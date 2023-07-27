@@ -26,4 +26,14 @@
     margin-right: 5%;
     border: 1px solid #ffe388;
     color: white;
+    min-height: 600px;
+  }
+
+  .free-driver {
+    background-color: #3f3c57; /* Color un poco más claro que #110f24 */
+    border: none; /* Sin bordes */
+    border-radius: 10px; /* Esquinas redondeadas */
+    padding: 10px; /* Espacio interno para el contenido */
+    margin: 10px; /* Espacio entre los divs */
+    color: white; /* Color del texto */
   }
