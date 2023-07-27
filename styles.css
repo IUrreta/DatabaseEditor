@@ -1,3 +1,8 @@
-/* styles.css */
+@font-face {
+    font-family: 'Formula1';
+    src: url("./assets/fonts/Formula1-Regular.ttf") format('truetype');
+  }
 
-/* Add styles here to customize the appearance of your app */
+ .letra{
+    font-family: 'Formula1';
+  }
