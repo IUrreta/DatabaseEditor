@@ -11,6 +11,17 @@
     font-family: 'Formula1';
   }
 
+  .rounded-checkbox {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 5px; /* Ajusta el valor para redondear las esquinas */
+    margin-top: 10px;
+    border: 1px solid #adb5bd;
+    min-width: 20px;
+    min-height: 20px;
+  }
+
   .title{
     text-align: center;
     color: white;
@@ -35,6 +46,24 @@
     padding-top: 10px;
     display: grid;
     grid-template-columns: repeat(2, minmax(400px, 1fr));
+  }
+
+  .contract-details{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .rounded-input {
+    border: 1px solid #ccc;
+    border-radius: 10px; /* Ajusta el valor para redondear más o menos las esquinas */
+    padding: 8px 12px;
+    max-width: 210px;
+    outline: none; /* Elimina el resaltado al hacer clic */
+    transition: border-color 0.2s ease-in-out; /* Agrega una transición suave para resaltar el borde al enfocar */
+  }
+
+  .rounded-input:focus {
+    border-color: #007bff; /* Cambia el color del borde cuando el input está enfocado */
   }
 
   .free-driver {

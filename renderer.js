@@ -1,5 +1,9 @@
 
 document.addEventListener('DOMContentLoaded', function () {
+    const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+    const raceBonusCheck = document.getElementById("raceBonusCheck");
+    const raceBonusAmt = document.getElementById("raceBonusAmt");
+    const raceBonusPos = document.getElementById("raceBonusPos");
     fetch("./assets/drivers.json")
         .then(response => response.json())
         .then(data => {
@@ -17,6 +21,17 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         })
         .catch(error => console.error('Error al cargar el archivo:', error));
+
+    raceBonusCheck.addEventListener("click", function() {
+        if(raceBonusCheck.checked){
+            raceBonusPos.disabled = false;
+            raceBonusAmt.disabled = false;
+        }
+        else{
+            raceBonusPos.disabled = true;
+            raceBonusAmt.disabled = true;
+        }
+    })
 
     interact('.free-driver').draggable({
         inertia: true,
@@ -40,17 +55,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 const freeRect = freeDrivers.getBoundingClientRect();
 
                 const driverSpaceElements = document.querySelectorAll('.driver-space');
-                driverSpaceElements.forEach(function(element) {
+                driverSpaceElements.forEach(function (element) {
                     console.log(element)
                     const rect = element.getBoundingClientRect();
                     if (event.clientX >= rect.left && event.clientX <= rect.right &&
                         event.clientY >= rect.top && event.clientY <= rect.bottom) {
-                            if (element.childElementCount < 1) {
-                                element.appendChild(target);
-                            }
+                        if (element.childElementCount < 1) {
+                            element.appendChild(target);
+                            myModal.show();
                         }
+                    }
                 });
-                
+
 
                 const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
                 const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
