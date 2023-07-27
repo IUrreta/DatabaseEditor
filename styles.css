@@ -3,6 +3,27 @@
     src: url("./assets/fonts/Formula1-Regular.ttf") format('truetype');
   }
 
- .letra{
+  body {
+    background-color: #110f24 !important;
+  }
+
+ .font{
     font-family: 'Formula1';
+  }
+
+  .title{
+    text-align: center;
+    color: white;
+    padding-top: 3%;
+  }
+
+  .main-panel{
+    display: flex;
+  }
+
+  .main-columns{
+    margin-left: 5%;
+    margin-right: 5%;
+    border: 1px solid #ffe388;
+    color: white;
   }
