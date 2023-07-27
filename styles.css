@@ -37,3 +37,32 @@
     margin: 10px; /* Espacio entre los divs */
     color: white; /* Color del texto */
   }
+
+  .team-template{
+    background-color: #1f1b3b; /* Colores entre #110f24 y #3f3c57 */
+    border-radius: 10px; /* Esquinas redondeadas */
+    border: none; /* Sin borde */
+    color: white; /* Color del texto */
+    margin: 10px;
+  }
+
+  .team-name {
+    border-bottom: 2px solid #0600b5; /* Borde inferior con el color de Red Bull Racing (#0600b5) */
+    padding-bottom: 10px; /* Espacio entre el título y las secciones inferiores */
+    padding-left: 10px;
+    padding-top: 10px;
+  }
+
+  .drivers-section {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px; /* Espacio entre el título y las secciones inferiores */
+    min-height: 64px;
+  }
+
+  .driver-template {
+    width: calc(50% - 5px); /* Ancho de cada sección, con un espacio de 5px entre ellas */
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.1); /* Color de fondo con transparencia */
+    border-radius: 5px; /* Esquinas redondeadas para las secciones inferiores */
+  }
