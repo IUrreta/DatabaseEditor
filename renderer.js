@@ -1,7 +1,17 @@
-/**
- * This file is loaded via the <script> tag in the index.html file and will
- * be executed in the renderer process for that window. No Node.js APIs are
- * available in this process because `nodeIntegration` is turned off and
- * `contextIsolation` is turned on. Use the contextBridge API in `preload.js`
- * to expose Node.js functionality from the main process.
- */
+
+document.addEventListener('DOMContentLoaded', function () {
+    fetch("./assets/drivers.json")
+      .then(response => response.json())
+      .then(data => {
+        const names = data.freeDrivers;
+  
+        const freeDriversContainer = document.getElementById('free-drivers');
+  
+        names.forEach(name => {
+          const div = document.createElement('div');
+          div.textContent = name;
+          freeDriversContainer.appendChild(div);
+        });
+      })
+      .catch(error => console.error('Error al cargar el archivo:', error));
+  });
