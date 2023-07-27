@@ -14,7 +14,7 @@
   .title{
     text-align: center;
     color: white;
-    padding-top: 3%;
+    padding-top: 34px;
   }
 
   .main-panel{
@@ -27,6 +27,14 @@
     border: 1px solid #ffe388;
     color: white;
     min-height: 600px;
+    
+    
+  }
+
+  .teams-columns{
+    padding-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(400px, 1fr));
   }
 
   .free-driver {
@@ -44,6 +52,8 @@
     border: none; /* Sin borde */
     color: white; /* Color del texto */
     margin: 10px;
+    margin-top: 0px;
+    max-height: 140px;
   }
 
   .team-name {
@@ -64,6 +74,36 @@
     border-bottom: 2px solid #00D2BE
   }
 
+  #mclaren{
+    border-bottom: 2px solid #FF8700
+  }
+
+  #alpine{
+    border-bottom: 2px solid #0090FF
+  }
+
+  #alfaromeo{
+    border-bottom: 2px solid #900000
+  }
+
+  #astonmartin{
+    border-bottom: 2px solid #006F62
+  }
+
+  #alphatauri{
+    border-bottom: 2px solid #2B4562
+  }
+
+  #williams{
+    border-bottom: 2px solid #005AFF
+  }
+
+  #haas{
+    border-bottom: 2px solid #ffffff
+  }
+
+
+  
   .drivers-section {
     display: flex;
     justify-content: space-between;
