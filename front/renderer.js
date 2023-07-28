@@ -110,6 +110,14 @@ document.addEventListener('DOMContentLoaded', function () {
         let salaryData = document.getElementById("salaryInput").value;
         let yearData = document.getElementById("yearInput").value;
         let signBonusData = document.getElementById("signBonusInput").value;
+        console.log(originalParent)
+        if(originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers"){
+            let extra = {
+                command: "fire",
+                driver: draggable.dataset.driverid
+            }
+            socket.send(JSON.stringify(extra))
+        }
         let data = {
             command: "hire",
             driver: draggable.dataset.driverid,

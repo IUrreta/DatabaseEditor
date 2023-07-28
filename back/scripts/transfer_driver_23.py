@@ -21,7 +21,8 @@ def run_script(option=""):
                 cursor.execute("UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = " + str(engineer_id[0]) + " AND DriverID = " + str(driver_id[0]))
     elif(params[0] == "hire"):
 
-        driver_id = params[1]
+        driver_id = (params[1],)
+        
         new_team = params[2].capitalize() 
         new_team_id = params[2]
 
@@ -120,8 +121,7 @@ def run_script(option=""):
                 race_bonus = "0"
                 race_bonus_pos = "10"
 
-
-
+        print(driver_id)
         cursor.execute("INSERT INTO Staff_Contracts VALUES (" + str(driver_id[0]) + ", 0, 1," + str(day[0]) + ", 1, " + str(new_team_id) + ", " +  str(car_in_team) + ", 1, '[OPINION_STRING_NEUTRAL]', " + str(day[0]) + ", " + year_end + ", 1, '[OPINION_STRING_NEUTRAL]', " + salary + ", 1, '[OPINION_STRING_NEUTRAL]', " + starting_bonus + ", 1, '[OPINION_STRING_NEUTRAL]', " + race_bonus + ", 1, '[OPINION_STRING_NEUTRAL]', " + race_bonus_pos + ", 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')")
         if(int(car_in_team) != 3):
             cursor.execute("UPDATE Staff_DriverData SET AssignedCarNumber = " + str(car_in_team) + " WHERE StaffID = " + str(driver_id[0]))
