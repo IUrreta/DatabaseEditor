@@ -6,14 +6,14 @@ function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1400,
-    height: 832,
+    height: 860,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'front/preload.js')
     }
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('front/index.html')
 
   mainWindow.removeMenu()
 

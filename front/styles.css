@@ -1,0 +1,215 @@
+@font-face {
+  font-family: 'Formula1';
+  src: url("../assets/fonts/Formula1-Regular.ttf") format('truetype');
+}
+
+body {
+  background-color: #110f24 !important;
+  max-height: 930px;
+}
+
+.font {
+  font-family: 'Formula1';
+}
+
+.rounded-checkbox {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 5px;
+  /* Ajusta el valor para redondear las esquinas */
+  margin-top: 10px;
+  border: 1px solid #adb5bd;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+.title {
+  text-align: center;
+  color: white;
+}
+
+.main-panel {
+  display: flex;
+}
+
+.main-columns-drag-section {
+  margin-left: 5%;
+  margin-right: 5%;
+  border: 1px solid #ffe388;
+  color: white;
+  min-height: 600px;
+  max-height: 660px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  /* Para navegadores que soporten la propiedad scrollbar-width */
+  scrollbar-color: white #e5e5e5;
+  /* Para navegadores que soporten la propiedad scrollbar-color */
+
+
+}
+
+.main-columns-drag-section::-webkit-scrollbar {
+  width: 6px;
+  /* Ancho de la barra de scroll vertical */
+}
+
+
+.main-columns-drag-section::-webkit-scrollbar-thumb {
+  background-color: white;
+  /* Color del thumb (la parte que puedes arrastrar) */
+  border-radius: 3px;
+  /* Esquinas redondeadas del thumb */
+}
+
+
+
+.categoryPills{
+  color: #dbdbdb !important;
+}
+
+.active{
+  background-color: #797599 !important;
+  color: #fdfdfd !important;
+}
+
+#F2pill.active{
+  background-color: #797599 !important;
+  color: #1374fc !important;
+}
+
+#F3pill.active{
+  background-color: #797599 !important;
+  color: red !important;
+}
+
+
+
+
+.teams-columns {
+  padding-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(400px, 1fr));
+  overflow-y:hidden;
+}
+
+.contract-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.rounded-input {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  /* Ajusta el valor para redondear más o menos las esquinas */
+  padding: 8px 12px;
+  max-width: 210px;
+  outline: none;
+  /* Elimina el resaltado al hacer clic */
+  transition: border-color 0.2s ease-in-out;
+  /* Agrega una transición suave para resaltar el borde al enfocar */
+}
+
+.rounded-input:focus {
+  border-color: #007bff;
+  /* Cambia el color del borde cuando el input está enfocado */
+}
+
+.free-driver {
+  background-color: #3f3c57;
+  /* Color un poco más claro que #110f24 */
+  border: none;
+  /* Sin bordes */
+  border-radius: 10px;
+  /* Esquinas redondeadas */
+  padding: 10px;
+  /* Espacio interno para el contenido */
+  margin: 10px;
+  /* Espacio entre los divs */
+  color: white;
+  /* Color del texto */
+  touch-action: pan-x;
+}
+
+.team-template {
+  background-color: #1f1b3b;
+  /* Colores entre #110f24 y #3f3c57 */
+  border-radius: 10px;
+  /* Esquinas redondeadas */
+  border: none;
+  /* Sin borde */
+  color: white;
+  /* Color del texto */
+  margin: 10px;
+  margin-top: 0px;
+  max-height: 140px;
+}
+
+.team-name {
+  padding-bottom: 10px;
+  /* Espacio entre el título y las secciones inferiores */
+  padding-left: 10px;
+  padding-top: 10px;
+}
+
+#redbull {
+  border-bottom: 2px solid #0600b5;
+  /* Borde inferior con el color de Red Bull Racing (#0600b5) */
+}
+
+#ferrari {
+  border-bottom: 2px solid #FF2800;
+}
+
+#merc {
+  border-bottom: 2px solid #00D2BE
+}
+
+#mclaren {
+  border-bottom: 2px solid #FF8700
+}
+
+#alpine {
+  border-bottom: 2px solid #0090FF
+}
+
+#alfaromeo {
+  border-bottom: 2px solid #900000
+}
+
+#astonmartin {
+  border-bottom: 2px solid #006F62
+}
+
+#alphatauri {
+  border-bottom: 2px solid #2B4562
+}
+
+#williams {
+  border-bottom: 2px solid #005AFF
+}
+
+#haas {
+  border-bottom: 2px solid #ffffff
+}
+
+
+
+.drivers-section {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  /* Espacio entre el título y las secciones inferiores */
+  min-height: 64px;
+}
+
+
+.driver-template {
+  width: calc(50% - 5px);
+  /* Ancho de cada sección, con un espacio de 5px entre ellas */
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.1);
+  /* Color de fondo con transparencia */
+  border-radius: 5px;
+  /* Esquinas redondeadas para las secciones inferiores */
+}

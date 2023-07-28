@@ -4,12 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-  <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
-  <link href="./styles.css" rel="stylesheet">
-  <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-  <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script src="node_modules/interactjs/dist/interact.min.js"></script>
+  <link href="styles.css" rel="stylesheet">
+  <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="../node_modules/interactjs/dist/interact.min.js"></script>
   <title>Hello World!</title>
 </head>
 
@@ -25,19 +23,19 @@
           <div>
             Salary
             <div>
-              <input type="number" class="rounded-input">
+              <input type="number" class="rounded-input" id="salaryInput">
             </div>
           </div>
           <div>
             Valid until
             <div>
-              <input type="number" class="rounded-input">
+              <input type="number" class="rounded-input" id="yearInput">
             </div>
           </div>
           <div>
             Sign bonus
             <div>
-              <input type="number" class="rounded-input">
+              <input type="number" class="rounded-input" id="signBonusInput">
             </div>
           </div>
           <div class="mt-3">
@@ -68,130 +66,123 @@
       </div>
     </div>
   </div>
-  <div class="title">
+  <div class="title mt-3">
     <h3>Drag a driver to the team you want to move him in!</h3>
   </div>
   <div class="main-panel">
     <div class="col-3">
-      <div class="title">
-        <h5>Free drivers</h5>
+      <div class="pt-2 pb-3 ps-3">
+        <ul class="nav nav-pills">
+          <li class="nav-item">
+            <a class="nav-link categoryPills active" data-bs-toggle="pill" href="#" id="freepill">Free drivers</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link categoryPills" data-bs-toggle="pill" href="#" id="F2pill">F2</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link categoryPills" data-bs-toggle="pill" href="#" id="F3pill">F3</a>
+          </li>
+        </ul>
       </div>
       <div class="main-columns-drag-section" id="free-drivers">
+        <div id="fake"></div>
       </div>
+      <div class="main-columns-drag-section d-none" id="f2-drivers"></div>
+      <div class="main-columns-drag-section d-none" id="f3-drivers"></div>
     </div>
 
     <div class="col-9">
-      <div class="title">
+      <div class="title py-3">
         <h5>Contracted drivers</h5>
       </div>
       <div class="main-columns-drag-section teams-columns">
         <div class="team-template">
           <div class="team-name" id="redbull">Red Bull Racing</div>
           <div class="drivers-section" data-team="redbull">
-            <div class="col driver-space">
-              <div class="col free-driver">Max Verstappen</div>
+            <div class="col driver-space" id="rb1">
             </div>
-            <div class="col driver-space">
-              <div class="col free-driver">Sergio Pérez</div>
+            <div class="col driver-space" id="rb2">
             </div>
           </div>
         </div>
         <div class="team-template">
           <div class="team-name" id="ferrari">Ferrari</div>
           <div class="drivers-section" data-team="ferrari">
-            <div class="col driver-space">
-              <div class="col free-driver">Charles Leclerc</div>
+            <div class="col driver-space" id="fe1">
             </div>
-            <div class="col driver-space">
-              <div class="col free-driver">Carlos Sainz</div>
+            <div class="col driver-space" id="fe2">
             </div>
           </div>
         </div>
         <div class="team-template">
           <div class="team-name" id="merc">Mercedes</div>
           <div class="drivers-section" data-team="merc">
-            <div class="col driver-space">
-              <div class="col free-driver">Lewis Hamilton</div>
+            <div class="col driver-space" id="me1">
             </div>
-            <div class="col driver-space">
-              <div class="col free-driver">George Russell</div>
+            <div class="col driver-space" id="me2">
             </div>
           </div>
         </div>
         <div class="team-template">
           <div class="team-name" id="alpine">Alpine</div>
           <div class="drivers-section" data-team="alpine">
-            <div class="col driver-space">
-              <div class="col free-driver">Esteban Ocon</div>
+            <div class="col driver-space" id="al1">
             </div>
-            <div class="col driver-space">
-              <div class="col free-driver">Pierre Gasly</div>
+            <div class="col driver-space" id="al2">
             </div>
           </div>
         </div>
         <div class="team-template">
           <div class="team-name" id="mclaren">McLaren</div>
           <div class="drivers-section" data-team="mclaren">
-            <div class="col driver-space">
-              <div class="col free-driver">Lando Norris</div>
+            <div class="col driver-space" id="mc1">
             </div>
-            <div class="col driver-space">
-              <div class="col free-driver">Oscar Piastri</div>
+            <div class="col driver-space" id="mc2">
             </div>
           </div>
         </div>
         <div class="team-template">
           <div class="team-name" id="alfaromeo">Alfa Romeo</div>
           <div class="drivers-section" data-team="alfaromeo">
-            <div class="col driver-space">
-              <div class="col free-driver">Valtteri Bottas</div>
+            <div class="col driver-space" id="af1">
             </div>
-            <div class="col driver-space">
-              <div class="col free-driver">Guanyu Zhou</div>
+            <div class="col driver-space" id="af2">
             </div>
           </div>
         </div>
         <div class="team-template">
           <div class="team-name" id="astonmartin">Aston Martin</div>
           <div class="drivers-section"  data-team="astonmartin">
-            <div class="col driver-space">
-              <div class="col free-driver">Fernando Alonso</div>
+            <div class="col driver-space" id="as1">
             </div>
-            <div class="col driver-space">
-              <div class="col free-driver">Lance Stroll</div>
+            <div class="col driver-space" id="as2">
             </div>
           </div>
         </div>
         <div class="team-template">
           <div class="team-name" id="haas">Haas</div>
           <div class="drivers-section" data-team="haas">
-            <div class="col driver-space">
-              <div class="col free-driver">Kevin Magnussen</div>
+            <div class="col driver-space" id="ha1">
             </div>
-            <div class="col driver-space">
-              <div class="col free-driver">Nico Hulkenberg</div>
+            <div class="col driver-space" id="ha2">
             </div>
           </div>
         </div>
         <div class="team-template">
           <div class="team-name" id="alphatauri">Alpha Tauri</div>
           <div class="drivers-section"  data-team="alphatauri">
-            <div class="col driver-space">
-              <div class="col free-driver">Yuki Tsunoda</div>
+            <div class="col driver-space" id="at1">
             </div>
-            <div class="col driver-space">
-              <div class="col free-driver">Nyck de Vries</div>
+            <div class="col driver-space" id="at2">
             </div>
           </div>
         </div>
         <div class="team-template">
           <div class="team-name" id="williams">Williams</div>
           <div class="drivers-section" id="williams-contracted-drivers">
-            <div class="col driver-space">
-              <div class="col free-driver">Alex Albon</div>
+            <div class="col driver-space" id="wi1">
             </div>
-            <div class="col driver-space">
-              <div class="col free-driver">Logan Sargeant</div>
+            <div class="col driver-space" id="wi2">
             </div>
           </div>
         </div>
@@ -202,7 +193,7 @@
 
 
 
-  <script src="./renderer.js"></script>
+  <script src="renderer.js"></script>
 </body>
 
 </html>
