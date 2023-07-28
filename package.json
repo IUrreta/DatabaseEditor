@@ -6,15 +6,8 @@
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
-  ],
-  "author": "GitHub",
+  "repository": "",
+  "author": "IUrreta",
   "license": "CC0-1.0",
   "dependencies": {
     "bootstrap": "^5.3.0",

@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let originalParent;
     let destinationParent;
     let draggable;
-    fetch("./assets/drivers.json")
+    fetch("../assets/drivers.json")
         .then(response => response.json())
         .then(data => {
             const names = data.freeDrivers;
