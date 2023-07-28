@@ -56,12 +56,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const driverSpaceElements = document.querySelectorAll('.driver-space');
                 driverSpaceElements.forEach(function (element) {
-                    console.log(element)
                     const rect = element.getBoundingClientRect();
                     if (event.clientX >= rect.left && event.clientX <= rect.right &&
                         event.clientY >= rect.top && event.clientY <= rect.bottom) {
                         if (element.childElementCount < 1) {
                             element.appendChild(target);
+                            console.log(target.innerHTML)
+                            console.log(element.parentNode.dataset.team)
+                            document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + element.parentNode.dataset.team;
                             myModal.show();
                         }
                     }

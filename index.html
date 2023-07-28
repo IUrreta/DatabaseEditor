@@ -14,12 +14,12 @@
 </head>
 
 <body class="font">
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" 
     aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <h5 class="modal-title" id="contractModalTitle"></h5>
         </div>
         <div class="modal-body contract-details">
           <div>
@@ -87,7 +87,7 @@
       <div class="main-columns-drag-section teams-columns">
         <div class="team-template">
           <div class="team-name" id="redbull">Red Bull Racing</div>
-          <div class="drivers-section" id="redbull-contracted-drivers">
+          <div class="drivers-section" data-team="redbull">
             <div class="col driver-space">
               <div class="col free-driver">Max Verstappen</div>
             </div>
@@ -98,7 +98,7 @@
         </div>
         <div class="team-template">
           <div class="team-name" id="ferrari">Ferrari</div>
-          <div class="drivers-section" id="ferrari-contracted-drivers">
+          <div class="drivers-section" data-team="ferrari">
             <div class="col driver-space">
               <div class="col free-driver">Charles Leclerc</div>
             </div>
@@ -109,7 +109,7 @@
         </div>
         <div class="team-template">
           <div class="team-name" id="merc">Mercedes</div>
-          <div class="drivers-section" id="merc-contracted-drivers">
+          <div class="drivers-section" data-team="merc">
             <div class="col driver-space">
               <div class="col free-driver">Lewis Hamilton</div>
             </div>
@@ -120,7 +120,7 @@
         </div>
         <div class="team-template">
           <div class="team-name" id="alpine">Alpine</div>
-          <div class="drivers-section" id="alpine-contracted-drivers">
+          <div class="drivers-section" data-team="alpine">
             <div class="col driver-space">
               <div class="col free-driver">Esteban Ocon</div>
             </div>
@@ -131,7 +131,7 @@
         </div>
         <div class="team-template">
           <div class="team-name" id="mclaren">McLaren</div>
-          <div class="drivers-section" id="mclaren-contracted-drivers">
+          <div class="drivers-section" data-team="mclaren">
             <div class="col driver-space">
               <div class="col free-driver">Lando Norris</div>
             </div>
@@ -142,7 +142,7 @@
         </div>
         <div class="team-template">
           <div class="team-name" id="alfaromeo">Alfa Romeo</div>
-          <div class="drivers-section" id="alfaromeo-contracted-drivers">
+          <div class="drivers-section" data-team="alfaromeo">
             <div class="col driver-space">
               <div class="col free-driver">Valtteri Bottas</div>
             </div>
@@ -153,7 +153,7 @@
         </div>
         <div class="team-template">
           <div class="team-name" id="astonmartin">Aston Martin</div>
-          <div class="drivers-section" id="astonmartin-contracted-drivers">
+          <div class="drivers-section"  data-team="astonmartin">
             <div class="col driver-space">
               <div class="col free-driver">Fernando Alonso</div>
             </div>
@@ -164,7 +164,7 @@
         </div>
         <div class="team-template">
           <div class="team-name" id="haas">Haas</div>
-          <div class="drivers-section" id="haas-contracted-drivers">
+          <div class="drivers-section" data-team="haas">
             <div class="col driver-space">
               <div class="col free-driver">Kevin Magnussen</div>
             </div>
@@ -175,7 +175,7 @@
         </div>
         <div class="team-template">
           <div class="team-name" id="alphatauri">Alpha Tauri</div>
-          <div class="drivers-section" id="alphatauri-contracted-drivers">
+          <div class="drivers-section"  data-team="alphatauri">
             <div class="col driver-space">
               <div class="col free-driver">Yuki Tsunoda</div>
             </div>
