@@ -90,7 +90,6 @@ body {
   padding-top: 10px;
   display: grid;
   grid-template-columns: repeat(2, minmax(400px, 1fr));
-  overflow-y: hidden;
 }
 
 .contract-details {
@@ -128,6 +127,7 @@ body {
   /* Espacio entre los divs */
   color: white;
   /* Color del texto */
+  touch-action: pan-x;
 }
 
 .team-template {

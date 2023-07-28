@@ -46,9 +46,11 @@ document.addEventListener('DOMContentLoaded', function () {
             if(driver[2] > 0 && driver[2] <= 10) divPosition = team_dict[driver[2]] + driver[3];
             else if(driver[2] > 10 && driver[2] <= 20) divPosition = "f2-drivers";
             else if(driver[2] > 20 && driver[2] <= 30) divPosition = "f3-drivers";
-            if(driver[3] != 3){
+            if(driver[3] != 3){ 
                 let newDiv = document.createElement("div");
-                newDiv.innerHTML = "<div class='col free-driver' data-driverid='" + driver[1] + "'>" + driver[0] + "</div>"
+                newDiv.className = "col free-driver";
+                newDiv.dataset.driverid = driver[1];
+                newDiv.innerHTML = driver[0];
                 document.getElementById(divPosition).appendChild(newDiv)
             }
 
@@ -94,7 +96,6 @@ document.addEventListener('DOMContentLoaded', function () {
         let salaryData = document.getElementById("salaryInput").value;
         let yearData = document.getElementById("yearInput").value;
         let signBonusData = document.getElementById("signBonusInput").value;
-        console.log(document.getElementById("yearInput"))
         let data = {
             command: "hire",
             driver: draggable.innerHTML,
@@ -124,6 +125,13 @@ document.addEventListener('DOMContentLoaded', function () {
             start(event) {
                 originalParent = event.target.parentNode;
                 draggable = event.target;
+                let target = event.target;
+                let position = target.getBoundingClientRect();
+                let width = target.getBoundingClientRect().width
+                console.log(width)
+                target.style.width = width + "px";
+                target.style.position = "fixed";
+                target.style.top = position.top + "px";
             },
             move(event) {
                 const target = event.target;
@@ -131,12 +139,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
                 target.style.transform = `translate(${x}px, ${y}px)`;
+                target.style.opacity = 1;
+                target.style.zIndex = 10;
 
                 target.setAttribute('data-x', x);
                 target.setAttribute('data-y', y);
             },
             end(event) {
-                const target = event.target;
+                let target = event.target;
+                target.style.position = "relative";
+                target.style.top = "auto";
+                target.style.width = "auto";
                 const freeDrivers = document.getElementById('free-drivers');
                 const freeRect = freeDrivers.getBoundingClientRect();
 
@@ -148,8 +161,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (element.childElementCount < 1) {
                             destinationParent = element;
                             element.appendChild(target);
-                            console.log(target.innerHTML)
-                            console.log(element.parentNode.dataset.team)
                             document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + element.parentNode.dataset.team;
                             myModal.show();
                         }
@@ -167,13 +178,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (event.clientX >= freeRect.left && event.clientX <= freeRect.right &&
                     event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
                     // Suelta el div en el div "free-drivers"
+                    console.log(originalParent)
+                    originalParent.removeChild(draggable);
                     freeDrivers.appendChild(target);
+                    
                     let data = {
                         command: "fire",
                         driver: draggable.innerHTML
                     }
                     socket.send(JSON.stringify(data))
                 }
+                
 
                 // Reinicia las coordenadas de arrastre
                 target.style.transform = 'none';

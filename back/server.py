@@ -19,8 +19,8 @@ async def handle_command(message):
 
     # elif type =="hire":
         # run_script()
-    elif type =="fire":
-        run_script("fire ")
+    #elif type =="fire":
+        #run_script("fire ")
 
 
 async def send_message_to_client(message):
