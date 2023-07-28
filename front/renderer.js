@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     socket.onopen = () => {
         console.log('Conexión establecida.');
+        let data = {
+            command: "connect"
+        }
+        socket.send(JSON.stringify(data))
     };
 
     raceBonusCheck.addEventListener("click", function () {
@@ -45,7 +49,19 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     document.getElementById("confirmButton").addEventListener('click', function () {
+        let salaryData = document.getElementById("salaryInput").value;
+        let yearData = document.getElementById("yearInput").value;
+        let signBonusData = document.getElementById("signBonusInput").value;
+        console.log(document.getElementById("yearInput"))
+        let data = {
+            command: "hire",
+            driver: draggable.innerHTML,
+            salary: salaryData,
+            year: yearData,
+            signBonus: signBonusData
+        }
         destinationParent.appendChild(draggable);
+        socket.send(JSON.stringify(data))
     })
 
     document.getElementById("cancelButton").addEventListener('click', function () {
@@ -110,6 +126,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
                     // Suelta el div en el div "free-drivers"
                     freeDrivers.appendChild(target);
+                    let data = {
+                        command: "fire",
+                        driver: draggable.innerHTML
+                    }
+                    socket.send(JSON.stringify(data))
                 }
 
                 // Reinicia las coordenadas de arrastre
