@@ -127,12 +127,21 @@ def run_script(option=""):
             cursor.execute("UPDATE Staff_DriverData SET AssignedCarNumber = " + str(car_in_team) + " WHERE StaffID = " + str(driver_id[0]))
 
             #checks if the driver was in the standings and if it wasn't it updates the standings
-            position_in_standings = cursor.execute("SELECT MAX(Position) FROM Races_DriverStandings WHERE SeasonID = " + str(year[0])).fetchone()
-            points_driver_in_standings = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE DriverID = " + str(driver_id[0]) + " AND SeasonID = " + str(year[0])).fetchone()
+            position_in_standings = cursor.execute("SELECT MAX(Position) FROM Races_DriverStandings WHERE SeasonID = " + str(year[0]) + " AND RaceFormula = 1").fetchone()
+            points_driver_in_standings = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE DriverID = " + str(driver_id[0]) + " AND SeasonID = " + str(year[0])  + " AND RaceFormula = 1").fetchone()
         
             if(points_driver_in_standings == None):
                 points_driver_in_standings = (0,)
                 cursor.execute("INSERT INTO Races_DriverStandings VALUES (" + str(year[0]) + ", " + str(driver_id[0]) + ", " + str(points_driver_in_standings[0])+ ", " + str(position_in_standings[0] + 1) + ", 0, 0, 1)")
+
+            was_in_f2 = points_driver_in_standings = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE DriverID = " + str(driver_id[0]) + " AND SeasonID = " + str(year[0])  + " AND RaceFormula = 2").fetchone()
+            was_in_f3 = points_driver_in_standings = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE DriverID = " + str(driver_id[0]) + " AND SeasonID = " + str(year[0])  + " AND RaceFormula = 3").fetchone()
+            if(was_in_f2 != None):
+                print("was in f2")
+                cursor.execute("DELETE FROM Races_DriverStandings WHERE DriverID = " + str(driver_id[0]) + " AND SeasonID = " + str(year[0]) + " AND RaceFormula = 2")
+            if(was_in_f3 != None):
+                print("was in f3")
+                cursor.execute("DELETE FROM Races_DriverStandings WHERE DriverID = " + str(driver_id[0]) + " AND SeasonID = " + str(year[0]) + " AND RaceFormula = 3")
 
 
             engineers = cursor.execute("SELECT con.StaffID FROM Staff_Contracts con JOIN Staff_BasicData com ON con.StaffID = com.StaffID WHERE con.TeamID = " + str(new_team_id)).fetchall()
