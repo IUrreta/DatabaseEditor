@@ -7,29 +7,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const raceBonusCheck = document.getElementById("raceBonusCheck");
     const raceBonusAmt = document.getElementById("raceBonusAmt");
     const raceBonusPos = document.getElementById("raceBonusPos");
+
+    const freeDriversPill = document.getElementById("freepill");
+    const f2DriversPill = document.getElementById("F2pill");
+    const f3DriversPill = document.getElementById("F3pill");
+
+    const freeDriversDiv = document.getElementById("free-drivers");
+    const f2DriversDiv = document.getElementById("f2-drivers");
+    const f3DriversDiv = document.getElementById("f3-drivers");
+
+    const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
+
     let originalParent;
     let destinationParent;
     let draggable;
 
     let team_dict={1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as"}
-
-    fetch("../assets/drivers.json")
-        .then(response => response.json())
-        .then(data => {
-            const names = data.freeDrivers;
-
-            const freeDriversContainer = document.getElementById('free-drivers');
-
-            names.forEach(name => {
-                if (name.trim() !== '') {
-                    const div = document.createElement('div');
-                    div.textContent = name.trim();
-                    div.classList.add('free-driver'); // Agrega la clase "free-driver"
-                    freeDriversContainer.appendChild(div);
-                }
-            });
-        })
-        .catch(error => console.error('Error al cargar el archivo:', error));
 
     socket.onopen = () => {
         console.log('Conexión establecida.');
@@ -50,7 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
         let divPosition;
         driversArray.forEach((driver) => {
             divPosition = "free-drivers"
-            if(driver[2] > 0 && driver[2] <= 10) divPosition = team_dict[driver[2]] + driver[3]
+            if(driver[2] > 0 && driver[2] <= 10) divPosition = team_dict[driver[2]] + driver[3];
+            else if(driver[2] > 10 && driver[2] <= 20) divPosition = "f2-drivers";
+            else if(driver[2] > 20 && driver[2] <= 30) divPosition = "f3-drivers";
             if(driver[3] != 3){
                 let newDiv = document.createElement("div");
                 newDiv.innerHTML = "<div class='col free-driver' data-driverid='" + driver[1] + "'>" + driver[0] + "</div>"
@@ -58,6 +53,29 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
 
+        })
+    }
+
+    freeDriversPill.addEventListener("click", function() {
+        manageDrivers("show", "hide", "hide")
+    })
+
+    f2DriversPill.addEventListener("click", function() {
+        manageDrivers("hide", "show", "hide")
+    })
+
+    f3DriversPill.addEventListener("click", function() {
+        manageDrivers("hide", "hide", "show")
+    })
+
+    function manageDrivers(...divs){
+        divsArray.forEach(function(div, index){
+            if(divs[index] === "show"){
+                div.className = "main-columns-drag-section"
+            }
+            else{
+                div.className = "main-columns-drag-section d-none"
+            }
         })
     }
 

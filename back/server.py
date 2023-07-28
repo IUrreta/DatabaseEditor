@@ -71,7 +71,8 @@ def format_names(name):
 
     
     nombre = nombre_match.group(2)
-    apellido = apellido_match.group(1)
+    apellido = remove_number(apellido_match.group(1))
+    print(apellido)
     name_formatted = f"{nombre} {apellido}"
     team_id = name[3] if name[3] is not None else 0
     pos_in_team = name[4] if name[4] is not None else 0
@@ -80,6 +81,11 @@ def format_names(name):
     resultado = (name_formatted, name[2], team_id, pos_in_team)
 
     return resultado
+
+def remove_number(cadena):
+    if cadena and cadena[-1].isdigit():
+        cadena = cadena[:-1]
+    return cadena
 
 asyncio.run(main())
 

@@ -66,20 +66,31 @@
       </div>
     </div>
   </div>
-  <div class="title">
+  <div class="title mt-3">
     <h3>Drag a driver to the team you want to move him in!</h3>
   </div>
   <div class="main-panel">
     <div class="col-3">
-      <div class="title">
-        <h5>Free drivers</h5>
+      <div class="pt-2 pb-3 ps-3">
+        <ul class="nav nav-pills">
+          <li class="nav-item">
+            <a class="nav-link categoryPills active" data-bs-toggle="pill" href="#" id="freepill">Free drivers</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link categoryPills" data-bs-toggle="pill" href="#" id="F2pill">F2</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link categoryPills" data-bs-toggle="pill" href="#" id="F3pill">F3</a>
+          </li>
+        </ul>
       </div>
-      <div class="main-columns-drag-section" id="free-drivers">
-      </div>
+      <div class="main-columns-drag-section" id="free-drivers"></div>
+      <div class="main-columns-drag-section d-none" id="f2-drivers"></div>
+      <div class="main-columns-drag-section d-none" id="f3-drivers"></div>
     </div>
 
     <div class="col-9">
-      <div class="title">
+      <div class="title py-3">
         <h5>Contracted drivers</h5>
       </div>
       <div class="main-columns-drag-section teams-columns">
