@@ -1,5 +1,8 @@
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    const socket = new WebSocket('ws://localhost:8765/');
+
     const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
     const raceBonusCheck = document.getElementById("raceBonusCheck");
     const raceBonusAmt = document.getElementById("raceBonusAmt");
@@ -7,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let originalParent;
     let destinationParent;
     let draggable;
+
     fetch("../assets/drivers.json")
         .then(response => response.json())
         .then(data => {
@@ -25,32 +29,36 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(error => console.error('Error al cargar el archivo:', error));
 
-    raceBonusCheck.addEventListener("click", function() {
-        if(raceBonusCheck.checked){
+    socket.onopen = () => {
+        console.log('Conexión establecida.');
+    };
+
+    raceBonusCheck.addEventListener("click", function () {
+        if (raceBonusCheck.checked) {
             raceBonusPos.disabled = false;
             raceBonusAmt.disabled = false;
         }
-        else{
+        else {
             raceBonusPos.disabled = true;
             raceBonusAmt.disabled = true;
         }
     })
 
-    document.getElementById("confirmButton").addEventListener('click', function() {
+    document.getElementById("confirmButton").addEventListener('click', function () {
         destinationParent.appendChild(draggable);
     })
 
-    document.getElementById("cancelButton").addEventListener('click', function() {
+    document.getElementById("cancelButton").addEventListener('click', function () {
         // Volver a colocar div0 como hijo de su div padre original
         originalParent.appendChild(draggable);
-    
+
         // Restablecer la posición original
         div0.style.transform = 'translate(0px, 0px)';
         div0.setAttribute('data-x', 0);
         div0.setAttribute('data-y', 0);
 
 
-      })
+    })
 
     interact('.free-driver').draggable({
         inertia: true,
