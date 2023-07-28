@@ -11,7 +11,7 @@ client = None
 async def handle_command(message):
     type = message["command"]
     if type == "connect":
-        process_unpack("../saveF23.sav", "../result")
+        process_unpack("../save1.sav", "../result")
         drivers = fetch_drivers()
         data_json = json.dumps(drivers)
         await send_message_to_client(data_json)
@@ -52,7 +52,7 @@ async def main():
 def fetch_drivers():
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
-    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID').fetchall()
+    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID').fetchall()
     print(drivers)
     formatted_tuples = []
     for tupla in drivers:
@@ -74,9 +74,10 @@ def format_names(name):
     apellido = apellido_match.group(1)
     name_formatted = f"{nombre} {apellido}"
     team_id = name[3] if name[3] is not None else 0
+    pos_in_team = name[4] if name[4] is not None else 0
 
     
-    resultado = (name_formatted, name[2], team_id)
+    resultado = (name_formatted, name[2], team_id, pos_in_team)
 
     return resultado
 

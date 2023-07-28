@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let destinationParent;
     let draggable;
 
+    let team_dict={1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as"}
+
     fetch("../assets/drivers.json")
         .then(response => response.json())
         .then(data => {
@@ -38,9 +40,25 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     socket.onmessage = (event) => {
-        const mensaje = event.data;
-        console.log('Mensaje recibido: ' + mensaje);
+        // const mensaje = event.data;
+        // console.log('Mensaje recibido: ' + event.data);
+        let message = JSON.parse(event.data)
+        place_drivers(message)
     };
+
+    function place_drivers(driversArray){
+        driversArray.forEach((driver) => {
+            if(driver[2] > 0 && driver[2] <= 10 && driver[3] != 3){
+                console.log(driver[0])
+                let divPosition = team_dict[driver[2]] + driver[3]
+                let newDiv = document.createElement("div");
+                newDiv.innerHTML = "<div class='col free-driver'>" + driver[0] + "</div>"
+                document.getElementById(divPosition).appendChild(newDiv)
+                console.log(document.getElementById(divPosition))
+            }
+
+        })
+    }
 
     raceBonusCheck.addEventListener("click", function () {
         if (raceBonusCheck.checked) {
