@@ -47,15 +47,16 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     function place_drivers(driversArray){
+        let divPosition;
         driversArray.forEach((driver) => {
-            if(driver[2] > 0 && driver[2] <= 10 && driver[3] != 3){
-                console.log(driver[0])
-                let divPosition = team_dict[driver[2]] + driver[3]
+            divPosition = "free-drivers"
+            if(driver[2] > 0 && driver[2] <= 10) divPosition = team_dict[driver[2]] + driver[3]
+            if(driver[3] != 3){
                 let newDiv = document.createElement("div");
-                newDiv.innerHTML = "<div class='col free-driver'>" + driver[0] + "</div>"
+                newDiv.innerHTML = "<div class='col free-driver' data-driverid='" + driver[1] + "'>" + driver[0] + "</div>"
                 document.getElementById(divPosition).appendChild(newDiv)
-                console.log(document.getElementById(divPosition))
             }
+
 
         })
     }

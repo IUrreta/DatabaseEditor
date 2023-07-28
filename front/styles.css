@@ -5,6 +5,7 @@
 
   body {
     background-color: #110f24 !important;
+    max-height: 930px;
   }
 
  .font{
@@ -38,6 +39,8 @@
     border: 1px solid #ffe388;
     color: white;
     min-height: 600px;
+    max-height: 660px;
+    overflow-y: auto;
     
     
   }
@@ -46,6 +49,7 @@
     padding-top: 10px;
     display: grid;
     grid-template-columns: repeat(2, minmax(400px, 1fr));
+    overflow-y: hidden;
   }
 
   .contract-details{
