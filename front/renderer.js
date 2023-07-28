@@ -21,8 +21,22 @@ document.addEventListener('DOMContentLoaded', function () {
     let originalParent;
     let destinationParent;
     let draggable;
+    let team;
+    let posInTeam;
 
     let team_dict={1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as"}
+    let inverted_dict = {
+        'ferrari': 1,
+        'mclaren': 2,
+        'redbull': 3,
+        'merc': 4,
+        'alpine': 5,
+        'williams': 6,
+        'haas': 7,
+        'alphatauri': 8,
+        'alfaromeo': 9,
+        'astonmartin': 10
+    }
 
     socket.onopen = () => {
         console.log('Conexión establecida.');
@@ -98,10 +112,14 @@ document.addEventListener('DOMContentLoaded', function () {
         let signBonusData = document.getElementById("signBonusInput").value;
         let data = {
             command: "hire",
-            driver: draggable.innerHTML,
+            driver: draggable.dataset.driverid,
+            teamID: inverted_dict[team],
+            position: posInTeam,
             salary: salaryData,
-            year: yearData,
-            signBonus: signBonusData
+            signBonus: signBonusData,
+            raceBonus: '0',
+            raceBonusPos: '10',
+            year: yearData
         }
         destinationParent.appendChild(draggable);
         socket.send(JSON.stringify(data))
@@ -161,7 +179,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (element.childElementCount < 1) {
                             destinationParent = element;
                             element.appendChild(target);
-                            document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + element.parentNode.dataset.team;
+                            team = element.parentNode.dataset.team
+                            posInTeam = element.id.charAt(2)
+                            console.log(posInTeam)
+                            document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + team;
                             myModal.show();
                         }
                     }
@@ -184,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     let data = {
                         command: "fire",
-                        driver: draggable.innerHTML
+                        driver: draggable.dataset.driverid
                     }
                     socket.send(JSON.stringify(data))
                 }

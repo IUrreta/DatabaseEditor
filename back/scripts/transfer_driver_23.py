@@ -3,7 +3,7 @@ import random
 
 def run_script(option=""):
 
-    conn = sqlite3.connect("scripts/result/main.db")
+    conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
 
     text = option.lower()
@@ -11,7 +11,7 @@ def run_script(option=""):
     
 
     if(params[0] == "fire"):
-        driver_id = get_driver_id(params[1])
+        driver_id = (params[1],)
         position = cursor.execute("SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = " + str(driver_id[0])).fetchone()
         cursor.execute("DELETE FROM Staff_Contracts WHERE StaffID = " + str(driver_id[0]))     #deletes the driver you're replacing current contract
         if(position[0] != 3):
@@ -21,21 +21,9 @@ def run_script(option=""):
                 cursor.execute("UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = " + str(engineer_id[0]) + " AND DriverID = " + str(driver_id[0]))
     elif(params[0] == "hire"):
 
-        driver_id = get_driver_id(params[1])
+        driver_id = params[1]
         new_team = params[2].capitalize() 
-
-        #gets the id of the team you want to move in the driver
-        if "Ferrari" in new_team: new_team_id = 1
-        elif "Mclaren" in new_team: new_team_id = 2
-        elif "Red bull" in new_team or "Redbull" in new_team or "Rb" in new_team: new_team_id = 3
-        elif "Merc" in new_team or "Mercedes" in new_team: new_team_id = 4
-        elif "Alpine" in new_team: new_team_id = 5
-        elif "Williams" in new_team: new_team_id = 6
-        elif "Haas" in new_team: new_team_id = 7
-        elif "Alphatauri" in new_team or "Alpha tauri" in new_team or "At" in new_team: new_team_id = 8
-        elif "Alfa" in new_team or "Romeo" in new_team: new_team_id = 9
-        elif "Aston" in new_team or "Martin" in new_team: new_team_id = 10
-        else: new_team_id = -1
+        new_team_id = params[2]
 
         day = cursor.execute("SELECT Day FROM Player_State").fetchone()
         year =  cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()

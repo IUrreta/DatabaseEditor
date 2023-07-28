@@ -17,10 +17,14 @@ async def handle_command(message):
         await send_message_to_client(data_json)
 
 
-    # elif type =="hire":
-        # run_script()
-    #elif type =="fire":
-        #run_script("fire ")
+    elif type =="hire":
+        print(message)
+        run_script("hire " + message["driver"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"])
+    elif type =="fire":
+        print(message)
+        run_script("fire " + message["driver"])
+
+    process_repack("../result", "../save1.sav")
 
 
 async def send_message_to_client(message):
@@ -53,7 +57,6 @@ def fetch_drivers():
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
     drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID').fetchall()
-    print(drivers)
     formatted_tuples = []
     for tupla in drivers:
          result = format_names(tupla)
@@ -72,7 +75,6 @@ def format_names(name):
     
     nombre = nombre_match.group(2)
     apellido = remove_number(apellido_match.group(1))
-    print(apellido)
     name_formatted = f"{nombre} {apellido}"
     team_id = name[3] if name[3] is not None else 0
     pos_in_team = name[4] if name[4] is not None else 0
