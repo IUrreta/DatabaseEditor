@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const raceBonusCheck = document.getElementById("raceBonusCheck");
     const raceBonusAmt = document.getElementById("raceBonusAmt");
     const raceBonusPos = document.getElementById("raceBonusPos");
+    let originalParent;
+    let destinationParent;
+    let draggable;
     fetch("./assets/drivers.json")
         .then(response => response.json())
         .then(data => {
@@ -33,11 +36,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     })
 
+    document.getElementById("confirmButton").addEventListener('click', function() {
+        destinationParent.appendChild(draggable);
+    })
+
+    document.getElementById("cancelButton").addEventListener('click', function() {
+        // Volver a colocar div0 como hijo de su div padre original
+        originalParent.appendChild(draggable);
+    
+        // Restablecer la posición original
+        div0.style.transform = 'translate(0px, 0px)';
+        div0.setAttribute('data-x', 0);
+        div0.setAttribute('data-y', 0);
+
+
+      })
+
     interact('.free-driver').draggable({
         inertia: true,
         listeners: {
             start(event) {
-                // Se ejecuta cuando comienza el arrastre
+                originalParent = event.target.parentNode;
+                draggable = event.target;
             },
             move(event) {
                 const target = event.target;
@@ -60,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (event.clientX >= rect.left && event.clientX <= rect.right &&
                         event.clientY >= rect.top && event.clientY <= rect.bottom) {
                         if (element.childElementCount < 1) {
+                            destinationParent = element;
                             element.appendChild(target);
                             console.log(target.innerHTML)
                             console.log(element.parentNode.dataset.team)
@@ -87,6 +108,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 target.style.transform = 'none';
                 target.setAttribute('data-x', 0);
                 target.setAttribute('data-y', 0);
+                // originalParent = undefined;
+                // destinationParent = undefined;
+                // draggable = undefined;
             }
         }
     });
