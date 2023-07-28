@@ -37,6 +37,11 @@ document.addEventListener('DOMContentLoaded', function () {
         socket.send(JSON.stringify(data))
     };
 
+    socket.onmessage = (event) => {
+        const mensaje = event.data;
+        console.log('Mensaje recibido: ' + mensaje);
+    };
+
     raceBonusCheck.addEventListener("click", function () {
         if (raceBonusCheck.checked) {
             raceBonusPos.disabled = false;
