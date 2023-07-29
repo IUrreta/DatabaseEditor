@@ -9,7 +9,6 @@ from scripts.transfer_driver_23 import run_script
 
 client = None
 path = None
-print("funcionando")
 
 async def handle_command(message):
     type = message["command"]
@@ -26,7 +25,6 @@ async def handle_command(message):
         path = "../" + save
         process_unpack(path, "../result")
         drivers = fetch_drivers()
-        print(drivers)
         data_json = json.dumps(drivers)
         await send_message_to_client(data_json)
 
@@ -58,6 +56,8 @@ async def handle_client(websocket, path):
 async def start_server():
     server = await websockets.serve(handle_client, "localhost", 8765)
     await server.wait_closed()
+    server.shutdown(1)
+    server.close()
 
 
 async def main():
