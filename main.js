@@ -3,22 +3,20 @@ const { app, BrowserWindow } = require('electron')
 const path = require('path')
 
 function createWindow () {
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 1400,
-    height: 860,
+    width: 1700,
+    height: 1020,
+    icon: path.join(__dirname, "assets/icon.png"),
     webPreferences: {
       preload: path.join(__dirname, 'front/preload.js')
     }
   })
-
   // and load the index.html of the app.
   mainWindow.loadFile('front/index.html')
-
   mainWindow.removeMenu()
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
   
 
 }

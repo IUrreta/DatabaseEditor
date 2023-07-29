@@ -3,28 +3,38 @@ import websockets
 import json
 import sqlite3
 import re
+import os
 from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script
 
 client = None
+path = None
+print("funcionando")
 
 async def handle_command(message):
     type = message["command"]
+    global path    
     if type == "connect":
-        process_unpack("../save1.sav", "../result")
+        saves = [element for element in os.listdir("../") if ".sav" in element]
+        if "player.sav" in saves:
+            saves.remove("player.sav")
+        saves.insert(0, "saveList")
+        data_saves = json.dumps(saves)
+        await send_message_to_client(data_saves)
+    elif type == "saveSelected":
+        save = message["save"]
+        path = "../" + save
+        process_unpack(path, "../result")
         drivers = fetch_drivers()
         data_json = json.dumps(drivers)
         await send_message_to_client(data_json)
 
-
     elif type =="hire":
-        print(message)
         run_script("hire " + message["driver"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"])
+        process_repack("../result", path)
     elif type =="fire":
-        print(message)
         run_script("fire " + message["driver"])
-
-    process_repack("../result", "../save1.sav")
+        process_repack("../result", path)
 
 
 async def send_message_to_client(message):
@@ -35,7 +45,6 @@ async def handle_client(websocket, path):
     global client
     client = websocket
     try:
-        # Bucle para manejar mensajes entrantes desde el cliente
         async for message in websocket:
             data = json.loads(message)
             await handle_command(data)
@@ -73,7 +82,7 @@ def format_names(name):
     apellido_match = re.search(apellido_pattern, name[1])
 
     
-    nombre = nombre_match.group(2)
+    nombre = remove_number(nombre_match.group(2))
     apellido = remove_number(apellido_match.group(1))
     name_formatted = f"{nombre} {apellido}"
     team_id = name[3] if name[3] is not None else 0

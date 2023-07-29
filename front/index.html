@@ -6,9 +6,9 @@
   <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
   <link href="styles.css" rel="stylesheet">
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
-  <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../node_modules/interactjs/dist/interact.min.js"></script>
-  <title>Hello World!</title>
+  <title>Database Editor for F1 Manager 23</title>
 </head>
 
 <body class="font">
@@ -47,13 +47,13 @@
           <div class="mt-3">
             Race bonus amount
             <div>
-              <input type="number" class="rounded-input" id="raceBonusAmt" disabled>
+              <input type="number" class="rounded-input" id="raceBonusAmt" value="0" disabled>
             </div>
           </div>
           <div class="mt-3">
             Race bonus position
             <div>
-              <input type="number" class="rounded-input" id="raceBonusPos" disabled>
+              <input type="number" class="rounded-input" id="raceBonusPos" value="10"disabled>
             </div>
           </div>
 
@@ -66,11 +66,29 @@
       </div>
     </div>
   </div>
-  <div class="title mt-3">
-    <h3>Drag a driver to the team you want to move him in!</h3>
+  <div class="title main-title">
+    <h1 class="bold-font">Databse Editor for F1M23</h1>
+    <h3 class="font">by u/ignaciourreta</h3>
+  </div>
+  <div class="row tools-panel">
+    <div class="col ms-3 save-selector">
+      Save selector
+      <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Your saves
+      </button>
+      <ul class="dropdown-menu" id="dropdownMenu">
+
+      </ul>
+    </div>
+    <div class="col ms-4">
+      Select any of your saves from the saves selector<br>
+      Drag and drop any driver into any free spot from the official F1 teams.<br>
+      Switch between the driver tabs to select any F2 or F3 drivers
+    </div>
+
   </div>
   <div class="main-panel">
-    <div class="col-3">
+    <div class="col-2">
       <div class="pt-2 pb-3 ps-3">
         <ul class="nav nav-pills">
           <li class="nav-item">
@@ -91,7 +109,7 @@
       <div class="main-columns-drag-section d-none" id="f3-drivers"></div>
     </div>
 
-    <div class="col-9">
+    <div class="col-10">
       <div class="title py-3">
         <h5>Contracted drivers</h5>
       </div>
@@ -103,6 +121,8 @@
             </div>
             <div class="col driver-space" id="rb2">
             </div>
+            <div class="col driver-space" id="rb3">
+            </div>
           </div>
         </div>
         <div class="team-template">
@@ -111,6 +131,8 @@
             <div class="col driver-space" id="fe1">
             </div>
             <div class="col driver-space" id="fe2">
+            </div>
+            <div class="col driver-space" id="fe3">
             </div>
           </div>
         </div>
@@ -121,6 +143,8 @@
             </div>
             <div class="col driver-space" id="me2">
             </div>
+            <div class="col driver-space" id="me3">
+            </div>
           </div>
         </div>
         <div class="team-template">
@@ -129,6 +153,8 @@
             <div class="col driver-space" id="al1">
             </div>
             <div class="col driver-space" id="al2">
+            </div>
+            <div class="col driver-space" id="al3">
             </div>
           </div>
         </div>
@@ -139,6 +165,8 @@
             </div>
             <div class="col driver-space" id="mc2">
             </div>
+            <div class="col driver-space" id="mc3">
+            </div>
           </div>
         </div>
         <div class="team-template">
@@ -147,6 +175,8 @@
             <div class="col driver-space" id="af1">
             </div>
             <div class="col driver-space" id="af2">
+            </div>
+            <div class="col driver-space" id="af3">
             </div>
           </div>
         </div>
@@ -157,6 +187,8 @@
             </div>
             <div class="col driver-space" id="as2">
             </div>
+            <div class="col driver-space" id="as3">
+            </div>
           </div>
         </div>
         <div class="team-template">
@@ -165,6 +197,8 @@
             <div class="col driver-space" id="ha1">
             </div>
             <div class="col driver-space" id="ha2">
+            </div>
+            <div class="col driver-space" id="ha3">
             </div>
           </div>
         </div>
@@ -175,6 +209,8 @@
             </div>
             <div class="col driver-space" id="at2">
             </div>
+            <div class="col driver-space" id="at3">
+            </div>
           </div>
         </div>
         <div class="team-template">
@@ -183,6 +219,8 @@
             <div class="col driver-space" id="wi1">
             </div>
             <div class="col driver-space" id="wi2">
+            </div>
+            <div class="col driver-space" id="wi3">
             </div>
           </div>
         </div>
