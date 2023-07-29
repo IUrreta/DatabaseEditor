@@ -4,6 +4,8 @@ Friendly to use tool for editing your save files from F1 Manager 23. Supports dr
 **PLEASE KEEP IN MIND**: This is the first version and will only get better with time. It will get regular updates to support more functionallity, and veruy likely it will get 
 updates focusing on setting up if any issues come up
 
+If you have any issues feel free to open an Issue or message me in Discord @_n4x
+
 ## What's the Database Editor? ##
 Basically it's just a friendly user interface that helps you make the modifications you wish for the databasde from your save file from F1 Manager 23
 
@@ -11,10 +13,10 @@ It's developed by the same guy (me, u/ignaciourreta on Reddit) who developed mul
 
 When I developed those scripts, more specifically the driver transfers script for the Script Manager for F1M22 I always had in mind to devlop a tool like this to make it easier to the user to take advantage of my scripts
 
-## What do I need to use thge Database Editor? ##
-You'll need to have isntalled on your computer 2 things: Python and NodeJS.
+## What do I need to use the Database Editor? ##
+You'll need to have installed on your computer 2 things: Python and NodeJS.
 
-If you used the script manager last year you should already have pytho installed. If not, download it from here: https://www.python.org/downloads/ (MAKE SURE to tick the box that says add python to the PATH system variable or something similar)
+If you used the script manager last year you should already have python installed. If not, download it from here: https://www.python.org/downloads/ (MAKE SURE to tick the box that says add python to the PATH system variable or something similar)
 
 For NodeJS, you can download it from here https://nodejs.org/en/download, just select the installer for your system. 
 
@@ -43,7 +45,7 @@ If you still don't want to clone the repo, just hit the green button that reads 
 
 Once you have cloned/downloaded the repository, just paste the save file you want to edit into the DatabaseEditor folder. Your saves folder should be in C:\Users\XXX\AppData\Local\F1Manager23\Saved\SaveGames where XXX is your username. If the AppData folder does not appear go to View in windows explorer and then click on hidden elements.
 
-With your save inside the Database Editor folder, just double click on the run.vbs file and there you go! everything else should install itself and the tool should open. Now you will be able to 
+With your save inside the Database Editor folder, just double click on the run.vbs file and there you go! Everything else should install itself and the tool should open. Now you will be able to 
 make any driver transfer you desire. I **HIGHLY RECOMMEND** to make a **BACKUP** of your file you're about to edit. To use the tool, select any save from the save selector and just drag and drop any driver into the spot you want to sign him into. To free a spot, just drag the driver that is occupying it and drop him into the Dree Drivers secion.
 
 ### Screenshot ###
