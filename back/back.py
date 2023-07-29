@@ -9,7 +9,6 @@ from scripts.transfer_driver_23 import run_script
 
 client = None
 path = None
-print("funcionando")
 
 async def handle_command(message):
     type = message["command"]
@@ -57,6 +56,8 @@ async def handle_client(websocket, path):
 async def start_server():
     server = await websockets.serve(handle_client, "localhost", 8765)
     await server.wait_closed()
+    server.shutdown(1)
+    server.close()
 
 
 async def main():
@@ -65,7 +66,7 @@ async def main():
 def fetch_drivers():
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
-    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID').fetchall()
+    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID WHERE ContractType = 0 OR ContractType IS NULL;').fetchall()
     formatted_tuples = []
     for tupla in drivers:
          result = format_names(tupla)
