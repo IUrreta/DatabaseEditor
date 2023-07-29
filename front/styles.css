@@ -53,6 +53,19 @@ body {
 
 .main-panel {
   display: flex;
+  margin-top: 2rem;
+}
+
+.save-selector{
+  display: flex;
+  flex-direction: column;
+}
+
+#dropdownButton{
+  max-width: 210px;
+  margin-top: 0.6rem;
+  background-color: #3f3c57;
+  border: 2px solid white;
 }
 
 .main-columns-drag-section {
