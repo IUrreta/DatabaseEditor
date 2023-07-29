@@ -3,6 +3,7 @@ import websockets
 import json
 import sqlite3
 import re
+import os
 from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script
 
@@ -11,10 +12,17 @@ client = None
 async def handle_command(message):
     type = message["command"]
     if type == "connect":
-        process_unpack("../save1.sav", "../result")
-        drivers = fetch_drivers()
-        data_json = json.dumps(drivers)
-        await send_message_to_client(data_json)
+        saves = [element for element in os.listdir("../") if ".sav" in element]
+        if "player.sav" in saves:
+            saves.remove("player.sav")
+        print(saves)
+        saves.insert(0, "saveList")
+        data_saves = json.dumps(saves)
+        await send_message_to_client(data_saves)
+        # process_unpack("../save1.sav", "../result")
+        # drivers = fetch_drivers()
+        # data_json = json.dumps(drivers)
+        # await send_message_to_client(data_json)
 
 
     elif type =="hire":

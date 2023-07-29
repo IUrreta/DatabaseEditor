@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const f2DriversDiv = document.getElementById("f2-drivers");
     const f3DriversDiv = document.getElementById("f3-drivers");
 
+    const dropDownMenu = document.getElementById("dropdownMenu");
+
     const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
 
     let originalParent;
@@ -24,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let team;
     let posInTeam;
 
-    let team_dict={1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as"}
+    let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as" }
     let inverted_dict = {
         'ferrari': 1,
         'mclaren': 2,
@@ -50,17 +52,52 @@ document.addEventListener('DOMContentLoaded', function () {
         // const mensaje = event.data;
         // console.log('Mensaje recibido: ' + event.data);
         let message = JSON.parse(event.data)
-        place_drivers(message)
+        if (message[0] === "saveList") {
+            load_saves(message)
+        }
+        else {
+            place_drivers(message)
+        }
     };
 
-    function place_drivers(driversArray){
+
+    function load_saves(savesArray) {
+
+        for (let i = 1; i < savesArray.length; i++) {
+            let elem = savesArray[i]
+            let li = document.createElement('li');
+            let a = document.createElement('a');
+            a.classList.add('dropdown-item');
+            a.href = '#';
+            a.textContent = elem;
+
+            // Agrega el enlace al <li> y el <li> al Dropdown Menu
+            li.appendChild(a);
+            console.log(li)
+            dropDownMenu.appendChild(li);
+
+            document.querySelectorAll('#dropdownMenu a').forEach(item => {
+                console.log(item)
+                item.addEventListener("click", function () {
+                    const dropdownButton = document.getElementById('dropdownButton');
+                    dropdownButton.innerHTML = item.innerHTML
+                    
+                });
+            });
+        }
+
+    }
+
+
+
+    function place_drivers(driversArray) {
         let divPosition;
         driversArray.forEach((driver) => {
             divPosition = "free-drivers"
-            if(driver[2] > 0 && driver[2] <= 10) divPosition = team_dict[driver[2]] + driver[3];
-            else if(driver[2] > 10 && driver[2] <= 20) divPosition = "f2-drivers";
-            else if(driver[2] > 20 && driver[2] <= 30) divPosition = "f3-drivers";
-            if(driver[3] != 3){ 
+            if (driver[2] > 0 && driver[2] <= 10) divPosition = team_dict[driver[2]] + driver[3];
+            else if (driver[2] > 10 && driver[2] <= 20) divPosition = "f2-drivers";
+            else if (driver[2] > 20 && driver[2] <= 30) divPosition = "f3-drivers";
+            if (driver[3] != 3) {
                 let newDiv = document.createElement("div");
                 newDiv.className = "col free-driver";
                 newDiv.dataset.driverid = driver[1];
@@ -72,24 +109,24 @@ document.addEventListener('DOMContentLoaded', function () {
         })
     }
 
-    freeDriversPill.addEventListener("click", function() {
+    freeDriversPill.addEventListener("click", function () {
         manageDrivers("show", "hide", "hide")
     })
 
-    f2DriversPill.addEventListener("click", function() {
+    f2DriversPill.addEventListener("click", function () {
         manageDrivers("hide", "show", "hide")
     })
 
-    f3DriversPill.addEventListener("click", function() {
+    f3DriversPill.addEventListener("click", function () {
         manageDrivers("hide", "hide", "show")
     })
 
-    function manageDrivers(...divs){
-        divsArray.forEach(function(div, index){
-            if(divs[index] === "show"){
+    function manageDrivers(...divs) {
+        divsArray.forEach(function (div, index) {
+            if (divs[index] === "show") {
                 div.className = "main-columns-drag-section"
             }
-            else{
+            else {
                 div.className = "main-columns-drag-section d-none"
             }
         })
@@ -111,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let yearData = document.getElementById("yearInput").value;
         let signBonusData = document.getElementById("signBonusInput").value;
         console.log(originalParent)
-        if(originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers"){
+        if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers") {
             let extra = {
                 command: "fire",
                 driver: draggable.dataset.driverid
@@ -210,14 +247,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log(originalParent)
                     originalParent.removeChild(draggable);
                     freeDrivers.appendChild(target);
-                    
+
                     let data = {
                         command: "fire",
                         driver: draggable.dataset.driverid
                     }
                     socket.send(JSON.stringify(data))
                 }
-                
+
 
                 // Reinicia las coordenadas de arrastre
                 target.style.transform = 'none';

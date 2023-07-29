@@ -6,7 +6,7 @@
   <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
   <link href="styles.css" rel="stylesheet">
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
-  <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../node_modules/interactjs/dist/interact.min.js"></script>
   <title>Hello World!</title>
 </head>
@@ -73,6 +73,12 @@
   <div class="row tools-panel mt-3">
     <div class="col">
       Save selector
+      <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Seleccionar Opción
+      </button>
+      <ul class="dropdown-menu" id="dropdownMenu">
+
+      </ul>
     </div>
     <div class="col">
       Script info
