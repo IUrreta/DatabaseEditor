@@ -145,10 +145,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (raceBonusCheck.checked) {
             raceBonusPos.disabled = false;
             raceBonusAmt.disabled = false;
+            raceBonusAmt.value = "";
+            raceBonusPos.value = "";
         }
         else {
             raceBonusPos.disabled = true;
             raceBonusAmt.disabled = true;
+            raceBonusAmt.value = "0";
+            raceBonusPos.value = "10";
         }
     })
 
@@ -156,6 +160,21 @@ document.addEventListener('DOMContentLoaded', function () {
         let salaryData = document.getElementById("salaryInput").value;
         let yearData = document.getElementById("yearInput").value;
         let signBonusData = document.getElementById("signBonusInput").value;
+        let raceBonusData;
+        let raceBonusPosData;
+        if(raceBonusAmt.value === ""){
+            raceBonusData = "0";
+        }
+        else{
+            raceBonusData = raceBonusAmt.value;
+        }
+        if(raceBonusPos.value === ""){
+            raceBonusPosData = "10";
+        }
+        else{
+            raceBonusPosData = raceBonusPos.value;
+        }
+        console.log(raceBonusData, raceBonusPosData)
         if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
             let extra = {
                 command: "fire",
@@ -170,8 +189,8 @@ document.addEventListener('DOMContentLoaded', function () {
             position: posInTeam,
             salary: salaryData,
             signBonus: signBonusData,
-            raceBonus: '0',
-            raceBonusPos: '10',
+            raceBonus: raceBonusData,
+            raceBonusPos: raceBonusPosData,
             year: yearData
         }
         destinationParent.appendChild(draggable);

@@ -111,7 +111,12 @@ def run_script(option=""):
             starting_bonus = params[5]
             race_bonus = params[6]
             race_bonus_pos = params[7]
-            year_end = params[8] 
+            year_end = params[8]
+
+            isRetired = cursor.execute("SELECT Retired FROM Staff_GameData WHERE StaffID = " + str(driver_id[0])).fetchone()
+            print(isRetired)
+            if(isRetired[0] == 1):
+                 cursor.execute("UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = " + str(driver_id[0]))
 
             #default values for some arguments
             if(starting_bonus == "none"):
