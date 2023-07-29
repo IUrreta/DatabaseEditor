@@ -4,24 +4,30 @@ import json
 import sqlite3
 import re
 import os
+from datetime import datetime
 from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script
 
 client = None
 path = None
+log = open("../log.txt", 'a', encoding='utf-8')
 
 async def handle_command(message):
     type = message["command"]
-    global path    
+    global path
+    argument = ""
     if type == "connect":
+        argument = type
         saves = [element for element in os.listdir("../") if ".sav" in element]
         if "player.sav" in saves:
             saves.remove("player.sav")
         saves.insert(0, "saveList")
         data_saves = json.dumps(saves)
         await send_message_to_client(data_saves)
+
     elif type == "saveSelected":
         save = message["save"]
+        argument = type + " " + save
         path = "../" + save
         process_unpack(path, "../result")
         drivers = fetch_drivers()
@@ -29,11 +35,17 @@ async def handle_command(message):
         await send_message_to_client(data_json)
 
     elif type =="hire":
-        run_script("hire " + message["driver"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"])
+        argument = "hire " + message["driver"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
+        run_script(argument)
         process_repack("../result", path)
+
     elif type =="fire":
-        run_script("fire " + message["driver"])
+        argument = "fire " + message["driver"]
+        run_script(argument)
         process_repack("../result", path)
+
+    log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
+    log.flush()
 
 
 async def send_message_to_client(message):
@@ -47,8 +59,9 @@ async def handle_client(websocket, path):
         async for message in websocket:
             data = json.loads(message)
             await handle_command(data)
-    except websockets.exceptions.ConnectionClosed:
-        pass
+    except Exception as e:
+        log.write("[" + str(datetime.now()) + "] EXCEPTION:" + str(e) + "\n")
+        log.flush()
     finally:
         client = None
         
