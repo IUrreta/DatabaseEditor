@@ -26,6 +26,7 @@ async def handle_command(message):
         path = "../" + save
         process_unpack(path, "../result")
         drivers = fetch_drivers()
+        print(drivers)
         data_json = json.dumps(drivers)
         await send_message_to_client(data_json)
 
@@ -65,7 +66,7 @@ async def main():
 def fetch_drivers():
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
-    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID').fetchall()
+    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID WHERE ContractType = 0 OR ContractType IS NULL;').fetchall()
     formatted_tuples = []
     for tupla in drivers:
          result = format_names(tupla)
