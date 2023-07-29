@@ -44,11 +44,16 @@ body {
 
 .main-title{
   text-align: left;
-  margin-left: 28%;
+  padding-left: 28%;
+  background-color: #18152e;
+  padding-top: 1rem;
+  padding-bottom: 0.1%;
 }
 
 .tools-panel{
   color:white;
+  background-color: #18152e;
+  border-bottom: 1px solid #797599;
 }
 
 .main-panel {
@@ -64,18 +69,20 @@ body {
 #dropdownButton{
   max-width: 210px;
   margin-top: 0.6rem;
-  background-color: #3f3c57;
-  border: 2px solid white;
+  background-color: #797599;
+  border: 1px solid rgb(211, 211, 211);
+  margin-bottom: 1%;
 }
 
 .main-columns-drag-section {
   margin-left: 5%;
   margin-right: 5%;
-  border: 1px solid #ffe388;
+  border: 1px solid #797599;
   color: white;
   min-height: 600px;
   max-height: 660px;
   overflow-y: auto;
+  border-radius: 10px;
   scrollbar-width: thin;
   /* Para navegadores que soporten la propiedad scrollbar-width */
   scrollbar-color: white #e5e5e5;
