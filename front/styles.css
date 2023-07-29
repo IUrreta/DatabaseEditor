@@ -3,9 +3,22 @@
   src: url("../assets/fonts/Formula1-Regular.ttf") format('truetype');
 }
 
+@font-face{
+  font-family: 'Formula1Bold';
+  src: url("../assets/fonts/Formula1-Bold.ttf") format('truetype');
+}
+
+.bold-font{
+  font-family: 'Formula1Bold' !important;
+}
+
+
+
+
 body {
   background-color: #110f24 !important;
   max-height: 930px;
+  overflow-x: hidden;
 }
 
 .font {
@@ -27,6 +40,15 @@ body {
 .title {
   text-align: center;
   color: white;
+}
+
+.main-title{
+  text-align: left;
+  margin-left: 25%;
+}
+
+.tools-panel{
+  color:white;
 }
 
 .main-panel {
