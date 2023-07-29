@@ -44,7 +44,7 @@ body {
 
 .main-title{
   text-align: left;
-  margin-left: 25%;
+  margin-left: 28%;
 }
 
 .tools-panel{
@@ -109,13 +109,11 @@ body {
 }
 
 #F2pill.active{
-  background-color: #797599 !important;
-  color: #1374fc !important;
+  background-color: #1374fc !important;
 }
 
 #F3pill.active{
-  background-color: #797599 !important;
-  color: red !important;
+  background-color: red !important;
 }
 
 

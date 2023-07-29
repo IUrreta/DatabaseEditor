@@ -56,13 +56,13 @@ document.addEventListener('DOMContentLoaded', function () {
             load_saves(message)
         }
         else {
+            remove_drivers()
             place_drivers(message)
         }
     };
 
 
     function load_saves(savesArray) {
-
         for (let i = 1; i < savesArray.length; i++) {
             let elem = savesArray[i]
             let li = document.createElement('li');
@@ -73,22 +73,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Agrega el enlace al <li> y el <li> al Dropdown Menu
             li.appendChild(a);
-            console.log(li)
             dropDownMenu.appendChild(li);
+            
 
-            document.querySelectorAll('#dropdownMenu a').forEach(item => {
-                console.log(item)
-                item.addEventListener("click", function () {
-                    const dropdownButton = document.getElementById('dropdownButton');
-                    dropdownButton.innerHTML = item.innerHTML
-                    
-                });
-            });
+
         }
+        listenersSaves()
 
     }
 
+    function listenersSaves(){
+        document.querySelectorAll('#dropdownMenu a').forEach(item => {
+            item.addEventListener("click", function () {
+                const dropdownButton = document.getElementById('dropdownButton');
+                let saveSelected = item.innerHTML
+                dropdownButton.innerHTML = saveSelected;
+                let dataSaves = {
+                    command: "saveSelected",
+                    save: saveSelected
+                }
+                socket.send(JSON.stringify(dataSaves))
+                
+            });
+        });
+    }
 
+
+    function remove_drivers(){
+        console.log(document.querySelectorAll('.driver-space'))
+        document.querySelectorAll('.driver-space').forEach(item => {
+            item.innerHTML = ""
+        });
+        freeDriversDiv.innerHTML = ""
+        f2DriversDiv.innerHTML = ""
+        f3DriversDiv.innerHTML = ""
+    }
 
     function place_drivers(driversArray) {
         let divPosition;
@@ -147,7 +166,6 @@ document.addEventListener('DOMContentLoaded', function () {
         let salaryData = document.getElementById("salaryInput").value;
         let yearData = document.getElementById("yearInput").value;
         let signBonusData = document.getElementById("signBonusInput").value;
-        console.log(originalParent)
         if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers") {
             let extra = {
                 command: "fire",
@@ -191,7 +209,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 let target = event.target;
                 let position = target.getBoundingClientRect();
                 let width = target.getBoundingClientRect().width
-                console.log(width)
                 target.style.width = width + "px";
                 target.style.position = "fixed";
                 target.style.top = position.top + "px";
@@ -226,7 +243,6 @@ document.addEventListener('DOMContentLoaded', function () {
                             element.appendChild(target);
                             team = element.parentNode.dataset.team
                             posInTeam = element.id.charAt(2)
-                            console.log(posInTeam)
                             document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + team;
                             myModal.show();
                         }
@@ -244,7 +260,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (event.clientX >= freeRect.left && event.clientX <= freeRect.right &&
                     event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
                     // Suelta el div en el div "free-drivers"
-                    console.log(originalParent)
                     originalParent.removeChild(draggable);
                     freeDrivers.appendChild(target);
 
