@@ -27,18 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let posInTeam;
 
     let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as" }
-    let inverted_dict = {
-        'ferrari': 1,
-        'mclaren': 2,
-        'redbull': 3,
-        'merc': 4,
-        'alpine': 5,
-        'williams': 6,
-        'haas': 7,
-        'alphatauri': 8,
-        'alfaromeo': 9,
-        'astonmartin': 10
-    }
+    let inverted_dict = {'ferrari': 1,'mclaren': 2,'redbull': 3,'merc': 4,'alpine': 5,'williams': 6,'haas': 7,'alphatauri': 8,'alfaromeo': 9, 'astonmartin': 10}
+    let name_dict = {'ferrari': "Ferrari",'mclaren': "McLaren",'redbull': "Red Bull",'merc': "Mercedes",'alpine': "Alpine",'williams': "Williams",'haas': "Haas",'alphatauri': "Alpha Tauri",'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin"}
 
     socket.onopen = () => {
         console.log('Conexión establecida.');
@@ -243,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             element.appendChild(target);
                             team = element.parentNode.dataset.team
                             posInTeam = element.id.charAt(2)
-                            document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + team;
+                            document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + name_dict[team];
                             myModal.show();
                         }
                     }
