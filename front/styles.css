@@ -116,6 +116,10 @@ body {
   background-color: red !important;
 }
 
+.car-info{
+  font-size: 14px;
+}
+
 
 
 
@@ -124,6 +128,8 @@ body {
   display: grid;
   grid-template-columns: repeat(2, minmax(400px, 1fr));
   overflow-y:hidden;
+  margin-left: 0%;
+  margin-right: 2%;
 }
 
 .contract-details {
