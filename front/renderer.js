@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let salaryData = document.getElementById("salaryInput").value;
         let yearData = document.getElementById("yearInput").value;
         let signBonusData = document.getElementById("signBonusInput").value;
-        if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers") {
+        if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
             let extra = {
                 command: "fire",
                 driver: draggable.dataset.driverid
