@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let name_dict = {'ferrari': "Ferrari",'mclaren': "McLaren",'redbull': "Red Bull",'merc': "Mercedes",'alpine': "Alpine",'williams': "Williams",'haas': "Haas",'alphatauri': "Alpha Tauri",'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin"}
 
     socket.onopen = () => {
-        console.log('Conexión establecida.');
+        //console.log('Conexión establecida.');
         let data = {
             command: "connect"
         }
@@ -61,15 +61,11 @@ document.addEventListener('DOMContentLoaded', function () {
             a.href = '#';
             a.textContent = elem;
 
-            // Agrega el enlace al <li> y el <li> al Dropdown Menu
             li.appendChild(a);
             dropDownMenu.appendChild(li);
             
-
-
         }
         listenersSaves()
-
     }
 
     function listenersSaves(){
@@ -90,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function remove_drivers(){
-        console.log(document.querySelectorAll('.driver-space'))
+        
         document.querySelectorAll('.driver-space').forEach(item => {
             item.innerHTML = ""
         });
@@ -162,19 +158,17 @@ document.addEventListener('DOMContentLoaded', function () {
         let signBonusData = document.getElementById("signBonusInput").value;
         let raceBonusData;
         let raceBonusPosData;
-        if(raceBonusAmt.value === ""){
-            raceBonusData = "0";
-        }
-        else{
-            raceBonusData = raceBonusAmt.value;
-        }
-        if(raceBonusPos.value === ""){
+        
+        if(raceBonusAmt.value === "")
+         raceBonusData = "0";
+        else
+
+         raceBonusData = raceBonusAmt.value;
+        if(raceBonusPos.value === "")
             raceBonusPosData = "10";
-        }
-        else{
+        else
             raceBonusPosData = raceBonusPos.value;
-        }
-        console.log(raceBonusData, raceBonusPosData)
+
         if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
             let extra = {
                 command: "fire",
@@ -198,10 +192,8 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     document.getElementById("cancelButton").addEventListener('click', function () {
-        // Volver a colocar div0 como hijo de su div padre original
         originalParent.appendChild(draggable);
 
-        // Restablecer la posición original
         div0.style.transform = 'translate(0px, 0px)';
         div0.setAttribute('data-x', 0);
         div0.setAttribute('data-y', 0);
@@ -262,13 +254,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
                 const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
-                // Verifica si el punto final del evento de soltar está dentro de los límites del div "contracted-drivers"
-
-
-                // Verifica si el punto final del evento de soltar está dentro de los límites del div "free-drivers"
                 if (event.clientX >= freeRect.left && event.clientX <= freeRect.right &&
                     event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
-                    // Suelta el div en el div "free-drivers"
                     originalParent.removeChild(draggable);
                     freeDrivers.appendChild(target);
 
@@ -279,8 +266,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     socket.send(JSON.stringify(data))
                 }
 
-
-                // Reinicia las coordenadas de arrastre
                 target.style.transform = 'none';
                 target.setAttribute('data-x', 0);
                 target.setAttribute('data-y', 0);

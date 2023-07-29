@@ -13,8 +13,6 @@
 }
 
 
-
-
 body {
   background-color: #110f24 !important;
   max-height: 930px;
@@ -30,7 +28,6 @@ body {
   align-items: center;
   cursor: pointer;
   border-radius: 5px;
-  /* Ajusta el valor para redondear las esquinas */
   margin-top: 10px;
   border: 1px solid #adb5bd;
   min-width: 20px;
@@ -84,24 +81,19 @@ body {
   overflow-y: auto;
   border-radius: 10px;
   scrollbar-width: thin;
-  /* Para navegadores que soporten la propiedad scrollbar-width */
   scrollbar-color: white #e5e5e5;
-  /* Para navegadores que soporten la propiedad scrollbar-color */
 
 
 }
 
 .main-columns-drag-section::-webkit-scrollbar {
   width: 6px;
-  /* Ancho de la barra de scroll vertical */
 }
 
 
 .main-columns-drag-section::-webkit-scrollbar-thumb {
   background-color: white;
-  /* Color del thumb (la parte que puedes arrastrar) */
   border-radius: 3px;
-  /* Esquinas redondeadas del thumb */
 }
 
 
@@ -147,45 +139,31 @@ body {
 .rounded-input {
   border: 1px solid #ccc;
   border-radius: 10px;
-  /* Ajusta el valor para redondear más o menos las esquinas */
   padding: 8px 12px;
   max-width: 210px;
   outline: none;
-  /* Elimina el resaltado al hacer clic */
   transition: border-color 0.2s ease-in-out;
-  /* Agrega una transición suave para resaltar el borde al enfocar */
 }
 
 .rounded-input:focus {
   border-color: #007bff;
-  /* Cambia el color del borde cuando el input está enfocado */
 }
 
 .free-driver {
   background-color: #3f3c57;
-  /* Color un poco más claro que #110f24 */
   border: none;
-  /* Sin bordes */
   border-radius: 10px;
-  /* Esquinas redondeadas */
   padding: 10px;
-  /* Espacio interno para el contenido */
   margin: 10px;
-  /* Espacio entre los divs */
   color: white;
-  /* Color del texto */
   touch-action: pan-x;
 }
 
 .team-template {
   background-color: #1f1b3b;
-  /* Colores entre #110f24 y #3f3c57 */
   border-radius: 10px;
-  /* Esquinas redondeadas */
   border: none;
-  /* Sin borde */
   color: white;
-  /* Color del texto */
   margin: 10px;
   margin-top: 0px;
   max-height: 140px;
@@ -193,14 +171,12 @@ body {
 
 .team-name {
   padding-bottom: 10px;
-  /* Espacio entre el título y las secciones inferiores */
   padding-left: 10px;
   padding-top: 10px;
 }
 
 #redbull {
   border-bottom: 2px solid #0600b5;
-  /* Borde inferior con el color de Red Bull Racing (#0600b5) */
 }
 
 #ferrari {
@@ -245,17 +221,13 @@ body {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
-  /* Espacio entre el título y las secciones inferiores */
   min-height: 64px;
 }
 
 
 .driver-template {
   width: calc(50% - 5px);
-  /* Ancho de cada sección, con un espacio de 5px entre ellas */
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.1);
-  /* Color de fondo con transparencia */
   border-radius: 5px;
-  /* Esquinas redondeadas para las secciones inferiores */
 }

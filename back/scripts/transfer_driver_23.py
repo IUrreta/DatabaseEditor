@@ -101,7 +101,7 @@ def run_script(option=""):
                 car_in_team = 3
             else:
                 car_in_team = params[3]
-            print(number_1s_team, number_2s_team, number_3s_team)
+            #print(number_1s_team, number_2s_team, number_3s_team)
 
 
             #print(salary, year_end, starting_bonus, race_bonus, race_bonus_pos, car_in_team)
@@ -114,7 +114,7 @@ def run_script(option=""):
             year_end = params[8]
 
             isRetired = cursor.execute("SELECT Retired FROM Staff_GameData WHERE StaffID = " + str(driver_id[0])).fetchone()
-            print(isRetired)
+            # print(isRetired)
             if(isRetired[0] == 1):
                  cursor.execute("UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = " + str(driver_id[0]))
 
@@ -126,7 +126,6 @@ def run_script(option=""):
                 race_bonus = "0"
                 race_bonus_pos = "10"
 
-        print(driver_id)
         cursor.execute("INSERT INTO Staff_Contracts VALUES (" + str(driver_id[0]) + ", 0, 1," + str(day[0]) + ", 1, " + str(new_team_id) + ", " +  str(car_in_team) + ", 1, '[OPINION_STRING_NEUTRAL]', " + str(day[0]) + ", " + year_end + ", 1, '[OPINION_STRING_NEUTRAL]', " + salary + ", 1, '[OPINION_STRING_NEUTRAL]', " + starting_bonus + ", 1, '[OPINION_STRING_NEUTRAL]', " + race_bonus + ", 1, '[OPINION_STRING_NEUTRAL]', " + race_bonus_pos + ", 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')")
         if(int(car_in_team) != 3):
             cursor.execute("UPDATE Staff_DriverData SET AssignedCarNumber = " + str(car_in_team) + " WHERE StaffID = " + str(driver_id[0]))
@@ -142,10 +141,10 @@ def run_script(option=""):
             was_in_f2 = points_driver_in_standings = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE DriverID = " + str(driver_id[0]) + " AND SeasonID = " + str(year[0])  + " AND RaceFormula = 2").fetchone()
             was_in_f3 = points_driver_in_standings = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE DriverID = " + str(driver_id[0]) + " AND SeasonID = " + str(year[0])  + " AND RaceFormula = 3").fetchone()
             if(was_in_f2 != None):
-                print("was in f2")
+                # print("was in f2")
                 cursor.execute("DELETE FROM Races_DriverStandings WHERE DriverID = " + str(driver_id[0]) + " AND SeasonID = " + str(year[0]) + " AND RaceFormula = 2")
             if(was_in_f3 != None):
-                print("was in f3")
+                # print("was in f3")
                 cursor.execute("DELETE FROM Races_DriverStandings WHERE DriverID = " + str(driver_id[0]) + " AND SeasonID = " + str(year[0]) + " AND RaceFormula = 3")
 
 
@@ -277,11 +276,11 @@ def run_script(option=""):
         actual_year = cursor.execute("SELECT EndSeason FROM Staff_Contracts WHERE ContractType = 0 AND StaffID =" + str(driver_id[0])).fetchone()
         new_year = int(actual_year[0]) +  int(more_seasons)
         cursor.execute("UPDATE Staff_Contracts SET Salary = " + str(new_salary) + ", EndSeason = " + str(new_year) + " WHERE ContractType = 0 AND StaffID = " + str(driver_id[0]))
-        print("Succesfully renewed contract to the season " +  str(new_year) + " with " +  str(new_salary) + " as the salary")
+        # print("Succesfully renewed contract to the season " +  str(new_year) + " with " +  str(new_salary) + " as the salary")
     elif(params[0] == "check"):
         driver_id = get_driver_id(params[1])
         actual_year = cursor.execute("SELECT EndSeason FROM Staff_Contracts WHERE ContractType = 0 AND StaffID =" + str(driver_id[0])).fetchone()
-        print(params[1] + "'s contract end in " + str(actual_year[0]))
+        # print(params[1] + "'s contract end in " + str(actual_year[0]))
     conn.commit()
     conn.close()
 
@@ -327,7 +326,7 @@ def get_driver_id(name):
     else:
         driver_id = cursor.execute('SELECT StaffID FROM Staff_BasicData WHERE LastName = "[StaffName_Surname_' + str(driver) + ']"').fetchone()
     
-    print(name, driver_id)
+    # print(name, driver_id)
 
     return driver_id
 

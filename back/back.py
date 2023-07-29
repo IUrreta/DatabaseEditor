@@ -9,6 +9,7 @@ from scripts.transfer_driver_23 import run_script
 
 client = None
 path = None
+print("funcionando")
 
 async def handle_command(message):
     type = message["command"]
@@ -17,27 +18,21 @@ async def handle_command(message):
         saves = [element for element in os.listdir("../") if ".sav" in element]
         if "player.sav" in saves:
             saves.remove("player.sav")
-        print(saves)
         saves.insert(0, "saveList")
         data_saves = json.dumps(saves)
         await send_message_to_client(data_saves)
     elif type == "saveSelected":
         save = message["save"]
         path = "../" + save
-        print(path)
         process_unpack(path, "../result")
         drivers = fetch_drivers()
         data_json = json.dumps(drivers)
         await send_message_to_client(data_json)
 
     elif type =="hire":
-        print(message)
-        print(path)
         run_script("hire " + message["driver"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"])
         process_repack("../result", path)
     elif type =="fire":
-        print(message)
-        print(path)
         run_script("fire " + message["driver"])
         process_repack("../result", path)
 
@@ -50,7 +45,6 @@ async def handle_client(websocket, path):
     global client
     client = websocket
     try:
-        # Bucle para manejar mensajes entrantes desde el cliente
         async for message in websocket:
             data = json.loads(message)
             await handle_command(data)
