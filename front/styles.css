@@ -44,6 +44,7 @@ body {
   color: white;
   font-size: 26px;
   padding-left: 10px;
+  padding-top: 20px;
 }
 
 .upper-section-stats{
@@ -57,6 +58,7 @@ body {
   display: flex;
   flex-direction: column-reverse;
   font-size: 24px;
+  margin-right: 10px;
   
 }
 
@@ -70,7 +72,7 @@ body {
   border-radius: 10px;
   width: 66px;
   height: 56px;
-  margin-top: 10px;
+  margin-top: 13px;
   margin-right: 15px;
   display: flex;
   justify-content: center;
@@ -144,7 +146,7 @@ body {
 
 .main-panel {
   display: flex;
-  margin-top: 2rem;
+  margin-top: 0.8rem;
 }
 
 .script-view{
@@ -194,18 +196,21 @@ body {
 }
 
 .left-panel-stats{
-  width: 60%;
+  width: 100%;
 }
 
 .confirm-section{
-  margin: 25px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  margin-top: 15px;
   background-color: #181535;
   border: 1px solid #797599;
   border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 100px;
+  padding: 120px;
 }
 
 .custom-confirm{
@@ -313,32 +318,39 @@ body {
 
 .free-driver {
   background-color: #3f3c57;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 10px;
-  padding: 10px;
+  padding: 8px;
+  cursor: grab !important;
   margin: 10px;
   color: white;
+  transition: border-color 0.5s;
+}
+
+.free-driver:hover{
+  border-color: white;
+  cursor: grab !important;
 }
 
 .normal-driver{
   background-color: #3f3c57;
-  border: none;
+  cursor: pointer;
   border-radius: 10px;
-  padding: 10px;
+  padding: 8px;
   margin: 10px;
   color: white;
   border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
+  transition: border-color 0.5s;
 }
 
 .one-stat-panel{
-  background-color: #322f44;
-  border: none;
+  background-color: #3f3c57;
   border-radius: 10px;
   padding-left: 10px;
   margin: 10px;
-  font-size: 18px;
+  margin-left: 20px;
   color: white;
   min-height: 70px;
   border: 2px solid transparent;
@@ -349,14 +361,22 @@ body {
 
 .custom-input-number{
   background-color: #21202e;
-  border: none;
   border-radius: 10px;
   padding: 10px;
   margin-right: 7px;
   color: white;
   max-width: 60px;
   height: 56px;
+  border: 2px solid transparent;
+  transition: border-color 0.5s;
+  
 }
+
+.custom-input-number:focus{
+  outline: 0px solid transparent;
+  border-color: #adadad;
+}
+
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

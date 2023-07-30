@@ -192,12 +192,10 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll(".custom-input-number").forEach(function(elem){
             stats += elem.value + " "
         })
-        console.log(stats)
         stats = stats.slice(0, -1);
         let oldovr = document.getElementById("ovrholder").innerHTML;
         let ovr = calculateOverall(stats);
         if (oldovr != ovr){
-            console.log("distinto")
             document.getElementById("ovrholder").innerHTML = ovr;
             document.getElementById("ovrholder").className = "overall-holder bold-font alert";
             setTimeout(() =>{
