@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as" }
     let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
-    let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin" }
+    let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3" }
 
     socket.onopen = () => {
         //console.log('Conexión establecida.');
@@ -186,7 +186,6 @@ document.addEventListener('DOMContentLoaded', function () {
         let raceBonusData;
         let raceBonusPosData;
         let driverName = draggable.innerHTML
-        let teamName = name_dict[teamDestiniy];
 
         if (raceBonusAmt.value === "")
             raceBonusData = "0";
@@ -198,12 +197,12 @@ document.addEventListener('DOMContentLoaded', function () {
         else
             raceBonusPosData = raceBonusPos.value;
 
-        console.log(draggable)
-
         if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
             let extra = {
                 command: "fire",
-                driver: draggable.dataset.driverid
+                driverID: draggable.dataset.driverid, 
+                driver: driverName,
+                team: name_dict[teamOrigin.dataset.team]
             }
             socket.send(JSON.stringify(extra))
         }
@@ -218,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
             raceBonusPos: raceBonusPosData,
             year: yearData,
             driver: driverName,
-            team: teamName
+            team: name_dict[teamDestiniy]
         }
         destinationParent.appendChild(draggable);
         socket.send(JSON.stringify(data))
@@ -298,10 +297,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
                     originalParent.removeChild(draggable);
                     freeDrivers.appendChild(target);
-
                     let data = {
                         command: "fire",
-                        driver: draggable.dataset.driverid
+                        driverID: draggable.dataset.driverid,
+                        driver: draggable.innerHTML,
+                        team: name_dict[teamOrigin.dataset.team]
                     }
                     socket.send(JSON.stringify(data))
                 }
