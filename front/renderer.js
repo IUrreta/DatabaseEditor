@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
         else if (message[0] === "Save Loaded Succesfully") {
             remove_drivers()
             place_drivers(message.slice(1))
+            place_drivers_editStats(message.slice(1))
         }
         update_notifications(message[0])
     };
@@ -119,15 +120,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     driverTransferPill.addEventListener("click", function () {
-        console.log(scriptsArray)
         manageScripts("show", "hide")
-        
     })
 
     editStatsPill.addEventListener("click", function () {
-        console.log(scriptsArray)
         manageScripts("hide", "show")
-        
     })
 
 
@@ -141,7 +138,71 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         })
     }
-    
+
+    //-------------------------------------ESPECIFICO DE EDITSTATS SCRIPT-----------------------------------------------------------
+
+    let driverStatTitle = document.getElementById("driverStatsTitle")
+
+    function place_drivers_editStats(driversArray) {
+        let divPosition;
+        driversArray.forEach((driver) => {
+            divPosition = "fulldriverlist"
+
+            let newDiv = document.createElement("div");
+            let ovrDiv = document.createElement("div");
+            
+            newDiv.className = "col normal-driver";
+            newDiv.dataset.driverid = driver[1];
+            newDiv.innerHTML = driver[0];
+            let statsString = '';
+
+            for (let i = 4; i <= 12; i++) {
+                statsString += driver[i] + ' ';
+            }
+            newDiv.dataset.stats = statsString;
+            newDiv.addEventListener('click', () => {
+                let elementosClicked = document.querySelectorAll('.clicked');
+                elementosClicked.forEach(item => item.classList.remove('clicked'));
+                newDiv.classList.toggle('clicked');
+                driverStatTitle.innerHTML = manage_stats_title(newDiv.textContent);
+                
+            });
+            ovr = calculateOverall(statsString)
+            ovrDiv.innerHTML = ovr
+            newDiv.appendChild(ovrDiv)
+            document.getElementById(divPosition).appendChild(newDiv)
+
+
+
+        })
+    }
+
+    function calculateOverall(stats) {
+        let statsArray = stats.split(" ").map(Number);
+
+        let cornering = statsArray[0];
+        let braking = statsArray[1];
+        let control = statsArray[2];
+        let smoothness = statsArray[3];
+        let adaptability = statsArray[4];
+        let overtaking = statsArray[5];
+        let defence = statsArray[6];
+        let reactions = statsArray[7];
+        let accuracy = statsArray[8];
+
+        let rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.5 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 4.75;
+
+        return Math.round(rating)
+    }
+
+
+    function manage_stats_title(html){
+        let name = html.substring(0, html.length - 2).trim();
+
+        return name;
+
+    }
+
 
     //-------------------------------------ESPECIFICO DE TRANSFER SCRIPT-----------------------------------------------------------
 
@@ -234,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
             let extra = {
                 command: "fire",
-                driverID: draggable.dataset.driverid, 
+                driverID: draggable.dataset.driverid,
                 driver: driverName,
                 team: name_dict[teamOrigin.dataset.team]
             }

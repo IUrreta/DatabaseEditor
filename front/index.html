@@ -12,8 +12,7 @@
 </head>
 
 <body class="font">
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" 
-    aria-hidden="true">
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -53,14 +52,14 @@
           <div class="mt-3">
             Race bonus position
             <div>
-              <input type="number" class="rounded-input" id="raceBonusPos" value="10"disabled>
+              <input type="number" class="rounded-input" id="raceBonusPos" value="10" disabled>
             </div>
           </div>
 
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id ="cancelButton">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelButton">Close</button>
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="confirmButton">Confirm</button>
         </div>
       </div>
@@ -77,7 +76,8 @@
   <div class="row tools-panel">
     <div class="col-3 ms-3 bold-font save-selector">
       Save selector
-      <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownButton" data-bs-toggle="dropdown"
+        aria-haspopup="true" aria-expanded="false">
         Your saves
       </button>
       <ul class="dropdown-menu" id="dropdownMenu">
@@ -89,7 +89,8 @@
       <div class="pt-2 pb-3 ps-3">
         <ul class="nav nav-pills">
           <li class="nav-item">
-            <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#" id="transferpill">Driver trasnfers</a>
+            <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#" id="transferpill">Driver
+              trasnfers</a>
           </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="statspill">Edit stats</a>
@@ -110,7 +111,8 @@
         <div class="pt-2 pb-3 ps-3">
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link bold-font categoryPills active" data-bs-toggle="pill" href="#" id="freepill">Free drivers</a>
+              <a class="nav-link bold-font categoryPills active" data-bs-toggle="pill" href="#" id="freepill">Free
+                drivers</a>
             </li>
             <li class="nav-item">
               <a class="nav-link bold-font categoryPills" data-bs-toggle="pill" href="#" id="F2pill">F2</a>
@@ -198,7 +200,7 @@
           </div>
           <div class="team-template">
             <div class="team-name bold-font" id="astonmartin">Aston Martin</div>
-            <div class="drivers-section"  data-team="astonmartin">
+            <div class="drivers-section" data-team="astonmartin">
               <div class="col driver-space" id="as1">
               </div>
               <div class="col driver-space" id="as2">
@@ -220,7 +222,7 @@
           </div>
           <div class="team-template">
             <div class="team-name bold-font" id="alphatauri">Alpha Tauri</div>
-            <div class="drivers-section"  data-team="alphatauri">
+            <div class="drivers-section" data-team="alphatauri">
               <div class="col driver-space" id="at1">
               </div>
               <div class="col driver-space" id="at2">
@@ -244,7 +246,61 @@
       </div>
     </div>
     <div class="script-view d-none" id="edit_stats">
-      aaaaaaaaaa
+      <div class="col-3">
+        <div class="title bold-font py-3">
+          <h5>Drivers</h5>
+        </div>
+        <div class="main-editStats-section" id="fulldriverlist">
+        </div>
+      </div>
+      <div class="col-9">
+        <div class="title bold-font py-3">
+          <h5>Stats</h5>
+        </div>
+        <div class="main-editStats-section" id="driverstats">
+          <div class="stats-title bold-font py-3" id="driverStatsTitle">
+
+          </div>
+          <div class="main-panel-stats">
+            <div class="one-stat-panel">
+              Cornering
+              <input type="number" class="custom-input-number">
+            </div>
+            <div class="one-stat-panel">
+              Cornering
+              <input type="number" class="custom-input-number">
+            </div>
+            <div class="one-stat-panel">
+              Cornering
+              <input type="number" class="custom-input-number">
+            </div>
+            <div class="one-stat-panel">
+              Cornering
+              <input type="number" class="custom-input-number">
+            </div>
+            <div class="one-stat-panel">
+              Cornering
+              <input type="number" class="custom-input-number">
+            </div>
+            <div class="one-stat-panel">
+              Cornering
+              <input type="number" class="custom-input-number">
+            </div>
+            <div class="one-stat-panel">
+              Cornering
+              <input type="number" class="custom-input-number">
+            </div>
+            <div class="one-stat-panel">
+              Cornering
+              <input type="number" class="custom-input-number">
+            </div>
+            <div class="one-stat-panel">
+              Cornering
+              <input type="number" class="custom-input-number">
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
