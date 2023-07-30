@@ -49,7 +49,6 @@ body {
 .upper-section-stats{
   display: flex;
   justify-content: space-between;
-  width: 60%;
   padding-right: 16px;
   min-height: 71px;
 }
@@ -170,9 +169,34 @@ body {
 }
 
 .main-panel-stats{
-  max-width: 60%;
   display: grid;
   grid-template-columns: repeat(3, 0.33fr);
+}
+
+.left-panel-stats{
+  width: 60%;
+}
+
+.confirm-section{
+  margin: 25px;
+  background-color: #181535;
+  border: 1px solid #797599;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 100px;
+}
+
+.custom-confirm{
+  border: 2px solid white !important;
+  border-radius: 10px !important;
+  color: white !important;
+  background-color: #13A713 !important;
+}
+
+.custom-confirm:active{
+  background-color: #0F870F !important;
 }
 
 .main-editStats-section{
