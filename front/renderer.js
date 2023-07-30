@@ -18,17 +18,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
+    const notificationPanel = document.getElementById("notificationPanel");
+
     const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
 
     let originalParent;
     let destinationParent;
     let draggable;
-    let team;
+    let teamDestiniy;
+    let teamOrigin;
     let posInTeam;
 
     let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as" }
-    let inverted_dict = {'ferrari': 1,'mclaren': 2,'redbull': 3,'merc': 4,'alpine': 5,'williams': 6,'haas': 7,'alphatauri': 8,'alfaromeo': 9, 'astonmartin': 10}
-    let name_dict = {'ferrari': "Ferrari",'mclaren': "McLaren",'redbull': "Red Bull",'merc': "Mercedes",'alpine': "Alpine",'williams': "Williams",'haas': "Haas",'alphatauri': "Alpha Tauri",'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin"}
+    let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
+    let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3" }
 
     socket.onopen = () => {
         //console.log('Conexión establecida.');
@@ -42,14 +45,37 @@ document.addEventListener('DOMContentLoaded', function () {
         // const mensaje = event.data;
         // console.log('Mensaje recibido: ' + event.data);
         let message = JSON.parse(event.data)
-        if (message[0] === "saveList") {
+        if (message[0] === "Connected Succesfully") {
             load_saves(message)
+
         }
-        else {
+        else if (message[0] === "Save Loaded Succesfully") {
             remove_drivers()
-            place_drivers(message)
+            place_drivers(message.slice(1))
         }
+        update_notifications(message[0])
     };
+
+    function update_notifications(noti) {
+        let newNoti;
+
+        newNoti = document.createElement('div');
+        newNoti.className = 'notification';
+        newNoti.textContent = noti;
+
+        notificationPanel.appendChild(newNoti);
+
+        setTimeout(function () {
+            newNoti.className = 'notification hide';
+
+            // Después de otros 2 segundos, eliminar el nuevo div
+            setTimeout(function () {
+                notificationPanel.removeChild(newNoti);
+            }, 980);
+        }, 3000);
+
+
+    }
 
 
     function load_saves(savesArray) {
@@ -63,12 +89,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             li.appendChild(a);
             dropDownMenu.appendChild(li);
-            
+
         }
         listenersSaves()
     }
 
-    function listenersSaves(){
+    function listenersSaves() {
         document.querySelectorAll('#dropdownMenu a').forEach(item => {
             item.addEventListener("click", function () {
                 const dropdownButton = document.getElementById('dropdownButton');
@@ -79,14 +105,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     save: saveSelected
                 }
                 socket.send(JSON.stringify(dataSaves))
-                
+
             });
         });
     }
 
 
-    function remove_drivers(){
-        
+    function remove_drivers() {
+
         document.querySelectorAll('.driver-space').forEach(item => {
             item.innerHTML = ""
         });
@@ -158,13 +184,14 @@ document.addEventListener('DOMContentLoaded', function () {
         let signBonusData = document.getElementById("signBonusInput").value;
         let raceBonusData;
         let raceBonusPosData;
-        
-        if(raceBonusAmt.value === "")
-         raceBonusData = "0";
+        let driverName = draggable.innerHTML
+
+        if (raceBonusAmt.value === "")
+            raceBonusData = "0";
         else
 
-         raceBonusData = raceBonusAmt.value;
-        if(raceBonusPos.value === "")
+            raceBonusData = raceBonusAmt.value;
+        if (raceBonusPos.value === "")
             raceBonusPosData = "10";
         else
             raceBonusPosData = raceBonusPos.value;
@@ -172,20 +199,24 @@ document.addEventListener('DOMContentLoaded', function () {
         if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
             let extra = {
                 command: "fire",
-                driver: draggable.dataset.driverid
+                driverID: draggable.dataset.driverid, 
+                driver: driverName,
+                team: name_dict[teamOrigin.dataset.team]
             }
             socket.send(JSON.stringify(extra))
         }
         let data = {
             command: "hire",
-            driver: draggable.dataset.driverid,
-            teamID: inverted_dict[team],
+            driverID: draggable.dataset.driverid,
+            teamID: inverted_dict[teamDestiniy],
             position: posInTeam,
             salary: salaryData,
             signBonus: signBonusData,
             raceBonus: raceBonusData,
             raceBonusPos: raceBonusPosData,
-            year: yearData
+            year: yearData,
+            driver: driverName,
+            team: name_dict[teamDestiniy]
         }
         destinationParent.appendChild(draggable);
         socket.send(JSON.stringify(data))
@@ -206,6 +237,12 @@ document.addEventListener('DOMContentLoaded', function () {
         listeners: {
             start(event) {
                 originalParent = event.target.parentNode;
+                if (originalParent.className != "main-columns-drag-section") {
+                    teamOrigin = originalParent.parentNode
+                }
+                else {
+                    teamOrigin = originalParent
+                }
                 draggable = event.target;
                 let target = event.target;
                 let position = target.getBoundingClientRect();
@@ -242,9 +279,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (element.childElementCount < 1) {
                             destinationParent = element;
                             element.appendChild(target);
-                            team = element.parentNode.dataset.team
+                            teamDestiniy = element.parentNode.dataset.team
                             posInTeam = element.id.charAt(2)
-                            document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + name_dict[team];
+                            document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + name_dict[teamDestiniy];
                             myModal.show();
                         }
                     }
@@ -258,10 +295,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
                     originalParent.removeChild(draggable);
                     freeDrivers.appendChild(target);
-
                     let data = {
                         command: "fire",
-                        driver: draggable.dataset.driverid
+                        driverID: draggable.dataset.driverid,
+                        driver: draggable.innerHTML,
+                        team: name_dict[teamOrigin.dataset.team]
                     }
                     socket.send(JSON.stringify(data))
                 }

@@ -21,7 +21,7 @@ async def handle_command(message):
         saves = [element for element in os.listdir("../") if ".sav" in element]
         if "player.sav" in saves:
             saves.remove("player.sav")
-        saves.insert(0, "saveList")
+        saves.insert(0, "Connected Succesfully")
         data_saves = json.dumps(saves)
         await send_message_to_client(data_saves)
 
@@ -31,18 +31,24 @@ async def handle_command(message):
         path = "../" + save
         process_unpack(path, "../result")
         drivers = fetch_drivers()
+        drivers.insert(0, "Save Loaded Succesfully")
         data_json = json.dumps(drivers)
         await send_message_to_client(data_json)
 
     elif type =="hire":
-        argument = "hire " + message["driver"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
-        run_script(argument)
+        run_script("hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"])
         process_repack("../result", path)
-
+        info = []
+        info.insert(0, "Succesfully moved " + message["driver"] + " into " + message["team"])
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
     elif type =="fire":
-        argument = "fire " + message["driver"]
-        run_script(argument)
+        run_script("fire " + message["driverID"])
         process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully released " + message["driver"] + " from " + message["team"])
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()

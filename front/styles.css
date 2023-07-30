@@ -39,12 +39,41 @@ body {
   color: white;
 }
 
+.upper-panel{
+  display:flex;
+}
+
 .main-title{
   text-align: left;
   padding-left: 28%;
   background-color: #18152e;
   padding-top: 1rem;
   padding-bottom: 0.1%;
+  width: 67%;
+}
+
+.notification-panel{
+  color:white;
+  background-color: #18152e;
+  width: 37%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+}
+
+.hide {
+  animation: fadeOut 1s;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .tools-panel{
