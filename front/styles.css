@@ -83,6 +83,26 @@ body {
   display:flex;
 }
 
+@keyframes colorChange {
+  0%, 100% {
+    border: 3px solid white;
+    border-radius: 10px;
+    background-color: #21202e;
+  }
+  50% {
+    border: 3px solid red;
+    border-radius: 10px;
+    background-color: #21202e;
+  }
+}
+
+
+
+.alert{
+  animation: colorChange 0.5s infinite;
+  margin-bottom: 0px !important;
+}
+
 .main-title{
   text-align: left;
   padding-left: 28%;
@@ -208,6 +228,15 @@ body {
   border-radius: 10px;
   scrollbar-width: thin;
   scrollbar-color: white #e5e5e5;
+}
+
+.main-editStats-section::-webkit-scrollbar {
+  width: 4px;
+}
+
+.main-editStats-section::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px;
 }
 
 #fulldriverlist{
