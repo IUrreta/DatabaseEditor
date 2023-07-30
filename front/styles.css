@@ -173,8 +173,17 @@ body {
   max-width: 210px;
   margin-top: 0.6rem;
   background-color: #797599;
-  border: 1px solid rgb(211, 211, 211);
   margin-bottom: 1%;
+  border: 2px solid transparent;
+
+}
+
+#dropdownButton:hover{
+  border: 2px solid white !important;
+}
+
+#dropdownButton:active{
+  background-color: #1a1826;
 }
 
 .main-columns-drag-section {
@@ -254,7 +263,7 @@ body {
 }
 
 .main-columns-drag-section::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 
@@ -357,6 +366,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.scriptPills{
+color: white !important;
+}
+
+.scriptPills.active{
+  background-color: #797599 !important;
 }
 
 .custom-input-number{
