@@ -70,7 +70,7 @@ body {
   border-radius: 10px;
   width: 66px;
   height: 56px;
-  margin-top: 10px;
+  margin-top: 13px;
   margin-right: 15px;
   display: flex;
   justify-content: center;
@@ -78,6 +78,27 @@ body {
   font-size: 24px;
 
 }
+
+@keyframes colorChange {
+  0%, 100% {
+    border: 3px solid white;
+    border-radius: 10px;
+    background-color: #21202e;
+  }
+  50% {
+    border: 3px solid red;
+    border-radius: 10px;
+    background-color: #21202e;
+  }
+}
+
+
+
+.alert{
+  animation: colorChange 0.5s infinite;
+  margin-bottom: 0px !important;
+}
+
 
 .upper-panel{
   display:flex;
@@ -178,14 +199,84 @@ body {
 }
 
 .confirm-section{
-  margin: 25px;
+  margin: 10px;
   background-color: #181535;
   border: 1px solid #797599;
   border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 100px;
+  padding: 125px;
+}
+
+.vertical-line {
+  height: 648px;
+  border-left: 2px solid #797599;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.preset-grid{
+  display: flex;
+  flex-direction: column;
+}
+
+.preset{
+  background-color: #322f44;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px;
+  font-size: 18px;
+  color: white;
+  border: 2px solid #797599;
+  cursor: pointer;
+  min-width: 255px;
+  transition: border-color 0.5s, background-color 0.5s;
+
+}
+
+.selected-preset{
+  border-color: #54e7fa;
+  background-color: #31828d;
+}
+
+.non-selected-preset:hover{
+  background-color: #322f44;
+  border-color: #797599;
+}
+
+.preset:hover{
+  border-color: #54e7fa;
+  background-color: #31828d;
+}
+
+.pluslessbtn{
+  padding: 5px;
+  border: 2px solid #797599;
+  border-radius: 10px;
+  color: white;
+  margin: 10px;
+  font-size: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 50px;
+  max-height: 50px;
+  cursor: pointer;
+}
+
+.plus{
+  background-color: green;
+  margin-right: 0px;
+}
+
+.less{
+  background-color: red;
+}
+
+.moreless{
+  display: flex;
+  flex-direction: row;
 }
 
 .custom-confirm{
@@ -206,8 +297,21 @@ body {
   max-height: 660px;
   overflow-y: auto;
   border-radius: 10px;
-  scrollbar-width: thin;
-  scrollbar-color: white #e5e5e5;
+
+}
+
+.main-editStats-section::-webkit-scrollbar {
+  width: 4px;
+}
+
+.main-editStats-section::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px;
+}
+
+.right-section{
+  display: flex;
+  flex-direction: row;
 }
 
 #fulldriverlist{
@@ -220,7 +324,7 @@ body {
 }
 
 .main-columns-drag-section::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 
