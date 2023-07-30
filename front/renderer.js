@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         else if (message[0] === "Save Loaded Succesfully") {
             remove_drivers()
+            removeStatsDrivers()
             place_drivers(message.slice(1))
             place_drivers_editStats(message.slice(1))
         }
@@ -142,6 +143,10 @@ document.addEventListener('DOMContentLoaded', function () {
     //-------------------------------------ESPECIFICO DE EDITSTATS SCRIPT-----------------------------------------------------------
 
     let driverStatTitle = document.getElementById("driverStatsTitle")
+
+    function removeStatsDrivers(){
+        document.getElementById("fulldriverlist").innerHTML = ""
+    }
 
     function place_drivers_editStats(driversArray) {
         let divPosition;
