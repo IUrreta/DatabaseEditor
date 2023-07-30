@@ -4,24 +4,30 @@ import json
 import sqlite3
 import re
 import os
+from datetime import datetime
 from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script
 
 client = None
 path = None
+log = open("../log.txt", 'a', encoding='utf-8')
 
 async def handle_command(message):
     type = message["command"]
-    global path    
+    global path
+    argument = ""
     if type == "connect":
+        argument = type
         saves = [element for element in os.listdir("../") if ".sav" in element]
         if "player.sav" in saves:
             saves.remove("player.sav")
         saves.insert(0, "Connected Succesfully")
         data_saves = json.dumps(saves)
         await send_message_to_client(data_saves)
+
     elif type == "saveSelected":
         save = message["save"]
+        argument = type + " " + save
         path = "../" + save
         process_unpack(path, "../result")
         drivers = fetch_drivers()
@@ -44,6 +50,9 @@ async def handle_command(message):
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
 
+    log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
+    log.flush()
+
 
 async def send_message_to_client(message):
     if client:
@@ -56,8 +65,9 @@ async def handle_client(websocket, path):
         async for message in websocket:
             data = json.loads(message)
             await handle_command(data)
-    except websockets.exceptions.ConnectionClosed:
-        pass
+    except Exception as e:
+        log.write("[" + str(datetime.now()) + "] EXCEPTION:" + str(e) + "\n")
+        log.flush()
     finally:
         client = None
         
