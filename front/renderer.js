@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
         else if (message[0] === "Save Loaded Succesfully") {
-            console.log(message)
             remove_drivers()
             place_drivers(message.slice(1))
         }
@@ -244,7 +243,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 else {
                     teamOrigin = originalParent
                 }
-                console.log(teamOrigin)
                 draggable = event.target;
                 let target = event.target;
                 let position = target.getBoundingClientRect();
