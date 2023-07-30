@@ -165,16 +165,38 @@ document.addEventListener('DOMContentLoaded', function () {
                 elementosClicked.forEach(item => item.classList.remove('clicked'));
                 newDiv.classList.toggle('clicked');
                 driverStatTitle.innerHTML = manage_stats_title(newDiv.textContent);
+                load_stats(statsString)
+                recalculateOverall()
                 
             });
             ovr = calculateOverall(statsString)
             ovrDiv.innerHTML = ovr
             newDiv.appendChild(ovrDiv)
             document.getElementById(divPosition).appendChild(newDiv)
+            
 
 
 
         })
+
+        document.querySelectorAll(".custom-input-number").forEach(function(elem) {
+            elem.addEventListener("change", function(){
+                recalculateOverall()
+            });
+        });
+    }
+
+    function recalculateOverall(){
+        let stats = ""
+        document.querySelectorAll(".custom-input-number").forEach(function(elem){
+            stats += elem.value + " "
+        })
+        console.log(stats)
+        stats = stats.slice(0, -1);
+        let ovr = calculateOverall(stats)
+        document.getElementById("ovrholder").innerHTML = ovr
+
+
     }
 
     function calculateOverall(stats) {
@@ -193,6 +215,14 @@ document.addEventListener('DOMContentLoaded', function () {
         let rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.5 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 4.75;
 
         return Math.round(rating)
+    }
+
+    function load_stats(stats){
+        let statsArray = stats.split(" ").map(Number);
+        let inputArray = document.querySelectorAll(".custom-input-number")
+        inputArray.forEach(function (input, index) {
+            inputArray[index].value = statsArray[index]
+        });
     }
 
 

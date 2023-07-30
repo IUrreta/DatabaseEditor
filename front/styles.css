@@ -42,7 +42,42 @@ body {
 .stats-title{
   text-align: left;
   color: white;
+  font-size: 26px;
+  padding-left: 10px;
+}
+
+.upper-section-stats{
+  display: flex;
+  justify-content: space-between;
+  width: 60%;
+  padding-right: 16px;
+  min-height: 71px;
+}
+
+.ovr{
+  display: flex;
+  flex-direction: column-reverse;
   font-size: 24px;
+  
+}
+
+.ovrcombined{
+  display: flex;
+}
+
+.overall-holder{
+  background-color: #21202e;
+  border: 3px solid white;
+  border-radius: 10px;
+  width: 66px;
+  height: 56px;
+  margin-top: 10px;
+  margin-right: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+
 }
 
 .upper-panel{
