@@ -87,6 +87,21 @@ body {
   margin-top: 2rem;
 }
 
+.script-view{
+  display: flex;
+  width: 100%;
+}
+
+.scirpt-info{
+  font-size: 15px;
+}
+
+.script-selector{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .save-selector{
   display: flex;
   flex-direction: column;

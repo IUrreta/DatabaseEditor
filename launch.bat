@@ -1,6 +1,7 @@
 @echo off
 REM Ejecutar server.py en la carpeta "back" usando Python
 cd back
+pip install websockets
 start "" /B py back.py
 cd ..
 
