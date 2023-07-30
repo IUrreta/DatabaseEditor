@@ -59,7 +59,21 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 
+}
+
+.hide {
+  animation: fadeOut 1s;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .tools-panel{
