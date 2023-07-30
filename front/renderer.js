@@ -166,7 +166,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 newDiv.classList.toggle('clicked');
                 driverStatTitle.innerHTML = manage_stats_title(newDiv.textContent);
                 load_stats(statsString)
-                document.getElementById("confirmbtn").className = "btn custom-confirm disabled"
                 recalculateOverall()
                 
             });
@@ -183,7 +182,6 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll(".custom-input-number").forEach(function(elem) {
             elem.addEventListener("change", function(){
                 recalculateOverall()
-                document.getElementById("confirmbtn").className = "btn custom-confirm"
             });
         });
     }
@@ -195,18 +193,10 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         console.log(stats)
         stats = stats.slice(0, -1);
-        let oldovr = document.getElementById("ovrholder").innerHTML;
-        let ovr = calculateOverall(stats);
-        if (oldovr != ovr){
-            console.log("distinto")
-            document.getElementById("ovrholder").innerHTML = ovr;
-            document.getElementById("ovrholder").className = "overall-holder bold-font alert";
-            setTimeout(() =>{
-                document.getElementById("ovrholder").className = "overall-holder bold-font"
-            }, 500);
-        
-        }
-        
+        let ovr = calculateOverall(stats)
+        document.getElementById("ovrholder").innerHTML = ovr
+
+
     }
 
     function calculateOverall(stats) {
