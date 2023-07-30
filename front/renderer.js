@@ -3,6 +3,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const socket = new WebSocket('ws://localhost:8765/');
 
+    const driverTransferPill = document.getElementById("transferpill");
+    const editStatsPill = document.getElementById("statspill");
+
+    const driverTransferDiv = document.getElementById("driver_transfers");
+    const editStatsDiv = document.getElementById("edit_stats");
+
+    const scriptsArray = [driverTransferDiv, editStatsDiv]
+
     const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
     const raceBonusCheck = document.getElementById("raceBonusCheck");
     const raceBonusAmt = document.getElementById("raceBonusAmt");
@@ -109,6 +117,33 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+
+    driverTransferPill.addEventListener("click", function () {
+        console.log(scriptsArray)
+        manageScripts("show", "hide")
+        
+    })
+
+    editStatsPill.addEventListener("click", function () {
+        console.log(scriptsArray)
+        manageScripts("hide", "show")
+        
+    })
+
+
+    function manageScripts(...divs) {
+        scriptsArray.forEach(function (div, index) {
+            if (divs[index] === "show") {
+                div.className = "script-view"
+            }
+            else {
+                div.className = "script-view d-none"
+            }
+        })
+    }
+    
+
+    //-------------------------------------ESPECIFICO DE TRANSFER SCRIPT-----------------------------------------------------------
 
 
     function remove_drivers() {
