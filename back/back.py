@@ -12,12 +12,15 @@ from scripts.edit_stats_23 import run_script as run_editStats
 client = None
 path = None
 log = open("../log.txt", 'a', encoding='utf-8')
-conn = sqlite3.connect("../result/main.db")
-cursor = conn.cursor()
+conn = None
+cursor = None
+
 
 async def handle_command(message):
     type = message["command"]
     global path
+    global conn
+    global cursor
     argument = ""
     if type == "connect":
         argument = type
@@ -33,6 +36,8 @@ async def handle_command(message):
         argument = type + " " + save
         path = "../" + save
         process_unpack(path, "../result")
+        conn = sqlite3.connect("../result/main.db")
+        cursor = conn.cursor()
         drivers = fetch_drivers()
         drivers.insert(0, "Save Loaded Succesfully")
         data_json = json.dumps(drivers)
@@ -84,6 +89,8 @@ async def handle_client(websocket, path):
         log.flush()
     finally:
         client = None
+        conn.commit()
+        conn.close()
         
 
 async def start_server():
