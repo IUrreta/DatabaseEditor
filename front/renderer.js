@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let isSaveSelected = 0;
     let scriptSelected = 0;
     let divBlocking = 1;
+    let statPanelShown = 0;
 
     let originalParent;
     let destinationParent;
@@ -189,6 +190,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 newDiv.classList.toggle('clicked');
                 driverStatTitle.innerHTML = manage_stats_title(newDiv.textContent);
                 load_stats(newDiv)
+                if(statPanelShown == 0){
+                    document.getElementById("editStatsPanel").className = "left-panel-stats"
+                    statPanelShown = 1
+                }
+                
                 document.getElementById("confirmbtn").className = "btn custom-confirm disabled"
                 recalculateOverall()
                 
@@ -197,10 +203,8 @@ document.addEventListener('DOMContentLoaded', function () {
             ovrDiv.innerHTML = ovr
             newDiv.appendChild(ovrDiv)
             document.getElementById(divPosition).appendChild(newDiv)
+
             
-
-
-
         })
 
         document.querySelectorAll(".custom-input-number").forEach(function(elem) {

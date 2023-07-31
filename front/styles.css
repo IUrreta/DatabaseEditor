@@ -227,7 +227,7 @@ body {
   margin-right: 20px;
   margin-bottom: 20px;
   margin-top: 15px;
-  background-color: #181535;
+  background-color: #18152e;
   border: 1px solid #797599;
   border-radius: 10px;
   display: flex;
@@ -255,7 +255,7 @@ body {
 .main-editStats-section {
   border: 1px solid #797599;
   color: white;
-  min-height: 600px;
+  min-height: 660px;
   max-height: 660px;
   overflow-y: auto;
   border-radius: 10px;
