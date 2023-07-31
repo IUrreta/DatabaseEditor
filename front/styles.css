@@ -240,17 +240,21 @@ body {
   border: 2.5px solid white !important;
   border-radius: 10px !important;
   color: white !important;
-  background-color: #13A713 !important;
-  transition: border-color 0.5s;
-}
-
-.custom-confirm:active {
-  background-color: #0F870F !important;
+  background-color: #797599 !important;
+  transition: border-color 0.5s, background-color 0.5s;
+  
 }
 
 .custom-confirm:hover {
-  border-color: #19f124 !important;
+  background-color: #199c19 !important;
+  border-color: #5cfc64 !important;
 }
+
+.custom-confirm:active {
+  background-color: #0d5f0d !important;
+}
+
+
 
 .main-editStats-section {
   border: 1px solid #797599;
