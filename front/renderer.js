@@ -3,6 +3,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const socket = new WebSocket('ws://localhost:8765/');
 
+    const driverTransferPill = document.getElementById("transferpill");
+    const editStatsPill = document.getElementById("statspill");
+
+    const driverTransferDiv = document.getElementById("driver_transfers");
+    const editStatsDiv = document.getElementById("edit_stats");
+
+    const scriptsArray = [driverTransferDiv, editStatsDiv]
+
     const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
     const raceBonusCheck = document.getElementById("raceBonusCheck");
     const raceBonusAmt = document.getElementById("raceBonusAmt");
@@ -18,17 +26,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
+    const notificationPanel = document.getElementById("notificationPanel");
+
     const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
+
+    let isSaveSelected = 0;
+    let scriptSelected = 0;
+    let divBlocking = 1;
+    let statPanelShown = 0;
 
     let originalParent;
     let destinationParent;
     let draggable;
-    let team;
+    let teamDestiniy;
+    let teamOrigin;
     let posInTeam;
 
     let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as" }
-    let inverted_dict = {'ferrari': 1,'mclaren': 2,'redbull': 3,'merc': 4,'alpine': 5,'williams': 6,'haas': 7,'alphatauri': 8,'alfaromeo': 9, 'astonmartin': 10}
-    let name_dict = {'ferrari': "Ferrari",'mclaren': "McLaren",'redbull': "Red Bull",'merc': "Mercedes",'alpine': "Alpine",'williams': "Williams",'haas': "Haas",'alphatauri': "Alpha Tauri",'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin"}
+    let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
+    let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3" }
 
     socket.onopen = () => {
         //console.log('Conexión establecida.');
@@ -42,14 +58,39 @@ document.addEventListener('DOMContentLoaded', function () {
         // const mensaje = event.data;
         // console.log('Mensaje recibido: ' + event.data);
         let message = JSON.parse(event.data)
-        if (message[0] === "saveList") {
+        if (message[0] === "Connected Succesfully") {
             load_saves(message)
+
         }
-        else {
+        else if (message[0] === "Save Loaded Succesfully") {
             remove_drivers()
-            place_drivers(message)
+            removeStatsDrivers()
+            place_drivers(message.slice(1))
+            place_drivers_editStats(message.slice(1))
         }
+        update_notifications(message[0])
     };
+
+    function update_notifications(noti) {
+        let newNoti;
+
+        newNoti = document.createElement('div');
+        newNoti.className = 'notification';
+        newNoti.textContent = noti;
+
+        notificationPanel.appendChild(newNoti);
+
+        setTimeout(function () {
+            newNoti.className = 'notification hide';
+
+            // Después de otros 2 segundos, eliminar el nuevo div
+            setTimeout(function () {
+                notificationPanel.removeChild(newNoti);
+            }, 980);
+        }, 3000);
+
+
+    }
 
 
     function load_saves(savesArray) {
@@ -63,12 +104,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             li.appendChild(a);
             dropDownMenu.appendChild(li);
-            
+
         }
         listenersSaves()
     }
 
-    function listenersSaves(){
+    function listenersSaves() {
         document.querySelectorAll('#dropdownMenu a').forEach(item => {
             item.addEventListener("click", function () {
                 const dropdownButton = document.getElementById('dropdownButton');
@@ -79,14 +120,191 @@ document.addEventListener('DOMContentLoaded', function () {
                     save: saveSelected
                 }
                 socket.send(JSON.stringify(dataSaves))
-                
+                isSaveSelected = 1;
+                document.getElementById("editStatsPanel").className = "left-panel-stats d-none";
+                statPanelShown = 0;
+                check_selected()
             });
         });
     }
 
+    function check_selected(){
+        if(isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1){
+            document.getElementById("blockDiv").className = "d-none"
+            divBlocking = 0;
 
-    function remove_drivers(){
+        }
+    }
+
+    driverTransferPill.addEventListener("click", function () {
+        manageScripts("show", "hide")
+        scriptSelected = 1
+        check_selected()
         
+    })
+
+    editStatsPill.addEventListener("click", function () {
+        manageScripts("hide", "show")
+        scriptSelected = 1
+        check_selected()
+    })
+
+
+    function manageScripts(...divs) {
+        scriptsArray.forEach(function (div, index) {
+            if (divs[index] === "show") {
+                div.className = "script-view"
+            }
+            else {
+                div.className = "script-view d-none"
+            }
+        })
+    }
+
+    //-------------------------------------ESPECIFICO DE EDITSTATS SCRIPT-----------------------------------------------------------
+
+    let driverStatTitle = document.getElementById("driverStatsTitle")
+
+    function removeStatsDrivers(){
+        document.getElementById("fulldriverlist").innerHTML = ""
+    }
+
+    function place_drivers_editStats(driversArray) {
+        let divPosition;
+        driversArray.forEach((driver) => {
+            divPosition = "fulldriverlist"
+
+            let newDiv = document.createElement("div");
+            let ovrDiv = document.createElement("div");
+            
+            newDiv.className = "col normal-driver";
+            newDiv.dataset.driverid = driver[1];
+            newDiv.innerHTML = driver[0];
+            let statsString = '';
+
+            for (let i = 4; i <= 12; i++) {
+                statsString += driver[i] + ' ';
+            }
+            newDiv.dataset.stats = statsString;
+            newDiv.addEventListener('click', () => {
+                let elementosClicked = document.querySelectorAll('.clicked');
+                elementosClicked.forEach(item => item.classList.remove('clicked'));
+                newDiv.classList.toggle('clicked');
+                driverStatTitle.innerHTML = manage_stats_title(newDiv.textContent);
+                load_stats(newDiv)
+                if(statPanelShown == 0){
+                    document.getElementById("editStatsPanel").className = "left-panel-stats"
+                    statPanelShown = 1
+                }
+                
+                document.getElementById("confirmbtn").className = "btn custom-confirm disabled"
+                recalculateOverall()
+                
+            });
+            ovr = calculateOverall(statsString)
+            ovrDiv.innerHTML = ovr
+            newDiv.appendChild(ovrDiv)
+            document.getElementById(divPosition).appendChild(newDiv)
+
+            
+        })
+
+        document.querySelectorAll(".custom-input-number").forEach(function(elem) {
+            elem.addEventListener("change", function(){
+                document.getElementById("confirmbtn").className = "btn custom-confirm"
+                if(elem.value > 99){
+                    elem.value = 99;
+                }
+                recalculateOverall()
+            });
+        });
+    }
+
+    function recalculateOverall(){
+        let stats = ""
+        document.querySelectorAll(".custom-input-number").forEach(function(elem){
+            stats += elem.value + " "
+        })
+        stats = stats.slice(0, -1);
+        let oldovr = document.getElementById("ovrholder").innerHTML;
+        let ovr = calculateOverall(stats);
+        if (oldovr != ovr){
+            document.getElementById("ovrholder").innerHTML = ovr;
+            document.getElementById("ovrholder").className = "overall-holder bold-font alert";
+            setTimeout(() =>{
+                document.getElementById("ovrholder").className = "overall-holder bold-font"
+            }, 500);
+        
+        }
+        
+
+
+    }
+
+    document.getElementById("confirmbtn").addEventListener("click", function(){
+        let stats = ""
+        document.querySelectorAll(".custom-input-number").forEach(function(elem){
+            stats += elem.value + " "
+        })
+
+        let id = document.querySelector(".clicked").dataset.driverid
+        let driverName = manage_stats_title(document.querySelector(".clicked").textContent)
+        document.querySelector(".clicked").dataset.stats = stats
+        let new_ovr = calculateOverall(stats)
+        document.querySelector(".clicked").childNodes[1].innerHTML = new_ovr
+
+        let dataStats = {
+            command: "editStats",
+            driverID: id,
+            driver: driverName,
+            statsArray: stats
+        }
+
+        socket.send(JSON.stringify(dataStats))
+
+    })
+
+    function calculateOverall(stats) {
+        let statsArray = stats.split(" ").map(Number);
+
+        let cornering = statsArray[0];
+        let braking = statsArray[1];
+        let control = statsArray[2];
+        let smoothness = statsArray[3];
+        let adaptability = statsArray[4];
+        let overtaking = statsArray[5];
+        let defence = statsArray[6];
+        let reactions = statsArray[7];
+        let accuracy = statsArray[8];
+
+        let rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.5 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 4.75;
+
+        return Math.round(rating)
+    }
+
+    function load_stats(div){
+        let statsArray = div.dataset.stats.split(" ").map(Number);
+
+        let inputArray = document.querySelectorAll(".custom-input-number")
+        inputArray.forEach(function (input, index) {
+            inputArray[index].value = statsArray[index]
+        });
+    }
+
+
+    function manage_stats_title(html){
+        let name = html.substring(0, html.length - 2).trim();
+
+        return name;
+
+    }
+
+
+    //-------------------------------------ESPECIFICO DE TRANSFER SCRIPT-----------------------------------------------------------
+
+
+    function remove_drivers() {
+
         document.querySelectorAll('.driver-space').forEach(item => {
             item.innerHTML = ""
         });
@@ -158,13 +376,14 @@ document.addEventListener('DOMContentLoaded', function () {
         let signBonusData = document.getElementById("signBonusInput").value;
         let raceBonusData;
         let raceBonusPosData;
-        
-        if(raceBonusAmt.value === "")
-         raceBonusData = "0";
+        let driverName = draggable.innerHTML
+
+        if (raceBonusAmt.value === "")
+            raceBonusData = "0";
         else
 
-         raceBonusData = raceBonusAmt.value;
-        if(raceBonusPos.value === "")
+            raceBonusData = raceBonusAmt.value;
+        if (raceBonusPos.value === "")
             raceBonusPosData = "10";
         else
             raceBonusPosData = raceBonusPos.value;
@@ -172,20 +391,24 @@ document.addEventListener('DOMContentLoaded', function () {
         if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
             let extra = {
                 command: "fire",
-                driver: draggable.dataset.driverid
+                driverID: draggable.dataset.driverid,
+                driver: driverName,
+                team: name_dict[teamOrigin.dataset.team]
             }
             socket.send(JSON.stringify(extra))
         }
         let data = {
             command: "hire",
-            driver: draggable.dataset.driverid,
-            teamID: inverted_dict[team],
+            driverID: draggable.dataset.driverid,
+            teamID: inverted_dict[teamDestiniy],
             position: posInTeam,
             salary: salaryData,
             signBonus: signBonusData,
             raceBonus: raceBonusData,
             raceBonusPos: raceBonusPosData,
-            year: yearData
+            year: yearData,
+            driver: driverName,
+            team: name_dict[teamDestiniy]
         }
         destinationParent.appendChild(draggable);
         socket.send(JSON.stringify(data))
@@ -206,6 +429,12 @@ document.addEventListener('DOMContentLoaded', function () {
         listeners: {
             start(event) {
                 originalParent = event.target.parentNode;
+                if (originalParent.className != "main-columns-drag-section") {
+                    teamOrigin = originalParent.parentNode
+                }
+                else {
+                    teamOrigin = originalParent
+                }
                 draggable = event.target;
                 let target = event.target;
                 let position = target.getBoundingClientRect();
@@ -242,9 +471,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (element.childElementCount < 1) {
                             destinationParent = element;
                             element.appendChild(target);
-                            team = element.parentNode.dataset.team
+                            teamDestiniy = element.parentNode.dataset.team
                             posInTeam = element.id.charAt(2)
-                            document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + name_dict[team];
+                            document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + name_dict[teamDestiniy];
                             myModal.show();
                         }
                     }
@@ -258,10 +487,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
                     originalParent.removeChild(draggable);
                     freeDrivers.appendChild(target);
-
                     let data = {
                         command: "fire",
-                        driver: draggable.dataset.driverid
+                        driverID: draggable.dataset.driverid,
+                        driver: draggable.innerHTML,
+                        team: name_dict[teamOrigin.dataset.team]
                     }
                     socket.send(JSON.stringify(data))
                 }

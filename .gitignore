@@ -1,4 +1,7 @@
 node_modules
 result
 licenses
+log.txt
+**/__pycache__
 *.sav
+
