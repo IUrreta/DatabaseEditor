@@ -30,6 +30,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
 
+    let isSaveSelected = 0;
+    let scriptSelected = 0;
+    let divBlocking = 1;
+
     let originalParent;
     let destinationParent;
     let draggable;
@@ -115,17 +119,31 @@ document.addEventListener('DOMContentLoaded', function () {
                     save: saveSelected
                 }
                 socket.send(JSON.stringify(dataSaves))
-
+                isSaveSelected = 1;
+                check_selected()
             });
         });
     }
 
+    function check_selected(){
+        if(isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1){
+            document.getElementById("blockDiv").className = "d-none"
+            divBlocking = 0;
+
+        }
+    }
+
     driverTransferPill.addEventListener("click", function () {
         manageScripts("show", "hide")
+        scriptSelected = 1
+        check_selected()
+        
     })
 
     editStatsPill.addEventListener("click", function () {
         manageScripts("hide", "show")
+        scriptSelected = 1
+        check_selected()
     })
 
 

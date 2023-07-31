@@ -3,12 +3,12 @@
   src: url("../assets/fonts/Formula1-Regular.ttf") format('truetype');
 }
 
-@font-face{
+@font-face {
   font-family: 'Formula1Bold';
   src: url("../assets/fonts/Formula1-Bold.ttf") format('truetype');
 }
 
-.bold-font{
+.bold-font {
   font-family: 'Formula1Bold' !important;
 }
 
@@ -37,9 +37,10 @@ body {
 .title {
   text-align: center;
   color: white;
+  font-size: 28px;
 }
 
-.stats-title{
+.stats-title {
   text-align: left;
   color: white;
   font-size: 26px;
@@ -47,26 +48,26 @@ body {
   padding-top: 20px;
 }
 
-.upper-section-stats{
+.upper-section-stats {
   display: flex;
   justify-content: space-between;
   padding-right: 16px;
   min-height: 71px;
 }
 
-.ovr{
+.ovr {
   display: flex;
   flex-direction: column-reverse;
   font-size: 24px;
   margin-right: 10px;
-  
+
 }
 
-.ovrcombined{
+.ovrcombined {
   display: flex;
 }
 
-.overall-holder{
+.overall-holder {
   background-color: #21202e;
   border: 3px solid white;
   border-radius: 10px;
@@ -81,16 +82,19 @@ body {
 
 }
 
-.upper-panel{
-  display:flex;
+.upper-panel {
+  display: flex;
 }
 
 @keyframes colorChange {
-  0%, 100% {
+
+  0%,
+  100% {
     border: 3px solid white;
     border-radius: 10px;
     background-color: #21202e;
   }
+
   50% {
     border: 3px solid red;
     border-radius: 10px;
@@ -100,22 +104,22 @@ body {
 
 
 
-.alert{
+.alert {
   animation: colorChange 0.5s infinite;
   margin-bottom: 0px !important;
 }
 
-.main-title{
+.main-title {
   text-align: left;
-  padding-left: 28%;
+  padding-left: 30%;
   background-color: #18152e;
   padding-top: 1rem;
   padding-bottom: 0.1%;
-  width: 67%;
+  width: 70%;
 }
 
-.notification-panel{
-  color:white;
+.notification-panel {
+  color: white;
   background-color: #18152e;
   width: 37%;
   display: flex;
@@ -133,43 +137,53 @@ body {
   from {
     opacity: 1;
   }
+
   to {
     opacity: 0;
   }
 }
 
-.tools-panel{
-  color:white;
+.tools-panel {
+  color: white;
   background-color: #18152e;
   border-bottom: 1px solid #797599;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .main-panel {
   display: flex;
-  margin-top: 0.8rem;
+  position: relative;
+  min-height: 79vh;
 }
 
-.script-view{
+.script-view {
   display: flex;
   width: 100%;
 }
 
-.scirpt-info{
+.scirpt-info {
   font-size: 15px;
 }
 
-.script-selector{
+.script-selector {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-right: 20px;
 }
 
-.save-selector{
+.dropdown-menu{
+  z-index: 9999 !important;
+}
+
+.save-selector {
   display: flex;
   flex-direction: column;
 }
 
-#dropdownButton{
+#dropdownButton {
   max-width: 210px;
   margin-top: 0.6rem;
   background-color: #797599;
@@ -178,11 +192,11 @@ body {
 
 }
 
-#dropdownButton:hover{
+#dropdownButton:hover {
   border: 2px solid white !important;
 }
 
-#dropdownButton:active{
+#dropdownButton:active {
   background-color: #1a1826;
 }
 
@@ -199,16 +213,16 @@ body {
   scrollbar-color: white #e5e5e5;
 }
 
-.main-panel-stats{
+.main-panel-stats {
   display: grid;
   grid-template-columns: repeat(3, 0.33fr);
 }
 
-.left-panel-stats{
+.left-panel-stats {
   width: 100%;
 }
 
-.confirm-section{
+.confirm-section {
   margin-left: 20px;
   margin-right: 20px;
   margin-bottom: 20px;
@@ -222,7 +236,7 @@ body {
   padding: 120px;
 }
 
-.custom-confirm{
+.custom-confirm {
   border: 2.5px solid white !important;
   border-radius: 10px !important;
   color: white !important;
@@ -230,15 +244,15 @@ body {
   transition: border-color 0.5s;
 }
 
-.custom-confirm:active{
+.custom-confirm:active {
   background-color: #0F870F !important;
 }
 
-.custom-confirm:hover{
+.custom-confirm:hover {
   border-color: #19f124 !important;
 }
 
-.main-editStats-section{
+.main-editStats-section {
   border: 1px solid #797599;
   color: white;
   min-height: 600px;
@@ -258,12 +272,12 @@ body {
   border-radius: 3px;
 }
 
-#fulldriverlist{
+#fulldriverlist {
   margin-left: 5%;
   margin-right: 5%;
 }
 
-#driverstats{
+#driverstats {
   margin-right: 2%;
 }
 
@@ -279,24 +293,24 @@ body {
 
 
 
-.categoryPills{
+.categoryPills {
   color: #dbdbdb !important;
 }
 
-.active{
+.active {
   background-color: #797599 !important;
   color: #fdfdfd !important;
 }
 
-#F2pill.active{
+#F2pill.active {
   background-color: #1374fc !important;
 }
 
-#F3pill.active{
+#F3pill.active {
   background-color: red !important;
 }
 
-.car-info{
+.car-info {
   font-size: 14px;
 }
 
@@ -307,7 +321,7 @@ body {
   padding-top: 10px;
   display: grid;
   grid-template-columns: repeat(2, minmax(400px, 1fr));
-  overflow-y:hidden;
+  overflow-y: hidden;
   margin-left: 0%;
   margin-right: 2%;
 }
@@ -341,12 +355,34 @@ body {
   transition: border-color 0.5s;
 }
 
-.free-driver:hover{
+#free-drivers {
+  min-height: 660px;
+}
+
+#fulldriverlist {
+  min-height: 660px;
+}
+
+.free-driver:hover {
   border-color: white;
   cursor: grab !important;
 }
 
-.normal-driver{
+.blocking-div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(128, 128, 128, 0.5);
+  z-index: 9998;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.normal-driver {
   background-color: #3f3c57;
   cursor: pointer;
   border-radius: 10px;
@@ -359,7 +395,7 @@ body {
   transition: border-color 0.5s;
 }
 
-.one-stat-panel{
+.one-stat-panel {
   background-color: #3f3c57;
   border-radius: 10px;
   padding-left: 10px;
@@ -373,15 +409,15 @@ body {
   align-items: center;
 }
 
-.scriptPills{
-color: white !important;
+.scriptPills {
+  color: white !important;
 }
 
-.scriptPills.active{
+.scriptPills.active {
   background-color: #797599 !important;
 }
 
-.custom-input-number{
+.custom-input-number {
   background-color: #21202e;
   border-radius: 10px;
   padding: 10px;
@@ -392,10 +428,10 @@ color: white !important;
   border: 2px solid transparent;
   font-size: 20px;
   transition: border-color 0.5s;
-  
+
 }
 
-.custom-input-number:focus{
+.custom-input-number:focus {
   outline: 0px solid transparent;
   border-color: #adadad;
 }
@@ -408,15 +444,18 @@ input::-webkit-inner-spin-button {
 }
 
 .normal-driver:hover {
-  border-color: white; /* Borde blanco al pasar el ratón */
+  border-color: white;
+  /* Borde blanco al pasar el ratón */
 }
 
 .normal-driver:active {
-  background-color: #1a1826; /* Cambia el color al hacer clic */
+  background-color: #1a1826;
+  /* Cambia el color al hacer clic */
 }
 
 .normal-driver.clicked {
-  border-color: red; /* Borde rojo al hacer clic */
+  border-color: red;
+  /* Borde rojo al hacer clic */
 }
 
 .team-template {
