@@ -39,7 +39,7 @@ This repository has mainly 1 usable branch: `release`. This branch will have the
 
 
 For cloning the repo, just create any folder **OUTSIDE ANY WINDOWS CONTRROLLED FOLDER** (Program Files, System32 etc.), your desktop for example is a good place, but feel free to choose
-other places. Then go into that folder in the Windows Explorer (Win+E) and type in the "Address bar" at the top: `cmd` and press Enter.
+other places. Then go into that folder in the Windows Explorer (`Win+E`) and type in the "Address bar" at the top: `cmd` and press Enter.
 
 Once the black box (Command Prompt) opens, copy and paste this command and press Enter:
 
@@ -53,6 +53,13 @@ Once you have cloned/downloaded the repository, just paste the save file you wan
 
 With your save inside the Database Editor folder, just double click on the run.vbs file and there you go! Everything else should install itself and the tool should open. Now you will be able to 
 make any driver transfer you desire. I **HIGHLY RECOMMEND** to make a **BACKUP** of your file you're about to edit. To use the tool, select any save from the save selector and just drag and drop any driver into the spot you want to sign him into. To free a spot, just drag the driver that is occupying it and drop him into the Dree Drivers secion.
+
+### How can I update the Database Editor if I had a previouos verision? ###
+
+It's actually super easy. If you cloned the repository from github, just open the repository location in your file eplorer folder (`Win + E`) and type in the "Address bar" `cmd` and press `Enter`. Then, a black box (Command prompt) will appear. Copy and paste this command: `git pull` and press `Enter` again. Everything should download automatically. 
+
+If, on the other hand, you just downloaded the zip with the files, it's the same process again! Download the zip, extract the files and you should be good to go!
+
 
 ### Screenshots ###
 
