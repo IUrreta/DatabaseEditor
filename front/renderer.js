@@ -121,6 +121,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 socket.send(JSON.stringify(dataSaves))
                 isSaveSelected = 1;
+                document.getElementById("editStatsPanel").className = "left-panel-stats d-none";
+                statPanelShown = 0;
                 check_selected()
             });
         });
