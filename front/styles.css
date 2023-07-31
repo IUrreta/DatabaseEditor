@@ -43,7 +43,7 @@ body {
   text-align: left;
   color: white;
   font-size: 26px;
-  padding-left: 10px;
+  padding-left: 20px;
   padding-top: 20px;
 }
 
@@ -223,14 +223,19 @@ body {
 }
 
 .custom-confirm{
-  border: 2px solid white !important;
+  border: 2.5px solid white !important;
   border-radius: 10px !important;
   color: white !important;
   background-color: #13A713 !important;
+  transition: border-color 0.5s;
 }
 
 .custom-confirm:active{
   background-color: #0F870F !important;
+}
+
+.custom-confirm:hover{
+  border-color: #19f124 !important;
 }
 
 .main-editStats-section{
@@ -385,6 +390,7 @@ color: white !important;
   max-width: 60px;
   height: 56px;
   border: 2px solid transparent;
+  font-size: 20px;
   transition: border-color 0.5s;
   
 }

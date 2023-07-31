@@ -39,17 +39,28 @@ async def handle_command(message):
         await send_message_to_client(data_json)
 
     elif type =="hire":
-        run_trasnsfer("hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"])
+        argument = "hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
+        run_trasnsfer(argument)
         process_repack("../result", path)
         info = []
         info.insert(0, "Succesfully moved " + message["driver"] + " into " + message["team"])
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
     elif type =="fire":
-        run_trasnsfer("fire " + message["driverID"])
+        argument = "fire " + message["driverID"]
+        run_trasnsfer(argument)
         process_repack("../result", path)
         info = []
         info.insert(0, "Succesfully released " + message["driver"] + " from " + message["team"])
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+
+    elif type =="editStats":
+        run_editStats(message["driverID"] + " " + message["statsArray"])
+        argument = type + " " + message["driverID"] + " " + message["statsArray"]
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully edited " + message["driver"] + "'s stats")
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
 

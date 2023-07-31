@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 elementosClicked.forEach(item => item.classList.remove('clicked'));
                 newDiv.classList.toggle('clicked');
                 driverStatTitle.innerHTML = manage_stats_title(newDiv.textContent);
-                load_stats(statsString)
+                load_stats(newDiv)
                 document.getElementById("confirmbtn").className = "btn custom-confirm disabled"
                 recalculateOverall()
                 
@@ -187,6 +187,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         document.querySelectorAll(".custom-input-number").forEach(function(elem) {
             elem.addEventListener("change", function(){
+                document.getElementById("confirmbtn").className = "btn custom-confirm"
+                if(elem.value > 99){
+                    elem.value = 99;
+                }
                 recalculateOverall()
             });
         });
@@ -213,6 +217,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
+    document.getElementById("confirmbtn").addEventListener("click", function(){
+        let stats = ""
+        document.querySelectorAll(".custom-input-number").forEach(function(elem){
+            stats += elem.value + " "
+        })
+
+        let id = document.querySelector(".clicked").dataset.driverid
+        let driverName = manage_stats_title(document.querySelector(".clicked").textContent)
+        document.querySelector(".clicked").dataset.stats = stats
+        let new_ovr = calculateOverall(stats)
+        document.querySelector(".clicked").childNodes[1].innerHTML = new_ovr
+
+        let dataStats = {
+            command: "editStats",
+            driverID: id,
+            driver: driverName,
+            statsArray: stats
+        }
+
+        socket.send(JSON.stringify(dataStats))
+
+    })
+
     function calculateOverall(stats) {
         let statsArray = stats.split(" ").map(Number);
 
@@ -231,8 +258,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return Math.round(rating)
     }
 
-    function load_stats(stats){
-        let statsArray = stats.split(" ").map(Number);
+    function load_stats(div){
+        let statsArray = div.dataset.stats.split(" ").map(Number);
+
         let inputArray = document.querySelectorAll(".custom-input-number")
         inputArray.forEach(function (input, index) {
             inputArray[index].value = statsArray[index]
