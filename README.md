@@ -1,7 +1,7 @@
 # Database Editor for F1 Manager 23 #
 Friendly to use tool for editing your save files from F1 Manager 23. Supports driver transfers for now, but more options will be added in the future!
 
-**PLEASE KEEP IN MIND**: This is the first version and will only get better with time. It will get regular updates to support more functionallity, and veruy likely it will get 
+**PLEASE KEEP IN MIND**: This are the first few iterations and will only get better with time. It will get regular updates to support more functionallity, and very likely it will get 
 updates focusing on setting up if any issues come up
 
 If you have any issues feel free to open an Issue or message me in Discord @_n4x
@@ -12,6 +12,12 @@ Basically it's just a friendly user interface that helps you make the modificati
 It's developed by the same guy (me, u/ignaciourreta on Reddit) who developed multiple scripts for the F1 Manager 22 game as the driver trasnfer script, custom calendar, edit stats, or edit performance of cars
 
 When I developed those scripts, more specifically the driver transfers script for the Script Manager for F1M22 I always had in mind to devlop a tool like this to make it easier to the user to take advantage of my scripts
+
+### What can I actually edit with the Database Editor? ###
+
+As of today, the supported functionalities are making driver transfers and editing driver stats. Driver transfers include F1 official drivers, reserves, drivers from F2, F3, or even from their sofa if they have retired! Editing stats include any of the 9 stats that add up to calculate the overall rating of the driver. 
+
+Don't worry if there has been driver changes in your save, or if any driver has gained or lost performance in any statistic. You'll be able to see those changes on the Database Editor.
 
 ## What do I need to use the Database Editor? ##
 You'll need to have installed on your computer 2 things: Python and NodeJS.
@@ -48,7 +54,10 @@ Once you have cloned/downloaded the repository, just paste the save file you wan
 With your save inside the Database Editor folder, just double click on the run.vbs file and there you go! Everything else should install itself and the tool should open. Now you will be able to 
 make any driver transfer you desire. I **HIGHLY RECOMMEND** to make a **BACKUP** of your file you're about to edit. To use the tool, select any save from the save selector and just drag and drop any driver into the spot you want to sign him into. To free a spot, just drag the driver that is occupying it and drop him into the Dree Drivers secion.
 
-### Screenshot ###
+### Screenshots ###
 
-![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/907a39e6-ed48-4196-9a51-ab10bbe8969c)
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/617085b7-4823-495d-bdbd-75df04a57847)
+
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/16039739-bc40-481f-8371-efb9b4770778)
+
 
