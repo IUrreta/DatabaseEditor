@@ -41,6 +41,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let teamDestiniy;
     let teamOrigin;
     let posInTeam;
+    let connectionTimeout = setTimeout(() => {
+        update_notifications("Could not connect with backend", true) 
+    }, 4000); 
 
     let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as" }
     let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
@@ -52,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
             command: "connect"
         }
         socket.send(JSON.stringify(data))
+
     };
 
     socket.onmessage = (event) => {
@@ -60,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let message = JSON.parse(event.data)
         if (message[0] === "Connected Succesfully") {
             load_saves(message)
-
+            clearTimeout(connectionTimeout);
         }
         else if (message[0] === "Save Loaded Succesfully") {
             remove_drivers()
@@ -68,28 +72,27 @@ document.addEventListener('DOMContentLoaded', function () {
             place_drivers(message.slice(1))
             place_drivers_editStats(message.slice(1))
         }
-        update_notifications(message[0])
+        update_notifications(message[0], false)
     };
 
-    function update_notifications(noti) {
+    function update_notifications(noti, error) {
         let newNoti;
-
         newNoti = document.createElement('div');
         newNoti.className = 'notification';
         newNoti.textContent = noti;
+        if(error) newNoti.style.color = "red";
 
         notificationPanel.appendChild(newNoti);
-
-        setTimeout(function () {
-            newNoti.className = 'notification hide';
-
-            // Después de otros 2 segundos, eliminar el nuevo div
+        if(!error){
             setTimeout(function () {
-                notificationPanel.removeChild(newNoti);
-            }, 980);
-        }, 3000);
-
-
+                newNoti.className = 'notification hide';
+    
+                // Después de otros 2 segundos, eliminar el nuevo div
+                setTimeout(function () {
+                    notificationPanel.removeChild(newNoti);
+                }, 980);
+            }, 3000);
+        }
     }
 
 
