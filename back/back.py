@@ -59,6 +59,14 @@ async def handle_command(message):
         info.insert(0, "Succesfully released " + message["driver"] + " from " + message["team"])
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
+    elif type =="autocontract":
+        argument = "hire " + message["driverID"] + " " +  str(message["teamID"]) + " " + message["position"]
+        run_trasnsfer(argument)
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully moved " + message["driver"] + " into " + message["team"])
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
 
     elif type =="editStats":
         run_editStats(message["driverID"] + " " + message["statsArray"])
