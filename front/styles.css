@@ -1,3 +1,7 @@
+:root{
+  --bs-form-switch-bg: #ff0000 !important;
+}
+
 @font-face {
   font-family: 'Formula1';
   src: url("../assets/fonts/Formula1-Regular.ttf") format('truetype');
@@ -39,6 +43,24 @@ body {
   color: white;
   font-size: 28px;
 }
+
+.trasnfer-top-panel{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transfer-title{
+  flex: 1;
+  text-align: center;
+}
+
+.auto-contract{
+  color: white;
+  font-size: 20px;
+  padding-right: 2rem;
+}
+
 
 .stats-title {
   text-align: left;
