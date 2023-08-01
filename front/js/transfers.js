@@ -225,6 +225,9 @@ interact('.free-driver').draggable({
                         posInTeam = element.id.charAt(2)
                         document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + name_dict[teamDestiniy];
                         if (autoContractToggle.checked) {
+                            if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
+                                signDriver("fireandhire")
+                            }
                             signDriver("autocontract")
                         }
                         else {
