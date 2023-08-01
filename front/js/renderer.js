@@ -23,12 +23,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let divBlocking = 1;
 
 
-    let originalParent;
-    let destinationParent;
-    let draggable;
-    let teamDestiniy;
-    let teamOrigin;
-    let posInTeam;
     let connectionTimeout = setTimeout(() => {
         update_notifications("Could not connect with backend", true) 
     }, 4000); 

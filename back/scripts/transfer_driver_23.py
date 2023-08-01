@@ -30,7 +30,9 @@ def run_script(option=""):
         year =  cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
 
         if(len(params) == 3 or len(params) == 4):
+            print("llego hasta aqui")
             tier = get_tier(driver_id)
+            print(tier)
             if(tier == 1):
                 salary = str(round(random.uniform(14, 30),3)*1000000) 
                 starting_bonus = str(round(random.uniform(2, 4.5), 3)*1000000)
@@ -71,7 +73,9 @@ def run_script(option=""):
             #print(tier)
             
             if(has_bonus):
+                print("aimai")
                 prestige_values = cursor.execute("SELECT PtsFromConstructorResults, PtsFromDriverResults, PtsFromSeasonsEntered, PtsFromChampionshipsWon FROM Board_Prestige WHERE SeasonID = " + str(year[0]) +  " AND TeamID = " + str(new_team_id)).fetchall()
+                print("llego hasta aqui2")
                 prestige = 0
                 for i in range(len(prestige_values)):
                     prestige += prestige_values[i][0]
@@ -286,7 +290,7 @@ def run_script(option=""):
 
 def get_tier(driverID):
 
-    conn = sqlite3.connect("scripts/result/main.db")
+    conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
 
     driver_stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(driverID[0])).fetchall()
@@ -304,6 +308,9 @@ def get_tier(driverID):
     elif(rating >= 81): tier = 2
     elif(rating >= 77): tier = 3
     else: tier = 4
+
+    conn.commit()
+    conn.close()
     return tier
 
 def get_driver_id(name):

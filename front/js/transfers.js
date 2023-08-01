@@ -13,13 +13,19 @@ const f3DriversDiv = document.getElementById("f3-drivers");
 
 const autoContractToggle = document.getElementById("autoContractToggle")
 
-
-
 const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
 
+
+let originalParent;
+let destinationParent;
+let draggable;
+let teamDestiniy;
+let teamOrigin;
+let posInTeam;
+
 let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as" }
-    let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
-    let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3" }
+let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
+let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3" }
 
 
 function remove_drivers() {
@@ -90,61 +96,81 @@ raceBonusCheck.addEventListener("click", function () {
 })
 
 document.getElementById("confirmButton").addEventListener('click', function () {
-    let salaryData = document.getElementById("salaryInput").value;
-    let yearData = document.getElementById("yearInput").value;
-    let signBonusData = document.getElementById("signBonusInput").value;
-    let raceBonusData;
-    let raceBonusPosData;
+    if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
+        signDriver("fireandhire")
+    }
+    signDriver("regular")
+})
+
+function signDriver(type) {
     let driverName = draggable.innerHTML
 
-    if(signBonusData === "")
-        signBonusData = "0"
-
-
-    if (raceBonusAmt.value === "")
-        raceBonusData = "0";
-    else
-        raceBonusData = raceBonusAmt.value;
-
-    if (raceBonusPos.value === "")
-        raceBonusPosData = "10";
-    else
-        raceBonusPosData = raceBonusPos.value;
-
-    if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
+    if (type === "fireandhire") {
         let extra = {
             command: "fire",
             driverID: draggable.dataset.driverid,
             driver: driverName,
             team: name_dict[teamOrigin.dataset.team]
         }
+
         socket.send(JSON.stringify(extra))
+
     }
-    let data = {
-        command: "hire",
-        driverID: draggable.dataset.driverid,
-        teamID: inverted_dict[teamDestiniy],
-        position: posInTeam,
-        salary: salaryData,
-        signBonus: signBonusData,
-        raceBonus: raceBonusData,
-        raceBonusPos: raceBonusPosData,
-        year: yearData,
-        driver: driverName,
-        team: name_dict[teamDestiniy]
+    if (type === "regular") {
+        let salaryData = document.getElementById("salaryInput").value;
+        let yearData = document.getElementById("yearInput").value;
+        let signBonusData = document.getElementById("signBonusInput").value;
+        let raceBonusData;
+        let raceBonusPosData;
+
+        if (signBonusData === "")
+            signBonusData = "0"
+
+
+        if (raceBonusAmt.value === "")
+            raceBonusData = "0";
+        else
+            raceBonusData = raceBonusAmt.value;
+
+        if (raceBonusPos.value === "")
+            raceBonusPosData = "10";
+        else
+            raceBonusPosData = raceBonusPos.value;
+
+        let data = {
+            command: "hire",
+            driverID: draggable.dataset.driverid,
+            teamID: inverted_dict[teamDestiniy],
+            position: posInTeam,
+            salary: salaryData,
+            signBonus: signBonusData,
+            raceBonus: raceBonusData,
+            raceBonusPos: raceBonusPosData,
+            year: yearData,
+            driver: driverName,
+            team: name_dict[teamDestiniy]
+        }
+        destinationParent.appendChild(draggable);
+        socket.send(JSON.stringify(data))
+
     }
-    destinationParent.appendChild(draggable);
-    socket.send(JSON.stringify(data))
-})
+    else if (type === "autocontract") {
+        let dataAuto = {
+            command: "autocontract",
+            driverID: draggable.dataset.driverid,
+            teamID: inverted_dict[teamDestiniy],
+            position: posInTeam,
+            driver: driverName,
+            team: name_dict[teamDestiniy]
+        }
+        destinationParent.appendChild(draggable);
+        socket.send(JSON.stringify(dataAuto))
+
+    }
+}
 
 document.getElementById("cancelButton").addEventListener('click', function () {
     originalParent.appendChild(draggable);
-
-    div0.style.transform = 'translate(0px, 0px)';
-    div0.setAttribute('data-x', 0);
-    div0.setAttribute('data-y', 0);
-
-
 })
 
 
@@ -198,14 +224,14 @@ interact('.free-driver').draggable({
                         teamDestiniy = element.parentNode.dataset.team
                         posInTeam = element.id.charAt(2)
                         document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + name_dict[teamDestiniy];
-                        if (autoContractToggle.checked){
-
+                        if (autoContractToggle.checked) {
+                            signDriver("autocontract")
                         }
-                        else{
+                        else {
                             myModal.show();
                         }
-                        }
-                        
+                    }
+
                 }
             });
 
