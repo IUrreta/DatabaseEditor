@@ -133,11 +133,19 @@ body {
 
 .main-title {
   text-align: left;
-  padding-left: 30%;
+  padding-left: 29%;
   background-color: #18152e;
   padding-top: 1rem;
   padding-bottom: 0.1%;
-  width: 70%;
+  width: 71%;
+}
+
+.versionPanel{
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  color: white;
+
 }
 
 .notification-panel {

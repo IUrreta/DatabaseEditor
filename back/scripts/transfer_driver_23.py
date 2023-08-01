@@ -30,9 +30,7 @@ def run_script(option=""):
         year =  cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
 
         if(len(params) == 3 or len(params) == 4):
-            print("llego hasta aqui")
             tier = get_tier(driver_id)
-            print(tier)
             if(tier == 1):
                 salary = str(round(random.uniform(14, 30),3)*1000000) 
                 starting_bonus = str(round(random.uniform(2, 4.5), 3)*1000000)
@@ -73,9 +71,7 @@ def run_script(option=""):
             #print(tier)
             
             if(has_bonus):
-                print("aimai")
                 prestige_values = cursor.execute("SELECT PtsFromConstructorResults, PtsFromDriverResults, PtsFromSeasonsEntered, PtsFromChampionshipsWon FROM Board_Prestige WHERE SeasonID = " + str(year[0]) +  " AND TeamID = " + str(new_team_id)).fetchall()
-                print("llego hasta aqui2")
                 prestige = 0
                 for i in range(len(prestige_values)):
                     prestige += prestige_values[i][0]

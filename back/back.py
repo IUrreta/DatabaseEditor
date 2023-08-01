@@ -61,7 +61,6 @@ async def handle_command(message):
         await send_message_to_client(info_json)
     elif type =="autocontract":
         argument = "hire " + message["driverID"] + " " +  str(message["teamID"]) + " " + message["position"]
-        print(argument)
         run_trasnsfer(argument)
         process_repack("../result", path)
         info = []
