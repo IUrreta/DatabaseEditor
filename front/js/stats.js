@@ -18,7 +18,7 @@ function place_drivers_editStats(driversArray) {
         newDiv.innerHTML = driver[0];
         let statsString = '';
 
-        for (let i = 4; i <= 12; i++) {
+        for (let i = 4; i <= 14; i++) {
             statsString += driver[i] + ' ';
         }
         newDiv.dataset.stats = statsString;

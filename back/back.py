@@ -146,8 +146,8 @@ def format_names_get_stats(name):
     resultado = (name_formatted, name[2], team_id, pos_in_team)
 
     stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID BETWEEN 2 AND 10").fetchall()
-
-    nums = resultado + tuple(stat[0] for stat in stats)
+    additionalStats = cursor.execute("SELECT Improvability, Aggression FROM Staff_DriverData WHERE StaffID = " + str(name[2])).fetchone()
+    nums = resultado + tuple(stat[0] for stat in stats) + additionalStats
 
     return nums
 
