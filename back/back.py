@@ -51,6 +51,7 @@ async def handle_command(message):
         info.insert(0, "Succesfully moved " + message["driver"] + " into " + message["team"])
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
+
     elif type =="fire":
         argument = "fire " + message["driverID"]
         run_trasnsfer(argument)
@@ -59,6 +60,7 @@ async def handle_command(message):
         info.insert(0, "Succesfully released " + message["driver"] + " from " + message["team"])
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
+
     elif type =="autocontract":
         argument = "hire " + message["driverID"] + " " +  str(message["teamID"]) + " " + message["position"]
         run_trasnsfer(argument)
@@ -95,6 +97,11 @@ async def handle_client(websocket, path):
     except Exception as e:
         log.write("[" + str(datetime.now()) + "] EXCEPTION:" + str(e) + "\n")
         log.flush()
+        info = []
+        info.insert(0, "ERROR")
+        info.insert(1, "Something went wrong. Please restart the tool")
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
     finally:
         client = None
         conn.commit()
@@ -139,8 +146,8 @@ def format_names_get_stats(name):
     resultado = (name_formatted, name[2], team_id, pos_in_team)
 
     stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID BETWEEN 2 AND 10").fetchall()
-
-    nums = resultado + tuple(stat[0] for stat in stats)
+    additionalStats = cursor.execute("SELECT Improvability, Aggression FROM Staff_DriverData WHERE StaffID = " + str(name[2])).fetchone()
+    nums = resultado + tuple(stat[0] for stat in stats) + additionalStats
 
     return nums
 

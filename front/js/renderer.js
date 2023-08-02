@@ -42,17 +42,24 @@ document.addEventListener('DOMContentLoaded', function () {
         // const mensaje = event.data;
         // console.log('Mensaje recibido: ' + event.data);
         let message = JSON.parse(event.data)
-        if (message[0] === "Connected Succesfully") {
-            load_saves(message)
-            clearTimeout(connectionTimeout);
+        console.log(message)
+        if(message[0] === "ERROR"){
+            update_notifications(message[1], true)
         }
-        else if (message[0] === "Save Loaded Succesfully") {
-            remove_drivers()
-            removeStatsDrivers()
-            place_drivers(message.slice(1))
-            place_drivers_editStats(message.slice(1))
+        else{
+            if (message[0] === "Connected Succesfully") {
+                load_saves(message)
+                clearTimeout(connectionTimeout);
+            }
+            else if (message[0] === "Save Loaded Succesfully") {
+                remove_drivers()
+                removeStatsDrivers()
+                place_drivers(message.slice(1))
+                place_drivers_editStats(message.slice(1))
+            }
+            update_notifications(message[0], false)
         }
-        update_notifications(message[0], false)
+
     };
 
     function update_notifications(noti, error) {
@@ -60,6 +67,8 @@ document.addEventListener('DOMContentLoaded', function () {
         newNoti = document.createElement('div');
         newNoti.className = 'notification';
         newNoti.textContent = noti;
+        console.log(noti)
+        console.log(error)
         if(error) newNoti.style.color = "red";
 
         notificationPanel.appendChild(newNoti);
