@@ -248,6 +248,18 @@ body {
   grid-template-columns: repeat(3, 0.33fr);
 }
 
+.extra-atributes{
+  width: 33%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.bottom-panel{
+  display: flex;
+  flex-direction: row;
+}
+
 .left-panel-stats {
   width: 100%;
 }
@@ -263,7 +275,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 120px;
+  padding-top: 120px;
+  padding-bottom: 120px;
+  padding-left: 315px;
+  padding-right: 315px;
 }
 
 .custom-confirm {
