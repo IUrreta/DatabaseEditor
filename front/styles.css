@@ -290,12 +290,18 @@ body {
 }
 
 .custom-confirm {
-  border: 2.5px solid white !important;
+  width: 160px;
+  border: 2.5px solid transparent !important;
   border-radius: 10px !important;
   color: white !important;
   background-color: #797599 !important;
-  transition: border-color 0.5s, background-color 0.5s;
+  transition: border-color 0.5s, background-color 0.5s !important;
   
+}
+
+.extra-inputs{
+  margin-bottom: 20px !important;
+  margin-top: 20px !important;
 }
 
 .custom-confirm:hover {
@@ -359,6 +365,26 @@ body {
   color: #fdfdfd !important;
 }
 
+#F2pill{
+  border: 2px solid transparent;
+  transition: border-color 0.5s, background-color 0.5s;
+}
+
+#F2pill:hover{
+  border: 2px solid #38c8f0;
+  background-color: #388cd5;
+}
+
+#F3pill{
+  border: 2px solid transparent;
+  transition: border-color 0.5s, background-color 0.5s;
+}
+
+#F3pill:hover{
+  border: 2px solid rgb(255, 72, 72);
+  background-color: rgb(207, 46, 46);
+}
+
 #F2pill.active {
   background-color: #1374fc !important;
 }
@@ -367,12 +393,11 @@ body {
   background-color: red !important;
 }
 
+
+
 .car-info {
   font-size: 14px;
 }
-
-
-
 
 .teams-columns {
   padding-top: 10px;
@@ -468,6 +493,13 @@ body {
 
 .scriptPills {
   color: white !important;
+  border: 2px solid transparent !important;
+  transition: border-color 0.5s, background-color 0.5s !important;
+}
+
+.scriptPills:hover {
+  border-color:  white !important;
+  background-color: #58556c;
 }
 
 .scriptPills.active {
@@ -484,13 +516,18 @@ body {
   height: 56px;
   border: 2px solid transparent;
   font-size: 20px;
-  transition: border-color 0.5s;
+  transition: border-color 0.5s !important;
+
+}
+
+.custom-input-number:hover {
+  border-color: #cecece;
 
 }
 
 .custom-input-number:focus {
   outline: 0px solid transparent;
-  border-color: #adadad;
+  border-color: white;
 }
 
 
