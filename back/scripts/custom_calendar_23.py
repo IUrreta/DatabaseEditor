@@ -8,7 +8,11 @@ def run_script(option=""):
     cursor = conn.cursor()
     
     default_tracks = [2, 1, 11, 24, 22, 5, 6, 4, 7, 10, 9, 12, 13, 14, 15, 17, 19, 18, 20, 21, 23, 25, 26]
+    races_map = {"bah": 2,"aus": 1,"sau": 11,"imo": 24,"mia": 22,"spa": 5, "mon": 6,"aze": 4,"can": 7,"gbr": 10,"aut": 9,"fra": 8,"hun": 12,"bel": 13,"ita": 14,"sgp": 15,"jap": 17,"usa": 19,"mex": 18,"bra": 20,"uae": 21,"ned": 23,"veg": 25,"qat": 26}
+    races_codes = ["bah", "aus", "sau", "imo", "mia", "spa", "mon", "aze", "can", "gbr", "aut", "fra", "hun", "bel", "ita", "sgp", "jap", "usa", "mex", "bra", "uae", "ned", "veg", "qat"]
+
     track_ids = []
+    formats = []
 
     calendar = option.lower()
     races = calendar.split()
@@ -38,13 +42,7 @@ def run_script(option=""):
     #Inserting new race calendar
     for i in range (len(track_ids)):
         data_race = cursor.execute("SELECT * FROM Races WHERE TrackID = "+ str(track_ids[i]) + " AND SeasonID = " + str(day_season[1])).fetchone()
-        if(str(data_race[3]) == "4" or str(data_race[3]) == "9" or str(data_race[3]) == "13" or str(data_race[3]) == "26" or str(data_race[3]) == "19" or str(data_race[3]) == "20" or str(data_race[3]) == "6"):
-            type = "1"
-        elif(str(data_race[3]) == "24" or str(data_race[3]) == "12"):
-            type = "2"
-        else:
-            type = "0"
-        cursor.execute("INSERT INTO Races VALUES (" + str(curr_event) + ", " + str(data_race[1]) + ", " + str(data_race[2]) + ", " + str(data_race[3]) + ", " + str(data_race[4]) + ", " + str(data_race[5]) + ", " + str(data_race[6]) + ", " + str(data_race[7]) + ", " + str(data_race[8]) + ", " + str(data_race[9]) + ", " + str(data_race[10]) + ", " + str(data_race[11]) + ", " + str(data_race[12]) + ", " + str(data_race[13]) + ", " + type + ")")
+        cursor.execute("INSERT INTO Races VALUES (" + str(curr_event) + ", " + str(data_race[1]) + ", " + str(data_race[2]) + ", " + str(data_race[3]) + ", " + str(data_race[4]) + ", " + str(data_race[5]) + ", " + str(data_race[6]) + ", " + str(data_race[7]) + ", " + str(data_race[8]) + ", " + str(data_race[9]) + ", " + str(data_race[10]) + ", " + str(data_race[11]) + ", " + str(data_race[12]) + ", " + str(data_race[13]) + ", " + formats[i] + ")")
         curr_event += 1  
 
 

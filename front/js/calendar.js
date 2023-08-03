@@ -58,20 +58,33 @@ function create_races() {
             let parent = event.currentTarget.parentNode.parentNode;
             let ATAInput = parent.querySelector(".ata-input")
             if (ATAInput.checked) ATAInput.checked = false
+            if(elem.checked) changeFormat(parent.parentNode, "1")
+            else changeFormat(parent.parentNode, "0")
         })
     })
 
     document.querySelectorAll(".ata-input").forEach(function (elem) {
         elem.addEventListener("click",function (event) {
             let parent = event.currentTarget.parentNode.parentNode;
-            let ATAInput = parent.querySelector(".sprint-input")
-            if (ATAInput.checked) ATAInput.checked = false
+            let SprintInput = parent.querySelector(".sprint-input")
+            if (SprintInput.checked) SprintInput.checked = false
+            if(elem.checked) changeFormat(parent.parentNode, "2")
+            else changeFormat(parent.parentNode, "0")
         })
 
     })
 }
 
-
+function changeFormat(div, format){
+    let lastChar = div.dataset.code.charAt(div.dataset.code.length - 1)
+    if(/\d/.test(lastChar)){
+        div.dataset.code = div.dataset.code.slice(0, -1) + format
+    }
+    else{
+        div.dataset.code = div.dataset.code + format
+    }
+    
+}
 
 
 
