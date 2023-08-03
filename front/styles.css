@@ -313,6 +313,37 @@ body {
   background-color: #0d5f0d !important;
 }
 
+.main-calendar-section{
+  margin-left: 1.5rem;
+  border: 1px solid #797599;
+  color: white;
+  min-height: 660px;
+  max-height: 660px;
+  overflow-y: auto;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.race-calendar {
+  background-color: #3f3c57;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 8px;
+  margin: 10px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 22px;
+}
+
+.flag{
+  max-width: 120px;
+  max-height: 60px;
+  border-radius: 10px;
+}
+
 
 
 .main-editStats-section {
