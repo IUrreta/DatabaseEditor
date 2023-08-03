@@ -1,8 +1,10 @@
-let codes_dict = {"bah": "../assets/flags/bahrain.png", "sau": "../assets/flags/saudi.jpg", "aus": "../assets/flags/australia.png", "aze": "../assets/flags/azerbaiyan.png",
-"mia": "../assets/flags/usa.png", "imo": "../assets/flags/italy.png", "mon" : "../assets/flags/monaco.png", "spa": "../assets/flags/spain.png", "can": "../assets/flags/canada.png",
-"aut" : "../assets/flags/austria.png", "gbr" : "../assets/flags/gbr.png", "hun" : "../assets/flags/hungry.png", "bel": "../assets/flags/balgium.png", "ned" : "../assets/flags/ned.png",
-"ita": "../assets/flags/italy.png", "sgp": "../assets/flags/singapore.png", "qat": "../assets/flags/qatar.png", "usa": "../assets/flags/usa.png", "mex" : "../assets/flags/mexico.png",
-"bra": "../assets/flags/brazil.png", "veg": "../assets/flags/usa.png", "uae": "../assets/flags/uae.png"}
+let codes_dict = {
+    "bah": "../assets/flags/bahrain.png","sau": "../assets/flags/saudi.jpg","aus": "../assets/flags/australia.png","aze": "../assets/flags/azerbaiyan.png",
+    "mia": "../assets/flags/usa.png","imo": "../assets/flags/italy.png","mon": "../assets/flags/monaco.png","spa": "../assets/flags/spain.png","can": "../assets/flags/canada.png",
+    "aut": "../assets/flags/austria.png","gbr": "../assets/flags/gbr.png","hun": "../assets/flags/hungry.png","bel": "../assets/flags/balgium.png","ned": "../assets/flags/ned.png",
+    "ita": "../assets/flags/italy.png","sgp": "../assets/flags/singapore.png","qat": "../assets/flags/qatar.png","usa": "../assets/flags/usa.png","mex": "../assets/flags/mexico.png",
+    "bra": "../assets/flags/brazil.png","veg": "../assets/flags/usa.png","uae": "../assets/flags/uae.png"
+}
 
 function reubicate(div0,div1,beforeAfter) {
     console.log(div0,div1)
@@ -19,38 +21,59 @@ function reubicate(div0,div1,beforeAfter) {
 
 }
 
-function create_races(){
+function create_races() {
+    document.querySelector('.main-calendar-section').innerHTML = ""
     for (let dataCode of Object.keys(codes_dict)) {
         let imageUrl = codes_dict[dataCode];
-      
+
         let div = document.createElement('div');
         div.classList.add('race-calendar');
-        div.setAttribute('data-code', dataCode);
-      
+        div.setAttribute('data-code',dataCode);
+
         let upperDiv = document.createElement('div');
-        upperDiv.classList.add('upper-race', 'bold-font');
+        upperDiv.classList.add('upper-race','bold-font');
         upperDiv.textContent = dataCode.toUpperCase();
-        
+
         const img = document.createElement('img');
         img.src = imageUrl;
         img.classList.add('flag');
-        
+
         upperDiv.appendChild(img);
-      
+
         const lowerDiv = document.createElement('div');
         lowerDiv.classList.add('lower-race');
 
-        lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle' type='checkbox' role='switch' id='autoContractToggle'><label class='form-check-label'>Sprint weekend</label></div><div class='form-check form-switch'><input class='form-check-input custom-toggle' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>"
+        lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint weekend</label></div><div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>"
         div.appendChild(upperDiv);
         div.appendChild(lowerDiv);
 
         document.querySelector('.main-calendar-section').appendChild(div)
 
-      
+
         // Aquí puedes agregar el div creado al DOM como lo desees
         // Ejemplo: document.body.appendChild(div);
-      }
+    }
+    document.querySelectorAll(".sprint-input").forEach(function (elem) {
+        elem.addEventListener("click",function (event) {
+            let parent = event.currentTarget.parentNode.parentNode;
+            let ATAInput = parent.querySelector(".ata-input")
+            if (ATAInput.checked) ATAInput.checked = false
+        })
+    })
+
+    document.querySelectorAll(".ata-input").forEach(function (elem) {
+        elem.addEventListener("click",function (event) {
+            let parent = event.currentTarget.parentNode.parentNode;
+            let ATAInput = parent.querySelector(".sprint-input")
+            if (ATAInput.checked) ATAInput.checked = false
+        })
+
+    })
 }
+
+
+
+
 
 document.getElementById("confirmCalendar").addEventListener("click",function () {
     let dataCodesString = '';
