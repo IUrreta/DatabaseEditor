@@ -88,15 +88,22 @@ function changeFormat(div, format){
     
 }
 
-document.getElementById("deleteTracks").addEventListener("click", function(){
+document.getElementById("deleteTracks").addEventListener("click", function(btn){
+    console.log(btn)
     if(deleting){
         document.querySelectorAll(".delete-div").forEach(function(elem){
             elem.parentNode.removeChild(elem)
+        })
+        this.className = "btn custom-delete"
+        document.querySelectorAll(".race-calendar").forEach(function(elem){
+            elem.classList = "race-calendar";
+
         })
 
     }
     else{
         document.querySelectorAll(".race-calendar").forEach(function(elem){
+            elem.classList = "race-calendar deleting";
             let div = document.createElement('div');
             div.classList.add('delete-div');
             let divText = document.createElement('div');
@@ -104,8 +111,13 @@ document.getElementById("deleteTracks").addEventListener("click", function(){
             div.appendChild(divText);
             console.log(elem.firstChild);
             elem.insertBefore(div, elem.firstChild);
+            divText.addEventListener("click", function(){
+                let race = divText.parentNode.parentNode
+                divText.parentNode.parentNode.parentNode.removeChild(race)
+            })
 
         })
+        this.className = "btn custom-delete delete-mode"
 
     }
 

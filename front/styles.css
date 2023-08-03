@@ -313,6 +313,37 @@ body {
   background-color: #0d5f0d !important;
 }
 
+.custom-delete {
+  width: 160px;
+  border: 2.5px solid transparent !important;
+  border-radius: 10px !important;
+  color: white !important;
+  background-color: #797599 !important;
+  transition: border-color 0.5s, background-color 0.5s !important;
+  display: flex;
+  justify-content: center;
+
+}
+
+.delete-mode{
+  background-color: #9c1919 !important;
+  border-color: #fc5c5c !important;
+  transition: border-color 0.5s;
+}
+
+.custom-delete:hover {
+  background-color: #9c1919 !important;
+  border-color: #fc5c5c !important;
+}
+
+.custom-delete:active {
+  background-color: #5f0d0d !important;
+}
+
+.delete-mode:hover{
+  border-color: white !important;
+}
+
 .main-calendar-section {
   margin-left: 1.5rem;
   border: 1px solid #797599;
@@ -349,10 +380,21 @@ body {
   margin: 10px;
   color: white;
   display: flex;
+  cursor: grab !important;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
+  max-height: 112px;
+  transition: border-color 0.5s;
 
+}
+
+.race-calendar:hover{
+  border-color: white !important;
+}
+
+.deleting:hover{
+  border: 2px solid transparent !important;
 }
 
 .delete-div {
@@ -366,7 +408,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 2px solid transparent;
+  border: 2.5px solid transparent;
   border-radius: 10px;
   color: white;
   transition: color 0.5s, border-color 0.5s;
