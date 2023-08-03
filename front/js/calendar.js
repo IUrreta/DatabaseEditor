@@ -1,9 +1,9 @@
 let codes_dict = {
-    "bah": "../assets/flags/bahrain.png","sau": "../assets/flags/saudi.jpg","aus": "../assets/flags/australia.png","aze": "../assets/flags/azerbaiyan.png",
-    "mia": "../assets/flags/usa.png","imo": "../assets/flags/italy.png","mon": "../assets/flags/monaco.png","spa": "../assets/flags/spain.png","can": "../assets/flags/canada.png",
-    "aut": "../assets/flags/austria.png","gbr": "../assets/flags/gbr.png","hun": "../assets/flags/hungry.png","bel": "../assets/flags/balgium.png","ned": "../assets/flags/ned.png",
-    "ita": "../assets/flags/italy.png","sgp": "../assets/flags/singapore.png","qat": "../assets/flags/qatar.png","usa": "../assets/flags/usa.png","mex": "../assets/flags/mexico.png",
-    "bra": "../assets/flags/brazil.png","veg": "../assets/flags/usa.png","uae": "../assets/flags/uae.png"
+    "bah0": "../assets/flags/bahrain.png","sau0": "../assets/flags/saudi.jpg","aus0": "../assets/flags/australia.png","aze0": "../assets/flags/azerbaiyan.png",
+    "mia0": "../assets/flags/usa.png","imo0": "../assets/flags/italy.png","mon0": "../assets/flags/monaco.png","spa0": "../assets/flags/spain.png","can0": "../assets/flags/canada.png",
+    "aut0": "../assets/flags/austria.png","gbr0": "../assets/flags/gbr.png","hun0": "../assets/flags/hungry.png","bel0": "../assets/flags/balgium.png","ned0": "../assets/flags/ned.png",
+    "ita0": "../assets/flags/italy.png","sgp0": "../assets/flags/singapore.png","qat0": "../assets/flags/qatar.png","usa0": "../assets/flags/usa.png","mex0": "../assets/flags/mexico.png",
+    "bra0": "../assets/flags/brazil.png","veg0": "../assets/flags/usa.png","uae0": "../assets/flags/uae.png"
 }
 
 function reubicate(div0,div1,beforeAfter) {
