@@ -6,6 +6,8 @@ let codes_dict = {
     "bra0": "../assets/flags/brazil.png","veg0": "../assets/flags/usa.png","uae0": "../assets/flags/uae.png"
 }
 
+let deleting = false;
+
 function reubicate(div0,div1,beforeAfter) {
     console.log(div0,div1)
     const parentDiv = document.querySelector('.main-calendar-section');
@@ -32,7 +34,7 @@ function create_races() {
 
         let upperDiv = document.createElement('div');
         upperDiv.classList.add('upper-race','bold-font');
-        upperDiv.textContent = dataCode.toUpperCase();
+        upperDiv.textContent = dataCode.slice(0, -1).toUpperCase();
 
         const img = document.createElement('img');
         img.src = imageUrl;
@@ -85,6 +87,30 @@ function changeFormat(div, format){
     }
     
 }
+
+document.getElementById("deleteTracks").addEventListener("click", function(){
+    if(deleting){
+        document.querySelectorAll(".delete-div").forEach(function(elem){
+            elem.parentNode.removeChild(elem)
+        })
+
+    }
+    else{
+        document.querySelectorAll(".race-calendar").forEach(function(elem){
+            let div = document.createElement('div');
+            div.classList.add('delete-div');
+            let divText = document.createElement('div');
+            divText.innerHTML = "Delete";
+            div.appendChild(divText);
+            console.log(elem.firstChild);
+            elem.insertBefore(div, elem.firstChild);
+
+        })
+
+    }
+
+    deleting = !deleting
+})
 
 
 

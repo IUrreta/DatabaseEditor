@@ -337,9 +337,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-evenly;
 }
 
 .race-calendar {
+  position: relative;
   background-color: #3f3c57;
   border: 2px solid transparent;
   border-radius: 10px;
@@ -352,6 +354,31 @@ body {
   justify-content: space-around;
 
 }
+
+.delete-div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(128, 128, 128, 0.829);
+  z-index: 9998;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  color: white;
+  transition: color 0.5s, border-color 0.5s;
+  cursor: pointer;
+}
+
+.delete-div:hover{
+  color: red;
+  border-color: red;
+}
+
+
 
 .upper-race {
   font-size: 22px;

@@ -81,9 +81,13 @@ async def handle_command(message):
         await send_message_to_client(info_json)
 
     elif type=="calendar":
-        print(message["calendarCodes"])
         run_editCalendar(message["calendarCodes"])
         process_repack("../result", path)
+        argument = type
+        info = []
+        info.insert(0, "Succesfully edited the calendar")
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()

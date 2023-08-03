@@ -20,14 +20,12 @@ def run_script(option=""):
     for race in races:
         format = race[-1]
         race_code = race[:-1]
-        print(race_code, format)
         if race_code in races_map:
-            track_ids.append(race_code)
+            track_ids.append(str(races_map[race_code]))
             formats.append(format)
 
     print(track_ids)
     print(formats)
-
  
 
     
@@ -35,9 +33,14 @@ def run_script(option=""):
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
     season_events = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
 
+    print(season_events)
+
     season_first_event = season_events[0][0]
     season_last_event = season_events[-1][0]
     curr_event = season_last_event + 1
+
+
+
 
     #Inserting new race calendar
     for i in range (len(track_ids)):
@@ -50,6 +53,7 @@ def run_script(option=""):
     race_blanks = 22 - len(track_ids)
     random_blanks = []
     race_cont = 0
+
 
     #Random race days that will no longer host a GP
     for i in range (0, race_blanks):
