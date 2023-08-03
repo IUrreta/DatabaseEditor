@@ -4,10 +4,10 @@ import random
 
 
 def run_script(option=""):
-    conn = sqlite3.connect("scripts/result/main.db")
+    conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
     
-    default_tracks = [2, 1, 11, 24, 22, 5, 6, 4, 7, 10, 9, 8, 12, 13, 14, 15, 17, 19, 18, 20, 21, 23]
+    default_tracks = [2, 1, 11, 24, 22, 5, 6, 4, 7, 10, 9, 12, 13, 14, 15, 17, 19, 18, 20, 21, 23, 25, 26]
     track_ids = []
 
     calendar = option.lower()
@@ -28,7 +28,7 @@ def run_script(option=""):
             track_ids.insert(i, 5)
         elif (races[i]) == "mon":
             track_ids.insert(i, 6)
-        elif (races[i]) == "bak":
+        elif (races[i]) == "aze":
             track_ids.insert(i, 4)
         elif (races[i]) == "can":
             track_ids.insert(i, 7)
@@ -44,7 +44,7 @@ def run_script(option=""):
             track_ids.insert(i, 13)
         elif (races[i]) == "ita":
             track_ids.insert(i, 14)
-        elif (races[i]) == "sin":
+        elif (races[i]) == "sgp":
             track_ids.insert(i, 15)
         elif (races[i]) == "jap":
             track_ids.insert(i, 17)
@@ -57,7 +57,11 @@ def run_script(option=""):
         elif (races[i]) == "uae":
             track_ids.insert(i, 21)  
         elif (races[i]) == "ned":
-            track_ids.insert(i, 23)  
+            track_ids.insert(i, 23)
+        elif (races[i]) == "veg":
+            track_ids.insert(i, 25)  
+        elif (races[i]) == "qat":
+            track_ids.insert(i, 26)    
     
     # Getting all the current season races
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
@@ -70,7 +74,7 @@ def run_script(option=""):
     #Inserting new race calendar
     for i in range (len(track_ids)):
         data_race = cursor.execute("SELECT * FROM Races WHERE TrackID = "+ str(track_ids[i]) + " AND SeasonID = " + str(day_season[1])).fetchone()
-        cursor.execute("INSERT INTO Races VALUES (" + str(curr_event) + ", " + str(data_race[1]) + ", " + str(data_race[2]) + ", " + str(data_race[3]) + ", " + str(data_race[4]) + ", " + str(data_race[5]) + ", " + str(data_race[6]) + ", " + str(data_race[7]) + ", " + str(data_race[8]) + ", " + str(data_race[9]) + ", " + str(data_race[10]) + ", " + str(data_race[11]) + ", " + str(data_race[12]) + ", " + str(data_race[13]) + ")")
+        cursor.execute("INSERT INTO Races VALUES (" + str(curr_event) + ", " + str(data_race[1]) + ", " + str(data_race[2]) + ", " + str(data_race[3]) + ", " + str(data_race[4]) + ", " + str(data_race[5]) + ", " + str(data_race[6]) + ", " + str(data_race[7]) + ", " + str(data_race[8]) + ", " + str(data_race[9]) + ", " + str(data_race[10]) + ", " + str(data_race[11]) + ", " + str(data_race[12]) + ", " + str(data_race[13]) + ", 0)")
         curr_event += 1  
 
 

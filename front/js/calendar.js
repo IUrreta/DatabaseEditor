@@ -1,5 +1,5 @@
 function reubicate(div0,div1,beforeAfter) {
-    console.log(div0, div1)
+    console.log(div0,div1)
     const parentDiv = document.querySelector('.main-calendar-section');
     parentDiv.removeChild(div0)
 
@@ -12,6 +12,26 @@ function reubicate(div0,div1,beforeAfter) {
     }
 
 }
+
+document.getElementById("confirmCalendar").addEventListener("click",function () {
+    let dataCodesString = '';
+    let children = document.querySelector('.main-calendar-section').children;
+
+    Array.from(children).forEach((child) => {
+
+        dataCodesString += child.dataset.code + ' ';
+
+    });
+
+
+    dataCodesString = dataCodesString.trim();
+    console.log(dataCodesString)
+    let dataCalendar = {
+        command: "calendar",
+        calendarCodes: dataCodesString
+    }
+    socket.send(JSON.stringify(dataCalendar))
+})
 
 interact('.race-calendar').draggable({
     inertia: true,
@@ -48,10 +68,10 @@ interact('.race-calendar').draggable({
                         console.log(element)
                         if (event.clientX >= centerHorizontal) {
                             console.log('Está en la mitad derecha del div');
-                            reubicate(target, element, "after")
+                            reubicate(target,element,"after")
                         } else {
                             console.log('Está en la mitad izquierda del div');
-                            reubicate(target, element, "before")
+                            reubicate(target,element,"before")
                         }
 
                     }

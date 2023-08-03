@@ -8,6 +8,7 @@ from datetime import datetime
 from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script as run_trasnsfer
 from scripts.edit_stats_23 import run_script as run_editStats
+from scripts.custom_calendar_23 import run_script as run_editCalendar
 
 client = None
 path = None
@@ -78,6 +79,11 @@ async def handle_command(message):
         info.insert(0, "Succesfully edited " + message["driver"] + "'s stats")
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
+
+    elif type=="calendar":
+        print(message["calendarCodes"])
+        run_editCalendar(message["calendarCodes"])
+        process_repack("../result", path)
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()
