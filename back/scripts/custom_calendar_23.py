@@ -24,7 +24,7 @@ def run_script(option=""):
             track_ids.insert(i, 24)
         elif (races[i]) == "mia":
             track_ids.insert(i, 22)
-        elif (races[i]) == "bar":
+        elif (races[i]) == "spa":
             track_ids.insert(i, 5)
         elif (races[i]) == "mon":
             track_ids.insert(i, 6)
@@ -74,7 +74,13 @@ def run_script(option=""):
     #Inserting new race calendar
     for i in range (len(track_ids)):
         data_race = cursor.execute("SELECT * FROM Races WHERE TrackID = "+ str(track_ids[i]) + " AND SeasonID = " + str(day_season[1])).fetchone()
-        cursor.execute("INSERT INTO Races VALUES (" + str(curr_event) + ", " + str(data_race[1]) + ", " + str(data_race[2]) + ", " + str(data_race[3]) + ", " + str(data_race[4]) + ", " + str(data_race[5]) + ", " + str(data_race[6]) + ", " + str(data_race[7]) + ", " + str(data_race[8]) + ", " + str(data_race[9]) + ", " + str(data_race[10]) + ", " + str(data_race[11]) + ", " + str(data_race[12]) + ", " + str(data_race[13]) + ", 0)")
+        if(str(data_race[3]) == "4" or str(data_race[3]) == "9" or str(data_race[3]) == "13" or str(data_race[3]) == "26" or str(data_race[3]) == "19" or str(data_race[3]) == "20" or str(data_race[3]) == "6"):
+            type = "1"
+        elif(str(data_race[3]) == "24" or str(data_race[3]) == "12"):
+            type = "2"
+        else:
+            type = "0"
+        cursor.execute("INSERT INTO Races VALUES (" + str(curr_event) + ", " + str(data_race[1]) + ", " + str(data_race[2]) + ", " + str(data_race[3]) + ", " + str(data_race[4]) + ", " + str(data_race[5]) + ", " + str(data_race[6]) + ", " + str(data_race[7]) + ", " + str(data_race[8]) + ", " + str(data_race[9]) + ", " + str(data_race[10]) + ", " + str(data_race[11]) + ", " + str(data_race[12]) + ", " + str(data_race[13]) + ", " + type + ")")
         curr_event += 1  
 
 

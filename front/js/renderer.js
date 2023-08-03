@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 removeStatsDrivers()
                 place_drivers(message.slice(1))
                 place_drivers_editStats(message.slice(1))
+                create_races()
             }
             update_notifications(message[0], false)
         }
