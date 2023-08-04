@@ -286,7 +286,7 @@ def run_script(option=""):
 
 def get_tier(driverID):
 
-    conn = sqlite3.connect("scripts/result/main.db")
+    conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
 
     driver_stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(driverID[0])).fetchall()
@@ -304,6 +304,9 @@ def get_tier(driverID):
     elif(rating >= 81): tier = 2
     elif(rating >= 77): tier = 3
     else: tier = 4
+
+    conn.commit()
+    conn.close()
     return tier
 
 def get_driver_id(name):

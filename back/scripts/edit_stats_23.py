@@ -12,7 +12,7 @@ def run_script(option=""):
     driver_id = (params[0],)
 
     cursor.execute("UPDATE Staff_performanceStats SET Val = CASE StatID WHEN 2 THEN " + str(params[1]) + " WHEN 3 THEN " + params[2] + " WHEN 4 THEN " + params[3] + " WHEN 5 THEN " + params[4] + " WHEN 6 THEN " + params[5] + " WHEN 7 THEN " + params[6] + " WHEN 8 THEN " + params[7] + " WHEN 9 THEN " + params[8] + " WHEN 10 THEN " + params[9] + " ELSE Val END WHERE StaffID = " + str(driver_id[0]))
-
+    cursor.execute("UPDATE Staff_DriverData SET Improvability = " + str(params[10]) + ", Aggression =  " + str(params[11]) + " WHERE StaffID = " + str(driver_id[0]))
     
     conn.commit()
     conn.close()
