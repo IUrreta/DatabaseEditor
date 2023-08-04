@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (message[0] === "Connected Succesfully") {
                 load_saves(message)
                 clearTimeout(connectionTimeout);
+                update_notifications(message[0], false)
             }
             else if (message[0] === "Save Loaded Succesfully") {
                 remove_drivers()
@@ -59,11 +60,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 place_drivers(message.slice(1))
                 place_drivers_editStats(message.slice(1))
                 create_races()
+                update_notifications(message[0], false)
             }
-            update_notifications(message[0], false)
+            else if (message[0] === "Calendar fetched") {
+                manage_calendarDiv(message.slice(1)[0])
+            }
+                
+            
         }
 
     };
+
+    function manage_calendarDiv(info){
+        if(info[0] === "1"){
+            document.getElementById("calendarBlockDiv").className = "blocking-div d-none"
+
+        }
+        else if(info[0] === "0"){
+            document.getElementById("calendarBlockDiv").className = "blocking-div"
+        }
+    }
 
     function update_notifications(noti, error) {
         let newNoti;

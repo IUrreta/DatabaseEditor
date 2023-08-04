@@ -39,10 +39,14 @@ async def handle_command(message):
         process_unpack(path, "../result")
         conn = sqlite3.connect("../result/main.db")
         cursor = conn.cursor()
-        drivers = fetch_drivers()
+        drivers = fetch_info()
         drivers.insert(0, "Save Loaded Succesfully")
-        data_json = json.dumps(drivers)
-        await send_message_to_client(data_json)
+        data_json_drivers = json.dumps(drivers)
+        await send_message_to_client(data_json_drivers)
+        allowCalendar = [tuple(check_claendar())]
+        allowCalendar.insert(0, "Calendar fetched")
+        data_json_calendar = json.dumps(allowCalendar)
+        await send_message_to_client(data_json_calendar)
 
     elif type =="hire":
         argument = "hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
@@ -128,15 +132,31 @@ async def start_server():
 async def main():
     await start_server()
 
-def fetch_drivers():
+def fetch_info():
 
     drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID WHERE ContractType = 0 OR ContractType IS NULL;').fetchall()
     formatted_tuples = []
     for tupla in drivers:
         result = format_names_get_stats(tupla)
         formatted_tuples.append(result)
+
+    allowCalendar = check_claendar()
     
     return formatted_tuples
+
+def check_claendar():
+    default_tracks = [2, 1, 11, 24, 22, 5, 6, 4, 7, 10, 9, 12, 13, 14, 15, 17, 19, 18, 20, 21, 23, 25, 26]
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
+    tuple_numbers = {num for tpl in season_events for num in tpl}
+
+    are_all_numbers_present = all(num in tuple_numbers for num in default_tracks)
+
+    # Definir la variable resultante
+    resultCalendar = "1" if are_all_numbers_present else "0"
+
+    return resultCalendar
+    
 
 def format_names_get_stats(name):
     nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'

@@ -648,6 +648,10 @@ body {
   color: white;
 }
 
+#calendarBlockDiv{
+  background-color: rgba(128, 128, 128, 0.733);
+}
+
 .normal-driver {
   background-color: #3f3c57;
   cursor: pointer;
