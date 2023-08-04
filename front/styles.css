@@ -285,11 +285,11 @@ body::-webkit-scrollbar-thumb {
 }
 
 .main-columns-drag-section {
-  margin-left: 5%;
+  margin-left: 14px;
   margin-right: 5%;
   border: 1px solid #797599;
   color: white;
-  min-height: 600px;
+  min-height: 660px;
   max-height: 660px;
   overflow-y: auto;
   border-radius: 10px;
@@ -399,7 +399,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .main-calendar-section {
-  margin-left: 1.5rem;
+  margin-left: 14px;
   border: 1px solid #797599;
   color: white;
   min-height: 660px;
@@ -412,7 +412,7 @@ body::-webkit-scrollbar-thumb {
 
 .main-options-section {
   margin-left: 1.5rem;
-  margin-right: 1.5rem;
+  margin-right: 14px;
   border: 1px solid #797599;
   color: white;
   min-height: 660px;
@@ -528,12 +528,12 @@ body::-webkit-scrollbar-thumb {
 }
 
 #fulldriverlist {
-  margin-left: 5%;
+  margin-left: 14px;
   margin-right: 5%;
 }
 
 #driverstats {
-  margin-right: 2%;
+  margin-right: 14px;
 }
 
 .main-columns-drag-section::-webkit-scrollbar {
@@ -597,7 +597,7 @@ body::-webkit-scrollbar-thumb {
   grid-template-columns: repeat(2, minmax(400px, 1fr));
   overflow-y: hidden;
   margin-left: 0%;
-  margin-right: 2%;
+  margin-right: 14px;
 }
 
 .contract-details {

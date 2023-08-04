@@ -2,14 +2,14 @@ let codes_dict = {
     "bah0": "../assets/flags/bahrain.png","sau0": "../assets/flags/saudi.jpg","aus0": "../assets/flags/australia.png","aze0": "../assets/flags/azerbaiyan.png",
     "mia0": "../assets/flags/usa.png","imo0": "../assets/flags/italy.png","mon0": "../assets/flags/monaco.png","spa0": "../assets/flags/spain.png","can0": "../assets/flags/canada.png",
     "aut0": "../assets/flags/austria.png","gbr0": "../assets/flags/gbr.png","hun0": "../assets/flags/hungry.png","bel0": "../assets/flags/balgium.png","ned0": "../assets/flags/ned.png",
-    "ita0": "../assets/flags/italy.png","sgp0": "../assets/flags/singapore.png","qat0": "../assets/flags/qatar.png","usa0": "../assets/flags/usa.png","mex0": "../assets/flags/mexico.png",
+    "ita0": "../assets/flags/italy.png","jap0": "../assets/flags/japan.png", "sgp0": "../assets/flags/singapore.png","qat0": "../assets/flags/qatar.png","usa0": "../assets/flags/usa.png","mex0": "../assets/flags/mexico.png",
     "bra0": "../assets/flags/brazil.png","veg0": "../assets/flags/usa.png","uae0": "../assets/flags/uae.png"
 }
 let countries_dict = {
     "bah0": "Bahrain", "sau0": "Saudi Arabia", "aus0": "Australia", "aze0": "Azerbaijan",
     "mia0": "Miami", "imo0": "Imola", "mon0": "Monaco", "spa0": "Spain", "can0": "Canada",
     "aut0": "Austria", "gbr0": "United Kingdom", "hun0": "Hungary", "bel0": "Belgium", "ned0": "Netherlands",
-    "ita0": "Italy", "sgp0": "Singapore", "qat0": "Qatar", "usa0": "USA", "mex0": "Mexico",
+    "ita0": "Italy", "sgp0": "Singapore", "jap0": "Japan", "qat0": "Qatar", "usa0": "USA", "mex0": "Mexico",
     "bra0": "Brazil", "veg0": "Vegas", "uae0": "Abu Dhbai"
 };
 
@@ -122,7 +122,7 @@ function load_addRaces(){
 function listenerRaces(){
     document.querySelectorAll('#addTrackMenu a').forEach(item => {
         item.addEventListener("click", function(){
-            if(document.querySelector(".main-calendar-section").childElementCount < 22){
+            if(document.querySelector(".main-calendar-section").childElementCount < 23){
                 addRace(item.dataset.code)
             }
         })

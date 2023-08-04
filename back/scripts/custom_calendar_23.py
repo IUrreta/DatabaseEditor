@@ -40,7 +40,7 @@ def run_script(option=""):
 
 
     curr_event = season_last_event + 1
-    race_blanks = 22 - len(track_ids)
+    race_blanks = 23 - len(track_ids)
     random_blanks = []
     race_cont = 0
 
