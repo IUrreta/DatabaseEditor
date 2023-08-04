@@ -14,6 +14,7 @@ let countries_dict = {
 };
 
 let deleting = false;
+let deleted = false;
 
 function reubicate(div0,div1,beforeAfter) {
     const parentDiv = document.querySelector('.main-calendar-section');
@@ -152,8 +153,9 @@ document.getElementById("deleteTracks").addEventListener("click", function(btn){
             div.appendChild(divText);
             elem.insertBefore(div, elem.firstChild);
             divText.addEventListener("click", function(){
-                let race = divText.parentNode.parentNode
-                divText.parentNode.parentNode.parentNode.removeChild(race)
+                let race = divText.parentNode.parentNode;
+                divText.parentNode.parentNode.parentNode.removeChild(race);
+                deleted = true;
             })
 
         })
@@ -171,7 +173,6 @@ document.getElementById("confirmCalendar").addEventListener("click",function () 
     let children = document.querySelector('.main-calendar-section').children;
 
     Array.from(children).forEach((child) => {
-
         dataCodesString += child.dataset.code + ' ';
 
     });
@@ -183,6 +184,12 @@ document.getElementById("confirmCalendar").addEventListener("click",function () 
         calendarCodes: dataCodesString
     }
     socket.send(JSON.stringify(dataCalendar))
+
+    console.log(deleted)
+
+    if(deleted){
+        document.getElementById("addRaceButton").disabled = true;
+    }
 })
 
 interact('.race-calendar').draggable({
