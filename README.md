@@ -1,10 +1,9 @@
 # Database Editor for F1 Manager 23 #
-Friendly to use tool for editing your save files from F1 Manager 23. Supports driver transfers for now, but more options will be added in the future!
+Friendly to use tool for editing your save files from F1 Manager 23. Supports driver transfers, stat and calendar editing for now, but the tool is still in constant development!
 
-**PLEASE KEEP IN MIND**: This are the first few iterations and will only get better with time. It will get regular updates to support more functionallity, and very likely it will get 
-updates focusing on setting up if any issues come up
+**PLEASE KEEP IN MIND**: This are the first few iterations and will only get better with time. It will get regular updates to support more functionallity, and very likely it will get updates focusing on setting up if any issues come up
 
-If you have any issues feel free to open an Issue or message me in Discord @_n4x
+If you have any issues, I recommend first look at the Troubleshoot guide for the most common error: https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide. If this doesn't fix the error, you can open an Issue on GitHub
 
 ## What's the Database Editor? ##
 Basically it's just a friendly user interface that helps you make the modifications you wish for the databasde from your save file from F1 Manager 23
@@ -15,9 +14,11 @@ When I developed those scripts, more specifically the driver transfers script fo
 
 ### What can I actually edit with the Database Editor? ###
 
-As of today, the supported functionalities are making driver transfers and editing driver stats. Driver transfers include F1 official drivers, reserves, drivers from F2, F3, or even from their sofa if they have retired! Editing stats include any of the 9 stats that add up to calculate the overall rating of the driver. 
+As of today, the supported functionalities are making driver transfers, editing driver stats and customizing the race calendar. Driver transfers include F1 official drivers, reserves, drivers from F2, F3, or even from their sofa if they have retired! Editing stats include any of the 9 stats that add up to calculate the overall rating of the driver, plus their growth and aggression. 
 
-Don't worry if there has been driver changes in your save, or if any driver has gained or lost performance in any statistic. You'll be able to see those changes on the Database Editor.
+Don't worry if there has been driver changes in your save, or if any driver has gained or lost performance in any statistic. You'll be able to see those changes on the Database Editor. Just drag and drop the driver in a free space in any F1 team and you are done! No need to save changes for driver transfers. With the auto contract switch ON, the tool will automatically generate a contract for a driver when you move him into a new team, so you will not have to worry about it! (If you want to do it manually, just switch it off)
+
+As for the calendar customization, there is the possibility to shuffle the races however you please, just drag and drop them wherever you want to place them. There is also support to choose what weekends will have the Spint format, as well as the Alternative Tyre Allocation format (Q1 on hards, Q2 on mediums and Q3 on softs). There is a maximum of 22 races per seaso, although you can remove any track that you don't like and add a repeated one. **KEEP IN MIND**: Due to how the script works, once you have deleted **at least** one track and **hit Save Changes**, you will no longer have the chance of adding new races in that season. You will be able to reshuffle them if you prefer them in other specific order, but no more adding races. While you don't press the **Save Changes** button, you are free to edit the calendar to your liking. I suggest editing the calendar as soon as you start a new season, your save integrity will not be guaranteed if you do it mid-through.
 
 ## What do I need to use the Database Editor? ##
 You'll need to have installed on your computer 2 things: Python and NodeJS.
@@ -63,8 +64,12 @@ If, on the other hand, you just downloaded the zip with the files, it's the same
 
 ### Screenshots ###
 
-![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/617085b7-4823-495d-bdbd-75df04a57847)
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/a7c4acb2-5054-4b41-8ae6-4de8c2e87b7e)
 
-![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/16039739-bc40-481f-8371-efb9b4770778)
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/a8481cf2-e01a-4ac3-8239-9af8230337f6)
+
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/01d36c8c-f8ac-4d76-af38-188f2a94ef24)
+
+
 
 
