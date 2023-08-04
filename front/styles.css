@@ -1,4 +1,4 @@
-:root{
+:root {
   --bs-form-switch-bg: #ff0000 !important;
 }
 
@@ -23,6 +23,15 @@ body {
   overflow-x: hidden;
 }
 
+body::-webkit-scrollbar {
+  width: 6px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 6px;
+}
+
 .font {
   font-family: 'Formula1';
 }
@@ -44,18 +53,18 @@ body {
   font-size: 28px;
 }
 
-.trasnfer-top-panel{
+.trasnfer-top-panel {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.transfer-title{
+.transfer-title {
   flex: 1;
   text-align: center;
 }
 
-.auto-contract{
+.auto-contract {
   color: white;
   font-size: 20px;
   padding-right: 2rem;
@@ -140,7 +149,7 @@ body {
   width: 71%;
 }
 
-.versionPanel{
+.versionPanel {
   position: fixed;
   top: 10px;
   left: 10px;
@@ -185,7 +194,7 @@ body {
 .main-panel {
   display: flex;
   position: relative;
-  min-height: 79vh;
+  min-height: 78vh;
 }
 
 .script-view {
@@ -204,7 +213,7 @@ body {
   margin-right: 20px;
 }
 
-.dropdown-menu{
+.dropdown-menu {
   z-index: 9999 !important;
 }
 
@@ -219,6 +228,8 @@ body {
   background-color: #797599;
   margin-bottom: 1%;
   border: 2px solid transparent;
+  border-radius: 10px !important;
+
 
 }
 
@@ -228,6 +239,49 @@ body {
 
 #dropdownButton:active {
   background-color: #1a1826;
+}
+
+.addTracks-button {
+  max-width: 210px;
+  margin-top: 0.6rem;
+  background-color: #797599 !important;
+  margin-bottom: 1%;
+  border: 2px solid transparent !important;
+  border-radius: 10px !important;
+  box-shadow: none;
+
+}
+
+.addTracks-button:hover {
+  border: 2px solid white !important;
+}
+
+.addTracks-button:active {
+  background-color: #1a1826;
+}
+
+#addTrackMenu{
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+#addTrackMenu::-webkit-scrollbar {
+  width: 4px;
+}
+
+#addTrackMenu::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px;
+}
+
+.menu-race{
+  max-width: 200px;
+}
+
+.menuFlag{
+  height: 10px;
+  width: 20px;
+  margin-left: 10px;
 }
 
 .main-columns-drag-section {
@@ -248,13 +302,13 @@ body {
   grid-template-columns: repeat(3, 0.33fr);
 }
 
-.extra-atributes{
+.extra-atributes {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
 }
 
-.bottom-panel{
+.bottom-panel {
   display: flex;
   flex-direction: row;
 }
@@ -296,10 +350,10 @@ body {
   color: white !important;
   background-color: #797599 !important;
   transition: border-color 0.5s, background-color 0.5s !important;
-  
+
 }
 
-.extra-inputs{
+.extra-inputs {
   margin-bottom: 20px !important;
   margin-top: 20px !important;
 }
@@ -311,6 +365,144 @@ body {
 
 .custom-confirm:active {
   background-color: #0d5f0d !important;
+}
+
+.custom-delete {
+  width: 160px;
+  border: 2.5px solid transparent !important;
+  border-radius: 10px !important;
+  color: white !important;
+  background-color: #797599 !important;
+  transition: border-color 0.5s, background-color 0.5s !important;
+  display: flex;
+  justify-content: center;
+
+}
+
+.delete-mode{
+  background-color: #9c1919 !important;
+  border-color: #fc5c5c !important;
+  transition: border-color 0.5s;
+}
+
+.custom-delete:hover {
+  background-color: #9c1919 !important;
+  border-color: #fc5c5c !important;
+}
+
+.custom-delete:active {
+  background-color: #5f0d0d !important;
+}
+
+.delete-mode:hover{
+  border-color: white !important;
+}
+
+.main-calendar-section {
+  margin-left: 1.5rem;
+  border: 1px solid #797599;
+  color: white;
+  min-height: 660px;
+  max-height: 660px;
+  overflow-y: auto;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.main-options-section {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+  border: 1px solid #797599;
+  color: white;
+  min-height: 660px;
+  max-height: 660px;
+  overflow-y: auto;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.save-calendar-section{
+  height: 530px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.option-buttons{
+  margin: 10px;
+  width: 210px !important;
+  height: 41px !important;
+  
+}
+
+.race-calendar {
+  position: relative;
+  background-color: #3f3c57;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 8px;
+  margin: 10px;
+  color: white;
+  display: flex;
+  cursor: grab !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  max-height: 112px;
+  transition: border-color 0.5s;
+
+}
+
+.race-calendar:hover{
+  border-color: white !important;
+}
+
+.deleting:hover{
+  border: 2px solid transparent !important;
+}
+
+.delete-div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(128, 128, 128, 0.829);
+  z-index: 9998;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2.5px solid transparent;
+  border-radius: 10px;
+  color: white;
+  transition: color 0.5s, border-color 0.5s;
+  cursor: pointer;
+}
+
+.delete-div:hover{
+  color: red;
+  border-color: red;
+}
+
+
+
+.upper-race {
+  font-size: 22px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.flag {
+  width: 65px;
+  height: 35px;
+  border-radius: 10px;
 }
 
 
@@ -365,22 +557,22 @@ body {
   color: #fdfdfd !important;
 }
 
-#F2pill{
+#F2pill {
   border: 2px solid transparent;
   transition: border-color 0.5s, background-color 0.5s;
 }
 
-#F2pill:hover{
+#F2pill:hover {
   border: 2px solid #38c8f0;
   background-color: #388cd5;
 }
 
-#F3pill{
+#F3pill {
   border: 2px solid transparent;
   transition: border-color 0.5s, background-color 0.5s;
 }
 
-#F3pill:hover{
+#F3pill:hover {
   border: 2px solid rgb(255, 72, 72);
   background-color: rgb(207, 46, 46);
 }
@@ -464,6 +656,10 @@ body {
   color: white;
 }
 
+#calendarBlockDiv{
+  background-color: rgba(128, 128, 128, 0.733);
+}
+
 .normal-driver {
   background-color: #3f3c57;
   cursor: pointer;
@@ -498,7 +694,7 @@ body {
 }
 
 .scriptPills:hover {
-  border-color:  white !important;
+  border-color: white !important;
   background-color: #58556c;
 }
 

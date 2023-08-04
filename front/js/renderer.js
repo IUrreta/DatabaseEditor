@@ -6,11 +6,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const driverTransferPill = document.getElementById("transferpill");
     const editStatsPill = document.getElementById("statspill");
+    const CalendarPill = document.getElementById("calendarpill");
 
     const driverTransferDiv = document.getElementById("driver_transfers");
     const editStatsDiv = document.getElementById("edit_stats");
+    const customCalendarDiv = document.getElementById("custom_calendar");
 
-    const scriptsArray = [driverTransferDiv, editStatsDiv]
+
+    const scriptsArray = [driverTransferDiv, editStatsDiv, customCalendarDiv]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -42,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // const mensaje = event.data;
         // console.log('Mensaje recibido: ' + event.data);
         let message = JSON.parse(event.data)
-        console.log(message)
         if(message[0] === "ERROR"){
             update_notifications(message[1], true)
         }
@@ -56,19 +58,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 removeStatsDrivers()
                 place_drivers(message.slice(1))
                 place_drivers_editStats(message.slice(1))
+                create_races()
             }
-            update_notifications(message[0], false)
+            else if (message[0] === "Calendar fetched") {
+                manage_calendarDiv(message.slice(1)[0])
+            }
+            if(message[0] !== "Calendar fetched") update_notifications(message[0], false) 
+            
         }
 
     };
+
+    function manage_calendarDiv(info){
+        if(info[0] === "1"){
+            document.getElementById("calendarBlockDiv").className = "blocking-div d-none"
+
+        }
+        else if(info[0] === "0"){
+            document.getElementById("calendarBlockDiv").className = "blocking-div"
+        }
+    }
 
     function update_notifications(noti, error) {
         let newNoti;
         newNoti = document.createElement('div');
         newNoti.className = 'notification';
         newNoti.textContent = noti;
-        console.log(noti)
-        console.log(error)
         if(error) newNoti.style.color = "red";
 
         notificationPanel.appendChild(newNoti);
@@ -129,14 +144,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     driverTransferPill.addEventListener("click", function () {
-        manageScripts("show", "hide")
+        manageScripts("show", "hide", "hide")
         scriptSelected = 1
         check_selected()
         
     })
 
     editStatsPill.addEventListener("click", function () {
-        manageScripts("hide", "show")
+        manageScripts("hide", "show", "hide")
+        scriptSelected = 1
+        check_selected()
+    })
+
+    CalendarPill.addEventListener("click", function () {
+        manageScripts("hide", "hide", "show")
         scriptSelected = 1
         check_selected()
     })

@@ -28,7 +28,7 @@
           <div>
             Valid until
             <div>
-              <input type="number" class="rounded-input" id="yearInput">
+              <input type="number" class="rounded-input" id="yearInput" placeholder="ex: 2028">
             </div>
           </div>
           <div>
@@ -96,6 +96,10 @@
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="statspill">Edit stats</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="calendarpill">Custom
+              calendar</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -111,7 +115,8 @@
         <div class="pb-3 ps-3" style="padding-top: 1.1rem;">
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link bold-font categoryPills scriptPills active" data-bs-toggle="pill" href="#" id="freepill">Free
+              <a class="nav-link bold-font categoryPills scriptPills active" data-bs-toggle="pill" href="#"
+                id="freepill">Free
                 drivers</a>
             </li>
             <li class="nav-item">
@@ -271,11 +276,11 @@
                 <div class="overall-holder bold-font" id="ovrholder"></div>
                 <div class="ovr bold-font">
                   OVR
-                </div> 
+                </div>
               </div>
-              
+
             </div>
-  
+
             <div class="main-panel-stats">
               <div class="one-stat-panel">
                 Cornering
@@ -314,7 +319,7 @@
                 <input type="number" class="custom-input-number">
               </div>
             </div>
-            
+
             <div class="bottom-panel">
               <div style="width: 33%;">
                 <div class="custom-hr"></div>
@@ -337,6 +342,41 @@
         </div>
       </div>
     </div>
+    <div class="script-view d-none" id="custom_calendar">
+      <div class="blocking-div d-none" id="calendarBlockDiv">
+        There is already a  modified calendar! Try again next season!
+      </div>
+      <div class="col-9">
+        <div class="title bold-font py-3">
+          New calendar
+        </div>
+        <div class="main-calendar-section" id="officialCalendarList">
+
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="title bold-font py-3">
+          Options
+        </div>
+        <div class="main-options-section">
+          <div class="option-buttons" >
+            <button type="button" class="btn btn-primary dropdown-toggle addTracks-button" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false" style="font-family: Formula1; width: 100%; height: 100%;" id = "addRaceButton">
+              Add race
+            </button>
+            <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
+
+            </ul>
+          </div>
+          <div class="btn custom-delete option-buttons" id="deleteTracks">Delete races</div>
+          <div class="save-calendar-section">
+            <div class="btn custom-confirm option-buttons" id="confirmCalendar">Save changes</div>
+          </div>
+          
+        </div>
+
+      </div>
+    </div>
   </div>
 
 
@@ -344,6 +384,7 @@
   <script src="./js/renderer.js"></script>
   <script src="./js/transfers.js"></script>
   <script src="./js/stats.js"></script>
+  <script src="./js/calendar.js"></script>
 </body>
 
 </html>
