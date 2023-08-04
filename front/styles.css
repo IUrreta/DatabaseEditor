@@ -21,7 +21,15 @@ body {
   background-color: #110f24 !important;
   max-height: 930px;
   overflow-x: hidden;
-  overflow-y: hidden;
+}
+
+body::-webkit-scrollbar {
+  width: 6px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 6px;
 }
 
 .font {
@@ -186,7 +194,7 @@ body {
 .main-panel {
   display: flex;
   position: relative;
-  min-height: 79vh;
+  min-height: 78vh;
 }
 
 .script-view {
