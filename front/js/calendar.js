@@ -5,11 +5,17 @@ let codes_dict = {
     "ita0": "../assets/flags/italy.png","sgp0": "../assets/flags/singapore.png","qat0": "../assets/flags/qatar.png","usa0": "../assets/flags/usa.png","mex0": "../assets/flags/mexico.png",
     "bra0": "../assets/flags/brazil.png","veg0": "../assets/flags/usa.png","uae0": "../assets/flags/uae.png"
 }
+let countries_dict = {
+    "bah0": "Bahrain", "sau0": "Saudi Arabia", "aus0": "Australia", "aze0": "Azerbaijan",
+    "mia0": "Miami", "imo0": "Imola", "mon0": "Monaco", "spa0": "Spain", "can0": "Canada",
+    "aut0": "Austria", "gbr0": "United Kingdom", "hun0": "Hungary", "bel0": "Belgium", "ned0": "Netherlands",
+    "ita0": "Italy", "sgp0": "Singapore", "qat0": "Qatar", "usa0": "USA", "mex0": "Mexico",
+    "bra0": "Brazil", "veg0": "Vegas", "uae0": "Abu Dhbai"
+};
 
 let deleting = false;
 
 function reubicate(div0,div1,beforeAfter) {
-    console.log(div0,div1)
     const parentDiv = document.querySelector('.main-calendar-section');
     parentDiv.removeChild(div0)
 
@@ -23,18 +29,16 @@ function reubicate(div0,div1,beforeAfter) {
 
 }
 
-function create_races() {
-    document.querySelector('.main-calendar-section').innerHTML = ""
-    for (let dataCode of Object.keys(codes_dict)) {
-        let imageUrl = codes_dict[dataCode];
+function addRace(code){
+    let imageUrl = codes_dict[code];
 
         let div = document.createElement('div');
         div.classList.add('race-calendar');
-        div.setAttribute('data-code',dataCode);
+        div.setAttribute('data-code',code);
 
         let upperDiv = document.createElement('div');
         upperDiv.classList.add('upper-race','bold-font');
-        upperDiv.textContent = dataCode.slice(0, -1).toUpperCase();
+        upperDiv.textContent = code.slice(0, -1).toUpperCase();
 
         const img = document.createElement('img');
         img.src = imageUrl;
@@ -45,36 +49,37 @@ function create_races() {
         const lowerDiv = document.createElement('div');
         lowerDiv.classList.add('lower-race');
 
-        lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint weekend</label></div><div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>"
+        lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint weekend</label></div><div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>";
+        let SprintInput = lowerDiv.querySelector(".sprint-input")
+        let ATAInput = lowerDiv.querySelector(".ata-input")
+        SprintInput.addEventListener("click", function(event){
+            if (ATAInput.checked) ATAInput.checked = false
+            if(SprintInput.checked) changeFormat(div, "1")
+            else changeFormat(div, "0")
+
+        })
+        ATAInput.addEventListener("click", function(event){
+            if (SprintInput.checked) SprintInput.checked = false
+            if(ATAInput.checked) changeFormat(div, "2")
+            else changeFormat(div, "0")
+
+        })
         div.appendChild(upperDiv);
         div.appendChild(lowerDiv);
 
         document.querySelector('.main-calendar-section').appendChild(div)
 
 
-        // Aquí puedes agregar el div creado al DOM como lo desees
-        // Ejemplo: document.body.appendChild(div);
+
+}
+
+function create_races() {
+    document.querySelector('.main-calendar-section').innerHTML = ""
+    for (let dataCode of Object.keys(codes_dict)) {
+        addRace(dataCode)
+
     }
-    document.querySelectorAll(".sprint-input").forEach(function (elem) {
-        elem.addEventListener("click",function (event) {
-            let parent = event.currentTarget.parentNode.parentNode;
-            let ATAInput = parent.querySelector(".ata-input")
-            if (ATAInput.checked) ATAInput.checked = false
-            if(elem.checked) changeFormat(parent.parentNode, "1")
-            else changeFormat(parent.parentNode, "0")
-        })
-    })
-
-    document.querySelectorAll(".ata-input").forEach(function (elem) {
-        elem.addEventListener("click",function (event) {
-            let parent = event.currentTarget.parentNode.parentNode;
-            let SprintInput = parent.querySelector(".sprint-input")
-            if (SprintInput.checked) SprintInput.checked = false
-            if(elem.checked) changeFormat(parent.parentNode, "2")
-            else changeFormat(parent.parentNode, "0")
-        })
-
-    })
+    load_addRaces()
 }
 
 function changeFormat(div, format){
@@ -88,8 +93,42 @@ function changeFormat(div, format){
     
 }
 
+function load_addRaces(){
+    for (let dataCode of Object.keys(codes_dict)) {
+        let elem = countries_dict[dataCode]
+        let li = document.createElement('li');
+        let a = document.createElement('a');
+        a.classList.add('dropdown-item');
+        a.classList.add('menu-race');
+        a.href = '#';
+        a.textContent = elem;
+        a.dataset.code = dataCode
+
+        let imageUrl = codes_dict[dataCode];
+        let img = document.createElement('img');
+        img.src = imageUrl;
+        img.classList.add('menuFlag');
+
+        a.appendChild(img)
+
+        li.appendChild(a);
+        document.getElementById("addTrackMenu").appendChild(li);
+
+    }
+    listenerRaces()
+}
+
+function listenerRaces(){
+    document.querySelectorAll('#addTrackMenu a').forEach(item => {
+        item.addEventListener("click", function(){
+            if(document.querySelector(".main-calendar-section").childElementCount < 22){
+                addRace(item.dataset.code)
+            }
+        })
+    })
+}
+
 document.getElementById("deleteTracks").addEventListener("click", function(btn){
-    console.log(btn)
     if(deleting){
         document.querySelectorAll(".delete-div").forEach(function(elem){
             elem.parentNode.removeChild(elem)
@@ -108,8 +147,9 @@ document.getElementById("deleteTracks").addEventListener("click", function(btn){
             div.classList.add('delete-div');
             let divText = document.createElement('div');
             divText.innerHTML = "Delete";
+            divText.className = "bold-font"
+            divText.style.fontSize = "18px"
             div.appendChild(divText);
-            console.log(elem.firstChild);
             elem.insertBefore(div, elem.firstChild);
             divText.addEventListener("click", function(){
                 let race = divText.parentNode.parentNode
@@ -138,7 +178,6 @@ document.getElementById("confirmCalendar").addEventListener("click",function () 
 
 
     dataCodesString = dataCodesString.trim();
-    console.log(dataCodesString)
     let dataCalendar = {
         command: "calendar",
         calendarCodes: dataCodesString
@@ -178,12 +217,9 @@ interact('.race-calendar').draggable({
                 if (target !== element) {
 
                     if (event.clientX >= eventRect.left && event.clientX <= eventRect.right && event.clientY >= eventRect.top && event.clientY <= eventRect.bottom) {
-                        console.log(element)
                         if (event.clientX >= centerHorizontal) {
-                            console.log('Está en la mitad derecha del div');
                             reubicate(target,element,"after")
                         } else {
-                            console.log('Está en la mitad izquierda del div');
                             reubicate(target,element,"before")
                         }
 

@@ -219,6 +219,8 @@ body {
   background-color: #797599;
   margin-bottom: 1%;
   border: 2px solid transparent;
+  border-radius: 10px !important;
+
 
 }
 
@@ -228,6 +230,49 @@ body {
 
 #dropdownButton:active {
   background-color: #1a1826;
+}
+
+.addTracks-button {
+  max-width: 210px;
+  margin-top: 0.6rem;
+  background-color: #797599 !important;
+  margin-bottom: 1%;
+  border: 2px solid transparent !important;
+  border-radius: 10px !important;
+  box-shadow: none;
+
+}
+
+.addTracks-button:hover {
+  border: 2px solid white !important;
+}
+
+.addTracks-button:active {
+  background-color: #1a1826;
+}
+
+#addTrackMenu{
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+#addTrackMenu::-webkit-scrollbar {
+  width: 4px;
+}
+
+#addTrackMenu::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px;
+}
+
+.menu-race{
+  max-width: 200px;
+}
+
+.menuFlag{
+  height: 10px;
+  width: 20px;
+  margin-left: 10px;
 }
 
 .main-columns-drag-section {

@@ -24,23 +24,13 @@ def run_script(option=""):
             track_ids.append(str(races_map[race_code]))
             formats.append(format)
 
-    print(track_ids)
-    print(formats)
- 
-
-    
     # Getting all the current season races
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
     season_events = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
 
-    print(season_events)
-
     season_first_event = season_events[0][0]
     season_last_event = season_events[-1][0]
     curr_event = season_last_event + 1
-
-
-
 
     #Inserting new race calendar
     for i in range (len(track_ids)):

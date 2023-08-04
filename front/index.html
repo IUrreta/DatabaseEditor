@@ -28,7 +28,7 @@
           <div>
             Valid until
             <div>
-              <input type="number" class="rounded-input" id="yearInput">
+              <input type="number" class="rounded-input" id="yearInput" placeholder="ex: 2028">
             </div>
           </div>
           <div>
@@ -348,7 +348,7 @@
           New calendar
         </div>
         <div class="main-calendar-section" id="officialCalendarList">
-          
+
         </div>
       </div>
       <div class="col-3">
@@ -356,8 +356,17 @@
           Options
         </div>
         <div class="main-options-section">
+          <div>
+            <button type="button" class="btn btn-primary dropdown-toggle addTracks-button" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
+              Add race
+            </button>
+            <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
+
+            </ul>
+          </div>
+          <div class="btn custom-delete" id="deleteTracks">Delete races</div>
           <div class="btn custom-confirm" id="confirmCalendar">Save changes</div>
-          <div class="btn custom-delete" id="deleteTracks">Delete tracks</div>
         </div>
 
       </div>
