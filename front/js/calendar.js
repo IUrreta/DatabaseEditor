@@ -133,7 +133,7 @@ document.getElementById("deleteTracks").addEventListener("click", function(btn){
         document.querySelectorAll(".delete-div").forEach(function(elem){
             elem.parentNode.removeChild(elem)
         })
-        this.className = "btn custom-delete"
+        this.className = "btn custom-delete option-buttons"
         document.querySelectorAll(".race-calendar").forEach(function(elem){
             elem.classList = "race-calendar";
 
@@ -157,7 +157,7 @@ document.getElementById("deleteTracks").addEventListener("click", function(btn){
             })
 
         })
-        this.className = "btn custom-delete delete-mode"
+        this.className = "btn custom-delete option-buttons delete-mode"
 
     }
 
