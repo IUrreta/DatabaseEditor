@@ -47,9 +47,12 @@ function place_drivers(driversArray) {
         divPosition = "free-drivers"
         if (driver[2] > 0 && driver[2] <= 10){
             divPosition = team_dict[driver[2]] + driver[3];
+            let iconDiv = document.createElement("div");
+            iconDiv.className = "custom-icon"
             let iconElement = document.createElement("i");
             iconElement.className = "bi bi-pencil-square";
-            newDiv.appendChild(iconElement)
+            iconDiv.appendChild(iconElement)
+            newDiv.appendChild(iconDiv)
 
         }
          

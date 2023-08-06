@@ -667,19 +667,31 @@ body::-webkit-scrollbar-thumb {
   margin: 10px;
   color: white;
   transition: border-color 0.5s;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  position: relative;
 }
 
-.free-driver i{
+.free-driver .custom-icon{
   color: transparent;
-  cursor: pointer;
-  transition: color 0.5s;
+  transition: color 0.5s, opacity 0.5s;
+  background-image: linear-gradient(to left, #3f3c57, transparent);
+  width: 80px;
+  opacity: 0;
+  z-index: 3;
+  display: flex;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  justify-content: flex-end;
 }
 
-.free-driver:hover i{
+.custom-icon i{
+  cursor: pointer;
+}
+
+.free-driver:hover .custom-icon{
   color: white;
+  opacity: 1;
+  
 }
 
 #free-drivers {
@@ -828,9 +840,9 @@ input::-webkit-inner-spin-button {
 #redbulllogo{
   width: 55px;
   height: 45px;
-  padding-bottom: 6px;
+  padding-bottom: 8px;
   padding-left: 5px;
-  padding-top: 6px;
+  padding-top: 7px;
 }
 
 #ferrarilogo{
@@ -844,7 +856,7 @@ input::-webkit-inner-spin-button {
 #merclogo{
   width: 40px;
   height: 40px;
-  padding-bottom: 6px;
+  padding-bottom: 5px;
   padding-top: 9px;
   padding-left: 10px;
 }
@@ -890,20 +902,21 @@ input::-webkit-inner-spin-button {
 }
 
 #alphataurilogo{
-  width: 50px;
+  width: 45px;
   height: 45px;
-  padding-bottom: 11px;
+  padding-bottom: 12px;
   padding-left: 10px;
-  padding-top: 11px;
+  padding-top: 12px;
 }
 
 #williamslogo{
-  width: 50px;
+  width: 45px;
   height: 45px;
-  padding-bottom: 10px;
-  padding-left: 10px;
+  padding-bottom: 11px;
+  padding-left: 12px;
   padding-top: 10px;
 }
+
 
 #redbull {
   border-bottom: 2px solid #0600b5;
