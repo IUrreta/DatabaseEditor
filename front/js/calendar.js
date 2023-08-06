@@ -1,9 +1,9 @@
 let codes_dict = {
-    "bah0": "../assets/flags/bahrain.png","sau0": "../assets/flags/saudi.jpg","aus0": "../assets/flags/australia.png","aze0": "../assets/flags/azerbaiyan.png",
-    "mia0": "../assets/flags/usa.png","imo0": "../assets/flags/italy.png","mon0": "../assets/flags/monaco.png","spa0": "../assets/flags/spain.png","can0": "../assets/flags/canada.png",
-    "aut0": "../assets/flags/austria.png","gbr0": "../assets/flags/gbr.png","hun0": "../assets/flags/hungry.png","bel0": "../assets/flags/balgium.png","ned0": "../assets/flags/ned.png",
-    "ita0": "../assets/flags/italy.png","jap0": "../assets/flags/japan.png", "sgp0": "../assets/flags/singapore.png","qat0": "../assets/flags/qatar.png","usa0": "../assets/flags/usa.png","mex0": "../assets/flags/mexico.png",
-    "bra0": "../assets/flags/brazil.png","veg0": "../assets/flags/usa.png","uae0": "../assets/flags/uae.png"
+    "bah0": "../assets/images/bahrain.png","sau0": "../assets/images/saudi.jpg","aus0": "../assets/images/australia.png","aze0": "../assets/images/azerbaiyan.png",
+    "mia0": "../assets/images/usa.png","imo0": "../assets/images/italy.png","mon0": "../assets/images/monaco.png","spa0": "../assets/images/spain.png","can0": "../assets/images/canada.png",
+    "aut0": "../assets/images/austria.png","gbr0": "../assets/images/gbr.png","hun0": "../assets/images/hungry.png","bel0": "../assets/images/balgium.png","ned0": "../assets/images/ned.png",
+    "ita0": "../assets/images/italy.png","jap0": "../assets/images/japan.png", "sgp0": "../assets/images/singapore.png","qat0": "../assets/images/qatar.png","usa0": "../assets/images/usa.png","mex0": "../assets/images/mexico.png",
+    "bra0": "../assets/images/brazil.png","veg0": "../assets/images/usa.png","uae0": "../assets/images/uae.png"
 }
 let countries_dict = {
     "bah0": "Bahrain", "sau0": "Saudi Arabia", "aus0": "Australia", "aze0": "Azerbaijan",

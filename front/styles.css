@@ -758,7 +758,87 @@ input::-webkit-inner-spin-button {
   max-height: 140px;
 }
 
+.logo-and-name{
+  display: flex;
+  flex-direction: row;
+
+}
+
+
+
 .team-name {
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-top: 10px;
+}
+
+#redbulllogo{
+  width: 55px;
+  height: 45px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-top: 6px;
+}
+
+#ferrarilogo{
+  width: 35px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-top: 8px;
+  padding-left: 5px;
+}
+
+#merclogo{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-top: 9px;
+  padding-left: 10px;
+}
+
+#alpinelogo{
+  width: 45px;
+    height: 40px;
+    padding-bottom: 6px;
+    padding-top: 9px;
+    padding-left: 5px;
+}
+
+#mclarenlogo{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 4px;
+  padding-top: 7px;
+  padding-left: 5px;
+}
+
+#alfalogo{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 3px;
+  padding-top: 5px;
+  padding-left: 5px;
+}
+
+#astonlogo{
+  width: 50px;
+  height: 45px;
+  padding-bottom: 5px;
+  padding-left: 7px;
+  padding-top: 5px;
+}
+
+#haaslogo{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 5px;
+  padding-top: 7px;
+  padding-left: 6px;
+}
+
+#alphataurilogo{
+  width: 50px;
+  height: 45px;
   padding-bottom: 10px;
   padding-left: 10px;
   padding-top: 10px;
