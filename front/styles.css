@@ -607,19 +607,42 @@ body::-webkit-scrollbar-thumb {
 .contract-details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  color: white;
+  background-color: #393744;
+}
+
+
+.custom-header {
+  color: white !important;
+  border-bottom: 1px solid #797599 !important;
+  background-color: #393744 !important;
+
+}
+
+.custom-footer{
+  color: white !important;
+  border-top: 1px solid #797599 !important;
+  background-color: #393744 !important;
+
+}
+
+::-webkit-input-placeholder {
+  color: #999; /* Cambia el color del texto del placeholder */
 }
 
 .rounded-input {
-  border: 1px solid #ccc;
+  border: 2px solid transparent;
   border-radius: 10px;
   padding: 8px 12px;
   max-width: 210px;
   outline: none;
-  transition: border-color 0.2s ease-in-out;
+  transition: border-color 0.5s;
+  background-color: rgb(99, 99, 110);
+  color: white;
 }
 
 .rounded-input:focus {
-  border-color: #007bff;
+  border-color: white;
 }
 
 .free-driver {
@@ -846,6 +869,14 @@ input::-webkit-inner-spin-button {
   padding-bottom: 11px;
   padding-left: 10px;
   padding-top: 11px;
+}
+
+#williamslogo{
+  width: 50px;
+  height: 45px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-top: 10px;
 }
 
 #redbull {
