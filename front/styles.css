@@ -142,11 +142,12 @@ body::-webkit-scrollbar-thumb {
 
 .main-title {
   text-align: left;
-  padding-left: 29%;
   background-color: #18152e;
   padding-top: 1rem;
   padding-bottom: 0.1%;
-  width: 71%;
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 .versionPanel {
@@ -158,14 +159,17 @@ body::-webkit-scrollbar-thumb {
 }
 
 .notification-panel {
+  position: absolute;
+  top: 0px;
+  right: 0px;
   color: white;
   background-color: #18152e;
-  width: 37%;
+  width: 530px;
+  height: 116px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-
 }
 
 .hide {
@@ -839,9 +843,9 @@ input::-webkit-inner-spin-button {
 #alphataurilogo{
   width: 50px;
   height: 45px;
-  padding-bottom: 10px;
+  padding-bottom: 11px;
   padding-left: 10px;
-  padding-top: 10px;
+  padding-top: 11px;
 }
 
 #redbull {
