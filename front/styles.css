@@ -142,11 +142,12 @@ body::-webkit-scrollbar-thumb {
 
 .main-title {
   text-align: left;
-  padding-left: 29%;
   background-color: #18152e;
   padding-top: 1rem;
   padding-bottom: 0.1%;
-  width: 71%;
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 .versionPanel {
@@ -158,14 +159,17 @@ body::-webkit-scrollbar-thumb {
 }
 
 .notification-panel {
+  position: absolute;
+  top: 0px;
+  right: 0px;
   color: white;
   background-color: #18152e;
-  width: 37%;
+  width: 530px;
+  height: 116px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-
 }
 
 .hide {
@@ -325,6 +329,8 @@ body::-webkit-scrollbar-thumb {
   margin-top: 1rem;
   margin-bottom: 2rem;
 }
+
+
 
 .confirm-section {
   margin-left: 20px;
@@ -603,19 +609,53 @@ body::-webkit-scrollbar-thumb {
 .contract-details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  color: white;
+  background-color: #393744;
+}
+
+
+.custom-header {
+  color: white !important;
+  border-bottom: 1px solid #797599 !important;
+  background-color: #393744 !important;
+
+}
+
+.custom-footer{
+  color: white !important;
+  border-top: 1px solid #797599 !important;
+  background-color: #393744 !important;
+
+}
+
+::-webkit-input-placeholder {
+  color: #999; /* Cambia el color del texto del placeholder */
 }
 
 .rounded-input {
-  border: 1px solid #ccc;
+  border: 2px solid transparent;
   border-radius: 10px;
   padding: 8px 12px;
   max-width: 210px;
   outline: none;
-  transition: border-color 0.2s ease-in-out;
+  transition: border-color 0.5s;
+  background-color: rgb(99, 99, 110);
+  color: white;
+}
+
+.custom-disabled{
+  background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
+}
+
+
+.rounded-input:hover {
+  border-color: #cecece;
+
 }
 
 .rounded-input:focus {
-  border-color: #007bff;
+  outline: 0px solid transparent;
+  border-color: white;
 }
 
 .free-driver {
@@ -771,7 +811,95 @@ input::-webkit-inner-spin-button {
   max-height: 140px;
 }
 
+.logo-and-name{
+  display: flex;
+  flex-direction: row;
+
+}
+
+
+
 .team-name {
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-top: 10px;
+}
+
+#redbulllogo{
+  width: 55px;
+  height: 45px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-top: 6px;
+}
+
+#ferrarilogo{
+  width: 35px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-top: 8px;
+  padding-left: 5px;
+}
+
+#merclogo{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-top: 9px;
+  padding-left: 10px;
+}
+
+#alpinelogo{
+  width: 45px;
+    height: 40px;
+    padding-bottom: 6px;
+    padding-top: 9px;
+    padding-left: 5px;
+}
+
+#mclarenlogo{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 4px;
+  padding-top: 7px;
+  padding-left: 5px;
+}
+
+#alfalogo{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 3px;
+  padding-top: 5px;
+  padding-left: 5px;
+}
+
+#astonlogo{
+  width: 50px;
+  height: 45px;
+  padding-bottom: 5px;
+  padding-left: 7px;
+  padding-top: 5px;
+}
+
+#haaslogo{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 5px;
+  padding-top: 7px;
+  padding-left: 6px;
+}
+
+#alphataurilogo{
+  width: 50px;
+  height: 45px;
+  padding-bottom: 11px;
+  padding-left: 10px;
+  padding-top: 11px;
+}
+
+#williamslogo{
+  width: 50px;
+  height: 45px;
   padding-bottom: 10px;
   padding-left: 10px;
   padding-top: 10px;

@@ -1,5 +1,4 @@
 const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
-const raceBonusCheck = document.getElementById("raceBonusCheck");
 const raceBonusAmt = document.getElementById("raceBonusAmt");
 const raceBonusPos = document.getElementById("raceBonusPos");
 
@@ -85,20 +84,6 @@ function manageDrivers(...divs) {
     })
 }
 
-raceBonusCheck.addEventListener("click", function () {
-    if (raceBonusCheck.checked) {
-        raceBonusPos.disabled = false;
-        raceBonusAmt.disabled = false;
-        raceBonusAmt.value = "";
-        raceBonusPos.value = "";
-    }
-    else {
-        raceBonusPos.disabled = true;
-        raceBonusAmt.disabled = true;
-        raceBonusAmt.value = "0";
-        raceBonusPos.value = "10";
-    }
-})
 
 document.getElementById("confirmButton").addEventListener('click', function () {
     if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
@@ -236,7 +221,8 @@ interact('.free-driver').draggable({
                             signDriver("autocontract")
                         }
                         else {
-                            myModal.show();
+                            myModal.show()
+                            
                         }
                     }
 
