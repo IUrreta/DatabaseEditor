@@ -627,6 +627,19 @@ body::-webkit-scrollbar-thumb {
   margin: 10px;
   color: white;
   transition: border-color 0.5s;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.free-driver i{
+  color: transparent;
+  cursor: pointer;
+  transition: color 0.5s;
+}
+
+.free-driver:hover i{
+  color: white;
 }
 
 #free-drivers {

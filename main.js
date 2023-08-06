@@ -20,7 +20,7 @@ function createWindow () {
   mainWindow.removeMenu()
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
   
 
 }

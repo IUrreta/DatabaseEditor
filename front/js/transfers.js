@@ -41,18 +41,23 @@ function remove_drivers() {
 function place_drivers(driversArray) {
     let divPosition;
     driversArray.forEach((driver) => {
-        divPosition = "free-drivers"
-        if (driver[2] > 0 && driver[2] <= 10) divPosition = team_dict[driver[2]] + driver[3];
-        else if (driver[2] > 10 && driver[2] <= 20) divPosition = "f2-drivers";
-        else if (driver[2] > 20 && driver[2] <= 31) divPosition = "f3-drivers";
-
         let newDiv = document.createElement("div");
         newDiv.className = "col free-driver";
         newDiv.dataset.driverid = driver[1];
         newDiv.innerHTML = driver[0];
+        divPosition = "free-drivers"
+        if (driver[2] > 0 && driver[2] <= 10){
+            divPosition = team_dict[driver[2]] + driver[3];
+            let iconElement = document.createElement("i");
+            iconElement.className = "bi bi-pencil-square";
+            newDiv.appendChild(iconElement)
+
+        }
+         
+        else if (driver[2] > 10 && driver[2] <= 20) divPosition = "f2-drivers";
+        else if (driver[2] > 20 && driver[2] <= 31) divPosition = "f3-drivers";
+
         document.getElementById(divPosition).appendChild(newDiv)
-
-
 
     })
 }
