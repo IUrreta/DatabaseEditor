@@ -94,14 +94,21 @@ async def handle_command(message):
         await send_message_to_client(info_json)
 
     elif type=="requestDriver":
-        print(message)
         contractDetails = fetch_driverContract(message["driverID"])
-        print(contractDetails)
         contractMsg = [contractDetails]
         contractMsg.insert(0, "Contract fetched")
-        print(contractMsg)
         data_json_contract = json.dumps(contractMsg)
         await send_message_to_client(data_json_contract)
+
+    elif type=="editContract":
+        argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"])
+        run_trasnsfer(argument)
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully edited " + message["driver"] + "'s contract")
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()

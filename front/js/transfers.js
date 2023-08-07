@@ -22,6 +22,8 @@ let teamDestiniy;
 let teamOrigin;
 let posInTeam;
 let modalType;
+let driverEditingID;
+let driverEditingName;
 
 let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as" }
 let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
@@ -76,13 +78,13 @@ function iconListener(icon){
 }
 
 function queryContract(elem){
-    console.log(elem)
+    driverEditingID = elem.dataset.driverid
+    driverEditingName = elem.innerText
     let driverReq = {
         command: "requestDriver",
-        driverID: elem.dataset.driverid,
+        driverID: driverEditingID,
         driver: elem.innerText,
     }
-    console.log(driverReq)
 
     socket.send(JSON.stringify(driverReq))
     
@@ -121,11 +123,30 @@ document.getElementById("confirmButton").addEventListener('click', function () {
         modalType = "";
     }
     else if (modalType === "edit"){
-        console.log("ay mi madre");
+        editContract()
         modalType ="";
     }
 
 })
+
+function editContract(){
+    let values = []
+    document.querySelectorAll(".rounded-input").forEach(function(elem){
+        values.push(elem.value)
+    })
+    
+    let data = {
+        command: "editContract",
+        driverID: driverEditingID,
+        salary: values[0],
+        year: values[1],
+        signBonus: values[2],
+        raceBonus: values[3],
+        raceBonusPos: values[4],
+        driver: driverEditingName
+    }
+    socket.send(JSON.stringify(data))
+}
 
 function signDriver(type) {
     let driverName = draggable.innerText
