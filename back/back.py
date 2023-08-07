@@ -58,6 +58,7 @@ async def handle_command(message):
         await send_message_to_client(info_json)
 
     elif type =="fire":
+        print(message)
         argument = "fire " + message["driverID"]
         run_trasnsfer(argument)
         process_repack("../result", path)

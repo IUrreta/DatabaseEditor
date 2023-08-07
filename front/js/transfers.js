@@ -49,14 +49,8 @@ function place_drivers(driversArray) {
         newDiv.innerHTML = driver[0];
         divPosition = "free-drivers"
         if (driver[2] > 0 && driver[2] <= 10){
+            addIcon(newDiv)
             divPosition = team_dict[driver[2]] + driver[3];
-            let iconDiv = document.createElement("div");
-            iconDiv.className = "custom-icon"
-            let iconElement = document.createElement("i");
-            iconElement.className = "bi bi-pencil-square";
-            iconListener(iconElement)
-            iconDiv.appendChild(iconElement)
-            newDiv.appendChild(iconDiv)
 
         }
          
@@ -66,6 +60,17 @@ function place_drivers(driversArray) {
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
+}
+
+function addIcon(div){
+    let iconDiv = document.createElement("div");
+    iconDiv.className = "custom-icon"
+    let iconElement = document.createElement("i");
+    iconElement.className = "bi bi-pencil-square";
+    iconListener(iconElement)
+    iconDiv.appendChild(iconElement)
+    div.appendChild(iconDiv)
+
 }
 
 function iconListener(icon){
@@ -283,6 +288,10 @@ interact('.free-driver').draggable({
                             myModal.show()
                             
                         }
+                        if(target.querySelector(".custom-icon") === null){
+                            addIcon(target)
+                        }
+                        
                     }
 
                 }
@@ -294,6 +303,9 @@ interact('.free-driver').draggable({
 
             if (event.clientX >= freeRect.left && event.clientX <= freeRect.right &&
                 event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
+                if(target.querySelector(".custom-icon") !== null){
+                    draggable.removeChild(draggable.querySelector(".custom-icon"))
+                }
                 originalParent.removeChild(draggable);
                 freeDrivers.appendChild(target);
                 let data = {
