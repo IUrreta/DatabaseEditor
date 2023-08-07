@@ -672,7 +672,7 @@ body::-webkit-scrollbar-thumb {
 
 .free-driver .custom-icon{
   color: transparent;
-  transition: color 0.5s, opacity 0.5s;
+  transition: opacity 0.5s;
   background-image: linear-gradient(to left, #3f3c57, transparent);
   width: 80px;
   opacity: 0;
@@ -685,11 +685,16 @@ body::-webkit-scrollbar-thumb {
 }
 
 .custom-icon i{
+  transition: color 0.5s;
+}
+
+.custom-icon i:hover{
+  color: white;
   cursor: pointer;
 }
 
 .free-driver:hover .custom-icon{
-  color: white;
+  color: #9d98b8;
   opacity: 1;
   
 }
