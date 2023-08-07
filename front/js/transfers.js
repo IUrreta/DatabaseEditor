@@ -131,7 +131,7 @@ document.getElementById("confirmButton").addEventListener('click', function () {
         editContract()
         modalType ="";
     }
-    clearModal()
+    setTimeout(clearModal, 500);
 })
 
 function clearModal(){
@@ -232,7 +232,7 @@ document.getElementById("cancelButton").addEventListener('click', function () {
     if(modalType === "hire"){
         originalParent.appendChild(draggable);
     }
-    clearModal()
+    setTimeout(clearModal, 500);
 })
 
 
