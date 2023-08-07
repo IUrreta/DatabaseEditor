@@ -21,6 +21,7 @@ let draggable;
 let teamDestiniy;
 let teamOrigin;
 let posInTeam;
+let modalType;
 
 let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as" }
 let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
@@ -51,6 +52,7 @@ function place_drivers(driversArray) {
             iconDiv.className = "custom-icon"
             let iconElement = document.createElement("i");
             iconElement.className = "bi bi-pencil-square";
+            iconListener(iconElement)
             iconDiv.appendChild(iconElement)
             newDiv.appendChild(iconDiv)
 
@@ -61,6 +63,14 @@ function place_drivers(driversArray) {
 
         document.getElementById(divPosition).appendChild(newDiv)
 
+    })
+}
+
+function iconListener(icon){
+    icon.addEventListener("click", function() {
+        modalType = "edit"
+        document.getElementById("contractModalTitle").innerHTML = icon.parentNode.parentNode.innerText + "'s contract";
+        myModal.show()
     })
 }
 
@@ -89,10 +99,18 @@ function manageDrivers(...divs) {
 
 
 document.getElementById("confirmButton").addEventListener('click', function () {
-    if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
-        signDriver("fireandhire")
+    if(modalType === "hire"){
+        if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
+            signDriver("fireandhire")
+        }
+        signDriver("regular")
+        modalType = "";
     }
-    signDriver("regular")
+    else if (modalType === "edit"){
+        console.log("ay mi madre");
+        modalType ="";
+    }
+
 })
 
 function signDriver(type) {
@@ -163,7 +181,9 @@ function signDriver(type) {
 }
 
 document.getElementById("cancelButton").addEventListener('click', function () {
-    originalParent.appendChild(draggable);
+    if(modalType === "hire"){
+        originalParent.appendChild(draggable);
+    }
 })
 
 
@@ -216,7 +236,7 @@ interact('.free-driver').draggable({
                         element.appendChild(target);
                         teamDestiniy = element.parentNode.dataset.team
                         posInTeam = element.id.charAt(2)
-                        document.getElementById("contractModalTitle").innerHTML = target.innerHTML + "'s contract with " + name_dict[teamDestiniy];
+                        document.getElementById("contractModalTitle").innerHTML = target.innerText + "'s contract with " + name_dict[teamDestiniy];
                         if (autoContractToggle.checked) {
                             if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
                                 signDriver("fireandhire")
@@ -224,6 +244,7 @@ interact('.free-driver').draggable({
                             signDriver("autocontract")
                         }
                         else {
+                            modalType = "hire"
                             myModal.show()
                             
                         }
