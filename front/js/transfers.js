@@ -131,8 +131,14 @@ document.getElementById("confirmButton").addEventListener('click', function () {
         editContract()
         modalType ="";
     }
-
+    clearModal()
 })
+
+function clearModal(){
+    document.querySelectorAll(".rounded-input").forEach(function(elem){
+        elem.value = ""
+    })
+}
 
 function editContract(){
     let values = []
@@ -220,10 +226,13 @@ function signDriver(type) {
     }
 }
 
+
+
 document.getElementById("cancelButton").addEventListener('click', function () {
     if(modalType === "hire"){
         originalParent.appendChild(draggable);
     }
+    clearModal()
 })
 
 
@@ -306,15 +315,17 @@ interact('.free-driver').draggable({
                 if(target.querySelector(".custom-icon") !== null){
                     draggable.removeChild(draggable.querySelector(".custom-icon"))
                 }
-                originalParent.removeChild(draggable);
-                freeDrivers.appendChild(target);
-                let data = {
-                    command: "fire",
-                    driverID: draggable.dataset.driverid,
-                    driver: draggable.innerText,
-                    team: name_dict[teamOrigin.dataset.team]
+                if(originalParent.id !== "free-drivers"){
+                    originalParent.removeChild(draggable);
+                    freeDrivers.appendChild(target);
+                    let data = {
+                        command: "fire",
+                        driverID: draggable.dataset.driverid,
+                        driver: draggable.innerText,
+                        team: name_dict[teamOrigin.dataset.team]
+                    }
+                    socket.send(JSON.stringify(data))
                 }
-                socket.send(JSON.stringify(data))
             }
 
             target.style.transform = 'none';
