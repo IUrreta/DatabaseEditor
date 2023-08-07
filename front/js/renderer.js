@@ -63,7 +63,10 @@ document.addEventListener('DOMContentLoaded', function () {
             else if (message[0] === "Calendar fetched") {
                 manage_calendarDiv(message.slice(1)[0])
             }
-            if(message[0] !== "Calendar fetched") update_notifications(message[0], false) 
+            else if (message[0] === "Contract fetched") {
+                manage_modal(message.slice(1)[0])
+            }
+            if(message[0] !== "Calendar fetched" && message[0] !== "Contract fetched") update_notifications(message[0], false) 
             
         }
 
@@ -77,6 +80,13 @@ document.addEventListener('DOMContentLoaded', function () {
         else if(info[0] === "0"){
             document.getElementById("calendarBlockDiv").className = "blocking-div"
         }
+    }
+
+    function manage_modal(info){
+        document.querySelectorAll(".rounded-input").forEach(function(elem, index){
+            elem.value = info[index]
+        })
+
     }
 
     function update_notifications(noti, error) {

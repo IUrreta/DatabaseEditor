@@ -70,8 +70,22 @@ function iconListener(icon){
     icon.addEventListener("click", function() {
         modalType = "edit"
         document.getElementById("contractModalTitle").innerHTML = icon.parentNode.parentNode.innerText + "'s contract";
+        queryContract(icon.parentNode.parentNode)
         myModal.show()
     })
+}
+
+function queryContract(elem){
+    console.log(elem)
+    let driverReq = {
+        command: "requestDriver",
+        driverID: elem.dataset.driverid,
+        driver: elem.innerText,
+    }
+    console.log(driverReq)
+
+    socket.send(JSON.stringify(driverReq))
+    
 }
 
 freeDriversPill.addEventListener("click", function () {
@@ -114,7 +128,7 @@ document.getElementById("confirmButton").addEventListener('click', function () {
 })
 
 function signDriver(type) {
-    let driverName = draggable.innerHTML
+    let driverName = draggable.innerText
 
     if (type === "fireandhire") {
         let extra = {
@@ -264,7 +278,7 @@ interact('.free-driver').draggable({
                 let data = {
                     command: "fire",
                     driverID: draggable.dataset.driverid,
-                    driver: draggable.innerHTML,
+                    driver: draggable.innerText,
                     team: name_dict[teamOrigin.dataset.team]
                 }
                 socket.send(JSON.stringify(data))

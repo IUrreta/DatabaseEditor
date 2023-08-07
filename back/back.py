@@ -87,11 +87,21 @@ async def handle_command(message):
     elif type=="calendar":
         run_editCalendar(message["calendarCodes"])
         process_repack("../result", path)
-        argument = type
+        argument = type + message["calendarCodes"]
         info = []
         info.insert(0, "Succesfully edited the calendar")
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
+
+    elif type=="requestDriver":
+        print(message)
+        contractDetails = fetch_driverContract(message["driverID"])
+        print(contractDetails)
+        contractMsg = [contractDetails]
+        contractMsg.insert(0, "Contract fetched")
+        print(contractMsg)
+        data_json_contract = json.dumps(contractMsg)
+        await send_message_to_client(data_json_contract)
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()
@@ -131,6 +141,11 @@ async def start_server():
 
 async def main():
     await start_server()
+
+def fetch_driverContract(id):
+    details = cursor.execute("SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = " + str(id)).fetchone()
+
+    return details
 
 def fetch_info():
 
