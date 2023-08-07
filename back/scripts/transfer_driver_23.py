@@ -8,6 +8,7 @@ def run_script(option=""):
 
     text = option.lower()
     params = text.split()
+
     
 
     if(params[0] == "fire"):
@@ -281,6 +282,13 @@ def run_script(option=""):
         driver_id = get_driver_id(params[1])
         actual_year = cursor.execute("SELECT EndSeason FROM Staff_Contracts WHERE ContractType = 0 AND StaffID =" + str(driver_id[0])).fetchone()
         # print(params[1] + "'s contract end in " + str(actual_year[0]))
+
+    elif(params[0] == "editcontract"):
+        params_to_update = params[1:7]
+
+        query = "UPDATE Staff_Contracts SET Salary=?, EndSeason=?, StartingBonus=?, RaceBonus=?, RaceBonusTargetPos=? WHERE ContractType = 0 AND StaffID =?"
+        cursor.execute(query, params_to_update)
+
     conn.commit()
     conn.close()
 
