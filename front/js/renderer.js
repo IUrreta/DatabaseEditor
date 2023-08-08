@@ -125,14 +125,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
         listenersSaves()
+        listenersStaffGroups()
     }
 
     function listenersSaves() {
         document.querySelectorAll('#dropdownMenu a').forEach(item => {
             item.addEventListener("click", function () {
-                const dropdownButton = document.getElementById('dropdownButton');
+                const saveSelector = document.getElementById('saveSelector');
                 let saveSelected = item.innerHTML
-                dropdownButton.innerHTML = saveSelected;
+                saveSelector.innerHTML = saveSelected;
                 let dataSaves = {
                     command: "saveSelected",
                     save: saveSelected
@@ -142,6 +143,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById("editStatsPanel").className = "left-panel-stats d-none";
                 statPanelShown = 0;
                 check_selected()
+            });
+        });
+    }
+
+    function listenersStaffGroups() {
+        document.querySelectorAll('#staffMenu a').forEach(item => {
+            item.addEventListener("click", function () {
+                const staffButton = document.getElementById('staffButton');
+                let staffSelected = item.innerHTML
+                staffButton.innerHTML = staffSelected;
+                document.querySelectorAll(".staff-list").forEach(function(elem){
+                    elem.classList.add("d-none")
+                    if(item.dataset.list == elem.id){
+                        elem.classList.remove("d-none")
+                    }
+                })
             });
         });
     }

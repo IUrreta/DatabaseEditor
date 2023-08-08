@@ -74,7 +74,7 @@
   <div class="tools-panel">
     <div class="ms-3 bold-font save-selector">
       Save selector
-      <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownButton" data-bs-toggle="dropdown"
+      <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="saveSelector" data-bs-toggle="dropdown"
         aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
         Your saves
       </button>
@@ -285,11 +285,33 @@
     </div>
     <div class="script-view d-none" id="edit_stats">
       <div class="col-3">
-        <div class="title bold-font py-3">
-          Drivers
+        <div class="pb-3 ps-3" style="padding-top: 1.1rem;">
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="staffButton" data-bs-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
+          Staff Type
+        </button>
+        <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
+          <a class="dropdown-item" href="#" data-list="fulldriverlist">Drivers</a>
+          <a class="dropdown-item" href="#" data-list="fullTechnicalList">Technical Chiefs</a>
+          <a class="dropdown-item" href="#" data-list="fullEngineerList">Race Engineers</a>
+          <a class="dropdown-item" href="#" data-list="fullAeroList">Head of Aerodynamics</a>
+          <a class="dropdown-item" href="#" data-list="fullDirectorList">Sporting Directors</a>
+        </ul>
         </div>
-        <div class="main-editStats-section" id="fulldriverlist">
+        <div id="StaffLists">
+          <div class="main-editStats-section staff-list d-none" id="fulldriverlist">
+          </div>
+          <div class="main-editStats-section staff-list d-none" id="fullTechnicalList">1
+          </div>
+          <div class="main-editStats-section staff-list d-none" id="fullEngineerList">2
+          </div>
+          <div class="main-editStats-section staff-list d-none" id="fullAeroList">3
+          </div>
+          <div class="main-editStats-section staff-list d-none" id="fullDirectorList">4
+          </div>
+
         </div>
+
       </div>
       <div class="col-9">
         <div class="title bold-font py-3">

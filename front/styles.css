@@ -227,23 +227,23 @@ body::-webkit-scrollbar-thumb {
   flex-direction: column;
 }
 
-#dropdownButton {
-  max-width: 210px;
-  margin-top: 0.6rem;
-  background-color: #797599;
-  margin-bottom: 1%;
-  border: 2px solid transparent;
+.custom-dropdown {
+  max-width: 210px !important;
+  margin-top: 0.6rem !important;
+  background-color: #797599 !important;
+  margin-bottom: 1% !important;
+  border: 2px solid transparent !important;
   border-radius: 10px !important;
 
 
 }
 
-#dropdownButton:hover {
+.custom-dropdown:hover {
   border: 2px solid white !important;
 }
 
-#dropdownButton:active {
-  background-color: #1a1826;
+.custom-dropdown:active {
+  background-color: #1a1826 !important;
 }
 
 .addTracks-button {
@@ -534,9 +534,10 @@ body::-webkit-scrollbar-thumb {
   border-radius: 3px;
 }
 
-#fulldriverlist {
+.staff-list {
   margin-left: 14px;
   margin-right: 5%;
+  min-height: 660px;
 }
 
 #driverstats {
@@ -704,9 +705,6 @@ body::-webkit-scrollbar-thumb {
   min-height: 660px;
 }
 
-#fulldriverlist {
-  min-height: 660px;
-}
 
 .free-driver:hover {
   border-color: white;
