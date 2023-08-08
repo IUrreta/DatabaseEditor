@@ -302,6 +302,23 @@ interact('.free-driver').draggable({
                         }
                         
                     }
+                    else if(element.childElementCount == 1){
+                        console.log(originalParent.id)
+                        if (originalParent.className === "col driver-space") {
+                            let driver1 = target.dataset.driverid;
+                            let driver2 = element.firstChild.dataset.driverid;
+                            let data = {
+                                command: "swap",
+                                driver1ID: target.dataset.driverid,
+                                driver2ID: element.firstChild.dataset.driverid,
+                                driver1: target.innerText,
+                                driver2: element.firstChild.innerText,
+                            }
+                    
+                            socket.send(JSON.stringify(data))
+                        }
+                        
+                    }
 
                 }
             });

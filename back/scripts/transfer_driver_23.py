@@ -172,8 +172,8 @@ def run_script(option=""):
             new_num = free_numbers[rand_index]
             cursor.execute("UPDATE Staff_DriverNumbers SET CurrentHolder = " + str(driver_id[0]) + " WHERE Number = " + str(new_num[0]))
     elif(params[0] == "swap"):
-        driver_1_id = get_driver_id(params[1])
-        driver_2_id = get_driver_id(params[2])
+        driver_1_id = (params[1],)
+        driver_2_id = (params[2],)
         position_1 = cursor.execute("SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = " + str(driver_1_id[0])).fetchone()
         position_2 = cursor.execute("SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = " + str(driver_2_id[0])).fetchone()
         team_1_id = cursor.execute("SELECT TeamID FROM Staff_Contracts WHERE StaffID = " + str(driver_1_id[0])).fetchone()
