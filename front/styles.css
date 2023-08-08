@@ -228,7 +228,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .custom-dropdown {
-  max-width: 210px !important;
+  max-width: 250px !important;
   margin-top: 0.6rem !important;
   background-color: #797599 !important;
   margin-bottom: 1% !important;
@@ -305,6 +305,7 @@ body::-webkit-scrollbar-thumb {
 .main-panel-stats {
   display: grid;
   grid-template-columns: repeat(3, 0.33fr);
+  min-height: 270px;
 }
 
 .extra-atributes {
@@ -754,6 +755,7 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-height: 70px;
 }
 
 .scriptPills {

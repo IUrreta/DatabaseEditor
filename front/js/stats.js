@@ -1,6 +1,7 @@
 let driverStatTitle = document.getElementById("driverStatsTitle")
 let statPanelShown = 0;
 let typeOverall = "driver";
+let typeEdit;
 
 function removeStatsDrivers() {
     document.getElementById("fulldriverlist").innerHTML = ""
@@ -114,7 +115,6 @@ function place_staff(staffArray) {
             recalculateOverall()
 
         });
-        console.log("aaaaaaaaaaaaaaaaaaaaa")
         ovr = calculateOverall(statsString, "staff")
         console.log(ovr)
         ovrDiv.innerHTML = ovr
@@ -151,8 +151,15 @@ document.getElementById("confirmbtn").addEventListener("click",function () {
     document.querySelectorAll(".elegible").forEach(function (elem) {
         stats += elem.value + " "
     })
+    stats = stats.slice(0,-1);
 
-    let id = document.querySelector(".clicked").dataset.driverid
+    let id;
+    if(document.querySelector(".clicked").dataset.driverid){
+        id = document.querySelector(".clicked").dataset.driverid
+    }
+    else{
+        id = document.querySelector(".clicked").dataset.staffid
+    }
     let driverName = manage_stats_title(document.querySelector(".clicked").textContent)
     document.querySelector(".clicked").dataset.stats = stats
     let new_ovr = calculateOverall(stats, typeOverall)
@@ -162,7 +169,8 @@ document.getElementById("confirmbtn").addEventListener("click",function () {
         command: "editStats",
         driverID: id,
         driver: driverName,
-        statsArray: stats
+        statsArray: stats,
+        typeStaff: typeEdit
     }
 
     socket.send(JSON.stringify(dataStats))

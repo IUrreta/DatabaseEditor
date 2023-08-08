@@ -89,8 +89,9 @@ async def handle_command(message):
         await send_message_to_client(info_json)
 
     elif type =="editStats":
-        run_editStats(message["driverID"] + " " + message["statsArray"])
-        argument = type + " " + message["driverID"] + " " + message["statsArray"]
+        print(message)
+        run_editStats(message["driverID"] + " " + message["typeStaff"] + " " + message["statsArray"])
+        argument = type + " " + message["driverID"] + " " + message["typeStaff"] + " " + message["statsArray"]
         process_repack("../result", path)
         info = []
         info.insert(0, "Succesfully edited " + message["driver"] + "'s stats")
