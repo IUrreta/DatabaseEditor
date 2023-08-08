@@ -44,7 +44,9 @@ document.addEventListener('DOMContentLoaded', function () {
     socket.onmessage = (event) => {
         // const mensaje = event.data;
         // console.log('Mensaje recibido: ' + event.data);
+        
         let message = JSON.parse(event.data)
+        console.log(message)
         if(message[0] === "ERROR"){
             update_notifications(message[1], true)
         }
@@ -59,6 +61,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 place_drivers(message.slice(1))
                 place_drivers_editStats(message.slice(1))
                 create_races()
+            }
+            else if(message[0] ==="Staff Fetched"){
+                place_staff(message.slice(1))
             }
             else if (message[0] === "Calendar fetched") {
                 manage_calendarDiv(message.slice(1)[0])

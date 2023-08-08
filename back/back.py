@@ -43,6 +43,10 @@ async def handle_command(message):
         drivers.insert(0, "Save Loaded Succesfully")
         data_json_drivers = json.dumps(drivers)
         await send_message_to_client(data_json_drivers)
+        staff = fetch_staff()
+        staff.insert(0, "Staff Fetched")
+        data_json_staff = json.dumps(staff)
+        await send_message_to_client(data_json_staff)
         allowCalendar = [tuple(check_claendar())]
         allowCalendar.insert(0, "Calendar fetched")
         data_json_calendar = json.dumps(allowCalendar)
@@ -163,15 +167,22 @@ def fetch_driverContract(id):
 
     return details
 
+def fetch_staff():
+    staff = cursor.execute("SELECT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0;").fetchall()
+    formatted_tuples = []
+
+    for tupla in staff:
+        result = format_names_get_stats(tupla, "staff"+str(tupla[4]))
+        formatted_tuples.append(result)
+    return formatted_tuples
+
 def fetch_info():
 
     drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID WHERE ContractType = 0 OR ContractType IS NULL;').fetchall()
     formatted_tuples = []
     for tupla in drivers:
-        result = format_names_get_stats(tupla)
+        result = format_names_get_stats(tupla, "driver")
         formatted_tuples.append(result)
-
-    allowCalendar = check_claendar()
     
     return formatted_tuples
 
@@ -189,7 +200,7 @@ def check_claendar():
     return resultCalendar
     
 
-def format_names_get_stats(name):
+def format_names_get_stats(name, type):
     nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
     apellido_pattern = r'StaffName_Surname_(\w+)'
 
@@ -206,11 +217,36 @@ def format_names_get_stats(name):
 
     resultado = (name_formatted, name[2], team_id, pos_in_team)
 
-    stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID BETWEEN 2 AND 10").fetchall()
-    additionalStats = cursor.execute("SELECT Improvability, Aggression FROM Staff_DriverData WHERE StaffID = " + str(name[2])).fetchone()
-    nums = resultado + tuple(stat[0] for stat in stats) + additionalStats
+    if type == "driver":
+        stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID BETWEEN 2 AND 10").fetchall()
+        additionalStats = cursor.execute("SELECT Improvability, Aggression FROM Staff_DriverData WHERE StaffID = " + str(name[2])).fetchone()
+        nums = resultado + tuple(stat[0] for stat in stats) + additionalStats
 
-    return nums
+        return nums
+    
+    elif type == "staff1":
+        stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID IN (0,1,14,15,16,17);").fetchall()
+        nums = resultado + tuple(stat[0] for stat in stats)
+
+        return nums
+    
+    elif type == "staff2":
+        stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID IN (13,25,43);").fetchall()
+        nums = resultado + tuple(stat[0] for stat in stats)
+
+        return nums
+    
+    elif type == "staff3":
+        stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID IN (19,20,26,27,28,29,30,31);").fetchall()
+        nums = resultado + tuple(stat[0] for stat in stats)
+
+        return nums
+    
+    elif type == "staff4":
+        stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID IN (11,22,23,24);").fetchall()
+        nums = resultado + tuple(stat[0] for stat in stats)
+
+        return nums
 
 def remove_number(cadena):
     if cadena and cadena[-1].isdigit():

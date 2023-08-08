@@ -1,7 +1,7 @@
 let driverStatTitle = document.getElementById("driverStatsTitle")
 let statPanelShown = 0;
 
-function removeStatsDrivers(){
+function removeStatsDrivers() {
     document.getElementById("fulldriverlist").innerHTML = ""
 }
 
@@ -12,7 +12,7 @@ function place_drivers_editStats(driversArray) {
 
         let newDiv = document.createElement("div");
         let ovrDiv = document.createElement("div");
-        
+
         newDiv.className = "col normal-driver";
         newDiv.dataset.driverid = driver[1];
         newDiv.innerHTML = driver[0];
@@ -22,33 +22,33 @@ function place_drivers_editStats(driversArray) {
             statsString += driver[i] + ' ';
         }
         newDiv.dataset.stats = statsString;
-        newDiv.addEventListener('click', () => {
+        newDiv.addEventListener('click',() => {
             let elementosClicked = document.querySelectorAll('.clicked');
             elementosClicked.forEach(item => item.classList.remove('clicked'));
             newDiv.classList.toggle('clicked');
             driverStatTitle.innerHTML = manage_stats_title(newDiv.textContent);
             load_stats(newDiv)
-            if(statPanelShown == 0){
+            if (statPanelShown == 0) {
                 document.getElementById("editStatsPanel").className = "left-panel-stats"
                 statPanelShown = 1
             }
-            
+
             document.getElementById("confirmbtn").className = "btn custom-confirm disabled"
             recalculateOverall()
-            
+
         });
         ovr = calculateOverall(statsString)
         ovrDiv.innerHTML = ovr
         newDiv.appendChild(ovrDiv)
         document.getElementById(divPosition).appendChild(newDiv)
 
-        
+
     })
 
-    document.querySelectorAll(".custom-input-number").forEach(function(elem) {
-        elem.addEventListener("change", function(){
+    document.querySelectorAll(".custom-input-number").forEach(function (elem) {
+        elem.addEventListener("change",function () {
             document.getElementById("confirmbtn").className = "btn custom-confirm"
-            if(elem.value > 99){
+            if (elem.value > 99) {
                 elem.value = 99;
             }
             recalculateOverall()
@@ -56,30 +56,96 @@ function place_drivers_editStats(driversArray) {
     });
 }
 
-function recalculateOverall(){
-    let stats = ""
-    document.querySelectorAll(".custom-input-number").forEach(function(elem){
-        stats += elem.value + " "
-    })
-    stats = stats.slice(0, -1);
-    let oldovr = document.getElementById("ovrholder").innerHTML;
-    let ovr = calculateOverall(stats);
-    if (oldovr != ovr){
-        document.getElementById("ovrholder").innerHTML = ovr;
-        document.getElementById("ovrholder").className = "overall-holder bold-font alert";
-        setTimeout(() =>{
-            document.getElementById("ovrholder").className = "overall-holder bold-font"
-        }, 500);
-    
-    }
-    
+function place_staff(staffArray) {
+    let divPosition;
+    let statsString = '';
 
+
+    staffArray.forEach((staff) => {
+        console.log(staff[0])
+        console.log(staff[3])
+        if (staff[3] == 1) {
+            divPosition = "fullTechnicalList"
+            for (let i = 4; i <= 9; i++) {
+                statsString += staff[i] + ' ';
+            }
+        }
+        else if (staff[3] == 2) {
+            divPosition = "fullEngineerList"
+            for (let i = 4; i <= 6; i++) {
+                statsString += staff[i] + ' ';
+            }
+        }
+        else if (staff[3] == 3) {
+            divPosition = "fullAeroList"
+            for (let i = 4; i <= 11; i++) {
+                statsString += staff[i] + ' ';
+            }
+        }
+        else if (staff[3] == 4) {
+            divPosition = "fullDirectorList"
+            for (let i = 4; i <= 7; i++) {
+                statsString += staff[i] + ' ';
+            }
+        }
+        console.log(divPosition)
+
+
+        let newDiv = document.createElement("div");
+        let ovrDiv = document.createElement("div");
+
+        newDiv.className = "col normal-driver";
+        newDiv.dataset.staffid = staff[1];
+        newDiv.innerHTML = staff[0];
+
+        newDiv.dataset.stats = statsString;
+        newDiv.addEventListener('click',() => {
+            let elementosClicked = document.querySelectorAll('.clicked');
+            elementosClicked.forEach(item => item.classList.remove('clicked'));
+            newDiv.classList.toggle('clicked');
+            driverStatTitle.innerHTML = manage_stats_title(newDiv.textContent);
+            // load_stats(newDiv)
+            // if (statPanelShown == 0) {
+            //     document.getElementById("editStatsPanel").className = "left-panel-stats"
+            //     statPanelShown = 1
+            // }
+
+            // document.getElementById("confirmbtn").className = "btn custom-confirm disabled"
+            // recalculateOverall()
+
+        });
+        // ovr = calculateOverall(statsString)
+        // ovrDiv.innerHTML = ovr
+        newDiv.appendChild(ovrDiv)
+        document.getElementById(divPosition).appendChild(newDiv)
+
+
+    })
 
 }
 
-document.getElementById("confirmbtn").addEventListener("click", function(){
+function recalculateOverall() {
     let stats = ""
-    document.querySelectorAll(".custom-input-number").forEach(function(elem){
+    document.querySelectorAll(".custom-input-number").forEach(function (elem) {
+        stats += elem.value + " "
+    })
+    stats = stats.slice(0,-1);
+    let oldovr = document.getElementById("ovrholder").innerHTML;
+    let ovr = calculateOverall(stats);
+    if (oldovr != ovr) {
+        document.getElementById("ovrholder").innerHTML = ovr;
+        document.getElementById("ovrholder").className = "overall-holder bold-font alert";
+        setTimeout(() => {
+            document.getElementById("ovrholder").className = "overall-holder bold-font"
+        },500);
+
+    }
+
+}
+
+document.getElementById("confirmbtn").addEventListener("click",function () {
+    let stats = ""
+    document.querySelectorAll(".custom-input-number").forEach(function (elem) {
         stats += elem.value + " "
     })
 
@@ -118,18 +184,18 @@ function calculateOverall(stats) {
     return Math.round(rating)
 }
 
-function load_stats(div){
+function load_stats(div) {
     let statsArray = div.dataset.stats.split(" ").map(Number);
 
     let inputArray = document.querySelectorAll(".custom-input-number")
-    inputArray.forEach(function (input, index) {
+    inputArray.forEach(function (input,index) {
         inputArray[index].value = statsArray[index]
     });
 }
 
 
-function manage_stats_title(html){
-    let name = html.substring(0, html.length - 2).trim();
+function manage_stats_title(html) {
+    let name = html.substring(0,html.length - 2).trim();
 
     return name;
 
