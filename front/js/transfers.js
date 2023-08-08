@@ -319,16 +319,19 @@ interact('.free-driver').draggable({
                         if (originalParent.className === "col driver-space") {
                             driver1 = target;
                             driver2 = element.firstChild;
-                            let data = {
-                                command: "swap",
-                                driver1ID: target.dataset.driverid,
-                                driver2ID: element.firstChild.dataset.driverid,
-                                driver1: target.innerText,
-                                driver2: element.firstChild.innerText,
+                            if(driver1 !== driver2){
+                                let data = {
+                                    command: "swap",
+                                    driver1ID: target.dataset.driverid,
+                                    driver2ID: element.firstChild.dataset.driverid,
+                                    driver1: target.innerText,
+                                    driver2: element.firstChild.innerText,
+                                }
+                        
+                                socket.send(JSON.stringify(data))
+                                manage_swap()
                             }
-                    
-                            socket.send(JSON.stringify(data))
-                            manage_swap()
+
                         }
                         
                     }
