@@ -1,5 +1,6 @@
 let driverStatTitle = document.getElementById("driverStatsTitle")
 let statPanelShown = 0;
+let typeOverall = "driver";
 
 function removeStatsDrivers() {
     document.getElementById("fulldriverlist").innerHTML = ""
@@ -37,7 +38,7 @@ function place_drivers_editStats(driversArray) {
             recalculateOverall()
 
         });
-        ovr = calculateOverall(statsString)
+        ovr = calculateOverall(statsString, "driver")
         ovrDiv.innerHTML = ovr
         newDiv.appendChild(ovrDiv)
         document.getElementById(divPosition).appendChild(newDiv)
@@ -58,12 +59,10 @@ function place_drivers_editStats(driversArray) {
 
 function place_staff(staffArray) {
     let divPosition;
-    let statsString = '';
-
 
     staffArray.forEach((staff) => {
-        console.log(staff[0])
-        console.log(staff[3])
+        let statsString = '';
+
         if (staff[3] == 1) {
             divPosition = "fullTechnicalList"
             for (let i = 4; i <= 9; i++) {
@@ -88,6 +87,7 @@ function place_staff(staffArray) {
                 statsString += staff[i] + ' ';
             }
         }
+        statsString = statsString.slice(0,-1);
         console.log(divPosition)
 
 
@@ -104,18 +104,20 @@ function place_staff(staffArray) {
             elementosClicked.forEach(item => item.classList.remove('clicked'));
             newDiv.classList.toggle('clicked');
             driverStatTitle.innerHTML = manage_stats_title(newDiv.textContent);
-            // load_stats(newDiv)
-            // if (statPanelShown == 0) {
-            //     document.getElementById("editStatsPanel").className = "left-panel-stats"
-            //     statPanelShown = 1
-            // }
+            load_stats(newDiv)
+            if (statPanelShown == 0) {
+                document.getElementById("editStatsPanel").className = "left-panel-stats"
+                statPanelShown = 1
+            }
 
-            // document.getElementById("confirmbtn").className = "btn custom-confirm disabled"
-            // recalculateOverall()
+            document.getElementById("confirmbtn").className = "btn custom-confirm disabled"
+            recalculateOverall()
 
         });
-        // ovr = calculateOverall(statsString)
-        // ovrDiv.innerHTML = ovr
+        console.log("aaaaaaaaaaaaaaaaaaaaa")
+        ovr = calculateOverall(statsString, "staff")
+        console.log(ovr)
+        ovrDiv.innerHTML = ovr
         newDiv.appendChild(ovrDiv)
         document.getElementById(divPosition).appendChild(newDiv)
 
@@ -126,12 +128,13 @@ function place_staff(staffArray) {
 
 function recalculateOverall() {
     let stats = ""
-    document.querySelectorAll(".custom-input-number").forEach(function (elem) {
+    document.querySelectorAll(".elegible").forEach(function (elem) {
         stats += elem.value + " "
     })
     stats = stats.slice(0,-1);
     let oldovr = document.getElementById("ovrholder").innerHTML;
-    let ovr = calculateOverall(stats);
+    let ovr = calculateOverall(stats, typeOverall);
+    console.log(ovr)
     if (oldovr != ovr) {
         document.getElementById("ovrholder").innerHTML = ovr;
         document.getElementById("ovrholder").className = "overall-holder bold-font alert";
@@ -145,14 +148,14 @@ function recalculateOverall() {
 
 document.getElementById("confirmbtn").addEventListener("click",function () {
     let stats = ""
-    document.querySelectorAll(".custom-input-number").forEach(function (elem) {
+    document.querySelectorAll(".elegible").forEach(function (elem) {
         stats += elem.value + " "
     })
 
     let id = document.querySelector(".clicked").dataset.driverid
     let driverName = manage_stats_title(document.querySelector(".clicked").textContent)
     document.querySelector(".clicked").dataset.stats = stats
-    let new_ovr = calculateOverall(stats)
+    let new_ovr = calculateOverall(stats, typeOverall)
     document.querySelector(".clicked").childNodes[1].innerHTML = new_ovr
 
     let dataStats = {
@@ -166,20 +169,31 @@ document.getElementById("confirmbtn").addEventListener("click",function () {
 
 })
 
-function calculateOverall(stats) {
+function calculateOverall(stats, type) {
     let statsArray = stats.split(" ").map(Number);
+    let rating;
+    console.log(type)
+    if (type === "driver") {
+        let cornering = statsArray[0];
+        let braking = statsArray[1];
+        let control = statsArray[2];
+        let smoothness = statsArray[3];
+        let adaptability = statsArray[4];
+        let overtaking = statsArray[5];
+        let defence = statsArray[6];
+        let reactions = statsArray[7];
+        let accuracy = statsArray[8];
 
-    let cornering = statsArray[0];
-    let braking = statsArray[1];
-    let control = statsArray[2];
-    let smoothness = statsArray[3];
-    let adaptability = statsArray[4];
-    let overtaking = statsArray[5];
-    let defence = statsArray[6];
-    let reactions = statsArray[7];
-    let accuracy = statsArray[8];
+        rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.5 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 4.75;
 
-    let rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.5 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 4.75;
+    }
+    else if(type === "staff"){
+        let suma = 0;
+        for (let i = 0; i < statsArray.length; i++) {
+            suma += statsArray[i];
+          }
+          rating = suma / statsArray.length;
+    }
 
     return Math.round(rating)
 }
@@ -187,7 +201,8 @@ function calculateOverall(stats) {
 function load_stats(div) {
     let statsArray = div.dataset.stats.split(" ").map(Number);
 
-    let inputArray = document.querySelectorAll(".custom-input-number")
+    let inputArray = document.querySelectorAll(".elegible")
+    console.log(inputArray)
     inputArray.forEach(function (input,index) {
         inputArray[index].value = statsArray[index]
     });

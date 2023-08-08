@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let divBlocking = 1;
 
 
+
     let connectionTimeout = setTimeout(() => {
         update_notifications("Could not connect with backend", true) 
     }, 4000); 
@@ -157,7 +158,14 @@ document.addEventListener('DOMContentLoaded', function () {
             item.addEventListener("click", function () {
                 const staffButton = document.getElementById('staffButton');
                 let staffSelected = item.innerHTML
+                if(staffSelected === "Drivers"){
+                    typeOverall = "driver"
+                }
+                else{
+                    typeOverall ="staff"
+                }
                 staffButton.innerHTML = staffSelected;
+                change_elegibles(item.dataset.spacestats)
                 document.querySelectorAll(".staff-list").forEach(function(elem){
                     elem.classList.add("d-none")
                     if(item.dataset.list == elem.id){
@@ -166,6 +174,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
             });
         });
+    }
+
+    function change_elegibles(divID){
+        document.querySelectorAll(".elegible").forEach(function(elem){
+            elem.classList.remove("elegible")
+
+        })
+        let divStats = document.getElementById(divID)
+        console.log(divID)
+        console.log(divStats)
+        divStats.querySelectorAll(".custom-input-number").forEach(function(elem){
+            elem.classList.add("elegible")
+        })
+        if(divID === "driverStats"){
+            document.getElementById("growthInput").classList.add("elegible")
+            document.getElementById("agressionInput").classList.add("elegible")
+
+        }
+        document.querySelectorAll(".main-panel-stats").forEach(function(elem){
+            elem.className = "main-panel-stats d-none"
+        })
+        divStats.classList.remove("d-none")
+
     }
 
     function check_selected(){
