@@ -185,8 +185,6 @@ document.getElementById("confirmCalendar").addEventListener("click",function () 
     }
     socket.send(JSON.stringify(dataCalendar))
 
-    console.log(deleted)
-
     if(deleted){
         document.getElementById("addRaceButton").disabled = true;
     }

@@ -24,6 +24,8 @@ let posInTeam;
 let modalType;
 let driverEditingID;
 let driverEditingName;
+let driver1;
+let driver2;
 
 let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as" }
 let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
@@ -157,6 +159,17 @@ function editContract(){
         driver: driverEditingName
     }
     socket.send(JSON.stringify(data))
+}
+
+
+function manage_swap(){
+    let parent1 = driver1.parentNode;
+    let parent2 = driver2.parentNode;
+    parent1.removeChild(driver1);
+    parent2.removeChild(driver2);
+    parent1.appendChild(driver2);
+    parent2.appendChild(driver1);
+
 }
 
 function signDriver(type) {
@@ -303,10 +316,9 @@ interact('.free-driver').draggable({
                         
                     }
                     else if(element.childElementCount == 1){
-                        console.log(originalParent.id)
                         if (originalParent.className === "col driver-space") {
-                            let driver1 = target.dataset.driverid;
-                            let driver2 = element.firstChild.dataset.driverid;
+                            driver1 = target;
+                            driver2 = element.firstChild;
                             let data = {
                                 command: "swap",
                                 driver1ID: target.dataset.driverid,
@@ -316,6 +328,7 @@ interact('.free-driver').draggable({
                             }
                     
                             socket.send(JSON.stringify(data))
+                            manage_swap()
                         }
                         
                     }
