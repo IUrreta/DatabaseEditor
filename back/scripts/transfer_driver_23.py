@@ -172,8 +172,8 @@ def run_script(option=""):
             new_num = free_numbers[rand_index]
             cursor.execute("UPDATE Staff_DriverNumbers SET CurrentHolder = " + str(driver_id[0]) + " WHERE Number = " + str(new_num[0]))
     elif(params[0] == "swap"):
-        driver_1_id = get_driver_id(params[1])
-        driver_2_id = get_driver_id(params[2])
+        driver_1_id = (params[1],)
+        driver_2_id = (params[2],)
         position_1 = cursor.execute("SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = " + str(driver_1_id[0])).fetchone()
         position_2 = cursor.execute("SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = " + str(driver_2_id[0])).fetchone()
         team_1_id = cursor.execute("SELECT TeamID FROM Staff_Contracts WHERE StaffID = " + str(driver_1_id[0])).fetchone()
@@ -220,12 +220,12 @@ def run_script(option=""):
                 cursor.execute("INSERT INTO Staff_RaceEngineerDriverAssignments VALUES (" + str(engineer_2_id[0]) + ", " + str(driver_1_id[0]) +  ", 0, 0, 1)")
 
             #checks if the driver was in the standings and if it wasn't it updates the standings
-            position_1in_standings = cursor.execute("SELECT MAX(Position) FROM Races_DriverStandings WHERE SeasonID = " + str(year[0])).fetchone()
-            points_driver1_in_standings = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE DriverID = " + str(driver_1_id[0]) + " AND SeasonID = " + str(year[0])).fetchone()
+            position_1in_standings = cursor.execute("SELECT MAX(Position) FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = " + str(year[0])).fetchone()
+            points_driver1_in_standings = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND DriverID = " + str(driver_1_id[0]) + " AND SeasonID = " + str(year[0])).fetchone()
         
             if(points_driver1_in_standings == None):
                 points_driver1_in_standings = (0,)
-                cursor.execute("INSERT INTO Races_DriverStandings VALUES (" + str(year[0]) + ", " + str(driver_1_id[0]) + ", " + str(points_driver1_in_standings[0])+ ", " + str(position_1in_standings[0] + 1) + ", 0, 0)")
+                cursor.execute("INSERT INTO Races_DriverStandings VALUES (" + str(year[0]) + ", " + str(driver_1_id[0]) + ", " + str(points_driver1_in_standings[0])+ ", " + str(position_1in_standings[0] + 1) + ", 0, 0, 1)")
 
             cursor.execute("UPDATE Staff_Contracts SET TeamID = " + str(team_1_id[0]) + ", PosInTeam = " + str(position_1[0]) + " WHERE ContractType = 0 AND StaffID = " + str(driver_2_id[0]))
             cursor.execute("UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = " + str(driver_2_id[0]))
@@ -244,12 +244,12 @@ def run_script(option=""):
                 cursor.execute("INSERT INTO Staff_RaceEngineerDriverAssignments VALUES (" + str(engineer_1_id[0]) + ", " + str(driver_2_id[0]) +  ", 0, 0, 1)")
 
             #checks if the driver was in the standings and if it wasn't it updates the standings
-            position_2in_standings = cursor.execute("SELECT MAX(Position) FROM Races_DriverStandings WHERE SeasonID = " + str(year[0])).fetchone()
-            points_driver2_in_standings = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE DriverID = " + str(driver_2_id[0]) + " AND SeasonID = " + str(year[0])).fetchone()
+            position_2in_standings = cursor.execute("SELECT MAX(Position) FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = " + str(year[0])).fetchone()
+            points_driver2_in_standings = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND DriverID = " + str(driver_2_id[0]) + " AND SeasonID = " + str(year[0])).fetchone()
         
             if(points_driver2_in_standings == None):
                 points_driver2_in_standings = (0,)
-                cursor.execute("INSERT INTO Races_DriverStandings VALUES (" + str(year[0]) + ", " + str(driver_2_id[0]) + ", " + str(points_driver2_in_standings[0])+ ", " + str(position_2in_standings[0] + 1) + ", 0, 0)")
+                cursor.execute("INSERT INTO Races_DriverStandings VALUES (" + str(year[0]) + ", " + str(driver_2_id[0]) + ", " + str(points_driver2_in_standings[0])+ ", " + str(position_2in_standings[0] + 1) + ", 0, 0, 1)")
 
             cursor.execute("UPDATE Staff_Contracts SET TeamID = " + str(team_2_id[0]) + ", PosInTeam = " + str(position_2[0]) + " WHERE ContractType = 0 AND StaffID = " + str(driver_1_id[0]))
             cursor.execute("UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = " + str(driver_1_id[0]))

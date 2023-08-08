@@ -75,6 +75,15 @@ async def handle_command(message):
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
 
+    elif type=="swap":
+        argument = "swap " + message["driver1ID"] + " " + message["driver2ID"]
+        run_trasnsfer(argument)
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully swapped " + message["driver1"] + " and  " + message["driver2"])
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+
     elif type =="editStats":
         run_editStats(message["driverID"] + " " + message["statsArray"])
         argument = type + " " + message["driverID"] + " " + message["statsArray"]

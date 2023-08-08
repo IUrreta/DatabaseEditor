@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     };
 
+
     function manage_calendarDiv(info){
         if(info[0] === "1"){
             document.getElementById("calendarBlockDiv").className = "blocking-div d-none"
