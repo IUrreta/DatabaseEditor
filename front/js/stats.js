@@ -42,7 +42,7 @@ function place_drivers_editStats(driversArray) {
             let elementosClicked = document.querySelectorAll('.clicked');
             elementosClicked.forEach(item => item.classList.remove('clicked'));
             newDiv.classList.toggle('clicked');
-            driverStatTitle.innerHTML = manage_stats_title(newDiv.textContent);
+            driverStatTitle.innerHTML = manage_stats_title(newDiv);
             load_stats(newDiv)
             if (statPanelShown == 0) {
                 document.getElementById("editStatsPanel").className = "left-panel-stats"
@@ -130,7 +130,7 @@ function place_staff(staffArray) {
             let elementosClicked = document.querySelectorAll('.clicked');
             elementosClicked.forEach(item => item.classList.remove('clicked'));
             newDiv.classList.toggle('clicked');
-            driverStatTitle.innerHTML = manage_stats_title(newDiv.textContent);
+            driverStatTitle.innerHTML = manage_stats_title(newDiv);
             load_stats(newDiv)
             if (statPanelShown == 0) {
                 document.getElementById("editStatsPanel").className = "left-panel-stats"
@@ -185,7 +185,7 @@ document.getElementById("confirmbtn").addEventListener("click",function () {
     else{
         id = document.querySelector(".clicked").dataset.staffid
     }
-    let driverName = manage_stats_title(document.querySelector(".clicked").textContent)
+    let driverName = getName(document.querySelector(".clicked"))
     document.querySelector(".clicked").dataset.stats = stats
     let new_ovr = calculateOverall(stats, typeOverall)
     document.querySelector(".clicked").childNodes[1].innerHTML = new_ovr
@@ -201,6 +201,19 @@ document.getElementById("confirmbtn").addEventListener("click",function () {
     socket.send(JSON.stringify(dataStats))
 
 })
+
+function getName(html) {
+    let name = ""
+    html.querySelectorAll('span').forEach(function(elem){
+        name += elem.innerText + " "
+    })
+
+    name = name.slice(0, -1)
+
+    return name;
+
+}
+
 
 function calculateOverall(stats, type) {
     let statsArray = stats.split(" ").map(Number);
@@ -241,7 +254,15 @@ function load_stats(div) {
 
 
 function manage_stats_title(html) {
-    let name = html.substring(0,html.length - 2).trim();
+    let colorClass =""
+    if(html.dataset.teamid != 0){
+        colorClass = team_dict[html.dataset.teamid] + "font"
+    }
+    let spanName = document.createElement("span")
+    let spanLastName = document.createElement("span")
+    let name = "<span>" + html.children[0].children[0].innerText + " </span>" + "<span class='" + colorClass + "'>" + html.children[0].children[1].innerText + "</span>"
+    
+    //let name = html.substring(0,html.length - 2).trim();
 
     return name;
 
