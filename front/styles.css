@@ -678,6 +678,7 @@ body::-webkit-scrollbar-thumb {
   color: white;
   transition: border-color 0.5s;
   position: relative;
+  font-size: 15px;
 }
 
 .free-driver .custom-icon{
@@ -932,44 +933,85 @@ input::-webkit-inner-spin-button {
 
 
 #redbull {
-  border-bottom: 2px solid #0600b5;
+  border-bottom: 2px solid #3671C6;
 }
 
 #ferrari {
-  border-bottom: 2px solid #FF2800;
+  border-bottom: 2px solid #F91536;
 }
 
 #merc {
-  border-bottom: 2px solid #00D2BE
+  border-bottom: 2px solid #6CD3BF
 }
 
 #mclaren {
-  border-bottom: 2px solid #FF8700
+  border-bottom: 2px solid #F58020
 }
 
 #alpine {
-  border-bottom: 2px solid #0090FF
+  border-bottom: 2px solid #2293D1
 }
 
 #alfaromeo {
-  border-bottom: 2px solid #900000
+  border-bottom: 2px solid #C92D4B
 }
 
 #astonmartin {
-  border-bottom: 2px solid #006F62
+  border-bottom: 2px solid #358C75
 }
 
 #alphatauri {
-  border-bottom: 2px solid #2B4562
+  border-bottom: 2px solid #5E8FAA
 }
 
 #williams {
-  border-bottom: 2px solid #005AFF
+  border-bottom: 2px solid #37BEDD
 }
 
 #haas {
-  border-bottom: 2px solid #ffffff
+  border-bottom: 2px solid #B6BABD
 }
+
+.rbfont {
+  color: #3671C6;
+}
+
+.fefont {
+  color: #F91536;
+}
+
+.mefont {
+  color: #6CD3BF;
+}
+
+.mcfont {
+  color: #F58020;
+}
+
+.alfont {
+  color: #2293D1  ;
+}
+
+.affont {
+  color: #C92D4B;
+}
+
+.asfont {
+  color: #358C75;
+}
+
+.atfont {
+  color: #5E8FAA;
+}
+
+.wifont {
+  color: #37BEDD;
+}
+
+.hafont {
+  color: #B6BABD;
+}
+
 
 
 

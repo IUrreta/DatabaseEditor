@@ -48,7 +48,18 @@ function place_drivers(driversArray) {
         let newDiv = document.createElement("div");
         newDiv.className = "col free-driver";
         newDiv.dataset.driverid = driver[1];
-        newDiv.innerHTML = driver[0];
+        newDiv.dataset.teamid = driver[2]
+        let name = driver[0].split(" ")
+        let spanName = document.createElement("span")
+        let spanLastName = document.createElement("span")
+        spanName.textContent = name[0] + " "
+        spanLastName.textContent = " "+ name[1].toUpperCase()
+        spanLastName.classList.add("bold-font")
+        newDiv.appendChild(spanName)
+        newDiv.appendChild(spanLastName)
+        manageColor(newDiv, spanLastName)
+
+        //newDiv.innerHTML = driver[0];
         divPosition = "free-drivers"
         if (driver[2] > 0 && driver[2] <= 10){
             addIcon(newDiv)
@@ -62,6 +73,12 @@ function place_drivers(driversArray) {
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
+}
+
+function manageColor(div, lastName){
+    let cl = team_dict[div.dataset.teamid] + "font"
+    lastName.classList.add(cl)
+    
 }
 
 function addIcon(div){
