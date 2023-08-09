@@ -227,23 +227,23 @@ body::-webkit-scrollbar-thumb {
   flex-direction: column;
 }
 
-#dropdownButton {
-  max-width: 210px;
-  margin-top: 0.6rem;
-  background-color: #797599;
-  margin-bottom: 1%;
-  border: 2px solid transparent;
+.custom-dropdown {
+  max-width: 250px !important;
+  margin-top: 0.6rem !important;
+  background-color: #797599 !important;
+  margin-bottom: 1% !important;
+  border: 2px solid transparent !important;
   border-radius: 10px !important;
 
 
 }
 
-#dropdownButton:hover {
+.custom-dropdown:hover {
   border: 2px solid white !important;
 }
 
-#dropdownButton:active {
-  background-color: #1a1826;
+.custom-dropdown:active {
+  background-color: #1a1826 !important;
 }
 
 .addTracks-button {
@@ -305,6 +305,7 @@ body::-webkit-scrollbar-thumb {
 .main-panel-stats {
   display: grid;
   grid-template-columns: repeat(3, 0.33fr);
+  min-height: 270px;
 }
 
 .extra-atributes {
@@ -331,6 +332,15 @@ body::-webkit-scrollbar-thumb {
   margin-bottom: 2rem;
 }
 
+.categoryPills, .scriptPills{
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  border-radius: 10px !important;
+
+}
+
 
 
 .confirm-section {
@@ -344,10 +354,8 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 120px;
-  padding-bottom: 120px;
-  padding-left: 315px;
-  padding-right: 315px;
+  width: 100%;
+  min-height: 276px;
 }
 
 .custom-confirm {
@@ -534,9 +542,10 @@ body::-webkit-scrollbar-thumb {
   border-radius: 3px;
 }
 
-#fulldriverlist {
+.staff-list {
   margin-left: 14px;
   margin-right: 5%;
+  min-height: 660px;
 }
 
 #driverstats {
@@ -669,6 +678,7 @@ body::-webkit-scrollbar-thumb {
   color: white;
   transition: border-color 0.5s;
   position: relative;
+  font-size: 15px;
 }
 
 .free-driver .custom-icon{
@@ -681,7 +691,7 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   position: absolute;
   right: 10px;
-  top: 8px;
+  top: 7.5px;
   justify-content: flex-end;
 }
 
@@ -704,9 +714,6 @@ body::-webkit-scrollbar-thumb {
   min-height: 660px;
 }
 
-#fulldriverlist {
-  min-height: 660px;
-}
 
 .free-driver:hover {
   border-color: white;
@@ -756,6 +763,7 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-height: 70px;
 }
 
 .scriptPills {
@@ -925,44 +933,85 @@ input::-webkit-inner-spin-button {
 
 
 #redbull {
-  border-bottom: 2px solid #0600b5;
+  border-bottom: 2px solid #3671C6;
 }
 
 #ferrari {
-  border-bottom: 2px solid #FF2800;
+  border-bottom: 2px solid #F91536;
 }
 
 #merc {
-  border-bottom: 2px solid #00D2BE
+  border-bottom: 2px solid #6CD3BF
 }
 
 #mclaren {
-  border-bottom: 2px solid #FF8700
+  border-bottom: 2px solid #F58020
 }
 
 #alpine {
-  border-bottom: 2px solid #0090FF
+  border-bottom: 2px solid #2293D1
 }
 
 #alfaromeo {
-  border-bottom: 2px solid #900000
+  border-bottom: 2px solid #C92D4B
 }
 
 #astonmartin {
-  border-bottom: 2px solid #006F62
+  border-bottom: 2px solid #358C75
 }
 
 #alphatauri {
-  border-bottom: 2px solid #2B4562
+  border-bottom: 2px solid #5E8FAA
 }
 
 #williams {
-  border-bottom: 2px solid #005AFF
+  border-bottom: 2px solid #37BEDD
 }
 
 #haas {
-  border-bottom: 2px solid #ffffff
+  border-bottom: 2px solid #B6BABD
 }
+
+.rbfont {
+  color: #3671C6;
+}
+
+.fefont {
+  color: #F91536;
+}
+
+.mefont {
+  color: #6CD3BF;
+}
+
+.mcfont {
+  color: #F58020;
+}
+
+.alfont {
+  color: #2293D1  ;
+}
+
+.affont {
+  color: #C92D4B;
+}
+
+.asfont {
+  color: #358C75;
+}
+
+.atfont {
+  color: #5E8FAA;
+}
+
+.wifont {
+  color: #37BEDD;
+}
+
+.hafont {
+  color: #B6BABD;
+}
+
 
 
 

@@ -48,7 +48,18 @@ function place_drivers(driversArray) {
         let newDiv = document.createElement("div");
         newDiv.className = "col free-driver";
         newDiv.dataset.driverid = driver[1];
-        newDiv.innerHTML = driver[0];
+        newDiv.dataset.teamid = driver[2];
+        let name = driver[0].split(" ")
+        let spanName = document.createElement("span")
+        let spanLastName = document.createElement("span")
+        spanName.textContent = name[0] + " "
+        spanLastName.textContent = " "+ name[1].toUpperCase()
+        spanLastName.classList.add("bold-font")
+        newDiv.appendChild(spanName)
+        newDiv.appendChild(spanLastName)
+        manageColor(newDiv, spanLastName)
+
+        //newDiv.innerHTML = driver[0];
         divPosition = "free-drivers"
         if (driver[2] > 0 && driver[2] <= 10){
             addIcon(newDiv)
@@ -62,6 +73,25 @@ function place_drivers(driversArray) {
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
+}
+
+function updateColor(div){
+    let surnameDiv = div.querySelector(".bold-font")
+    surnameDiv.className = "bold-font"
+    manageColor(div, surnameDiv)
+    let statsDiv = document.querySelector("#fulldriverlist").querySelector('[data-driverid="' + div.dataset.driverid + '"]')
+    statsDiv.dataset.teamid = div.dataset.teamid
+    surnameDiv = statsDiv.querySelector(".surname")
+    surnameDiv.className = "bold-font surname"
+    manageColor(statsDiv, surnameDiv)
+
+}
+
+function manageColor(div, lastName){
+    if(div.dataset.teamid != 0){
+        let colorClass = team_dict[div.dataset.teamid] + "font"
+        lastName.classList.add(colorClass)
+    }
 }
 
 function addIcon(div){
@@ -244,6 +274,8 @@ function signDriver(type) {
 document.getElementById("cancelButton").addEventListener('click', function () {
     if(modalType === "hire"){
         originalParent.appendChild(draggable);
+        draggable.dataset.teamid = inverted_dict[teamOrigin.dataset.team]
+        updateColor(draggable)
     }
     setTimeout(clearModal, 500);
 })
@@ -297,6 +329,8 @@ interact('.free-driver').draggable({
                         destinationParent = element;
                         element.appendChild(target);
                         teamDestiniy = element.parentNode.dataset.team
+                        target.dataset.teamid = inverted_dict[teamDestiniy]
+                        updateColor(target)
                         posInTeam = element.id.charAt(2)
                         document.getElementById("contractModalTitle").innerHTML = target.innerText + "'s contract with " + name_dict[teamDestiniy];
                         if (autoContractToggle.checked) {
@@ -319,6 +353,12 @@ interact('.free-driver').draggable({
                         if (originalParent.className === "col driver-space") {
                             driver1 = target;
                             driver2 = element.firstChild;
+                            let team1 = driver1.parentNode.parentNode
+                            let team2 = driver2.parentNode.parentNode
+                            driver1.dataset.teamid = inverted_dict[team2.dataset.team]
+                            updateColor(driver1)
+                            driver2.dataset.teamid = inverted_dict[team1.dataset.team]
+                            updateColor(driver2)
                             if(driver1 !== driver2){
                                 let data = {
                                     command: "swap",
@@ -350,6 +390,8 @@ interact('.free-driver').draggable({
                 }
                 if(originalParent.id !== "free-drivers"){
                     originalParent.removeChild(draggable);
+                    draggable.dataset.teamid = 0
+                    updateColor(draggable)
                     freeDrivers.appendChild(target);
                     let data = {
                         command: "fire",

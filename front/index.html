@@ -74,7 +74,7 @@
   <div class="tools-panel">
     <div class="ms-3 bold-font save-selector">
       Save selector
-      <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownButton" data-bs-toggle="dropdown"
+      <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="saveSelector" data-bs-toggle="dropdown"
         aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
         Your saves
       </button>
@@ -285,11 +285,35 @@
     </div>
     <div class="script-view d-none" id="edit_stats">
       <div class="col-3">
-        <div class="title bold-font py-3">
-          Drivers
+        <div class=" ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem;">
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="staffButton" data-bs-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
+          Staff Type
+        </button>
+        <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
+          <a class="dropdown-item" href="#" data-list="fulldriverlist" data-spaceStats="driverStats">Drivers</a>
+          <a class="dropdown-item" href="#" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical Chiefs</a>
+          <a class="dropdown-item" href="#" data-list="fullEngineerList" data-spaceStats="engineerStats">Race Engineers</a>
+          <a class="dropdown-item" href="#" data-list="fullAeroList" data-spaceStats="aeroStats">Head of Aerodynamics</a>
+          <a class="dropdown-item" href="#" data-list="fullDirectorList" data-spaceStats="directorStats">Sporting Directors</a>
+        </ul>
         </div>
-        <div class="main-editStats-section" id="fulldriverlist">
+        <div id="StaffLists">
+          <div class="main-editStats-section staff-list" id="placeholder">
+          </div>
+          <div class="main-editStats-section staff-list d-none" id="fulldriverlist">
+          </div>
+          <div class="main-editStats-section staff-list d-none" id="fullTechnicalList">
+          </div>
+          <div class="main-editStats-section staff-list d-none" id="fullEngineerList">
+          </div>
+          <div class="main-editStats-section staff-list d-none" id="fullAeroList">
+          </div>
+          <div class="main-editStats-section staff-list d-none" id="fullDirectorList">
+          </div>
+
         </div>
+
       </div>
       <div class="col-9">
         <div class="title bold-font py-3">
@@ -307,57 +331,152 @@
               </div>
 
             </div>
-
-            <div class="main-panel-stats">
-              <div class="one-stat-panel">
-                Cornering
-                <input type="number" class="custom-input-number">
+            <div class="main-panel-space">
+              <div class="main-panel-stats" id="driverStats">
+                <div class="one-stat-panel">
+                  Cornering
+                  <input type="number" class="custom-input-number elegible">
+                </div>
+                <div class="one-stat-panel">
+                  Breaking
+                  <input type="number" class="custom-input-number elegible">
+                </div>
+                <div class="one-stat-panel">
+                  Control
+                  <input type="number" class="custom-input-number elegible">
+                </div>
+                <div class="one-stat-panel">
+                  Smoothness
+                  <input type="number" class="custom-input-number elegible">
+                </div>
+                <div class="one-stat-panel">
+                  Adaptability
+                  <input type="number" class="custom-input-number elegible">
+                </div>
+                <div class="one-stat-panel">
+                  Overtaking
+                  <input type="number" class="custom-input-number elegible">
+                </div>
+                <div class="one-stat-panel">
+                  Defence
+                  <input type="number" class="custom-input-number elegible">
+                </div>
+                <div class="one-stat-panel">
+                  Reactions 
+                  <input type="number" class="custom-input-number elegible">
+                </div>
+                <div class="one-stat-panel">
+                  Accuracy
+                  <input type="number" class="custom-input-number elegible">
+                </div>
               </div>
-              <div class="one-stat-panel">
-                Breaking
-                <input type="number" class="custom-input-number">
+              <div class="main-panel-stats d-none" id="chiefStats">
+                <div class="one-stat-panel">
+                  Chasis
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Front wing
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Rear wing
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Sidepods
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Floor
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Suspenson
+                  <input type="number" class="custom-input-number ">
+                </div>
               </div>
-              <div class="one-stat-panel">
-                Control
-                <input type="number" class="custom-input-number">
+              <div class="main-panel-stats d-none" id="engineerStats">
+                <div class="one-stat-panel">
+                  Friendliness
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Feedback
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Composure
+                  <input type="number" class="custom-input-number ">
+                </div>
               </div>
-              <div class="one-stat-panel">
-                Smoothness
-                <input type="number" class="custom-input-number">
+              <div class="main-panel-stats d-none" id="aeroStats">
+                <div class="one-stat-panel">
+                  Cooling
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  DRS
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  High speed downforce
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel">
+                  Medium speed downforce
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Low speed downforce
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Drag
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel">
+                  Airflow
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Sensitivity
+                  <input type="number" class="custom-input-number ">
+                </div>
               </div>
-              <div class="one-stat-panel">
-                Adaptability
-                <input type="number" class="custom-input-number">
-              </div>
-              <div class="one-stat-panel">
-                Overtaking
-                <input type="number" class="custom-input-number">
-              </div>
-              <div class="one-stat-panel">
-                Defence
-                <input type="number" class="custom-input-number">
-              </div>
-              <div class="one-stat-panel">
-                Reactions
-                <input type="number" class="custom-input-number">
-              </div>
-              <div class="one-stat-panel">
-                Accuracy
-                <input type="number" class="custom-input-number">
+              <div class="main-panel-stats d-none" id="directorStats">
+                <div class="one-stat-panel">
+                  Training
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Aptitude
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Leadership
+                  <input type="number" class="custom-input-number ">
+                </div>
+                <div class="one-stat-panel staff">
+                  Processes
+                  <input type="number" class="custom-input-number ">
+                </div>
               </div>
             </div>
 
+
+
             <div class="bottom-panel">
-              <div style="width: 33%;">
+              <div style="min-width: 33%;" id="specialStatsPanel">
                 <div class="custom-hr"></div>
                 <div class="extra-atributes">
                   <div class="one-stat-panel extra-inputs">
                     Growth
-                    <input type="number" class="custom-input-number">
+                    <input type="number" class="custom-input-number elegible" id="growthInput">
                   </div>
                   <div class="one-stat-panel extra-inputs">
                     Agression
-                    <input type="number" class="custom-input-number">
+                    <input type="number" class="custom-input-number elegible" id="agressionInput">
                   </div>
                 </div>
               </div>
