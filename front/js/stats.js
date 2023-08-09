@@ -4,7 +4,9 @@ let typeOverall = "driver";
 let typeEdit;
 
 function removeStatsDrivers() {
-    document.getElementById("fulldriverlist").innerHTML = ""
+    document.querySelectorAll(".staff-list").forEach(function(elem){
+        elem.innerHTML = ""
+    })
 }
 
 function place_drivers_editStats(driversArray) {
@@ -89,7 +91,6 @@ function place_staff(staffArray) {
             }
         }
         statsString = statsString.slice(0,-1);
-        console.log(divPosition)
 
 
         let newDiv = document.createElement("div");
@@ -116,7 +117,6 @@ function place_staff(staffArray) {
 
         });
         ovr = calculateOverall(statsString, "staff")
-        console.log(ovr)
         ovrDiv.innerHTML = ovr
         newDiv.appendChild(ovrDiv)
         document.getElementById(divPosition).appendChild(newDiv)
@@ -134,7 +134,6 @@ function recalculateOverall() {
     stats = stats.slice(0,-1);
     let oldovr = document.getElementById("ovrholder").innerHTML;
     let ovr = calculateOverall(stats, typeOverall);
-    console.log(ovr)
     if (oldovr != ovr) {
         document.getElementById("ovrholder").innerHTML = ovr;
         document.getElementById("ovrholder").className = "overall-holder bold-font alert";
@@ -180,7 +179,6 @@ document.getElementById("confirmbtn").addEventListener("click",function () {
 function calculateOverall(stats, type) {
     let statsArray = stats.split(" ").map(Number);
     let rating;
-    console.log(type)
     if (type === "driver") {
         let cornering = statsArray[0];
         let braking = statsArray[1];
@@ -210,7 +208,6 @@ function load_stats(div) {
     let statsArray = div.dataset.stats.split(" ").map(Number);
 
     let inputArray = document.querySelectorAll(".elegible")
-    console.log(inputArray)
     inputArray.forEach(function (input,index) {
         inputArray[index].value = statsArray[index]
     });

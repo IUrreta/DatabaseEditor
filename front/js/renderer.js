@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded',function () {
         // console.log('Mensaje recibido: ' + event.data);
 
         let message = JSON.parse(event.data)
-        console.log(message)
         if (message[0] === "ERROR") {
             update_notifications(message[1],true)
         }
@@ -72,7 +71,7 @@ document.addEventListener('DOMContentLoaded',function () {
             else if (message[0] === "Contract fetched") {
                 manage_modal(message.slice(1)[0])
             }
-            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched") update_notifications(message[0],false)
+            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched") update_notifications(message[0],false)
 
         }
 
@@ -175,7 +174,7 @@ document.addEventListener('DOMContentLoaded',function () {
                     if (staffSelected === "Head of Aerodynamics") {
                         typeEdit = "3"
                     }
-                    if (staffSelected === "Sporting directors") {
+                    if (staffSelected === "Sporting Directors") {
                         typeEdit = "4"
                     }
 
@@ -200,8 +199,6 @@ document.addEventListener('DOMContentLoaded',function () {
 
         })
         let divStats = document.getElementById(divID)
-        console.log(divID)
-        console.log(divStats)
         divStats.querySelectorAll(".custom-input-number").forEach(function (elem) {
             elem.classList.add("elegible")
         })
