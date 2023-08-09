@@ -48,7 +48,7 @@ function place_drivers(driversArray) {
         let newDiv = document.createElement("div");
         newDiv.className = "col free-driver";
         newDiv.dataset.driverid = driver[1];
-        newDiv.dataset.teamid = driver[2]
+        newDiv.dataset.teamid = driver[2];
         let name = driver[0].split(" ")
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
@@ -79,6 +79,11 @@ function updateColor(div){
     let surnameDiv = div.querySelector(".bold-font")
     surnameDiv.className = "bold-font"
     manageColor(div, surnameDiv)
+    let statsDiv = document.querySelector("#fulldriverlist").querySelector('[data-driverid="' + div.dataset.driverid + '"]')
+    statsDiv.dataset.teamid = div.dataset.teamid
+    surnameDiv = statsDiv.querySelector(".surname")
+    surnameDiv.className = "bold-font surname"
+    manageColor(statsDiv, surnameDiv)
 
 }
 

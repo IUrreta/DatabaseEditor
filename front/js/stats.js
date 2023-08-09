@@ -19,7 +19,19 @@ function place_drivers_editStats(driversArray) {
 
         newDiv.className = "col normal-driver";
         newDiv.dataset.driverid = driver[1];
-        newDiv.innerHTML = driver[0];
+        let nameDiv = document.createElement("div");
+        newDiv.dataset.teamid = driver[2];
+        let name = driver[0].split(" ")
+        let spanName = document.createElement("span")
+        let spanLastName = document.createElement("span")
+        spanName.textContent = name[0] + " "
+        spanLastName.textContent = " "+ name[1].toUpperCase()
+        spanLastName.classList.add("bold-font")
+        spanLastName.classList.add("surname")
+        nameDiv.appendChild(spanName)
+        nameDiv.appendChild(spanLastName)
+        manageColor(newDiv, spanLastName)
+        newDiv.appendChild(nameDiv)
         let statsString = '';
 
         for (let i = 4; i <= 14; i++) {
@@ -43,6 +55,7 @@ function place_drivers_editStats(driversArray) {
         });
         ovr = calculateOverall(statsString, "driver")
         ovrDiv.innerHTML = ovr
+        ovrDiv.classList.add("bold-font")
         newDiv.appendChild(ovrDiv)
         document.getElementById(divPosition).appendChild(newDiv)
 
@@ -98,7 +111,19 @@ function place_staff(staffArray) {
 
         newDiv.className = "col normal-driver";
         newDiv.dataset.staffid = staff[1];
-        newDiv.innerHTML = staff[0];
+        let nameDiv = document.createElement("div");
+        newDiv.dataset.teamid = staff[2];
+        let name = staff[0].split(" ")
+        let spanName = document.createElement("span")
+        let spanLastName = document.createElement("span")
+        spanName.textContent = name[0] + " "
+        spanLastName.textContent = " "+ name[1].toUpperCase()
+        spanLastName.classList.add("bold-font")
+        spanLastName.classList.add("surname")
+        nameDiv.appendChild(spanName)
+        nameDiv.appendChild(spanLastName)
+        manageColor(newDiv, spanLastName)
+        newDiv.appendChild(nameDiv)
 
         newDiv.dataset.stats = statsString;
         newDiv.addEventListener('click',() => {
@@ -118,6 +143,7 @@ function place_staff(staffArray) {
         });
         ovr = calculateOverall(statsString, "staff")
         ovrDiv.innerHTML = ovr
+        ovrDiv.classList.add("bold-font")
         newDiv.appendChild(ovrDiv)
         document.getElementById(divPosition).appendChild(newDiv)
 

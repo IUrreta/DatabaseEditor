@@ -691,7 +691,7 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   position: absolute;
   right: 10px;
-  top: 8px;
+  top: 7.5px;
   justify-content: flex-end;
 }
 
