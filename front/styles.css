@@ -265,7 +265,7 @@ body::-webkit-scrollbar-thumb {
   background-color: #1a1826;
 }
 
-#addTrackMenu{
+#addTrackMenu {
   max-height: 300px;
   overflow-y: scroll;
 }
@@ -279,11 +279,11 @@ body::-webkit-scrollbar-thumb {
   border-radius: 3px;
 }
 
-.menu-race{
+.menu-race {
   max-width: 200px;
 }
 
-.menuFlag{
+.menuFlag {
   height: 10px;
   width: 20px;
   margin-left: 10px;
@@ -332,7 +332,8 @@ body::-webkit-scrollbar-thumb {
   margin-bottom: 2rem;
 }
 
-.categoryPills, .scriptPills{
+.categoryPills,
+.scriptPills {
   padding-top: 6px !important;
   padding-bottom: 6px !important;
   padding-left: 12px !important;
@@ -394,7 +395,7 @@ body::-webkit-scrollbar-thumb {
 
 }
 
-.delete-mode{
+.delete-mode {
   background-color: #9c1919 !important;
   border-color: #fc5c5c !important;
   transition: border-color 0.5s;
@@ -409,7 +410,7 @@ body::-webkit-scrollbar-thumb {
   background-color: #5f0d0d !important;
 }
 
-.delete-mode:hover{
+.delete-mode:hover {
   border-color: white !important;
 }
 
@@ -440,7 +441,7 @@ body::-webkit-scrollbar-thumb {
   justify-content: flex-start;
 }
 
-.save-calendar-section{
+.save-calendar-section {
   height: 530px;
   display: flex;
   flex-direction: column;
@@ -448,11 +449,11 @@ body::-webkit-scrollbar-thumb {
   justify-content: flex-end;
 }
 
-.option-buttons{
+.option-buttons {
   margin: 10px;
   width: 210px !important;
   height: 41px !important;
-  
+
 }
 
 .race-calendar {
@@ -473,11 +474,11 @@ body::-webkit-scrollbar-thumb {
 
 }
 
-.race-calendar:hover{
+.race-calendar:hover {
   border-color: white !important;
 }
 
-.deleting:hover{
+.deleting:hover {
   border: 2px solid transparent !important;
 }
 
@@ -499,7 +500,7 @@ body::-webkit-scrollbar-thumb {
   cursor: pointer;
 }
 
-.delete-div:hover{
+.delete-div:hover {
   color: red;
   border-color: red;
 }
@@ -601,7 +602,25 @@ body::-webkit-scrollbar-thumb {
   background-color: red !important;
 }
 
+.one-performance {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 22px;
+  padding-left: 20px;
+}
 
+.performance-buttons {
+  padding: 10px;
+  display: flex;
+  width: 100px;
+  justify-content: space-around;
+}
+
+.performance-name{
+  width: 200px;
+}
 
 .car-info {
   font-size: 14px;
@@ -611,6 +630,17 @@ body::-webkit-scrollbar-thumb {
   padding-top: 10px;
   display: grid;
   grid-template-columns: repeat(2, minmax(400px, 1fr));
+  overflow-y: hidden;
+  margin-left: 0%;
+  margin-right: 14px;
+}
+
+.performance-bar {
+  width: 300px;
+}
+
+.performance-section {
+  padding-top: 10px;
   overflow-y: hidden;
   margin-left: 0%;
   margin-right: 14px;
@@ -631,7 +661,7 @@ body::-webkit-scrollbar-thumb {
 
 }
 
-.custom-footer{
+.custom-footer {
   color: white !important;
   border-top: 1px solid #797599 !important;
   background-color: #393744 !important;
@@ -639,7 +669,8 @@ body::-webkit-scrollbar-thumb {
 }
 
 ::-webkit-input-placeholder {
-  color: #999; /* Cambia el color del texto del placeholder */
+  color: #999;
+  /* Cambia el color del texto del placeholder */
 }
 
 .rounded-input {
@@ -653,7 +684,7 @@ body::-webkit-scrollbar-thumb {
   color: white;
 }
 
-.custom-disabled{
+.custom-disabled {
   background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
 }
 
@@ -665,6 +696,23 @@ body::-webkit-scrollbar-thumb {
 
 .rounded-input:focus {
   outline: 0px solid transparent;
+  border-color: white;
+}
+
+.team {
+  background-color: #3f3c57;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 4.8px;
+  cursor: pointer !important;
+  margin: 10px;
+  color: white;
+  transition: border-color 0.5s;
+  position: relative;
+  font-size: 18px;
+}
+
+.team:hover {
   border-color: white;
 }
 
@@ -681,7 +729,7 @@ body::-webkit-scrollbar-thumb {
   font-size: 15px;
 }
 
-.free-driver .custom-icon{
+.free-driver .custom-icon {
   color: transparent;
   transition: opacity 0.5s;
   background-image: linear-gradient(to left, #3f3c57, transparent);
@@ -695,19 +743,19 @@ body::-webkit-scrollbar-thumb {
   justify-content: flex-end;
 }
 
-.custom-icon i{
+.custom-icon i {
   transition: color 0.5s;
 }
 
-.custom-icon i:hover{
+.custom-icon i:hover {
   color: white;
   cursor: pointer;
 }
 
-.free-driver:hover .custom-icon{
+.free-driver:hover .custom-icon {
   color: #9d98b8;
   opacity: 1;
-  
+
 }
 
 #free-drivers {
@@ -734,7 +782,7 @@ body::-webkit-scrollbar-thumb {
   color: white;
 }
 
-#calendarBlockDiv{
+#calendarBlockDiv {
   background-color: rgba(128, 128, 128, 0.733);
 }
 
@@ -837,12 +885,18 @@ input::-webkit-inner-spin-button {
   max-height: 140px;
 }
 
-.logo-and-name{
+.logo-and-name {
   display: flex;
   flex-direction: row;
 
 }
 
+.team-title {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  padding-left: 8px;
+}
 
 
 .team-name {
@@ -851,7 +905,7 @@ input::-webkit-inner-spin-button {
   padding-top: 10px;
 }
 
-#redbulllogo{
+#redbulllogo {
   width: 55px;
   height: 45px;
   padding-bottom: 8px;
@@ -859,7 +913,7 @@ input::-webkit-inner-spin-button {
   padding-top: 7px;
 }
 
-#ferrarilogo{
+#ferrarilogo {
   width: 35px;
   height: 40px;
   padding-bottom: 6px;
@@ -867,7 +921,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#merclogo{
+#merclogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -875,15 +929,15 @@ input::-webkit-inner-spin-button {
   padding-left: 10px;
 }
 
-#alpinelogo{
+#alpinelogo {
   width: 45px;
-    height: 40px;
-    padding-bottom: 6px;
-    padding-top: 9px;
-    padding-left: 5px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-top: 9px;
+  padding-left: 5px;
 }
 
-#mclarenlogo{
+#mclarenlogo {
   width: 40px;
   height: 40px;
   padding-bottom: 4px;
@@ -891,7 +945,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#alfalogo{
+#alfalogo {
   width: 40px;
   height: 40px;
   padding-bottom: 3px;
@@ -899,7 +953,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#astonlogo{
+#astonlogo {
   width: 50px;
   height: 45px;
   padding-bottom: 5px;
@@ -907,7 +961,7 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
-#haaslogo{
+#haaslogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -915,7 +969,7 @@ input::-webkit-inner-spin-button {
   padding-left: 6px;
 }
 
-#alphataurilogo{
+#alphataurilogo {
   width: 45px;
   height: 45px;
   padding-bottom: 12px;
@@ -923,7 +977,7 @@ input::-webkit-inner-spin-button {
   padding-top: 12px;
 }
 
-#williamslogo{
+#williamslogo {
   width: 45px;
   height: 45px;
   padding-bottom: 11px;
@@ -989,7 +1043,7 @@ input::-webkit-inner-spin-button {
 }
 
 .alfont {
-  color: #2293D1  ;
+  color: #2293D1;
 }
 
 .affont {

@@ -47,7 +47,7 @@ async def handle_command(message):
         staff.insert(0, "Staff Fetched")
         data_json_staff = json.dumps(staff)
         await send_message_to_client(data_json_staff)
-        print(fetch_parts())
+        #print(fetch_parts())
         allowCalendar = [tuple(check_claendar())]
         allowCalendar.insert(0, "Calendar fetched")
         data_json_calendar = json.dumps(allowCalendar)
