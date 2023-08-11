@@ -21,6 +21,10 @@ document.addEventListener('DOMContentLoaded',function () {
 
     const notificationPanel = document.getElementById("notificationPanel");
 
+    const logButton = document.getElementById("logFileButton");
+
+    const status = document.querySelector(".status-info")
+
 
 
     let isSaveSelected = 0;
@@ -31,6 +35,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
     let connectionTimeout = setTimeout(() => {
         update_notifications("Could not connect with backend",true)
+        manage_status(0)
     },4000);
 
 
@@ -51,11 +56,13 @@ document.addEventListener('DOMContentLoaded',function () {
         let message = JSON.parse(event.data)
         if (message[0] === "ERROR") {
             update_notifications(message[1],true)
+            manage_status(0)
         }
         else {
             if (message[0] === "Connected Succesfully") {
                 load_saves(message)
                 clearTimeout(connectionTimeout);
+                manage_status(1)
             }
             else if (message[0] === "Save Loaded Succesfully") {
                 remove_drivers()
@@ -78,6 +85,24 @@ document.addEventListener('DOMContentLoaded',function () {
         }
 
     };
+
+    logButton.addEventListener("click", function(){
+        window.location.href = '../log.txt';
+    })
+
+    function manage_status(state){
+        if(state == 1){
+            status.classList.remove("awaiting")
+            status.classList.add("positive")
+            status.textContent = '\xa0' + "Connected"
+        }
+        else if(state == 0){
+            status.classList.remove("awaiting")
+            status.classList.remove("positive")
+            status.classList.add("negative")
+            status.textContent = '\xa0' + "Disconnected"
+        }
+    }
 
 
     function manage_calendarDiv(info) {
@@ -102,7 +127,7 @@ document.addEventListener('DOMContentLoaded',function () {
         newNoti = document.createElement('div');
         newNoti.className = 'notification';
         newNoti.textContent = noti;
-        if (error) newNoti.style.color = "red";
+        if (error) newNoti.style.color = "#ff8080";
 
         notificationPanel.appendChild(newNoti);
         if (!error) {
