@@ -24,6 +24,7 @@ def run_script(option=""):
     for i in range(len(partsType)):
         designs = cursor.execute("SELECT DesignID FROM Parts_Designs WHERE PartType = " + str(partsType[i]) + " AND TeamID = " + team_id).fetchall()
         listDesigns = []
+        doneExp = 0
         for j in designs:
             listDesigns.append(j[0])
         # print(listDesigns)
@@ -40,10 +41,8 @@ def run_script(option=""):
                     ratio = 0.002
                 else:
                     ratio = 0.1
-                print("AAAAAAAAAAA")
                 delta = buffs_dict[buffs[i]]
                 deltaUnit = delta*ratio
-                print(delta)
                 values = cursor.execute("SELECT Value, UnitValue FROM Parts_Designs_StatValues WHERE DesignID = " + str(design) + " AND PartStat = " + str(k)).fetchone()
                 old_value = round(decimal.Decimal(values[0]), 10)
                 old_valueUnit = round(decimal.Decimal(values[1]), 10)
@@ -51,7 +50,23 @@ def run_script(option=""):
                 new_valueUnit = old_valueUnit + decimal.Decimal(deltaUnit)
                 cursor.execute("UPDATE Parts_Designs_StatValues SET Value = " + str(new_value) + ", UnitValue = " + str(new_valueUnit) + " WHERE DesignID = " + str(design) + " AND PartStat = " + str(k))
                 print("Old value for stat " + str(k) + " from design " + str(design) + ": [" + str(old_value) + ", " + str(old_valueUnit) + "], new values: [" + str(new_value) + ", " + str(new_valueUnit) + "]")
-
+                if(doneExp < len(listStats)):
+                    expertise_value = cursor.execute("SELECT Expertise FROM Parts_TeamExpertise WHERE PartType = " + str(partsType[i]) + " AND PartStat = " + str(k) + " AND TeamID = " + str(team_id)).fetchone() 
+                    if expertise_value is None:
+                        print("Done!")
+                    else:
+                        if(delta >= 0):
+                            expertiseDelta = delta * round(decimal.Decimal(1.2), 10)
+                        else:
+                            expertiseDelta = delta
+                        expertiseDelta
+                        old_expertise = round(decimal.Decimal(expertise_value[0]), 10)
+                        new_expertise = old_expertise + expertiseDelta
+                        cursor.execute("UPDATE Parts_TeamExpertise SET Expertise = " + str(new_expertise) + " WHERE PartType = " + str(partsType[i]) + " AND PartStat = " + str(k) + " AND TeamID = " + str(team_id))
+                        print("Old Expertise: " + str(old_expertise) + ", new expertise: " + str(new_expertise))   
+                        doneExp += 1
+                else:
+                    print("Done!")            
 
 
     

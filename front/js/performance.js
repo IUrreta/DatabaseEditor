@@ -27,10 +27,12 @@ document.getElementById("confirmPerformancebtn").addEventListener("click",functi
         performanes += dataProgress + ' ';
     });
     performanes = performanes.slice(0,-1);
+    document.querySelector(".selected").dataset.teamname
     let dataPerformance = {
         command: "editPerformance",
         teamID: teamSelected,
         performanceArray: performanes,
+        teamName : document.querySelector(".selected").dataset.teamname
     }
 
     socket.send(JSON.stringify(dataPerformance))

@@ -128,6 +128,12 @@ async def handle_command(message):
         print(message)
         argument = message["teamID"] + " " + message["performanceArray"]
         run_editPerformance(argument)
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully edited " + message["teamName"] + "'s car performance")
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+        argument = "editPerformance " +  message["teamID"] + " " + message["performanceArray"]
 
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")

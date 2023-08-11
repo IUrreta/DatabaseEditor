@@ -647,10 +647,11 @@ body::-webkit-scrollbar-thumb {
 .performance-name {
   width: 200px;
   transition: color 0.5s;
+  cursor:default !important;
 }
 
 .custom-progress {
-  width: 500px;
+  width: 703px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -658,14 +659,14 @@ body::-webkit-scrollbar-thumb {
 }
 
 .red-part {
-  width: 250px;
+  width: 350px;
   height: 3px;
   background-color: #ff8080;
   position: relative;
 }
 
 .disabled-part {
-  width: 250px;
+  width: 350px;
   height: 3px;
   background-color: #110f24;
   position: relative;
