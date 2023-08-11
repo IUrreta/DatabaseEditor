@@ -123,6 +123,9 @@ async def handle_command(message):
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
 
+    elif type =="editPerformance":
+        print(message)
+
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()

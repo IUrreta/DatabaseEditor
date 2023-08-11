@@ -776,6 +776,13 @@ body::-webkit-scrollbar-thumb {
   border-color: white;
 }
 
+.confirm-area{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 130px;
+}
+
 .team {
   background-color: #3f3c57;
   border: 2px solid transparent;
@@ -791,6 +798,15 @@ body::-webkit-scrollbar-thumb {
 
 .team:hover {
   border-color: white;
+}
+
+.team.selected {
+  border-color: red;
+  /* Borde rojo al hacer clic */
+}
+
+.team:active {
+  background-color: #1a1826;
 }
 
 .free-driver {
