@@ -463,19 +463,21 @@ body::-webkit-scrollbar-thumb {
   border-radius: 10px;
   padding: 8px;
   margin: 10px;
-  color: white;
+  color: #dedde6;
+  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
   display: flex;
   cursor: grab !important;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
   max-height: 112px;
-  transition: border-color 0.5s;
 
 }
 
 .race-calendar:hover {
-  border-color: white !important;
+  border-color: white;
+  color: white;
+  background-color: #4e4b69;
 }
 
 .deleting:hover {
@@ -614,17 +616,17 @@ body::-webkit-scrollbar-thumb {
   margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
-  color: rgb(202, 199, 214);
+  color: #dedde6;
   border: 2px solid transparent;
   transition: border-color 0.5s, background-color 0.5s;
 }
 
-.one-performance:hover{
+.one-performance:hover {
   border-color: white;
   background-color: #4e4b69;
 }
 
-.one-performance:hover .performance-name{
+.one-performance:hover .performance-name {
   color: white;
 }
 
@@ -635,23 +637,27 @@ body::-webkit-scrollbar-thumb {
   justify-content: space-around;
 }
 
-.performance-buttons i{
+.performance-buttons i {
   transition: color 0.5s;
   cursor: pointer !important;
 }
 
-.performance-buttons i:hover{
-  color: white;
+.performance-buttons .bi-dash-circle:hover, .negative {
+  color: #ff8080;;
+}
+
+.performance-buttons .bi-plus-circle:hover, .positive {
+  color: #9fdf9f;
 }
 
 .performance-name {
   width: 200px;
   transition: color 0.5s;
-  cursor:default !important;
+  cursor: default !important;
 }
 
 .custom-progress {
-  width: 703px;
+  width: 603px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -659,14 +665,14 @@ body::-webkit-scrollbar-thumb {
 }
 
 .red-part {
-  width: 350px;
+  width: 300px;
   height: 3px;
   background-color: #ff8080;
   position: relative;
 }
 
 .disabled-part {
-  width: 350px;
+  width: 300px;
   height: 3px;
   background-color: #110f24;
   position: relative;
@@ -675,7 +681,7 @@ body::-webkit-scrollbar-thumb {
 .green-part {
   width: 0%;
   height: 100%;
-  background-color: #9fdf9f; 
+  background-color: #9fdf9f;
   position: absolute;
   top: 0;
   left: 0;
@@ -683,7 +689,7 @@ body::-webkit-scrollbar-thumb {
   transition: width 0.2s;
 }
 
-.separation-zone{
+.separation-zone {
   width: 3px;
   height: 10px;
   background-color: #f0f0f0;
@@ -692,7 +698,7 @@ body::-webkit-scrollbar-thumb {
 .gray-part {
   width: 100%;
   height: 100%;
-  background-color: #110f24; 
+  background-color: #110f24;
   position: absolute;
   top: 0;
   left: 0;
@@ -777,11 +783,18 @@ body::-webkit-scrollbar-thumb {
   border-color: white;
 }
 
-.confirm-area{
+.confirm-area {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 130px;
+}
+
+.performance-data {
+  margin-left: 30px;
+  font-size: 26px;
+  width: 200px;
+  text-align: center;
 }
 
 .team {
@@ -791,18 +804,21 @@ body::-webkit-scrollbar-thumb {
   padding: 4.8px;
   cursor: pointer !important;
   margin: 10px;
-  color: white;
-  transition: border-color 0.5s;
+  color: #dedde6;
+  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
   position: relative;
   font-size: 18px;
 }
 
 .team:hover {
   border-color: white;
+  color: white;
+  background-color: #4e4b69;
 }
 
 .team.selected {
   border-color: red;
+  color: white;
   /* Borde rojo al hacer clic */
 }
 
@@ -817,8 +833,8 @@ body::-webkit-scrollbar-thumb {
   padding: 8px;
   cursor: grab !important;
   margin: 10px;
-  color: white;
-  transition: border-color 0.5s;
+  color: #dedde6;
+  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
   position: relative;
   font-size: 15px;
 }
@@ -860,6 +876,8 @@ body::-webkit-scrollbar-thumb {
 .free-driver:hover {
   border-color: white;
   cursor: grab !important;
+  color: white;
+  background-color: #4e4b69;
 }
 
 .blocking-div {
@@ -886,11 +904,11 @@ body::-webkit-scrollbar-thumb {
   border-radius: 10px;
   padding: 8px;
   margin: 10px;
-  color: white;
+  color: #dedde6;
+  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
   border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
-  transition: border-color 0.5s;
 }
 
 .one-stat-panel {
@@ -956,17 +974,17 @@ input::-webkit-inner-spin-button {
 
 .normal-driver:hover {
   border-color: white;
-  /* Borde blanco al pasar el ratón */
+  color: white;
+  background-color: #4e4b69;
 }
 
 .normal-driver:active {
   background-color: #1a1826;
-  /* Cambia el color al hacer clic */
 }
 
 .normal-driver.clicked {
   border-color: red;
-  /* Borde rojo al hacer clic */
+  color: white;
 }
 
 .team-template {
@@ -982,6 +1000,12 @@ input::-webkit-inner-spin-button {
 .logo-and-name {
   display: flex;
   flex-direction: row;
+}
+
+.logo-and-title {
+  display: flex;
+  flex-direction: row;
+  height: 54.5px;
 
 }
 

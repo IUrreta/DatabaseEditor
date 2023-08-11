@@ -149,6 +149,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 isSaveSelected = 1;
                 document.getElementById("editStatsPanel").className = "left-panel-stats d-none";
                 statPanelShown = 0;
+                document.querySelector(".performance-show").classList.add("d-none")
                 check_selected()
             });
         });

@@ -7,6 +7,7 @@ document.querySelectorAll(".team").forEach(function (elem) {
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         console.log(elem.dataset.teamid)
+        document.querySelector(".performance-show").classList.remove("d-none")
         resetBars()
     })
 })
@@ -47,6 +48,7 @@ document.querySelectorAll(".bi-dash-circle").forEach(function (elem) {
             let value = parseInt(bar.dataset.progress,10) - 1
             bar.dataset.progress = value
         }
+        
         manage_bar(bar,bar.dataset.progress)
     })
 })
@@ -69,17 +71,21 @@ function manage_bar(bar,progress) {
     if (progress == 0) {
         grayDiv.style.width = "100%"
         greenDiv.style.width = "0%"
+        bar.parentNode.querySelector(".performance-data").className = "performance-data bold-font"
     }
     else if (progress > 0) {
         grayDiv.style.width = "100%"
         let newProgress = progress * 10
         let newWidth = 0 + newProgress + "%"
         greenDiv.style.width = newWidth;
+        bar.parentNode.querySelector(".performance-data").className = "performance-data bold-font positive"
     }
     else if (progress < 0) {
         greenDiv.style.width = "0%"
         let newProgress = progress * 10
         let newWidth = 100 + newProgress + "%"
         grayDiv.style.width = newWidth;
+        bar.parentNode.querySelector(".performance-data").className = "performance-data bold-font negative"
     }
+    bar.parentNode.querySelector(".performance-data").innerHTML = progress * 10 + "%"
 }
