@@ -863,9 +863,8 @@ body::-webkit-scrollbar-thumb {
 }
 
 .team.selected {
-  border-color: red;
-  color: white;
-  /* Borde rojo al hacer clic */
+  color: #110f24;
+  background-color: #dedde6;
 }
 
 .team:active {
@@ -1029,8 +1028,8 @@ input::-webkit-inner-spin-button {
 }
 
 .normal-driver.clicked {
-  border-color: red;
-  color: white;
+  color: #110f24;
+  background-color: #dedde6;
 }
 
 .team-template {
