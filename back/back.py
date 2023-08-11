@@ -9,6 +9,7 @@ from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script as run_trasnsfer
 from scripts.edit_stats_23 import run_script as run_editStats
 from scripts.custom_calendar_23 import run_script as run_editCalendar
+from scripts.car_performance_23 import run_script as run_editPerformance
 
 client = None
 path = None
@@ -125,6 +126,8 @@ async def handle_command(message):
 
     elif type =="editPerformance":
         print(message)
+        argument = message["teamID"] + " " + message["performanceArray"]
+        run_editPerformance(argument)
 
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")

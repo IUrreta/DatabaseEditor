@@ -6,6 +6,7 @@ document.querySelectorAll(".team").forEach(function (elem) {
         elemsSelected.forEach(item => item.classList.remove('selected'));
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
+        console.log(elem.dataset.teamid)
         resetBars()
     })
 })
@@ -29,7 +30,7 @@ document.getElementById("confirmPerformancebtn").addEventListener("click",functi
     let dataPerformance = {
         command: "editPerformance",
         teamID: teamSelected,
-        performaneArray: performanes,
+        performanceArray: performanes,
     }
 
     socket.send(JSON.stringify(dataPerformance))
