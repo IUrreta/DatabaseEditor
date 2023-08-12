@@ -117,7 +117,9 @@ document.addEventListener('DOMContentLoaded',function () {
                     let latestTag = tags[0].name;
                     let actualVersion = document.querySelector('.versionPanel').textContent.trim()
                     if (actualVersion.slice(-3) === "dev") {
-                        console.log("Development")
+                        document.querySelector(".update-info").textContent = '\xa0' + "Development branch"
+                        document.querySelector(".update-info").classList.remove("bi-cloud")
+                        document.querySelector(".update-info").classList.add("bi-code-slash")
                     }
                     else {
                         let latestVer = latestTag.split(".").map(Number);
