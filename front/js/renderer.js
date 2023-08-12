@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded',function () {
     const carPerformanceDiv = document.getElementById("car_performance");
 
 
-    const scriptsArray = [driverTransferDiv,editStatsDiv,customCalendarDiv, carPerformanceDiv]
+    const scriptsArray = [driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded',function () {
     const logButton = document.getElementById("logFileButton");
 
     const status = document.querySelector(".status-info")
+
+    const repoOwner = 'IUrreta'; // Reemplaza con el nombre del dueño del repositorio
+    const repoName = 'DatabaseEditor'; // Reemplaza con el nombre del repositorio
 
 
 
@@ -46,6 +49,7 @@ document.addEventListener('DOMContentLoaded',function () {
             command: "connect"
         }
         socket.send(JSON.stringify(data))
+        check_version()
 
     };
 
@@ -63,6 +67,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 load_saves(message)
                 clearTimeout(connectionTimeout);
                 manage_status(1)
+
             }
             else if (message[0] === "Save Loaded Succesfully") {
                 remove_drivers()
@@ -86,22 +91,63 @@ document.addEventListener('DOMContentLoaded',function () {
 
     };
 
-    logButton.addEventListener("click", function(){
+    logButton.addEventListener("click",function () {
         window.location.href = '../log.txt';
     })
 
-    function manage_status(state){
-        if(state == 1){
+    function manage_status(state) {
+        if (state == 1) {
             status.classList.remove("awaiting")
             status.classList.add("positive")
             status.textContent = '\xa0' + "Connected"
         }
-        else if(state == 0){
+        else if (state == 0) {
             status.classList.remove("awaiting")
             status.classList.remove("positive")
             status.classList.add("negative")
             status.textContent = '\xa0' + "Disconnected"
         }
+    }
+
+    function check_version() {
+        fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/tags`)
+            .then(response => response.json())
+            .then(tags => {
+                if (tags.length > 0) {
+                    let latestTag = tags[0].name;
+                    let actualVersion = document.querySelector('.versionPanel').textContent.trim()
+                    if (actualVersion.slice(-3) === "dev") {
+                        console.log("Development")
+                    }
+                    else {
+                        let latestVer = latestTag.split(".").map(Number);
+                        let actualVer = actualVersion.split(".").map(Number);
+                        let isSame = true;
+                        for (let i = 0; i < latestVer.length; i++) {
+                            if (latestVer[i] !== actualVer[i]) {
+                                isSame = false;
+                                break;
+                            }
+                        }
+                        if(isSame){
+                            document.querySelector(".update-info").textContent = '\xa0' + "Up to date"
+                            document.querySelector(".update-info").classList.remove("bi-cloud")
+                            document.querySelector(".update-info").classList.add("bi-check2")
+                        }
+                        else{
+                            document.querySelector(".update-info").textContent = '\xa0' + "New update available"
+                            document.querySelector(".update-info").classList.remove("bi-cloud")
+                            document.querySelector(".update-info").classList.add("bi-exclamation-lg")
+                            document.querySelector(".update-info").setAttribute('href', 'https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                        }
+                        
+                    }
+                    console.log(`La última etiqueta de versión es: ${latestTag}`);
+                } else {
+                    console.log('No se encontraron etiquetas de versión.');
+                }
+            })
+            .catch(error => console.error('Error al obtener las etiquetas:',error));
     }
 
 
@@ -251,26 +297,26 @@ document.addEventListener('DOMContentLoaded',function () {
     }
 
     driverTransferPill.addEventListener("click",function () {
-        manageScripts("show","hide","hide", "hide")
+        manageScripts("show","hide","hide","hide")
         scriptSelected = 1
         check_selected()
 
     })
 
     editStatsPill.addEventListener("click",function () {
-        manageScripts("hide","show","hide", "hide")
+        manageScripts("hide","show","hide","hide")
         scriptSelected = 1
         check_selected()
     })
 
     CalendarPill.addEventListener("click",function () {
-        manageScripts("hide","hide","show", "hide")
+        manageScripts("hide","hide","show","hide")
         scriptSelected = 1
         check_selected()
     })
 
     carPill.addEventListener("click",function () {
-        manageScripts("hide","hide", "hide","show")
+        manageScripts("hide","hide","hide","show")
         scriptSelected = 1
         check_selected()
     })

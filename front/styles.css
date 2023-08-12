@@ -65,10 +65,26 @@ body::-webkit-scrollbar-thumb {
   color: #dedde6;
 }
 
+.update-info{
+  transition: color 0.5s;
+  text-decoration: none;
+  color: #797599;
+  cursor: default;
+}
+
+.bi-exclamation-lg{
+  color: #d3d393;
+  cursor: pointer;
+}
+
+.bi-exclamation-lg:hover{
+  color: #FFFF99;
+}
+
 .status{
   display: flex;
   flex-direction: row;
-  width: 300px;
+  width: 500px;
   justify-content: flex-end;
 }
 
@@ -411,7 +427,7 @@ body::-webkit-scrollbar-thumb {
   border-radius: 10px !important;
   color: white !important;
   background-color: #797599 !important;
-  transition: border-color 0.5s, background-color 0.5s !important;
+  transition: border-color 0.5s, background-color 0.5s, color 0.5s !important;
 
 }
 
@@ -420,13 +436,16 @@ body::-webkit-scrollbar-thumb {
   margin-top: 20px !important;
 }
 
+
 .custom-confirm:hover {
-  background-color: #199c19 !important;
+  background-color: #9fdf9f !important;
   border-color: #5cfc64 !important;
+  color: #555555 !important;
+
 }
 
 .custom-confirm:active {
-  background-color: #0d5f0d !important;
+  background-color: #679467 !important;
 }
 
 .custom-delete {
@@ -442,18 +461,18 @@ body::-webkit-scrollbar-thumb {
 }
 
 .delete-mode {
-  background-color: #9c1919 !important;
+  background-color: #ff8080 !important;
   border-color: #fc5c5c !important;
   transition: border-color 0.5s;
 }
 
 .custom-delete:hover {
-  background-color: #9c1919 !important;
+  background-color: #ff8080 !important;
   border-color: #fc5c5c !important;
 }
 
 .custom-delete:active {
-  background-color: #5f0d0d !important;
+  background-color: #a35050 !important;
 }
 
 .delete-mode:hover {
@@ -1030,6 +1049,11 @@ input::-webkit-inner-spin-button {
 .normal-driver.clicked {
   color: #110f24;
   background-color: #dedde6;
+}
+
+
+.normal-driver.clicked .surname{
+  color: inherit !important;
 }
 
 .team-template {
