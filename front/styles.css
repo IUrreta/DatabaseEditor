@@ -36,6 +36,87 @@ body::-webkit-scrollbar-thumb {
   font-family: 'Formula1';
 }
 
+#byname{
+  text-decoration: none;
+  color: #797599;
+  transition: color  0.4s;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #18152e;
+  color: #797599;
+  border-top: 1px solid #797599;
+  text-align: center;
+  padding: 5px 0;
+  font-size: 16px;
+  z-index: 20;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.socials a, .footer i{
+  cursor: pointer !important;
+  padding: 0 7px;
+  transition: color 0.3s;
+  color: #797599;
+  text-decoration: none;
+}
+
+.socials a:hover, .footer i:hover{
+  color: #dedde6;
+}
+
+.update-info{
+  transition: color 0.5s;
+  text-decoration: none;
+  color: #797599;
+  cursor: default;
+}
+
+.bi-exclamation-lg, .bi-cloud-download{
+  color: #d3d393;
+  cursor: pointer;
+}
+
+.bi-exclamation-lg:hover, .bi-cloud-download:hover{
+  color: #FFFF99;
+}
+
+a.bi-reddit:hover{
+  color: #FFA07A;
+}
+
+a.bi-twitter:hover, #byname:hover{
+  color: #8fc7f0;
+}
+
+a.bi-heart:hover{
+  color: #ffa4b2;
+}
+
+
+.status{
+  display: flex;
+  flex-direction: row;
+  width: 700px;
+  justify-content: flex-end;
+}
+
+.status-info{
+  margin-right: 7px;
+  cursor: default;
+}
+
+.awaiting{
+  color: #8a8a8a;
+}
+
+
 .rounded-checkbox {
   display: inline-flex;
   align-items: center;
@@ -265,7 +346,7 @@ body::-webkit-scrollbar-thumb {
   background-color: #1a1826;
 }
 
-#addTrackMenu{
+#addTrackMenu {
   max-height: 300px;
   overflow-y: scroll;
 }
@@ -279,11 +360,11 @@ body::-webkit-scrollbar-thumb {
   border-radius: 3px;
 }
 
-.menu-race{
+.menu-race {
   max-width: 200px;
 }
 
-.menuFlag{
+.menuFlag {
   height: 10px;
   width: 20px;
   margin-left: 10px;
@@ -332,7 +413,8 @@ body::-webkit-scrollbar-thumb {
   margin-bottom: 2rem;
 }
 
-.categoryPills, .scriptPills{
+.categoryPills,
+.scriptPills {
   padding-top: 6px !important;
   padding-bottom: 6px !important;
   padding-left: 12px !important;
@@ -364,7 +446,7 @@ body::-webkit-scrollbar-thumb {
   border-radius: 10px !important;
   color: white !important;
   background-color: #797599 !important;
-  transition: border-color 0.5s, background-color 0.5s !important;
+  transition: border-color 0.5s, background-color 0.5s, color 0.5s !important;
 
 }
 
@@ -373,13 +455,16 @@ body::-webkit-scrollbar-thumb {
   margin-top: 20px !important;
 }
 
+
 .custom-confirm:hover {
-  background-color: #199c19 !important;
+  background-color: #9fdf9f !important;
   border-color: #5cfc64 !important;
+  color: #555555 !important;
+
 }
 
 .custom-confirm:active {
-  background-color: #0d5f0d !important;
+  background-color: #679467 !important;
 }
 
 .custom-delete {
@@ -394,22 +479,22 @@ body::-webkit-scrollbar-thumb {
 
 }
 
-.delete-mode{
-  background-color: #9c1919 !important;
+.delete-mode {
+  background-color: #ff8080 !important;
   border-color: #fc5c5c !important;
   transition: border-color 0.5s;
 }
 
 .custom-delete:hover {
-  background-color: #9c1919 !important;
+  background-color: #ff8080 !important;
   border-color: #fc5c5c !important;
 }
 
 .custom-delete:active {
-  background-color: #5f0d0d !important;
+  background-color: #a35050 !important;
 }
 
-.delete-mode:hover{
+.delete-mode:hover {
   border-color: white !important;
 }
 
@@ -440,7 +525,7 @@ body::-webkit-scrollbar-thumb {
   justify-content: flex-start;
 }
 
-.save-calendar-section{
+.save-calendar-section {
   height: 530px;
   display: flex;
   flex-direction: column;
@@ -448,11 +533,11 @@ body::-webkit-scrollbar-thumb {
   justify-content: flex-end;
 }
 
-.option-buttons{
+.option-buttons {
   margin: 10px;
   width: 210px !important;
   height: 41px !important;
-  
+
 }
 
 .race-calendar {
@@ -462,22 +547,24 @@ body::-webkit-scrollbar-thumb {
   border-radius: 10px;
   padding: 8px;
   margin: 10px;
-  color: white;
+  color: #dedde6;
+  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
   display: flex;
   cursor: grab !important;
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
   max-height: 112px;
-  transition: border-color 0.5s;
 
 }
 
-.race-calendar:hover{
-  border-color: white !important;
+.race-calendar:hover {
+  border-color: white;
+  color: white;
+  background-color: #4e4b69;
 }
 
-.deleting:hover{
+.deleting:hover {
   border: 2px solid transparent !important;
 }
 
@@ -499,7 +586,7 @@ body::-webkit-scrollbar-thumb {
   cursor: pointer;
 }
 
-.delete-div:hover{
+.delete-div:hover {
   color: red;
   border-color: red;
 }
@@ -601,7 +688,136 @@ body::-webkit-scrollbar-thumb {
   background-color: red !important;
 }
 
+.one-performance {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 22px;
+  padding-left: 20px;
+  background-color: #3f3c57;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  color: #dedde6;
+  border: 2px solid transparent;
+  transition: border-color 0.5s, background-color 0.5s;
+}
 
+.one-performance:hover {
+  border-color: white;
+  background-color: #4e4b69;
+}
+
+.one-performance:hover .performance-name {
+  color: white;
+}
+
+.performance-buttons{
+  padding: 10px;
+  display: flex;
+  width: 100px;
+  justify-content: space-around;
+}
+
+
+.perf-engine{
+  font-size: 20px;
+}
+
+.performance-buttons i {
+  transition: color 0.5s;
+  cursor: pointer !important;
+}
+
+.performance-buttons .bi-dash-circle:hover, .negative {
+  color: #ff8080;
+}
+
+.performance-buttons .bi-plus-circle:hover, .positive {
+  color: #9fdf9f;
+}
+
+.performance-name {
+  width: 200px;
+  transition: color 0.5s;
+  cursor: default !important;
+}
+
+.performance-name-engine {
+  width: 300px;
+  transition: color 0.5s;
+  cursor: default !important;
+}
+
+.custom-progress {
+  width: 603px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 50px;
+}
+
+.red-part {
+  width: 300px;
+  height: 3px;
+  background-color: #ff8080;
+  position: relative;
+}
+
+.disabled-part {
+  width: 300px;
+  height: 3px;
+  background-color: #110f24;
+  position: relative;
+}
+
+.disabled-part-engine {
+  width: 100%;
+  height: 3px;
+  background-color: #110f24;
+  position: relative;
+}
+
+.green-part {
+  width: 0%;
+  height: 100%;
+  background-color: #9fdf9f;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  transition: width 0.2s;
+}
+
+.white-part {
+  width: 0%;
+  height: 100%;
+  background-color: #f0f0f0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  transition: width 0.2s;
+}
+
+.separation-zone {
+  width: 3px;
+  height: 10px;
+  background-color: #f0f0f0;
+}
+
+.gray-part {
+  width: 100%;
+  height: 100%;
+  background-color: #110f24;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  transition: width 0.2s;
+}
 
 .car-info {
   font-size: 14px;
@@ -611,6 +827,17 @@ body::-webkit-scrollbar-thumb {
   padding-top: 10px;
   display: grid;
   grid-template-columns: repeat(2, minmax(400px, 1fr));
+  overflow-y: hidden;
+  margin-left: 0%;
+  margin-right: 14px;
+}
+
+.performance-bar {
+  width: 300px;
+}
+
+.performance-section {
+  padding-top: 10px;
   overflow-y: hidden;
   margin-left: 0%;
   margin-right: 14px;
@@ -631,7 +858,7 @@ body::-webkit-scrollbar-thumb {
 
 }
 
-.custom-footer{
+.custom-footer {
   color: white !important;
   border-top: 1px solid #797599 !important;
   background-color: #393744 !important;
@@ -639,7 +866,8 @@ body::-webkit-scrollbar-thumb {
 }
 
 ::-webkit-input-placeholder {
-  color: #999; /* Cambia el color del texto del placeholder */
+  color: #999;
+  /* Cambia el color del texto del placeholder */
 }
 
 .rounded-input {
@@ -653,7 +881,7 @@ body::-webkit-scrollbar-thumb {
   color: white;
 }
 
-.custom-disabled{
+.custom-disabled {
   background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
 }
 
@@ -668,6 +896,48 @@ body::-webkit-scrollbar-thumb {
   border-color: white;
 }
 
+.confirm-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 23px;
+}
+
+.performance-data {
+  margin-left: 30px;
+  font-size: 26px;
+  width: 200px;
+  text-align: center;
+}
+
+.team, .engine {
+  background-color: #3f3c57;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 4.8px;
+  cursor: pointer !important;
+  margin: 10px;
+  color: #dedde6;
+  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  position: relative;
+  font-size: 18px;
+}
+
+.team:hover, .engine:hover {
+  border-color: white;
+  color: white;
+  background-color: #4e4b69;
+}
+
+.team.selected, .engine.selected {
+  color: #110f24;
+  background-color: #dedde6;
+}
+
+.team:active .engine:active{
+  background-color: #1a1826;
+}
+
 .free-driver {
   background-color: #3f3c57;
   border: 2px solid transparent;
@@ -675,13 +945,13 @@ body::-webkit-scrollbar-thumb {
   padding: 8px;
   cursor: grab !important;
   margin: 10px;
-  color: white;
-  transition: border-color 0.5s;
+  color: #dedde6;
+  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
   position: relative;
   font-size: 15px;
 }
 
-.free-driver .custom-icon{
+.free-driver .custom-icon {
   color: transparent;
   transition: opacity 0.5s;
   background-image: linear-gradient(to left, #3f3c57, transparent);
@@ -695,19 +965,19 @@ body::-webkit-scrollbar-thumb {
   justify-content: flex-end;
 }
 
-.custom-icon i{
+.custom-icon i {
   transition: color 0.5s;
 }
 
-.custom-icon i:hover{
+.custom-icon i:hover {
   color: white;
   cursor: pointer;
 }
 
-.free-driver:hover .custom-icon{
+.free-driver:hover .custom-icon {
   color: #9d98b8;
   opacity: 1;
-  
+
 }
 
 #free-drivers {
@@ -718,6 +988,8 @@ body::-webkit-scrollbar-thumb {
 .free-driver:hover {
   border-color: white;
   cursor: grab !important;
+  color: white;
+  background-color: #4e4b69;
 }
 
 .blocking-div {
@@ -727,14 +999,14 @@ body::-webkit-scrollbar-thumb {
   width: 100%;
   height: 100%;
   background-color: rgba(128, 128, 128, 0.5);
-  z-index: 9998;
+  z-index: 10;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
 }
 
-#calendarBlockDiv{
+#calendarBlockDiv {
   background-color: rgba(128, 128, 128, 0.733);
 }
 
@@ -744,11 +1016,11 @@ body::-webkit-scrollbar-thumb {
   border-radius: 10px;
   padding: 8px;
   margin: 10px;
-  color: white;
+  color: #dedde6;
+  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
   border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
-  transition: border-color 0.5s;
 }
 
 .one-stat-panel {
@@ -814,17 +1086,22 @@ input::-webkit-inner-spin-button {
 
 .normal-driver:hover {
   border-color: white;
-  /* Borde blanco al pasar el ratón */
+  color: white;
+  background-color: #4e4b69;
 }
 
 .normal-driver:active {
   background-color: #1a1826;
-  /* Cambia el color al hacer clic */
 }
 
 .normal-driver.clicked {
-  border-color: red;
-  /* Borde rojo al hacer clic */
+  color: #110f24;
+  background-color: #dedde6;
+}
+
+
+.normal-driver.clicked .surname{
+  color: inherit !important;
 }
 
 .team-template {
@@ -837,12 +1114,24 @@ input::-webkit-inner-spin-button {
   max-height: 140px;
 }
 
-.logo-and-name{
+.logo-and-name {
   display: flex;
   flex-direction: row;
+}
+
+.logo-and-title {
+  display: flex;
+  flex-direction: row;
+  height: 54.5px;
 
 }
 
+.team-title {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  padding-left: 8px;
+}
 
 
 .team-name {
@@ -851,7 +1140,12 @@ input::-webkit-inner-spin-button {
   padding-top: 10px;
 }
 
-#redbulllogo{
+.perf-title{
+  padding-bottom: 10px;
+  padding-top: 5px;
+}
+
+#redbulllogo {
   width: 55px;
   height: 45px;
   padding-bottom: 8px;
@@ -859,7 +1153,7 @@ input::-webkit-inner-spin-button {
   padding-top: 7px;
 }
 
-#ferrarilogo{
+#ferrarilogo {
   width: 35px;
   height: 40px;
   padding-bottom: 6px;
@@ -867,7 +1161,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#merclogo{
+#merclogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -875,15 +1169,16 @@ input::-webkit-inner-spin-button {
   padding-left: 10px;
 }
 
-#alpinelogo{
+#alpinelogo {
   width: 45px;
-    height: 40px;
-    padding-bottom: 6px;
-    padding-top: 9px;
-    padding-left: 5px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-top: 9px;
+  padding-left: 5px;
+  transition: opacity 0.5s;
 }
 
-#mclarenlogo{
+#mclarenlogo {
   width: 40px;
   height: 40px;
   padding-bottom: 4px;
@@ -891,7 +1186,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#alfalogo{
+#alfalogo {
   width: 40px;
   height: 40px;
   padding-bottom: 3px;
@@ -899,7 +1194,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#astonlogo{
+#astonlogo {
   width: 50px;
   height: 45px;
   padding-bottom: 5px;
@@ -907,7 +1202,7 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
-#haaslogo{
+#haaslogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -915,7 +1210,7 @@ input::-webkit-inner-spin-button {
   padding-left: 6px;
 }
 
-#alphataurilogo{
+#alphataurilogo {
   width: 45px;
   height: 45px;
   padding-bottom: 12px;
@@ -923,7 +1218,7 @@ input::-webkit-inner-spin-button {
   padding-top: 12px;
 }
 
-#williamslogo{
+#williamslogo {
   width: 45px;
   height: 45px;
   padding-bottom: 11px;
@@ -989,7 +1284,7 @@ input::-webkit-inner-spin-button {
 }
 
 .alfont {
-  color: #2293D1  ;
+  color: #2293D1;
 }
 
 .affont {

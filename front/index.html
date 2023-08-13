@@ -65,7 +65,7 @@
     <div class="title main-title">
       <div style="display: flex; flex-direction: column;">
         <h1 class="bold-font">Database Editor for F1M23</h1>
-        <h3 class="font" >by <a href="https://twitter.com/ignaciourreta_">@ignaciourreta_</a></h3>
+        <h3 class="font" >by <a href="https://twitter.com/ignaciourreta_" id="byname">@ignaciourreta_</a></h3>
       </div>
     </div>
   </div>
@@ -83,19 +83,20 @@
       </ul>
     </div>
     <div class="script-selector bold-font ms-3">
-      Script selector
+      Edit
       <div class="pt-2 pb-3 ps-3">
         <ul class="nav nav-pills">
           <li class="nav-item">
-            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="transferpill">Driver
-              transfers</a>
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="transferpill">Contracts</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="statspill">Edit stats</a>
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="statspill">Stats</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="calendarpill">Custom
-              calendar</a>
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="calendarpill">Calendar</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="carpill">Performance</a>
           </li>
         </ul>
       </div>
@@ -143,7 +144,7 @@
           <div class="team-template">
             <div class="logo-and-name" id="redbull">
               <img src="../assets/images/redbull.png" id="redbulllogo">
-              <div class="team-name bold-font">Red Bull Racing</div>
+              <div class="team-name bold-font">RED BULL RACING</div>
             </div>
             <div class="drivers-section" data-team="redbull">
               <div class="col driver-space" id="rb1">
@@ -157,7 +158,7 @@
           <div class="team-template">
             <div class="logo-and-name" id="ferrari">
               <img src="../assets/images/ferrari.png" id="ferrarilogo">
-              <div class="team-name bold-font">Ferrari</div>
+              <div class="team-name bold-font">FERRARI</div>
             </div>
             <div class="drivers-section" data-team="ferrari">
               <div class="col driver-space" id="fe1">
@@ -171,7 +172,7 @@
           <div class="team-template">
             <div class="logo-and-name" id="merc">
               <img src="../assets/images/mercedes.png" id="merclogo">
-              <div class="team-name bold-font">Mercedes</div>
+              <div class="team-name bold-font">MERCEDES</div>
             </div>
             <div class="drivers-section" data-team="merc">
               <div class="col driver-space" id="me1">
@@ -185,7 +186,7 @@
           <div class="team-template">
             <div class="logo-and-name" id="alpine">
               <img src="../assets/images/alpine.png" id="alpinelogo">
-              <div class="team-name bold-font">Alpine</div>
+              <div class="team-name bold-font">ALPINE</div>
             </div>
             <div class="drivers-section" data-team="alpine">
               <div class="col driver-space" id="al1">
@@ -199,7 +200,7 @@
           <div class="team-template">
             <div class="logo-and-name" id="mclaren">
               <img src="../assets/images/mclaren.png" id="mclarenlogo">
-              <div class="team-name bold-font">McLaren</div>
+              <div class="team-name bold-font">MCLAREN</div>
             </div>
             <div class="drivers-section" data-team="mclaren">
               <div class="col driver-space" id="mc1">
@@ -213,7 +214,7 @@
           <div class="team-template">
             <div class="logo-and-name" id="alfaromeo">
               <img src="../assets/images/alfaromeo.png" id="alfalogo">
-              <div class="team-name bold-font">Alfa Romeo</div>
+              <div class="team-name bold-font">ALFA ROMEO</div>
             </div>
             <div class="drivers-section" data-team="alfaromeo">
               <div class="col driver-space" id="af1">
@@ -227,7 +228,7 @@
           <div class="team-template">
             <div class="logo-and-name" id="astonmartin">
               <img src="../assets/images/astonMartin.png" id="astonlogo">
-              <div class="team-name bold-font">Aston Martin</div>
+              <div class="team-name bold-font">ASTON MARTIN</div>
             </div>
             <div class="drivers-section" data-team="astonmartin">
               <div class="col driver-space" id="as1">
@@ -241,7 +242,7 @@
           <div class="team-template">
             <div class="logo-and-name" id="haas">
               <img src="../assets/images/haas.png" id="haaslogo">
-              <div class="team-name bold-font">Haas</div>
+              <div class="team-name bold-font">HAAS</div>
             </div>
             <div class="drivers-section" data-team="haas">
               <div class="col driver-space" id="ha1">
@@ -255,7 +256,7 @@
           <div class="team-template">
             <div class="logo-and-name" id="alphatauri">
               <img src="../assets/images/alphatauri.png" id="alphataurilogo">
-              <div class="team-name bold-font">Alpha Tauri</div>
+              <div class="team-name bold-font">ALPHA TAURI</div>
             </div>
             <div class="drivers-section" data-team="alphatauri">
               <div class="col driver-space" id="at1">
@@ -269,7 +270,7 @@
           <div class="team-template">
             <div class="logo-and-name" id="williams">
               <img src="../assets/images/williams.png" id="williamslogo">
-              <div class="team-name bold-font">Williams</div>
+              <div class="team-name bold-font">WILLIAMS</div>
             </div>
             <div class="drivers-section" data-team="williams">
               <div class="col driver-space" id="wi1">
@@ -286,8 +287,8 @@
     <div class="script-view d-none" id="edit_stats">
       <div class="col-3">
         <div class=" ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem;">
-          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="staffButton" data-bs-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffButton" data-bs-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
           Staff Type
         </button>
         <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
@@ -523,7 +524,324 @@
 
       </div>
     </div>
+    <div class="script-view d-none" id="car_performance">
+      <div class="col-3">
+        <div class="pb-3 ps-3" style="padding-top: 1.1rem;">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link bold-font categoryPills scriptPills active" data-bs-toggle="pill" data-section=".teams-section" href="#" id="teamsPill">Teams</a>
+            </li>
+            <li class="nav-item d-none">
+              <a class="nav-link bold-font categoryPills scriptPills" data-bs-toggle="pill" data-section=".engines-section" href="#" id="enginesPill">Engines</a>
+            </li>
+          </ul>
+        </div>
+        <div class="teams-engines">
+          <div class="main-columns-drag-section" id="teamsDiv">
+            <div class="col team bold-font logo-and-title"data-teamid="3" data-teamname="Red Bull Racing" style="">
+              <img src="../assets/images/redbull.png" id="redbulllogo">
+              <div class="team-title">RED BULL RACING</div>
+            </div>
+            <div class="col team bold-font logo-and-title" data-teamid="1" data-teamname="Ferrari" style="">
+              <img src="../assets/images/ferrari.png" id="ferrarilogo" style="padding-bottom: 7px; padding-top: 7px;">
+              <div class="team-title">FERRARI</div>
+            </div>
+            <div class="col team bold-font logo-and-title"data-teamid="4" data-teamname="Mercedes" style="">
+              <img src="../assets/images/mercedes.png" id="merclogo" style="padding-top: 6px; padding-left: 7px;">
+              <div class="team-title">MERCEDES</div>
+            </div>
+            <div class="col team bold-font logo-and-title" data-teamid="5" data-teamname="Alpine" id="alpineTeam" style="">
+              <img src="../assets/images/alpine.png" id="alpinelogo">
+              <img src="../assets/images/alpine2.png" class="d-none" id="alpinelogo">
+              <div class="team-title">ALPINE</div>
+            </div>
+            <div class="col team bold-font logo-and-title"  data-teamid="2" data-teamname="McLaren" style="">
+              <img src="../assets/images/mclaren.png" id="mclarenlogo">
+              <div class="team-title">MCLAREN</div>
+            </div>
+            <div class="col team bold-font logo-and-title" data-teamid="9" data-teamname="Alfa Romeo" style="">
+              <img src="../assets/images/alfaromeo.png" id="alfalogo">
+              <div class="team-title">ALFA ROMEO</div>
+            </div>
+            <div class="col team bold-font logo-and-title" data-teamid="10" data-teamname="Aston Martin" style="">
+              <img src="../assets/images/astonMartin.png" id="astonlogo">
+              <div class="team-title">ASTON MARTIN</div>
+            </div>
+            <div class="col team bold-font logo-and-title"  data-teamid="7" data-teamname="Haas" style="">
+              <img src="../assets/images/haas.png" id="haaslogo">
+              <div class="team-title">HAAS</div>
+            </div>
+            <div class="col team bold-font logo-and-title" data-teamid="8" data-teamname="Alpha Tauri" id="alphaTauriTeam" style="">
+              <img src="../assets/images/alphatauri.png" id="alphataurilogo">
+              <img src="../assets/images/alphatauri2.png" class="d-none" id="alphataurilogo">
+              <div class="team-title">ALPHA TAURI</div>
+            </div>
+            <div class="col team bold-font logo-and-title" data-teamid="6" data-teamname="Williams" style="">
+              <img src="../assets/images/williams.png" id="williamslogo">
+              <div class="team-title">WILLIAMS</div>
+            </div>
+          </div>
+          <div class="main-columns-drag-section d-none" id="enginesDiv">
+            <div class="col engine bold-font logo-and-title" data-engineid="1" data-teamname="Ferrari" style="">
+              <img src="../assets/images/ferrari.png" id="ferrarilogo" style="padding-bottom: 7px; padding-top: 7px;">
+              <div class="team-title">FERRARI</div>
+            </div>
+            <div class="col engine bold-font logo-and-title"data-engineid="2" data-teamname="Mercedes" style="">
+              <img src="../assets/images/renault.png" id="ferrarilogo" style="padding-top: 7px; padding-left: 7px;">
+              <div class="team-title">RENAULT</div>
+            </div>
+            <div class="col engine bold-font logo-and-title"data-engineid="3" data-teamname="Red Bull Racing" style="">
+              <img src="../assets/images/redbull.png" id="redbulllogo">
+              <div class="team-title">RED BULL PT</div>
+            </div>
+            <div class="col engine bold-font logo-and-title"data-engineid="4" data-teamname="Mercedes" style="">
+              <img src="../assets/images/mercedes.png" id="merclogo" style="padding-top: 6px; padding-left: 7px;">
+              <div class="team-title">MERCEDES</div>
+            </div>
+
+
+          </div>
+
+        </div>
+
+      </div>
+      <div class="col-9">
+        <div class="trasnfer-top-panel">
+          <div class="title transfer-title bold-font py-3">
+            Performance
+          </div>
+        </div>
+        <div class="main-columns-drag-section performance-section">
+          <div class="performance-show engines-show d-none">
+            <div class="one-performance perf-engine" style="margin-top: 0px;">
+              <div class="performance-name-engine">Fuel Efficiency</div>
+              <div class="performance-buttons">
+                <i class="bi bi-dash-circle"></i>
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="custom-progress" data-progress="0" data-type="engine">
+                <div class="disabled-part-engine">
+                  <div class="white-part"></div>
+                </div>
+              </div>
+              <div class="performance-data bold-font">0%</div>
+            </div>
+            
+            <div class="one-performance perf-engine">
+              <div class="performance-name-engine">Power</div>
+              <div class="performance-buttons">
+                <i class="bi bi-dash-circle"></i>
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="custom-progress" data-progress="0" data-type="engine">
+                <div class="disabled-part-engine">
+                  <div class="white-part"></div>
+                </div>
+              </div>
+              <div class="performance-data bold-font">0%</div>
+            </div>
+            <div class="one-performance perf-engine">
+              <div class="performance-name-engine">Performance Threshold</div>
+              <div class="performance-buttons">
+                <i class="bi bi-dash-circle"></i>
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="custom-progress" data-progress="0" data-type="engine">
+                <div class="disabled-part-engine">
+                  <div class="white-part"></div>
+                </div>
+              </div>
+              <div class="performance-data bold-font">0%</div>
+            </div>
+            
+            <div class="one-performance perf-engine">
+              <div class="performance-name-engine">Performance Loss</div>
+              <div class="performance-buttons">
+                <i class="bi bi-dash-circle"></i>
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="custom-progress" data-progress="0" data-type="engine">
+                <div class="disabled-part-engine">
+                  <div class="white-part"></div>
+                </div>
+              </div>
+              <div class="performance-data bold-font">0%</div>
+            </div>
+            
+            <div class="one-performance perf-engine">
+              <div class="performance-name-engine">Operational Range</div>
+              <div class="performance-buttons">
+                <i class="bi bi-dash-circle"></i>
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="custom-progress" data-progress="0" data-type="engine">
+                <div class="disabled-part-engine">
+                  <div class="white-part"></div>
+                </div>
+              </div>
+              <div class="performance-data bold-font">0%</div>
+            </div>
+            
+            <div class="one-performance perf-engine">
+              <div class="performance-name-engine">Durability</div>
+              <div class="performance-buttons">
+                <i class="bi bi-dash-circle"></i>
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="custom-progress" data-progress="0" data-type="engine">
+                <div class="disabled-part-engine">
+                  <div class="white-part"></div>
+                </div>
+              </div>
+              <div class="performance-data bold-font">0%</div>
+            </div>
+            <div class="confirm-area">
+              <div class="btn custom-confirm" id="confirmEnginebtn">Save changes</div>
+            </div>
+          </div>
+          <div class="performance-show teams-show d-none">
+            <div class="stats-title perf-title bold-font" id="teamPerformanceTitle">PRUEBA</div>
+            <div class="one-performance" style="margin-top: 0px;">
+              <div class="performance-name">Chasis</div>
+              <div class="performance-buttons">
+                <i class="bi bi-dash-circle"></i>
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="custom-progress" data-progress="0">
+                <div class="negative-zone">
+                  <div class="red-part">
+                    <div class="gray-part"></div>
+                  </div>
+                </div>
+                <div class="separation-zone"></div>
+                <div class="disabled-part">
+                  <div class="green-part"></div>
+                </div>
+              </div>
+              <div class="performance-data bold-font">0%</div>
+            </div>
+            
+            <div class="one-performance">
+              <div class="performance-name">Front Wing</div>
+              <div class="performance-buttons">
+                <i class="bi bi-dash-circle"></i>
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="custom-progress" data-progress="0">
+                <div class="negative-zone">
+                  <div class="red-part">
+                    <div class="gray-part"></div>
+                  </div>
+                </div>
+                <div class="separation-zone"></div>
+                <div class="disabled-part">
+                  <div class="green-part"></div>
+                </div>
+              </div>
+              <div class="performance-data bold-font">0%</div>
+            </div>
+            <div class="one-performance">
+              <div class="performance-name">Rear  Wing</div>
+              <div class="performance-buttons">
+                <i class="bi bi-dash-circle"></i>
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="custom-progress" data-progress="0">
+                <div class="negative-zone">
+                  <div class="red-part">
+                    <div class="gray-part"></div>
+                  </div>
+                </div>
+                <div class="separation-zone"></div>
+                <div class="disabled-part">
+                  <div class="green-part"></div>
+                </div>
+              </div>
+              <div class="performance-data bold-font">0%</div>
+            </div>
+            
+            <div class="one-performance">
+              <div class="performance-name">Floor</div>
+              <div class="performance-buttons">
+                <i class="bi bi-dash-circle"></i>
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="custom-progress" data-progress="0">
+                <div class="negative-zone">
+                  <div class="red-part">
+                    <div class="gray-part"></div>
+                  </div>
+                </div>
+                <div class="separation-zone"></div>
+                <div class="disabled-part">
+                  <div class="green-part"></div>
+                </div>
+              </div>
+              <div class="performance-data bold-font">0%</div>
+            </div>
+            
+            <div class="one-performance">
+              <div class="performance-name">Sidepods</div>
+              <div class="performance-buttons">
+                <i class="bi bi-dash-circle"></i>
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="custom-progress" data-progress="0">
+                <div class="negative-zone">
+                  <div class="red-part">
+                    <div class="gray-part"></div>
+                  </div>
+                </div>
+                <div class="separation-zone"></div>
+                <div class="disabled-part">
+                  <div class="green-part"></div>
+                </div>
+              </div>
+              <div class="performance-data bold-font">0%</div>
+            </div>
+            
+            <div class="one-performance">
+              <div class="performance-name">Suspension</div>
+              <div class="performance-buttons">
+                <i class="bi bi-dash-circle"></i>
+                <i class="bi bi-plus-circle"></i>
+              </div>
+              <div class="custom-progress" data-progress="0">
+                <div class="negative-zone">
+                  <div class="red-part">
+                    <div class="gray-part"></div>
+                  </div>
+                </div>
+                <div class="separation-zone"></div>
+                <div class="disabled-part">
+                  <div class="green-part"></div>
+                </div>
+              </div>
+              <div class="performance-data bold-font">0%</div>
+            </div>
+            <div class="confirm-area">
+              <div class="btn custom-confirm" id="confirmPerformancebtn">Save changes</div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
   </div>
+  <footer class="footer">
+    <div class="socials">
+      <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor">&nbsp;DDBB Editor</a>
+      <a class="bi bi-twitter" href="https://twitter.com/ignaciourreta_">&nbsp;@ignaciourreta_</a>
+      <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta">&nbsp;ignaciourreta</a>
+      <a class="bi bi-heart" href="https://www.buymeacoffee.com/iUrreta">&nbsp;Support me</a>
+    </div>
+    <div class="status">
+      <i class="bi bi-file-text" id="logFileButton" style="padding-right: 10px;" ></i>
+      <a class="bi bi-cloud update-info" style="padding-right: 10px;">&nbsp;Checking for updates...</a>
+      <div class="bi bi-circle-fill status-info awaiting">&nbsp;Waiting for connection...</div>
+
+    </div>
+  </footer>
 
 
 
@@ -531,6 +849,7 @@
   <script src="./js/transfers.js"></script>
   <script src="./js/stats.js"></script>
   <script src="./js/calendar.js"></script>
+  <script src="./js/performance.js"></script>
 </body>
 
 </html>

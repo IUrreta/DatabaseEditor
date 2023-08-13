@@ -1,4 +1,15 @@
 const socket = new WebSocket('ws://localhost:8765/');
+socket.onopen = () => {
+    //console.log('Conexión establecida.');
+    let data = {
+        command: "connect"
+    }
+    socket.send(JSON.stringify(data))
+
+};
+const fs = require('fs');
+const simpleGit = require('simple-git');
+const { exec } = require('child_process');
 
 document.addEventListener('DOMContentLoaded',function () {
 
@@ -7,17 +18,28 @@ document.addEventListener('DOMContentLoaded',function () {
     const driverTransferPill = document.getElementById("transferpill");
     const editStatsPill = document.getElementById("statspill");
     const CalendarPill = document.getElementById("calendarpill");
+    const carPill = document.getElementById("carpill");
 
     const driverTransferDiv = document.getElementById("driver_transfers");
     const editStatsDiv = document.getElementById("edit_stats");
     const customCalendarDiv = document.getElementById("custom_calendar");
+    const carPerformanceDiv = document.getElementById("car_performance");
 
 
-    const scriptsArray = [driverTransferDiv,editStatsDiv,customCalendarDiv]
+    const scriptsArray = [driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
     const notificationPanel = document.getElementById("notificationPanel");
+
+    const logButton = document.getElementById("logFileButton");
+
+    const status = document.querySelector(".status-info")
+    const updateInfo = document.querySelector(".update-info")
+    let latestTag;
+
+    const repoOwner = 'IUrreta'; // Reemplaza con el nombre del dueño del repositorio
+    const repoName = 'DatabaseEditor'; // Reemplaza con el nombre del repositorio
 
 
 
@@ -29,18 +51,12 @@ document.addEventListener('DOMContentLoaded',function () {
 
     let connectionTimeout = setTimeout(() => {
         update_notifications("Could not connect with backend",true)
+        manage_status(0)
     },4000);
 
 
 
-    socket.onopen = () => {
-        //console.log('Conexión establecida.');
-        let data = {
-            command: "connect"
-        }
-        socket.send(JSON.stringify(data))
 
-    };
 
     socket.onmessage = (event) => {
         // const mensaje = event.data;
@@ -49,11 +65,15 @@ document.addEventListener('DOMContentLoaded',function () {
         let message = JSON.parse(event.data)
         if (message[0] === "ERROR") {
             update_notifications(message[1],true)
+            manage_status(0)
         }
         else {
             if (message[0] === "Connected Succesfully") {
                 load_saves(message)
                 clearTimeout(connectionTimeout);
+                manage_status(1)
+                check_version()
+
             }
             else if (message[0] === "Save Loaded Succesfully") {
                 remove_drivers()
@@ -76,6 +96,137 @@ document.addEventListener('DOMContentLoaded',function () {
         }
 
     };
+
+    logButton.addEventListener("click",function () {
+        window.location.href = '../log.txt';
+    })
+
+    function manage_status(state) {
+        if (state == 1) {
+            status.classList.remove("awaiting")
+            status.classList.add("positive")
+            status.textContent = '\xa0' + "Connected"
+        }
+        else if (state == 0) {
+            status.classList.remove("awaiting")
+            status.classList.remove("positive")
+            status.classList.add("negative")
+            status.textContent = '\xa0' + "Disconnected"
+        }
+    }
+
+    function check_version() {
+        fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/tags`)
+            .then(response => response.json())
+            .then(tags => {
+                if (tags.length > 0) {
+                    latestTag = tags[0].name;
+                    let actualVersion = document.querySelector('.versionPanel').textContent.trim()
+
+                    if (actualVersion.slice(-3) === "dev") {
+                        updateInfo.textContent = '\xa0' + "Development branch"
+                        updateInfo.classList.remove("bi-cloud")
+                        updateInfo.classList.add("bi-code-slash")
+
+                    }
+                    else {
+                        let latestVer = latestTag.split(".").map(Number);
+                        let actualVer = actualVersion.split(".").map(Number);
+                        let isSame = true;
+                        if (latestVer.length > actualVer.length) {
+                            isSame = false;
+                        }
+                        else {
+                            for (let i = 0; i < latestVer.length; i++) {
+                                if (latestVer[i] > actualVer[i]) {
+                                    isSame = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (isSame) {
+                            updateInfo.textContent = '\xa0' + "Up to date"
+                            updateInfo.classList.remove("bi-cloud")
+                            updateInfo.classList.add("bi-check2")
+                        }
+                        else {
+                            updateInfo.textContent = '\xa0' + "New update available"
+                            updateInfo.classList.remove("bi-cloud")
+                            if (checkGit()) {
+                                updateInfo.classList.add("bi-cloud-download")
+                                updateButton()
+                            }
+                            else {
+                                updateInfo.classList.add("bi-exclamation-lg")
+                                updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                            }
+
+                        }
+
+                    }
+                }
+            })
+            .catch(error => console.error('Error al obtener las etiquetas:',error));
+    }
+
+    function checkGit() {
+        let dir = './'; // Cambia esto a la ruta de tu herramienta
+        let res = false;
+        try {
+            const files = fs.readdirSync(dir);
+            return files.includes('.git');
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
+    function addSpinner() {
+
+        let statusDiv = document.querySelector('.status');
+        let spinnerDiv = document.createElement('div');
+        let outsideDiv = document.createElement('div');
+        spinnerDiv.className = ' spinner-border spinner-border-sm';
+        spinnerDiv.role = 'status';
+        outsideDiv.textContent = "Updating..."
+        outsideDiv.style.paddingRight = "10px"
+        outsideDiv.className = "outside-div"
+        outsideDiv.appendChild(spinnerDiv)
+        statusDiv.insertBefore(outsideDiv,statusDiv.children[2]);
+    }
+
+    function updateButton() {
+        let repoPath = './';
+        let git = simpleGit(repoPath);
+
+        document.querySelector(".bi-cloud-download").addEventListener("click",function () {
+
+            git.pull("origin","release",(error,update) => {
+                addSpinner()
+                if (error) {
+                    update_notifications("Update automatically failed, please update manually",true)
+                    updateInfo.classList.remove("bi-cloud-download")
+                    updateInfo.classList.add("bi-exclamation-lg")
+                    updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                    document.querySelector(".status").removeChild(document.querySelector(".outside-div"))
+                    updateInfo.removeEventListener("click",arguments.callee)
+                } else {
+                    //console.log('Git pull exitoso:',update);
+                    setTimeout(() => {
+                        exec('restart.vbs', (error, stdout, stderr) => {
+                          if (error) {
+                            //console.error(`Error: ${error}`);
+                            return;
+                          }
+                          //console.log(`Resultado: ${stdout}`);
+                        });
+                      }, 1000);
+                }
+            });
+        })
+    }
+
 
 
     function manage_calendarDiv(info) {
@@ -100,7 +251,7 @@ document.addEventListener('DOMContentLoaded',function () {
         newNoti = document.createElement('div');
         newNoti.className = 'notification';
         newNoti.textContent = noti;
-        if (error) newNoti.style.color = "red";
+        if (error) newNoti.style.color = "#ff8080";
 
         notificationPanel.appendChild(newNoti);
         if (!error) {
@@ -147,6 +298,9 @@ document.addEventListener('DOMContentLoaded',function () {
                 isSaveSelected = 1;
                 document.getElementById("editStatsPanel").className = "left-panel-stats d-none";
                 statPanelShown = 0;
+                document.querySelectorAll(".performance-show").forEach(function (elem) {
+                    elem.classList.add("d-none")
+                })
                 check_selected()
             });
         });
@@ -223,20 +377,26 @@ document.addEventListener('DOMContentLoaded',function () {
     }
 
     driverTransferPill.addEventListener("click",function () {
-        manageScripts("show","hide","hide")
+        manageScripts("show","hide","hide","hide")
         scriptSelected = 1
         check_selected()
 
     })
 
     editStatsPill.addEventListener("click",function () {
-        manageScripts("hide","show","hide")
+        manageScripts("hide","show","hide","hide")
         scriptSelected = 1
         check_selected()
     })
 
     CalendarPill.addEventListener("click",function () {
-        manageScripts("hide","hide","show")
+        manageScripts("hide","hide","show","hide")
+        scriptSelected = 1
+        check_selected()
+    })
+
+    carPill.addEventListener("click",function () {
+        manageScripts("hide","hide","hide","show")
         scriptSelected = 1
         check_selected()
     })

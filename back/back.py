@@ -9,6 +9,7 @@ from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script as run_trasnsfer
 from scripts.edit_stats_23 import run_script as run_editStats
 from scripts.custom_calendar_23 import run_script as run_editCalendar
+from scripts.car_performance_23 import run_script as run_editPerformance
 
 client = None
 path = None
@@ -24,6 +25,7 @@ async def handle_command(message):
     global cursor
     argument = ""
     if type == "connect":
+        #print("Connect recibido")
         argument = type
         saves = [element for element in os.listdir("../") if ".sav" in element]
         if "player.sav" in saves:
@@ -47,6 +49,7 @@ async def handle_command(message):
         staff.insert(0, "Staff Fetched")
         data_json_staff = json.dumps(staff)
         await send_message_to_client(data_json_staff)
+        #print(fetch_parts())
         allowCalendar = [tuple(check_claendar())]
         allowCalendar.insert(0, "Calendar fetched")
         data_json_calendar = json.dumps(allowCalendar)
@@ -122,6 +125,16 @@ async def handle_command(message):
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
 
+    elif type =="editPerformance":
+        argument = message["teamID"] + " " + message["performanceArray"]
+        run_editPerformance(argument)
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully edited " + message["teamName"] + "'s car performance")
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+        argument = "editPerformance " +  message["teamID"] + " " + message["performanceArray"]
+
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()
@@ -154,9 +167,23 @@ async def handle_client(websocket, path):
 
 async def start_server():
     server = await websockets.serve(handle_client, "localhost", 8765)
+    #print(server)
     await server.wait_closed()
-    server.shutdown(1)
     server.close()
+
+
+def fetch_parts():
+    lista = []
+    for teamID in range(1, 11):
+        teamList = []
+        for partType in range(3, 9):
+            id = cursor.execute("SELECT MAX(DesignID) AS MaxDesignID FROM Parts_Designs WHERE PartType = " + str(partType) + " AND TeamID = " + str(teamID)).fetchone()
+            teamList.append(id[0])
+        teamInfo = (teamID, teamList)
+        lista.append(teamInfo)
+
+    return lista
+        
 
 
 async def main():
