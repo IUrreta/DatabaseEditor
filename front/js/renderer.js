@@ -36,6 +36,8 @@ document.addEventListener('DOMContentLoaded',function () {
     const logButton = document.getElementById("logFileButton");
 
     const status = document.querySelector(".status-info")
+    const updateInfo = document.querySelector(".update-info")
+    let latestTag;
 
     const repoOwner = 'IUrreta'; // Reemplaza con el nombre del dueño del repositorio
     const repoName = 'DatabaseEditor'; // Reemplaza con el nombre del repositorio
@@ -119,9 +121,9 @@ document.addEventListener('DOMContentLoaded',function () {
             .then(response => response.json())
             .then(tags => {
                 if (tags.length > 0) {
-                    let latestTag = tags[0].name;
+                    latestTag = tags[0].name;
                     let actualVersion = document.querySelector('.versionPanel').textContent.trim()
-                    let updateInfo = document.querySelector(".update-info")
+                    
                     if (actualVersion.slice(-3) === "dev") {
                         updateInfo.textContent = '\xa0' + "Development branch"
                         updateInfo.classList.remove("bi-cloud")
@@ -132,12 +134,18 @@ document.addEventListener('DOMContentLoaded',function () {
                         let latestVer = latestTag.split(".").map(Number);
                         let actualVer = actualVersion.split(".").map(Number);
                         let isSame = true;
-                        for (let i = 0; i < latestVer.length; i++) {
-                            if (latestVer[i] !== actualVer[i]) {
-                                isSame = false;
-                                break;
+                        if(latestVer.length > actualVer.length){
+                            isSame = false;
+                        }
+                        else{
+                            for (let i = 0; i < latestVer.length; i++) {
+                                if (latestVer[i] > actualVer[i]) {
+                                    isSame = false;
+                                    break;
+                                }
                             }
                         }
+
                         if (isSame) {
                             updateInfo.textContent = '\xa0' + "Up to date"
                             updateInfo.classList.remove("bi-cloud")
@@ -186,6 +194,7 @@ document.addEventListener('DOMContentLoaded',function () {
         spinnerDiv.role = 'status';
         outsideDiv.textContent = "Updating..."
         outsideDiv.style.paddingRight = "10px"
+        outsideDiv.className ="outside-div"
         outsideDiv.appendChild(spinnerDiv)
         statusDiv.insertBefore(outsideDiv,statusDiv.children[2]);
     }
@@ -196,10 +205,15 @@ document.addEventListener('DOMContentLoaded',function () {
 
         document.querySelector(".bi-cloud-download").addEventListener("click",function () {
 
-            git.pull("origin","release",(error,update) => {
+            git.pull("origin","www",(error,update) => {
                 addSpinner()
                 if (error) {
-                    console.error('Error al hacer git pull:',error);
+                    update_notifications("Update automatically failed, please update manually", true)
+                    updateInfo.classList.remove("bi-cloud-download")
+                    updateInfo.classList.add("bi-exclamation-lg")
+                    updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                    document.querySelector(".status").removeChild(document.querySelector(".outside-div"))
+                    updateInfo.removeEventListener("click", arguments.callee)
                 } else {
                     console.log('Git pull exitoso:',update);
                     exec('restart.vbs',(error,stdout,stderr) => {

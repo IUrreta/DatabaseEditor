@@ -36,6 +36,12 @@ body::-webkit-scrollbar-thumb {
   font-family: 'Formula1';
 }
 
+#byname{
+  text-decoration: none;
+  color: #797599;
+  transition: color  0.4s;
+}
+
 .footer {
   position: fixed;
   bottom: 0;
@@ -85,7 +91,7 @@ a.bi-reddit:hover{
   color: #FFA07A;
 }
 
-a.bi-twitter:hover{
+a.bi-twitter:hover, #byname:hover{
   color: #8fc7f0;
 }
 
