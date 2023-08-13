@@ -1,4 +1,13 @@
 const socket = new WebSocket('ws://localhost:8765/');
+console.log(socket)
+socket.onopen = () => {
+    console.log('Conexión establecida.');
+    let data = {
+        command: "connect"
+    }
+    socket.send(JSON.stringify(data))
+
+};
 const fs = require('fs');
 const simpleGit = require('simple-git');
 const { exec } = require('child_process');
@@ -46,15 +55,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
 
-    socket.onopen = () => {
-        //console.log('Conexión establecida.');
-        let data = {
-            command: "connect"
-        }
-        socket.send(JSON.stringify(data))
-        check_version()
 
-    };
 
     socket.onmessage = (event) => {
         // const mensaje = event.data;
@@ -70,6 +71,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 load_saves(message)
                 clearTimeout(connectionTimeout);
                 manage_status(1)
+                check_version()
 
             }
             else if (message[0] === "Save Loaded Succesfully") {

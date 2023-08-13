@@ -25,6 +25,7 @@ async def handle_command(message):
     global cursor
     argument = ""
     if type == "connect":
+        print("Connect recibido")
         argument = type
         saves = [element for element in os.listdir("../") if ".sav" in element]
         if "player.sav" in saves:
@@ -167,8 +168,8 @@ async def handle_client(websocket, path):
 
 async def start_server():
     server = await websockets.serve(handle_client, "localhost", 8765)
+    print(server)
     await server.wait_closed()
-    server.shutdown(1)
     server.close()
 
 

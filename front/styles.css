@@ -81,6 +81,19 @@ body::-webkit-scrollbar-thumb {
   color: #FFFF99;
 }
 
+a.bi-reddit:hover{
+  color: #FFA07A;
+}
+
+a.bi-twitter:hover{
+  color: #8fc7f0;
+}
+
+a.bi-heart:hover{
+  color: #FFB6C1;
+}
+
+
 .status{
   display: flex;
   flex-direction: row;
