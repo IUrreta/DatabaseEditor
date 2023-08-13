@@ -1,7 +1,6 @@
 const socket = new WebSocket('ws://localhost:8765/');
-console.log(socket)
 socket.onopen = () => {
-    console.log('Conexión establecida.');
+    //console.log('Conexión establecida.');
     let data = {
         command: "connect"
     }
@@ -123,7 +122,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 if (tags.length > 0) {
                     latestTag = tags[0].name;
                     let actualVersion = document.querySelector('.versionPanel').textContent.trim()
-                    
+
                     if (actualVersion.slice(-3) === "dev") {
                         updateInfo.textContent = '\xa0' + "Development branch"
                         updateInfo.classList.remove("bi-cloud")
@@ -134,10 +133,10 @@ document.addEventListener('DOMContentLoaded',function () {
                         let latestVer = latestTag.split(".").map(Number);
                         let actualVer = actualVersion.split(".").map(Number);
                         let isSame = true;
-                        if(latestVer.length > actualVer.length){
+                        if (latestVer.length > actualVer.length) {
                             isSame = false;
                         }
-                        else{
+                        else {
                             for (let i = 0; i < latestVer.length; i++) {
                                 if (latestVer[i] > actualVer[i]) {
                                     isSame = false;
@@ -166,8 +165,6 @@ document.addEventListener('DOMContentLoaded',function () {
                         }
 
                     }
-                } else {
-                    console.log('No se encontraron etiquetas de versión.');
                 }
             })
             .catch(error => console.error('Error al obtener las etiquetas:',error));
@@ -185,8 +182,8 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
-    function addSpinner(){
-        
+    function addSpinner() {
+
         let statusDiv = document.querySelector('.status');
         let spinnerDiv = document.createElement('div');
         let outsideDiv = document.createElement('div');
@@ -194,7 +191,7 @@ document.addEventListener('DOMContentLoaded',function () {
         spinnerDiv.role = 'status';
         outsideDiv.textContent = "Updating..."
         outsideDiv.style.paddingRight = "10px"
-        outsideDiv.className ="outside-div"
+        outsideDiv.className = "outside-div"
         outsideDiv.appendChild(spinnerDiv)
         statusDiv.insertBefore(outsideDiv,statusDiv.children[2]);
     }
@@ -205,24 +202,26 @@ document.addEventListener('DOMContentLoaded',function () {
 
         document.querySelector(".bi-cloud-download").addEventListener("click",function () {
 
-            git.pull("origin","www",(error,update) => {
+            git.pull("origin","release",(error,update) => {
                 addSpinner()
                 if (error) {
-                    update_notifications("Update automatically failed, please update manually", true)
+                    update_notifications("Update automatically failed, please update manually",true)
                     updateInfo.classList.remove("bi-cloud-download")
                     updateInfo.classList.add("bi-exclamation-lg")
                     updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
                     document.querySelector(".status").removeChild(document.querySelector(".outside-div"))
-                    updateInfo.removeEventListener("click", arguments.callee)
+                    updateInfo.removeEventListener("click",arguments.callee)
                 } else {
-                    console.log('Git pull exitoso:',update);
-                    exec('restart.vbs',(error,stdout,stderr) => {
-                        if (error) {
-                            console.error(`Error: ${error}`);
+                    //console.log('Git pull exitoso:',update);
+                    setTimeout(() => {
+                        exec('restart.vbs', (error, stdout, stderr) => {
+                          if (error) {
+                            //console.error(`Error: ${error}`);
                             return;
-                        }
-                        console.log(`Resultado: ${stdout}`);
-                    });
+                          }
+                          //console.log(`Resultado: ${stdout}`);
+                        });
+                      }, 1000);
                 }
             });
         })
@@ -299,7 +298,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 isSaveSelected = 1;
                 document.getElementById("editStatsPanel").className = "left-panel-stats d-none";
                 statPanelShown = 0;
-                document.querySelectorAll(".performance-show").forEach(function(elem){
+                document.querySelectorAll(".performance-show").forEach(function (elem) {
                     elem.classList.add("d-none")
                 })
                 check_selected()

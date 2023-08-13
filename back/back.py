@@ -25,7 +25,7 @@ async def handle_command(message):
     global cursor
     argument = ""
     if type == "connect":
-        print("Connect recibido")
+        #print("Connect recibido")
         argument = type
         saves = [element for element in os.listdir("../") if ".sav" in element]
         if "player.sav" in saves:
@@ -126,7 +126,6 @@ async def handle_command(message):
         await send_message_to_client(info_json)
 
     elif type =="editPerformance":
-        print(message)
         argument = message["teamID"] + " " + message["performanceArray"]
         run_editPerformance(argument)
         process_repack("../result", path)
@@ -168,7 +167,7 @@ async def handle_client(websocket, path):
 
 async def start_server():
     server = await websockets.serve(handle_client, "localhost", 8765)
-    print(server)
+    #print(server)
     await server.wait_closed()
     server.close()
 
