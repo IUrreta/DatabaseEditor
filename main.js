@@ -8,7 +8,10 @@ function createWindow () {
     height: 1020,
     icon: path.join(__dirname, "assets/images/icon2.png"),
     webPreferences: {
-      preload: path.join(__dirname, 'front/preload.js')
+      preload: path.join(__dirname, 'front/preload.js'),
+      nodeIntegration: true,
+      contextIsolation: false,
+      
     }
   })
   // and load the index.html of the app.

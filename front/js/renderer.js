@@ -1,4 +1,7 @@
 const socket = new WebSocket('ws://localhost:8765/');
+const fs = require('fs');
+const simpleGit = require('simple-git');
+const { exec } = require('child_process');
 
 document.addEventListener('DOMContentLoaded',function () {
 
@@ -116,10 +119,12 @@ document.addEventListener('DOMContentLoaded',function () {
                 if (tags.length > 0) {
                     let latestTag = tags[0].name;
                     let actualVersion = document.querySelector('.versionPanel').textContent.trim()
+                    let updateInfo = document.querySelector(".update-info")
                     if (actualVersion.slice(-3) === "dev") {
-                        document.querySelector(".update-info").textContent = '\xa0' + "Development branch"
-                        document.querySelector(".update-info").classList.remove("bi-cloud")
-                        document.querySelector(".update-info").classList.add("bi-code-slash")
+                        updateInfo.textContent = '\xa0' + "Development branch"
+                        updateInfo.classList.remove("bi-cloud")
+                        updateInfo.classList.add("bi-code-slash")
+
                     }
                     else {
                         let latestVer = latestTag.split(".").map(Number);
@@ -131,26 +136,82 @@ document.addEventListener('DOMContentLoaded',function () {
                                 break;
                             }
                         }
-                        if(isSame){
-                            document.querySelector(".update-info").textContent = '\xa0' + "Up to date"
-                            document.querySelector(".update-info").classList.remove("bi-cloud")
-                            document.querySelector(".update-info").classList.add("bi-check2")
+                        if (isSame) {
+                            updateInfo.textContent = '\xa0' + "Up to date"
+                            updateInfo.classList.remove("bi-cloud")
+                            updateInfo.classList.add("bi-check2")
                         }
-                        else{
-                            document.querySelector(".update-info").textContent = '\xa0' + "New update available"
-                            document.querySelector(".update-info").classList.remove("bi-cloud")
-                            document.querySelector(".update-info").classList.add("bi-exclamation-lg")
-                            document.querySelector(".update-info").setAttribute('href', 'https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                        else {
+                            updateInfo.textContent = '\xa0' + "New update available"
+                            updateInfo.classList.remove("bi-cloud")
+                            if (checkGit()) {
+                                updateInfo.classList.add("bi-cloud-download")
+                                updateButton()
+                            }
+                            else {
+                                updateInfo.classList.add("bi-exclamation-lg")
+                                updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                            }
+
                         }
-                        
+
                     }
-                    console.log(`La última etiqueta de versión es: ${latestTag}`);
                 } else {
                     console.log('No se encontraron etiquetas de versión.');
                 }
             })
             .catch(error => console.error('Error al obtener las etiquetas:',error));
     }
+
+    function checkGit() {
+        let dir = './'; // Cambia esto a la ruta de tu herramienta
+        let res = false;
+        try {
+            const files = fs.readdirSync(dir);
+            return files.includes('.git');
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
+    function addSpinner(){
+        
+        let statusDiv = document.querySelector('.status');
+        let spinnerDiv = document.createElement('div');
+        let outsideDiv = document.createElement('div');
+        spinnerDiv.className = ' spinner-border spinner-border-sm';
+        spinnerDiv.role = 'status';
+        outsideDiv.textContent = "Updating..."
+        outsideDiv.style.paddingRight = "10px"
+        outsideDiv.appendChild(spinnerDiv)
+        statusDiv.insertBefore(outsideDiv,statusDiv.children[2]);
+    }
+
+    function updateButton() {
+        let repoPath = './';
+        let git = simpleGit(repoPath);
+
+        document.querySelector(".bi-cloud-download").addEventListener("click",function () {
+
+            git.pull("origin","release",(error,update) => {
+                addSpinner()
+                if (error) {
+                    console.error('Error al hacer git pull:',error);
+                } else {
+                    console.log('Git pull exitoso:',update);
+                    exec('restart.vbs',(error,stdout,stderr) => {
+                        if (error) {
+                            console.error(`Error: ${error}`);
+                            return;
+                        }
+                        console.log(`Resultado: ${stdout}`);
+                    });
+                }
+            });
+        })
+    }
+
 
 
     function manage_calendarDiv(info) {

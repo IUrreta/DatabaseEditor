@@ -72,19 +72,19 @@ body::-webkit-scrollbar-thumb {
   cursor: default;
 }
 
-.bi-exclamation-lg{
+.bi-exclamation-lg, .bi-cloud-download{
   color: #d3d393;
   cursor: pointer;
 }
 
-.bi-exclamation-lg:hover{
+.bi-exclamation-lg:hover, .bi-cloud-download:hover{
   color: #FFFF99;
 }
 
 .status{
   display: flex;
   flex-direction: row;
-  width: 500px;
+  width: 700px;
   justify-content: flex-end;
 }
 
