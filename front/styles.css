@@ -90,7 +90,7 @@ a.bi-twitter:hover{
 }
 
 a.bi-heart:hover{
-  color: #FFB6C1;
+  color: #ffa4b2;
 }
 
 
@@ -894,7 +894,7 @@ a.bi-heart:hover{
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 130px;
+  padding-top: 23px;
 }
 
 .performance-data {
@@ -1134,6 +1134,11 @@ input::-webkit-inner-spin-button {
   padding-top: 10px;
 }
 
+.perf-title{
+  padding-bottom: 10px;
+  padding-top: 5px;
+}
+
 #redbulllogo {
   width: 55px;
   height: 45px;
@@ -1164,6 +1169,7 @@ input::-webkit-inner-spin-button {
   padding-bottom: 6px;
   padding-top: 9px;
   padding-left: 5px;
+  transition: opacity 0.5s;
 }
 
 #mclarenlogo {

@@ -35,7 +35,21 @@ function manageTeamsEngines(...divs) {
 document.querySelectorAll(".team").forEach(function (elem) {
     elem.addEventListener("click",function () {
         let elemsSelected = document.querySelectorAll('.selected');
-        elemsSelected.forEach(item => item.classList.remove('selected'));
+        elemsSelected.forEach(item => {
+            item.classList.remove('selected')
+            if(item.id==="alpineTeam"){
+                document.getElementById("alpineTeam").firstElementChild.classList.remove("d-none")
+                document.getElementById("alpineTeam").children[1].classList.add("d-none")
+            }
+            else if(item.id==="alphaTauriTeam"){
+                document.getElementById("alphaTauriTeam").firstElementChild.classList.remove("d-none")
+                document.getElementById("alphaTauriTeam").children[1].classList.add("d-none")
+            }
+        });
+        document.getElementById("teamPerformanceTitle").innerText = elem.querySelector(".team-title").innerText;
+        colorClass = team_dict[elem.dataset.teamid] + "font"
+        document.getElementById("teamPerformanceTitle").className = "stats-title perf-title bold-font"
+        document.getElementById("teamPerformanceTitle").classList.add(colorClass)
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         console.log(elem.dataset.teamid)
@@ -124,6 +138,16 @@ document.querySelectorAll(".bi-plus-circle").forEach(function (elem) {
         }
         manage_bar(bar,bar.dataset.progress)
     })
+})
+
+document.getElementById("alpineTeam").addEventListener("click", function(){
+    document.getElementById("alpineTeam").firstElementChild.classList.add("d-none")
+    document.getElementById("alpineTeam").children[1].classList.remove("d-none")
+})
+
+document.getElementById("alphaTauriTeam").addEventListener("click", function(){
+    document.getElementById("alphaTauriTeam").firstElementChild.classList.add("d-none")
+    document.getElementById("alphaTauriTeam").children[1].classList.remove("d-none")
 })
 
 function manage_bar(bar,progress) {

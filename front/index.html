@@ -74,8 +74,8 @@
   <div class="tools-panel">
     <div class="ms-3 bold-font save-selector">
       Save selector
-      <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="saveSelector" data-bs-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
+      <button type="button" class="btn btn-primary dropdown-toggle bold-font custom-dropdown" id="saveSelector" data-bs-toggle="dropdown"
+        aria-haspopup="true" aria-expanded="false">
         Your saves
       </button>
       <ul class="dropdown-menu" id="dropdownMenu" style="font-family: Formula1;">
@@ -287,8 +287,8 @@
     <div class="script-view d-none" id="edit_stats">
       <div class="col-3">
         <div class=" ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem;">
-          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="staffButton" data-bs-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffButton" data-bs-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
           Staff Type
         </button>
         <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
@@ -550,8 +550,9 @@
               <img src="../assets/images/mercedes.png" id="merclogo" style="padding-top: 6px; padding-left: 7px;">
               <div class="team-title">MERCEDES</div>
             </div>
-            <div class="col team bold-font logo-and-title" data-teamid="5" data-teamname="Alpine" style="">
+            <div class="col team bold-font logo-and-title" data-teamid="5" data-teamname="Alpine" id="alpineTeam" style="">
               <img src="../assets/images/alpine.png" id="alpinelogo">
+              <img src="../assets/images/alpine2.png" class="d-none" id="alpinelogo">
               <div class="team-title">ALPINE</div>
             </div>
             <div class="col team bold-font logo-and-title"  data-teamid="2" data-teamname="McLaren" style="">
@@ -570,8 +571,9 @@
               <img src="../assets/images/haas.png" id="haaslogo">
               <div class="team-title">HAAS</div>
             </div>
-            <div class="col team bold-font logo-and-title" data-teamid="8" data-teamname="Alpha Tauri" style="">
+            <div class="col team bold-font logo-and-title" data-teamid="8" data-teamname="Alpha Tauri" id="alphaTauriTeam" style="">
               <img src="../assets/images/alphatauri.png" id="alphataurilogo">
+              <img src="../assets/images/alphatauri2.png" class="d-none" id="alphataurilogo">
               <div class="team-title">ALPHA TAURI</div>
             </div>
             <div class="col team bold-font logo-and-title" data-teamid="6" data-teamname="Williams" style="">
@@ -698,6 +700,7 @@
             </div>
           </div>
           <div class="performance-show teams-show d-none">
+            <div class="stats-title perf-title bold-font" id="teamPerformanceTitle">PRUEBA</div>
             <div class="one-performance" style="margin-top: 0px;">
               <div class="performance-name">Chasis</div>
               <div class="performance-buttons">
