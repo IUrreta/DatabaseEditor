@@ -875,7 +875,7 @@ a.bi-heart:hover{
   text-align: center;
 }
 
-.team {
+.team, .engine {
   background-color: #3f3c57;
   border: 2px solid transparent;
   border-radius: 10px;
@@ -888,18 +888,18 @@ a.bi-heart:hover{
   font-size: 18px;
 }
 
-.team:hover {
+.team:hover, .engine:hover {
   border-color: white;
   color: white;
   background-color: #4e4b69;
 }
 
-.team.selected {
+.team.selected, .engine.selected {
   color: #110f24;
   background-color: #dedde6;
 }
 
-.team:active {
+.team:active .engine:active{
   background-color: #1a1826;
 }
 

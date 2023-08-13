@@ -1,4 +1,33 @@
+const teamsPill = document.getElementById("teamsPill");
+const enginesPill = document.getElementById("enginesPill");
+
+const teamsDiv = document.getElementById("teamsDiv");
+const enginesDiv = document.getElementById("enginesDiv");
+
+const divsTeamsArray = [teamsDiv, enginesDiv]
+
+
 let teamSelected;
+
+teamsPill.addEventListener("click", function () {
+    manageTeamsEngines("show", "hide")
+})
+
+enginesPill.addEventListener("click", function () {
+    manageTeamsEngines("hide", "show")
+    document.querySelector(".performance-show").classList.add("d-none")
+})
+
+function manageTeamsEngines(...divs) {
+    divsTeamsArray.forEach(function (div, index) {
+        if (divs[index] === "show") {
+            div.className = "main-columns-drag-section"
+        }
+        else {
+            div.className = "main-columns-drag-section d-none"
+        }
+    })
+}
 
 document.querySelectorAll(".team").forEach(function (elem) {
     elem.addEventListener("click",function () {
