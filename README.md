@@ -57,7 +57,15 @@ make any driver transfer you desire. I **HIGHLY RECOMMEND** to make a **BACKUP**
 
 ### How can I update the Database Editor if I had a previouos verision? ###
 
-This is something that I have been working on an it's now easier than ever to update! Whenever you open the tool, it will automatically look if there's a new update out. If you're not connected to the internet, don't worry, this will show up on the footer: ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/9a38df06-65eb-4fce-8b04-27deac52d964)
+If you're still on the 1.3 or any previous version, the old method for updating will still work:
+
+If installed through git, just go into your Database Editor folder, and type in the "Address bar" `cmd`, just like this: ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/87cb051c-73fa-4590-8b7a-184058cfd0c1)
+
+and then press `Enter`. When the command prompt opens up, copy and paste this commmand: `git pull`
+
+If you installed using the .zip file, just download the latest one.
+
+Now, for the 1.4 version, this is something that I have been working on an it's now easier than ever! Whenever you open the tool, it will automatically look if there's a new update out. If you're not connected to the internet, don't worry, this will show up on the footer: ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/9a38df06-65eb-4fce-8b04-27deac52d964)
 ,
 but you will still be able to keep using the tool.
 
@@ -69,7 +77,7 @@ just click it and the update will download and install **AUTOMATICALLY**, you wo
 If, on the other hand, you installed downloading the zip, you'll see the same message but with a different icon:
 ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/f35f7df7-34f3-4356-b542-5c5a7e8f6de9)
 ,
-just click it and it will re direct you to the latest release available
+just click it and it will re direct you to the latest release available, so you can download it from there.
 
 When you have the latest version available, you'll see this on the right bottom corner of the screen:
 
