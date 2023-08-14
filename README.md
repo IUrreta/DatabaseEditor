@@ -103,7 +103,9 @@ Also, this is done so you can just execute it with a double click, no more typin
 ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/823cd8f4-a3ab-4e8f-a8c2-1928b02f66d6)
 
 
+### Special thanks ###
+xAranaktu for the save repacker: https://github.com/xAranaktu/F1-Manager-2022-SaveFile-Repacker
 
+Rolfeee for his design contribution: https://www.racedepartment.com/members/rolfeee.1369146/
 
-
-
+F1 Manager Mods discord for the help during testing
