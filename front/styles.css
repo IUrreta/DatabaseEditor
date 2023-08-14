@@ -78,6 +78,10 @@ body::-webkit-scrollbar-thumb {
   cursor: default;
 }
 
+.bi-exclamation-diamond{
+  color: #ff8080;
+}
+
 .bi-exclamation-lg, .bi-cloud-download{
   color: #d3d393;
   cursor: pointer;
