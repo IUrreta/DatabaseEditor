@@ -1,12 +1,12 @@
 # Database Editor for F1 Manager 23 #
-Friendly to use tool for editing your save files from F1 Manager 23. Supports driver transfers, stat and calendar editing for now, but the tool is still in constant development!
+Friendly to use tool for editing your save files from F1 Manager 23. Supports driver transfers, calendar customization, staff stat editing and car eprfromance editing, but the tool is still in constant development!
 
-**PLEASE KEEP IN MIND**: This are the first few iterations and will only get better with time. It will get regular updates to support more functionallity, and very likely it will get updates focusing on setting up if any issues come up
+**PLEASE KEEP IN MIND**: This are the first few iterations and will only get better with time. It will get regular updates to support more functionallity.
 
 If you have any issues, I recommend first look at the Troubleshoot guide for the most common error: https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide. If this doesn't fix the error, you can open an Issue on GitHub
 
 ## What's the Database Editor? ##
-Basically it's just a friendly user interface that helps you make the modifications you wish for the databasde from your save file from F1 Manager 23
+Basically it's just a friendly user interface that helps you make the modifications you wish for the database from your save file from F1 Manager 23
 
 It's developed by the same guy (me, u/ignaciourreta on Reddit) who developed multiple scripts for the F1 Manager 22 game as the driver trasnfer script, custom calendar, edit stats, or edit performance of cars
 
@@ -14,11 +14,13 @@ When I developed those scripts, more specifically the driver transfers script fo
 
 ### What can I actually edit with the Database Editor? ###
 
-As of today, the supported functionalities are making driver transfers, editing driver stats and customizing the race calendar. Driver transfers include F1 official drivers, reserves, drivers from F2, F3, or even from their sofa if they have retired! Editing stats include any of the 9 stats that add up to calculate the overall rating of the driver, plus their growth and aggression. 
+As of today, the supported functionalities are making driver transfers, editing driver stats and customizing the race calendar. Driver transfers include F1 official drivers, reserves, drivers from F2, F3, or even from their sofa if they have retired! Editing stats include any of all the stats that add up to form the overall rating of **ANY** staff from the game, including drivers, technical chiefs, race engineers etc.
 
-Don't worry if there has been driver changes in your save, or if any driver has gained or lost performance in any statistic. You'll be able to see those changes on the Database Editor. Just drag and drop the driver in a free space in any F1 team and you are done! No need to save changes for driver transfers. With the auto contract switch ON, the tool will automatically generate a contract for a driver when you move him into a new team, so you will not have to worry about it! (If you want to do it manually, just switch it off)
+Don't worry if there has been driver changes in your save, or if any staff memebr has gained or lost performance in any statistic. You'll be able to see those changes on the Database Editor. Just drag and drop the driver in a free space in any F1 team and you are done! No need to save changes for driver transfers. With the auto contract switch ON, the tool will automatically generate a contract for a driver when you move him into a new team, so you will not have to worry about it! (If you want to do it manually, just switch it off). You can also now edit the contract details of nay driver on the grid. Just put your mouse on top of it and an icon to allow you to edit them will pop up.
 
 As for the calendar customization, there is the possibility to shuffle the races however you please, just drag and drop them wherever you want to place them. There is also support to choose what weekends will have the Spint format, as well as the Alternative Tyre Allocation format (Q1 on hards, Q2 on mediums and Q3 on softs). There is a maximum of 22 races per seaso, although you can remove any track that you don't like and add a repeated one. **KEEP IN MIND**: Due to how the script works, once you have deleted **at least** one track and **hit Save Changes**, you will no longer have the chance of adding new races in that season. You will be able to reshuffle them if you prefer them in other specific order, but no more adding races. While you don't press the **Save Changes** button, you are free to edit the calendar to your liking. I suggest editing the calendar as soon as you start a new season, your save integrity will not be guaranteed if you do it mid-through.
+
+For the car performance editor, just sleect the team you want to buff or nerf, and click the `+` or `-` buttons to add or remove performance from that specific part. **KEEP IN MIND**: It's literally impossible for me to calculate how much a buff or a nerf on a part will affect laptimes, as it depends on a lot of factors (such as track type, driver etc.), so the percentage that you see on the right of the bar is just a numeric representation of the bar progress.
 
 ## What do I need to use the Database Editor? ##
 You'll need to have installed on your computer 2 things: Python and NodeJS.
@@ -34,13 +36,11 @@ If you don't like cmds, don't worry, I have designed this to not require you to 
 So, if you have everything installed, you just have to download this repository to be able to use the editor!
 
 If you know how to use git and have it installed, just clone this repository wherever you desire.
-**I HIGHLY RECOMMEND** to use git as it will be much easier to update the editor in the future. Here is a guide to install it (don't worry, it's not complicated): https://github.com/git-guides/install-git
+**I REALLY HIGHLY RECOMMEND** to use git as it will be much easier to update the editor in the future. Here is a guide to install it (don't worry, it's not complicated): https://github.com/git-guides/install-git
 
 This repository has mainly 1 usable branch: `release`. This branch will have the latest functional version. The `main` branch will also have functional versions but it's **NOT RECOMMENDED** for casual use. It should not but it **MAY** break at any time and software there will not be FINAL.
 
-
-For cloning the repo, just create any folder **OUTSIDE ANY WINDOWS CONTRROLLED FOLDER** (Program Files, System32 etc.), your desktop for example is a good place, but feel free to choose
-other places. Then go into that folder in the Windows Explorer (`Win+E`) and type in the "Address bar" at the top: `cmd` and press Enter.
+For cloning the repo, just create any folder **OUTSIDE ANY WINDOWS CONTRROLLED FOLDER** (Program Files, System32 etc.), your desktop for example is a good place, but feel free to choose other places. Then go into that folder in the Windows Explorer (`Win+E`) and type in the "Address bar" at the top: `cmd` and press Enter.
 
 Once the black box (Command Prompt) opens, copy and paste this command and press Enter:
 
@@ -57,18 +57,52 @@ make any driver transfer you desire. I **HIGHLY RECOMMEND** to make a **BACKUP**
 
 ### How can I update the Database Editor if I had a previouos verision? ###
 
-It's actually super easy. If you cloned the repository from github, just open the repository location in your file eplorer folder (`Win + E`) and type in the "Address bar" `cmd` and press `Enter`. Then, a black box (Command prompt) will appear. Copy and paste this command: `git pull` and press `Enter` again. Everything should download automatically. 
+This is something that I have been working on an it's now easier than ever to update! Whenever you open the tool, it will automatically look if there's a new update out. If you're not connected to the internet, don't worry, this will show up on the footer: ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/9a38df06-65eb-4fce-8b04-27deac52d964)
+,
+but you will still be able to keep using the tool.
 
-If, on the other hand, you just downloaded the zip with the files, it's the same process again! Download the zip, extract the files and you should be good to go!
+If you are connected to the internet and you **INSTALLED THROUGH GIT**, adn there's an update available, you'll see thie:
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/9cb4d880-f2db-4af2-a346-1209ac48c866)
+,
+just click it and the update will download and install **AUTOMATICALLY**, you won't have to do anything else. The tool will restart itself.
+
+If, on the other hand, you installed downloading the zip, you'll see the same message but with a different icon:
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/f35f7df7-34f3-4356-b542-5c5a7e8f6de9)
+,
+just click it and it will re direct you to the latest release available
+
+When you have the latest version available, you'll see this on the right bottom corner of the screen:
+
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/481fec01-e020-47d8-82cb-a9804156bd28)
+
+
+## FAQ ##
+
+### I get an error saying "could not connect with backend". Have I done something wrong? ###
+
+It most likely has something to do with a bad python installation. Not that you have a not-compatible version, but that you missed some of the steps to install it propperly. There's a complete guide on how to solve this: https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide
+
+### I can edit stats and do transfers, but then I don't see those changes applied to the game ###
+
+One of two cases, either you didn't drop the save file you just edited back into the SavedGames folder on your F1 Manager 23 folder, or you pasted back the wrong file. If something goes wrong during using the tool or doesn0t save, **YOU WILL GET AN ERROR SAYING IT**, if you don't see any erro, it means that everything has been done succesfully.
+
+### Why do I have to install Python and NodeJS? Isn't it Docker easier to use? ###
+
+Actually, Docker might seem easier to use, but it's much more heavy in terms of size than installing only this two dependencies.
+Also, this is done so you can just execute it with a double click, no more typing in your browser sketchy ip addresses that you don't understand😉
 
 
 ### Screenshots ###
 
-![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/a7c4acb2-5054-4b41-8ae6-4de8c2e87b7e)
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/89baa8a5-7920-43b3-ab6a-cd88a1907918)
 
-![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/a8481cf2-e01a-4ac3-8239-9af8230337f6)
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/1fec6164-4f5f-4364-97bd-31e6ea77ee81)
 
-![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/01d36c8c-f8ac-4d76-af38-188f2a94ef24)
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/914ba276-21bd-467c-9142-636362641a7f)
+
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/823cd8f4-a3ab-4e8f-a8c2-1928b02f66d6)
+
+
 
 
 
