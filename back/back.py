@@ -9,6 +9,7 @@ from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script as run_trasnsfer
 from scripts.edit_stats_23 import run_script as run_editStats
 from scripts.custom_calendar_23 import run_script as run_editCalendar
+from scripts.car_performance_23 import run_script as run_editPerformance
 
 client = None
 path = None
@@ -24,6 +25,7 @@ async def handle_command(message):
     global cursor
     argument = ""
     if type == "connect":
+        #print("Connect recibido")
         argument = type
         saves = [element for element in os.listdir("../") if ".sav" in element]
         if "player.sav" in saves:
@@ -43,6 +45,11 @@ async def handle_command(message):
         drivers.insert(0, "Save Loaded Succesfully")
         data_json_drivers = json.dumps(drivers)
         await send_message_to_client(data_json_drivers)
+        staff = fetch_staff()
+        staff.insert(0, "Staff Fetched")
+        data_json_staff = json.dumps(staff)
+        await send_message_to_client(data_json_staff)
+        #print(fetch_parts())
         allowCalendar = [tuple(check_claendar())]
         allowCalendar.insert(0, "Calendar fetched")
         data_json_calendar = json.dumps(allowCalendar)
@@ -75,9 +82,18 @@ async def handle_command(message):
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
 
+    elif type=="swap":
+        argument = "swap " + message["driver1ID"] + " " + message["driver2ID"]
+        run_trasnsfer(argument)
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully swapped " + message["driver1"] + " and  " + message["driver2"])
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+
     elif type =="editStats":
-        run_editStats(message["driverID"] + " " + message["statsArray"])
-        argument = type + " " + message["driverID"] + " " + message["statsArray"]
+        run_editStats(message["driverID"] + " " + message["typeStaff"] + " " + message["statsArray"])
+        argument = type + " " + message["driverID"] + " " + message["typeStaff"] + " " + message["statsArray"]
         process_repack("../result", path)
         info = []
         info.insert(0, "Succesfully edited " + message["driver"] + "'s stats")
@@ -87,11 +103,38 @@ async def handle_command(message):
     elif type=="calendar":
         run_editCalendar(message["calendarCodes"])
         process_repack("../result", path)
-        argument = type
+        argument = type + message["calendarCodes"]
         info = []
         info.insert(0, "Succesfully edited the calendar")
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
+
+    elif type=="requestDriver":
+        contractDetails = fetch_driverContract(message["driverID"])
+        contractMsg = [contractDetails]
+        contractMsg.insert(0, "Contract fetched")
+        data_json_contract = json.dumps(contractMsg)
+        await send_message_to_client(data_json_contract)
+
+    elif type=="editContract":
+        argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"])
+        run_trasnsfer(argument)
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully edited " + message["driver"] + "'s contract")
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+
+    elif type =="editPerformance":
+        argument = message["teamID"] + " " + message["performanceArray"]
+        run_editPerformance(argument)
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully edited " + message["teamName"] + "'s car performance")
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+        argument = "editPerformance " +  message["teamID"] + " " + message["performanceArray"]
+
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()
@@ -124,23 +167,49 @@ async def handle_client(websocket, path):
 
 async def start_server():
     server = await websockets.serve(handle_client, "localhost", 8765)
+    #print(server)
     await server.wait_closed()
-    server.shutdown(1)
     server.close()
+
+
+def fetch_parts():
+    lista = []
+    for teamID in range(1, 11):
+        teamList = []
+        for partType in range(3, 9):
+            id = cursor.execute("SELECT MAX(DesignID) AS MaxDesignID FROM Parts_Designs WHERE PartType = " + str(partType) + " AND TeamID = " + str(teamID)).fetchone()
+            teamList.append(id[0])
+        teamInfo = (teamID, teamList)
+        lista.append(teamInfo)
+
+    return lista
+        
 
 
 async def main():
     await start_server()
+
+def fetch_driverContract(id):
+    details = cursor.execute("SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = " + str(id)).fetchone()
+
+    return details
+
+def fetch_staff():
+    staff = cursor.execute("SELECT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0;").fetchall()
+    formatted_tuples = []
+
+    for tupla in staff:
+        result = format_names_get_stats(tupla, "staff"+str(tupla[4]))
+        formatted_tuples.append(result)
+    return formatted_tuples
 
 def fetch_info():
 
     drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID WHERE ContractType = 0 OR ContractType IS NULL;').fetchall()
     formatted_tuples = []
     for tupla in drivers:
-        result = format_names_get_stats(tupla)
+        result = format_names_get_stats(tupla, "driver")
         formatted_tuples.append(result)
-
-    allowCalendar = check_claendar()
     
     return formatted_tuples
 
@@ -158,7 +227,7 @@ def check_claendar():
     return resultCalendar
     
 
-def format_names_get_stats(name):
+def format_names_get_stats(name, type):
     nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
     apellido_pattern = r'StaffName_Surname_(\w+)'
 
@@ -175,11 +244,36 @@ def format_names_get_stats(name):
 
     resultado = (name_formatted, name[2], team_id, pos_in_team)
 
-    stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID BETWEEN 2 AND 10").fetchall()
-    additionalStats = cursor.execute("SELECT Improvability, Aggression FROM Staff_DriverData WHERE StaffID = " + str(name[2])).fetchone()
-    nums = resultado + tuple(stat[0] for stat in stats) + additionalStats
+    if type == "driver":
+        stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID BETWEEN 2 AND 10").fetchall()
+        additionalStats = cursor.execute("SELECT Improvability, Aggression FROM Staff_DriverData WHERE StaffID = " + str(name[2])).fetchone()
+        nums = resultado + tuple(stat[0] for stat in stats) + additionalStats
 
-    return nums
+        return nums
+    
+    elif type == "staff1":
+        stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID IN (0,1,14,15,16,17);").fetchall()
+        nums = resultado + tuple(stat[0] for stat in stats)
+
+        return nums
+    
+    elif type == "staff2":
+        stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID IN (13,25,43);").fetchall()
+        nums = resultado + tuple(stat[0] for stat in stats)
+
+        return nums
+    
+    elif type == "staff3":
+        stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID IN (19,20,26,27,28,29,30,31);").fetchall()
+        nums = resultado + tuple(stat[0] for stat in stats)
+
+        return nums
+    
+    elif type == "staff4":
+        stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID IN (11,22,23,24);").fetchall()
+        nums = resultado + tuple(stat[0] for stat in stats)
+
+        return nums
 
 def remove_number(cadena):
     if cadena and cadena[-1].isdigit():
