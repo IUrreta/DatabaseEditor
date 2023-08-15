@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded',function () {
         // console.log('Mensaje recibido: ' + event.data);
 
         let message = JSON.parse(event.data)
+        console.log(message)
         if (message[0] === "ERROR") {
             update_notifications(message[1],true)
             manage_status(0)
@@ -93,6 +94,9 @@ document.addEventListener('DOMContentLoaded',function () {
             }
             else if (message[0] === "Calendar fetched") {
                 manage_calendarDiv(message.slice(1)[0])
+            }
+            else if (message[0] === "Engines fetched") {
+                manage_engineStats(message.slice(1))
             }
             else if (message[0] === "Contract fetched") {
                 manage_modal(message.slice(1)[0])

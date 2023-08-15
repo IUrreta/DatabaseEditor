@@ -49,7 +49,10 @@ async def handle_command(message):
         staff.insert(0, "Staff Fetched")
         data_json_staff = json.dumps(staff)
         await send_message_to_client(data_json_staff)
-        #print(fetch_parts())
+        engines = fetch_engines()
+        engines.insert(0, "Engines fetched")
+        data_json_engines = json.dumps(engines)
+        await send_message_to_client(data_json_engines)
         allowCalendar = [tuple(check_claendar())]
         allowCalendar.insert(0, "Calendar fetched")
         data_json_calendar = json.dumps(allowCalendar)
@@ -172,15 +175,17 @@ async def start_server():
     server.close()
 
 
-def fetch_parts():
+def fetch_engines():
+    engines_ids = [1,10,4,7]
+    stats_ids = [6,10,11,12,14]
     lista = []
-    for teamID in range(1, 11):
-        teamList = []
-        for partType in range(3, 9):
-            id = cursor.execute("SELECT MAX(DesignID) AS MaxDesignID FROM Parts_Designs WHERE PartType = " + str(partType) + " AND TeamID = " + str(teamID)).fetchone()
-            teamList.append(id[0])
-        teamInfo = (teamID, teamList)
-        lista.append(teamInfo)
+    for engineID in engines_ids:
+        statList = []
+        for stat in stats_ids:
+            res = cursor.execute("SELECT UnitValue FROM Parts_Designs_StatValues WHERE DesignID = " + str(engineID) + " AND PartStat = " + str(stat)).fetchone()
+            statList.append(res[0])
+        engineInfo = (engineID, statList)
+        lista.append(engineInfo)
 
     return lista
         

@@ -32,6 +32,30 @@ function manageTeamsEngines(...divs) {
     })
 }
 
+function manage_engineStats(msg){
+    msg.forEach(function(elem){
+        let engineId = elem[0]
+        console.log(elem[0])
+        let engineStats = ""
+        elem[1].forEach(function(stat){
+            engineStats += stat + " "
+        })
+        engineStats.trim()
+        console.log(engineStats)
+        place_engineStats(engineId, engineStats)
+    })
+}
+
+function place_engineStats(engineId, engineStats) {
+    var element = document.querySelector('[data-engineId="' + engineId + '"]');
+    element.setAttribute('data-stats', "");
+    if (element) {
+        element.setAttribute('data-stats', engineStats);
+    }
+}
+
+
+
 document.querySelectorAll(".team").forEach(function (elem) {
     elem.addEventListener("click",function () {
         let elemsSelected = document.querySelectorAll('.selected');
@@ -64,9 +88,20 @@ document.querySelectorAll(".engine").forEach(function (elem) {
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         document.querySelector(".engines-show").classList.remove("d-none")
-        resetBars()
+        resetBarsEngines(elem)
     })
 })
+
+function resetBarsEngines(div) {
+    let statsString = div.dataset.stats
+    var statsArray = statsString.split(' ').map(function(item) {
+        return parseFloat(item, 10) / 10;
+    });
+    document.querySelector(".engines-show").querySelectorAll(".custom-progress").forEach(function (elem, index) {
+        elem.dataset.progress = statsArray[index]
+        manage_bar(elem,elem.dataset.progress)
+    })
+}
 
 function resetBars() {
     document.querySelectorAll(".custom-progress").forEach(function (elem) {
@@ -152,6 +187,8 @@ function manage_bar(bar,progress) {
     if(bar.dataset.type ==="engine"){
         let whiteDiv = bar.querySelector(".white-part")
         let newProgress = progress * 10
+        console.log(progress)
+        console.log(newProgress)
         let newWidth = 0 + newProgress + "%"
         whiteDiv.style.width = newWidth;
     }
