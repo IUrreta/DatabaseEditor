@@ -1,5 +1,10 @@
 @echo off
 REM Ejecutar server.py en la carpeta "back" usando Python
+for %%I in ("%CD%") do set "ultima_carpeta=%%~nI"
+echo La última carpeta es: %ultima_carpeta%
+if "%ultima_carpeta%"=="launcher" (
+    cd..
+)
 cd back
 pip install websockets
 start "" /B py back.py
