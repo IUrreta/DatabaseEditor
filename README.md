@@ -79,6 +79,7 @@ If you are connected to the internet and you **INSTALLED THROUGH GIT**, adn ther
 ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/9cb4d880-f2db-4af2-a346-1209ac48c866)
 ,
 just click it and the update will download and install **AUTOMATICALLY**, you won't have to do anything else. The tool will restart itself.
+If when the tool restarts itself it opens 2 windows in stead of one, close both of them and open manually the tool manually. You should have tha latest version installed.
 
 If, on the other hand, you installed downloading the zip, you'll see the same message but with a different icon:
 ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/f35f7df7-34f3-4356-b542-5c5a7e8f6de9)
