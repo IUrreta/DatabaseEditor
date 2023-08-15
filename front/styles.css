@@ -1043,11 +1043,6 @@ a.bi-heart:hover{
   max-height: 70px;
 }
 
-.one-stat-panel:hover {
-  border-color: white;
-  color: white;
-  background-color: #4e4b69;
-}
 
 .scriptPills {
   color: white !important;
