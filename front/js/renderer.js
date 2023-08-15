@@ -167,7 +167,11 @@ document.addEventListener('DOMContentLoaded',function () {
                     }
                 }
             })
-            .catch(error => console.error('Error al obtener las etiquetas:',error));
+            .catch(error => {
+                updateInfo.textContent = '\xa0' + "Failed to fetch updates"
+                updateInfo.classList.remove("bi-cloud")
+                updateInfo.classList.add("bi-exclamation-diamond")
+            });
     }
 
     function checkGit() {
@@ -214,14 +218,14 @@ document.addEventListener('DOMContentLoaded',function () {
                 } else {
                     //console.log('Git pull exitoso:',update);
                     setTimeout(() => {
-                        exec('restart.vbs', (error, stdout, stderr) => {
-                          if (error) {
-                            //console.error(`Error: ${error}`);
-                            return;
-                          }
-                          //console.log(`Resultado: ${stdout}`);
+                        exec('restart.vbs',(error,stdout,stderr) => {
+                            if (error) {
+                                //console.error(`Error: ${error}`);
+                                return;
+                            }
+                            //console.log(`Resultado: ${stdout}`);
                         });
-                      }, 1000);
+                    },1000);
                 }
             });
         })

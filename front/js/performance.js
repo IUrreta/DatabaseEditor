@@ -52,7 +52,6 @@ document.querySelectorAll(".team").forEach(function (elem) {
         document.getElementById("teamPerformanceTitle").classList.add(colorClass)
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
-        console.log(elem.dataset.teamid)
         document.querySelector(".teams-show").classList.remove("d-none")
         resetBars()
     })
@@ -64,7 +63,6 @@ document.querySelectorAll(".engine").forEach(function (elem) {
         elemsSelected.forEach(item => item.classList.remove('selected'));
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
-        console.log(elem.dataset.teamid)
         document.querySelector(".engines-show").classList.remove("d-none")
         resetBars()
     })

@@ -78,6 +78,10 @@ body::-webkit-scrollbar-thumb {
   cursor: default;
 }
 
+.bi-exclamation-diamond{
+  color: #ff8080;
+}
+
 .bi-exclamation-lg, .bi-cloud-download{
   color: #d3d393;
   cursor: pointer;
@@ -458,7 +462,7 @@ a.bi-heart:hover{
 
 .custom-confirm:hover {
   background-color: #9fdf9f !important;
-  border-color: #5cfc64 !important;
+  border-color: #6d9e6d  !important;
   color: #555555 !important;
 
 }
@@ -481,13 +485,13 @@ a.bi-heart:hover{
 
 .delete-mode {
   background-color: #ff8080 !important;
-  border-color: #fc5c5c !important;
+  border-color: #d66f6f !important;
   transition: border-color 0.5s;
 }
 
 .custom-delete:hover {
   background-color: #ff8080 !important;
-  border-color: #fc5c5c !important;
+  border-color: #d35f5f !important;
 }
 
 .custom-delete:active {
@@ -587,8 +591,8 @@ a.bi-heart:hover{
 }
 
 .delete-div:hover {
-  color: red;
-  border-color: red;
+  color: #ff8080;
+  border-color: #ff8080;
 }
 
 
