@@ -32,32 +32,46 @@ For NodeJS, you can download it from here https://nodejs.org/en/download, just s
 Now, if you have installed succesfully both of them, you should be able to run both py and npm commands on a cmd. You can do this for extra checking, but this is NOT MANDATORY.
 If you don't like cmds, don't worry, I have designed this to not require you to use them. 
 
-## How can I run the Database Editor? ##
-So, if you have everything installed, you just have to download this repository to be able to use the editor!
+## How can I install the Database Editor? ##
+So, if you have everything I mentioned installed, you just have to download this repository to be able to use the editor!
 
-If you know how to use git and have it installed, just clone this repository wherever you desire.
-**I REALLY HIGHLY RECOMMEND** to use git as it will be much easier to update the editor in the future. Here is a guide to install it (don't worry, it's not complicated): https://github.com/git-guides/install-git
+### Git installation (recommended) ##
 
-This repository has mainly 1 usable branch: `release`. This branch will have the latest functional version. The `main` branch will also have functional versions but it's **NOT RECOMMENDED** for casual use. It should not but it **MAY** break at any time and software there will not be FINAL.
+If you don't have git installed, you can download it for windows here : [https://github.com/git-guides/install-git](https://gitforwindows.org/)
 
-For cloning the repo, just create any folder **OUTSIDE ANY WINDOWS CONTRROLLED FOLDER** (Program Files, System32 etc.), your desktop for example is a good place, but feel free to choose other places. Then go into that folder in the Windows Explorer (`Win+E`) and type in the "Address bar" at the top: `cmd` and press Enter.
+For cloning the repository (installing the tool), just create any folder **OUTSIDE ANY WINDOWS CONTRROLLED FOLDER** (Program Files, System32 etc.), your desktop for example is a good place, but feel free to choose other places. Then go into that folder in the Windows Explorer (`Win+E`) and type in the "Address bar" at the top: `cmd` and press `Enter`, like in the following picture:
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/e0f8b123-0557-4783-a2dd-242eb12e7718)
+
+This repository has mainly 1 usable branch: `release`. This branch will have the latest functional version. The `main` branch will also have functional versions but it's **NOT RECOMMENDED** for casual use. It should not but it **MAY** break at any time and software there will not be FINAL (ignore this paragraph if you're not familiar with git).
 
 Once the black box (Command Prompt) opens, copy and paste this command and press Enter:
 
 `git clone https://github.com/IUrreta/DatabaseEditor.git -b release`
 
-This will clone the repo from the release branch
+This will clone the repo from the release branch, and you will have the tool installed.
 
-If you still don't want to clone the repo, just hit the green button that reads "Code" in it and click the download Zip option. Extract the files where you want and you should have the files from the editor ready.
+### Zip installation (discouraged) ###
 
-Once you have cloned/downloaded the repository, just paste the save file you want to edit into the DatabaseEditor folder. Your saves folder should be in C:\Users\XXX\AppData\Local\F1Manager23\Saved\SaveGames where XXX is your username. If the AppData folder does not appear go to View in windows explorer and then click on hidden elements.
+If you still don't want to clone the repo, just go into the [Releases](https://github.com/IUrreta/DatabaseEditor/releases) tab in it and hit `Source code(.zip)` from the **LATEST** release 
 
-With your save inside the Database Editor folder, just double click on the run.vbs file and there you go! Everything else should install itself and the tool should open. Now you will be able to 
+## How can I run the Databse Editor? ##
+
+Once you have cloned/downloaded the repository, just paste the save file you want to edit into the `DatabaseEditor` folder. Your saves folder should be in `C:\Users\XXX\AppData\Local\F1Manager23\Saved\SaveGames` where `XXX` is your username. If the `AppData` folder does not appear go to `View > Show` in the `Windows Explorer` and then click on `Hidden elements`.
+
+With your save inside the Database Editor folder, just double click on the `run.vbs` file and there you go! Everything else should install itself and the tool should open. Now you will be able to 
 make any driver transfer you desire. I **HIGHLY RECOMMEND** to make a **BACKUP** of your file you're about to edit. To use the tool, select any save from the save selector and just drag and drop any driver into the spot you want to sign him into. To free a spot, just drag the driver that is occupying it and drop him into the Dree Drivers secion.
 
 ### How can I update the Database Editor if I had a previouos verision? ###
 
-This is something that I have been working on an it's now easier than ever to update! Whenever you open the tool, it will automatically look if there's a new update out. If you're not connected to the internet, don't worry, this will show up on the footer: ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/9a38df06-65eb-4fce-8b04-27deac52d964)
+If you're still on the 1.3 or any previous version, the old method for updating will still work:
+
+If installed through git, just go into your Database Editor folder, and type in the "Address bar" `cmd`, just like this: ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/87cb051c-73fa-4590-8b7a-184058cfd0c1)
+
+and then press `Enter`. When the command prompt opens up, copy and paste this commmand: `git pull`
+
+If you installed using the .zip file, just download the latest one.
+
+Now, for the 1.4 version, this is something that I have been working on an it's now easier than ever! Whenever you open the tool, it will automatically look if there's a new update out. If you're not connected to the internet, don't worry, this will show up on the footer: ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/9a38df06-65eb-4fce-8b04-27deac52d964)
 ,
 but you will still be able to keep using the tool.
 
@@ -69,7 +83,7 @@ just click it and the update will download and install **AUTOMATICALLY**, you wo
 If, on the other hand, you installed downloading the zip, you'll see the same message but with a different icon:
 ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/f35f7df7-34f3-4356-b542-5c5a7e8f6de9)
 ,
-just click it and it will re direct you to the latest release available
+just click it and it will re direct you to the latest release available, so you can download it from there.
 
 When you have the latest version available, you'll see this on the right bottom corner of the screen:
 
@@ -80,11 +94,16 @@ When you have the latest version available, you'll see this on the right bottom 
 
 ### I get an error saying "could not connect with backend". Have I done something wrong? ###
 
-It most likely has something to do with a bad python installation. Not that you have a not-compatible version, but that you missed some of the steps to install it propperly. There's a complete guide on how to solve this: https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide
+It most likely has something to do with a bad python installation. Not that you have a not-compatible version, but that you missed some of the steps to install it propperly. There's a complete guide on how to solve this in the [Troubleshoot Guide](https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide)
+
+### My save files don't appear in the tool ###
+
+There's another chapter covering that on the [Troubleshoot Guide](https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide)
+
 
 ### I can edit stats and do transfers, but then I don't see those changes applied to the game ###
 
-One of two cases, either you didn't drop the save file you just edited back into the SavedGames folder on your F1 Manager 23 folder, or you pasted back the wrong file. If something goes wrong during using the tool or doesn0t save, **YOU WILL GET AN ERROR SAYING IT**, if you don't see any erro, it means that everything has been done succesfully.
+One of two cases, either you didn't drop the save file you just edited back into the SavedGames folder on your F1 Manager 23 folder, or you pasted back the wrong file. If something goes wrong during using the tool or doesn't save, **YOU WILL GET AN ERROR SAYING IT**, if you don't see any erro, it means that everything has been done succesfully. This is also covered in the [Troubleshoot Guide](https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide)
 
 ### Why do I have to install Python and NodeJS? Isn't it Docker easier to use? ###
 
@@ -103,7 +122,9 @@ Also, this is done so you can just execute it with a double click, no more typin
 ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/823cd8f4-a3ab-4e8f-a8c2-1928b02f66d6)
 
 
+### Special thanks ###
+xAranaktu for the save repacker: https://github.com/xAranaktu/F1-Manager-2022-SaveFile-Repacker
 
+Rolfeee for his design contribution: https://www.racedepartment.com/members/rolfeee.1369146/
 
-
-
+F1 Manager Mods discord for the help during testing
