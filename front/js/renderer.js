@@ -1,4 +1,8 @@
 const socket = new WebSocket('ws://localhost:8765/');
+const fs = require('fs');
+const simpleGit = require('simple-git');
+const { exec } = require('child_process');
+
 socket.onopen = () => {
     //console.log('Conexión establecida.');
     let data = {
@@ -7,13 +11,16 @@ socket.onopen = () => {
     socket.send(JSON.stringify(data))
 
 };
-const fs = require('fs');
-const simpleGit = require('simple-git');
-const { exec } = require('child_process');
+
+const versionPanel = document.querySelector('.versionPanel');
+fetch('./../launcher/version.conf')
+.then(response => response.text())
+.then(version => {
+    versionPanel.textContent = `${version}`;
+});
+
 
 document.addEventListener('DOMContentLoaded',function () {
-
-
 
     const driverTransferPill = document.getElementById("transferpill");
     const editStatsPill = document.getElementById("statspill");
@@ -36,6 +43,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
+
     let latestTag;
 
     const repoOwner = 'IUrreta'; // Reemplaza con el nombre del dueño del repositorio
@@ -49,13 +57,11 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
 
+
     let connectionTimeout = setTimeout(() => {
         update_notifications("Could not connect with backend",true)
         manage_status(0)
     },4000);
-
-
-
 
 
     socket.onmessage = (event) => {
@@ -121,7 +127,7 @@ document.addEventListener('DOMContentLoaded',function () {
             .then(tags => {
                 if (tags.length > 0) {
                     latestTag = tags[0].name;
-                    let actualVersion = document.querySelector('.versionPanel').textContent.trim()
+                    let actualVersion = versionPanel.textContent.trim()
 
                     if (actualVersion.slice(-3) === "dev") {
                         updateInfo.textContent = '\xa0' + "Development branch"
@@ -130,7 +136,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
                     }
                     else {
-                        let latestVer = latestTag.split(".").map(Number);
+                        let latestVer = [latestTag.split(".").map(Number);]
                         let actualVer = actualVersion.split(".").map(Number);
                         let isSame = true;
                         if (latestVer.length > actualVer.length) {
