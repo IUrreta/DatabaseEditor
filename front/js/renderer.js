@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
                     }
                     else {
-                        let latestVer = [latestTag.split(".").map(Number);]
+                        let latestVer = latestTag.split(".").map(Number);
                         let actualVer = actualVersion.split(".").map(Number);
                         let isSame = true;
                         if (latestVer.length > actualVer.length) {
