@@ -1033,13 +1033,20 @@ a.bi-heart:hover{
   padding-left: 10px;
   margin: 10px;
   margin-left: 20px;
-  color: white;
+  color: #dedde6;
+  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
   min-height: 70px;
   border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
   align-items: center;
   max-height: 70px;
+}
+
+.one-stat-panel:hover {
+  border-color: white;
+  color: white;
+  background-color: #4e4b69;
 }
 
 .scriptPills {
