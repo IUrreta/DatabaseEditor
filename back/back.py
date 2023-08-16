@@ -5,6 +5,7 @@ import sqlite3
 import re
 import os
 from datetime import datetime
+import shutil
 from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script as run_trasnsfer
 from scripts.edit_stats_23 import run_script as run_editStats
@@ -57,6 +58,7 @@ async def handle_command(message):
         allowCalendar.insert(0, "Calendar fetched")
         data_json_calendar = json.dumps(allowCalendar)
         await send_message_to_client(data_json_calendar)
+        create_backup(path, save)
 
     elif type =="hire":
         argument = "hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
@@ -173,6 +175,14 @@ async def start_server():
     #print(server)
     await server.wait_closed()
     server.close()
+
+    
+def create_backup(originalFIle, saveFile):
+    backup_path = "./../backup"
+    if not os.path.exists(backup_path):
+        os.makedirs(backup_path)
+    new_file = backup_path + "/" + saveFile
+    shutil.copy(originalFIle, new_file)
 
 
 def fetch_engines():
