@@ -13,7 +13,7 @@ socket.onopen = () => {
 };
 
 const versionPanel = document.querySelector('.versionPanel');
-fetch('./../launcher/version.conf')
+fetch('./../version.conf')
 .then(response => response.text())
 .then(version => {
     versionPanel.textContent = `${version}`;
