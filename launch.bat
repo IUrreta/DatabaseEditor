@@ -1,14 +1,8 @@
 @echo off
 REM Ejecutar server.py en la carpeta "back" usando Python
 
-for %%I in ("%CD%") do set "last_folder=%%~nI"
-if "%last_folder%"=="DatabaseEditor" (
-    cd launcher
-)
-
 set /p version=<version.conf
 echo Version: %version%
-cd ..
 
 cd back
 pip install websockets
