@@ -8,6 +8,7 @@ const divsTeamsArray = [teamsDiv,enginesDiv]
 
 
 let teamSelected;
+let engineSelected;
 
 teamsPill.addEventListener("click",function () {
     manageTeamsEngines("show","hide")
@@ -86,7 +87,7 @@ document.querySelectorAll(".engine").forEach(function (elem) {
         let elemsSelected = document.querySelectorAll('.selected');
         elemsSelected.forEach(item => item.classList.remove('selected'));
         elem.classList.toggle('selected');
-        teamSelected = elem.dataset.teamid;
+        engineSelected = elem.dataset.engineid;
         document.querySelector(".engines-show").classList.remove("d-none")
         resetBarsEngines(elem)
     })
@@ -110,6 +111,25 @@ function resetBars() {
     })
 }
 
+document.getElementById("confirmEnginebtn").addEventListener("click",function () {
+    let performanes = "";
+    let progresses =""
+    document.querySelector(".engines-show").querySelectorAll(".custom-progress").forEach(function (elem) {
+        var dataProgress = elem.dataset.progress;
+        performanes += dataProgress + ' ';
+        progresses += dataProgress * 10 + " "
+    });
+    performanes = performanes.slice(0,-1);
+    progresses = progresses.slice(0,-1);
+    document.querySelector(".selected").dataset.stats = progresses
+    let dataPerformance = {
+        command: "editEngine",
+        engineID: engineSelected,
+        performanceArray: performanes,
+    }
+    socket.send(JSON.stringify(dataPerformance))
+})
+
 document.getElementById("confirmPerformancebtn").addEventListener("click",function () {
     let performanes = "";
 
@@ -119,7 +139,6 @@ document.getElementById("confirmPerformancebtn").addEventListener("click",functi
         performanes += dataProgress + ' ';
     });
     performanes = performanes.slice(0,-1);
-    document.querySelector(".selected").dataset.teamname
     let dataPerformance = {
         command: "editPerformance",
         teamID: teamSelected,

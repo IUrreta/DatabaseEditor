@@ -11,6 +11,7 @@ from scripts.transfer_driver_23 import run_script as run_trasnsfer
 from scripts.edit_stats_23 import run_script as run_editStats
 from scripts.custom_calendar_23 import run_script as run_editCalendar
 from scripts.car_performance_23 import run_script as run_editPerformance
+from scripts.engine_performance_23 import run_script as run_editEngine
 
 client = None
 path = None
@@ -139,6 +140,11 @@ async def handle_command(message):
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
         argument = "editPerformance " +  message["teamID"] + " " + message["performanceArray"]
+
+    elif type=="editEngine":
+        print(message)
+        argument = message["engineID"] +  " " + message["performanceArray"]
+        run_editEngine(argument)
 
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
