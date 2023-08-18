@@ -143,8 +143,13 @@ async def handle_command(message):
 
     elif type=="editEngine":
         print(message)
-        argument = message["engineID"] +  " " + message["performanceArray"]
+        argument = message["engineID"] +  " " + message["teamEngineID"] + " " +  message["performanceArray"]
         run_editEngine(argument)
+        process_repack("../result", path)
+        info.insert(0, "Succesfully edited the engine performance")
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+        argument = "editPerformance " +  message["teamID"] + " " + message["performanceArray"]
 
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")

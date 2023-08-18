@@ -9,6 +9,7 @@ const divsTeamsArray = [teamsDiv,enginesDiv]
 
 let teamSelected;
 let engineSelected;
+let teamEngineSelected;
 
 teamsPill.addEventListener("click",function () {
     manageTeamsEngines("show","hide")
@@ -88,6 +89,7 @@ document.querySelectorAll(".engine").forEach(function (elem) {
         elemsSelected.forEach(item => item.classList.remove('selected'));
         elem.classList.toggle('selected');
         engineSelected = elem.dataset.engineid;
+        teamEngineSelected = elem.dataset.teamengine
         document.querySelector(".engines-show").classList.remove("d-none")
         resetBarsEngines(elem)
     })
@@ -125,6 +127,7 @@ document.getElementById("confirmEnginebtn").addEventListener("click",function ()
     let dataPerformance = {
         command: "editEngine",
         engineID: engineSelected,
+        teamEngineID : teamEngineSelected,
         performanceArray: performanes,
     }
     socket.send(JSON.stringify(dataPerformance))
