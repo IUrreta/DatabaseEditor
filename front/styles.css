@@ -243,6 +243,23 @@ a.bi-heart:hover{
 
 }
 
+.patchNotesPanel {
+  position: fixed;
+  top: 40px;
+  left: 10px;
+}
+
+.patchNotesPanel i{
+  transition: color 0.5s;
+  font-style: normal;
+  color: #797599;
+  cursor: pointer;
+}
+
+.patchNotesPanel i:hover{
+  color: white;
+}
+
 .notification-panel {
   position: absolute;
   top: 0px;

@@ -30,12 +30,14 @@ def run_script(option=""):
             newValue = 0
         else:
             newValue = 1000
-        dif = abs(float(values[i]) - float(values_minimum[i]))
+        dif = float(values[i]) - float(values_minimum[i])
         dif = round(dif, 3)
         delta = dif*values_relative[i]
         newValue += delta
         newValue = round(newValue)
         new_valuesList.append(newValue)
+
+    print(new_valuesList)
 
     teams_powered = cursor.execute("SELECT TeamID FROM Parts_teamHistory WHERE SeasonID = " + str(year[0]) + " AND EngineManufacturer = " + str(teamEngine)).fetchall()
 
