@@ -72,10 +72,6 @@ document.querySelectorAll(".team").forEach(function (elem) {
                 document.getElementById("alphaTauriTeam").children[1].classList.add("d-none")
             }
         });
-        document.getElementById("teamPerformanceTitle").innerText = elem.querySelector(".team-title").innerText;
-        colorClass = team_dict[elem.dataset.teamid] + "font"
-        document.getElementById("teamPerformanceTitle").className = "stats-title perf-title bold-font"
-        document.getElementById("teamPerformanceTitle").classList.add(colorClass)
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         document.querySelector(".teams-show").classList.remove("d-none")

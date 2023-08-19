@@ -958,7 +958,7 @@ a.bi-heart:hover{
 .free-driver .custom-icon {
   color: transparent;
   transition: opacity 0.5s;
-  background-image: linear-gradient(to left, #3f3c57, transparent);
+  background-image: linear-gradient(to left, #4e4b69, transparent);
   width: 80px;
   opacity: 0;
   z-index: 3;

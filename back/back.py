@@ -142,14 +142,13 @@ async def handle_command(message):
         argument = "editPerformance " +  message["teamID"] + " " + message["performanceArray"]
 
     elif type=="editEngine":
-        print(message)
         argument = message["engineID"] +  " " + message["teamEngineID"] + " " +  message["performanceArray"]
         run_editEngine(argument)
         process_repack("../result", path)
+        info = []
         info.insert(0, "Succesfully edited the engine performance")
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
-        argument = "editPerformance " +  message["teamID"] + " " + message["performanceArray"]
 
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
@@ -199,13 +198,19 @@ def create_backup(originalFIle, saveFile):
 def fetch_engines():
     engines_ids = [1,10,4,7]
     stats_ids = [6,10,11,12,14]
+    ers_ids = [2, 11, 5, 8]
+    gearboxes_ids = [3,12,6,9]
     lista = []
-    for engineID in engines_ids:
+    for i in range(len(engines_ids)):
         statList = []
         for stat in stats_ids:
-            res = cursor.execute("SELECT UnitValue FROM Parts_Designs_StatValues WHERE DesignID = " + str(engineID) + " AND PartStat = " + str(stat)).fetchone()
+            res = cursor.execute("SELECT UnitValue FROM Parts_Designs_StatValues WHERE DesignID = " + str(engines_ids[i]) + " AND PartStat = " + str(stat)).fetchone()
             statList.append(res[0])
-        engineInfo = (engineID, statList)
+        ers_res = cursor.execute("SELECT UnitValue FROM Parts_Designs_StatValues WHERE DesignID = " + str(ers_ids[i]) + " AND PartStat = 15").fetchone()
+        statList.append(ers_res[0])
+        gearbox_res = cursor.execute("SELECT UnitValue FROM Parts_Designs_StatValues WHERE DesignID = " + str(gearboxes_ids[i]) + " AND PartStat = 15").fetchone()
+        statList.append(gearbox_res[0])
+        engineInfo = (engines_ids[i], statList)
         lista.append(engineInfo)
 
     return lista
