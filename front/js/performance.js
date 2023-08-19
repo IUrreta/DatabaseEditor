@@ -14,13 +14,15 @@ let teamEngineSelected;
 teamsPill.addEventListener("click",function () {
     manageTeamsEngines("show","hide")
     document.querySelector(".engines-show").classList.add("d-none")
-    document.querySelector(".teams-show").classList.remove("d-none")
+    document.querySelector(".teams-show").classList.add("d-none")
+    removeSelected()
 })
 
 enginesPill.addEventListener("click",function () {
     manageTeamsEngines("hide","show")
     document.querySelector(".teams-show").classList.add("d-none")
-    document.querySelector(".engines-show").classList.remove("d-none")
+    document.querySelector(".engines-show").classList.add("d-none")
+    removeSelected()
 })
 
 function manageTeamsEngines(...divs) {
@@ -37,13 +39,11 @@ function manageTeamsEngines(...divs) {
 function manage_engineStats(msg) {
     msg.forEach(function (elem) {
         let engineId = elem[0]
-        console.log(elem[0])
         let engineStats = ""
         elem[1].forEach(function (stat) {
             engineStats += stat + " "
         })
         engineStats.trim()
-        console.log(engineStats)
         place_engineStats(engineId,engineStats)
     })
 }
@@ -56,22 +56,30 @@ function place_engineStats(engineId,engineStats) {
     }
 }
 
+function removeSelected() {
+    let elemsSelected = document.querySelectorAll('.selected');
+    elemsSelected.forEach(item => {
+        item.classList.remove('selected')
+        if (item.id === "alpineTeam") {
+            document.getElementById("alpineTeam").firstElementChild.classList.remove("d-none")
+            document.getElementById("alpineTeam").children[1].classList.add("d-none")
+        }
+        else if (item.id === "alphaTauriTeam") {
+            document.getElementById("alphaTauriTeam").firstElementChild.classList.remove("d-none")
+            document.getElementById("alphaTauriTeam").children[1].classList.add("d-none")
+        }
+        else if (item.id === "renaultengine") {
+            document.getElementById("renaultengine").firstElementChild.classList.remove("d-none")
+            document.getElementById("renaultengine").children[1].classList.add("d-none")
+        }
+    });
+}
+
 
 
 document.querySelectorAll(".team").forEach(function (elem) {
     elem.addEventListener("click",function () {
-        let elemsSelected = document.querySelectorAll('.selected');
-        elemsSelected.forEach(item => {
-            item.classList.remove('selected')
-            if (item.id === "alpineTeam") {
-                document.getElementById("alpineTeam").firstElementChild.classList.remove("d-none")
-                document.getElementById("alpineTeam").children[1].classList.add("d-none")
-            }
-            else if (item.id === "alphaTauriTeam") {
-                document.getElementById("alphaTauriTeam").firstElementChild.classList.remove("d-none")
-                document.getElementById("alphaTauriTeam").children[1].classList.add("d-none")
-            }
-        });
+        removeSelected()
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         document.querySelector(".teams-show").classList.remove("d-none")
@@ -81,8 +89,7 @@ document.querySelectorAll(".team").forEach(function (elem) {
 
 document.querySelectorAll(".engine").forEach(function (elem) {
     elem.addEventListener("click",function () {
-        let elemsSelected = document.querySelectorAll('.selected');
-        elemsSelected.forEach(item => item.classList.remove('selected'));
+        removeSelected()
         elem.classList.toggle('selected');
         engineSelected = elem.dataset.engineid;
         teamEngineSelected = elem.dataset.teamengine
@@ -111,7 +118,7 @@ function resetBars() {
 
 document.getElementById("confirmEnginebtn").addEventListener("click",function () {
     let performanes = "";
-    let progresses =""
+    let progresses = ""
     document.querySelector(".engines-show").querySelectorAll(".custom-progress").forEach(function (elem) {
         var dataProgress = elem.dataset.progress;
         performanes += dataProgress + ' ';
@@ -123,7 +130,8 @@ document.getElementById("confirmEnginebtn").addEventListener("click",function ()
     let dataPerformance = {
         command: "editEngine",
         engineID: engineSelected,
-        teamEngineID : teamEngineSelected,
+        teamEngineID: teamEngineSelected,
+        team: document.querySelector(".selected").dataset.teamname,
         performanceArray: performanes,
     }
     socket.send(JSON.stringify(dataPerformance))
@@ -202,12 +210,15 @@ document.getElementById("alphaTauriTeam").addEventListener("click",function () {
     document.getElementById("alphaTauriTeam").children[1].classList.remove("d-none")
 })
 
+document.getElementById("renaultengine").addEventListener("click",function () {
+    document.getElementById("renaultengine").firstElementChild.classList.add("d-none")
+    document.getElementById("renaultengine").children[1].classList.remove("d-none")
+})
+
 function manage_bar(bar,progress) {
     if (bar.dataset.type === "engine") {
         let whiteDiv = bar.querySelector(".white-part")
         let newProgress = progress * 10
-        console.log(progress)
-        console.log(newProgress)
         let newWidth = 0 + newProgress + "%"
         whiteDiv.style.width = newWidth;
     }

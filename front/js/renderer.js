@@ -13,7 +13,7 @@ socket.onopen = () => {
 };
 
 const versionPanel = document.querySelector('.versionPanel');
-fetch('./../version.conf')
+fetch('./../launcher/version.conf')
 .then(response => response.text())
 .then(version => {
     versionPanel.textContent = `${version}`;
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded',function () {
         // console.log('Mensaje recibido: ' + event.data);
 
         let message = JSON.parse(event.data)
-        console.log(message)
+        //console.log(message)
         if (message[0] === "ERROR") {
             update_notifications(message[1],true)
             manage_status(0)
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded',function () {
             else if (message[0] === "Contract fetched") {
                 manage_modal(message.slice(1)[0])
             }
-            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched"  && message[0] != "Engines Fetched") update_notifications(message[0],false)
+            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched"  && message[0] != "Engines fetched") update_notifications(message[0],false)
 
         }
 
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded',function () {
                             }
                             //console.log(`Resultado: ${stdout}`);
                         });
-                    },1000);
+                    },500);
                 }
             });
         })

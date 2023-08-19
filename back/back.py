@@ -146,7 +146,7 @@ async def handle_command(message):
         run_editEngine(argument)
         process_repack("../result", path)
         info = []
-        info.insert(0, "Succesfully edited the engine performance")
+        info.insert(0, "Succesfully edited all " + message["team"] + " engines performance")
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
 
