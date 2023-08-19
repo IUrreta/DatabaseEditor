@@ -478,14 +478,12 @@ a.bi-heart:hover{
 
 
 .custom-confirm:hover {
-  background-color: #9fdf9f !important;
-  border-color: #6d9e6d  !important;
-  color: #555555 !important;
-
+  background-color: #A569BD!important;
+  border-color: #8E44AD  !important;
 }
 
 .custom-confirm:active {
-  background-color: #679467 !important;
+  background-color: #6f4680 !important;
 }
 
 .custom-delete {
@@ -869,6 +867,16 @@ a.bi-heart:hover{
   grid-template-columns: repeat(3, 1fr);
   color: white;
   background-color: #393744;
+}
+
+.custom-body{
+  color: white;
+  background-color: #393744;
+}
+
+
+.custom-modal{
+  min-width: 600px !important;
 }
 
 

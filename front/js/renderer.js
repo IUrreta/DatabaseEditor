@@ -2,6 +2,7 @@ const socket = new WebSocket('ws://localhost:8765/');
 const fs = require('fs');
 const simpleGit = require('simple-git');
 const { exec } = require('child_process');
+const { marked } = require('marked');
 
 socket.onopen = () => {
     //console.log('Conexión establecida.');
@@ -12,13 +13,39 @@ socket.onopen = () => {
 
 };
 
+let versionNow;
 const versionPanel = document.querySelector('.versionPanel');
+const parchModalTitle = document.getElementById("patchModalTitle")
+
+const repoOwner = 'IUrreta';
+const repoName = 'DatabaseEditor'; 
+
 fetch('./../launcher/version.conf')
 .then(response => response.text())
 .then(version => {
     versionPanel.textContent = `${version}`;
+    versionNow = version
+    parchModalTitle.textContent = "Version: " + version + " patch notes"
+    getPatchNotes()
 });
 
+async function getPatchNotes(){
+    if (versionNow.slice(-3) !== "dev") {
+        let response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/releases/tags/${versionNow}`);
+        let data = await response.json();
+        let changes = data.body;
+        let changesHTML = marked(changes);
+        patchNotesBody.innerHTML = changesHTML
+        let h1Elements = patchNotesBody.querySelectorAll("h1");
+    
+        h1Elements.forEach(function(h1Element) {
+            let h4Element = document.createElement("h4");
+            h4Element.textContent = h1Element.textContent;
+            patchNotesBody.replaceChild(h4Element, h1Element);
+        });
+    }
+
+}
 
 document.addEventListener('DOMContentLoaded',function () {
 
@@ -31,7 +58,7 @@ document.addEventListener('DOMContentLoaded',function () {
     const editStatsDiv = document.getElementById("edit_stats");
     const customCalendarDiv = document.getElementById("custom_calendar");
     const carPerformanceDiv = document.getElementById("car_performance");
-
+    const patchNotesBody = document.getElementById("patchNotesBody")
 
     const scriptsArray = [driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv]
 
@@ -45,11 +72,6 @@ document.addEventListener('DOMContentLoaded',function () {
     const updateInfo = document.querySelector(".update-info")
 
     let latestTag;
-
-    const repoOwner = 'IUrreta'; // Reemplaza con el nombre del dueño del repositorio
-    const repoName = 'DatabaseEditor'; // Reemplaza con el nombre del repositorio
-
-
 
     let isSaveSelected = 0;
     let scriptSelected = 0;
@@ -80,6 +102,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 clearTimeout(connectionTimeout);
                 manage_status(1)
                 check_version()
+                
 
             }
             else if (message[0] === "Save Loaded Succesfully") {

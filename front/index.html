@@ -9,11 +9,12 @@
   <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../node_modules/interactjs/dist/interact.min.js"></script>
+  <script src="../node_modules/marked/marked.min.js"></script>
   <title>Database Editor for F1 Manager 23</title>
 </head>
 
 <body class="font">
-  <div class="modal custom-modal fade" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal custom-modal fade" id="contractModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content cusotm-modal">
         <div class="modal-header custom-header">
@@ -60,9 +61,23 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal fade" id="patchModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title" id="patchModalTitle"></h3>
+        </div>
+        <div class="modal-body custom-body" id="patchNotesBody">
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal" id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="versionPanel"></div>
   <div class="patchNotesPanel">
-    <i class="bi bi-list-ul">&nbsp;Patch Notes</i>
+    <i class="bi bi-list-ul" data-bs-toggle="modal" data-bs-target="#patchModal">&nbsp;Patch Notes</i>
   </div>
   <div class="upper-panel">
     <div class="title main-title">
