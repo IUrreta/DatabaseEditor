@@ -230,12 +230,15 @@ def fetch_driverContract(id):
     return details
 
 def fetch_staff():
-    staff = cursor.execute("SELECT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0;").fetchall()
+    staff = cursor.execute("SELECT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0 AND (con.ContractType = 0 OR con.ContractType IS NULL)").fetchall()
+
     formatted_tuples = []
 
     for tupla in staff:
         result = format_names_get_stats(tupla, "staff"+str(tupla[4]))
         formatted_tuples.append(result)
+
+    print(formatted_tuples)
     return formatted_tuples
 
 def fetch_info():
