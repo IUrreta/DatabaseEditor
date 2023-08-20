@@ -1,6 +1,7 @@
 node_modules
 result
 licenses
+backup
 log.txt
 **/__pycache__
 *.sav

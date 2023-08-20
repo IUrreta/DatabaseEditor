@@ -1,7 +1,4 @@
 const socket = new WebSocket('ws://localhost:8765/');
-const fs = require('fs');
-const simpleGit = require('simple-git');
-const { exec } = require('child_process');
 
 socket.onopen = () => {
     //console.log('Conexión establecida.');
@@ -12,13 +9,49 @@ socket.onopen = () => {
 
 };
 
-const versionPanel = document.querySelector('.versionPanel');
-fetch('./../version.conf')
-.then(response => response.text())
-.then(version => {
-    versionPanel.textContent = `${version}`;
-});
+const fs = require('fs');
+const simpleGit = require('simple-git');
+const { exec } = require('child_process');
+const { marked } = require('marked');
 
+let versionNow;
+const versionPanel = document.querySelector('.versionPanel');
+const parchModalTitle = document.getElementById("patchModalTitle")
+
+const repoOwner = 'IUrreta';
+const repoName = 'DatabaseEditor';
+
+fetch('./../launcher/version.conf')
+    .then(response => response.text())
+    .then(version => {
+        versionPanel.textContent = `${version}`;
+        versionNow = version
+        parchModalTitle.textContent = "Version: " + version + " patch notes"
+        getPatchNotes()
+    });
+
+async function getPatchNotes() {
+    try {
+        if (versionNow.slice(-3) !== "dev") {
+            let response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/releases/tags/${versionNow}`);
+            let data = await response.json();
+            let changes = data.body;
+            let changesHTML = marked(changes);
+            patchNotesBody.innerHTML = changesHTML
+            let h1Elements = patchNotesBody.querySelectorAll("h1");
+
+            h1Elements.forEach(function (h1Element) {
+                let h4Element = document.createElement("h4");
+                h4Element.textContent = h1Element.textContent;
+                patchNotesBody.replaceChild(h4Element,h1Element);
+            });
+        }
+    } catch {
+        console.log("Couldn't find patch notes")
+    }
+
+
+}
 
 document.addEventListener('DOMContentLoaded',function () {
 
@@ -31,7 +64,7 @@ document.addEventListener('DOMContentLoaded',function () {
     const editStatsDiv = document.getElementById("edit_stats");
     const customCalendarDiv = document.getElementById("custom_calendar");
     const carPerformanceDiv = document.getElementById("car_performance");
-
+    const patchNotesBody = document.getElementById("patchNotesBody")
 
     const scriptsArray = [driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv]
 
@@ -45,11 +78,6 @@ document.addEventListener('DOMContentLoaded',function () {
     const updateInfo = document.querySelector(".update-info")
 
     let latestTag;
-
-    const repoOwner = 'IUrreta'; // Reemplaza con el nombre del dueño del repositorio
-    const repoName = 'DatabaseEditor'; // Reemplaza con el nombre del repositorio
-
-
 
     let isSaveSelected = 0;
     let scriptSelected = 0;
@@ -69,6 +97,7 @@ document.addEventListener('DOMContentLoaded',function () {
         // console.log('Mensaje recibido: ' + event.data);
 
         let message = JSON.parse(event.data)
+        //console.log(message)
         if (message[0] === "ERROR") {
             update_notifications(message[1],true)
             manage_status(0)
@@ -79,6 +108,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 clearTimeout(connectionTimeout);
                 manage_status(1)
                 check_version()
+
 
             }
             else if (message[0] === "Save Loaded Succesfully") {
@@ -94,10 +124,13 @@ document.addEventListener('DOMContentLoaded',function () {
             else if (message[0] === "Calendar fetched") {
                 manage_calendarDiv(message.slice(1)[0])
             }
+            else if (message[0] === "Engines fetched") {
+                manage_engineStats(message.slice(1))
+            }
             else if (message[0] === "Contract fetched") {
                 manage_modal(message.slice(1)[0])
             }
-            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched") update_notifications(message[0],false)
+            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched" && message[0] != "Engines fetched") update_notifications(message[0],false)
 
         }
 
@@ -231,7 +264,7 @@ document.addEventListener('DOMContentLoaded',function () {
                             }
                             //console.log(`Resultado: ${stdout}`);
                         });
-                    },1000);
+                    },500);
                 }
             });
         })
