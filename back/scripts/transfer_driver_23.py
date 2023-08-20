@@ -3,7 +3,7 @@ import random
 
 def run_script(option=""):
 
-    conn = sqlite3.connect("../result/main.db")
+    conn = sqlite3.connect("../../../result/main.db")
     cursor = conn.cursor()
 
     text = option.lower()
@@ -295,7 +295,7 @@ def run_script(option=""):
 
 def get_tier(driverID):
 
-    conn = sqlite3.connect("../result/main.db")
+    conn = sqlite3.connect("../../../result/main.db")
     cursor = conn.cursor()
 
     driver_stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(driverID[0])).fetchall()

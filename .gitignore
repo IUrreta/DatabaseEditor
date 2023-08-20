@@ -3,6 +3,7 @@ result
 licenses
 backup
 log.txt
+backDev.py
 **/__pycache__
 *.sav
 

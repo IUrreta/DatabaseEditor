@@ -11,8 +11,11 @@ echo Version: %version%
 cd ..
 
 cd back
-pip install websockets
-start "" /B py back.py
+cd dist
+cd back
+start "" /B back.exe
+cd ..
+cd ..
 cd ..
 
 REM Instalar las dependencias y ejecutar "npm start" en la carpeta actual

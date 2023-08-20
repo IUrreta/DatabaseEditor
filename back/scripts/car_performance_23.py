@@ -9,7 +9,7 @@ buffs_dict = {
 }
 
 def run_script(option=""):
-    conn = sqlite3.connect("../result/main.db")
+    conn = sqlite3.connect("../../../result/main.db")
     cursor = conn.cursor()
     
     text = option.lower()
