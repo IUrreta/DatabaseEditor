@@ -4,7 +4,7 @@ import random
 
 
 def run_script(option=""):
-    conn = sqlite3.connect("../../../result/main.db")
+    conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
     
     default_tracks = [2, 1, 11, 24, 22, 5, 6, 4, 7, 10, 9, 12, 13, 14, 15, 17, 19, 18, 20, 21, 23, 25, 26]

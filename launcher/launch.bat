@@ -10,13 +10,10 @@ set /p version=<version.conf
 echo Version: %version%
 cd ..
 
-cd back
-cd dist
-cd back
+cd backend/dist/back
 start "" /B back.exe
-cd ..
-cd ..
-cd ..
+cd ../../..
+
 
 REM Instalar las dependencias y ejecutar "npm start" en la carpeta actual
 call npm install --no-audit

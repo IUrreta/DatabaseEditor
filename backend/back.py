@@ -15,7 +15,7 @@ from scripts.engine_performance_23 import run_script as run_editEngine
 
 client = None
 path = None
-log = open("../../../log.txt", 'a', encoding='utf-8')
+log = None
 conn = None
 cursor = None
 
@@ -25,11 +25,15 @@ async def handle_command(message):
     global path
     global conn
     global cursor
+    global log
+    if os.path.basename(os.getcwd()) == "back":
+        os.chdir("../..")
     argument = ""
     if type == "connect":
         #print("Connect recibido")
+        log = open("../log.txt", 'a', encoding='utf-8')
         argument = type
-        saves = [element for element in os.listdir("../../../") if ".sav" in element]
+        saves = [element for element in os.listdir("../") if ".sav" in element]
         if "player.sav" in saves:
             saves.remove("player.sav")
         saves.insert(0, "Connected Succesfully")
@@ -39,9 +43,9 @@ async def handle_command(message):
     elif type == "saveSelected":
         save = message["save"]
         argument = type + " " + save
-        path = "../../../" + save
-        process_unpack(path, "../../../result")
-        conn = sqlite3.connect("../../../result/main.db")
+        path = "../" + save
+        process_unpack(path, "../result")
+        conn = sqlite3.connect("../result/main.db")
         cursor = conn.cursor()
         drivers = fetch_info()
         drivers.insert(0, "Save Loaded Succesfully")
@@ -64,7 +68,7 @@ async def handle_command(message):
     elif type =="hire":
         argument = "hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
         run_trasnsfer(argument)
-        process_repack("../../../result", path)
+        process_repack("../result", path)
         info = []
         info.insert(0, "Succesfully moved " + message["driver"] + " into " + message["team"])
         info_json = json.dumps(info)
@@ -73,7 +77,7 @@ async def handle_command(message):
     elif type =="fire":
         argument = "fire " + message["driverID"]
         run_trasnsfer(argument)
-        process_repack("../../../result", path)
+        process_repack("../result", path)
         info = []
         info.insert(0, "Succesfully released " + message["driver"] + " from " + message["team"])
         info_json = json.dumps(info)
@@ -82,7 +86,7 @@ async def handle_command(message):
     elif type =="autocontract":
         argument = "hire " + message["driverID"] + " " +  str(message["teamID"]) + " " + message["position"]
         run_trasnsfer(argument)
-        process_repack("../../../result", path)
+        process_repack("../result", path)
         info = []
         info.insert(0, "Succesfully moved " + message["driver"] + " into " + message["team"])
         info_json = json.dumps(info)
@@ -91,7 +95,7 @@ async def handle_command(message):
     elif type=="swap":
         argument = "swap " + message["driver1ID"] + " " + message["driver2ID"]
         run_trasnsfer(argument)
-        process_repack("../../../result", path)
+        process_repack("../result", path)
         info = []
         info.insert(0, "Succesfully swapped " + message["driver1"] + " and  " + message["driver2"])
         info_json = json.dumps(info)
@@ -100,7 +104,7 @@ async def handle_command(message):
     elif type =="editStats":
         run_editStats(message["driverID"] + " " + message["typeStaff"] + " " + message["statsArray"])
         argument = type + " " + message["driverID"] + " " + message["typeStaff"] + " " + message["statsArray"]
-        process_repack("../../../result", path)
+        process_repack("../result", path)
         info = []
         info.insert(0, "Succesfully edited " + message["driver"] + "'s stats")
         info_json = json.dumps(info)
@@ -108,7 +112,7 @@ async def handle_command(message):
 
     elif type=="calendar":
         run_editCalendar(message["calendarCodes"])
-        process_repack("../../../result", path)
+        process_repack("../result", path)
         argument = type + message["calendarCodes"]
         info = []
         info.insert(0, "Succesfully edited the calendar")
@@ -125,7 +129,7 @@ async def handle_command(message):
     elif type=="editContract":
         argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"])
         run_trasnsfer(argument)
-        process_repack("../../../result", path)
+        process_repack("../result", path)
         info = []
         info.insert(0, "Succesfully edited " + message["driver"] + "'s contract")
         info_json = json.dumps(info)
@@ -134,7 +138,7 @@ async def handle_command(message):
     elif type =="editPerformance":
         argument = message["teamID"] + " " + message["performanceArray"]
         run_editPerformance(argument)
-        process_repack("../../../result", path)
+        process_repack("../result", path)
         info = []
         info.insert(0, "Succesfully edited " + message["teamName"] + "'s car performance")
         info_json = json.dumps(info)
@@ -144,7 +148,7 @@ async def handle_command(message):
     elif type=="editEngine":
         argument = message["engineID"] +  " " + message["teamEngineID"] + " " +  message["performanceArray"]
         run_editEngine(argument)
-        process_repack("../../../result", path)
+        process_repack("../result", path)
         info = []
         info.insert(0, "Succesfully edited all " + message["team"] + " engines performance")
         info_json = json.dumps(info)
@@ -188,7 +192,7 @@ async def start_server():
 
     
 def create_backup(originalFIle, saveFile):
-    backup_path = "./../../../backup"
+    backup_path = "./../backup"
     if not os.path.exists(backup_path):
         os.makedirs(backup_path)
     new_file = backup_path + "/" + saveFile

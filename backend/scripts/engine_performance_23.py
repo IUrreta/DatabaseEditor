@@ -6,7 +6,7 @@ values_minimum = [9, 9, 6.5, 7, 8.5, 4, 4]
 values_relative = [1000, 1000, -500, 666.6, 666.6, 333.3, 333.3]
 
 def run_script(option=""):
-    conn = sqlite3.connect("../../../result/main.db")
+    conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
     
     text = option.lower()
