@@ -1,4 +1,4 @@
-const myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+const myModal = new bootstrap.Modal(document.getElementById('contractModal'));
 const raceBonusAmt = document.getElementById("raceBonusAmt");
 const raceBonusPos = document.getElementById("raceBonusPos");
 

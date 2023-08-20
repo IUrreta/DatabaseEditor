@@ -243,6 +243,23 @@ a.bi-heart:hover{
 
 }
 
+.patchNotesPanel {
+  position: fixed;
+  top: 40px;
+  left: 10px;
+}
+
+.patchNotesPanel i{
+  transition: color 0.5s;
+  font-style: normal;
+  color: #797599;
+  cursor: pointer;
+}
+
+.patchNotesPanel i:hover{
+  color: white;
+}
+
 .notification-panel {
   position: absolute;
   top: 0px;
@@ -461,14 +478,12 @@ a.bi-heart:hover{
 
 
 .custom-confirm:hover {
-  background-color: #9fdf9f !important;
-  border-color: #6d9e6d  !important;
-  color: #555555 !important;
-
+  background-color: #A569BD!important;
+  border-color: #8E44AD  !important;
 }
 
 .custom-confirm:active {
-  background-color: #679467 !important;
+  background-color: #6f4680 !important;
 }
 
 .custom-delete {
@@ -854,6 +869,16 @@ a.bi-heart:hover{
   background-color: #393744;
 }
 
+.custom-body{
+  color: white;
+  background-color: #393744;
+}
+
+
+.custom-modal{
+  min-width: 600px !important;
+}
+
 
 .custom-header {
   color: white !important;
@@ -904,7 +929,7 @@ a.bi-heart:hover{
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 23px;
+  padding-top: 50px;
 }
 
 .performance-data {
@@ -958,7 +983,7 @@ a.bi-heart:hover{
 .free-driver .custom-icon {
   color: transparent;
   transition: opacity 0.5s;
-  background-image: linear-gradient(to left, #3f3c57, transparent);
+  background-image: linear-gradient(to left, #4e4b69, transparent);
   width: 80px;
   opacity: 0;
   z-index: 3;

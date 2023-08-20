@@ -4,25 +4,29 @@ const enginesPill = document.getElementById("enginesPill");
 const teamsDiv = document.getElementById("teamsDiv");
 const enginesDiv = document.getElementById("enginesDiv");
 
-const divsTeamsArray = [teamsDiv, enginesDiv]
+const divsTeamsArray = [teamsDiv,enginesDiv]
 
 
 let teamSelected;
+let engineSelected;
+let teamEngineSelected;
 
-teamsPill.addEventListener("click", function () {
-    manageTeamsEngines("show", "hide")
+teamsPill.addEventListener("click",function () {
+    manageTeamsEngines("show","hide")
     document.querySelector(".engines-show").classList.add("d-none")
-    document.querySelector(".teams-show").classList.remove("d-none")
+    document.querySelector(".teams-show").classList.add("d-none")
+    removeSelected()
 })
 
-enginesPill.addEventListener("click", function () {
-    manageTeamsEngines("hide", "show")
+enginesPill.addEventListener("click",function () {
+    manageTeamsEngines("hide","show")
     document.querySelector(".teams-show").classList.add("d-none")
-    document.querySelector(".engines-show").classList.remove("d-none")
+    document.querySelector(".engines-show").classList.add("d-none")
+    removeSelected()
 })
 
 function manageTeamsEngines(...divs) {
-    divsTeamsArray.forEach(function (div, index) {
+    divsTeamsArray.forEach(function (div,index) {
         if (divs[index] === "show") {
             div.className = "main-columns-drag-section"
         }
@@ -32,24 +36,50 @@ function manageTeamsEngines(...divs) {
     })
 }
 
+function manage_engineStats(msg) {
+    msg.forEach(function (elem) {
+        let engineId = elem[0]
+        let engineStats = ""
+        elem[1].forEach(function (stat) {
+            engineStats += stat + " "
+        })
+        engineStats.trim()
+        place_engineStats(engineId,engineStats)
+    })
+}
+
+function place_engineStats(engineId,engineStats) {
+    var element = document.querySelector('[data-engineId="' + engineId + '"]');
+    element.setAttribute('data-stats',"");
+    if (element) {
+        element.setAttribute('data-stats',engineStats);
+    }
+}
+
+function removeSelected() {
+    let elemsSelected = document.querySelectorAll('.selected');
+    elemsSelected.forEach(item => {
+        item.classList.remove('selected')
+        if (item.id === "alpineTeam") {
+            document.getElementById("alpineTeam").firstElementChild.classList.remove("d-none")
+            document.getElementById("alpineTeam").children[1].classList.add("d-none")
+        }
+        else if (item.id === "alphaTauriTeam") {
+            document.getElementById("alphaTauriTeam").firstElementChild.classList.remove("d-none")
+            document.getElementById("alphaTauriTeam").children[1].classList.add("d-none")
+        }
+        else if (item.id === "renaultengine") {
+            document.getElementById("renaultengine").firstElementChild.classList.remove("d-none")
+            document.getElementById("renaultengine").children[1].classList.add("d-none")
+        }
+    });
+}
+
+
+
 document.querySelectorAll(".team").forEach(function (elem) {
     elem.addEventListener("click",function () {
-        let elemsSelected = document.querySelectorAll('.selected');
-        elemsSelected.forEach(item => {
-            item.classList.remove('selected')
-            if(item.id==="alpineTeam"){
-                document.getElementById("alpineTeam").firstElementChild.classList.remove("d-none")
-                document.getElementById("alpineTeam").children[1].classList.add("d-none")
-            }
-            else if(item.id==="alphaTauriTeam"){
-                document.getElementById("alphaTauriTeam").firstElementChild.classList.remove("d-none")
-                document.getElementById("alphaTauriTeam").children[1].classList.add("d-none")
-            }
-        });
-        document.getElementById("teamPerformanceTitle").innerText = elem.querySelector(".team-title").innerText;
-        colorClass = team_dict[elem.dataset.teamid] + "font"
-        document.getElementById("teamPerformanceTitle").className = "stats-title perf-title bold-font"
-        document.getElementById("teamPerformanceTitle").classList.add(colorClass)
+        removeSelected()
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         document.querySelector(".teams-show").classList.remove("d-none")
@@ -59,14 +89,25 @@ document.querySelectorAll(".team").forEach(function (elem) {
 
 document.querySelectorAll(".engine").forEach(function (elem) {
     elem.addEventListener("click",function () {
-        let elemsSelected = document.querySelectorAll('.selected');
-        elemsSelected.forEach(item => item.classList.remove('selected'));
+        removeSelected()
         elem.classList.toggle('selected');
-        teamSelected = elem.dataset.teamid;
+        engineSelected = elem.dataset.engineid;
+        teamEngineSelected = elem.dataset.teamengine
         document.querySelector(".engines-show").classList.remove("d-none")
-        resetBars()
+        resetBarsEngines(elem)
     })
 })
+
+function resetBarsEngines(div) {
+    let statsString = div.dataset.stats
+    var statsArray = statsString.split(' ').map(function (item) {
+        return parseFloat(item,10) / 10;
+    });
+    document.querySelector(".engines-show").querySelectorAll(".custom-progress").forEach(function (elem,index) {
+        elem.dataset.progress = statsArray[index]
+        manage_bar(elem,elem.dataset.progress)
+    })
+}
 
 function resetBars() {
     document.querySelectorAll(".custom-progress").forEach(function (elem) {
@@ -75,8 +116,29 @@ function resetBars() {
     })
 }
 
+document.getElementById("confirmEnginebtn").addEventListener("click",function () {
+    let performanes = "";
+    let progresses = ""
+    document.querySelector(".engines-show").querySelectorAll(".custom-progress").forEach(function (elem) {
+        var dataProgress = elem.dataset.progress;
+        performanes += dataProgress + ' ';
+        progresses += dataProgress * 10 + " "
+    });
+    performanes = performanes.slice(0,-1);
+    progresses = progresses.slice(0,-1);
+    document.querySelector(".selected").dataset.stats = progresses
+    let dataPerformance = {
+        command: "editEngine",
+        engineID: engineSelected,
+        teamEngineID: teamEngineSelected,
+        team: document.querySelector(".selected").dataset.teamname,
+        performanceArray: performanes,
+    }
+    socket.send(JSON.stringify(dataPerformance))
+})
+
 document.getElementById("confirmPerformancebtn").addEventListener("click",function () {
-    let performanes= "";
+    let performanes = "";
 
     document.querySelector(".teams-show").querySelectorAll('.custom-progress').forEach(function (element) {
         var dataProgress = element.dataset.progress;
@@ -84,12 +146,11 @@ document.getElementById("confirmPerformancebtn").addEventListener("click",functi
         performanes += dataProgress + ' ';
     });
     performanes = performanes.slice(0,-1);
-    document.querySelector(".selected").dataset.teamname
     let dataPerformance = {
         command: "editPerformance",
         teamID: teamSelected,
         performanceArray: performanes,
-        teamName : document.querySelector(".selected").dataset.teamname
+        teamName: document.querySelector(".selected").dataset.teamname
     }
 
     socket.send(JSON.stringify(dataPerformance))
@@ -100,20 +161,20 @@ document.querySelectorAll(".bi-dash-circle").forEach(function (elem) {
     elem.addEventListener("click",function () {
         let performanceArea = elem.parentNode.parentNode
         let bar = performanceArea.querySelector(".custom-progress")
-        
-        if(bar.dataset.type === "engine"){
+
+        if (bar.dataset.type === "engine") {
             if (bar.dataset.progress > 0) {
-                let value = parseFloat(bar.dataset.progress,10) - 0.25
+                let value = parseFloat(bar.dataset.progress,10) - 0.125
                 bar.dataset.progress = value
             }
         }
-        else{
+        else {
             if (bar.dataset.progress >= -9) {
                 let value = parseInt(bar.dataset.progress,10) - 1
                 bar.dataset.progress = value
             }
         }
-        
+
         manage_bar(bar,bar.dataset.progress)
     })
 })
@@ -122,13 +183,14 @@ document.querySelectorAll(".bi-plus-circle").forEach(function (elem) {
     elem.addEventListener("click",function () {
         let performanceArea = elem.parentNode.parentNode
         let bar = performanceArea.querySelector(".custom-progress")
-        if(bar.dataset.type === "engine"){
-            if (bar.dataset.progress < 10) {
-                let value = parseFloat(bar.dataset.progress,10) + 0.25
-                bar.dataset.progress = value
+        if (bar.dataset.type === "engine") {
+            let value = parseFloat(bar.dataset.progress,10) + 0.125
+            if (value > 10) {
+                value = 10
             }
+            bar.dataset.progress = value
         }
-        else{
+        else {
             if (bar.dataset.progress <= 9) {
                 let value = parseInt(bar.dataset.progress,10) + 1
                 bar.dataset.progress = value
@@ -138,24 +200,29 @@ document.querySelectorAll(".bi-plus-circle").forEach(function (elem) {
     })
 })
 
-document.getElementById("alpineTeam").addEventListener("click", function(){
+document.getElementById("alpineTeam").addEventListener("click",function () {
     document.getElementById("alpineTeam").firstElementChild.classList.add("d-none")
     document.getElementById("alpineTeam").children[1].classList.remove("d-none")
 })
 
-document.getElementById("alphaTauriTeam").addEventListener("click", function(){
+document.getElementById("alphaTauriTeam").addEventListener("click",function () {
     document.getElementById("alphaTauriTeam").firstElementChild.classList.add("d-none")
     document.getElementById("alphaTauriTeam").children[1].classList.remove("d-none")
 })
 
+document.getElementById("renaultengine").addEventListener("click",function () {
+    document.getElementById("renaultengine").firstElementChild.classList.add("d-none")
+    document.getElementById("renaultengine").children[1].classList.remove("d-none")
+})
+
 function manage_bar(bar,progress) {
-    if(bar.dataset.type ==="engine"){
+    if (bar.dataset.type === "engine") {
         let whiteDiv = bar.querySelector(".white-part")
         let newProgress = progress * 10
         let newWidth = 0 + newProgress + "%"
         whiteDiv.style.width = newWidth;
     }
-    else{
+    else {
         let grayDiv = bar.querySelector(".gray-part")
         let greenDiv = bar.querySelector(".green-part")
         if (progress == 0) {

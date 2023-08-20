@@ -5,11 +5,13 @@ import sqlite3
 import re
 import os
 from datetime import datetime
+import shutil
 from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script as run_trasnsfer
 from scripts.edit_stats_23 import run_script as run_editStats
 from scripts.custom_calendar_23 import run_script as run_editCalendar
 from scripts.car_performance_23 import run_script as run_editPerformance
+from scripts.engine_performance_23 import run_script as run_editEngine
 
 client = None
 path = None
@@ -49,11 +51,15 @@ async def handle_command(message):
         staff.insert(0, "Staff Fetched")
         data_json_staff = json.dumps(staff)
         await send_message_to_client(data_json_staff)
-        #print(fetch_parts())
+        engines = fetch_engines()
+        engines.insert(0, "Engines fetched")
+        data_json_engines = json.dumps(engines)
+        await send_message_to_client(data_json_engines)
         allowCalendar = [tuple(check_claendar())]
         allowCalendar.insert(0, "Calendar fetched")
         data_json_calendar = json.dumps(allowCalendar)
         await send_message_to_client(data_json_calendar)
+        create_backup(path, save)
 
     elif type =="hire":
         argument = "hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
@@ -135,6 +141,15 @@ async def handle_command(message):
         await send_message_to_client(info_json)
         argument = "editPerformance " +  message["teamID"] + " " + message["performanceArray"]
 
+    elif type=="editEngine":
+        argument = message["engineID"] +  " " + message["teamEngineID"] + " " +  message["performanceArray"]
+        run_editEngine(argument)
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully edited all " + message["team"] + " engines performance")
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()
@@ -171,16 +186,32 @@ async def start_server():
     await server.wait_closed()
     server.close()
 
+    
+def create_backup(originalFIle, saveFile):
+    backup_path = "./../backup"
+    if not os.path.exists(backup_path):
+        os.makedirs(backup_path)
+    new_file = backup_path + "/" + saveFile
+    shutil.copy(originalFIle, new_file)
 
-def fetch_parts():
+
+def fetch_engines():
+    engines_ids = [1,10,4,7]
+    stats_ids = [6,10,11,12,14]
+    ers_ids = [2, 11, 5, 8]
+    gearboxes_ids = [3,12,6,9]
     lista = []
-    for teamID in range(1, 11):
-        teamList = []
-        for partType in range(3, 9):
-            id = cursor.execute("SELECT MAX(DesignID) AS MaxDesignID FROM Parts_Designs WHERE PartType = " + str(partType) + " AND TeamID = " + str(teamID)).fetchone()
-            teamList.append(id[0])
-        teamInfo = (teamID, teamList)
-        lista.append(teamInfo)
+    for i in range(len(engines_ids)):
+        statList = []
+        for stat in stats_ids:
+            res = cursor.execute("SELECT UnitValue FROM Parts_Designs_StatValues WHERE DesignID = " + str(engines_ids[i]) + " AND PartStat = " + str(stat)).fetchone()
+            statList.append(res[0])
+        ers_res = cursor.execute("SELECT UnitValue FROM Parts_Designs_StatValues WHERE DesignID = " + str(ers_ids[i]) + " AND PartStat = 15").fetchone()
+        statList.append(ers_res[0])
+        gearbox_res = cursor.execute("SELECT UnitValue FROM Parts_Designs_StatValues WHERE DesignID = " + str(gearboxes_ids[i]) + " AND PartStat = 15").fetchone()
+        statList.append(gearbox_res[0])
+        engineInfo = (engines_ids[i], statList)
+        lista.append(engineInfo)
 
     return lista
         

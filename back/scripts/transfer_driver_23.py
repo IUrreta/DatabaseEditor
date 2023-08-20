@@ -114,10 +114,7 @@ def run_script(option=""):
             race_bonus_pos = params[7]
             year_end = params[8]
 
-            isRetired = cursor.execute("SELECT Retired FROM Staff_GameData WHERE StaffID = " + str(driver_id[0])).fetchone()
-            # print(isRetired)
-            if(isRetired[0] == 1):
-                 cursor.execute("UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = " + str(driver_id[0]))
+
 
             #default values for some arguments
             if(starting_bonus == "none"):
@@ -126,6 +123,10 @@ def run_script(option=""):
             if(race_bonus == "none"):
                 race_bonus = "0"
                 race_bonus_pos = "10"
+
+        isRetired = cursor.execute("SELECT Retired FROM Staff_GameData WHERE StaffID = " + str(driver_id[0])).fetchone()
+        if(isRetired[0] == 1):
+                cursor.execute("UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = " + str(driver_id[0]))
 
         cursor.execute("INSERT INTO Staff_Contracts VALUES (" + str(driver_id[0]) + ", 0, 1," + str(day[0]) + ", 1, " + str(new_team_id) + ", " +  str(car_in_team) + ", 1, '[OPINION_STRING_NEUTRAL]', " + str(day[0]) + ", " + year_end + ", 1, '[OPINION_STRING_NEUTRAL]', " + salary + ", 1, '[OPINION_STRING_NEUTRAL]', " + starting_bonus + ", 1, '[OPINION_STRING_NEUTRAL]', " + race_bonus + ", 1, '[OPINION_STRING_NEUTRAL]', " + race_bonus_pos + ", 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')")
         if(int(car_in_team) != 3):
