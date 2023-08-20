@@ -1,7 +1,7 @@
 import sqlite3
 import decimal
 
-engine_stats = [6,10,11,2,14]
+engine_stats = [6,10,11,12,14]
 values_minimum = [9, 9, 6.5, 7, 8.5, 4, 4]
 values_relative = [1000, 1000, -500, 666.6, 666.6, 333.3, 333.3]
 

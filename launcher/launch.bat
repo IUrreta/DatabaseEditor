@@ -22,4 +22,4 @@ REM Instalar las dependencias y ejecutar "npm start" en la carpeta actual
 call npm install --no-audit
 call npm start
 
-taskkill /F /IM python.exe
+taskkill /F /IM back.exe
