@@ -2,15 +2,15 @@ let codes_dict = {
     "bah0": "../assets/images/bahrain.png","sau0": "../assets/images/saudi.jpg","aus0": "../assets/images/australia.png","aze0": "../assets/images/azerbaiyan.png",
     "mia0": "../assets/images/usa.png","imo0": "../assets/images/italy.png","mon0": "../assets/images/monaco.png","spa0": "../assets/images/spain.png","can0": "../assets/images/canada.png",
     "aut0": "../assets/images/austria.png","gbr0": "../assets/images/gbr.png","hun0": "../assets/images/hungry.png","bel0": "../assets/images/balgium.png","ned0": "../assets/images/ned.png",
-    "ita0": "../assets/images/italy.png","jap0": "../assets/images/japan.png", "sgp0": "../assets/images/singapore.png","qat0": "../assets/images/qatar.png","usa0": "../assets/images/usa.png","mex0": "../assets/images/mexico.png",
+    "ita0": "../assets/images/italy.png","jap0": "../assets/images/japan.png","sgp0": "../assets/images/singapore.png","qat0": "../assets/images/qatar.png","usa0": "../assets/images/usa.png","mex0": "../assets/images/mexico.png",
     "bra0": "../assets/images/brazil.png","veg0": "../assets/images/usa.png","uae0": "../assets/images/uae.png"
 }
 let countries_dict = {
-    "bah0": "Bahrain", "sau0": "Saudi Arabia", "aus0": "Australia", "aze0": "Azerbaijan",
-    "mia0": "Miami", "imo0": "Imola", "mon0": "Monaco", "spa0": "Spain", "can0": "Canada",
-    "aut0": "Austria", "gbr0": "United Kingdom", "hun0": "Hungary", "bel0": "Belgium", "ned0": "Netherlands",
-    "ita0": "Italy", "sgp0": "Singapore", "jap0": "Japan", "qat0": "Qatar", "usa0": "USA", "mex0": "Mexico",
-    "bra0": "Brazil", "veg0": "Vegas", "uae0": "Abu Dhbai"
+    "bah0": "Bahrain","sau0": "Saudi Arabia","aus0": "Australia","aze0": "Azerbaijan",
+    "mia0": "Miami","imo0": "Imola","mon0": "Monaco","spa0": "Spain","can0": "Canada",
+    "aut0": "Austria","gbr0": "United Kingdom","hun0": "Hungary","bel0": "Belgium","ned0": "Netherlands",
+    "ita0": "Italy","sgp0": "Singapore","jap0": "Japan","qat0": "Qatar","usa0": "USA","mex0": "Mexico",
+    "bra0": "Brazil","veg0": "Vegas","uae0": "Abu Dhbai"
 };
 
 let deleting = false;
@@ -30,45 +30,45 @@ function reubicate(div0,div1,beforeAfter) {
 
 }
 
-function addRace(code){
+function addRace(code) {
     let imageUrl = codes_dict[code];
 
-        let div = document.createElement('div');
-        div.classList.add('race-calendar');
-        div.setAttribute('data-code',code);
+    let div = document.createElement('div');
+    div.classList.add('race-calendar');
+    div.setAttribute('data-code',code);
 
-        let upperDiv = document.createElement('div');
-        upperDiv.classList.add('upper-race','bold-font');
-        upperDiv.textContent = code.slice(0, -1).toUpperCase();
+    let upperDiv = document.createElement('div');
+    upperDiv.classList.add('upper-race','bold-font');
+    upperDiv.textContent = code.slice(0,-1).toUpperCase();
 
-        const img = document.createElement('img');
-        img.src = imageUrl;
-        img.classList.add('flag');
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.classList.add('flag');
 
-        upperDiv.appendChild(img);
+    upperDiv.appendChild(img);
 
-        const lowerDiv = document.createElement('div');
-        lowerDiv.classList.add('lower-race');
+    const lowerDiv = document.createElement('div');
+    lowerDiv.classList.add('lower-race');
 
-        lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint weekend</label></div><div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>";
-        let SprintInput = lowerDiv.querySelector(".sprint-input")
-        let ATAInput = lowerDiv.querySelector(".ata-input")
-        SprintInput.addEventListener("click", function(event){
-            if (ATAInput.checked) ATAInput.checked = false
-            if(SprintInput.checked) changeFormat(div, "1")
-            else changeFormat(div, "0")
+    lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint weekend</label></div><div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>";
+    let SprintInput = lowerDiv.querySelector(".sprint-input")
+    let ATAInput = lowerDiv.querySelector(".ata-input")
+    SprintInput.addEventListener("click",function (event) {
+        if (ATAInput.checked) ATAInput.checked = false
+        if (SprintInput.checked) changeFormat(div,"1")
+        else changeFormat(div,"0")
 
-        })
-        ATAInput.addEventListener("click", function(event){
-            if (SprintInput.checked) SprintInput.checked = false
-            if(ATAInput.checked) changeFormat(div, "2")
-            else changeFormat(div, "0")
+    })
+    ATAInput.addEventListener("click",function (event) {
+        if (SprintInput.checked) SprintInput.checked = false
+        if (ATAInput.checked) changeFormat(div,"2")
+        else changeFormat(div,"0")
 
-        })
-        div.appendChild(upperDiv);
-        div.appendChild(lowerDiv);
+    })
+    div.appendChild(upperDiv);
+    div.appendChild(lowerDiv);
 
-        document.querySelector('.main-calendar-section').appendChild(div)
+    document.querySelector('.main-calendar-section').appendChild(div)
 
 
 
@@ -83,18 +83,19 @@ function create_races() {
     load_addRaces()
 }
 
-function changeFormat(div, format){
+function changeFormat(div,format) {
     let lastChar = div.dataset.code.charAt(div.dataset.code.length - 1)
-    if(/\d/.test(lastChar)){
-        div.dataset.code = div.dataset.code.slice(0, -1) + format
+    if (/\d/.test(lastChar)) {
+        div.dataset.code = div.dataset.code.slice(0,-1) + format
     }
-    else{
+    else {
         div.dataset.code = div.dataset.code + format
     }
-    
+
 }
 
-function load_addRaces(){
+function load_addRaces() {
+    document.getElementById("addTrackMenu").innerHTML = ""
     for (let dataCode of Object.keys(codes_dict)) {
         let elem = countries_dict[dataCode]
         let li = document.createElement('li');
@@ -119,30 +120,30 @@ function load_addRaces(){
     listenerRaces()
 }
 
-function listenerRaces(){
+function listenerRaces() {
     document.querySelectorAll('#addTrackMenu a').forEach(item => {
-        item.addEventListener("click", function(){
-            if(document.querySelector(".main-calendar-section").childElementCount < 23){
+        item.addEventListener("click",function () {
+            if (document.querySelector(".main-calendar-section").childElementCount < 23) {
                 addRace(item.dataset.code)
             }
         })
     })
 }
 
-document.getElementById("deleteTracks").addEventListener("click", function(btn){
-    if(deleting){
-        document.querySelectorAll(".delete-div").forEach(function(elem){
+document.getElementById("deleteTracks").addEventListener("click",function (btn) {
+    if (deleting) {
+        document.querySelectorAll(".delete-div").forEach(function (elem) {
             elem.parentNode.removeChild(elem)
         })
         this.className = "btn custom-delete option-buttons"
-        document.querySelectorAll(".race-calendar").forEach(function(elem){
+        document.querySelectorAll(".race-calendar").forEach(function (elem) {
             elem.classList = "race-calendar";
 
         })
 
     }
-    else{
-        document.querySelectorAll(".race-calendar").forEach(function(elem){
+    else {
+        document.querySelectorAll(".race-calendar").forEach(function (elem) {
             elem.classList = "race-calendar deleting";
             let div = document.createElement('div');
             div.classList.add('delete-div');
@@ -151,8 +152,8 @@ document.getElementById("deleteTracks").addEventListener("click", function(btn){
             divText.className = "bold-font"
             divText.style.fontSize = "18px"
             div.appendChild(divText);
-            elem.insertBefore(div, elem.firstChild);
-            divText.addEventListener("click", function(){
+            elem.insertBefore(div,elem.firstChild);
+            divText.addEventListener("click",function () {
                 let race = divText.parentNode.parentNode;
                 divText.parentNode.parentNode.parentNode.removeChild(race);
                 deleted = true;
@@ -185,7 +186,7 @@ document.getElementById("confirmCalendar").addEventListener("click",function () 
     }
     socket.send(JSON.stringify(dataCalendar))
 
-    if(deleted){
+    if (deleted) {
         document.getElementById("addRaceButton").disabled = true;
     }
 })
