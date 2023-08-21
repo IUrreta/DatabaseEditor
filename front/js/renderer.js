@@ -177,9 +177,13 @@ document.addEventListener('DOMContentLoaded',function () {
                             isSame = false;
                         }
                         else {
+                            console.log(latestVer)
                             for (let i = 0; i < latestVer.length; i++) {
                                 if (latestVer[i] > actualVer[i]) {
                                     isSame = false;
+                                    break;
+                                }
+                                else if(latestVer[i] < actualVer[i]){
                                     break;
                                 }
                             }
