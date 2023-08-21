@@ -119,6 +119,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 create_races()
             }
             else if (message[0] === "Staff Fetched") {
+                console.log(message)
                 place_staff(message.slice(1))
             }
             else if (message[0] === "Calendar fetched") {
@@ -179,6 +180,9 @@ document.addEventListener('DOMContentLoaded',function () {
                             for (let i = 0; i < latestVer.length; i++) {
                                 if (latestVer[i] > actualVer[i]) {
                                     isSame = false;
+                                    break;
+                                }
+                                else if(latestVer[i] < actualVer[i]){
                                     break;
                                 }
                             }
