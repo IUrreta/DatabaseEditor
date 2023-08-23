@@ -11,6 +11,7 @@ echo Version: %version%
 cd ..
 
 cd back
+pip install websockets
 start "" /B py back.py
 cd ../
 
