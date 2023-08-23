@@ -26,8 +26,6 @@ async def handle_command(message):
     global conn
     global cursor
     global log
-    if os.path.basename(os.getcwd()) == "back":
-        os.chdir("../..")
     argument = ""
     if type == "connect":
         #print("Connect recibido")

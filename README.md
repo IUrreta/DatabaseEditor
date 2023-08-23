@@ -22,9 +22,9 @@ When I developed those scripts, more specifically the driver transfers script fo
 6. Edit the performance and durability of any of the 4 engines suppliers
 
 ## How can I install the Database Editor? ##
-If you're on Windows you'll only need one thing: [NodeJS](https://nodejs.org/en/download) and run the installer
+You'll need to downlaod two things: [NodeJS](https://nodejs.org/en/download) and [Python](https://www.python.org/downloads/)
 
-It's all covered in the [Installation and set-up guide](https://github.com/IUrreta/DatabaseEditor/wiki/Installation-guide)
+It's all covered in the [Installation and set-up guide](https://github.com/IUrreta/DatabaseEditor/wiki/Installation-and-set%E2%80%90up-guide)
 
 ### How can I update the Database Editor if I had a previouos verision? ###
 
