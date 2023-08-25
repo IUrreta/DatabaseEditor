@@ -119,7 +119,6 @@ document.addEventListener('DOMContentLoaded',function () {
                 create_races()
             }
             else if (message[0] === "Staff Fetched") {
-                console.log(message)
                 place_staff(message.slice(1))
             }
             else if (message[0] === "Calendar fetched") {
