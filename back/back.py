@@ -63,6 +63,7 @@ async def handle_command(message):
         await send_message_to_client(data_json_calendar)
         create_backup(path, save)
 
+
     elif type =="hire":
         argument = "hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
         run_trasnsfer(argument)
@@ -180,7 +181,7 @@ async def handle_client(websocket, path):
         client = None
         conn.commit()
         conn.close()
-        
+
 
 async def start_server():
     server = await websockets.serve(handle_client, "localhost", 8765)
@@ -188,7 +189,7 @@ async def start_server():
     await server.wait_closed()
     server.close()
 
-    
+
 def create_backup(originalFIle, saveFile):
     backup_path = "./../backup"
     if not os.path.exists(backup_path):
@@ -216,7 +217,7 @@ def fetch_engines():
         lista.append(engineInfo)
 
     return lista
-        
+
 
 
 async def main():
@@ -236,17 +237,16 @@ def fetch_staff():
         result = format_names_get_stats(tupla, "staff"+str(tupla[4]))
         formatted_tuples.append(result)
 
-    print(formatted_tuples)
     return formatted_tuples
 
 def fetch_info():
 
-    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID WHERE ContractType = 0 OR ContractType IS NULL;').fetchall()
+    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID GROUP BY bas.FirstName, bas.LastName, bas.StaffID, con.TeamID;').fetchall()
     formatted_tuples = []
     for tupla in drivers:
         result = format_names_get_stats(tupla, "driver")
         formatted_tuples.append(result)
-    
+
     return formatted_tuples
 
 def check_claendar():
@@ -261,22 +261,26 @@ def check_claendar():
     resultCalendar = "1" if are_all_numbers_present else "0"
 
     return resultCalendar
-    
+
 
 def format_names_get_stats(name, type):
     nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
     apellido_pattern = r'StaffName_Surname_(\w+)'
 
-    
+
     nombre_match = re.search(nombre_pattern, name[0])
     apellido_match = re.search(apellido_pattern, name[1])
 
-    
+
     nombre = remove_number(nombre_match.group(2))
     apellido = remove_number(apellido_match.group(1))
     name_formatted = f"{nombre} {apellido}"
     team_id = name[3] if name[3] is not None else 0
     pos_in_team = name[4] if name[4] is not None else 0
+    if type =="driver" and name[5] != 0:
+        team_id = 0
+        pos_in_team = 0
+
 
     resultado = (name_formatted, name[2], team_id, pos_in_team)
 
@@ -286,25 +290,25 @@ def format_names_get_stats(name, type):
         nums = resultado + tuple(stat[0] for stat in stats) + additionalStats
 
         return nums
-    
+
     elif type == "staff1":
         stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID IN (0,1,14,15,16,17);").fetchall()
         nums = resultado + tuple(stat[0] for stat in stats)
 
         return nums
-    
+
     elif type == "staff2":
         stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID IN (13,25,43);").fetchall()
         nums = resultado + tuple(stat[0] for stat in stats)
 
         return nums
-    
+
     elif type == "staff3":
         stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID IN (19,20,26,27,28,29,30,31);").fetchall()
         nums = resultado + tuple(stat[0] for stat in stats)
 
         return nums
-    
+
     elif type == "staff4":
         stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID IN (11,22,23,24);").fetchall()
         nums = resultado + tuple(stat[0] for stat in stats)
