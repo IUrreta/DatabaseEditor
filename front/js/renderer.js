@@ -130,7 +130,10 @@ document.addEventListener('DOMContentLoaded',function () {
             else if (message[0] === "Contract fetched") {
                 manage_modal(message.slice(1)[0])
             }
-            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched" && message[0] != "Engines fetched") update_notifications(message[0],false)
+            else if(message[0] === "Results fetched"){
+                console.log(message.slice(1))
+            }
+            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched" && message[0] != "Engines fetched" && message[0] != "Results fetched") update_notifications(message[0],false)
 
         }
 

@@ -62,6 +62,10 @@ async def handle_command(message):
         data_json_calendar = json.dumps(allowCalendar)
         await send_message_to_client(data_json_calendar)
         create_backup(path, save)
+        results = fetch_seasonResults()
+        results.insert(0, "Results fetched")
+        data_json_results = json.dumps(results)
+        await send_message_to_client(data_json_results)
 
 
     elif type =="hire":
@@ -238,6 +242,35 @@ def fetch_staff():
         formatted_tuples.append(result)
 
     return formatted_tuples
+
+def fetch_seasonResults(): 
+    year =  cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
+    drivers = cursor.execute("SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = " + str(year[0])).fetchall()
+    seasonResults = []
+    for driver in drivers:
+        results = cursor.execute("SELECT DriverID, TeamID, FinishingPos, Points FROM Races_Results WHERE Season = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
+        teamID = results[0][1]
+        driverName = cursor.execute("SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = " + str(driver[0])).fetchone()
+        seasonResults.append(format_seasonResults(results, driverName, teamID))
+    return seasonResults
+
+
+def format_seasonResults(results, driver, teamID):
+    nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
+    apellido_pattern = r'StaffName_Surname_(\w+)'
+
+    nombre_match = re.search(nombre_pattern, driver[0])
+    apellido_match = re.search(apellido_pattern, driver[1])
+
+    nombre = remove_number(nombre_match.group(2))
+    apellido = remove_number(apellido_match.group(1))
+    name_formatted = f"{nombre} {apellido}"
+
+    formatred_results = [(result[-2], result[-1]) for result in results]
+    formatred_results.insert(0, teamID)
+    formatred_results.insert(0, name_formatted)
+    return formatred_results
+
 
 def fetch_info():
 
