@@ -1,5 +1,6 @@
 const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0" };
 let seasonTable;
+let default_points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
 let races_ids = []
 
 function createTable(calendar) {
@@ -33,19 +34,26 @@ function createTable(calendar) {
                 if (key !== "driver" && key !== "points") {
                     var cellValue = rowData[key];
                     
-                    if (cellValue == 25) {
+                    if (cellValue >= 25) {
                         row.getCell(key).getElement().style.backgroundColor = "gold";
                         row.getCell(key).getElement().style.color = "#18152e";
-                    } else if (cellValue == 18) {
+                    } else if (cellValue >= 18) {
                         row.getCell(key).getElement().style.backgroundColor = "silver";
                         row.getCell(key).getElement().style.color = "#18152e";
-                    } else if (cellValue == 15) {
+                    } else if (cellValue >= 15) {
                         row.getCell(key).getElement().style.backgroundColor = "#cd7f32";
                     }
+                    if(!default_points.includes(cellValue) && cellValue !== "-"){
+                        row.getCell(key).getElement().style.color = "#c90fd7";
+                    }
+
                 }
             }
         }
+
     });
+
+
 }
 
 function loadTable(allDrivers) {
@@ -53,6 +61,18 @@ function loadTable(allDrivers) {
         addDriver(driver)
     })
     seasonTable.setSort("points", "desc");
+    let data = seasonTable.getData()
+    data.forEach(row => {
+
+        for (var key in row) {
+            if (row[key] === 0) {
+                row[key] = "";
+            } else if (row[key] === undefined) {
+                row[key] = "-"; // Reemplazar vacío por "-"
+            }
+        }
+    });
+    seasonTable.setData(data);
 }
 
 function addDriver(driverInfo) {

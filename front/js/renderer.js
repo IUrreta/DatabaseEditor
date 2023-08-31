@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded',function () {
             else if(message[0] === "Results fetched"){
                 setTimeout(function() {
                     loadTable(message.slice(1)); // Llamar a la función después de 1 segundo
-                }, 1000);
+                }, 20);
                 
             }
             if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched" && message[0] != "Engines fetched" && message[0] != "Results fetched") update_notifications(message[0],false)
