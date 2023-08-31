@@ -517,6 +517,29 @@ a.bi-heart:hover{
   border-color: white !important;
 }
 
+.main-viewer-section{
+  margin-left: 14px;
+  margin-right: 14px;
+  border: 1px solid #797599;
+  color: white;
+  min-height: 660px;
+  max-height: 660px;
+  overflow-y: auto;
+  border-radius: 10px;
+}
+
+.flag-header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.flag-header img{
+  width: 40px;
+  height: 20px;
+}
+
 .main-calendar-section {
   margin-left: 14px;
   border: 1px solid #797599;

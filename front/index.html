@@ -7,6 +7,7 @@
   <link href="styles.css" rel="stylesheet">
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../node_modules/tabulator-tables/dist/css/tabulator.min.css">
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../node_modules/interactjs/dist/interact.min.js"></script>
   <script src="../node_modules/marked/marked.min.js"></script>
@@ -105,6 +106,9 @@
       <div class="pt-2 pb-3 ps-3">
         <ul class="nav nav-pills">
           <li class="nav-item">
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="viewerpill">SEASON VIEWER</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="transferpill">CONTRACTS</a>
           </li>
           <li class="nav-item">
@@ -125,6 +129,17 @@
   <div class="main-panel">
     <div class="blocking-div" id="blockDiv">
       Select a script and a save to start editing!
+    </div>
+    <div class="script-view d-none" id="season_viewer">
+      <div class="col">
+        <div class="title bold-font py-3">
+          Season Results
+        </div>
+        <div class="main-viewer-section" id="officialCalendarList">
+          <div id="seasonresults-table"></div>
+        </div>
+      </div>
+
     </div>
     <div class="script-view d-none" id="driver_transfers">
       <div class="col-2">
@@ -881,6 +896,7 @@
   <script src="./js/stats.js"></script>
   <script src="./js/calendar.js"></script>
   <script src="./js/performance.js"></script>
+  <script src="./js/seasonViewer.js"></script>
 </body>
 
 </html>

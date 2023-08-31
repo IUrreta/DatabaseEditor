@@ -288,12 +288,16 @@ def check_claendar():
     season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
     tuple_numbers = {num for tpl in season_events for num in tpl}
 
+    events_ids =[]
+    for tupla in season_events:
+        events_ids.append(tupla[0])
+
     are_all_numbers_present = all(num in tuple_numbers for num in default_tracks)
 
     # Definir la variable resultante
     resultCalendar = "1" if are_all_numbers_present else "0"
 
-    return resultCalendar
+    return (resultCalendar, events_ids)
 
 
 def format_names_get_stats(name, type):
