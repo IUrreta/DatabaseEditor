@@ -522,11 +522,58 @@ a.bi-heart:hover{
   margin-right: 14px;
   border: 1px solid #797599;
   color: white;
-  min-height: 660px;
-  max-height: 660px;
-  overflow-y: auto;
+  height: 660px;
+  overflow: hidden;
   border-radius: 10px;
 }
+
+#seasonresults-table{
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.main-viewer-section .tabulator-tableholder::-webkit-scrollbar {
+  width: 4px !important;
+}
+
+.main-viewer-section .tabulator-tableholder::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px !important;
+}
+
+.main-viewer-section .tabulator-col, .main-viewer-section .tabulator-cell{
+  border: none !important;
+}
+
+.main-viewer-section .tabulator-col{
+  background-color: #18152e !important;
+  color: #dedde6 !important;
+}
+
+.main-viewer-section .tabulator-row{
+  background-color: #3f3c57 !important;
+  cursor: pointer !important;
+  color: #dedde6 !important;
+  transition: background-color 0.3s !important;
+}
+
+.main-viewer-section .tabulator-row-even{
+  background-color: #484463 !important;
+  cursor: pointer !important;
+  color: #dedde6 !important;
+}
+
+.main-viewer-section .tabulator-row:hover{
+  background-color: #625e86 !important;
+  cursor: pointer !important;
+  color: #dedde6 !important;
+}
+
+.main-viewer-section .tabulator-table{
+  background-color: #110f24 !important;
+  overflow-x: hidden !important;
+}
+
 
 .flag-header{
   display: flex;
