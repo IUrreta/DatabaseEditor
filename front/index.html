@@ -132,6 +132,14 @@
     </div>
     <div class="script-view d-none" id="season_viewer">
       <div class="col">
+        <div class=" ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute;">
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButton" data-bs-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          Year
+          </button>
+          <ul class="dropdown-menu" id="yearMenu" style="font-family: Formula1;">
+          </ul>
+        </div>
         <div class="title bold-font py-3">
           Season Results
         </div>
@@ -322,14 +330,14 @@
           <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffButton" data-bs-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           Staff Type
-        </button>
-        <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
+          </button>
+          <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
           <a class="dropdown-item" href="#" data-list="fulldriverlist" data-spaceStats="driverStats">Drivers</a>
           <a class="dropdown-item" href="#" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical Chiefs</a>
           <a class="dropdown-item" href="#" data-list="fullEngineerList" data-spaceStats="engineerStats">Race Engineers</a>
           <a class="dropdown-item" href="#" data-list="fullAeroList" data-spaceStats="aeroStats">Head of Aerodynamics</a>
           <a class="dropdown-item" href="#" data-list="fullDirectorList" data-spaceStats="directorStats">Sporting Directors</a>
-        </ul>
+          </ul>
         </div>
         <div id="StaffLists">
           <div class="main-editStats-section staff-list" id="placeholder">

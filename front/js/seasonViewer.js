@@ -1,13 +1,12 @@
 const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0" };
 let seasonTable;
-let default_points = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
+let default_points = ["25", "18", "15", "12", "10", "8", "6", "4", "2", "1"]
 let races_ids = []
 
 function createTable(calendar) {
     calendar.forEach(function (elem, index) {
         races_ids.push(calendar[index][0])
     })
-    console.log(races_ids)
     seasonTable = new Tabulator("#seasonresults-table", {
         layout: "fitColumns",
         maxWidth: "1650px",
@@ -32,21 +31,22 @@ function createTable(calendar) {
             
             for (var key in rowData) {
                 if (key !== "driver" && key !== "points") {
-                    var cellValue = rowData[key];
-                    
-                    if (cellValue >= 25) {
-                        row.getCell(key).getElement().style.backgroundColor = "gold";
-                        row.getCell(key).getElement().style.color = "#18152e";
-                    } else if (cellValue >= 18) {
-                        row.getCell(key).getElement().style.backgroundColor = "silver";
-                        row.getCell(key).getElement().style.color = "#18152e";
-                    } else if (cellValue >= 15) {
-                        row.getCell(key).getElement().style.backgroundColor = "#cd7f32";
+                    let cellValue = rowData[key];
+                    if(cellValue !== undefined){
+                        cellValue = cellValue.split(" ")
+                        if (parseInt(cellValue[0]) >= 25) {
+                            row.getCell(key).getElement().style.backgroundColor = "gold";
+                            row.getCell(key).getElement().style.color = "#18152e";
+                        } else if (parseInt(cellValue[0]) >= 18) {
+                            row.getCell(key).getElement().style.backgroundColor = "silver";
+                            row.getCell(key).getElement().style.color = "#18152e";
+                        } else if (parseInt(cellValue[0]) >= 15) {
+                            row.getCell(key).getElement().style.backgroundColor = "#cd7f32";
+                        }
+                        if(!default_points.includes(cellValue[0]) && cellValue[0] !== "-" && cellValue[0] !== "0"){
+                            row.getCell(key).getElement().style.color = "#c90fd7";
+                        }
                     }
-                    if(!default_points.includes(cellValue) && cellValue !== "-"){
-                        row.getCell(key).getElement().style.color = "#c90fd7";
-                    }
-
                 }
             }
         }
@@ -54,6 +54,27 @@ function createTable(calendar) {
     });
 
 
+}
+
+function generateYearsMenu(actualYear) {
+    var yearMenu = document.querySelector("#yearMenu");
+    yearMenu.innerHTML = ""
+    for (let year = actualYear; year >= 2023; year--) {
+        let a = document.createElement("a");
+        a.textContent = year.toString();
+        a.classList = "dropdown-item"
+        a.style.cursor = "pointer"
+        yearMenu.appendChild(a);
+        a.addEventListener("click", function(){
+            document.getElementById("yearButton").textContent = a.textContent
+            let dataYear = {
+                command: "yearSelected",
+                year: a.textContent
+            }
+    
+            socket.send(JSON.stringify(dataYear))
+        })
+    }
 }
 
 function loadTable(allDrivers) {
@@ -65,7 +86,7 @@ function loadTable(allDrivers) {
     data.forEach(row => {
 
         for (var key in row) {
-            if (row[key] === 0) {
+            if (row[key] === "0") {
                 row[key] = "";
             } else if (row[key] === undefined) {
                 row[key] = "-"; // Reemplazar vacío por "-"
@@ -90,13 +111,22 @@ function addDriver(driverInfo) {
     
     let rowData = { driver: nameDiv.innerHTML };
     driverInfo.slice(2).forEach((pair, index) => {
-        rowData["race" + pair[0]] = pair[2];
+        if(pair.length === 3){
+            rowData["race" + pair[0]] = "" + pair[2];
+        }
+        else if(pair.length === 4){
+            rowData["race" + pair[0]] = pair[2] + " (" + pair[3] + ")"
+        }
+
     });
 
 
     let totalPoints = 0;
     driverInfo.slice(2).forEach(function (elem) {
         totalPoints += elem[2]
+        if(elem.length === 4){
+            totalPoints += elem[3]
+        }
     })
     rowData["points"] = totalPoints;
     seasonTable.addData(rowData);

@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 place_staff(message.slice(1))
             }
             else if (message[0] === "Calendar fetched") {
-                createTable(message.slice(1)[0][1])
+                console.log(message.slice(1))
                 manage_calendarDiv(message.slice(1)[0])
             }
             else if (message[0] === "Engines fetched") {
@@ -134,9 +134,13 @@ document.addEventListener('DOMContentLoaded',function () {
             else if (message[0] === "Contract fetched") {
                 manage_modal(message.slice(1)[0])
             }
+            else if (message[0] === "Year fetched") {
+                generateYearsMenu(message.slice(1))
+            }
             else if(message[0] === "Results fetched"){
+                createTable(message[1])
                 setTimeout(function() {
-                    loadTable(message.slice(1)); // Llamar a la función después de 1 segundo
+                    loadTable(message.slice(2)); // Llamar a la función después de 1 segundo
                 }, 20);
                 
             }

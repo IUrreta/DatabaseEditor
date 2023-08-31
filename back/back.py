@@ -62,10 +62,11 @@ async def handle_command(message):
         data_json_calendar = json.dumps(allowCalendar)
         await send_message_to_client(data_json_calendar)
         create_backup(path, save)
-        results = fetch_seasonResults()
-        results.insert(0, "Results fetched")
-        data_json_results = json.dumps(results)
-        await send_message_to_client(data_json_results)
+        year =  cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
+        year = ["Year fetched", year]
+        data_json_year = json.dumps(year)
+        await send_message_to_client(data_json_year)
+
 
 
     elif type =="hire":
@@ -157,6 +158,13 @@ async def handle_command(message):
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
 
+    elif type=="yearSelected":
+        results = fetch_seasonResults(message["year"])
+        results.insert(0, fetch_events_from(message["year"]))
+        results.insert(0, "Results fetched")
+        data_json_results = json.dumps(results)
+        await send_message_to_client(data_json_results)
+
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()
@@ -243,19 +251,31 @@ def fetch_staff():
 
     return formatted_tuples
 
-def fetch_seasonResults(): 
-    year =  cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
+def fetch_seasonResults(yearSelected): 
+    year =  (yearSelected, )
     drivers = cursor.execute("SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = " + str(year[0])).fetchall()
     seasonResults = []
     for driver in drivers:
         results = cursor.execute("SELECT DriverID, TeamID, FinishingPos, Points FROM Races_Results WHERE Season = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
-        teamID = results[0][1]
-        driverName = cursor.execute("SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = " + str(driver[0])).fetchone()
-        seasonResults.append(format_seasonResults(results, driverName, teamID, driver, year))
+        if results:
+            sprintResults = cursor.execute("SELECT RaceID, ChampionshipPoints FROm Races_SprintResults WHERE SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
+            teamID = results[0][1]
+            driverName = cursor.execute("SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = " + str(driver[0])).fetchone()
+            seasonResults.append(format_seasonResults(results, driverName, teamID, driver, year, sprintResults))
     return seasonResults
 
+def fetch_events_from(year):
+    season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(year)).fetchall()
+    tuple_numbers = {num for tpl in season_events for num in tpl}
 
-def format_seasonResults(results, driverName, teamID, driverID, year):
+    season_ids = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(year)).fetchall()
+    events_ids =[]
+    for i in range(len(season_ids)):
+        events_ids.append((season_ids[i][0], season_events[i][0]))
+
+    return events_ids
+
+def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
     nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
     apellido_pattern = r'StaffName_Surname_(\w+)'
 
@@ -267,12 +287,15 @@ def format_seasonResults(results, driverName, teamID, driverID, year):
     name_formatted = f"{nombre} {apellido}"
 
     races_participated = cursor.execute("SELECT RaceID FROM Races_Results WHERE DriverID = " + str(driverID[0]) + " AND Season = " + str(year[0])).fetchall()
-
     formatred_results = [(result[-2], result[-1]) for result in results]
     for i in range(len(races_participated)):
         formatred_results[i] = (races_participated[i][0],)  + formatred_results[i]
 
-    print(formatred_results)
+    for tupla1 in sprints:
+        for i, tupla2 in enumerate(formatred_results):
+            if tupla1[0] == tupla2[0]:
+                formatred_results[i] = tupla2 + (tupla1[1],)
+
     formatred_results.insert(0, teamID)
     formatred_results.insert(0, name_formatted)
     return formatred_results
@@ -304,7 +327,7 @@ def check_claendar():
     # Definir la variable resultante
     resultCalendar = "1" if are_all_numbers_present else "0"
 
-    return (resultCalendar, events_ids)
+    return resultCalendar
 
 
 def format_names_get_stats(name, type):
