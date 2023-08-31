@@ -251,22 +251,28 @@ def fetch_seasonResults():
         results = cursor.execute("SELECT DriverID, TeamID, FinishingPos, Points FROM Races_Results WHERE Season = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
         teamID = results[0][1]
         driverName = cursor.execute("SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = " + str(driver[0])).fetchone()
-        seasonResults.append(format_seasonResults(results, driverName, teamID))
+        seasonResults.append(format_seasonResults(results, driverName, teamID, driver, year))
     return seasonResults
 
 
-def format_seasonResults(results, driver, teamID):
+def format_seasonResults(results, driverName, teamID, driverID, year):
     nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
     apellido_pattern = r'StaffName_Surname_(\w+)'
 
-    nombre_match = re.search(nombre_pattern, driver[0])
-    apellido_match = re.search(apellido_pattern, driver[1])
+    nombre_match = re.search(nombre_pattern, driverName[0])
+    apellido_match = re.search(apellido_pattern, driverName[1])
 
     nombre = remove_number(nombre_match.group(2))
     apellido = remove_number(apellido_match.group(1))
     name_formatted = f"{nombre} {apellido}"
 
+    races_participated = cursor.execute("SELECT RaceID FROM Races_Results WHERE DriverID = " + str(driverID[0]) + " AND Season = " + str(year[0])).fetchall()
+
     formatred_results = [(result[-2], result[-1]) for result in results]
+    for i in range(len(races_participated)):
+        formatred_results[i] = (races_participated[i][0],)  + formatred_results[i]
+
+    print(formatred_results)
     formatred_results.insert(0, teamID)
     formatred_results.insert(0, name_formatted)
     return formatred_results
@@ -288,9 +294,10 @@ def check_claendar():
     season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
     tuple_numbers = {num for tpl in season_events for num in tpl}
 
+    season_ids = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
     events_ids =[]
-    for tupla in season_events:
-        events_ids.append(tupla[0])
+    for i in range(len(season_ids)):
+        events_ids.append((season_ids[i][0], season_events[i][0]))
 
     are_all_numbers_present = all(num in tuple_numbers for num in default_tracks)
 
