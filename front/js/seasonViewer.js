@@ -4,9 +4,11 @@ let seasonTable;
 let default_points = ["25", "18", "15", "12", "10", "8", "6", "4", "2", "1", "DNF", "0", "", "-"]
 let races_ids = []
 let seasonResults;
+let calendarData;
+let pointsOrPos = "points"
 
 function createTable(calendar) {
-    console.log(calendar)
+    calendarData = calendar;
     calendar.forEach(function (elem, index) {
         races_ids.push(calendar[index][0])
     })
@@ -32,26 +34,45 @@ function createTable(calendar) {
         }],
         rowFormatter: function (row) {
             var rowData = row.getData();
-
             for (var key in rowData) {
                 if (key !== "driver" && key !== "points") {
                     let cellValue = rowData[key];
                     if (cellValue !== undefined) {
-                        cellValue = cellValue.split("(")
-                        if (parseInt(cellValue[0]) >= 25) {
-                            row.getCell(key).getElement().style.backgroundColor = "#FDE06B";
-                            row.getCell(key).getElement().style.color = "#18152e";
-                        } else if (parseInt(cellValue[0]) >= 18) {
-                            row.getCell(key).getElement().style.backgroundColor = "#AEB2B8";
-                            row.getCell(key).getElement().style.color = "#18152e";
-                        } else if (parseInt(cellValue[0]) >= 15) {
-                            row.getCell(key).getElement().style.backgroundColor = "#d7985a";
-                            row.getCell(key).getElement().style.color = "#18152e";
+                        if(pointsOrPos === "points"){
+                            cellValue = cellValue.split("(")
+                            if (parseInt(cellValue[0]) >= 25) {
+                                row.getCell(key).getElement().style.backgroundColor = "#FDE06B";
+                                row.getCell(key).getElement().style.color = "#18152e";
+                            } else if (parseInt(cellValue[0]) >= 18) {
+                                row.getCell(key).getElement().style.backgroundColor = "#AEB2B8";
+                                row.getCell(key).getElement().style.color = "#18152e";
+                            } else if (parseInt(cellValue[0]) >= 15) {
+                                row.getCell(key).getElement().style.backgroundColor = "#d7985a";
+                                row.getCell(key).getElement().style.color = "#18152e";
+                            }
+                            if (!default_points.includes(cellValue[0])) {
+                                console.log(cellValue)
+                                row.getCell(key).getElement().style.color = "#c90fd7";
+                            }
                         }
-                        if (!default_points.includes(cellValue[0])) {
-                            console.log(cellValue)
-                            row.getCell(key).getElement().style.color = "#c90fd7";
+                        else if(pointsOrPos === "pos"){
+                            cellValue = cellValue.split("(")
+                            if (parseInt(cellValue[0]) === 1) {
+                                row.getCell(key).getElement().style.backgroundColor = "#FDE06B";
+                                row.getCell(key).getElement().style.color = "#18152e";
+                            } else if (parseInt(cellValue[0]) == 2) {
+                                row.getCell(key).getElement().style.backgroundColor = "#AEB2B8";
+                                row.getCell(key).getElement().style.color = "#18152e";
+                            } else if (parseInt(cellValue[0]) === 3) {
+                                row.getCell(key).getElement().style.backgroundColor = "#d7985a";
+                                row.getCell(key).getElement().style.color = "#18152e";
+                            }
+                            // if (!default_points.includes(cellValue[0])) {
+                            //     console.log(cellValue)
+                            //     row.getCell(key).getElement().style.color = "#c90fd7";
+                            // }
                         }
+
                     }
                 }
             }
@@ -61,6 +82,31 @@ function createTable(calendar) {
 
 
 }
+
+document.getElementById("pospill").addEventListener("click", function(){
+    if(seasonTable){
+        seasonTable.destroy()
+    }
+    pointsOrPos = "pos"
+    createTable(calendarData)
+    setTimeout(function() {
+        loadTable(seasonResults)
+    }, 20);
+    
+
+
+})
+
+document.getElementById("pointspill").addEventListener("click", function(){
+        if(seasonTable){
+        seasonTable.destroy()
+    }
+    pointsOrPos = "points"
+    createTable(calendarData)
+    setTimeout(function() {
+        loadTable(seasonResults)
+    }, 20);
+})
 
 function generateYearsMenu(actualYear) {
     var yearMenu = document.querySelector("#yearMenu");
@@ -142,12 +188,21 @@ function addDriver(driverInfo) {
     manageColor(spanLastName, spanLastName)
 
     let rowData = { driver: nameDiv.innerHTML };
+    let value;
+    if(pointsOrPos === "points"){
+        value = 2
+    }
+    else if(pointsOrPos === "pos"){
+        value = 1
+    }
+
     driverInfo.slice(2).forEach((pair, index) => {
+
         if (pair.length === 3) {
-            rowData["race" + pair[0]] = "" + pair[2];
+            rowData["race" + pair[0]] = "" + pair[value];
         }
         else if (pair.length === 4) {
-            rowData["race" + pair[0]] = pair[2] + "(" + pair[3] + ")"
+            rowData["race" + pair[0]] = pair[value] + "(" + pair[3] + ")"
         }
 
     });
