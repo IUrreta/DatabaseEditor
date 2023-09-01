@@ -526,6 +526,17 @@ a.bi-heart:hover{
   border-radius: 10px;
 }
 
+[tabulator-field^="race"] {
+  font-size: 13px; /* Establece el tamaño de fuente a 13px */
+  border: none !important;
+}
+
+[tabulator-field="driver"], [tabulator-field="points"]{
+  background-color: rgb(92, 89, 116) !important;
+}
+
+
+
 #seasonresults-table{
   background-color: transparent !important;
   border: none !important;
@@ -540,8 +551,19 @@ a.bi-heart:hover{
   border-radius: 3px !important;
 }
 
-.main-viewer-section .tabulator-col, .main-viewer-section .tabulator-cell{
+.tabulator-col-content{
   border: none !important;
+}
+
+[tabulator-field="driver"]{
+  border-right: 1.5px solid #797599 !important;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+
+[tabulator-field="points"]{
+  border-left: 1.5px solid #797599 !important;
+  transition: color 0.3s, background-color 0.3s;
 }
 
 .main-viewer-section .tabulator-col{
@@ -568,11 +590,28 @@ a.bi-heart:hover{
   color: #dedde6 !important;
 }
 
+.tabulator-row:hover [tabulator-field="driver"],  .tabulator-row:hover [tabulator-field="points"]{
+  color: #110f24;
+  background-color: #dedde6 !important;
+}
+
+[tabulator-field="driver"] span.bold-font{
+  transition: color 0.3s;
+}
+
+.tabulator-row:hover [tabulator-field="driver"] span.bold-font{
+  color: #110f24;
+}
+
+
 .main-viewer-section .tabulator-table{
   background-color: #110f24 !important;
   overflow-x: hidden !important;
 }
 
+.tabulator-col-content:has(img){
+  padding: 0px !important;
+}
 
 .flag-header{
   display: flex;
@@ -582,8 +621,17 @@ a.bi-heart:hover{
 }
 
 .flag-header img{
-  width: 40px;
-  height: 20px;
+  width: 100%;
+  height: 29px;
+  opacity: 0.45;
+}
+
+.text-in-front{
+  position: absolute;
+  z-index: 4;
+  color: #eeedf3;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 15px;
 }
 
 .main-calendar-section {

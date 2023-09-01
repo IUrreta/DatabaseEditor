@@ -285,11 +285,16 @@ def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
     nombre = remove_number(nombre_match.group(2))
     apellido = remove_number(apellido_match.group(1))
     name_formatted = f"{nombre} {apellido}"
-
+    
     races_participated = cursor.execute("SELECT RaceID FROM Races_Results WHERE DriverID = " + str(driverID[0]) + " AND Season = " + str(year[0])).fetchall()
     formatred_results = [(result[-2], result[-1]) for result in results]
     for i in range(len(races_participated)):
+        dnfd = cursor.execute("SELECT DNF FROM Races_Results WHERE DriverID = " + str(driverID[0]) + " AND Season = " + str(year[0]) + " AND RaceID = " + str(races_participated[i][0])).fetchone()
         formatred_results[i] = (races_participated[i][0],)  + formatred_results[i]
+        if dnfd[0] == 1:
+            results_list = list(formatred_results[i])
+            results_list[-1] = -1
+            formatred_results[i] = tuple(results_list)
 
     for tupla1 in sprints:
         for i, tupla2 in enumerate(formatred_results):

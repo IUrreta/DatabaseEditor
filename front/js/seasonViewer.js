@@ -1,49 +1,55 @@
 const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0" };
+const races_names = {2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT"};
 let seasonTable;
-let default_points = ["25", "18", "15", "12", "10", "8", "6", "4", "2", "1"]
+let default_points = ["25", "18", "15", "12", "10", "8", "6", "4", "2", "1", "DNF", "0", "", "-"]
 let races_ids = []
+let seasonResults;
 
 function createTable(calendar) {
+    console.log(calendar)
     calendar.forEach(function (elem, index) {
         races_ids.push(calendar[index][0])
     })
     seasonTable = new Tabulator("#seasonresults-table", {
         layout: "fitColumns",
         maxWidth: "1650px",
-        responsiveLayout:"hide",
-        columns: [{ title: "Driver", field: "driver", width: 175, headerSort: false, resizable:false, formatter: "html"},
+        responsiveLayout: "hide",
+        columns: [{ title: "Driver", field: "driver", width: 175, headerSort: false, resizable: false, formatter: "html", headerHozAlign:"center" },
         ...calendar.map((race, index) => ({
-            title: '<span class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"></span>',
+            title: '<div class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"><div class="text-in-front bold-font">' + races_names[race[1]] + '</div></div>',
             field: "race" + race[0],
             hozAlign: "center",
             headerSort: false,
-            resizable:false
+            resizable: false
         })),
         {
             title: "Points",
             field: "points",
             hozAlign: "center",
             headerSort: false,
-            resizable:false
+            headerHozAlign:"center",
+            resizable: false
         }],
-        rowFormatter: function(row) {
+        rowFormatter: function (row) {
             var rowData = row.getData();
-            
+
             for (var key in rowData) {
                 if (key !== "driver" && key !== "points") {
                     let cellValue = rowData[key];
-                    if(cellValue !== undefined){
-                        cellValue = cellValue.split(" ")
+                    if (cellValue !== undefined) {
+                        cellValue = cellValue.split("(")
                         if (parseInt(cellValue[0]) >= 25) {
-                            row.getCell(key).getElement().style.backgroundColor = "gold";
+                            row.getCell(key).getElement().style.backgroundColor = "#FDE06B";
                             row.getCell(key).getElement().style.color = "#18152e";
                         } else if (parseInt(cellValue[0]) >= 18) {
-                            row.getCell(key).getElement().style.backgroundColor = "silver";
+                            row.getCell(key).getElement().style.backgroundColor = "#AEB2B8";
                             row.getCell(key).getElement().style.color = "#18152e";
                         } else if (parseInt(cellValue[0]) >= 15) {
-                            row.getCell(key).getElement().style.backgroundColor = "#cd7f32";
+                            row.getCell(key).getElement().style.backgroundColor = "#d7985a";
+                            row.getCell(key).getElement().style.color = "#18152e";
                         }
-                        if(!default_points.includes(cellValue[0]) && cellValue[0] !== "-" && cellValue[0] !== "0"){
+                        if (!default_points.includes(cellValue[0])) {
+                            console.log(cellValue)
                             row.getCell(key).getElement().style.color = "#c90fd7";
                         }
                     }
@@ -65,31 +71,57 @@ function generateYearsMenu(actualYear) {
         a.classList = "dropdown-item"
         a.style.cursor = "pointer"
         yearMenu.appendChild(a);
-        a.addEventListener("click", function(){
+        a.addEventListener("click", function () {
             document.getElementById("yearButton").textContent = a.textContent
             let dataYear = {
                 command: "yearSelected",
                 year: a.textContent
             }
-    
+
             socket.send(JSON.stringify(dataYear))
         })
     }
 }
 
 function loadTable(allDrivers) {
+    seasonResults = allDrivers;
     allDrivers.forEach(function (driver) {
         addDriver(driver)
     })
     seasonTable.setSort("points", "desc");
     let data = seasonTable.getData()
     data.forEach(row => {
-
         for (var key in row) {
-            if (row[key] === "0") {
-                row[key] = "";
-            } else if (row[key] === undefined) {
-                row[key] = "-"; // Reemplazar vacío por "-"
+            if (key !== "driver" && key !== "points") {
+                if (row[key] !== undefined) {
+                    let val = row[key].split("(")
+                    if (val.length == 2) {
+                        if (val[0] === "0") {
+                            val[0] = ""
+                        }
+                        else if(val[0] === "-1"){
+                            val[0] = "DNF"
+                        }
+                        if (val[1] === "0)") {
+                            val[1] = ""
+                        }
+                        else{
+                            val[1] = "("+val[1]
+                        }
+                        row[key] = val[0] + val[1]
+                    }
+                    else if (val.length == 1) {
+                        if (row[key] === "0") {
+                            row[key] = "";
+                        }
+                        if (row[key] === "-1") {
+                            row[key] = "DNF";
+                        }
+                    }
+                }
+                else{
+                    row[key] = "-"
+                }
             }
         }
     });
@@ -102,20 +134,20 @@ function addDriver(driverInfo) {
     let spanName = document.createElement("span")
     let spanLastName = document.createElement("span")
     spanName.textContent = name[0] + " "
-    spanLastName.textContent = " "+ name[1].toUpperCase()
+    spanLastName.textContent = " " + name[1].toUpperCase()
     spanLastName.classList.add("bold-font")
     spanLastName.dataset.teamid = driverInfo[1]
     nameDiv.appendChild(spanName)
     nameDiv.appendChild(spanLastName)
     manageColor(spanLastName, spanLastName)
-    
+
     let rowData = { driver: nameDiv.innerHTML };
     driverInfo.slice(2).forEach((pair, index) => {
-        if(pair.length === 3){
+        if (pair.length === 3) {
             rowData["race" + pair[0]] = "" + pair[2];
         }
-        else if(pair.length === 4){
-            rowData["race" + pair[0]] = pair[2] + " (" + pair[3] + ")"
+        else if (pair.length === 4) {
+            rowData["race" + pair[0]] = pair[2] + "(" + pair[3] + ")"
         }
 
     });
@@ -123,8 +155,11 @@ function addDriver(driverInfo) {
 
     let totalPoints = 0;
     driverInfo.slice(2).forEach(function (elem) {
-        totalPoints += elem[2]
-        if(elem.length === 4){
+        if(elem[2] != "-1"){
+            totalPoints += elem[2]
+        }
+        
+        if (elem.length === 4) {
             totalPoints += elem[3]
         }
     })
