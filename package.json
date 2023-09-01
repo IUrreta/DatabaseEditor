@@ -14,7 +14,8 @@
     "bootstrap-icons": "^1.10.5",
     "interactjs": "^1.10.17",
     "marked": "^7.0.3",
-    "simple-git": "^3.19.1"
+    "simple-git": "^3.19.1",
+    "tabulator-tables": "^5.5.2"
   },
   "devDependencies": {
     "electron": "^25.3.1"

@@ -517,6 +517,131 @@ a.bi-heart:hover{
   border-color: white !important;
 }
 
+.main-viewer-section{
+  margin-left: 14px;
+  margin-right: 14px;
+  border: 1px solid #797599;
+  color: white;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+[tabulator-field^="race"] {
+  font-size: 13px; /* Establece el tamaño de fuente a 13px */
+  border: none !important;
+}
+
+[tabulator-field="driver"], [tabulator-field="points"]{
+  background-color: rgb(92, 89, 116) !important;
+}
+
+
+
+#seasonresults-table{
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.main-viewer-section .tabulator-tableholder::-webkit-scrollbar {
+  width: 4px !important;
+}
+
+.main-viewer-section .tabulator-tableholder::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px !important;
+}
+
+.tabulator-col-content{
+  border: none !important;
+}
+
+[tabulator-field="driver"]{
+  border-right: 1.5px solid #797599 !important;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+}
+
+
+[tabulator-field="points"]{
+  border-left: 1.5px solid #797599 !important;
+  border-right: none !important;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+}
+
+.main-viewer-section .tabulator-col{
+  background-color: #18152e !important;
+  color: #dedde6 !important;
+}
+
+.main-viewer-section .tabulator-row{
+  background-color: #3f3c57 !important;
+  cursor: pointer !important;
+  color: #dedde6 !important;
+  transition: background-color 0.3s !important;
+}
+
+.main-viewer-section .tabulator-row-even{
+  background-color: #484463 !important;
+  cursor: pointer !important;
+  color: #dedde6 !important;
+}
+
+.main-viewer-section .tabulator-row:hover{
+  background-color: #625e86 !important;
+  cursor: pointer !important;
+  color: #dedde6 !important;
+}
+
+.tabulator-row:hover [tabulator-field="driver"]  {
+  color: #110f24;
+  background-color: #dedde6 !important;
+  border-right: 1.5px solid #dedde6 !important;
+}
+
+.tabulator-row:hover [tabulator-field="points"]{
+  color: #110f24;
+  background-color: #dedde6 !important;
+  border-left: 1.5px solid #dedde6 !important;
+}
+
+[tabulator-field="driver"] span.bold-font{
+  transition: color 0.3s;
+}
+
+.tabulator-row:hover [tabulator-field="driver"] span.bold-font{
+  color: #110f24;
+}
+
+
+.main-viewer-section .tabulator-table{
+  background-color: #110f24 !important;
+  overflow-x: hidden !important;
+}
+
+.tabulator-col-content:has(img){
+  padding: 0px !important;
+}
+
+.flag-header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.flag-header img{
+  width: 100%;
+  height: 29px;
+  opacity: 0.45;
+}
+
+.text-in-front{
+  position: absolute;
+  z-index: 4;
+  color: #eeedf3;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 15px;
+}
+
 .main-calendar-section {
   margin-left: 14px;
   border: 1px solid #797599;
@@ -1143,6 +1268,12 @@ input::-webkit-inner-spin-button {
   margin: 10px;
   margin-top: 0px;
   max-height: 140px;
+}
+
+.viewer-top{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .logo-and-name {
