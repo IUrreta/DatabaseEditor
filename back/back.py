@@ -258,7 +258,7 @@ def fetch_seasonResults(yearSelected):
     for driver in drivers:
         results = cursor.execute("SELECT DriverID, TeamID, FinishingPos, Points FROM Races_Results WHERE Season = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
         if results:
-            sprintResults = cursor.execute("SELECT RaceID, ChampionshipPoints FROm Races_SprintResults WHERE SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
+            sprintResults = cursor.execute("SELECT RaceID, FinishingPos, ChampionshipPoints FROM Races_SprintResults WHERE SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
             teamID = results[0][1]
             driverName = cursor.execute("SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = " + str(driver[0])).fetchone()
             seasonResults.append(format_seasonResults(results, driverName, teamID, driver, year, sprintResults))
@@ -294,12 +294,13 @@ def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
         if dnfd[0] == 1:
             results_list = list(formatred_results[i])
             results_list[-1] = -1
+            results_list[-2] = -1
             formatred_results[i] = tuple(results_list)
 
     for tupla1 in sprints:
         for i, tupla2 in enumerate(formatred_results):
             if tupla1[0] == tupla2[0]:
-                formatred_results[i] = tupla2 + (tupla1[1],)
+                formatred_results[i] = tupla2 + (tupla1[2], tupla1[1])
 
     formatred_results.insert(0, teamID)
     formatred_results.insert(0, name_formatted)

@@ -188,21 +188,25 @@ function addDriver(driverInfo) {
     manageColor(spanLastName, spanLastName)
 
     let rowData = { driver: nameDiv.innerHTML };
-    let value;
+    let raceValue;
+    let sprintvalue;
     if(pointsOrPos === "points"){
-        value = 2
+        raceValue = 2;
+        sprintvalue = 3;
     }
     else if(pointsOrPos === "pos"){
-        value = 1
+        raceValue = 1;
+        sprintvalue = 4;
     }
 
     driverInfo.slice(2).forEach((pair, index) => {
+        console.log(pair)
 
         if (pair.length === 3) {
-            rowData["race" + pair[0]] = "" + pair[value];
+            rowData["race" + pair[0]] = "" + pair[raceValue];
         }
-        else if (pair.length === 4) {
-            rowData["race" + pair[0]] = pair[value] + "(" + pair[3] + ")"
+        else if (pair.length === 5) {
+            rowData["race" + pair[0]] = pair[raceValue] + "(" + pair[sprintvalue] + ")"
         }
 
     });
