@@ -39,38 +39,38 @@ function createTable(calendar) {
                     let cellValue = rowData[key];
                     if (cellValue !== undefined) {
                         if(pointsOrPos === "points"){
-                            cellValue = cellValue.split("(")
-                            if (parseInt(cellValue[0]) >= 25) {
+                            let splitted = cellValue.split("(")
+                            if (parseInt(splitted[0]) >= 25) {
                                 row.getCell(key).getElement().style.backgroundColor = "#FDE06B";
                                 row.getCell(key).getElement().style.color = "#18152e";
-                            } else if (parseInt(cellValue[0]) >= 18) {
+                            } else if (parseInt(splitted[0]) >= 18) {
                                 row.getCell(key).getElement().style.backgroundColor = "#AEB2B8";
                                 row.getCell(key).getElement().style.color = "#18152e";
-                            } else if (parseInt(cellValue[0]) >= 15) {
+                            } else if (parseInt(splitted[0]) >= 15) {
                                 row.getCell(key).getElement().style.backgroundColor = "#d7985a";
                                 row.getCell(key).getElement().style.color = "#18152e";
                             }
-                            if (!default_points.includes(cellValue[0])) {
-                                console.log(cellValue)
+                            if(cellValue[cellValue.length-1] === "s"){
+                                row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -1)
                                 row.getCell(key).getElement().style.color = "#c90fd7";
                             }
                         }
                         else if(pointsOrPos === "pos"){
-                            cellValue = cellValue.split("(")
-                            if (parseInt(cellValue[0]) === 1) {
+                            let splitted = cellValue.split("(")
+                            if (parseInt(splitted[0]) === 1) {
                                 row.getCell(key).getElement().style.backgroundColor = "#FDE06B";
                                 row.getCell(key).getElement().style.color = "#18152e";
-                            } else if (parseInt(cellValue[0]) == 2) {
+                            } else if (parseInt(splitted[0]) == 2) {
                                 row.getCell(key).getElement().style.backgroundColor = "#AEB2B8";
                                 row.getCell(key).getElement().style.color = "#18152e";
-                            } else if (parseInt(cellValue[0]) === 3) {
+                            } else if (parseInt(splitted[0]) === 3) {
                                 row.getCell(key).getElement().style.backgroundColor = "#d7985a";
                                 row.getCell(key).getElement().style.color = "#18152e";
                             }
-                            // if (!default_points.includes(cellValue[0])) {
-                            //     console.log(cellValue)
-                            //     row.getCell(key).getElement().style.color = "#c90fd7";
-                            // }
+                            if(cellValue[cellValue.length-1] === "s"){
+                                row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -1)
+                                row.getCell(key).getElement().style.color = "#c90fd7";
+                            }
                         }
 
                     }
@@ -91,7 +91,7 @@ document.getElementById("pospill").addEventListener("click", function(){
     createTable(calendarData)
     setTimeout(function() {
         loadTable(seasonResults)
-    }, 20);
+    }, 10);
     
 
 
@@ -105,7 +105,7 @@ document.getElementById("pointspill").addEventListener("click", function(){
     createTable(calendarData)
     setTimeout(function() {
         loadTable(seasonResults)
-    }, 20);
+    }, 10);
 })
 
 function generateYearsMenu(actualYear) {
@@ -136,7 +136,6 @@ function loadTable(allDrivers) {
     })
     seasonTable.setSort("points", "desc");
     formatTable()
-    console.log(document.querySelector(".tabulator-table").offsetHeight)
     document.querySelector(".tabulator-tableholder").style.maxHeight = document.querySelector(".tabulator-table").offsetHeight + "px";
     document.querySelector(".tabulator-tableholder").style.overflow = "hidden";
 }
@@ -199,21 +198,25 @@ function addDriver(driverInfo) {
     let sprintvalue;
     if(pointsOrPos === "points"){
         raceValue = 2;
-        sprintvalue = 3;
+        sprintvalue = 4;
     }
     else if(pointsOrPos === "pos"){
         raceValue = 1;
-        sprintvalue = 4;
+        sprintvalue = 5;
     }
+
+
 
     driverInfo.slice(2).forEach((pair, index) => {
         console.log(pair)
-
-        if (pair.length === 3) {
+        if (pair.length === 4) {
             rowData["race" + pair[0]] = "" + pair[raceValue];
         }
-        else if (pair.length === 5) {
+        else if (pair.length === 6) {
             rowData["race" + pair[0]] = pair[raceValue] + "(" + pair[sprintvalue] + ")"
+        }
+        if (pair[3] === 1){
+            rowData["race" + pair[0]] += "s"
         }
 
     });
@@ -225,8 +228,8 @@ function addDriver(driverInfo) {
             totalPoints += elem[2]
         }
         
-        if (elem.length === 4) {
-            totalPoints += elem[3]
+        if (elem.length === 6) {
+            totalPoints += elem[4]
         }
     })
     rowData["points"] = totalPoints;
