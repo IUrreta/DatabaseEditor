@@ -563,6 +563,7 @@ a.bi-heart:hover{
 
 [tabulator-field="points"]{
   border-left: 1.5px solid #797599 !important;
+  border-right: none !important;
   transition: color 0.3s, background-color 0.3s;
 }
 

@@ -135,6 +135,13 @@ function loadTable(allDrivers) {
         addDriver(driver)
     })
     seasonTable.setSort("points", "desc");
+    formatTable()
+    console.log(document.querySelector(".tabulator-table").offsetHeight)
+    document.querySelector(".tabulator-tableholder").style.maxHeight = document.querySelector(".tabulator-table").offsetHeight + "px";
+    document.querySelector(".tabulator-tableholder").style.overflow = "hidden";
+}
+
+function formatTable(){
     let data = seasonTable.getData()
     data.forEach(row => {
         for (var key in row) {
