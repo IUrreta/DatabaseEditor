@@ -310,7 +310,10 @@ def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
         for i, tupla2 in enumerate(formatred_results):
             if tupla1[0] == tupla2[0]:
                 formatred_results[i] = tupla2 + (tupla1[2], tupla1[1])
+    
+    position = cursor.execute("SELECT Position FROM Races_Driverstandings WHERE RaceFormula = 1 AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driverID[0])).fetchone()
 
+    formatred_results.insert(0, position[0])
     formatred_results.insert(0, teamID)
     formatred_results.insert(0, name_formatted)
     return formatred_results

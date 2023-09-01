@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 }, 20);
                 
             }
-            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched" && message[0] != "Engines fetched" && message[0] != "Results fetched") update_notifications(message[0],false)
+            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched" && message[0] != "Engines fetched" && message[0] != "Results fetched" && message[0] != "Year fetched") update_notifications(message[0],false)
 
         }
 

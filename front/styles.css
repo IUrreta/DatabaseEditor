@@ -557,14 +557,14 @@ a.bi-heart:hover{
 
 [tabulator-field="driver"]{
   border-right: 1.5px solid #797599 !important;
-  transition: color 0.3s, background-color 0.3s;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
 }
 
 
 [tabulator-field="points"]{
   border-left: 1.5px solid #797599 !important;
   border-right: none !important;
-  transition: color 0.3s, background-color 0.3s;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
 }
 
 .main-viewer-section .tabulator-col{
@@ -591,9 +591,16 @@ a.bi-heart:hover{
   color: #dedde6 !important;
 }
 
-.tabulator-row:hover [tabulator-field="driver"],  .tabulator-row:hover [tabulator-field="points"]{
+.tabulator-row:hover [tabulator-field="driver"]  {
   color: #110f24;
   background-color: #dedde6 !important;
+  border-right: 1.5px solid #dedde6 !important;
+}
+
+.tabulator-row:hover [tabulator-field="points"]{
+  color: #110f24;
+  background-color: #dedde6 !important;
+  border-left: 1.5px solid #dedde6 !important;
 }
 
 [tabulator-field="driver"] span.bold-font{
