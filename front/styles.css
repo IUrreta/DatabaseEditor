@@ -869,6 +869,12 @@ a.bi-heart:hover{
   background-color: #393744;
 }
 
+.number-and-contract{
+  display: flex;
+  flex-direction: column;
+  background-color: #393744;
+}
+
 .custom-body{
   color: white;
   background-color: #393744;

@@ -20,43 +20,58 @@
         <div class="modal-header custom-header">
           <h5 class="modal-title" id="contractModalTitle"></h5>
         </div>
-        <div class="modal-body contract-details">
-          <div>
-            Salary
-            <div>
-              <input type="number" class="rounded-input" id="salaryInput" placeholder="ex: 2000000">
+        <div class="modal-body number-and-contract">
+          <div class="number-editor">
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample"
+              aria-expanded="false" aria-controls="collapseExample">
+              Button with data-bs-target
+            </button>
+            <div class="collapse" id="collapseExample">
+              <div class="card card-body">
+                Some placeholder content for the collapse component. This panel is hidden by default but revealed when
+                the user activates the relevant trigger.
+              </div>
             </div>
           </div>
-          <div>
-            Valid until
+          <div class="contract-details">
             <div>
-              <input type="number" class="rounded-input" id="yearInput" placeholder="ex: 2028">
+              Salary
+              <div>
+                <input type="number" class="rounded-input" id="salaryInput" placeholder="ex: 2000000">
+              </div>
+            </div>
+            <div>
+              Valid until
+              <div>
+                <input type="number" class="rounded-input" id="yearInput" placeholder="ex: 2028">
+              </div>
+            </div>
+            <div>
+              Sign bonus
+              <div>
+                <input type="number" class="rounded-input" id="signBonusInput" placeholder="ex: 10000">
+              </div>
+            </div>
+            <div class="mt-3">
+              Race bonus amount
+              <div>
+                <input type="number" class="rounded-input" id="raceBonusAmt" placeholder="ex: 150000">
+              </div>
+            </div>
+            <div class="mt-3">
+              Race bonus position
+              <div>
+                <input type="number" class="rounded-input" id="raceBonusPos" placeholder="ex: 1">
+              </div>
             </div>
           </div>
-          <div>
-            Sign bonus
-            <div>
-              <input type="number" class="rounded-input" id="signBonusInput" placeholder="ex: 10000">
-            </div>
-          </div>
-          <div class="mt-3">
-            Race bonus amount
-            <div>
-              <input type="number" class="rounded-input" id="raceBonusAmt" placeholder="ex: 150000">
-            </div>
-          </div>
-          <div class="mt-3">
-            Race bonus position
-            <div>
-              <input type="number" class="rounded-input" id="raceBonusPos" placeholder="ex: 1">
-            </div>
-          </div>
-
 
         </div>
         <div class="modal-footer custom-footer">
-          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal" id="cancelButton">Close</button>
-          <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal" id="confirmButton">Confirm</button>
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+          <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
+            id="confirmButton">Confirm</button>
         </div>
       </div>
     </div>
@@ -70,7 +85,8 @@
         <div class="modal-body custom-body" id="patchNotesBody">
         </div>
         <div class="modal-footer custom-footer">
-          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal" id="cancelButton">Close</button>
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
         </div>
       </div>
     </div>
@@ -83,7 +99,7 @@
     <div class="title main-title">
       <div style="display: flex; flex-direction: column;">
         <h1 class="bold-font">Database Editor for F1M23</h1>
-        <h3 class="font" >by <a href="https://twitter.com/ignaciourreta_" id="byname">@ignaciourreta_</a></h3>
+        <h3 class="font">by <a href="https://twitter.com/ignaciourreta_" id="byname">@ignaciourreta_</a></h3>
       </div>
     </div>
   </div>
@@ -92,8 +108,8 @@
   <div class="tools-panel">
     <div class="ms-3 bold-font save-selector">
       Save selector
-      <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="saveSelector" data-bs-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
+      <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="saveSelector"
+        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
         Your saves
       </button>
       <ul class="dropdown-menu" id="dropdownMenu" style="font-family: Formula1;">
@@ -125,6 +141,35 @@
   <div class="main-panel">
     <div class="blocking-div" id="blockDiv">
       Select a script and a save to start editing!
+    </div>
+    <div class="script-view d-none" id="season_viewer">
+      <div class="col">
+        <div class=" ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute;">
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButton"
+            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Year
+          </button>
+          <ul class="dropdown-menu" id="yearMenu" style="font-family: Formula1;">
+          </ul>
+        </div>
+        <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="pospill">Positions</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#" id="pointspill">Points</a>
+            </li>
+          </ul>
+        </div>
+        <div class="title bold-font py-3">
+          Season Results
+        </div>
+        <div class="main-viewer-section" id="officialCalendarList">
+          <div id="seasonresults-table"></div>
+        </div>
+      </div>
+
     </div>
     <div class="script-view d-none" id="driver_transfers">
       <div class="col-2">
@@ -304,17 +349,21 @@
     <div class="script-view d-none" id="edit_stats">
       <div class="col-3">
         <div class=" ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem;">
-          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffButton" data-bs-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          Staff Type
-        </button>
-        <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
-          <a class="dropdown-item" href="#" data-list="fulldriverlist" data-spaceStats="driverStats">Drivers</a>
-          <a class="dropdown-item" href="#" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical Chiefs</a>
-          <a class="dropdown-item" href="#" data-list="fullEngineerList" data-spaceStats="engineerStats">Race Engineers</a>
-          <a class="dropdown-item" href="#" data-list="fullAeroList" data-spaceStats="aeroStats">Head of Aerodynamics</a>
-          <a class="dropdown-item" href="#" data-list="fullDirectorList" data-spaceStats="directorStats">Sporting Directors</a>
-        </ul>
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffButton"
+            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Staff Type
+          </button>
+          <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
+            <a class="dropdown-item" href="#" data-list="fulldriverlist" data-spaceStats="driverStats">Drivers</a>
+            <a class="dropdown-item" href="#" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical
+              Chiefs</a>
+            <a class="dropdown-item" href="#" data-list="fullEngineerList" data-spaceStats="engineerStats">Race
+              Engineers</a>
+            <a class="dropdown-item" href="#" data-list="fullAeroList" data-spaceStats="aeroStats">Head of
+              Aerodynamics</a>
+            <a class="dropdown-item" href="#" data-list="fullDirectorList" data-spaceStats="directorStats">Sporting
+              Directors</a>
+          </ul>
         </div>
         <div id="StaffLists">
           <div class="main-editStats-section staff-list" id="placeholder">
@@ -380,7 +429,7 @@
                   <input type="number" class="custom-input-number elegible">
                 </div>
                 <div class="one-stat-panel">
-                  Reactions 
+                  Reactions
                   <input type="number" class="custom-input-number elegible">
                 </div>
                 <div class="one-stat-panel">
@@ -508,7 +557,7 @@
     </div>
     <div class="script-view d-none" id="custom_calendar">
       <div class="blocking-div d-none" id="calendarBlockDiv">
-        There is already a  modified calendar! Try again next season!
+        There is already a modified calendar! Try again next season!
       </div>
       <div class="col-9">
         <div class="title bold-font py-3">
@@ -523,9 +572,10 @@
           Options
         </div>
         <div class="main-options-section">
-          <div class="option-buttons" >
+          <div class="option-buttons">
             <button type="button" class="btn btn-primary dropdown-toggle addTracks-button" data-bs-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false" style="font-family: Formula1; width: 100%; height: 100%;" id = "addRaceButton">
+              aria-haspopup="true" aria-expanded="false" style="font-family: Formula1; width: 100%; height: 100%;"
+              id="addRaceButton">
               Add race
             </button>
             <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
@@ -536,7 +586,7 @@
           <div class="save-calendar-section">
             <div class="btn custom-confirm option-buttons" id="confirmCalendar">Save changes</div>
           </div>
-          
+
         </div>
 
       </div>
@@ -546,73 +596,82 @@
         <div class="pb-3 ps-3" style="padding-top: 1.1rem;">
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link bold-font categoryPills scriptPills active" data-bs-toggle="pill" data-section=".teams-section" href="#" id="teamsPill">TEAMS</a>
+              <a class="nav-link bold-font categoryPills scriptPills active" data-bs-toggle="pill"
+                data-section=".teams-section" href="#" id="teamsPill">TEAMS</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link bold-font categoryPills scriptPills" data-bs-toggle="pill" data-section=".engines-section" href="#" id="enginesPill">ENGINES</a>
+              <a class="nav-link bold-font categoryPills scriptPills" data-bs-toggle="pill"
+                data-section=".engines-section" href="#" id="enginesPill">ENGINES</a>
             </li>
           </ul>
         </div>
         <div class="teams-engines">
           <div class="main-columns-drag-section" id="teamsDiv">
-            <div class="col team bold-font logo-and-title"data-teamid="3" data-teamname="Red Bull Racing" >
+            <div class="col team bold-font logo-and-title" data-teamid="3" data-teamname="Red Bull Racing">
               <img src="../assets/images/redbull.png" id="redbulllogo">
               <div class="team-title">RED BULL RACING</div>
             </div>
-            <div class="col team bold-font logo-and-title" data-teamid="1" data-teamname="Ferrari" >
+            <div class="col team bold-font logo-and-title" data-teamid="1" data-teamname="Ferrari">
               <img src="../assets/images/ferrari.png" id="ferrarilogo" style="padding-bottom: 7px; padding-top: 7px;">
               <div class="team-title">FERRARI</div>
             </div>
-            <div class="col team bold-font logo-and-title"data-teamid="4" data-teamname="Mercedes" >
+            <div class="col team bold-font logo-and-title" data-teamid="4" data-teamname="Mercedes">
               <img src="../assets/images/mercedes.png" id="merclogo" style="padding-top: 6px; padding-left: 7px;">
               <div class="team-title">MERCEDES</div>
             </div>
-            <div class="col team bold-font logo-and-title" data-teamid="5" data-teamname="Alpine" id="alpineTeam" >
+            <div class="col team bold-font logo-and-title" data-teamid="5" data-teamname="Alpine" id="alpineTeam">
               <img src="../assets/images/alpine.png" id="alpinelogo">
               <img src="../assets/images/alpine2.png" class="d-none" id="alpinelogo">
               <div class="team-title">ALPINE</div>
             </div>
-            <div class="col team bold-font logo-and-title"  data-teamid="2" data-teamname="McLaren" >
+            <div class="col team bold-font logo-and-title" data-teamid="2" data-teamname="McLaren">
               <img src="../assets/images/mclaren.png" id="mclarenlogo">
               <div class="team-title">MCLAREN</div>
             </div>
-            <div class="col team bold-font logo-and-title" data-teamid="9" data-teamname="Alfa Romeo" >
+            <div class="col team bold-font logo-and-title" data-teamid="9" data-teamname="Alfa Romeo">
               <img src="../assets/images/alfaromeo.png" id="alfalogo">
               <div class="team-title">ALFA ROMEO</div>
             </div>
-            <div class="col team bold-font logo-and-title" data-teamid="10" data-teamname="Aston Martin" >
+            <div class="col team bold-font logo-and-title" data-teamid="10" data-teamname="Aston Martin">
               <img src="../assets/images/astonMartin.png" id="astonlogo">
               <div class="team-title">ASTON MARTIN</div>
             </div>
-            <div class="col team bold-font logo-and-title"  data-teamid="7" data-teamname="Haas" >
+            <div class="col team bold-font logo-and-title" data-teamid="7" data-teamname="Haas">
               <img src="../assets/images/haas.png" id="haaslogo">
               <div class="team-title">HAAS</div>
             </div>
-            <div class="col team bold-font logo-and-title" data-teamid="8" data-teamname="Alpha Tauri" id="alphaTauriTeam" >
+            <div class="col team bold-font logo-and-title" data-teamid="8" data-teamname="Alpha Tauri"
+              id="alphaTauriTeam">
               <img src="../assets/images/alphatauri.png" id="alphataurilogo">
               <img src="../assets/images/alphatauri2.png" class="d-none" id="alphataurilogo">
               <div class="team-title">ALPHA TAURI</div>
             </div>
-            <div class="col team bold-font logo-and-title" data-teamid="6" data-teamname="Williams" >
+            <div class="col team bold-font logo-and-title" data-teamid="6" data-teamname="Williams">
               <img src="../assets/images/williams.png" id="williamslogo">
               <div class="team-title">WILLIAMS</div>
             </div>
           </div>
           <div class="main-columns-drag-section d-none" id="enginesDiv">
-            <div class="col engine bold-font logo-and-title" data-engineid="1" data-teamEngine="1" data-stats="" data-teamname="Ferrari" >
+            <div class="col engine bold-font logo-and-title" data-engineid="1" data-teamEngine="1" data-stats=""
+              data-teamname="Ferrari">
               <img src="../assets/images/ferrari.png" id="ferrarilogo" style="padding-bottom: 7px; padding-top: 7px;">
               <div class="team-title">FERRARI</div>
             </div>
-            <div class="col engine bold-font logo-and-title"data-engineid="10" data-teamengine="2" data-stats="" data-teamname="Renault" id="renaultengine" >
-              <img src="../assets/images/renault.png" class="" id="ferrarilogo" style="padding-top: 7px; padding-left: 7px;">
-              <img src="../assets/images/renault2.png" class="d-none" id="ferrarilogo" style="padding-top: 7px; padding-left: 7px;">
+            <div class="col engine bold-font logo-and-title" data-engineid="10" data-teamengine="2" data-stats=""
+              data-teamname="Renault" id="renaultengine">
+              <img src="../assets/images/renault.png" class="" id="ferrarilogo"
+                style="padding-top: 7px; padding-left: 7px;">
+              <img src="../assets/images/renault2.png" class="d-none" id="ferrarilogo"
+                style="padding-top: 7px; padding-left: 7px;">
               <div class="team-title">RENAULT</div>
             </div>
-            <div class="col engine bold-font logo-and-title"data-engineid="4" data-teamEngine="3" data-stats="" data-teamname="Red Bull Racing" >
+            <div class="col engine bold-font logo-and-title" data-engineid="4" data-teamEngine="3" data-stats=""
+              data-teamname="Red Bull Racing">
               <img src="../assets/images/redbull.png" id="redbulllogo">
               <div class="team-title">RED BULL PT</div>
             </div>
-            <div class="col engine bold-font logo-and-title"data-engineid="7" data-teamEngine="4" data-stats="" data-teamname="Mercedes" >
+            <div class="col engine bold-font logo-and-title" data-engineid="7" data-teamEngine="4" data-stats=""
+              data-teamname="Mercedes">
               <img src="../assets/images/mercedes.png" id="merclogo" style="padding-top: 6px; padding-left: 7px;">
               <div class="team-title">MERCEDES</div>
             </div>
@@ -644,7 +703,7 @@
               </div>
               <div class="performance-data bold-font">0%</div>
             </div>
-            
+
             <div class="one-performance perf-engine">
               <div class="performance-name-engine">Power</div>
               <div class="performance-buttons">
@@ -671,7 +730,7 @@
               </div>
               <div class="performance-data bold-font">0%</div>
             </div>
-            
+
             <div class="one-performance perf-engine">
               <div class="performance-name-engine">Performance Loss</div>
               <div class="performance-buttons">
@@ -685,7 +744,7 @@
               </div>
               <div class="performance-data bold-font">0%</div>
             </div>
-            
+
             <div class="one-performance perf-engine">
               <div class="performance-name-engine">Operational Range</div>
               <div class="performance-buttons">
@@ -725,9 +784,9 @@
               </div>
               <div class="performance-data bold-font">0%</div>
             </div>
-        
-          
-            <div class="confirm-area"  style="padding-top: 18px;">
+
+
+            <div class="confirm-area" style="padding-top: 18px;">
               <div class="btn custom-confirm" id="confirmEnginebtn">Save changes</div>
             </div>
           </div>
@@ -751,7 +810,7 @@
               </div>
               <div class="performance-data bold-font">0%</div>
             </div>
-            
+
             <div class="one-performance">
               <div class="performance-name">Front Wing</div>
               <div class="performance-buttons">
@@ -772,7 +831,7 @@
               <div class="performance-data bold-font">0%</div>
             </div>
             <div class="one-performance">
-              <div class="performance-name">Rear  Wing</div>
+              <div class="performance-name">Rear Wing</div>
               <div class="performance-buttons">
                 <i class="bi bi-dash-circle"></i>
                 <i class="bi bi-plus-circle"></i>
@@ -790,7 +849,7 @@
               </div>
               <div class="performance-data bold-font">0%</div>
             </div>
-            
+
             <div class="one-performance">
               <div class="performance-name">Sidepods</div>
               <div class="performance-buttons">
@@ -810,7 +869,7 @@
               </div>
               <div class="performance-data bold-font">0%</div>
             </div>
-            
+
             <div class="one-performance">
               <div class="performance-name">Floor</div>
               <div class="performance-buttons">
@@ -830,7 +889,7 @@
               </div>
               <div class="performance-data bold-font">0%</div>
             </div>
-            
+
             <div class="one-performance">
               <div class="performance-name">Suspension</div>
               <div class="performance-buttons">
@@ -854,7 +913,7 @@
               <div class="btn custom-confirm" id="confirmPerformancebtn">Save changes</div>
             </div>
           </div>
-          
+
         </div>
       </div>
     </div>
@@ -867,7 +926,7 @@
       <a class="bi bi-heart" href="https://www.buymeacoffee.com/iUrreta">&nbsp;Support me</a>
     </div>
     <div class="status">
-      <i class="bi bi-file-text" id="logFileButton" style="padding-right: 10px;" ></i>
+      <i class="bi bi-file-text" id="logFileButton" style="padding-right: 10px;"></i>
       <a class="bi bi-cloud update-info" style="padding-right: 10px;">&nbsp;Checking for updates...</a>
       <div class="bi bi-circle-fill status-info awaiting">&nbsp;Waiting for connection...</div>
 
