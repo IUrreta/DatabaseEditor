@@ -13,6 +13,7 @@ const fs = require('fs');
 const simpleGit = require('simple-git');
 const { exec } = require('child_process');
 const { marked } = require('marked');
+const Tabulator = require('tabulator-tables');
 
 let versionNow;
 const versionPanel = document.querySelector('.versionPanel');
@@ -59,14 +60,16 @@ document.addEventListener('DOMContentLoaded',function () {
     const editStatsPill = document.getElementById("statspill");
     const CalendarPill = document.getElementById("calendarpill");
     const carPill = document.getElementById("carpill");
+    const viewPill = document.getElementById("viewerpill");
 
     const driverTransferDiv = document.getElementById("driver_transfers");
     const editStatsDiv = document.getElementById("edit_stats");
     const customCalendarDiv = document.getElementById("custom_calendar");
     const carPerformanceDiv = document.getElementById("car_performance");
+    const viewDiv = document.getElementById("season_viewer");
     const patchNotesBody = document.getElementById("patchNotesBody")
 
-    const scriptsArray = [driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv]
+    const scriptsArray = [viewDiv, driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv,]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -122,15 +125,29 @@ document.addEventListener('DOMContentLoaded',function () {
                 place_staff(message.slice(1))
             }
             else if (message[0] === "Calendar fetched") {
+                console.log(message.slice(1))
                 manage_calendarDiv(message.slice(1)[0])
             }
             else if (message[0] === "Engines fetched") {
                 manage_engineStats(message.slice(1))
             }
             else if (message[0] === "Contract fetched") {
-                manage_modal(message.slice(1)[0])
+                manage_modal(message.slice(1))
             }
-            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched" && message[0] != "Engines fetched") update_notifications(message[0],false)
+            else if (message[0] === "Year fetched") {
+                generateYearsMenu(message.slice(1))
+            }
+            else if(message[0] === "Numbers fetched"){
+                loadNumbers(message.slice(1))
+            }
+            else if(message[0] === "Results fetched"){
+                createTable(message[1])
+                setTimeout(function() {
+                    loadTable(message.slice(2)); // Llamar a la función después de 1 segundo
+                }, 20);
+                
+            }
+            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched" && message[0] != "Engines fetched" && message[0] != "Results fetched" && message[0] != "Year fetched") update_notifications(message[0],false)
 
         }
 
@@ -286,10 +303,17 @@ document.addEventListener('DOMContentLoaded',function () {
     }
 
     function manage_modal(info) {
+        console.log(info)
         document.querySelectorAll(".rounded-input").forEach(function (elem,index) {
-            elem.value = info[index]
+            elem.value = info[0][index]
         })
-
+        document.querySelector("#numberButton").textContent = info[1][0]
+        if(info[1][1] === 1){
+            document.querySelector("#driverNumber1").checked = true
+        }
+        else if(info[1][1] === 0){
+            document.querySelector("#driverNumber1").checked = false
+        }
     }
 
     function update_notifications(noti,error) {
@@ -422,27 +446,34 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
+    viewPill.addEventListener("click",function () {
+        manageScripts("show", "hide", "hide","hide","hide")
+        scriptSelected = 1
+        check_selected()
+
+    })
+
     driverTransferPill.addEventListener("click",function () {
-        manageScripts("show","hide","hide","hide")
+        manageScripts("hide", "show","hide","hide","hide")
         scriptSelected = 1
         check_selected()
 
     })
 
     editStatsPill.addEventListener("click",function () {
-        manageScripts("hide","show","hide","hide")
+        manageScripts("hide","hide","show","hide","hide")
         scriptSelected = 1
         check_selected()
     })
 
     CalendarPill.addEventListener("click",function () {
-        manageScripts("hide","hide","show","hide")
+        manageScripts("hide","hide","hide","show","hide")
         scriptSelected = 1
         check_selected()
     })
 
     carPill.addEventListener("click",function () {
-        manageScripts("hide","hide","hide","show")
+        manageScripts("hide","hide","hide","hide","show")
         scriptSelected = 1
         check_selected()
     })

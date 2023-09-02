@@ -53,7 +53,7 @@ function place_drivers(driversArray) {
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
         spanName.textContent = name[0] + " "
-        spanLastName.textContent = " "+ name[1].toUpperCase()
+        spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
         newDiv.appendChild(spanName)
         newDiv.appendChild(spanLastName)
@@ -61,12 +61,12 @@ function place_drivers(driversArray) {
 
         //newDiv.innerHTML = driver[0];
         divPosition = "free-drivers"
-        if (driver[2] > 0 && driver[2] <= 10){
+        if (driver[2] > 0 && driver[2] <= 10) {
             addIcon(newDiv)
             divPosition = team_dict[driver[2]] + driver[3];
 
         }
-         
+
         else if (driver[2] > 10 && driver[2] <= 20) divPosition = "f2-drivers";
         else if (driver[2] > 20 && driver[2] <= 31) divPosition = "f3-drivers";
 
@@ -75,7 +75,7 @@ function place_drivers(driversArray) {
     })
 }
 
-function updateColor(div){
+function updateColor(div) {
     let surnameDiv = div.querySelector(".bold-font")
     surnameDiv.className = "bold-font"
     manageColor(div, surnameDiv)
@@ -87,14 +87,31 @@ function updateColor(div){
 
 }
 
-function manageColor(div, lastName){
-    if(div.dataset.teamid != 0){
+function manageColor(div, lastName) {
+    if (div.dataset.teamid != 0) {
         let colorClass = team_dict[div.dataset.teamid] + "font"
         lastName.classList.add(colorClass)
     }
 }
 
-function addIcon(div){
+function loadNumbers(nums) {
+    let numsMenu = document.getElementById("numberMenu")
+    numsMenu.innerHTML = ""
+    nums.forEach(function (elem) {
+        let a = document.createElement("a");
+        a.textContent = elem.toString();
+        a.classList = "dropdown-item"
+        a.style.cursor = "pointer"
+        numsMenu.appendChild(a);
+        a.addEventListener("click", function () {
+            document.getElementById("numberButton").textContent = a.textContent
+        })
+    })
+
+
+}
+
+function addIcon(div) {
     let iconDiv = document.createElement("div");
     iconDiv.className = "custom-icon"
     let iconElement = document.createElement("i");
@@ -105,16 +122,17 @@ function addIcon(div){
 
 }
 
-function iconListener(icon){
-    icon.addEventListener("click", function() {
+function iconListener(icon) {
+    icon.addEventListener("click", function () {
         modalType = "edit"
+        document.querySelector(".number-options").classList.remove("d-none")
         document.getElementById("contractModalTitle").innerHTML = icon.parentNode.parentNode.innerText + "'s contract";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
     })
 }
 
-function queryContract(elem){
+function queryContract(elem) {
     driverEditingID = elem.dataset.driverid
     driverEditingName = elem.innerText
     let driverReq = {
@@ -124,7 +142,7 @@ function queryContract(elem){
     }
 
     socket.send(JSON.stringify(driverReq))
-    
+
 }
 
 freeDriversPill.addEventListener("click", function () {
@@ -152,32 +170,40 @@ function manageDrivers(...divs) {
 
 
 document.getElementById("confirmButton").addEventListener('click', function () {
-    if(modalType === "hire"){
+    if (modalType === "hire") {
         if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
             signDriver("fireandhire")
         }
         signDriver("regular")
         modalType = "";
     }
-    else if (modalType === "edit"){
+    else if (modalType === "edit") {
         editContract()
-        modalType ="";
+        modalType = "";
     }
     setTimeout(clearModal, 500);
 })
 
-function clearModal(){
-    document.querySelectorAll(".rounded-input").forEach(function(elem){
+function clearModal() {
+    document.querySelectorAll(".rounded-input").forEach(function (elem) {
         elem.value = ""
     })
 }
 
-function editContract(){
+function editContract() {
     let values = []
-    document.querySelectorAll(".rounded-input").forEach(function(elem){
+    document.querySelectorAll(".rounded-input").forEach(function (elem) {
         values.push(elem.value)
     })
-    
+    let number = document.querySelector("#numberButton").textContent
+    let wants1;
+    if(document.querySelector("#driverNumber1").checked){
+        wants1 = 1;
+    }
+    else{
+        wants1 = 0;
+    }
+
     let data = {
         command: "editContract",
         driverID: driverEditingID,
@@ -186,13 +212,15 @@ function editContract(){
         signBonus: values[2],
         raceBonus: values[3],
         raceBonusPos: values[4],
+        driverNumber: number,
+        wantsN1: wants1,
         driver: driverEditingName
     }
     socket.send(JSON.stringify(data))
 }
 
 
-function manage_swap(){
+function manage_swap() {
     let parent1 = driver1.parentNode;
     let parent2 = driver2.parentNode;
     parent1.removeChild(driver1);
@@ -272,7 +300,7 @@ function signDriver(type) {
 
 
 document.getElementById("cancelButton").addEventListener('click', function () {
-    if(modalType === "hire"){
+    if (modalType === "hire") {
         originalParent.appendChild(draggable);
         draggable.dataset.teamid = inverted_dict[teamOrigin.dataset.team]
         updateColor(draggable)
@@ -341,15 +369,16 @@ interact('.free-driver').draggable({
                         }
                         else {
                             modalType = "hire"
+                            document.querySelector(".number-options").classList.add("d-none")
                             myModal.show()
-                            
+
                         }
-                        if(target.querySelector(".custom-icon") === null){
+                        if (target.querySelector(".custom-icon") === null) {
                             addIcon(target)
                         }
-                        
+
                     }
-                    else if(element.childElementCount == 1){
+                    else if (element.childElementCount == 1) {
                         if (originalParent.className === "col driver-space") {
                             driver1 = target;
                             driver2 = element.firstChild;
@@ -359,7 +388,7 @@ interact('.free-driver').draggable({
                             updateColor(driver1)
                             driver2.dataset.teamid = inverted_dict[team1.dataset.team]
                             updateColor(driver2)
-                            if(driver1 !== driver2){
+                            if (driver1 !== driver2) {
                                 let data = {
                                     command: "swap",
                                     driver1ID: target.dataset.driverid,
@@ -367,13 +396,13 @@ interact('.free-driver').draggable({
                                     driver1: target.innerText,
                                     driver2: element.firstChild.innerText,
                                 }
-                        
+
                                 socket.send(JSON.stringify(data))
                                 manage_swap()
                             }
 
                         }
-                        
+
                     }
 
                 }
@@ -385,10 +414,10 @@ interact('.free-driver').draggable({
 
             if (event.clientX >= freeRect.left && event.clientX <= freeRect.right &&
                 event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
-                if(target.querySelector(".custom-icon") !== null){
+                if (target.querySelector(".custom-icon") !== null) {
                     draggable.removeChild(draggable.querySelector(".custom-icon"))
                 }
-                if(originalParent.id !== "free-drivers"){
+                if (originalParent.id !== "free-drivers") {
                     originalParent.removeChild(draggable);
                     draggable.dataset.teamid = 0
                     updateColor(draggable)

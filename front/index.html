@@ -7,6 +7,7 @@
   <link href="styles.css" rel="stylesheet">
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../node_modules/tabulator-tables/dist/css/tabulator.min.css">
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../node_modules/interactjs/dist/interact.min.js"></script>
   <script src="../node_modules/marked/marked.min.js"></script>
@@ -15,53 +16,59 @@
 
 <body class="font">
   <div class="modal custom-modal fade" id="contractModal" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content cusotm-modal">
         <div class="modal-header custom-header">
-          <h5 class="modal-title" id="contractModalTitle"></h5>
+          <h4 class="modal-title bold-font" id="contractModalTitle"></h4>
         </div>
         <div class="modal-body number-and-contract">
-          <div class="number-editor">
-            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample"
-              aria-expanded="false" aria-controls="collapseExample">
-              Button with data-bs-target
+          <div class="number-options pb-3">
+            <h5 class="modal-subtitle">Driver Number</h5>
+            <div class="number-details">
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="numberButton"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Number
             </button>
-            <div class="collapse" id="collapseExample">
-              <div class="card card-body">
-                Some placeholder content for the collapse component. This panel is hidden by default but revealed when
-                the user activates the relevant trigger.
-              </div>
+            <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
+            </ul>
+            <div class="form-check form-switch auto-contract">
+              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="driverNumber1">
+              <label class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</label>
+            </div>
             </div>
           </div>
-          <div class="contract-details">
-            <div>
-              Salary
+          <div class="contract-options">
+            <h5 class="modal-subtitle">Driver contract</h5>
+            <div class="contract-details">
               <div>
-                <input type="number" class="rounded-input" id="salaryInput" placeholder="ex: 2000000">
+                Salary
+                <div>
+                  <input type="number" class="rounded-input" id="salaryInput" placeholder="ex: 2000000">
+                </div>
               </div>
-            </div>
-            <div>
-              Valid until
               <div>
-                <input type="number" class="rounded-input" id="yearInput" placeholder="ex: 2028">
+                Valid until
+                <div>
+                  <input type="number" class="rounded-input" id="yearInput" placeholder="ex: 2028">
+                </div>
               </div>
-            </div>
-            <div>
-              Sign bonus
               <div>
-                <input type="number" class="rounded-input" id="signBonusInput" placeholder="ex: 10000">
+                Sign bonus
+                <div>
+                  <input type="number" class="rounded-input" id="signBonusInput" placeholder="ex: 10000">
+                </div>
               </div>
-            </div>
-            <div class="mt-3">
-              Race bonus amount
-              <div>
-                <input type="number" class="rounded-input" id="raceBonusAmt" placeholder="ex: 150000">
+              <div class="mt-3">
+                Race bonus amount
+                <div>
+                  <input type="number" class="rounded-input" id="raceBonusAmt" placeholder="ex: 150000">
+                </div>
               </div>
-            </div>
-            <div class="mt-3">
-              Race bonus position
-              <div>
-                <input type="number" class="rounded-input" id="raceBonusPos" placeholder="ex: 1">
+              <div class="mt-3">
+                Race bonus position
+                <div>
+                  <input type="number" class="rounded-input" id="raceBonusPos" placeholder="ex: 1">
+                </div>
               </div>
             </div>
           </div>
@@ -120,6 +127,9 @@
       &nbsp;
       <div class="pt-2 pb-3 ps-3">
         <ul class="nav nav-pills">
+          <li class="nav-item">
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="viewerpill">SEASON VIEWER</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="transferpill">CONTRACTS</a>
           </li>
@@ -940,6 +950,7 @@
   <script src="./js/stats.js"></script>
   <script src="./js/calendar.js"></script>
   <script src="./js/performance.js"></script>
+  <script src="./js/seasonViewer.js"></script>
 </body>
 
 </html>

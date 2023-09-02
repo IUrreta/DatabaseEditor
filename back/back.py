@@ -62,7 +62,10 @@ async def handle_command(message):
         data_json_calendar = json.dumps(allowCalendar)
         await send_message_to_client(data_json_calendar)
         create_backup(path, save)
-
+        year =  cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
+        year = ["Year fetched", year]
+        data_json_year = json.dumps(year)
+        await send_message_to_client(data_json_year)
 
     elif type =="hire":
         argument = "hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
@@ -121,12 +124,18 @@ async def handle_command(message):
     elif type=="requestDriver":
         contractDetails = fetch_driverContract(message["driverID"])
         contractMsg = [contractDetails]
+        contractMsg.append(fetchDriverNumberDetails(message["driverID"]))
+        print(contractMsg)
         contractMsg.insert(0, "Contract fetched")
         data_json_contract = json.dumps(contractMsg)
         await send_message_to_client(data_json_contract)
+        nums = fetch_driverNumebrs()
+        nums.insert(0, "Numbers fetched")
+        data_json_numbers = json.dumps(nums)
+        await send_message_to_client(data_json_numbers)
 
     elif type=="editContract":
-        argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"])
+        argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"] + " " + str(message["driverNumber"] + " " + str(message["wantsN1"])))
         run_trasnsfer(argument)
         process_repack("../result", path)
         info = []
@@ -152,6 +161,13 @@ async def handle_command(message):
         info.insert(0, "Succesfully edited all " + message["team"] + " engines performance")
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
+
+    elif type=="yearSelected":
+        results = fetch_seasonResults(message["year"])
+        results.insert(0, fetch_events_from(message["year"]))
+        results.insert(0, "Results fetched")
+        data_json_results = json.dumps(results)
+        await send_message_to_client(data_json_results)
 
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
@@ -197,6 +213,19 @@ def create_backup(originalFIle, saveFile):
     new_file = backup_path + "/" + saveFile
     shutil.copy(originalFIle, new_file)
 
+def fetch_driverNumebrs():
+    numbers = cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL").fetchall()
+    numList = []
+    for num in numbers:
+        if num[0] != 1 and num[0] != 0:
+            numList.append(num[0])
+    return numList
+
+def fetchDriverNumberDetails(driverID):
+    num = cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder =" + str(driverID)).fetchone()
+    wants1 = cursor.execute("SELECT WantsChampionDriverNumber FROM Staff_DriverData WHERE StaffID =" + str(driverID)).fetchone()
+
+    return[num[0], wants1[0]]
 
 def fetch_engines():
     engines_ids = [1,10,4,7]
@@ -225,7 +254,7 @@ async def main():
 
 def fetch_driverContract(id):
     details = cursor.execute("SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = " + str(id)).fetchone()
-
+    print(details)
     return details
 
 def fetch_staff():
@@ -238,6 +267,74 @@ def fetch_staff():
         formatted_tuples.append(result)
 
     return formatted_tuples
+
+def fetch_seasonResults(yearSelected): 
+    year =  (yearSelected, )
+    drivers = cursor.execute("SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = " + str(year[0])).fetchall()
+    seasonResults = []
+    for driver in drivers:
+        results = cursor.execute("SELECT DriverID, TeamID, FinishingPos, Points FROM Races_Results WHERE Season = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
+        if results:
+            sprintResults = cursor.execute("SELECT RaceID, FinishingPos, ChampionshipPoints FROM Races_SprintResults WHERE SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
+            teamID = results[0][1]
+            driverName = cursor.execute("SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = " + str(driver[0])).fetchone()
+            seasonResults.append(format_seasonResults(results, driverName, teamID, driver, year, sprintResults))
+    return seasonResults
+
+def fetch_events_from(year):
+    season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(year)).fetchall()
+    tuple_numbers = {num for tpl in season_events for num in tpl}
+
+    season_ids = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(year)).fetchall()
+    events_ids =[]
+    for i in range(len(season_ids)):
+        events_ids.append((season_ids[i][0], season_events[i][0]))
+
+    return events_ids
+
+def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
+    nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
+    apellido_pattern = r'StaffName_Surname_(\w+)'
+
+    nombre_match = re.search(nombre_pattern, driverName[0])
+    apellido_match = re.search(apellido_pattern, driverName[1])
+
+    nombre = remove_number(nombre_match.group(2))
+    apellido = remove_number(apellido_match.group(1))
+    name_formatted = f"{nombre} {apellido}"
+    
+    races_participated = cursor.execute("SELECT RaceID FROM Races_Results WHERE DriverID = " + str(driverID[0]) + " AND Season = " + str(year[0])).fetchall()
+    formatred_results = [(result[-2], result[-1]) for result in results]
+    for i in range(len(races_participated)):
+        driver_with_fastest_lap = cursor.execute("SELECT DriverID FROM Races_Results WHERE FastestLap > 0 AND RaceID = "+ str(races_participated[i][0]) + " AND Season = " + str(year[0]) + " ORDER BY FastestLap LIMIT 1; ").fetchone()
+        dnfd = cursor.execute("SELECT DNF FROM Races_Results WHERE DriverID = " + str(driverID[0]) + " AND Season = " + str(year[0]) + " AND RaceID = " + str(races_participated[i][0])).fetchone()
+        formatred_results[i] = (races_participated[i][0],)  + formatred_results[i]
+        if dnfd[0] == 1:
+            results_list = list(formatred_results[i])
+            results_list[-1] = -1
+            results_list[-2] = -1
+            formatred_results[i] = tuple(results_list)
+        if driver_with_fastest_lap[0] == driverID[0]:
+            results_list = list(formatred_results[i])
+            results_list.append(1)
+            formatred_results[i] = tuple(results_list)
+        else:
+            results_list = list(formatred_results[i])
+            results_list.append(0)
+            formatred_results[i] = tuple(results_list)
+
+    for tupla1 in sprints:
+        for i, tupla2 in enumerate(formatred_results):
+            if tupla1[0] == tupla2[0]:
+                formatred_results[i] = tupla2 + (tupla1[2], tupla1[1])
+    
+    position = cursor.execute("SELECT Position FROM Races_Driverstandings WHERE RaceFormula = 1 AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driverID[0])).fetchone()
+
+    formatred_results.insert(0, position[0])
+    formatred_results.insert(0, teamID)
+    formatred_results.insert(0, name_formatted)
+    return formatred_results
+
 
 def fetch_info():
 
@@ -254,6 +351,11 @@ def check_claendar():
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
     season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
     tuple_numbers = {num for tpl in season_events for num in tpl}
+
+    season_ids = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
+    events_ids =[]
+    for i in range(len(season_ids)):
+        events_ids.append((season_ids[i][0], season_events[i][0]))
 
     are_all_numbers_present = all(num in tuple_numbers for num in default_tracks)
 
