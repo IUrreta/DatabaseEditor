@@ -139,7 +139,7 @@ async def handle_command(message):
         run_trasnsfer(argument)
         process_repack("../result", path)
         info = []
-        info.insert(0, "Succesfully edited " + message["driver"] + "'s contract")
+        info.insert(0, "Succesfully edited " + message["driver"] + "'s details")
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
 

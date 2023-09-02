@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
+    const noNotifications = ["Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched"]
 
     let latestTag;
 
@@ -147,7 +148,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 }, 20);
                 
             }
-            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched" && message[0] != "Engines fetched" && message[0] != "Results fetched" && message[0] != "Year fetched") update_notifications(message[0],false)
+            if(!noNotifications.includes(message[0]))  update_notifications(message[0],false)
 
         }
 

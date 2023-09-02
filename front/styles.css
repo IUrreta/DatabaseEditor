@@ -555,7 +555,7 @@ a.bi-heart:hover {
 
 [tabulator-field="driver"],
 [tabulator-field="points"] {
-  background-color: rgb(92, 89, 116) !important;
+  background-color: #373063 !important;
 }
 
 
@@ -596,14 +596,14 @@ a.bi-heart:hover {
 }
 
 .main-viewer-section .tabulator-row {
-  background-color: #3f3c57 !important;
+  background-color: #1f1b3b !important;
   cursor: pointer !important;
   color: #dedde6 !important;
   transition: background-color 0.3s !important;
 }
 
 .main-viewer-section .tabulator-row-even {
-  background-color: #484463 !important;
+  background-color: #2a2450 !important;
   cursor: pointer !important;
   color: #dedde6 !important;
 }

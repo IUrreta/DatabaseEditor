@@ -126,7 +126,7 @@ function iconListener(icon) {
     icon.addEventListener("click", function () {
         modalType = "edit"
         document.querySelector(".number-options").classList.remove("d-none")
-        document.getElementById("contractModalTitle").innerHTML = icon.parentNode.parentNode.innerText + "'s contract";
+        document.getElementById("contractModalTitle").innerHTML = icon.parentNode.parentNode.innerText + "'s details";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
     })
