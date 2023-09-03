@@ -126,7 +126,6 @@ document.addEventListener('DOMContentLoaded',function () {
                 place_staff(message.slice(1))
             }
             else if (message[0] === "Calendar fetched") {
-                console.log(message.slice(1))
                 manage_calendarDiv(message.slice(1)[0])
             }
             else if (message[0] === "Engines fetched") {

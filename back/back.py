@@ -125,7 +125,6 @@ async def handle_command(message):
         contractDetails = fetch_driverContract(message["driverID"])
         contractMsg = [contractDetails]
         contractMsg.append(fetchDriverNumberDetails(message["driverID"]))
-        print(contractMsg)
         contractMsg.insert(0, "Contract fetched")
         data_json_contract = json.dumps(contractMsg)
         await send_message_to_client(data_json_contract)

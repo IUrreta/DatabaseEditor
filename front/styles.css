@@ -163,13 +163,39 @@ a.bi-heart:hover {
 .number-details {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
 }
 
 #numberMenu{
   max-height: 200px;
   overflow-y: scroll;
+}
+
+#numberMenu::-webkit-scrollbar {
+  width: 4px;
+}
+
+#numberMenu::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px;
+}
+
+.dropdown-menu{
+  background-color: #797599 !important;
+  border: none !important;
+  border-radius: 10px;
+
+}
+
+.dropdown-menu a{
+  color: white !important;
+  border: 2px solid transparent;
+  transition: border-color 0.3s, color 0.3s;
+}
+
+.dropdown-menu a:hover{
+  background-color: #8b87af !important;
+  border-bottom: 2px solid white !important;
 }
 
 .modal-subtitle {
@@ -359,6 +385,14 @@ a.bi-heart:hover {
   border-radius: 10px !important;
 
 
+}
+
+#numberButton{
+  min-width: 100px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .custom-dropdown:hover {
