@@ -31,9 +31,10 @@ let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha",
 let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
 let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3" }
 
-
+/**
+ * Removes all the drivers from teams and categories
+ */
 function remove_drivers() {
-
     document.querySelectorAll('.driver-space').forEach(item => {
         item.innerHTML = ""
     });
@@ -42,6 +43,10 @@ function remove_drivers() {
     f3DriversDiv.innerHTML = ""
 }
 
+/**
+ * Places all drivers in their respective team, category etc
+ * @param {Object} driversArray List of drivers
+ */
 function place_drivers(driversArray) {
     let divPosition;
     driversArray.forEach((driver) => {
@@ -75,6 +80,10 @@ function place_drivers(driversArray) {
     })
 }
 
+/**
+ * Updates the color from the div depending on the team, both in contract and stats view
+ * @param {div} div div from the driver
+ */
 function updateColor(div) {
     let surnameDiv = div.querySelector(".bold-font")
     surnameDiv.className = "bold-font"
@@ -87,6 +96,11 @@ function updateColor(div) {
 
 }
 
+/**
+ * Manages the color depending on the team
+ * @param {div} div div from the driver
+ * @param {span} lastName the lastname span from the driver
+ */
 function manageColor(div, lastName) {
     if (div.dataset.teamid != 0) {
         let colorClass = team_dict[div.dataset.teamid] + "font"
@@ -94,6 +108,10 @@ function manageColor(div, lastName) {
     }
 }
 
+/**
+ * Loads all the numbers into the number menu
+ * @param {Object} nums all numbers array
+ */
 function loadNumbers(nums) {
     let numsMenu = document.getElementById("numberMenu")
     numsMenu.innerHTML = ""
@@ -111,6 +129,10 @@ function loadNumbers(nums) {
 
 }
 
+/**
+ * Adds the edit icon
+ * @param {div} div div from the driver that is going to add the icon into
+ */
 function addIcon(div) {
     let iconDiv = document.createElement("div");
     iconDiv.className = "custom-icon"
@@ -122,6 +144,10 @@ function addIcon(div) {
 
 }
 
+/**
+ * Adds the eventlistener for one icon
+ * @param {div} icon div from the icon
+ */
 function iconListener(icon) {
     icon.addEventListener("click", function () {
         modalType = "edit"
@@ -132,6 +158,10 @@ function iconListener(icon) {
     })
 }
 
+/**
+ * Sends the message that requests the details from the driver
+ * @param {div} elem div from the driver its requesting its details
+ */
 function queryContract(elem) {
     driverEditingID = elem.dataset.driverid
     driverEditingName = elem.innerText
@@ -145,6 +175,9 @@ function queryContract(elem) {
 
 }
 
+/**
+ * Pills from the 3 categories
+ */
 freeDriversPill.addEventListener("click", function () {
     manageDrivers("show", "hide", "hide")
 })
@@ -157,6 +190,10 @@ f3DriversPill.addEventListener("click", function () {
     manageDrivers("hide", "hide", "show")
 })
 
+/**
+ * Manages the state of the categorias
+ * @param  {...string} divs the state of each div
+ */
 function manageDrivers(...divs) {
     divsArray.forEach(function (div, index) {
         if (divs[index] === "show") {
@@ -168,7 +205,9 @@ function manageDrivers(...divs) {
     })
 }
 
-
+/**
+ * Event listener for the confirm button from the modal
+ */
 document.getElementById("confirmButton").addEventListener('click', function () {
     if (modalType === "hire") {
         if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
@@ -184,12 +223,18 @@ document.getElementById("confirmButton").addEventListener('click', function () {
     setTimeout(clearModal, 500);
 })
 
+/**
+ * Clears the modal's inputs
+ */
 function clearModal() {
     document.querySelectorAll(".rounded-input").forEach(function (elem) {
         elem.value = ""
     })
 }
 
+/**
+ * Sends the message to the backend to edit the contract
+ */
 function editContract() {
     let values = []
     document.querySelectorAll(".rounded-input").forEach(function (elem) {
@@ -219,7 +264,9 @@ function editContract() {
     socket.send(JSON.stringify(data))
 }
 
-
+/**
+ * Changes the positions of 2 drivers involved in a swap
+ */
 function manage_swap() {
     let parent1 = driver1.parentNode;
     let parent2 = driver2.parentNode;
@@ -230,6 +277,10 @@ function manage_swap() {
 
 }
 
+/**
+ * Sends the necessary messages to hire a driver
+ * @param {string} type type of the hiring of the driver, depending if he needs to be fired before or not
+ */
 function signDriver(type) {
     let driverName = draggable.innerText
 
@@ -294,7 +345,9 @@ function signDriver(type) {
 }
 
 
-
+/**
+ * Event listener for the cancel button on the modal
+ */
 document.getElementById("cancelButton").addEventListener('click', function () {
     if (modalType === "hire") {
         originalParent.appendChild(draggable);
@@ -304,7 +357,9 @@ document.getElementById("cancelButton").addEventListener('click', function () {
     setTimeout(clearModal, 500);
 })
 
-
+/**
+ * Manages the interaction to drag drivers
+ */
 interact('.free-driver').draggable({
     inertia: true,
     listeners: {

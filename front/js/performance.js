@@ -11,6 +11,9 @@ let teamSelected;
 let engineSelected;
 let teamEngineSelected;
 
+/**
+ * Pills that manage engines and teams screens and lists
+ */
 teamsPill.addEventListener("click",function () {
     manageTeamsEngines("show","hide")
     document.querySelector(".engines-show").classList.add("d-none")
@@ -25,6 +28,10 @@ enginesPill.addEventListener("click",function () {
     removeSelected()
 })
 
+/**
+ * manages if to show or hide teams/engines list
+ * @param  {Array} divs state of the list divs of engines and teams
+ */
 function manageTeamsEngines(...divs) {
     divsTeamsArray.forEach(function (div,index) {
         if (divs[index] === "show") {
@@ -36,6 +43,10 @@ function manageTeamsEngines(...divs) {
     })
 }
 
+/**
+ * Manages the engine stats for all manufacturers
+ * @param {Object} msg engine stats for all manufacturers
+ */
 function manage_engineStats(msg) {
     msg.forEach(function (elem) {
         let engineId = elem[0]
@@ -48,6 +59,11 @@ function manage_engineStats(msg) {
     })
 }
 
+/**
+ * Places the stats engineStats of engineid in its div
+ * @param {string} engineId if of the engine to place the stats in
+ * @param {string} engineStats string with all the stats of the engineid manufacturer
+ */
 function place_engineStats(engineId,engineStats) {
     var element = document.querySelector('[data-engineId="' + engineId + '"]');
     element.setAttribute('data-stats',"");
@@ -56,6 +72,9 @@ function place_engineStats(engineId,engineStats) {
     }
 }
 
+/**
+ * removes the team or engine selected anc changes the icon if necesssary
+ */
 function removeSelected() {
     let elemsSelected = document.querySelectorAll('.selected');
     elemsSelected.forEach(item => {
@@ -75,8 +94,9 @@ function removeSelected() {
     });
 }
 
-
-
+/**
+ * eventListeners for all teams and engines
+ */
 document.querySelectorAll(".team").forEach(function (elem) {
     elem.addEventListener("click",function () {
         removeSelected()
@@ -98,6 +118,10 @@ document.querySelectorAll(".engine").forEach(function (elem) {
     })
 })
 
+/**
+ * Puts the bars of the engine to their appropiate values
+ * @param {div} div element of the dom that contains the stats of the engine
+ */
 function resetBarsEngines(div) {
     let statsString = div.dataset.stats
     var statsArray = statsString.split(' ').map(function (item) {
@@ -109,6 +133,9 @@ function resetBarsEngines(div) {
     })
 }
 
+/**
+ * resets all bars to 0
+ */
 function resetBars() {
     document.querySelectorAll(".custom-progress").forEach(function (elem) {
         elem.dataset.progress = 0
@@ -116,6 +143,9 @@ function resetBars() {
     })
 }
 
+/**
+ * eventListeners for the confirm button for engines and teams
+ */
 document.getElementById("confirmEnginebtn").addEventListener("click",function () {
     let performanes = "";
     let progresses = ""
@@ -156,7 +186,9 @@ document.getElementById("confirmPerformancebtn").addEventListener("click",functi
     socket.send(JSON.stringify(dataPerformance))
 })
 
-
+/**
+ * eventlisteners for the buttons to add or remove from a bar, depending on if its an engine bar or team
+ */
 document.querySelectorAll(".bi-dash-circle").forEach(function (elem) {
     elem.addEventListener("click",function () {
         let performanceArea = elem.parentNode.parentNode
@@ -200,6 +232,9 @@ document.querySelectorAll(".bi-plus-circle").forEach(function (elem) {
     })
 })
 
+/**
+ * eventListeners on Alpine and AT teams and Renault engine to change the icon
+ */
 document.getElementById("alpineTeam").addEventListener("click",function () {
     document.getElementById("alpineTeam").firstElementChild.classList.add("d-none")
     document.getElementById("alpineTeam").children[1].classList.remove("d-none")
@@ -215,6 +250,11 @@ document.getElementById("renaultengine").addEventListener("click",function () {
     document.getElementById("renaultengine").children[1].classList.remove("d-none")
 })
 
+/**
+ * Manages the progression of the bars 
+ * @param {div} bar bar that is about to be edited
+ * @param {int} progress number that determines the progress of the bar 
+ */
 function manage_bar(bar,progress) {
     if (bar.dataset.type === "engine") {
         let whiteDiv = bar.querySelector(".white-part")

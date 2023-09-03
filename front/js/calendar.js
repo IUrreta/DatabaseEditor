@@ -16,6 +16,12 @@ let countries_dict = {
 let deleting = false;
 let deleted = false;
 
+/**
+ * Positions both the div the user's moving and the one he has moved it into
+ * @param {div} div0 The div the user is moving
+ * @param {div} div1 The div the user has moved div0 into
+ * @param {string} beforeAfter If the user has moved div0 before or after div1
+ */
 function reubicate(div0,div1,beforeAfter) {
     const parentDiv = document.querySelector('.main-calendar-section');
     parentDiv.removeChild(div0)
@@ -30,6 +36,10 @@ function reubicate(div0,div1,beforeAfter) {
 
 }
 
+/**
+ * Adds a race in the calendar div
+ * @param {string} code Code from the race
+ */
 function addRace(code) {
     let imageUrl = codes_dict[code];
 
@@ -74,6 +84,9 @@ function addRace(code) {
 
 }
 
+/**
+ * Creates all the races
+ */
 function create_races() {
     document.querySelector('.main-calendar-section').innerHTML = ""
     for (let dataCode of Object.keys(codes_dict)) {
@@ -83,6 +96,11 @@ function create_races() {
     load_addRaces()
 }
 
+/**
+ * Changes the number after the race code to specify the format
+ * @param {div} div div from the race that's changing format
+ * @param {string} format code of the format
+ */
 function changeFormat(div,format) {
     let lastChar = div.dataset.code.charAt(div.dataset.code.length - 1)
     if (/\d/.test(lastChar)) {
@@ -94,6 +112,9 @@ function changeFormat(div,format) {
 
 }
 
+/**
+ * Adds all the races to the addRace menu
+ */
 function load_addRaces() {
     document.getElementById("addTrackMenu").innerHTML = ""
     for (let dataCode of Object.keys(codes_dict)) {
@@ -120,6 +141,9 @@ function load_addRaces() {
     listenerRaces()
 }
 
+/**
+ * Adds the listeners to the addRace menu races
+ */
 function listenerRaces() {
     document.querySelectorAll('#addTrackMenu a').forEach(item => {
         item.addEventListener("click",function () {
@@ -130,6 +154,9 @@ function listenerRaces() {
     })
 }
 
+/**
+ * Event listeenr for the delete tracks button
+ */
 document.getElementById("deleteTracks").addEventListener("click",function (btn) {
     if (deleting) {
         document.querySelectorAll(".delete-div").forEach(function (elem) {
@@ -167,8 +194,9 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
     deleting = !deleting
 })
 
-
-
+/**
+ * Event listener for the confirm button
+ */
 document.getElementById("confirmCalendar").addEventListener("click",function () {
     let dataCodesString = '';
     let children = document.querySelector('.main-calendar-section').children;
@@ -191,6 +219,9 @@ document.getElementById("confirmCalendar").addEventListener("click",function () 
     }
 })
 
+/**
+ * Manages the interaction with the race divs
+ */
 interact('.race-calendar').draggable({
     inertia: true,
     listeners: {

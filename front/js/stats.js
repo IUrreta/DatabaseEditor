@@ -3,12 +3,19 @@ let statPanelShown = 0;
 let typeOverall = "driver";
 let typeEdit;
 
+/**
+ * Removes all the staff from their list
+ */
 function removeStatsDrivers() {
     document.querySelectorAll(".staff-list").forEach(function(elem){
         elem.innerHTML = ""
     })
 }
 
+/**
+ * Places the drivers that the backend fetched on the driver list
+ * @param {Object} driversArray Object with all the drivers that the backend fetched
+ */
 function place_drivers_editStats(driversArray) {
     let divPosition;
     driversArray.forEach((driver) => {
@@ -73,6 +80,10 @@ function place_drivers_editStats(driversArray) {
     });
 }
 
+/**
+ * Places the staff that the backend fetched on their respective staff list
+ * @param {Object} staffArray Object with all the staff that the backend fetched
+ */
 function place_staff(staffArray) {
     let divPosition;
 
@@ -152,6 +163,9 @@ function place_staff(staffArray) {
 
 }
 
+/**
+ * changes the overall placed in the overall square
+ */
 function recalculateOverall() {
     let stats = ""
     document.querySelectorAll(".elegible").forEach(function (elem) {
@@ -171,6 +185,9 @@ function recalculateOverall() {
 
 }
 
+/**
+ * eventListeenr for the confirm button for the stats
+ */
 document.getElementById("confirmbtn").addEventListener("click",function () {
     let stats = ""
     document.querySelectorAll(".elegible").forEach(function (elem) {
@@ -202,6 +219,11 @@ document.getElementById("confirmbtn").addEventListener("click",function () {
 
 })
 
+/**
+ * Gets the named with a space between name and lastname
+ * @param {*} html element with the name bad formatted
+ * @returns the name formatted
+ */
 function getName(html) {
     let name = ""
     html.querySelectorAll('span').forEach(function(elem){
@@ -214,7 +236,12 @@ function getName(html) {
 
 }
 
-
+/**
+ * Mathematic calculations to get a staff's overall value
+ * @param {string} stats all stats spearated by a space between them
+ * @param {string} type type of staff
+ * @returns the number of his overall value
+ */
 function calculateOverall(stats, type) {
     let statsArray = stats.split(" ").map(Number);
     let rating;
@@ -243,6 +270,10 @@ function calculateOverall(stats, type) {
     return Math.round(rating)
 }
 
+/**
+ * Loads the stats into the input numbers
+ * @param {div} div div of the staff that is about to be edited
+ */
 function load_stats(div) {
     let statsArray = div.dataset.stats.split(" ").map(Number);
 
@@ -252,7 +283,11 @@ function load_stats(div) {
     });
 }
 
-
+/**
+ * Generates the name title on the main panel of the edit stats
+ * @param {div} html div from the staff selected
+ * @returns the html necessary to put in the name with correct color
+ */
 function manage_stats_title(html) {
     let colorClass =""
     if(html.dataset.teamid != 0){
@@ -265,5 +300,30 @@ function manage_stats_title(html) {
     //let name = html.substring(0,html.length - 2).trim();
 
     return name;
+
+}
+
+/**
+ * Changes the input number that are taken into account to change stats 
+ * @param {div} divID div that contains the correct input numbers  
+ */
+function change_elegibles(divID) {
+    document.querySelectorAll(".elegible").forEach(function (elem) {
+        elem.classList.remove("elegible")
+
+    })
+    let divStats = document.getElementById(divID)
+    divStats.querySelectorAll(".custom-input-number").forEach(function (elem) {
+        elem.classList.add("elegible")
+    })
+    if (divID === "driverStats") {
+        document.getElementById("growthInput").classList.add("elegible")
+        document.getElementById("agressionInput").classList.add("elegible")
+
+    }
+    document.querySelectorAll(".main-panel-stats").forEach(function (elem) {
+        elem.className = "main-panel-stats d-none"
+    })
+    divStats.classList.remove("d-none")
 
 }
