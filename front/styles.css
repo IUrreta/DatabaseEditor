@@ -190,7 +190,7 @@ a.bi-heart:hover {
 .dropdown-menu a{
   color: white !important;
   border: 2px solid transparent;
-  transition: border-color 0.3s, color 0.3s;
+  transition: border-color 0.3s, background-color 0.3s;
 }
 
 .dropdown-menu a:hover{
@@ -201,7 +201,6 @@ a.bi-heart:hover {
 .modal-subtitle {
   color: white;
 }
-
 
 .stats-title {
   text-align: left;
@@ -316,14 +315,18 @@ a.bi-heart:hover {
   width: 530px;
   height: 116px;
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
   text-align: center;
+  align-items: flex-end;
+  gap: 10px;
 }
 
 .hide {
-  animation: fadeOut 1s;
+  animation: fadeOut 0.5s;
+}
+
+.myShow{
+  animation: myFadeIn 0.5s;
 }
 
 @keyframes fadeOut {
@@ -333,6 +336,17 @@ a.bi-heart:hover {
 
   to {
     opacity: 0;
+  }
+}
+
+
+@keyframes myFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
 

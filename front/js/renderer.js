@@ -44,7 +44,7 @@ async function getPatchNotes() {
             h1Elements.forEach(function (h1Element) {
                 let h4Element = document.createElement("h4");
                 h4Element.textContent = h1Element.textContent;
-                patchNotesBody.replaceChild(h4Element,h1Element);
+                patchNotesBody.replaceChild(h4Element, h1Element);
             });
         }
     } catch {
@@ -54,7 +54,7 @@ async function getPatchNotes() {
 
 }
 
-document.addEventListener('DOMContentLoaded',function () {
+document.addEventListener('DOMContentLoaded', function () {
 
     const driverTransferPill = document.getElementById("transferpill");
     const editStatsPill = document.getElementById("statspill");
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded',function () {
     const viewDiv = document.getElementById("season_viewer");
     const patchNotesBody = document.getElementById("patchNotesBody")
 
-    const scriptsArray = [viewDiv, driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv,]
+    const scriptsArray = [viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv,]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -91,9 +91,9 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
     let connectionTimeout = setTimeout(() => {
-        update_notifications("Could not connect with backend",true)
+        update_notifications("Could not connect with backend", true)
         manage_status(0)
-    },4000);
+    }, 4000);
 
 
     socket.onmessage = (event) => {
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded',function () {
         let message = JSON.parse(event.data)
         //console.log(message)
         if (message[0] === "ERROR") {
-            update_notifications(message[1],true)
+            update_notifications(message[1], true)
             manage_status(0)
         }
         else {
@@ -137,23 +137,23 @@ document.addEventListener('DOMContentLoaded',function () {
             else if (message[0] === "Year fetched") {
                 generateYearsMenu(message.slice(1))
             }
-            else if(message[0] === "Numbers fetched"){
+            else if (message[0] === "Numbers fetched") {
                 loadNumbers(message.slice(1))
             }
-            else if(message[0] === "Results fetched"){
+            else if (message[0] === "Results fetched") {
                 createTable(message[1])
-                setTimeout(function() {
+                setTimeout(function () {
                     loadTable(message.slice(2)); // Llamar a la función después de 1 segundo
                 }, 20);
-                
+
             }
-            if(!noNotifications.includes(message[0]))  update_notifications(message[0],false)
+            if (!noNotifications.includes(message[0])) update_notifications(message[0], false)
 
         }
 
     };
 
-    logButton.addEventListener("click",function () {
+    logButton.addEventListener("click", function () {
         window.location.href = '../log.txt';
     })
 
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded',function () {
                                     isSame = false;
                                     break;
                                 }
-                                else if(latestVer[i] < actualVer[i]){
+                                else if (latestVer[i] < actualVer[i]) {
                                     break;
                                 }
                             }
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded',function () {
                             }
                             else {
                                 updateInfo.classList.add("bi-exclamation-lg")
-                                updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                                updateInfo.setAttribute('href', 'https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
                             }
 
                         }
@@ -256,35 +256,35 @@ document.addEventListener('DOMContentLoaded',function () {
         outsideDiv.style.paddingRight = "10px"
         outsideDiv.className = "outside-div"
         outsideDiv.appendChild(spinnerDiv)
-        statusDiv.insertBefore(outsideDiv,statusDiv.children[2]);
+        statusDiv.insertBefore(outsideDiv, statusDiv.children[2]);
     }
 
     function updateButton() {
         let repoPath = './';
         let git = simpleGit(repoPath);
 
-        document.querySelector(".bi-cloud-download").addEventListener("click",function () {
+        document.querySelector(".bi-cloud-download").addEventListener("click", function () {
 
-            git.pull("origin","release",(error,update) => {
+            git.pull("origin", "release", (error, update) => {
                 addSpinner()
                 if (error) {
-                    update_notifications("Update automatically failed, please update manually",true)
+                    update_notifications("Update automatically failed, please update manually", true)
                     updateInfo.classList.remove("bi-cloud-download")
                     updateInfo.classList.add("bi-exclamation-lg")
-                    updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                    updateInfo.setAttribute('href', 'https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
                     document.querySelector(".status").removeChild(document.querySelector(".outside-div"))
-                    updateInfo.removeEventListener("click",arguments.callee)
+                    updateInfo.removeEventListener("click", arguments.callee)
                 } else {
                     //console.log('Git pull exitoso:',update);
                     setTimeout(() => {
-                        exec('restart.vbs',(error,stdout,stderr) => {
+                        exec('restart.vbs', (error, stdout, stderr) => {
                             if (error) {
                                 //console.error(`Error: ${error}`);
                                 return;
                             }
                             //console.log(`Resultado: ${stdout}`);
                         });
-                    },500);
+                    }, 500);
                 }
             });
         })
@@ -304,36 +304,65 @@ document.addEventListener('DOMContentLoaded',function () {
 
     function manage_modal(info) {
         console.log(info)
-        document.querySelectorAll(".rounded-input").forEach(function (elem,index) {
+        document.querySelectorAll(".rounded-input").forEach(function (elem, index) {
             elem.value = info[0][index]
         })
         document.querySelector("#numberButton").textContent = info[1][0]
-        if(info[1][1] === 1){
+        if (info[1][1] === 1) {
             document.querySelector("#driverNumber1").checked = true
         }
-        else if(info[1][1] === 0){
+        else if (info[1][1] === 0) {
             document.querySelector("#driverNumber1").checked = false
         }
     }
 
-    function update_notifications(noti,error) {
+    function update_notifications(noti, error) {
         let newNoti;
         newNoti = document.createElement('div');
         newNoti.className = 'notification';
         newNoti.textContent = noti;
+        let toast = createToast(noti)
+        setTimeout(function () {
+            toast.classList.remove("myShow")
+        }, 500)
         if (error) newNoti.style.color = "#ff8080";
 
-        notificationPanel.appendChild(newNoti);
+        notificationPanel.appendChild(toast);
         if (!error) {
             setTimeout(function () {
-                newNoti.className = 'notification hide';
+                toast.classList.add("hide")
 
                 // Después de otros 2 segundos, eliminar el nuevo div
                 setTimeout(function () {
-                    notificationPanel.removeChild(newNoti);
-                },980);
-            },3000);
+                    notificationPanel.removeChild(toast);
+                }, 480);
+            }, 3000);
         }
+    }
+
+    function createToast(msg) {
+        let toastDiv = document.createElement('div');
+        let toastBodyDiv = document.createElement('div');
+        let closeButton = document.createElement('button');
+
+        // Asignar clases y atributos
+        toastDiv.classList.add('toast', 'align-items-center', 'text-bg-primary', 'border-0', "d-block", "myShow");
+        toastDiv.setAttribute('role', 'alert');
+        toastDiv.setAttribute('aria-live', 'assertive');
+        toastDiv.setAttribute('aria-atomic', 'true');
+
+        toastBodyDiv.classList.add('d-flex', 'toast-body');
+        toastBodyDiv.textContent = msg;
+
+        closeButton.setAttribute('type', 'button');
+        closeButton.classList.add('btn-close', 'btn-close-white', 'me-2', 'm-auto');
+        closeButton.setAttribute('data-bs-dismiss', 'toast');
+        closeButton.setAttribute('aria-label', 'Close');
+
+        toastBodyDiv.appendChild(closeButton);
+        toastDiv.appendChild(toastBodyDiv);
+
+        return toastDiv;
     }
 
 
@@ -356,7 +385,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
     function listenersSaves() {
         document.querySelectorAll('#dropdownMenu a').forEach(item => {
-            item.addEventListener("click",function () {
+            item.addEventListener("click", function () {
                 const saveSelector = document.getElementById('saveSelector');
                 let saveSelected = item.innerHTML
                 saveSelector.innerHTML = saveSelected;
@@ -378,7 +407,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
     function listenersStaffGroups() {
         document.querySelectorAll('#staffMenu a').forEach(item => {
-            item.addEventListener("click",function () {
+            item.addEventListener("click", function () {
                 const staffButton = document.getElementById('staffButton');
                 let staffSelected = item.innerHTML
                 if (staffSelected === "Drivers") {
@@ -446,41 +475,41 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
-    viewPill.addEventListener("click",function () {
-        manageScripts("show", "hide", "hide","hide","hide")
+    viewPill.addEventListener("click", function () {
+        manageScripts("show", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
 
     })
 
-    driverTransferPill.addEventListener("click",function () {
-        manageScripts("hide", "show","hide","hide","hide")
+    driverTransferPill.addEventListener("click", function () {
+        manageScripts("hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
 
     })
 
-    editStatsPill.addEventListener("click",function () {
-        manageScripts("hide","hide","show","hide","hide")
+    editStatsPill.addEventListener("click", function () {
+        manageScripts("hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
     })
 
-    CalendarPill.addEventListener("click",function () {
-        manageScripts("hide","hide","hide","show","hide")
+    CalendarPill.addEventListener("click", function () {
+        manageScripts("hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
     })
 
-    carPill.addEventListener("click",function () {
-        manageScripts("hide","hide","hide","hide","show")
+    carPill.addEventListener("click", function () {
+        manageScripts("hide", "hide", "hide", "hide", "show")
         scriptSelected = 1
         check_selected()
     })
 
 
     function manageScripts(...divs) {
-        scriptsArray.forEach(function (div,index) {
+        scriptsArray.forEach(function (div, index) {
             if (divs[index] === "show") {
                 div.className = "script-view"
             }
