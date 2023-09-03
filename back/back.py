@@ -67,6 +67,7 @@ async def handle_command(message):
         data_json_year = json.dumps(year)
         await send_message_to_client(data_json_year)
 
+
     elif type =="hire":
         argument = "hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
         run_trasnsfer(argument)

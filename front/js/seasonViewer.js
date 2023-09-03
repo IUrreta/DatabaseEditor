@@ -7,6 +7,10 @@ let seasonResults;
 let calendarData;
 let pointsOrPos = "points"
 
+/**
+ * Creates the main table for the calendar of the season selected
+ * @param {Object} calendar calendar of the year selected
+ */
 function createTable(calendar) {
     calendarData = calendar;
     calendar.forEach(function (elem, index) {
@@ -79,6 +83,9 @@ function createTable(calendar) {
 
 }
 
+/**
+ * Even listener for the positions and points pill
+ */
 document.getElementById("pospill").addEventListener("click", function () {
     if (seasonTable) {
         seasonTable.destroy()
@@ -104,6 +111,10 @@ document.getElementById("pointspill").addEventListener("click", function () {
     }, 10);
 })
 
+/**
+ * Creates the year selector menu
+ * @param {String} actualYear current year of the save
+ */
 function generateYearsMenu(actualYear) {
     var yearMenu = document.querySelector("#yearMenu");
     yearMenu.innerHTML = ""
@@ -125,6 +136,10 @@ function generateYearsMenu(actualYear) {
     }
 }
 
+/**
+ * Loads the data into the table
+ * @param {Object} allDrivers all driver's results of the season
+ */
 function loadTable(allDrivers) {
     seasonResults = allDrivers;
     allDrivers.forEach(function (driver) {
@@ -136,6 +151,9 @@ function loadTable(allDrivers) {
     document.querySelector(".tabulator-tableholder").style.overflow = "hidden";
 }
 
+/**
+ * Formats the table for special vlaues
+ */
 function formatTable() {
     let data = seasonTable.getData()
     data.forEach(row => {
@@ -176,6 +194,10 @@ function formatTable() {
     seasonTable.setData(data);
 }
 
+/**
+ * Adds one driver into the table
+ * @param {Object} driverInfo one driver's season results
+ */
 function addDriver(driverInfo) {
     let nameDiv = document.createElement("div");
     let name = driverInfo[0].split(" ")

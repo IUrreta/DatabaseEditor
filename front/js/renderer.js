@@ -1,5 +1,8 @@
 const socket = new WebSocket('ws://localhost:8765/');
 
+/**
+ * When the socket is opened sends a connect message to the backend
+ */
 socket.onopen = () => {
     //console.log('Conexión establecida.');
     let data = {
@@ -22,6 +25,9 @@ const parchModalTitle = document.getElementById("patchModalTitle")
 const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
 
+/**
+ * Fetches the version from the version.conf file
+ */
 fetch('./../launcher/version.conf')
     .then(response => response.text())
     .then(version => {
@@ -31,6 +37,9 @@ fetch('./../launcher/version.conf')
         getPatchNotes()
     });
 
+/**
+ * get the patch notes from the actual version fro the github api
+ */
 async function getPatchNotes() {
     try {
         if (versionNow.slice(-3) !== "dev") {
@@ -88,14 +97,15 @@ document.addEventListener('DOMContentLoaded',function () {
     let divBlocking = 1;
 
 
-
-
     let connectionTimeout = setTimeout(() => {
         update_notifications("Could not connect with backend",true)
         manage_status(0)
     },4000);
 
-
+    /**
+     * Handles the receiving end from the messages sent from backend
+     * @param {string} event the message tha tcomes fro the backend
+     */
     socket.onmessage = (event) => {
         // const mensaje = event.data;
         // console.log('Mensaje recibido: ' + event.data);
@@ -153,10 +163,17 @@ document.addEventListener('DOMContentLoaded',function () {
 
     };
 
+    /**
+     * Opens the log file
+     */
     logButton.addEventListener("click",function () {
         window.location.href = '../log.txt';
     })
 
+    /**
+     * Manages the look of the status icon in the footer
+     * @param {int} state state of the connection with backend
+     */
     function manage_status(state) {
         if (state == 1) {
             status.classList.remove("awaiting")
@@ -171,6 +188,9 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
+    /**
+     * Checks with the github api if there is a newer version of the tool
+     */
     function check_version() {
         fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/tags`)
             .then(response => response.json())
@@ -233,6 +253,10 @@ document.addEventListener('DOMContentLoaded',function () {
             });
     }
 
+    /**
+     * Check if the tool was installed through git or not
+     * @returns {bool} If the tool was installed through git or zip
+     */
     function checkGit() {
         let dir = './'; // Cambia esto a la ruta de tu herramienta
         let res = false;
@@ -245,6 +269,9 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
+    /**
+     * Adds the spinner informing of updating state
+     */
     function addSpinner() {
 
         let statusDiv = document.querySelector('.status');
@@ -259,6 +286,9 @@ document.addEventListener('DOMContentLoaded',function () {
         statusDiv.insertBefore(outsideDiv,statusDiv.children[2]);
     }
 
+    /**
+     * Manages the actions of the update button
+     */
     function updateButton() {
         let repoPath = './';
         let git = simpleGit(repoPath);
@@ -291,7 +321,10 @@ document.addEventListener('DOMContentLoaded',function () {
     }
 
 
-
+    /**
+     * Manages the state of the calendar blocking div in case it cannot be modified
+     * @param {string} info If the calendar has had major changes or not
+     */
     function manage_calendarDiv(info) {
         if (info[0] === "1") {
             document.getElementById("calendarBlockDiv").className = "blocking-div d-none"
@@ -302,6 +335,10 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
+    /**
+     * Places all the values for the modal that just openend
+     * @param {Object} info values for the contract modal that just opened
+     */
     function manage_modal(info) {
         console.log(info)
         document.querySelectorAll(".rounded-input").forEach(function (elem,index) {
@@ -316,6 +353,11 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
+    /**
+     * Places and manages the notifications that appear in the tool
+     * @param {string} noti message of the notification
+     * @param {bool} error if the notification is an error or not
+     */
     function update_notifications(noti,error) {
         let newNoti;
         newNoti = document.createElement('div');
@@ -336,7 +378,10 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
-
+    /**
+     * Adds the saves that the backend detected to the dropdown of saves
+     * @param {Object} savesArray contains the list of saves that the backend was able to find
+     */
     function load_saves(savesArray) {
         for (let i = 1; i < savesArray.length; i++) {
             let elem = savesArray[i]
@@ -354,6 +399,9 @@ document.addEventListener('DOMContentLoaded',function () {
         listenersStaffGroups()
     }
 
+    /**
+     * Adds the eventListeners to each element of the save dropdown
+     */
     function listenersSaves() {
         document.querySelectorAll('#dropdownMenu a').forEach(item => {
             item.addEventListener("click",function () {
@@ -376,6 +424,9 @@ document.addEventListener('DOMContentLoaded',function () {
         });
     }
 
+    /**
+     * Adds eventListeners to all the elements of the staff dropdown
+     */
     function listenersStaffGroups() {
         document.querySelectorAll('#staffMenu a').forEach(item => {
             item.addEventListener("click",function () {
@@ -417,27 +468,9 @@ document.addEventListener('DOMContentLoaded',function () {
         });
     }
 
-    function change_elegibles(divID) {
-        document.querySelectorAll(".elegible").forEach(function (elem) {
-            elem.classList.remove("elegible")
-
-        })
-        let divStats = document.getElementById(divID)
-        divStats.querySelectorAll(".custom-input-number").forEach(function (elem) {
-            elem.classList.add("elegible")
-        })
-        if (divID === "driverStats") {
-            document.getElementById("growthInput").classList.add("elegible")
-            document.getElementById("agressionInput").classList.add("elegible")
-
-        }
-        document.querySelectorAll(".main-panel-stats").forEach(function (elem) {
-            elem.className = "main-panel-stats d-none"
-        })
-        divStats.classList.remove("d-none")
-
-    }
-
+    /**
+     * checks if a save and a script have been selected to unlock the tool
+     */
     function check_selected() {
         if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
             document.getElementById("blockDiv").className = "d-none"
@@ -446,6 +479,9 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
+    /**
+     * Pills and their eventListeners
+     */
     viewPill.addEventListener("click",function () {
         manageScripts("show", "hide", "hide","hide","hide")
         scriptSelected = 1
@@ -478,7 +514,10 @@ document.addEventListener('DOMContentLoaded',function () {
         check_selected()
     })
 
-
+    /**
+     * Manages the stats of the divs associated with the pills
+     * @param  {Array} divs array of state of the divs
+     */
     function manageScripts(...divs) {
         scriptsArray.forEach(function (div,index) {
             if (divs[index] === "show") {
