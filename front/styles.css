@@ -36,10 +36,10 @@ body::-webkit-scrollbar-thumb {
   font-family: 'Formula1';
 }
 
-#byname{
+#byname {
   text-decoration: none;
   color: #797599;
-  transition: color  0.4s;
+  transition: color 0.4s;
 }
 
 .footer {
@@ -59,7 +59,8 @@ body::-webkit-scrollbar-thumb {
   justify-content: space-between;
 }
 
-.socials a, .footer i{
+.socials a,
+.footer i {
   cursor: pointer !important;
   padding: 0 7px;
   transition: color 0.3s;
@@ -67,56 +68,60 @@ body::-webkit-scrollbar-thumb {
   text-decoration: none;
 }
 
-.socials a:hover, .footer i:hover{
+.socials a:hover,
+.footer i:hover {
   color: #dedde6;
 }
 
-.update-info{
+.update-info {
   transition: color 0.5s;
   text-decoration: none;
   color: #797599;
   cursor: default;
 }
 
-.bi-exclamation-diamond{
+.bi-exclamation-diamond {
   color: #ff8080;
 }
 
-.bi-exclamation-lg, .bi-cloud-download{
+.bi-exclamation-lg,
+.bi-cloud-download {
   color: #d3d393;
   cursor: pointer;
 }
 
-.bi-exclamation-lg:hover, .bi-cloud-download:hover{
+.bi-exclamation-lg:hover,
+.bi-cloud-download:hover {
   color: #FFFF99;
 }
 
-a.bi-reddit:hover{
+a.bi-reddit:hover {
   color: #FFA07A;
 }
 
-a.bi-twitter:hover, #byname:hover{
+a.bi-twitter:hover,
+#byname:hover {
   color: #8fc7f0;
 }
 
-a.bi-heart:hover{
+a.bi-heart:hover {
   color: #ffa4b2;
 }
 
 
-.status{
+.status {
   display: flex;
   flex-direction: row;
   width: 700px;
   justify-content: flex-end;
 }
 
-.status-info{
+.status-info {
   margin-right: 7px;
   cursor: default;
 }
 
-.awaiting{
+.awaiting {
   color: #8a8a8a;
 }
 
@@ -153,6 +158,48 @@ a.bi-heart:hover{
   color: white;
   font-size: 20px;
   padding-right: 2rem;
+}
+
+.number-details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#numberMenu{
+  max-height: 200px;
+  overflow-y: scroll;
+}
+
+#numberMenu::-webkit-scrollbar {
+  width: 4px;
+}
+
+#numberMenu::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px;
+}
+
+.dropdown-menu{
+  background-color: #797599 !important;
+  border: none !important;
+  border-radius: 10px;
+
+}
+
+.dropdown-menu a{
+  color: white !important;
+  border: 2px solid transparent;
+  transition: border-color 0.3s, color 0.3s;
+}
+
+.dropdown-menu a:hover{
+  background-color: #8b87af !important;
+  border-bottom: 2px solid white !important;
+}
+
+.modal-subtitle {
+  color: white;
 }
 
 
@@ -249,14 +296,14 @@ a.bi-heart:hover{
   left: 10px;
 }
 
-.patchNotesPanel i{
+.patchNotesPanel i {
   transition: color 0.5s;
   font-style: normal;
   color: #797599;
   cursor: pointer;
 }
 
-.patchNotesPanel i:hover{
+.patchNotesPanel i:hover {
   color: white;
 }
 
@@ -338,6 +385,14 @@ a.bi-heart:hover{
   border-radius: 10px !important;
 
 
+}
+
+#numberButton{
+  min-width: 100px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .custom-dropdown:hover {
@@ -478,8 +533,8 @@ a.bi-heart:hover{
 
 
 .custom-confirm:hover {
-  background-color: #A569BD!important;
-  border-color: #8E44AD  !important;
+  background-color: #A569BD !important;
+  border-color: #8E44AD !important;
 }
 
 .custom-confirm:active {
@@ -515,6 +570,133 @@ a.bi-heart:hover{
 
 .delete-mode:hover {
   border-color: white !important;
+}
+
+.main-viewer-section {
+  margin-left: 14px;
+  margin-right: 14px;
+  border: 1px solid #797599;
+  color: white;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+[tabulator-field^="race"] {
+  font-size: 13px;
+  /* Establece el tamaño de fuente a 13px */
+  border: none !important;
+}
+
+[tabulator-field="driver"],
+[tabulator-field="points"] {
+  background-color: #373063 !important;
+}
+
+
+
+#seasonresults-table {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.main-viewer-section .tabulator-tableholder::-webkit-scrollbar {
+  width: 4px !important;
+}
+
+.main-viewer-section .tabulator-tableholder::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px !important;
+}
+
+.tabulator-col-content {
+  border: none !important;
+}
+
+[tabulator-field="driver"] {
+  border-right: 1.5px solid #797599 !important;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+}
+
+
+[tabulator-field="points"] {
+  border-left: 1.5px solid #797599 !important;
+  border-right: none !important;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+}
+
+.main-viewer-section .tabulator-col {
+  background-color: #18152e !important;
+  color: #dedde6 !important;
+}
+
+.main-viewer-section .tabulator-row {
+  background-color: #1f1b3b !important;
+  cursor: pointer !important;
+  color: #dedde6 !important;
+  transition: background-color 0.3s !important;
+}
+
+.main-viewer-section .tabulator-row-even {
+  background-color: #2a2450 !important;
+  cursor: pointer !important;
+  color: #dedde6 !important;
+}
+
+.main-viewer-section .tabulator-row:hover {
+  background-color: #625e86 !important;
+  cursor: pointer !important;
+  color: #dedde6 !important;
+}
+
+.tabulator-row:hover [tabulator-field="driver"] {
+  color: #110f24;
+  background-color: #dedde6 !important;
+  border-right: 1.5px solid #dedde6 !important;
+}
+
+.tabulator-row:hover [tabulator-field="points"] {
+  color: #110f24;
+  background-color: #dedde6 !important;
+  border-left: 1.5px solid #dedde6 !important;
+}
+
+[tabulator-field="driver"] span.bold-font {
+  transition: color 0.3s;
+}
+
+.tabulator-row:hover [tabulator-field="driver"] span.bold-font {
+  color: #110f24;
+}
+
+
+.main-viewer-section .tabulator-table {
+  background-color: #110f24 !important;
+  overflow-x: hidden !important;
+}
+
+.tabulator-col-content:has(img) {
+  padding: 0px !important;
+}
+
+.flag-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.flag-header img {
+  width: 100%;
+  height: 29px;
+  opacity: 0.45;
+}
+
+.text-in-front {
+  position: absolute;
+  z-index: 4;
+  color: #eeedf3;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 15px;
 }
 
 .main-calendar-section {
@@ -733,7 +915,7 @@ a.bi-heart:hover{
   color: white;
 }
 
-.performance-buttons{
+.performance-buttons {
   padding: 10px;
   display: flex;
   width: 100px;
@@ -741,7 +923,7 @@ a.bi-heart:hover{
 }
 
 
-.perf-engine{
+.perf-engine {
   font-size: 20px;
 }
 
@@ -750,11 +932,13 @@ a.bi-heart:hover{
   cursor: pointer !important;
 }
 
-.performance-buttons .bi-dash-circle:hover, .negative {
+.performance-buttons .bi-dash-circle:hover,
+.negative {
   color: #ff8080;
 }
 
-.performance-buttons .bi-plus-circle:hover, .positive {
+.performance-buttons .bi-plus-circle:hover,
+.positive {
   color: #9fdf9f;
 }
 
@@ -862,6 +1046,18 @@ a.bi-heart:hover{
   margin-right: 14px;
 }
 
+.btn-number {
+  background-color: transparent !important;
+  color: white !important;
+  padding-left: 0px !important;
+  border: none !important;
+}
+
+.collapse-number {
+  color: white;
+  background-color: #393744;
+}
+
 .contract-details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -869,13 +1065,19 @@ a.bi-heart:hover{
   background-color: #393744;
 }
 
-.custom-body{
+.number-and-contract {
+  display: flex;
+  flex-direction: column;
+  background-color: #393744;
+}
+
+.custom-body {
   color: white;
   background-color: #393744;
 }
 
 
-.custom-modal{
+.custom-modal {
   min-width: 600px !important;
 }
 
@@ -939,7 +1141,8 @@ a.bi-heart:hover{
   text-align: center;
 }
 
-.team, .engine {
+.team,
+.engine {
   background-color: #3f3c57;
   border: 2px solid transparent;
   border-radius: 10px;
@@ -952,18 +1155,20 @@ a.bi-heart:hover{
   font-size: 18px;
 }
 
-.team:hover, .engine:hover {
+.team:hover,
+.engine:hover {
   border-color: white;
   color: white;
   background-color: #4e4b69;
 }
 
-.team.selected, .engine.selected {
+.team.selected,
+.engine.selected {
   color: #110f24;
   background-color: #dedde6;
 }
 
-.team:active .engine:active{
+.team:active .engine:active {
   background-color: #1a1826;
 }
 
@@ -1131,7 +1336,7 @@ input::-webkit-inner-spin-button {
 }
 
 
-.normal-driver.clicked .surname{
+.normal-driver.clicked .surname {
   color: inherit !important;
 }
 
@@ -1143,6 +1348,12 @@ input::-webkit-inner-spin-button {
   margin: 10px;
   margin-top: 0px;
   max-height: 140px;
+}
+
+.viewer-top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .logo-and-name {
@@ -1171,7 +1382,7 @@ input::-webkit-inner-spin-button {
   padding-top: 10px;
 }
 
-.perf-title{
+.perf-title {
   padding-bottom: 10px;
   padding-top: 5px;
 }

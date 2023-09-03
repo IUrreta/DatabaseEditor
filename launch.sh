@@ -10,7 +10,7 @@ version=$(<version.conf)
 echo "Version: $version"
 cd ..
 
-cd backend
+cd back
 pip install websockets
 python3 back.py &
 cd ..
