@@ -1,6 +1,4 @@
-:root {
-  --bs-form-switch-bg: #ff0000 !important;
-}
+
 
 @font-face {
   font-family: 'Formula1';
@@ -319,6 +317,29 @@ a.bi-heart:hover {
   text-align: center;
   align-items: flex-end;
   gap: 10px;
+}
+
+.notification-line{
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  position: relative;
+  bottom: 7px;
+}
+
+.line-error{
+  background-color: #ff8080 !important;
+}
+
+.custom-toast{
+  background-color: rgba(187, 182, 236, 0.5) !important;
+  color: white;
+  border-radius: 10px !important;
+  width: 420px !important;
+}
+
+.toast-error{
+  color: #ff8080 !important;
 }
 
 .hide {

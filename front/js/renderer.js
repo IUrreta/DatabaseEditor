@@ -321,11 +321,10 @@ document.addEventListener('DOMContentLoaded', function () {
         newNoti = document.createElement('div');
         newNoti.className = 'notification';
         newNoti.textContent = noti;
-        let toast = createToast(noti)
+        let toast = createToast(noti, error)
         setTimeout(function () {
             toast.classList.remove("myShow")
         }, 500)
-        if (error) newNoti.style.color = "#ff8080";
 
         notificationPanel.appendChild(toast);
         if (!error) {
@@ -340,29 +339,38 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function createToast(msg) {
+    function createToast(msg, err) {
+        let toastFull = document.createElement('div');
         let toastDiv = document.createElement('div');
         let toastBodyDiv = document.createElement('div');
-        let closeButton = document.createElement('button');
+        let line = document.createElement('div');
 
         // Asignar clases y atributos
-        toastDiv.classList.add('toast', 'align-items-center', 'text-bg-primary', 'border-0', "d-block", "myShow");
-        toastDiv.setAttribute('role', 'alert');
-        toastDiv.setAttribute('aria-live', 'assertive');
-        toastDiv.setAttribute('aria-atomic', 'true');
+        toastFull.classList.add('toast', "d-flex", "myShow", "d-block", "custom-toast")
+        toastFull.style.flexDirection ="column"
+        toastFull.setAttribute('role', 'alert');
+        toastFull.setAttribute('aria-live', 'assertive');
+        toastFull.setAttribute('aria-atomic', 'true');
+
+        toastDiv.classList.add('align-items-center');
+        line.classList.add("notification-line")
 
         toastBodyDiv.classList.add('d-flex', 'toast-body');
         toastBodyDiv.textContent = msg;
+        toastBodyDiv.style.opacity = "1"
+        toastBodyDiv.style.color = "white"
+        toastBodyDiv.style.zIndex = "6"
 
-        closeButton.setAttribute('type', 'button');
-        closeButton.classList.add('btn-close', 'btn-close-white', 'me-2', 'm-auto');
-        closeButton.setAttribute('data-bs-dismiss', 'toast');
-        closeButton.setAttribute('aria-label', 'Close');
+        if(err){
+            toastBodyDiv.classList.add("toast-error")
+            line.classList.add("line-error")
+        }
 
-        toastBodyDiv.appendChild(closeButton);
         toastDiv.appendChild(toastBodyDiv);
+        toastFull.appendChild(toastDiv)
+        toastFull.appendChild(line)
 
-        return toastDiv;
+        return toastFull;
     }
 
 

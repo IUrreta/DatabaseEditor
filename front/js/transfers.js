@@ -251,10 +251,6 @@ function signDriver(type) {
         let raceBonusData;
         let raceBonusPosData;
 
-        if (signBonusData === "")
-            signBonusData = "0"
-
-
         if (raceBonusAmt.value === "")
             raceBonusData = "0";
         else
