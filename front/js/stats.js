@@ -79,6 +79,7 @@ function place_drivers_editStats(driversArray) {
         });
     });
 }
+
 /**
  * Places the staff that the backend fetched on their respective staff list
  * @param {Object} staffArray Object with all the staff that the backend fetched
