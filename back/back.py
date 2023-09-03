@@ -67,8 +67,6 @@ async def handle_command(message):
         data_json_year = json.dumps(year)
         await send_message_to_client(data_json_year)
 
-
-
     elif type =="hire":
         argument = "hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
         run_trasnsfer(argument)
@@ -126,16 +124,21 @@ async def handle_command(message):
     elif type=="requestDriver":
         contractDetails = fetch_driverContract(message["driverID"])
         contractMsg = [contractDetails]
+        contractMsg.append(fetchDriverNumberDetails(message["driverID"]))
         contractMsg.insert(0, "Contract fetched")
         data_json_contract = json.dumps(contractMsg)
         await send_message_to_client(data_json_contract)
+        nums = fetch_driverNumebrs()
+        nums.insert(0, "Numbers fetched")
+        data_json_numbers = json.dumps(nums)
+        await send_message_to_client(data_json_numbers)
 
     elif type=="editContract":
-        argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"])
+        argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"] + " " + str(message["driverNumber"] + " " + str(message["wantsN1"])))
         run_trasnsfer(argument)
         process_repack("../result", path)
         info = []
-        info.insert(0, "Succesfully edited " + message["driver"] + "'s contract")
+        info.insert(0, "Succesfully edited " + message["driver"] + "'s details")
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
 
@@ -209,6 +212,19 @@ def create_backup(originalFIle, saveFile):
     new_file = backup_path + "/" + saveFile
     shutil.copy(originalFIle, new_file)
 
+def fetch_driverNumebrs():
+    numbers = cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL").fetchall()
+    numList = []
+    for num in numbers:
+        if num[0] != 1 and num[0] != 0:
+            numList.append(num[0])
+    return numList
+
+def fetchDriverNumberDetails(driverID):
+    num = cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder =" + str(driverID)).fetchone()
+    wants1 = cursor.execute("SELECT WantsChampionDriverNumber FROM Staff_DriverData WHERE StaffID =" + str(driverID)).fetchone()
+
+    return[num[0], wants1[0]]
 
 def fetch_engines():
     engines_ids = [1,10,4,7]
@@ -237,7 +253,7 @@ async def main():
 
 def fetch_driverContract(id):
     details = cursor.execute("SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = " + str(id)).fetchone()
-
+    print(details)
     return details
 
 def fetch_staff():
