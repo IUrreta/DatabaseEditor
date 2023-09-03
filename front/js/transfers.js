@@ -305,7 +305,6 @@ function signDriver(type) {
         if (signBonusData === "")
             signBonusData = "0"
 
-
         if (raceBonusAmt.value === "")
             raceBonusData = "0";
         else

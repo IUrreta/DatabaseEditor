@@ -53,7 +53,7 @@ async function getPatchNotes() {
             h1Elements.forEach(function (h1Element) {
                 let h4Element = document.createElement("h4");
                 h4Element.textContent = h1Element.textContent;
-                patchNotesBody.replaceChild(h4Element,h1Element);
+                patchNotesBody.replaceChild(h4Element, h1Element);
             });
         }
     } catch {
@@ -63,7 +63,7 @@ async function getPatchNotes() {
 
 }
 
-document.addEventListener('DOMContentLoaded',function () {
+document.addEventListener('DOMContentLoaded', function () {
 
     const driverTransferPill = document.getElementById("transferpill");
     const editStatsPill = document.getElementById("statspill");
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded',function () {
     const viewDiv = document.getElementById("season_viewer");
     const patchNotesBody = document.getElementById("patchNotesBody")
 
-    const scriptsArray = [viewDiv, driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv,]
+    const scriptsArray = [viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv,]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -98,9 +98,9 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
     let connectionTimeout = setTimeout(() => {
-        update_notifications("Could not connect with backend",true)
+        update_notifications("Could not connect with backend", true)
         manage_status(0)
-    },4000);
+    }, 4000);
 
     /**
      * Handles the receiving end from the messages sent from backend
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded',function () {
         let message = JSON.parse(event.data)
         //console.log(message)
         if (message[0] === "ERROR") {
-            update_notifications(message[1],true)
+            update_notifications(message[1], true)
             manage_status(0)
         }
         else {
@@ -147,17 +147,17 @@ document.addEventListener('DOMContentLoaded',function () {
             else if (message[0] === "Year fetched") {
                 generateYearsMenu(message.slice(1))
             }
-            else if(message[0] === "Numbers fetched"){
+            else if (message[0] === "Numbers fetched") {
                 loadNumbers(message.slice(1))
             }
-            else if(message[0] === "Results fetched"){
+            else if (message[0] === "Results fetched") {
                 createTable(message[1])
-                setTimeout(function() {
+                setTimeout(function () {
                     loadTable(message.slice(2)); // Llamar a la función después de 1 segundo
                 }, 20);
-                
+
             }
-            if(!noNotifications.includes(message[0]))  update_notifications(message[0],false)
+            if (!noNotifications.includes(message[0])) update_notifications(message[0], false)
 
         }
 
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded',function () {
                                     isSame = false;
                                     break;
                                 }
-                                else if(latestVer[i] < actualVer[i]){
+                                else if (latestVer[i] < actualVer[i]) {
                                     break;
                                 }
                             }
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded',function () {
                             }
                             else {
                                 updateInfo.classList.add("bi-exclamation-lg")
-                                updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                                updateInfo.setAttribute('href', 'https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
                             }
 
                         }
@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded',function () {
         outsideDiv.style.paddingRight = "10px"
         outsideDiv.className = "outside-div"
         outsideDiv.appendChild(spinnerDiv)
-        statusDiv.insertBefore(outsideDiv,statusDiv.children[2]);
+        statusDiv.insertBefore(outsideDiv, statusDiv.children[2]);
     }
 
     /**
@@ -293,28 +293,28 @@ document.addEventListener('DOMContentLoaded',function () {
         let repoPath = './';
         let git = simpleGit(repoPath);
 
-        document.querySelector(".bi-cloud-download").addEventListener("click",function () {
+        document.querySelector(".bi-cloud-download").addEventListener("click", function () {
 
-            git.pull("origin","release",(error,update) => {
+            git.pull("origin", "release", (error, update) => {
                 addSpinner()
                 if (error) {
-                    update_notifications("Update automatically failed, please update manually",true)
+                    update_notifications("Update automatically failed, please update manually", true)
                     updateInfo.classList.remove("bi-cloud-download")
                     updateInfo.classList.add("bi-exclamation-lg")
-                    updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                    updateInfo.setAttribute('href', 'https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
                     document.querySelector(".status").removeChild(document.querySelector(".outside-div"))
-                    updateInfo.removeEventListener("click",arguments.callee)
+                    updateInfo.removeEventListener("click", arguments.callee)
                 } else {
                     //console.log('Git pull exitoso:',update);
                     setTimeout(() => {
-                        exec('restart.vbs',(error,stdout,stderr) => {
+                        exec('restart.vbs', (error, stdout, stderr) => {
                             if (error) {
                                 //console.error(`Error: ${error}`);
                                 return;
                             }
                             //console.log(`Resultado: ${stdout}`);
                         });
-                    },500);
+                    }, 500);
                 }
             });
         })
@@ -341,14 +341,14 @@ document.addEventListener('DOMContentLoaded',function () {
      */
     function manage_modal(info) {
         console.log(info)
-        document.querySelectorAll(".rounded-input").forEach(function (elem,index) {
+        document.querySelectorAll(".rounded-input").forEach(function (elem, index) {
             elem.value = info[0][index]
         })
         document.querySelector("#numberButton").textContent = info[1][0]
-        if(info[1][1] === 1){
+        if (info[1][1] === 1) {
             document.querySelector("#driverNumber1").checked = true
         }
-        else if(info[1][1] === 0){
+        else if (info[1][1] === 0) {
             document.querySelector("#driverNumber1").checked = false
         }
     }
@@ -363,20 +363,64 @@ document.addEventListener('DOMContentLoaded',function () {
         newNoti = document.createElement('div');
         newNoti.className = 'notification';
         newNoti.textContent = noti;
-        if (error) newNoti.style.color = "#ff8080";
+        let toast = createToast(noti, error)
+        setTimeout(function () {
+            toast.classList.remove("myShow")
+        }, 500)
 
-        notificationPanel.appendChild(newNoti);
+        notificationPanel.appendChild(toast);
         if (!error) {
             setTimeout(function () {
-                newNoti.className = 'notification hide';
+                toast.classList.add("hide")
 
                 // Después de otros 2 segundos, eliminar el nuevo div
                 setTimeout(function () {
-                    notificationPanel.removeChild(newNoti);
-                },980);
-            },3000);
+                    notificationPanel.removeChild(toast);
+                }, 480);
+            }, 3000);
         }
     }
+
+    /**
+     * Creates the toast with the message and the error status
+     * @param {string} msg string with the notification message
+     * @param {boolean} err if it's an error or not
+     * @returns 
+     */
+    function createToast(msg, err) {
+        let toastFull = document.createElement('div');
+        let toastDiv = document.createElement('div');
+        let toastBodyDiv = document.createElement('div');
+        let line = document.createElement('div');
+
+        // Asignar clases y atributos
+        toastFull.classList.add('toast', "d-flex", "myShow", "d-block", "custom-toast")
+        toastFull.style.flexDirection = "column"
+        toastFull.setAttribute('role', 'alert');
+        toastFull.setAttribute('aria-live', 'assertive');
+        toastFull.setAttribute('aria-atomic', 'true');
+
+        toastDiv.classList.add('align-items-center');
+        line.classList.add("notification-line")
+
+        toastBodyDiv.classList.add('d-flex', 'toast-body');
+        toastBodyDiv.textContent = msg;
+        toastBodyDiv.style.opacity = "1"
+        toastBodyDiv.style.color = "white"
+        toastBodyDiv.style.zIndex = "6"
+
+        if (err) {
+            toastBodyDiv.classList.add("toast-error")
+            line.classList.add("line-error")
+        }
+
+        toastDiv.appendChild(toastBodyDiv);
+        toastFull.appendChild(toastDiv)
+        toastFull.appendChild(line)
+
+        return toastFull;
+    }
+
 
     /**
      * Adds the saves that the backend detected to the dropdown of saves
@@ -404,7 +448,7 @@ document.addEventListener('DOMContentLoaded',function () {
      */
     function listenersSaves() {
         document.querySelectorAll('#dropdownMenu a').forEach(item => {
-            item.addEventListener("click",function () {
+            item.addEventListener("click", function () {
                 const saveSelector = document.getElementById('saveSelector');
                 let saveSelected = item.innerHTML
                 saveSelector.innerHTML = saveSelected;
@@ -429,7 +473,7 @@ document.addEventListener('DOMContentLoaded',function () {
      */
     function listenersStaffGroups() {
         document.querySelectorAll('#staffMenu a').forEach(item => {
-            item.addEventListener("click",function () {
+            item.addEventListener("click", function () {
                 const staffButton = document.getElementById('staffButton');
                 let staffSelected = item.innerHTML
                 if (staffSelected === "Drivers") {
@@ -482,34 +526,34 @@ document.addEventListener('DOMContentLoaded',function () {
     /**
      * Pills and their eventListeners
      */
-    viewPill.addEventListener("click",function () {
-        manageScripts("show", "hide", "hide","hide","hide")
+    viewPill.addEventListener("click", function () {
+        manageScripts("show", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
 
     })
 
-    driverTransferPill.addEventListener("click",function () {
-        manageScripts("hide", "show","hide","hide","hide")
+    driverTransferPill.addEventListener("click", function () {
+        manageScripts("hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
 
     })
 
-    editStatsPill.addEventListener("click",function () {
-        manageScripts("hide","hide","show","hide","hide")
+    editStatsPill.addEventListener("click", function () {
+        manageScripts("hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
     })
 
-    CalendarPill.addEventListener("click",function () {
-        manageScripts("hide","hide","hide","show","hide")
+    CalendarPill.addEventListener("click", function () {
+        manageScripts("hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
     })
 
-    carPill.addEventListener("click",function () {
-        manageScripts("hide","hide","hide","hide","show")
+    carPill.addEventListener("click", function () {
+        manageScripts("hide", "hide", "hide", "hide", "show")
         scriptSelected = 1
         check_selected()
     })
@@ -519,7 +563,7 @@ document.addEventListener('DOMContentLoaded',function () {
      * @param  {Array} divs array of state of the divs
      */
     function manageScripts(...divs) {
-        scriptsArray.forEach(function (div,index) {
+        scriptsArray.forEach(function (div, index) {
             if (divs[index] === "show") {
                 div.className = "script-view"
             }
