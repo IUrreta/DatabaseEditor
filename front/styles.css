@@ -164,16 +164,21 @@ a.bi-heart:hover {
   align-items: center;
 }
 
+#d1Menu, #d2Menu{
+  max-height: 200px;
+  overflow-y: scroll;
+}
+
 #numberMenu{
   max-height: 200px;
   overflow-y: scroll;
 }
 
-#numberMenu::-webkit-scrollbar {
+#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar {
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb {
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb {
   background-color: white;
   border-radius: 3px;
 }
@@ -1070,6 +1075,12 @@ a.bi-heart:hover {
   background-color: blue;
   height: 6px;
   transition: width 0.4s;
+}
+
+.h2h-top{
+  display: flex;
+  flex-direction: row;
+
 }
 
 .driver2-bar{

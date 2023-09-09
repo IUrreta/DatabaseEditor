@@ -117,7 +117,9 @@ document.getElementById("pointspill").addEventListener("click", function () {
  */
 function generateYearsMenu(actualYear) {
     var yearMenu = document.querySelector("#yearMenu");
+    var yearH2H = document.querySelector("#yearMenuH2H");
     yearMenu.innerHTML = ""
+    yearH2H.innerHTML = ""
     for (let year = actualYear; year >= 2023; year--) {
         let a = document.createElement("a");
         a.textContent = year.toString();
@@ -129,6 +131,20 @@ function generateYearsMenu(actualYear) {
             let dataYear = {
                 command: "yearSelected",
                 year: a.textContent
+            }
+
+            socket.send(JSON.stringify(dataYear))
+        })
+        let a2 = document.createElement("a");
+        a2.textContent = year.toString();
+        a2.classList = "dropdown-item"
+        a2.style.cursor = "pointer"
+        yearH2H.appendChild(a2);
+        a2.addEventListener("click", function () {
+            document.getElementById("yearButtonH2H").textContent = a2.textContent
+            let dataYear = {
+                command: "yearSelectedH2H",
+                year: a2.textContent
             }
 
             socket.send(JSON.stringify(dataYear))

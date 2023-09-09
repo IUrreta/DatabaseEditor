@@ -156,26 +156,28 @@
     </div>
     <div class="script-view d-none" id="head2head_viewer">
       <div class="col">
-        <div class=" ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute;">
+        <div class="ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute;">
           <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButtonH2H"
             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Year
           </button>
           <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
           </ul>
-          <button type="button driversDropDownH2H" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="driver1Button"
-            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Driver 1
-          </button>
-          <ul class="dropdown-menu driversDropDownH2H" id="d1MenuMenu" style="font-family: Formula1;">
-          </ul>
-          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="driver2Button"
-            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Driver 2
-          </button>
-          <ul class="dropdown-menu" id="d2MenuMenu" style="font-family: Formula1;">
-          </ul>
         </div>
+        <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+          style="position: absolute; right: 10px; margin-top: 1rem !important; margin-bottom: 1rem !important; " id="driver1Button"
+          data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Driver 1
+        </button>
+        <ul class="dropdown-menu driversDropDownH2H" id="d1Menu" style="font-family: Formula1;">
+        </ul>
+        <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+          style="margin-top: 1rem !important; margin-bottom: 1rem !important; position: absolute; right: 130px;" id="driver2Button"
+          data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Driver 2
+        </button>
+        <ul class="dropdown-menu" id="d2Menu" style="font-family: Formula1;">
+        </ul>
         <div class="title bold-font py-3">
           Driver Compraision
         </div>

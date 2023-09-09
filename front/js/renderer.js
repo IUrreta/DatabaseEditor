@@ -156,6 +156,9 @@ document.addEventListener('DOMContentLoaded', function () {
             else if (message[0] === "H2H fetched") {
                 manage_h2h_bars(message.slice(1)[0])
             }
+            else if(message[0] === "DriversH2H fetched"){
+                load_drivers_h2h(message.slice(1))
+            }
             else if (message[0] === "Results fetched") {
                 createTable(message[1])
                 setTimeout(function () {

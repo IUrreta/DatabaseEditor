@@ -174,6 +174,12 @@ async def handle_command(message):
         data_json_results = json.dumps(results)
         await send_message_to_client(data_json_results)
 
+    elif type=="yearSelectedH2H":
+        print(message["year"])
+        drivers = fetch_drivers_per_year(message["year"])
+        drivers.insert(0, "DriversH2H fetched")
+        data_json_drivers = json.dumps(drivers)
+        await send_message_to_client(data_json_drivers)
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()
@@ -341,6 +347,13 @@ def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
     formatred_results.insert(0, name_formatted)
     return formatred_results
 
+def fetch_drivers_per_year(year):
+    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, res.DriverID, res.TeamID FROM Staff_BasicData bas JOIN Races_Results res ON bas.StaffID = res.DriverID WHERE Season = ' + str(year) + " GROUP BY bas.FirstName, bas.LastName, bas.StaffID, res.TeamID").fetchall()
+    formatted_tuples = []
+    for tupla in drivers:
+        result = format_names_simple(tupla)
+        formatted_tuples.append(result)
+    return formatted_tuples
 
 def fetch_info():
 
@@ -370,6 +383,22 @@ def check_claendar():
 
     return resultCalendar
 
+def format_names_simple(name):
+    nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
+    apellido_pattern = r'StaffName_Surname_(\w+)'
+
+
+    nombre_match = re.search(nombre_pattern, name[0])
+    apellido_match = re.search(apellido_pattern, name[1])
+
+
+    nombre = remove_number(nombre_match.group(2))
+    apellido = remove_number(apellido_match.group(1))
+    name_formatted = f"{nombre} {apellido}"
+    team_id = name[3] if name[3] is not None else 0
+
+    resultado = (name_formatted, name[2], team_id)
+    return resultado
 
 def format_names_get_stats(name, type):
     nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
