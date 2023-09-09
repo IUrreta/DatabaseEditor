@@ -12,6 +12,7 @@ from scripts.edit_stats_23 import run_script as run_editStats
 from scripts.custom_calendar_23 import run_script as run_editCalendar
 from scripts.car_performance_23 import run_script as run_editPerformance
 from scripts.engine_performance_23 import run_script as run_editEngine
+from scripts.head2head_23 import fetch_Head2Head as fetch_Head2Head
 
 client = None
 path = None
@@ -66,6 +67,7 @@ async def handle_command(message):
         year = ["Year fetched", year]
         data_json_year = json.dumps(year)
         await send_message_to_client(data_json_year)
+        print(fetch_Head2Head((1,), (2,), (2023,), cursor))
 
 
     elif type =="hire":
@@ -220,6 +222,7 @@ def fetch_driverNumebrs():
         if num[0] != 1 and num[0] != 0:
             numList.append(num[0])
     return numList
+
 
 def fetchDriverNumberDetails(driverID):
     num = cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder =" + str(driverID)).fetchone()
