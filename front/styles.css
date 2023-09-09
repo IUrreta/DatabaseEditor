@@ -924,6 +924,43 @@ a.bi-heart:hover {
   background-color: red !important;
 }
 
+.one-statH2H {
+  padding-left: 10px;
+  padding-bottom: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+  background-color: #3f3c57;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  color: #dedde6;
+  border: 2px solid transparent;
+  transition: border-color 0.5s, background-color 0.5s;
+  align-items: center;
+}
+
+.driver-names{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 10px;
+  padding-top: 20px;
+  font-size: 20px;
+}
+
+.driver1-name, .driver2-name{
+  display: flex;
+  flex-direction: column;
+}
+
+.driver1-second, .driver2-second{
+  margin-top: -6px;
+}
+
 .one-performance {
   padding: 10px;
   display: flex;
@@ -996,6 +1033,45 @@ a.bi-heart:hover {
   align-items: center;
   margin-left: 50px;
 }
+
+.name-H2H{
+  width: 100%;
+  transition: color 0.5s;
+  cursor: default !important;
+  text-align: center;
+}
+
+.custom-H2H {
+  width: 280px;
+  display: flex;
+  flex-direction: row;
+  background-color: #110f24;
+  height: 7px;
+  margin-top: 5px;
+}
+
+.driver1-bar{
+  float: right;
+  width: 20%;
+  background-color: blue;
+  height: 6px;
+}
+
+.driver2-bar{
+  float: left;
+  width: 50%;
+  background-color: yellow;
+  height: 6px;
+}
+
+.driver2-space, .driver1-space{
+  width: 50%;
+  background-color: #110f24;
+  height: 6px;
+}
+
+
+
 
 .red-part {
   width: 300px;
