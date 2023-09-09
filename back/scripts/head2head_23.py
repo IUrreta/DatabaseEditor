@@ -64,6 +64,6 @@ def fetch_Head2Head(driver1ID, driver2ID, year, c):
     bestRace[1] = d2_BestRace
     bestQuali[0] = d1_BestQauli
     bestQuali[1] = d2_BestQauli   
-    resultList = [tuple(raceH2H),tuple(qualiH2H),tuple(dnfH2H),tuple(bestRace),tuple(bestQuali),tuple(pointsH2H),tuple(podiumsH2H)]
+    resultList = [tuple(raceH2H),tuple(qualiH2H),tuple(pointsH2H),tuple(podiumsH2H),tuple(bestRace),tuple(bestQuali),tuple(dnfH2H)]
 
     return resultList  

@@ -336,6 +336,21 @@ a.bi-heart:hover {
   color: white;
   border-radius: 10px !important;
   width: 420px !important;
+  backdrop-filter: blur(3px);
+}
+
+.bar-space{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.driver1-number{
+  margin-right: 10px;
+}
+
+.driver2-number{
+  margin-left: 10px;
 }
 
 .toast-error{
@@ -926,7 +941,6 @@ a.bi-heart:hover {
 
 .one-statH2H {
   padding-left: 10px;
-  padding-bottom: 10px;
   padding-right: 10px;
   padding-top: 5px;
   display: flex;
@@ -1055,6 +1069,7 @@ a.bi-heart:hover {
   width: 20%;
   background-color: blue;
   height: 6px;
+  transition: width 0.4s;
 }
 
 .driver2-bar{
@@ -1062,6 +1077,7 @@ a.bi-heart:hover {
   width: 50%;
   background-color: yellow;
   height: 6px;
+  transition: width 0.4s;
 }
 
 .driver2-space, .driver1-space{
@@ -1349,10 +1365,12 @@ a.bi-heart:hover {
   justify-content: center;
   align-items: center;
   color: white;
+  backdrop-filter: blur(3px);
 }
 
 #calendarBlockDiv {
   background-color: rgba(128, 128, 128, 0.733);
+  backdrop-filter: blur(3px);
 }
 
 .normal-driver {

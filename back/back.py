@@ -67,7 +67,10 @@ async def handle_command(message):
         year = ["Year fetched", year]
         data_json_year = json.dumps(year)
         await send_message_to_client(data_json_year)
-        print(fetch_Head2Head((1,), (2,), (2023,), cursor))
+        h2hRes = fetch_Head2Head((1,), (2,), (2023,), cursor)
+        h2h = ["H2H fetched", h2hRes]
+        data_json_h2h = json.dumps(h2h)
+        await send_message_to_client(data_json_h2h)
 
 
     elif type =="hire":
