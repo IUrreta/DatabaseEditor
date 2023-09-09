@@ -70,15 +70,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const CalendarPill = document.getElementById("calendarpill");
     const carPill = document.getElementById("carpill");
     const viewPill = document.getElementById("viewerpill");
+    const h2hPill = document.getElementById("h2hpill");
 
     const driverTransferDiv = document.getElementById("driver_transfers");
     const editStatsDiv = document.getElementById("edit_stats");
     const customCalendarDiv = document.getElementById("custom_calendar");
     const carPerformanceDiv = document.getElementById("car_performance");
     const viewDiv = document.getElementById("season_viewer");
+    const h2hDiv = document.getElementById("head2head_viewer");
+
     const patchNotesBody = document.getElementById("patchNotesBody")
 
-    const scriptsArray = [viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv,]
+    const scriptsArray = [h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv,]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -526,34 +529,41 @@ document.addEventListener('DOMContentLoaded', function () {
     /**
      * Pills and their eventListeners
      */
+    h2hPill.addEventListener("click", function () {
+        manageScripts("show","hide", "hide", "hide", "hide", "hide")
+        scriptSelected = 1
+        check_selected()
+
+    })
+
     viewPill.addEventListener("click", function () {
-        manageScripts("show", "hide", "hide", "hide", "hide")
+        manageScripts("hide","show", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
 
     })
 
     driverTransferPill.addEventListener("click", function () {
-        manageScripts("hide", "show", "hide", "hide", "hide")
+        manageScripts("hide","hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
 
     })
 
     editStatsPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "show", "hide", "hide")
+        manageScripts("hide","hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
     })
 
     CalendarPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "show", "hide")
+        manageScripts("hide","hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
     })
 
     carPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "hide", "show")
+        manageScripts("hide","hide", "hide", "hide", "hide", "show")
         scriptSelected = 1
         check_selected()
     })

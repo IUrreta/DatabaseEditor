@@ -25,15 +25,15 @@
             <h5 class="modal-subtitle">Driver Number</h5>
             <div class="number-details">
               <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="numberButton"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Number
-            </button>
-            <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
-            </ul>
-            <div class="form-check ms-5 form-switch auto-contract">
-              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="driverNumber1">
-              <label class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</label>
-            </div>
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Number
+              </button>
+              <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
+              </ul>
+              <div class="form-check ms-5 form-switch auto-contract">
+                <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="driverNumber1">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</label>
+              </div>
             </div>
           </div>
           <div class="contract-options">
@@ -127,6 +127,9 @@
       <div class="pt-2 pb-3 ps-3">
         <ul class="nav nav-pills">
           <li class="nav-item">
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="h2hpill">COMPARISION</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="viewerpill">STANDINGS</a>
           </li>
           <li class="nav-item">
@@ -150,6 +153,37 @@
   <div class="main-panel">
     <div class="blocking-div" id="blockDiv">
       Select a script and a save to start editing!
+    </div>
+    <div class="script-view d-none" id="head2head_viewer">
+      <div class="col">
+        <div class=" ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute;">
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButton"
+            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Year
+          </button>
+          <ul class="dropdown-menu" id="yearMenu" style="font-family: Formula1;">
+          </ul>
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="driver1Button"
+            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Driver 1
+          </button>
+          <ul class="dropdown-menu" id="yearMenu" style="font-family: Formula1;">
+          </ul>
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="driver2Button"
+            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Driver 2
+          </button>
+          <ul class="dropdown-menu" id="yearMenu" style="font-family: Formula1;">
+          </ul>
+        </div>
+        <div class="title bold-font py-3">
+          Driver Compraision
+        </div>
+        <div class="col-3 main-viewer-section" id="officialCalendarList">
+          AAAAAAAAAAAAA
+        </div>
+      </div>
+
     </div>
     <div class="script-view d-none" id="season_viewer">
       <div class="col">
