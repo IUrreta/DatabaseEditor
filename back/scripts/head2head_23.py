@@ -49,8 +49,8 @@ def fetch_Head2Head(driver1ID, driver2ID, year, c):
             d1_BestRace = d1_RRes[0]
         if(d2_RRes[0] < d2_BestRace):
             d2_BestRace = d2_RRes[0]
-        d1_RDNF = cursor.execute("SELECT FinishingPos FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
-        d2_RDNF = cursor.execute("SELECT FinishingPos FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
+        d1_RDNF = cursor.execute("SELECT DNF FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
+        d2_RDNF = cursor.execute("SELECT DNF FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
         if(d1_RDNF[0] == 1):
             dnfH2H[0] += 1
         if(d2_RDNF[0] == 1):

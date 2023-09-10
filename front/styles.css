@@ -184,21 +184,21 @@ a.bi-heart:hover {
 }
 
 .dropdown-menu{
-  background-color: #797599 !important;
+  background-color: #3f3c57 !important;
   border: none !important;
   border-radius: 10px;
 
 }
 
 .dropdown-menu a{
-  color: white !important;
+  color: #dedde6 !important;
   border: 2px solid transparent;
   transition: border-color 0.3s, background-color 0.3s;
 }
 
 .dropdown-menu a:hover{
-  background-color: #8b87af !important;
-  border-bottom: 2px solid white !important;
+  background-color: #4e4b69 !important;
+  border-bottom: 2px solid #dedde6 !important;
 }
 
 .modal-subtitle {
@@ -351,10 +351,12 @@ a.bi-heart:hover {
 }
 
 .driver1-number{
+  font-size: 18px;
   margin-right: 10px;
 }
 
 .driver2-number{
+  font-size: 18px;
   margin-left: 10px;
 }
 

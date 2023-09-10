@@ -2,6 +2,7 @@ let driver1_selected = false;
 let driver2_selected = false;
 let driver1Sel;
 let driver2Sel;
+let pos_dict = {1: "1st", 2:"2nd", 3: "3rd"}
 
 function manage_h2h_bars(data){
     console.log(data)
@@ -9,15 +10,34 @@ function manage_h2h_bars(data){
     let d1_width
     let d2_width
     document.querySelectorAll(".one-statH2H").forEach(function(elem, index){
-        if(elem.id === "raceh2h" || elem.id === "qualih2h" || elem.id === "podiumsh2h" || elem.id === "dnfh2h"){
-            relValue = (100 /(data[0][0] + data[0][1])).toFixed(2)
-
+        if(elem.id === "bestrh2h" || elem.id === "bestqh2h"){
+            d1_width = 100 / data[index][0]
+            d2_width = 100 / data[index][1]
+            if(data[index][0] <= 3){
+                elem.querySelector(".driver1-number").textContent = pos_dict[data[index][0]]
+            }
+            else{
+                elem.querySelector(".driver1-number").textContent = data[index][0]+"th"
+            }
+            if(data[index][1] <= 3){
+                elem.querySelector(".driver2-number").textContent = pos_dict[data[index][1]]
+            }
+            else{
+                elem.querySelector(".driver2-number").textContent = data[index][1]+"th"
+            }
         }
-        else if(elem.id === "ptsh2h" || elem.id === "bestrh2h" || elem.id === "bestqh2h"){
-            relValue = 100 / Math.max(data[index][0], data[index][0])
+        else{
+            if(elem.id === "raceh2h" || elem.id === "qualih2h" || elem.id === "podiumsh2h" || elem.id === "dnfh2h"){
+                relValue = (100 /(data[0][0] + data[0][1])).toFixed(2)
+            }
+            else if(elem.id === "ptsh2h"){
+                relValue = 100 / Math.max(data[index][0], data[index][1])
+            }
+            d1_width = data[index][0] * relValue 
+            d2_width = data[index][1] * relValue
+            elem.querySelector(".driver1-number").textContent = data[index][0]
+            elem.querySelector(".driver2-number").textContent = data[index][1]
         }
-        d1_width = data[index][0] * relValue 
-        d2_width = data[index][1] * relValue
         if(d1_width > 100){
             d1_width = 100
         }
@@ -26,8 +46,7 @@ function manage_h2h_bars(data){
         }
         elem.querySelector(".driver1-bar").style.width = d1_width+ "%"
         elem.querySelector(".driver2-bar").style.width = d2_width+ "%"
-        elem.querySelector(".driver1-number").textContent = data[index][0]
-        elem.querySelector(".driver2-number").textContent = data[index][1]
+
     })
 
 }
@@ -67,7 +86,10 @@ function listeners_h2h(aDriver2, aDriver1){
             driver1_selected = true
         }
         driver1Sel = aDriver1
-        console.log(driver1Sel)
+        document.querySelector(".driver1-first").textContent = driver1Sel.firstChild.children[0].innerText
+        document.querySelector(".driver1-second").textContent = driver1Sel.firstChild.children[1].innerText
+        document.querySelector(".driver1-second").dataset.teamid = driver1Sel.firstChild.children[1].dataset.teamid
+        manageColor(document.querySelector(".driver1-second"), document.querySelector(".driver1-second"))
         if(driver1_selected && driver2_selected){
             let data = {
                 command: "H2HConfigured",
@@ -85,6 +107,10 @@ function listeners_h2h(aDriver2, aDriver1){
         }
         driver2Sel = aDriver2
         console.log(driver2Sel)
+        document.querySelector(".driver2-first").textContent = driver2Sel.firstChild.children[0].innerText
+        document.querySelector(".driver2-second").textContent = driver2Sel.firstChild.children[1].innerText
+        document.querySelector(".driver2-second").dataset.teamid = driver2Sel.firstChild.children[1].dataset.teamid
+        manageColor(document.querySelector(".driver2-second"), document.querySelector(".driver2-second"))
         if(driver1_selected && driver2_selected){
             let data = {
                 command: "H2HConfigured",
