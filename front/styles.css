@@ -964,18 +964,45 @@ a.bi-heart:hover {
   align-items: center;
 }
 
+.one-statH2H:hover {
+  border-color: white;
+  background-color: #4e4b69;
+}
+
+.one-statH2H:hover .name-H2H {
+  color: white;
+}
+
+.one-statH2H:hover .driver1-number, .one-statH2H:hover .driver2-number{
+  color: white;
+}
+
 .driver-names{
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   padding: 10px;
-  padding-top: 20px;
   font-size: 20px;
+  height: 110px;
 }
 
 .driver1-name, .driver2-name{
   display: flex;
   flex-direction: column;
+  color: #dedde6;
+  background-color: #1f1b3b;
+  border-radius: 10px;
+  width: 100%;
+  margin-left: 5px;
+  margin-right: 5px;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.5s, color 0.5s;
+}
+
+.driver1-name:hover, .driver2-name:hover {
+  color: white;
+  background-color: #302a57;
 }
 
 .driver1-second, .driver2-second{
@@ -1066,16 +1093,15 @@ a.bi-heart:hover {
   width: 280px;
   display: flex;
   flex-direction: row;
-  background-color: #110f24;
+  background-color: #1f1b3b;
   height: 7px;
   margin-top: 5px;
 }
 
 .driver1-bar{
   float: right;
-  width: 20%;
-  background-color: blue;
-  height: 6px;
+  width: 0%;
+  height: 7px;
   transition: width 0.4s;
 }
 
@@ -1087,15 +1113,14 @@ a.bi-heart:hover {
 
 .driver2-bar{
   float: left;
-  width: 50%;
-  background-color: yellow;
-  height: 6px;
+  width: 0%;
+  height: 7px;
   transition: width 0.4s;
 }
 
 .driver2-space, .driver1-space{
   width: 50%;
-  background-color: #110f24;
+  background-color: #1f1b3b;
   height: 6px;
 }
 
@@ -1691,7 +1716,168 @@ input::-webkit-inner-spin-button {
   color: #B6BABD;
 }
 
+.rbbar-primary {
+  background-color: #3671C6;
+}
 
+.rbbar-secondary {
+  background-color: #ffd300;
+}
+
+.febar-primary {
+  background-color: #F91536;
+}
+
+.febar-secondary {
+  background-color: #0a0a0a;
+}
+
+.mebar-primary {
+  background-color: #6CD3BF;
+}
+
+.mebar-secondary {
+  background-color: #fcfcfc;
+}
+
+.mcbar-primary {
+  background-color: #F58020;
+}
+
+.mcbar-secondary {
+  background-color: #47c7fc;
+}
+
+.albar-primary {
+  background-color: #2293D1;
+}
+
+.albar-secondary {
+  background-color: #fd48c7;
+}
+
+.afbar-primary {
+  background-color: #C92D4B;
+}
+
+.afbar-secondary {
+  background-color: #0a0a0a;
+}
+
+.asbar-primary {
+  background-color: #358C75;
+}
+
+.asbar-secondary {
+  background-color: #c3dc00;
+}
+
+.atbar-primary {
+  background-color: #5E8FAA;
+}
+
+.atbar-secondary {
+  background-color: #f1f1f1;
+}
+
+.wibar-primary {
+  background-color: #37BEDD;
+}
+
+.wibar-secondary {
+  background-color: #3792dd;
+}
+
+.habar-primary {
+  background-color: #B6BABD;
+}
+
+.habar-secondary {
+  background-color: #da291c;
+}
+
+
+
+
+.rbborder-primary {
+  border: 2px solid #3671C6;
+}
+
+.rbborder-secondary {
+  border: 2px solid #ffd300;
+}
+
+.feborder-primary {
+  border: 2px solid #F91536;
+}
+
+.feborder-secondary {
+  border: 2px solid #0a0a0a;
+}
+
+.meborder-primary {
+  border: 2px solid #6CD3BF;
+}
+
+.meborder-secondary {
+  border: 2px solid #fcfcfc;
+}
+
+.mcborder-primary {
+  border: 2px solid #F58020;
+}
+
+.mcborder-secondary {
+  border: 2px solid #47c7fc;
+}
+
+.alborder-primary {
+  border: 2px solid #2293D1;
+}
+
+.alborder-secondary {
+  border: 2px solid #fd48c7;
+}
+
+.afborder-primary {
+  border: 2px solid #C92D4B;
+}
+
+.afborder-secondary {
+  border: 2px solid #0a0a0a;
+}
+
+.asborder-primary {
+  border: 2px solid #358C75;
+}
+
+.asborder-secondary {
+  border: 2px solid #c3dc00;
+}
+
+.atborder-primary {
+  border: 2px solid #5E8FAA;
+}
+
+.atborder-secondary {
+  border: 2px solid #f1f1f1;
+}
+
+.wiborder-primary {
+  border: 2px solid #37BEDD;
+}
+
+.wiborder-secondary {
+  border: 2px solid #3792dd;
+}
+
+.haborder-primary {
+  border: 2px solid #B6BABD;
+}
+
+.haborder-secondary {
+  border: 2px solid #da291c;
+}
 
 
 .drivers-section {

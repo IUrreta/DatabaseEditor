@@ -3,6 +3,8 @@ let driver2_selected = false;
 let driver1Sel;
 let driver2Sel;
 let pos_dict = {1: "1st", 2:"2nd", 3: "3rd"}
+let d1_team
+let d2_team
 
 function manage_h2h_bars(data){
     console.log(data)
@@ -43,6 +45,20 @@ function manage_h2h_bars(data){
         }
         if(d2_width > 100){
             d2_width = 100
+        }
+        elem.querySelector(".driver1-bar").className = "driver1-bar"
+        elem.querySelector(".driver2-bar").className = "driver2-bar"
+        document.querySelector(".driver1-name").className = "driver1-name"
+        document.querySelector(".driver2-name").className = "driver2-name"
+        elem.querySelector(".driver1-bar").classList.add(team_dict[d1_team]+"bar-primary")
+        document.querySelector(".driver1-name").classList.add(team_dict[d1_team]+"border-primary")
+        if(d1_team === d2_team){
+            elem.querySelector(".driver2-bar").classList.add(team_dict[d2_team]+"bar-secondary") 
+            document.querySelector(".driver2-name").classList.add(team_dict[d2_team]+"border-secondary")
+        }
+        else{
+            elem.querySelector(".driver2-bar").classList.add(team_dict[d2_team]+"bar-primary") 
+            document.querySelector(".driver2-name").classList.add(team_dict[d2_team]+"border-primary")
         }
         elem.querySelector(".driver1-bar").style.width = d1_width+ "%"
         elem.querySelector(".driver2-bar").style.width = d2_width+ "%"
@@ -89,6 +105,8 @@ function listeners_h2h(aDriver2, aDriver1){
         document.querySelector(".driver1-first").textContent = driver1Sel.firstChild.children[0].innerText
         document.querySelector(".driver1-second").textContent = driver1Sel.firstChild.children[1].innerText
         document.querySelector(".driver1-second").dataset.teamid = driver1Sel.firstChild.children[1].dataset.teamid
+        d1_team = driver1Sel.firstChild.children[1].dataset.teamid
+        document.querySelector(".driver1-second").className = "driver1-second bold-font"
         manageColor(document.querySelector(".driver1-second"), document.querySelector(".driver1-second"))
         if(driver1_selected && driver2_selected){
             let data = {
@@ -110,6 +128,8 @@ function listeners_h2h(aDriver2, aDriver1){
         document.querySelector(".driver2-first").textContent = driver2Sel.firstChild.children[0].innerText
         document.querySelector(".driver2-second").textContent = driver2Sel.firstChild.children[1].innerText
         document.querySelector(".driver2-second").dataset.teamid = driver2Sel.firstChild.children[1].dataset.teamid
+        document.querySelector(".driver2-second").className = "driver2-second bold-font"
+        d2_team = driver2Sel.firstChild.children[1].dataset.teamid
         manageColor(document.querySelector(".driver2-second"), document.querySelector(".driver2-second"))
         if(driver1_selected && driver2_selected){
             let data = {
