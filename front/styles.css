@@ -798,6 +798,17 @@ a.bi-heart:hover {
 
 }
 
+.buttons-h2h{
+  display: flex;
+  gap: 10px;
+}
+
+#driver1Button, #driver2Button{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .race-calendar {
   position: relative;
   background-color: #3f3c57;
@@ -1108,7 +1119,7 @@ a.bi-heart:hover {
 .h2h-top{
   display: flex;
   flex-direction: row;
-
+  justify-content: space-between
 }
 
 .driver2-bar{

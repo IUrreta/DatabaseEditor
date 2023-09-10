@@ -107,6 +107,9 @@ function listeners_h2h(aDriver2, aDriver1){
         document.querySelector(".driver1-second").dataset.teamid = driver1Sel.firstChild.children[1].dataset.teamid
         d1_team = driver1Sel.firstChild.children[1].dataset.teamid
         document.querySelector(".driver1-second").className = "driver1-second bold-font"
+        let newName = aDriver1.firstChild.cloneNode(true)
+        document.querySelector("#driver1Button").innerHTML = ""
+        document.querySelector("#driver1Button").appendChild(newName)
         manageColor(document.querySelector(".driver1-second"), document.querySelector(".driver1-second"))
         if(driver1_selected && driver2_selected){
             let data = {
@@ -129,6 +132,9 @@ function listeners_h2h(aDriver2, aDriver1){
         document.querySelector(".driver2-second").textContent = driver2Sel.firstChild.children[1].innerText
         document.querySelector(".driver2-second").dataset.teamid = driver2Sel.firstChild.children[1].dataset.teamid
         document.querySelector(".driver2-second").className = "driver2-second bold-font"
+        let newName2 = aDriver2.firstChild.cloneNode(true)
+        document.querySelector("#driver2Button").innerHTML = ""
+        document.querySelector("#driver2Button").appendChild(newName2)
         d2_team = driver2Sel.firstChild.children[1].dataset.teamid
         manageColor(document.querySelector(".driver2-second"), document.querySelector(".driver2-second"))
         if(driver1_selected && driver2_selected){
