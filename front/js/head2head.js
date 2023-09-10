@@ -13,8 +13,8 @@ function manage_h2h_bars(data){
     let d2_width
     document.querySelectorAll(".one-statH2H").forEach(function(elem, index){
         if(elem.id === "bestrh2h" || elem.id === "bestqh2h"){
-            d1_width = 100 / data[index][0]
-            d2_width = 100 / data[index][1]
+            d1_width = 100 - (data[index][0] - 1) *5
+            d2_width = 100 - (data[index][1] - 1) *5
             if(data[index][0] <= 3){
                 elem.querySelector(".driver1-number").textContent = pos_dict[data[index][0]]
             }
