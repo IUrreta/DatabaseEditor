@@ -1740,7 +1740,7 @@ input::-webkit-inner-spin-button {
 }
 
 .febar-secondary {
-  background-color: #0a0a0a;
+  background-color: #f1f1f1;
 }
 
 .mebar-primary {
@@ -1772,7 +1772,7 @@ input::-webkit-inner-spin-button {
 }
 
 .afbar-secondary {
-  background-color: #0a0a0a;
+  background-color: #f1f1f1;
 }
 
 .asbar-primary {
@@ -1823,7 +1823,7 @@ input::-webkit-inner-spin-button {
 }
 
 .feborder-secondary {
-  border: 2px solid #0a0a0a;
+  border: 2px solid #f1f1f1;
 }
 
 .meborder-primary {
@@ -1855,7 +1855,7 @@ input::-webkit-inner-spin-button {
 }
 
 .afborder-secondary {
-  border: 2px solid #0a0a0a;
+  border: 2px solid #f1f1f1;
 }
 
 .asborder-primary {
