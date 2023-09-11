@@ -5,12 +5,25 @@ let driver2Sel;
 let pos_dict = {1: "1st", 2:"2nd", 3: "3rd"}
 let d1_team
 let d2_team
+let wins = false;
+let poles = false;
 
 function manage_h2h_bars(data){
     console.log(data)
     let relValue
     let d1_width
     let d2_width
+    if(data[7].some(elem => elem >= 2)){
+        data[4] = data[7]
+        document.getElementById("bestrh2h").querySelector(".name-H2H").textContent = "WINS"
+        wins = true
+    }
+    if(data[8].some(elem => elem >= 2)){
+        data[5] = data[8]
+        document.getElementById("bestqh2h").querySelector(".name-H2H").textContent = "POLES"
+        poles = true
+    }
+    
     document.querySelectorAll(".one-statH2H").forEach(function(elem, index){
         if(elem.id === "bestrh2h" || elem.id === "bestqh2h"){
             d1_width = 100 - (data[index][0] - 1) *5
