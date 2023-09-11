@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
         window.location.href = '../log.txt';
     })
 
-    /**
+    /** 
      * Manages the look of the status icon in the footer
      * @param {int} state state of the connection with backend
      */
