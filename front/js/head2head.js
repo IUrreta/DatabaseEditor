@@ -88,9 +88,13 @@ function manage_h2h_bars(data) {
             }
             else if (elem.id === "ptsh2h") {
                 relValue = 100 / Math.max(data[index][0], data[index][1])
+                console.log(relValue)
             }
             else if(elem.id === "dnfh2h" || elem.id === "podiumsh2h"){
                 relValue = (100 / (data[index][0] + data[index][1])).toFixed(2)
+            }
+            if (relValue == Infinity){
+                relValue = 0
             }
             d1_width = data[index][0] * relValue
             d2_width = data[index][1] * relValue

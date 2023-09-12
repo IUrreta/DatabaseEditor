@@ -25,9 +25,9 @@ def fetch_Head2Head(driver1ID, driver2ID, year, c):
         d1_QRes = cursor.execute("SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
         d2_QRes = cursor.execute("SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
         if(d1_QStage[0] < d2_QStage[0]):
-            qualiH2H[0]+= 1
-        elif(d1_QStage[0] > d2_QStage[0]):
             qualiH2H[1]+= 1
+        elif(d1_QStage[0] > d2_QStage[0]):
+            qualiH2H[0]+= 1
         elif(d1_QStage[0] == d2_QStage[0]):
             if(d1_QRes[0] < d2_QRes[0]):
                 qualiH2H[0]+= 1
