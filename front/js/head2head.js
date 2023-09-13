@@ -90,10 +90,10 @@ function manage_h2h_bars(data) {
                 relValue = 100 / Math.max(data[index][0], data[index][1])
                 console.log(relValue)
             }
-            else if(elem.id === "dnfh2h" || elem.id === "podiumsh2h"){
+            else if (elem.id === "dnfh2h" || elem.id === "podiumsh2h") {
                 relValue = (100 / (data[index][0] + data[index][1])).toFixed(2)
             }
-            if (relValue == Infinity){
+            if (relValue == Infinity) {
                 relValue = 0
             }
             d1_width = data[index][0] * relValue
@@ -125,7 +125,7 @@ function manage_h2h_bars(data) {
         elem.querySelector(".driver2-bar").style.width = d2_width + "%"
 
     })
-
+    createChart()
 }
 
 function load_drivers_h2h(drivers) {
@@ -209,4 +209,31 @@ function listeners_h2h(aDriver2, aDriver1) {
             socket.send(JSON.stringify(data))
         }
     })
+}
+
+function createChart() {
+    const data = [
+        { year: 2010, count: 10 },
+        { year: 2011, count: 20 },
+        { year: 2012, count: 15 },
+        { year: 2013, count: 25 },
+        { year: 2014, count: 22 },
+        { year: 2015, count: 30 },
+        { year: 2016, count: 28 },
+      ];
+    new Chart(
+        document.getElementById('driverGraph'),
+        {
+            type: 'bar',
+            data: {
+                labels: data.map(row => row.year),
+                datasets: [
+                    {
+                        label: 'Acquisitions by year',
+                        data: data.map(row => row.count)
+                    }
+                ]
+            }
+        }
+    );
 }

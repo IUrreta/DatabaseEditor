@@ -12,6 +12,7 @@
   "dependencies": {
     "bootstrap": "^5.3.0",
     "bootstrap-icons": "^1.10.5",
+    "chart.js": "^4.4.0",
     "interactjs": "^1.10.17",
     "marked": "^7.0.3",
     "simple-git": "^3.19.1",
