@@ -159,6 +159,9 @@ document.addEventListener('DOMContentLoaded', function () {
             else if(message[0] === "DriversH2H fetched"){
                 load_drivers_h2h(message.slice(1))
             }
+            else if(message[0] === "H2HDriver fetched"){
+                console.log(message.slice(1))
+            }
             else if (message[0] === "Results fetched") {
                 createTable(message[1])
                 setTimeout(function () {

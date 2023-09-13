@@ -224,7 +224,7 @@ function createChart() {
     new Chart(
         document.getElementById('driverGraph'),
         {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels: data.map(row => row.year),
                 datasets: [

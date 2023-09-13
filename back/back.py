@@ -184,6 +184,15 @@ async def handle_command(message):
         h2h = ["H2H fetched", h2hRes]
         data_json_h2h = json.dumps(h2h)
         await send_message_to_client(data_json_h2h)
+        d1Res = fetch_oneDriver_seasonResults((message["d1"],), (message["year"],))
+        d2Res = fetch_oneDriver_seasonResults((message["d2"],), (message["year"],))
+        print(d1Res)
+        print(d2Res)
+        h2hDrivers = [d1Res, d2Res]
+        h2hDrivers.insert(0, fetch_events_from(message["year"]))
+        h2hDrivers.insert(0, "H2HDriver fetched")
+        data_json_h2hdrivers = json.dumps(h2hDrivers)
+        await send_message_to_client(data_json_h2hdrivers)
 
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
