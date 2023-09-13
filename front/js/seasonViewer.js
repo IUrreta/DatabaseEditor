@@ -215,6 +215,7 @@ function formatTable() {
  * @param {Object} driverInfo one driver's season results
  */
 function addDriver(driverInfo) {
+    console.log(driverInfo)
     let nameDiv = document.createElement("div");
     let name = driverInfo[0].split(" ")
     let spanName = document.createElement("span")

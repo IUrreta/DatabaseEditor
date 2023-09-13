@@ -169,6 +169,7 @@ async def handle_command(message):
         results.insert(0, fetch_events_from(message["year"]))
         results.insert(0, "Results fetched")
         data_json_results = json.dumps(results)
+        #argument = json.dumps(message)
         await send_message_to_client(data_json_results)
 
     elif type=="yearSelectedH2H":
@@ -289,13 +290,20 @@ def fetch_seasonResults(yearSelected):
     drivers = cursor.execute("SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = " + str(year[0])).fetchall()
     seasonResults = []
     for driver in drivers:
-        results = cursor.execute("SELECT DriverID, TeamID, FinishingPos, Points FROM Races_Results WHERE Season = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
-        if results:
-            sprintResults = cursor.execute("SELECT RaceID, FinishingPos, ChampionshipPoints FROM Races_SprintResults WHERE SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
-            teamID = results[0][1]
-            driverName = cursor.execute("SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = " + str(driver[0])).fetchone()
-            seasonResults.append(format_seasonResults(results, driverName, teamID, driver, year, sprintResults))
+            driverRes = fetch_oneDriver_seasonResults(driver, year)
+            if(driverRes):
+                seasonResults.append(driverRes)
     return seasonResults
+
+def fetch_oneDriver_seasonResults(driver, year):
+    print(driver)
+    results = cursor.execute("SELECT DriverID, TeamID, FinishingPos, Points FROM Races_Results WHERE Season = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
+    if results:
+        sprintResults = cursor.execute("SELECT RaceID, FinishingPos, ChampionshipPoints FROM Races_SprintResults WHERE SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
+        teamID = results[0][1]
+        driverName = cursor.execute("SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = " + str(driver[0])).fetchone()
+        return format_seasonResults(results, driverName, teamID, driver, year, sprintResults)
+    
 
 def fetch_events_from(year):
     season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(year)).fetchall()
