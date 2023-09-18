@@ -198,7 +198,7 @@ a.bi-heart:hover {
 
 .dropdown-menu a:hover{
   background-color: #8b87af !important;
-  border-bottom: 2px solid white !important;
+  border-bottom: 2px solid white;
   color: white !important;
 }
 
@@ -1649,44 +1649,44 @@ input::-webkit-inner-spin-button {
 }
 
 
-#redbull, .rbborder-down {
-  border-bottom: 2px solid #3671C6;
+#redbull, .rbborder-down:hover {
+  border-bottom: 2px solid #3671C6 !important;
 }
 
-#ferrari, .feborder-down {
-  border-bottom: 2px solid #F91536;
+#ferrari, .feborder-down:hover {
+  border-bottom: 2px solid #F91536 !important;
 }
 
-#merc, .meborder-down {
-  border-bottom: 2px solid #6CD3BF
+#merc, .meborder-down:hover {
+  border-bottom: 2px solid #6CD3BF !important;
 }
 
-#mclaren, .mcborder-down {
-  border-bottom: 2px solid #F58020
+#mclaren, .mcborder-down:hover {
+  border-bottom: 2px solid #F58020 !important;
 }
 
-#alpine,.alborder-down {
-  border-bottom: 2px solid #2293D1
+#alpine,.alborder-down:hover {
+  border-bottom: 2px solid #2293D1 !important
 }
 
-#alfaromeo, .afborder-down {
-  border-bottom: 2px solid #C92D4B
+#alfaromeo, .afborder-down:hover {
+  border-bottom: 2px solid #C92D4B !important
 }
 
-#astonmartin, .asborder-down {
-  border-bottom: 2px solid #358C75
+#astonmartin, .asborder-down:hover {
+  border-bottom: 2px solid #358C75 !important
 }
 
-#alphatauri, .atborder-down {
-  border-bottom: 2px solid #5E8FAA
+#alphatauri, .atborder-down:hover {
+  border-bottom: 2px solid #5E8FAA !important 
 }
 
-#williams, .wiborder-down {
-  border-bottom: 2px solid #37BEDD
+#williams, .wiborder-down:hover {
+  border-bottom: 2px solid #37BEDD !important
 }
 
-#haas, .haborder-down {
-  border-bottom: 2px solid #B6BABD
+#haas, .haborder-down:hover {
+  border-bottom: 2px solid #B6BABD !important
 }
 
 .rbfont {

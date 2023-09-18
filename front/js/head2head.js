@@ -141,13 +141,13 @@ function load_drivers_h2h(drivers) {
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
         spanLastName.dataset.teamid = elem[2]
-        manageColor(spanLastName,spanLastName)
         let a = document.createElement("a");
         a.dataset.driverid = elem[1]
         nameDiv.appendChild(spanName)
         nameDiv.appendChild(spanLastName)
         a.appendChild(nameDiv)
         a.classList = "dropdown-item"
+        a.classList.add(team_dict[elem[2]] + "border-down")
         a.style.cursor = "pointer"
         let a2 = a.cloneNode(true)
         driver1Menu.appendChild(a2);
