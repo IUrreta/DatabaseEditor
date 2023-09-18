@@ -184,7 +184,7 @@ a.bi-heart:hover {
 }
 
 .dropdown-menu{
-  background-color: #3f3c57 !important;
+  background-color: #797599 !important;
   border: none !important;
   border-radius: 10px;
 
@@ -193,12 +193,13 @@ a.bi-heart:hover {
 .dropdown-menu a{
   color: #dedde6 !important;
   border: 2px solid transparent;
-  transition: border-color 0.3s, background-color 0.3s;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
 
 .dropdown-menu a:hover{
-  background-color: #4e4b69 !important;
-  border-bottom: 2px solid #dedde6 !important;
+  background-color: #8b87af !important;
+  border-bottom: 2px solid white !important;
+  color: white !important;
 }
 
 .modal-subtitle {
@@ -440,8 +441,8 @@ a.bi-heart:hover {
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
-
-
+  color: #dedde6 !important;
+  transition: border-color 0.3s, color 0.3s;
 }
 
 #numberButton{
@@ -454,6 +455,7 @@ a.bi-heart:hover {
 
 .custom-dropdown:hover {
   border: 2px solid white !important;
+  color: white !important;
 }
 
 .custom-dropdown:active {
@@ -1647,43 +1649,43 @@ input::-webkit-inner-spin-button {
 }
 
 
-#redbull {
+#redbull, .rbborder-down {
   border-bottom: 2px solid #3671C6;
 }
 
-#ferrari {
+#ferrari, .feborder-down {
   border-bottom: 2px solid #F91536;
 }
 
-#merc {
+#merc, .meborder-down {
   border-bottom: 2px solid #6CD3BF
 }
 
-#mclaren {
+#mclaren, .mcborder-down {
   border-bottom: 2px solid #F58020
 }
 
-#alpine {
+#alpine,.alborder-down {
   border-bottom: 2px solid #2293D1
 }
 
-#alfaromeo {
+#alfaromeo, .afborder-down {
   border-bottom: 2px solid #C92D4B
 }
 
-#astonmartin {
+#astonmartin, .asborder-down {
   border-bottom: 2px solid #358C75
 }
 
-#alphatauri {
+#alphatauri, .atborder-down {
   border-bottom: 2px solid #5E8FAA
 }
 
-#williams {
+#williams, .wiborder-down {
   border-bottom: 2px solid #37BEDD
 }
 
-#haas {
+#haas, .haborder-down {
   border-bottom: 2px solid #B6BABD
 }
 
