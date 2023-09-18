@@ -2,7 +2,7 @@ let driver1_selected = false;
 let driver2_selected = false;
 let driver1Sel;
 let driver2Sel;
-let pos_dict = { 1: "1st", 2: "2nd", 3: "3rd" }
+let pos_dict = { 1: "1st",2: "2nd",3: "3rd" }
 let d1_team
 let d2_team
 let wins = false;
@@ -33,7 +33,7 @@ function manage_h2h_bars(data) {
         poles = false
     }
 
-    document.querySelectorAll(".one-statH2H").forEach(function (elem, index) {
+    document.querySelectorAll(".one-statH2H").forEach(function (elem,index) {
         if (elem.id === "bestrh2h" || elem.id === "bestqh2h") {
             if (!wins && elem.id === "bestrh2h") {
                 d1_width = 100 - (data[index][0] - 1) * 5
@@ -87,7 +87,7 @@ function manage_h2h_bars(data) {
                 relValue = (100 / (data[0][0] + data[0][1])).toFixed(2)
             }
             else if (elem.id === "ptsh2h") {
-                relValue = 100 / Math.max(data[index][0], data[index][1])
+                relValue = 100 / Math.max(data[index][0],data[index][1])
                 console.log(relValue)
             }
             else if (elem.id === "dnfh2h" || elem.id === "podiumsh2h") {
@@ -125,7 +125,6 @@ function manage_h2h_bars(data) {
         elem.querySelector(".driver2-bar").style.width = d2_width + "%"
 
     })
-    createChart()
 }
 
 function load_drivers_h2h(drivers) {
@@ -142,7 +141,7 @@ function load_drivers_h2h(drivers) {
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
         spanLastName.dataset.teamid = elem[2]
-        manageColor(spanLastName, spanLastName)
+        manageColor(spanLastName,spanLastName)
         let a = document.createElement("a");
         a.dataset.driverid = elem[1]
         nameDiv.appendChild(spanName)
@@ -153,12 +152,12 @@ function load_drivers_h2h(drivers) {
         let a2 = a.cloneNode(true)
         driver1Menu.appendChild(a2);
         driver2Menu.appendChild(a);
-        listeners_h2h(a, a2)
+        listeners_h2h(a,a2)
     })
 }
 
-function listeners_h2h(aDriver2, aDriver1) {
-    aDriver1.addEventListener("click", function () {
+function listeners_h2h(aDriver2,aDriver1) {
+    aDriver1.addEventListener("click",function () {
         if (!driver1_selected) {
             driver1_selected = true
         }
@@ -171,7 +170,7 @@ function listeners_h2h(aDriver2, aDriver1) {
         let newName = aDriver1.firstChild.cloneNode(true)
         document.querySelector("#driver1Button").innerHTML = ""
         document.querySelector("#driver1Button").appendChild(newName)
-        manageColor(document.querySelector(".driver1-second"), document.querySelector(".driver1-second"))
+        manageColor(document.querySelector(".driver1-second"),document.querySelector(".driver1-second"))
         if (driver1_selected && driver2_selected) {
             let data = {
                 command: "H2HConfigured",
@@ -183,7 +182,7 @@ function listeners_h2h(aDriver2, aDriver1) {
             socket.send(JSON.stringify(data))
         }
     })
-    aDriver2.addEventListener("click", function () {
+    aDriver2.addEventListener("click",function () {
         if (!driver2_selected) {
             driver2_selected = true
         }
@@ -197,7 +196,7 @@ function listeners_h2h(aDriver2, aDriver1) {
         document.querySelector("#driver2Button").innerHTML = ""
         document.querySelector("#driver2Button").appendChild(newName2)
         d2_team = driver2Sel.firstChild.children[1].dataset.teamid
-        manageColor(document.querySelector(".driver2-second"), document.querySelector(".driver2-second"))
+        manageColor(document.querySelector(".driver2-second"),document.querySelector(".driver2-second"))
         if (driver1_selected && driver2_selected) {
             let data = {
                 command: "H2HConfigured",
@@ -211,29 +210,52 @@ function listeners_h2h(aDriver2, aDriver1) {
     })
 }
 
-function createChart() {
-    const data = [
-        { year: 2010, count: 10 },
-        { year: 2011, count: 20 },
-        { year: 2012, count: 15 },
-        { year: 2013, count: 25 },
-        { year: 2014, count: 22 },
-        { year: 2015, count: 30 },
-        { year: 2016, count: 28 },
-      ];
+function load_h2h_graph(data) {
+    var labels = [];
+    data[0].forEach(function(elem){
+        labels.push(elem[0])
+    })
+
+    let d1_res = [];
+    let d2_res = [];
+
+    data[1].slice(3).forEach(function(elem){
+        d1_res.push(elem[1])
+    })
+    data[2].slice(3).forEach(function(elem){
+        d2_res.push(elem[1])
+    })
+
+    console.log(labels)
+    createChart(labels, d1_res, d2_res)
+
+}
+
+function createChart(labelsArray, d1Results, d2Results) {
+    const dataD = {
+        labels: labelsArray,
+        datasets: [
+            {
+              label: 'Datos Set 1',
+              data: d1Results,
+              borderColor: 'red', // Color de la línea
+              borderWidth: 2, // Grosor de la línea
+              fill: false // No rellenar el área debajo de la línea
+            },
+            {
+                label: 'Datos Set 2',
+                data: d2Results,
+                borderColor: 'blue', // Color de la línea
+                borderWidth: 2, // Grosor de la línea
+                fill: false // No rellenar el área debajo de la línea
+              },
+        ]
+    };
     new Chart(
         document.getElementById('driverGraph'),
         {
             type: 'line',
-            data: {
-                labels: data.map(row => row.year),
-                datasets: [
-                    {
-                        label: 'Acquisitions by year',
-                        data: data.map(row => row.count)
-                    }
-                ]
-            }
+            data: dataD
         }
     );
 }
