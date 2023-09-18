@@ -198,7 +198,7 @@ a.bi-heart:hover {
 
 .dropdown-menu a:hover{
   background-color: #8b87af !important;
-  border-bottom: 2px solid white;
+  border-bottom: 2px solid white  ;
   color: white !important;
 }
 

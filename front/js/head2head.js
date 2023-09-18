@@ -7,6 +7,8 @@ let d1_team
 let d2_team
 let wins = false;
 let poles = false;
+let colors_dict = {"10": "#F91536", "11":"#f1f1f1", "20":"#F58020", "21":"#47c7fc","30": "#3671C6", "31": "#ffd300", "40":"#6CD3BF", "41":"#fcfcfc", "50":"#2293D1", "51":"#fd48c7", "60":"#37BEDD", "61":"#3792dd", "70":"#B6BABD", "71":"#da291c", "80":"#5E8FAA", "81":"#f1f1f1", "90":"#C92D4B", "91":"#f1f1f1", "100":"#358C75", "101":"#c3dc00"}
+let graph;
 
 function manage_h2h_bars(data) {
     console.log(data)
@@ -225,37 +227,57 @@ function load_h2h_graph(data) {
     data[2].slice(3).forEach(function(elem){
         d2_res.push(elem[1])
     })
+    let d1_color = colors_dict[data[1][1] + "0"]
+    let d2_color;
+    if(data[1][1] === data[2][1]){
+        d2_color = colors_dict[data[2][1] + "1"]
+    }
+    else{
+        d2_color = colors_dict[data[2][1] + "0"]
+    }
 
     console.log(labels)
-    createChart(labels, d1_res, d2_res)
+    if (typeof graph !== 'undefined' && graph !== null) {
+        graph.destroy();
+      }
+    createChart(labels, d1_res, d2_res, d1_color, d2_color)
 
 }
 
-function createChart(labelsArray, d1Results, d2Results) {
+function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color) {
     const dataD = {
         labels: labelsArray,
         datasets: [
             {
               label: 'Datos Set 1',
               data: d1Results,
-              borderColor: 'red', // Color de la línea
+              borderColor: d1_color, // Color de la línea
               borderWidth: 2, // Grosor de la línea
               fill: false // No rellenar el área debajo de la línea
             },
             {
                 label: 'Datos Set 2',
                 data: d2Results,
-                borderColor: 'blue', // Color de la línea
+                borderColor: d2_color, // Color de la línea
                 borderWidth: 2, // Grosor de la línea
                 fill: false // No rellenar el área debajo de la línea
               },
         ]
     };
-    new Chart(
+    graph = new Chart(
         document.getElementById('driverGraph'),
         {
             type: 'line',
-            data: dataD
+            data: dataD,
+            options: {
+                scales: {
+                  y: {
+                    reverse: true, // Invierte el eje Y
+                    min: 1,
+                    max: 20
+                  }
+                }
+              }
         }
     );
 }
