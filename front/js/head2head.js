@@ -2,12 +2,12 @@ let driver1_selected = false;
 let driver2_selected = false;
 let driver1Sel;
 let driver2Sel;
-let pos_dict = { 1: "1st",2: "2nd",3: "3rd" }
+let pos_dict = { 1: "1st", 2: "2nd", 3: "3rd" }
 let d1_team
 let d2_team
 let wins = false;
 let poles = false;
-let colors_dict = {"10": "#F91536", "11":"#f1f1f1", "20":"#F58020", "21":"#47c7fc","30": "#3671C6", "31": "#ffd300", "40":"#6CD3BF", "41":"#fcfcfc", "50":"#2293D1", "51":"#fd48c7", "60":"#37BEDD", "61":"#3792dd", "70":"#B6BABD", "71":"#da291c", "80":"#5E8FAA", "81":"#f1f1f1", "90":"#C92D4B", "91":"#f1f1f1", "100":"#358C75", "101":"#c3dc00"}
+let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#3792dd", "70": "#B6BABD", "71": "#da291c", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00" }
 let graph;
 
 function manage_h2h_bars(data) {
@@ -35,7 +35,7 @@ function manage_h2h_bars(data) {
         poles = false
     }
 
-    document.querySelectorAll(".one-statH2H").forEach(function (elem,index) {
+    document.querySelectorAll(".one-statH2H").forEach(function (elem, index) {
         if (elem.id === "bestrh2h" || elem.id === "bestqh2h") {
             if (!wins && elem.id === "bestrh2h") {
                 d1_width = 100 - (data[index][0] - 1) * 5
@@ -89,7 +89,7 @@ function manage_h2h_bars(data) {
                 relValue = (100 / (data[0][0] + data[0][1])).toFixed(2)
             }
             else if (elem.id === "ptsh2h") {
-                relValue = 100 / Math.max(data[index][0],data[index][1])
+                relValue = 100 / Math.max(data[index][0], data[index][1])
                 console.log(relValue)
             }
             else if (elem.id === "dnfh2h" || elem.id === "podiumsh2h") {
@@ -154,12 +154,12 @@ function load_drivers_h2h(drivers) {
         let a2 = a.cloneNode(true)
         driver1Menu.appendChild(a2);
         driver2Menu.appendChild(a);
-        listeners_h2h(a,a2)
+        listeners_h2h(a, a2)
     })
 }
 
-function listeners_h2h(aDriver2,aDriver1) {
-    aDriver1.addEventListener("click",function () {
+function listeners_h2h(aDriver2, aDriver1) {
+    aDriver1.addEventListener("click", function () {
         if (!driver1_selected) {
             driver1_selected = true
         }
@@ -172,7 +172,7 @@ function listeners_h2h(aDriver2,aDriver1) {
         let newName = aDriver1.firstChild.cloneNode(true)
         document.querySelector("#driver1Button").innerHTML = ""
         document.querySelector("#driver1Button").appendChild(newName)
-        manageColor(document.querySelector(".driver1-second"),document.querySelector(".driver1-second"))
+        manageColor(document.querySelector(".driver1-second"), document.querySelector(".driver1-second"))
         if (driver1_selected && driver2_selected) {
             let data = {
                 command: "H2HConfigured",
@@ -184,7 +184,7 @@ function listeners_h2h(aDriver2,aDriver1) {
             socket.send(JSON.stringify(data))
         }
     })
-    aDriver2.addEventListener("click",function () {
+    aDriver2.addEventListener("click", function () {
         if (!driver2_selected) {
             driver2_selected = true
         }
@@ -198,7 +198,7 @@ function listeners_h2h(aDriver2,aDriver1) {
         document.querySelector("#driver2Button").innerHTML = ""
         document.querySelector("#driver2Button").appendChild(newName2)
         d2_team = driver2Sel.firstChild.children[1].dataset.teamid
-        manageColor(document.querySelector(".driver2-second"),document.querySelector(".driver2-second"))
+        manageColor(document.querySelector(".driver2-second"), document.querySelector(".driver2-second"))
         if (driver1_selected && driver2_selected) {
             let data = {
                 command: "H2HConfigured",
@@ -214,54 +214,62 @@ function listeners_h2h(aDriver2,aDriver1) {
 
 function load_h2h_graph(data) {
     var labels = [];
-    data[0].forEach(function(elem){
-        labels.push(elem[0])
+    data[0].forEach(function (elem) {
+        labels.push(races_names[elem[1]])
     })
 
     let d1_res = [];
     let d2_res = [];
 
-    data[1].slice(3).forEach(function(elem){
+    data[1].slice(3).forEach(function (elem) {
+        if (elem[1] === -1) {
+            elem[1] = 20
+        }
         d1_res.push(elem[1])
     })
-    data[2].slice(3).forEach(function(elem){
+    data[2].slice(3).forEach(function (elem) {
+        if (elem[1] === -1) {
+            elem[1] = 20
+        }
         d2_res.push(elem[1])
     })
     let d1_color = colors_dict[data[1][1] + "0"]
     let d2_color;
-    if(data[1][1] === data[2][1]){
+    if (data[1][1] === data[2][1]) {
         d2_color = colors_dict[data[2][1] + "1"]
     }
-    else{
+    else {
         d2_color = colors_dict[data[2][1] + "0"]
     }
 
     console.log(labels)
     if (typeof graph !== 'undefined' && graph !== null) {
         graph.destroy();
-      }
-    createChart(labels, d1_res, d2_res, d1_color, d2_color)
+    }
+    createChart(labels, d1_res, d2_res, d1_color, d2_color, data[1][0], data[2][0])
 
 }
 
-function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color) {
+function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color, d1_name, d2_name) {
     const dataD = {
         labels: labelsArray,
         datasets: [
             {
-              label: 'Datos Set 1',
-              data: d1Results,
-              borderColor: d1_color, // Color de la línea
-              borderWidth: 2, // Grosor de la línea
-              fill: false // No rellenar el área debajo de la línea
+                label: d1_name,
+                data: d1Results,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                borderWidth: 2,
+                fill: false
             },
             {
-                label: 'Datos Set 2',
+                label: d2_name,
                 data: d2Results,
-                borderColor: d2_color, // Color de la línea
-                borderWidth: 2, // Grosor de la línea
-                fill: false // No rellenar el área debajo de la línea
-              },
+                borderColor: d2_color,
+                pointBackgroundColor: d2_color,
+                borderWidth: 2,
+                fill: false
+            },
         ]
     };
     graph = new Chart(
@@ -271,13 +279,38 @@ function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color) {
             data: dataD,
             options: {
                 scales: {
-                  y: {
-                    reverse: true, // Invierte el eje Y
-                    min: 1,
-                    max: 20
-                  }
+                    x: {
+                        grid: {
+                            color: '#3d3b4d' // Cambia el color de las guías en el eje X
+                        },
+                        ticks: {
+                            color: "#dedde6"
+                        }
+                    },
+                    y: {
+                        reverse: true, // Invierte el eje Y
+                        min: 1,
+                        max: 20,
+                        grid: {
+                            color: '#3d3b4d' // Cambia el color de las guías en el eje Y
+                        },
+                        ticks: {
+                            color: "#dedde6"
+                        }
+
+                    }
+                },
+                plugins:{
+                    legend: {
+                        labels: {
+                            usePointStyle: true,
+                            color: "#dedde6",
+                        },
+                    }
                 }
-              }
+
+
+            }
         }
     );
 }

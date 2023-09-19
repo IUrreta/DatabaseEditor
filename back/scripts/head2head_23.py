@@ -19,11 +19,15 @@ def fetch_Head2Head(driver1ID, driver2ID, year, c):
     d2_BestRace = 21
     d1_BestQauli = 21
     d2_BestQauli = 21
+    d1_highestQStage = 3
+    d2_highestQStage = 3
     for race in tuple_races:
         d1_QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
         d2_QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
-        d1_QRes = cursor.execute("SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
-        d2_QRes = cursor.execute("SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
+        d1_QRes = cursor.execute("SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0]) + " AND QualifyingStage = " + str(d1_QStage[0])).fetchone()
+        d2_QRes = cursor.execute("SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0]) + " AND QualifyingStage = " + str(d2_QStage[0])).fetchone()
+        print(d1_QRes)
+        print(d2_QRes)
         if(d1_QStage[0] < d2_QStage[0]):
             qualiH2H[1]+= 1
         elif(d1_QStage[0] > d2_QStage[0]):
@@ -37,10 +41,14 @@ def fetch_Head2Head(driver1ID, driver2ID, year, c):
             polesH2H[0] += 1
         if(d2_QStage[0] == 3 and d2_QRes[0] == 1):
             polesH2H[1] += 1
-        if(d1_QRes[0] < d1_BestQauli):
-            d1_BestQauli = d1_QRes[0]
-        if(d2_QRes[0] < d2_BestQauli):
-            d2_BestQauli = d2_QRes[0]
+        if(d1_QStage[0] <= d1_highestQStage):
+            d1_highestQStage = d1_QStage[0]
+            if(d1_QRes[0] < d1_BestQauli):
+                d1_BestQauli = d1_QRes[0]
+        if(d2_QStage[0] <= d2_highestQStage):
+            d2_highestQStage = d2_QStage[0]
+            if(d2_QRes[0] < d2_BestQauli):
+                d2_BestQauli = d2_QRes[0]
         d1_RRes = cursor.execute("SELECT FinishingPos FROM Races_Results  WHERE RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
         d2_RRes = cursor.execute("SELECT FinishingPos FROM Races_Results  WHERE RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
         if(d1_RRes[0] == 1):

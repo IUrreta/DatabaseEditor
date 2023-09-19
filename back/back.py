@@ -280,7 +280,6 @@ async def main():
 
 def fetch_driverContract(id):
     details = cursor.execute("SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = " + str(id)).fetchone()
-    print(details)
     return details
 
 def fetch_staff():
@@ -305,7 +304,6 @@ def fetch_seasonResults(yearSelected):
     return seasonResults
 
 def fetch_oneDriver_seasonResults(driver, year):
-    print(driver)
     results = cursor.execute("SELECT DriverID, TeamID, FinishingPos, Points FROM Races_Results WHERE Season = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
     if results:
         sprintResults = cursor.execute("SELECT RaceID, FinishingPos, ChampionshipPoints FROM Races_SprintResults WHERE SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
