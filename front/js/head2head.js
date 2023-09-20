@@ -223,13 +223,13 @@ function load_h2h_graph(data) {
 
     data[1].slice(3).forEach(function (elem) {
         if (elem[1] === -1) {
-            elem[1] = 20
+            elem[1] = NaN
         }
         d1_res.push(elem[1])
     })
     data[2].slice(3).forEach(function (elem) {
         if (elem[1] === -1) {
-            elem[1] = 20
+            elem[1] = NaN
         }
         d2_res.push(elem[1])
     })
@@ -278,24 +278,35 @@ function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color, d1_n
             type: 'line',
             data: dataD,
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index'
+                },
                 scales: {
                     x: {
                         grid: {
-                            color: '#3d3b4d' // Cambia el color de las guías en el eje X
+                            color: '#191630'
                         },
                         ticks: {
-                            color: "#dedde6"
+                            color: "#dedde6",
+                            font: {
+                                family: "Formula1Bold"
+                            }
                         }
                     },
                     y: {
-                        reverse: true, // Invierte el eje Y
+                        reverse: true,
                         min: 1,
                         max: 20,
                         grid: {
-                            color: '#3d3b4d' // Cambia el color de las guías en el eje Y
+                            color: '#191630'
                         },
                         ticks: {
-                            color: "#dedde6"
+                            color: "#dedde6",
+                            font: {
+                                family: "Formula1Bold"
+                            }
                         }
 
                     }
@@ -305,8 +316,23 @@ function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color, d1_n
                         labels: {
                             usePointStyle: true,
                             color: "#dedde6",
+                            font: {
+                                family: "Formula1"
+                            }
                         },
+                    },
+                    tooltip: {
+                        titleFont: {
+                            family: 'Formula1Bold', 
+                            size: 16
+
+                        },
+                        bodyFont: {
+                            family: 'Formula1',
+                            size: 14
+                        }
                     }
+
                 }
 
 
