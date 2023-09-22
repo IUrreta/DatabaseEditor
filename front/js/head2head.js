@@ -260,7 +260,7 @@ function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color, d1_n
                 borderColor: d1_color,
                 pointBackgroundColor: d1_color,
                 borderWidth: 2,
-                fill: false
+                fill: false,
             },
             {
                 label: d2_name,
@@ -268,7 +268,8 @@ function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color, d1_n
                 borderColor: d2_color,
                 pointBackgroundColor: d2_color,
                 borderWidth: 2,
-                fill: false
+                fill: false,
+
             },
         ]
     };
@@ -297,8 +298,10 @@ function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color, d1_n
                     },
                     y: {
                         reverse: true,
-                        min: 1,
-                        max: 20,
+                        afterDataLimits: (scale) => {
+                            scale.max = 20;
+                            scale.min = 0.5;
+                          },
                         grid: {
                             color: '#191630'
                         },

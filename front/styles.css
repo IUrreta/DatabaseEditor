@@ -191,15 +191,14 @@ a.bi-heart:hover {
 }
 
 .dropdown-menu a{
-  color: #dedde6 !important;
+  color: white !important;
   border: 2px solid transparent;
-  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+  transition: border-color 0.3s, background-color 0.3s;
 }
 
 .dropdown-menu a:hover{
   background-color: #8b87af !important;
   border-bottom: 2px solid white  ;
-  color: white !important;
 }
 
 .modal-subtitle {
@@ -441,8 +440,8 @@ a.bi-heart:hover {
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
-  color: #dedde6 !important;
-  transition: border-color 0.3s, color 0.3s;
+  color: white !important;
+  transition: border-color 0.3s;
 }
 
 #numberButton{
@@ -455,7 +454,6 @@ a.bi-heart:hover {
 
 .custom-dropdown:hover {
   border: 2px solid white !important;
-  color: white !important;
 }
 
 .custom-dropdown:active {
