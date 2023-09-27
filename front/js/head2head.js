@@ -214,25 +214,48 @@ function listeners_h2h(aDriver2, aDriver1) {
 
 function load_h2h_graph(data) {
     var labels = [];
-    data[0].forEach(function (elem) {
-        labels.push(races_names[elem[1]])
-    })
-
     let d1_res = [];
     let d2_res = [];
-
+    let d1_races = [];
+    let d1_provisonal = [];
+    let d2_races = [];
+    let d2_provisonal = [];
+    
     data[1].slice(3).forEach(function (elem) {
-        if (elem[1] === -1) {
-            elem[1] = NaN
-        }
-        d1_res.push(elem[1])
+        d1_races.push(elem[0])
+        d1_provisonal.push(elem[1])
     })
+
     data[2].slice(3).forEach(function (elem) {
-        if (elem[1] === -1) {
-            elem[1] = NaN
-        }
-        d2_res.push(elem[1])
+        d2_races.push(elem[0])
+        d2_provisonal.push(elem[1])
     })
+
+
+    data[0].forEach(function (elem) {
+        labels.push(races_names[elem[1]])
+        let index1 = d1_races.indexOf(elem[0])
+        let index2 = d2_races.indexOf(elem[0])
+        if(index1 !== -1){
+            d1_res.push(d1_provisonal[index1])
+            if(d1_res[index1] === -1){
+                d1_res[index1] = NaN
+            }
+        }
+        else{
+            d1_res.push(NaN)
+        }
+        if(index2 !== -1){
+            d2_res.push(d2_provisonal[index2])
+            if(d2_res[index2] === -1){
+                d2_res[index2] = NaN
+            }
+        }
+        else{
+            d2_res.push(NaN)
+        }
+    })
+
     let d1_color = colors_dict[data[1][1] + "0"]
     let d2_color;
     if (data[1][1] === data[2][1]) {
@@ -241,8 +264,6 @@ function load_h2h_graph(data) {
     else {
         d2_color = colors_dict[data[2][1] + "0"]
     }
-
-    console.log(labels)
     if (typeof graph !== 'undefined' && graph !== null) {
         graph.destroy();
     }
