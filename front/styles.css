@@ -72,7 +72,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .update-info {
-  transition: color 0.5s;
+  transition: color 0.4s;
   text-decoration: none;
   color: #797599;
   cursor: default;
@@ -270,7 +270,7 @@ a.bi-heart:hover {
 
 
 .alert {
-  animation: colorChange 0.5s infinite;
+  animation: colorChange 0.4s infinite;
   margin-bottom: 0px !important;
 }
 
@@ -299,7 +299,7 @@ a.bi-heart:hover {
 }
 
 .patchNotesPanel i {
-  transition: color 0.5s;
+  transition: color 0.4s;
   font-style: normal;
   color: #797599;
   cursor: pointer;
@@ -365,11 +365,11 @@ a.bi-heart:hover {
 }
 
 .hide {
-  animation: fadeOut 0.5s;
+  animation: fadeOut 0.4s;
 }
 
 .myShow{
-  animation: myFadeIn 0.5s;
+  animation: myFadeIn 0.4s;
 }
 
 @keyframes fadeOut {
@@ -553,10 +553,39 @@ a.bi-heart:hover {
   padding-left: 12px !important;
   padding-right: 12px !important;
   border-radius: 10px !important;
-
 }
 
+.pill-types{
+  display: flex;
+  flex-direction: row;
+  color: #dedde6;
+  font-size: 18px;
+  width: 100%;
+}
 
+.pill-types .activeType{
+  color: white !important;
+}
+
+#editPills{
+  position: absolute;
+  right: 280px;
+  transition: color 0.4s;
+}
+
+#dataPills{
+  padding-left: 150px;
+  transition: color 0.4s;
+}
+
+.save-selector-title{
+  color: #dedde6;
+  transition: color 0.4s;
+}
+
+.save-selector-title.activeSelected{
+  color: white !important;
+}
 
 .confirm-section {
   margin-left: 20px;
@@ -579,7 +608,7 @@ a.bi-heart:hover {
   border-radius: 10px !important;
   color: white !important;
   background-color: #797599 !important;
-  transition: border-color 0.5s, background-color 0.5s, color 0.5s !important;
+  transition: border-color 0.4s, background-color 0.4s, color 0.4s !important;
 
 }
 
@@ -604,7 +633,7 @@ a.bi-heart:hover {
   border-radius: 10px !important;
   color: white !important;
   background-color: #797599 !important;
-  transition: border-color 0.5s, background-color 0.5s !important;
+  transition: border-color 0.4s, background-color 0.4s !important;
   display: flex;
   justify-content: center;
 
@@ -613,7 +642,7 @@ a.bi-heart:hover {
 .delete-mode {
   background-color: #ff8080 !important;
   border-color: #d66f6f !important;
-  transition: border-color 0.5s;
+  transition: border-color 0.4s;
 }
 
 .custom-delete:hover {
@@ -817,7 +846,7 @@ a.bi-heart:hover {
   padding: 8px;
   margin: 10px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   display: flex;
   cursor: grab !important;
   flex-direction: column;
@@ -851,7 +880,7 @@ a.bi-heart:hover {
   border: 2.5px solid transparent;
   border-radius: 10px;
   color: white;
-  transition: color 0.5s, border-color 0.5s;
+  transition: color 0.4s, border-color 0.4s;
   cursor: pointer;
 }
 
@@ -931,7 +960,7 @@ a.bi-heart:hover {
 
 #F2pill {
   border: 2px solid transparent;
-  transition: border-color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, background-color 0.4s;
 }
 
 #F2pill:hover {
@@ -941,7 +970,7 @@ a.bi-heart:hover {
 
 #F3pill {
   border: 2px solid transparent;
-  transition: border-color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, background-color 0.4s;
 }
 
 #F3pill:hover {
@@ -971,7 +1000,7 @@ a.bi-heart:hover {
   margin-right: 10px;
   color: #dedde6;
   border: 2px solid transparent;
-  transition: border-color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, background-color 0.4s;
   align-items: center;
 }
 
@@ -1009,7 +1038,7 @@ a.bi-heart:hover {
   margin-right: 5px;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.5s, color 0.5s;
+  transition: background-color 0.4s, color 0.4s;
 }
 
 .driver1-name:hover, .driver2-name:hover {
@@ -1035,7 +1064,7 @@ a.bi-heart:hover {
   margin-right: 10px;
   color: #dedde6;
   border: 2px solid transparent;
-  transition: border-color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, background-color 0.4s;
 }
 
 .one-performance:hover {
@@ -1060,7 +1089,7 @@ a.bi-heart:hover {
 }
 
 .performance-buttons i {
-  transition: color 0.5s;
+  transition: color 0.4s;
   cursor: pointer !important;
 }
 
@@ -1076,13 +1105,13 @@ a.bi-heart:hover {
 
 .performance-name {
   width: 200px;
-  transition: color 0.5s;
+  transition: color 0.4s;
   cursor: default !important;
 }
 
 .performance-name-engine {
   width: 300px;
-  transition: color 0.5s;
+  transition: color 0.4s;
   cursor: default !important;
 }
 
@@ -1096,7 +1125,7 @@ a.bi-heart:hover {
 
 .name-H2H{
   width: 100%;
-  transition: color 0.5s;
+  transition: color 0.4s;
   cursor: default !important;
   text-align: center;
 }
@@ -1284,7 +1313,7 @@ a.bi-heart:hover {
   padding: 8px 12px;
   max-width: 210px;
   outline: none;
-  transition: border-color 0.5s;
+  transition: border-color 0.4s;
   background-color: rgb(99, 99, 110);
   color: white;
 }
@@ -1327,7 +1356,7 @@ a.bi-heart:hover {
   cursor: pointer !important;
   margin: 10px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   position: relative;
   font-size: 18px;
 }
@@ -1357,14 +1386,14 @@ a.bi-heart:hover {
   cursor: grab !important;
   margin: 10px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   position: relative;
   font-size: 15px;
 }
 
 .free-driver .custom-icon {
   color: transparent;
-  transition: opacity 0.5s;
+  transition: opacity 0.4s;
   background-image: linear-gradient(to left, #4e4b69, transparent);
   width: 80px;
   opacity: 0;
@@ -1377,7 +1406,7 @@ a.bi-heart:hover {
 }
 
 .custom-icon i {
-  transition: color 0.5s;
+  transition: color 0.4s;
 }
 
 .custom-icon i:hover {
@@ -1430,7 +1459,7 @@ a.bi-heart:hover {
   padding: 8px;
   margin: 10px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
@@ -1443,7 +1472,7 @@ a.bi-heart:hover {
   margin: 10px;
   margin-left: 20px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   min-height: 70px;
   border: 2px solid transparent;
   display: flex;
@@ -1454,18 +1483,20 @@ a.bi-heart:hover {
 
 
 .scriptPills {
-  color: white !important;
+  color: #dedde6 !important;
   border: 2px solid transparent !important;
-  transition: border-color 0.5s, background-color 0.5s !important;
+  transition: border-color 0.4s, background-color 0.4s , color 0.4s !important;
 }
 
 .scriptPills:hover {
   border-color: white !important;
   background-color: #58556c;
+  color: white !important;
 }
 
 .scriptPills.active {
   background-color: #797599 !important;
+  color: white !important;
 }
 
 .custom-input-number {
@@ -1478,7 +1509,7 @@ a.bi-heart:hover {
   height: 56px;
   border: 2px solid transparent;
   font-size: 20px;
-  transition: border-color 0.5s !important;
+  transition: border-color 0.4s !important;
 
 }
 
@@ -1596,7 +1627,7 @@ input::-webkit-inner-spin-button {
   padding-bottom: 6px;
   padding-top: 9px;
   padding-left: 5px;
-  transition: opacity 0.5s;
+  transition: opacity 0.4s;
 }
 
 #mclarenlogo {

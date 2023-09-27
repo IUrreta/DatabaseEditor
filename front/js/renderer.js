@@ -463,6 +463,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('#dropdownMenu a').forEach(item => {
             item.addEventListener("click", function () {
                 const saveSelector = document.getElementById('saveSelector');
+                document.querySelector(".save-selector-title").classList.add("activeSelected")
                 let saveSelected = item.innerHTML
                 saveSelector.innerHTML = saveSelected;
                 let dataSaves = {
@@ -543,6 +544,7 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("show","hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("data")
 
     })
 
@@ -550,6 +552,7 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("hide","show", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("data")
 
     })
 
@@ -557,6 +560,7 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("hide","hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("edit")
 
     })
 
@@ -564,19 +568,33 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("hide","hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("edit")
     })
 
     CalendarPill.addEventListener("click", function () {
         manageScripts("hide","hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("edit")
     })
 
     carPill.addEventListener("click", function () {
         manageScripts("hide","hide", "hide", "hide", "hide", "show")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("edit")
     })
+
+    function managePillsTitle(type){
+        if(type === "data"){
+            document.querySelector("#dataPills").classList.add("activeType")
+            document.querySelector("#editPills").classList.remove("activeType")
+        }
+        else if(type === "edit"){
+            document.querySelector("#editPills").classList.add("activeType")
+            document.querySelector("#dataPills").classList.remove("activeType")
+        }
+    }
 
     /**
      * Manages the stats of the divs associated with the pills
