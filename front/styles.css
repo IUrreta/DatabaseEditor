@@ -995,6 +995,7 @@ a.bi-heart:hover {
   padding: 10px;
   font-size: 20px;
   height: 110px;
+  margin-top: 6px;
 }
 
 .driver1-name, .driver2-name{
