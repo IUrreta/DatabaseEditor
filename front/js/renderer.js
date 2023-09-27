@@ -169,7 +169,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 load_drivers_h2h(message.slice(1))
             }
             else if(message[0] === "H2HDriver fetched"){
-                console.log(message.slice(1))
                 load_h2h_graph(message.slice(1))
             }
             else if (message[0] === "Results fetched") {
@@ -361,7 +360,6 @@ document.addEventListener('DOMContentLoaded', function () {
      * @param {Object} info values for the contract modal that just opened
      */
     function manage_modal(info) {
-        console.log(info)
         document.querySelectorAll(".rounded-input").forEach(function (elem, index) {
             elem.value = info[0][index]
         })
