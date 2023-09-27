@@ -70,15 +70,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const CalendarPill = document.getElementById("calendarpill");
     const carPill = document.getElementById("carpill");
     const viewPill = document.getElementById("viewerpill");
+    const h2hPill = document.getElementById("h2hpill");
 
     const driverTransferDiv = document.getElementById("driver_transfers");
     const editStatsDiv = document.getElementById("edit_stats");
     const customCalendarDiv = document.getElementById("custom_calendar");
     const carPerformanceDiv = document.getElementById("car_performance");
     const viewDiv = document.getElementById("season_viewer");
+    const h2hDiv = document.getElementById("head2head_viewer");
+
     const patchNotesBody = document.getElementById("patchNotesBody")
 
-    const scriptsArray = [viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv,]
+    const scriptsArray = [h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv,]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -88,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched"]
+    const noNotifications = ["Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched"]
 
     let latestTag;
 
@@ -150,6 +153,16 @@ document.addEventListener('DOMContentLoaded', function () {
             else if (message[0] === "Numbers fetched") {
                 loadNumbers(message.slice(1))
             }
+            else if (message[0] === "H2H fetched") {
+                manage_h2h_bars(message.slice(1)[0])
+            }
+            else if(message[0] === "DriversH2H fetched"){
+                load_drivers_h2h(message.slice(1))
+            }
+            else if(message[0] === "H2HDriver fetched"){
+                console.log(message.slice(1))
+                load_h2h_graph(message.slice(1))
+            }
             else if (message[0] === "Results fetched") {
                 createTable(message[1])
                 setTimeout(function () {
@@ -170,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
         window.location.href = '../log.txt';
     })
 
-    /**
+    /** 
      * Manages the look of the status icon in the footer
      * @param {int} state state of the connection with backend
      */
@@ -450,6 +463,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('#dropdownMenu a').forEach(item => {
             item.addEventListener("click", function () {
                 const saveSelector = document.getElementById('saveSelector');
+                document.querySelector(".save-selector-title").classList.add("activeSelected")
                 let saveSelected = item.innerHTML
                 saveSelector.innerHTML = saveSelected;
                 let dataSaves = {
@@ -526,37 +540,61 @@ document.addEventListener('DOMContentLoaded', function () {
     /**
      * Pills and their eventListeners
      */
-    viewPill.addEventListener("click", function () {
-        manageScripts("show", "hide", "hide", "hide", "hide")
+    h2hPill.addEventListener("click", function () {
+        manageScripts("show","hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("data")
+
+    })
+
+    viewPill.addEventListener("click", function () {
+        manageScripts("hide","show", "hide", "hide", "hide", "hide")
+        scriptSelected = 1
+        check_selected()
+        managePillsTitle("data")
 
     })
 
     driverTransferPill.addEventListener("click", function () {
-        manageScripts("hide", "show", "hide", "hide", "hide")
+        manageScripts("hide","hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("edit")
 
     })
 
     editStatsPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "show", "hide", "hide")
+        manageScripts("hide","hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("edit")
     })
 
     CalendarPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "show", "hide")
+        manageScripts("hide","hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("edit")
     })
 
     carPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "hide", "show")
+        manageScripts("hide","hide", "hide", "hide", "hide", "show")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("edit")
     })
+
+    function managePillsTitle(type){
+        if(type === "data"){
+            document.querySelector("#dataPills").classList.add("activeType")
+            document.querySelector("#editPills").classList.remove("activeType")
+        }
+        else if(type === "edit"){
+            document.querySelector("#editPills").classList.add("activeType")
+            document.querySelector("#dataPills").classList.remove("activeType")
+        }
+    }
 
     /**
      * Manages the stats of the divs associated with the pills

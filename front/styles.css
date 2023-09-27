@@ -72,7 +72,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .update-info {
-  transition: color 0.5s;
+  transition: color 0.4s;
   text-decoration: none;
   color: #797599;
   cursor: default;
@@ -164,16 +164,21 @@ a.bi-heart:hover {
   align-items: center;
 }
 
+#d1Menu, #d2Menu{
+  max-height: 200px;
+  overflow-y: scroll;
+}
+
 #numberMenu{
   max-height: 200px;
   overflow-y: scroll;
 }
 
-#numberMenu::-webkit-scrollbar {
+#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar {
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb {
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb {
   background-color: white;
   border-radius: 3px;
 }
@@ -193,7 +198,7 @@ a.bi-heart:hover {
 
 .dropdown-menu a:hover{
   background-color: #8b87af !important;
-  border-bottom: 2px solid white !important;
+  border-bottom: 2px solid white  ;
 }
 
 .modal-subtitle {
@@ -265,7 +270,7 @@ a.bi-heart:hover {
 
 
 .alert {
-  animation: colorChange 0.5s infinite;
+  animation: colorChange 0.4s infinite;
   margin-bottom: 0px !important;
 }
 
@@ -294,7 +299,7 @@ a.bi-heart:hover {
 }
 
 .patchNotesPanel i {
-  transition: color 0.5s;
+  transition: color 0.4s;
   font-style: normal;
   color: #797599;
   cursor: pointer;
@@ -336,6 +341,23 @@ a.bi-heart:hover {
   color: white;
   border-radius: 10px !important;
   width: 420px !important;
+  backdrop-filter: blur(3px);
+}
+
+.bar-space{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.driver1-number{
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.driver2-number{
+  font-size: 18px;
+  margin-left: 10px;
 }
 
 .toast-error{
@@ -343,11 +365,11 @@ a.bi-heart:hover {
 }
 
 .hide {
-  animation: fadeOut 0.5s;
+  animation: fadeOut 0.4s;
 }
 
 .myShow{
-  animation: myFadeIn 0.5s;
+  animation: myFadeIn 0.4s;
 }
 
 @keyframes fadeOut {
@@ -418,8 +440,8 @@ a.bi-heart:hover {
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
-
-
+  color: white !important;
+  transition: border-color 0.3s;
 }
 
 #numberButton{
@@ -531,10 +553,39 @@ a.bi-heart:hover {
   padding-left: 12px !important;
   padding-right: 12px !important;
   border-radius: 10px !important;
-
 }
 
+.pill-types{
+  display: flex;
+  flex-direction: row;
+  color: #dedde6;
+  font-size: 18px;
+  width: 100%;
+}
 
+.pill-types .activeType{
+  color: white !important;
+}
+
+#editPills{
+  position: absolute;
+  right: 280px;
+  transition: color 0.4s;
+}
+
+#dataPills{
+  padding-left: 150px;
+  transition: color 0.4s;
+}
+
+.save-selector-title{
+  color: #dedde6;
+  transition: color 0.4s;
+}
+
+.save-selector-title.activeSelected{
+  color: white !important;
+}
 
 .confirm-section {
   margin-left: 20px;
@@ -557,7 +608,7 @@ a.bi-heart:hover {
   border-radius: 10px !important;
   color: white !important;
   background-color: #797599 !important;
-  transition: border-color 0.5s, background-color 0.5s, color 0.5s !important;
+  transition: border-color 0.4s, background-color 0.4s, color 0.4s !important;
 
 }
 
@@ -582,7 +633,7 @@ a.bi-heart:hover {
   border-radius: 10px !important;
   color: white !important;
   background-color: #797599 !important;
-  transition: border-color 0.5s, background-color 0.5s !important;
+  transition: border-color 0.4s, background-color 0.4s !important;
   display: flex;
   justify-content: center;
 
@@ -591,7 +642,7 @@ a.bi-heart:hover {
 .delete-mode {
   background-color: #ff8080 !important;
   border-color: #d66f6f !important;
-  transition: border-color 0.5s;
+  transition: border-color 0.4s;
 }
 
 .custom-delete:hover {
@@ -624,7 +675,7 @@ a.bi-heart:hover {
 
 [tabulator-field="driver"],
 [tabulator-field="points"] {
-  background-color: #373063 !important;
+  background-color: #464166 !important;
 }
 
 
@@ -665,14 +716,14 @@ a.bi-heart:hover {
 }
 
 .main-viewer-section .tabulator-row {
-  background-color: #1f1b3b !important;
+  background-color: #494561 !important;
   cursor: pointer !important;
   color: #dedde6 !important;
   transition: background-color 0.3s !important;
 }
 
 .main-viewer-section .tabulator-row-even {
-  background-color: #2a2450 !important;
+  background-color: #3c3952 !important;
   cursor: pointer !important;
   color: #dedde6 !important;
 }
@@ -776,6 +827,17 @@ a.bi-heart:hover {
 
 }
 
+.buttons-h2h{
+  display: flex;
+  gap: 10px;
+}
+
+#driver1Button, #driver2Button{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .race-calendar {
   position: relative;
   background-color: #3f3c57;
@@ -784,7 +846,7 @@ a.bi-heart:hover {
   padding: 8px;
   margin: 10px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   display: flex;
   cursor: grab !important;
   flex-direction: column;
@@ -818,7 +880,7 @@ a.bi-heart:hover {
   border: 2.5px solid transparent;
   border-radius: 10px;
   color: white;
-  transition: color 0.5s, border-color 0.5s;
+  transition: color 0.4s, border-color 0.4s;
   cursor: pointer;
 }
 
@@ -898,7 +960,7 @@ a.bi-heart:hover {
 
 #F2pill {
   border: 2px solid transparent;
-  transition: border-color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, background-color 0.4s;
 }
 
 #F2pill:hover {
@@ -908,7 +970,7 @@ a.bi-heart:hover {
 
 #F3pill {
   border: 2px solid transparent;
-  transition: border-color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, background-color 0.4s;
 }
 
 #F3pill:hover {
@@ -922,6 +984,70 @@ a.bi-heart:hover {
 
 #F3pill.active {
   background-color: red !important;
+}
+
+.one-statH2H {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+  background-color: #3f3c57;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  color: #dedde6;
+  border: 2px solid transparent;
+  transition: border-color 0.4s, background-color 0.4s;
+  align-items: center;
+}
+
+.one-statH2H:hover {
+  border-color: white;
+  background-color: #4e4b69;
+}
+
+.one-statH2H:hover .name-H2H {
+  color: white;
+}
+
+.one-statH2H:hover .driver1-number, .one-statH2H:hover .driver2-number{
+  color: white;
+}
+
+.driver-names{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 10px;
+  font-size: 20px;
+  height: 110px;
+  margin-top: 6px;
+}
+
+.driver1-name, .driver2-name{
+  display: flex;
+  flex-direction: column;
+  color: #dedde6;
+  background-color: #1f1b3b;
+  border-radius: 10px;
+  width: 100%;
+  margin-left: 5px;
+  margin-right: 5px;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.4s, color 0.4s;
+}
+
+.driver1-name:hover, .driver2-name:hover {
+  color: white;
+  background-color: #302a57;
+}
+
+.driver1-second, .driver2-second{
+  margin-top: -6px;
 }
 
 .one-performance {
@@ -938,7 +1064,7 @@ a.bi-heart:hover {
   margin-right: 10px;
   color: #dedde6;
   border: 2px solid transparent;
-  transition: border-color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, background-color 0.4s;
 }
 
 .one-performance:hover {
@@ -963,7 +1089,7 @@ a.bi-heart:hover {
 }
 
 .performance-buttons i {
-  transition: color 0.5s;
+  transition: color 0.4s;
   cursor: pointer !important;
 }
 
@@ -979,13 +1105,13 @@ a.bi-heart:hover {
 
 .performance-name {
   width: 200px;
-  transition: color 0.5s;
+  transition: color 0.4s;
   cursor: default !important;
 }
 
 .performance-name-engine {
   width: 300px;
-  transition: color 0.5s;
+  transition: color 0.4s;
   cursor: default !important;
 }
 
@@ -996,6 +1122,51 @@ a.bi-heart:hover {
   align-items: center;
   margin-left: 50px;
 }
+
+.name-H2H{
+  width: 100%;
+  transition: color 0.4s;
+  cursor: default !important;
+  text-align: center;
+}
+
+.custom-H2H {
+  width: 280px;
+  display: flex;
+  flex-direction: row;
+  background-color: #1f1b3b;
+  height: 7px;
+  margin-top: 5px;
+}
+
+.driver1-bar{
+  float: right;
+  width: 0%;
+  height: 7px;
+  transition: width 0.4s;
+}
+
+.h2h-top{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between
+}
+
+.driver2-bar{
+  float: left;
+  width: 0%;
+  height: 7px;
+  transition: width 0.4s;
+}
+
+.driver2-space, .driver1-space{
+  width: 50%;
+  background-color: #1f1b3b;
+  height: 6px;
+}
+
+
+
 
 .red-part {
   width: 300px;
@@ -1142,7 +1313,7 @@ a.bi-heart:hover {
   padding: 8px 12px;
   max-width: 210px;
   outline: none;
-  transition: border-color 0.5s;
+  transition: border-color 0.4s;
   background-color: rgb(99, 99, 110);
   color: white;
 }
@@ -1185,7 +1356,7 @@ a.bi-heart:hover {
   cursor: pointer !important;
   margin: 10px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   position: relative;
   font-size: 18px;
 }
@@ -1215,14 +1386,14 @@ a.bi-heart:hover {
   cursor: grab !important;
   margin: 10px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   position: relative;
   font-size: 15px;
 }
 
 .free-driver .custom-icon {
   color: transparent;
-  transition: opacity 0.5s;
+  transition: opacity 0.4s;
   background-image: linear-gradient(to left, #4e4b69, transparent);
   width: 80px;
   opacity: 0;
@@ -1235,7 +1406,7 @@ a.bi-heart:hover {
 }
 
 .custom-icon i {
-  transition: color 0.5s;
+  transition: color 0.4s;
 }
 
 .custom-icon i:hover {
@@ -1273,10 +1444,12 @@ a.bi-heart:hover {
   justify-content: center;
   align-items: center;
   color: white;
+  backdrop-filter: blur(3px);
 }
 
 #calendarBlockDiv {
   background-color: rgba(128, 128, 128, 0.733);
+  backdrop-filter: blur(3px);
 }
 
 .normal-driver {
@@ -1286,7 +1459,7 @@ a.bi-heart:hover {
   padding: 8px;
   margin: 10px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
@@ -1299,7 +1472,7 @@ a.bi-heart:hover {
   margin: 10px;
   margin-left: 20px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   min-height: 70px;
   border: 2px solid transparent;
   display: flex;
@@ -1310,18 +1483,20 @@ a.bi-heart:hover {
 
 
 .scriptPills {
-  color: white !important;
+  color: #dedde6 !important;
   border: 2px solid transparent !important;
-  transition: border-color 0.5s, background-color 0.5s !important;
+  transition: border-color 0.4s, background-color 0.4s , color 0.4s !important;
 }
 
 .scriptPills:hover {
   border-color: white !important;
   background-color: #58556c;
+  color: white !important;
 }
 
 .scriptPills.active {
   background-color: #797599 !important;
+  color: white !important;
 }
 
 .custom-input-number {
@@ -1334,7 +1509,7 @@ a.bi-heart:hover {
   height: 56px;
   border: 2px solid transparent;
   font-size: 20px;
-  transition: border-color 0.5s !important;
+  transition: border-color 0.4s !important;
 
 }
 
@@ -1452,7 +1627,7 @@ input::-webkit-inner-spin-button {
   padding-bottom: 6px;
   padding-top: 9px;
   padding-left: 5px;
-  transition: opacity 0.5s;
+  transition: opacity 0.4s;
 }
 
 #mclarenlogo {
@@ -1504,44 +1679,44 @@ input::-webkit-inner-spin-button {
 }
 
 
-#redbull {
-  border-bottom: 2px solid #3671C6;
+#redbull, .rbborder-down:hover {
+  border-bottom: 2px solid #3671C6 !important;
 }
 
-#ferrari {
-  border-bottom: 2px solid #F91536;
+#ferrari, .feborder-down:hover {
+  border-bottom: 2px solid #F91536 !important;
 }
 
-#merc {
-  border-bottom: 2px solid #6CD3BF
+#merc, .meborder-down:hover {
+  border-bottom: 2px solid #6CD3BF !important;
 }
 
-#mclaren {
-  border-bottom: 2px solid #F58020
+#mclaren, .mcborder-down:hover {
+  border-bottom: 2px solid #F58020 !important;
 }
 
-#alpine {
-  border-bottom: 2px solid #2293D1
+#alpine,.alborder-down:hover {
+  border-bottom: 2px solid #2293D1 !important
 }
 
-#alfaromeo {
-  border-bottom: 2px solid #C92D4B
+#alfaromeo, .afborder-down:hover {
+  border-bottom: 2px solid #C92D4B !important
 }
 
-#astonmartin {
-  border-bottom: 2px solid #358C75
+#astonmartin, .asborder-down:hover {
+  border-bottom: 2px solid #358C75 !important
 }
 
-#alphatauri {
-  border-bottom: 2px solid #5E8FAA
+#alphatauri, .atborder-down:hover {
+  border-bottom: 2px solid #5E8FAA !important 
 }
 
-#williams {
-  border-bottom: 2px solid #37BEDD
+#williams, .wiborder-down:hover {
+  border-bottom: 2px solid #37BEDD !important
 }
 
-#haas {
-  border-bottom: 2px solid #B6BABD
+#haas, .haborder-down:hover {
+  border-bottom: 2px solid #B6BABD !important
 }
 
 .rbfont {
@@ -1584,7 +1759,168 @@ input::-webkit-inner-spin-button {
   color: #B6BABD;
 }
 
+.rbbar-primary {
+  background-color: #3671C6;
+}
 
+.rbbar-secondary {
+  background-color: #ffd300;
+}
+
+.febar-primary {
+  background-color: #F91536;
+}
+
+.febar-secondary {
+  background-color: #f1f1f1;
+}
+
+.mebar-primary {
+  background-color: #6CD3BF;
+}
+
+.mebar-secondary {
+  background-color: #fcfcfc;
+}
+
+.mcbar-primary {
+  background-color: #F58020;
+}
+
+.mcbar-secondary {
+  background-color: #47c7fc;
+}
+
+.albar-primary {
+  background-color: #2293D1;
+}
+
+.albar-secondary {
+  background-color: #fd48c7;
+}
+
+.afbar-primary {
+  background-color: #C92D4B;
+}
+
+.afbar-secondary {
+  background-color: #f1f1f1;
+}
+
+.asbar-primary {
+  background-color: #358C75;
+}
+
+.asbar-secondary {
+  background-color: #c3dc00;
+}
+
+.atbar-primary {
+  background-color: #5E8FAA;
+}
+
+.atbar-secondary {
+  background-color: #f1f1f1;
+}
+
+.wibar-primary {
+  background-color: #37BEDD;
+}
+
+.wibar-secondary {
+  background-color: #3792dd;
+}
+
+.habar-primary {
+  background-color: #B6BABD;
+}
+
+.habar-secondary {
+  background-color: #da291c;
+}
+
+
+
+
+.rbborder-primary {
+  border: 2px solid #3671C6;
+}
+
+.rbborder-secondary {
+  border: 2px solid #ffd300;
+}
+
+.feborder-primary {
+  border: 2px solid #F91536;
+}
+
+.feborder-secondary {
+  border: 2px solid #f1f1f1;
+}
+
+.meborder-primary {
+  border: 2px solid #6CD3BF;
+}
+
+.meborder-secondary {
+  border: 2px solid #fcfcfc;
+}
+
+.mcborder-primary {
+  border: 2px solid #F58020;
+}
+
+.mcborder-secondary {
+  border: 2px solid #47c7fc;
+}
+
+.alborder-primary {
+  border: 2px solid #2293D1;
+}
+
+.alborder-secondary {
+  border: 2px solid #fd48c7;
+}
+
+.afborder-primary {
+  border: 2px solid #C92D4B;
+}
+
+.afborder-secondary {
+  border: 2px solid #f1f1f1;
+}
+
+.asborder-primary {
+  border: 2px solid #358C75;
+}
+
+.asborder-secondary {
+  border: 2px solid #c3dc00;
+}
+
+.atborder-primary {
+  border: 2px solid #5E8FAA;
+}
+
+.atborder-secondary {
+  border: 2px solid #f1f1f1;
+}
+
+.wiborder-primary {
+  border: 2px solid #37BEDD;
+}
+
+.wiborder-secondary {
+  border: 2px solid #3792dd;
+}
+
+.haborder-primary {
+  border: 2px solid #B6BABD;
+}
+
+.haborder-secondary {
+  border: 2px solid #da291c;
+}
 
 
 .drivers-section {

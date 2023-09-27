@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../node_modules/tabulator-tables/dist/css/tabulator.min.css">
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../node_modules/interactjs/dist/interact.min.js"></script>
+  <script src="../node_modules/chart.js/dist/chart.umd.js"></script>
   <title>Database Editor for F1 Manager 23</title>
 </head>
 
@@ -25,15 +26,15 @@
             <h5 class="modal-subtitle">Driver Number</h5>
             <div class="number-details">
               <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="numberButton"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Number
-            </button>
-            <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
-            </ul>
-            <div class="form-check ms-5 form-switch auto-contract">
-              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="driverNumber1">
-              <label class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</label>
-            </div>
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Number
+              </button>
+              <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
+              </ul>
+              <div class="form-check ms-5 form-switch auto-contract">
+                <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="driverNumber1">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</label>
+              </div>
             </div>
           </div>
           <div class="contract-options">
@@ -113,7 +114,9 @@
   </div>
   <div class="tools-panel">
     <div class="ms-3 bold-font save-selector">
-      Save selector
+      <div class="save-selector-title">
+        SAVE SELECTOR
+      </div>
       <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="saveSelector"
         data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
         Your saves
@@ -123,9 +126,15 @@
       </ul>
     </div>
     <div class="script-selector bold-font ms-3">
-      &nbsp;
-      <div class="pt-2 pb-3 ps-3">
+      <div class="pill-types">
+        <div id="dataPills">DATA</div>
+        <div id="editPills">EDIT</div>
+      </div>
+      <div class="pt-2 ps-3" style="padding-bottom: 0.6rem;">
         <ul class="nav nav-pills">
+          <li class="nav-item">
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="h2hpill">COMPARISION</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="viewerpill">STANDINGS</a>
           </li>
@@ -150,6 +159,161 @@
   <div class="main-panel">
     <div class="blocking-div" id="blockDiv">
       Select a script and a save to start editing!
+    </div>
+    <div class="script-view d-none" id="head2head_viewer">
+      <div class="col">
+        <div class="col h2h-title">
+          <div class="ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute;">
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButtonH2H"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Year
+            </button>
+            <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
+            </ul>
+          </div>
+          <div class="buttons-h2h"
+            style="position: absolute; right: 20px; margin-top: 0.5rem !important; margin-bottom: 1rem !important; ">
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="driver2Button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Driver 2
+            </button>
+            <ul class="dropdown-menu" id="d2Menu" style="font-family: Formula1;">
+            </ul>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="driver1Button"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Driver 1
+            </button>
+            <ul class="dropdown-menu driversDropDownH2H" id="d1Menu" style="font-family: Formula1;">
+            </ul>
+          </div>
+          <div class="title bold-font py-3">
+            Driver Compraision
+          </div>
+        </div>
+        <div class="d-flex d-none" id="mainH2h">
+          <div class="col-3 main-viewer-section">
+            <div class="driver-names">
+              <div class="driver1-name">
+                <div class="driver1-first">&nbsp;</div>
+                <div class="driver1-second bold-font">&nbsp;</div>
+              </div>
+              <div class="driver2-name">
+                <div class="driver2-first">&nbsp;</div>
+                <div class="driver2-second bold-font">&nbsp;</div>
+              </div>
+            </div>
+            <div class="one-statH2H" id="raceh2h">
+              <div class="name-H2H bold-font">RACE</div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+            </div>
+            <div class="one-statH2H" id="qualih2h">
+              <div class="name-H2H bold-font">QUALIFYING</div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+            </div>
+            <div class="one-statH2H" id="ptsh2h">
+              <div class="name-H2H bold-font">POINTS</div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+            </div>
+            <div class="one-statH2H" id="podiumsh2h">
+              <div class="name-H2H bold-font">PODIUMS</div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+            </div>
+            <div class="one-statH2H" id="bestrh2h">
+              <div class="name-H2H bold-font">BEST RACE</div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+            </div>
+            <div class="one-statH2H" id="bestqh2h">
+              <div class="name-H2H bold-font">BEST QUALI</div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+            </div>
+            <div class="one-statH2H" id="dnfh2h" style="margin-bottom: 10px;">
+              <div class="name-H2H bold-font">DNF</div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-9 main-viewer-section" style="max-width: 71.7vw;">
+              <canvas id="driverGraph"></canvas>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="script-view d-none" id="season_viewer">
       <div class="col">
@@ -950,6 +1114,7 @@
   <script src="./js/calendar.js"></script>
   <script src="./js/performance.js"></script>
   <script src="./js/seasonViewer.js"></script>
+  <script src="./js/head2head.js"></script>
 </body>
 
 </html>
