@@ -387,6 +387,7 @@ def check_claendar():
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
     season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
     tuple_numbers = {num for tpl in season_events for num in tpl}
+    first_race = cursor.execute("SELECT MIN(Day) FROM Races WHERE SeasonID = " + str(day_season[1])).fetchone()
 
     season_ids = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
     events_ids =[]
@@ -394,9 +395,11 @@ def check_claendar():
         events_ids.append((season_ids[i][0], season_events[i][0]))
 
     are_all_numbers_present = all(num in tuple_numbers for num in default_tracks)
+    print(day_season[0], first_race[0])
+    has_first_race_done = day_season[0] < first_race[0]
 
     # Definir la variable resultante
-    resultCalendar = "1" if are_all_numbers_present else "0"
+    resultCalendar = "1" if (are_all_numbers_present and has_first_race_done) else "0"
 
     return resultCalendar
 
