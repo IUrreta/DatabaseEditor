@@ -10,8 +10,11 @@ let poles = false;
 let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#3792dd", "70": "#B6BABD", "71": "#da291c", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00" }
 let graph;
 
+/**
+ * Puts the bars of the head to head with the correct width for the drivers selected
+ * @param {object} data object with all the info of the comparision between both drivers
+ */
 function manage_h2h_bars(data) {
-    console.log(data)
     let relValue
     let d1_width
     let d2_width
@@ -19,7 +22,6 @@ function manage_h2h_bars(data) {
         data[4] = data[7]
         document.getElementById("bestrh2h").querySelector(".name-H2H").textContent = "WINS"
         wins = true
-        console.log(data)
     }
     else {
         document.getElementById("bestrh2h").querySelector(".name-H2H").textContent = "BEST RACE"
@@ -90,7 +92,6 @@ function manage_h2h_bars(data) {
             }
             else if (elem.id === "ptsh2h") {
                 relValue = 100 / Math.max(data[index][0], data[index][1])
-                console.log(relValue)
             }
             else if (elem.id === "dnfh2h" || elem.id === "podiumsh2h") {
                 relValue = (100 / (data[index][0] + data[index][1])).toFixed(2)
@@ -129,6 +130,10 @@ function manage_h2h_bars(data) {
     })
 }
 
+/**
+ * Loads all the drivers into the menus of driver selection
+ * @param {Object} drivers object with all the driver info
+ */
 function load_drivers_h2h(drivers) {
     let driver1Menu = document.querySelector("#d1Menu")
     driver1Menu.innerHTML = ""
@@ -158,6 +163,11 @@ function load_drivers_h2h(drivers) {
     })
 }
 
+/**
+ * Adds the eventlisteners for all the selectable items in the drivers selection menu
+ * @param {a} aDriver2 <a> elem of the driver 2
+ * @param {a} aDriver1 <a> elem of the driver 1
+ */
 function listeners_h2h(aDriver2, aDriver1) {
     aDriver1.addEventListener("click", function () {
         if (!driver1_selected) {
@@ -190,7 +200,6 @@ function listeners_h2h(aDriver2, aDriver1) {
             driver2_selected = true
         }
         driver2Sel = aDriver2
-        console.log(driver2Sel)
         document.querySelector(".driver2-first").textContent = driver2Sel.firstChild.children[0].innerText
         document.querySelector(".driver2-second").textContent = driver2Sel.firstChild.children[1].innerText
         document.querySelector(".driver2-second").dataset.teamid = driver2Sel.firstChild.children[1].dataset.teamid
@@ -226,6 +235,10 @@ function resetH2H(){
     driver2Sel = null;
 }
 
+/**
+ * Prepares the data for the head to head graph
+ * @param {object} data object with all the data of races in wich both drivers participated and their results 
+ */
 function load_h2h_graph(data) {
     var labels = [];
     let d1_res = [];
@@ -285,6 +298,16 @@ function load_h2h_graph(data) {
 
 }
 
+/**
+ * Creates the head to head chart
+ * @param {Array} labelsArray array with all the labels for the races
+ * @param {Array} d1Results array with all the driver 1 results
+ * @param {Array} d2Results array with all the driver 2 results
+ * @param {string} d1_color color for the driver 1 line
+ * @param {string} d2_color color for the driver 2 line
+ * @param {string} d1_name name of the first driver
+ * @param {string} d2_name name of the second driver
+ */
 function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color, d1_name, d2_name) {
     const dataD = {
         labels: labelsArray,

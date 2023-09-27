@@ -53,7 +53,16 @@ async function getPatchNotes() {
             h1Elements.forEach(function (h1Element) {
                 let h4Element = document.createElement("h4");
                 h4Element.textContent = h1Element.textContent;
-                patchNotesBody.replaceChild(h4Element, h1Element);
+                h4Element.classList.add("bold-font")
+                patchNotesBody.replaceChild(h4Element,h1Element);
+            });
+
+            let h2Elements = patchNotesBody.querySelectorAll("h2");
+            h2Elements.forEach(function (h1Element) {
+                let h4Element = document.createElement("h4");
+                h4Element.textContent = h1Element.textContent;
+                h4Element.classList.add("bold-font")
+                patchNotesBody.replaceChild(h4Element,h1Element);
             });
         }
     } catch {
@@ -341,7 +350,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function manage_calendarDiv(info) {
         if (info[0] === "1") {
             document.getElementById("calendarBlockDiv").className = "blocking-div d-none"
-
         }
         else if (info[0] === "0") {
             document.getElementById("calendarBlockDiv").className = "blocking-div"

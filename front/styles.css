@@ -153,7 +153,7 @@ a.bi-heart:hover {
 }
 
 .auto-contract {
-  color: white;
+  color: #dedde6;
   font-size: 20px;
   padding-right: 2rem;
 }
@@ -202,7 +202,7 @@ a.bi-heart:hover {
 }
 
 .modal-subtitle {
-  color: white;
+  color: #dedde6;
 }
 
 .stats-title {
@@ -1278,15 +1278,17 @@ a.bi-heart:hover {
 }
 
 .custom-body {
-  color: white;
+  color: #dedde6;
   background-color: #393744;
 }
-
 
 .custom-modal {
   min-width: 600px !important;
 }
 
+.contract-details div{
+  color: #dedde6;
+}
 
 .custom-header {
   color: white !important;
@@ -1315,7 +1317,7 @@ a.bi-heart:hover {
   outline: none;
   transition: border-color 0.4s;
   background-color: rgb(99, 99, 110);
-  color: white;
+  color: #ebeaf0;
 }
 
 .custom-disabled {
@@ -1445,6 +1447,7 @@ a.bi-heart:hover {
   align-items: center;
   color: white;
   backdrop-filter: blur(3px);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 #calendarBlockDiv {
