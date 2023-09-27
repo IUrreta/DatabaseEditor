@@ -174,6 +174,7 @@ function listeners_h2h(aDriver2, aDriver1) {
         document.querySelector("#driver1Button").appendChild(newName)
         manageColor(document.querySelector(".driver1-second"), document.querySelector(".driver1-second"))
         if (driver1_selected && driver2_selected) {
+            document.querySelector("#mainH2h").classList.remove("d-none")
             let data = {
                 command: "H2HConfigured",
                 d1: driver1Sel.dataset.driverid,
@@ -200,6 +201,7 @@ function listeners_h2h(aDriver2, aDriver1) {
         d2_team = driver2Sel.firstChild.children[1].dataset.teamid
         manageColor(document.querySelector(".driver2-second"), document.querySelector(".driver2-second"))
         if (driver1_selected && driver2_selected) {
+            document.querySelector("#mainH2h").classList.remove("d-none")
             let data = {
                 command: "H2HConfigured",
                 d1: driver1Sel.dataset.driverid,
@@ -210,6 +212,18 @@ function listeners_h2h(aDriver2, aDriver1) {
             socket.send(JSON.stringify(data))
         }
     })
+}
+
+function resetH2H(){
+    document.querySelector("#mainH2h").classList.add("d-none")
+    document.querySelector("#driver1Button").innerHTML = ""
+    document.querySelector("#driver1Button").textContent = "Driver 1"
+    document.querySelector("#driver2Button").innerHTML = ""
+    document.querySelector("#driver2Button").textContent = "Driver 2"
+    driver1_selected = false;
+    driver2_selected = false;
+    driver1Sel = null;
+    driver2Sel = null;
 }
 
 function load_h2h_graph(data) {
