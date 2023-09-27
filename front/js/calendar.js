@@ -213,6 +213,7 @@ document.getElementById("confirmCalendar").addEventListener("click",function () 
         calendarCodes: dataCodesString
     }
     socket.send(JSON.stringify(dataCalendar))
+    document.getElementById("calendarBlockDiv").className = "blocking-div"
 
     if (deleted) {
         document.getElementById("addRaceButton").disabled = true;

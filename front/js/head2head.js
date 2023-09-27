@@ -11,7 +11,6 @@ let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#4
 let graph;
 
 function manage_h2h_bars(data) {
-    console.log(data)
     let relValue
     let d1_width
     let d2_width
@@ -19,7 +18,6 @@ function manage_h2h_bars(data) {
         data[4] = data[7]
         document.getElementById("bestrh2h").querySelector(".name-H2H").textContent = "WINS"
         wins = true
-        console.log(data)
     }
     else {
         document.getElementById("bestrh2h").querySelector(".name-H2H").textContent = "BEST RACE"
@@ -90,7 +88,6 @@ function manage_h2h_bars(data) {
             }
             else if (elem.id === "ptsh2h") {
                 relValue = 100 / Math.max(data[index][0], data[index][1])
-                console.log(relValue)
             }
             else if (elem.id === "dnfh2h" || elem.id === "podiumsh2h") {
                 relValue = (100 / (data[index][0] + data[index][1])).toFixed(2)
@@ -190,7 +187,6 @@ function listeners_h2h(aDriver2, aDriver1) {
             driver2_selected = true
         }
         driver2Sel = aDriver2
-        console.log(driver2Sel)
         document.querySelector(".driver2-first").textContent = driver2Sel.firstChild.children[0].innerText
         document.querySelector(".driver2-second").textContent = driver2Sel.firstChild.children[1].innerText
         document.querySelector(".driver2-second").dataset.teamid = driver2Sel.firstChild.children[1].dataset.teamid
