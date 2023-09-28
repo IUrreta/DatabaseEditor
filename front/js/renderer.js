@@ -1,5 +1,8 @@
 const socket = new WebSocket('ws://localhost:8765/');
 
+/**
+ * When the socket is opened sends a connect message to the backend
+ */
 socket.onopen = () => {
     //console.log('Conexión establecida.');
     let data = {
@@ -13,6 +16,7 @@ const fs = require('fs');
 const simpleGit = require('simple-git');
 const { exec } = require('child_process');
 const { marked } = require('marked');
+const Tabulator = require('tabulator-tables');
 
 let versionNow;
 const versionPanel = document.querySelector('.versionPanel');
@@ -21,6 +25,9 @@ const parchModalTitle = document.getElementById("patchModalTitle")
 const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
 
+/**
+ * Fetches the version from the version.conf file
+ */
 fetch('./../launcher/version.conf')
     .then(response => response.text())
     .then(version => {
@@ -30,6 +37,9 @@ fetch('./../launcher/version.conf')
         getPatchNotes()
     });
 
+/**
+ * get the patch notes from the actual version fro the github api
+ */
 async function getPatchNotes() {
     try {
         if (versionNow.slice(-3) !== "dev") {
@@ -43,6 +53,15 @@ async function getPatchNotes() {
             h1Elements.forEach(function (h1Element) {
                 let h4Element = document.createElement("h4");
                 h4Element.textContent = h1Element.textContent;
+                h4Element.classList.add("bold-font")
+                patchNotesBody.replaceChild(h4Element,h1Element);
+            });
+
+            let h2Elements = patchNotesBody.querySelectorAll("h2");
+            h2Elements.forEach(function (h1Element) {
+                let h4Element = document.createElement("h4");
+                h4Element.textContent = h1Element.textContent;
+                h4Element.classList.add("bold-font")
                 patchNotesBody.replaceChild(h4Element,h1Element);
             });
         }
@@ -53,20 +72,25 @@ async function getPatchNotes() {
 
 }
 
-document.addEventListener('DOMContentLoaded',function () {
+document.addEventListener('DOMContentLoaded', function () {
 
     const driverTransferPill = document.getElementById("transferpill");
     const editStatsPill = document.getElementById("statspill");
     const CalendarPill = document.getElementById("calendarpill");
     const carPill = document.getElementById("carpill");
+    const viewPill = document.getElementById("viewerpill");
+    const h2hPill = document.getElementById("h2hpill");
 
     const driverTransferDiv = document.getElementById("driver_transfers");
     const editStatsDiv = document.getElementById("edit_stats");
     const customCalendarDiv = document.getElementById("custom_calendar");
     const carPerformanceDiv = document.getElementById("car_performance");
+    const viewDiv = document.getElementById("season_viewer");
+    const h2hDiv = document.getElementById("head2head_viewer");
+
     const patchNotesBody = document.getElementById("patchNotesBody")
 
-    const scriptsArray = [driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv]
+    const scriptsArray = [h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv,]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -76,6 +100,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
+    const noNotifications = ["Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched"]
 
     let latestTag;
 
@@ -84,14 +109,15 @@ document.addEventListener('DOMContentLoaded',function () {
     let divBlocking = 1;
 
 
-
-
     let connectionTimeout = setTimeout(() => {
-        update_notifications("Could not connect with backend",true)
+        update_notifications("Could not connect with backend", true)
         manage_status(0)
-    },4000);
+    }, 4000);
 
-
+    /**
+     * Handles the receiving end from the messages sent from backend
+     * @param {string} event the message tha tcomes fro the backend
+     */
     socket.onmessage = (event) => {
         // const mensaje = event.data;
         // console.log('Mensaje recibido: ' + event.data);
@@ -99,7 +125,7 @@ document.addEventListener('DOMContentLoaded',function () {
         let message = JSON.parse(event.data)
         //console.log(message)
         if (message[0] === "ERROR") {
-            update_notifications(message[1],true)
+            update_notifications(message[1], true)
             manage_status(0)
         }
         else {
@@ -128,18 +154,47 @@ document.addEventListener('DOMContentLoaded',function () {
                 manage_engineStats(message.slice(1))
             }
             else if (message[0] === "Contract fetched") {
-                manage_modal(message.slice(1)[0])
+                manage_modal(message.slice(1))
             }
-            if (message[0] !== "Calendar fetched" && message[0] !== "Contract fetched" && message[0] != "Staff Fetched" && message[0] != "Engines fetched") update_notifications(message[0],false)
+            else if (message[0] === "Year fetched") {
+                generateYearsMenu(message.slice(1))
+            }
+            else if (message[0] === "Numbers fetched") {
+                loadNumbers(message.slice(1))
+            }
+            else if (message[0] === "H2H fetched") {
+                manage_h2h_bars(message.slice(1)[0])
+            }
+            else if(message[0] === "DriversH2H fetched"){
+                load_drivers_h2h(message.slice(1))
+            }
+            else if(message[0] === "H2HDriver fetched"){
+                load_h2h_graph(message.slice(1))
+            }
+            else if (message[0] === "Results fetched") {
+                createTable(message[1])
+                setTimeout(function () {
+                    loadTable(message.slice(2)); // Llamar a la función después de 1 segundo
+                }, 20);
+
+            }
+            if (!noNotifications.includes(message[0])) update_notifications(message[0], false)
 
         }
 
     };
 
+    /**
+     * Opens the log file
+     */
     logButton.addEventListener("click",function () {
         window.location.href = '../log.txt';
     })
 
+    /** 
+     * Manages the look of the status icon in the footer
+     * @param {int} state state of the connection with backend
+     */
     function manage_status(state) {
         if (state == 1) {
             status.classList.remove("awaiting")
@@ -154,6 +209,9 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
+    /**
+     * Checks with the github api if there is a newer version of the tool
+     */
     function check_version() {
         fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/tags`)
             .then(response => response.json())
@@ -181,7 +239,7 @@ document.addEventListener('DOMContentLoaded',function () {
                                     isSame = false;
                                     break;
                                 }
-                                else if(latestVer[i] < actualVer[i]){
+                                else if (latestVer[i] < actualVer[i]) {
                                     break;
                                 }
                             }
@@ -201,7 +259,7 @@ document.addEventListener('DOMContentLoaded',function () {
                             }
                             else {
                                 updateInfo.classList.add("bi-exclamation-lg")
-                                updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                                updateInfo.setAttribute('href', 'https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
                             }
 
                         }
@@ -216,6 +274,10 @@ document.addEventListener('DOMContentLoaded',function () {
             });
     }
 
+    /**
+     * Check if the tool was installed through git or not
+     * @returns {bool} If the tool was installed through git or zip
+     */
     function checkGit() {
         let dir = './'; // Cambia esto a la ruta de tu herramienta
         let res = false;
@@ -228,6 +290,9 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
+    /**
+     * Adds the spinner informing of updating state
+     */
     function addSpinner() {
 
         let statusDiv = document.querySelector('.status');
@@ -239,80 +304,147 @@ document.addEventListener('DOMContentLoaded',function () {
         outsideDiv.style.paddingRight = "10px"
         outsideDiv.className = "outside-div"
         outsideDiv.appendChild(spinnerDiv)
-        statusDiv.insertBefore(outsideDiv,statusDiv.children[2]);
+        statusDiv.insertBefore(outsideDiv, statusDiv.children[2]);
     }
 
+    /**
+     * Manages the actions of the update button
+     */
     function updateButton() {
         let repoPath = './';
         let git = simpleGit(repoPath);
 
-        document.querySelector(".bi-cloud-download").addEventListener("click",function () {
+        document.querySelector(".bi-cloud-download").addEventListener("click", function () {
 
-            git.pull("origin","release",(error,update) => {
+            git.pull("origin", "release", (error, update) => {
                 addSpinner()
                 if (error) {
-                    update_notifications("Update automatically failed, please update manually",true)
+                    update_notifications("Update automatically failed, please update manually", true)
                     updateInfo.classList.remove("bi-cloud-download")
                     updateInfo.classList.add("bi-exclamation-lg")
-                    updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                    updateInfo.setAttribute('href', 'https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
                     document.querySelector(".status").removeChild(document.querySelector(".outside-div"))
-                    updateInfo.removeEventListener("click",arguments.callee)
+                    updateInfo.removeEventListener("click", arguments.callee)
                 } else {
                     //console.log('Git pull exitoso:',update);
                     setTimeout(() => {
-                        exec('restart.vbs',(error,stdout,stderr) => {
+                        exec('restart.vbs', (error, stdout, stderr) => {
                             if (error) {
                                 //console.error(`Error: ${error}`);
                                 return;
                             }
                             //console.log(`Resultado: ${stdout}`);
                         });
-                    },500);
+                    }, 500);
                 }
             });
         })
     }
 
 
-
+    /**
+     * Manages the state of the calendar blocking div in case it cannot be modified
+     * @param {string} info If the calendar has had major changes or not
+     */
     function manage_calendarDiv(info) {
         if (info[0] === "1") {
             document.getElementById("calendarBlockDiv").className = "blocking-div d-none"
-
         }
         else if (info[0] === "0") {
             document.getElementById("calendarBlockDiv").className = "blocking-div"
         }
     }
 
+    /**
+     * Places all the values for the modal that just openend
+     * @param {Object} info values for the contract modal that just opened
+     */
     function manage_modal(info) {
-        document.querySelectorAll(".rounded-input").forEach(function (elem,index) {
-            elem.value = info[index]
+        document.querySelectorAll(".rounded-input").forEach(function (elem, index) {
+            elem.value = info[0][index]
         })
-
+        document.querySelector("#numberButton").textContent = info[1][0]
+        if (info[1][1] === 1) {
+            document.querySelector("#driverNumber1").checked = true
+        }
+        else if (info[1][1] === 0) {
+            document.querySelector("#driverNumber1").checked = false
+        }
     }
 
+    /**
+     * Places and manages the notifications that appear in the tool
+     * @param {string} noti message of the notification
+     * @param {bool} error if the notification is an error or not
+     */
     function update_notifications(noti,error) {
         let newNoti;
         newNoti = document.createElement('div');
         newNoti.className = 'notification';
         newNoti.textContent = noti;
-        if (error) newNoti.style.color = "#ff8080";
+        let toast = createToast(noti, error)
+        setTimeout(function () {
+            toast.classList.remove("myShow")
+        }, 500)
 
-        notificationPanel.appendChild(newNoti);
+        notificationPanel.appendChild(toast);
         if (!error) {
             setTimeout(function () {
-                newNoti.className = 'notification hide';
+                toast.classList.add("hide")
 
                 // Después de otros 2 segundos, eliminar el nuevo div
                 setTimeout(function () {
-                    notificationPanel.removeChild(newNoti);
-                },980);
-            },3000);
+                    notificationPanel.removeChild(toast);
+                }, 480);
+            }, 3000);
         }
     }
 
+    /**
+     * Creates the toast with the message and the error status
+     * @param {string} msg string with the notification message
+     * @param {boolean} err if it's an error or not
+     * @returns 
+     */
+    function createToast(msg, err) {
+        let toastFull = document.createElement('div');
+        let toastDiv = document.createElement('div');
+        let toastBodyDiv = document.createElement('div');
+        let line = document.createElement('div');
 
+        // Asignar clases y atributos
+        toastFull.classList.add('toast', "d-flex", "myShow", "d-block", "custom-toast")
+        toastFull.style.flexDirection = "column"
+        toastFull.setAttribute('role', 'alert');
+        toastFull.setAttribute('aria-live', 'assertive');
+        toastFull.setAttribute('aria-atomic', 'true');
+
+        toastDiv.classList.add('align-items-center');
+        line.classList.add("notification-line")
+
+        toastBodyDiv.classList.add('d-flex', 'toast-body');
+        toastBodyDiv.textContent = msg;
+        toastBodyDiv.style.opacity = "1"
+        toastBodyDiv.style.color = "white"
+        toastBodyDiv.style.zIndex = "6"
+
+        if (err) {
+            toastBodyDiv.classList.add("toast-error")
+            line.classList.add("line-error")
+        }
+
+        toastDiv.appendChild(toastBodyDiv);
+        toastFull.appendChild(toastDiv)
+        toastFull.appendChild(line)
+
+        return toastFull;
+    }
+
+
+    /**
+     * Adds the saves that the backend detected to the dropdown of saves
+     * @param {Object} savesArray contains the list of saves that the backend was able to find
+     */
     function load_saves(savesArray) {
         for (let i = 1; i < savesArray.length; i++) {
             let elem = savesArray[i]
@@ -330,10 +462,14 @@ document.addEventListener('DOMContentLoaded',function () {
         listenersStaffGroups()
     }
 
+    /**
+     * Adds the eventListeners to each element of the save dropdown
+     */
     function listenersSaves() {
         document.querySelectorAll('#dropdownMenu a').forEach(item => {
-            item.addEventListener("click",function () {
+            item.addEventListener("click", function () {
                 const saveSelector = document.getElementById('saveSelector');
+                document.querySelector(".save-selector-title").classList.add("activeSelected")
                 let saveSelected = item.innerHTML
                 saveSelector.innerHTML = saveSelected;
                 let dataSaves = {
@@ -352,9 +488,12 @@ document.addEventListener('DOMContentLoaded',function () {
         });
     }
 
+    /**
+     * Adds eventListeners to all the elements of the staff dropdown
+     */
     function listenersStaffGroups() {
         document.querySelectorAll('#staffMenu a').forEach(item => {
-            item.addEventListener("click",function () {
+            item.addEventListener("click", function () {
                 const staffButton = document.getElementById('staffButton');
                 let staffSelected = item.innerHTML
                 if (staffSelected === "Drivers") {
@@ -393,27 +532,9 @@ document.addEventListener('DOMContentLoaded',function () {
         });
     }
 
-    function change_elegibles(divID) {
-        document.querySelectorAll(".elegible").forEach(function (elem) {
-            elem.classList.remove("elegible")
-
-        })
-        let divStats = document.getElementById(divID)
-        divStats.querySelectorAll(".custom-input-number").forEach(function (elem) {
-            elem.classList.add("elegible")
-        })
-        if (divID === "driverStats") {
-            document.getElementById("growthInput").classList.add("elegible")
-            document.getElementById("agressionInput").classList.add("elegible")
-
-        }
-        document.querySelectorAll(".main-panel-stats").forEach(function (elem) {
-            elem.className = "main-panel-stats d-none"
-        })
-        divStats.classList.remove("d-none")
-
-    }
-
+    /**
+     * checks if a save and a script have been selected to unlock the tool
+     */
     function check_selected() {
         if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
             document.getElementById("blockDiv").className = "d-none"
@@ -422,34 +543,71 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
-    driverTransferPill.addEventListener("click",function () {
-        manageScripts("show","hide","hide","hide")
+    /**
+     * Pills and their eventListeners
+     */
+    h2hPill.addEventListener("click", function () {
+        manageScripts("show","hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("data")
 
     })
 
-    editStatsPill.addEventListener("click",function () {
-        manageScripts("hide","show","hide","hide")
+    viewPill.addEventListener("click", function () {
+        manageScripts("hide","show", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("data")
+
     })
 
-    CalendarPill.addEventListener("click",function () {
-        manageScripts("hide","hide","show","hide")
+    driverTransferPill.addEventListener("click", function () {
+        manageScripts("hide","hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("edit")
+
     })
 
-    carPill.addEventListener("click",function () {
-        manageScripts("hide","hide","hide","show")
+    editStatsPill.addEventListener("click", function () {
+        manageScripts("hide","hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        managePillsTitle("edit")
     })
 
+    CalendarPill.addEventListener("click", function () {
+        manageScripts("hide","hide", "hide", "hide", "show", "hide")
+        scriptSelected = 1
+        check_selected()
+        managePillsTitle("edit")
+    })
 
+    carPill.addEventListener("click", function () {
+        manageScripts("hide","hide", "hide", "hide", "hide", "show")
+        scriptSelected = 1
+        check_selected()
+        managePillsTitle("edit")
+    })
+
+    function managePillsTitle(type){
+        if(type === "data"){
+            document.querySelector("#dataPills").classList.add("activeType")
+            document.querySelector("#editPills").classList.remove("activeType")
+        }
+        else if(type === "edit"){
+            document.querySelector("#editPills").classList.add("activeType")
+            document.querySelector("#dataPills").classList.remove("activeType")
+        }
+    }
+
+    /**
+     * Manages the stats of the divs associated with the pills
+     * @param  {Array} divs array of state of the divs
+     */
     function manageScripts(...divs) {
-        scriptsArray.forEach(function (div,index) {
+        scriptsArray.forEach(function (div, index) {
             if (divs[index] === "show") {
                 div.className = "script-view"
             }

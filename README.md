@@ -1,7 +1,5 @@
 # Database Editor for F1 Manager 23 #
-Friendly to use tool for editing your save files from F1 Manager 23. Supports driver transfers, calendar customization, staff stat editing and car eprfromance editing, but the tool is still in constant development!
-
-**PLEASE KEEP IN MIND**: This are the first few iterations and will only get better with time. It will get regular updates to support more functionallity.
+Friendly to use tool for editing your save files from F1 Manager 23. Supports driver transfers, calendar customization, staff stat editing and car eprfromance editing, and from 1.6 onwards data visualization! (An area in which the game fails miserably)
 
 If you have any issues, I recommend first look at the Troubleshoot guide for the most common error: https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide. If this doesn't fix the error, you can open an Issue on GitHub
 
@@ -12,14 +10,17 @@ It's developed by the same guy (me, u/ignaciourreta on Reddit) who developed mul
 
 When I developed those scripts, more specifically the driver transfers script for the Script Manager for F1M22 I always had in mind to devlop a tool like this to make it easier to the user to take advantage of my scripts
 
-### What can I actually edit with the Database Editor? ###
+### What can I actually do with the Database Editor? ###
 
 1. Driver transfers
 2. Editing driver contracts
-3. Editing all staff (including drivers') stats
-4. Customize your calendar (run **ONLY** before the first race of the season)
-5. Buff or nerf any car part of any car
-6. Edit the performance and durability of any of the 4 engines suppliers
+3. Edit driver numbers
+4. Editing all staff (including drivers') stats
+5. Customize your calendar (can **ONLY BE DONE** before the first race of the season)
+6. Buff or nerf any car part of any car
+7. Edit the performance and durability of any of the 4 engines suppliers
+8. Keep track of past seasons with a wikipedia-style table
+9. Compare drivers and their stats from their past seasons
 
 ## How can I install the Database Editor? ##
 You'll need to downlaod two things: [NodeJS](https://nodejs.org/en/download) and [Python](https://www.python.org/downloads/)
@@ -37,18 +38,21 @@ You can try to look at them at the [Troubleshoot Guide](https://github.com/IUrre
 
 ### Screenshots ###
 
-![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/8ca241d1-16da-4a7b-a28a-912b50e9b61b)
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/f8eb8172-5b27-41d6-b68f-15c63837948c)
 
-![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/fc5a404d-b75e-4981-8e18-d6834dd6fc97)
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/804f32c4-fcde-4d8f-86b9-50e14660af9a)
 
-![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/3d35612c-1993-456f-a5b5-78464ee5137f)
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/66706691-1627-4a14-9f3f-5403e09e8d86)
 
-![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/e072756c-4d78-471e-84db-7d79fe0af4cc)
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/d413ffdd-f696-45b8-8516-133e45c7935f)
+
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/b681f63e-b740-4a3b-a047-2aa77a4e2a83)
+
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/44f7820a-01be-4297-a0f8-2aecf59ed600)
+
 
 
 ### Special thanks ###
 xAranaktu for the save repacker: https://github.com/xAranaktu/F1-Manager-2022-SaveFile-Repacker
-
-Rolfeee for his design contribution: https://www.racedepartment.com/members/rolfeee.1369146/
 
 F1 Manager Mods discord for the help during testing

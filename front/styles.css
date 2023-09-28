@@ -1,6 +1,4 @@
-:root {
-  --bs-form-switch-bg: #ff0000 !important;
-}
+
 
 @font-face {
   font-family: 'Formula1';
@@ -36,10 +34,10 @@ body::-webkit-scrollbar-thumb {
   font-family: 'Formula1';
 }
 
-#byname{
+#byname {
   text-decoration: none;
   color: #797599;
-  transition: color  0.4s;
+  transition: color 0.4s;
 }
 
 .footer {
@@ -59,7 +57,8 @@ body::-webkit-scrollbar-thumb {
   justify-content: space-between;
 }
 
-.socials a, .footer i{
+.socials a,
+.footer i {
   cursor: pointer !important;
   padding: 0 7px;
   transition: color 0.3s;
@@ -67,56 +66,60 @@ body::-webkit-scrollbar-thumb {
   text-decoration: none;
 }
 
-.socials a:hover, .footer i:hover{
+.socials a:hover,
+.footer i:hover {
   color: #dedde6;
 }
 
-.update-info{
-  transition: color 0.5s;
+.update-info {
+  transition: color 0.4s;
   text-decoration: none;
   color: #797599;
   cursor: default;
 }
 
-.bi-exclamation-diamond{
+.bi-exclamation-diamond {
   color: #ff8080;
 }
 
-.bi-exclamation-lg, .bi-cloud-download{
+.bi-exclamation-lg,
+.bi-cloud-download {
   color: #d3d393;
   cursor: pointer;
 }
 
-.bi-exclamation-lg:hover, .bi-cloud-download:hover{
+.bi-exclamation-lg:hover,
+.bi-cloud-download:hover {
   color: #FFFF99;
 }
 
-a.bi-reddit:hover{
+a.bi-reddit:hover {
   color: #FFA07A;
 }
 
-a.bi-twitter:hover, #byname:hover{
+a.bi-twitter:hover,
+#byname:hover {
   color: #8fc7f0;
 }
 
-a.bi-heart:hover{
+a.bi-heart:hover {
   color: #ffa4b2;
 }
 
 
-.status{
+.status {
   display: flex;
   flex-direction: row;
   width: 700px;
   justify-content: flex-end;
 }
 
-.status-info{
+.status-info {
   margin-right: 7px;
   cursor: default;
 }
 
-.awaiting{
+.awaiting {
   color: #8a8a8a;
 }
 
@@ -150,11 +153,57 @@ a.bi-heart:hover{
 }
 
 .auto-contract {
-  color: white;
+  color: #dedde6;
   font-size: 20px;
   padding-right: 2rem;
 }
 
+.number-details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#d1Menu, #d2Menu{
+  max-height: 200px;
+  overflow-y: scroll;
+}
+
+#numberMenu{
+  max-height: 200px;
+  overflow-y: scroll;
+}
+
+#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px;
+}
+
+.dropdown-menu{
+  background-color: #797599 !important;
+  border: none !important;
+  border-radius: 10px;
+
+}
+
+.dropdown-menu a{
+  color: white !important;
+  border: 2px solid transparent;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+.dropdown-menu a:hover{
+  background-color: #8b87af !important;
+  border-bottom: 2px solid white  ;
+}
+
+.modal-subtitle {
+  color: #dedde6;
+}
 
 .stats-title {
   text-align: left;
@@ -221,7 +270,7 @@ a.bi-heart:hover{
 
 
 .alert {
-  animation: colorChange 0.5s infinite;
+  animation: colorChange 0.4s infinite;
   margin-bottom: 0px !important;
 }
 
@@ -249,14 +298,14 @@ a.bi-heart:hover{
   left: 10px;
 }
 
-.patchNotesPanel i{
-  transition: color 0.5s;
+.patchNotesPanel i {
+  transition: color 0.4s;
   font-style: normal;
   color: #797599;
   cursor: pointer;
 }
 
-.patchNotesPanel i:hover{
+.patchNotesPanel i:hover {
   color: white;
 }
 
@@ -269,14 +318,58 @@ a.bi-heart:hover{
   width: 530px;
   height: 116px;
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
   text-align: center;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.notification-line{
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  position: relative;
+  bottom: 7px;
+}
+
+.line-error{
+  background-color: #ff8080 !important;
+}
+
+.custom-toast{
+  background-color: rgba(187, 182, 236, 0.5) !important;
+  color: white;
+  border-radius: 10px !important;
+  width: 420px !important;
+  backdrop-filter: blur(3px);
+}
+
+.bar-space{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.driver1-number{
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.driver2-number{
+  font-size: 18px;
+  margin-left: 10px;
+}
+
+.toast-error{
+  color: #ff8080 !important;
 }
 
 .hide {
-  animation: fadeOut 1s;
+  animation: fadeOut 0.5s;
+}
+
+.myShow{
+  animation: myFadeIn 0.5s;
 }
 
 @keyframes fadeOut {
@@ -286,6 +379,17 @@ a.bi-heart:hover{
 
   to {
     opacity: 0;
+  }
+}
+
+
+@keyframes myFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
 
@@ -336,8 +440,16 @@ a.bi-heart:hover{
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
+  color: white !important;
+  transition: border-color 0.3s;
+}
 
-
+#numberButton{
+  min-width: 100px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .custom-dropdown:hover {
@@ -441,10 +553,39 @@ a.bi-heart:hover{
   padding-left: 12px !important;
   padding-right: 12px !important;
   border-radius: 10px !important;
-
 }
 
+.pill-types{
+  display: flex;
+  flex-direction: row;
+  color: #dedde6;
+  font-size: 18px;
+  width: 100%;
+}
 
+.pill-types .activeType{
+  color: white !important;
+}
+
+#editPills{
+  position: absolute;
+  right: 280px;
+  transition: color 0.4s;
+}
+
+#dataPills{
+  padding-left: 150px;
+  transition: color 0.4s;
+}
+
+.save-selector-title{
+  color: #dedde6;
+  transition: color 0.4s;
+}
+
+.save-selector-title.activeSelected{
+  color: white !important;
+}
 
 .confirm-section {
   margin-left: 20px;
@@ -467,7 +608,7 @@ a.bi-heart:hover{
   border-radius: 10px !important;
   color: white !important;
   background-color: #797599 !important;
-  transition: border-color 0.5s, background-color 0.5s, color 0.5s !important;
+  transition: border-color 0.4s, background-color 0.4s, color 0.4s !important;
 
 }
 
@@ -478,8 +619,8 @@ a.bi-heart:hover{
 
 
 .custom-confirm:hover {
-  background-color: #A569BD!important;
-  border-color: #8E44AD  !important;
+  background-color: #A569BD !important;
+  border-color: #8E44AD !important;
 }
 
 .custom-confirm:active {
@@ -492,7 +633,7 @@ a.bi-heart:hover{
   border-radius: 10px !important;
   color: white !important;
   background-color: #797599 !important;
-  transition: border-color 0.5s, background-color 0.5s !important;
+  transition: border-color 0.4s, background-color 0.4s !important;
   display: flex;
   justify-content: center;
 
@@ -501,7 +642,7 @@ a.bi-heart:hover{
 .delete-mode {
   background-color: #ff8080 !important;
   border-color: #d66f6f !important;
-  transition: border-color 0.5s;
+  transition: border-color 0.4s;
 }
 
 .custom-delete:hover {
@@ -515,6 +656,133 @@ a.bi-heart:hover{
 
 .delete-mode:hover {
   border-color: white !important;
+}
+
+.main-viewer-section {
+  margin-left: 14px;
+  margin-right: 14px;
+  border: 1px solid #797599;
+  color: white;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+[tabulator-field^="race"] {
+  font-size: 13px;
+  /* Establece el tamaño de fuente a 13px */
+  border: none !important;
+}
+
+[tabulator-field="driver"],
+[tabulator-field="points"] {
+  background-color: #464166 !important;
+}
+
+
+
+#seasonresults-table {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+.main-viewer-section .tabulator-tableholder::-webkit-scrollbar {
+  width: 4px !important;
+}
+
+.main-viewer-section .tabulator-tableholder::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px !important;
+}
+
+.tabulator-col-content {
+  border: none !important;
+}
+
+[tabulator-field="driver"] {
+  border-right: 1.5px solid #797599 !important;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+}
+
+
+[tabulator-field="points"] {
+  border-left: 1.5px solid #797599 !important;
+  border-right: none !important;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+}
+
+.main-viewer-section .tabulator-col {
+  background-color: #18152e !important;
+  color: #dedde6 !important;
+}
+
+.main-viewer-section .tabulator-row {
+  background-color: #494561 !important;
+  cursor: pointer !important;
+  color: #dedde6 !important;
+  transition: background-color 0.3s !important;
+}
+
+.main-viewer-section .tabulator-row-even {
+  background-color: #3c3952 !important;
+  cursor: pointer !important;
+  color: #dedde6 !important;
+}
+
+.main-viewer-section .tabulator-row:hover {
+  background-color: #625e86 !important;
+  cursor: pointer !important;
+  color: #dedde6 !important;
+}
+
+.tabulator-row:hover [tabulator-field="driver"] {
+  color: #110f24;
+  background-color: #dedde6 !important;
+  border-right: 1.5px solid #dedde6 !important;
+}
+
+.tabulator-row:hover [tabulator-field="points"] {
+  color: #110f24;
+  background-color: #dedde6 !important;
+  border-left: 1.5px solid #dedde6 !important;
+}
+
+[tabulator-field="driver"] span.bold-font {
+  transition: color 0.3s;
+}
+
+.tabulator-row:hover [tabulator-field="driver"] span.bold-font {
+  color: #110f24;
+}
+
+
+.main-viewer-section .tabulator-table {
+  background-color: #110f24 !important;
+  overflow-x: hidden !important;
+}
+
+.tabulator-col-content:has(img) {
+  padding: 0px !important;
+}
+
+.flag-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.flag-header img {
+  width: 100%;
+  height: 29px;
+  opacity: 0.45;
+}
+
+.text-in-front {
+  position: absolute;
+  z-index: 4;
+  color: #eeedf3;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 15px;
 }
 
 .main-calendar-section {
@@ -559,6 +827,17 @@ a.bi-heart:hover{
 
 }
 
+.buttons-h2h{
+  display: flex;
+  gap: 10px;
+}
+
+#driver1Button, #driver2Button{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .race-calendar {
   position: relative;
   background-color: #3f3c57;
@@ -567,7 +846,7 @@ a.bi-heart:hover{
   padding: 8px;
   margin: 10px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   display: flex;
   cursor: grab !important;
   flex-direction: column;
@@ -601,7 +880,7 @@ a.bi-heart:hover{
   border: 2.5px solid transparent;
   border-radius: 10px;
   color: white;
-  transition: color 0.5s, border-color 0.5s;
+  transition: color 0.4s, border-color 0.4s;
   cursor: pointer;
 }
 
@@ -681,7 +960,7 @@ a.bi-heart:hover{
 
 #F2pill {
   border: 2px solid transparent;
-  transition: border-color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, background-color 0.4s;
 }
 
 #F2pill:hover {
@@ -691,7 +970,7 @@ a.bi-heart:hover{
 
 #F3pill {
   border: 2px solid transparent;
-  transition: border-color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, background-color 0.4s;
 }
 
 #F3pill:hover {
@@ -705,6 +984,70 @@ a.bi-heart:hover{
 
 #F3pill.active {
   background-color: red !important;
+}
+
+.one-statH2H {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+  background-color: #3f3c57;
+  border-radius: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  color: #dedde6;
+  border: 2px solid transparent;
+  transition: border-color 0.4s, background-color 0.4s;
+  align-items: center;
+}
+
+.one-statH2H:hover {
+  border-color: white;
+  background-color: #4e4b69;
+}
+
+.one-statH2H:hover .name-H2H {
+  color: white;
+}
+
+.one-statH2H:hover .driver1-number, .one-statH2H:hover .driver2-number{
+  color: white;
+}
+
+.driver-names{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 10px;
+  font-size: 20px;
+  height: 110px;
+  margin-top: 6px;
+}
+
+.driver1-name, .driver2-name{
+  display: flex;
+  flex-direction: column;
+  color: #dedde6;
+  background-color: #1f1b3b;
+  border-radius: 10px;
+  width: 100%;
+  margin-left: 5px;
+  margin-right: 5px;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.4s, color 0.4s;
+}
+
+.driver1-name:hover, .driver2-name:hover {
+  color: white;
+  background-color: #302a57;
+}
+
+.driver1-second, .driver2-second{
+  margin-top: -6px;
 }
 
 .one-performance {
@@ -721,7 +1064,7 @@ a.bi-heart:hover{
   margin-right: 10px;
   color: #dedde6;
   border: 2px solid transparent;
-  transition: border-color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, background-color 0.4s;
 }
 
 .one-performance:hover {
@@ -733,7 +1076,7 @@ a.bi-heart:hover{
   color: white;
 }
 
-.performance-buttons{
+.performance-buttons {
   padding: 10px;
   display: flex;
   width: 100px;
@@ -741,32 +1084,34 @@ a.bi-heart:hover{
 }
 
 
-.perf-engine{
+.perf-engine {
   font-size: 20px;
 }
 
 .performance-buttons i {
-  transition: color 0.5s;
+  transition: color 0.4s;
   cursor: pointer !important;
 }
 
-.performance-buttons .bi-dash-circle:hover, .negative {
+.performance-buttons .bi-dash-circle:hover,
+.negative {
   color: #ff8080;
 }
 
-.performance-buttons .bi-plus-circle:hover, .positive {
+.performance-buttons .bi-plus-circle:hover,
+.positive {
   color: #9fdf9f;
 }
 
 .performance-name {
   width: 200px;
-  transition: color 0.5s;
+  transition: color 0.4s;
   cursor: default !important;
 }
 
 .performance-name-engine {
   width: 300px;
-  transition: color 0.5s;
+  transition: color 0.4s;
   cursor: default !important;
 }
 
@@ -777,6 +1122,51 @@ a.bi-heart:hover{
   align-items: center;
   margin-left: 50px;
 }
+
+.name-H2H{
+  width: 100%;
+  transition: color 0.4s;
+  cursor: default !important;
+  text-align: center;
+}
+
+.custom-H2H {
+  width: 280px;
+  display: flex;
+  flex-direction: row;
+  background-color: #1f1b3b;
+  height: 7px;
+  margin-top: 5px;
+}
+
+.driver1-bar{
+  float: right;
+  width: 0%;
+  height: 7px;
+  transition: width 0.4s;
+}
+
+.h2h-top{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between
+}
+
+.driver2-bar{
+  float: left;
+  width: 0%;
+  height: 7px;
+  transition: width 0.4s;
+}
+
+.driver2-space, .driver1-space{
+  width: 50%;
+  background-color: #1f1b3b;
+  height: 6px;
+}
+
+
+
 
 .red-part {
   width: 300px;
@@ -862,6 +1252,18 @@ a.bi-heart:hover{
   margin-right: 14px;
 }
 
+.btn-number {
+  background-color: transparent !important;
+  color: white !important;
+  padding-left: 0px !important;
+  border: none !important;
+}
+
+.collapse-number {
+  color: white;
+  background-color: #393744;
+}
+
 .contract-details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -869,16 +1271,24 @@ a.bi-heart:hover{
   background-color: #393744;
 }
 
-.custom-body{
-  color: white;
+.number-and-contract {
+  display: flex;
+  flex-direction: column;
   background-color: #393744;
 }
 
+.custom-body {
+  color: #dedde6;
+  background-color: #393744;
+}
 
-.custom-modal{
+.custom-modal {
   min-width: 600px !important;
 }
 
+.contract-details div{
+  color: #dedde6;
+}
 
 .custom-header {
   color: white !important;
@@ -905,9 +1315,9 @@ a.bi-heart:hover{
   padding: 8px 12px;
   max-width: 210px;
   outline: none;
-  transition: border-color 0.5s;
+  transition: border-color 0.4s;
   background-color: rgb(99, 99, 110);
-  color: white;
+  color: #ebeaf0;
 }
 
 .custom-disabled {
@@ -939,7 +1349,8 @@ a.bi-heart:hover{
   text-align: center;
 }
 
-.team, .engine {
+.team,
+.engine {
   background-color: #3f3c57;
   border: 2px solid transparent;
   border-radius: 10px;
@@ -947,23 +1358,25 @@ a.bi-heart:hover{
   cursor: pointer !important;
   margin: 10px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   position: relative;
   font-size: 18px;
 }
 
-.team:hover, .engine:hover {
+.team:hover,
+.engine:hover {
   border-color: white;
   color: white;
   background-color: #4e4b69;
 }
 
-.team.selected, .engine.selected {
+.team.selected,
+.engine.selected {
   color: #110f24;
   background-color: #dedde6;
 }
 
-.team:active .engine:active{
+.team:active .engine:active {
   background-color: #1a1826;
 }
 
@@ -975,14 +1388,14 @@ a.bi-heart:hover{
   cursor: grab !important;
   margin: 10px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   position: relative;
   font-size: 15px;
 }
 
 .free-driver .custom-icon {
   color: transparent;
-  transition: opacity 0.5s;
+  transition: opacity 0.4s;
   background-image: linear-gradient(to left, #4e4b69, transparent);
   width: 80px;
   opacity: 0;
@@ -995,7 +1408,7 @@ a.bi-heart:hover{
 }
 
 .custom-icon i {
-  transition: color 0.5s;
+  transition: color 0.4s;
 }
 
 .custom-icon i:hover {
@@ -1033,10 +1446,13 @@ a.bi-heart:hover{
   justify-content: center;
   align-items: center;
   color: white;
+  backdrop-filter: blur(3px);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 #calendarBlockDiv {
   background-color: rgba(128, 128, 128, 0.733);
+  backdrop-filter: blur(3px);
 }
 
 .normal-driver {
@@ -1046,7 +1462,7 @@ a.bi-heart:hover{
   padding: 8px;
   margin: 10px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
@@ -1059,7 +1475,7 @@ a.bi-heart:hover{
   margin: 10px;
   margin-left: 20px;
   color: #dedde6;
-  transition: border-color 0.5s, color 0.5s, background-color 0.5s;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   min-height: 70px;
   border: 2px solid transparent;
   display: flex;
@@ -1070,18 +1486,20 @@ a.bi-heart:hover{
 
 
 .scriptPills {
-  color: white !important;
+  color: #dedde6 !important;
   border: 2px solid transparent !important;
-  transition: border-color 0.5s, background-color 0.5s !important;
+  transition: border-color 0.4s, background-color 0.4s , color 0.4s !important;
 }
 
 .scriptPills:hover {
   border-color: white !important;
   background-color: #58556c;
+  color: white !important;
 }
 
 .scriptPills.active {
   background-color: #797599 !important;
+  color: white !important;
 }
 
 .custom-input-number {
@@ -1094,7 +1512,7 @@ a.bi-heart:hover{
   height: 56px;
   border: 2px solid transparent;
   font-size: 20px;
-  transition: border-color 0.5s !important;
+  transition: border-color 0.4s !important;
 
 }
 
@@ -1131,7 +1549,7 @@ input::-webkit-inner-spin-button {
 }
 
 
-.normal-driver.clicked .surname{
+.normal-driver.clicked .surname {
   color: inherit !important;
 }
 
@@ -1143,6 +1561,12 @@ input::-webkit-inner-spin-button {
   margin: 10px;
   margin-top: 0px;
   max-height: 140px;
+}
+
+.viewer-top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .logo-and-name {
@@ -1171,7 +1595,7 @@ input::-webkit-inner-spin-button {
   padding-top: 10px;
 }
 
-.perf-title{
+.perf-title {
   padding-bottom: 10px;
   padding-top: 5px;
 }
@@ -1206,7 +1630,7 @@ input::-webkit-inner-spin-button {
   padding-bottom: 6px;
   padding-top: 9px;
   padding-left: 5px;
-  transition: opacity 0.5s;
+  transition: opacity 0.4s;
 }
 
 #mclarenlogo {
@@ -1258,44 +1682,44 @@ input::-webkit-inner-spin-button {
 }
 
 
-#redbull {
-  border-bottom: 2px solid #3671C6;
+#redbull, .rbborder-down:hover {
+  border-bottom: 2px solid #3671C6 !important;
 }
 
-#ferrari {
-  border-bottom: 2px solid #F91536;
+#ferrari, .feborder-down:hover {
+  border-bottom: 2px solid #F91536 !important;
 }
 
-#merc {
-  border-bottom: 2px solid #6CD3BF
+#merc, .meborder-down:hover {
+  border-bottom: 2px solid #6CD3BF !important;
 }
 
-#mclaren {
-  border-bottom: 2px solid #F58020
+#mclaren, .mcborder-down:hover {
+  border-bottom: 2px solid #F58020 !important;
 }
 
-#alpine {
-  border-bottom: 2px solid #2293D1
+#alpine,.alborder-down:hover {
+  border-bottom: 2px solid #2293D1 !important
 }
 
-#alfaromeo {
-  border-bottom: 2px solid #C92D4B
+#alfaromeo, .afborder-down:hover {
+  border-bottom: 2px solid #C92D4B !important
 }
 
-#astonmartin {
-  border-bottom: 2px solid #358C75
+#astonmartin, .asborder-down:hover {
+  border-bottom: 2px solid #358C75 !important
 }
 
-#alphatauri {
-  border-bottom: 2px solid #5E8FAA
+#alphatauri, .atborder-down:hover {
+  border-bottom: 2px solid #5E8FAA !important 
 }
 
-#williams {
-  border-bottom: 2px solid #37BEDD
+#williams, .wiborder-down:hover {
+  border-bottom: 2px solid #37BEDD !important
 }
 
-#haas {
-  border-bottom: 2px solid #B6BABD
+#haas, .haborder-down:hover {
+  border-bottom: 2px solid #B6BABD !important
 }
 
 .rbfont {
@@ -1338,7 +1762,165 @@ input::-webkit-inner-spin-button {
   color: #B6BABD;
 }
 
+.rbbar-primary {
+  background-color: #3671C6;
+}
 
+.rbbar-secondary {
+  background-color: #ffd300;
+}
+
+.febar-primary {
+  background-color: #F91536;
+}
+
+.febar-secondary {
+  background-color: #f1f1f1;
+}
+
+.mebar-primary {
+  background-color: #6CD3BF;
+}
+
+.mebar-secondary {
+  background-color: #fcfcfc;
+}
+
+.mcbar-primary {
+  background-color: #F58020;
+}
+
+.mcbar-secondary {
+  background-color: #47c7fc;
+}
+
+.albar-primary {
+  background-color: #2293D1;
+}
+
+.albar-secondary {
+  background-color: #fd48c7;
+}
+
+.afbar-primary {
+  background-color: #C92D4B;
+}
+
+.afbar-secondary {
+  background-color: #f1f1f1;
+}
+
+.asbar-primary {
+  background-color: #358C75;
+}
+
+.asbar-secondary {
+  background-color: #c3dc00;
+}
+
+.atbar-primary {
+  background-color: #5E8FAA;
+}
+
+.atbar-secondary {
+  background-color: #f1f1f1;
+}
+
+.wibar-primary {
+  background-color: #37BEDD;
+}
+
+.wibar-secondary {
+  background-color: #3792dd;
+}
+
+.habar-primary {
+  background-color: #B6BABD;
+}
+
+.habar-secondary {
+  background-color: #da291c;
+}
+
+.rbborder-primary {
+  border: 2px solid #3671C6;
+}
+
+.rbborder-secondary {
+  border: 2px solid #ffd300;
+}
+
+.feborder-primary {
+  border: 2px solid #F91536;
+}
+
+.feborder-secondary {
+  border: 2px solid #f1f1f1;
+}
+
+.meborder-primary {
+  border: 2px solid #6CD3BF;
+}
+
+.meborder-secondary {
+  border: 2px solid #fcfcfc;
+}
+
+.mcborder-primary {
+  border: 2px solid #F58020;
+}
+
+.mcborder-secondary {
+  border: 2px solid #47c7fc;
+}
+
+.alborder-primary {
+  border: 2px solid #2293D1;
+}
+
+.alborder-secondary {
+  border: 2px solid #fd48c7;
+}
+
+.afborder-primary {
+  border: 2px solid #C92D4B;
+}
+
+.afborder-secondary {
+  border: 2px solid #f1f1f1;
+}
+
+.asborder-primary {
+  border: 2px solid #358C75;
+}
+
+.asborder-secondary {
+  border: 2px solid #c3dc00;
+}
+
+.atborder-primary {
+  border: 2px solid #5E8FAA;
+}
+
+.atborder-secondary {
+  border: 2px solid #f1f1f1;
+}
+
+.wiborder-primary {
+  border: 2px solid #37BEDD;
+}
+
+.wiborder-secondary {
+  border: 2px solid #3792dd;
+}
+
+.haborder-primary {
+  border: 2px solid #B6BABD;
+}
+
+.haborder-secondary {
+  border: 2px solid #da291c;
+}
 
 
 .drivers-section {

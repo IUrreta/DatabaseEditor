@@ -31,9 +31,10 @@ let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha",
 let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
 let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3" }
 
-
+/**
+ * Removes all the drivers from teams and categories
+ */
 function remove_drivers() {
-
     document.querySelectorAll('.driver-space').forEach(item => {
         item.innerHTML = ""
     });
@@ -42,6 +43,10 @@ function remove_drivers() {
     f3DriversDiv.innerHTML = ""
 }
 
+/**
+ * Places all drivers in their respective team, category etc
+ * @param {Object} driversArray List of drivers
+ */
 function place_drivers(driversArray) {
     let divPosition;
     driversArray.forEach((driver) => {
@@ -53,7 +58,7 @@ function place_drivers(driversArray) {
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
         spanName.textContent = name[0] + " "
-        spanLastName.textContent = " "+ name[1].toUpperCase()
+        spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
         newDiv.appendChild(spanName)
         newDiv.appendChild(spanLastName)
@@ -61,12 +66,12 @@ function place_drivers(driversArray) {
 
         //newDiv.innerHTML = driver[0];
         divPosition = "free-drivers"
-        if (driver[2] > 0 && driver[2] <= 10){
+        if (driver[2] > 0 && driver[2] <= 10) {
             addIcon(newDiv)
             divPosition = team_dict[driver[2]] + driver[3];
 
         }
-         
+
         else if (driver[2] > 10 && driver[2] <= 20) divPosition = "f2-drivers";
         else if (driver[2] > 20 && driver[2] <= 31) divPosition = "f3-drivers";
 
@@ -75,7 +80,11 @@ function place_drivers(driversArray) {
     })
 }
 
-function updateColor(div){
+/**
+ * Updates the color from the div depending on the team, both in contract and stats view
+ * @param {div} div div from the driver
+ */
+function updateColor(div) {
     let surnameDiv = div.querySelector(".bold-font")
     surnameDiv.className = "bold-font"
     manageColor(div, surnameDiv)
@@ -87,14 +96,44 @@ function updateColor(div){
 
 }
 
-function manageColor(div, lastName){
-    if(div.dataset.teamid != 0){
+/**
+ * Manages the color depending on the team
+ * @param {div} div div from the driver
+ * @param {span} lastName the lastname span from the driver
+ */
+function manageColor(div, lastName) {
+    if (div.dataset.teamid != 0) {
         let colorClass = team_dict[div.dataset.teamid] + "font"
         lastName.classList.add(colorClass)
     }
 }
 
-function addIcon(div){
+/**
+ * Loads all the numbers into the number menu
+ * @param {Object} nums all numbers array
+ */
+function loadNumbers(nums) {
+    let numsMenu = document.getElementById("numberMenu")
+    numsMenu.innerHTML = ""
+    nums.forEach(function (elem) {
+        let a = document.createElement("a");
+        a.textContent = elem.toString();
+        a.classList = "dropdown-item"
+        a.style.cursor = "pointer"
+        numsMenu.appendChild(a);
+        a.addEventListener("click", function () {
+            document.getElementById("numberButton").textContent = a.textContent
+        })
+    })
+
+
+}
+
+/**
+ * Adds the edit icon
+ * @param {div} div div from the driver that is going to add the icon into
+ */
+function addIcon(div) {
     let iconDiv = document.createElement("div");
     iconDiv.className = "custom-icon"
     let iconElement = document.createElement("i");
@@ -105,16 +144,25 @@ function addIcon(div){
 
 }
 
-function iconListener(icon){
-    icon.addEventListener("click", function() {
+/**
+ * Adds the eventlistener for one icon
+ * @param {div} icon div from the icon
+ */
+function iconListener(icon) {
+    icon.addEventListener("click", function () {
         modalType = "edit"
-        document.getElementById("contractModalTitle").innerHTML = icon.parentNode.parentNode.innerText + "'s contract";
+        document.querySelector(".number-options").classList.remove("d-none")
+        document.getElementById("contractModalTitle").innerHTML = icon.parentNode.parentNode.innerText + "'s details";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
     })
 }
 
-function queryContract(elem){
+/**
+ * Sends the message that requests the details from the driver
+ * @param {div} elem div from the driver its requesting its details
+ */
+function queryContract(elem) {
     driverEditingID = elem.dataset.driverid
     driverEditingName = elem.innerText
     let driverReq = {
@@ -124,9 +172,12 @@ function queryContract(elem){
     }
 
     socket.send(JSON.stringify(driverReq))
-    
+
 }
 
+/**
+ * Pills from the 3 categories
+ */
 freeDriversPill.addEventListener("click", function () {
     manageDrivers("show", "hide", "hide")
 })
@@ -139,6 +190,10 @@ f3DriversPill.addEventListener("click", function () {
     manageDrivers("hide", "hide", "show")
 })
 
+/**
+ * Manages the state of the categorias
+ * @param  {...string} divs the state of each div
+ */
 function manageDrivers(...divs) {
     divsArray.forEach(function (div, index) {
         if (divs[index] === "show") {
@@ -150,34 +205,50 @@ function manageDrivers(...divs) {
     })
 }
 
-
+/**
+ * Event listener for the confirm button from the modal
+ */
 document.getElementById("confirmButton").addEventListener('click', function () {
-    if(modalType === "hire"){
+    if (modalType === "hire") {
         if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
             signDriver("fireandhire")
         }
         signDriver("regular")
         modalType = "";
     }
-    else if (modalType === "edit"){
+    else if (modalType === "edit") {
         editContract()
-        modalType ="";
+        modalType = "";
     }
     setTimeout(clearModal, 500);
 })
 
-function clearModal(){
-    document.querySelectorAll(".rounded-input").forEach(function(elem){
+/**
+ * Clears the modal's inputs
+ */
+function clearModal() {
+    document.querySelectorAll(".rounded-input").forEach(function (elem) {
         elem.value = ""
     })
 }
 
-function editContract(){
+/**
+ * Sends the message to the backend to edit the contract
+ */
+function editContract() {
     let values = []
-    document.querySelectorAll(".rounded-input").forEach(function(elem){
+    document.querySelectorAll(".rounded-input").forEach(function (elem) {
         values.push(elem.value)
     })
-    
+    let number = document.querySelector("#numberButton").textContent
+    let wants1;
+    if(document.querySelector("#driverNumber1").checked){
+        wants1 = 1;
+    }
+    else{
+        wants1 = 0;
+    }
+
     let data = {
         command: "editContract",
         driverID: driverEditingID,
@@ -186,13 +257,17 @@ function editContract(){
         signBonus: values[2],
         raceBonus: values[3],
         raceBonusPos: values[4],
+        driverNumber: number,
+        wantsN1: wants1,
         driver: driverEditingName
     }
     socket.send(JSON.stringify(data))
 }
 
-
-function manage_swap(){
+/**
+ * Changes the positions of 2 drivers involved in a swap
+ */
+function manage_swap() {
     let parent1 = driver1.parentNode;
     let parent2 = driver2.parentNode;
     parent1.removeChild(driver1);
@@ -202,6 +277,10 @@ function manage_swap(){
 
 }
 
+/**
+ * Sends the necessary messages to hire a driver
+ * @param {string} type type of the hiring of the driver, depending if he needs to be fired before or not
+ */
 function signDriver(type) {
     let driverName = draggable.innerText
 
@@ -225,7 +304,6 @@ function signDriver(type) {
 
         if (signBonusData === "")
             signBonusData = "0"
-
 
         if (raceBonusAmt.value === "")
             raceBonusData = "0";
@@ -270,9 +348,11 @@ function signDriver(type) {
 }
 
 
-
+/**
+ * Event listener for the cancel button on the modal
+ */
 document.getElementById("cancelButton").addEventListener('click', function () {
-    if(modalType === "hire"){
+    if (modalType === "hire") {
         originalParent.appendChild(draggable);
         draggable.dataset.teamid = inverted_dict[teamOrigin.dataset.team]
         updateColor(draggable)
@@ -280,7 +360,9 @@ document.getElementById("cancelButton").addEventListener('click', function () {
     setTimeout(clearModal, 500);
 })
 
-
+/**
+ * Manages the interaction to drag drivers
+ */
 interact('.free-driver').draggable({
     inertia: true,
     listeners: {
@@ -341,15 +423,16 @@ interact('.free-driver').draggable({
                         }
                         else {
                             modalType = "hire"
+                            document.querySelector(".number-options").classList.add("d-none")
                             myModal.show()
-                            
+
                         }
-                        if(target.querySelector(".custom-icon") === null){
+                        if (target.querySelector(".custom-icon") === null) {
                             addIcon(target)
                         }
-                        
+
                     }
-                    else if(element.childElementCount == 1){
+                    else if (element.childElementCount == 1) {
                         if (originalParent.className === "col driver-space") {
                             driver1 = target;
                             driver2 = element.firstChild;
@@ -359,7 +442,7 @@ interact('.free-driver').draggable({
                             updateColor(driver1)
                             driver2.dataset.teamid = inverted_dict[team1.dataset.team]
                             updateColor(driver2)
-                            if(driver1 !== driver2){
+                            if (driver1 !== driver2) {
                                 let data = {
                                     command: "swap",
                                     driver1ID: target.dataset.driverid,
@@ -367,13 +450,13 @@ interact('.free-driver').draggable({
                                     driver1: target.innerText,
                                     driver2: element.firstChild.innerText,
                                 }
-                        
+
                                 socket.send(JSON.stringify(data))
                                 manage_swap()
                             }
 
                         }
-                        
+
                     }
 
                 }
@@ -385,10 +468,10 @@ interact('.free-driver').draggable({
 
             if (event.clientX >= freeRect.left && event.clientX <= freeRect.right &&
                 event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
-                if(target.querySelector(".custom-icon") !== null){
+                if (target.querySelector(".custom-icon") !== null) {
                     draggable.removeChild(draggable.querySelector(".custom-icon"))
                 }
-                if(originalParent.id !== "free-drivers"){
+                if (originalParent.id !== "free-drivers") {
                     originalParent.removeChild(draggable);
                     draggable.dataset.teamid = 0
                     updateColor(draggable)
