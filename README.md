@@ -42,7 +42,7 @@ You can try to look at them at the [Troubleshoot Guide](https://github.com/IUrre
 
 ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/804f32c4-fcde-4d8f-86b9-50e14660af9a)
 
-![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/3d35612c-1993-456f-a5b5-78464ee5137f)
+![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/66706691-1627-4a14-9f3f-5403e09e8d86)
 
 ![image](https://github.com/IUrreta/DatabaseEditor/assets/95303008/d413ffdd-f696-45b8-8516-133e45c7935f)
 
