@@ -365,11 +365,11 @@ a.bi-heart:hover {
 }
 
 .hide {
-  animation: fadeOut 0.4s;
+  animation: fadeOut 0.5s;
 }
 
 .myShow{
-  animation: myFadeIn 0.4s;
+  animation: myFadeIn 0.5s;
 }
 
 @keyframes fadeOut {
@@ -1841,9 +1841,6 @@ input::-webkit-inner-spin-button {
 .habar-secondary {
   background-color: #da291c;
 }
-
-
-
 
 .rbborder-primary {
   border: 2px solid #3671C6;
