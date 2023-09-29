@@ -264,18 +264,23 @@ function load_h2h_graph(data) {
         let index1 = d1_races.indexOf(elem[0])
         let index2 = d2_races.indexOf(elem[0])
         if(index1 !== -1){
-            d1_res.push(d1_provisonal[index1])
-            if(d1_res[index1] === -1){
-                d1_res[index1] = NaN
+            if(d1_provisonal[index1] === -1){
+                d1_res.push(NaN)
             }
+            else{
+                d1_res.push(d1_provisonal[index1])
+            }
+            
         }
         else{
             d1_res.push(NaN)
         }
         if(index2 !== -1){
-            d2_res.push(d2_provisonal[index2])
-            if(d2_res[index2] === -1){
-                d2_res[index2] = NaN
+            if(d2_provisonal[index2] === -1){
+                d2_res.push(NaN)
+            }
+            else{
+                d2_res.push(d2_provisonal[index2])
             }
         }
         else{
