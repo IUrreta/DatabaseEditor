@@ -182,8 +182,11 @@ function formatTable() {
                         if (val[0] === "0") {
                             val[0] = ""
                         }
-                        else if (val[0] === "-1") {
+                        if (val[0] === "-1") {
                             val[0] = "DNF"
+                        }
+                        else  if (val[0] === "-1s") {
+                            val[0] = "DNFs"
                         }
                         if (val[1] === "0)") {
                             val[1] = ""
@@ -194,11 +197,16 @@ function formatTable() {
                         row[key] = val[0] + val[1]
                     }
                     else if (val.length == 1) {
+                        console.log(row)
+                        console.log(key)
                         if (row[key] === "0") {
                             row[key] = "";
                         }
                         if (row[key] === "-1") {
                             row[key] = "DNF";
+                        }
+                        else if (row[key] === "-1s") {
+                            row[key] = "DNFs";
                         }
                     }
                 }
