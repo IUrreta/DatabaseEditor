@@ -342,6 +342,7 @@ a.bi-heart:hover {
   border-radius: 10px !important;
   width: 420px !important;
   backdrop-filter: blur(3px);
+  z-index: 9999 !important;
 }
 
 .bar-space{
@@ -571,11 +572,13 @@ a.bi-heart:hover {
 
 #editPills{
   position: absolute;
+  z-index: 1;
   right: 280px;
   transition: color 0.4s;
 }
 
 #dataPills{
+  z-index: 1 !important;
   padding-left: 150px;
   transition: color 0.4s;
 }
