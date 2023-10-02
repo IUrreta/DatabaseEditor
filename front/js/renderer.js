@@ -163,6 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 loadNumbers(message.slice(1))
             }
             else if (message[0] === "H2H fetched") {
+                sprintsListeners()
                 manage_h2h_bars(message.slice(1)[0])
             }
             else if(message[0] === "DriversH2H fetched"){

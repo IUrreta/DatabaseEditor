@@ -82,6 +82,17 @@ function createTable(calendar) {
                                 row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -1)
                                 row.getCell(key).getElement().style.color = "#c90fd7";
                             }
+                            if (cellValue[cellValue.length - 1] === "p") {
+                                row.getCell(key).getElement().style.fontFamily = "Formula1Bold";
+                                if(cellValue[cellValue.length - 2] === "s"){
+                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -2)
+                                    row.getCell(key).getElement().style.color = "#c90fd7";
+                                }
+                                else{
+                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -1)
+
+                                }
+                            }
                         }
 
                     }
@@ -268,8 +279,6 @@ function addDriver(driverInfo) {
         sprintvalue = 6;
     }
 
-
-    console.log(driverInfo)
     driverInfo.slice(3).forEach((pair, index) => {
         if (pair.length === 5) {
             rowData["race" + pair[0]] = "" + pair[raceValue];
