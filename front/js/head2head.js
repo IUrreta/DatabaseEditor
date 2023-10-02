@@ -20,20 +20,20 @@ function manage_h2h_bars(data) {
     let d2_width
     if (data[7].some(elem => elem >= 2)) {
         data[4] = data[7]
-        document.getElementById("bestrh2h").querySelector(".name-H2H").textContent = "WINS"
+        document.getElementById("bestrh2h").querySelector(".only-name").textContent = "WINS"
         wins = true
     }
     else {
-        document.getElementById("bestrh2h").querySelector(".name-H2H").textContent = "BEST RACE"
+        document.getElementById("bestrh2h").querySelector(".only-name").textContent = "BEST RACE"
         wins = false
     }
     if (data[8].some(elem => elem >= 2)) {
         data[5] = data[8]
-        document.getElementById("bestqh2h").querySelector(".name-H2H").textContent = "POLES"
+        document.getElementById("bestqh2h").querySelector(".only-name").textContent = "POLES"
         poles = true
     }
     else {
-        document.getElementById("bestqh2h").querySelector(".name-H2H").textContent = "BEST QUALI"
+        document.getElementById("bestqh2h").querySelector(".only-name").textContent = "BEST QUALI"
         poles = false
     }
 

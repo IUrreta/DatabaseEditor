@@ -1011,7 +1011,18 @@ a.bi-heart:hover {
   background-color: #4e4b69;
 }
 
-.one-statH2H:hover .name-H2H {
+.one-statH2H i{
+  cursor: pointer;
+  transition: color 0.4s;
+}
+
+.one-statH2H i:hover{
+  cursor: pointer;
+  color: white;
+}
+
+
+.one-statH2H:hover .name-H2H .only-name{
   color: white;
 }
 
@@ -1130,6 +1141,15 @@ a.bi-heart:hover {
   transition: color 0.4s;
   cursor: default !important;
   text-align: center;
+}
+
+.only-name{
+  transition: color 0.4s;
+}
+
+#bestrh2h .name-H2H{
+  display: flex;
+  justify-content: space-between;
 }
 
 .custom-H2H {
