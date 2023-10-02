@@ -353,11 +353,13 @@ a.bi-heart:hover {
 .driver1-number{
   font-size: 18px;
   margin-right: 10px;
+  transition: color 0.4s;
 }
 
 .driver2-number{
   font-size: 18px;
   margin-left: 10px;
+  transition: color 0.4s;
 }
 
 .toast-error{
