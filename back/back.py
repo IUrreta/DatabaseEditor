@@ -335,6 +335,7 @@ def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
     formatred_results = [(result[-2], result[-1]) for result in results]
     for i in range(len(races_participated)):
         driver_with_fastest_lap = cursor.execute("SELECT DriverID FROM Races_Results WHERE FastestLap > 0 AND RaceID = "+ str(races_participated[i][0]) + " AND Season = " + str(year[0]) + " ORDER BY FastestLap LIMIT 1; ").fetchone()
+        driver_with_pole = cursor.execute("SELECT DriverID FROM Races_QualifyingResults WHERE QualifyingStage = 3 AND FinishingPos = 1 AND RaceID = " + str(races_participated[i][0])).fetchone()
         dnfd = cursor.execute("SELECT DNF FROM Races_Results WHERE DriverID = " + str(driverID[0]) + " AND Season = " + str(year[0]) + " AND RaceID = " + str(races_participated[i][0])).fetchone()
         formatred_results[i] = (races_participated[i][0],)  + formatred_results[i]
         if dnfd[0] == 1:
@@ -350,6 +351,14 @@ def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
             results_list = list(formatred_results[i])
             results_list.append(0)
             formatred_results[i] = tuple(results_list)
+        if driver_with_pole[0] == driverID[0]:
+            results_list = list(formatred_results[i])
+            results_list.append(1)
+            formatred_results[i] = tuple(results_list)
+        else:
+            results_list = list(formatred_results[i])
+            results_list.append(0)
+            formatred_results[i] = tuple(results_list) 
 
     for tupla1 in sprints:
         for i, tupla2 in enumerate(formatred_results):
