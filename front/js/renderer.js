@@ -530,6 +530,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.querySelector(".left-panel-stats").classList.add("d-none")
                 statPanelShown = 0;
             });
+            
         });
     }
 
