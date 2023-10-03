@@ -134,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 clearTimeout(connectionTimeout);
                 manage_status(1)
                 check_version()
+                listeners_plusLess()
 
 
             }

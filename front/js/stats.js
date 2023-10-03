@@ -270,6 +270,26 @@ function calculateOverall(stats, type) {
     return Math.round(rating)
 }
 
+function listeners_plusLess(){
+    document.querySelectorAll(".bi-plus-lg").forEach(function(elem){
+        elem.addEventListener("click", function(){
+            let input = elem.parentNode.parentNode.querySelector("input")
+            console.log(input.value)
+            input.value = parseInt(input.value) + 1;
+            recalculateOverall()
+        })
+
+    })
+    document.querySelectorAll(".bi-dash-lg").forEach(function(elem){
+        elem.addEventListener("click", function(){
+            let input = elem.parentNode.parentNode.querySelector("input")
+            console.log(input.value)
+            input.value = parseInt(input.value) - 1;
+            recalculateOverall()
+        })
+    })
+}
+
 /**
  * Loads the stats into the input numbers
  * @param {div} div div of the staff that is about to be edited
