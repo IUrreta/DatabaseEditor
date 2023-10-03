@@ -1500,13 +1500,55 @@ a.bi-heart:hover {
   margin: 10px;
   margin-left: 20px;
   color: #dedde6;
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  transition: border-color 0.4s, background-color 0.4s;
   min-height: 70px;
   border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
   align-items: center;
   max-height: 70px;
+}
+
+.one-stat-panel:hover{
+  border-color: white;
+  background-color: #4e4b69;
+}
+
+.one-stat-panel span{
+  color: #dedde6;
+  transition: color 0.4s;
+}
+
+.one-stat-panel:hover span, .one-stat-panel:hover i{
+  color: white;
+}
+
+.one-stat-panel .bi-plus-lg, .one-stat-panel .bi-dash-lg{
+  transition: color 0.4s;
+  cursor: pointer;
+}
+
+.one-stat-panel .bi-plus-lg:hover{
+  color: #9fdf9f;
+}
+
+.one-stat-panel .bi-dash-lg:hover{
+  color: #ff8080;
+}
+
+
+.input-and-buttons{
+  display: flex;
+  flex-direction: row;  
+  align-items: center;
+  margin-right: 5px;
+}
+
+.input-buttons{
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+  padding-top: 2px;
 }
 
 
@@ -1532,17 +1574,18 @@ a.bi-heart:hover {
   border-radius: 10px;
   padding: 10px;
   margin-right: 7px;
-  color: white;
+  color: #dedde6;
   max-width: 60px;
   height: 56px;
   border: 2px solid transparent;
   font-size: 20px;
-  transition: border-color 0.4s !important;
+  transition: background-color 0.4s, color 0.4s !important;
 
 }
 
 .custom-input-number:hover {
-  border-color: #cecece;
+  color: white;
+  background-color: #292738;
 
 }
 
