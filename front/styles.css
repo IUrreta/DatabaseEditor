@@ -1519,21 +1519,8 @@ a.bi-heart:hover {
   transition: color 0.4s;
 }
 
-.one-stat-panel:hover span, .one-stat-panel:hover i{
+.one-stat-panel:hover span{
   color: white;
-}
-
-.one-stat-panel .bi-plus-lg, .one-stat-panel .bi-dash-lg{
-  transition: color 0.4s;
-  cursor: pointer;
-}
-
-.one-stat-panel .bi-plus-lg:hover{
-  color: #9fdf9f;
-}
-
-.one-stat-panel .bi-dash-lg:hover{
-  color: #ff8080;
 }
 
 
@@ -1549,6 +1536,30 @@ a.bi-heart:hover {
   flex-direction: column;
   font-size: 20px;
   padding-top: 2px;
+  gap: 5px;
+}
+
+.input-buttons i{
+  cursor: pointer;
+  background-color: transparent;
+  border-radius: 10px;
+  transition: background-color 0.4s, color 0.4s;
+  background-color: transparent;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-buttons i:hover{
+  background-color: #6f698f !important;
+  color: white !important;
+}
+
+.input-buttons i:active{
+  background-color: #5f5a7c !important;
+  color: rgb(226, 226, 226) !important;
 }
 
 
