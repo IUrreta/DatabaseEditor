@@ -1104,19 +1104,28 @@ a.bi-heart:hover {
   font-size: 20px;
 }
 
-.performance-buttons i {
-  transition: color 0.4s;
-  cursor: pointer !important;
+.performance-buttons i{
+  cursor: pointer;
+  background-color: transparent;
+  border-radius: 10px;
+  transition: background-color 0.4s, color 0.4s;
+  background-color: transparent;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.performance-buttons .bi-dash-circle:hover,
-.negative {
-  color: #ff8080;
+.performance-buttons i:hover{
+  background-color: #6f698f !important;
+  color: white !important;
 }
 
-.performance-buttons .bi-plus-circle:hover,
-.positive {
-  color: #9fdf9f;
+.performance-buttons i:active{
+  background-color: #5f5a7c !important;
+  color: rgb(226, 226, 226) !important;
+  transition-duration: 0s;
 }
 
 .performance-name {
@@ -1560,6 +1569,7 @@ a.bi-heart:hover {
 .input-buttons i:active{
   background-color: #5f5a7c !important;
   color: rgb(226, 226, 226) !important;
+  transition-duration: 0s;
 }
 
 
