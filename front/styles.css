@@ -1532,6 +1532,13 @@ a.bi-heart:hover {
   color: white;
 }
 
+.positive {
+  color: #9fdf9f;
+}
+
+.negative {
+  color: #ff8080;
+}
 
 .input-and-buttons{
   display: flex;
