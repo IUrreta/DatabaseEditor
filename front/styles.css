@@ -234,7 +234,7 @@ a.bi-heart:hover {
 
 .overall-holder {
   background-color: #21202e;
-  border: 3px solid white;
+  border: 2px solid white;
   border-radius: 10px;
   width: 66px;
   height: 56px;
@@ -251,26 +251,46 @@ a.bi-heart:hover {
   display: flex;
 }
 
-@keyframes colorChange {
+@keyframes colorChangeNeg {
 
   0%,
   100% {
-    border: 3px solid white;
+    border: 2px solid white;
     border-radius: 10px;
     background-color: #21202e;
   }
 
   50% {
-    border: 3px solid red;
+    border: 2px solid #ff8080;
+    border-radius: 10px;
+    background-color: #21202e;
+  }
+}
+
+@keyframes colorChangePos {
+
+  0%,
+  100% {
+    border: 2px solid white;
+    border-radius: 10px;
+    background-color: #21202e;
+  }
+
+  50% {
+    border: 2px solid #9fdf9f;
     border-radius: 10px;
     background-color: #21202e;
   }
 }
 
 
+.alertNeg {
+  animation: colorChangeNeg 0.4s infinite;
+  margin-bottom: 0px !important;
+}
 
-.alert {
-  animation: colorChange 0.4s infinite;
+.alertPos {
+  animation: colorChangePos 0.4s infinite;
   margin-bottom: 0px !important;
 }
 
