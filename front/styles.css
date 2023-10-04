@@ -51,7 +51,7 @@ body::-webkit-scrollbar-thumb {
   text-align: center;
   padding: 5px 0;
   font-size: 16px;
-  z-index: 20;
+  z-index: 200;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -234,7 +234,7 @@ a.bi-heart:hover {
 
 .overall-holder {
   background-color: #21202e;
-  border: 3px solid white;
+  border: 2px solid white;
   border-radius: 10px;
   width: 66px;
   height: 56px;
@@ -251,26 +251,46 @@ a.bi-heart:hover {
   display: flex;
 }
 
-@keyframes colorChange {
+@keyframes colorChangeNeg {
 
   0%,
   100% {
-    border: 3px solid white;
+    border: 2px solid white;
     border-radius: 10px;
     background-color: #21202e;
   }
 
   50% {
-    border: 3px solid red;
+    border: 2px solid #ff8080;
+    border-radius: 10px;
+    background-color: #21202e;
+  }
+}
+
+@keyframes colorChangePos {
+
+  0%,
+  100% {
+    border: 2px solid white;
+    border-radius: 10px;
+    background-color: #21202e;
+  }
+
+  50% {
+    border: 2px solid #9fdf9f;
     border-radius: 10px;
     background-color: #21202e;
   }
 }
 
 
+.alertNeg {
+  animation: colorChangeNeg 0.4s infinite;
+  margin-bottom: 0px !important;
+}
 
-.alert {
-  animation: colorChange 0.4s infinite;
+.alertPos {
+  animation: colorChangePos 0.4s infinite;
   margin-bottom: 0px !important;
 }
 
@@ -342,6 +362,7 @@ a.bi-heart:hover {
   border-radius: 10px !important;
   width: 420px !important;
   backdrop-filter: blur(3px);
+  z-index: 9999 !important;
 }
 
 .bar-space{
@@ -353,11 +374,13 @@ a.bi-heart:hover {
 .driver1-number{
   font-size: 18px;
   margin-right: 10px;
+  transition: color 0.4s;
 }
 
 .driver2-number{
   font-size: 18px;
   margin-left: 10px;
+  transition: color 0.4s;
 }
 
 .toast-error{
@@ -569,11 +592,13 @@ a.bi-heart:hover {
 
 #editPills{
   position: absolute;
+  z-index: 1;
   right: 280px;
   transition: color 0.4s;
 }
 
 #dataPills{
+  z-index: 1 !important;
   padding-left: 150px;
   transition: color 0.4s;
 }
@@ -1009,7 +1034,18 @@ a.bi-heart:hover {
   background-color: #4e4b69;
 }
 
-.one-statH2H:hover .name-H2H {
+.one-statH2H i{
+  cursor: pointer;
+  transition: color 0.4s;
+}
+
+.one-statH2H i:hover{
+  cursor: pointer;
+  color: white;
+}
+
+
+.one-statH2H:hover .name-H2H .only-name{
   color: white;
 }
 
@@ -1088,19 +1124,28 @@ a.bi-heart:hover {
   font-size: 20px;
 }
 
-.performance-buttons i {
-  transition: color 0.4s;
-  cursor: pointer !important;
+.performance-buttons i{
+  cursor: pointer;
+  background-color: transparent;
+  border-radius: 10px;
+  transition: background-color 0.4s, color 0.4s;
+  background-color: transparent;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.performance-buttons .bi-dash-circle:hover,
-.negative {
-  color: #ff8080;
+.performance-buttons i:hover{
+  background-color: #6f698f !important;
+  color: white !important;
 }
 
-.performance-buttons .bi-plus-circle:hover,
-.positive {
-  color: #9fdf9f;
+.performance-buttons i:active{
+  background-color: #5f5a7c !important;
+  color: rgb(226, 226, 226) !important;
+  transition-duration: 0s;
 }
 
 .performance-name {
@@ -1128,6 +1173,15 @@ a.bi-heart:hover {
   transition: color 0.4s;
   cursor: default !important;
   text-align: center;
+}
+
+.only-name{
+  transition: color 0.4s;
+}
+
+#bestrh2h .name-H2H{
+  display: flex;
+  justify-content: space-between;
 }
 
 .custom-H2H {
@@ -1441,7 +1495,7 @@ a.bi-heart:hover {
   width: 100%;
   height: 100%;
   background-color: rgba(128, 128, 128, 0.5);
-  z-index: 10;
+  z-index: 100;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1475,13 +1529,74 @@ a.bi-heart:hover {
   margin: 10px;
   margin-left: 20px;
   color: #dedde6;
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  transition: border-color 0.4s, background-color 0.4s;
   min-height: 70px;
   border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
   align-items: center;
   max-height: 70px;
+}
+
+.one-stat-panel:hover{
+  border-color: white;
+  background-color: #4e4b69;
+}
+
+.one-stat-panel span{
+  color: #dedde6;
+  transition: color 0.4s;
+}
+
+.one-stat-panel:hover span{
+  color: white;
+}
+
+.positive {
+  color: #9fdf9f;
+}
+
+.negative {
+  color: #ff8080;
+}
+
+.input-and-buttons{
+  display: flex;
+  flex-direction: row;  
+  align-items: center;
+  margin-right: 5px;
+}
+
+.input-buttons{
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+  padding-top: 2px;
+  gap: 5px;
+}
+
+.input-buttons i{
+  cursor: pointer;
+  background-color: transparent;
+  border-radius: 10px;
+  transition: background-color 0.4s, color 0.4s;
+  background-color: transparent;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-buttons i:hover{
+  background-color: #6f698f !important;
+  color: white !important;
+}
+
+.input-buttons i:active{
+  background-color: #5f5a7c !important;
+  color: rgb(226, 226, 226) !important;
+  transition-duration: 0s;
 }
 
 
@@ -1507,17 +1622,22 @@ a.bi-heart:hover {
   border-radius: 10px;
   padding: 10px;
   margin-right: 7px;
-  color: white;
+  color: #dedde6;
   max-width: 60px;
   height: 56px;
   border: 2px solid transparent;
   font-size: 20px;
-  transition: border-color 0.4s !important;
+  transition: background-color 0.4s, color 0.4s !important;
 
 }
 
+.custom-input-number::selection{
+  background-color: transparent;
+}
+
 .custom-input-number:hover {
-  border-color: #cecece;
+  color: white;
+  background-color: #292738;
 
 }
 

@@ -134,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 clearTimeout(connectionTimeout);
                 manage_status(1)
                 check_version()
+                listeners_plusLess()
 
 
             }
@@ -163,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 loadNumbers(message.slice(1))
             }
             else if (message[0] === "H2H fetched") {
+                sprintsListeners()
                 manage_h2h_bars(message.slice(1)[0])
             }
             else if(message[0] === "DriversH2H fetched"){
@@ -496,7 +498,8 @@ document.addEventListener('DOMContentLoaded', function () {
             item.addEventListener("click", function () {
                 const staffButton = document.getElementById('staffButton');
                 let staffSelected = item.innerHTML
-                if (staffSelected === "Drivers") {
+                let staffCode = item.dataset.spacestats
+                if (staffCode === "driverStats") {
                     typeOverall = "driver"
                     typeEdit = "0"
                     document.getElementById("specialStatsPanel").classList.remove("d-none")
@@ -504,16 +507,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 else {
                     typeOverall = "staff"
                     document.getElementById("specialStatsPanel").classList.add("d-none")
-                    if (staffSelected === "Technical Chiefs") {
+                    if (staffCode === "chiefStats") {
                         typeEdit = "1"
                     }
-                    if (staffSelected === "Race Engineers") {
+                    if (staffCode === "engineerStats") {
                         typeEdit = "2"
                     }
-                    if (staffSelected === "Head of Aerodynamics") {
+                    if (staffCode === "aeroStats") {
                         typeEdit = "3"
                     }
-                    if (staffSelected === "Sporting Directors") {
+                    if (staffCode === "directorStats") {
                         typeEdit = "4"
                     }
 
@@ -529,6 +532,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.querySelector(".left-panel-stats").classList.add("d-none")
                 statPanelShown = 0;
             });
+            
         });
     }
 

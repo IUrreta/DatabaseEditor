@@ -15,6 +15,7 @@ def fetch_Head2Head(driver1ID, driver2ID, year, c):
     podiumsH2H = [0,0]
     polesH2H = [0,0]
     winsH2H = [0,0]
+    sprintWinsH2H  = [0,0]
     d1_BestRace = 21
     d2_BestRace = 21
     d1_BestQauli = 21
@@ -64,7 +65,15 @@ def fetch_Head2Head(driver1ID, driver2ID, year, c):
         if(d1_RDNF[0] == 1):
             dnfH2H[0] += 1
         if(d2_RDNF[0] == 1):
-            dnfH2H[1] += 1    
+            dnfH2H[1] += 1  
+        d1_SRes = cursor.execute("SELECT FinishingPos FROM Races_Sprintresults  WHERE RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
+        d2_SRes = cursor.execute("SELECT FinishingPos FROM Races_Sprintresults  WHERE RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
+        if(d1_SRes != None):
+            if(d1_SRes[0] == 1):
+                sprintWinsH2H[0] += 1
+        if(d2_SRes != None):
+            if(d2_SRes[0] == 1):
+                sprintWinsH2H[1] += 1
 
     d1_Pts = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND  SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
     d2_Pts = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND  SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
@@ -74,6 +83,6 @@ def fetch_Head2Head(driver1ID, driver2ID, year, c):
     bestRace[1] = d2_BestRace
     bestQuali[0] = d1_BestQauli
     bestQuali[1] = d2_BestQauli   
-    resultList = [tuple(raceH2H),tuple(qualiH2H),tuple(pointsH2H),tuple(podiumsH2H),tuple(bestRace),tuple(bestQuali),tuple(dnfH2H), tuple(winsH2H), tuple(polesH2H)]
+    resultList = [tuple(raceH2H),tuple(qualiH2H),tuple(pointsH2H),tuple(podiumsH2H),tuple(bestRace),tuple(bestQuali),tuple(dnfH2H), tuple(winsH2H), tuple(polesH2H), tuple(sprintWinsH2H)]
 
     return resultList  

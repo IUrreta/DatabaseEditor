@@ -54,6 +54,17 @@ function createTable(calendar) {
                                 row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -1)
                                 row.getCell(key).getElement().style.color = "#c90fd7";
                             }
+                            if (cellValue[cellValue.length - 1] === "p") {
+                                row.getCell(key).getElement().style.fontFamily = "Formula1Bold";
+                                if(cellValue[cellValue.length - 2] === "s"){
+                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -2)
+                                    row.getCell(key).getElement().style.color = "#c90fd7";
+                                }
+                                else{
+                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -1)
+
+                                }
+                            }
                         }
                         else if (pointsOrPos === "pos") {
                             let splitted = cellValue.split("(")
@@ -70,6 +81,17 @@ function createTable(calendar) {
                             if (cellValue[cellValue.length - 1] === "s") {
                                 row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -1)
                                 row.getCell(key).getElement().style.color = "#c90fd7";
+                            }
+                            if (cellValue[cellValue.length - 1] === "p") {
+                                row.getCell(key).getElement().style.fontFamily = "Formula1Bold";
+                                if(cellValue[cellValue.length - 2] === "s"){
+                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -2)
+                                    row.getCell(key).getElement().style.color = "#c90fd7";
+                                }
+                                else{
+                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -1)
+
+                                }
                             }
                         }
 
@@ -182,8 +204,17 @@ function formatTable() {
                         if (val[0] === "0") {
                             val[0] = ""
                         }
-                        else if (val[0] === "-1") {
+                        if (val[0] === "-1") {
                             val[0] = "DNF"
+                        }
+                        else  if (val[0] === "-1s") {
+                            val[0] = "DNFs"
+                        }
+                        else  if (val[0] === "-1p") {
+                            val[0] = "DNFp"
+                        }
+                        else  if (val[0] === "-1sp") {
+                            val[0] = "DNFsp"
                         }
                         if (val[1] === "0)") {
                             val[1] = ""
@@ -199,6 +230,15 @@ function formatTable() {
                         }
                         if (row[key] === "-1") {
                             row[key] = "DNF";
+                        }
+                        else if (row[key] === "-1s") {
+                            row[key] = "DNFs";
+                        }
+                        else if (row[key] === "-1p") {
+                            row[key] = "DNFp";
+                        }
+                        else if (row[key] === "-1sp") {
+                            row[key] = "DNFsp";
                         }
                     }
                 }
@@ -232,24 +272,25 @@ function addDriver(driverInfo) {
     let sprintvalue;
     if (pointsOrPos === "points") {
         raceValue = 2;
-        sprintvalue = 4;
+        sprintvalue = 5;
     }
     else if (pointsOrPos === "pos") {
         raceValue = 1;
-        sprintvalue = 5;
+        sprintvalue = 6;
     }
 
-
-
     driverInfo.slice(3).forEach((pair, index) => {
-        if (pair.length === 4) {
+        if (pair.length === 5) {
             rowData["race" + pair[0]] = "" + pair[raceValue];
         }
-        else if (pair.length === 6) {
+        else if (pair.length === 7) {
             rowData["race" + pair[0]] = pair[raceValue] + "(" + pair[sprintvalue] + ")"
         }
         if (pair[3] === 1) {
             rowData["race" + pair[0]] += "s"
+        }
+        if (pair[4] === 1) {
+            rowData["race" + pair[0]] += "p"
         }
 
     });
@@ -261,8 +302,8 @@ function addDriver(driverInfo) {
             totalPoints += elem[2]
         }
 
-        if (elem.length === 6) {
-            totalPoints += elem[4]
+        if (elem.length === 7) {
+            totalPoints += elem[5]
         }
     })
     rowData["points"] = totalPoints;

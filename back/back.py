@@ -280,7 +280,7 @@ def fetch_driverContract(id):
     return details
 
 def fetch_staff():
-    staff = cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0 AND (con.ContractType = 0 OR con.ContractType IS NULL OR con.ContractType = 3)").fetchall()
+    staff = cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0 AND (con.ContractType = 0 OR con.ContractType IS NULL OR con.ContractType = 3) GROUP BY bas.StaffID").fetchall()
 
     formatted_tuples = []
 
@@ -335,6 +335,7 @@ def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
     formatred_results = [(result[-2], result[-1]) for result in results]
     for i in range(len(races_participated)):
         driver_with_fastest_lap = cursor.execute("SELECT DriverID FROM Races_Results WHERE FastestLap > 0 AND RaceID = "+ str(races_participated[i][0]) + " AND Season = " + str(year[0]) + " ORDER BY FastestLap LIMIT 1; ").fetchone()
+        driver_with_pole = cursor.execute("SELECT DriverID FROM Races_QualifyingResults WHERE QualifyingStage = 3 AND FinishingPos = 1 AND RaceID = " + str(races_participated[i][0])).fetchone()
         dnfd = cursor.execute("SELECT DNF FROM Races_Results WHERE DriverID = " + str(driverID[0]) + " AND Season = " + str(year[0]) + " AND RaceID = " + str(races_participated[i][0])).fetchone()
         formatred_results[i] = (races_participated[i][0],)  + formatred_results[i]
         if dnfd[0] == 1:
@@ -350,6 +351,14 @@ def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
             results_list = list(formatred_results[i])
             results_list.append(0)
             formatred_results[i] = tuple(results_list)
+        if driver_with_pole[0] == driverID[0]:
+            results_list = list(formatred_results[i])
+            results_list.append(1)
+            formatred_results[i] = tuple(results_list)
+        else:
+            results_list = list(formatred_results[i])
+            results_list.append(0)
+            formatred_results[i] = tuple(results_list) 
 
     for tupla1 in sprints:
         for i, tupla2 in enumerate(formatred_results):
@@ -373,7 +382,7 @@ def fetch_drivers_per_year(year):
 
 def fetch_info():
 
-    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID GROUP BY bas.FirstName, bas.LastName, bas.StaffID, con.TeamID;').fetchall()
+    drivers = cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID GROUP BY bas.StaffID;').fetchall()
     formatted_tuples = []
     for tupla in drivers:
         result = format_names_get_stats(tupla, "driver")
