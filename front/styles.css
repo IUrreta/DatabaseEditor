@@ -1611,6 +1611,10 @@ a.bi-heart:hover {
 
 }
 
+.custom-input-number::selection{
+  background-color: transparent;
+}
+
 .custom-input-number:hover {
   color: white;
   background-color: #292738;

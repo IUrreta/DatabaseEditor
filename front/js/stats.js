@@ -272,18 +272,16 @@ function calculateOverall(stats, type) {
 
 function listeners_plusLess(){
     document.querySelectorAll(".bi-plus-lg").forEach(function(elem){
-        elem.addEventListener("click", function(){
+        elem.addEventListener("mousedown", function(){
             let input = elem.parentNode.parentNode.querySelector("input")
-            console.log(input.value)
             input.value = parseInt(input.value) + 1;
             recalculateOverall()
         })
 
     })
     document.querySelectorAll(".bi-dash-lg").forEach(function(elem){
-        elem.addEventListener("click", function(){
+        elem.addEventListener("mousedown", function(){
             let input = elem.parentNode.parentNode.querySelector("input")
-            console.log(input.value)
             input.value = parseInt(input.value) - 1;
             recalculateOverall()
         })
