@@ -203,7 +203,9 @@
               </div>
             </div>
             <div class="one-statH2H" id="raceh2h">
-              <div class="name-H2H bold-font">RACE</div>
+              <div class="name-H2H bold-font">
+                <div class="only-name">RACE</div>
+              </div>
               <div class="bar-space">
                 <div class="driver1-number bold-font"></div>
                 <div class="custom-H2H" data-driver1="0" data-driver2="0">
@@ -218,7 +220,9 @@
               </div>
             </div>
             <div class="one-statH2H" id="qualih2h">
-              <div class="name-H2H bold-font">QUALIFYING</div>
+              <div class="name-H2H bold-font">
+                <div class="only-name">QUALIFYING</div>
+              </div>
               <div class="bar-space">
                 <div class="driver1-number bold-font"></div>
                 <div class="custom-H2H" data-driver1="0" data-driver2="0">
@@ -233,7 +237,9 @@
               </div>
             </div>
             <div class="one-statH2H" id="ptsh2h">
-              <div class="name-H2H bold-font">POINTS</div>
+              <div class="name-H2H bold-font">
+                <div class="only-name">POINTS</div>
+              </div>
               <div class="bar-space">
                 <div class="driver1-number bold-font"></div>
                 <div class="custom-H2H" data-driver1="0" data-driver2="0">
@@ -248,7 +254,9 @@
               </div>
             </div>
             <div class="one-statH2H" id="podiumsh2h">
-              <div class="name-H2H bold-font">PODIUMS</div>
+              <div class="name-H2H bold-font">
+                <div class="only-name">PODIUMS</div>
+              </div>
               <div class="bar-space">
                 <div class="driver1-number bold-font"></div>
                 <div class="custom-H2H" data-driver1="0" data-driver2="0">
@@ -263,7 +271,11 @@
               </div>
             </div>
             <div class="one-statH2H" id="bestrh2h">
-              <div class="name-H2H bold-font">BEST RACE</div>
+              <div class="name-H2H bold-font">
+                <i class="bi bi-chevron-left d-none"></i>
+                <div class="only-name">BEST RACEe</div>
+                <i class="bi bi-chevron-right d-none"></i>
+              </div>
               <div class="bar-space">
                 <div class="driver1-number bold-font"></div>
                 <div class="custom-H2H" data-driver1="0" data-driver2="0">
@@ -278,7 +290,9 @@
               </div>
             </div>
             <div class="one-statH2H" id="bestqh2h">
-              <div class="name-H2H bold-font">BEST QUALI</div>
+              <div class="name-H2H bold-font">
+                <div class="only-name">BEST QUALI</div>
+              </div>
               <div class="bar-space">
                 <div class="driver1-number bold-font"></div>
                 <div class="custom-H2H" data-driver1="0" data-driver2="0">
@@ -293,7 +307,9 @@
               </div>
             </div>
             <div class="one-statH2H" id="dnfh2h" style="margin-bottom: 10px;">
-              <div class="name-H2H bold-font">DNF</div>
+              <div class="name-H2H bold-font">
+                <div class="only-name">DNF</div>
+              </div>
               <div class="bar-space">
                 <div class="driver1-number bold-font"></div>
                 <div class="custom-H2H" data-driver1="0" data-driver2="0">
@@ -309,7 +325,7 @@
             </div>
           </div>
           <div class="col-9 main-viewer-section" style="max-width: 71.7vw;">
-              <canvas id="driverGraph"></canvas>
+            <canvas id="driverGraph"></canvas>
           </div>
         </div>
       </div>
@@ -574,133 +590,293 @@
             <div class="main-panel-space">
               <div class="main-panel-stats" id="driverStats">
                 <div class="one-stat-panel">
-                  Cornering
-                  <input type="number" class="custom-input-number elegible">
+                  <span class="bold-font">CORNERING</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number elegible">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>
                 </div>
                 <div class="one-stat-panel">
-                  Breaking
-                  <input type="number" class="custom-input-number elegible">
+                  <span class="bold-font">BRAKING</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number elegible">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>
                 </div>
                 <div class="one-stat-panel">
-                  Control
-                  <input type="number" class="custom-input-number elegible">
+                  <span class="bold-font">CONTROL</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number elegible">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>
                 </div>
                 <div class="one-stat-panel">
-                  Smoothness
-                  <input type="number" class="custom-input-number elegible">
+                  <span class="bold-font">SMOOTHNESS</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number elegible">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>
                 </div>
                 <div class="one-stat-panel">
-                  Adaptability
-                  <input type="number" class="custom-input-number elegible">
+                  <span class="bold-font">ADAPTABILITY</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number elegible">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>
                 </div>
                 <div class="one-stat-panel">
-                  Overtaking
-                  <input type="number" class="custom-input-number elegible">
+                  <span class="bold-font">OVERTAKING</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number elegible">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>
                 </div>
                 <div class="one-stat-panel">
-                  Defence
-                  <input type="number" class="custom-input-number elegible">
+                  <span class="bold-font">DEFENCE</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number elegible">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>
                 </div>
                 <div class="one-stat-panel">
-                  Reactions
-                  <input type="number" class="custom-input-number elegible">
+                  <span class="bold-font">REACTIONS</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number elegible">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>
                 </div>
                 <div class="one-stat-panel">
-                  Accuracy
-                  <input type="number" class="custom-input-number elegible">
+                  <span class="bold-font">ACCURACY</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number elegible">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="main-panel-stats d-none" id="chiefStats">
                 <div class="one-stat-panel">
-                  Chassis
-                  <input type="number" class="custom-input-number ">
+                  <span class="bold-font">CHASIS</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>
                 </div>
                 <div class="one-stat-panel staff">
-                  Front wing
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">FRONT WING</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  Rear wing
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">REAR WING</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  Sidepods
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">SIDEPODS</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  Floor
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">FLOOR</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  Suspenson
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">SUSPENSION</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
               </div>
               <div class="main-panel-stats d-none" id="engineerStats">
                 <div class="one-stat-panel">
-                  Friendliness
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">FRIENDLINESS</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  Feedback
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">FEEDBACK</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  Composure
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">COMPOSURE</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
               </div>
               <div class="main-panel-stats d-none" id="aeroStats">
                 <div class="one-stat-panel">
-                  Cooling
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">COOLING</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  DRS
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">DRS</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  High speed downforce
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">HIGH SPEED PERFORMANCE</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel">
-                  Medium speed downforce
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">MEDIUM SPEED PERFORMANCE</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  Low speed downforce
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">LOW SPEED PERFORMANCE</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  Drag
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">DRAG</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel">
-                  Airflow
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">AIRFLOW</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  Sensitivity
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">SENSITIVITY</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
               </div>
               <div class="main-panel-stats d-none" id="directorStats">
                 <div class="one-stat-panel">
-                  Training
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">TRAINING</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  Aptitude
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">APTITUDE</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  Leadership
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">LEADERSHIP</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
                 <div class="one-stat-panel staff">
-                  Processes
-                  <input type="number" class="custom-input-number ">
-                </div>
+                  <span class="bold-font">PROCESSES</span>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number">
+                    <div class="input-buttons">
+                      <i class="bi bi-plus-lg"></i>
+                      <i class="bi bi-dash-lg"></i>
+                    </div>
+                  </div>                </div>
               </div>
             </div>
 
@@ -711,12 +887,24 @@
                 <div class="custom-hr"></div>
                 <div class="extra-atributes">
                   <div class="one-stat-panel extra-inputs">
-                    Growth
-                    <input type="number" class="custom-input-number elegible" id="growthInput">
+                    <span class="bold-font">GROWTH</span>
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number elegible" id="growthInput">
+                      <div class="input-buttons">
+                        <i class="bi bi-plus-lg"></i>
+                        <i class="bi bi-dash-lg"></i>
+                      </div>
+                    </div>
                   </div>
                   <div class="one-stat-panel extra-inputs">
-                    Agression
-                    <input type="number" class="custom-input-number elegible" id="agressionInput">
+                    <span class="bold-font">AGRESSION</span>
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number elegible" id="agressionInput">
+                      <div class="input-buttons">
+                        <i class="bi bi-plus-lg"></i>
+                        <i class="bi bi-dash-lg"></i>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -866,8 +1054,8 @@
             <div class="one-performance perf-engine" style="margin-top: 0px;">
               <div class="performance-name-engine">Fuel Efficiency</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0" data-type="engine">
                 <div class="disabled-part-engine">
@@ -880,8 +1068,8 @@
             <div class="one-performance perf-engine">
               <div class="performance-name-engine">Power</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0" data-type="engine">
                 <div class="disabled-part-engine">
@@ -893,8 +1081,8 @@
             <div class="one-performance perf-engine">
               <div class="performance-name-engine">Performance Threshold</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0" data-type="engine">
                 <div class="disabled-part-engine">
@@ -907,8 +1095,8 @@
             <div class="one-performance perf-engine">
               <div class="performance-name-engine">Performance Loss</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0" data-type="engine">
                 <div class="disabled-part-engine">
@@ -921,8 +1109,8 @@
             <div class="one-performance perf-engine">
               <div class="performance-name-engine">Operational Range</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0" data-type="engine">
                 <div class="disabled-part-engine">
@@ -934,8 +1122,8 @@
             <div class="one-performance perf-engine">
               <div class="performance-name-engine">ERS Durability</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0" data-type="engine">
                 <div class="disabled-part-engine">
@@ -947,8 +1135,8 @@
             <div class="one-performance perf-engine">
               <div class="performance-name-engine">Gearbox Durability</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0" data-type="engine">
                 <div class="disabled-part-engine">
@@ -967,8 +1155,8 @@
             <div class="one-performance" style="margin-top: 0px;">
               <div class="performance-name">Chassis</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0">
                 <div class="negative-zone">
@@ -987,8 +1175,8 @@
             <div class="one-performance">
               <div class="performance-name">Front Wing</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0">
                 <div class="negative-zone">
@@ -1006,8 +1194,8 @@
             <div class="one-performance">
               <div class="performance-name">Rear Wing</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0">
                 <div class="negative-zone">
@@ -1026,8 +1214,8 @@
             <div class="one-performance">
               <div class="performance-name">Sidepods</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0">
                 <div class="negative-zone">
@@ -1046,8 +1234,8 @@
             <div class="one-performance">
               <div class="performance-name">Floor</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0">
                 <div class="negative-zone">
@@ -1066,8 +1254,8 @@
             <div class="one-performance">
               <div class="performance-name">Suspension</div>
               <div class="performance-buttons">
-                <i class="bi bi-dash-circle"></i>
-                <i class="bi bi-plus-circle"></i>
+                <i class="bi bi-dash-lg"></i>
+                <i class="bi bi-plus-lg"></i>
               </div>
               <div class="custom-progress" data-progress="0">
                 <div class="negative-zone">

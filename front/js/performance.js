@@ -189,7 +189,7 @@ document.getElementById("confirmPerformancebtn").addEventListener("click",functi
 /**
  * eventlisteners for the buttons to add or remove from a bar, depending on if its an engine bar or team
  */
-document.querySelectorAll(".bi-dash-circle").forEach(function (elem) {
+document.querySelector("#car_performance").querySelectorAll(".bi-dash-lg").forEach(function (elem) {
     elem.addEventListener("click",function () {
         let performanceArea = elem.parentNode.parentNode
         let bar = performanceArea.querySelector(".custom-progress")
@@ -211,7 +211,7 @@ document.querySelectorAll(".bi-dash-circle").forEach(function (elem) {
     })
 })
 
-document.querySelectorAll(".bi-plus-circle").forEach(function (elem) {
+document.querySelector("#car_performance").querySelectorAll(".bi-plus-lg").forEach(function (elem) {
     elem.addEventListener("click",function () {
         let performanceArea = elem.parentNode.parentNode
         let bar = performanceArea.querySelector(".custom-progress")

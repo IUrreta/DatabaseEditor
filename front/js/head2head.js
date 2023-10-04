@@ -7,8 +7,10 @@ let d1_team
 let d2_team
 let wins = false;
 let poles = false;
+let sprints = false;
 let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#3792dd", "70": "#B6BABD", "71": "#da291c", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00" }
 let graph;
+let compData;
 
 /**
  * Puts the bars of the head to head with the correct width for the drivers selected
@@ -18,23 +20,36 @@ function manage_h2h_bars(data) {
     let relValue
     let d1_width
     let d2_width
+    compData = data
     if (data[7].some(elem => elem >= 2)) {
         data[4] = data[7]
-        document.getElementById("bestrh2h").querySelector(".name-H2H").textContent = "WINS"
+        document.getElementById("bestrh2h").querySelector(".only-name").textContent = "WINS"
         wins = true
     }
     else {
-        document.getElementById("bestrh2h").querySelector(".name-H2H").textContent = "BEST RACE"
+        document.getElementById("bestrh2h").querySelector(".only-name").textContent = "BEST RACE"
         wins = false
     }
     if (data[8].some(elem => elem >= 2)) {
         data[5] = data[8]
-        document.getElementById("bestqh2h").querySelector(".name-H2H").textContent = "POLES"
+        document.getElementById("bestqh2h").querySelector(".only-name").textContent = "POLES"
         poles = true
     }
     else {
-        document.getElementById("bestqh2h").querySelector(".name-H2H").textContent = "BEST QUALI"
+        document.getElementById("bestqh2h").querySelector(".only-name").textContent = "BEST QUALI"
         poles = false
+    }
+    if (data[9].some(elem => elem >= 1)) {
+        document.getElementById("bestrh2h").querySelector(".name-H2H").style.justifyContent = "space-between"
+        document.getElementById("bestrh2h").querySelectorAll("i").forEach(function(elem){
+            elem.classList.remove("d-none")
+        })
+    }
+    else{
+        document.getElementById("bestrh2h").querySelector(".name-H2H").style.justifyContent  = "center"
+        document.getElementById("bestrh2h").querySelectorAll("i").forEach(function(elem){
+            elem.classList.add("d-none")
+        })
     }
 
     document.querySelectorAll(".one-statH2H").forEach(function (elem, index) {
@@ -110,24 +125,80 @@ function manage_h2h_bars(data) {
         if (d2_width > 100) {
             d2_width = 100
         }
-        elem.querySelector(".driver1-bar").className = "driver1-bar"
-        elem.querySelector(".driver2-bar").className = "driver2-bar"
-        document.querySelector(".driver1-name").className = "driver1-name"
-        document.querySelector(".driver2-name").className = "driver2-name"
-        elem.querySelector(".driver1-bar").classList.add(team_dict[d1_team] + "bar-primary")
-        document.querySelector(".driver1-name").classList.add(team_dict[d1_team] + "border-primary")
-        if (d1_team === d2_team) {
-            elem.querySelector(".driver2-bar").classList.add(team_dict[d2_team] + "bar-secondary")
-            document.querySelector(".driver2-name").classList.add(team_dict[d2_team] + "border-secondary")
-        }
-        else {
-            elem.querySelector(".driver2-bar").classList.add(team_dict[d2_team] + "bar-primary")
-            document.querySelector(".driver2-name").classList.add(team_dict[d2_team] + "border-primary")
-        }
-        elem.querySelector(".driver1-bar").style.width = d1_width + "%"
-        elem.querySelector(".driver2-bar").style.width = d2_width + "%"
+        fill_bars(elem, d1_width, d2_width)
 
     })
+}
+
+function fill_bars(elem, d1_width, d2_width){
+    elem.querySelector(".driver1-bar").className = "driver1-bar"
+    elem.querySelector(".driver2-bar").className = "driver2-bar"
+    document.querySelector(".driver1-name").className = "driver1-name"
+    document.querySelector(".driver2-name").className = "driver2-name"
+    elem.querySelector(".driver1-bar").classList.add(team_dict[d1_team] + "bar-primary")
+    document.querySelector(".driver1-name").classList.add(team_dict[d1_team] + "border-primary")
+    if (d1_team === d2_team) {
+        elem.querySelector(".driver2-bar").classList.add(team_dict[d2_team] + "bar-secondary")
+        document.querySelector(".driver2-name").classList.add(team_dict[d2_team] + "border-secondary")
+    }
+    else {
+        elem.querySelector(".driver2-bar").classList.add(team_dict[d2_team] + "bar-primary")
+        document.querySelector(".driver2-name").classList.add(team_dict[d2_team] + "border-primary")
+    }
+    elem.querySelector(".driver1-bar").style.width = d1_width + "%"
+    elem.querySelector(".driver2-bar").style.width = d2_width + "%"
+}
+
+function toggle_sprints(){
+    let elem = document.querySelector("#bestrh2h")
+    if(sprints){
+        elem.querySelector(".only-name").textContent = "SPRINT WINS"
+        relValue = (100 / (compData[9][0] + compData[9][1])).toFixed(2)
+        d1_width = compData[9][0] * relValue
+        d2_width = compData[9][1] * relValue
+        elem.querySelector(".driver1-number").textContent = compData[9][0]
+        elem.querySelector(".driver2-number").textContent = compData[9][1]
+    }
+    else{
+        if(wins){
+            elem.querySelector(".only-name").textContent = "WINS"
+            relValue = (100 / (compData[4][0] + compData[4][1])).toFixed(2)
+            d1_width = compData[4][0] * relValue
+            d2_width = compData[4][1] * relValue
+            elem.querySelector(".driver1-number").textContent = compData[4][0]
+            elem.querySelector(".driver2-number").textContent = compData[4][1]
+        }
+        else{
+            elem.querySelector(".only-name").textContent = "BEST RACE"
+            d1_width = 100 - (compData[4][0] - 1) * 5
+            d2_width = 100 - (compData[4][1] - 1) * 5
+            if (compData[4][0] <= 3) {
+                elem.querySelector(".driver1-number").textContent = pos_dict[compData[4][0]]
+            }
+            else {
+                elem.querySelector(".driver1-number").textContent = compData[4][0] + "th"
+            }
+            if (compData[4][1] <= 3) {
+                elem.querySelector(".driver2-number").textContent = pos_dict[compData[4][1]]
+            }
+            else {
+                elem.querySelector(".driver2-number").textContent = compData[4][1] + "th"
+            }
+        }
+    }
+    fill_bars(elem, d1_width, d2_width)
+}
+
+function sprintsListeners(){
+    document.querySelector("#bestrh2h").querySelectorAll("i").forEach(function(elem){
+        elem.removeEventListener('evento', change_sprintView);
+        elem.addEventListener("click", change_sprintView)
+    })
+}
+
+function change_sprintView(){
+    sprints = !sprints
+    toggle_sprints()
 }
 
 /**

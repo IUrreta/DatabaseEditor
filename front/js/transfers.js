@@ -72,8 +72,8 @@ function place_drivers(driversArray) {
 
         }
 
-        else if (driver[2] > 10 && driver[2] <= 20) divPosition = "f2-drivers";
-        else if (driver[2] > 20 && driver[2] <= 31) divPosition = "f3-drivers";
+        else if (driver[2] > 10 && driver[2] <= 21) divPosition = "f2-drivers";
+        else if (driver[2] > 21 && driver[2] <= 31) divPosition = "f3-drivers";
 
         document.getElementById(divPosition).appendChild(newDiv)
 

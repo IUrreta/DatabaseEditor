@@ -174,13 +174,19 @@ function recalculateOverall() {
     stats = stats.slice(0,-1);
     let oldovr = document.getElementById("ovrholder").innerHTML;
     let ovr = calculateOverall(stats, typeOverall);
-    if (oldovr != ovr) {
+    if (oldovr > ovr) {
         document.getElementById("ovrholder").innerHTML = ovr;
-        document.getElementById("ovrholder").className = "overall-holder bold-font alert";
+        document.getElementById("ovrholder").className = "overall-holder bold-font alertNeg";
         setTimeout(() => {
             document.getElementById("ovrholder").className = "overall-holder bold-font"
-        },500);
-
+        },400);
+    }
+    else if(oldovr < ovr){
+        document.getElementById("ovrholder").innerHTML = ovr;
+        document.getElementById("ovrholder").className = "overall-holder bold-font alertPos";
+        setTimeout(() => {
+            document.getElementById("ovrholder").className = "overall-holder bold-font"
+        },400);
     }
 
 }
@@ -268,6 +274,24 @@ function calculateOverall(stats, type) {
     }
 
     return Math.round(rating)
+}
+
+function listeners_plusLess(){
+    document.querySelectorAll(".bi-plus-lg").forEach(function(elem){
+        elem.addEventListener("mousedown", function(){
+            let input = elem.parentNode.parentNode.querySelector("input")
+            input.value = parseInt(input.value) + 1;
+            recalculateOverall()
+        })
+
+    })
+    document.querySelectorAll(".bi-dash-lg").forEach(function(elem){
+        elem.addEventListener("mousedown", function(){
+            let input = elem.parentNode.parentNode.querySelector("input")
+            input.value = parseInt(input.value) - 1;
+            recalculateOverall()
+        })
+    })
 }
 
 /**
