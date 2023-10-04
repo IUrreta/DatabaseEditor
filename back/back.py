@@ -280,7 +280,7 @@ def fetch_driverContract(id):
     return details
 
 def fetch_staff():
-    staff = cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0 AND (con.ContractType = 0 OR con.ContractType IS NULL OR con.ContractType = 3)").fetchall()
+    staff = cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0 AND (con.ContractType = 0 OR con.ContractType IS NULL OR con.ContractType = 3) GROUP BY bas.StaffID").fetchall()
 
     formatted_tuples = []
 
@@ -382,7 +382,7 @@ def fetch_drivers_per_year(year):
 
 def fetch_info():
 
-    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID GROUP BY bas.FirstName, bas.LastName, bas.StaffID, con.TeamID;').fetchall()
+    drivers = cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID GROUP BY bas.StaffID;').fetchall()
     formatted_tuples = []
     for tupla in drivers:
         result = format_names_get_stats(tupla, "driver")
