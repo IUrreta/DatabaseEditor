@@ -56,7 +56,6 @@ function place_drivers_editStats(driversArray) {
                 statPanelShown = 1
             }
 
-            document.getElementById("confirmbtn").className = "btn custom-confirm disabled"
             recalculateOverall()
 
         });
@@ -148,7 +147,6 @@ function place_staff(staffArray) {
                 statPanelShown = 1
             }
 
-            document.getElementById("confirmbtn").className = "btn custom-confirm disabled"
             recalculateOverall()
 
         });
