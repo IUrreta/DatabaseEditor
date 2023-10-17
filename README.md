@@ -3,6 +3,8 @@ Friendly to use tool for editing your save files from F1 Manager 23. Supports dr
 
 If you have any issues, I recommend first look at the Troubleshoot guide for the most common error: https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide. If this doesn't fix the error, you can open an Issue on GitHub
 
+**KEEP IN MIND**: Since Frontier updated the game to 1.9, the save format is a bit different, so the editor will now only **RECOGNIZE SAVES FROM 1.9 ONWARDS** (not only new saves, just saves that have been loadad in the 1.9 version of the game)
+
 ## What's the Database Editor? ##
 Basically it's just a friendly user interface that helps you make the modifications you wish for the database from your save file from F1 Manager 23
 
@@ -33,8 +35,7 @@ It's all explained in the [Update guide](https://github.com/IUrreta/DatabaseEdit
 
 ## For any issues ##
 
-You can try to look at them at the [Troubleshoot Guide](https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide), although this was made prior to 1.5, so when Python **was** required, so it will get updates as time goes on from 1.5 onwards. If you **already have Python installed** and the regular `run.vbs` is not working for you, you can try running `runpython.vbs` and it will open the same way as before 1.5
-
+Take a  look at the [Troubleshoot Guide](https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide)
 
 ### Screenshots ###
 
