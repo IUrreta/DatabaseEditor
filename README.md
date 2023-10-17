@@ -54,6 +54,8 @@ Take a  look at the [Troubleshoot Guide](https://github.com/IUrreta/DatabaseEdit
 
 
 ### Special thanks ###
-xAranaktu for the save repacker: https://github.com/xAranaktu/F1-Manager-2022-SaveFile-Repacker
+[ieeb's Save Reader for the 1.9 patch](https://github.com/iebb/F1ManagerSaveReader)
+
+[xAranaktu for the save repacker](https://github.com/xAranaktu/F1-Manager-2022-SaveFile-Repacker)
 
 F1 Manager Mods discord for the help during testing
