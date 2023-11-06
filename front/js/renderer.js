@@ -108,6 +108,15 @@ document.addEventListener('DOMContentLoaded', function () {
     let scriptSelected = 0;
     let divBlocking = 1;
 
+    document.querySelectorAll(".modal").forEach(function(elem){
+        elem.addEventListener('show.bs.modal', function () {
+            setTimeout(function() {
+              var modalBackdrop = document.querySelector('.modal-backdrop');
+              var cetContainer = document.querySelector('.cet-container');
+              cetContainer.appendChild(modalBackdrop);
+            }, 0);
+          });
+    })
 
     let connectionTimeout = setTimeout(() => {
         update_notifications("Could not connect with backend", true)
@@ -388,13 +397,15 @@ document.addEventListener('DOMContentLoaded', function () {
         setTimeout(function () {
             toast.classList.remove("myShow")
         }, 500)
-
         notificationPanel.appendChild(toast);
         if (!error) {
+            setTimeout(function() {
+                console.log(toast.querySelector(".notification-line").classList);
+                toast.querySelector(".notification-line").classList.add("start");
+            }, 1);
             setTimeout(function () {
                 toast.classList.add("hide")
 
-                // Después de otros 2 segundos, eliminar el nuevo div
                 setTimeout(function () {
                     notificationPanel.removeChild(toast);
                 }, 480);

@@ -357,11 +357,16 @@ a.bi-heart:hover {
 }
 
 .notification-line{
-  width: 100%;
+  width: 0%;
   height: 2px;
   background-color: white;
   position: relative;
   bottom: 7px;
+  transition: width 3s linear;
+}
+
+.notification-line.start{
+  width: 100%;
 }
 
 .line-error{
@@ -1380,6 +1385,7 @@ a.bi-heart:hover {
 
 .custom-modal {
   min-width: 600px !important;
+  z-index: 2000 !important;
 }
 
 .contract-details div{
