@@ -304,17 +304,29 @@ a.bi-heart:hover {
   justify-content: center;
 }
 
+.cet-menubar{
+  opacity: 0 !important;
+}
+
+.cet-title{
+  font-family: 'Formula1' !important;
+}
+
 .versionPanel {
   position: fixed;
-  top: 10px;
+  top: 40px;
   left: 10px;
   color: white;
 
 }
 
+.cet-container{
+  overflow: hidden !important;
+}
+
 .patchNotesPanel {
   position: fixed;
-  top: 40px;
+  top: 70px;
   left: 10px;
 }
 
