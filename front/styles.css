@@ -721,6 +721,19 @@ a.bi-heart:hover {
   border: none !important;
 }
 
+.year-drivers-teams{
+  padding-top: 0.6rem;
+  padding-bottom: 0.7rem;
+  position: absolute;
+  display: flex;
+  gap: 10px;
+}
+
+.drivers-teams-pills{
+  display: flex;
+  align-items: flex-end;
+}
+
 .main-viewer-section .tabulator-tableholder::-webkit-scrollbar {
   width: 4px !important;
 }
