@@ -569,6 +569,17 @@ a.bi-heart:hover {
   margin-bottom: 2rem;
 }
 
+.pill-line{
+  height: 1.3px;
+  width: 0%;
+  background-color: white;
+  transition: width 0.4s;
+}
+
+.pill-line.activeType{
+  width: 100%;
+}
+
 .categoryPills,
 .scriptPills {
   padding-top: 6px !important;

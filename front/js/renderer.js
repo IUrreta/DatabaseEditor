@@ -598,11 +598,15 @@ document.addEventListener('DOMContentLoaded', function () {
     function managePillsTitle(type){
         if(type === "data"){
             document.querySelector("#dataPills").classList.add("activeType")
+            document.querySelector("#dataPills").querySelector(".pill-line").classList.add("activeType")
             document.querySelector("#editPills").classList.remove("activeType")
+            document.querySelector("#editPills").querySelector(".pill-line").classList.remove("activeType")
         }
         else if(type === "edit"){
             document.querySelector("#editPills").classList.add("activeType")
+            document.querySelector("#editPills").querySelector(".pill-line").classList.add("activeType")
             document.querySelector("#dataPills").classList.remove("activeType")
+            document.querySelector("#dataPills").querySelector(".pill-line").classList.remove("activeType")
         }
     }
 
