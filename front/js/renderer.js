@@ -54,7 +54,7 @@ async function getPatchNotes() {
                 let h4Element = document.createElement("h4");
                 h4Element.textContent = h1Element.textContent;
                 h4Element.classList.add("bold-font")
-                patchNotesBody.replaceChild(h4Element,h1Element);
+                patchNotesBody.replaceChild(h4Element, h1Element);
             });
 
             let h2Elements = patchNotesBody.querySelectorAll("h2");
@@ -62,7 +62,7 @@ async function getPatchNotes() {
                 let h4Element = document.createElement("h4");
                 h4Element.textContent = h1Element.textContent;
                 h4Element.classList.add("bold-font")
-                patchNotesBody.replaceChild(h4Element,h1Element);
+                patchNotesBody.replaceChild(h4Element, h1Element);
             });
         }
     } catch {
@@ -163,14 +163,14 @@ document.addEventListener('DOMContentLoaded', function () {
     let scriptSelected = 0;
     let divBlocking = 1;
 
-    document.querySelectorAll(".modal").forEach(function(elem){
+    document.querySelectorAll(".modal").forEach(function (elem) {
         elem.addEventListener('show.bs.modal', function () {
-            setTimeout(function() {
-              var modalBackdrop = document.querySelector('.modal-backdrop');
-              var cetContainer = document.querySelector('.cet-container');
-              cetContainer.appendChild(modalBackdrop);
+            setTimeout(function () {
+                var modalBackdrop = document.querySelector('.modal-backdrop');
+                var cetContainer = document.querySelector('.cet-container');
+                cetContainer.appendChild(modalBackdrop);
             }, 0);
-          });
+        });
     })
 
     let connectionTimeout = setTimeout(() => {
@@ -184,22 +184,22 @@ document.addEventListener('DOMContentLoaded', function () {
      * Handles the receiving end from the messages sent from backend
      * @param {string} event the message tha tcomes fro the backend
      */
-socket.onmessage = (event) => {
-    let message = JSON.parse(event.data);
-    let handler = messageHandlers[message[0]];
+    socket.onmessage = (event) => {
+        let message = JSON.parse(event.data);
+        let handler = messageHandlers[message[0]];
 
-    if (handler) {
-        handler(message);
-    }
-    if (!noNotifications.includes(message[0])) {
-        update_notifications(message[0], false);
-    }
-};
+        if (handler) {
+            handler(message);
+        }
+        if (!noNotifications.includes(message[0])) {
+            update_notifications(message[0], false);
+        }
+    };
 
     /**
      * Opens the log file
      */
-    logButton.addEventListener("click",function () {
+    logButton.addEventListener("click", function () {
         window.location.href = '../log.txt';
     })
 
@@ -389,7 +389,7 @@ socket.onmessage = (event) => {
      * @param {string} noti message of the notification
      * @param {bool} error if the notification is an error or not
      */
-    function update_notifications(noti,error) {
+    function update_notifications(noti, error) {
         let newNoti;
         newNoti = document.createElement('div');
         newNoti.className = 'notification';
@@ -400,10 +400,10 @@ socket.onmessage = (event) => {
         }, 500)
         notificationPanel.appendChild(toast);
         if (!error) {
-            setTimeout(function() {
+            setTimeout(function () {
                 console.log(toast.querySelector(".notification-line").classList);
                 toast.querySelector(".notification-line").classList.add("start");
-            }, 1);
+            }, 10);
             setTimeout(function () {
                 toast.classList.add("hide")
 
@@ -544,7 +544,7 @@ socket.onmessage = (event) => {
                 document.querySelector(".left-panel-stats").classList.add("d-none")
                 statPanelShown = 0;
             });
-            
+
         });
     }
 
@@ -563,7 +563,7 @@ socket.onmessage = (event) => {
      * Pills and their eventListeners
      */
     h2hPill.addEventListener("click", function () {
-        manageScripts("show","hide", "hide", "hide", "hide", "hide")
+        manageScripts("show", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("data")
@@ -571,7 +571,7 @@ socket.onmessage = (event) => {
     })
 
     viewPill.addEventListener("click", function () {
-        manageScripts("hide","show", "hide", "hide", "hide", "hide")
+        manageScripts("hide", "show", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("data")
@@ -579,7 +579,7 @@ socket.onmessage = (event) => {
     })
 
     driverTransferPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "show", "hide", "hide", "hide")
+        manageScripts("hide", "hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
@@ -587,34 +587,34 @@ socket.onmessage = (event) => {
     })
 
     editStatsPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "hide", "show", "hide", "hide")
+        manageScripts("hide", "hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
     })
 
     CalendarPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "hide", "hide", "show", "hide")
+        manageScripts("hide", "hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
     })
 
     carPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "hide", "hide", "hide", "show")
+        manageScripts("hide", "hide", "hide", "hide", "hide", "show")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
     })
 
-    function managePillsTitle(type){
-        if(type === "data"){
+    function managePillsTitle(type) {
+        if (type === "data") {
             document.querySelector("#dataPills").classList.add("activeType")
             document.querySelector("#dataPills").querySelector(".pill-line").classList.add("activeType")
             document.querySelector("#editPills").classList.remove("activeType")
             document.querySelector("#editPills").querySelector(".pill-line").classList.remove("activeType")
         }
-        else if(type === "edit"){
+        else if (type === "edit") {
             document.querySelector("#editPills").classList.add("activeType")
             document.querySelector("#editPills").querySelector(".pill-line").classList.add("activeType")
             document.querySelector("#dataPills").classList.remove("activeType")
