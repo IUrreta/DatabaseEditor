@@ -1032,22 +1032,25 @@ a.bi-heart:hover {
 
 #F2pill {
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s;
+  transition: border-color 0.4s, background-color 0.4s, color 0.4s;
 }
 
 #F2pill:hover {
   border: 2px solid #38c8f0;
   background-color: #388cd5;
+  color: white !important;
+
 }
 
 #F3pill {
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s;
+  transition: border-color 0.4s, background-color 0.4s, color 0.4s;
 }
 
 #F3pill:hover {
   border: 2px solid rgb(255, 72, 72);
   background-color: rgb(207, 46, 46);
+  color: white !important;
 }
 
 #F2pill.active {
