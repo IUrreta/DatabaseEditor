@@ -102,6 +102,61 @@ document.addEventListener('DOMContentLoaded', function () {
     const updateInfo = document.querySelector(".update-info")
     const noNotifications = ["Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched"]
 
+    const messageHandlers = {
+        "ERROR": (message) => {
+            update_notifications(message[1], true);
+            manage_status(0);
+        },
+        "Connected Succesfully": (message) => {
+            load_saves(message);
+            clearTimeout(connectionTimeout);
+            manage_status(1);
+            check_version();
+            listeners_plusLess();
+        },
+        "Save Loaded Succesfully": (message) => {
+            remove_drivers();
+            removeStatsDrivers();
+            place_drivers(message.slice(1));
+            place_drivers_editStats(message.slice(1));
+            create_races();
+        },
+        "Staff Fetched": (message) => {
+            place_staff(message.slice(1));
+        },
+        "Calendar fetched": (message) => {
+            manage_calendarDiv(message.slice(1)[0]);
+        },
+        "Engines fetched": (message) => {
+            manage_engineStats(message.slice(1));
+        },
+        "Contract fetched": (message) => {
+            manage_modal(message.slice(1));
+        },
+        "Year fetched": (message) => {
+            generateYearsMenu(message.slice(1));
+        },
+        "Numbers fetched": (message) => {
+            loadNumbers(message.slice(1));
+        },
+        "H2H fetched": (message) => {
+            sprintsListeners();
+            manage_h2h_bars(message.slice(1)[0]);
+        },
+        "DriversH2H fetched": (message) => {
+            load_drivers_h2h(message.slice(1));
+        },
+        "H2HDriver fetched": (message) => {
+            load_h2h_graph(message.slice(1));
+        },
+        "Results fetched": (message) => {
+            createTable(message[1]);
+            setTimeout(function () {
+                loadTable(message.slice(2)); // Llamar a la función después de 1 segundo
+            }, 20);
+        }
+    };
+
     let latestTag;
 
     let isSaveSelected = 0;
@@ -123,77 +178,23 @@ document.addEventListener('DOMContentLoaded', function () {
         manage_status(0)
     }, 4000);
 
+
+
     /**
      * Handles the receiving end from the messages sent from backend
      * @param {string} event the message tha tcomes fro the backend
      */
-    socket.onmessage = (event) => {
-        // const mensaje = event.data;
-        // console.log('Mensaje recibido: ' + event.data);
+socket.onmessage = (event) => {
+    let message = JSON.parse(event.data);
+    let handler = messageHandlers[message[0]];
 
-        let message = JSON.parse(event.data)
-        //console.log(message)
-        if (message[0] === "ERROR") {
-            update_notifications(message[1], true)
-            manage_status(0)
-        }
-        else {
-            if (message[0] === "Connected Succesfully") {
-                load_saves(message)
-                clearTimeout(connectionTimeout);
-                manage_status(1)
-                check_version()
-                listeners_plusLess()
-
-
-            }
-            else if (message[0] === "Save Loaded Succesfully") {
-                remove_drivers()
-                removeStatsDrivers()
-                place_drivers(message.slice(1))
-                place_drivers_editStats(message.slice(1))
-                create_races()
-            }
-            else if (message[0] === "Staff Fetched") {
-                place_staff(message.slice(1))
-            }
-            else if (message[0] === "Calendar fetched") {
-                manage_calendarDiv(message.slice(1)[0])
-            }
-            else if (message[0] === "Engines fetched") {
-                manage_engineStats(message.slice(1))
-            }
-            else if (message[0] === "Contract fetched") {
-                manage_modal(message.slice(1))
-            }
-            else if (message[0] === "Year fetched") {
-                generateYearsMenu(message.slice(1))
-            }
-            else if (message[0] === "Numbers fetched") {
-                loadNumbers(message.slice(1))
-            }
-            else if (message[0] === "H2H fetched") {
-                sprintsListeners()
-                manage_h2h_bars(message.slice(1)[0])
-            }
-            else if(message[0] === "DriversH2H fetched"){
-                load_drivers_h2h(message.slice(1))
-            }
-            else if(message[0] === "H2HDriver fetched"){
-                load_h2h_graph(message.slice(1))
-            }
-            else if (message[0] === "Results fetched") {
-                createTable(message[1])
-                setTimeout(function () {
-                    loadTable(message.slice(2)); // Llamar a la función después de 1 segundo
-                }, 20);
-
-            }
-            if (!noNotifications.includes(message[0])) update_notifications(message[0], false)
-
-        }
-
-    };
+    if (handler) {
+        handler(message);
+    }
+    if (!noNotifications.includes(message[0])) {
+        update_notifications(message[0], false);
+    }
+};
 
     /**
      * Opens the log file
