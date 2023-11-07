@@ -1999,7 +1999,7 @@ input::-webkit-inner-spin-button {
 }
 
 .wibar-secondary {
-  background-color: #3792dd;
+  background-color: #f1f1f1;
 }
 
 .habar-primary {
@@ -2079,7 +2079,7 @@ input::-webkit-inner-spin-button {
 }
 
 .wiborder-secondary {
-  border: 2px solid #3792dd;
+  border: 2px solid #f1f1f1;
 }
 
 .haborder-primary {
