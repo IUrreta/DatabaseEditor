@@ -152,27 +152,39 @@ function colorTeamTable() {
         column.updateDefinition({
             formatter: function (cell,formatterParams) {
                 let value = cell.getValue();
-                if (field.startsWith('race')) {
-                    if (typeof value === 'string') {
-                        let parts = value.split('(');
-                        value = Number(parts[0]) + Number(parts[1].replace(')',''));
-                    }
-                    if (topThreeValues[0] === value & value !== undefined) {
-                        return "<div style='background-color:#FDE06B; color:#18152e; align-items: center; display:flex; justify-content:center; height:100%; width:100%'>" + cell.getValue() + "</div>";
-                    }
-                    else if (topThreeValues[1] === value & value !== undefined) {
-                        return "<div style='background-color:#AEB2B8; color:#18152e; align-items: center; display:flex; justify-content:center; height:100%; width:100%'>" + cell.getValue() + "</div>";
-                    }
-                    else if (topThreeValues[2] === value & value !== undefined) {
-                        return "<div style='background-color:#d7985a; color:#18152e; align-items: center; display:flex; justify-content:center; height:100%; width:100%'>" + cell.getValue() + "</div>";
+                if (value !== undefined) {
+                    if (field.startsWith('race')) {
+                        if (typeof value === 'string') {
+                            let parts = value.split('(');
+                            value = Number(parts[0]) + Number(parts[1].replace(')',''));
+                        }
+                        if(value !== 0){
+                            if (topThreeValues[0] === value) {
+                                return "<div style='background-color:#FDE06B; color:#18152e; align-items: center; display:flex; justify-content:center; height:100%; width:100%'>" + cell.getValue() + "</div>";
+                            }
+                            else if (topThreeValues[1] === value) {
+                                return "<div style='background-color:#AEB2B8; color:#18152e; align-items: center; display:flex; justify-content:center; height:100%; width:100%'>" + cell.getValue() + "</div>";
+                            }
+                            else if (topThreeValues[2] === value) {
+                                return "<div style='background-color:#d7985a; color:#18152e; align-items: center; display:flex; justify-content:center; height:100%; width:100%'>" + cell.getValue() + "</div>";
+                            }
+                            else {
+                                return cell.getValue();
+                            }
+                        }
+                        else{
+                            return ""
+                        }
+
                     }
                     else {
                         return cell.getValue();
                     }
                 }
-                else {
-                    return cell.getValue();
+                else{
+                    return "-"
                 }
+
             }
         });
     })
@@ -277,12 +289,14 @@ function loadTeamsTable(allDrivers) {
     }
     console.log(allDrivers)
     colorTeamTable()
+    teamsTable.setSort("points","desc");
 }
 
 function addTeam(code,teamName,drivers) {
     let rowData = { team: teamName }
     drivers.forEach(function (elem) {
         if (elem[1] === code) {
+            let totalPoints = 0;
             let raceValue;
             let sprintvalue;
             elem.slice(3).forEach((pair,index) => {
@@ -301,6 +315,7 @@ function addTeam(code,teamName,drivers) {
                 else {
                     race = pair[raceValue]
                 }
+ 
                 if ('race' + pair[0] in rowData) {
                     if (pair.length === 5) {
                         rowData["race" + pair[0]] += race;
@@ -319,9 +334,23 @@ function addTeam(code,teamName,drivers) {
                     }
                 }
 
-
-
+                
             });
+            elem.slice(3).forEach(function (elem) {
+                if (elem[2] != "-1") {
+                    totalPoints += elem[2]
+                }
+        
+                if (elem.length === 7) {
+                    totalPoints += elem[5]
+                }
+            })
+            if("points" in rowData){
+                rowData["points"] += totalPoints;
+            }
+            else{
+                rowData["points"] = totalPoints;
+            }
         }
     })
     teamsTable.addData(rowData)
