@@ -11,7 +11,7 @@ let pointsOrPos = "points"
  * Creates the main table for the calendar of the season selected
  * @param {Object} calendar calendar of the year selected
  */
-function createTable(calendar) {
+function createDriversTable(calendar) {
     calendarData = calendar;
     calendar.forEach(function (elem, index) {
         races_ids.push(calendar[index][0])
@@ -103,7 +103,36 @@ function createTable(calendar) {
     });
 
 
+
 }
+
+function createTeamsTable(calendar){
+    teamsTable = new Tabulator("#seasonresults-teams-table",{
+        layout: "fitColumns",
+        maxWidth: "1650px",
+        responsiveLayout: "hide",
+        columns: [{ title: "Team", field: "team", width: 175, headerSort: false, resizable: false, formatter: "html", headerHozAlign: "center" },
+        ...calendar.map((race, index) => ({
+            title: '<div class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"><div class="text-in-front bold-font">' + races_names[race[1]] + '</div></div>',
+            field: "race" + race[0],
+            hozAlign: "center",
+            headerSort: false,
+            resizable: false
+        })),
+        { title: "Points", field: "points", hozAlign: "center", headerSort: false, headerHozAlign: "center", resizable: false },
+        { title: "Position", field: "pos", hozAlign: "center", visible: false}]
+    });
+}
+
+document.getElementById("driverspill").addEventListener("click", function(){
+    document.getElementById("seasonresults-teams-table").classList.add("d-none")
+    document.getElementById("seasonresults-table").classList.remove("d-none")
+})
+
+document.getElementById("teamspill").addEventListener("click", function(){
+    document.getElementById("seasonresults-teams-table").classList.remove("d-none")
+    document.getElementById("seasonresults-table").classList.add("d-none")
+})
 
 /**
  * Even listener for the positions and points pill
@@ -113,7 +142,7 @@ document.getElementById("pospill").addEventListener("click", function () {
         seasonTable.destroy()
     }
     pointsOrPos = "pos"
-    createTable(calendarData)
+    createDriversTable(calendarData)
     setTimeout(function () {
         loadTable(seasonResults)
     }, 10);
@@ -127,7 +156,7 @@ document.getElementById("pointspill").addEventListener("click", function () {
         seasonTable.destroy()
     }
     pointsOrPos = "points"
-    createTable(calendarData)
+    createDriversTable(calendarData)
     setTimeout(function () {
         loadTable(seasonResults)
     }, 10);

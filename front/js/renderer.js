@@ -150,10 +150,11 @@ document.addEventListener('DOMContentLoaded', function () {
             load_h2h_graph(message.slice(1));
         },
         "Results fetched": (message) => {
-            createTable(message[1]);
+            createDriversTable(message[1]);
             setTimeout(function () {
                 loadTable(message.slice(2)); // Llamar a la función después de 1 segundo
             }, 20);
+            createTeamsTable(message[1])
         }
     };
 
