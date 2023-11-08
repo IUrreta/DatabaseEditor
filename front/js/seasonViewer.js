@@ -1,6 +1,17 @@
 const races_map = { 2: "bah0",1: "aus0",11: "sau0",24: "imo0",22: "mia0",5: "spa0",6: "mon0",4: "aze0",7: "can0",10: "gbr0",9: "aut0",8: "fra0",12: "hun0",13: "bel0",14: "ita0",15: "sgp0",17: "jap0",19: "usa0",18: "mex0",20: "bra0",21: "uae0",23: "ned0",25: "veg0",26: "qat0" };
 const races_names = { 2: "BAH",1: "AUS",11: "SAU",24: "IMO",22: "MIA",5: "SPA",6: "MON",4: "AZE",7: "CAN",10: "GBR",9: "AUT",8: "FRA",12: "HUN",13: "BEL",14: "ITA",15: "SGP",17: "JAP",19: "USA",18: "MEX",20: "BRA",21: "UAE",23: "NED",25: "VEG",26: "QAT" };
-const teams_full_name_dict = { 'FERRARI': 1,'MCLAREN': 2,'RED BULL RACING': 3,'MERCEDES': 4,'ALPINE': 5,'WILIIAMS': 6,'HAAS': 7,'ALPHA TAURI': 8,'ALFA ROMEO': 9,'ASTON MARTIN': 10 }
+const teams_full_name_dict = { 'FERRARI': 1,'MCLAREN': 2,'RED BULL': 3,'MERCEDES': 4,'ALPINE': 5,'WILIIAMS': 6,'HAAS': 7,'ALPHA TAURI': 8,'ALFA ROMEO': 9,'ASTON MARTIN': 10 }
+const logos_disc =  { 
+    1: '../assets/images/ferrari.png', 
+    2: '../assets/images/mclaren.png', 
+    3: '../assets/images/redbull.png', 
+    4: '../assets/images/mercedes.png', 
+    5: '../assets/images/alpine.png', 
+    6: '../assets/images/williams.png', 
+    7: '../assets/images/haas.png', 
+    8: '../assets/images/alphatauri.png', 
+    9: '../assets/images/alfaromeo.png', 
+    10: '../assets/images/astonmartin.png'};
 let seasonTable;
 let teamsTable;
 let default_points = ["25","18","15","12","10","8","6","4","2","1","DNF","0","","-"]
@@ -114,7 +125,7 @@ function createTeamsTable(calendar) {
         maxWidth: "1650px",
         rowHeight: 60,
         responsiveLayout: "hide",
-        columns: [{ title: "Team",field: "team",width: 175,headerSort: false,vertAlign: "middle",resizable: false,formatter: "html",headerHozAlign: "center" },
+        columns: [{ title: "Team",field: "team",width: 195,headerSort: false,vertAlign: "middle",resizable: false,formatter: "html",headerHozAlign: "center" },
         ...calendar.map((race,index) => ({
             title: '<div class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"><div class="text-in-front bold-font">' + races_names[race[1]] + '</div></div>',
             field: "race" + race[0],
@@ -123,7 +134,7 @@ function createTeamsTable(calendar) {
             headerSort: false,
             resizable: false
         })),
-        { title: "Points",field: "points",hozAlign: "center",headerSort: false,headerHozAlign: "center",resizable: false },
+        { title: "Points",field: "points",hozAlign: "center", vertAlign: "middle",headerSort: false,headerHozAlign: "center",resizable: false },
         { title: "Position",field: "pos",hozAlign: "center",visible: false }],
     });
 }
@@ -295,7 +306,18 @@ function loadTeamsTable(allDrivers) {
 }
 
 function addTeam(code,teamName,drivers) {
-    let rowData = { team: teamName }
+    let spanTeamName = document.createElement("span")
+    spanTeamName.textContent = teamName
+    spanTeamName.dataset.teamid = code
+    let divOverall = document.createElement("div")
+    divOverall.className = "team-table-logo-name"
+    let logo = document.createElement("img")
+    logo.setAttribute("src", logos_disc[code])
+    logo.id = team_dict[code] + "logo"
+    divOverall.appendChild(logo)
+    divOverall.appendChild(spanTeamName)
+    // manageColor(spanTeamName,spanTeamName)
+    let rowData = { team: divOverall }
     drivers.forEach(function (elem) {
         if (elem[1] === code) {
             let totalPoints = 0;

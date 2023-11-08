@@ -738,6 +738,10 @@ a.bi-heart:hover {
   background-color: #464166 !important;
 }
 
+[tabulator-field="team"]{
+  padding-left: 0 !important;
+}
+
 #seasonresults-teams-table [tabulator-field^="race"] {
   padding: 0px !important;
 }
@@ -774,11 +778,17 @@ a.bi-heart:hover {
   border-radius: 3px !important;
 }
 
+.team-table-logo-name{
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
 .tabulator-col-content {
   border: none !important;
 }
 
-[tabulator-field="driver"], [tabulator-field="team"] {
+[tabulator-field="driver"] {
   border-right: 1.5px solid #797599 !important;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
 }
@@ -814,11 +824,22 @@ a.bi-heart:hover {
   color: #dedde6 !important;
 }
 
-.tabulator-row:hover [tabulator-field="driver"], .tabulator-row:hover [tabulator-field="team"] {
+[tabulator-field="team"]{
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.tabulator-row:hover [tabulator-field="team"] {
+  background-color: #625e86 !important;
+  color: white !important;
+  border-right: 1.5px solid #dedde6 !important;
+}
+
+.tabulator-row:hover [tabulator-field="driver"] {
   color: #110f24;
   background-color: #dedde6 !important;
   border-right: 1.5px solid #dedde6 !important;
 }
+
 
 .tabulator-row:hover [tabulator-field="points"] {
   color: #110f24;
@@ -826,11 +847,11 @@ a.bi-heart:hover {
   border-left: 1.5px solid #dedde6 !important;
 }
 
-[tabulator-field="driver"] span.bold-font, [tabulator-field="team"] span.bold-font {
+[tabulator-field="driver"] span.bold-font{
   transition: color 0.3s;
 }
 
-.tabulator-row:hover [tabulator-field="driver"] span.bold-font, .tabulator-row:hover [tabulator-field="team"] span.bold-font {
+.tabulator-row:hover [tabulator-field="driver"] span.bold-font {
   color: #110f24;
 }
 
@@ -1779,7 +1800,7 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
-#redbulllogo {
+#redbulllogo, #rblogo {
   width: 55px;
   height: 45px;
   padding-bottom: 8px;
@@ -1787,7 +1808,7 @@ input::-webkit-inner-spin-button {
   padding-top: 7px;
 }
 
-#ferrarilogo {
+#ferrarilogo, #felogo {
   width: 35px;
   height: 40px;
   padding-bottom: 6px;
@@ -1795,7 +1816,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#merclogo {
+#merclogo, #melogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -1803,7 +1824,7 @@ input::-webkit-inner-spin-button {
   padding-left: 10px;
 }
 
-#alpinelogo {
+#alpinelogo, #allogo {
   width: 45px;
   height: 40px;
   padding-bottom: 6px;
@@ -1812,7 +1833,7 @@ input::-webkit-inner-spin-button {
   transition: opacity 0.4s;
 }
 
-#mclarenlogo {
+#mclarenlogo, #mclogo {
   width: 40px;
   height: 40px;
   padding-bottom: 4px;
@@ -1820,7 +1841,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#alfalogo {
+#alfalogo, #aflogo {
   width: 40px;
   height: 40px;
   padding-bottom: 3px;
@@ -1828,7 +1849,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#astonlogo {
+#astonlogo, #aslogo {
   width: 50px;
   height: 45px;
   padding-bottom: 5px;
@@ -1836,7 +1857,7 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
-#haaslogo {
+#haaslogo, #halogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -1844,7 +1865,7 @@ input::-webkit-inner-spin-button {
   padding-left: 6px;
 }
 
-#alphataurilogo {
+#alphataurilogo, #atlogo {
   width: 45px;
   height: 45px;
   padding-bottom: 12px;
@@ -1852,7 +1873,7 @@ input::-webkit-inner-spin-button {
   padding-top: 12px;
 }
 
-#williamslogo {
+#williamslogo, #wilogo {
   width: 45px;
   height: 45px;
   padding-bottom: 11px;
