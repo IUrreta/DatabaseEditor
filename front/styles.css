@@ -737,6 +737,10 @@ a.bi-heart:hover {
   background-color: #464166 !important;
 }
 
+#seasonresults-teams-table [tabulator-field^="race"] {
+  padding: 0px !important;
+}
+
 
 
 #seasonresults-table {
