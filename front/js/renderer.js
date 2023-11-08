@@ -152,9 +152,12 @@ document.addEventListener('DOMContentLoaded', function () {
         "Results fetched": (message) => {
             createDriversTable(message[1]);
             setTimeout(function () {
-                loadTable(message.slice(2)); // Llamar a la función después de 1 segundo
+                loadDriversTable(message.slice(2)); // Llamar a la función después de 1 segundo
             }, 20);
             createTeamsTable(message[1])
+            setTimeout(function () {
+                loadTeamsTable(message.slice(2)); // Llamar a la función después de 1 segundo
+            }, 20);
         }
     };
 

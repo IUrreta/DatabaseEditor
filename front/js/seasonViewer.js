@@ -1,6 +1,8 @@
 const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0" };
 const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT" };
+const teams_full_name_dict = { 'Ferrari': 1, 'McLaren': 2, 'Red Bull': 3, 'Mercercedes': 4, 'Alpine': 5, 'Williams': 6, 'Haas': 7, 'Alpha Tauri': 8, 'Alfa Romeo': 9, 'Aston Martin': 10 }
 let seasonTable;
+let teamsTable;
 let default_points = ["25", "18", "15", "12", "10", "8", "6", "4", "2", "1", "DNF", "0", "", "-"]
 let races_ids = []
 let seasonResults;
@@ -110,17 +112,19 @@ function createTeamsTable(calendar){
     teamsTable = new Tabulator("#seasonresults-teams-table",{
         layout: "fitColumns",
         maxWidth: "1650px",
+        rowHeight:60,
         responsiveLayout: "hide",
-        columns: [{ title: "Team", field: "team", width: 175, headerSort: false, resizable: false, formatter: "html", headerHozAlign: "center" },
+        columns: [{ title: "Team", field: "team", width: 175, headerSort: false,vertAlign:"middle", resizable: false, formatter: "html", headerHozAlign: "center" },
         ...calendar.map((race, index) => ({
             title: '<div class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"><div class="text-in-front bold-font">' + races_names[race[1]] + '</div></div>',
             field: "race" + race[0],
             hozAlign: "center",
+            vertAlign:"middle",
             headerSort: false,
             resizable: false
         })),
         { title: "Points", field: "points", hozAlign: "center", headerSort: false, headerHozAlign: "center", resizable: false },
-        { title: "Position", field: "pos", hozAlign: "center", visible: false}]
+        { title: "Position", field: "pos", hozAlign: "center", visible: false}],
     });
 }
 
@@ -144,11 +148,8 @@ document.getElementById("pospill").addEventListener("click", function () {
     pointsOrPos = "pos"
     createDriversTable(calendarData)
     setTimeout(function () {
-        loadTable(seasonResults)
+        loadDriversTable(seasonResults)
     }, 10);
-
-
-
 })
 
 document.getElementById("pointspill").addEventListener("click", function () {
@@ -158,7 +159,7 @@ document.getElementById("pointspill").addEventListener("click", function () {
     pointsOrPos = "points"
     createDriversTable(calendarData)
     setTimeout(function () {
-        loadTable(seasonResults)
+        loadDriversTable(seasonResults)
     }, 10);
 })
 
@@ -208,7 +209,7 @@ function generateYearsMenu(actualYear) {
  * Loads the data into the table
  * @param {Object} allDrivers all driver's results of the season
  */
-function loadTable(allDrivers) {
+function loadDriversTable(allDrivers) {
     seasonResults = allDrivers;
     allDrivers.forEach(function (driver) {
         addDriver(driver)
@@ -217,6 +218,62 @@ function loadTable(allDrivers) {
     formatTable()
     document.querySelector(".tabulator-tableholder").style.maxHeight = document.querySelector(".tabulator-table").offsetHeight + "px";
     document.querySelector(".tabulator-tableholder").style.overflow = "hidden";
+}
+
+function loadTeamsTable(allDrivers){
+    for (let team in teams_full_name_dict) {
+        addTeam(teams_full_name_dict[team], team, allDrivers)
+    }
+    console.log(allDrivers)
+}
+
+function addTeam(code, teamName, drivers){
+    let rowData = {team: teamName}
+    drivers.forEach(function(elem){
+        if(elem[1] === code){
+            let raceValue;
+            let sprintvalue;
+            elem.slice(3).forEach((pair, index) => {
+                if (pointsOrPos === "points") {
+                    raceValue = 2;
+                    sprintvalue = 5;
+                }
+                else if (pointsOrPos === "pos") {
+                    raceValue = 1;
+                    sprintvalue = 6;
+                }
+                let race;
+                if (pair[raceValue] === -1){
+                    race = 0
+                }
+                else{
+                    race = pair[raceValue]
+                }
+                if ('race'+pair[0] in rowData) {
+                    if (pair.length === 5) {
+                        rowData["race" + pair[0]] += race;
+                    }
+                    else if (pair.length === 7) {
+                        let racePoints = parseInt(rowData["race" + pair[0]].split("(")[0]) + race
+                        let sprintPoints = parseInt(rowData["race" + pair[0]].split("(")[1].slice(0, -1)) +  pair[sprintvalue]
+                        rowData["race" + pair[0]] = racePoints + "(" + sprintPoints + ")"
+                    }
+                } else {
+                    if (pair.length === 5) {
+                        rowData["race" + pair[0]] = race;
+                    }
+                    else if (pair.length === 7) {
+                        rowData["race" + pair[0]] = race + "(" + pair[sprintvalue] + ")"
+                    }
+                }
+
+
+        
+            });
+        }
+    })
+    teamsTable.addData(rowData)
+
 }
 
 /**
