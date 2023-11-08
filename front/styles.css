@@ -733,7 +733,8 @@ a.bi-heart:hover {
 }
 
 [tabulator-field="driver"],
-[tabulator-field="points"] {
+[tabulator-field="points"],
+[tabulator-field="team"]{
   background-color: #464166 !important;
 }
 
@@ -741,6 +742,9 @@ a.bi-heart:hover {
   padding: 0px !important;
 }
 
+#seasonresults-teams-table [tabulator-field="team"] {
+  font-family: Formula1Bold;
+}
 
 
 #seasonresults-table {
@@ -774,7 +778,7 @@ a.bi-heart:hover {
   border: none !important;
 }
 
-[tabulator-field="driver"] {
+[tabulator-field="driver"], [tabulator-field="team"] {
   border-right: 1.5px solid #797599 !important;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
 }
@@ -810,7 +814,7 @@ a.bi-heart:hover {
   color: #dedde6 !important;
 }
 
-.tabulator-row:hover [tabulator-field="driver"] {
+.tabulator-row:hover [tabulator-field="driver"], .tabulator-row:hover [tabulator-field="team"] {
   color: #110f24;
   background-color: #dedde6 !important;
   border-right: 1.5px solid #dedde6 !important;
@@ -822,11 +826,11 @@ a.bi-heart:hover {
   border-left: 1.5px solid #dedde6 !important;
 }
 
-[tabulator-field="driver"] span.bold-font {
+[tabulator-field="driver"] span.bold-font, [tabulator-field="team"] span.bold-font {
   transition: color 0.3s;
 }
 
-.tabulator-row:hover [tabulator-field="driver"] span.bold-font {
+.tabulator-row:hover [tabulator-field="driver"] span.bold-font, .tabulator-row:hover [tabulator-field="team"] span.bold-font {
   color: #110f24;
 }
 
