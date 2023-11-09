@@ -290,7 +290,6 @@ function loadDriversTable(allDrivers) {
     })
     seasonTable.setSort("pos","asc");
     formatTable()
-    document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.maxHeight = document.querySelector("#seasonresults-table").querySelector(".tabulator-table").offsetHeight + "px";
     document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.overflow = "hidden";
 }
 
@@ -329,8 +328,10 @@ function addTeam(code,teamName,drivers) {
                     sprintvalue = 5;
                 }
                 else if (pointsOrPos === "pos") {
-                    raceValue = 1;
-                    sprintvalue = 6;
+                    // raceValue = 1; PROVISIONAL HASTA QUE HAGA POSICIONES
+                    // sprintvalue = 6;
+                    raceValue = 2;
+                    sprintvalue = 5;
                 }
                 let race;
                 if (pair[raceValue] === -1) {
