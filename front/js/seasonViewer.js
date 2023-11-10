@@ -290,7 +290,8 @@ function loadDriversTable(allDrivers) {
     })
     seasonTable.setSort("pos","asc");
     formatTable()
-    document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.overflow = "hidden";
+    document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.maxHeight = "628px";
+    document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.overflowX = "hidden";
 }
 
 function loadTeamsTable(allDrivers) {
