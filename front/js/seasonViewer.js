@@ -1,20 +1,23 @@
-const races_map = { 2: "bah0",1: "aus0",11: "sau0",24: "imo0",22: "mia0",5: "spa0",6: "mon0",4: "aze0",7: "can0",10: "gbr0",9: "aut0",8: "fra0",12: "hun0",13: "bel0",14: "ita0",15: "sgp0",17: "jap0",19: "usa0",18: "mex0",20: "bra0",21: "uae0",23: "ned0",25: "veg0",26: "qat0" };
-const races_names = { 2: "BAH",1: "AUS",11: "SAU",24: "IMO",22: "MIA",5: "SPA",6: "MON",4: "AZE",7: "CAN",10: "GBR",9: "AUT",8: "FRA",12: "HUN",13: "BEL",14: "ITA",15: "SGP",17: "JAP",19: "USA",18: "MEX",20: "BRA",21: "UAE",23: "NED",25: "VEG",26: "QAT" };
-const teams_full_name_dict = { 'FERRARI': 1,'MCLAREN': 2,'RED BULL': 3,'MERCEDES': 4,'ALPINE': 5,'WILIIAMS': 6,'HAAS': 7,'ALPHA TAURI': 8,'ALFA ROMEO': 9,'ASTON MARTIN': 10 }
-const logos_disc =  { 
-    1: '../assets/images/ferrari.png', 
-    2: '../assets/images/mclaren.png', 
-    3: '../assets/images/redbull.png', 
-    4: '../assets/images/mercedes.png', 
-    5: '../assets/images/alpine.png', 
-    6: '../assets/images/williams.png', 
-    7: '../assets/images/haas.png', 
-    8: '../assets/images/alphatauri.png', 
-    9: '../assets/images/alfaromeo.png', 
-    10: '../assets/images/astonmartin.png'};
+const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0" };
+const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT" };
+const teams_full_name_dict = { 'FERRARI': 1, 'MCLAREN': 2, 'RED BULL': 3, 'MERCEDES': 4, 'ALPINE': 5, 'WILIIAMS': 6, 'HAAS': 7, 'ALPHA TAURI': 8, 'ALFA ROMEO': 9, 'ASTON MARTIN': 10 }
+const logos_disc = {
+    1: '../assets/images/ferrari.png',
+    2: '../assets/images/mclaren.png',
+    3: '../assets/images/redbull.png',
+    4: '../assets/images/mercedes.png',
+    5: '../assets/images/alpine.png',
+    6: '../assets/images/williams.png',
+    7: '../assets/images/haas.png',
+    8: '../assets/images/alphatauri.png',
+    9: '../assets/images/alfaromeo.png',
+    10: '../assets/images/astonmartin.png'
+};
+const points_race = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 }
+const points_sprint = { 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1 }
 let seasonTable;
 let teamsTable;
-let default_points = ["25","18","15","12","10","8","6","4","2","1","DNF","0","","-"]
+let default_points = ["25", "18", "15", "12", "10", "8", "6", "4", "2", "1", "DNF", "0", "", "-"]
 let races_ids = []
 let seasonResults;
 let calendarData;
@@ -26,23 +29,23 @@ let pointsOrPos = "points"
  */
 function createDriversTable(calendar) {
     calendarData = calendar;
-    calendar.forEach(function (elem,index) {
+    calendar.forEach(function (elem, index) {
         races_ids.push(calendar[index][0])
     })
-    seasonTable = new Tabulator("#seasonresults-table",{
+    seasonTable = new Tabulator("#seasonresults-table", {
         layout: "fitColumns",
         maxWidth: "1650px",
         responsiveLayout: "hide",
-        columns: [{ title: "Driver",field: "driver",width: 175,headerSort: false,resizable: false,formatter: "html",headerHozAlign: "center" },
-        ...calendar.map((race,index) => ({
+        columns: [{ title: "Driver", field: "driver", width: 175, headerSort: false, resizable: false, formatter: "html", headerHozAlign: "center" },
+        ...calendar.map((race, index) => ({
             title: '<div class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"><div class="text-in-front bold-font">' + races_names[race[1]] + '</div></div>',
             field: "race" + race[0],
             hozAlign: "center",
             headerSort: false,
             resizable: false
         })),
-        { title: "Points",field: "points",hozAlign: "center",headerSort: false,headerHozAlign: "center",resizable: false },
-        { title: "Position",field: "pos",hozAlign: "center",visible: false }
+        { title: "Points", field: "points", hozAlign: "center", headerSort: false, headerHozAlign: "center", resizable: false },
+        { title: "Position", field: "pos", hozAlign: "center", visible: false }
 
         ],
         rowFormatter: function (row) {
@@ -64,17 +67,17 @@ function createDriversTable(calendar) {
                                 row.getCell(key).getElement().style.color = "#18152e";
                             }
                             if (cellValue[cellValue.length - 1] === "s") {
-                                row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0,-1)
+                                row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -1)
                                 row.getCell(key).getElement().style.color = "#c90fd7";
                             }
                             if (cellValue[cellValue.length - 1] === "p") {
                                 row.getCell(key).getElement().style.fontFamily = "Formula1Bold";
                                 if (cellValue[cellValue.length - 2] === "s") {
-                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0,-2)
+                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -2)
                                     row.getCell(key).getElement().style.color = "#c90fd7";
                                 }
                                 else {
-                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0,-1)
+                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -1)
 
                                 }
                             }
@@ -92,17 +95,17 @@ function createDriversTable(calendar) {
                                 row.getCell(key).getElement().style.color = "#18152e";
                             }
                             if (cellValue[cellValue.length - 1] === "s") {
-                                row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0,-1)
+                                row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -1)
                                 row.getCell(key).getElement().style.color = "#c90fd7";
                             }
                             if (cellValue[cellValue.length - 1] === "p") {
                                 row.getCell(key).getElement().style.fontFamily = "Formula1Bold";
                                 if (cellValue[cellValue.length - 2] === "s") {
-                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0,-2)
+                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -2)
                                     row.getCell(key).getElement().style.color = "#c90fd7";
                                 }
                                 else {
-                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0,-1)
+                                    row.getCell(key).getElement().innerText = row.getCell(key).getElement().innerText.slice(0, -1)
 
                                 }
                             }
@@ -120,22 +123,23 @@ function createDriversTable(calendar) {
 }
 
 function createTeamsTable(calendar) {
-    teamsTable = new Tabulator("#seasonresults-teams-table",{
+    teamsTable = new Tabulator("#seasonresults-teams-table", {
         layout: "fitColumns",
         maxWidth: "1650px",
         rowHeight: 60,
         responsiveLayout: "hide",
-        columns: [{ title: "Team",field: "team",width: 195,headerSort: false,vertAlign: "middle",resizable: false,formatter: "html",headerHozAlign: "center" },
-        ...calendar.map((race,index) => ({
+        columns: [{ title: "Team", field: "team", width: 195, headerSort: false, vertAlign: "middle", resizable: false, formatter: "html", headerHozAlign: "center" },
+        ...calendar.map((race, index) => ({
             title: '<div class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"><div class="text-in-front bold-font">' + races_names[race[1]] + '</div></div>',
             field: "race" + race[0],
             hozAlign: "center",
+            formatter: "html",
             vertAlign: "middle",
             headerSort: false,
             resizable: false
         })),
-        { title: "Points",field: "points",hozAlign: "center", vertAlign: "middle",headerSort: false,headerHozAlign: "center",resizable: false },
-        { title: "Position",field: "pos",hozAlign: "center",visible: false }],
+        { title: "Points", field: "points", hozAlign: "center", vertAlign: "middle", headerSort: false, headerHozAlign: "center", resizable: false },
+        { title: "Position", field: "pos", hozAlign: "center", visible: false }],
     });
 }
 
@@ -150,26 +154,70 @@ function colorTeamTable() {
                 let cell = row.getCell(field);
                 let value = cell.getValue();
                 if (typeof value === 'string') {
-                    let parts = value.split('(');
-                    value = Number(parts[0]) + Number(parts[1].replace(')',''));
+                    if (pointsOrPos === "points") {
+                        let parts = value.split('(');
+                        value = Number(parts[0]) + Number(parts[1].slice(0, -1));
+                    }
+                    else {
+                        let drivers = value.split("<br>")
+                        let d1 = drivers[0].split("(")
+                        if (d1.length > 1) {
+                            d1 = Number(points_race[d1[0]] + points_sprint[d1[1].slice(0, -1)])
+                        }
+                        else {
+                            d1 = points_race[d1[0]]
+                        }
+                        let d2 = drivers[1].split("(")
+                        if (d2.length > 1) {
+                            d2 = Number(points_race[d2[0]] + points_sprint[d2[1].slice(0, -1)])
+                        }
+                        else {
+                            d2 = points_race[d2[0]]
+                        }
+                        value = Number(d1 + d2)
+                    }
                 }
                 values.push(value);
 
             });
-            values.sort((a,b) => b - a);
-            topThreeValues = values.slice(0,3);
+            values.sort((a, b) => b - a);
+            topThreeValues = values.slice(0, 3);
         }
 
         column.updateDefinition({
-            formatter: function (cell,formatterParams) {
+            formatter: function (cell, formatterParams) {
                 let value = cell.getValue();
                 if (value !== undefined) {
                     if (field.startsWith('race')) {
-                        if (typeof value === 'string') {
-                            let parts = value.split('(');
-                            value = Number(parts[0]) + Number(parts[1].replace(')',''));
+                        if (pointsOrPos === "points") {
+                            if (typeof value === 'string') {
+                                let parts = value.split('(');
+                                value = Number(parts[0]) + Number(parts[1].replace(')', ''));
+                            }
                         }
-                        if(value !== 0){
+                        else {
+                            // console.log(value)
+                            // console.log(field)
+                            // console.log(column)
+                            // let drivers = value.split("<br>")
+                            // let d1 = drivers[0].split("(")
+                            // if(d1.length > 1){
+                            //     d1 = Number(points_race[d1[0]] + points_sprint[d1[1].slice(0,-1)])
+                            // }
+                            // else{
+                            //     d1 = points_race[d1[0]]
+                            // }
+                            // let d2 = drivers[1].split("(")
+                            // if(d2.length > 1){
+                            //     d2 = Number(points_race[d2[0]] + points_sprint[d2[1].slice(0,-1)])
+                            // }
+                            // else{
+                            //     d2 = points_race[d2[0]]
+                            // }
+                            // value = Number(d1 + d2)
+                            return value;
+                        }
+                        if (value !== 0) {
                             if (topThreeValues[0] === value) {
                                 return "<div style='background-color:#FDE06B; color:#18152e; align-items: center; display:flex; justify-content:center; height:100%; width:100%'>" + cell.getValue() + "</div>";
                             }
@@ -183,16 +231,15 @@ function colorTeamTable() {
                                 return cell.getValue();
                             }
                         }
-                        else{
+                        else {
                             return ""
                         }
-
                     }
                     else {
                         return cell.getValue();
                     }
                 }
-                else{
+                else {
                     return "-"
                 }
 
@@ -202,20 +249,23 @@ function colorTeamTable() {
 }
 
 
-document.getElementById("driverspill").addEventListener("click",function () {
+document.getElementById("driverspill").addEventListener("click", function () {
     document.getElementById("seasonresults-teams-table").classList.add("d-none")
     document.getElementById("seasonresults-table").classList.remove("d-none")
 })
 
-document.getElementById("teamspill").addEventListener("click",function () {
+document.getElementById("teamspill").addEventListener("click", function () {
     document.getElementById("seasonresults-teams-table").classList.remove("d-none")
     document.getElementById("seasonresults-table").classList.add("d-none")
+    setTimeout(function () {
+        document.querySelector("#seasonresults-teams-table").querySelector('span[data-teamid="10"]').parentNode.style.gap = "3px"
+    }, 100);
 })
 
 /**
  * Even listener for the positions and points pill
  */
-document.getElementById("pospill").addEventListener("click",function () {
+document.getElementById("pospill").addEventListener("click", function () {
     if (seasonTable) {
         seasonTable.destroy()
     }
@@ -223,10 +273,17 @@ document.getElementById("pospill").addEventListener("click",function () {
     createDriversTable(calendarData)
     setTimeout(function () {
         loadDriversTable(seasonResults)
-    },10);
+    }, 10);
+    if (teamsTable) {
+        teamsTable.destroy()
+    }
+    createTeamsTable(calendarData)
+    setTimeout(function () {
+        loadTeamsTable(seasonResults)
+    }, 10);
 })
 
-document.getElementById("pointspill").addEventListener("click",function () {
+document.getElementById("pointspill").addEventListener("click", function () {
     if (seasonTable) {
         seasonTable.destroy()
     }
@@ -234,7 +291,14 @@ document.getElementById("pointspill").addEventListener("click",function () {
     createDriversTable(calendarData)
     setTimeout(function () {
         loadDriversTable(seasonResults)
-    },10);
+    }, 10);
+    if (teamsTable) {
+        teamsTable.destroy()
+    }
+    createTeamsTable(calendarData)
+    setTimeout(function () {
+        loadTeamsTable(seasonResults)
+    }, 10);
 })
 
 /**
@@ -252,7 +316,7 @@ function generateYearsMenu(actualYear) {
         a.classList = "dropdown-item"
         a.style.cursor = "pointer"
         yearMenu.appendChild(a);
-        a.addEventListener("click",function () {
+        a.addEventListener("click", function () {
             document.getElementById("yearButton").textContent = a.textContent
             let dataYear = {
                 command: "yearSelected",
@@ -266,7 +330,7 @@ function generateYearsMenu(actualYear) {
         a2.classList = "dropdown-item"
         a2.style.cursor = "pointer"
         yearH2H.appendChild(a2);
-        a2.addEventListener("click",function () {
+        a2.addEventListener("click", function () {
             resetH2H()
             document.getElementById("yearButtonH2H").textContent = a2.textContent
             let dataYear = {
@@ -288,7 +352,7 @@ function loadDriversTable(allDrivers) {
     allDrivers.forEach(function (driver) {
         addDriver(driver)
     })
-    seasonTable.setSort("pos","asc");
+    seasonTable.setSort("pos", "asc");
     formatTable()
     document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.maxHeight = "628px";
     document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.overflowX = "hidden";
@@ -296,16 +360,23 @@ function loadDriversTable(allDrivers) {
 
 function loadTeamsTable(allDrivers) {
     for (let team in teams_full_name_dict) {
-        addTeam(teams_full_name_dict[team],team,allDrivers)
+
+        let rowData = { team: createTeamNameAndLogo(teams_full_name_dict[team], team), points: 0}
+        teamsTable.addData(rowData)
     }
+    setTimeout(function () {
+        addDriversDataToTeams(allDrivers)
+        colorTeamTable()
+    }, 10);
     console.log(allDrivers)
-    colorTeamTable()
-    teamsTable.setSort("points","desc");
+    teamsTable.setSort("points", "desc");
     document.querySelector("#seasonresults-teams-table").querySelector(".tabulator-tableholder").style.maxHeight = "598px";
     document.querySelector("#seasonresults-teams-table").querySelector(".tabulator-tableholder").style.overflow = "hidden";
+
+
 }
 
-function addTeam(code,teamName,drivers) {
+function createTeamNameAndLogo(code, teamName) {
     let spanTeamName = document.createElement("span")
     spanTeamName.textContent = teamName
     spanTeamName.dataset.teamid = code
@@ -316,72 +387,88 @@ function addTeam(code,teamName,drivers) {
     logo.id = team_dict[code] + "logo"
     divOverall.appendChild(logo)
     divOverall.appendChild(spanTeamName)
-    // manageColor(spanTeamName,spanTeamName)
-    let rowData = { team: divOverall }
-    drivers.forEach(function (elem) {
-        if (elem[1] === code) {
-            let totalPoints = 0;
-            let raceValue;
-            let sprintvalue;
-            elem.slice(3).forEach((pair,index) => {
-                if (pointsOrPos === "points") {
-                    raceValue = 2;
-                    sprintvalue = 5;
-                }
-                else if (pointsOrPos === "pos") {
-                    // raceValue = 1; PROVISIONAL HASTA QUE HAGA POSICIONES
-                    // sprintvalue = 6;
-                    raceValue = 2;
-                    sprintvalue = 5;
-                }
-                let race;
-                if (pair[raceValue] === -1) {
-                    race = 0
-                }
-                else {
-                    race = pair[raceValue]
-                }
- 
-                if ('race' + pair[0] in rowData) {
-                    if (pair.length === 5) {
-                        rowData["race" + pair[0]] += race;
-                    }
-                    else if (pair.length === 7) {
-                        let racePoints = parseInt(rowData["race" + pair[0]].split("(")[0]) + race
-                        let sprintPoints = parseInt(rowData["race" + pair[0]].split("(")[1].slice(0,-1)) + pair[sprintvalue]
-                        rowData["race" + pair[0]] = racePoints + "(" + sprintPoints + ")"
-                    }
-                } else {
-                    if (pair.length === 5) {
-                        rowData["race" + pair[0]] = race;
-                    }
-                    else if (pair.length === 7) {
-                        rowData["race" + pair[0]] = race + "(" + pair[sprintvalue] + ")"
-                    }
-                }
+    return divOverall;
+}
 
-                
-            });
-            elem.slice(3).forEach(function (elem) {
-                if (elem[2] != "-1") {
-                    totalPoints += elem[2]
-                }
+function addDriversDataToTeams(drivers) {
+    drivers.forEach(function (elem) {
+        let data = teamsTable.getData()
+        let teamRow;
+        let raceValue;
+        let sprintvalue;
+        elem.slice(3).forEach((pair, index) => {
+            let teamForRace = pair[pair.length - 1]
+            data.forEach(rowData => {
+                if (teamForRace === Number(rowData["team"].querySelector("span").dataset.teamid)) {
+                    if (pointsOrPos === "points") {
+                        raceValue = 2;
+                        sprintvalue = 5;
+                        let race;
+                        if (pair[2] === -1) {
+                            race = 0
+                        }
+                        else {
+                            race = pair[2]
+                        }
+
+                        if ('race' + pair[0] in rowData && rowData['race' + pair[0]] !== undefined) {
+                            if (pair.length === 6) {
+                                rowData["race" + pair[0]] += race;
+                            }
+                            else if (pair.length === 8) {
+                                let racePoints = parseInt(rowData["race" + pair[0]].split("(")[0]) + race
+                                let sprintPoints = parseInt(rowData["race" + pair[0]].split("(")[1].slice(0, -1)) + pair[5]
+                                rowData["race" + pair[0]] = racePoints + "(" + sprintPoints + ")"
+                            }
+                        } else {
+                            if (pair.length === 6) {
+                                rowData["race" + pair[0]] = race;
+                            }
+                            else if (pair.length === 8) {
+                                rowData["race" + pair[0]] = race + "(" + pair[5] + ")"
+                            }
+                        }
+
+                    }
+                    else if (pointsOrPos === "pos") {
+                        raceValue = 2;
+                        sprintvalue = 5;
+                        if ('race' + pair[0] in rowData && rowData['race' + pair[0]] !== undefined) {
+                            if (pair.length === 6) {
+                                rowData["race" + pair[0]] += "<br>" + pair[1];
+                            }
+                            else if (pair.length === 8) {
+                                rowData["race" + pair[0]] += "<br>" + pair[1] + "(" + pair[6] + ")"
+                            }
+                        } else {
+                            if (pair.length === 6) {
+                                rowData["race" + pair[0]] = pair[1];
+                            }
+                            else if (pair.length === 8) {
+                                rowData["race" + pair[0]] = pair[1] + "(" + pair[6] + ")"
+                            }
+                        }
+                    }
+                    console.log(rowData)
+                    console.log(elem)
+                    if (pair[2] != "-1") {
+                        rowData["points"] += pair[2]
+                    }
         
-                if (elem.length === 7) {
-                    totalPoints += elem[5]
+                    if (pair.length === 8) {
+                        rowData["points"] += pair[5]
+                    }
+
                 }
-            })
-            if("points" in rowData){
-                rowData["points"] += totalPoints;
-            }
-            else{
-                rowData["points"] = totalPoints;
-            }
-        }
+            });
+        });
+        teamsTable.setData(data);
+
     })
-    teamsTable.addData(rowData)
+
 
 }
+
 
 /**
  * Formats the table for special vlaues
@@ -459,8 +546,8 @@ function addDriver(driverInfo) {
     spanLastName.dataset.teamid = driverInfo[1]
     nameDiv.appendChild(spanName)
     nameDiv.appendChild(spanLastName)
-    manageColor(spanLastName,spanLastName)
-    let rowData = { driver: nameDiv.innerHTML,pos: driverInfo[2] }
+    manageColor(spanLastName, spanLastName)
+    let rowData = { driver: nameDiv.innerHTML, pos: driverInfo[2] }
     let raceValue;
     let sprintvalue;
     if (pointsOrPos === "points") {
@@ -472,11 +559,11 @@ function addDriver(driverInfo) {
         sprintvalue = 6;
     }
 
-    driverInfo.slice(3).forEach((pair,index) => {
-        if (pair.length === 5) {
+    driverInfo.slice(3).forEach((pair, index) => {
+        if (pair.length === 6) {
             rowData["race" + pair[0]] = "" + pair[raceValue];
         }
-        else if (pair.length === 7) {
+        else if (pair.length === 8) {
             rowData["race" + pair[0]] = pair[raceValue] + "(" + pair[sprintvalue] + ")"
         }
         if (pair[3] === 1) {
@@ -495,7 +582,7 @@ function addDriver(driverInfo) {
             totalPoints += elem[2]
         }
 
-        if (elem.length === 7) {
+        if (elem.length === 8) {
             totalPoints += elem[5]
         }
     })
