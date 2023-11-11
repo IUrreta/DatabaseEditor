@@ -11,6 +11,7 @@ let sprints = false;
 let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00" }
 let driverGraph;
 let pointsGraph;
+let qualiGraph;
 let compData;
 
 /**
@@ -237,13 +238,22 @@ function load_drivers_h2h(drivers) {
 
 document.querySelector("#pointsProgression").addEventListener("click", function(elem){
     document.querySelector("#graphTypeButton").innerText = "Points progression"
+    document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.remove("d-none")
 })
 
 document.querySelector("#raceForm").addEventListener("click", function(elem){
     document.querySelector("#graphTypeButton").innerText = "Race form"
+    document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.remove("d-none")
+    document.querySelector("#progressionGraph").classList.add("d-none")
+})
+
+document.querySelector("#qualiForm").addEventListener("click", function(elem){
+    document.querySelector("#graphTypeButton").innerText = "Qualifying form"
+    document.querySelector("#qualiGraph").classList.remove("d-none")
+    document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
 })
 
@@ -336,10 +346,15 @@ function load_h2h_graphs(data) {
     let d2_points_provisional = []
     let d1_points = [0]
     let d2_points = [0]
+    let d1_qualis = [];
+    let d1_provisonal_q = [];
+    let d2_qualis = [];
+    let d2_provisonal_q = [];
     
     data[1].slice(3).forEach(function (elem) {
         d1_races.push(elem[0])
         d1_provisonal.push(elem[1])
+        d1_provisonal_q.push(elem[4])
         let ptsThatRace = elem[2];
         if(ptsThatRace === -1){
             ptsThatRace = 0;
@@ -355,6 +370,7 @@ function load_h2h_graphs(data) {
     data[2].slice(3).forEach(function (elem) {
         d2_races.push(elem[0])
         d2_provisonal.push(elem[1])
+        d2_provisonal_q.push(elem[4])
         let ptsThatRace = elem[2];
         if(ptsThatRace === -1){
             ptsThatRace = 0;
@@ -378,13 +394,14 @@ function load_h2h_graphs(data) {
             }
             else{
                 d1_res.push(d1_provisonal[index1])
-                
             }
             d1_points.push(d1_points_provisional[index1] + d1_points[d1_points.length-1])
+            d1_qualis.push(d1_provisonal_q[index1])
             
         }
         else{
             d1_res.push(NaN)
+            d1_qualis.push(NaN)
             if(data[3].indexOf(elem[0]) !== -1){
                 d1_points.push(d1_points[d1_points.length-1])
             }
@@ -401,9 +418,11 @@ function load_h2h_graphs(data) {
                 d2_res.push(d2_provisonal[index2])
             }
             d2_points.push(d2_points_provisional[index2] + d2_points[d2_points.length-1])
+            d2_qualis.push(d2_provisonal_q[index2])
         }
         else{
             d2_res.push(NaN)
+            d2_qualis.push(NaN)
             if(data[3].indexOf(elem[0]) !== -1){
                 d2_points.push(d2_points[d2_points.length-1])
             }
@@ -429,7 +448,11 @@ function load_h2h_graphs(data) {
     if (typeof pointsGraph !== 'undefined' && pointsGraph !== null) {
         pointsGraph.destroy();
     }
+    if (typeof qualiGraph !== 'undefined' && qualiGraph !== null) {
+        qualiGraph.destroy();
+    }
     createRaceChart(labels, d1_res, d2_res, d1_color, d2_color, data[1][0], data[2][0])
+    createQualiChart(labels, d1_qualis, d2_qualis, d1_color, d2_color, data[1][0], data[2][0])
     createPointsChart(labels, d1_points, d2_points, d1_color, d2_color, data[1][0], data[2][0])
 
 }
@@ -469,6 +492,100 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
     };
     driverGraph = new Chart(
         document.getElementById('driverGraph'),
+        {
+            type: 'line',
+            data: dataD,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index'
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: '#191630'
+                        },
+                        ticks: {
+                            color: "#dedde6",
+                            font: {
+                                family: "Formula1Bold"
+                            }
+                        }
+                    },
+                    y: {
+                        reverse: true,
+                        afterDataLimits: (scale) => {
+                            scale.max = 20;
+                            scale.min = 0.5;
+                          },
+                        grid: {
+                            color: '#191630'
+                        },
+                        ticks: {
+                            color: "#dedde6",
+                            font: {
+                                family: "Formula1Bold"
+                            }
+                        }
+
+                    }
+                },
+                plugins:{
+                    legend: {
+                        labels: {
+                            usePointStyle: true,
+                            color: "#dedde6",
+                            font: {
+                                family: "Formula1"
+                            }
+                        },
+                    },
+                    tooltip: {
+                        titleFont: {
+                            family: 'Formula1Bold', 
+                            size: 16
+
+                        },
+                        bodyFont: {
+                            family: 'Formula1',
+                            size: 14
+                        }
+                    }
+
+                }
+
+
+            }
+        }
+    );
+}
+
+function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_name, d2_name) {
+    const dataD = {
+        labels: labelsArray,
+        datasets: [
+            {
+                label: d1_name,
+                data: d1Quali,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                borderWidth: 2,
+                fill: false,
+            },
+            {
+                label: d2_name,
+                data: d2Quali,
+                borderColor: d2_color,
+                pointBackgroundColor: d2_color,
+                borderWidth: 2,
+                fill: false,
+
+            },
+        ]
+    };
+    qualiGraph = new Chart(
+        document.getElementById('qualiGraph'),
         {
             type: 'line',
             data: dataD,

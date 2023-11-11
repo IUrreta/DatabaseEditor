@@ -592,7 +592,7 @@ function addDriver(driverInfo) {
         raceValue = 1;
         sprintvalue = 6;
     }
-
+    console.log(driverInfo)
     driverInfo.slice(3).forEach((pair, index) => {
         if (pair.length === 6) {
             rowData["race" + pair[0]] = "" + pair[raceValue];

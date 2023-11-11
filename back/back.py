@@ -360,14 +360,12 @@ def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
             results_list = list(formatred_results[i])
             results_list.append(0)
             formatred_results[i] = tuple(results_list)
-        if driver_with_pole[0] == driverID[0]:
-            results_list = list(formatred_results[i])
-            results_list.append(1)
-            formatred_results[i] = tuple(results_list)
-        else:
-            results_list = list(formatred_results[i])
-            results_list.append(0)
-            formatred_results[i] = tuple(results_list) 
+        QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(races_participated[i][0]) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driverID[0])).fetchone()
+        QRes = cursor.execute("SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(races_participated[i][0]) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driverID[0]) + " AND QualifyingStage = " + str(QStage[0])).fetchone()
+        results_list = list(formatred_results[i])
+        results_list.append(QRes[0])
+        formatred_results[i] = tuple(results_list)
+
 
     for tupla1 in sprints:
         for i, tupla2 in enumerate(formatred_results):
