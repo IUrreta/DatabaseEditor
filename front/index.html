@@ -175,6 +175,15 @@
             </button>
             <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
             </ul>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2" id="graphTypeButton"
+              data-bs-toggle="dropdown">
+              Race form
+            </button>
+            <ul class="dropdown-menu" id="graphTypeDropdown" style="font-family: Formula1;">
+              <a class="dropdown-item" style="cursor: pointer;" id="raceForm">Race form</a>
+              <a class="dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
+              <!-- <a class="dropdown-item" style="cursor: pointer;">Qualifyin form</a> -->
+            </ul>
           </div>
           <div class="buttons-h2h"
             style="position: absolute; right: 20px; margin-top: 0.5rem !important; margin-bottom: 1rem !important; ">
@@ -331,6 +340,7 @@
           </div>
           <div class="col-9 main-viewer-section" style="max-width: 71.7vw;">
             <canvas id="driverGraph"></canvas>
+            <canvas class="d-none" id="progressionGraph"></canvas>
           </div>
         </div>
       </div>
@@ -341,16 +351,17 @@
         <div class="year-drivers-teams ps-3">
           <div>
             <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButton"
-            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Year
-          </button>
-          <ul class="dropdown-menu" id="yearMenu" style="font-family: Formula1;">
-          </ul>
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Year
+            </button>
+            <ul class="dropdown-menu" id="yearMenu" style="font-family: Formula1;">
+            </ul>
           </div>
           <div class="drivers-teams-pills">
             <ul class="nav nav-pills">
               <li class="nav-item">
-                <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#" id="driverspill">Drivers</a>
+                <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#"
+                  id="driverspill">Drivers</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="teamspill">Teams</a>
@@ -717,7 +728,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">REAR WING</span>
                   <div class="input-and-buttons">
@@ -726,7 +738,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">SIDEPODS</span>
                   <div class="input-and-buttons">
@@ -735,7 +748,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">FLOOR</span>
                   <div class="input-and-buttons">
@@ -744,7 +758,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">SUSPENSION</span>
                   <div class="input-and-buttons">
@@ -753,7 +768,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
               </div>
               <div class="main-panel-stats d-none" id="engineerStats">
                 <div class="one-stat-panel">
@@ -764,7 +780,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">FEEDBACK</span>
                   <div class="input-and-buttons">
@@ -773,7 +790,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">COMPOSURE</span>
                   <div class="input-and-buttons">
@@ -782,7 +800,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
               </div>
               <div class="main-panel-stats d-none" id="aeroStats">
                 <div class="one-stat-panel">
@@ -793,7 +812,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">DRS</span>
                   <div class="input-and-buttons">
@@ -802,7 +822,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">HIGH SPEED PERFORMANCE</span>
                   <div class="input-and-buttons">
@@ -811,7 +832,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel">
                   <span class="bold-font">MEDIUM SPEED PERFORMANCE</span>
                   <div class="input-and-buttons">
@@ -820,7 +842,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">LOW SPEED PERFORMANCE</span>
                   <div class="input-and-buttons">
@@ -829,7 +852,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">DRAG</span>
                   <div class="input-and-buttons">
@@ -838,7 +862,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel">
                   <span class="bold-font">AIRFLOW</span>
                   <div class="input-and-buttons">
@@ -847,7 +872,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">SENSITIVITY</span>
                   <div class="input-and-buttons">
@@ -856,7 +882,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
               </div>
               <div class="main-panel-stats d-none" id="directorStats">
                 <div class="one-stat-panel">
@@ -867,7 +894,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">APTITUDE</span>
                   <div class="input-and-buttons">
@@ -876,7 +904,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">LEADERSHIP</span>
                   <div class="input-and-buttons">
@@ -885,7 +914,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">PROCESSES</span>
                   <div class="input-and-buttons">
@@ -894,7 +924,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
               </div>
             </div>
 

@@ -9,7 +9,8 @@ let wins = false;
 let poles = false;
 let sprints = false;
 let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00" }
-let graph;
+let driverGraph;
+let pointsGraph;
 let compData;
 
 /**
@@ -234,6 +235,18 @@ function load_drivers_h2h(drivers) {
     })
 }
 
+document.querySelector("#pointsProgression").addEventListener("click", function(elem){
+    document.querySelector("#graphTypeButton").innerText = "Points progression"
+    document.querySelector("#driverGraph").classList.add("d-none")
+    document.querySelector("#progressionGraph").classList.remove("d-none")
+})
+
+document.querySelector("#raceForm").addEventListener("click", function(elem){
+    document.querySelector("#graphTypeButton").innerText = "Race form"
+    document.querySelector("#driverGraph").classList.remove("d-none")
+    document.querySelector("#progressionGraph").classList.add("d-none")
+})
+
 /**
  * Adds the eventlisteners for all the selectable items in the drivers selection menu
  * @param {a} aDriver2 <a> elem of the driver 2
@@ -310,7 +323,8 @@ function resetH2H(){
  * Prepares the data for the head to head graph
  * @param {object} data object with all the data of races in wich both drivers participated and their results 
  */
-function load_h2h_graph(data) {
+function load_h2h_graphs(data) {
+    console.log(data)
     var labels = [];
     let d1_res = [];
     let d2_res = [];
@@ -318,15 +332,39 @@ function load_h2h_graph(data) {
     let d1_provisonal = [];
     let d2_races = [];
     let d2_provisonal = [];
+    let d1_points_provisional = []
+    let d2_points_provisional = []
+    let d1_points = [0]
+    let d2_points = [0]
     
     data[1].slice(3).forEach(function (elem) {
         d1_races.push(elem[0])
         d1_provisonal.push(elem[1])
+        let ptsThatRace = elem[2];
+        if(ptsThatRace === -1){
+            ptsThatRace = 0;
+        }
+        if(elem.length === 8){
+            d1_points_provisional.push(ptsThatRace + elem[5])
+        }
+        else{
+            d1_points_provisional.push(ptsThatRace)
+        }
     })
 
     data[2].slice(3).forEach(function (elem) {
         d2_races.push(elem[0])
         d2_provisonal.push(elem[1])
+        let ptsThatRace = elem[2];
+        if(ptsThatRace === -1){
+            ptsThatRace = 0;
+        }
+        if(elem.length === 8){
+            d2_points_provisional.push(ptsThatRace + elem[5])
+        }
+        else{
+            d2_points_provisional.push(ptsThatRace)
+        }
     })
 
 
@@ -340,11 +378,20 @@ function load_h2h_graph(data) {
             }
             else{
                 d1_res.push(d1_provisonal[index1])
+                
             }
+            d1_points.push(d1_points_provisional[index1] + d1_points[d1_points.length-1])
             
         }
         else{
             d1_res.push(NaN)
+            if(data[3].indexOf(elem[0]) !== -1){
+                d1_points.push(d1_points[d1_points.length-1])
+            }
+            else{
+                d1_points.push(NaN)
+            }
+            
         }
         if(index2 !== -1){
             if(d2_provisonal[index2] === -1){
@@ -353,11 +400,20 @@ function load_h2h_graph(data) {
             else{
                 d2_res.push(d2_provisonal[index2])
             }
+            d2_points.push(d2_points_provisional[index2] + d2_points[d2_points.length-1])
         }
         else{
             d2_res.push(NaN)
+            if(data[3].indexOf(elem[0]) !== -1){
+                d2_points.push(d2_points[d2_points.length-1])
+            }
+            else{
+                d2_points.push(NaN)
+            }
         }
     })
+    d1_points.shift()
+    d2_points.shift()
 
     let d1_color = colors_dict[data[1][1] + "0"]
     let d2_color;
@@ -367,10 +423,14 @@ function load_h2h_graph(data) {
     else {
         d2_color = colors_dict[data[2][1] + "0"]
     }
-    if (typeof graph !== 'undefined' && graph !== null) {
-        graph.destroy();
+    if (typeof driverGraph !== 'undefined' && driverGraph !== null) {
+        driverGraph.destroy();
     }
-    createChart(labels, d1_res, d2_res, d1_color, d2_color, data[1][0], data[2][0])
+    if (typeof pointsGraph !== 'undefined' && pointsGraph !== null) {
+        pointsGraph.destroy();
+    }
+    createRaceChart(labels, d1_res, d2_res, d1_color, d2_color, data[1][0], data[2][0])
+    createPointsChart(labels, d1_points, d2_points, d1_color, d2_color, data[1][0], data[2][0])
 
 }
 
@@ -384,7 +444,7 @@ function load_h2h_graph(data) {
  * @param {string} d1_name name of the first driver
  * @param {string} d2_name name of the second driver
  */
-function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color, d1_name, d2_name) {
+function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, d1_name, d2_name) {
     const dataD = {
         labels: labelsArray,
         datasets: [
@@ -407,7 +467,7 @@ function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color, d1_n
             },
         ]
     };
-    graph = new Chart(
+    driverGraph = new Chart(
         document.getElementById('driverGraph'),
         {
             type: 'line',
@@ -452,6 +512,96 @@ function createChart(labelsArray, d1Results, d2Results, d1_color, d2_color, d1_n
                     legend: {
                         labels: {
                             usePointStyle: true,
+                            color: "#dedde6",
+                            font: {
+                                family: "Formula1"
+                            }
+                        },
+                    },
+                    tooltip: {
+                        titleFont: {
+                            family: 'Formula1Bold', 
+                            size: 16
+
+                        },
+                        bodyFont: {
+                            family: 'Formula1',
+                            size: 14
+                        }
+                    }
+
+                }
+
+
+            }
+        }
+    );
+}
+
+function createPointsChart(labelsArray, d1Points, d2Points, d1_color, d2_color, d1_name, d2_name) {
+    const dataD = {
+        labels: labelsArray,
+        datasets: [
+            {
+                label: d1_name,
+                data: d1Points,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+            },
+            {
+                label: d2_name,
+                data: d2Points,
+                borderColor: d2_color,
+                pointBackgroundColor: d2_color,
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+
+            },
+        ]
+    };
+    pointsGraph = new Chart(
+        document.getElementById('progressionGraph'),
+        {
+            type: 'line',
+            data: dataD,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index'
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: '#191630'
+                        },
+                        ticks: {
+                            color: "#dedde6",
+                            font: {
+                                family: "Formula1Bold"
+                            }
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: '#191630'
+                        },
+                        ticks: {
+                            color: "#dedde6",
+                            font: {
+                                family: "Formula1Bold"
+                            }
+                        }
+
+                    }
+                },
+                plugins:{
+                    legend: {
+                        labels: {
                             color: "#dedde6",
                             font: {
                                 family: "Formula1"

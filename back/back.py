@@ -185,7 +185,7 @@ async def handle_command(message):
         await send_message_to_client(data_json_h2h)
         d1Res = fetch_oneDriver_seasonResults((message["d1"],), (message["year"],))
         d2Res = fetch_oneDriver_seasonResults((message["d2"],), (message["year"],))
-        h2hDrivers = [d1Res, d2Res]
+        h2hDrivers = [d1Res, d2Res, fetch_events_done_from(message["year"])]
         h2hDrivers.insert(0, fetch_events_from(message["year"]))
         h2hDrivers.insert(0, "H2HDriver fetched")
         data_json_h2hdrivers = json.dumps(h2hDrivers)
@@ -309,6 +309,15 @@ def fetch_oneDriver_seasonResults(driver, year):
         return format_seasonResults(results, driverName, teamID, driver, year, sprintResults)
     
 
+def fetch_events_done_from(year):
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    season_ids = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(year) + " AND Day < " + str(day_season[0])).fetchall()
+    events_ids =[]
+    for i in range(len(season_ids)):
+        events_ids.append((season_ids[i][0]))
+
+    return events_ids
+
 def fetch_events_from(year):
     season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(year)).fetchall()
     tuple_numbers = {num for tpl in season_events for num in tpl}
@@ -413,8 +422,6 @@ def check_claendar():
     are_all_numbers_present = all(num in tuple_numbers for num in default_tracks)
     has_first_race_done = day_season[0] < first_race[0]
     has_been_edited = last_race_last_season[0] + 1 == first_race_curr_season[0]
-    print(day_season[0], first_race[0])
-    print(are_all_numbers_present, has_first_race_done, has_been_edited)
 
     # Definir la variable resultante
     resultCalendar = "1" if (are_all_numbers_present and has_first_race_done and has_been_edited) else "0"
