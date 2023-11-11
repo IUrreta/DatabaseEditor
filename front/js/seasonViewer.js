@@ -372,7 +372,6 @@ function loadDriversTable(allDrivers) {
 
 function loadTeamsTable(allDrivers) {
     for (let team in teams_full_name_dict) {
-
         let rowData = { team: createTeamNameAndLogo(teams_full_name_dict[team], team), points: 0}
         teamsTable.addData(rowData)
     }
@@ -383,10 +382,6 @@ function loadTeamsTable(allDrivers) {
     teamsTable.setSort("points", "desc");
     document.querySelector("#seasonresults-teams-table").querySelector(".tabulator-tableholder").style.maxHeight = "598px";
     document.querySelector("#seasonresults-teams-table").querySelector(".tabulator-tableholder").style.overflow = "hidden";
-    setTimeout(function () {
-        document.querySelector("#seasonresults-teams-table").querySelector('span[data-teamid="10"]').parentNode.style.gap = "3px"
-    }, 500);
-
 }
 
 function createTeamNameAndLogo(code, teamName) {
@@ -395,6 +390,9 @@ function createTeamNameAndLogo(code, teamName) {
     spanTeamName.dataset.teamid = code
     let divOverall = document.createElement("div")
     divOverall.className = "team-table-logo-name"
+    if(code === 10){
+        divOverall.style.gap = "3px"
+    }
     let logo = document.createElement("img")
     logo.setAttribute("src", logos_disc[code])
     logo.id = team_dict[code] + "logo"
