@@ -128,6 +128,10 @@ function createDriversTable(calendar) {
 
 }
 
+/**
+ * Creates the teams table for the calendar of the season selected
+ * @param {Object} calendar calendar of the year selected
+ */
 function createTeamsTable(calendar) {
     teamsTable = new Tabulator("#seasonresults-teams-table", {
         layout: "fitColumns",
@@ -149,6 +153,9 @@ function createTeamsTable(calendar) {
     });
 }
 
+/**
+ * Colors the cells from the teams table
+ */
 function colorTeamTable() {
     teamsTable.getColumns().forEach(column => {
         let field = column.getField();
@@ -262,7 +269,9 @@ function colorTeamTable() {
     })
 }
 
-
+/**
+ * Pills for the drivers and teams tables
+ */
 document.getElementById("driverspill").addEventListener("click", function () {
     document.getElementById("seasonresults-teams-table").classList.add("d-none")
     document.getElementById("seasonresults-table").classList.remove("d-none")
@@ -372,6 +381,10 @@ function loadDriversTable(allDrivers) {
     document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.overflowX = "hidden";
 }
 
+/**
+ * Loads the data into the teams table
+ * @param {object} allDrivers information for all the drivers on the grid
+ */
 function loadTeamsTable(allDrivers) {
     for (let team in teams_full_name_dict) {
         let rowData = { team: createTeamNameAndLogo(teams_full_name_dict[team], team), points: 0}
@@ -386,6 +399,12 @@ function loadTeamsTable(allDrivers) {
     document.querySelector("#seasonresults-teams-table").querySelector(".tabulator-tableholder").style.overflow = "hidden";
 }
 
+/**
+ * Creates the row header with team name and icon
+ * @param {Number} code team id 
+ * @param {String} teamName team name
+ * @returns 
+ */
 function createTeamNameAndLogo(code, teamName) {
     let spanTeamName = document.createElement("span")
     spanTeamName.textContent = teamName
@@ -404,6 +423,10 @@ function createTeamNameAndLogo(code, teamName) {
     return divOverall;
 }
 
+/**
+ * Adds each driver's season results to its team
+ * @param {object} drivers all driver's results race by race
+ */
 function addDriversDataToTeams(drivers) {
     drivers.forEach(function (elem) {
         let data = teamsTable.getData()
