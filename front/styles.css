@@ -782,6 +782,10 @@ a.bi-heart:hover {
   display: flex;
   align-items: center;
   gap: 7px;
+  border-right: 4px solid transparent;
+  transition: border 0.3s;
+  width: 100%;
+  height: 100%;
 }
 
 .tabulator-col-content {
@@ -826,12 +830,14 @@ a.bi-heart:hover {
 
 [tabulator-field="team"]{
   transition: background-color 0.3s, color 0.3s;
+  padding-right: 0px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
 }
 
 .tabulator-row:hover [tabulator-field="team"] {
   background-color: #625e86 !important;
   color: white !important;
-  border-right: 1.5px solid #dedde6 !important;
 }
 
 .tabulator-row:hover [tabulator-field="driver"] {
@@ -1886,40 +1892,81 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid #3671C6 !important;
 }
 
+.tabulator-row:hover .rbborder-right {
+  border-right: 3px solid #3671C6 !important;
+}
+
+
 #ferrari, .feborder-down:hover {
   border-bottom: 2px solid #F91536 !important;
+}
+
+.tabulator-row:hover .feborder-right {
+  border-right: 3px solid #F91536 !important;
 }
 
 #merc, .meborder-down:hover {
   border-bottom: 2px solid #6CD3BF !important;
 }
 
+.tabulator-row:hover .meborder-right {
+  border-right: 3px solid #6CD3BF !important;
+}
+
 #mclaren, .mcborder-down:hover {
   border-bottom: 2px solid #F58020 !important;
+}
+
+.tabulator-row:hover .mcborder-right {
+  border-right: 3px solid #F58020 !important;
 }
 
 #alpine,.alborder-down:hover {
   border-bottom: 2px solid #2293D1 !important
 }
 
+.tabulator-row:hover .alborder-right {
+  border-right: 3px solid #2293D1 !important;
+}
+
 #alfaromeo, .afborder-down:hover {
   border-bottom: 2px solid #C92D4B !important
+}
+
+.tabulator-row:hover .afborder-right {
+  border-right: 3px solid #C92D4B !important;
 }
 
 #astonmartin, .asborder-down:hover {
   border-bottom: 2px solid #358C75 !important
 }
 
+.tabulator-row:hover .asborder-right {
+  border-right: 3px solid #358C75 !important;
+}
+
 #alphatauri, .atborder-down:hover {
   border-bottom: 2px solid #5E8FAA !important 
+}
+
+.tabulator-row:hover .atborder-right {
+  border-right: 3px solid #5E8FAA !important;
 }
 
 #williams, .wiborder-down:hover {
   border-bottom: 2px solid #37BEDD !important
 }
 
+.tabulator-row:hover .wiborder-right {
+  border-right: 3px solid #37BEDD !important;
+}
+
 #haas, .haborder-down:hover {
   border-bottom: 2px solid #B6BABD !important
+}
+
+.tabulator-row:hover .haborder-right {
+  border-right: 3px solid #B6BABD !important;
 }
 
 .rbfont {

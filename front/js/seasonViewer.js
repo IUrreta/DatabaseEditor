@@ -278,6 +278,7 @@ document.getElementById("teamspill").addEventListener("click", function () {
  * Even listener for the positions and points pill
  */
 document.getElementById("pospill").addEventListener("click", function () {
+    document.getElementById("driverspill").click()
     if (seasonTable) {
         seasonTable.destroy()
     }
@@ -296,6 +297,7 @@ document.getElementById("pospill").addEventListener("click", function () {
 })
 
 document.getElementById("pointspill").addEventListener("click", function () {
+    document.getElementById("driverspill").click()
     if (seasonTable) {
         seasonTable.destroy()
     }
@@ -390,6 +392,7 @@ function createTeamNameAndLogo(code, teamName) {
     spanTeamName.dataset.teamid = code
     let divOverall = document.createElement("div")
     divOverall.className = "team-table-logo-name"
+    divOverall.classList.add(team_dict[code]+"border-right")
     if(code === 10){
         divOverall.style.gap = "3px"
     }
