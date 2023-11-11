@@ -413,6 +413,8 @@ def check_claendar():
     are_all_numbers_present = all(num in tuple_numbers for num in default_tracks)
     has_first_race_done = day_season[0] < first_race[0]
     has_been_edited = last_race_last_season[0] + 1 == first_race_curr_season[0]
+    print(day_season[0], first_race[0])
+    print(are_all_numbers_present, has_first_race_done, has_been_edited)
 
     # Definir la variable resultante
     resultCalendar = "1" if (are_all_numbers_present and has_first_race_done and has_been_edited) else "0"

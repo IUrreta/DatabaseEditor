@@ -13,8 +13,14 @@ const logos_disc = {
     9: '../assets/images/alfaromeo.png',
     10: '../assets/images/astonmartin.png'
 };
-const points_race = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 }
-const points_sprint = { 1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1 }
+const points_race = { 
+    1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1, 
+    11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, "DNF":0
+}
+const points_sprint = { 
+    1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1, 
+    9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, "-1":0
+}
 let seasonTable;
 let teamsTable;
 let default_points = ["25", "18", "15", "12", "10", "8", "6", "4", "2", "1", "DNF", "0", "", "-"]
@@ -194,30 +200,41 @@ function colorTeamTable() {
                                 let parts = value.split('(');
                                 value = Number(parts[0]) + Number(parts[1].replace(')', ''));
                             }
+                            if (value !== 0) {
+                                if (topThreeValues[0] === value) {
+                                    return "<div style='background-color:#FDE06B; color:#18152e; align-items: center; display:flex; justify-content:center; height:100%; width:100%'>" + cell.getValue() + "</div>";
+                                }
+                                else if (topThreeValues[1] === value) {
+                                    return "<div style='background-color:#AEB2B8; color:#18152e; align-items: center; display:flex; justify-content:center; height:100%; width:100%'>" + cell.getValue() + "</div>";
+                                }
+                                else if (topThreeValues[2] === value) {
+                                    return "<div style='background-color:#d7985a; color:#18152e; align-items: center; display:flex; justify-content:center; height:100%; width:100%'>" + cell.getValue() + "</div>";
+                                }
+                                else {
+                                    return cell.getValue();
+                                }
+                            }
+                            else {
+                                return ""
+                            }
                         }
                         else {
-                            // console.log(value)
-                            // console.log(field)
-                            // console.log(column)
-                            // let drivers = value.split("<br>")
-                            // let d1 = drivers[0].split("(")
-                            // if(d1.length > 1){
-                            //     d1 = Number(points_race[d1[0]] + points_sprint[d1[1].slice(0,-1)])
-                            // }
-                            // else{
-                            //     d1 = points_race[d1[0]]
-                            // }
-                            // let d2 = drivers[1].split("(")
-                            // if(d2.length > 1){
-                            //     d2 = Number(points_race[d2[0]] + points_sprint[d2[1].slice(0,-1)])
-                            // }
-                            // else{
-                            //     d2 = points_race[d2[0]]
-                            // }
-                            // value = Number(d1 + d2)
-                            return value;
-                        }
-                        if (value !== 0) {
+                            let drivers = value.split("<br>")
+                            let d1 = drivers[0].split("(")
+                            if(d1.length > 1){
+                                d1 = Number(points_race[d1[0]] + points_sprint[d1[1].slice(0,-1)])
+                            }
+                            else{
+                                d1 = points_race[d1[0]]
+                            }
+                            let d2 = drivers[1].split("(")
+                            if(d2.length > 1){
+                                d2 = Number(points_race[d2[0]] + points_sprint[d2[1].slice(0,-1)])
+                            }
+                            else{
+                                d2 = points_race[d2[0]]
+                            }
+                            value = Number(d1 + d2)
                             if (topThreeValues[0] === value) {
                                 return "<div style='background-color:#FDE06B; color:#18152e; align-items: center; display:flex; justify-content:center; height:100%; width:100%'>" + cell.getValue() + "</div>";
                             }
@@ -230,9 +247,6 @@ function colorTeamTable() {
                             else {
                                 return cell.getValue();
                             }
-                        }
-                        else {
-                            return ""
                         }
                     }
                     else {
@@ -257,9 +271,7 @@ document.getElementById("driverspill").addEventListener("click", function () {
 document.getElementById("teamspill").addEventListener("click", function () {
     document.getElementById("seasonresults-teams-table").classList.remove("d-none")
     document.getElementById("seasonresults-table").classList.add("d-none")
-    setTimeout(function () {
-        document.querySelector("#seasonresults-teams-table").querySelector('span[data-teamid="10"]').parentNode.style.gap = "3px"
-    }, 100);
+
 })
 
 /**
@@ -368,11 +380,12 @@ function loadTeamsTable(allDrivers) {
         addDriversDataToTeams(allDrivers)
         colorTeamTable()
     }, 10);
-    console.log(allDrivers)
     teamsTable.setSort("points", "desc");
     document.querySelector("#seasonresults-teams-table").querySelector(".tabulator-tableholder").style.maxHeight = "598px";
     document.querySelector("#seasonresults-teams-table").querySelector(".tabulator-tableholder").style.overflow = "hidden";
-
+    setTimeout(function () {
+        document.querySelector("#seasonresults-teams-table").querySelector('span[data-teamid="10"]').parentNode.style.gap = "3px"
+    }, 500);
 
 }
 
@@ -393,16 +406,11 @@ function createTeamNameAndLogo(code, teamName) {
 function addDriversDataToTeams(drivers) {
     drivers.forEach(function (elem) {
         let data = teamsTable.getData()
-        let teamRow;
-        let raceValue;
-        let sprintvalue;
         elem.slice(3).forEach((pair, index) => {
             let teamForRace = pair[pair.length - 1]
             data.forEach(rowData => {
                 if (teamForRace === Number(rowData["team"].querySelector("span").dataset.teamid)) {
                     if (pointsOrPos === "points") {
-                        raceValue = 2;
-                        sprintvalue = 5;
                         let race;
                         if (pair[2] === -1) {
                             race = 0
@@ -431,26 +439,28 @@ function addDriversDataToTeams(drivers) {
 
                     }
                     else if (pointsOrPos === "pos") {
-                        raceValue = 2;
-                        sprintvalue = 5;
+                        let race = pair[1]
+                        if(pair[1] === -1){
+                            race = "DNF"
+                        }
+                        
+
                         if ('race' + pair[0] in rowData && rowData['race' + pair[0]] !== undefined) {
                             if (pair.length === 6) {
-                                rowData["race" + pair[0]] += "<br>" + pair[1];
+                                rowData["race" + pair[0]] += "<br>" + race;
                             }
                             else if (pair.length === 8) {
-                                rowData["race" + pair[0]] += "<br>" + pair[1] + "(" + pair[6] + ")"
+                                rowData["race" + pair[0]] += "<br>" + race + "(" + pair[6] + ")"
                             }
                         } else {
                             if (pair.length === 6) {
-                                rowData["race" + pair[0]] = pair[1];
+                                rowData["race" + pair[0]] = race;
                             }
                             else if (pair.length === 8) {
-                                rowData["race" + pair[0]] = pair[1] + "(" + pair[6] + ")"
+                                rowData["race" + pair[0]] = race + "(" + pair[6] + ")"
                             }
                         }
                     }
-                    console.log(rowData)
-                    console.log(elem)
                     if (pair[2] != "-1") {
                         rowData["points"] += pair[2]
                     }
