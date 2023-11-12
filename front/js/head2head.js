@@ -14,6 +14,7 @@ let pointsGraph;
 let qualiGraph;
 let compData;
 
+
 /**
  * Puts the bars of the head to head with the correct width for the drivers selected
  * @param {object} data object with all the info of the comparision between both drivers
@@ -43,13 +44,13 @@ function manage_h2h_bars(data) {
     }
     if (data[9].some(elem => elem >= 1)) {
         document.getElementById("bestrh2h").querySelector(".name-H2H").style.justifyContent = "space-between"
-        document.getElementById("bestrh2h").querySelectorAll("i").forEach(function(elem){
+        document.getElementById("bestrh2h").querySelectorAll("i").forEach(function (elem) {
             elem.classList.remove("d-none")
         })
     }
-    else{
-        document.getElementById("bestrh2h").querySelector(".name-H2H").style.justifyContent  = "center"
-        document.getElementById("bestrh2h").querySelectorAll("i").forEach(function(elem){
+    else {
+        document.getElementById("bestrh2h").querySelector(".name-H2H").style.justifyContent = "center"
+        document.getElementById("bestrh2h").querySelectorAll("i").forEach(function (elem) {
             elem.classList.add("d-none")
         })
     }
@@ -132,7 +133,7 @@ function manage_h2h_bars(data) {
     })
 }
 
-function fill_bars(elem, d1_width, d2_width){
+function fill_bars(elem, d1_width, d2_width) {
     elem.querySelector(".driver1-bar").className = "driver1-bar"
     elem.querySelector(".driver2-bar").className = "driver2-bar"
     document.querySelector(".driver1-name").className = "driver1-name"
@@ -151,9 +152,9 @@ function fill_bars(elem, d1_width, d2_width){
     elem.querySelector(".driver2-bar").style.width = d2_width + "%"
 }
 
-function toggle_sprints(){
+function toggle_sprints() {
     let elem = document.querySelector("#bestrh2h")
-    if(sprints){
+    if (sprints) {
         elem.querySelector(".only-name").textContent = "SPRINT WINS"
         relValue = (100 / (compData[9][0] + compData[9][1])).toFixed(2)
         d1_width = compData[9][0] * relValue
@@ -161,8 +162,8 @@ function toggle_sprints(){
         elem.querySelector(".driver1-number").textContent = compData[9][0]
         elem.querySelector(".driver2-number").textContent = compData[9][1]
     }
-    else{
-        if(wins){
+    else {
+        if (wins) {
             elem.querySelector(".only-name").textContent = "WINS"
             relValue = (100 / (compData[4][0] + compData[4][1])).toFixed(2)
             d1_width = compData[4][0] * relValue
@@ -170,7 +171,7 @@ function toggle_sprints(){
             elem.querySelector(".driver1-number").textContent = compData[4][0]
             elem.querySelector(".driver2-number").textContent = compData[4][1]
         }
-        else{
+        else {
             elem.querySelector(".only-name").textContent = "BEST RACE"
             d1_width = 100 - (compData[4][0] - 1) * 5
             d2_width = 100 - (compData[4][1] - 1) * 5
@@ -191,14 +192,14 @@ function toggle_sprints(){
     fill_bars(elem, d1_width, d2_width)
 }
 
-function sprintsListeners(){
-    document.querySelector("#bestrh2h").querySelectorAll("i").forEach(function(elem){
+function sprintsListeners() {
+    document.querySelector("#bestrh2h").querySelectorAll("i").forEach(function (elem) {
         elem.removeEventListener('evento', change_sprintView);
         elem.addEventListener("click", change_sprintView)
     })
 }
 
-function change_sprintView(){
+function change_sprintView() {
     sprints = !sprints
     toggle_sprints()
 }
@@ -236,21 +237,21 @@ function load_drivers_h2h(drivers) {
     })
 }
 
-document.querySelector("#pointsProgression").addEventListener("click", function(elem){
+document.querySelector("#pointsProgression").addEventListener("click", function (elem) {
     document.querySelector("#graphTypeButton").innerText = "Points progression"
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.remove("d-none")
 })
 
-document.querySelector("#raceForm").addEventListener("click", function(elem){
+document.querySelector("#raceForm").addEventListener("click", function (elem) {
     document.querySelector("#graphTypeButton").innerText = "Race form"
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.remove("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
 })
 
-document.querySelector("#qualiForm").addEventListener("click", function(elem){
+document.querySelector("#qualiForm").addEventListener("click", function (elem) {
     document.querySelector("#graphTypeButton").innerText = "Qualifying form"
     document.querySelector("#qualiGraph").classList.remove("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
@@ -317,7 +318,7 @@ function listeners_h2h(aDriver2, aDriver1) {
     })
 }
 
-function resetH2H(){
+function resetH2H() {
     document.querySelector("#mainH2h").classList.add("d-none")
     document.querySelector("#driver1Button").innerHTML = ""
     document.querySelector("#driver1Button").textContent = "Driver 1"
@@ -350,19 +351,19 @@ function load_h2h_graphs(data) {
     let d1_provisonal_q = [];
     let d2_qualis = [];
     let d2_provisonal_q = [];
-    
+
     data[1].slice(3).forEach(function (elem) {
         d1_races.push(elem[0])
         d1_provisonal.push(elem[1])
         d1_provisonal_q.push(elem[4])
         let ptsThatRace = elem[2];
-        if(ptsThatRace === -1){
+        if (ptsThatRace === -1) {
             ptsThatRace = 0;
         }
-        if(elem.length === 8){
+        if (elem.length === 8) {
             d1_points_provisional.push(ptsThatRace + elem[5])
         }
-        else{
+        else {
             d1_points_provisional.push(ptsThatRace)
         }
     })
@@ -372,13 +373,13 @@ function load_h2h_graphs(data) {
         d2_provisonal.push(elem[1])
         d2_provisonal_q.push(elem[4])
         let ptsThatRace = elem[2];
-        if(ptsThatRace === -1){
+        if (ptsThatRace === -1) {
             ptsThatRace = 0;
         }
-        if(elem.length === 8){
+        if (elem.length === 8) {
             d2_points_provisional.push(ptsThatRace + elem[5])
         }
-        else{
+        else {
             d2_points_provisional.push(ptsThatRace)
         }
     })
@@ -388,45 +389,45 @@ function load_h2h_graphs(data) {
         labels.push(races_names[elem[1]])
         let index1 = d1_races.indexOf(elem[0])
         let index2 = d2_races.indexOf(elem[0])
-        if(index1 !== -1){
-            if(d1_provisonal[index1] === -1){
+        if (index1 !== -1) {
+            if (d1_provisonal[index1] === -1) {
                 d1_res.push(NaN)
             }
-            else{
+            else {
                 d1_res.push(d1_provisonal[index1])
             }
-            d1_points.push(d1_points_provisional[index1] + d1_points[d1_points.length-1])
+            d1_points.push(d1_points_provisional[index1] + d1_points[d1_points.length - 1])
             d1_qualis.push(d1_provisonal_q[index1])
-            
+
         }
-        else{
+        else {
             d1_res.push(NaN)
             d1_qualis.push(NaN)
-            if(data[3].indexOf(elem[0]) !== -1){
-                d1_points.push(d1_points[d1_points.length-1])
+            if (data[3].indexOf(elem[0]) !== -1) {
+                d1_points.push(d1_points[d1_points.length - 1])
             }
-            else{
+            else {
                 d1_points.push(NaN)
             }
-            
+
         }
-        if(index2 !== -1){
-            if(d2_provisonal[index2] === -1){
+        if (index2 !== -1) {
+            if (d2_provisonal[index2] === -1) {
                 d2_res.push(NaN)
             }
-            else{
+            else {
                 d2_res.push(d2_provisonal[index2])
             }
-            d2_points.push(d2_points_provisional[index2] + d2_points[d2_points.length-1])
+            d2_points.push(d2_points_provisional[index2] + d2_points[d2_points.length - 1])
             d2_qualis.push(d2_provisonal_q[index2])
         }
-        else{
+        else {
             d2_res.push(NaN)
             d2_qualis.push(NaN)
-            if(data[3].indexOf(elem[0]) !== -1){
-                d2_points.push(d2_points[d2_points.length-1])
+            if (data[3].indexOf(elem[0]) !== -1) {
+                d2_points.push(d2_points[d2_points.length - 1])
             }
-            else{
+            else {
                 d2_points.push(NaN)
             }
         }
@@ -456,6 +457,8 @@ function load_h2h_graphs(data) {
     createPointsChart(labels, d1_points, d2_points, d1_color, d2_color, data[1][0], data[2][0])
 
 }
+
+
 
 /**
  * Creates the head to head chart
@@ -518,7 +521,7 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
                         afterDataLimits: (scale) => {
                             scale.max = 20;
                             scale.min = 0.5;
-                          },
+                        },
                         grid: {
                             color: '#191630'
                         },
@@ -531,7 +534,7 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
 
                     }
                 },
-                plugins:{
+                plugins: {
                     annotation: {
                         annotations: {
                             line1: {
@@ -575,7 +578,7 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
                     },
                     tooltip: {
                         titleFont: {
-                            family: 'Formula1Bold', 
+                            family: 'Formula1Bold',
                             size: 16
 
                         },
@@ -644,7 +647,7 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
                         afterDataLimits: (scale) => {
                             scale.max = 20;
                             scale.min = 0.5;
-                          },
+                        },
                         grid: {
                             color: '#191630'
                         },
@@ -657,7 +660,7 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
 
                     }
                 },
-                plugins:{
+                plugins: {
                     annotation: {
                         annotations: {
                             line1: {
@@ -667,14 +670,14 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
                                 borderColor: 'red',
                                 borderWidth: 1,
                                 label: {
-                                    display:true,
-                                    color:"white",
-                                    backgroundColor:"red",
+                                    display: true,
+                                    color: "white",
+                                    backgroundColor: "red",
                                     content: 'Q2',
                                     position: 'start',
                                     font: {
                                         family: "Formula1Bold",
-                                        size: 12                                    
+                                        size: 12
                                     }
                                 }
                             },
@@ -685,9 +688,9 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
                                 borderColor: 'red',
                                 borderWidth: 1,
                                 label: {
-                                    color:"white",
-                                    display:true,
-                                    backgroundColor:"red",
+                                    color: "white",
+                                    display: true,
+                                    backgroundColor: "red",
                                     content: 'Q3',
                                     position: 'start',
                                     font: {
@@ -709,7 +712,7 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
                     },
                     tooltip: {
                         titleFont: {
-                            family: 'Formula1Bold', 
+                            family: 'Formula1Bold',
                             size: 16
 
                         },
@@ -788,7 +791,7 @@ function createPointsChart(labelsArray, d1Points, d2Points, d1_color, d2_color, 
 
                     }
                 },
-                plugins:{
+                plugins: {
                     legend: {
                         labels: {
                             color: "#dedde6",
@@ -799,7 +802,7 @@ function createPointsChart(labelsArray, d1Points, d2Points, d1_color, d2_color, 
                     },
                     tooltip: {
                         titleFont: {
-                            family: 'Formula1Bold', 
+                            family: 'Formula1Bold',
                             size: 16
 
                         },
