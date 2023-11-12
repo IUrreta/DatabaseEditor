@@ -767,7 +767,7 @@ function createPointsChart(labelsArray, d1Points, d2Points, d1_color, d2_color, 
                             return "#272727"
                         }
                         else{
-                            return '#dedde6'
+                            return '#eeeef1'
                         }
                     },
                     backgroundColor: d1_color,
@@ -799,7 +799,7 @@ function createPointsChart(labelsArray, d1Points, d2Points, d1_color, d2_color, 
                             return "#272727"
                         }
                         else{
-                            return '#dedde6'
+                            return '#eeeef1'
                         }
                     },          
                     backgroundColor: d2_color,
