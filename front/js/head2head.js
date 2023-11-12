@@ -14,6 +14,10 @@ let pointsGraph;
 let qualiGraph;
 let compData;
 
+const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD",  "#B6BABD", "#c3dc00"]
+
+Chart.register(ChartDataLabels);
+
 
 /**
  * Puts the bars of the head to head with the correct width for the drivers selected
@@ -458,7 +462,14 @@ function load_h2h_graphs(data) {
 
 }
 
-
+function findLastNonNaNIndex(arr) {
+    for (let i = arr.length - 1; i >= 0; i--) {
+        if (!isNaN(arr[i])) {
+            return i;
+        }
+    }
+    return -1; // Devuelve -1 si todos los valores son NaN
+}
 
 /**
  * Creates the head to head chart
@@ -535,6 +546,9 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
                     }
                 },
                 plugins: {
+                    datalabels: {
+                        display: false
+                    },
                     annotation: {
                         annotations: {
                             line1: {
@@ -569,7 +583,8 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
                     },
                     legend: {
                         labels: {
-                            usePointStyle: true,
+                            boxHeight: 2,
+                            boxWidth: 25,
                             color: "#dedde6",
                             font: {
                                 family: "Formula1"
@@ -661,6 +676,9 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
                     }
                 },
                 plugins: {
+                    datalabels: {
+                        display: false
+                    },
                     annotation: {
                         annotations: {
                             line1: {
@@ -703,7 +721,8 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
                     },
                     legend: {
                         labels: {
-                            usePointStyle: true,
+                            boxHeight: 2,
+                            boxWidth: 25,
                             color: "#dedde6",
                             font: {
                                 family: "Formula1"
@@ -742,6 +761,29 @@ function createPointsChart(labelsArray, d1Points, d2Points, d1_color, d2_color, 
                 borderWidth: 2,
                 pointRadius: 0,
                 fill: false,
+                datalabels: {
+                    color: function(){
+                        if(lightColors.indexOf(d1_color) !== -1){
+                            return "#272727"
+                        }
+                        else{
+                            return '#dedde6'
+                        }
+                    },
+                    backgroundColor: d1_color,
+                    display: function(context) {
+                        if (context.dataIndex === findLastNonNaNIndex(context.dataset.data)) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    borderRadius: 5,
+                    font: {
+                        family: "Formula1Bold"
+                    }
+
+                },
             },
             {
                 label: d2_name,
@@ -751,6 +793,29 @@ function createPointsChart(labelsArray, d1Points, d2Points, d1_color, d2_color, 
                 borderWidth: 2,
                 pointRadius: 0,
                 fill: false,
+                datalabels: {
+                    color: function(){
+                        if(lightColors.indexOf(d2_color) !== -1){
+                            return "#272727"
+                        }
+                        else{
+                            return '#dedde6'
+                        }
+                    },          
+                    backgroundColor: d2_color,
+                    display: function(context) {
+                        if (context.dataIndex === findLastNonNaNIndex(context.dataset.data)) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    borderRadius: 5,
+                    font: {
+                        family: "Formula1Bold"
+                    }
+
+                },
 
             },
         ]
@@ -794,6 +859,8 @@ function createPointsChart(labelsArray, d1Points, d2Points, d1_color, d2_color, 
                 plugins: {
                     legend: {
                         labels: {
+                            boxHeight: 2,
+                            boxWidth: 25,
                             color: "#dedde6",
                             font: {
                                 family: "Formula1"
