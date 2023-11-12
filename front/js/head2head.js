@@ -137,7 +137,12 @@ function manage_h2h_bars(data) {
 
     })
 }
-
+/**
+ * Fills the bars for the elem with driver1 and 2 data
+ * @param {div} elem general bar for the comparision
+ * @param {Number} d1_width driver 1's width for his bar
+ * @param {Number} d2_width driver 2's width for his bar
+ */
 function fill_bars(elem, d1_width, d2_width) {
     elem.querySelector(".driver1-bar").className = "driver1-bar"
     elem.querySelector(".driver2-bar").className = "driver2-bar"
@@ -157,6 +162,9 @@ function fill_bars(elem, d1_width, d2_width) {
     elem.querySelector(".driver2-bar").style.width = d2_width + "%"
 }
 
+/**
+ * Toggles the sprint wins comparision
+ */
 function toggle_sprints() {
     let elem = document.querySelector("#bestrh2h")
     if (sprints) {
@@ -197,6 +205,9 @@ function toggle_sprints() {
     fill_bars(elem, d1_width, d2_width)
 }
 
+/**
+ * Adds listeners for the arrows to change between sprints and races
+ */
 function sprintsListeners() {
     document.querySelector("#bestrh2h").querySelectorAll("i").forEach(function (elem) {
         elem.removeEventListener('evento', change_sprintView);
@@ -204,11 +215,17 @@ function sprintsListeners() {
     })
 }
 
+/**
+ * Changes the sprint view
+ */
 function change_sprintView() {
     sprints = !sprints
     toggle_sprints()
 }
 
+/**
+ * Event listener for the annotatiosn switch
+ */
 document.getElementById("annotationsToggle").addEventListener("click", function(){
     annotationsToggle = !annotationsToggle
     if (typeof driverGraph !== 'undefined' && driverGraph !== null) {
@@ -259,6 +276,9 @@ function load_drivers_h2h(drivers) {
     })
 }
 
+/**
+ * Event listeners for the 3 types of graphs
+ */
 document.querySelector("#pointsProgression").addEventListener("click", function (elem) {
     document.querySelector("#graphTypeButton").innerText = "Points progression"
     document.querySelector("#qualiGraph").classList.add("d-none")
@@ -480,6 +500,11 @@ function load_h2h_graphs(data) {
 
 }
 
+/**
+ * Finds tha last non NaN element in an array
+ * @param {Array} arr array in which the function will look
+ * @returns the indef on which is the last non NaN or -1 if there is none
+ */
 function findLastNonNaNIndex(arr) {
     for (let i = arr.length - 1; i >= 0; i--) {
         if (!isNaN(arr[i])) {
@@ -490,7 +515,7 @@ function findLastNonNaNIndex(arr) {
 }
 
 /**
- * Creates the head to head chart
+ * Creates the head to head race chart
  * @param {Array} labelsArray array with all the labels for the races
  * @param {Array} d1Results array with all the driver 1 results
  * @param {Array} d2Results array with all the driver 2 results
@@ -631,6 +656,16 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
     );
 }
 
+/**
+ * Creates the head to head qualifying chart
+ * @param {Array} labelsArray array with all the labels for the races
+ * @param {Array} d1Quali array with all the driver 1 quali results
+ * @param {Array} d2Quali array with all the driver 2 quali results
+ * @param {string} d1_color color for the driver 1 line
+ * @param {string} d2_color color for the driver 2 line
+ * @param {string} d1_name name of the first driver
+ * @param {string} d2_name name of the second driver
+ */
 function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_name, d2_name) {
     const dataD = {
         labels: labelsArray,
@@ -769,6 +804,16 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
     );
 }
 
+/**
+ * Creates the head to head qualifying chart
+ * @param {Array} labelsArray array with all the labels for the races
+ * @param {Array} d1Points array with all the driver 1 points
+ * @param {Array} d2Points array with all the driver 2 poìnts
+ * @param {string} d1_color color for the driver 1 line
+ * @param {string} d2_color color for the driver 2 line
+ * @param {string} d1_name name of the first driver
+ * @param {string} d2_name name of the second driver
+ */
 function createPointsChart(labelsArray, d1Points, d2Points, d1_color, d2_color, d1_name, d2_name) {
     const dataD = {
         labels: labelsArray,
