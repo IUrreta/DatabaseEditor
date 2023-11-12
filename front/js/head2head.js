@@ -532,6 +532,38 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
                     }
                 },
                 plugins:{
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 1,
+                                yMax: 1,
+                                borderColor: '#FDE06B',
+                                borderWidth: 1,
+                            },
+                            line2: {
+                                type: 'line',
+                                yMin: 2,
+                                yMax: 2,
+                                borderColor: '#AEB2B8',
+                                borderWidth: 1,
+                            },
+                            line3: {
+                                type: 'line',
+                                yMin: 3,
+                                yMax: 3,
+                                borderColor: '#d7985a',
+                                borderWidth: 1,
+                            },
+                            line4: {
+                                type: 'line',
+                                yMin: 10,
+                                yMax: 10,
+                                borderColor: '#dedde6',
+                                borderWidth: 1,
+                            }
+                        }
+                    },
                     legend: {
                         labels: {
                             usePointStyle: true,
@@ -626,6 +658,46 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
                     }
                 },
                 plugins:{
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 15,
+                                yMax: 15,
+                                borderColor: 'red',
+                                borderWidth: 1,
+                                label: {
+                                    display:true,
+                                    color:"white",
+                                    backgroundColor:"red",
+                                    content: 'Q2',
+                                    position: 'start',
+                                    font: {
+                                        family: "Formula1Bold",
+                                        size: 12                                    
+                                    }
+                                }
+                            },
+                            line2: {
+                                type: 'line',
+                                yMin: 10,
+                                yMax: 10,
+                                borderColor: 'red',
+                                borderWidth: 1,
+                                label: {
+                                    color:"white",
+                                    display:true,
+                                    backgroundColor:"red",
+                                    content: 'Q3',
+                                    position: 'start',
+                                    font: {
+                                        family: "Formula1Bold",
+                                        size: 12
+                                    }
+                                }
+                            }
+                        }
+                    },
                     legend: {
                         labels: {
                             usePointStyle: true,
