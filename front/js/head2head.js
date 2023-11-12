@@ -13,6 +13,7 @@ let driverGraph;
 let pointsGraph;
 let qualiGraph;
 let compData;
+let annotationsToggle = true;
 
 const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD",  "#B6BABD", "#c3dc00"]
 
@@ -207,6 +208,23 @@ function change_sprintView() {
     sprints = !sprints
     toggle_sprints()
 }
+
+document.getElementById("annotationsToggle").addEventListener("click", function(){
+    annotationsToggle = !annotationsToggle
+    if (typeof driverGraph !== 'undefined' && driverGraph !== null) {
+        driverGraph.options.plugins.annotation.annotations.line1.display = annotationsToggle
+        driverGraph.options.plugins.annotation.annotations.line2.display = annotationsToggle
+        driverGraph.options.plugins.annotation.annotations.line3.display = annotationsToggle
+        driverGraph.options.plugins.annotation.annotations.line4.display = annotationsToggle
+        driverGraph.update();
+    }
+    if (typeof qualiGraph !== 'undefined' && qualiGraph !== null) {
+        qualiGraph.options.plugins.annotation.annotations.line1.display = annotationsToggle
+        qualiGraph.options.plugins.annotation.annotations.line2.display = annotationsToggle
+        qualiGraph.update();
+    }
+
+})
 
 /**
  * Loads all the drivers into the menus of driver selection
@@ -529,10 +547,8 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
                     },
                     y: {
                         reverse: true,
-                        afterDataLimits: (scale) => {
-                            scale.max = 20;
-                            scale.min = 0.5;
-                        },
+                        min: 1,
+                        max: 20,
                         grid: {
                             color: '#191630'
                         },
@@ -553,6 +569,7 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
                         annotations: {
                             line1: {
                                 type: 'line',
+                                display: annotationsToggle,
                                 yMin: 1,
                                 yMax: 1,
                                 borderColor: '#FDE06B',
@@ -560,6 +577,7 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
                             },
                             line2: {
                                 type: 'line',
+                                display: annotationsToggle,
                                 yMin: 2,
                                 yMax: 2,
                                 borderColor: '#AEB2B8',
@@ -567,6 +585,7 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
                             },
                             line3: {
                                 type: 'line',
+                                display: annotationsToggle,
                                 yMin: 3,
                                 yMax: 3,
                                 borderColor: '#d7985a',
@@ -574,6 +593,7 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
                             },
                             line4: {
                                 type: 'line',
+                                display: annotationsToggle,
                                 yMin: 10,
                                 yMax: 10,
                                 borderColor: '#dedde6',
@@ -659,10 +679,8 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
                     },
                     y: {
                         reverse: true,
-                        afterDataLimits: (scale) => {
-                            scale.max = 20;
-                            scale.min = 0.5;
-                        },
+                        min: 1,
+                        max: 20,
                         grid: {
                             color: '#191630'
                         },
@@ -683,6 +701,7 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
                         annotations: {
                             line1: {
                                 type: 'line',
+                                display: annotationsToggle,
                                 yMin: 15,
                                 yMax: 15,
                                 borderColor: 'red',
@@ -701,6 +720,7 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
                             },
                             line2: {
                                 type: 'line',
+                                display: annotationsToggle,
                                 yMin: 10,
                                 yMax: 10,
                                 borderColor: 'red',

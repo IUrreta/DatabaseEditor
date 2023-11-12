@@ -170,7 +170,7 @@
     <div class="script-view d-none" id="head2head_viewer">
       <div class="col">
         <div class="col h2h-title">
-          <div class="ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute;">
+          <div class="ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center;">
             <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButtonH2H"
               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Year
@@ -186,6 +186,10 @@
               <a class="dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
               <a class="dropdown-item" style="cursor: pointer;" id="qualiForm">Qualifying form</a>
             </ul>
+            <div class="form-check form-switch auto-contract ms-3 pt-2">
+              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="annotationsToggle" checked>
+              <label class="form-check-label" for="flexSwitchCheckDefault">Annotations</label>
+            </div>
           </div>
           <div class="buttons-h2h"
             style="position: absolute; right: 20px; margin-top: 0.5rem !important; margin-bottom: 1rem !important; ">
