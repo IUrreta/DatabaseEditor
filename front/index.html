@@ -22,23 +22,38 @@
       <div class="modal-content cusotm-modal">
         <div class="modal-header custom-header">
           <h4 class="modal-title bold-font" id="contractModalTitle"></h4>
+          <h4 class="bold-font" id="driverAge"></h4>
         </div>
         <div class="modal-body number-and-contract">
-          <div class="number-options pb-3">
-            <h5 class="modal-subtitle bold-font">Driver Number</h5>
-            <div class="number-details">
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="numberButton"
-                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Number
-              </button>
-              <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
-              </ul>
-              <div class="form-check ms-5 form-switch auto-contract">
-                <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="driverNumber1">
-                <label class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</label>
+          <div class="number-and-retirement pb-3">
+            <div class="number-options">
+              <h5 class="modal-subtitle bold-font">Driver Number</h5>
+              <div class="number-details">
+                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="numberButton"
+                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Number
+                </button>
+                <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
+                </ul>
+                <div class="form-check ms-5 form-switch auto-contract">
+                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="driverNumber1">
+                  <label class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</label>
+                </div>
               </div>
             </div>
+            <div class="retirement-options">
+              <h5 class="modal-subtitle bold-font">Retirement age</h5>
+              <div class="input-and-buttons" style="margin-top: 0.75rem;">
+                <input class="rounded-input retirement" id="retirementInput"></input>
+                <div class="input-buttons">
+                  <i class="bi bi-plus-lg"></i>
+                  <i class="bi bi-dash-lg"></i>
+                </div>
+              </div>
+              
+            </div>
           </div>
+
           <div class="contract-options">
             <h5 class="modal-subtitle bold-font">Driver contract</h5>
             <div class="contract-details pt-1">

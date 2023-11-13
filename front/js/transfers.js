@@ -129,6 +129,12 @@ function loadNumbers(nums) {
 
 }
 
+function loadRetirementyear(ages){
+    document.getElementById("driverAge").innerText = "Age: " + ages[1]
+    console.log(ages)
+    document.getElementById("retirementInput").value = ages[0]
+}
+
 /**
  * Adds the edit icon
  * @param {div} div div from the driver that is going to add the icon into
@@ -152,7 +158,7 @@ function iconListener(icon) {
     icon.addEventListener("click", function () {
         modalType = "edit"
         document.querySelector(".number-options").classList.remove("d-none")
-        document.getElementById("contractModalTitle").innerHTML = icon.parentNode.parentNode.innerText + "'s details";
+        document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText + "'s details";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
     })
@@ -414,7 +420,8 @@ interact('.free-driver').draggable({
                         target.dataset.teamid = inverted_dict[teamDestiniy]
                         updateColor(target)
                         posInTeam = element.id.charAt(2)
-                        document.getElementById("contractModalTitle").innerHTML = target.innerText + "'s contract with " + name_dict[teamDestiniy];
+                        document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
+                        document.getElementById("driverAge").innerText = ""
                         if (autoContractToggle.checked) {
                             if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
                                 signDriver("fireandhire")

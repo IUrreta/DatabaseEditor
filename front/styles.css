@@ -251,6 +251,24 @@ a.bi-heart:hover {
   display: flex;
 }
 
+.number-and-retirement{
+  display: flex;
+  flex-direction: row;
+}
+
+.number-options{
+  width: 66%;
+}
+
+.retirement-options i{
+  color: #dedde6;
+  border-radius: 7.5px !important;
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 20px !important;
+  margin-left: 5px !important;
+}
+
 @keyframes colorChangeNeg {
 
   0%,
@@ -1437,6 +1455,8 @@ a.bi-heart:hover {
   color: white !important;
   border-bottom: 1px solid #797599 !important;
   background-color: #393744 !important;
+  display: flex;
+  justify-content: space-around;
 
 }
 
@@ -1461,6 +1481,10 @@ a.bi-heart:hover {
   transition: border-color 0.4s;
   background-color: rgb(99, 99, 110);
   color: #ebeaf0;
+}
+
+.rounded-input.retirement{
+  max-width: 75px;
 }
 
 .custom-disabled {

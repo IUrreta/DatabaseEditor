@@ -139,6 +139,9 @@ document.addEventListener('DOMContentLoaded', function () {
         "Numbers fetched": (message) => {
             loadNumbers(message.slice(1));
         },
+        "Retirement fetched": (message) => {
+            loadRetirementyear(message.slice(1));
+        },
         "H2H fetched": (message) => {
             sprintsListeners();
             manage_h2h_bars(message.slice(1)[0]);
