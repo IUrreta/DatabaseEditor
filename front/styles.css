@@ -383,20 +383,25 @@ a.bi-heart:hover {
 }
 
 .bar-space{
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding: 0 5px;
 }
 
 .driver1-number{
   font-size: 18px;
   margin-right: 10px;
   transition: color 0.4s;
+  width: 12.5%;
+  text-align: right;
 }
 
 .driver2-number{
   font-size: 18px;
   margin-left: 10px;
+  width: 12.5%;
   transition: color 0.4s;
 }
 
@@ -1097,8 +1102,6 @@ a.bi-heart:hover {
 }
 
 .one-statH2H {
-  padding-left: 10px;
-  padding-right: 10px;
   padding-top: 5px;
   display: flex;
   flex-direction: column;
@@ -1270,7 +1273,7 @@ a.bi-heart:hover {
 }
 
 .custom-H2H {
-  width: 280px;
+  width: 75%;
   display: flex;
   flex-direction: row;
   background-color: #1f1b3b;

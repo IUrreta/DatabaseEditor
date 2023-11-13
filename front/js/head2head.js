@@ -243,6 +243,36 @@ document.getElementById("annotationsToggle").addEventListener("click", function(
 
 })
 
+function changeYearH2H(drivers){
+    let ids = []
+    drivers.forEach(function(elem){
+        ids.push(elem[1])
+    })
+    let d1ID = Number(driver1Sel.dataset.driverid)
+    let d2ID = Number(driver2Sel.dataset.driverid)
+    let newA1;
+    let newA2;
+    if(ids.indexOf(d1ID) !== -1 && ids.indexOf(d2ID) !== -1){
+        document.querySelector("#d1Menu").querySelectorAll("a").forEach(function(elem){
+            if (Number(elem.dataset.driverid) === d1ID){
+                newA1 = elem;
+            }
+        })
+        document.querySelector("#d2Menu").querySelectorAll("a").forEach(function(elem){
+            if (Number(elem.dataset.driverid) === d2ID){
+                newA2 = elem;
+            }
+        })
+        nameTitleD1(newA1)
+        nameTitleD2(newA2)
+        H2HReady()
+    }
+    else{
+        resetH2H()
+    }
+
+}
+
 /**
  * Loads all the drivers into the menus of driver selection
  * @param {Object} drivers object with all the driver info
@@ -274,6 +304,10 @@ function load_drivers_h2h(drivers) {
         driver2Menu.appendChild(a);
         listeners_h2h(a, a2)
     })
+    if(driver1Sel && driver2Sel){
+        changeYearH2H(drivers)
+    }
+    
 }
 
 /**
@@ -311,55 +345,64 @@ function listeners_h2h(aDriver2, aDriver1) {
             driver1_selected = true
         }
         driver1Sel = aDriver1
-        document.querySelector(".driver1-first").textContent = driver1Sel.firstChild.children[0].innerText
-        document.querySelector(".driver1-second").textContent = driver1Sel.firstChild.children[1].innerText
-        document.querySelector(".driver1-second").dataset.teamid = driver1Sel.firstChild.children[1].dataset.teamid
-        d1_team = driver1Sel.firstChild.children[1].dataset.teamid
-        document.querySelector(".driver1-second").className = "driver1-second bold-font"
-        let newName = aDriver1.firstChild.cloneNode(true)
-        document.querySelector("#driver1Button").innerHTML = ""
-        document.querySelector("#driver1Button").appendChild(newName)
-        manageColor(document.querySelector(".driver1-second"), document.querySelector(".driver1-second"))
+        nameTitleD1(aDriver1)
         if (driver1_selected && driver2_selected) {
-            document.querySelector("#mainH2h").classList.remove("d-none")
-            let data = {
-                command: "H2HConfigured",
-                d1: driver1Sel.dataset.driverid,
-                d2: driver2Sel.dataset.driverid,
-                year: document.querySelector("#yearButtonH2H").textContent
-            }
-
-            socket.send(JSON.stringify(data))
+            H2HReady()
         }
     })
     aDriver2.addEventListener("click", function () {
         if (!driver2_selected) {
             driver2_selected = true
         }
-        driver2Sel = aDriver2
-        document.querySelector(".driver2-first").textContent = driver2Sel.firstChild.children[0].innerText
-        document.querySelector(".driver2-second").textContent = driver2Sel.firstChild.children[1].innerText
-        document.querySelector(".driver2-second").dataset.teamid = driver2Sel.firstChild.children[1].dataset.teamid
-        document.querySelector(".driver2-second").className = "driver2-second bold-font"
-        let newName2 = aDriver2.firstChild.cloneNode(true)
-        document.querySelector("#driver2Button").innerHTML = ""
-        document.querySelector("#driver2Button").appendChild(newName2)
-        d2_team = driver2Sel.firstChild.children[1].dataset.teamid
-        manageColor(document.querySelector(".driver2-second"), document.querySelector(".driver2-second"))
+        nameTitleD2(aDriver2)
         if (driver1_selected && driver2_selected) {
-            document.querySelector("#mainH2h").classList.remove("d-none")
-            let data = {
-                command: "H2HConfigured",
-                d1: driver1Sel.dataset.driverid,
-                d2: driver2Sel.dataset.driverid,
-                year: document.querySelector("#yearButtonH2H").textContent
-            }
-
-            socket.send(JSON.stringify(data))
+            H2HReady()
         }
     })
 }
 
+function nameTitleD1(aDriver1){
+    driver1Sel = aDriver1
+    document.querySelector(".driver1-first").textContent = driver1Sel.firstChild.children[0].innerText
+    document.querySelector(".driver1-second").textContent = driver1Sel.firstChild.children[1].innerText
+    document.querySelector(".driver1-second").dataset.teamid = driver1Sel.firstChild.children[1].dataset.teamid
+    d1_team = driver1Sel.firstChild.children[1].dataset.teamid
+    document.querySelector(".driver1-second").className = "driver1-second bold-font"
+    let newName = driver1Sel.firstChild.cloneNode(true)
+    document.querySelector("#driver1Button").innerHTML = ""
+    document.querySelector("#driver1Button").appendChild(newName)
+    manageColor(document.querySelector(".driver1-second"), document.querySelector(".driver1-second"))
+}
+
+function nameTitleD2(aDriver2){
+    driver2Sel = aDriver2
+    document.querySelector(".driver2-first").textContent = driver2Sel.firstChild.children[0].innerText
+    document.querySelector(".driver2-second").textContent = driver2Sel.firstChild.children[1].innerText
+    document.querySelector(".driver2-second").dataset.teamid = driver2Sel.firstChild.children[1].dataset.teamid
+    document.querySelector(".driver2-second").className = "driver2-second bold-font"
+    let newName2 = driver2Sel.firstChild.cloneNode(true)
+    document.querySelector("#driver2Button").innerHTML = ""
+    document.querySelector("#driver2Button").appendChild(newName2)
+    d2_team = driver2Sel.firstChild.children[1].dataset.teamid
+    manageColor(document.querySelector(".driver2-second"), document.querySelector(".driver2-second"))
+}
+
+function H2HReady(){
+    document.querySelector("#mainH2h").classList.remove("d-none")
+    let data = {
+        command: "H2HConfigured",
+        d1: driver1Sel.dataset.driverid,
+        d2: driver2Sel.dataset.driverid,
+        year: document.querySelector("#yearButtonH2H").textContent
+    }
+
+    socket.send(JSON.stringify(data))
+}
+
+
+/**
+ * Resets the H2H comparision
+ */
 function resetH2H() {
     document.querySelector("#mainH2h").classList.add("d-none")
     document.querySelector("#driver1Button").innerHTML = ""
@@ -377,7 +420,6 @@ function resetH2H() {
  * @param {object} data object with all the data of races in wich both drivers participated and their results 
  */
 function load_h2h_graphs(data) {
-    console.log(data)
     var labels = [];
     let d1_res = [];
     let d2_res = [];

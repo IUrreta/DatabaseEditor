@@ -354,13 +354,12 @@ function generateYearsMenu(actualYear) {
         a2.style.cursor = "pointer"
         yearH2H.appendChild(a2);
         a2.addEventListener("click", function () {
-            resetH2H()
+            //resetH2H()
             document.getElementById("yearButtonH2H").textContent = a2.textContent
             let dataYear = {
                 command: "yearSelectedH2H",
                 year: a2.textContent
             }
-
             socket.send(JSON.stringify(dataYear))
         })
     }
@@ -592,7 +591,6 @@ function addDriver(driverInfo) {
         raceValue = 1;
         sprintvalue = 6;
     }
-    console.log(driverInfo)
     driverInfo.slice(3).forEach((pair, index) => {
         if (pair.length === 6) {
             rowData["race" + pair[0]] = "" + pair[raceValue];
