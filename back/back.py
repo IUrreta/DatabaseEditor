@@ -142,7 +142,7 @@ async def handle_command(message):
         await send_message_to_client(data_json_year)
 
     elif type=="editContract":
-        argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"] + " " + str(message["driverNumber"] + " " + str(message["wantsN1"])))
+        argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"]) + " " + str(message["driverNumber"]) + " " + str(message["wantsN1"]) + " " + str(message["retirementAge"])
         run_trasnsfer(argument)
         process_repack("../result", path)
         info = []

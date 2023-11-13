@@ -1487,6 +1487,10 @@ a.bi-heart:hover {
   max-width: 75px;
 }
 
+.rounded-input.retirement::selection{
+  background-color: transparent;
+}
+
 .custom-disabled {
   background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
 }

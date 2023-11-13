@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched"]
+    const noNotifications = ["Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * @param {Object} info values for the contract modal that just opened
      */
     function manage_modal(info) {
-        document.querySelectorAll(".rounded-input").forEach(function (elem, index) {
+        document.querySelector(".contract-options").querySelectorAll(".rounded-input").forEach(function (elem, index) {
             elem.value = info[0][index]
         })
         document.querySelector("#numberButton").textContent = info[1][0]

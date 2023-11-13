@@ -130,8 +130,7 @@ function loadNumbers(nums) {
 }
 
 function loadRetirementyear(ages){
-    document.getElementById("driverAge").innerText = "Age: " + ages[1]
-    console.log(ages)
+    document.getElementById("driverAge").innerText = "Age " + ages[1]
     document.getElementById("retirementInput").value = ages[0]
 }
 
@@ -157,7 +156,7 @@ function addIcon(div) {
 function iconListener(icon) {
     icon.addEventListener("click", function () {
         modalType = "edit"
-        document.querySelector(".number-options").classList.remove("d-none")
+        document.querySelector(".number-and-retirement").classList.remove("d-none")
         document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText + "'s details";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
@@ -243,10 +242,11 @@ function clearModal() {
  */
 function editContract() {
     let values = []
-    document.querySelectorAll(".rounded-input").forEach(function (elem) {
+    document.querySelector(".contract-options").querySelectorAll(".rounded-input").forEach(function (elem) {
         values.push(elem.value)
     })
     let number = document.querySelector("#numberButton").textContent
+    let age = document.querySelector("#retirementInput").value
     let wants1;
     if(document.querySelector("#driverNumber1").checked){
         wants1 = 1;
@@ -265,7 +265,8 @@ function editContract() {
         raceBonusPos: values[4],
         driverNumber: number,
         wantsN1: wants1,
-        driver: driverEditingName
+        driver: driverEditingName,
+        retirementAge: age
     }
     socket.send(JSON.stringify(data))
 }
@@ -367,6 +368,17 @@ document.getElementById("cancelButton").addEventListener('click', function () {
 })
 
 /**
+ * Listeners for the buttons on the retirement age selector
+ */
+document.querySelector(".retirement-options").querySelector(".bi-plus-lg").addEventListener("click", function(){
+    document.querySelector(".retirement-options").querySelector("input").value = Number(document.querySelector(".retirement-options").querySelector("input").value) + 1
+})
+
+document.querySelector(".retirement-options").querySelector(".bi-dash-lg").addEventListener("click", function(){
+    document.querySelector(".retirement-options").querySelector("input").value -= 1
+})
+
+/**
  * Manages the interaction to drag drivers
  */
 interact('.free-driver').draggable({
@@ -430,7 +442,7 @@ interact('.free-driver').draggable({
                         }
                         else {
                             modalType = "hire"
-                            document.querySelector(".number-options").classList.add("d-none")
+                            document.querySelector(".number-and-retirement").classList.add("d-none")
                             myModal.show()
 
                         }
