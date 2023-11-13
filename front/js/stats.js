@@ -275,7 +275,7 @@ function calculateOverall(stats, type) {
 }
 
 function listeners_plusLess(){
-    document.querySelectorAll(".bi-plus-lg").forEach(function(elem){
+    document.querySelector("#edit_stats").querySelectorAll(".bi-plus-lg").forEach(function(elem){
         elem.addEventListener("mousedown", function(){
             let input = elem.parentNode.parentNode.querySelector("input")
             input.value = parseInt(input.value) + 1;
@@ -283,7 +283,7 @@ function listeners_plusLess(){
         })
 
     })
-    document.querySelectorAll(".bi-dash-lg").forEach(function(elem){
+    document.querySelector("#edit_stats").querySelectorAll(".bi-dash-lg").forEach(function(elem){
         elem.addEventListener("mousedown", function(){
             let input = elem.parentNode.parentNode.querySelector("input")
             input.value = parseInt(input.value) - 1;

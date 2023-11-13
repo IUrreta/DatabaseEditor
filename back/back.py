@@ -6,6 +6,7 @@ import re
 import os
 from datetime import datetime
 import shutil
+import math
 from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script as run_trasnsfer
 from scripts.edit_stats_23 import run_script as run_editStats
@@ -135,9 +136,13 @@ async def handle_command(message):
         nums.insert(0, "Numbers fetched")
         data_json_numbers = json.dumps(nums)
         await send_message_to_client(data_json_numbers)
+        yearOfRetirement = fetch_driverRetirement(message["driverID"])
+        yearOfRetirement.insert(0, "Retirement fetched")
+        data_json_year = json.dumps(yearOfRetirement)
+        await send_message_to_client(data_json_year)
 
     elif type=="editContract":
-        argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"] + " " + str(message["driverNumber"] + " " + str(message["wantsN1"])))
+        argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"]) + " " + str(message["driverNumber"]) + " " + str(message["wantsN1"]) + " " + str(message["retirementAge"])
         run_trasnsfer(argument)
         process_repack("../result", path)
         info = []
@@ -242,6 +247,12 @@ def fetch_driverNumebrs():
         if num[0] != 1 and num[0] != 0:
             numList.append(num[0])
     return numList
+
+def fetch_driverRetirement(driverID):
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    retirement_age = cursor.execute("SELECT RetirementAge FROM Staff_GameData WHERE StaffID = " + str(driverID)).fetchone()
+    dob = cursor.execute("SELECT DOB FROM Staff_BasicData WHERE StaffID = " + str(driverID)).fetchone()
+    return [retirement_age[0], math.floor((day_season[0] - dob[0]) /365.25)]
 
 
 def fetchDriverNumberDetails(driverID):

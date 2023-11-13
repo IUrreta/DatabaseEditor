@@ -286,13 +286,14 @@ def run_script(option=""):
 
     elif(params[0] == "editcontract"):
         params_to_update = params[1:7]
-
+        
         query = "UPDATE Staff_Contracts SET Salary=?, EndSeason=?, StartingBonus=?, RaceBonus=?, RaceBonusTargetPos=? WHERE ContractType = 0 AND StaffID =?"
         cursor.execute(query, params_to_update)
         old_num = cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = " + str(params[6])).fetchone()
         cursor.execute("UPDATE Staff_DriverNumbers SET CurrentHolder = NULL WHERE Number = " + str(old_num[0]))
         cursor.execute("UPDATE Staff_DriverNumbers SET CurrentHolder = " + str(params[6]) + " WHERE Number = " + str(params[7]))
         cursor.execute("UPDATE Staff_DriverData SET WantsChampionDriverNumber = " + str(params[8]) + " WHERE StaffID = " + str(params[6]))
+        cursor.execute("UPDATE Staff_GameData SET RetirementAge = " + str(params[9]) + " WHERE StaffID = " + str(params[6]))
 
     conn.commit()
     conn.close()
