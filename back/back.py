@@ -185,7 +185,7 @@ async def handle_command(message):
         await send_message_to_client(data_json_h2h)
         d1Res = fetch_oneDriver_seasonResults((message["d1"],), (message["year"],))
         d2Res = fetch_oneDriver_seasonResults((message["d2"],), (message["year"],))
-        h2hDrivers = [d1Res, d2Res]
+        h2hDrivers = [d1Res, d2Res, fetch_events_done_from(message["year"])]
         h2hDrivers.insert(0, fetch_events_from(message["year"]))
         h2hDrivers.insert(0, "H2HDriver fetched")
         data_json_h2hdrivers = json.dumps(h2hDrivers)
@@ -309,6 +309,15 @@ def fetch_oneDriver_seasonResults(driver, year):
         return format_seasonResults(results, driverName, teamID, driver, year, sprintResults)
     
 
+def fetch_events_done_from(year):
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    season_ids = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(year) + " AND Day < " + str(day_season[0])).fetchall()
+    events_ids =[]
+    for i in range(len(season_ids)):
+        events_ids.append((season_ids[i][0]))
+
+    return events_ids
+
 def fetch_events_from(year):
     season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(year)).fetchall()
     tuple_numbers = {num for tpl in season_events for num in tpl}
@@ -351,19 +360,22 @@ def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
             results_list = list(formatred_results[i])
             results_list.append(0)
             formatred_results[i] = tuple(results_list)
-        if driver_with_pole[0] == driverID[0]:
-            results_list = list(formatred_results[i])
-            results_list.append(1)
-            formatred_results[i] = tuple(results_list)
-        else:
-            results_list = list(formatred_results[i])
-            results_list.append(0)
-            formatred_results[i] = tuple(results_list) 
+        QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(races_participated[i][0]) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driverID[0])).fetchone()
+        QRes = cursor.execute("SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(races_participated[i][0]) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driverID[0]) + " AND QualifyingStage = " + str(QStage[0])).fetchone()
+        results_list = list(formatred_results[i])
+        results_list.append(QRes[0])
+        formatred_results[i] = tuple(results_list)
+
 
     for tupla1 in sprints:
         for i, tupla2 in enumerate(formatred_results):
             if tupla1[0] == tupla2[0]:
                 formatred_results[i] = tupla2 + (tupla1[2], tupla1[1])
+
+    for i in range(len(formatred_results)):
+        team_in_race = cursor.execute("SELECT TeamID FROM Races_Results WHERE RaceID = " + str(formatred_results[i][0]) + " AND DriverID = " + str(driverID[0])).fetchone()
+        formatred_results[i] += (team_in_race)
+
     
     position = cursor.execute("SELECT Position FROM Races_Driverstandings WHERE RaceFormula = 1 AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driverID[0])).fetchone()
 

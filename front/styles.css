@@ -304,17 +304,29 @@ a.bi-heart:hover {
   justify-content: center;
 }
 
+.cet-menubar{
+  opacity: 0 !important;
+}
+
+.cet-title{
+  font-family: 'Formula1' !important;
+}
+
 .versionPanel {
   position: fixed;
-  top: 10px;
+  top: 40px;
   left: 10px;
   color: white;
 
 }
 
+.cet-container{
+  overflow: hidden !important;
+}
+
 .patchNotesPanel {
   position: fixed;
-  top: 40px;
+  top: 70px;
   left: 10px;
 }
 
@@ -345,11 +357,16 @@ a.bi-heart:hover {
 }
 
 .notification-line{
-  width: 100%;
+  width: 0%;
   height: 2px;
   background-color: white;
   position: relative;
   bottom: 7px;
+  transition: width 3s linear;
+}
+
+.notification-line.start{
+  width: 100%;
 }
 
 .line-error{
@@ -366,20 +383,25 @@ a.bi-heart:hover {
 }
 
 .bar-space{
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding: 0 5px;
 }
 
 .driver1-number{
   font-size: 18px;
   margin-right: 10px;
   transition: color 0.4s;
+  width: 12.5%;
+  text-align: right;
 }
 
 .driver2-number{
   font-size: 18px;
   margin-left: 10px;
+  width: 12.5%;
   transition: color 0.4s;
 }
 
@@ -569,6 +591,23 @@ a.bi-heart:hover {
   margin-bottom: 2rem;
 }
 
+.pill-line{
+  height: 1.3px;
+  width: 0%;
+  background-color: #dedde6;
+  transition: width 0.4s, color 0.4s;
+}
+
+.pill-line.activeType{
+  width: 100%;
+  background-color: white;
+}
+
+.activeSelected .pill-line{
+  width: 100%;
+  background-color: white;
+}
+
 .categoryPills,
 .scriptPills {
   padding-top: 6px !important;
@@ -699,15 +738,40 @@ a.bi-heart:hover {
 }
 
 [tabulator-field="driver"],
-[tabulator-field="points"] {
+[tabulator-field="points"],
+[tabulator-field="team"]{
   background-color: #464166 !important;
 }
 
+[tabulator-field="team"]{
+  padding-left: 0 !important;
+}
+
+#seasonresults-teams-table [tabulator-field^="race"] {
+  padding: 0px !important;
+}
+
+#seasonresults-teams-table [tabulator-field="team"] {
+  font-family: Formula1Bold;
+}
 
 
 #seasonresults-table {
   background-color: transparent !important;
   border: none !important;
+}
+
+.year-drivers-teams{
+  padding-top: 0.6rem;
+  padding-bottom: 0.7rem;
+  position: absolute;
+  display: flex;
+  gap: 10px;
+}
+
+.drivers-teams-pills{
+  display: flex;
+  align-items: flex-end;
 }
 
 .main-viewer-section .tabulator-tableholder::-webkit-scrollbar {
@@ -717,6 +781,16 @@ a.bi-heart:hover {
 .main-viewer-section .tabulator-tableholder::-webkit-scrollbar-thumb {
   background-color: white;
   border-radius: 3px !important;
+}
+
+.team-table-logo-name{
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border-right: 4px solid transparent;
+  transition: border 0.3s;
+  width: 100%;
+  height: 100%;
 }
 
 .tabulator-col-content {
@@ -759,11 +833,24 @@ a.bi-heart:hover {
   color: #dedde6 !important;
 }
 
+[tabulator-field="team"]{
+  transition: background-color 0.3s, color 0.3s;
+  padding-right: 0px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+.tabulator-row:hover [tabulator-field="team"] {
+  background-color: #625e86 !important;
+  color: white !important;
+}
+
 .tabulator-row:hover [tabulator-field="driver"] {
   color: #110f24;
   background-color: #dedde6 !important;
   border-right: 1.5px solid #dedde6 !important;
 }
+
 
 .tabulator-row:hover [tabulator-field="points"] {
   color: #110f24;
@@ -771,7 +858,7 @@ a.bi-heart:hover {
   border-left: 1.5px solid #dedde6 !important;
 }
 
-[tabulator-field="driver"] span.bold-font {
+[tabulator-field="driver"] span.bold-font{
   transition: color 0.3s;
 }
 
@@ -985,22 +1072,25 @@ a.bi-heart:hover {
 
 #F2pill {
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s;
+  transition: border-color 0.4s, background-color 0.4s, color 0.4s;
 }
 
 #F2pill:hover {
   border: 2px solid #38c8f0;
   background-color: #388cd5;
+  color: white !important;
+
 }
 
 #F3pill {
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s;
+  transition: border-color 0.4s, background-color 0.4s, color 0.4s;
 }
 
 #F3pill:hover {
   border: 2px solid rgb(255, 72, 72);
   background-color: rgb(207, 46, 46);
+  color: white !important;
 }
 
 #F2pill.active {
@@ -1012,8 +1102,6 @@ a.bi-heart:hover {
 }
 
 .one-statH2H {
-  padding-left: 10px;
-  padding-right: 10px;
   padding-top: 5px;
   display: flex;
   flex-direction: column;
@@ -1185,7 +1273,7 @@ a.bi-heart:hover {
 }
 
 .custom-H2H {
-  width: 280px;
+  width: 75%;
   display: flex;
   flex-direction: row;
   background-color: #1f1b3b;
@@ -1338,6 +1426,7 @@ a.bi-heart:hover {
 
 .custom-modal {
   min-width: 600px !important;
+  z-index: 2000 !important;
 }
 
 .contract-details div{
@@ -1720,7 +1809,7 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
-#redbulllogo {
+#redbulllogo, #rblogo {
   width: 55px;
   height: 45px;
   padding-bottom: 8px;
@@ -1728,7 +1817,7 @@ input::-webkit-inner-spin-button {
   padding-top: 7px;
 }
 
-#ferrarilogo {
+#ferrarilogo, #felogo {
   width: 35px;
   height: 40px;
   padding-bottom: 6px;
@@ -1736,7 +1825,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#merclogo {
+#merclogo, #melogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -1744,7 +1833,7 @@ input::-webkit-inner-spin-button {
   padding-left: 10px;
 }
 
-#alpinelogo {
+#alpinelogo, #allogo {
   width: 45px;
   height: 40px;
   padding-bottom: 6px;
@@ -1753,7 +1842,7 @@ input::-webkit-inner-spin-button {
   transition: opacity 0.4s;
 }
 
-#mclarenlogo {
+#mclarenlogo, #mclogo {
   width: 40px;
   height: 40px;
   padding-bottom: 4px;
@@ -1761,7 +1850,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#alfalogo {
+#alfalogo, #aflogo {
   width: 40px;
   height: 40px;
   padding-bottom: 3px;
@@ -1769,7 +1858,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#astonlogo {
+#astonlogo, #aslogo {
   width: 50px;
   height: 45px;
   padding-bottom: 5px;
@@ -1777,7 +1866,7 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
-#haaslogo {
+#haaslogo, #halogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -1785,7 +1874,7 @@ input::-webkit-inner-spin-button {
   padding-left: 6px;
 }
 
-#alphataurilogo {
+#alphataurilogo, #atlogo {
   width: 45px;
   height: 45px;
   padding-bottom: 12px;
@@ -1793,7 +1882,7 @@ input::-webkit-inner-spin-button {
   padding-top: 12px;
 }
 
-#williamslogo {
+#williamslogo, #wilogo {
   width: 45px;
   height: 45px;
   padding-bottom: 11px;
@@ -1806,40 +1895,81 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid #3671C6 !important;
 }
 
+.tabulator-row:hover .rbborder-right {
+  border-right: 3px solid #3671C6 !important;
+}
+
+
 #ferrari, .feborder-down:hover {
   border-bottom: 2px solid #F91536 !important;
+}
+
+.tabulator-row:hover .feborder-right {
+  border-right: 3px solid #F91536 !important;
 }
 
 #merc, .meborder-down:hover {
   border-bottom: 2px solid #6CD3BF !important;
 }
 
+.tabulator-row:hover .meborder-right {
+  border-right: 3px solid #6CD3BF !important;
+}
+
 #mclaren, .mcborder-down:hover {
   border-bottom: 2px solid #F58020 !important;
+}
+
+.tabulator-row:hover .mcborder-right {
+  border-right: 3px solid #F58020 !important;
 }
 
 #alpine,.alborder-down:hover {
   border-bottom: 2px solid #2293D1 !important
 }
 
+.tabulator-row:hover .alborder-right {
+  border-right: 3px solid #2293D1 !important;
+}
+
 #alfaromeo, .afborder-down:hover {
   border-bottom: 2px solid #C92D4B !important
+}
+
+.tabulator-row:hover .afborder-right {
+  border-right: 3px solid #C92D4B !important;
 }
 
 #astonmartin, .asborder-down:hover {
   border-bottom: 2px solid #358C75 !important
 }
 
+.tabulator-row:hover .asborder-right {
+  border-right: 3px solid #358C75 !important;
+}
+
 #alphatauri, .atborder-down:hover {
   border-bottom: 2px solid #5E8FAA !important 
+}
+
+.tabulator-row:hover .atborder-right {
+  border-right: 3px solid #5E8FAA !important;
 }
 
 #williams, .wiborder-down:hover {
   border-bottom: 2px solid #37BEDD !important
 }
 
+.tabulator-row:hover .wiborder-right {
+  border-right: 3px solid #37BEDD !important;
+}
+
 #haas, .haborder-down:hover {
   border-bottom: 2px solid #B6BABD !important
+}
+
+.tabulator-row:hover .haborder-right {
+  border-right: 3px solid #B6BABD !important;
 }
 
 .rbfont {
@@ -1951,7 +2081,7 @@ input::-webkit-inner-spin-button {
 }
 
 .wibar-secondary {
-  background-color: #3792dd;
+  background-color: #f1f1f1;
 }
 
 .habar-primary {
@@ -1959,7 +2089,7 @@ input::-webkit-inner-spin-button {
 }
 
 .habar-secondary {
-  background-color: #da291c;
+  background-color: #f62039;
 }
 
 .rbborder-primary {
@@ -2031,7 +2161,7 @@ input::-webkit-inner-spin-button {
 }
 
 .wiborder-secondary {
-  border: 2px solid #3792dd;
+  border: 2px solid #f1f1f1;
 }
 
 .haborder-primary {
@@ -2039,7 +2169,7 @@ input::-webkit-inner-spin-button {
 }
 
 .haborder-secondary {
-  border: 2px solid #da291c;
+  border: 2px solid #f62039;
 }
 
 
