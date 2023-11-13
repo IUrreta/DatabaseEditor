@@ -243,6 +243,10 @@ document.getElementById("annotationsToggle").addEventListener("click", function(
 
 })
 
+/**
+ * Checks if both the selected drivers are in the new year's drivers to see if it can update the H2H
+ * @param {object} drivers all drivers information
+ */
 function changeYearH2H(drivers){
     let ids = []
     drivers.forEach(function(elem){
@@ -361,6 +365,10 @@ function listeners_h2h(aDriver2, aDriver1) {
     })
 }
 
+/**
+ * Updates the driver 1 name card with the d1 information stored in aDriver1
+ * @param {a} aDriver1 clickable element of the driver 1 dropdown
+ */
 function nameTitleD1(aDriver1){
     driver1Sel = aDriver1
     document.querySelector(".driver1-first").textContent = driver1Sel.firstChild.children[0].innerText
@@ -374,6 +382,10 @@ function nameTitleD1(aDriver1){
     manageColor(document.querySelector(".driver1-second"), document.querySelector(".driver1-second"))
 }
 
+/**
+ * Updates the driver 2 name card with the d1 information stored in aDriver2
+ * @param {a} aDriver2 clickable element of the driver 2 dropdown
+ */
 function nameTitleD2(aDriver2){
     driver2Sel = aDriver2
     document.querySelector(".driver2-first").textContent = driver2Sel.firstChild.children[0].innerText
@@ -387,6 +399,9 @@ function nameTitleD2(aDriver2){
     manageColor(document.querySelector(".driver2-second"), document.querySelector(".driver2-second"))
 }
 
+/**
+ * Sends the message that the H2H is properly configured to fetch results
+ */
 function H2HReady(){
     document.querySelector("#mainH2h").classList.remove("d-none")
     let data = {
