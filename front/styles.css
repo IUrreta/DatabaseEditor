@@ -566,6 +566,11 @@ a.bi-heart:hover {
   margin-left: 10px;
 }
 
+#edit_teams{
+  display: flex;
+  flex-direction: column;
+}
+
 .main-columns-drag-section {
   margin-left: 14px;
   margin-right: 5%;
@@ -650,7 +655,7 @@ a.bi-heart:hover {
 #editPills{
   position: absolute;
   z-index: 1;
-  right: 280px;
+  right: 350px;
   transition: color 0.4s;
 }
 
