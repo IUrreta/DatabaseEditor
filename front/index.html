@@ -42,7 +42,7 @@
               </div>
             </div>
             <div class="retirement-options">
-              <h5 class="modal-subtitle bold-font">Retirement  age</h5>
+              <h5 class="modal-subtitle bold-font">Retirement age</h5>
               <div class="input-and-buttons" style="margin-top: 0.75rem;">
                 <input type="number" class="rounded-input retirement" id="retirementInput"></input>
                 <div class="input-buttons">
@@ -50,7 +50,7 @@
                   <i class="bi bi-dash-lg"></i>
                 </div>
               </div>
-              
+
             </div>
           </div>
 
@@ -188,15 +188,16 @@
     <div class="script-view d-none" id="head2head_viewer">
       <div class="col">
         <div class="col h2h-title">
-          <div class="ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center;">
+          <div class="ps-3"
+            style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center;">
             <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButtonH2H"
               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Year
             </button>
             <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
             </ul>
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2" id="graphTypeButton"
-              data-bs-toggle="dropdown">
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
+              id="graphTypeButton" data-bs-toggle="dropdown">
               Race form
             </button>
             <ul class="dropdown-menu" id="graphTypeDropdown" style="font-family: Formula1;">
@@ -205,7 +206,8 @@
               <a class="dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
             </ul>
             <div class="form-check form-switch auto-contract ms-3 pt-2">
-              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="annotationsToggle" checked>
+              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="annotationsToggle"
+                checked>
               <label class="form-check-label" for="flexSwitchCheckDefault">Annotations</label>
             </div>
           </div>
@@ -992,7 +994,8 @@
     </div>
     <div class="script-view d-none" id="edit_teams">
       <div class="w-100">
-        <div class="ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center;">
+        <div class="ps-3"
+          style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center;">
           <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="teamButton"
             data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Team
@@ -1018,7 +1021,7 @@
         <div class="w-50" id="viewer-first">
           <div class="team-header bold-font"></div>
           <div class="viewer-component">
-            <div class="first-component">
+            <div class="first-component" id="seasonObjective">
               <div class="modal-subtitle bold-font">Season Objective</div>
               <div class="input-and-buttons" style="margin-top: 0.75rem;">
                 <input type="number" class="custom-input-number" id="seasonObjectiveInput" value="4"></input>
@@ -1030,15 +1033,35 @@
             </div>
             <div class="second-component">
               <div class="modal-subtitle bold-font">Long-term Objective</div>
+              <div id="objAndYear">
+                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                  id="objectiveButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Long-term objective
+                </button>
+                <ul class="dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
+                  <a class="dropdown-item" style="cursor: pointer;" data-objid="1">Constructor's champion</a>
+                  <a class="dropdown-item" style="cursor: pointer;" data-objid="2">Poium contender</a>
+                  <a class="dropdown-item" style="cursor: pointer;" data-objid="3">Points contender</a>
+                </ul>
+                <div class="input-and-buttons" style="margin-top: 0.75rem;">
+                  <input type="number" class="custom-input-number" id="longTermInput" value="2024"></input>
+                  <div class="input-buttons">
+                    <i class="bi bi-plus-lg"></i>
+                    <i class="bi bi-dash-lg"></i>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
-            
+
           </div>
-          
+
         </div>
         <div class="w-50" id="viewer-second">
-          
+
         </div>
-        
+
       </div>
     </div>
     <div class="script-view d-none" id="custom_calendar">

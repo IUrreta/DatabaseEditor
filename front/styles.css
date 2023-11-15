@@ -571,6 +571,13 @@ a.bi-heart:hover {
   flex-direction: column;
 }
 
+#objAndYear{
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
+}
+
 .main-columns-drag-section {
   margin-left: 14px;
   margin-right: 5%;
@@ -1865,7 +1872,15 @@ input::-webkit-inner-spin-button {
   background-color: rgb(99, 99, 110) !important;
   text-align: center;
   padding: 8px;
-  height: auto !important;
+  height: 39.2px !important;
+}
+
+#longTermInput{
+  min-width: 90px;
+}
+
+#objectiveButton{
+  margin-top: 17px !important;
 }
 
 .first-component, .second-component{
