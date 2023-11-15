@@ -201,7 +201,7 @@ a.bi-heart:hover {
   border-bottom: 2px solid white  ;
 }
 
-.modal-subtitle {
+.modal-subtitle, .component-subtitle{
   color: #dedde6;
 }
 
@@ -1852,8 +1852,20 @@ input::-webkit-inner-spin-button {
 .team-viewer{
   display: flex;
   flex-direction: row;
-  height: 100%;
+  height: 660px;
   padding: 4px 20px;
+}
+
+.team-viewer .input-buttons{
+  font-size: 18px;
+}
+
+#teamBudgetInput{
+  min-width: 160px;
+}
+
+#costCapInput{
+  min-width: 170px;
 }
 
 .team-header{
@@ -1863,16 +1875,90 @@ input::-webkit-inner-spin-button {
 }
 
 .viewer-component{
-  margin-top: 10px;
+  margin-top: 20px;
   display: flex;
   flex-direction: row;
 }
 
-.viewer-component .custom-input-number{
+.facility-component{
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.facility-component-lg{
+  margin-top: 57px;
+}
+
+.facility, .facility-level-indicator{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.facility{
+  margin-top: 5px;
+  justify-content: space-between;
+}
+
+.facility-level-indicator{
+  gap: 6px;
+  margin: 0 10px;
+  padding-top: 1px;
+}
+
+.facility-name{
+  width: 25%;
+  color: #dedde6;
+}
+
+.custom-button{
+  height: 40px;
+  font-size: 18px;
+  padding: 0 10px;
+}
+
+
+#viewer-first{
+  width: 49%;
+  padding-right: 20px;
+}
+
+#viewer-second{
+  width: 50%;
+  padding-left: 20px;
+}
+
+.separator{
+  margin-top: 60px;
+  width: 1px;
+  background-color: rgb(99, 99, 110);
+  height: 85%;
+}
+
+.level{
+  height: 8px;
+  width: 42px;
+  background-color: rgb(99, 99, 110);
+}
+
+.viewer-component .custom-input-number, .facility-component .custom-input-number, .facility-component-lg .custom-input-number{
   background-color: rgb(99, 99, 110) !important;
   text-align: center;
   padding: 8px;
   height: 39.2px !important;
+}
+
+.condition-input{
+  max-width: 80px;
+}
+
+.facility-condition{
+  margin-left: 45px;
+  gap: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 #longTermInput{
@@ -1880,11 +1966,31 @@ input::-webkit-inner-spin-button {
 }
 
 #objectiveButton{
-  margin-top: 17px !important;
+  margin-top: 5px !important;
+  color: #ebebee;
 }
 
 .first-component, .second-component{
   width: 50%;
+}
+
+.facility i{
+  transition: color 0.4s;
+  font-size: 20px;
+  color: #dedde6;
+}
+
+.facility i:hover{
+  cursor: pointer;
+  color: white !important;
+}
+
+.component-subtitle{
+  font-size: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 #redbulllogo, #rblogo {

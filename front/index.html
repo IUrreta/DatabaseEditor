@@ -313,7 +313,7 @@
             <div class="one-statH2H" id="bestrh2h">
               <div class="name-H2H bold-font">
                 <i class="bi bi-chevron-left d-none"></i>
-                <div class="only-name">BEST RACEe</div>
+                <div class="only-name">BEST RACE</div>
                 <i class="bi bi-chevron-right d-none"></i>
               </div>
               <div class="bar-space">
@@ -1018,12 +1018,12 @@
         </div>
       </div>
       <div class="main-viewer-section team-viewer">
-        <div class="w-50" id="viewer-first">
+        <div id="viewer-first">
           <div class="team-header bold-font"></div>
           <div class="viewer-component">
             <div class="first-component" id="seasonObjective">
-              <div class="modal-subtitle bold-font">Season Objective</div>
-              <div class="input-and-buttons" style="margin-top: 0.75rem;">
+              <div class="component-subtitle bold-font">Season Objective</div>
+              <div class="input-and-buttons">
                 <input type="number" class="custom-input-number" id="seasonObjectiveInput" value="4"></input>
                 <div class="input-buttons">
                   <i class="bi bi-plus-lg"></i>
@@ -1032,7 +1032,7 @@
               </div>
             </div>
             <div class="second-component">
-              <div class="modal-subtitle bold-font">Long-term Objective</div>
+              <div class="component-subtitle bold-font">Long-term Objective</div>
               <div id="objAndYear">
                 <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
                   id="objectiveButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -1040,10 +1040,10 @@
                 </button>
                 <ul class="dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
                   <a class="dropdown-item" style="cursor: pointer;" data-objid="1">Constructor's champion</a>
-                  <a class="dropdown-item" style="cursor: pointer;" data-objid="2">Poium contender</a>
+                  <a class="dropdown-item" style="cursor: pointer;" data-objid="2">Podium contender</a>
                   <a class="dropdown-item" style="cursor: pointer;" data-objid="3">Points contender</a>
                 </ul>
-                <div class="input-and-buttons" style="margin-top: 0.75rem;">
+                <div class="input-and-buttons">
                   <input type="number" class="custom-input-number" id="longTermInput" value="2024"></input>
                   <div class="input-buttons">
                     <i class="bi bi-plus-lg"></i>
@@ -1054,12 +1054,398 @@
               </div>
 
             </div>
+          </div>
+          <div class="viewer-component">
+            <div class="first-component">
+              <div class="component-subtitle bold-font">Budget</div>
+              <div class="input-and-buttons">
+                <input type="number" class="custom-input-number" id="teamBudgetInput" value="40000000"></input>
+                <div class="input-buttons">
+                  <i class="bi bi-plus-lg"></i>
+                  <i class="bi bi-dash-lg"></i>
+                </div>
+              </div>
+            </div>
+            <div class="second-component">
+              <div class="component-subtitle bold-font">Cost cap spent</div>
+              <div class="input-and-buttons">
+                <input type="number" class="custom-input-number" id="costCapInput" value="120000000"></input>
+                <div class="input-buttons">
+                  <i class="bi bi-plus-lg"></i>
+                  <i class="bi bi-dash-lg"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="viewer-component">
+            <div class="first-component">
+              <div class="component-subtitle bold-font">Board confidence</div>
+              <div class="input-and-buttons">
+                <input type="number" class="custom-input-number" id="confidenceInput" value="48"></input>
+                <div class="input-buttons">
+                  <i class="bi bi-plus-lg"></i>
+                  <i class="bi bi-dash-lg"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="facility-component">
+            <div class="component-subtitle bold-font">Staff facilities</div>
+            <div class="facility ">
+              <div class="facility-name">Team hub</div>
+              <i class="bi bi-chevron-left"></i>
+              <div class="facility-level-indicator">
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+              </div>
+              <i class="bi bi-chevron-right"></i>
+              <div class="facility-condition">
+                Condition:
+                <div class="input-and-buttons">
+                  <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                  <div class="input-buttons">
+                    <i class="bi bi-chevron-up"></i>
+                    <i class="bi bi-chevron-down"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="facility ">
+              <div class="facility-name">Scouting department</div>
+              <i class="bi bi-chevron-left"></i>
+              <div class="facility-level-indicator">
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+              </div>
+              <i class="bi bi-chevron-right"></i>
+              <div class="facility-condition">
+                Condition:
+                <div class="input-and-buttons">
+                  <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                  <div class="input-buttons">
+                    <i class="bi bi-chevron-up"></i>
+                    <i class="bi bi-chevron-down"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="facility ">
+              <div class="facility-name">Race simulator</div>
+              <i class="bi bi-chevron-left"></i>
+              <div class="facility-level-indicator">
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+              </div>
+              <i class="bi bi-chevron-right"></i>
+              <div class="facility-condition">
+                Condition:
+                <div class="input-and-buttons">
+                  <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                  <div class="input-buttons">
+                    <i class="bi bi-chevron-up"></i>
+                    <i class="bi bi-chevron-down"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
 
           </div>
 
         </div>
-        <div class="w-50" id="viewer-second">
+        <div class="separator"></div>
+        <div id="viewer-second">
+          <div class="facility-component-lg">
+            <div class="component-subtitle bold-font">
+              <div>Car development facilities</div>
+              <button class="custom-dropdown custom-button" id="carDevButton" data-state="hide" data-bs-toggle="collapse" data-bs-target="#carDevCollapse">
+                Show
+              </button>
+            </div>
+            <div class="collapse" id="carDevCollapse">
+              <div class="facility ">
+                <div class="facility-name">Factory</div>
+                <i class="bi bi-chevron-left"></i>
+                <div class="facility-level-indicator">
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+                <div class="facility-condition">
+                  Condition:
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-chevron-up"></i>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="facility ">
+                <div class="facility-name">Design centre</div>
+                <i class="bi bi-chevron-left"></i>
+                <div class="facility-level-indicator">
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+                <div class="facility-condition">
+                  Condition:
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-chevron-up"></i>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="facility ">
+                <div class="facility-name">Wind tunnel</div>
+                <i class="bi bi-chevron-left"></i>
+                <div class="facility-level-indicator">
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+                <div class="facility-condition">
+                  Condition:
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-chevron-up"></i>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="facility ">
+                <div class="facility-name">CFD simulator</div>
+                <i class="bi bi-chevron-left"></i>
+                <div class="facility-level-indicator">
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+                <div class="facility-condition">
+                  Condition:
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-chevron-up"></i>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="facility ">
+                <div class="facility-name">Suspension simulator</div>
+                <i class="bi bi-chevron-left"></i>
+                <div class="facility-level-indicator">
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+                <div class="facility-condition">
+                  Condition:
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-chevron-up"></i>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="facility ">
+                <div class="facility-name">Car part test centre</div>
+                <i class="bi bi-chevron-left"></i>
+                <div class="facility-level-indicator">
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+                <div class="facility-condition">
+                  Condition:
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-chevron-up"></i>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="component-subtitle bold-font">
+              <div>Operations facilities</div>
+              <button class="custom-dropdown custom-button" id="operationButton" data-state="hide" data-bs-toggle="collapse" data-bs-target="#operationCollapse">
+                Show
+              </button>
 
+            </div>
+            <div class="collapse" id="operationCollapse">
+              <div class="facility ">
+                <div class="facility-name">Factory</div>
+                <i class="bi bi-chevron-left"></i>
+                <div class="facility-level-indicator">
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+                <div class="facility-condition">
+                  Condition:
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-chevron-up"></i>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="facility ">
+                <div class="facility-name">Design centre</div>
+                <i class="bi bi-chevron-left"></i>
+                <div class="facility-level-indicator">
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+                <div class="facility-condition">
+                  Condition:
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-chevron-up"></i>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="facility ">
+                <div class="facility-name">Wind tunnel</div>
+                <i class="bi bi-chevron-left"></i>
+                <div class="facility-level-indicator">
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+                <div class="facility-condition">
+                  Condition:
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-chevron-up"></i>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="facility ">
+                <div class="facility-name">CFD simulator</div>
+                <i class="bi bi-chevron-left"></i>
+                <div class="facility-level-indicator">
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+                <div class="facility-condition">
+                  Condition:
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-chevron-up"></i>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="facility ">
+                <div class="facility-name">Suspension simulator</div>
+                <i class="bi bi-chevron-left"></i>
+                <div class="facility-level-indicator">
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+                <div class="facility-condition">
+                  Condition:
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-chevron-up"></i>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="facility ">
+                <div class="facility-name">Car part test centre</div>
+                <i class="bi bi-chevron-left"></i>
+                <div class="facility-level-indicator">
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                  <div class="level"></div>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+                <div class="facility-condition">
+                  Condition:
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-chevron-up"></i>
+                      <i class="bi bi-chevron-down"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
