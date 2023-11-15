@@ -1842,6 +1842,36 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
+.team-viewer{
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  padding: 4px 20px;
+}
+
+.team-header{
+  font-size: 44px;
+  height: 55px;
+  width: 100%;
+}
+
+.viewer-component{
+  margin-top: 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+.viewer-component .custom-input-number{
+  background-color: rgb(99, 99, 110) !important;
+  text-align: center;
+  padding: 8px;
+  height: auto !important;
+}
+
+.first-component, .second-component{
+  width: 50%;
+}
+
 #redbulllogo, #rblogo {
   width: 55px;
   height: 45px;

@@ -998,23 +998,48 @@
             Team
           </button>
           <ul class="dropdown-menu" id="teamMenu" style="font-family: Formula1;">
-            <a class="dropdown-item" style="cursor: pointer;" data-teamid="1">Ferrari</a>
-            <a class="dropdown-item" style="cursor: pointer;" data-teamid="2">McLaren</a>
-            <a class="dropdown-item" style="cursor: pointer;" data-teamid="3">Red Bull</a>
-            <a class="dropdown-item" style="cursor: pointer;" data-teamid="4">Mercedes</a>
-            <a class="dropdown-item" style="cursor: pointer;" data-teamid="5">Alpine</a>
-            <a class="dropdown-item" style="cursor: pointer;" data-teamid="6">Williams</a>
-            <a class="dropdown-item" style="cursor: pointer;" data-teamid="7">Haas</a>
-            <a class="dropdown-item" style="cursor: pointer;" data-teamid="8">Alpha Tauri</a>
-            <a class="dropdown-item" style="cursor: pointer;" data-teamid="9">Alfa Romeo</a>
-            <a class="dropdown-item" style="cursor: pointer;" data-teamid="10">Aston Martin</a>
+            <a class="dropdown-item" style="cursor: pointer;" data-teamid="1">FERRARI</a>
+            <a class="dropdown-item" style="cursor: pointer;" data-teamid="2">MCLAREN</a>
+            <a class="dropdown-item" style="cursor: pointer;" data-teamid="3">RED BULL</a>
+            <a class="dropdown-item" style="cursor: pointer;" data-teamid="4">MERCEDES</a>
+            <a class="dropdown-item" style="cursor: pointer;" data-teamid="5">ALPINE</a>
+            <a class="dropdown-item" style="cursor: pointer;" data-teamid="6">WILLIAMS</a>
+            <a class="dropdown-item" style="cursor: pointer;" data-teamid="7">HAAS</a>
+            <a class="dropdown-item" style="cursor: pointer;" data-teamid="8">ALPHA TAURI</a>
+            <a class="dropdown-item" style="cursor: pointer;" data-teamid="9">ALFA ROMEO</a>
+            <a class="dropdown-item" style="cursor: pointer;" data-teamid="10">ASTON MARTIN</a>
           </ul>
         </div>
         <div class="title bold-font py-3">
           Team viewer
         </div>
       </div>
-      <div class="main-viewer-section"></div>
+      <div class="main-viewer-section team-viewer">
+        <div class="w-50" id="viewer-first">
+          <div class="team-header bold-font"></div>
+          <div class="viewer-component">
+            <div class="first-component">
+              <div class="modal-subtitle bold-font">Season Objective</div>
+              <div class="input-and-buttons" style="margin-top: 0.75rem;">
+                <input type="number" class="custom-input-number" id="seasonObjectiveInput" value="4"></input>
+                <div class="input-buttons">
+                  <i class="bi bi-plus-lg"></i>
+                  <i class="bi bi-dash-lg"></i>
+                </div>
+              </div>
+            </div>
+            <div class="second-component">
+              <div class="modal-subtitle bold-font">Long-term Objective</div>
+            </div>
+            
+          </div>
+          
+        </div>
+        <div class="w-50" id="viewer-second">
+          
+        </div>
+        
+      </div>
     </div>
     <div class="script-view d-none" id="custom_calendar">
       <div class="blocking-div d-none" id="calendarBlockDiv">
@@ -1403,6 +1428,7 @@
   <script src="./js/performance.js"></script>
   <script src="./js/seasonViewer.js"></script>
   <script src="./js/head2head.js"></script>
+  <script src="./js/teams.js"></script>
 </body>
 
 </html>
