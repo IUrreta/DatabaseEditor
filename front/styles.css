@@ -1756,7 +1756,7 @@ a.bi-heart:hover {
   height: 56px;
   border: 2px solid transparent;
   font-size: 20px;
-  transition: background-color 0.4s, color 0.4s !important;
+  transition: background-color 0.4s, color 0.4s, border-color 0.4s !important;
 
 }
 
@@ -1951,6 +1951,11 @@ input::-webkit-inner-spin-button {
   height: 8px;
   width: 42px;
   background-color: rgb(99, 99, 110);
+  transition: background-color 0.2s;
+}
+
+.level.activated{
+  background-color: white !important;
 }
 
 .viewer-component .custom-input-number, .facility-component .custom-input-number, .facility-component-lg .custom-input-number{

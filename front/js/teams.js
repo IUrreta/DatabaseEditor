@@ -1,62 +1,109 @@
-document.querySelector("#teamMenu").querySelectorAll("a").forEach(function(elem){
-    elem.addEventListener("click", function(){
+document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem) {
+    elem.addEventListener("click",function () {
         document.querySelector("#teamButton").innerText = elem.textContent
     })
-    
+
 })
 
-document.querySelector("#objectiveMenu").querySelectorAll("a").forEach(function(elem){
-    elem.addEventListener("click", function(){
+document.querySelector("#objectiveMenu").querySelectorAll("a").forEach(function (elem) {
+    elem.addEventListener("click",function () {
         document.querySelector("#objectiveButton").innerText = elem.textContent
     })
-    
+
 })
 
-document.querySelector("#objAndYear").querySelector(".bi-chevron-up").addEventListener("click", function(){
+document.querySelector("#objAndYear").querySelector(".bi-chevron-up").addEventListener("click",function () {
     document.querySelector("#longTermInput").value = Number(document.querySelector("#longTermInput").value) + 1
 })
 
-document.querySelector("#objAndYear").querySelector(".bi-chevron-down").addEventListener("click", function(){
+document.querySelector("#objAndYear").querySelector(".bi-chevron-down").addEventListener("click",function () {
     document.querySelector("#longTermInput").value = Number(document.querySelector("#longTermInput").value) - 1
 })
 
-document.querySelector("#seasonObjective").querySelector(".bi-chevron-up").addEventListener("click", function(){
+document.querySelector("#seasonObjective").querySelector(".bi-chevron-up").addEventListener("click",function () {
     document.querySelector("#seasonObjectiveInput").value = Number(document.querySelector("#seasonObjectiveInput").value) + 1
 })
 
-document.querySelector("#seasonObjective").querySelector(".bi-chevron-down").addEventListener("click", function(){
+document.querySelector("#seasonObjective").querySelector(".bi-chevron-down").addEventListener("click",function () {
     document.querySelector("#seasonObjectiveInput").value = Number(document.querySelector("#seasonObjectiveInput").value) - 1
 })
 
-document.querySelector("#carDevButton").addEventListener("click", function(){
-    if(document.querySelector("#operationButton").dataset.state === "show"){
+document.querySelector("#carDevButton").addEventListener("click",function () {
+    if (document.querySelector("#operationButton").dataset.state === "show") {
         document.querySelector("#operationButton").click()
     }
-    if(document.querySelector("#carDevButton").dataset.state === "show"){
+    if (document.querySelector("#carDevButton").dataset.state === "show") {
         document.querySelector("#carDevButton").dataset.state = "hide"
         document.querySelector("#carDevButton").innerText = "Show"
     }
-    else{
+    else {
         document.querySelector("#carDevButton").dataset.state = "show"
         document.querySelector("#carDevButton").innerText = "Hide"
-        
+
     }
 
-    
+
 })
 
-document.querySelector("#operationButton").addEventListener("click", function(){
-    if(document.querySelector("#carDevButton").dataset.state === "show"){
+document.querySelector("#operationButton").addEventListener("click",function () {
+    if (document.querySelector("#carDevButton").dataset.state === "show") {
         document.querySelector("#carDevButton").click()
     }
-    if(document.querySelector("#operationButton").dataset.state === "show"){
+    if (document.querySelector("#operationButton").dataset.state === "show") {
         document.querySelector("#operationButton").dataset.state = "hide"
         document.querySelector("#operationButton").innerText = "Show"
     }
-    else{
+    else {
         document.querySelector("#operationButton").dataset.state = "show"
         document.querySelector("#operationButton").innerText = "Hide"
     }
 
+
+})
+
+
+
+
+document.querySelectorAll('.facility-level-indicator').forEach((indicator) => {
+    let value = indicator.getAttribute('data-value');
+    let levels = indicator.querySelectorAll('.level');
+
+    for (let i = 0; i < value; i++) {
+        levels[i].classList.add('activated');
+    }
+});
+
+document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-right").forEach(function (elem) {
+    elem.addEventListener("click",function () {
+        let indicator = elem.parentNode.querySelector(".facility-level-indicator")
+        let value = parseInt(indicator.getAttribute('data-value')) + 1;
+        if(value > 5){
+            value = 5
+        }
+
+        indicator.setAttribute('data-value',value);
+        let levels = indicator.querySelectorAll('.level');
+
+        if (value <= levels.length) {
+            levels[value - 1].classList.add('activated');
+        }
+    })
+})
+
+document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-left").forEach(function (elem) {
+    elem.addEventListener("click",function () {
+        let indicator = elem.parentNode.querySelector(".facility-level-indicator")
+        let value = parseInt(indicator.getAttribute('data-value')) - 1;
+        if(value < 0){
+            value = 0
+        }
+
+        indicator.setAttribute('data-value',value);
+        let levels = indicator.querySelectorAll('.level');
+
+        if (value < levels.length) {
+            levels[value].classList.remove('activated');
+        }
+    })
 
 })
