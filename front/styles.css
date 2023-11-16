@@ -1887,7 +1887,7 @@ input::-webkit-inner-spin-button {
 }
 
 .facility-component-lg{
-  margin-top: 57px;
+  margin-top: 5px;
 }
 
 .facility, .facility-level-indicator{
@@ -1930,10 +1930,21 @@ input::-webkit-inner-spin-button {
 }
 
 .separator{
-  margin-top: 60px;
+  margin-top: 30px;
   width: 1px;
   background-color: rgb(99, 99, 110);
   height: 85%;
+}
+
+.main-second-viewer{
+  min-height: 580px;
+}
+
+.save-button-zone{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: 100%
 }
 
 .level{
@@ -1974,15 +1985,24 @@ input::-webkit-inner-spin-button {
   width: 50%;
 }
 
-.facility i{
+#edit_teams i{
   transition: color 0.4s;
   font-size: 20px;
   color: #dedde6;
+  transition: background-color 0.4s, color 0.4s;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+
 }
 
-.facility i:hover{
+#edit_teams i:hover{
   cursor: pointer;
   color: white !important;
+  background-color: #6f698f !important;
 }
 
 .component-subtitle{
