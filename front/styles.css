@@ -2108,6 +2108,9 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid #3671C6 !important;
 }
 
+.rbactivated{
+  background-color: #3671C6;
+}
 
 #ferrari, .feborder-down:hover {
   border-bottom: 2px solid #F91536 !important;
@@ -2115,6 +2118,10 @@ input::-webkit-inner-spin-button {
 
 .tabulator-row:hover .feborder-right {
   border-right: 3px solid #F91536 !important;
+}
+
+.feactivated{
+  background-color: #F91536;
 }
 
 #merc, .meborder-down:hover {
@@ -2125,6 +2132,10 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid #6CD3BF !important;
 }
 
+.meactivated{
+  background-color: #6CD3BF;
+}
+
 #mclaren, .mcborder-down:hover {
   border-bottom: 2px solid #F58020 !important;
 }
@@ -2133,12 +2144,21 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid #F58020 !important;
 }
 
+.mcactivated{
+  background-color: #F58020;
+}
+
+
 #alpine,.alborder-down:hover {
   border-bottom: 2px solid #2293D1 !important
 }
 
 .tabulator-row:hover .alborder-right {
   border-right: 3px solid #2293D1 !important;
+}
+
+.alactivated{
+  background-color: #2293D1;
 }
 
 #alfaromeo, .afborder-down:hover {
@@ -2149,12 +2169,20 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid #C92D4B !important;
 }
 
+.afactivated{
+  background-color: #C92D4B;
+}
+
 #astonmartin, .asborder-down:hover {
   border-bottom: 2px solid #358C75 !important
 }
 
 .tabulator-row:hover .asborder-right {
   border-right: 3px solid #358C75 !important;
+}
+
+.asactivated{
+  background-color: #358C75;
 }
 
 #alphatauri, .atborder-down:hover {
@@ -2165,6 +2193,10 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid #5E8FAA !important;
 }
 
+.atactivated{
+  background-color: #5E8FAA;
+}
+
 #williams, .wiborder-down:hover {
   border-bottom: 2px solid #37BEDD !important
 }
@@ -2173,12 +2205,20 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid #37BEDD !important;
 }
 
+.wiactivated{
+  background-color: #37BEDD;
+}
+
 #haas, .haborder-down:hover {
   border-bottom: 2px solid #B6BABD !important
 }
 
 .tabulator-row:hover .haborder-right {
   border-right: 3px solid #B6BABD !important;
+}
+
+.haactivated{
+  background-color: #B6BABD;
 }
 
 .rbfont {

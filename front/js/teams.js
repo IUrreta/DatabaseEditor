@@ -1,8 +1,11 @@
+let teamCod;
+
 document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click",function () {
-        document.querySelector("#teamButton").innerText = elem.textContent
+        document.querySelector("#teamButton").innerText = elem.textContent;
+        teamCod = elem.dataset.teamid;
+        fillLevels()
     })
-
 })
 
 document.querySelector("#objectiveMenu").querySelectorAll("a").forEach(function (elem) {
@@ -63,15 +66,18 @@ document.querySelector("#operationButton").addEventListener("click",function () 
 
 
 
+function fillLevels(){
+    document.querySelectorAll('.facility-level-indicator').forEach((indicator) => {
+        let value = indicator.getAttribute('data-value');
+        let levels = indicator.querySelectorAll('.level');
+    
+        for (let i = 0; i < value; i++) {
+            levels[i].className="level"
+            levels[i].classList.add(team_dict[teamCod] + 'activated');
+        }
+    });
+}
 
-document.querySelectorAll('.facility-level-indicator').forEach((indicator) => {
-    let value = indicator.getAttribute('data-value');
-    let levels = indicator.querySelectorAll('.level');
-
-    for (let i = 0; i < value; i++) {
-        levels[i].classList.add('activated');
-    }
-});
 
 document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-right").forEach(function (elem) {
     elem.addEventListener("click",function () {
@@ -85,7 +91,7 @@ document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-right").forE
         let levels = indicator.querySelectorAll('.level');
 
         if (value <= levels.length) {
-            levels[value - 1].classList.add('activated');
+            levels[value - 1].classList.add(team_dict[teamCod] + 'activated');
         }
     })
 })
@@ -102,7 +108,7 @@ document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-left").forEa
         let levels = indicator.querySelectorAll('.level');
 
         if (value < levels.length) {
-            levels[value].classList.remove('activated');
+            levels[value].className = "level"
         }
     })
 
