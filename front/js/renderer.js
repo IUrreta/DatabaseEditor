@@ -163,6 +163,11 @@ document.addEventListener('DOMContentLoaded', function () {
             setTimeout(function () {
                 loadTeamsTable(message.slice(2)); // Llamar a la función después de 1 segundo
             }, 20);
+        },
+        "TeamData Fetched": (message)=>{
+            console.log(message)
+            fillLevels(message.slice(1))
+
         }
     };
 

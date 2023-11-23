@@ -4,7 +4,12 @@ document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem
     elem.addEventListener("click",function () {
         document.querySelector("#teamButton").innerText = elem.textContent;
         teamCod = elem.dataset.teamid;
-        fillLevels()
+        let data = {
+            command: "teamRequest",
+            teamID: teamCod,
+        }
+
+        socket.send(JSON.stringify(data))
     })
 })
 
@@ -66,16 +71,28 @@ document.querySelector("#operationButton").addEventListener("click",function () 
 
 
 
-function fillLevels(){
-    document.querySelectorAll('.facility-level-indicator').forEach((indicator) => {
-        let value = indicator.getAttribute('data-value');
+function fillLevels(teamData){
+    teamData.pop()
+    teamData.forEach(function(elem){
+        let num = elem[0];
+        let level = num % 10;
+        let facilityID = Math.floor(num / 10);
+        console.log(facilityID)
+        let facility = document.querySelector("#facility" + facilityID)
+        console.log(level)
+        let indicator = facility.querySelector('.facility-level-indicator')
+        indicator.dataset.value = level
+        let value = level
         let levels = indicator.querySelectorAll('.level');
     
-        for (let i = 0; i < value; i++) {
+        for (let i = 0; i < 5; i++) {
             levels[i].className="level"
-            levels[i].classList.add(team_dict[teamCod] + 'activated');
+            if(i <= value -1){
+                levels[i].classList.add(team_dict[teamCod] + 'activated');
+            }
         }
-    });
+        facility.querySelector("input").value = elem[1]
+    })
 }
 
 
