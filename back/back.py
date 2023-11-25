@@ -14,7 +14,7 @@ from scripts.custom_calendar_23 import run_script as run_editCalendar
 from scripts.car_performance_23 import run_script as run_editPerformance
 from scripts.engine_performance_23 import run_script as run_editEngine
 from scripts.head2head_23 import fetch_Head2Head as fetch_Head2Head
-from scripts.edit_teams import fetch_teamData
+from scripts.edit_teams import fetch_teamData, edit_team
 
 client = None
 path = None
@@ -202,6 +202,14 @@ async def handle_command(message):
         teamData.insert(0, "TeamData Fetched")
         data_json_teamData = json.dumps(teamData)
         await send_message_to_client(data_json_teamData)
+
+    elif type=="editTeam":
+        edit_team(message, cursor)
+        process_repack("../result", path)
+        info = ["Succesfully edited " + str(message["teamID"])]
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+        argument = message["command"]
 
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")

@@ -507,6 +507,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 socket.send(JSON.stringify(dataSaves))
                 isSaveSelected = 1;
                 document.getElementById("editStatsPanel").className = "left-panel-stats d-none";
+                resetTeamEditing()
                 statPanelShown = 0;
                 document.querySelectorAll(".performance-show").forEach(function (elem) {
                     elem.classList.add("d-none")

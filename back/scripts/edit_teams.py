@@ -1,9 +1,7 @@
-
-cursor = None
+import sqlite3
 def fetch_teamData(teamID, c):
-    global cursor
-    cursor = c
-    print("AAAAAAAAAA")
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
     levCon = cursor.execute("SELECT BuildingID, DegradationValue FROM Buildings_HQ WHERE TeamID = " + str(teamID)).fetchall()
     data = [(x, round(y, 2)) for x, y in levCon]
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
@@ -15,4 +13,27 @@ def fetch_teamData(teamID, c):
     longTermObj = cursor.execute("SELECT Type, TargetEndYear FROM Board_Objectives WHERE TeamID = " + str(teamID) + " AND TargetEndYear =" + str(maxTargetYear[0])).fetchone()
     confidence = cursor.execute("SELECT Confidence FROM Board_Confidence WHERE Season = " + str(day_season[1])).fetchone()
     data.extend([seasonObj, longTermObj, teamBalance, costCap, confidence, day_season[1]])
+
+    conn.commit()
+    conn.close()
+
     return data
+
+def edit_team(info, c):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    teamID = info["teamID"]
+    for facility in info["facilities"]:
+        id = facility[0][:-1]
+        cursor.execute("UPDATE Buildings_HQ SET BuildingID = " + str(facility[0]) + ", DegradationValue = " + str(facility[1]) + " WHERE TeamID = " + str(teamID) + " AND BuildingType = " + str(id))
+    cursor.execute("UPDATE Board_SeasonObjectives SET TargetPos = " + info["seasonObj"] + " WHERE TeamID =" + str(teamID) + " AND SeasonID = " + str(day_season[1]))
+    maxTargetYear = cursor.execute("SELECT MAX(TargetEndYear) FROM Board_Objectives WHERE TeamID = " +str(teamID)).fetchone()
+    cursor.execute("UPDATE Board_Objectives SET Type = " + str(info["longTermObj"]) + ", TargetEndYear = " + str(info["longTermYear"]) + " WHERE TeamID =  " + str(teamID) + " AND targetEndYear = " + str(maxTargetYear[0]))
+    if info["confidence"] != "-1":
+        cursor.execute("UPDATE Board_Confidence SET Confidence = " + str(info["confidence"]) + " WHERE Season = " + str(day_season[1]))
+    cursor.execute("UPDATE Finance_TeamBalance SET Balance = " + str(info["teamBudget"]) + " WHERE TeamID = " + str(teamID))
+    cursor.execute("INSERT INTO Finance_Transactions VALUES ("+ str(teamID) +", "+ str(day_season[0]) +", "+ str(info["costCapEdit"]) +", 9, -1, 1)")
+
+    conn.commit()
+    conn.close()

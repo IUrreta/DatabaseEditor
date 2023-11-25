@@ -164,7 +164,7 @@ a.bi-heart:hover {
   align-items: center;
 }
 
-#d1Menu, #d2Menu{
+#d1Menu, #d2Menu, #teamMenu{
   max-height: 200px;
   overflow-y: scroll;
 }
@@ -174,11 +174,11 @@ a.bi-heart:hover {
   overflow-y: scroll;
 }
 
-#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar {
+#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar {
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb {
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb {
   background-color: white;
   border-radius: 3px;
 }
@@ -1864,6 +1864,7 @@ input::-webkit-inner-spin-button {
   min-width: 160px;
 }
 
+
 #costCapInput{
   min-width: 170px;
 }
@@ -1916,6 +1917,13 @@ input::-webkit-inner-spin-button {
   height: 40px;
   font-size: 18px;
   padding: 0 10px;
+}
+
+#teamMenu a{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
 }
 
 
@@ -1986,6 +1994,7 @@ input::-webkit-inner-spin-button {
 }
 
 #objectiveButton{
+  padding-left: 6px;
   margin-top: 5px !important;
   color: #ebebee;
 }

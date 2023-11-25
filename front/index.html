@@ -1001,23 +1001,71 @@
             Team
           </button>
           <ul class="dropdown-menu" id="teamMenu" style="font-family: Formula1;">
-            <a class="dropdown-item feborder-down bold-font" style="cursor: pointer;" data-teamid="1">FERRARI</a>
-            <a class="dropdown-item mcborder-down bold-font" style="cursor: pointer;" data-teamid="2">MCLAREN</a>
-            <a class="dropdown-item rbborder-down bold-font" style="cursor: pointer;" data-teamid="3">RED BULL</a>
-            <a class="dropdown-item meborder-down bold-font" style="cursor: pointer;" data-teamid="4">MERCEDES</a>
-            <a class="dropdown-item alborder-down bold-font" style="cursor: pointer;" data-teamid="5">ALPINE</a>
-            <a class="dropdown-item wiborder-down bold-font" style="cursor: pointer;" data-teamid="6">WILLIAMS</a>
-            <a class="dropdown-item haborder-down bold-font" style="cursor: pointer;" data-teamid="7">HAAS</a>
-            <a class="dropdown-item atborder-down bold-font" style="cursor: pointer;" data-teamid="8">ALPHA TAURI</a>
-            <a class="dropdown-item afborder-down bold-font" style="cursor: pointer;" data-teamid="9">ALFA ROMEO</a>
-            <a class="dropdown-item asborder-down bold-font" style="cursor: pointer;" data-teamid="10">ASTON MARTIN</a>
+            <a class="dropdown-item feborder-down bold-font" style="cursor: pointer;" data-teamid="1">
+              <img src="../assets/images/ferrari.png" id="ferrarilogo">
+              <div class="team-menu-name">
+                FERRARI
+              </div>
+            </a>
+            <a class="dropdown-item mcborder-down bold-font" style="cursor: pointer;" data-teamid="2">
+              <img src="../assets/images/mclaren.png" id="mclarenlogo">
+              <div class="team-menu-name">
+                MCLAREN
+              </div>
+            </a>
+            <a class="dropdown-item rbborder-down bold-font" style="cursor: pointer;" data-teamid="3">
+              <img src="../assets/images/redbull.png" id="redbulllogo">
+              <div class="team-menu-name">RED BULL</div>
+            </a>
+            <a class="dropdown-item meborder-down bold-font" style="cursor: pointer;" data-teamid="4">
+              <img src="../assets/images/mercedes.png" id="merclogo">
+              <div class="team-menu-name ps-1">
+                MERCEDES
+              </div>
+            </a>
+            <a class="dropdown-item alborder-down bold-font" style="cursor: pointer;" data-teamid="5">
+              <img src="../assets/images/alpine.png" id="alpinelogo">
+              <div class="team-menu-name ps-1">
+                ALPINE
+              </div>
+            </a>
+            <a class="dropdown-item wiborder-down bold-font" style="cursor: pointer;" data-teamid="6">
+              <img src="../assets/images/williams.png" id="williamslogo">
+              <div class="team-menu-name ps-1">
+                WILLIAMS
+              </div>
+            </a>
+            <a class="dropdown-item haborder-down bold-font" style="cursor: pointer;" data-teamid="7">
+              <img src="../assets/images/haas.png" id="haaslogo">
+              <div class="team-menu-name ps-1">
+                HAAS
+              </div>
+            </a>
+            <a class="dropdown-item atborder-down bold-font" style="cursor: pointer;" data-teamid="8">
+              <img src="../assets/images/alphatauri.png" id="alphataurilogo">
+              <div class="team-menu-name">
+                ALPHA TAURI
+              </div>
+            </a>
+            <a class="dropdown-item afborder-down bold-font" style="cursor: pointer;" data-teamid="9">
+              <img src="../assets/images/alfaromeo.png" id="alfalogo">
+              <div class="team-menu-name">
+                ALFA ROMEO
+              </div>
+            </a>
+            <a class="dropdown-item asborder-down bold-font" style="cursor: pointer;" data-teamid="10">
+              <img src="../assets/images/astonMartin.png" id="astonlogo" class="ps-0">
+              <div class="team-menu-name">
+                ASTON MARTIN
+              </div>
+            </a>
           </ul>
         </div>
         <div class="title bold-font py-3">
-          Team viewer
+          Team editor
         </div>
       </div>
-      <div class="main-viewer-section team-viewer">
+      <div class="main-viewer-section team-viewer d-none">
         <div id="viewer-first">
           <div class="viewer-component">
             <div class="first-component" id="seasonObjective">
@@ -1055,7 +1103,7 @@
             </div>
           </div>
           <div class="viewer-component">
-            <div class="first-component"  id="teamBudget">
+            <div class="first-component" id="teamBudget">
               <div class="component-subtitle bold-font">Budget</div>
               <div class="input-and-buttons">
                 <input type="string" class="custom-input-number" id="teamBudgetInput" value="40000000"></input>
@@ -1065,7 +1113,7 @@
                 </div>
               </div>
             </div>
-            <div class="second-component"  id="costCap">
+            <div class="second-component" id="costCap">
               <div class="component-subtitle bold-font">Cost cap spent</div>
               <div class="input-and-buttons">
                 <input type="string" class="custom-input-number" id="costCapInput" value="120000000"></input>
@@ -1166,12 +1214,12 @@
             <div class="main-second-viewer">
               <div class="component-subtitle bold-font">
                 <div>Car development facilities</div>
-                <button class="custom-dropdown custom-button" id="carDevButton" data-state="hide"
+                <button class="custom-dropdown custom-button" id="carDevButton" data-state="show"
                   data-bs-toggle="collapse" data-bs-target="#carDevCollapse">
-                  Show
+                  Hide
                 </button>
               </div>
-              <div class="collapse" id="carDevCollapse">
+              <div class="collapse show" id="carDevCollapse">
                 <div class="facility " id="facility3">
                   <div class="facility-name">Factory</div>
                   <i class="bi bi-chevron-left"></i>
