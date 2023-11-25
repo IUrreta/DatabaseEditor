@@ -1038,9 +1038,9 @@
                   Long-term objective
                 </button>
                 <ul class="dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
-                  <a class="dropdown-item" style="cursor: pointer;" data-objid="1">Constructor's champion</a>
-                  <a class="dropdown-item" style="cursor: pointer;" data-objid="2">Podium contender</a>
-                  <a class="dropdown-item" style="cursor: pointer;" data-objid="3">Points contender</a>
+                  <a class="dropdown-item" style="cursor: pointer;" id="longTermObj0">Constructor's champion</a>
+                  <a class="dropdown-item" style="cursor: pointer;" id="longTermObj1">Podium contender</a>
+                  <a class="dropdown-item" style="cursor: pointer;" id="longTermObj2">Points contender</a>
                 </ul>
                 <div class="input-and-buttons">
                   <input type="number" class="custom-input-number" id="longTermInput" value="2024"></input>
@@ -1055,20 +1055,20 @@
             </div>
           </div>
           <div class="viewer-component">
-            <div class="first-component">
+            <div class="first-component"  id="teamBudget">
               <div class="component-subtitle bold-font">Budget</div>
               <div class="input-and-buttons">
-                <input type="number" class="custom-input-number" id="teamBudgetInput" value="40000000"></input>
+                <input type="string" class="custom-input-number" id="teamBudgetInput" value="40000000"></input>
                 <div class="input-buttons">
                   <i class="bi bi-plus-lg"></i>
                   <i class="bi bi-dash-lg"></i>
                 </div>
               </div>
             </div>
-            <div class="second-component">
+            <div class="second-component"  id="costCap">
               <div class="component-subtitle bold-font">Cost cap spent</div>
               <div class="input-and-buttons">
-                <input type="number" class="custom-input-number" id="costCapInput" value="120000000"></input>
+                <input type="string" class="custom-input-number" id="costCapInput" value="120000000"></input>
                 <div class="input-buttons">
                   <i class="bi bi-plus-lg"></i>
                   <i class="bi bi-dash-lg"></i>
@@ -1077,7 +1077,7 @@
             </div>
           </div>
           <div class="viewer-component">
-            <div class="first-component">
+            <div class="first-component" id="confidence">
               <div class="component-subtitle bold-font">Board confidence</div>
               <div class="input-and-buttons">
                 <input type="number" class="custom-input-number" id="confidenceInput" value="48"></input>

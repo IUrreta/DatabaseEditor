@@ -1,4 +1,5 @@
 let teamCod;
+let currYear;
 
 document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click",function () {
@@ -25,15 +26,89 @@ document.querySelector("#objAndYear").querySelector(".bi-chevron-up").addEventLi
 })
 
 document.querySelector("#objAndYear").querySelector(".bi-chevron-down").addEventListener("click",function () {
-    document.querySelector("#longTermInput").value = Number(document.querySelector("#longTermInput").value) - 1
+    let value = Number(document.querySelector("#longTermInput").value) - 1
+    if(value <= currYear){
+        value = currYear
+    }
+    document.querySelector("#longTermInput").value = value
 })
 
 document.querySelector("#seasonObjective").querySelector(".bi-chevron-up").addEventListener("click",function () {
-    document.querySelector("#seasonObjectiveInput").value = Number(document.querySelector("#seasonObjectiveInput").value) + 1
+    let value = Number(document.querySelector("#seasonObjectiveInput").value) + 1
+    if(value >= 10){
+        value = 10
+    }
+    document.querySelector("#seasonObjectiveInput").value = value
 })
 
 document.querySelector("#seasonObjective").querySelector(".bi-chevron-down").addEventListener("click",function () {
-    document.querySelector("#seasonObjectiveInput").value = Number(document.querySelector("#seasonObjectiveInput").value) - 1
+    let value = Number(document.querySelector("#seasonObjectiveInput").value) - 1
+    if(value <= 1){
+        value = 1
+    }
+    document.querySelector("#seasonObjectiveInput").value = value
+})
+
+document.querySelector("#confidence").querySelector(".bi-plus-lg").addEventListener("click",function () {
+    let value = Number(document.querySelector("#confidenceInput").value) + 5
+    if(value >= 100){
+        value = 100
+    }
+    document.querySelector("#confidenceInput").value = value
+})
+
+document.querySelector("#confidence").querySelector(".bi-dash-lg").addEventListener("click",function () {
+    let value = Number(document.querySelector("#confidenceInput").value) - 5
+    if(value <= 0){
+        value = 0
+    }
+    document.querySelector("#confidenceInput").value = value
+})
+
+
+document.querySelector("#costCap").querySelector(".bi-plus-lg").addEventListener("click", function () {
+    let valorActual = document.querySelector("#costCapInput").value.replace(/[$,]/g, "");
+    let nuevoValor = Number(valorActual) + 100000;
+    let valorFormateado = nuevoValor.toLocaleString('en-US') + '$';
+    document.querySelector("#costCapInput").value = valorFormateado;
+})
+
+document.querySelector("#costCap").querySelector(".bi-dash-lg").addEventListener("click", function () {
+    let valorActual = document.querySelector("#costCapInput").value.replace(/[$,]/g, "");
+    let nuevoValor = Number(valorActual) - 100000;
+    let valorFormateado = nuevoValor.toLocaleString('en-US') + '$';
+    document.querySelector("#costCapInput").value = valorFormateado;
+})
+
+document.querySelector("#teamBudget").querySelector(".bi-plus-lg").addEventListener("click", function () {
+    let valorActual = document.querySelector("#teamBudgetInput").value.replace(/[$,]/g, "");
+    let nuevoValor = Number(valorActual) + 100000;
+    let valorFormateado = nuevoValor.toLocaleString('en-US') + '$';
+    document.querySelector("#teamBudgetInput").value = valorFormateado;
+})
+
+document.querySelector("#teamBudget").querySelector(".bi-dash-lg").addEventListener("click", function () {
+    let valorActual = document.querySelector("#teamBudgetInput").value.replace(/[$,]/g, "");
+    let nuevoValor = Number(valorActual) - 100000;
+    let valorFormateado = nuevoValor.toLocaleString('en-US') + '$';
+    document.querySelector("#teamBudgetInput").value = valorFormateado;
+})
+
+document.querySelectorAll(".facility-condition").forEach(function(elem){
+    elem.querySelector(".bi-chevron-up").addEventListener("click", function(){
+        let value = (Number(elem.querySelector("input").value) + 0.05).toFixed(2)
+        if(value >= 1){
+            value = 1
+        }
+        elem.querySelector("input").value = value
+    })
+    elem.querySelector(".bi-chevron-down").addEventListener("click", function(){
+        let value = (Number(elem.querySelector("input").value) - 0.05).toFixed(2)
+        if(value <= 0){
+            value = 0
+        }
+        elem.querySelector("input").value = value
+    })
 })
 
 document.querySelector("#carDevButton").addEventListener("click",function () {
@@ -72,8 +147,7 @@ document.querySelector("#operationButton").addEventListener("click",function () 
 
 
 function fillLevels(teamData){
-    teamData.pop()
-    teamData.forEach(function(elem){
+    teamData.slice(0, 15).forEach(function(elem){
         let num = elem[0];
         let level = num % 10;
         let facilityID = Math.floor(num / 10);
@@ -93,6 +167,14 @@ function fillLevels(teamData){
         }
         facility.querySelector("input").value = elem[1]
     })
+    console.log(teamData)
+    document.querySelector("#seasonObjectiveInput").value = teamData[16]
+    document.querySelector("#longTermObj" + teamData[17][0]).click()
+    document.querySelector("#longTermInput").value = teamData[17][1]
+    document.querySelector("#teamBudgetInput").value = teamData[18].toLocaleString("en-US") + "$"
+    document.querySelector("#costCapInput").value = Math.abs(teamData[19][0]).toLocaleString("en-US") + "$"
+    document.querySelector("#confidenceInput").value = teamData[20]
+    currYear = teamData[21]
 }
 
 

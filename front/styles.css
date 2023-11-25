@@ -1965,6 +1965,10 @@ input::-webkit-inner-spin-button {
   height: 39.2px !important;
 }
 
+#confidenceInput{
+  min-width: 70px !important;
+}
+
 .condition-input{
   max-width: 80px;
 }
