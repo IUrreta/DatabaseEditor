@@ -3,6 +3,9 @@ let currYear;
 let originalCostCap;
 let longTermObj;
 
+/**
+ * Listener for the team menu buttons
+ */
 document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click", function () {
         document.querySelector("#teamButton").innerText = elem.querySelector(".team-menu-name").innerText;
@@ -18,12 +21,18 @@ document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem
     
 })
 
+/**
+ * Resets the view
+ */
 function resetTeamEditing(){
     document.querySelector(".team-viewer").classList.add("d-none");
     teamCod = null;
     document.querySelector("#teamButton").innerText = "Team";
 }
 
+/**
+ * Listener for the objective menu dropdown
+ */
 document.querySelector("#objectiveMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click", function () {
         document.querySelector("#objectiveButton").innerText = elem.textContent
@@ -32,6 +41,9 @@ document.querySelector("#objectiveMenu").querySelectorAll("a").forEach(function 
 
 })
 
+/**
+ * Listeners for the long term input year
+ */
 document.querySelector("#objAndYear").querySelector(".bi-chevron-up").addEventListener("click", function () {
     document.querySelector("#longTermInput").value = Number(document.querySelector("#longTermInput").value) + 1
 })
@@ -44,6 +56,9 @@ document.querySelector("#objAndYear").querySelector(".bi-chevron-down").addEvent
     document.querySelector("#longTermInput").value = value
 })
 
+/**
+ * Listeners for the season objective input
+ */
 document.querySelector("#seasonObjective").querySelector(".bi-chevron-up").addEventListener("click", function () {
     let value = Number(document.querySelector("#seasonObjectiveInput").value) + 1
     if (value >= 10) {
@@ -60,6 +75,9 @@ document.querySelector("#seasonObjective").querySelector(".bi-chevron-down").add
     document.querySelector("#seasonObjectiveInput").value = value
 })
 
+/**
+ * Listeners for the board confidence input
+ */
 document.querySelector("#confidence").querySelector(".bi-plus-lg").addEventListener("click", function () {
     let value = Number(document.querySelector("#confidenceInput").value) + 5
     if (value >= 100) {
@@ -77,6 +95,9 @@ document.querySelector("#confidence").querySelector(".bi-dash-lg").addEventListe
 })
 
 
+/**
+ * Listeners for the cost cap input
+ */
 document.querySelector("#costCap").querySelector(".bi-plus-lg").addEventListener("click", function () {
     let valorActual = document.querySelector("#costCapInput").value.replace(/[$,]/g, "");
     let nuevoValor = Number(valorActual) + 100000;
@@ -91,6 +112,9 @@ document.querySelector("#costCap").querySelector(".bi-dash-lg").addEventListener
     document.querySelector("#costCapInput").value = valorFormateado;
 })
 
+/**
+ * Listeners for the team budget input
+ */
 document.querySelector("#teamBudget").querySelector(".bi-plus-lg").addEventListener("click", function () {
     let valorActual = document.querySelector("#teamBudgetInput").value.replace(/[$,]/g, "");
     let nuevoValor = Number(valorActual) + 100000;
@@ -105,6 +129,9 @@ document.querySelector("#teamBudget").querySelector(".bi-dash-lg").addEventListe
     document.querySelector("#teamBudgetInput").value = valorFormateado;
 })
 
+/**
+ * Listeners for all the facility conditions inputs
+ */
 document.querySelectorAll(".facility-condition").forEach(function (elem) {
     elem.querySelector(".bi-chevron-up").addEventListener("click", function () {
         let value = (Number(elem.querySelector("input").value) + 0.05).toFixed(2)
@@ -122,6 +149,9 @@ document.querySelectorAll(".facility-condition").forEach(function (elem) {
     })
 })
 
+/**
+ * Listeners for the show and hide buttons facilities
+ */
 document.querySelector("#carDevButton").addEventListener("click", function () {
     if (document.querySelector("#operationButton").dataset.state === "show") {
         document.querySelector("#operationButton").click()
@@ -156,7 +186,10 @@ document.querySelector("#operationButton").addEventListener("click", function ()
 })
 
 
-
+/**
+ * Fills the level for each facility
+ * @param {object} teamData info of the team facilities
+ */
 function fillLevels(teamData) {
     teamData.slice(0, 15).forEach(function (elem) {
         let num = elem[0];
@@ -189,7 +222,9 @@ function fillLevels(teamData) {
     originalCostCap = Math.abs(teamData[19][0])
 }
 
-
+/**
+ * Listeners for the level indicators for each facility
+ */
 document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-right").forEach(function (elem) {
     elem.addEventListener("click", function () {
         let indicator = elem.parentNode.querySelector(".facility-level-indicator")
@@ -225,6 +260,9 @@ document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-left").forEa
 
 })
 
+/**
+ * Confirm button listener
+ */
 document.querySelector("#confirmTeam").addEventListener("click", function(){
     let seasonObjData = document.querySelector("#seasonObjectiveInput").value;
     let longTermData = longTermObj;
@@ -249,7 +287,10 @@ document.querySelector("#confirmTeam").addEventListener("click", function(){
 })
 
 
-
+/**
+ * Collects the data for each facility
+ * @returns array with tuples for each facility
+ */
 function gatherData() {
     let facilities = document.getElementsByClassName('facility');
     let result = [];
