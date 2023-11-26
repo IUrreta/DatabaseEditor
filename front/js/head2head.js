@@ -15,6 +15,8 @@ let qualiGraph;
 let compData;
 let annotationsToggle = true;
 let h2hCount = 0;
+let h2hList = []
+let graphList = []
 
 const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD",  "#B6BABD", "#c3dc00"]
 
@@ -284,7 +286,10 @@ function changeYearH2H(drivers){
  */
 function load_drivers_h2h(drivers) {
     let dest = document.querySelector(".drivers-modal-zone")
-
+    h2hList = []
+    graphList = []
+    dest.innerHTML = ""
+    console.log(drivers)
     drivers.forEach(function (driver) {
         let newDiv = document.createElement("div");
         newDiv.className = "col modal-driver";
@@ -297,6 +302,7 @@ function load_drivers_h2h(drivers) {
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
         let h2hBut = document.createElement("div")
+        h2hBut.dataset.driverid = driver[1]
         h2hBut.innerText = "H2H"
         h2hBut.className = "H2Hradio"
         h2hBut.dataset.state = "unchecked"
@@ -305,15 +311,18 @@ function load_drivers_h2h(drivers) {
                 h2hBut.dataset.state = "checked"
                 h2hBut.classList.add("activated")
                 h2hCount += 1
+                h2hList.push(h2hBut.dataset.driverid)
             }
             else if(h2hBut.dataset.state === "checked"){
                 h2hBut.dataset.state = "unchecked"
                 h2hBut.classList.remove("activated")
                 h2hCount -= 1
+                h2hList = h2hList.filter(x => x !== h2hBut.dataset.driverid)
             }
         })
         let graphBut = document.createElement("div")
         let graphIcon = document.createElement("i")
+        graphBut.dataset.driverid = driver[1]
         graphIcon.className = "bi bi-graph-up"
         graphBut.appendChild(graphIcon)
         graphBut.className = "GraphButton"
@@ -322,11 +331,12 @@ function load_drivers_h2h(drivers) {
             if(graphBut.dataset.state === "unchecked"){
                 graphBut.dataset.state = "checked"
                 graphBut.classList.add("activated")
+                graphList.push(graphBut.dataset.driverid)
             }
             else if(graphBut.dataset.state === "checked"){
                 graphBut.dataset.state = "unchecked"
                 graphBut.classList.remove("activated")
-
+                graphList = graphList.filter(x => x !== graphBut.dataset.driverid)
             }
         })
         let nameAndSurName = document.createElement("div")
@@ -341,6 +351,7 @@ function load_drivers_h2h(drivers) {
         manageColor(newDiv, spanLastName)
         dest.appendChild(newDiv)
     });
+    buttonsListeners()
 
     /*
     if(driver1Sel && driver2Sel){
@@ -349,6 +360,19 @@ function load_drivers_h2h(drivers) {
     */
     
 }
+
+
+function buttonsListeners(){
+    document.querySelectorAll("H2HRadio").forEach(function(button){
+        button.addEventListener("click", function(){
+            
+        })
+    })
+}
+
+document.querySelector("#confirmComparison").addEventListener("click",function(){
+    H2HReady()
+})
 
 /**
  * Event listeners for the 3 types of graphs
@@ -442,8 +466,8 @@ function H2HReady(){
     document.querySelector("#mainH2h").classList.remove("d-none")
     let data = {
         command: "H2HConfigured",
-        d1: driver1Sel.dataset.driverid,
-        d2: driver2Sel.dataset.driverid,
+        h2h: h2hList,
+        graph: graphList,
         year: document.querySelector("#yearButtonH2H").textContent
     }
 
@@ -471,6 +495,7 @@ function resetH2H() {
  * @param {object} data object with all the data of races in wich both drivers participated and their results 
  */
 function load_h2h_graphs(data) {
+    console.log(data)
     var labels = [];
     let d1_res = [];
     let d2_res = [];

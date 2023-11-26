@@ -1611,6 +1611,7 @@ a.bi-heart:hover {
 
 .buttons-drivers-modal{
   display: flex;
+  gap: 4px;
 }
 
 .H2Hradio:hover, .GraphButton:hover{

@@ -185,13 +185,15 @@ async def handle_command(message):
         await send_message_to_client(data_json_drivers)
 
     elif type=="H2HConfigured":
-        h2hRes = fetch_Head2Head((message["d1"],), (message["d2"],), (message["year"],), cursor)
+        h2hRes = fetch_Head2Head((message["h2h"][0],), (message["h2h"][1],), (message["year"],), cursor)
         h2h = ["H2H fetched", h2hRes]
         data_json_h2h = json.dumps(h2h)
         await send_message_to_client(data_json_h2h)
-        d1Res = fetch_oneDriver_seasonResults((message["d1"],), (message["year"],))
-        d2Res = fetch_oneDriver_seasonResults((message["d2"],), (message["year"],))
-        h2hDrivers = [d1Res, d2Res, fetch_events_done_from(message["year"])]
+        h2hDrivers = []
+        for id in message["graph"]:
+            res = fetch_oneDriver_seasonResults((id,), (message["year"],))
+            h2hDrivers.append(res)
+        h2hDrivers.append(fetch_events_done_from(message["year"]))
         h2hDrivers.insert(0, fetch_events_from(message["year"]))
         h2hDrivers.insert(0, "H2HDriver fetched")
         data_json_h2hdrivers = json.dumps(h2hDrivers)
