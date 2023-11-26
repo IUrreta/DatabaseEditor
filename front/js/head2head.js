@@ -17,8 +17,10 @@ let annotationsToggle = true;
 let h2hCount = 0;
 let h2hList = []
 let graphList = []
+let h2hTeamList = []
+let graphTeamList = []
 
-const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD",  "#B6BABD", "#c3dc00"]
+const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD", "#B6BABD", "#c3dc00"]
 
 Chart.register(ChartDataLabels);
 
@@ -151,15 +153,15 @@ function fill_bars(elem, d1_width, d2_width) {
     elem.querySelector(".driver2-bar").className = "driver2-bar"
     document.querySelector(".driver1-name").className = "driver1-name"
     document.querySelector(".driver2-name").className = "driver2-name"
-    elem.querySelector(".driver1-bar").classList.add(team_dict[d1_team] + "bar-primary")
-    document.querySelector(".driver1-name").classList.add(team_dict[d1_team] + "border-primary")
-    if (d1_team === d2_team) {
-        elem.querySelector(".driver2-bar").classList.add(team_dict[d2_team] + "bar-secondary")
-        document.querySelector(".driver2-name").classList.add(team_dict[d2_team] + "border-secondary")
+    elem.querySelector(".driver1-bar").classList.add(team_dict[h2hTeamList[0]] + "bar-primary")
+    document.querySelector(".driver1-name").classList.add(team_dict[h2hTeamList[0]] + "border-primary")
+    if (h2hTeamList[0] === h2hTeamList[1]) {
+        elem.querySelector(".driver2-bar").classList.add(team_dict[h2hTeamList[1]] + "bar-secondary")
+        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "border-secondary")
     }
     else {
-        elem.querySelector(".driver2-bar").classList.add(team_dict[d2_team] + "bar-primary")
-        document.querySelector(".driver2-name").classList.add(team_dict[d2_team] + "border-primary")
+        elem.querySelector(".driver2-bar").classList.add(team_dict[h2hTeamList[1]] + "bar-primary")
+        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "border-primary")
     }
     elem.querySelector(".driver1-bar").style.width = d1_width + "%"
     elem.querySelector(".driver2-bar").style.width = d2_width + "%"
@@ -229,7 +231,7 @@ function change_sprintView() {
 /**
  * Event listener for the annotatiosn switch
  */
-document.getElementById("annotationsToggle").addEventListener("click", function(){
+document.getElementById("annotationsToggle").addEventListener("click", function () {
     annotationsToggle = !annotationsToggle
     if (typeof driverGraph !== 'undefined' && driverGraph !== null) {
         driverGraph.options.plugins.annotation.annotations.line1.display = annotationsToggle
@@ -247,45 +249,12 @@ document.getElementById("annotationsToggle").addEventListener("click", function(
 })
 
 /**
- * Checks if both the selected drivers are in the new year's drivers to see if it can update the H2H
- * @param {object} drivers all drivers information
- */
-function changeYearH2H(drivers){
-    let ids = []
-    drivers.forEach(function(elem){
-        ids.push(elem[1])
-    })
-    let d1ID = Number(driver1Sel.dataset.driverid)
-    let d2ID = Number(driver2Sel.dataset.driverid)
-    let newA1;
-    let newA2;
-    if(ids.indexOf(d1ID) !== -1 && ids.indexOf(d2ID) !== -1){
-        document.querySelector("#d1Menu").querySelectorAll("a").forEach(function(elem){
-            if (Number(elem.dataset.driverid) === d1ID){
-                newA1 = elem;
-            }
-        })
-        document.querySelector("#d2Menu").querySelectorAll("a").forEach(function(elem){
-            if (Number(elem.dataset.driverid) === d2ID){
-                newA2 = elem;
-            }
-        })
-        nameTitleD1(newA1)
-        nameTitleD2(newA2)
-        H2HReady()
-    }
-    else{
-        resetH2H()
-    }
-
-}
-
-/**
  * Loads all the drivers into the menus of driver selection
  * @param {Object} drivers object with all the driver info
  */
 function load_drivers_h2h(drivers) {
     let dest = document.querySelector(".drivers-modal-zone")
+    h2hCount = 0;
     h2hList = []
     graphList = []
     dest.innerHTML = ""
@@ -298,50 +267,61 @@ function load_drivers_h2h(drivers) {
         let name = driver[0].split(" ")
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
+        spanLastName.dataset.teamid = driver[2];
         spanName.textContent = name[0] + " "
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
         let h2hBut = document.createElement("div")
         h2hBut.dataset.driverid = driver[1]
+        h2hBut.dataset.teamid = driver[2]
         h2hBut.innerText = "H2H"
         h2hBut.className = "H2Hradio"
         h2hBut.dataset.state = "unchecked"
-        h2hBut.addEventListener("click", function(){
-            if(h2hBut.dataset.state === "unchecked" && h2hCount < 2){
+        h2hBut.addEventListener("click", function () {
+            if (h2hBut.dataset.state === "unchecked" && h2hCount < 2) {
                 h2hBut.dataset.state = "checked"
                 h2hBut.classList.add("activated")
                 h2hCount += 1
                 h2hList.push(h2hBut.dataset.driverid)
+                h2hTeamList.push(h2hBut.dataset.teamid)
             }
-            else if(h2hBut.dataset.state === "checked"){
+            else if (h2hBut.dataset.state === "checked") {
                 h2hBut.dataset.state = "unchecked"
                 h2hBut.classList.remove("activated")
                 h2hCount -= 1
+                let ind = h2hList.indexOf(h2hBut.dataset.driverid)
+                h2hTeamList.splice(ind, 1)
                 h2hList = h2hList.filter(x => x !== h2hBut.dataset.driverid)
             }
         })
         let graphBut = document.createElement("div")
         let graphIcon = document.createElement("i")
         graphBut.dataset.driverid = driver[1]
+        graphBut.dataset.teamid = driver[2]
         graphIcon.className = "bi bi-graph-up"
         graphBut.appendChild(graphIcon)
         graphBut.className = "GraphButton"
         graphBut.dataset.state = "unchecked"
-        graphBut.addEventListener("click", function(){
-            if(graphBut.dataset.state === "unchecked"){
+        graphBut.addEventListener("click", function () {
+            if (graphBut.dataset.state === "unchecked") {
                 graphBut.dataset.state = "checked"
                 graphBut.classList.add("activated")
                 graphList.push(graphBut.dataset.driverid)
+                graphTeamList.push(graphBut.dataset.teamid)
+
             }
-            else if(graphBut.dataset.state === "checked"){
+            else if (graphBut.dataset.state === "checked") {
                 graphBut.dataset.state = "unchecked"
                 graphBut.classList.remove("activated")
+                let ind = graphList.indexOf(graphBut.dataset.driverid)
+                graphTeamList.splice(ind, 1)
                 graphList = graphList.filter(x => x !== graphBut.dataset.driverid)
             }
         })
-        let nameAndSurName = document.createElement("div")
+        
         let buttons = document.createElement("div")
         buttons.classList = "buttons-drivers-modal"
+        let nameAndSurName = document.createElement("div")
         nameAndSurName.appendChild(spanName)
         nameAndSurName.appendChild(spanLastName)
         buttons.appendChild(h2hBut)
@@ -353,25 +333,24 @@ function load_drivers_h2h(drivers) {
     });
     buttonsListeners()
 
-    /*
-    if(driver1Sel && driver2Sel){
-        changeYearH2H(drivers)
-    }
-    */
-    
+
+
 }
 
 
-function buttonsListeners(){
-    document.querySelectorAll("H2HRadio").forEach(function(button){
-        button.addEventListener("click", function(){
-            
+function buttonsListeners() {
+    document.querySelectorAll("H2HRadio").forEach(function (button) {
+        button.addEventListener("click", function () {
+
         })
     })
 }
 
-document.querySelector("#confirmComparison").addEventListener("click",function(){
+document.querySelector("#confirmComparison").addEventListener("click", function () {
     H2HReady()
+    let drivers = document.querySelectorAll(".H2Hradio.activated")
+    nameTitleD1(drivers[0].parentElement.parentElement)
+    nameTitleD2(drivers[1].parentElement.parentElement)
 })
 
 /**
@@ -398,38 +377,12 @@ document.querySelector("#qualiForm").addEventListener("click", function (elem) {
     document.querySelector("#progressionGraph").classList.add("d-none")
 })
 
-/**
- * Adds the eventlisteners for all the selectable items in the drivers selection menu
- * @param {a} aDriver2 <a> elem of the driver 2
- * @param {a} aDriver1 <a> elem of the driver 1
- */
-function listeners_h2h(aDriver2, aDriver1) {
-    aDriver1.addEventListener("click", function () {
-        if (!driver1_selected) {
-            driver1_selected = true
-        }
-        driver1Sel = aDriver1
-        nameTitleD1(aDriver1)
-        if (driver1_selected && driver2_selected) {
-            H2HReady()
-        }
-    })
-    aDriver2.addEventListener("click", function () {
-        if (!driver2_selected) {
-            driver2_selected = true
-        }
-        nameTitleD2(aDriver2)
-        if (driver1_selected && driver2_selected) {
-            H2HReady()
-        }
-    })
-}
 
 /**
  * Updates the driver 1 name card with the d1 information stored in aDriver1
  * @param {a} aDriver1 clickable element of the driver 1 dropdown
  */
-function nameTitleD1(aDriver1){
+function nameTitleD1(aDriver1) {
     driver1Sel = aDriver1
     document.querySelector(".driver1-first").textContent = driver1Sel.firstChild.children[0].innerText
     document.querySelector(".driver1-second").textContent = driver1Sel.firstChild.children[1].innerText
@@ -437,8 +390,6 @@ function nameTitleD1(aDriver1){
     d1_team = driver1Sel.firstChild.children[1].dataset.teamid
     document.querySelector(".driver1-second").className = "driver1-second bold-font"
     let newName = driver1Sel.firstChild.cloneNode(true)
-    document.querySelector("#driver1Button").innerHTML = ""
-    document.querySelector("#driver1Button").appendChild(newName)
     manageColor(document.querySelector(".driver1-second"), document.querySelector(".driver1-second"))
 }
 
@@ -446,15 +397,13 @@ function nameTitleD1(aDriver1){
  * Updates the driver 2 name card with the d1 information stored in aDriver2
  * @param {a} aDriver2 clickable element of the driver 2 dropdown
  */
-function nameTitleD2(aDriver2){
+function nameTitleD2(aDriver2) {
     driver2Sel = aDriver2
     document.querySelector(".driver2-first").textContent = driver2Sel.firstChild.children[0].innerText
     document.querySelector(".driver2-second").textContent = driver2Sel.firstChild.children[1].innerText
     document.querySelector(".driver2-second").dataset.teamid = driver2Sel.firstChild.children[1].dataset.teamid
     document.querySelector(".driver2-second").className = "driver2-second bold-font"
     let newName2 = driver2Sel.firstChild.cloneNode(true)
-    document.querySelector("#driver2Button").innerHTML = ""
-    document.querySelector("#driver2Button").appendChild(newName2)
     d2_team = driver2Sel.firstChild.children[1].dataset.teamid
     manageColor(document.querySelector(".driver2-second"), document.querySelector(".driver2-second"))
 }
@@ -462,7 +411,7 @@ function nameTitleD2(aDriver2){
 /**
  * Sends the message that the H2H is properly configured to fetch results
  */
-function H2HReady(){
+function H2HReady() {
     document.querySelector("#mainH2h").classList.remove("d-none")
     let data = {
         command: "H2HConfigured",
@@ -475,134 +424,13 @@ function H2HReady(){
 }
 
 
-/**
- * Resets the H2H comparision
- */
-function resetH2H() {
-    document.querySelector("#mainH2h").classList.add("d-none")
-    document.querySelector("#driver1Button").innerHTML = ""
-    document.querySelector("#driver1Button").textContent = "Driver 1"
-    document.querySelector("#driver2Button").innerHTML = ""
-    document.querySelector("#driver2Button").textContent = "Driver 2"
-    driver1_selected = false;
-    driver2_selected = false;
-    driver1Sel = null;
-    driver2Sel = null;
-}
 
-/**
- * Prepares the data for the head to head graph
- * @param {object} data object with all the data of races in wich both drivers participated and their results 
- */
-function load_h2h_graphs(data) {
-    console.log(data)
+
+function load_labels_initialize_graphs(data) {
     var labels = [];
-    let d1_res = [];
-    let d2_res = [];
-    let d1_races = [];
-    let d1_provisonal = [];
-    let d2_races = [];
-    let d2_provisonal = [];
-    let d1_points_provisional = []
-    let d2_points_provisional = []
-    let d1_points = [0]
-    let d2_points = [0]
-    let d1_qualis = [];
-    let d1_provisonal_q = [];
-    let d2_qualis = [];
-    let d2_provisonal_q = [];
-
-    data[1].slice(3).forEach(function (elem) {
-        d1_races.push(elem[0])
-        d1_provisonal.push(elem[1])
-        d1_provisonal_q.push(elem[4])
-        let ptsThatRace = elem[2];
-        if (ptsThatRace === -1) {
-            ptsThatRace = 0;
-        }
-        if (elem.length === 8) {
-            d1_points_provisional.push(ptsThatRace + elem[5])
-        }
-        else {
-            d1_points_provisional.push(ptsThatRace)
-        }
-    })
-
-    data[2].slice(3).forEach(function (elem) {
-        d2_races.push(elem[0])
-        d2_provisonal.push(elem[1])
-        d2_provisonal_q.push(elem[4])
-        let ptsThatRace = elem[2];
-        if (ptsThatRace === -1) {
-            ptsThatRace = 0;
-        }
-        if (elem.length === 8) {
-            d2_points_provisional.push(ptsThatRace + elem[5])
-        }
-        else {
-            d2_points_provisional.push(ptsThatRace)
-        }
-    })
-
-
     data[0].forEach(function (elem) {
         labels.push(races_names[elem[1]])
-        let index1 = d1_races.indexOf(elem[0])
-        let index2 = d2_races.indexOf(elem[0])
-        if (index1 !== -1) {
-            if (d1_provisonal[index1] === -1) {
-                d1_res.push(NaN)
-            }
-            else {
-                d1_res.push(d1_provisonal[index1])
-            }
-            d1_points.push(d1_points_provisional[index1] + d1_points[d1_points.length - 1])
-            d1_qualis.push(d1_provisonal_q[index1])
-
-        }
-        else {
-            d1_res.push(NaN)
-            d1_qualis.push(NaN)
-            if (data[3].indexOf(elem[0]) !== -1) {
-                d1_points.push(d1_points[d1_points.length - 1])
-            }
-            else {
-                d1_points.push(NaN)
-            }
-
-        }
-        if (index2 !== -1) {
-            if (d2_provisonal[index2] === -1) {
-                d2_res.push(NaN)
-            }
-            else {
-                d2_res.push(d2_provisonal[index2])
-            }
-            d2_points.push(d2_points_provisional[index2] + d2_points[d2_points.length - 1])
-            d2_qualis.push(d2_provisonal_q[index2])
-        }
-        else {
-            d2_res.push(NaN)
-            d2_qualis.push(NaN)
-            if (data[3].indexOf(elem[0]) !== -1) {
-                d2_points.push(d2_points[d2_points.length - 1])
-            }
-            else {
-                d2_points.push(NaN)
-            }
-        }
     })
-    d1_points.shift()
-    d2_points.shift()
-
-    let d1_color = colors_dict[data[1][1] + "0"]
-    let d2_color;
-    if (data[1][1] === data[2][1]) {
-        d2_color = colors_dict[data[2][1] + "1"]
-    }
-    else {
-        d2_color = colors_dict[data[2][1] + "0"]
-    }
     if (typeof driverGraph !== 'undefined' && driverGraph !== null) {
         driverGraph.destroy();
     }
@@ -612,10 +440,138 @@ function load_h2h_graphs(data) {
     if (typeof qualiGraph !== 'undefined' && qualiGraph !== null) {
         qualiGraph.destroy();
     }
-    createRaceChart(labels, d1_res, d2_res, d1_color, d2_color, data[1][0], data[2][0])
-    createQualiChart(labels, d1_qualis, d2_qualis, d1_color, d2_color, data[1][0], data[2][0])
-    createPointsChart(labels, d1_points, d2_points, d1_color, d2_color, data[1][0], data[2][0])
+    createRaceChart(labels)
+    createQualiChart(labels)
+    createPointsChart(labels)
+    load_graphs_data(data)
+}
 
+function load_graphs_data(data) {
+
+    data.forEach(function (driv, index) {
+        if (index !== 0 && index !== data.length - 1) {
+            let d1_res = [];
+            let d1_races = [];
+            let d1_provisonal = [];
+            let d1_points_provisional = []
+            let d1_points = [0]
+            let d1_qualis = [];
+            let d1_provisonal_q = [];
+
+            data[index].slice(3).forEach(function (elem) {
+                d1_races.push(elem[0])
+                d1_provisonal.push(elem[1])
+                d1_provisonal_q.push(elem[4])
+                let ptsThatRace = elem[2];
+                if (ptsThatRace === -1) {
+                    ptsThatRace = 0;
+                }
+                if (elem.length === 8) {
+                    d1_points_provisional.push(ptsThatRace + elem[5])
+                }
+                else {
+                    d1_points_provisional.push(ptsThatRace)
+                }
+            })
+
+
+            data[0].forEach(function (elem) {
+                let index1 = d1_races.indexOf(elem[0])
+                if (index1 !== -1) {
+                    if (d1_provisonal[index1] === -1) {
+                        d1_res.push(NaN)
+                    }
+                    else {
+                        d1_res.push(d1_provisonal[index1])
+                    }
+                    d1_points.push(d1_points_provisional[index1] + d1_points[d1_points.length - 1])
+                    d1_qualis.push(d1_provisonal_q[index1])
+
+                }
+                else {
+                    d1_res.push(NaN)
+                    d1_qualis.push(NaN)
+                    if (data[data.length - 1].indexOf(elem[0]) !== -1) {
+                        d1_points.push(d1_points[d1_points.length - 1])
+                    }
+                    else {
+                        d1_points.push(NaN)
+                    }
+
+                }
+
+            })
+            d1_points.shift()
+            let d1Id = graphList[index-1]
+            let d1pos = graphList.indexOf(d1Id)
+            let d1_color
+            if(d1pos === graphTeamList.indexOf(driv[1].toString())){
+                d1_color = colors_dict[data[index][1] + "0"]
+            }
+            else{
+                d1_color = colors_dict[data[index][1] + "1"]
+            }
+            driverGraph.data.datasets.push({
+                label: driv[0],
+                data: d1_res,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                borderWidth: 2,
+                fill: false,
+            })
+            qualiGraph.data.datasets.push({
+                label: driv[0],
+                data: d1_qualis,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                borderWidth: 2,
+                fill: false,
+            })
+            pointsGraph.data.datasets.push({
+                label: driv[0],
+                data: d1_points,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+                datalabels: {
+                    color: function () {
+                        if (lightColors.indexOf(d1_color) !== -1) {
+                            return "#272727"
+                        }
+                        else {
+                            return '#eeeef1'
+                        }
+                    },
+                    backgroundColor: d1_color,
+                    display: function (context) {
+                        if (context.dataIndex === findLastNonNaNIndex(context.dataset.data)) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    borderRadius: 5,
+                    font: {
+                        family: "Formula1Bold"
+                    }
+
+                },
+            })
+        }
+
+    })
+
+
+    /*
+    
+    let d2_color;
+
+    */
+    driverGraph.update()
+    qualiGraph.update()
+    pointsGraph.update()
 }
 
 /**
@@ -635,35 +591,10 @@ function findLastNonNaNIndex(arr) {
 /**
  * Creates the head to head race chart
  * @param {Array} labelsArray array with all the labels for the races
- * @param {Array} d1Results array with all the driver 1 results
- * @param {Array} d2Results array with all the driver 2 results
- * @param {string} d1_color color for the driver 1 line
- * @param {string} d2_color color for the driver 2 line
- * @param {string} d1_name name of the first driver
- * @param {string} d2_name name of the second driver
  */
-function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, d1_name, d2_name) {
+function createRaceChart(labelsArray) {
     const dataD = {
         labels: labelsArray,
-        datasets: [
-            {
-                label: d1_name,
-                data: d1Results,
-                borderColor: d1_color,
-                pointBackgroundColor: d1_color,
-                borderWidth: 2,
-                fill: false,
-            },
-            {
-                label: d2_name,
-                data: d2Results,
-                borderColor: d2_color,
-                pointBackgroundColor: d2_color,
-                borderWidth: 2,
-                fill: false,
-
-            },
-        ]
     };
     driverGraph = new Chart(
         document.getElementById('driverGraph'),
@@ -777,35 +708,10 @@ function createRaceChart(labelsArray, d1Results, d2Results, d1_color, d2_color, 
 /**
  * Creates the head to head qualifying chart
  * @param {Array} labelsArray array with all the labels for the races
- * @param {Array} d1Quali array with all the driver 1 quali results
- * @param {Array} d2Quali array with all the driver 2 quali results
- * @param {string} d1_color color for the driver 1 line
- * @param {string} d2_color color for the driver 2 line
- * @param {string} d1_name name of the first driver
- * @param {string} d2_name name of the second driver
  */
-function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_name, d2_name) {
+function createQualiChart(labelsArray) {
     const dataD = {
         labels: labelsArray,
-        datasets: [
-            {
-                label: d1_name,
-                data: d1Quali,
-                borderColor: d1_color,
-                pointBackgroundColor: d1_color,
-                borderWidth: 2,
-                fill: false,
-            },
-            {
-                label: d2_name,
-                data: d2Quali,
-                borderColor: d2_color,
-                pointBackgroundColor: d2_color,
-                borderWidth: 2,
-                fill: false,
-
-            },
-        ]
     };
     qualiGraph = new Chart(
         document.getElementById('qualiGraph'),
@@ -925,83 +831,10 @@ function createQualiChart(labelsArray, d1Quali, d2Quali, d1_color, d2_color, d1_
 /**
  * Creates the head to head qualifying chart
  * @param {Array} labelsArray array with all the labels for the races
- * @param {Array} d1Points array with all the driver 1 points
- * @param {Array} d2Points array with all the driver 2 poìnts
- * @param {string} d1_color color for the driver 1 line
- * @param {string} d2_color color for the driver 2 line
- * @param {string} d1_name name of the first driver
- * @param {string} d2_name name of the second driver
  */
-function createPointsChart(labelsArray, d1Points, d2Points, d1_color, d2_color, d1_name, d2_name) {
+function createPointsChart(labelsArray) {
     const dataD = {
         labels: labelsArray,
-        datasets: [
-            {
-                label: d1_name,
-                data: d1Points,
-                borderColor: d1_color,
-                pointBackgroundColor: d1_color,
-                borderWidth: 2,
-                pointRadius: 0,
-                fill: false,
-                datalabels: {
-                    color: function(){
-                        if(lightColors.indexOf(d1_color) !== -1){
-                            return "#272727"
-                        }
-                        else{
-                            return '#eeeef1'
-                        }
-                    },
-                    backgroundColor: d1_color,
-                    display: function(context) {
-                        if (context.dataIndex === findLastNonNaNIndex(context.dataset.data)) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    },
-                    borderRadius: 5,
-                    font: {
-                        family: "Formula1Bold"
-                    }
-
-                },
-            },
-            {
-                label: d2_name,
-                data: d2Points,
-                borderColor: d2_color,
-                pointBackgroundColor: d2_color,
-                borderWidth: 2,
-                pointRadius: 0,
-                fill: false,
-                datalabels: {
-                    color: function(){
-                        if(lightColors.indexOf(d2_color) !== -1){
-                            return "#272727"
-                        }
-                        else{
-                            return '#eeeef1'
-                        }
-                    },          
-                    backgroundColor: d2_color,
-                    display: function(context) {
-                        if (context.dataIndex === findLastNonNaNIndex(context.dataset.data)) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    },
-                    borderRadius: 5,
-                    font: {
-                        family: "Formula1Bold"
-                    }
-
-                },
-
-            },
-        ]
     };
     pointsGraph = new Chart(
         document.getElementById('progressionGraph'),

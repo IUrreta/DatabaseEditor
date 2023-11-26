@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
             load_drivers_h2h(message.slice(1));
         },
         "H2HDriver fetched": (message) => {
-            load_h2h_graphs(message.slice(1));
+            load_labels_initialize_graphs(message.slice(1));
         },
         "Results fetched": (message) => {
             createDriversTable(message[1]);
