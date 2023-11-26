@@ -1597,7 +1597,23 @@ a.bi-heart:hover {
   cursor: pointer;
 }
 
-.H2Hradio:hover{
+.GraphButton{
+  border: 2px solid transparent;
+  border-radius: 7px;
+  color: #dedde6;
+  background-color: #797599;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  height: 28px;
+  font-size: 16px;
+  padding: 0 3px;
+  cursor: pointer;
+}
+
+.buttons-drivers-modal{
+  display: flex;
+}
+
+.H2Hradio:hover, .GraphButton:hover{
   color: white;
   background-color: #807ca1;
   border-color: white;
@@ -1606,6 +1622,12 @@ a.bi-heart:hover {
 .H2Hradio.activated{
   background-color: #34c297;
   border-color: #88ebcd;
+  color: white;
+}
+
+.GraphButton.activated{
+  background-color: #34bdc2;
+  border-color: #95ebee;
   color: white;
 }
 

@@ -312,11 +312,32 @@ function load_drivers_h2h(drivers) {
                 h2hCount -= 1
             }
         })
+        let graphBut = document.createElement("div")
+        let graphIcon = document.createElement("i")
+        graphIcon.className = "bi bi-graph-up"
+        graphBut.appendChild(graphIcon)
+        graphBut.className = "GraphButton"
+        graphBut.dataset.state = "unchecked"
+        graphBut.addEventListener("click", function(){
+            if(graphBut.dataset.state === "unchecked"){
+                graphBut.dataset.state = "checked"
+                graphBut.classList.add("activated")
+            }
+            else if(graphBut.dataset.state === "checked"){
+                graphBut.dataset.state = "unchecked"
+                graphBut.classList.remove("activated")
+
+            }
+        })
         let nameAndSurName = document.createElement("div")
+        let buttons = document.createElement("div")
+        buttons.classList = "buttons-drivers-modal"
         nameAndSurName.appendChild(spanName)
         nameAndSurName.appendChild(spanLastName)
+        buttons.appendChild(h2hBut)
+        buttons.append(graphBut)
         newDiv.appendChild(nameAndSurName)
-        newDiv.appendChild(h2hBut)
+        newDiv.appendChild(buttons)
         manageColor(newDiv, spanLastName)
         dest.appendChild(newDiv)
     });
