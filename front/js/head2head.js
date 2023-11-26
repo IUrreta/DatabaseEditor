@@ -14,6 +14,7 @@ let pointsGraph;
 let qualiGraph;
 let compData;
 let annotationsToggle = true;
+let h2hCount = 0;
 
 const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD",  "#B6BABD", "#c3dc00"]
 
@@ -282,35 +283,49 @@ function changeYearH2H(drivers){
  * @param {Object} drivers object with all the driver info
  */
 function load_drivers_h2h(drivers) {
-    let driver1Menu = document.querySelector("#d1Menu")
-    driver1Menu.innerHTML = ""
-    let driver2Menu = document.querySelector("#d2Menu")
-    driver2Menu.innerHTML = ""
-    drivers.forEach(function (elem) {
-        let nameDiv = document.createElement("div");
-        let name = elem[0].split(" ")
+    let dest = document.querySelector(".drivers-modal-zone")
+
+    drivers.forEach(function (driver) {
+        let newDiv = document.createElement("div");
+        newDiv.className = "col modal-driver";
+        newDiv.dataset.driverid = driver[1];
+        newDiv.dataset.teamid = driver[2];
+        let name = driver[0].split(" ")
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
         spanName.textContent = name[0] + " "
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
-        spanLastName.dataset.teamid = elem[2]
-        let a = document.createElement("a");
-        a.dataset.driverid = elem[1]
-        nameDiv.appendChild(spanName)
-        nameDiv.appendChild(spanLastName)
-        a.appendChild(nameDiv)
-        a.classList = "dropdown-item"
-        a.classList.add(team_dict[elem[2]] + "border-down")
-        a.style.cursor = "pointer"
-        let a2 = a.cloneNode(true)
-        driver1Menu.appendChild(a2);
-        driver2Menu.appendChild(a);
-        listeners_h2h(a, a2)
-    })
+        let h2hBut = document.createElement("div")
+        h2hBut.innerText = "H2H"
+        h2hBut.className = "H2Hradio"
+        h2hBut.dataset.state = "unchecked"
+        h2hBut.addEventListener("click", function(){
+            if(h2hBut.dataset.state === "unchecked" && h2hCount < 2){
+                h2hBut.dataset.state = "checked"
+                h2hBut.classList.add("activated")
+                h2hCount += 1
+            }
+            else if(h2hBut.dataset.state === "checked"){
+                h2hBut.dataset.state = "unchecked"
+                h2hBut.classList.remove("activated")
+                h2hCount -= 1
+            }
+        })
+        let nameAndSurName = document.createElement("div")
+        nameAndSurName.appendChild(spanName)
+        nameAndSurName.appendChild(spanLastName)
+        newDiv.appendChild(nameAndSurName)
+        newDiv.appendChild(h2hBut)
+        manageColor(newDiv, spanLastName)
+        dest.appendChild(newDiv)
+    });
+
+    /*
     if(driver1Sel && driver2Sel){
         changeYearH2H(drivers)
     }
+    */
     
 }
 

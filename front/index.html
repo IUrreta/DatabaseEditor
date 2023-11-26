@@ -115,6 +115,34 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal fade" id="compDataModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Comparison data selection</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButtonH2H"
+          data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Year
+        </button>
+        <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
+        </ul>
+        <div class="drievrs-modal-section">
+          <div class="drivers-modal-title component-subtitle bold-font mt-3">Select drivers</div>
+          <div class="drivers-modal-zone mt-2"></div>
+
+        </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+            <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
+            id="confirmButton">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="versionPanel"></div>
   <div class="patchNotesPanel">
     <i class="bi bi-list-ul" data-bs-toggle="modal" data-bs-target="#patchModal">&nbsp;Patch Notes</i>
@@ -155,7 +183,7 @@
       <div class="pt-2 ps-3" style="padding-bottom: 0.6rem;">
         <ul class="nav nav-pills">
           <li class="nav-item">
-            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="h2hpill">COMPARISION</a>
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="h2hpill">COMPARISON</a>
           </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="viewerpill">STANDINGS</a>
@@ -190,12 +218,18 @@
         <div class="col h2h-title">
           <div class="ps-3"
             style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center;">
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButtonH2H"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Year
+            <button class="custom-dropdown custom-button bold-font" id="compDataButton" data-bs-toggle="modal"
+              data-bs-target="#compDataModal">
+              Data
             </button>
-            <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
-            </ul>
+          </div>
+          <div class="ps-3"
+            style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center; right: 20px;">
+            <div class="form-check form-switch auto-contract ms-3 pt-2">
+              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="annotationsToggle"
+                checked>
+              <label class="form-check-label" for="flexSwitchCheckDefault">Annotations</label>
+            </div>
             <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
               id="graphTypeButton" data-bs-toggle="dropdown">
               Race form
@@ -204,26 +238,6 @@
               <a class="dropdown-item" style="cursor: pointer;" id="raceForm">Race form</a>
               <a class="dropdown-item" style="cursor: pointer;" id="qualiForm">Qualifying form</a>
               <a class="dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
-            </ul>
-            <div class="form-check form-switch auto-contract ms-3 pt-2">
-              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="annotationsToggle"
-                checked>
-              <label class="form-check-label" for="flexSwitchCheckDefault">Annotations</label>
-            </div>
-          </div>
-          <div class="buttons-h2h"
-            style="position: absolute; right: 20px; margin-top: 0.5rem !important; margin-bottom: 1rem !important; ">
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="driver2Button"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Driver 2
-            </button>
-            <ul class="dropdown-menu driversDropDownH2H" id="d2Menu" style="font-family: Formula1;">
-            </ul>
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="driver1Button"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Driver 1
-            </button>
-            <ul class="dropdown-menu driversDropDownH2H" id="d1Menu" style="font-family: Formula1;">
             </ul>
           </div>
           <div class="title bold-font py-3">

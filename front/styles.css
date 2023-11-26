@@ -1459,6 +1459,15 @@ a.bi-heart:hover {
   z-index: 2000 !important;
 }
 
+.drivers-modal-zone{
+  border: 1px solid #797599;
+  border-radius: 10px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+
 .contract-details div{
   color: #dedde6;
 }
@@ -1576,6 +1585,51 @@ a.bi-heart:hover {
   font-size: 15px;
 }
 
+.H2Hradio{
+  border: 2px solid transparent;
+  border-radius: 7px;
+  color: #dedde6;
+  background-color: #797599;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  height: 28px;
+  font-size: 16px;
+  padding: 0 3px;
+  cursor: pointer;
+}
+
+.H2Hradio:hover{
+  color: white;
+  background-color: #807ca1;
+  border-color: white;
+}
+
+.H2Hradio.activated{
+  background-color: #34c297;
+  border-color: #88ebcd;
+  color: white;
+}
+
+
+
+.modal-dialog-lg{
+  min-width: 1300px !important;
+}
+
+.modal-driver{
+  background-color: #4e4b69;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 6px;
+  margin: 8px;
+  color: #dedde6;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  position: relative;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .free-driver .custom-icon {
   color: transparent;
   transition: opacity 0.4s;
@@ -1613,6 +1667,12 @@ a.bi-heart:hover {
 .free-driver:hover {
   border-color: white;
   cursor: grab !important;
+  color: white;
+  background-color: #4e4b69;
+}
+
+.modal-driver:hover{
+  border-color: white;
   color: white;
   background-color: #4e4b69;
 }
@@ -2066,7 +2126,7 @@ input::-webkit-inner-spin-button {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
-  padding-top: 9px;
+  padding-top: 7px;
   padding-left: 10px;
 }
 
