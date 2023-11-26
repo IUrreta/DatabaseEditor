@@ -158,6 +158,12 @@ a.bi-heart:hover {
   padding-right: 2rem;
 }
 
+.annotations {
+  color: #dedde6;
+  font-size: 20px;
+  padding-right: 1rem;
+}
+
 .number-details {
   display: flex;
   flex-direction: row;
