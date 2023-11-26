@@ -198,13 +198,13 @@ async def handle_command(message):
         await send_message_to_client(data_json_h2hdrivers)
 
     elif type=="teamRequest":
-        teamData = fetch_teamData(message["teamID"], cursor)
+        teamData = fetch_teamData(message["teamID"])
         teamData.insert(0, "TeamData Fetched")
         data_json_teamData = json.dumps(teamData)
         await send_message_to_client(data_json_teamData)
 
     elif type=="editTeam":
-        edit_team(message, cursor)
+        edit_team(message)
         process_repack("../result", path)
         info = ["Succesfully edited " + str(message["teamID"])]
         info_json = json.dumps(info)

@@ -1,5 +1,5 @@
 import sqlite3
-def fetch_teamData(teamID, c):
+def fetch_teamData(teamID):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
     levCon = cursor.execute("SELECT BuildingID, DegradationValue FROM Buildings_HQ WHERE TeamID = " + str(teamID)).fetchall()
@@ -11,7 +11,11 @@ def fetch_teamData(teamID, c):
     seasonObj = cursor.execute("SELECT TargetPos FROM Board_SeasonObjectives WHERE TeamID = " + str(teamID) + " AND SeasonID = " + str(day_season[1])).fetchone()
     maxTargetYear = cursor.execute("SELECT MAX(TargetEndYear) FROM Board_Objectives WHERE TeamID = " +str(teamID)).fetchone()
     longTermObj = cursor.execute("SELECT Type, TargetEndYear FROM Board_Objectives WHERE TeamID = " + str(teamID) + " AND TargetEndYear =" + str(maxTargetYear[0])).fetchone()
-    confidence = cursor.execute("SELECT Confidence FROM Board_Confidence WHERE Season = " + str(day_season[1])).fetchone()
+    playerTeam = cursor.execute("SELECT TeamID FROM Player").fetchone()
+    if(playerTeam[0] == int(teamID)):
+        confidence = cursor.execute("SELECT Confidence FROM Board_Confidence WHERE Season = " + str(day_season[1])).fetchone()
+    else:
+        confidence = (-1,)
     data.extend([seasonObj, longTermObj, teamBalance, costCap, confidence, day_season[1]])
 
     conn.commit()
@@ -19,7 +23,7 @@ def fetch_teamData(teamID, c):
 
     return data
 
-def edit_team(info, c):
+def edit_team(info):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()

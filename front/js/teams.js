@@ -217,9 +217,24 @@ function fillLevels(teamData) {
     document.querySelector("#longTermInput").value = teamData[17][1]
     document.querySelector("#teamBudgetInput").value = teamData[18].toLocaleString("en-US") + "$"
     document.querySelector("#costCapInput").value = Math.abs(teamData[19][0]).toLocaleString("en-US") + "$"
+    manageConfidence(teamData[20])
     document.querySelector("#confidenceInput").value = teamData[20]
     currYear = teamData[21]
     originalCostCap = Math.abs(teamData[19][0])
+}
+
+/**
+ * Manages state of blocking div for confidence
+ * @param {Number} data Confidence number. If -1, blocking div is activated
+ */
+function manageConfidence(data){
+    console.log(data)
+    if(Number(data[0]) !== -1){
+        document.querySelector(".blocking-confidence").classList.add("d-none")
+    }
+    else{
+        document.querySelector(".blocking-confidence").classList.remove("d-none")
+    }
 }
 
 /**

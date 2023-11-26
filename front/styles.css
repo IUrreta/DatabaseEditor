@@ -1633,6 +1633,21 @@ a.bi-heart:hover {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.blocking-confidence{
+  background-color: rgba(128, 128, 128, 0.5);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  backdrop-filter: blur(3px);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  width: 46%;
+  height: 7%;
+  position: absolute;
+  border-radius: 10px;
+}
+
 #calendarBlockDiv {
   background-color: rgba(128, 128, 128, 0.733);
   backdrop-filter: blur(3px);
