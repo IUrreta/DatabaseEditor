@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const carPill = document.getElementById("carpill");
     const viewPill = document.getElementById("viewerpill");
     const h2hPill = document.getElementById("h2hpill");
+    const constructorsPill = document.getElementById("constructorspill")
 
     const driverTransferDiv = document.getElementById("driver_transfers");
     const editStatsDiv = document.getElementById("edit_stats");
@@ -87,10 +88,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const carPerformanceDiv = document.getElementById("car_performance");
     const viewDiv = document.getElementById("season_viewer");
     const h2hDiv = document.getElementById("head2head_viewer");
+    const teamsDiv = document.getElementById("edit_teams");
 
     const patchNotesBody = document.getElementById("patchNotesBody")
 
-    const scriptsArray = [h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv,]
+    const scriptsArray = [h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv, teamsDiv]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -161,6 +163,11 @@ document.addEventListener('DOMContentLoaded', function () {
             setTimeout(function () {
                 loadTeamsTable(message.slice(2)); // Llamar a la función después de 1 segundo
             }, 20);
+        },
+        "TeamData Fetched": (message)=>{
+            console.log(message)
+            fillLevels(message.slice(1))
+
         }
     };
 
@@ -500,6 +507,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 socket.send(JSON.stringify(dataSaves))
                 isSaveSelected = 1;
                 document.getElementById("editStatsPanel").className = "left-panel-stats d-none";
+                resetTeamEditing()
                 statPanelShown = 0;
                 document.querySelectorAll(".performance-show").forEach(function (elem) {
                     elem.classList.add("d-none")
@@ -570,7 +578,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * Pills and their eventListeners
      */
     h2hPill.addEventListener("click", function () {
-        manageScripts("show", "hide", "hide", "hide", "hide", "hide")
+        manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("data")
@@ -578,7 +586,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     viewPill.addEventListener("click", function () {
-        manageScripts("hide", "show", "hide", "hide", "hide", "hide")
+        manageScripts("hide", "show", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("data")
@@ -586,7 +594,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     driverTransferPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "show", "hide", "hide", "hide")
+        manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
@@ -594,21 +602,29 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     editStatsPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "show", "hide", "hide")
+        manageScripts("hide", "hide", "hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
     })
 
+    constructorsPill.addEventListener("click", function () {
+        manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show")
+        scriptSelected = 1
+        check_selected()
+        managePillsTitle("edit")
+    })
+    
+
     CalendarPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "hide", "show", "hide")
+        manageScripts("hide", "hide", "hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
     })
 
     carPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "hide", "hide", "show")
+        manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")

@@ -164,7 +164,7 @@ a.bi-heart:hover {
   align-items: center;
 }
 
-#d1Menu, #d2Menu{
+#d1Menu, #d2Menu, #teamMenu{
   max-height: 200px;
   overflow-y: scroll;
 }
@@ -174,11 +174,11 @@ a.bi-heart:hover {
   overflow-y: scroll;
 }
 
-#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar {
+#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar {
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb {
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb {
   background-color: white;
   border-radius: 3px;
 }
@@ -201,7 +201,7 @@ a.bi-heart:hover {
   border-bottom: 2px solid white  ;
 }
 
-.modal-subtitle {
+.modal-subtitle, .component-subtitle{
   color: #dedde6;
 }
 
@@ -566,6 +566,18 @@ a.bi-heart:hover {
   margin-left: 10px;
 }
 
+#edit_teams{
+  display: flex;
+  flex-direction: column;
+}
+
+#objAndYear{
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
+}
+
 .main-columns-drag-section {
   margin-left: 14px;
   margin-right: 5%;
@@ -650,7 +662,7 @@ a.bi-heart:hover {
 #editPills{
   position: absolute;
   z-index: 1;
-  right: 280px;
+  right: 350px;
   transition: color 0.4s;
 }
 
@@ -1621,6 +1633,21 @@ a.bi-heart:hover {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.blocking-confidence{
+  background-color: rgba(128, 128, 128, 0.5);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  backdrop-filter: blur(3px);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  width: 46%;
+  height: 7%;
+  position: absolute;
+  border-radius: 10px;
+}
+
 #calendarBlockDiv {
   background-color: rgba(128, 128, 128, 0.733);
   backdrop-filter: blur(3px);
@@ -1744,7 +1771,7 @@ a.bi-heart:hover {
   height: 56px;
   border: 2px solid transparent;
   font-size: 20px;
-  transition: background-color 0.4s, color 0.4s !important;
+  transition: background-color 0.4s, color 0.4s, border-color 0.4s !important;
 
 }
 
@@ -1837,6 +1864,188 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
+.team-viewer{
+  display: flex;
+  flex-direction: row;
+  height: 660px;
+  padding: 4px 20px;
+}
+
+.team-viewer .input-buttons{
+  font-size: 18px;
+}
+
+#teamBudgetInput{
+  min-width: 160px;
+}
+
+
+#costCapInput{
+  min-width: 170px;
+}
+
+.team-header{
+  font-size: 44px;
+  height: 55px;
+  width: 100%;
+}
+
+.viewer-component{
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+}
+
+.facility-component{
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.facility-component-lg{
+  margin-top: 5px;
+}
+
+.facility, .facility-level-indicator{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.facility{
+  margin-top: 5px;
+  justify-content: space-between;
+}
+
+.facility-level-indicator{
+  gap: 6px;
+  margin: 0 10px;
+  padding-top: 1px;
+}
+
+.facility-name{
+  width: 25%;
+  color: #dedde6;
+}
+
+.custom-button{
+  height: 40px;
+  font-size: 18px;
+  padding: 0 10px;
+}
+
+#teamMenu a{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+
+#viewer-first{
+  width: 49%;
+  padding-right: 20px;
+}
+
+#viewer-second{
+  width: 50%;
+  padding-left: 20px;
+}
+
+.separator{
+  margin-top: 30px;
+  width: 1px;
+  background-color: rgb(99, 99, 110);
+  height: 85%;
+}
+
+.main-second-viewer{
+  min-height: 580px;
+}
+
+.save-button-zone{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: 100%
+}
+
+.level{
+  height: 8px;
+  width: 42px;
+  background-color: rgb(99, 99, 110);
+  transition: background-color 0.2s;
+}
+
+.level.activated{
+  background-color: white !important;
+}
+
+.viewer-component .custom-input-number, .facility-component .custom-input-number, .facility-component-lg .custom-input-number{
+  background-color: rgb(99, 99, 110) !important;
+  text-align: center;
+  padding: 8px;
+  height: 39.2px !important;
+}
+
+#confidenceInput{
+  min-width: 70px !important;
+}
+
+.condition-input{
+  max-width: 80px;
+}
+
+.facility-condition{
+  margin-left: 45px;
+  gap: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#longTermInput{
+  min-width: 90px;
+}
+
+#objectiveButton{
+  padding-left: 6px;
+  margin-top: 5px !important;
+  color: #ebebee;
+}
+
+.first-component, .second-component{
+  width: 50%;
+}
+
+#edit_teams i{
+  transition: color 0.4s;
+  font-size: 20px;
+  color: #dedde6;
+  transition: background-color 0.4s, color 0.4s;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+
+}
+
+#edit_teams i:hover{
+  cursor: pointer;
+  color: white !important;
+  background-color: #6f698f !important;
+}
+
+.component-subtitle{
+  font-size: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
 #redbulllogo, #rblogo {
   width: 55px;
   height: 45px;
@@ -1927,6 +2136,9 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid #3671C6 !important;
 }
 
+.rbactivated{
+  background-color: #3671C6;
+}
 
 #ferrari, .feborder-down:hover {
   border-bottom: 2px solid #F91536 !important;
@@ -1934,6 +2146,10 @@ input::-webkit-inner-spin-button {
 
 .tabulator-row:hover .feborder-right {
   border-right: 3px solid #F91536 !important;
+}
+
+.feactivated{
+  background-color: #F91536;
 }
 
 #merc, .meborder-down:hover {
@@ -1944,6 +2160,10 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid #6CD3BF !important;
 }
 
+.meactivated{
+  background-color: #6CD3BF;
+}
+
 #mclaren, .mcborder-down:hover {
   border-bottom: 2px solid #F58020 !important;
 }
@@ -1952,12 +2172,21 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid #F58020 !important;
 }
 
+.mcactivated{
+  background-color: #F58020;
+}
+
+
 #alpine,.alborder-down:hover {
   border-bottom: 2px solid #2293D1 !important
 }
 
 .tabulator-row:hover .alborder-right {
   border-right: 3px solid #2293D1 !important;
+}
+
+.alactivated{
+  background-color: #2293D1;
 }
 
 #alfaromeo, .afborder-down:hover {
@@ -1968,12 +2197,20 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid #C92D4B !important;
 }
 
+.afactivated{
+  background-color: #C92D4B;
+}
+
 #astonmartin, .asborder-down:hover {
   border-bottom: 2px solid #358C75 !important
 }
 
 .tabulator-row:hover .asborder-right {
   border-right: 3px solid #358C75 !important;
+}
+
+.asactivated{
+  background-color: #358C75;
 }
 
 #alphatauri, .atborder-down:hover {
@@ -1984,6 +2221,10 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid #5E8FAA !important;
 }
 
+.atactivated{
+  background-color: #5E8FAA;
+}
+
 #williams, .wiborder-down:hover {
   border-bottom: 2px solid #37BEDD !important
 }
@@ -1992,12 +2233,20 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid #37BEDD !important;
 }
 
+.wiactivated{
+  background-color: #37BEDD;
+}
+
 #haas, .haborder-down:hover {
   border-bottom: 2px solid #B6BABD !important
 }
 
 .tabulator-row:hover .haborder-right {
   border-right: 3px solid #B6BABD !important;
+}
+
+.haactivated{
+  background-color: #B6BABD;
 }
 
 .rbfont {
