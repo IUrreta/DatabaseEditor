@@ -174,21 +174,21 @@ a.bi-heart:hover {
 }
 
 .h2h-highlight {
-  animation: h2h-animation 0.5s alternate;
+  animation: h2h-animation 0.3s forwards;
 }
 
 .graph-highlight {
-  animation: graph-animation 0.5s alternate;
+  animation: graph-animation 0.3s forwards;
 }
 
 @keyframes h2h-animation {
-  0% { color: #dedde6; }
-  100% { color: #88ebcd; }
+  0%, 100% { color: #dedde6; }
+  50% { color: #88ebcd; }
 }
 
 @keyframes graph-animation {
-  0% { color: #dedde6; }
-  100% { color: #95ebee; }
+  0%, 100% { color: #dedde6; }
+  50% { color: #95ebee; }
 }
 
 .annotations {

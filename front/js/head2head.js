@@ -302,7 +302,7 @@ function load_drivers_h2h(drivers) {
             text.classList.add("h2h-highlight");
             setTimeout(function () {
                 text.classList.remove("h2h-highlight");
-            }, 200);
+            }, 400);
         })
         let graphBut = document.createElement("div")
         let graphIcon = document.createElement("i")
@@ -333,7 +333,7 @@ function load_drivers_h2h(drivers) {
             text.classList.add("graph-highlight");
             setTimeout(function () {
                 text.classList.remove("graph-highlight");
-            }, 200);
+            }, 400);
         })
 
         let buttons = document.createElement("div")
