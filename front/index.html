@@ -122,22 +122,31 @@
           <h3 class="modal-title bold-font">Comparison data selection</h3>
         </div>
         <div class="modal-body custom-body">
-          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButtonH2H"
-          data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Year
-        </button>
-        <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
-        </ul>
-        <div class="drievrs-modal-section">
-          <div class="drivers-modal-title component-subtitle bold-font mt-3">Select drivers</div>
-          <div class="drivers-modal-zone mt-2"></div>
+          <div class="info-modal-section">
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButtonH2H"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Year
+            </button>
+            <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
+            </ul>
+            <div class="info-texts">
+              <div class="H2H-text">
+                <span class="bold-font text-main">H2H </span><span class="text-normal">- 0/2 drivers selected</span>
+              </div>
+              <div class="graph-text">
+                <span class="bold-font text-main">Graph </span><span class="text-normal">- 0 drivers selected</span>
+              </div>
+            </div>
+          </div>
 
-        </div>
+          <div class="drievrs-modal-section">
+            <div class="drivers-modal-title component-subtitle bold-font mt-3">Select drivers</div>
+            <div class="drivers-modal-zone mt-2"></div>
+          </div>
         </div>
         <div class="modal-footer custom-footer">
-          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-           >Close</button>
-            <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
             id="confirmComparison">Confirm</button>
         </div>
       </div>
@@ -246,6 +255,7 @@
         </div>
         <div class="d-flex d-none" id="mainH2h">
           <div class="col-3 main-viewer-section">
+            <div class="blocking-h2h">Select at leat 2 drivers for H2H!</div>
             <div class="driver-names">
               <div class="driver1-name">
                 <div class="driver1-first">&nbsp;</div>

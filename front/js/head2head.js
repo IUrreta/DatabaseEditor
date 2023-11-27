@@ -15,6 +15,7 @@ let qualiGraph;
 let compData;
 let annotationsToggle = true;
 let h2hCount = 0;
+let graphCount = 0;
 let h2hList = []
 let graphList = []
 let h2hTeamList = []
@@ -284,6 +285,7 @@ function load_drivers_h2h(drivers) {
                 h2hBut.dataset.state = "checked"
                 h2hBut.classList.add("activated")
                 h2hCount += 1
+
                 h2hList.push(h2hBut.dataset.driverid)
                 h2hTeamList.push(h2hBut.dataset.teamid)
             }
@@ -295,6 +297,12 @@ function load_drivers_h2h(drivers) {
                 h2hTeamList.splice(ind, 1)
                 h2hList = h2hList.filter(x => x !== h2hBut.dataset.driverid)
             }
+            let text = document.querySelector(".H2H-text").querySelector(".text-normal")
+            text.innerText = "- " + h2hCount + "/2 drivers selected"
+            text.classList.add("h2h-highlight");
+            setTimeout(function () {
+                text.classList.remove("h2h-highlight");
+            }, 200);
         })
         let graphBut = document.createElement("div")
         let graphIcon = document.createElement("i")
@@ -310,7 +318,7 @@ function load_drivers_h2h(drivers) {
                 graphBut.classList.add("activated")
                 graphList.push(graphBut.dataset.driverid)
                 graphTeamList.push(graphBut.dataset.teamid)
-
+                graphCount += 1
             }
             else if (graphBut.dataset.state === "checked") {
                 graphBut.dataset.state = "unchecked"
@@ -318,9 +326,16 @@ function load_drivers_h2h(drivers) {
                 let ind = graphList.indexOf(graphBut.dataset.driverid)
                 graphTeamList.splice(ind, 1)
                 graphList = graphList.filter(x => x !== graphBut.dataset.driverid)
+                graphCount -= 1
             }
+            let text = document.querySelector(".graph-text").querySelector(".text-normal")
+            text.innerText = "- " + graphCount + " drivers selected"
+            text.classList.add("graph-highlight");
+            setTimeout(function () {
+                text.classList.remove("graph-highlight");
+            }, 200);
         })
-        
+
         let buttons = document.createElement("div")
         buttons.classList = "buttons-drivers-modal"
         let nameAndSurName = document.createElement("div")
@@ -350,21 +365,24 @@ function buttonsListeners() {
 
 document.querySelector("#confirmComparison").addEventListener("click", function () {
     H2HReady()
-    let drivers = document.querySelectorAll(".H2Hradio.activated")
-    let d1
-    let d2
-    document.querySelectorAll(".H2Hradio.activated").forEach(function(elem){
-        if (elem.dataset.driverid === h2hList[0]){
-            d1 = elem;
-        }
-        else if(elem.dataset.driverid === h2hList[1]){
-            d2 = elem
-        }
-    })
-    console.log(d1.parentElement.parentElement)
-    console.log(d2.parentElement.parentElement)
-    nameTitleD1(d1.parentElement.parentElement)
-    nameTitleD2(d2.parentElement.parentElement)
+    if(h2hCount === 2){
+        let drivers = document.querySelectorAll(".H2Hradio.activated")
+        let d1
+        let d2
+        document.querySelectorAll(".H2Hradio.activated").forEach(function (elem) {
+            if (elem.dataset.driverid === h2hList[0]) {
+                d1 = elem;
+            }
+            else if (elem.dataset.driverid === h2hList[1]) {
+                d2 = elem
+            }
+        })
+        console.log(d1.parentElement.parentElement)
+        console.log(d2.parentElement.parentElement)
+        nameTitleD1(d1.parentElement.parentElement)
+        nameTitleD2(d2.parentElement.parentElement)
+    }
+    
 })
 
 /**
@@ -429,16 +447,23 @@ function H2HReady() {
     document.querySelector("#mainH2h").classList.remove("d-none")
     let data = {
         command: "H2HConfigured",
-        h2h: h2hList,
+        h2h: h2hCount === 2 ? h2hList : -1,
         graph: graphList,
         year: document.querySelector("#yearButtonH2H").textContent
     }
-
+    manageH2hState()
     socket.send(JSON.stringify(data))
 }
 
 
-
+function manageH2hState(){
+    if(h2hCount === 2){
+        document.querySelector(".blocking-h2h").classList.add("d-none")
+    }
+    else{
+        document.querySelector(".blocking-h2h").classList.remove("d-none")
+    }
+}
 
 function load_labels_initialize_graphs(data) {
     var labels = [];
@@ -516,13 +541,13 @@ function load_graphs_data(data) {
 
             })
             d1_points.shift()
-            let d1Id = graphList[index-1]
+            let d1Id = graphList[index - 1]
             let d1pos = graphList.indexOf(d1Id)
             let d1_color
-            if(d1pos === graphTeamList.indexOf(driv[1].toString())){
+            if (d1pos === graphTeamList.indexOf(driv[1].toString())) {
                 d1_color = colors_dict[data[index][1] + "0"]
             }
-            else{
+            else {
                 d1_color = colors_dict[data[index][1] + "1"]
             }
             driverGraph.data.datasets.push({

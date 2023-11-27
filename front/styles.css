@@ -158,6 +158,39 @@ a.bi-heart:hover {
   padding-right: 2rem;
 }
 
+.info-modal-section{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.H2H-text span.text-main{
+  color: #34c297;
+}
+
+.graph-text span.text-main{
+  color: #34bdc2;
+}
+
+.h2h-highlight {
+  animation: h2h-animation 0.5s alternate;
+}
+
+.graph-highlight {
+  animation: graph-animation 0.5s alternate;
+}
+
+@keyframes h2h-animation {
+  0% { color: #dedde6; }
+  100% { color: #88ebcd; }
+}
+
+@keyframes graph-animation {
+  0% { color: #dedde6; }
+  100% { color: #95ebee; }
+}
+
 .annotations {
   color: #dedde6;
   font-size: 20px;
@@ -1733,6 +1766,20 @@ a.bi-heart:hover {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   width: 46%;
   height: 7%;
+  position: absolute;
+  border-radius: 10px;
+}
+.blocking-h2h{
+  background-color: rgba(128, 128, 128, 0.5);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  backdrop-filter: blur(3px);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  width: 24.9%;
+  height: 658px;
   position: absolute;
   border-radius: 10px;
 }
