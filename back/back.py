@@ -31,7 +31,6 @@ async def handle_command(message):
     global log
     argument = ""
     if type == "connect":
-        #print("Connect recibido")
         log = open("../log.txt", 'a', encoding='utf-8')
         argument = type
         saves = [element for element in os.listdir("../") if ".sav" in element]
@@ -40,6 +39,7 @@ async def handle_command(message):
         saves.insert(0, "Connected Succesfully")
         data_saves = json.dumps(saves)
         await send_message_to_client(data_saves)
+        await send_message_to_client(json.dumps(["JIC"]))
 
     elif type == "saveSelected":
         save = message["save"]
