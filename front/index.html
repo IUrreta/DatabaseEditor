@@ -123,12 +123,30 @@
         </div>
         <div class="modal-body custom-body">
           <div class="info-modal-section">
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButtonH2H"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Year
-            </button>
-            <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
-            </ul>
+            <div class="modal-buttons">
+              <div>
+                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                  id="yearButtonH2H" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Year
+                </button>
+                <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
+                </ul>
+              </div>
+              <div class="drivers-teams-pills">
+                <ul class="nav nav-pills">
+                  <li class="nav-item">
+                    <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#"
+                      id="driverspillmodal">Drivers</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#"
+                      id="teamspillmodal">Teams</a>
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+
             <div class="info-texts">
               <div class="H2H-text">
                 <span class="bold-font text-main">H2H </span><span class="text-normal">- 0/2 drivers selected</span>
@@ -139,9 +157,114 @@
             </div>
           </div>
 
-          <div class="drievrs-modal-section">
+          <div class="drivers-modal-section d-none">
             <div class="drivers-modal-title component-subtitle bold-font mt-3">Select drivers</div>
             <div class="drivers-modal-zone mt-2"></div>
+          </div>
+          <div class="teams-modal-section">
+            <div class="drivers-modal-title component-subtitle bold-font mt-3">Select teams</div>
+            <div class="teams-modal-zone mt-2">
+              <div class="col modal-team ferrari" data-teamid="1">
+                <div class="logo-and-name">
+                  <img src="../assets/images/ferrari.png" id="ferrarilogo">
+                  <div class="team-name bold-font">FERRARI</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="1" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="1" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team mclaren" data-teamid="2">
+                <div class="logo-and-name">
+                  <img src="../assets/images/mclaren.png" id="mclarenlogo">
+                  <div class="team-name bold-font">MCLAREN</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="2" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="2" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team redbull" data-teamid="3">
+                <div class="logo-and-name">
+                  <img src="../assets/images/redbull.png" id="redbulllogo">
+                  <div class="team-name bold-font">RED BULL</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="3" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="3" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team merc" data-teamid="4">
+                <div class="logo-and-name">
+                  <img src="../assets/images/mercedes.png" id="merclogo2">
+                  <div class="team-name bold-font">MERCEDES</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="4" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="4" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team alpine" data-teamid="5">
+                <div class="logo-and-name">
+                  <img src="../assets/images/alpine.png" id="alpinelogo">
+                  <div class="team-name bold-font">ALPINE</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="5" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="5" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team williams" data-teamid="6">
+                <div class="logo-and-name">
+                  <img src="../assets/images/williams.png" id="williamslogo">
+                  <div class="team-name bold-font">WILLIAMS</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="6" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="6" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team haas" data-teamid="7">
+                <div class="logo-and-name">
+                  <img src="../assets/images/haas.png" id="haaslogo">
+                  <div class="team-name bold-font">HAAS</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="7" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="7" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team alpha" data-teamid="8">
+                <div class="logo-and-name">
+                  <img src="../assets/images/alphatauri.png" id="alphataurilogo">
+                  <div class="team-name bold-font">ALPHA TAURI</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="8" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="8" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team alfa" data-teamid="9">
+                <div class="logo-and-name">
+                  <img src="../assets/images/alfaromeo.png" id="alfalogo">
+                  <div class="team-name bold-font">ALFA ROMEO</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="9" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="9" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team aston" data-teamid="10">
+                <div class="logo-and-name">
+                  <img src="../assets/images/astonMartin.png" id="astonlogo">
+                  <div class="team-name bold-font ps-1">ASTON MARTIN</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="10" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="10" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="modal-footer custom-footer">

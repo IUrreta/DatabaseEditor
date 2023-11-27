@@ -261,7 +261,6 @@ function load_drivers_h2h(drivers) {
     h2hTeamList = []
     graphTeamList = []
     dest.innerHTML = ""
-    console.log(drivers)
     drivers.forEach(function (driver) {
         let newDiv = document.createElement("div");
         newDiv.className = "col modal-driver";
@@ -354,6 +353,16 @@ function load_drivers_h2h(drivers) {
 
 }
 
+document.querySelector("#driverspillmodal").addEventListener("click", function(){
+    document.querySelector(".drivers-modal-section").classList.remove("d-none")
+    document.querySelector(".teams-modal-section").classList.add("d-none")
+})
+
+document.querySelector("#teamspillmodal").addEventListener("click", function(){
+    document.querySelector(".drivers-modal-section").classList.add("d-none")
+    document.querySelector(".teams-modal-section").classList.remove("d-none")
+})
+
 
 function buttonsListeners() {
     document.querySelectorAll("H2HRadio").forEach(function (button) {
@@ -377,8 +386,6 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
                 d2 = elem
             }
         })
-        console.log(d1.parentElement.parentElement)
-        console.log(d2.parentElement.parentElement)
         nameTitleD1(d1.parentElement.parentElement)
         nameTitleD2(d2.parentElement.parentElement)
     }

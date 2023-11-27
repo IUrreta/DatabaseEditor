@@ -843,6 +843,11 @@ a.bi-heart:hover {
   align-items: flex-end;
 }
 
+.modal-buttons{
+  gap: 10px;
+  display: flex;
+}
+
 .main-viewer-section .tabulator-tableholder::-webkit-scrollbar {
   width: 4px !important;
 }
@@ -1499,7 +1504,7 @@ a.bi-heart:hover {
   z-index: 2000 !important;
 }
 
-.drivers-modal-zone{
+.drivers-modal-zone, .teams-modal-zone{
   border: 1px solid #797599;
   border-radius: 10px;
   width: 100%;
@@ -1693,6 +1698,21 @@ a.bi-heart:hover {
   align-items: center;
 }
 
+.modal-team{
+  background-color: #4e4b69;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 0px 6px;
+  margin: 8px;
+  color: #dedde6;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  position: relative;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .free-driver .custom-icon {
   color: transparent;
   transition: opacity 0.4s;
@@ -1734,11 +1754,51 @@ a.bi-heart:hover {
   background-color: #4e4b69;
 }
 
-.modal-driver:hover{
+.modal-driver:hover, .modal-team:hover{
   border-color: white;
   color: white;
   background-color: #4e4b69;
 }
+
+.modal-team.ferrari:hover{
+  color: #F91536;
+}
+
+.modal-team.redbull:hover{
+  color: #3671C6;
+}
+
+.modal-team.mclaren:hover{
+  color: #F58020;
+}
+
+.modal-team.merc:hover{
+  color: #6CD3BF;
+}
+
+.modal-team.alpine:hover{
+  color: #2293D1;
+}
+
+.modal-team.williams:hover{
+  color: #37BEDD;
+}
+
+.modal-team.haas:hover{
+  color: #B6BABD;
+}
+
+.modal-team.alpha:hover{
+  color: #5E8FAA;;
+}
+
+.modal-team.alfa:hover{
+  color: #C92D4B;
+}
+
+.modal-team.aston:hover{
+  color: #358C75;
+} 
 
 .blocking-div {
   position: absolute;
@@ -2205,6 +2265,15 @@ input::-webkit-inner-spin-button {
   padding-bottom: 5px;
   padding-top: 7px;
   padding-left: 10px;
+}
+
+#merclogo2 {
+  width: 40px;
+  height: 40px;
+  padding-bottom: 5px;
+  padding-top: 7px;
+  padding-left: 5px;
+  padding-right: 4px;
 }
 
 #alpinelogo, #allogo {
