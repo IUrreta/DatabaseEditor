@@ -1184,6 +1184,7 @@ a.bi-heart:hover {
   border: 2px solid transparent;
   transition: border-color 0.4s, background-color 0.4s;
   align-items: center;
+  min-height: 66px;
 }
 
 .one-statH2H:hover {

@@ -462,6 +462,26 @@ function manageH2hState(){
     }
     else{
         document.querySelector(".blocking-h2h").classList.remove("d-none")
+        document.querySelector(".driver1-name").className = "driver1-name"
+        document.querySelector(".driver2-name").className = "driver2-name"
+        document.querySelector(".driver1-first").textContent = ""
+        document.querySelector(".driver2-first").textContent = ""
+        document.querySelector(".driver1-second").textContent = ""
+        document.querySelector(".driver2-second").textContent = ""
+        document.querySelectorAll(".driver1-bar").forEach(function(bar){
+            bar.className = "driver1-bar"
+            bar.style.width = "0px"
+        })
+        document.querySelectorAll(".driver2-bar").forEach(function(bar){
+            bar.className = "driver2-bar"
+            bar.style.width = "0px"
+        })
+        document.querySelectorAll(".driver1-number").forEach(function(num){
+            num.innerText = ""
+        })
+        document.querySelectorAll(".driver2-number").forEach(function(num){
+            num.innerText = ""
+        })
     }
 }
 

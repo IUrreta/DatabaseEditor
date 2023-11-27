@@ -185,7 +185,6 @@ async def handle_command(message):
         await send_message_to_client(data_json_drivers)
 
     elif type=="H2HConfigured":
-        print(message)
         if(message["h2h"] != -1):
             h2hRes = fetch_Head2Head((message["h2h"][0],), (message["h2h"][1],), (message["year"],), cursor)
             h2h = ["H2H fetched", h2hRes]
