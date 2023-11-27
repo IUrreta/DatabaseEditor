@@ -257,6 +257,8 @@ function load_drivers_h2h(drivers) {
     h2hCount = 0;
     h2hList = []
     graphList = []
+    h2hTeamList = []
+    graphTeamList = []
     dest.innerHTML = ""
     console.log(drivers)
     drivers.forEach(function (driver) {
@@ -349,8 +351,20 @@ function buttonsListeners() {
 document.querySelector("#confirmComparison").addEventListener("click", function () {
     H2HReady()
     let drivers = document.querySelectorAll(".H2Hradio.activated")
-    nameTitleD1(drivers[0].parentElement.parentElement)
-    nameTitleD2(drivers[1].parentElement.parentElement)
+    let d1
+    let d2
+    document.querySelectorAll(".H2Hradio.activated").forEach(function(elem){
+        if (elem.dataset.driverid === h2hList[0]){
+            d1 = elem;
+        }
+        else if(elem.dataset.driverid === h2hList[1]){
+            d2 = elem
+        }
+    })
+    console.log(d1.parentElement.parentElement)
+    console.log(d2.parentElement.parentElement)
+    nameTitleD1(d1.parentElement.parentElement)
+    nameTitleD2(d2.parentElement.parentElement)
 })
 
 /**
