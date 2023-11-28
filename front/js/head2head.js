@@ -284,7 +284,6 @@ function load_drivers_h2h(drivers) {
                 h2hBut.dataset.state = "checked"
                 h2hBut.classList.add("activated")
                 h2hCount += 1
-
                 h2hList.push(h2hBut.dataset.driverid)
                 h2hTeamList.push(h2hBut.dataset.teamid)
             }
@@ -353,14 +352,98 @@ function load_drivers_h2h(drivers) {
 
 }
 
+document.querySelector(".teams-modal-zone").querySelectorAll(".H2Hradio").forEach(function(h2hBut){
+    h2hBut.addEventListener("click", function(){
+        if (h2hBut.dataset.state === "unchecked" && h2hCount < 2) {
+            h2hBut.dataset.state = "checked"
+            h2hBut.classList.add("activated")
+            h2hCount += 1
+            h2hTeamList.push(h2hBut.dataset.teamid)
+        }
+        else if (h2hBut.dataset.state === "checked") {
+            h2hBut.dataset.state = "unchecked"
+            h2hBut.classList.remove("activated")
+            h2hCount -= 1
+            let ind = h2hTeamList.indexOf(h2hBut.dataset.teamud)
+            h2hTeamList.splice(ind, 1)
+        }
+        let text = document.querySelector(".H2H-text").querySelector(".text-normal")
+        text.innerText = "- " + h2hCount + "/2 teams selected"
+        text.classList.add("h2h-highlight");
+        setTimeout(function () {
+            text.classList.remove("h2h-highlight");
+        }, 400);
+    })
+})
+
+document.querySelector(".teams-modal-zone").querySelectorAll(".GraphButton").forEach(function(graphBut){
+    graphBut.addEventListener("click", function(){
+        if (graphBut.dataset.state === "unchecked") {
+            graphBut.dataset.state = "checked"
+            graphBut.classList.add("activated")
+            graphTeamList.push(graphBut.dataset.teamid)
+            graphCount += 1
+        }
+        else if (graphBut.dataset.state === "checked") {
+            graphBut.dataset.state = "unchecked"
+            graphBut.classList.remove("activated")
+            let ind = graphTeamList.indexOf(graphBut.dataset.teamid)
+            graphTeamList.splice(ind, 1)
+            graphCount -= 1
+        }
+        let text = document.querySelector(".graph-text").querySelector(".text-normal")
+        text.innerText = "- " + graphCount + " teams selected"
+        text.classList.add("graph-highlight");
+        setTimeout(function () {
+            text.classList.remove("graph-highlight");
+        }, 400);
+    })
+})
+
 document.querySelector("#driverspillmodal").addEventListener("click", function(){
     document.querySelector(".drivers-modal-section").classList.remove("d-none")
     document.querySelector(".teams-modal-section").classList.add("d-none")
+    h2hCount = 0;
+    graphCount = 0;
+    h2hList = []
+    graphList = []
+    h2hTeamList = []
+    graphTeamList = []
+    let h2htext = document.querySelector(".H2H-text").querySelector(".text-normal")
+    h2htext.innerText = "- " + h2hCount + "/2 drivers selected"
+    let graphtext = document.querySelector(".graph-text").querySelector(".text-normal")
+    graphtext.innerText = "- " + graphCount + " drivers selected"
+    document.querySelector(".teams-modal-zone").querySelectorAll(".H2Hradio").forEach(function(elem){
+        elem.classList = "H2Hradio"
+        elem.dataset.state = "unchecked"
+    })
+    document.querySelector(".teams-modal-zone").querySelectorAll(".GraphButton").forEach(function(elem){
+        elem.classList = "GraphButton"
+        elem.dataset.state = "unchecked"
+    })
 })
 
 document.querySelector("#teamspillmodal").addEventListener("click", function(){
     document.querySelector(".drivers-modal-section").classList.add("d-none")
     document.querySelector(".teams-modal-section").classList.remove("d-none")
+    h2hCount = 0;
+    graphCount = 0;
+    h2hList = []
+    graphList = []
+    h2hTeamList = []
+    graphTeamList = []
+    let h2htext = document.querySelector(".H2H-text").querySelector(".text-normal")
+    h2htext.innerText = "- " + h2hCount + "/2 teams selected"
+    let graphtext = document.querySelector(".graph-text").querySelector(".text-normal")
+    graphtext.innerText = "- " + graphCount + " teams selected"
+    document.querySelector(".drivers-modal-zone").querySelectorAll(".H2Hradio").forEach(function(elem){
+        elem.classList = "H2Hradio"
+        elem.dataset.state = "unchecked"
+    })
+    document.querySelector(".drivers-modal-zone").querySelectorAll(".GraphButton").forEach(function(elem){
+        elem.classList = "GraphButton"
+        elem.dataset.state = "unchecked"
+    })
 })
 
 
