@@ -186,14 +186,23 @@ async def handle_command(message):
 
     elif type=="H2HConfigured":
         if(message["h2h"] != -1):
-            h2hRes = fetch_Head2Head((message["h2h"][0],), (message["h2h"][1],), (message["year"],), cursor)
-            h2h = ["H2H fetched", h2hRes]
-            data_json_h2h = json.dumps(h2h)
-            await send_message_to_client(data_json_h2h)
+            if(message["mode"] == "driver"):
+                h2hRes = fetch_Head2Head((message["h2h"][0],), (message["h2h"][1],), (message["year"],), cursor)
+                h2h = ["H2H fetched", h2hRes]
+                data_json_h2h = json.dumps(h2h)
+                await send_message_to_client(data_json_h2h)
+            elif(message["mode"] == "team"):
+                print(message)
         h2hDrivers = []
         for id in message["graph"]:
-            res = fetch_oneDriver_seasonResults((id,), (message["year"],))
-            h2hDrivers.append(res)
+            if(message["mode"] == "driver"):
+                res = fetch_oneDriver_seasonResults((id,), (message["year"],))
+                h2hDrivers.append(res)
+            elif(message["mode"] == "team"):
+                print("AAAAAAaa")
+                res = fetch_oneTeam_seasonResults((id,), (message["year"],))
+                h2hDrivers.append(res)
+        print(h2hDrivers)
         h2hDrivers.append(fetch_events_done_from(message["year"]))
         h2hDrivers.insert(0, fetch_events_from(message["year"]))
         h2hDrivers.insert(0, "H2HDriver fetched")
@@ -328,6 +337,11 @@ def fetch_seasonResults(yearSelected):
             if(driverRes):
                 seasonResults.append(driverRes)
     return seasonResults
+
+def fetch_oneTeam_seasonResults(team, year):
+    drivers = cursor.execute("SELECT DISTINCT DriverID FROM Races_Results WHERE Season = " + str(year[0]) + " AND TeamID = " + str(team[0])).fetchall()
+    results = [fetch_oneDriver_seasonResults(driver, year) for driver in drivers]
+    return results
 
 def fetch_oneDriver_seasonResults(driver, year):
     results = cursor.execute("SELECT DriverID, TeamID, FinishingPos, Points FROM Races_Results WHERE Season = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
