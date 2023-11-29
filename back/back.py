@@ -13,7 +13,7 @@ from scripts.edit_stats_23 import run_script as run_editStats
 from scripts.custom_calendar_23 import run_script as run_editCalendar
 from scripts.car_performance_23 import run_script as run_editPerformance
 from scripts.engine_performance_23 import run_script as run_editEngine
-from scripts.head2head_23 import fetch_Head2Head as fetch_Head2Head
+from scripts.head2head_23 import fetch_Head2Head, fetch_Head2Head_team
 from scripts.edit_teams import fetch_teamData, edit_team
 
 client = None
@@ -31,7 +31,6 @@ async def handle_command(message):
     global log
     argument = ""
     if type == "connect":
-        #print("Connect recibido")
         log = open("../log.txt", 'a', encoding='utf-8')
         argument = type
         saves = [element for element in os.listdir("../") if ".sav" in element]
@@ -40,6 +39,7 @@ async def handle_command(message):
         saves.insert(0, "Connected Succesfully")
         data_saves = json.dumps(saves)
         await send_message_to_client(data_saves)
+        await send_message_to_client(json.dumps(["JIC"]))
 
     elif type == "saveSelected":
         save = message["save"]
@@ -185,13 +185,26 @@ async def handle_command(message):
         await send_message_to_client(data_json_drivers)
 
     elif type=="H2HConfigured":
-        h2hRes = fetch_Head2Head((message["d1"],), (message["d2"],), (message["year"],), cursor)
-        h2h = ["H2H fetched", h2hRes]
-        data_json_h2h = json.dumps(h2h)
-        await send_message_to_client(data_json_h2h)
-        d1Res = fetch_oneDriver_seasonResults((message["d1"],), (message["year"],))
-        d2Res = fetch_oneDriver_seasonResults((message["d2"],), (message["year"],))
-        h2hDrivers = [d1Res, d2Res, fetch_events_done_from(message["year"])]
+        if(message["h2h"] != -1):
+            if(message["mode"] == "driver"):
+                h2hRes = fetch_Head2Head((message["h2h"][0],), (message["h2h"][1],), (message["year"],))
+                h2h = ["H2H fetched", h2hRes]
+                data_json_h2h = json.dumps(h2h)
+                await send_message_to_client(data_json_h2h)
+            elif(message["mode"] == "team"):
+                h2hRes = fetch_Head2Head_team((message["h2h"][0],), (message["h2h"][1],), (message["year"],))
+                h2h = ["H2H fetched", h2hRes]
+                data_json_h2h = json.dumps(h2h)
+                await send_message_to_client(data_json_h2h)
+        h2hDrivers = []
+        for id in message["graph"]:
+            if(message["mode"] == "driver"):
+                res = fetch_oneDriver_seasonResults((id,), (message["year"],))
+                h2hDrivers.append(res)
+            elif(message["mode"] == "team"):
+                res = fetch_oneTeam_seasonResults((id,), (message["year"],))
+                h2hDrivers.append(res)
+        h2hDrivers.append(fetch_events_done_from(message["year"]))
         h2hDrivers.insert(0, fetch_events_from(message["year"]))
         h2hDrivers.insert(0, "H2HDriver fetched")
         data_json_h2hdrivers = json.dumps(h2hDrivers)
@@ -325,6 +338,11 @@ def fetch_seasonResults(yearSelected):
             if(driverRes):
                 seasonResults.append(driverRes)
     return seasonResults
+
+def fetch_oneTeam_seasonResults(team, year):
+    drivers = cursor.execute("SELECT DISTINCT DriverID FROM Races_Results WHERE Season = " + str(year[0]) + " AND TeamID = " + str(team[0])).fetchall()
+    results = [fetch_oneDriver_seasonResults(driver, year) for driver in drivers]
+    return results
 
 def fetch_oneDriver_seasonResults(driver, year):
     results = cursor.execute("SELECT DriverID, TeamID, FinishingPos, Points FROM Races_Results WHERE Season = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()

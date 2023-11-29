@@ -158,6 +158,45 @@ a.bi-heart:hover {
   padding-right: 2rem;
 }
 
+.info-modal-section{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.H2H-text span.text-main{
+  color: #34c297;
+}
+
+.graph-text span.text-main{
+  color: #34bdc2;
+}
+
+.h2h-highlight {
+  animation: h2h-animation 0.3s forwards;
+}
+
+.graph-highlight {
+  animation: graph-animation 0.3s forwards;
+}
+
+@keyframes h2h-animation {
+  0%, 100% { color: #dedde6; }
+  50% { color: #88ebcd; }
+}
+
+@keyframes graph-animation {
+  0%, 100% { color: #dedde6; }
+  50% { color: #95ebee; }
+}
+
+.annotations {
+  color: #dedde6;
+  font-size: 20px;
+  padding-right: 1rem;
+}
+
 .number-details {
   display: flex;
   flex-direction: row;
@@ -804,6 +843,11 @@ a.bi-heart:hover {
   align-items: flex-end;
 }
 
+.modal-buttons{
+  gap: 10px;
+  display: flex;
+}
+
 .main-viewer-section .tabulator-tableholder::-webkit-scrollbar {
   width: 4px !important;
 }
@@ -1145,6 +1189,7 @@ a.bi-heart:hover {
   border: 2px solid transparent;
   transition: border-color 0.4s, background-color 0.4s;
   align-items: center;
+  min-height: 66px;
 }
 
 .one-statH2H:hover {
@@ -1459,6 +1504,15 @@ a.bi-heart:hover {
   z-index: 2000 !important;
 }
 
+.drivers-modal-zone, .teams-modal-zone{
+  border: 1px solid #797599;
+  border-radius: 10px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+
 .contract-details div{
   color: #dedde6;
 }
@@ -1576,6 +1630,89 @@ a.bi-heart:hover {
   font-size: 15px;
 }
 
+.H2Hradio{
+  border: 2px solid transparent;
+  border-radius: 7px;
+  color: #dedde6;
+  background-color: #797599;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  height: 28px;
+  font-size: 16px;
+  padding: 0 3px;
+  cursor: pointer;
+}
+
+.GraphButton{
+  border: 2px solid transparent;
+  border-radius: 7px;
+  color: #dedde6;
+  background-color: #797599;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  height: 28px;
+  font-size: 16px;
+  padding: 0 3px;
+  cursor: pointer;
+}
+
+.buttons-drivers-modal{
+  display: flex;
+  gap: 4px;
+}
+
+.H2Hradio:hover, .GraphButton:hover{
+  color: white;
+  background-color: #807ca1;
+  border-color: white;
+}
+
+.H2Hradio.activated{
+  background-color: #34c297;
+  border-color: #88ebcd;
+  color: white;
+}
+
+.GraphButton.activated{
+  background-color: #34bdc2;
+  border-color: #95ebee;
+  color: white;
+}
+
+
+
+.modal-dialog-lg{
+  min-width: 1300px !important;
+}
+
+.modal-driver{
+  background-color: #4e4b69;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 6px;
+  margin: 8px;
+  color: #dedde6;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  position: relative;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-team{
+  background-color: #4e4b69;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 0px 6px;
+  margin: 8px;
+  color: #dedde6;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  position: relative;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .free-driver .custom-icon {
   color: transparent;
   transition: opacity 0.4s;
@@ -1617,6 +1754,52 @@ a.bi-heart:hover {
   background-color: #4e4b69;
 }
 
+.modal-driver:hover, .modal-team:hover{
+  border-color: white;
+  color: white;
+  background-color: #4e4b69;
+}
+
+.modal-team.ferrari:hover{
+  color: #F91536;
+}
+
+.modal-team.redbull:hover{
+  color: #3671C6;
+}
+
+.modal-team.mclaren:hover{
+  color: #F58020;
+}
+
+.modal-team.merc:hover{
+  color: #6CD3BF;
+}
+
+.modal-team.alpine:hover{
+  color: #2293D1;
+}
+
+.modal-team.williams:hover{
+  color: #37BEDD;
+}
+
+.modal-team.haas:hover{
+  color: #B6BABD;
+}
+
+.modal-team.alpha:hover{
+  color: #5E8FAA;;
+}
+
+.modal-team.alfa:hover{
+  color: #C92D4B;
+}
+
+.modal-team.aston:hover{
+  color: #358C75;
+} 
+
 .blocking-div {
   position: absolute;
   top: 0;
@@ -1644,6 +1827,20 @@ a.bi-heart:hover {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   width: 46%;
   height: 7%;
+  position: absolute;
+  border-radius: 10px;
+}
+.blocking-h2h{
+  background-color: rgba(128, 128, 128, 0.5);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  backdrop-filter: blur(3px);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  width: 24.9%;
+  height: 658px;
   position: absolute;
   border-radius: 10px;
 }
@@ -2066,8 +2263,17 @@ input::-webkit-inner-spin-button {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
-  padding-top: 9px;
+  padding-top: 7px;
   padding-left: 10px;
+}
+
+#merclogo2 {
+  width: 40px;
+  height: 40px;
+  padding-bottom: 5px;
+  padding-top: 7px;
+  padding-left: 5px;
+  padding-right: 4px;
 }
 
 #alpinelogo, #allogo {
@@ -2125,6 +2331,56 @@ input::-webkit-inner-spin-button {
   padding-bottom: 11px;
   padding-left: 12px;
   padding-top: 10px;
+}
+
+.team1, .team2{
+  max-width: 150px;
+  text-align: center;
+}
+
+.driver1-name .team1, .driver2-name .team2{
+  color: #dedde6 !important;
+  transition: color 0.4s;
+}
+
+.driver1-name:hover .team1[data-teamid="1"], .driver2-name:hover .team2[data-teamid="1"]{
+  color: #F91536 !important;
+}
+
+.driver1-name:hover .team1[data-teamid="2"], .driver2-name:hover .team2[data-teamid="2"]{
+  color: #F58020 !important;
+}
+
+.driver1-name:hover .team1[data-teamid="3"], .driver2-name:hover .team2[data-teamid="3"]{
+  color: #3671C6 !important;
+}
+
+.driver1-name:hover .team1[data-teamid="4"], .driver2-name:hover .team2[data-teamid="4"]{
+  color: #6CD3BF !important;
+}
+
+.driver1-name:hover .team1[data-teamid="5"], .driver2-name:hover .team2[data-teamid="5"]{
+  color: #2293D1 !important;
+}
+
+.driver1-name:hover .team1[data-teamid="6"], .driver2-name:hover .team2[data-teamid="6"]{
+  color: #37BEDD !important;
+}
+
+.driver1-name:hover .team1[data-teamid="7"], .driver2-name:hover .team2[data-teamid="7"]{
+  color: #B6BABD !important;
+}
+
+.driver1-name:hover .team1[data-teamid="8"], .driver2-name:hover .team2[data-teamid="8"]{
+  color: #5E8FAA !important;
+}
+
+.driver1-name:hover .team1[data-teamid="9"], .driver2-name:hover .team2[data-teamid="9"]{
+  color: #C92D4B !important;
+}
+
+.driver1-name:hover .team1[data-teamid="10"], .driver2-name:hover .team2[data-teamid="10"]{
+  color: #358C75 !important;
 }
 
 

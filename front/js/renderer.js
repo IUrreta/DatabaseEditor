@@ -1,5 +1,4 @@
 const socket = new WebSocket('ws://localhost:8765/');
-
 /**
  * When the socket is opened sends a connect message to the backend
  */
@@ -17,6 +16,7 @@ const simpleGit = require('simple-git');
 const { exec } = require('child_process');
 const { marked } = require('marked');
 const Tabulator = require('tabulator-tables');
+let conn = 0;
 
 let versionNow;
 const versionPanel = document.querySelector('.versionPanel');
@@ -102,14 +102,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched"]
+    const noNotifications = ["JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
             update_notifications(message[1], true);
             manage_status(0);
         },
+        "JIC": (message) => {
+            if(conn === 0){
+                console.log("JIC DOES ITS THING")
+                let data = {
+                    command: "connect"
+                }
+                socket.send(JSON.stringify(data))
+            }
+        },
         "Connected Succesfully": (message) => {
+            conn = 1;
             load_saves(message);
             clearTimeout(connectionTimeout);
             manage_status(1);
@@ -152,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
             load_drivers_h2h(message.slice(1));
         },
         "H2HDriver fetched": (message) => {
-            load_h2h_graphs(message.slice(1));
+            load_labels_initialize_graphs(message.slice(1));
         },
         "Results fetched": (message) => {
             createDriversTable(message[1]);
@@ -165,7 +175,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 20);
         },
         "TeamData Fetched": (message)=>{
-            console.log(message)
             fillLevels(message.slice(1))
 
         }
@@ -200,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     socket.onmessage = (event) => {
         let message = JSON.parse(event.data);
+        //console.log(message)
         let handler = messageHandlers[message[0]];
 
         if (handler) {
@@ -415,7 +425,6 @@ document.addEventListener('DOMContentLoaded', function () {
         notificationPanel.appendChild(toast);
         if (!error) {
             setTimeout(function () {
-                console.log(toast.querySelector(".notification-line").classList);
                 toast.querySelector(".notification-line").classList.add("start");
             }, 10);
             setTimeout(function () {

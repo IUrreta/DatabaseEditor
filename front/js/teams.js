@@ -195,9 +195,7 @@ function fillLevels(teamData) {
         let num = elem[0];
         let level = num % 10;
         let facilityID = Math.floor(num / 10);
-        console.log(facilityID)
         let facility = document.querySelector("#facility" + facilityID)
-        console.log(level)
         let indicator = facility.querySelector('.facility-level-indicator')
         indicator.dataset.value = level
         let value = level
@@ -211,7 +209,6 @@ function fillLevels(teamData) {
         }
         facility.querySelector("input").value = elem[1]
     })
-    console.log(teamData)
     document.querySelector("#seasonObjectiveInput").value = teamData[16]
     document.querySelector("#longTermObj" + teamData[17][0]).click()
     document.querySelector("#longTermInput").value = teamData[17][1]
@@ -228,7 +225,6 @@ function fillLevels(teamData) {
  * @param {Number} data Confidence number. If -1, blocking div is activated
  */
 function manageConfidence(data){
-    console.log(data)
     if(Number(data[0]) !== -1){
         document.querySelector(".blocking-confidence").classList.add("d-none")
     }
