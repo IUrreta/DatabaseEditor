@@ -109,15 +109,12 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
     d2_BestRace = 21
     d1_BestQauli = 21
     d2_BestQauli = 21
-    print(year)
     for gp in races:
         race = gp[0]
         drivers1 = cursor.execute("SELECT DISTINCT DriverID FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = " + str(race) + " AND TeamID = " + str(teamID1[0])).fetchall()
         drivers2 = cursor.execute("SELECT DISTINCT DriverID FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = " + str(race) + " AND TeamID = " + str(teamID2[0])).fetchall()
         drivers1 = tuple(i[0] for i in drivers1)
         drivers2 = tuple(i[0] for i in drivers2)
-        print("Race: " + str(race))
-        print(drivers1, drivers2)
         d1_QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers1)).fetchone()
         d2_QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers2)).fetchone()
         d1_QRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers1) + " AND QualifyingStage = " + str(d1_QStage[0])).fetchone()
@@ -141,7 +138,6 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
             d2_BestQauli = d2_QRes[0]
         d1_RRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Results  WHERE RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers1)).fetchone()
         d2_RRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Results  WHERE RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers2)).fetchone()
-        print(d1_RRes, d2_RRes)
         if(d1_RRes[0] == 1):
             winsH2H[0] += 1
         if(d2_RRes[0] == 1):
@@ -182,7 +178,6 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
     bestQuali[0] = d1_BestQauli
     bestQuali[1] = d2_BestQauli   
     resultList = [tuple(raceH2H),tuple(qualiH2H),tuple(pointsH2H),tuple(podiumsH2H),tuple(bestRace),tuple(bestQuali),tuple(dnfH2H), tuple(winsH2H), tuple(polesH2H), tuple(sprintWinsH2H)]
-    print(resultList)
 
     conn.commit()
     conn.close()

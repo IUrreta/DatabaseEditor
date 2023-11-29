@@ -377,7 +377,7 @@ document.querySelector(".teams-modal-zone").querySelectorAll(".H2Hradio").forEac
             h2hBut.dataset.state = "unchecked"
             h2hBut.classList.remove("activated")
             h2hCount -= 1
-            let ind = h2hTeamList.indexOf(h2hBut.dataset.teamud)
+            let ind = h2hTeamList.indexOf(h2hBut.dataset.teamid)
             h2hTeamList.splice(ind, 1)
         }
         let text = document.querySelector(".H2H-text").querySelector(".text-normal")
@@ -485,9 +485,15 @@ function resetH2H() {
     h2hTeamList = []
     graphTeamList = []
     let h2htext = document.querySelector(".H2H-text").querySelector(".text-normal")
-    h2htext.innerText = "- " + h2hCount + "/2 drivers selected"
     let graphtext = document.querySelector(".graph-text").querySelector(".text-normal")
-    graphtext.innerText = "- " + graphCount + " drivers selected"
+    if(mode === "driver"){
+        h2htext.innerText = "- " + h2hCount + "/2 drivers selected"
+        graphtext.innerText = "- " + graphCount + " drivers selected"
+    }
+    else if(mode === "team"){
+        h2htext.innerText = "- " + h2hCount + "/2 teams selected"
+        graphtext.innerText = "- " + graphCount + " teams selected"
+    }
     document.querySelector(".teams-modal-zone").querySelectorAll(".H2Hradio").forEach(function (elem) {
         elem.classList = "H2Hradio"
         elem.dataset.state = "unchecked"

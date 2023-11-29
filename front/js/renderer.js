@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     socket.onmessage = (event) => {
         let message = JSON.parse(event.data);
-        console.log(message)
+        //console.log(message)
         let handler = messageHandlers[message[0]];
 
         if (handler) {
@@ -425,7 +425,6 @@ document.addEventListener('DOMContentLoaded', function () {
         notificationPanel.appendChild(toast);
         if (!error) {
             setTimeout(function () {
-                console.log(toast.querySelector(".notification-line").classList);
                 toast.querySelector(".notification-line").classList.add("start");
             }, 10);
             setTimeout(function () {
