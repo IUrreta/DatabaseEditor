@@ -2,13 +2,13 @@ let driver1_selected = false;
 let driver2_selected = false;
 let driver1Sel;
 let driver2Sel;
-let pos_dict = { 1: "1st",2: "2nd",3: "3rd" }
+let pos_dict = { 1: "1st", 2: "2nd", 3: "3rd" }
 let d1_team
 let d2_team
 let wins = false;
 let poles = false;
 let sprints = false;
-let colors_dict = { "10": "#F91536","11": "#f1f1f1","20": "#F58020","21": "#47c7fc","30": "#3671C6","31": "#ffd300","40": "#6CD3BF","41": "#fcfcfc","50": "#2293D1","51": "#fd48c7","60": "#37BEDD","61": "#f1f1f1","70": "#B6BABD","71": "#f62039","80": "#5E8FAA","81": "#f1f1f1","90": "#C92D4B","91": "#f1f1f1","100": "#358C75","101": "#c3dc00" }
+let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00" }
 let driverGraph;
 let pointsGraph;
 let qualiGraph;
@@ -22,7 +22,19 @@ let h2hTeamList = []
 let graphTeamList = []
 let mode = "driver"
 
-const lightColors = ["#f1f1f1","#47c7fc","#ffd300","#6CD3BF","#fcfcfc","#37BEDD","#B6BABD","#c3dc00"]
+const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD", "#B6BABD", "#c3dc00"]
+let combined_dict = { 
+    1: "Ferrari", 
+    2: "McLaren", 
+    3: "Red Bull", 
+    4: "Mercedes", 
+    5: "Alpine", 
+    6: "Williams", 
+    7: "Haas", 
+    8: "Alpha Tauri", 
+    9: "Alfa Romeo", 
+    10: "Aston Martin" 
+}
 
 Chart.register(ChartDataLabels);
 
@@ -67,7 +79,7 @@ function manage_h2h_bars(data) {
         })
     }
 
-    document.querySelectorAll(".one-statH2H").forEach(function (elem,index) {
+    document.querySelectorAll(".one-statH2H").forEach(function (elem, index) {
         if (elem.id === "bestrh2h" || elem.id === "bestqh2h") {
             if (!wins && elem.id === "bestrh2h") {
                 d1_width = 100 - (data[index][0] - 1) * 5
@@ -121,7 +133,7 @@ function manage_h2h_bars(data) {
                 relValue = (100 / (data[0][0] + data[0][1])).toFixed(2)
             }
             else if (elem.id === "ptsh2h") {
-                relValue = 100 / Math.max(data[index][0],data[index][1])
+                relValue = 100 / Math.max(data[index][0], data[index][1])
             }
             else if (elem.id === "dnfh2h" || elem.id === "podiumsh2h") {
                 relValue = (100 / (data[index][0] + data[index][1])).toFixed(2)
@@ -140,7 +152,7 @@ function manage_h2h_bars(data) {
         if (d2_width > 100) {
             d2_width = 100
         }
-        fill_bars(elem,d1_width,d2_width)
+        fill_bars(elem, d1_width, d2_width)
 
     })
 }
@@ -150,7 +162,7 @@ function manage_h2h_bars(data) {
  * @param {Number} d1_width driver 1's width for his bar
  * @param {Number} d2_width driver 2's width for his bar
  */
-function fill_bars(elem,d1_width,d2_width) {
+function fill_bars(elem, d1_width, d2_width) {
     elem.querySelector(".driver1-bar").className = "driver1-bar"
     elem.querySelector(".driver2-bar").className = "driver2-bar"
     document.querySelector(".driver1-name").className = "driver1-name"
@@ -209,7 +221,7 @@ function toggle_sprints() {
             }
         }
     }
-    fill_bars(elem,d1_width,d2_width)
+    fill_bars(elem, d1_width, d2_width)
 }
 
 /**
@@ -217,8 +229,8 @@ function toggle_sprints() {
  */
 function sprintsListeners() {
     document.querySelector("#bestrh2h").querySelectorAll("i").forEach(function (elem) {
-        elem.removeEventListener('evento',change_sprintView);
-        elem.addEventListener("click",change_sprintView)
+        elem.removeEventListener('evento', change_sprintView);
+        elem.addEventListener("click", change_sprintView)
     })
 }
 
@@ -233,7 +245,7 @@ function change_sprintView() {
 /**
  * Event listener for the annotatiosn switch
  */
-document.getElementById("annotationsToggle").addEventListener("click",function () {
+document.getElementById("annotationsToggle").addEventListener("click", function () {
     annotationsToggle = !annotationsToggle
     if (typeof driverGraph !== 'undefined' && driverGraph !== null) {
         driverGraph.options.plugins.annotation.annotations.line1.display = annotationsToggle
@@ -280,7 +292,7 @@ function load_drivers_h2h(drivers) {
         h2hBut.innerText = "H2H"
         h2hBut.className = "H2Hradio"
         h2hBut.dataset.state = "unchecked"
-        h2hBut.addEventListener("click",function () {
+        h2hBut.addEventListener("click", function () {
             if (h2hBut.dataset.state === "unchecked" && h2hCount < 2) {
                 h2hBut.dataset.state = "checked"
                 h2hBut.classList.add("activated")
@@ -293,7 +305,7 @@ function load_drivers_h2h(drivers) {
                 h2hBut.classList.remove("activated")
                 h2hCount -= 1
                 let ind = h2hList.indexOf(h2hBut.dataset.driverid)
-                h2hTeamList.splice(ind,1)
+                h2hTeamList.splice(ind, 1)
                 h2hList = h2hList.filter(x => x !== h2hBut.dataset.driverid)
             }
             let text = document.querySelector(".H2H-text").querySelector(".text-normal")
@@ -301,7 +313,7 @@ function load_drivers_h2h(drivers) {
             text.classList.add("h2h-highlight");
             setTimeout(function () {
                 text.classList.remove("h2h-highlight");
-            },400);
+            }, 400);
         })
         let graphBut = document.createElement("div")
         let graphIcon = document.createElement("i")
@@ -311,7 +323,7 @@ function load_drivers_h2h(drivers) {
         graphBut.appendChild(graphIcon)
         graphBut.className = "GraphButton"
         graphBut.dataset.state = "unchecked"
-        graphBut.addEventListener("click",function () {
+        graphBut.addEventListener("click", function () {
             if (graphBut.dataset.state === "unchecked") {
                 graphBut.dataset.state = "checked"
                 graphBut.classList.add("activated")
@@ -323,7 +335,7 @@ function load_drivers_h2h(drivers) {
                 graphBut.dataset.state = "unchecked"
                 graphBut.classList.remove("activated")
                 let ind = graphList.indexOf(graphBut.dataset.driverid)
-                graphTeamList.splice(ind,1)
+                graphTeamList.splice(ind, 1)
                 graphList = graphList.filter(x => x !== graphBut.dataset.driverid)
                 graphCount -= 1
             }
@@ -332,7 +344,7 @@ function load_drivers_h2h(drivers) {
             text.classList.add("graph-highlight");
             setTimeout(function () {
                 text.classList.remove("graph-highlight");
-            },400);
+            }, 400);
         })
 
         let buttons = document.createElement("div")
@@ -344,7 +356,7 @@ function load_drivers_h2h(drivers) {
         buttons.append(graphBut)
         newDiv.appendChild(nameAndSurName)
         newDiv.appendChild(buttons)
-        manageColor(newDiv,spanLastName)
+        manageColor(newDiv, spanLastName)
         dest.appendChild(newDiv)
     });
     buttonsListeners()
@@ -354,7 +366,7 @@ function load_drivers_h2h(drivers) {
 }
 
 document.querySelector(".teams-modal-zone").querySelectorAll(".H2Hradio").forEach(function (h2hBut) {
-    h2hBut.addEventListener("click",function () {
+    h2hBut.addEventListener("click", function () {
         if (h2hBut.dataset.state === "unchecked" && h2hCount < 2) {
             h2hBut.dataset.state = "checked"
             h2hBut.classList.add("activated")
@@ -366,19 +378,19 @@ document.querySelector(".teams-modal-zone").querySelectorAll(".H2Hradio").forEac
             h2hBut.classList.remove("activated")
             h2hCount -= 1
             let ind = h2hTeamList.indexOf(h2hBut.dataset.teamud)
-            h2hTeamList.splice(ind,1)
+            h2hTeamList.splice(ind, 1)
         }
         let text = document.querySelector(".H2H-text").querySelector(".text-normal")
         text.innerText = "- " + h2hCount + "/2 teams selected"
         text.classList.add("h2h-highlight");
         setTimeout(function () {
             text.classList.remove("h2h-highlight");
-        },400);
+        }, 400);
     })
 })
 
 document.querySelector(".teams-modal-zone").querySelectorAll(".GraphButton").forEach(function (graphBut) {
-    graphBut.addEventListener("click",function () {
+    graphBut.addEventListener("click", function () {
         if (graphBut.dataset.state === "unchecked") {
             graphBut.dataset.state = "checked"
             graphBut.classList.add("activated")
@@ -389,7 +401,7 @@ document.querySelector(".teams-modal-zone").querySelectorAll(".GraphButton").for
             graphBut.dataset.state = "unchecked"
             graphBut.classList.remove("activated")
             let ind = graphTeamList.indexOf(graphBut.dataset.teamid)
-            graphTeamList.splice(ind,1)
+            graphTeamList.splice(ind, 1)
             graphCount -= 1
         }
         let text = document.querySelector(".graph-text").querySelector(".text-normal")
@@ -397,11 +409,11 @@ document.querySelector(".teams-modal-zone").querySelectorAll(".GraphButton").for
         text.classList.add("graph-highlight");
         setTimeout(function () {
             text.classList.remove("graph-highlight");
-        },400);
+        }, 400);
     })
 })
 
-document.querySelector("#driverspillmodal").addEventListener("click",function () {
+document.querySelector("#driverspillmodal").addEventListener("click", function () {
     document.querySelector(".drivers-modal-section").classList.remove("d-none")
     document.querySelector(".teams-modal-section").classList.add("d-none")
     h2hCount = 0;
@@ -425,7 +437,7 @@ document.querySelector("#driverspillmodal").addEventListener("click",function ()
     })
 })
 
-document.querySelector("#teamspillmodal").addEventListener("click",function () {
+document.querySelector("#teamspillmodal").addEventListener("click", function () {
     document.querySelector(".drivers-modal-section").classList.add("d-none")
     document.querySelector(".teams-modal-section").classList.remove("d-none")
     h2hCount = 0;
@@ -452,13 +464,13 @@ document.querySelector("#teamspillmodal").addEventListener("click",function () {
 
 function buttonsListeners() {
     document.querySelectorAll("H2HRadio").forEach(function (button) {
-        button.addEventListener("click",function () {
+        button.addEventListener("click", function () {
 
         })
     })
 }
 
-document.querySelector("#confirmComparison").addEventListener("click",function () {
+document.querySelector("#confirmComparison").addEventListener("click", function () {
     H2HReady()
     if (h2hCount === 2) {
         let drivers = document.querySelectorAll(".H2Hradio.activated")
@@ -481,21 +493,21 @@ document.querySelector("#confirmComparison").addEventListener("click",function (
 /**
  * Event listeners for the 3 types of graphs
  */
-document.querySelector("#pointsProgression").addEventListener("click",function (elem) {
+document.querySelector("#pointsProgression").addEventListener("click", function (elem) {
     document.querySelector("#graphTypeButton").innerText = "Points progression"
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.remove("d-none")
 })
 
-document.querySelector("#raceForm").addEventListener("click",function (elem) {
+document.querySelector("#raceForm").addEventListener("click", function (elem) {
     document.querySelector("#graphTypeButton").innerText = "Race form"
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.remove("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
 })
 
-document.querySelector("#qualiForm").addEventListener("click",function (elem) {
+document.querySelector("#qualiForm").addEventListener("click", function (elem) {
     document.querySelector("#graphTypeButton").innerText = "Qualifying form"
     document.querySelector("#qualiGraph").classList.remove("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
@@ -515,7 +527,7 @@ function nameTitleD1(aDriver1) {
     d1_team = driver1Sel.firstChild.children[1].dataset.teamid
     document.querySelector(".driver1-second").className = "driver1-second bold-font"
     let newName = driver1Sel.firstChild.cloneNode(true)
-    manageColor(document.querySelector(".driver1-second"),document.querySelector(".driver1-second"))
+    manageColor(document.querySelector(".driver1-second"), document.querySelector(".driver1-second"))
 }
 
 /**
@@ -530,7 +542,7 @@ function nameTitleD2(aDriver2) {
     document.querySelector(".driver2-second").className = "driver2-second bold-font"
     let newName2 = driver2Sel.firstChild.cloneNode(true)
     d2_team = driver2Sel.firstChild.children[1].dataset.teamid
-    manageColor(document.querySelector(".driver2-second"),document.querySelector(".driver2-second"))
+    manageColor(document.querySelector(".driver2-second"), document.querySelector(".driver2-second"))
 }
 
 /**
@@ -538,7 +550,7 @@ function nameTitleD2(aDriver2) {
  */
 function H2HReady() {
     document.querySelector("#mainH2h").classList.remove("d-none")
-    let list1,list2;
+    let list1, list2;
     if (mode === "driver") {
         list1 = h2hList
         list2 = graphList
@@ -603,13 +615,14 @@ function load_labels_initialize_graphs(data) {
     if (typeof qualiGraph !== 'undefined' && qualiGraph !== null) {
         qualiGraph.destroy();
     }
+    console.log("CREO")
+    createPointsChart(labels)
     if (mode === "driver") {
         createRaceChart(labels)
         createQualiChart(labels)
         load_graphs_data(data)
     }
     else if (mode === "team") {
-        createPointsChart(labels)
         load_teams_points_graph(data)
     }
 
@@ -617,62 +630,103 @@ function load_labels_initialize_graphs(data) {
 }
 
 function load_teams_points_graph(data) {
-    data.forEach(function (team,ind) {
+    data.forEach(function (team, ind) {
         if (ind !== 0 && ind !== data.length - 1) {
-            team.forEach(function (driv,index) {
-                console.log(driv)
-                let d1_races = [];
-                let d1_points_provisional = []
-                let d1_points = [0]
-                let teamPoints = [];
-                driv.slice(3).forEach(function (elem) {
-                    d1_races.push(elem[0])
-                    let ptsThatRace = elem[2];
-                    if (ptsThatRace === -1) {
-                        ptsThatRace = 0;
-                    }
-                    if (elem.length === 8) {
-                        d1_points_provisional.push(ptsThatRace + elem[5])
-                    }
-                    else {
-                        d1_points_provisional.push(ptsThatRace)
-                    }
-                    data[0].forEach(function (elem) {
-                        let index1 = d1_races.indexOf(elem[0])
-                        if (index1 !== -1) {
-                            d1_points.push(d1_points_provisional[index1] + d1_points[d1_points.length - 1])
+            let teamPoints = [];
+            team.forEach(function (driv, index) {
+                let points = get_one_driver_points_format(driv, data)
+                console.log(points)
+                if (teamPoints.length === 0) {
+                    teamPoints = [...points];
+                } else {
+                    teamPoints = teamPoints.map((point, index) => point + points[index]);
+                }
+
+            })
+            console.log(team)
+            console.log(teamPoints)
+            let team_color = colors_dict[graphTeamList[ind-1] + "0"]
+            pointsGraph.data.datasets.push({
+                label: combined_dict[graphTeamList[ind-1]],
+                data: teamPoints,
+                borderColor: team_color,
+                pointBackgroundColor: team_color,
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+                datalabels: {
+                    color: function () {
+                        if (lightColors.indexOf(team_color) !== -1) {
+                            return "#272727"
                         }
                         else {
-                            if (data[data.length - 1].indexOf(elem[0]) !== -1) {
-                                d1_points.push(d1_points[d1_points.length - 1])
-                            }
-                            else {
-                                d1_points.push(NaN)
-                            }
-
+                            return '#eeeef1'
                         }
-
-                    })
-                    d1_points.shift()
-                    if (teamPoints.length === 0) {
-                        teamPoints = [...d1_points];
-                    } else {
-                        teamPoints = teamPoints.map((point, index) => point + d1_points[index]);
+                    },
+                    backgroundColor: team_color,
+                    display: function (context) {
+                        if (context.dataIndex === findLastNonNaNIndex(context.dataset.data)) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    },
+                    borderRadius: 5,
+                    font: {
+                        family: "Formula1Bold"
                     }
-                    console.log(d1_points)
-                })
-                console.log(teamPoints)
 
+                },
             })
 
         }
     })
+    pointsGraph.update()
+}
+
+function get_one_driver_points_format(driver, data) {
+    let d1_races = [];
+    let d1_points_provisional = []
+    let d1_points = [0]
+    
+    driver.slice(3).forEach(function (elem) {
+        d1_races.push(elem[0])
+        let ptsThatRace = elem[2];
+        if (ptsThatRace === -1) {
+            ptsThatRace = 0;
+        }
+        if (elem.length === 8) {
+            d1_points_provisional.push(ptsThatRace + elem[5])
+        }
+        else {
+            d1_points_provisional.push(ptsThatRace)
+        }
+    })
+    data[0].forEach(function (elem) {
+        let index1 = d1_races.indexOf(elem[0])
+        if (index1 !== -1) {
+            d1_points.push(d1_points_provisional[index1] + d1_points[d1_points.length - 1])
+        }
+        else {
+            if (data[data.length - 1].indexOf(elem[0]) !== -1) {
+                d1_points.push(d1_points[d1_points.length - 1])
+            }
+            else {
+                d1_points.push(NaN)
+            }
+
+        }
+
+    })
+    d1_points.shift()
+
+    return d1_points
 
 }
 
 function load_graphs_data(data) {
 
-    data.forEach(function (driv,index) {
+    data.forEach(function (driv, index) {
         if (index !== 0 && index !== data.length - 1) {
             let d1_res = [];
             let d1_races = [];
@@ -1057,6 +1111,7 @@ function createQualiChart(labelsArray) {
  * @param {Array} labelsArray array with all the labels for the races
  */
 function createPointsChart(labelsArray) {
+    console.log(labelsArray)
     const dataD = {
         labels: labelsArray,
     };
