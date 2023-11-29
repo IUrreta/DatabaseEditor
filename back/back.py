@@ -193,6 +193,9 @@ async def handle_command(message):
                 await send_message_to_client(data_json_h2h)
             elif(message["mode"] == "team"):
                 h2hRes = fetch_Head2Head_team((message["h2h"][0],), (message["h2h"][1],), (message["year"],))
+                h2h = ["H2H fetched", h2hRes]
+                data_json_h2h = json.dumps(h2h)
+                await send_message_to_client(data_json_h2h)
         h2hDrivers = []
         for id in message["graph"]:
             if(message["mode"] == "driver"):
