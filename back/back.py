@@ -13,7 +13,7 @@ from scripts.edit_stats_23 import run_script as run_editStats
 from scripts.custom_calendar_23 import run_script as run_editCalendar
 from scripts.car_performance_23 import run_script as run_editPerformance
 from scripts.engine_performance_23 import run_script as run_editEngine
-from scripts.head2head_23 import fetch_Head2Head as fetch_Head2Head
+from scripts.head2head_23 import fetch_Head2Head, fetch_Head2Head_team
 from scripts.edit_teams import fetch_teamData, edit_team
 
 client = None
@@ -187,22 +187,20 @@ async def handle_command(message):
     elif type=="H2HConfigured":
         if(message["h2h"] != -1):
             if(message["mode"] == "driver"):
-                h2hRes = fetch_Head2Head((message["h2h"][0],), (message["h2h"][1],), (message["year"],), cursor)
+                h2hRes = fetch_Head2Head((message["h2h"][0],), (message["h2h"][1],), (message["year"],))
                 h2h = ["H2H fetched", h2hRes]
                 data_json_h2h = json.dumps(h2h)
                 await send_message_to_client(data_json_h2h)
             elif(message["mode"] == "team"):
-                print(message)
+                h2hRes = fetch_Head2Head_team((message["h2h"][0],), (message["h2h"][1],), (message["year"],))
         h2hDrivers = []
         for id in message["graph"]:
             if(message["mode"] == "driver"):
                 res = fetch_oneDriver_seasonResults((id,), (message["year"],))
                 h2hDrivers.append(res)
             elif(message["mode"] == "team"):
-                print("AAAAAAaa")
                 res = fetch_oneTeam_seasonResults((id,), (message["year"],))
                 h2hDrivers.append(res)
-        print(h2hDrivers)
         h2hDrivers.append(fetch_events_done_from(message["year"]))
         h2hDrivers.insert(0, fetch_events_from(message["year"]))
         h2hDrivers.insert(0, "H2HDriver fetched")
