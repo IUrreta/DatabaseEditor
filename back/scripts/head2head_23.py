@@ -159,7 +159,7 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
         if(d1_RDNF[0] > 0):
             dnfH2H[0] += d1_RDNF[0]
         if(d2_RDNF[0] > 0):
-            dnfH2H[1] += dnfH2H[1]
+            dnfH2H[1] += d2_RDNF[0]
         d1_SRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Sprintresults  WHERE RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers1)).fetchone()
         d2_SRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Sprintresults  WHERE RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers2)).fetchone()
         if(d1_SRes != None):
