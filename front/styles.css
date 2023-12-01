@@ -2343,44 +2343,8 @@ input::-webkit-inner-spin-button {
   transition: color 0.4s;
 }
 
-.driver1-name:hover .team1[data-teamid="1"], .driver2-name:hover .team2[data-teamid="1"]{
-  color: #F91536 !important;
-}
-
-.driver1-name:hover .team1[data-teamid="2"], .driver2-name:hover .team2[data-teamid="2"]{
-  color: #F58020 !important;
-}
-
-.driver1-name:hover .team1[data-teamid="3"], .driver2-name:hover .team2[data-teamid="3"]{
-  color: #3671C6 !important;
-}
-
-.driver1-name:hover .team1[data-teamid="4"], .driver2-name:hover .team2[data-teamid="4"]{
-  color: #6CD3BF !important;
-}
-
-.driver1-name:hover .team1[data-teamid="5"], .driver2-name:hover .team2[data-teamid="5"]{
-  color: #2293D1 !important;
-}
-
-.driver1-name:hover .team1[data-teamid="6"], .driver2-name:hover .team2[data-teamid="6"]{
-  color: #37BEDD !important;
-}
-
-.driver1-name:hover .team1[data-teamid="7"], .driver2-name:hover .team2[data-teamid="7"]{
-  color: #B6BABD !important;
-}
-
-.driver1-name:hover .team1[data-teamid="8"], .driver2-name:hover .team2[data-teamid="8"]{
-  color: #5E8FAA !important;
-}
-
-.driver1-name:hover .team1[data-teamid="9"], .driver2-name:hover .team2[data-teamid="9"]{
-  color: #C92D4B !important;
-}
-
-.driver1-name:hover .team1[data-teamid="10"], .driver2-name:hover .team2[data-teamid="10"]{
-  color: #358C75 !important;
+.driver1-name:hover .team1, .driver2-name:hover .team2{
+  color: white !important;
 }
 
 
