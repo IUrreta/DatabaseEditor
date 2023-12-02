@@ -49,3 +49,10 @@ function placeRaces(races){
         })
     })
 }
+
+function predictDrivers(drivers){
+    console.log(drivers)
+    drivers.forEach(function(driver){
+        console.log(driver)
+    })
+}

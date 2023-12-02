@@ -1622,6 +1622,33 @@ a.bi-heart:hover {
 #predictionMenu{
   margin-left: 0px;
   margin-right: 14px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.prediction-table{
+  width: 50%;
+}
+
+.prediction-table-header, .prediction-table-driver{
+  display: flex;
+  flex-direction: row;
+  color: #dedde6;
+  font-size: 20px;
+  margin: 10px 20px;
+}
+
+.driver-prediction{
+  width: 60%;
+}
+
+.position-prediction{
+  width: 20%;
+}
+
+.prediction-prediction{
+  width: 20%;
 }
 
 

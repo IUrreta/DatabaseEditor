@@ -234,7 +234,12 @@ async def handle_command(message):
         await send_message_to_client(data_json_events)
 
     elif type=="predict":
-        predict(message["race"], message["year"])
+        prediction = predict(message["race"], message["year"])
+        prediction = list(prediction.values())
+        prediction = sorted(prediction, key=lambda x: x['result'])
+        pred_msg = ["Prediction Fetched", prediction]
+        data_json_prediction = json.dumps(pred_msg)
+        await send_message_to_client(data_json_prediction)
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()

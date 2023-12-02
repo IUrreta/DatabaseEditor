@@ -182,7 +182,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         "Events to Predict Fetched": (message)=>{
             placeRaces(message.slice(1))
-
+        },
+        "Prediction Fetched": (message)=>{
+            predictDrivers(message.slice(1)[0])
         }
     };
 

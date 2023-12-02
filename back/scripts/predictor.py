@@ -130,9 +130,13 @@ def predict(gpID, year):
     dfT['Name'] = dfT['id'].map(name_dict)
     dfT['Prediction'] = dfT['Prediction'].astype(float)
     dfT['Prediction'] = dfT['Prediction'].rank(method='first').astype(int)
-    print(dfT[["Name", "Prediction", "result"]].sort_values("result"))
+    dfT['result'] = dfT['result'].astype(int)
+    dfT['id'] = dfT['id'].astype(int)
+    dict = dfT.set_index('id').T.to_dict()
+    return dict
+    # print(dfT[["Name", "Prediction", "result"]].sort_values("result"))
+    
 
-# predict(261)
 
 
 
