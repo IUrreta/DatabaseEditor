@@ -106,6 +106,7 @@ def createDF():
 def predict(gpID, year):
     MLP_fit = pickle.load(open("./models/PD01.pkl", "rb"))
     drivers = fetch_drivers_per_year(year)
+    print(drivers)
     idList = [driver[1] for driver in drivers]
     nameList = [(driver[0], driver[1]) for driver in drivers]
     idList = list(set(idList))
@@ -127,7 +128,9 @@ def predict(gpID, year):
     dfT['Prediction'] = MLP_fit.predict(dfT)
     dfT = dfT[["id", "result", "Prediction"]]
     name_dict = {id_: nombre for nombre, id_, _ in drivers}
+    team_dict = {id_ : team_ for _, id_, team_ in drivers}
     dfT['Name'] = dfT['id'].map(name_dict)
+    dfT["Team"] = dfT["id"].map(team_dict)
     dfT['Prediction'] = dfT['Prediction'].astype(float)
     dfT['Prediction'] = dfT['Prediction'].rank(method='first').astype(int)
     dfT['result'] = dfT['result'].astype(int)

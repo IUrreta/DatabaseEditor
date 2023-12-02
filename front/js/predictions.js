@@ -1,3 +1,5 @@
+
+
 const names_full = {
     "BAH": "Bahrain",
     "AUS": "Australia",
@@ -51,8 +53,65 @@ function placeRaces(races){
 }
 
 function predictDrivers(drivers){
+    document.querySelector("#predictionFirst").querySelector(".prediction-table-data").innerHTML = ""
+    document.querySelector("#predictionSecond").querySelector(".prediction-table-data").innerHTML = ""
     console.log(drivers)
     drivers.forEach(function(driver){
         console.log(driver)
+        let mainDiv = document.createElement("div")
+        mainDiv.className = "driver-info"
+        let name = driver.Name.split(" ")
+        let nameDiv = document.createElement("div")
+        nameDiv.classList = "driver-prediction"
+        let spanName = document.createElement("span")
+        let spanLastName = document.createElement("span")
+        spanLastName.dataset.teamid = driver.Team;
+        spanName.textContent = name[0] + " "
+        spanLastName.textContent = name[1].toUpperCase()
+        spanLastName.classList.add("bold-font")
+        manageColor(spanLastName, spanLastName)
+        nameDiv.appendChild(spanName)
+        nameDiv.appendChild(spanLastName)
+        mainDiv.appendChild(nameDiv)
+        let positionDiv = document.createElement("div")
+        positionDiv.className = "position-prediction"
+        let provisional = driver.result
+        if(provisional === 1){
+            provisional = provisional + "st"
+        }
+        else if(provisional === 2){
+            provisional = provisional + "nd"
+        }
+        else if(provisional === 3){
+            provisional = provisional + "rd"
+        }
+        else{
+            provisional = provisional + "th"
+        }
+        positionDiv.textContent = provisional
+        mainDiv.appendChild(positionDiv)
+        let predictionDiv = document.createElement("div")
+        predictionDiv.className = "prediction-prediction"
+        provisional = driver.Prediction
+        if(provisional === 1){
+            provisional = provisional + "st"
+        }
+        else if(provisional === 2){
+            provisional = provisional + "nd"
+        }
+        else if(provisional === 3){
+            provisional = provisional + "rd"
+        }
+        else{
+            provisional = provisional + "th"
+        }
+        predictionDiv.textContent = provisional
+        mainDiv.appendChild(predictionDiv)
+        if(driver.result <= 10){
+            document.querySelector("#predictionFirst").querySelector(".prediction-table-data").appendChild(mainDiv)
+        }
+        else if(driver.result > 10){
+            document.querySelector("#predictionSecond").querySelector(".prediction-table-data").appendChild(mainDiv)
+        }
     })
 }

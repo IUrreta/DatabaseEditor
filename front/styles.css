@@ -1610,6 +1610,21 @@ a.bi-heart:hover {
   font-size: 18px;
 }
 
+.driver-info{
+  background-color: #3f3c57;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 8px;
+  cursor: pointer !important;
+  margin: 13px 8px;
+  color: #dedde6;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  position: relative;
+  font-size: 18px;
+  display: flex;
+  flex-direction: row;
+}
+
 .race{
   font-size: 24px;
 }
@@ -1640,22 +1655,24 @@ a.bi-heart:hover {
 }
 
 .driver-prediction{
-  width: 60%;
+  width: 50%;
 }
 
 .position-prediction{
-  width: 20%;
+  width: 25%;
+  text-align: center;
 }
 
 .prediction-prediction{
-  width: 20%;
+  width: 25%;
+  text-align: center;
 }
 
 
 
 .team:hover,
 .engine:hover,
-.race:hover {
+.race:hover, .driver-info:hover {
   border-color: white;
   color: white;
   background-color: #4e4b69;
