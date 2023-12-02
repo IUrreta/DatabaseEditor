@@ -15,6 +15,7 @@ from scripts.car_performance_23 import run_script as run_editPerformance
 from scripts.engine_performance_23 import run_script as run_editEngine
 from scripts.head2head_23 import fetch_Head2Head, fetch_Head2Head_team
 from scripts.edit_teams import fetch_teamData, edit_team
+from scripts.predictor import predict
 
 client = None
 path = None
@@ -224,6 +225,16 @@ async def handle_command(message):
         await send_message_to_client(info_json)
         argument = message["command"]
 
+    elif type=="yearSelectedPrediction":
+        print(message)
+        events = [fetch_events_from(message["year"])]
+        events.insert(0, message["year"])
+        events.insert(0, "Events to Predict Fetched")
+        data_json_events = json.dumps(events)
+        await send_message_to_client(data_json_events)
+
+    elif type=="predict":
+        predict(message["race"], message["year"])
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()

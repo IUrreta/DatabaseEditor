@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const viewPill = document.getElementById("viewerpill");
     const h2hPill = document.getElementById("h2hpill");
     const constructorsPill = document.getElementById("constructorspill")
+    const predictPill = document.getElementById("predictpill")
 
     const driverTransferDiv = document.getElementById("driver_transfers");
     const editStatsDiv = document.getElementById("edit_stats");
@@ -89,10 +90,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const viewDiv = document.getElementById("season_viewer");
     const h2hDiv = document.getElementById("head2head_viewer");
     const teamsDiv = document.getElementById("edit_teams");
+    const predictDiv = document.getElementById("predict_results")
 
     const patchNotesBody = document.getElementById("patchNotesBody")
 
-    const scriptsArray = [h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv, teamsDiv]
+    const scriptsArray = [predictDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv, teamsDiv]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -177,6 +179,10 @@ document.addEventListener('DOMContentLoaded', function () {
         "TeamData Fetched": (message)=>{
             fillLevels(message.slice(1))
 
+        },
+        "Events to Predict Fetched": (message)=>{
+            placeRaces(message.slice(1))
+
         }
     };
 
@@ -209,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     socket.onmessage = (event) => {
         let message = JSON.parse(event.data);
-        //console.log(message)
+        console.log(message)
         let handler = messageHandlers[message[0]];
 
         if (handler) {
@@ -586,8 +592,15 @@ document.addEventListener('DOMContentLoaded', function () {
     /**
      * Pills and their eventListeners
      */
+    predictPill.addEventListener("click", function () {
+        manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+        scriptSelected = 1
+        check_selected()
+        managePillsTitle("ia")
+    })
+
     h2hPill.addEventListener("click", function () {
-        manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide")
+        manageScripts("hide","show", "hide", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("data")
@@ -595,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     viewPill.addEventListener("click", function () {
-        manageScripts("hide", "show", "hide", "hide", "hide", "hide", "hide")
+        manageScripts("hide","hide", "show", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("data")
@@ -603,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     driverTransferPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide")
+        manageScripts("hide","hide", "hide", "show", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
@@ -611,14 +624,14 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     editStatsPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "show", "hide", "hide", "hide")
+        manageScripts("hide","hide", "hide", "hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
     })
 
     constructorsPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show")
+        manageScripts("hide","hide", "hide", "hide", "hide", "hide", "hide", "show")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
@@ -626,14 +639,14 @@ document.addEventListener('DOMContentLoaded', function () {
     
 
     CalendarPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "hide", "show", "hide", "hide")
+        manageScripts("hide","hide", "hide", "hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
     })
 
     carPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide")
+        manageScripts("hide","hide", "hide", "hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
@@ -645,12 +658,24 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector("#dataPills").querySelector(".pill-line").classList.add("activeType")
             document.querySelector("#editPills").classList.remove("activeType")
             document.querySelector("#editPills").querySelector(".pill-line").classList.remove("activeType")
+            document.querySelector("#iaPills").classList.remove("activeType")
+            document.querySelector("#iaPills").querySelector(".pill-line").classList.remove("activeType")
         }
         else if (type === "edit") {
             document.querySelector("#editPills").classList.add("activeType")
             document.querySelector("#editPills").querySelector(".pill-line").classList.add("activeType")
             document.querySelector("#dataPills").classList.remove("activeType")
             document.querySelector("#dataPills").querySelector(".pill-line").classList.remove("activeType")
+            document.querySelector("#iaPills").classList.remove("activeType")
+            document.querySelector("#iaPills").querySelector(".pill-line").classList.remove("activeType")
+        }
+        else if (type === "ia") {
+            document.querySelector("#iaPills").classList.add("activeType")
+            document.querySelector("#iaPills").querySelector(".pill-line").classList.add("activeType")
+            document.querySelector("#dataPills").classList.remove("activeType")
+            document.querySelector("#dataPills").querySelector(".pill-line").classList.remove("activeType")
+            document.querySelector("#editPills").classList.remove("activeType")
+            document.querySelector("#editPills").querySelector(".pill-line").classList.remove("activeType")
         }
     }
 

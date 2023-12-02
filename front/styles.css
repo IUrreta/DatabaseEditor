@@ -213,11 +213,11 @@ a.bi-heart:hover {
   overflow-y: scroll;
 }
 
-#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar {
+#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar {
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb {
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb {
   background-color: white;
   border-radius: 3px;
 }
@@ -707,8 +707,17 @@ a.bi-heart:hover {
 
 #dataPills{
   z-index: 1 !important;
-  padding-left: 150px;
+  padding-left: 180px;
   transition: color 0.4s;
+}
+#iaPills{
+  z-index: 1 !important;
+  padding-left: 80px;
+  transition: color 0.4s;
+}
+
+#predict_results{
+  flex-direction: column;
 }
 
 .save-selector-title{
@@ -1587,7 +1596,8 @@ a.bi-heart:hover {
 }
 
 .team,
-.engine {
+.engine,
+.race {
   background-color: #3f3c57;
   border: 2px solid transparent;
   border-radius: 10px;
@@ -1600,8 +1610,25 @@ a.bi-heart:hover {
   font-size: 18px;
 }
 
+.race{
+  font-size: 24px;
+}
+
+#raceMenu{
+  max-height: 660px;
+  overflow-y: scroll;
+}
+
+#predictionMenu{
+  margin-left: 0px;
+  margin-right: 14px;
+}
+
+
+
 .team:hover,
-.engine:hover {
+.engine:hover,
+.race:hover {
   border-color: white;
   color: white;
   background-color: #4e4b69;
