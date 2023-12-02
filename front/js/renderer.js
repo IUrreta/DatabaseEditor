@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
             placeRaces(message.slice(1))
         },
         "Prediction Fetched": (message)=>{
-            predictDrivers(message.slice(1)[0])
+            predictDrivers(message.slice(1))
         }
     };
 
@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     socket.onmessage = (event) => {
         let message = JSON.parse(event.data);
-        console.log(message)
+        // console.log(message)
         let handler = messageHandlers[message[0]];
 
         if (handler) {

@@ -25,17 +25,17 @@ const names_full = {
     "NED": "Netherlands",
     "VEG": "Vegas",
     "QAT": "Qatar"
-  };
+};
 
 let yearSel;
+let racePredicted;
 
 
-function placeRaces(races){
+function placeRaces(races) {
     yearSel = races[0]
     raceMenu = document.querySelector("#raceMenu")
     raceMenu.innerHTML = ""
-    console.log(races)
-    races[1].forEach(function(race){
+    races[1].forEach(function (race) {
         let newDiv = document.createElement("div");
         newDiv.className = "race bold-font"
         newDiv.textContent = names_full[races_names[race[1]]]
@@ -46,27 +46,39 @@ function placeRaces(races){
         img.style.float = "right"
         newDiv.appendChild(img)
         raceMenu.appendChild(newDiv)
-        newDiv.addEventListener("click", function(){
-            if(raceMenu.querySelector(".selected")){
+        newDiv.addEventListener("click", function () {
+            racePredicted = newDiv.dataset.raceid;
+            if (raceMenu.querySelector(".selected")) {
                 raceMenu.querySelector(".selected").classList.remove("selected")
             }
             newDiv.classList.add("selected")
             let data = {
                 command: "predict",
                 race: newDiv.dataset.raceid,
-                year : yearSel
+                year: yearSel
             }
             socket.send(JSON.stringify(data))
         })
     })
 }
 
-function predictDrivers(drivers){
+function orderDrivers(lista, camp) {
+    return lista.sort((a, b) => a[camp] - b[camp]);
+}
+
+function predictDrivers(drivers) {
     document.querySelector("#predictionFirst").querySelector(".prediction-table-data").innerHTML = ""
     document.querySelector("#predictionSecond").querySelector(".prediction-table-data").innerHTML = ""
-    console.log(drivers)
-    drivers.forEach(function(driver){
-        console.log(driver)
+    let next_race = drivers[0]
+    let list;
+    let nextRace = (Number(racePredicted) === Number(next_race[0]))
+    if(nextRace){
+        list = orderDrivers(drivers[1], "Prediction")
+    }
+    else{
+        list = drivers[1]
+    }
+    list.forEach(function (driver) {
         let mainDiv = document.createElement("div")
         mainDiv.className = "driver-info"
         let name = driver.Name.split(" ")
@@ -86,34 +98,34 @@ function predictDrivers(drivers){
         positionDiv.className = "position-prediction bold-font"
         let provisional = driver.result
         let positionNum = document.createElement("div")
-        if(provisional === 1){
+        if (provisional === 1) {
             provisional = provisional + "st"
             positionNum.style.color = "#FDE06B"
         }
-        else if(provisional === 2){
+        else if (provisional === 2) {
             provisional = provisional + "nd"
             positionNum.style.color = "#AEB2B8"
         }
-        else if(provisional === 3){
+        else if (provisional === 3) {
             provisional = provisional + "rd"
             positionNum.style.color = "#d7985a"
         }
-        else{
+        else {
             provisional = provisional + "th"
         }
-        
-        let positionDelta= document.createElement("div")
+
+        let positionDelta = document.createElement("div")
         positionNum.textContent = provisional
         let delta = driver.Prediction - driver.result
-        if(delta > 0){
+        if (delta > 0) {
             positionDelta.innerText = "+" + delta
             positionDelta.style.color = "#5bd999"
         }
-        else if (delta < 0){
-            positionDelta.innerText =  delta
+        else if (delta < 0) {
+            positionDelta.innerText = delta
             positionDelta.style.color = "#e95656"
         }
-        else if (delta === 0){
+        else if (delta === 0) {
             positionDelta.innerText = " ="
         }
         positionDiv.appendChild(positionNum)
@@ -121,26 +133,58 @@ function predictDrivers(drivers){
         let predictionDiv = document.createElement("div")
         predictionDiv.className = "prediction-prediction bold-font"
         provisional = driver.Prediction
-        if(provisional === 1){
+        if (provisional === 1) {
             provisional = provisional + "st"
+            predictionDiv.style.color = "#FDE06B"
         }
-        else if(provisional === 2){
+        else if (provisional === 2) {
             provisional = provisional + "nd"
+            predictionDiv.style.color = "#AEB2B8"
+            
         }
-        else if(provisional === 3){
+        else if (provisional === 3) {
             provisional = provisional + "rd"
+            predictionDiv.style.color = "#d7985a"
         }
-        else{
+        else {
             provisional = provisional + "th"
         }
         predictionDiv.textContent = provisional
         mainDiv.appendChild(predictionDiv)
         mainDiv.appendChild(positionDiv)
-        if(driver.result <= 10){
-            document.querySelector("#predictionFirst").querySelector(".prediction-table-data").appendChild(mainDiv)
+        if(nextRace){
+            if (driver.Prediction <= 10) {
+                document.querySelector("#predictionFirst").querySelector(".prediction-table-data").appendChild(mainDiv)
+            }
+            else if (driver.Prediction > 10) {
+                document.querySelector("#predictionSecond").querySelector(".prediction-table-data").appendChild(mainDiv)
+            }
         }
-        else if(driver.result > 10){
-            document.querySelector("#predictionSecond").querySelector(".prediction-table-data").appendChild(mainDiv)
+        else{
+
+            if (driver.result <= 10 && driver.result != 0) {
+                document.querySelector("#predictionFirst").querySelector(".prediction-table-data").appendChild(mainDiv)
+            }
+            else if (driver.result > 10 && driver.result != 0) {
+                document.querySelector("#predictionSecond").querySelector(".prediction-table-data").appendChild(mainDiv)
+            }
         }
+
     })
+    if(nextRace){
+        document.querySelectorAll(".position-prediction").forEach(function(elem){
+            elem.classList.add("d-none")
+        })
+        document.querySelectorAll(".driver-prediction").forEach(function(elem){
+            elem.style.width = "75%"
+        })
+    }
+    else{
+        document.querySelectorAll(".position-prediction").forEach(function(elem){
+            elem.classList.remove("d-none")
+        })
+        document.querySelectorAll(".driver-prediction").forEach(function(elem){
+            elem.style.width = "50%"
+        })
+    }
 }

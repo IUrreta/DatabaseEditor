@@ -707,12 +707,12 @@ a.bi-heart:hover {
 
 #dataPills{
   z-index: 1 !important;
-  padding-left: 180px;
+  padding-left: 144px;
   transition: color 0.4s;
 }
 #iaPills{
   z-index: 1 !important;
-  padding-left: 80px;
+  padding-left: 36px;
   transition: color 0.4s;
 }
 
@@ -1650,6 +1650,7 @@ a.bi-heart:hover {
 #raceMenu{
   max-height: 660px;
   overflow-y: scroll;
+  height: 660px;
 }
 
 #predictionMenu{
@@ -1681,6 +1682,16 @@ a.bi-heart:hover {
   display: flex;
   justify-content: center;
   gap: 15px;
+  padding-left: 40px;
+}
+
+.position-prediction > :first-child{
+  min-width: 50px;
+  margin-left: 20px;
+}
+
+.position-prediction > :nth-child(2){
+  min-width: 50px;
 }
 
 .prediction-prediction{

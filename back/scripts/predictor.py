@@ -123,7 +123,8 @@ def predict(gpID, year):
         else:
             data_list = [id] + list(stats) + list(res)[::-1] + list(qs) + [0]
         dfT.loc[len(dfT)] = data_list
-    dfT.dropna(inplace=True)
+    # dfT.dropna(inplace=True)
+    dfT = dfT.fillna(15)
     dfT['Prediction'] = MLP_fit.predict(dfT)
     dfT = dfT[["id", "result", "Prediction"]]
     name_dict = {id_: nombre for nombre, id_, _ in drivers}
