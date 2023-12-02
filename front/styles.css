@@ -79,7 +79,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .bi-exclamation-diamond {
-  color: #ff8080;
+  color: #e95656;
 }
 
 .bi-exclamation-lg,
@@ -318,7 +318,7 @@ a.bi-heart:hover {
   }
 
   50% {
-    border: 2px solid #ff8080;
+    border: 2px solid #e95656;
     border-radius: 10px;
     background-color: #21202e;
   }
@@ -334,7 +334,7 @@ a.bi-heart:hover {
   }
 
   50% {
-    border: 2px solid #9fdf9f;
+    border: 2px solid #5bd999;
     border-radius: 10px;
     background-color: #21202e;
   }
@@ -427,7 +427,7 @@ a.bi-heart:hover {
 }
 
 .line-error{
-  background-color: #ff8080 !important;
+  background-color: #e95656 !important;
 }
 
 .custom-toast{
@@ -463,7 +463,7 @@ a.bi-heart:hover {
 }
 
 .toast-error{
-  color: #ff8080 !important;
+  color: #e95656 !important;
 }
 
 .hide {
@@ -782,13 +782,13 @@ a.bi-heart:hover {
 }
 
 .delete-mode {
-  background-color: #ff8080 !important;
+  background-color: #e95656 !important;
   border-color: #d66f6f !important;
   transition: border-color 0.4s;
 }
 
 .custom-delete:hover {
-  background-color: #ff8080 !important;
+  background-color: #e95656 !important;
   border-color: #d35f5f !important;
 }
 
@@ -1080,8 +1080,8 @@ a.bi-heart:hover {
 }
 
 .delete-div:hover {
-  color: #ff8080;
-  border-color: #ff8080;
+  color: #e95656;
+  border-color: #e95656;
 }
 
 
@@ -1397,7 +1397,7 @@ a.bi-heart:hover {
 .red-part {
   width: 300px;
   height: 3px;
-  background-color: #ff8080;
+  background-color: #e95656;
   position: relative;
 }
 
@@ -1418,7 +1418,7 @@ a.bi-heart:hover {
 .green-part {
   width: 0%;
   height: 100%;
-  background-color: #9fdf9f;
+  background-color: #5bd999;
   position: absolute;
   top: 0;
   left: 0;
@@ -1627,7 +1627,25 @@ a.bi-heart:hover {
 
 .race{
   font-size: 24px;
+  text-transform: uppercase;
+  padding: 5px 0;
+  padding-left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
+
+
+.race-flag{
+  min-width: 80px;
+  max-width: 80px;
+  min-height: 45px;
+  max-height: 45px;
+  border-radius: 10px;
+  z-index: 2;
+  margin-right: 4px;
+}
+
 
 #raceMenu{
   max-height: 660px;
@@ -1660,12 +1678,16 @@ a.bi-heart:hover {
 
 .position-prediction{
   width: 25%;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
 }
 
 .prediction-prediction{
   width: 25%;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
 }
 
 
@@ -1679,7 +1701,8 @@ a.bi-heart:hover {
 }
 
 .team.selected,
-.engine.selected {
+.engine.selected,
+.race.selected {
   color: #110f24;
   background-color: #dedde6;
 }
@@ -1965,11 +1988,11 @@ a.bi-heart:hover {
 }
 
 .positive {
-  color: #9fdf9f;
+  color: #5bd999;
 }
 
 .negative {
-  color: #ff8080;
+  color: #e95656;
 }
 
 .input-and-buttons{

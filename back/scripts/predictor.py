@@ -106,7 +106,6 @@ def createDF():
 def predict(gpID, year):
     MLP_fit = pickle.load(open("./models/PD01.pkl", "rb"))
     drivers = fetch_drivers_per_year(year)
-    print(drivers)
     idList = [driver[1] for driver in drivers]
     nameList = [(driver[0], driver[1]) for driver in drivers]
     idList = list(set(idList))

@@ -226,7 +226,6 @@ async def handle_command(message):
         argument = message["command"]
 
     elif type=="yearSelectedPrediction":
-        print(message)
         events = [fetch_events_from(message["year"])]
         events.insert(0, message["year"])
         events.insert(0, "Events to Predict Fetched")
