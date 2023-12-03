@@ -29,6 +29,7 @@ const names_full = {
 
 let yearSel;
 let racePredicted;
+let raceName;
 
 
 function placeRaces(races) {
@@ -126,7 +127,7 @@ function predictDrivers(drivers) {
             positionDelta.style.color = "#e95656"
         }
         else if (delta === 0) {
-            positionDelta.innerText = " ="
+            positionDelta.innerText = "\u00A0" + " ="
         }
         positionDiv.appendChild(positionNum)
         positionDiv.appendChild(positionDelta)

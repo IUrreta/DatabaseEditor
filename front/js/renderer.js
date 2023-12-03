@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched"]
+    const noNotifications = ["JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let connectionTimeout = setTimeout(() => {
         update_notifications("Could not connect with backend", true)
         manage_status(0)
-    }, 4000);
+    }, 8000);
 
 
 
@@ -662,6 +662,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector("#editPills").querySelector(".pill-line").classList.remove("activeType")
             document.querySelector("#iaPills").classList.remove("activeType")
             document.querySelector("#iaPills").querySelector(".pill-line").classList.remove("activeType")
+            document.querySelector(".mode-line").className = "mode-line view"
+            document.querySelector(".moving-line").className = "moving-line view"
         }
         else if (type === "edit") {
             document.querySelector("#editPills").classList.add("activeType")
@@ -670,6 +672,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector("#dataPills").querySelector(".pill-line").classList.remove("activeType")
             document.querySelector("#iaPills").classList.remove("activeType")
             document.querySelector("#iaPills").querySelector(".pill-line").classList.remove("activeType")
+            document.querySelector(".mode-line").className = "mode-line edit"
+            document.querySelector(".moving-line").className = "moving-line edit"
         }
         else if (type === "ia") {
             document.querySelector("#iaPills").classList.add("activeType")
@@ -678,6 +682,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelector("#dataPills").querySelector(".pill-line").classList.remove("activeType")
             document.querySelector("#editPills").classList.remove("activeType")
             document.querySelector("#editPills").querySelector(".pill-line").classList.remove("activeType")
+            document.querySelector(".mode-line").className = "mode-line ai"
+            document.querySelector(".moving-line").className = "moving-line ai"
         }
     }
 
