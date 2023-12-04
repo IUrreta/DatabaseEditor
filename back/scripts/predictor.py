@@ -97,14 +97,35 @@ def createDF():
         data[f'stat{i}'] = []
     for i in range(1, 4):
         data[f'race_lag{i}'] = []
-    for i in range(1, 4):
-        data[f'quali_lag{i}'] = []
+    data["boost"] = []
+    data["pctPoints"] = []
+    data["avgRacePosition"] = []  
     data['result'] = []
     dfT = pd.DataFrame(data)
     return dfT
 
+def fetch_points_until(raceid, driverid):
+    year = cursor.execute("SELECT SeasonID FROm Races WHERE RaceID = " + str(raceid)).fetchone()
+    points = cursor.execute("SELECT SUM(Points) FROM Races_Results WHERE RaceID <= " + str(raceid) + " AND DriverID = " + str(driverid) + " AND Season = " + str(year[0])).fetchone()
+    nRaces = cursor.execute("SELECT COUNT(RaceID) FROM Races_Results WHERE RaceID <= " + str(raceid) + " AND DriverID = " + str(driverid) + " AND Season = " + str(year[0])).fetchone()
+    if(nRaces[0] != 0):
+        maxPoints = nRaces[0] * 26
+        pctPoints = (points[0]*100)/maxPoints
+    else:
+        pctPoints = 0
+    return pctPoints
+
+def fetch_avg_position_until(raceid, driverid):
+    year = cursor.execute("SELECT SeasonID FROm Races WHERE RaceID = " + str(raceid)).fetchone()
+    pos = cursor.execute("SELECT AVG(FinishingPos) FROM Races_Results WHERE RaceID <= " + str(raceid) + " AND DriverID = " + str(driverid) + " AND Season = " + str(year[0])).fetchone()
+    return pos[0]
+
+def fetch_spawnBoost(driverID):
+    res = cursor.execute("SELECT PermaTraitSpawnBoost FROm Staff_GameData WHERE StaffID = " + str(driverID)).fetchone()
+    return res
+
 def predict(gpID, year):
-    MLP_fit = pickle.load(open("./models/PD01.pkl", "rb"))
+    model = pickle.load(open("./models/PD03LR.pkl", "rb"))
     drivers = fetch_drivers_per_year(year)
     idList = [driver[1] for driver in drivers]
     nameList = [(driver[0], driver[1]) for driver in drivers]
@@ -116,16 +137,19 @@ def predict(gpID, year):
         stats = collect_one_driver_inputs(id)
         races = last_3_races_prior_to(gp)
         res = race_results_last_3(races, id)
-        qs = quali_results_last_3(races, id)
+        points = fetch_points_until(gp, id)
+        position = fetch_avg_position_until(gp, id)
+        boost = fetch_spawnBoost(id)
         if(check_if_driver_race(gp, id)):
             y = race_result_in(gp, id)
-            data_list = [id] + list(stats) + list(res)[::-1] + list(qs) + list(y)
+            data_list = [id] + list(stats) + list(res) + list(boost) + [points] + [position] + list(y)
         else:
-            data_list = [id] + list(stats) + list(res)[::-1] + list(qs) + [0]
+            data_list = [id] + list(stats) + list(res) + list(boost) + [points] + [position] + [0]
         dfT.loc[len(dfT)] = data_list
     # dfT.dropna(inplace=True)
     dfT = dfT.fillna(15)
-    dfT['Prediction'] = MLP_fit.predict(dfT)
+    dfT['Prediction'] = model.predict(dfT)
+    print(dfT[["id", "pctPoints", "avgRacePosition", "result", "Prediction"]])
     dfT = dfT[["id", "result", "Prediction"]]
     name_dict = {id_: nombre for nombre, id_, _ in drivers}
     team_dict = {id_ : team_ for _, id_, team_ in drivers}
