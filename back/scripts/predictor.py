@@ -95,8 +95,8 @@ def fetch_next_race():
     last = cursor.execute("SELECT MIN(RaceID) FROM Races WHERE Day > " + str(day_season[0])).fetchone()
     return last[0]
 
-def fetch_remaining_races(gpID):
-    races = cursor.execute("SELECT RaceID FROM Races WHERE RaceID > " + str(gpID)).fetchall()
+def fetch_remaining_races(gpID, year):
+    races = cursor.execute("SELECT RaceID FROM Races WHERE RaceID >= " + str(gpID) + " AND SeasonID = " + year).fetchall()
     return races
     
 
@@ -174,20 +174,50 @@ def predict(gpID, year):
     dfT['id'] = dfT['id'].astype(int)
     dfT['result'] = dfT['result'].astype(int)
     if(str(gpID) != str(fetch_next_race())):
-        print("entro")
         dfT.drop(dfT[dfT['result'] == 0].index, inplace=True)
     dfT['Prediction'] = dfT['Prediction'].rank(method='first').astype(int)
     dict = dfT.set_index('id').T.to_dict()
     return dict
+
     
 def predict_with_rmse(df):
     random_numbers = np.random.uniform(-1.5, 1.5, df.shape[0])
     print(random_numbers)
-    df['Prediction2'] = df['Prediction'] + random_numbers
+    df['Prediction'] = df['Prediction'] + random_numbers
     df['Prediction'] = df['Prediction'].rank(method='first').astype(int)
-    df['Prediction2'] = df['Prediction2'].rank(method='first').astype(int)
-    print(df)
+    # df['Prediction2'] = df['Prediction2'].rank(method='first').astype(int)
+    return df
 
 
-# def predict_remaining(gpID, year):
+def predict_remaining(gpID, year):
+    races = fetch_remaining_races(gpID, year)
+    df = loadDF(gpID, year)
+    races = [race[0] for race in races]
+    nraces = len(races)
+    model = pickle.load(open("./models/PD03LR.pkl", "rb"))
+    drivers = fetch_drivers_per_year(year)
+    name_dict = {id_: nombre for nombre, id_, _ in drivers}
+    team_dict = {id_ : team_ for _, id_, team_ in drivers}
+    for gp in races:
+        df2 = df.copy()
+        df2['Prediction'] = model.predict(df2)
+        df2 = df2[["id", "result", "Prediction"]]
+        df2['Name'] = df2['id'].map(name_dict)
+        df2["Team"] = df2["id"].map(team_dict)
+        df2['Prediction'] = df2['Prediction'].astype(float)
+        df2['id'] = df2['id'].astype(int)
+        df2['result'] = df2['result'].astype(int)
+        df2 = predict_with_rmse(df2)
+        df = df.merge(df2[['id', 'Prediction']], on='id', how='left')
+        df['race_lag3'] = df['race_lag2']
+        df['race_lag2'] = df['race_lag1']
+        df['race_lag1'] = df['Prediction']
+        df['lastRacePoints'] = df['race_lag1'].map(points_race)
+        df['totalPoints'] = df['pctPoints'] * nraces * 26 + df['lastRacePoints']
+        nraces += 1
+        df['avgRacePosition'] = (df['avgRacePosition'] * (nraces - 1) + df['race_lag1']) / nraces
+        df['pctPoints'] = df['totalPoints'] / (nraces * 26)
+        df = df.drop(columns=['Prediction', "lastRacePoints", "totalPoints"])
+        
+
     

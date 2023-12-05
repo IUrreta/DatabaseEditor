@@ -15,7 +15,7 @@ from scripts.car_performance_23 import run_script as run_editPerformance
 from scripts.engine_performance_23 import run_script as run_editEngine
 from scripts.head2head_23 import fetch_Head2Head, fetch_Head2Head_team
 from scripts.edit_teams import fetch_teamData, edit_team
-from scripts.predictor import predict
+from scripts.predictor import predict, predict_remaining
 
 client = None
 path = None
@@ -239,6 +239,9 @@ async def handle_command(message):
         pred_msg = ["Prediction Fetched", fetch_next_race(), prediction]
         data_json_prediction = json.dumps(pred_msg)
         await send_message_to_client(data_json_prediction)
+
+    elif type == "predictMontecarlo":
+        predict_remaining(message["race"], message["year"])
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()
