@@ -2,6 +2,12 @@ import pickle
 import re
 import sqlite3
 import pandas as pd
+import numpy as np
+
+points_race = { 
+    1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1, 
+    11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0
+}
 
 
 conn = sqlite3.connect("../result/main.db")
@@ -84,11 +90,15 @@ def remove_number(cadena):
         cadena = cadena[:-1]
     return cadena
 
-def get_lest_race(day):
-    last = cursor.execute("SELECT MAX(RaceID) FROM Races WHERE Day < " + str(day)).fetchone()
+def fetch_next_race():
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    last = cursor.execute("SELECT MIN(RaceID) FROM Races WHERE Day > " + str(day_season[0])).fetchone()
     return last[0]
-    
 
+def fetch_remaining_races(gpID):
+    races = cursor.execute("SELECT RaceID FROM Races WHERE RaceID > " + str(gpID)).fetchall()
+    return races
+    
 
 def createDF():
     data = {}
@@ -102,6 +112,31 @@ def createDF():
     data["avgRacePosition"] = []  
     data['result'] = []
     dfT = pd.DataFrame(data)
+    return dfT
+
+def loadDF(gpID, year):
+    drivers = fetch_drivers_per_year(year)
+    idList = [driver[1] for driver in drivers]
+    nameList = [(driver[0], driver[1]) for driver in drivers]
+    idList = list(set(idList))
+    dfT = createDF()
+    for j in idList: 
+        id = j
+        gp = str(gpID)
+        stats = collect_one_driver_inputs(id)
+        races = last_3_races_prior_to(gp)
+        res = race_results_last_3(races, id)
+        points = fetch_points_until(gp, id)
+        position = fetch_avg_position_until(gp, id)
+        boost = fetch_spawnBoost(id)
+        if(check_if_driver_race(gp, id)):
+            y = race_result_in(gp, id)
+            data_list = [id] + list(stats) + list(res) + list(boost) + [points] + [position] + list(y)
+        else:
+            data_list = [id] + list(stats) + list(res) + list(boost) + [points] + [position] + [0]
+        dfT.loc[len(dfT)] = data_list
+    # dfT.dropna(inplace=True)
+    dfT = dfT.fillna(15)
     return dfT
 
 def fetch_points_until(raceid, driverid):
@@ -126,45 +161,33 @@ def fetch_spawnBoost(driverID):
 
 def predict(gpID, year):
     model = pickle.load(open("./models/PD03LR.pkl", "rb"))
-    drivers = fetch_drivers_per_year(year)
-    idList = [driver[1] for driver in drivers]
-    nameList = [(driver[0], driver[1]) for driver in drivers]
-    idList = list(set(idList))
-    dfT = createDF()
-    for j in idList: 
-        id = j
-        gp = str(gpID)
-        stats = collect_one_driver_inputs(id)
-        races = last_3_races_prior_to(gp)
-        res = race_results_last_3(races, id)
-        points = fetch_points_until(gp, id)
-        position = fetch_avg_position_until(gp, id)
-        boost = fetch_spawnBoost(id)
-        if(check_if_driver_race(gp, id)):
-            y = race_result_in(gp, id)
-            data_list = [id] + list(stats) + list(res) + list(boost) + [points] + [position] + list(y)
-        else:
-            data_list = [id] + list(stats) + list(res) + list(boost) + [points] + [position] + [0]
-        dfT.loc[len(dfT)] = data_list
-    # dfT.dropna(inplace=True)
-    dfT = dfT.fillna(15)
+    dfT = loadDF(gpID, year)
     dfT['Prediction'] = model.predict(dfT)
-    print(dfT[["id", "pctPoints", "avgRacePosition", "result", "Prediction"]])
     dfT = dfT[["id", "result", "Prediction"]]
+    drivers = fetch_drivers_per_year(year)
     name_dict = {id_: nombre for nombre, id_, _ in drivers}
     team_dict = {id_ : team_ for _, id_, team_ in drivers}
     dfT['Name'] = dfT['id'].map(name_dict)
     dfT["Team"] = dfT["id"].map(team_dict)
+    # print(dfT[["id", "result", "Prediction"]])
     dfT['Prediction'] = dfT['Prediction'].astype(float)
-    dfT['Prediction'] = dfT['Prediction'].rank(method='first').astype(int)
-    dfT['result'] = dfT['result'].astype(int)
     dfT['id'] = dfT['id'].astype(int)
+    dfT['result'] = dfT['result'].astype(int)
+    if(str(gpID) != str(fetch_next_race())):
+        print("entro")
+        dfT.drop(dfT[dfT['result'] == 0].index, inplace=True)
+    dfT['Prediction'] = dfT['Prediction'].rank(method='first').astype(int)
     dict = dfT.set_index('id').T.to_dict()
     return dict
-    # print(dfT[["Name", "Prediction", "result"]].sort_values("result"))
     
+def predict_with_rmse(df):
+    random_numbers = np.random.uniform(-1.5, 1.5, df.shape[0])
+    print(random_numbers)
+    df['Prediction2'] = df['Prediction'] + random_numbers
+    df['Prediction'] = df['Prediction'].rank(method='first').astype(int)
+    df['Prediction2'] = df['Prediction2'].rank(method='first').astype(int)
+    print(df)
 
 
-
-
+# def predict_remaining(gpID, year):
     
