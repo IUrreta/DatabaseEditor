@@ -139,6 +139,19 @@ def loadDF(gpID, year):
     dfT = dfT.fillna(15)
     return dfT
 
+def rebuild_driverStandings_until(raceid):
+    year = cursor.execute("SELECT SeasonID FROm Races WHERE RaceID = " + str(raceid)).fetchone()
+    drivers = fetch_drivers_per_year(year[0])
+    idList = [driver[1] for driver in drivers]
+    results = []
+    for driver in idList:
+        points = cursor.execute("SELECT SUM(Points) FROM Races_Results WHERE RaceID <= " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0])).fetchone()
+        results.append((driver, points))
+    df = pd.DataFrame(results, columns=['id', 'points'])
+    df['points'] = df['points'].apply(lambda x: x[0])
+    print(df)
+
+
 def fetch_points_until(raceid, driverid):
     year = cursor.execute("SELECT SeasonID FROm Races WHERE RaceID = " + str(raceid)).fetchone()
     points = cursor.execute("SELECT SUM(Points) FROM Races_Results WHERE RaceID <= " + str(raceid) + " AND DriverID = " + str(driverid) + " AND Season = " + str(year[0])).fetchone()
@@ -182,7 +195,6 @@ def predict(gpID, year):
     
 def predict_with_rmse(df):
     random_numbers = np.random.uniform(-1.5, 1.5, df.shape[0])
-    print(random_numbers)
     df['Prediction'] = df['Prediction'] + random_numbers
     df['Prediction'] = df['Prediction'].rank(method='first').astype(int)
     # df['Prediction2'] = df['Prediction2'].rank(method='first').astype(int)
@@ -198,8 +210,11 @@ def predict_remaining(gpID, year):
     drivers = fetch_drivers_per_year(year)
     name_dict = {id_: nombre for nombre, id_, _ in drivers}
     team_dict = {id_ : team_ for _, id_, team_ in drivers}
+    df_final = pd.DataFrame(index=name_dict.keys())
+    rebuild_driverStandings_until(gpID)
     for gp in races:
         df2 = df.copy()
+        print(df2.isnull().sum())
         df2['Prediction'] = model.predict(df2)
         df2 = df2[["id", "result", "Prediction"]]
         df2['Name'] = df2['id'].map(name_dict)
@@ -218,6 +233,9 @@ def predict_remaining(gpID, year):
         df['avgRacePosition'] = (df['avgRacePosition'] * (nraces - 1) + df['race_lag1']) / nraces
         df['pctPoints'] = df['totalPoints'] / (nraces * 26)
         df = df.drop(columns=['Prediction', "lastRacePoints", "totalPoints"])
+        df_final['race_' + str(gp)] = df2.set_index('id')['Prediction']
+
+    df_final
         
 
     

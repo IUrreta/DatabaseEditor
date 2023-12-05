@@ -54,7 +54,7 @@ function placeRaces(races) {
             }
             newDiv.classList.add("selected")
             let data = {
-                command: "predict",
+                command: "predictMontecarlo",
                 race: newDiv.dataset.raceid,
                 year: yearSel
             }
