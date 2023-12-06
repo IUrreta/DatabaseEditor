@@ -54,7 +54,8 @@ function placeRaces(races) {
             }
             newDiv.classList.add("selected")
             let data = {
-                command: "predictMontecarlo",
+                // command: "predictMontecarlo",
+                command: "predict",
                 race: newDiv.dataset.raceid,
                 year: yearSel
             }
@@ -62,6 +63,17 @@ function placeRaces(races) {
         })
     })
 }
+
+document.querySelector("#predictionpill").addEventListener("click", function(){
+    document.querySelector("#mainPred").classList.remove("d-none")
+    document.querySelector("#mainProb").classList.add("d-none")
+})
+
+document.querySelector("#probpill").addEventListener("click", function(){
+    document.querySelector("#mainPred").classList.add("d-none")
+    document.querySelector("#mainProb").classList.remove("d-none")
+})
+
 
 function orderDrivers(lista, camp) {
     return lista.sort((a, b) => a[camp] - b[camp]);

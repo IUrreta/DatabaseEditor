@@ -145,11 +145,11 @@ def rebuild_driverStandings_until(raceid):
     idList = [driver[1] for driver in drivers]
     results = []
     for driver in idList:
-        points = cursor.execute("SELECT SUM(Points) FROM Races_Results WHERE RaceID <= " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0])).fetchone()
+        points = cursor.execute("SELECT SUM(Points) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0])).fetchone()
         results.append((driver, points))
     df = pd.DataFrame(results, columns=['id', 'points'])
     df['points'] = df['points'].apply(lambda x: x[0])
-    print(df)
+    return df
 
 
 def fetch_points_until(raceid, driverid):
@@ -193,17 +193,45 @@ def predict(gpID, year):
     return dict
 
     
-def predict_with_rmse(df):
-    random_numbers = np.random.uniform(-1.5, 1.5, df.shape[0])
+def predict_with_rmse(df, gpID):
+    if(str(gpID) != str(fetch_next_race())):
+        df.drop(df[df['result'] == 0].index, inplace=True)
+    random_numbers = np.random.uniform(-5, 5, df.shape[0])
     df['Prediction'] = df['Prediction'] + random_numbers
     df['Prediction'] = df['Prediction'].rank(method='first').astype(int)
     # df['Prediction2'] = df['Prediction2'].rank(method='first').astype(int)
     return df
 
+def montecarlo(gpID, year):
+    drivers = fetch_drivers_per_year(year)
+    df_sims = pd.DataFrame()
+    n_sims = 89
+
+    for i in range(n_sims):
+        simulation = predict_remaining(gpID, year)
+        simulation.rename(columns={'Position': f'sim_{i+1}'}, inplace=True)
+        if i == 0:
+            df_sims = simulation.copy()
+        else:
+            df_sims = pd.merge(df_sims, simulation, on='id')
+    df_percentages = pd.DataFrame()
+    df_percentages['id'] = df_sims['id']
+
+    for i in range(1, 21):
+        df_percentages[f'pos_{i}'] = df_sims.iloc[:, 1:].apply(lambda row: (row == i).sum(), axis=1) / n_sims * 100
+    name_dict = {id_: nombre for nombre, id_, _ in drivers}
+    team_dict = {id_ : team_ for _, id_, team_ in drivers}
+    df_percentages['Name'] = df_percentages['id'].map(name_dict)
+    df_percentages["Team"] = df_percentages["id"].map(team_dict)
+    dict = df_percentages.set_index('id').T.to_dict()
+    return dict
+
+
 
 def predict_remaining(gpID, year):
     races = fetch_remaining_races(gpID, year)
     df = loadDF(gpID, year)
+    df = df.fillna(0)
     races = [race[0] for race in races]
     nraces = len(races)
     model = pickle.load(open("./models/PD03LR.pkl", "rb"))
@@ -211,18 +239,16 @@ def predict_remaining(gpID, year):
     name_dict = {id_: nombre for nombre, id_, _ in drivers}
     team_dict = {id_ : team_ for _, id_, team_ in drivers}
     df_final = pd.DataFrame(index=name_dict.keys())
-    rebuild_driverStandings_until(gpID)
+    df_results = rebuild_driverStandings_until(gpID)
     for gp in races:
         df2 = df.copy()
-        print(df2.isnull().sum())
         df2['Prediction'] = model.predict(df2)
-        df2 = df2[["id", "result", "Prediction"]]
         df2['Name'] = df2['id'].map(name_dict)
         df2["Team"] = df2["id"].map(team_dict)
         df2['Prediction'] = df2['Prediction'].astype(float)
         df2['id'] = df2['id'].astype(int)
         df2['result'] = df2['result'].astype(int)
-        df2 = predict_with_rmse(df2)
+        df2 = predict_with_rmse(df2, gpID)
         df = df.merge(df2[['id', 'Prediction']], on='id', how='left')
         df['race_lag3'] = df['race_lag2']
         df['race_lag2'] = df['race_lag1']
@@ -233,9 +259,38 @@ def predict_remaining(gpID, year):
         df['avgRacePosition'] = (df['avgRacePosition'] * (nraces - 1) + df['race_lag1']) / nraces
         df['pctPoints'] = df['totalPoints'] / (nraces * 26)
         df = df.drop(columns=['Prediction', "lastRacePoints", "totalPoints"])
+        df = df.fillna(0)
         df_final['race_' + str(gp)] = df2.set_index('id')['Prediction']
 
-    df_final
+
+    df_results.drop_duplicates(subset='id', keep='first', inplace=True)
+    for race in df_final.columns:
+        # Obtener los resultados de la carrera
+        race_results = df_final[race]
+        
+        # Mapear los resultados de la carrera a los puntos correspondientes
+        race_points = race_results.map(points_race)
+        
+        # Sumar los puntos de la carrera a los puntos totales en df_results
+        df_results.set_index('id', inplace=True)
+        df_results['points'] += race_points
+        df_results.reset_index(inplace=True)
+    df_results.fillna(0, inplace=True)
+    df_results.set_index("id", inplace=True)
+    df_final = df_final.join(df_results['points'])
+    print("AAAAAA")
+    df_final = df_final.fillna(1000)
+    df_final['best_result'] = df_final.drop('points', axis=1).min(axis=1)
+    df_final = df_final.sort_values(by=['points', 'best_result'], ascending=[False, True])
+    df_final['Position'] = range(1, len(df_final) + 1)
+    df_final = df_final.drop('best_result', axis=1)
+    print(df_final)
+    df_final.reset_index(inplace=True)
+    df_final.rename(columns={'index': 'id'}, inplace=True)
+    df_final = df_final[["id", "Position"]]
+    df_final["Position"] = df_final["Position"].astype(int)
+    return df_final
+    
         
 
     

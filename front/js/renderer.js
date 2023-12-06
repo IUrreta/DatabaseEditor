@@ -185,6 +185,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         "Prediction Fetched": (message)=>{
             predictDrivers(message.slice(1))
+        },
+        "Montecarlo Fetched": (message)=>{
+            console.log(message)
         }
     };
 

@@ -355,7 +355,7 @@
       Select a script and a save to start editing!
     </div>
     <div class="script-view d-none" id="predict_results">
-      <div class="w-100">
+      <div class="w-100 d-flex">
         <div class="year-drivers-teams ps-3">
           <div>
             <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearPredictionButton"
@@ -367,34 +367,48 @@
           </div>
         </div>
         <div class="title bold-font py-3 w-100">
-          Prediction
+          AI MODEL
+        </div>
+        <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#" id="predictionpill">Prediction</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="probpill">Probability</a>
+            </li>
+          </ul>
         </div>
       </div>
       <div class="d-flex d-none" id="mainPrediction">
-        <div class="col-3 main-viewer-section" id="raceMenu">
-        </div>
-        <div class="main-viewer-section" id="predictionMenu">
-          <div class="prediction-table" id="predictionFirst">
-            <div class="prediction-table-header">
-              <div class="header-label bold-font driver-prediction">Driver</div>
-              <div class="header-label bold-font prediction-prediction">Prediction</div>
-              <div class="header-label bold-font position-prediction">Position</div>
-              
+        <div class ="d-flex w-100"id="mainPred">
+          <div class="col-3 main-viewer-section" id="raceMenu">
+          </div>
+          <div class="main-viewer-section" id="predictionMenu">
+            <div class="prediction-table" id="predictionFirst">
+              <div class="prediction-table-header">
+                <div class="header-label bold-font driver-prediction">Driver</div>
+                <div class="header-label bold-font prediction-prediction">Prediction</div>
+                <div class="header-label bold-font position-prediction">Position</div>
+              </div>
+              <div class="prediction-table-data">
+              </div>
             </div>
-            <div class="prediction-table-data">
+            <div class="prediction-table" id="predictionSecond">
+              <div class="prediction-table-header">
+                <div class="header-label bold-font driver-prediction">Driver</div>
+                <div class="header-label bold-font prediction-prediction">Prediction</div>
+                <div class="header-label bold-font position-prediction">Position</div>
+              </div>
+              <div class="prediction-table-data">
+              </div>
             </div>
           </div>
-          <div class="prediction-table" id="predictionSecond">
-            <div class="prediction-table-header">
-              <div class="header-label bold-font driver-prediction">Driver</div>
-              <div class="header-label bold-font prediction-prediction">Prediction</div>
-              <div class="header-label bold-font position-prediction">Position</div>
-              
-            </div>
-            <div class="prediction-table-data">
-            </div>
-          </div>
         </div>
+        <div class ="d-none d-flex"id="mainProb">
+          AAAAAAAAAAAAAA
+        </div>
+
       </div>
       
 
