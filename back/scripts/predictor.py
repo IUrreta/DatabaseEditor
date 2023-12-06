@@ -224,12 +224,18 @@ def montecarlo(gpID, year):
     df_percentages['Name'] = df_percentages['id'].map(name_dict)
     df_percentages["Team"] = df_percentages["id"].map(team_dict)
     # dict = df_percentages.set_index('id').T.to_dict()
+    res = rebuild_driverStandings_until(gpID)
+    res['Position'] = res['points'].rank(method='first', ascending=False).astype(int)
+    print(res)
+    print(df_percentages)
+    df_percentages = df_percentages.merge(res[['id', 'Position']], on='id', how='left')
     dict = df_percentages.values.tolist()
     for i in range(len(dict)):
-    # Coge los dos últimos elementos
-        last = dict[i][-2:]
-        dict[i] = dict[i][:-2]
+        last = dict[i][-3:]
+        dict[i] = dict[i][:-3]
         dict[i] = dict[i][:1] + last + dict[i][1:]
+
+
 
     return dict
 
@@ -285,13 +291,11 @@ def predict_remaining(gpID, year):
     df_results.fillna(0, inplace=True)
     df_results.set_index("id", inplace=True)
     df_final = df_final.join(df_results['points'])
-    print("AAAAAA")
     df_final = df_final.fillna(1000)
     df_final['best_result'] = df_final.drop('points', axis=1).min(axis=1)
     df_final = df_final.sort_values(by=['points', 'best_result'], ascending=[False, True])
     df_final['Position'] = range(1, len(df_final) + 1)
     df_final = df_final.drop('best_result', axis=1)
-    print(df_final)
     df_final.reset_index(inplace=True)
     df_final.rename(columns={'index': 'id'}, inplace=True)
     df_final = df_final[["id", "Position"]]

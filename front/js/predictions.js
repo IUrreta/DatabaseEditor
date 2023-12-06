@@ -103,6 +103,7 @@ document.querySelector("#probpill").addEventListener("click", function(){
 function loadMontecarlo(data){
     console.log(data)
     let drivers = data[0]
+    drivers = orderPercent(drivers)
     let header = document.querySelector(".prob-viewer-header")
     header.innerHTML = ""
     let driverDiv = document.createElement("div")
@@ -115,7 +116,7 @@ function loadMontecarlo(data){
     header.appendChild(PositionDiv)
     let dataSect = document.querySelector(".prob-viewer-data")
     dataSect.innerHTML = ""
-    drivers[0].slice(3).forEach(function(elem, index){
+    drivers[0].slice(4).forEach(function(elem, index){
         let headerPos = document.createElement("div")
         headerPos.className = "viewer-header-pos bold-font"
         headerPos.innerText = index + 1
@@ -138,10 +139,10 @@ function loadMontecarlo(data){
         nameDiv.appendChild(spanLastName)
         let position = document.createElement("div")
         position.classList = "viewer-header-position bold-font"
-        position.innerText = index+1;
+        position.innerText = elem[3];
         row.appendChild(nameDiv)
         row.appendChild(position)
-        elem.slice(3).forEach(function(perc){
+        elem.slice(4).forEach(function(perc){
             let percDiv = document.createElement("div")
             percDiv.className = "viewer-header-data"
             console.log(Number(perc))
@@ -172,6 +173,13 @@ function loadMontecarlo(data){
 
 function orderDrivers(lista, camp) {
     return lista.sort((a, b) => a[camp] - b[camp]);
+}
+
+function orderPercent(lista) {
+    lista.sort(function(a, b) {
+        return a[3] - b[3];
+    });
+    return lista;
 }
 
 function predictDrivers(drivers) {
