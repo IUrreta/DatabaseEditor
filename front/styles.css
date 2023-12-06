@@ -203,7 +203,7 @@ a.bi-heart:hover {
   align-items: center;
 }
 
-#d1Menu, #d2Menu, #teamMenu{
+#d1Menu, #d2Menu, #teamMenu, #raceProbMenu{
   max-height: 200px;
   overflow-y: scroll;
 }
@@ -213,11 +213,11 @@ a.bi-heart:hover {
   overflow-y: scroll;
 }
 
-#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar {
+#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar, #raceProbMenu::-webkit-scrollbar, .prob-viewer-data::-webkit-scrollbar{
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb {
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb {
   background-color: white;
   border-radius: 3px;
 }
@@ -783,6 +783,77 @@ a.bi-heart:hover {
 
 #predict_results{
   flex-direction: column;
+}
+
+#probText{
+  padding-top: 2px;
+  color: #dedde6;
+}
+
+#probSelector{
+  display: flex;
+  align-items: center;
+}
+
+#raceProbButton{
+  margin-top: 0.45rem !important;
+}
+
+#probViewer{
+  width: 1670px;
+  height: 660px;
+  max-height: 660px;
+}
+
+.prob-viewer-data{
+  overflow-y: scroll;
+  max-height: 621px;
+}
+
+.prob-viewer-header, .prob-viewer-row{
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  padding: 5px 10px;
+}
+
+.prob-viewer-header{
+  border-bottom: 1px solid white;
+}
+
+.viewer-header-driver{
+  width: 210px;
+}
+
+.viewer-header-position{
+  width: 50px;
+}
+
+.viewer-header-pos, .viewer-header-data{
+  flex: 1 0 0;
+  text-align: center;
+  /* background-color: wheat; */
+}
+
+.viewer-header-data{
+  border-radius: 4px;
+  color: rgb(24, 21, 46);;
+}
+
+.viewer-header-data.i75-100{
+  background-color: #5bd999;
+}
+
+.viewer-header-data.i50-75{
+  background-color: #7adfac;
+}
+
+.viewer-header-data.i25-50{
+  background-color: #a2dfc0;
+}
+
+.viewer-header-data.i0-25{
+  background-color: #c5e7d6;
 }
 
 .save-selector-title{

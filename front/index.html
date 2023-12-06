@@ -358,11 +358,20 @@
       <div class="w-100 d-flex">
         <div class="year-drivers-teams ps-3">
           <div>
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearPredictionButton"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+              id="yearPredictionButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Year
             </button>
             <ul class="dropdown-menu" id="yearPredictionMenu" style="font-family: Formula1;">
+            </ul>
+          </div>
+          <div class="ms-4 d-none" id="probSelector">
+            <div class="bold-font" id="probText">Predict championship from</div>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
+              id="raceProbButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Race
+            </button>
+            <ul class="dropdown-menu" id="raceProbMenu" style="font-family: Formula1;">
             </ul>
           </div>
         </div>
@@ -372,7 +381,8 @@
         <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
           <ul class="nav nav-pills">
             <li class="nav-item">
-              <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#" id="predictionpill">Prediction</a>
+              <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#"
+                id="predictionpill">Prediction</a>
             </li>
             <li class="nav-item">
               <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="probpill">Probability</a>
@@ -381,7 +391,7 @@
         </div>
       </div>
       <div class="d-flex d-none" id="mainPrediction">
-        <div class ="d-flex w-100"id="mainPred">
+        <div class="d-flex w-100" id="mainPred">
           <div class="col-3 main-viewer-section" id="raceMenu">
           </div>
           <div class="main-viewer-section" id="predictionMenu">
@@ -405,12 +415,18 @@
             </div>
           </div>
         </div>
-        <div class ="d-none d-flex"id="mainProb">
-          AAAAAAAAAAAAAA
+        <div class="d-none d-flex" id="mainProb">
+          <div class="main-viewer-section" id="probViewer">
+            <div class="prob-viewer-header">
+              <div class="viewer-header-driver bold-font">Driver</div>
+              <div class="viewer-header-position bold-font">Pos</div>
+            </div>
+            <div class="prob-viewer-data"></div>
+          </div>
         </div>
 
       </div>
-      
+
 
     </div>
     <div class="script-view d-none" id="head2head_viewer">

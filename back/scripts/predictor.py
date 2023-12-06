@@ -216,14 +216,21 @@ def montecarlo(gpID, year):
             df_sims = pd.merge(df_sims, simulation, on='id')
     df_percentages = pd.DataFrame()
     df_percentages['id'] = df_sims['id']
-
-    for i in range(1, 21):
+    n_driver = df_sims.shape[0]
+    for i in range(1, n_driver+1):
         df_percentages[f'pos_{i}'] = df_sims.iloc[:, 1:].apply(lambda row: (row == i).sum(), axis=1) / n_sims * 100
     name_dict = {id_: nombre for nombre, id_, _ in drivers}
     team_dict = {id_ : team_ for _, id_, team_ in drivers}
     df_percentages['Name'] = df_percentages['id'].map(name_dict)
     df_percentages["Team"] = df_percentages["id"].map(team_dict)
-    dict = df_percentages.set_index('id').T.to_dict()
+    # dict = df_percentages.set_index('id').T.to_dict()
+    dict = df_percentages.values.tolist()
+    for i in range(len(dict)):
+    # Coge los dos últimos elementos
+        last = dict[i][-2:]
+        dict[i] = dict[i][:-2]
+        dict[i] = dict[i][:1] + last + dict[i][1:]
+
     return dict
 
 
