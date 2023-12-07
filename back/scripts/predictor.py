@@ -158,11 +158,27 @@ def rebuild_driverStandings_with_pos(raceid):
     results = []
     for driver in idList:
         points = cursor.execute("SELECT SUM(Points) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0])).fetchone()
+        sprintPoints = cursor.execute("SELECT SUM(ChampionshipPoints) FROM Races_SprintResults WHERE RaceFormula = 1 AND RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND SeasonID = " + str(year[0])).fetchone()
+        if(points[0] != None and sprintPoints[0] != None):
+            points = (points[0]+sprintPoints[0],)
+        elif sprintPoints[0] == None:
+            points = (points[0],)
+        elif points[0] == None:
+            points = (sprintPoints[0],)
+        else:
+            points = (0,)
         position = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0])).fetchone()
-        times = cursor.execute("SELECT COUNT(*) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0]) + " AND FinishingPos = " + str(position[0])).fetchone()
+        if(position[0] == None):
+            position = (21,)
+            times = (1,)
+        else:
+            times = cursor.execute("SELECT COUNT(*) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0]) + " AND FinishingPos = " + str(position[0])).fetchone()
         results.append((driver, points, position, times))
     data = [[item[0], item[1][0], item[2][0], item[3][0]] for item in results]
     df = pd.DataFrame(data, columns=['id', 'points', 'bestPos', 'timesAchieved'])
+    df["bestPos"].fillna(21, inplace=True)
+    df["timesAchieved"].fillna(0, inplace=True)
+    print(df)
     return df
     # df = pd.DataFrame(results, columns=['id', 'points'])
     # df['points'] = df['points'].apply(lambda x: x[0])
@@ -271,6 +287,7 @@ def predict_remaining(gpID, year):
     name_dict = {id_: nombre for nombre, id_, _ in drivers}
     team_dict = {id_ : team_ for _, id_, team_ in drivers}
     df_final = pd.DataFrame(index=name_dict.keys())
+    print("AAAAAAa")
     df_results = rebuild_driverStandings_with_pos(gpID)
     for gp in races:
         df2 = df.copy()
