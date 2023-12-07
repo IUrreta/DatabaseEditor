@@ -813,8 +813,11 @@ a.bi-heart:hover {
 .prob-viewer-header, .prob-viewer-row{
   display: flex;
   flex-direction: row;
-  gap: 4px;
-  padding: 5px 10px;
+  color: #dedde6;
+}
+
+.prob-viewer-header .viewer-header-data, .prob-viewer-row .viewer-header-data {
+  margin-left: 4px;
 }
 
 .prob-viewer-header{
@@ -823,10 +826,62 @@ a.bi-heart:hover {
 
 .viewer-header-driver{
   width: 210px;
+  padding: 0px 7px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s, color 0.3s;
 }
+
+.prob-viewer-row{
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.prob-viewer-row:hover{
+  background-color: #625e86 ;
+  cursor: pointer;
+}
+
+.prob-viewer-row .viewer-header-driver span.bold-font{
+  transition: background-color 0.3s, color 0.3s;
+  margin-left: 4px;
+}
+
+.prob-viewer-row .viewer-header-driver span{
+  transition: background-color 0.3s, color 0.05s;
+}
+
+
+.prob-viewer-row .viewer-header-driver span.bold-font{
+  transition: color 0.3s;
+}
+
+
+.prob-viewer-row:hover .viewer-header-driver{
+  background-color: #dedde6;
+  color: #18152e;
+}
+
+.prob-viewer-row:hover .viewer-header-driver span{
+  color: #18152e !important;
+}
+
+.prob-viewer-row .viewer-header-position {
+  transition: background-color 0.3s, color 0.3s;
+  padding-top: 4px;
+  text-align: center;
+}
+
+.prob-viewer-row:hover .viewer-header-position {
+  background-color: #dedde6;
+  color: #18152e !important;
+}
+
 
 .viewer-header-position{
   width: 50px;
+  text-align: center;
+  padding-top: 4px;
 }
 
 .viewer-header-pos, .viewer-header-data{
@@ -835,9 +890,20 @@ a.bi-heart:hover {
   /* background-color: wheat; */
 }
 
+.viewer-header-pos{
+  padding-top: 4px;
+  padding-left: 4px;
+}
+
 .viewer-header-data{
-  border-radius: 4px;
-  color: rgb(24, 21, 46);;
+  border-radius: 5px;
+  color: rgb(24, 21, 46);
+  transition: border 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  margin-top: 3px;
 }
 
 .viewer-header-data.i75-100{
@@ -1049,7 +1115,7 @@ a.bi-heart:hover {
 .main-viewer-section .tabulator-row:hover {
   background-color: #625e86 !important;
   cursor: pointer !important;
-  color: #dedde6 !important;
+  color: white !important;
 }
 
 [tabulator-field="team"]{

@@ -151,6 +151,23 @@ def rebuild_driverStandings_until(raceid):
     df['points'] = df['points'].apply(lambda x: x[0])
     return df
 
+def rebuild_driverStandings_with_pos(raceid):
+    year = cursor.execute("SELECT SeasonID FROm Races WHERE RaceID = " + str(raceid)).fetchone()
+    drivers = fetch_drivers_per_year(year[0])
+    idList = [driver[1] for driver in drivers]
+    results = []
+    for driver in idList:
+        points = cursor.execute("SELECT SUM(Points) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0])).fetchone()
+        position = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0])).fetchone()
+        times = cursor.execute("SELECT COUNT(*) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0]) + " AND FinishingPos = " + str(position[0])).fetchone()
+        results.append((driver, points, position, times))
+    data = [[item[0], item[1][0], item[2][0], item[3][0]] for item in results]
+    df = pd.DataFrame(data, columns=['id', 'points', 'bestPos', 'timesAchieved'])
+    return df
+    # df = pd.DataFrame(results, columns=['id', 'points'])
+    # df['points'] = df['points'].apply(lambda x: x[0])
+    # return df
+
 
 def fetch_points_until(raceid, driverid):
     year = cursor.execute("SELECT SeasonID FROm Races WHERE RaceID = " + str(raceid)).fetchone()
@@ -224,11 +241,13 @@ def montecarlo(gpID, year):
     df_percentages['Name'] = df_percentages['id'].map(name_dict)
     df_percentages["Team"] = df_percentages["id"].map(team_dict)
     # dict = df_percentages.set_index('id').T.to_dict()
-    res = rebuild_driverStandings_until(gpID)
-    res['Position'] = res['points'].rank(method='first', ascending=False).astype(int)
+    res = rebuild_driverStandings_with_pos(gpID)
+    res = res.sort_values(by=['points', 'bestPos', 'timesAchieved'], ascending=[False, True, False])
+    res['Position'] = range(1, len(res) + 1)
     print(res)
     print(df_percentages)
     df_percentages = df_percentages.merge(res[['id', 'Position']], on='id', how='left')
+    df_percentages.drop_duplicates(subset='id', keep='first', inplace=True)
     dict = df_percentages.values.tolist()
     for i in range(len(dict)):
         last = dict[i][-3:]
@@ -252,7 +271,7 @@ def predict_remaining(gpID, year):
     name_dict = {id_: nombre for nombre, id_, _ in drivers}
     team_dict = {id_ : team_ for _, id_, team_ in drivers}
     df_final = pd.DataFrame(index=name_dict.keys())
-    df_results = rebuild_driverStandings_until(gpID)
+    df_results = rebuild_driverStandings_with_pos(gpID)
     for gp in races:
         df2 = df.copy()
         df2['Prediction'] = model.predict(df2)
@@ -290,16 +309,18 @@ def predict_remaining(gpID, year):
         df_results.reset_index(inplace=True)
     df_results.fillna(0, inplace=True)
     df_results.set_index("id", inplace=True)
-    df_final = df_final.join(df_results['points'])
-    df_final = df_final.fillna(1000)
-    df_final['best_result'] = df_final.drop('points', axis=1).min(axis=1)
-    df_final = df_final.sort_values(by=['points', 'best_result'], ascending=[False, True])
+    df_final = df_final.join(df_results[['points', "bestPos", "timesAchieved"]])
+    df_final = df_final.fillna(21)
+    df_final['bestPos'] = df_final.drop(['points', "timesAchieved"], axis=1).min(axis=1)
+    print(df_final["bestPos"])
+    df_final = df_final.sort_values(by=['points', 'bestPos', "timesAchieved"], ascending=[False, True, False])
     df_final['Position'] = range(1, len(df_final) + 1)
-    df_final = df_final.drop('best_result', axis=1)
+    df_final = df_final.drop('bestPos', axis=1)
     df_final.reset_index(inplace=True)
     df_final.rename(columns={'index': 'id'}, inplace=True)
     df_final = df_final[["id", "Position"]]
     df_final["Position"] = df_final["Position"].astype(int)
+
     return df_final
     
         
