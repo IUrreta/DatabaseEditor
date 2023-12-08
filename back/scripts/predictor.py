@@ -159,14 +159,11 @@ def rebuild_driverStandings_with_pos(raceid):
     for driver in idList:
         points = cursor.execute("SELECT SUM(Points) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0])).fetchone()
         sprintPoints = cursor.execute("SELECT SUM(ChampionshipPoints) FROM Races_SprintResults WHERE RaceFormula = 1 AND RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND SeasonID = " + str(year[0])).fetchone()
-        if(points[0] != None and sprintPoints[0] != None):
-            points = (points[0]+sprintPoints[0],)
-        elif sprintPoints[0] == None:
-            points = (points[0],)
-        elif points[0] == None:
-            points = (sprintPoints[0],)
-        else:
+        if points[0] == None :
             points = (0,)
+        if sprintPoints[0] == None:
+            sprintPoints = (0,)
+        points = (points[0] + sprintPoints[0], )
         position = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0])).fetchone()
         if(position[0] == None):
             position = (21,)
