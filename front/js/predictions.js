@@ -78,6 +78,7 @@ function placeRaces(races) {
         a.addEventListener("click", function(){
             probRace = a.dataset.code
             document.querySelector("#raceProbButton").innerText = a.textContent
+            document.querySelector("#confirmPredict").disabled = false;
         })
         dropdownRaceMenu.appendChild(a)
         
@@ -104,7 +105,10 @@ document.querySelector("#confirmPredict").addEventListener("click", function(){
     }
     socket.send(JSON.stringify(data))
     document.querySelector(".bar-and-indicator").style.opacity = 1;
+    document.querySelector("#cancelPredict").disabled = true;
+    document.querySelector("#confirmPredict").disabled = true;
 })
+
 
 document.querySelector("#predictionpill").addEventListener("click", function(){
     document.querySelector("#mainPred").classList.remove("d-none")
@@ -121,6 +125,13 @@ function loadMontecarlo(data){
     bar.setAttribute("style", "width: 100%")
     document.querySelector(".indicator").innerText = "100%"
     let drivers = data[0]
+    setTimeout(function () {
+        document.querySelector("#cancelPredict").disabled = false;
+        document.querySelector("#confirmPredict").disabled = false;
+        document.querySelector("#cancelPredict").click()
+        resetBar()
+    }, 500);
+
     drivers = orderPercent(drivers)
     let header = document.querySelector(".prob-viewer-header")
     header.innerHTML = ""
