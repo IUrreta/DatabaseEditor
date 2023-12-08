@@ -115,6 +115,43 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal fade" id="predictModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-med modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font" id="predictModalTitle">Configure prediction</h3>
+        </div>
+        <div class="modal-body custom-body" id="predictModalBody">
+          <div class="modal-subtitle bold-font">Important information</div>
+          <div class="predict-warning">
+            When you click on “Confirm”, the tool will start running dozens of simulations for each race in the championship from the one selected in the dropdown button. 
+            This means that the earlier the selected race is in the championship, the more races it will have to simulate until the end of the championship, and the prediction will take longer. 
+            Depending on your system, the simulation may take more or less time.
+          </div>
+          <div class="modal-subtitle bold-font pt-3">Predict championship from</div>
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+            id="raceProbButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Race
+          </button>
+          <ul class="dropdown-menu" id="raceProbMenu" style="font-family: Formula1;">
+          </ul>
+        </div>
+        <div class="modal-footer custom-footer predict-footer">
+          <div class="bar-and-indicator">
+            <div class="progress custom-bar">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" id="predictBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="indicator bold-font">0%</div>
+          </div>
+
+          <div>
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary custom-confirm" id="confirmPredict">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="compDataModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-lg modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -365,15 +402,10 @@
             <ul class="dropdown-menu" id="yearPredictionMenu" style="font-family: Formula1;">
             </ul>
           </div>
-          <div class="ms-4 d-none" id="probSelector">
-            <div class="bold-font" id="probText">Predict championship from</div>
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
-              id="raceProbButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Race
-            </button>
-            <ul class="dropdown-menu" id="raceProbMenu" style="font-family: Formula1;">
-            </ul>
-          </div>
+          <button class="custom-dropdown custom-button bold-font ms-2" id="predictButton" data-bs-toggle="modal"
+            data-bs-target="#predictModal">
+            Configure
+          </button>
         </div>
         <div class="title bold-font py-3 w-100">
           AI MODEL

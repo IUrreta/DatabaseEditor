@@ -241,7 +241,7 @@ async def handle_command(message):
         await send_message_to_client(data_json_prediction)
 
     elif type == "predictMontecarlo":
-        perc = montecarlo(message["race"], message["year"])
+        perc = await montecarlo(message["race"], message["year"], client)
         perd_msg = ["Montecarlo Fetched", perc]
         data_json_montecarlo = json.dumps(perd_msg)
         await send_message_to_client(data_json_montecarlo)

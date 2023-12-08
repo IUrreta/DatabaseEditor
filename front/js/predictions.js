@@ -30,6 +30,7 @@ const names_full = {
 let yearSel;
 let racePredicted;
 let raceName;
+let probRace;
 
 
 function placeRaces(races) {
@@ -75,33 +76,50 @@ function placeRaces(races) {
         img2.classList.add('menuFlag');
         a.appendChild(img2)
         a.addEventListener("click", function(){
+            probRace = a.dataset.code
             document.querySelector("#raceProbButton").innerText = a.textContent
-            let data = {
-                command: "predictMontecarlo",
-                race: a.dataset.code,
-                year: yearSel
-            }
-            socket.send(JSON.stringify(data))
         })
         dropdownRaceMenu.appendChild(a)
-
+        
     })
 }
+
+function manageProgress(prog){
+    let bar = document.querySelector("#predictBar")
+    let val = "width: " + prog[0] + "% !important;"
+    bar.setAttribute("style", val)
+    document.querySelector(".indicator").innerText = prog[0] + "%"
+}
+
+function resetBar(){
+    document.querySelector(".bar-and-indicator").style.opacity = 0;
+    document.querySelector(".indicator").innerText = "0%"
+}
+
+document.querySelector("#confirmPredict").addEventListener("click", function(){
+    let data = {
+        command: "predictMontecarlo",
+        race: probRace,
+        year: yearSel
+    }
+    socket.send(JSON.stringify(data))
+    document.querySelector(".bar-and-indicator").style.opacity = 1;
+})
 
 document.querySelector("#predictionpill").addEventListener("click", function(){
     document.querySelector("#mainPred").classList.remove("d-none")
     document.querySelector("#mainProb").classList.add("d-none")
-    document.querySelector("#probSelector").classList.add("d-none")
 })
 
 document.querySelector("#probpill").addEventListener("click", function(){
     document.querySelector("#mainPred").classList.add("d-none")
     document.querySelector("#mainProb").classList.remove("d-none")
-    document.querySelector("#probSelector").classList.remove("d-none")
 })
 
 function loadMontecarlo(data){
-    console.log(data)
+    let bar = document.querySelector("#predictBar")
+    bar.setAttribute("style", "width: 100%")
+    document.querySelector(".indicator").innerText = "100%"
     let drivers = data[0]
     drivers = orderPercent(drivers)
     let header = document.querySelector(".prob-viewer-header")
@@ -145,7 +163,6 @@ function loadMontecarlo(data){
         elem.slice(4).forEach(function(perc){
             let percDiv = document.createElement("div")
             percDiv.className = "viewer-header-data"
-            console.log(Number(perc))
             if(perc !== 0){
                 percDiv.innerText = Number(perc.toFixed(2))
             }

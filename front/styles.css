@@ -1997,6 +1997,31 @@ a.bi-heart:hover {
   min-width: 1300px !important;
 }
 
+.modal-dialog-med{
+  min-width: 900px !important;
+}
+
+.predict-footer{
+  display: flex !important;
+  justify-content: space-between !important;
+}
+
+.custom-bar{
+  width: 350px;
+  --bs-progress-bar-bg: #0ebb63 !important;
+}
+
+.bar-and-indicator{
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.indicator{
+  color: #5bd999;
+}
+
 .modal-driver{
   background-color: #4e4b69;
   border: 2px solid transparent;
@@ -3017,6 +3042,10 @@ input::-webkit-inner-spin-button {
 
 .haborder-secondary {
   border: 2px solid #f62039;
+}
+
+.predict-warning{
+  font-size: 14px;
 }
 
 

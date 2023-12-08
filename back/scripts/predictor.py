@@ -3,6 +3,11 @@ import re
 import sqlite3
 import pandas as pd
 import numpy as np
+import math
+import json
+import asyncio
+
+c = None
 
 points_race = { 
     1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1, 
@@ -17,6 +22,7 @@ def collect_one_driver_inputs(driverID):
     stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = ?", (driverID,)).fetchall()
     formated = tuple(i[0] for i in stats)
     return formated
+
 
 def last_3_races():
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
@@ -99,6 +105,10 @@ def fetch_remaining_races(gpID, year):
     races = cursor.execute("SELECT RaceID FROM Races WHERE RaceID >= " + str(gpID) + " AND SeasonID = " + year).fetchall()
     return races
     
+async def send_message_to_client(message):
+    global c
+    if c:
+        await c.send(message)
 
 def createDF():
     data = {}
@@ -175,7 +185,6 @@ def rebuild_driverStandings_with_pos(raceid):
     df = pd.DataFrame(data, columns=['id', 'points', 'bestPos', 'timesAchieved'])
     df["bestPos"].fillna(21, inplace=True)
     df["timesAchieved"].fillna(0, inplace=True)
-    print(df)
     return df
     # df = pd.DataFrame(results, columns=['id', 'points'])
     # df['points'] = df['points'].apply(lambda x: x[0])
@@ -232,11 +241,13 @@ def predict_with_rmse(df, gpID):
     # df['Prediction2'] = df['Prediction2'].rank(method='first').astype(int)
     return df
 
-def montecarlo(gpID, year):
+async def montecarlo(gpID, year, client):
+    global c
+    c = client
     drivers = fetch_drivers_per_year(year)
     df_sims = pd.DataFrame()
     n_sims = 89
-
+    five_percent = math.ceil(n_sims * 0.05)
     for i in range(n_sims):
         simulation = predict_remaining(gpID, year)
         simulation.rename(columns={'Position': f'sim_{i+1}'}, inplace=True)
@@ -244,6 +255,10 @@ def montecarlo(gpID, year):
             df_sims = simulation.copy()
         else:
             df_sims = pd.merge(df_sims, simulation, on='id')
+        if i % five_percent == 0:
+            percent_done = int((i / n_sims) * 100)  
+            await send_message_to_client(json.dumps(["Progress",percent_done]))
+            await asyncio.sleep(0.1)
     df_percentages = pd.DataFrame()
     df_percentages['id'] = df_sims['id']
     n_driver = df_sims.shape[0]
@@ -257,8 +272,6 @@ def montecarlo(gpID, year):
     res = rebuild_driverStandings_with_pos(gpID)
     res = res.sort_values(by=['points', 'bestPos', 'timesAchieved'], ascending=[False, True, False])
     res['Position'] = range(1, len(res) + 1)
-    print(res)
-    print(df_percentages)
     df_percentages = df_percentages.merge(res[['id', 'Position']], on='id', how='left')
     df_percentages.drop_duplicates(subset='id', keep='first', inplace=True)
     dict = df_percentages.values.tolist()
@@ -284,7 +297,6 @@ def predict_remaining(gpID, year):
     name_dict = {id_: nombre for nombre, id_, _ in drivers}
     team_dict = {id_ : team_ for _, id_, team_ in drivers}
     df_final = pd.DataFrame(index=name_dict.keys())
-    print("AAAAAAa")
     df_results = rebuild_driverStandings_with_pos(gpID)
     for gp in races:
         df2 = df.copy()
@@ -326,7 +338,6 @@ def predict_remaining(gpID, year):
     df_final = df_final.join(df_results[['points', "bestPos", "timesAchieved"]])
     df_final = df_final.fillna(21)
     df_final['bestPos'] = df_final.drop(['points', "timesAchieved"], axis=1).min(axis=1)
-    print(df_final["bestPos"])
     df_final = df_final.sort_values(by=['points', 'bestPos', "timesAchieved"], ascending=[False, True, False])
     df_final['Position'] = range(1, len(df_final) + 1)
     df_final = df_final.drop('bestPos', axis=1)
