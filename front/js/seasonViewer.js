@@ -332,9 +332,11 @@ function generateYearsMenu(actualYear) {
     var yearMenu = document.querySelector("#yearMenu");
     var yearH2H = document.querySelector("#yearMenuH2H");
     var yearPrediction = document.querySelector("#yearPredictionMenu");
+    var yearPredictionModal = document.querySelector("#yearPredictionModalMenu");
     yearMenu.innerHTML = ""
     yearH2H.innerHTML = ""
     yearPrediction.innerHTML = ""
+    yearPredictionModal.innerHTML = ""
     for (let year = actualYear; year >= 2023; year--) {
         let a = document.createElement("a");
         a.textContent = year.toString();
@@ -375,6 +377,20 @@ function generateYearsMenu(actualYear) {
             let dataYear = {
                 command: "yearSelectedPrediction",
                 year: a3.textContent
+            }
+            socket.send(JSON.stringify(dataYear))
+        })
+        let a4 = document.createElement("a");
+        a4.textContent = year.toString();
+        a4.classList = "dropdown-item"
+        a4.style.cursor = "pointer"
+        yearPredictionModal.appendChild(a4);
+        a4.addEventListener("click", function () {
+            document.getElementById("yearPredictionModalButton").textContent = a4.textContent
+            document.querySelector("#mainPrediction").classList.remove("d-none")
+            let dataYear = {
+                command: "yearSelectedPredictionModal",
+                year: a4.textContent
             }
             socket.send(JSON.stringify(dataYear))
         })

@@ -232,6 +232,13 @@ async def handle_command(message):
         data_json_events = json.dumps(events)
         await send_message_to_client(data_json_events)
 
+    elif type=="yearSelectedPredictionModal":
+        events = [fetch_predictable_events_from(message["year"])]
+        events.insert(0, message["year"])
+        events.insert(0, "Events to Predict Modal Fetched")
+        data_json_events = json.dumps(events)
+        await send_message_to_client(data_json_events)
+
     elif type=="predict":
         prediction = predict(message["race"], message["year"])
         prediction = list(prediction.values())

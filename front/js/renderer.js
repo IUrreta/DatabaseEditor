@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched"]
+    const noNotifications = ["Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -182,6 +182,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         "Events to Predict Fetched": (message)=>{
             placeRaces(message.slice(1))
+        },
+        "Events to Predict Modal Fetched": (message)=>{
+            placeRacesInModal(message.slice(1))
         },
         "Prediction Fetched": (message)=>{
             predictDrivers(message.slice(1))

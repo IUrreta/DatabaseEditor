@@ -795,7 +795,7 @@ a.bi-heart:hover {
   align-items: center;
 }
 
-#raceProbButton{
+#raceProbButton, #yearPredictionModalButton{
   margin-top: 0.45rem !important;
 }
 
@@ -1046,6 +1046,11 @@ a.bi-heart:hover {
   padding-bottom: 0.7rem;
   position: absolute;
   display: flex;
+}
+
+.year-and-race{
+  display: flex;
+  flex-direction: row;
   gap: 10px;
 }
 
@@ -2466,7 +2471,7 @@ input::-webkit-inner-spin-button {
 
 .custom-button{
   height: 40px;
-  font-size: 18px;
+  font-size: 16px;
   padding: 0 10px;
 }
 

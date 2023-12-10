@@ -37,8 +37,8 @@ function placeRaces(races) {
     yearSel = races[0]
     raceMenu = document.querySelector("#raceMenu")
     dropdownRaceMenu = document.querySelector("#raceProbMenu")
+    dropdownRaceMenu = document.querySelector("#raceProbMenu")
     raceMenu.innerHTML = ""
-    dropdownRaceMenu.innerHTML = ""
     races[1].forEach(function (race) {
         let newDiv = document.createElement("div");
         newDiv.className = "race bold-font"
@@ -63,7 +63,17 @@ function placeRaces(races) {
                 year: yearSel
             }
             socket.send(JSON.stringify(data))
-        })
+        })     
+    })
+}
+
+function placeRacesInModal(races) {
+    yearSel = races[0]
+    raceMenu = document.querySelector("#raceMenu")
+    dropdownRaceMenu = document.querySelector("#raceProbMenu")
+    dropdownRaceMenu = document.querySelector("#raceProbMenu")
+    dropdownRaceMenu.innerHTML = ""
+    races[1].forEach(function (race) {
         let a = document.createElement('a');
         a.classList.add('dropdown-item');
         a.classList.add('menu-race');
@@ -113,11 +123,15 @@ document.querySelector("#confirmPredict").addEventListener("click", function(){
 document.querySelector("#predictionpill").addEventListener("click", function(){
     document.querySelector("#mainPred").classList.remove("d-none")
     document.querySelector("#mainProb").classList.add("d-none")
+    document.querySelector("#yearPredictionButton").classList.remove("d-none")
+    document.querySelector("#predictButton").classList.add("d-none")
 })
 
 document.querySelector("#probpill").addEventListener("click", function(){
     document.querySelector("#mainPred").classList.add("d-none")
     document.querySelector("#mainProb").classList.remove("d-none")
+    document.querySelector("#yearPredictionButton").classList.add("d-none")
+    document.querySelector("#predictButton").classList.remove("d-none")
 })
 
 function loadMontecarlo(data){
