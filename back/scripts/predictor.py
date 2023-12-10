@@ -247,7 +247,7 @@ async def montecarlo(gpID, year, client):
     drivers = fetch_drivers_per_year(year)
     df_sims = pd.DataFrame()
     n_sims = 89
-    five_percent = math.ceil(n_sims * 0.05)
+    percent = math.ceil(n_sims * 0.01)
     for i in range(n_sims):
         simulation = predict_remaining(gpID, year)
         simulation.rename(columns={'Position': f'sim_{i+1}'}, inplace=True)
@@ -255,7 +255,7 @@ async def montecarlo(gpID, year, client):
             df_sims = simulation.copy()
         else:
             df_sims = pd.merge(df_sims, simulation, on='id')
-        if i % five_percent == 0:
+        if i % percent == 0:
             percent_done = int((i / n_sims) * 100)  
             await send_message_to_client(json.dumps(["Progress",percent_done]))
             await asyncio.sleep(0.1)

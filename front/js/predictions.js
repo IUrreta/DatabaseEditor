@@ -28,6 +28,7 @@ const names_full = {
 };
 
 let yearSel;
+let yearProbSel;
 let racePredicted;
 let raceName;
 let probRace;
@@ -68,7 +69,7 @@ function placeRaces(races) {
 }
 
 function placeRacesInModal(races) {
-    yearSel = races[0]
+    yearProbSel = races[0]
     raceMenu = document.querySelector("#raceMenu")
     dropdownRaceMenu = document.querySelector("#raceProbMenu")
     dropdownRaceMenu = document.querySelector("#raceProbMenu")
@@ -111,7 +112,7 @@ document.querySelector("#confirmPredict").addEventListener("click", function(){
     let data = {
         command: "predictMontecarlo",
         race: probRace,
-        year: yearSel
+        year: yearProbSel
     }
     socket.send(JSON.stringify(data))
     document.querySelector(".bar-and-indicator").style.opacity = 1;

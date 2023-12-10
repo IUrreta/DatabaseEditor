@@ -1046,6 +1046,14 @@ a.bi-heart:hover {
   padding-bottom: 0.7rem;
   position: absolute;
   display: flex;
+  gap: 10px;
+}
+
+.prediction-buttons{
+  padding-top: 0.6rem;
+  padding-bottom: 0.7rem;
+  position: absolute;
+  display: flex;
 }
 
 .year-and-race{
