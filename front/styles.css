@@ -516,7 +516,7 @@ a.bi-heart:hover {
 }
 
 .mode-line.ai{
-  background-color: #FFB6C1;
+  background-color: #baffea;
 }
 
 .mode-line.edit{
@@ -524,7 +524,7 @@ a.bi-heart:hover {
 }
 
 .mode-line.view{
-  background-color: #baffea;
+  background-color: #FFB6C1;
 }
 
 .moving-line{
@@ -536,7 +536,7 @@ a.bi-heart:hover {
 }
 
 .moving-line.ai{
-  background: linear-gradient(to right, transparent, #FF69B4, transparent);
+  background: linear-gradient(to right, transparent, #00ffb3, transparent);
 }
 
 .moving-line.edit{
@@ -544,7 +544,7 @@ a.bi-heart:hover {
 }
 
 .moving-line.view{
-  background: linear-gradient(to right, transparent, #00ffb3, transparent);
+  background: linear-gradient(to right, transparent, #FF69B4, transparent);
 }
 
 .main-panel {
@@ -737,6 +737,10 @@ a.bi-heart:hover {
   width: 100%;
 }
 
+.pill-types .activeType{
+  color: white;
+}
+
 
 #editPills{
   position: absolute;
@@ -757,25 +761,16 @@ a.bi-heart:hover {
   
 }
 
-#iaPills.activeType{
-  color: #ffd3d9 ;
-}
 
 #iaPills .pill-line{
-  background-color: #ffd3d9;
-}
-
-#dataPills.activeType{
-  color: #c7ffee ;
-}
-
-#dataPills .pill-line{
   background-color: #c7ffee;
 }
 
-#editPills.activeType{
-  color: #f4ffd2 ;
+
+#dataPills .pill-line{
+  background-color: #ffd3d9;
 }
+
 
 #editPills .pill-line{
   background-color: #f4ffd2;
