@@ -464,6 +464,7 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
         nameTitleD1(d1.parentElement.parentElement)
         nameTitleD2(d2.parentElement.parentElement)
     }
+    document.querySelector("#compConfigContent").innerText = document.querySelector("#yearButtonH2H").textContent
     if(mode === "driver"){
         document.querySelector("#qualiForm").classList.remove("d-none")
         document.querySelector("#raceForm").classList.remove("d-none")
@@ -544,7 +545,6 @@ function nameTitleD1(aDriver1) {
         document.querySelector(".driver1-second").dataset.teamid = driver1Sel.firstChild.children[1].dataset.teamid
         d1_team = driver1Sel.firstChild.children[1].dataset.teamid
         document.querySelector(".driver1-second").className = "driver1-second bold-font"
-        let newName = driver1Sel.firstChild.cloneNode(true)
         manageColor(document.querySelector(".driver1-second"), document.querySelector(".driver1-second"))
     }
     else if (mode === "team") {
@@ -571,7 +571,7 @@ function nameTitleD2(aDriver2) {
         document.querySelector(".driver2-second").textContent = driver2Sel.firstChild.children[1].innerText
         document.querySelector(".driver2-second").dataset.teamid = driver2Sel.firstChild.children[1].dataset.teamid
         document.querySelector(".driver2-second").className = "driver2-second bold-font"
-        let newName2 = driver2Sel.firstChild.cloneNode(true)
+
         d2_team = driver2Sel.firstChild.children[1].dataset.teamid
         manageColor(document.querySelector(".driver2-second"), document.querySelector(".driver2-second"))
     }

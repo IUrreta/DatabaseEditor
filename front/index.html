@@ -115,6 +115,57 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal fade" id="predictModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-med modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font" id="predictModalTitle">Configure prediction</h3>
+        </div>
+        <div class="modal-body custom-body" id="predictModalBody">
+          <div class="modal-subtitle bold-font">Important information</div>
+          <div class="predict-warning">
+            When you click on “Confirm”, the tool will start running dozens of simulations for each race in the
+            championship from the one selected in the dropdown button.
+            This means that the earlier the selected race is in the championship, the more races it will have to
+            simulate until the end of the championship, and the prediction will take longer.
+            Depending on your system, the simulation may take more or less time.
+          </div>
+          <div class="modal-subtitle bold-font pt-3">Predict championship from</div>
+          <div class="year-and-race">
+            <div>
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                id="yearPredictionModalButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Year
+              </button>
+              <ul class="dropdown-menu" id="yearPredictionModalMenu" style="font-family: Formula1;">
+              </ul>
+            </div>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="raceProbButton"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Race
+            </button>
+            <ul class="dropdown-menu" id="raceProbMenu" style="font-family: Formula1;">
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer custom-footer predict-footer">
+          <div class="bar-and-indicator">
+            <div class="progress custom-bar">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" id="predictBar" role="progressbar"
+                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="indicator bold-font">0%</div>
+          </div>
+
+          <div>
+            <button type="button" class="btn btn-secondary custom-delete" id="cancelPredict"
+              data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary custom-confirm" id="confirmPredict" disabled>Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="compDataModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-lg modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -305,6 +356,9 @@
     </div>
     <div class="script-selector bold-font ms-3">
       <div class="pill-types">
+        <div id="iaPills">AI MODEL
+          <div class="pill-line"></div>
+        </div>
         <div id="dataPills">VIEW
           <div class="pill-line"></div>
         </div>
@@ -314,6 +368,9 @@
       </div>
       <div class="pt-2 ps-3" style="padding-bottom: 0.6rem;">
         <ul class="nav nav-pills">
+          <li class="nav-item">
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="predictpill">PREDICTION</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="h2hpill">COMPARISON</a>
           </li>
@@ -341,9 +398,83 @@
 
 
   </div>
+  <div class="mode-line">
+    <div class="moving-line"></div>
+  </div>
   <div class="main-panel">
     <div class="blocking-div" id="blockDiv">
       Select a script and a save to start editing!
+    </div>
+    <div class="script-view d-none" id="predict_results">
+      <div class="w-100 d-flex">
+        <div class="prediction-buttons ps-3">
+          <div>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+              id="yearPredictionButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Year
+            </button>
+            <ul class="dropdown-menu" id="yearPredictionMenu" style="font-family: Formula1;">
+            </ul>
+          </div>
+          <button class="custom-dropdown custom-button bold-font d-none" id="predictButton" data-bs-toggle="modal"
+            data-bs-target="#predictModal">
+            Configure
+          </button>
+          <div class="config-content bold-font ms-4" id="predictConfigContent"></div>
+        </div>
+        <div class="title bold-font py-3 w-100">
+          Forecast
+        </div>
+        <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#"
+                id="predictionpill">Races</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="probpill">Standings</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="d-flex" id="mainPrediction">
+        <div class="d-flex w-100" id="mainPred">
+          <div class="col-3 main-viewer-section" id="raceMenu">
+          </div>
+          <div class="main-viewer-section" id="predictionMenu">
+            <div class="prediction-table" id="predictionFirst">
+              <div class="prediction-table-header">
+                <div class="header-label bold-font driver-prediction">Driver</div>
+                <div class="header-label bold-font prediction-prediction">Prediction</div>
+                <div class="header-label bold-font position-prediction">Position</div>
+              </div>
+              <div class="prediction-table-data">
+              </div>
+            </div>
+            <div class="prediction-table" id="predictionSecond">
+              <div class="prediction-table-header">
+                <div class="header-label bold-font driver-prediction">Driver</div>
+                <div class="header-label bold-font prediction-prediction">Prediction</div>
+                <div class="header-label bold-font position-prediction">Position</div>
+              </div>
+              <div class="prediction-table-data">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-none d-flex" id="mainProb">
+          <div class="main-viewer-section" id="probViewer">
+            <div class="prob-viewer-header">
+              <div class="viewer-header-driver bold-font">Driver</div>
+              <div class="viewer-header-position bold-font">Pos</div>
+            </div>
+            <div class="prob-viewer-data"></div>
+          </div>
+        </div>
+
+      </div>
+
+
     </div>
     <div class="script-view d-none" id="head2head_viewer">
       <div class="col">
@@ -354,6 +485,7 @@
               data-bs-target="#compDataModal">
               Data
             </button>
+            <div class="config-content bold-font ms-4" id="compConfigContent"></div>
           </div>
           <div class="ps-3"
             style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center; right: 20px;">
@@ -2042,6 +2174,7 @@
   <script src="./js/seasonViewer.js"></script>
   <script src="./js/head2head.js"></script>
   <script src="./js/teams.js"></script>
+  <script src="./js/predictions.js"></script>
 </body>
 
 </html>

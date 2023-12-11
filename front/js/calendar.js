@@ -126,7 +126,6 @@ function load_addRaces() {
         a.href = '#';
         a.textContent = elem;
         a.dataset.code = dataCode
-
         let imageUrl = codes_dict[dataCode];
         let img = document.createElement('img');
         img.src = imageUrl;
