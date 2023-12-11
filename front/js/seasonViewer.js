@@ -373,7 +373,7 @@ function generateYearsMenu(actualYear) {
         yearPrediction.appendChild(a3);
         a3.addEventListener("click", function () {
             document.getElementById("yearPredictionButton").textContent = a3.textContent
-            document.querySelector("#mainPrediction").classList.remove("d-none")
+            document.querySelector("#mainPred").classList.remove("d-none")
             let dataYear = {
                 command: "yearSelectedPrediction",
                 year: a3.textContent
@@ -387,7 +387,6 @@ function generateYearsMenu(actualYear) {
         yearPredictionModal.appendChild(a4);
         a4.addEventListener("click", function () {
             document.getElementById("yearPredictionModalButton").textContent = a4.textContent
-            document.querySelector("#mainPrediction").classList.remove("d-none")
             let dataYear = {
                 command: "yearSelectedPredictionModal",
                 year: a4.textContent

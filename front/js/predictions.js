@@ -118,6 +118,7 @@ document.querySelector("#confirmPredict").addEventListener("click", function(){
     document.querySelector(".bar-and-indicator").style.opacity = 1;
     document.querySelector("#cancelPredict").disabled = true;
     document.querySelector("#confirmPredict").disabled = true;
+    
 })
 
 
@@ -126,6 +127,7 @@ document.querySelector("#predictionpill").addEventListener("click", function(){
     document.querySelector("#mainProb").classList.add("d-none")
     document.querySelector("#yearPredictionButton").classList.remove("d-none")
     document.querySelector("#predictButton").classList.add("d-none")
+    document.querySelector("#predictConfigContent").classList.add("d-none")
 })
 
 document.querySelector("#probpill").addEventListener("click", function(){
@@ -133,6 +135,7 @@ document.querySelector("#probpill").addEventListener("click", function(){
     document.querySelector("#mainProb").classList.remove("d-none")
     document.querySelector("#yearPredictionButton").classList.add("d-none")
     document.querySelector("#predictButton").classList.remove("d-none")
+    document.querySelector("#predictConfigContent").classList.remove("d-none")
 })
 
 function loadMontecarlo(data){
@@ -146,7 +149,8 @@ function loadMontecarlo(data){
         document.querySelector("#cancelPredict").click()
         resetBar()
     }, 500);
-
+    document.querySelector("#mainProb").classList.remove("d-none")
+    document.querySelector("#predictConfigContent").innerText = document.querySelector("#yearPredictionModalButton").textContent + " " + document.querySelector("#raceProbButton").textContent
     drivers = orderPercent(drivers)
     let header = document.querySelector(".prob-viewer-header")
     header.innerHTML = ""

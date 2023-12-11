@@ -464,6 +464,7 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
         nameTitleD1(d1.parentElement.parentElement)
         nameTitleD2(d2.parentElement.parentElement)
     }
+    document.querySelector("#compConfigContent").innerText = document.querySelector("#yearButtonH2H").textContent
     if(mode === "driver"){
         document.querySelector("#qualiForm").classList.remove("d-none")
         document.querySelector("#raceForm").classList.remove("d-none")

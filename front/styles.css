@@ -1111,7 +1111,7 @@ a.bi-heart:hover {
   background-color: #494561 !important;
   cursor: pointer !important;
   color: #dedde6 !important;
-  transition: background-color 0.3s !important;
+  transition: background-color 0.3s, color 0.3s !important;
 }
 
 .main-viewer-section .tabulator-row-even {
@@ -1863,12 +1863,19 @@ a.bi-heart:hover {
   height: 660px;
 }
 
-#raceName{
-  font-size: 24px;
-  -webkit-background-clip: text;
-  color: transparent;
-  text-transform: uppercase;
+.config-content{
+  color: #756f9b;
+  font-size: 22px;
 }
+
+#compConfigContent{
+  margin-top: 9px;
+}
+
+#predictConfigContent{
+  margin-top: 12px;
+}
+
 
 #predictionMenu{
   margin-left: 0px;
