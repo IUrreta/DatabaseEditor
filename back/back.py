@@ -15,6 +15,7 @@ from scripts.car_performance_23 import run_script as run_editPerformance
 from scripts.engine_performance_23 import run_script as run_editEngine
 from scripts.head2head_23 import fetch_Head2Head, fetch_Head2Head_team
 from scripts.edit_teams import fetch_teamData, edit_team
+from scripts.predictor import predict, montecarlo
 
 client = None
 path = None
@@ -222,6 +223,33 @@ async def handle_command(message):
         await send_message_to_client(info_json)
         argument = message["command"]
 
+    elif type=="yearSelectedPrediction":
+        events = [fetch_predictable_events_from(message["year"])]
+        events.insert(0, message["year"])
+        events.insert(0, "Events to Predict Fetched")
+        data_json_events = json.dumps(events)
+        await send_message_to_client(data_json_events)
+
+    elif type=="yearSelectedPredictionModal":
+        events = [fetch_predictable_events_from(message["year"])]
+        events.insert(0, message["year"])
+        events.insert(0, "Events to Predict Modal Fetched")
+        data_json_events = json.dumps(events)
+        await send_message_to_client(data_json_events)
+
+    elif type=="predict":
+        prediction = predict(message["race"], message["year"])
+        prediction = list(prediction.values())
+        prediction = sorted(prediction, key=lambda x: x['result'])
+        pred_msg = ["Prediction Fetched", fetch_next_race(), prediction]
+        data_json_prediction = json.dumps(pred_msg)
+        await send_message_to_client(data_json_prediction)
+
+    elif type == "predictMontecarlo":
+        perc = await montecarlo(message["race"], message["year"], client)
+        perd_msg = ["Montecarlo Fetched", perc]
+        data_json_montecarlo = json.dumps(perd_msg)
+        await send_message_to_client(data_json_montecarlo)
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()
@@ -351,6 +379,17 @@ def fetch_oneDriver_seasonResults(driver, year):
         return format_seasonResults(results, driverName, teamID, driver, year, sprintResults)
     
 
+def fetch_predictable_events_from(year):
+    last_predictable = fetch_next_race()
+    season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(year) + " AND RaceID <= " + str(last_predictable[0])).fetchall()
+    tuple_numbers = {num for tpl in season_events for num in tpl}
+    season_ids = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(year) + " AND RaceID <= " + str(last_predictable[0])).fetchall()
+    events_ids =[]
+    for i in range(len(season_ids)):
+        events_ids.append((season_ids[i][0], season_events[i][0]))
+
+    return events_ids
+
 def fetch_events_done_from(year):
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
     season_ids = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(year) + " AND Day < " + str(day_season[0])).fetchall()
@@ -443,6 +482,11 @@ def fetch_info():
         formatted_tuples.append(result)
 
     return formatted_tuples
+
+def fetch_next_race():
+    race = cursor.execute("SELECT MIN(RaceID) FROM Races WHERE State = 0").fetchall()
+    return race[0]
+
 
 def check_claendar():
     default_tracks = [2, 1, 11, 24, 22, 5, 6, 4, 7, 10, 9, 12, 13, 14, 15, 17, 19, 18, 20, 21, 23, 25, 26]
