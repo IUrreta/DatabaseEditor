@@ -1008,7 +1008,6 @@ a.bi-heart:hover {
 
 [tabulator-field^="race"] {
   font-size: 13px;
-  /* Establece el tamaño de fuente a 13px */
   border: none !important;
 }
 
@@ -1123,7 +1122,14 @@ a.bi-heart:hover {
 .main-viewer-section .tabulator-row:hover {
   background-color: #625e86 !important;
   cursor: pointer !important;
-  color: white !important;
+}
+
+.main-viewer-section .tabulator-row [tabulator-field^="race"] {
+  transition: color 0.3s;
+}
+
+.main-viewer-section .tabulator-row:hover [tabulator-field^="race"] {
+  color: white;
 }
 
 [tabulator-field="team"]{

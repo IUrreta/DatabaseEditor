@@ -105,6 +105,9 @@ function manageProgress(prog){
 
 function resetBar(){
     document.querySelector(".bar-and-indicator").style.opacity = 0;
+    let bar = document.querySelector("#predictBar")
+    let val = "width: 0% !important;"
+    bar.setAttribute("style", val)
     document.querySelector(".indicator").innerText = "0%"
 }
 
