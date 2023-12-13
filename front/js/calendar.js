@@ -13,6 +13,10 @@ let countries_dict = {
     "bra0": "Brazil","veg0": "Vegas","uae0": "Abu Dhbai"
 };
 
+let weather_dict = {
+    0: "bi bi-sun", 1:"bi bi-cloud-sun", 2: "bi bi-cloud", 3: "bi bi-cloud-drizzle", 4: "bi bi-cloud-rain-heavy", 5: "bi bi-cloud-lightning-rain"
+}
+
 let deleting = false;
 let deleted = false;
 
@@ -96,6 +100,7 @@ function addRace(code) {
     rightArrow.className = "bi bi-chevron-right"
     let wVis = document.createElement('div');
     wVis.className = "weather-vis"
+    wVis.dataset.value = 0
 
     wSelector.appendChild(leftArrow)
     wSelector.appendChild(wVis)
@@ -112,10 +117,50 @@ function addRace(code) {
 
 
     document.querySelector('.main-calendar-section').appendChild(div)
+}
 
-
+function addArrowsListeners(){
+    document.querySelector(".main-calendar").querySelectorAll(".bi-chevron-left").forEach(function(elem){
+        console.log(elem)
+        elem.addEventListener("click", function(){
+            console.log("me activo")
+            let val = elem.parentNode.querySelector(".weather-vis").dataset.value
+            newVal = Number(val) - 1
+            if(newVal === -1){
+                newVal = 5
+            }
+            elem.parentNode.querySelector(".weather-vis").dataset.value = newVal
+            updateVisualizers()
+        })
+    })
+    
+    document.querySelector(".main-calendar").querySelectorAll(".bi-chevron-right").forEach(function(elem){
+        elem.addEventListener("click", function(){
+            let val = elem.parentNode.querySelector(".weather-vis").dataset.value
+            newVal = Number(val) + 1
+            if(newVal === 6){
+                newVal = 0
+            }
+            elem.parentNode.querySelector(".weather-vis").dataset.value = newVal
+            updateVisualizers()
+        })
+    })
 
 }
+
+
+
+function updateVisualizers(){
+    document.querySelector(".main-calendar").querySelectorAll(".weather-vis").forEach(function(elem){
+        elem.innerHTML = ""
+        let val = elem.dataset.value
+        let icon = document.createElement("i")
+        icon.className = weather_dict[val]
+        elem.appendChild(icon)
+    })
+}
+
+
 
 /**
  * Creates all the races
@@ -126,6 +171,8 @@ function create_races() {
         addRace(dataCode)
 
     }
+    addArrowsListeners()
+    updateVisualizers()
     load_addRaces()
 }
 

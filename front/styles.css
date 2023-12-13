@@ -1293,6 +1293,8 @@ a.bi-heart:hover {
   border-radius: 10px;
   background-color: #292738;
   border: 1.5px solid rgb(44, 43, 59);
+  font-size: 22px;
+  text-align: center;
 }
 
 .weather-selector{
@@ -1301,6 +1303,10 @@ a.bi-heart:hover {
   margin-left: 5px;
   font-size: 24px;
   padding-top: 2px;
+}
+
+.weather-selector i{
+  cursor: pointer;
 }
 
 
