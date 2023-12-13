@@ -606,8 +606,8 @@ a.bi-heart:hover {
 }
 
 .addTracks-button {
+  margin-top: 0.4rem;
   max-width: 210px;
-  margin-top: 0.6rem;
   background-color: #797599 !important;
   margin-bottom: 1%;
   border: 2px solid transparent !important;
@@ -1196,6 +1196,11 @@ a.bi-heart:hover {
   font-size: 15px;
 }
 
+.main-calendar{
+  width: 100%;
+  margin-right: 14px;
+}
+
 .main-calendar-section {
   margin-left: 14px;
   border: 1px solid #797599;
@@ -1229,13 +1234,6 @@ a.bi-heart:hover {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-}
-
-.option-buttons {
-  margin: 10px;
-  width: 210px !important;
-  height: 41px !important;
-
 }
 
 .buttons-h2h{

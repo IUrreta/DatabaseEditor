@@ -1790,37 +1790,26 @@
       <div class="blocking-div d-none" id="calendarBlockDiv">
         There is already a modified calendar or you already did the first race! Try again next season!
       </div>
-      <div class="col-9">
+      <div class="main-calendar">
         <div class="title bold-font py-3">
           New calendar
+        </div>
+        <div class="ps-3" style="padding-top: 0.8rem; padding-bottom: 0.7rem; position: absolute; right:14px; top:0;">
+          <button type="button" class="btn btn-primary dropdown-toggle addTracks-button" data-bs-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false" style="font-family: Formula1; height: 100%;"
+            id="addRaceButton">
+            Add race
+          </button>
+          <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
+          </ul>
+          <div class="btn custom-delete option-buttons" id="deleteTracks">Delete races</div>
+          <div class="btn custom-confirm option-buttons" id="confirmCalendar">Save changes</div>
         </div>
         <div class="main-calendar-section" id="officialCalendarList">
 
         </div>
       </div>
-      <div class="col-3">
-        <div class="title bold-font py-3">
-          Options
-        </div>
-        <div class="main-options-section">
-          <div class="option-buttons">
-            <button type="button" class="btn btn-primary dropdown-toggle addTracks-button" data-bs-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false" style="font-family: Formula1; width: 100%; height: 100%;"
-              id="addRaceButton">
-              Add race
-            </button>
-            <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
 
-            </ul>
-          </div>
-          <div class="btn custom-delete option-buttons" id="deleteTracks">Delete races</div>
-          <div class="save-calendar-section">
-            <div class="btn custom-confirm option-buttons" id="confirmCalendar">Save changes</div>
-          </div>
-
-        </div>
-
-      </div>
     </div>
     <div class="script-view d-none" id="car_performance">
       <div class="col-3">
