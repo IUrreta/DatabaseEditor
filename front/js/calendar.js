@@ -44,6 +44,10 @@ function addRace(code) {
     let imageUrl = codes_dict[code];
 
     let div = document.createElement('div');
+    let leftDiv = document.createElement('div');
+    leftDiv.className = "left-race"
+    let rightDiv = document.createElement('div');
+    rightDiv.className = "right-race"
     div.classList.add('race-calendar');
     div.setAttribute('data-code',code);
 
@@ -57,10 +61,10 @@ function addRace(code) {
 
     upperDiv.appendChild(img);
 
-    const lowerDiv = document.createElement('div');
+    let lowerDiv = document.createElement('div');
     lowerDiv.classList.add('lower-race');
 
-    lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint weekend</label></div><div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>";
+    lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint</label></div><div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>";
     let SprintInput = lowerDiv.querySelector(".sprint-input")
     let ATAInput = lowerDiv.querySelector(".ata-input")
     SprintInput.addEventListener("click",function (event) {
@@ -75,8 +79,37 @@ function addRace(code) {
         else changeFormat(div,"0")
 
     })
-    div.appendChild(upperDiv);
-    div.appendChild(lowerDiv);
+    leftDiv.appendChild(upperDiv);
+    leftDiv.appendChild(lowerDiv);
+    div.appendChild(leftDiv)
+
+    let qWeather = document.createElement('div');
+    qWeather.className = "full-quali-weather"
+    let qName = document.createElement('div');
+    qName.className = "session-name bold-font"
+    qName.innerText ="Q"
+    let wSelector = document.createElement('div');
+    wSelector.className = "weather-selector"
+    let leftArrow = document.createElement('i');
+    leftArrow.className = "bi bi-chevron-left"
+    let rightArrow = document.createElement('i');
+    rightArrow.className = "bi bi-chevron-right"
+    let wVis = document.createElement('div');
+    wVis.className = "weather-vis"
+
+    wSelector.appendChild(leftArrow)
+    wSelector.appendChild(wVis)
+    wSelector.appendChild(rightArrow)
+    qWeather.appendChild(qName)
+    qWeather.appendChild(wSelector)
+    let rWeather = qWeather.cloneNode(true)
+    rWeather.firstChild.innerText = "R"
+    rightDiv.appendChild(qWeather)
+    rightDiv.appendChild(rWeather)
+
+
+    div.appendChild(rightDiv)
+
 
     document.querySelector('.main-calendar-section').appendChild(div)
 

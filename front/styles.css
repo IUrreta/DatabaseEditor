@@ -1258,12 +1258,51 @@ a.bi-heart:hover {
   transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   display: flex;
   cursor: grab !important;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
+  padding-left: 12px;
   max-height: 112px;
 
 }
+
+.left-race{
+  width: 50%;
+  gap: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.right-race{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.full-quali-weather{
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  margin-left: 20px;
+}
+
+.session-name{
+  font-size: 24px;
+}
+
+.weather-vis{
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  background-color: #292738;
+  border: 1.5px solid rgb(44, 43, 59);
+}
+
+.weather-selector{
+  display: flex;
+  flex-direction: row;
+  margin-left: 5px;
+  font-size: 24px;
+  padding-top: 2px;
+}
+
 
 .race-calendar:hover {
   border-color: white;
@@ -1305,7 +1344,7 @@ a.bi-heart:hover {
   display: flex;
   flex-direction: row;
   width: 100%;
-  justify-content: space-around;
+  gap: 10px;
 }
 
 .flag {
