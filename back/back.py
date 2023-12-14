@@ -490,7 +490,7 @@ def fetch_next_race():
 
 def fetch_calendar():
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
-    calendar = cursor.execute("SELECT TrackID, WeatherStateQualifying, WeatherStateRace, WeekendType FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
+    calendar = cursor.execute("SELECT TrackID, WeatherStateQualifying, WeatherStateRace, WeekendType, State FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
     return calendar
 
 def check_claendar():

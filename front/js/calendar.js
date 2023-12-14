@@ -44,7 +44,7 @@ function reubicate(div0,div1,beforeAfter) {
  * Adds a race in the calendar div
  * @param {string} code Code from the race
  */
-function addRace(code, rainQ, rainR, type, trackID) {
+function addRace(code, rainQ, rainR, type, trackID, state) {
     let imageUrl = codes_dict[code];
 
     let div = document.createElement('div');
@@ -57,6 +57,18 @@ function addRace(code, rainQ, rainR, type, trackID) {
     div.dataset.rainQ = rainQ
     div.dataset.rainR = rainR
     div.dataset.type = type
+    div.dataset.state = state
+    if(state === 2){
+        div.classList.add("completed")
+        let compDiv = document.createElement('div');
+        compDiv.classList.add('complete-div');
+        let divText = document.createElement('div');
+        divText.innerHTML = "Completed";
+        divText.className = "bold-font"
+        divText.style.fontSize = "18px"
+        compDiv.appendChild(divText)
+        div.appendChild(compDiv)
+    }
 
     let upperDiv = document.createElement('div');
     upperDiv.classList.add('upper-race','bold-font');
@@ -118,8 +130,6 @@ function addRace(code, rainQ, rainR, type, trackID) {
     rWeather.children[1].children[1].dataset.value = Number(rainR)
     rightDiv.appendChild(qWeather)
     rightDiv.appendChild(rWeather)
-
-
     div.appendChild(rightDiv)
 
 
@@ -182,7 +192,7 @@ function load_calendar(races){
     document.querySelector('.main-calendar-section').innerHTML = ""
     races.forEach(function(elem){
         code = races_map[elem[0]]
-        addRace(code, transformWeather(elem[1]), transformWeather(elem[2]), elem[3], elem[0])
+        addRace(code, transformWeather(elem[1]), transformWeather(elem[2]), elem[3], elem[0], elem[4])
     })
     addArrowsListeners()
     updateVisualizers()
@@ -266,7 +276,7 @@ function listenerRaces() {
     document.querySelectorAll('#addTrackMenu a').forEach(item => {
         item.addEventListener("click",function () {
             if (document.querySelector(".main-calendar-section").childElementCount < 23) {
-                addRace(item.dataset.code, 0, 0, 0, item.dataset.trackid)
+                addRace(item.dataset.code, 0, 0, 0, item.dataset.trackid, 0)
                 updateVisualizers()
             }
         })
@@ -283,27 +293,33 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
         })
         this.className = "custom-dropdown custom-button bold-font"
         document.querySelectorAll(".race-calendar").forEach(function (elem) {
-            elem.classList = "race-calendar";
+            if(elem.firstChild.className !== "complete-div"){
+                elem.classList = "race-calendar";
+            }
+            
 
         })
 
     }
     else {
         document.querySelectorAll(".race-calendar").forEach(function (elem) {
-            elem.classList = "race-calendar deleting";
-            let div = document.createElement('div');
-            div.classList.add('delete-div');
-            let divText = document.createElement('div');
-            divText.innerHTML = "Delete";
-            divText.className = "bold-font"
-            divText.style.fontSize = "18px"
-            div.appendChild(divText);
-            elem.insertBefore(div,elem.firstChild);
-            divText.addEventListener("click",function () {
-                let race = divText.parentNode.parentNode;
-                divText.parentNode.parentNode.parentNode.removeChild(race);
-                deleted = true;
-            })
+            if(elem.firstChild.className !== "complete-div"){
+                elem.classList = "race-calendar deleting";
+                let div = document.createElement('div');
+                div.classList.add('delete-div');
+                let divText = document.createElement('div');
+                divText.innerHTML = "Delete";
+                divText.className = "bold-font"
+                divText.style.fontSize = "18px"
+                div.appendChild(divText);
+                elem.insertBefore(div,elem.firstChild);
+                divText.addEventListener("click",function () {
+                    let race = divText.parentNode.parentNode;
+                    divText.parentNode.parentNode.parentNode.removeChild(race);
+                    deleted = true;
+                })
+            }
+
 
         })
         this.className = "custom-dropdown custom-button bold-font delete-mode"
@@ -320,7 +336,7 @@ document.getElementById("confirmCalendar").addEventListener("click",function () 
     let dataCodesString = '';
 
     document.querySelectorAll(".race-calendar").forEach((race) => {
-        dataCodesString += race.dataset.trackid.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString()  + ' ';
+        dataCodesString += race.dataset.trackid.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString()  + race.dataset.state.toString() + ' ';
     });
 
 
@@ -330,11 +346,6 @@ document.getElementById("confirmCalendar").addEventListener("click",function () 
         calendarCodes: dataCodesString
     }
     socket.send(JSON.stringify(dataCalendar))
-    // document.getElementById("calendarBlockDiv").className = "blocking-div"
-
-    if (deleted) {
-        document.getElementById("addRaceButton").disabled = true;
-    }
 })
 
 /**
