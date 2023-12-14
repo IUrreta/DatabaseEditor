@@ -316,10 +316,9 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
  */
 document.getElementById("confirmCalendar").addEventListener("click",function () {
     let dataCodesString = '';
-    let children = document.querySelector('.main-calendar-section').children;
 
-    Array.from(children).forEach((child) => {
-        dataCodesString += child.dataset.code + ' ';
+    document.querySelectorAll(".race-calendar").forEach((race) => {
+        dataCodesString += race.dataset.trackid.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString()  + ' ';
     });
 
 
@@ -329,7 +328,7 @@ document.getElementById("confirmCalendar").addEventListener("click",function () 
         calendarCodes: dataCodesString
     }
     socket.send(JSON.stringify(dataCalendar))
-    document.getElementById("calendarBlockDiv").className = "blocking-div"
+    // document.getElementById("calendarBlockDiv").className = "blocking-div"
 
     if (deleted) {
         document.getElementById("addRaceButton").disabled = true;

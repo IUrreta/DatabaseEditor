@@ -117,6 +117,7 @@ async def handle_command(message):
         await send_message_to_client(info_json)
 
     elif type=="calendar":
+        print(message)
         run_editCalendar(message["calendarCodes"])
         process_repack("../result", path)
         argument = type + message["calendarCodes"]
