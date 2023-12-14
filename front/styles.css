@@ -55,6 +55,7 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  max-height: 35px;
 }
 
 .socials a,
@@ -69,6 +70,18 @@ body::-webkit-scrollbar-thumb {
 .socials a:hover,
 .footer i:hover {
   color: #dedde6;
+}
+
+.socials a {
+  display: inline-block;
+  overflow: hidden;
+  max-width: 27px;
+  white-space: nowrap;
+  transition: max-width 0.5s ease-in-out;
+}
+
+.socials a:hover {
+  max-width: 180px;  /* Ajusta este valor según el tamaño máximo que desees para el texto */
 }
 
 .update-info {
@@ -94,16 +107,20 @@ body::-webkit-scrollbar-thumb {
 }
 
 a.bi-reddit:hover {
-  color: #FFA07A;
+  color: #fc6e28;
 }
 
 a.bi-twitter-x:hover,
 #byname:hover {
-  color: #8fc7f0;
+  color: #2ca4ee;
 }
 
 a.bi-heart:hover {
-  color: #ffa4b2;
+  color: #ef51f5;
+}
+
+a.bi-linkedin:hover {
+  color: #0077b5 ;
 }
 
 
@@ -139,6 +156,11 @@ a.bi-heart:hover {
   text-align: center;
   color: white;
   font-size: 28px;
+}
+
+.standings-list{
+  width: 65px;
+  text-align: center;
 }
 
 .trasnfer-top-panel {
@@ -1812,6 +1834,7 @@ a.bi-heart:hover {
 .custom-modal {
   min-width: 600px !important;
   z-index: 2000 !important;
+  border-radius: 50% !important;
 }
 
 .drivers-modal-zone, .teams-modal-zone{
