@@ -1320,6 +1320,18 @@ a.bi-heart:hover {
   background-color: #4e4b69;
 }
 
+.race-calendar .bi-chevron-left, .race-calendar .bi-chevron-right {
+  transition: color 0.3s;
+}
+
+.race-calendar:hover .bi-chevron-left, .race-calendar:hover .bi-chevron-right {
+  color: #dedde6;
+}
+
+.race-calendar .bi-chevron-left:hover, .race-calendar .bi-chevron-right:hover {
+  color: white;
+}
+
 .deleting:hover {
   border: 2px solid transparent !important;
 }
