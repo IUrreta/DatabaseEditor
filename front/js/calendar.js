@@ -244,6 +244,7 @@ function load_addRaces() {
         a.href = '#';
         a.textContent = elem;
         a.dataset.code = dataCode
+        a.dataset.trackid = invertedRacesMap[dataCode]
         let imageUrl = codes_dict[dataCode];
         let img = document.createElement('img');
         img.src = imageUrl;
@@ -265,7 +266,8 @@ function listenerRaces() {
     document.querySelectorAll('#addTrackMenu a').forEach(item => {
         item.addEventListener("click",function () {
             if (document.querySelector(".main-calendar-section").childElementCount < 23) {
-                addRace(item.dataset.code)
+                addRace(item.dataset.code, 0, 0, 0, item.dataset.trackid)
+                updateVisualizers()
             }
         })
     })
@@ -279,7 +281,7 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
         document.querySelectorAll(".delete-div").forEach(function (elem) {
             elem.parentNode.removeChild(elem)
         })
-        this.className = "btn custom-delete option-buttons"
+        this.className = "custom-dropdown custom-button bold-font"
         document.querySelectorAll(".race-calendar").forEach(function (elem) {
             elem.classList = "race-calendar";
 
@@ -304,7 +306,7 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
             })
 
         })
-        this.className = "btn custom-delete option-buttons delete-mode"
+        this.className = "custom-dropdown custom-button bold-font delete-mode"
 
     }
 

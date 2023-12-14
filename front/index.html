@@ -1266,7 +1266,7 @@
                 </div>
               </div>
               <div class="confirm-section">
-                <div class="btn custom-confirm" id="confirmbtn">Save changes</div>
+                <div class="btn custom-confirm bold-font" id="confirmbtn">Save changes</div>
               </div>
             </div>
           </div>
@@ -1779,7 +1779,7 @@
               </div>
             </div>
             <div class="save-button-zone">
-              <div class="btn custom-confirm" id="confirmTeam">Save changes</div>
+              <div class="btn custom-confirm bold-font" id="confirmTeam">Save changes</div>
             </div>
           </div>
         </div>
@@ -1791,19 +1791,25 @@
         There is already a modified calendar or you already did the first race! Try again next season!
       </div>
       <div class="main-calendar">
+        <div class="prediction-buttons ps-3" style="gap: 10px;">
+          <div>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+              id="addRaceButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Add race
+            </button>
+            <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
+            </ul>
+          </div>
+          <button class="custom-dropdown custom-button bold-font" id="deleteTracks">
+            Delete race
+          </button>
+          <div class="config-content bold-font ms-4" id="predictConfigContent"></div>
+        </div>
         <div class="title bold-font py-3">
           New calendar
         </div>
-        <div class="ps-3" style="padding-top: 0.8rem; padding-bottom: 0.7rem; position: absolute; right:14px; top:0;">
-          <button type="button" class="btn btn-primary dropdown-toggle addTracks-button" data-bs-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false" style="font-family: Formula1; height: 100%;"
-            id="addRaceButton">
-            Add race
-          </button>
-          <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
-          </ul>
-          <div class="btn custom-delete option-buttons" id="deleteTracks">Delete races</div>
-          <div class="btn custom-confirm option-buttons" id="confirmCalendar">Save changes</div>
+        <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px; top:0;">
+          <div class="btn custom-confirm option-buttons bold-font" id="confirmCalendar">Save changes</div>
         </div>
         <div class="main-calendar-section" id="officialCalendarList">
 
@@ -2007,7 +2013,7 @@
 
 
             <div class="confirm-area" style="padding-top: 18px;">
-              <div class="btn custom-confirm" id="confirmEnginebtn">Save changes</div>
+              <div class="btn custom-confirm bold-font" id="confirmEnginebtn">Save changes</div>
             </div>
           </div>
           <div class="performance-show teams-show d-none">
@@ -2130,7 +2136,7 @@
               <div class="performance-data bold-font">0%</div>
             </div>
             <div class="confirm-area">
-              <div class="btn custom-confirm" id="confirmPerformancebtn">Save changes</div>
+              <div class="btn custom-confirm bold-font" id="confirmPerformancebtn">Save changes</div>
             </div>
           </div>
 

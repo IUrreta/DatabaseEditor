@@ -1050,6 +1050,10 @@ a.bi-heart:hover {
   display: flex;
 }
 
+#deleteTracks{
+  transition: background-color 0.2s;
+}
+
 .year-and-race{
   display: flex;
   flex-direction: row;
@@ -1339,8 +1343,8 @@ a.bi-heart:hover {
 }
 
 .delete-div:hover {
-  color: #e95656;
-  border-color: #e95656;
+  color: #f15353;
+  border-color: #f15353;
 }
 
 
