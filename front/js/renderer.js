@@ -133,13 +133,13 @@ document.addEventListener('DOMContentLoaded', function () {
             removeStatsDrivers();
             place_drivers(message.slice(1));
             place_drivers_editStats(message.slice(1));
-            create_races();
         },
         "Staff Fetched": (message) => {
             place_staff(message.slice(1));
         },
         "Calendar fetched": (message) => {
-            manage_calendarDiv(message.slice(1)[0]);
+            console.log(message)
+            load_calendar(message.slice(1))
         },
         "Engines fetched": (message) => {
             manage_engineStats(message.slice(1));

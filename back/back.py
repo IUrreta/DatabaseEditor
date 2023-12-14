@@ -61,9 +61,9 @@ async def handle_command(message):
         engines.insert(0, "Engines fetched")
         data_json_engines = json.dumps(engines)
         await send_message_to_client(data_json_engines)
-        allowCalendar = [tuple(check_claendar())]
-        allowCalendar.insert(0, "Calendar fetched")
-        data_json_calendar = json.dumps(allowCalendar)
+        calendar = fetch_calendar()
+        calendar.insert(0, "Calendar fetched")
+        data_json_calendar = json.dumps(calendar)
         await send_message_to_client(data_json_calendar)
         create_backup(path, save)
         year =  cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
@@ -487,6 +487,10 @@ def fetch_next_race():
     race = cursor.execute("SELECT MIN(RaceID) FROM Races WHERE State = 0").fetchall()
     return race[0]
 
+def fetch_calendar():
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    calendar = cursor.execute("SELECT TrackID, WeatherStateQualifying, WeatherStateRace, WeekendType FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
+    return calendar
 
 def check_claendar():
     default_tracks = [2, 1, 11, 24, 22, 5, 6, 4, 7, 10, 9, 12, 13, 14, 15, 17, 19, 18, 20, 21, 23, 25, 26]

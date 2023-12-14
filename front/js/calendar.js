@@ -44,7 +44,7 @@ function reubicate(div0,div1,beforeAfter) {
  * Adds a race in the calendar div
  * @param {string} code Code from the race
  */
-function addRace(code) {
+function addRace(code, rainQ, rainR, type, trackID) {
     let imageUrl = codes_dict[code];
 
     let div = document.createElement('div');
@@ -53,7 +53,10 @@ function addRace(code) {
     let rightDiv = document.createElement('div');
     rightDiv.className = "right-race"
     div.classList.add('race-calendar');
-    div.setAttribute('data-code',code);
+    div.dataset.trackid = trackID
+    div.dataset.rainQ = rainQ
+    div.dataset.rainR = rainR
+    div.dataset.type = type
 
     let upperDiv = document.createElement('div');
     upperDiv.classList.add('upper-race','bold-font');
@@ -73,20 +76,23 @@ function addRace(code) {
     let ATAInput = lowerDiv.querySelector(".ata-input")
     SprintInput.addEventListener("click",function (event) {
         if (ATAInput.checked) ATAInput.checked = false
-        if (SprintInput.checked) changeFormat(div,"1")
-        else changeFormat(div,"0")
-
+        if (SprintInput.checked) div.dataset.type = 1
+        else div.dataset.type = 0
     })
     ATAInput.addEventListener("click",function (event) {
         if (SprintInput.checked) SprintInput.checked = false
-        if (ATAInput.checked) changeFormat(div,"2")
-        else changeFormat(div,"0")
-
+        if (ATAInput.checked) div.dataset.type = 2
+        else div.dataset.type = 0
     })
     leftDiv.appendChild(upperDiv);
     leftDiv.appendChild(lowerDiv);
+    if(type === 1){
+        lowerDiv.children[0].firstChild.click()
+    }
+    else if(type === 2){
+        lowerDiv.children[1].firstChild.click()
+    }
     div.appendChild(leftDiv)
-
     let qWeather = document.createElement('div');
     qWeather.className = "full-quali-weather"
     let qName = document.createElement('div');
@@ -100,7 +106,7 @@ function addRace(code) {
     rightArrow.className = "bi bi-chevron-right"
     let wVis = document.createElement('div');
     wVis.className = "weather-vis"
-    wVis.dataset.value = 0
+    wVis.dataset.value = Number(rainQ)
 
     wSelector.appendChild(leftArrow)
     wSelector.appendChild(wVis)
@@ -109,6 +115,7 @@ function addRace(code) {
     qWeather.appendChild(wSelector)
     let rWeather = qWeather.cloneNode(true)
     rWeather.firstChild.innerText = "R"
+    rWeather.children[1].children[1].dataset.value = Number(rainR)
     rightDiv.appendChild(qWeather)
     rightDiv.appendChild(rWeather)
 
@@ -121,15 +128,20 @@ function addRace(code) {
 
 function addArrowsListeners(){
     document.querySelector(".main-calendar").querySelectorAll(".bi-chevron-left").forEach(function(elem){
-        console.log(elem)
         elem.addEventListener("click", function(){
-            console.log("me activo")
             let val = elem.parentNode.querySelector(".weather-vis").dataset.value
             newVal = Number(val) - 1
             if(newVal === -1){
                 newVal = 5
             }
             elem.parentNode.querySelector(".weather-vis").dataset.value = newVal
+            if (elem.parentNode.parentNode.firstChild.innerText === "Q"){
+                elem.parentNode.parentNode.parentNode.parentNode.dataset.rainQ = newVal
+            }
+            else if (elem.parentNode.parentNode.firstChild.innerText === "R"){
+                elem.parentNode.parentNode.parentNode.parentNode.dataset.rainR = newVal
+            }
+            
             updateVisualizers()
         })
     })
@@ -142,6 +154,12 @@ function addArrowsListeners(){
                 newVal = 0
             }
             elem.parentNode.querySelector(".weather-vis").dataset.value = newVal
+            if (elem.parentNode.parentNode.firstChild.innerText === "Q"){
+                elem.parentNode.parentNode.parentNode.parentNode.dataset.rainQ = newVal
+            }
+            else if (elem.parentNode.parentNode.firstChild.innerText === "R"){
+                elem.parentNode.parentNode.parentNode.parentNode.dataset.rainR = newVal
+            }
             updateVisualizers()
         })
     })
@@ -160,20 +178,40 @@ function updateVisualizers(){
     })
 }
 
-
-
-/**
- * Creates all the races
- */
-function create_races() {
+function load_calendar(races){
     document.querySelector('.main-calendar-section').innerHTML = ""
-    for (let dataCode of Object.keys(codes_dict)) {
-        addRace(dataCode)
-
-    }
+    races.forEach(function(elem){
+        code = races_map[elem[0]]
+        addRace(code, transformWeather(elem[1]), transformWeather(elem[2]), elem[3], elem[0])
+    })
     addArrowsListeners()
     updateVisualizers()
     load_addRaces()
+
+}
+
+
+function transformWeather(state){
+    let realWeather;
+    if(state === 1){
+        realWeather = 0
+    }
+    else if(state === 2){
+        realWeather = 1
+    }
+    else if(state === 4){
+        realWeather = 2
+    }
+    else if(state === 8){
+        realWeather = 3
+    }
+    else if(state === 16){
+        realWeather = 4
+    }
+    else if(state === 32){
+        realWeather = 5
+    }
+    return realWeather;
 }
 
 /**
@@ -282,7 +320,6 @@ document.getElementById("confirmCalendar").addEventListener("click",function () 
 
     Array.from(children).forEach((child) => {
         dataCodesString += child.dataset.code + ' ';
-
     });
 
 
