@@ -23,6 +23,7 @@ path = None
 log = None
 conn = None
 cursor = None
+team_dict = {"1": "Ferrari", "2": "McLaren", "3": "Red Bull", "4": "Mercedes", "5": "Alpine", "6": "Williams", "7": "Haas", "8": "Alfa Romeo", "9": "AlphaTauri", "10": "Aston Martin"}
 
 
 async def handle_command(message):
@@ -220,7 +221,7 @@ async def handle_command(message):
     elif type=="editTeam":
         edit_team(message)
         process_repack("../result", path)
-        info = ["Succesfully edited " + str(message["teamID"])]
+        info = ["Succesfully edited " + str(team_dict[message["teamID"]])]
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
         argument = message["command"]

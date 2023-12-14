@@ -128,7 +128,7 @@
             championship from the one selected in the dropdown button.
             This means that the earlier the selected race is in the championship, the more races it will have to
             simulate until the end of the championship, and the prediction will take longer.
-            Depending on your system, the simulation may take more or less time.
+            Depending on your system, the simulation may take more time.
           </div>
           <div class="modal-subtitle bold-font pt-3">Predict championship from</div>
           <div class="year-and-race">
@@ -215,7 +215,7 @@
           <div class="teams-modal-section d-none">
             <div class="drivers-modal-title component-subtitle bold-font mt-3">Select teams</div>
             <div class="teams-modal-zone mt-2">
-              <div class="col modal-team ferrari" data-teamid="1">
+              <div class="col modal-team ferrari d-none" data-teamid="1">
                 <div class="logo-and-name">
                   <img src="../assets/images/ferrari.png" id="ferrarilogo">
                   <div class="team-name bold-font">FERRARI</div>
@@ -225,7 +225,7 @@
                   <div data-teamid="1" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team mclaren" data-teamid="2">
+              <div class="col modal-team mclaren d-none" data-teamid="2">
                 <div class="logo-and-name">
                   <img src="../assets/images/mclaren.png" id="mclarenlogo">
                   <div class="team-name bold-font">MCLAREN</div>
@@ -235,7 +235,7 @@
                   <div data-teamid="2" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team redbull" data-teamid="3">
+              <div class="col modal-team redbull d-none" data-teamid="3">
                 <div class="logo-and-name">
                   <img src="../assets/images/redbull.png" id="redbulllogo">
                   <div class="team-name bold-font">RED BULL</div>
@@ -245,7 +245,7 @@
                   <div data-teamid="3" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team merc" data-teamid="4">
+              <div class="col modal-team merc d-none" data-teamid="4">
                 <div class="logo-and-name">
                   <img src="../assets/images/mercedes.png" id="merclogo2">
                   <div class="team-name bold-font">MERCEDES</div>
@@ -255,7 +255,7 @@
                   <div data-teamid="4" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team alpine" data-teamid="5">
+              <div class="col modal-team alpine d-none" data-teamid="5">
                 <div class="logo-and-name">
                   <img src="../assets/images/alpine.png" id="alpinelogo">
                   <div class="team-name bold-font">ALPINE</div>
@@ -265,7 +265,7 @@
                   <div data-teamid="5" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team williams" data-teamid="6">
+              <div class="col modal-team williams d-none" data-teamid="6">
                 <div class="logo-and-name">
                   <img src="../assets/images/williams.png" id="williamslogo">
                   <div class="team-name bold-font">WILLIAMS</div>
@@ -275,7 +275,7 @@
                   <div data-teamid="6" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team haas" data-teamid="7">
+              <div class="col modal-team haas d-none" data-teamid="7">
                 <div class="logo-and-name">
                   <img src="../assets/images/haas.png" id="haaslogo">
                   <div class="team-name bold-font">HAAS</div>
@@ -285,7 +285,7 @@
                   <div data-teamid="7" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team alpha" data-teamid="8">
+              <div class="col modal-team alpha d-none" data-teamid="8">
                 <div class="logo-and-name">
                   <img src="../assets/images/alphatauri.png" id="alphataurilogo">
                   <div class="team-name bold-font">ALPHA TAURI</div>
@@ -295,7 +295,7 @@
                   <div data-teamid="8" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team alfa" data-teamid="9">
+              <div class="col modal-team alfa d-none" data-teamid="9">
                 <div class="logo-and-name">
                   <img src="../assets/images/alfaromeo.png" id="alfalogo">
                   <div class="team-name bold-font">ALFA ROMEO</div>
@@ -305,7 +305,7 @@
                   <div data-teamid="9" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team aston" data-teamid="10">
+              <div class="col modal-team aston d-none" data-teamid="10">
                 <div class="logo-and-name">
                   <img src="../assets/images/astonMartin.png" id="astonlogo">
                   <div class="team-name bold-font ps-1">ASTON MARTIN</div>
@@ -424,6 +424,7 @@
         </div>
         <div class="title bold-font py-3 w-100">
           Forecast
+          <i class="info-titles bold-font" id="standingsinfo">?</i>
         </div>
         <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
           <ul class="nav nav-pills">
@@ -689,6 +690,7 @@
         </div>
         <div class="title bold-font py-3">
           Season Results
+          <i class="info-titles bold-font" id="standingsinfo">?</i>
         </div>
         <div class="main-viewer-section">
           <div id="seasonresults-table"></div>
@@ -722,6 +724,7 @@
         <div class="trasnfer-top-panel">
           <div class="title transfer-title bold-font py-3">
             Contracted drivers
+            <i class="info-titles bold-font" id="standingsinfo">?</i>
           </div>
           <div class="form-check form-switch auto-contract">
             <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="autoContractToggle">
@@ -1806,7 +1809,8 @@
           <div class="config-content bold-font ms-4" id="predictConfigContent"></div>
         </div>
         <div class="title bold-font py-3">
-          New calendar
+          Calendar
+          <i class="info-titles bold-font" id="standingsinfo">?</i>
         </div>
         <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px; top:0;">
           <div class="btn custom-confirm option-buttons bold-font" id="confirmCalendar">Save changes</div>
@@ -1912,6 +1916,7 @@
         <div class="trasnfer-top-panel">
           <div class="title transfer-title bold-font py-3">
             Performance
+            <i class="info-titles bold-font" id="standingsinfo">?</i>
           </div>
         </div>
         <div class="main-columns-drag-section performance-section">

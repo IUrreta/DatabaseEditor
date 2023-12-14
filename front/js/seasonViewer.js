@@ -360,6 +360,9 @@ function generateYearsMenu(actualYear) {
         yearH2H.appendChild(a2);
         a2.addEventListener("click", function () {
             resetH2H()
+            document.querySelectorAll(".modal-team").forEach(function(elem){
+                elem.classList.remove("d-none")
+            })
             document.getElementById("yearButtonH2H").textContent = a2.textContent
             let dataYear = {
                 command: "yearSelectedH2H",

@@ -2214,7 +2214,16 @@ a.bi-heart:hover {
   cursor: pointer;
 }
 
+.info-titles{
+  color: #756f9b;
+  font-size: 22px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
 
+.info-titles:hover{
+  color: #a49ecc;
+}
 
 
 .free-driver:hover .custom-icon {
