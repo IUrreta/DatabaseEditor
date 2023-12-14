@@ -9,6 +9,7 @@ import shutil
 import math
 from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script as run_trasnsfer
+from scripts.transfer_driver_23 import unretire
 from scripts.edit_stats_23 import run_script as run_editStats
 from scripts.custom_calendar_23 import run_script as run_editCalendar
 from scripts.car_performance_23 import run_script as run_editPerformance
@@ -252,6 +253,15 @@ async def handle_command(message):
         data_json_montecarlo = json.dumps(perd_msg)
         await send_message_to_client(data_json_montecarlo)
 
+    elif type=="unretireDriver":
+        print(message)
+        unretire(message["driverID"])
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully unretired " + message["driver"])
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()
 
@@ -476,7 +486,7 @@ def fetch_drivers_per_year(year):
 
 def fetch_info():
 
-    drivers = cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID GROUP BY bas.StaffID;').fetchall()
+    drivers = cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType, gam.Retired FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID LEFT JOIN Staff_GameData gam ON dri.StaffID = gam.StaffID GROUP BY bas.StaffID;').fetchall()
     formatted_tuples = []
     for tupla in drivers:
         result = format_names_get_stats(tupla, "driver")
@@ -552,8 +562,10 @@ def format_names_get_stats(name, type):
         team_id = 0
         pos_in_team = 0
 
-
-    resultado = (name_formatted, name[2], team_id, pos_in_team)
+    if type == "driver":
+        resultado = (name_formatted, name[2], team_id, pos_in_team, name[6])
+    else:
+        resultado = (name_formatted, name[2], team_id, pos_in_team)
 
     if type == "driver":
         stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID BETWEEN 2 AND 10").fetchall()

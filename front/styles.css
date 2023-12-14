@@ -2172,8 +2172,41 @@ a.bi-heart:hover {
   justify-content: flex-end;
 }
 
-.custom-icon i {
+.free-driver .custom-unretire{
+  color: transparent;
+  transition: opacity 0.4s;
+  background-image: linear-gradient(to left, #4e4b69, transparent);
+  width: 80px;
+  height: 20px;
+  opacity: 0;
+  z-index: 3;
+  display: flex;
+  position: absolute;
+  right: 10px;
+  top: 7.5px;
+  justify-content: flex-end;
+}
+
+.free-driver:hover .custom-unretire{
+  opacity: 1;
+}
+
+.custom-icon .bi-pencil-square {
   transition: color 0.4s;
+}
+
+.free-driver .bi-ban{
+  opacity: 1 !important;
+  transition: color 0.4s;
+  color: white;
+  z-index: 10;
+  position: absolute;
+  right: 8px;
+  cursor: pointer;
+}
+
+.free-driver .bi-ban:hover{
+  color: #e95656;
 }
 
 .custom-icon i:hover {
@@ -2181,10 +2214,12 @@ a.bi-heart:hover {
   cursor: pointer;
 }
 
+
+
+
 .free-driver:hover .custom-icon {
   color: #9d98b8;
   opacity: 1;
-
 }
 
 #free-drivers {

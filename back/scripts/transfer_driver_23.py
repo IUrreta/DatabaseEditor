@@ -9,8 +9,6 @@ def run_script(option=""):
     text = option.lower()
     params = text.split()
 
-    
-
     if(params[0] == "fire"):
         driver_id = (params[1],)
         position = cursor.execute("SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = " + str(driver_id[0])).fetchone()
@@ -294,6 +292,15 @@ def run_script(option=""):
         cursor.execute("UPDATE Staff_DriverNumbers SET CurrentHolder = " + str(params[6]) + " WHERE Number = " + str(params[7]))
         cursor.execute("UPDATE Staff_DriverData SET WantsChampionDriverNumber = " + str(params[8]) + " WHERE StaffID = " + str(params[6]))
         cursor.execute("UPDATE Staff_GameData SET RetirementAge = " + str(params[9]) + " WHERE StaffID = " + str(params[6]))
+
+    conn.commit()
+    conn.close()
+
+def unretire(driverID):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = " + str(driverID))
 
     conn.commit()
     conn.close()

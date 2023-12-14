@@ -41,7 +41,7 @@ function place_drivers_editStats(driversArray) {
         newDiv.appendChild(nameDiv)
         let statsString = '';
 
-        for (let i = 4; i <= 14; i++) {
+        for (let i = 5; i <= 15; i++) {
             statsString += driver[i] + ' ';
         }
         newDiv.dataset.stats = statsString;
