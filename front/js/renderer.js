@@ -138,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function () {
             place_staff(message.slice(1));
         },
         "Calendar fetched": (message) => {
-            console.log(message)
             load_calendar(message.slice(1))
         },
         "Engines fetched": (message) => {
@@ -226,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     socket.onmessage = (event) => {
         let message = JSON.parse(event.data);
-        // console.log(message)
+        console.log(message[0])
         let handler = messageHandlers[message[0]];
 
         if (handler) {

@@ -125,20 +125,142 @@
           <div class="d-flex" style="gap: 7px;">
             <div class="standings-list bold-font">0</div> <span> - Pole poisiton in that race</span>
           </div>
-          <div class="d-flex" style="gap: 7px;">
+          <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list" style="color: #c90fd7;">0</div> <span> - Fastest lap that race</span>
           </div>
-          <div class="d-flex" style="gap: 7px;">
+          <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list" style="background-color: #FDE06B; color: #18152e;">&nbsp;</div> <span> - 1st place that race</span>
           </div>
-          <div class="d-flex" style="gap: 7px;">
+          <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list" style="background-color: #AEB2B8; color: #18152e;">&nbsp;</div> <span> - 2nd place that race</span>
           </div>
-          <div class="d-flex" style="gap: 7px;">
+          <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list" style="background-color: #d7985a; color: #18152e;">&nbsp;</div> <span> - 3rd place that race</span>
           </div>
-          <div class="d-flex" style="gap: 7px;">
+          <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list">DNF</div> <div> - Did not finish that race</div>
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="contractsModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Contracts info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="d-flex" style="gap: 7px;">
+            <div><i class="bi bi-ban"></i></div> <span> - Means the driver is retired. Click to unretire him</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div><i class="bi bi-pencil-square"></i></div> <span> - Click to edit driver's details</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div style="width: 170px;">Auto contract</div> <span> - Will give the drivers contracts automatically based on their rating</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            You can't place drivers in the F2 and F3 tab, only in the Free Drivers tab
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="performancemodal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Contracts info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="mt-2" style="gap: 7px;">
+            From the <span class="bold-font">Teams</span> tab, you will be able to edit performance from every part of any team.
+            The number you see beside the bars are the <span class="bold-font positive">Increment</span> or <span class="bold-font negative">Decrement</span>
+            in performance for that part in specific.
+          </div>
+          <div class="mt-2" style="gap: 7px;">
+            From the <span class="bold-font">Engines</span> tab, you will be able to edit directly the stats of every engine, seeing their exact performance.
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="forecastmodal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Forecast info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="mt-2" style="gap: 7px;">
+            The predictions are made with an AI model trained with the developer's own save file. You c an check out predictions
+            for previous races and for the next one in the <span class="bold-font">Race</span> tab.
+          </div>
+          <div class="mt-2" style="gap: 7px;">
+            In the <span class="bold-font">Standings</span> tab, you can configure a prediction for the rest of the season since the race you
+            select in the modal. Take into account that the sooner that race is in the season, the more races it will have to simulate and it will take longer.
+            For example, it will take much longer if you predict from the 3rd race of the season than if you predict only the last race of the season.
+            The model will run dozens of simulations of all the remaining races and calculate the amount of times a driver has finished in every position.
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="calendarmodal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Calendar info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="d-flex" style="gap: 7px;">
+            <div><i class="standings-list bi-sun"></i></div> <span> - Sunny</span>
+          </div>
+          <div class="d-flex  mt-2" style="gap: 7px;">
+            <div><i class="standings-list bi bi-cloud-sun"></i></div> <span> - Partially cloudy</span>
+          </div>
+          <div class="d-flex  mt-2" style="gap: 7px;">
+            <div><i class=" standings-list bi bi-cloud"></i></div> <span> - Cloudy</span>
+          </div>
+          <div class="d-flex  mt-2" style="gap: 7px;">
+            <div><i class="standings-list bi bi-cloud-drizzle"></i></div> <span> - Light rain</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div><i class="standings-list bi bi-cloud-rain-heavy"></i></div> <span> - Heavy rain</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div><i class="standings-list bi bi-cloud-lightning-rain"></i></div> <span> - Storm</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div style="width: 105px;">ATA Quali</div> <span> - Q1 will be on hards, Q2 on medium tyres and Q3 with soft tyres</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            Due to how the game works, it's only possible to set one of theese 6 patterns, and it's not possible to edit
+            with more detail the forecast for the race.
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            On sprint weekends, the game will take the Qualifying forecast for the sprint race
+          </div>
+          <div class="mt-2" style="gap: 7px;">
+            You can edit the calendar whenever you want and how many times you want, however, <span class="bold-font">during the season</span> it is <span class="bold-font">discouraged</span> to edit 
+            the order or amount of races, do it at <span class="bold-font">your own risk</span>. Changing weather forecast during the season should be safe.
           </div>
         </div>
         <div class="modal-footer custom-footer">
@@ -457,7 +579,7 @@
         </div>
         <div class="title bold-font py-3 w-100">
           Forecast
-          <i class="info-titles bold-font" id="forecastinfo">?</i>
+          <i class="info-titles bold-font" id="forecastinfo" data-bs-toggle="modal" data-bs-target="#forecastmodal">?</i>
         </div>
         <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
           <ul class="nav nav-pills">
@@ -757,7 +879,7 @@
         <div class="trasnfer-top-panel">
           <div class="title transfer-title bold-font py-3">
             Contracted drivers
-            <i class="info-titles bold-font" id="contractsinfo">?</i>
+            <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal" data-bs-target="#contractsModal">?</i>
           </div>
           <div class="form-check form-switch auto-contract">
             <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="autoContractToggle">
@@ -1843,7 +1965,7 @@
         </div>
         <div class="title bold-font py-3">
           Calendar
-          <i class="info-titles bold-font" id="calendarinfo">?</i>
+          <i class="info-titles bold-font" id="calendarinfo" data-bs-toggle="modal" data-bs-target="#calendarmodal">?</i>
         </div>
         <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px; top:0;">
           <div class="btn custom-confirm option-buttons bold-font" id="confirmCalendar">Save changes</div>
@@ -1949,7 +2071,7 @@
         <div class="trasnfer-top-panel">
           <div class="title transfer-title bold-font py-3">
             Performance
-            <i class="info-titles bold-font" id="perfoemanceinfo">?</i>
+            <i class="info-titles bold-font" id="perfoemanceinfo" data-bs-toggle="modal" data-bs-target="#performancemodal">?</i>
           </div>
         </div>
         <div class="main-columns-drag-section performance-section">
