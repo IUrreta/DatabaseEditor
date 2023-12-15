@@ -1286,11 +1286,18 @@ a.bi-linkedin:hover {
   cursor: grab !important;
   padding-left: 12px;
   max-height: 112px;
+  gap: 10px;
 
 }
 
+.upper-text-and-flag{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .left-race{
-  width: 50%;
+  width: 60%;
   gap: 4px;
   display: flex;
   flex-direction: column;
@@ -1306,7 +1313,6 @@ a.bi-linkedin:hover {
   display: flex;
   flex-direction: row;
   gap: 4px;
-  margin-left: 20px;
 }
 
 .session-name{
@@ -1373,7 +1379,7 @@ a.bi-linkedin:hover {
   border-radius: 10px;
   color: #5bd999;
   transition: color 0.4s, border-color 0.4s;
-  cursor: pointer;
+  cursor: default;
 }
 
 .complete-div:hover{
@@ -1413,7 +1419,6 @@ a.bi-linkedin:hover {
   font-size: 22px;
   display: flex;
   flex-direction: row;
-  width: 100%;
   gap: 10px;
 }
 

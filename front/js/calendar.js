@@ -71,13 +71,16 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
     }
 
     let upperDiv = document.createElement('div');
-    upperDiv.classList.add('upper-race','bold-font');
-    upperDiv.textContent = code.slice(0,-1).toUpperCase();
+    upperDiv.className = "upper-text-and-flag"
+    let textDiv = document.createElement('div');
+    textDiv.classList.add('upper-race','bold-font');
+    textDiv.textContent = code.slice(0,-1).toUpperCase();
 
     const img = document.createElement('img');
     img.src = imageUrl;
     img.classList.add('flag');
 
+    upperDiv.appendChild(textDiv);
     upperDiv.appendChild(img);
 
     let lowerDiv = document.createElement('div');
@@ -153,6 +156,7 @@ function addArrowsListeners(){
             }
             
             updateVisualizers()
+            
         })
     })
     
@@ -171,6 +175,7 @@ function addArrowsListeners(){
                 elem.parentNode.parentNode.parentNode.parentNode.dataset.rainR = newVal
             }
             updateVisualizers()
+            
         })
     })
 
@@ -196,8 +201,15 @@ function load_calendar(races){
     })
     addArrowsListeners()
     updateVisualizers()
+    updateNumbers()
     load_addRaces()
 
+}
+
+function updateNumbers(){
+    document.querySelectorAll(".left-race").forEach(function(elem, index){
+        elem.firstChild.firstChild.textContent = index + 1 + " " + races_names[elem.parentNode.dataset.trackid]
+    })
 }
 
 
@@ -278,6 +290,7 @@ function listenerRaces() {
             if (document.querySelector(".main-calendar-section").childElementCount < 23) {
                 addRace(item.dataset.code, 0, 0, 0, item.dataset.trackid, 0)
                 updateVisualizers()
+                updateNumbers()
             }
         })
     })
@@ -388,6 +401,7 @@ interact('.race-calendar').draggable({
                         } else {
                             reubicate(target,element,"before")
                         }
+                        updateNumbers()
 
                     }
                 }
