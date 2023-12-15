@@ -503,6 +503,14 @@ function resetH2H() {
         elem.classList = "GraphButton"
         elem.dataset.state = "unchecked"
     })
+    document.querySelector(".drivers-modal-zone").querySelectorAll(".H2Hradio").forEach(function (elem) {
+        elem.classList = "H2Hradio"
+        elem.dataset.state = "unchecked"
+    })
+    document.querySelector(".drivers-modal-zone").querySelectorAll(".GraphButton").forEach(function (elem) {
+        elem.classList = "GraphButton"
+        elem.dataset.state = "unchecked"
+    })
 }
 
 /**

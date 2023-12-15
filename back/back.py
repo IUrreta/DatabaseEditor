@@ -9,6 +9,7 @@ import shutil
 import math
 from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script as run_trasnsfer
+from scripts.transfer_driver_23 import unretire
 from scripts.edit_stats_23 import run_script as run_editStats
 from scripts.custom_calendar_23 import run_script as run_editCalendar
 from scripts.car_performance_23 import run_script as run_editPerformance
@@ -22,6 +23,7 @@ path = None
 log = None
 conn = None
 cursor = None
+team_dict = {"1": "Ferrari", "2": "McLaren", "3": "Red Bull", "4": "Mercedes", "5": "Alpine", "6": "Williams", "7": "Haas", "8": "Alfa Romeo", "9": "AlphaTauri", "10": "Aston Martin"}
 
 
 async def handle_command(message):
@@ -61,17 +63,15 @@ async def handle_command(message):
         engines.insert(0, "Engines fetched")
         data_json_engines = json.dumps(engines)
         await send_message_to_client(data_json_engines)
-        allowCalendar = [tuple(check_claendar())]
-        allowCalendar.insert(0, "Calendar fetched")
-        data_json_calendar = json.dumps(allowCalendar)
+        calendar = fetch_calendar()
+        calendar.insert(0, "Calendar fetched")
+        data_json_calendar = json.dumps(calendar)
         await send_message_to_client(data_json_calendar)
         create_backup(path, save)
         year =  cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
         year = ["Year fetched", year]
         data_json_year = json.dumps(year)
         await send_message_to_client(data_json_year)
-
-
 
     elif type =="hire":
         argument = "hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
@@ -119,6 +119,7 @@ async def handle_command(message):
         await send_message_to_client(info_json)
 
     elif type=="calendar":
+        print(message)
         run_editCalendar(message["calendarCodes"])
         process_repack("../result", path)
         argument = type + message["calendarCodes"]
@@ -220,7 +221,7 @@ async def handle_command(message):
     elif type=="editTeam":
         edit_team(message)
         process_repack("../result", path)
-        info = ["Succesfully edited " + str(message["teamID"])]
+        info = ["Succesfully edited " + str(team_dict[message["teamID"]])]
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
         argument = message["command"]
@@ -252,6 +253,15 @@ async def handle_command(message):
         perd_msg = ["Montecarlo Fetched", perc]
         data_json_montecarlo = json.dumps(perd_msg)
         await send_message_to_client(data_json_montecarlo)
+
+    elif type=="unretireDriver":
+        print(message)
+        unretire(message["driverID"])
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully unretired " + message["driver"])
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()
@@ -477,7 +487,7 @@ def fetch_drivers_per_year(year):
 
 def fetch_info():
 
-    drivers = cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID GROUP BY bas.StaffID;').fetchall()
+    drivers = cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType, gam.Retired FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID LEFT JOIN Staff_GameData gam ON dri.StaffID = gam.StaffID GROUP BY bas.StaffID;').fetchall()
     formatted_tuples = []
     for tupla in drivers:
         result = format_names_get_stats(tupla, "driver")
@@ -489,6 +499,10 @@ def fetch_next_race():
     race = cursor.execute("SELECT MIN(RaceID) FROM Races WHERE State = 0").fetchall()
     return race[0]
 
+def fetch_calendar():
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    calendar = cursor.execute("SELECT TrackID, WeatherStateQualifying, WeatherStateRace, WeekendType, State FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
+    return calendar
 
 def check_claendar():
     default_tracks = [2, 1, 11, 24, 22, 5, 6, 4, 7, 10, 9, 12, 13, 14, 15, 17, 19, 18, 20, 21, 23, 25, 26]
@@ -549,8 +563,10 @@ def format_names_get_stats(name, type):
         team_id = 0
         pos_in_team = 0
 
-
-    resultado = (name_formatted, name[2], team_id, pos_in_team)
+    if type == "driver":
+        resultado = (name_formatted, name[2], team_id, pos_in_team, name[6])
+    else:
+        resultado = (name_formatted, name[2], team_id, pos_in_team)
 
     if type == "driver":
         stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID BETWEEN 2 AND 10").fetchall()

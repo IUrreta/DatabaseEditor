@@ -60,17 +60,18 @@ document.querySelector("#objAndYear").querySelector(".bi-chevron-down").addEvent
  * Listeners for the season objective input
  */
 document.querySelector("#seasonObjective").querySelector(".bi-chevron-up").addEventListener("click", function () {
-    let value = Number(document.querySelector("#seasonObjectiveInput").value) + 1
-    if (value >= 10) {
-        value = 10
+
+    let value = Number(document.querySelector("#seasonObjectiveInput").value) - 1
+    if (value <= 1) {
+        value = 1
     }
     document.querySelector("#seasonObjectiveInput").value = value
 })
 
 document.querySelector("#seasonObjective").querySelector(".bi-chevron-down").addEventListener("click", function () {
-    let value = Number(document.querySelector("#seasonObjectiveInput").value) - 1
-    if (value <= 1) {
-        value = 1
+    let value = Number(document.querySelector("#seasonObjectiveInput").value) + 1
+    if (value >= 10) {
+        value = 10
     }
     document.querySelector("#seasonObjectiveInput").value = value
 })

@@ -19,7 +19,7 @@
 <body class="font">
   <div class="modal custom-modal fade" id="contractModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-      <div class="modal-content cusotm-modal">
+      <div class="modal-content custom-modal">
         <div class="modal-header custom-header">
           <h4 class="modal-title bold-font" id="contractModalTitle"></h4>
           <h4 class="bold-font" id="driverAge" style="margin-bottom: 0px;"></h4>
@@ -115,6 +115,161 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal fade" id="standingsmodal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Standings info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="d-flex" style="gap: 7px;">
+            <div class="standings-list bold-font">0</div> <span> - Pole poisiton in that race</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list" style="color: #c90fd7;">0</div> <span> - Fastest lap that race</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list" style="background-color: #FDE06B; color: #18152e;">&nbsp;</div> <span> - 1st place that race</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list" style="background-color: #AEB2B8; color: #18152e;">&nbsp;</div> <span> - 2nd place that race</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list" style="background-color: #d7985a; color: #18152e;">&nbsp;</div> <span> - 3rd place that race</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list">DNF</div> <div> - Did not finish that race</div>
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="contractsModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Contracts info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="d-flex" style="gap: 7px;">
+            <div><i class="bi bi-ban"></i></div> <span> - Means the driver is retired. Click to unretire him</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div><i class="bi bi-pencil-square"></i></div> <span> - Click to edit driver's details</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div style="width: 170px;">Auto contract</div> <span> - Will give the drivers contracts automatically based on their rating</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            You can't place drivers in the F2 and F3 tab, only in the Free Drivers tab
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="performancemodal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Contracts info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="mt-2" style="gap: 7px;">
+            From the <span class="bold-font">Teams</span> tab, you will be able to edit performance from every part of any team.
+            The number you see beside the bars are the <span class="bold-font positive">Increment</span> or <span class="bold-font negative">Decrement</span>
+            in performance for that part in specific.
+          </div>
+          <div class="mt-2" style="gap: 7px;">
+            From the <span class="bold-font">Engines</span> tab, you will be able to edit directly the stats of every engine, seeing their exact performance.
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="forecastmodal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Forecast info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="mt-2" style="gap: 7px;">
+            The predictions are made with an AI model trained with the developer's own save file. You c an check out predictions
+            for previous races and for the next one in the <span class="bold-font">Race</span> tab.
+          </div>
+          <div class="mt-2" style="gap: 7px;">
+            In the <span class="bold-font">Standings</span> tab, you can configure a prediction for the rest of the season since the race you
+            select in the modal. Take into account that the sooner that race is in the season, the more races it will have to simulate and it will take longer.
+            For example, it will take much longer if you predict from the 3rd race of the season than if you predict only the last race of the season.
+            The model will run dozens of simulations of all the remaining races and calculate the amount of times a driver has finished in every position.
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="calendarmodal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Calendar info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="d-flex" style="gap: 7px;">
+            <div><i class="standings-list bi-sun"></i></div> <span> - Sunny</span>
+          </div>
+          <div class="d-flex  mt-2" style="gap: 7px;">
+            <div><i class="standings-list bi bi-cloud-sun"></i></div> <span> - Partially cloudy</span>
+          </div>
+          <div class="d-flex  mt-2" style="gap: 7px;">
+            <div><i class=" standings-list bi bi-cloud"></i></div> <span> - Cloudy</span>
+          </div>
+          <div class="d-flex  mt-2" style="gap: 7px;">
+            <div><i class="standings-list bi bi-cloud-drizzle"></i></div> <span> - Light rain</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div><i class="standings-list bi bi-cloud-rain-heavy"></i></div> <span> - Heavy rain</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div><i class="standings-list bi bi-cloud-lightning-rain"></i></div> <span> - Storm</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div style="width: 105px;">ATA Quali</div> <span> - Q1 will be on hards, Q2 on medium tyres and Q3 with soft tyres</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            Due to how the game works, it's only possible to set one of theese 6 patterns, and it's not possible to edit
+            with more detail the forecast for the race.
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            On sprint weekends, the game will take the Qualifying forecast for the sprint race
+          </div>
+          <div class="mt-2" style="gap: 7px;">
+            You can edit the calendar whenever you want and how many times you want, however, <span class="bold-font">during the season</span> it is <span class="bold-font">discouraged</span> to edit 
+            the order or amount of races, do it at <span class="bold-font">your own risk</span>. Changing weather forecast during the season should be safe.
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="predictModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-med modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
@@ -128,7 +283,7 @@
             championship from the one selected in the dropdown button.
             This means that the earlier the selected race is in the championship, the more races it will have to
             simulate until the end of the championship, and the prediction will take longer.
-            Depending on your system, the simulation may take more or less time.
+            Depending on your system, the simulation may take more time.
           </div>
           <div class="modal-subtitle bold-font pt-3">Predict championship from</div>
           <div class="year-and-race">
@@ -215,7 +370,7 @@
           <div class="teams-modal-section d-none">
             <div class="drivers-modal-title component-subtitle bold-font mt-3">Select teams</div>
             <div class="teams-modal-zone mt-2">
-              <div class="col modal-team ferrari" data-teamid="1">
+              <div class="col modal-team ferrari d-none" data-teamid="1">
                 <div class="logo-and-name">
                   <img src="../assets/images/ferrari.png" id="ferrarilogo">
                   <div class="team-name bold-font">FERRARI</div>
@@ -225,7 +380,7 @@
                   <div data-teamid="1" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team mclaren" data-teamid="2">
+              <div class="col modal-team mclaren d-none" data-teamid="2">
                 <div class="logo-and-name">
                   <img src="../assets/images/mclaren.png" id="mclarenlogo">
                   <div class="team-name bold-font">MCLAREN</div>
@@ -235,7 +390,7 @@
                   <div data-teamid="2" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team redbull" data-teamid="3">
+              <div class="col modal-team redbull d-none" data-teamid="3">
                 <div class="logo-and-name">
                   <img src="../assets/images/redbull.png" id="redbulllogo">
                   <div class="team-name bold-font">RED BULL</div>
@@ -245,7 +400,7 @@
                   <div data-teamid="3" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team merc" data-teamid="4">
+              <div class="col modal-team merc d-none" data-teamid="4">
                 <div class="logo-and-name">
                   <img src="../assets/images/mercedes.png" id="merclogo2">
                   <div class="team-name bold-font">MERCEDES</div>
@@ -255,7 +410,7 @@
                   <div data-teamid="4" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team alpine" data-teamid="5">
+              <div class="col modal-team alpine d-none" data-teamid="5">
                 <div class="logo-and-name">
                   <img src="../assets/images/alpine.png" id="alpinelogo">
                   <div class="team-name bold-font">ALPINE</div>
@@ -265,7 +420,7 @@
                   <div data-teamid="5" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team williams" data-teamid="6">
+              <div class="col modal-team williams d-none" data-teamid="6">
                 <div class="logo-and-name">
                   <img src="../assets/images/williams.png" id="williamslogo">
                   <div class="team-name bold-font">WILLIAMS</div>
@@ -275,7 +430,7 @@
                   <div data-teamid="6" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team haas" data-teamid="7">
+              <div class="col modal-team haas d-none" data-teamid="7">
                 <div class="logo-and-name">
                   <img src="../assets/images/haas.png" id="haaslogo">
                   <div class="team-name bold-font">HAAS</div>
@@ -285,7 +440,7 @@
                   <div data-teamid="7" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team alpha" data-teamid="8">
+              <div class="col modal-team alpha d-none" data-teamid="8">
                 <div class="logo-and-name">
                   <img src="../assets/images/alphatauri.png" id="alphataurilogo">
                   <div class="team-name bold-font">ALPHA TAURI</div>
@@ -295,7 +450,7 @@
                   <div data-teamid="8" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team alfa" data-teamid="9">
+              <div class="col modal-team alfa d-none" data-teamid="9">
                 <div class="logo-and-name">
                   <img src="../assets/images/alfaromeo.png" id="alfalogo">
                   <div class="team-name bold-font">ALFA ROMEO</div>
@@ -305,7 +460,7 @@
                   <div data-teamid="9" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team aston" data-teamid="10">
+              <div class="col modal-team aston d-none" data-teamid="10">
                 <div class="logo-and-name">
                   <img src="../assets/images/astonMartin.png" id="astonlogo">
                   <div class="team-name bold-font ps-1">ASTON MARTIN</div>
@@ -403,7 +558,7 @@
   </div>
   <div class="main-panel">
     <div class="blocking-div" id="blockDiv">
-      Select a script and a save to start editing!
+      Select a tab and a save to start editing!
     </div>
     <div class="script-view d-none" id="predict_results">
       <div class="w-100 d-flex">
@@ -424,6 +579,7 @@
         </div>
         <div class="title bold-font py-3 w-100">
           Forecast
+          <i class="info-titles bold-font" id="forecastinfo" data-bs-toggle="modal" data-bs-target="#forecastmodal">?</i>
         </div>
         <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
           <ul class="nav nav-pills">
@@ -689,6 +845,7 @@
         </div>
         <div class="title bold-font py-3">
           Season Results
+          <i class="info-titles bold-font" id="standingsinfo" data-bs-toggle="modal" data-bs-target="#standingsmodal">?</i>
         </div>
         <div class="main-viewer-section">
           <div id="seasonresults-table"></div>
@@ -722,6 +879,7 @@
         <div class="trasnfer-top-panel">
           <div class="title transfer-title bold-font py-3">
             Contracted drivers
+            <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal" data-bs-target="#contractsModal">?</i>
           </div>
           <div class="form-check form-switch auto-contract">
             <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="autoContractToggle">
@@ -1266,7 +1424,7 @@
                 </div>
               </div>
               <div class="confirm-section">
-                <div class="btn custom-confirm" id="confirmbtn">Save changes</div>
+                <div class="btn custom-confirm bold-font" id="confirmbtn">Save changes</div>
               </div>
             </div>
           </div>
@@ -1779,7 +1937,7 @@
               </div>
             </div>
             <div class="save-button-zone">
-              <div class="btn custom-confirm" id="confirmTeam">Save changes</div>
+              <div class="btn custom-confirm bold-font" id="confirmTeam">Save changes</div>
             </div>
           </div>
         </div>
@@ -1790,37 +1948,33 @@
       <div class="blocking-div d-none" id="calendarBlockDiv">
         There is already a modified calendar or you already did the first race! Try again next season!
       </div>
-      <div class="col-9">
+      <div class="main-calendar">
+        <div class="prediction-buttons ps-3" style="gap: 10px;">
+          <div>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+              id="addRaceButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Add race
+            </button>
+            <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
+            </ul>
+          </div>
+          <button class="custom-dropdown custom-button bold-font" id="deleteTracks">
+            Delete race
+          </button>
+          <div class="config-content bold-font ms-4" id="predictConfigContent"></div>
+        </div>
         <div class="title bold-font py-3">
-          New calendar
+          Calendar
+          <i class="info-titles bold-font" id="calendarinfo" data-bs-toggle="modal" data-bs-target="#calendarmodal">?</i>
+        </div>
+        <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px; top:0;">
+          <div class="btn custom-confirm option-buttons bold-font" id="confirmCalendar">Save changes</div>
         </div>
         <div class="main-calendar-section" id="officialCalendarList">
 
         </div>
       </div>
-      <div class="col-3">
-        <div class="title bold-font py-3">
-          Options
-        </div>
-        <div class="main-options-section">
-          <div class="option-buttons">
-            <button type="button" class="btn btn-primary dropdown-toggle addTracks-button" data-bs-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false" style="font-family: Formula1; width: 100%; height: 100%;"
-              id="addRaceButton">
-              Add race
-            </button>
-            <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
 
-            </ul>
-          </div>
-          <div class="btn custom-delete option-buttons" id="deleteTracks">Delete races</div>
-          <div class="save-calendar-section">
-            <div class="btn custom-confirm option-buttons" id="confirmCalendar">Save changes</div>
-          </div>
-
-        </div>
-
-      </div>
     </div>
     <div class="script-view d-none" id="car_performance">
       <div class="col-3">
@@ -1917,6 +2071,7 @@
         <div class="trasnfer-top-panel">
           <div class="title transfer-title bold-font py-3">
             Performance
+            <i class="info-titles bold-font" id="perfoemanceinfo" data-bs-toggle="modal" data-bs-target="#performancemodal">?</i>
           </div>
         </div>
         <div class="main-columns-drag-section performance-section">
@@ -2018,7 +2173,7 @@
 
 
             <div class="confirm-area" style="padding-top: 18px;">
-              <div class="btn custom-confirm" id="confirmEnginebtn">Save changes</div>
+              <div class="btn custom-confirm bold-font" id="confirmEnginebtn">Save changes</div>
             </div>
           </div>
           <div class="performance-show teams-show d-none">
@@ -2141,7 +2296,7 @@
               <div class="performance-data bold-font">0%</div>
             </div>
             <div class="confirm-area">
-              <div class="btn custom-confirm" id="confirmPerformancebtn">Save changes</div>
+              <div class="btn custom-confirm bold-font" id="confirmPerformancebtn">Save changes</div>
             </div>
           </div>
 
@@ -2152,6 +2307,7 @@
   <footer class="footer">
     <div class="socials">
       <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor">&nbsp;DDBB Editor</a>
+      <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259">&nbsp;My profile</a>
       <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_">&nbsp;@ignaciourreta_</a>
       <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta">&nbsp;ignaciourreta</a>
       <a class="bi bi-heart" href="https://www.buymeacoffee.com/iUrreta">&nbsp;Support me</a>

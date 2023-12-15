@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+    const noNotifications = ["TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -133,13 +133,12 @@ document.addEventListener('DOMContentLoaded', function () {
             removeStatsDrivers();
             place_drivers(message.slice(1));
             place_drivers_editStats(message.slice(1));
-            create_races();
         },
         "Staff Fetched": (message) => {
             place_staff(message.slice(1));
         },
         "Calendar fetched": (message) => {
-            manage_calendarDiv(message.slice(1)[0]);
+            load_calendar(message.slice(1))
         },
         "Engines fetched": (message) => {
             manage_engineStats(message.slice(1));
@@ -226,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     socket.onmessage = (event) => {
         let message = JSON.parse(event.data);
-        // console.log(message)
+        console.log(message[0])
         let handler = messageHandlers[message[0]];
 
         if (handler) {

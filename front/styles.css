@@ -55,6 +55,7 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  max-height: 35px;
 }
 
 .socials a,
@@ -69,6 +70,18 @@ body::-webkit-scrollbar-thumb {
 .socials a:hover,
 .footer i:hover {
   color: #dedde6;
+}
+
+.socials a {
+  display: inline-block;
+  overflow: hidden;
+  max-width: 27px;
+  white-space: nowrap;
+  transition: max-width 0.5s ease-in-out, color 0.3s;
+}
+
+.socials a:hover {
+  max-width: 180px;  /* Ajusta este valor según el tamaño máximo que desees para el texto */
 }
 
 .update-info {
@@ -94,16 +107,20 @@ body::-webkit-scrollbar-thumb {
 }
 
 a.bi-reddit:hover {
-  color: #FFA07A;
+  color: #fc6e28;
 }
 
 a.bi-twitter-x:hover,
 #byname:hover {
-  color: #8fc7f0;
+  color: #2ca4ee;
 }
 
 a.bi-heart:hover {
-  color: #ffa4b2;
+  color: #ef51f5;
+}
+
+a.bi-linkedin:hover {
+  color: #0077b5 ;
 }
 
 
@@ -139,6 +156,11 @@ a.bi-heart:hover {
   text-align: center;
   color: white;
   font-size: 28px;
+}
+
+.standings-list{
+  width: 65px;
+  text-align: center;
 }
 
 .trasnfer-top-panel {
@@ -586,7 +608,7 @@ a.bi-heart:hover {
   border: 2px solid transparent !important;
   border-radius: 10px !important;
   color: white !important;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s !important;
 }
 
 #numberButton{
@@ -606,8 +628,8 @@ a.bi-heart:hover {
 }
 
 .addTracks-button {
+  margin-top: 0.4rem;
   max-width: 210px;
-  margin-top: 0.6rem;
   background-color: #797599 !important;
   margin-bottom: 1%;
   border: 2px solid transparent !important;
@@ -1050,6 +1072,10 @@ a.bi-heart:hover {
   display: flex;
 }
 
+#deleteTracks{
+  transition: background-color 0.2s, border-color 0.3s !important;
+}
+
 .year-and-race{
   display: flex;
   flex-direction: row;
@@ -1196,6 +1222,11 @@ a.bi-heart:hover {
   font-size: 15px;
 }
 
+.main-calendar{
+  width: 100%;
+  margin-right: 14px;
+}
+
 .main-calendar-section {
   margin-left: 14px;
   border: 1px solid #797599;
@@ -1231,13 +1262,6 @@ a.bi-heart:hover {
   justify-content: flex-end;
 }
 
-.option-buttons {
-  margin: 10px;
-  width: 210px !important;
-  height: 41px !important;
-
-}
-
 .buttons-h2h{
   display: flex;
   gap: 10px;
@@ -1260,12 +1284,63 @@ a.bi-heart:hover {
   transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   display: flex;
   cursor: grab !important;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
+  padding-left: 12px;
   max-height: 112px;
+  gap: 10px;
 
 }
+
+.upper-text-and-flag{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.left-race{
+  width: 60%;
+  gap: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.right-race{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.full-quali-weather{
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.session-name{
+  font-size: 24px;
+}
+
+.weather-vis{
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  background-color: #292738;
+  border: 1.5px solid rgb(44, 43, 59);
+  font-size: 22px;
+  text-align: center;
+}
+
+.weather-selector{
+  display: flex;
+  flex-direction: row;
+  margin-left: 5px;
+  font-size: 24px;
+  padding-top: 2px;
+}
+
+.weather-selector i{
+  cursor: pointer;
+}
+
 
 .race-calendar:hover {
   border-color: white;
@@ -1273,16 +1348,54 @@ a.bi-heart:hover {
   background-color: #4e4b69;
 }
 
+.race-calendar .bi-chevron-left, .race-calendar .bi-chevron-right {
+  transition: color 0.3s;
+}
+
+.race-calendar:hover .bi-chevron-left, .race-calendar:hover .bi-chevron-right {
+  color: #dedde6;
+}
+
+.race-calendar .bi-chevron-left:hover, .race-calendar .bi-chevron-right:hover {
+  color: white;
+}
+
 .deleting:hover {
   border: 2px solid transparent !important;
 }
 
+.complete-div {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 100.9%;
+  height: 101.9%;
+  background-color: rgba(128, 128, 128, 0.829);
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2.5px solid transparent;
+  border-radius: 10px;
+  color: #5bd999;
+  transition: color 0.4s, border-color 0.4s;
+  cursor: default;
+}
+
+.complete-div:hover{
+  border-color: #5bd999;
+}
+
+.completed:hover{
+  border-color: transparent;
+}
+
 .delete-div {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: -1px;
+  left: -1px;
+  width: 100.9%;
+  height: 101.9%;
   background-color: rgba(128, 128, 128, 0.829);
   z-index: 9998;
   display: flex;
@@ -1296,8 +1409,8 @@ a.bi-heart:hover {
 }
 
 .delete-div:hover {
-  color: #e95656;
-  border-color: #e95656;
+  color: #f15353;
+  border-color: #f15353;
 }
 
 
@@ -1306,8 +1419,7 @@ a.bi-heart:hover {
   font-size: 22px;
   display: flex;
   flex-direction: row;
-  width: 100%;
-  justify-content: space-around;
+  gap: 10px;
 }
 
 .flag {
@@ -1727,6 +1839,7 @@ a.bi-heart:hover {
 .custom-modal {
   min-width: 600px !important;
   z-index: 2000 !important;
+  border-radius: 50% !important;
 }
 
 .drivers-modal-zone, .teams-modal-zone{
@@ -2087,8 +2200,41 @@ a.bi-heart:hover {
   justify-content: flex-end;
 }
 
-.custom-icon i {
+.free-driver .custom-unretire{
+  color: transparent;
+  transition: opacity 0.4s;
+  background-image: linear-gradient(to left, #4e4b69, transparent);
+  width: 80px;
+  height: 20px;
+  opacity: 0;
+  z-index: 3;
+  display: flex;
+  position: absolute;
+  right: 10px;
+  top: 7.5px;
+  justify-content: flex-end;
+}
+
+.free-driver:hover .custom-unretire{
+  opacity: 1;
+}
+
+.custom-icon .bi-pencil-square {
   transition: color 0.4s;
+}
+
+.free-driver .bi-ban{
+  opacity: 1 !important;
+  transition: color 0.4s;
+  color: white;
+  z-index: 10;
+  position: absolute;
+  right: 8px;
+  cursor: pointer;
+}
+
+.free-driver .bi-ban:hover{
+  color: #e95656;
 }
 
 .custom-icon i:hover {
@@ -2096,10 +2242,21 @@ a.bi-heart:hover {
   cursor: pointer;
 }
 
+.info-titles{
+  color: #756f9b;
+  font-size: 22px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.info-titles:hover{
+  color: #a49ecc;
+}
+
+
 .free-driver:hover .custom-icon {
   color: #9d98b8;
   opacity: 1;
-
 }
 
 #free-drivers {
@@ -2703,44 +2860,8 @@ input::-webkit-inner-spin-button {
   transition: color 0.4s;
 }
 
-.driver1-name:hover .team1[data-teamid="1"], .driver2-name:hover .team2[data-teamid="1"]{
-  color: #F91536 !important;
-}
-
-.driver1-name:hover .team1[data-teamid="2"], .driver2-name:hover .team2[data-teamid="2"]{
-  color: #F58020 !important;
-}
-
-.driver1-name:hover .team1[data-teamid="3"], .driver2-name:hover .team2[data-teamid="3"]{
-  color: #3671C6 !important;
-}
-
-.driver1-name:hover .team1[data-teamid="4"], .driver2-name:hover .team2[data-teamid="4"]{
-  color: #6CD3BF !important;
-}
-
-.driver1-name:hover .team1[data-teamid="5"], .driver2-name:hover .team2[data-teamid="5"]{
-  color: #2293D1 !important;
-}
-
-.driver1-name:hover .team1[data-teamid="6"], .driver2-name:hover .team2[data-teamid="6"]{
-  color: #37BEDD !important;
-}
-
-.driver1-name:hover .team1[data-teamid="7"], .driver2-name:hover .team2[data-teamid="7"]{
-  color: #B6BABD !important;
-}
-
-.driver1-name:hover .team1[data-teamid="8"], .driver2-name:hover .team2[data-teamid="8"]{
-  color: #5E8FAA !important;
-}
-
-.driver1-name:hover .team1[data-teamid="9"], .driver2-name:hover .team2[data-teamid="9"]{
-  color: #C92D4B !important;
-}
-
-.driver1-name:hover .team1[data-teamid="10"], .driver2-name:hover .team2[data-teamid="10"]{
-  color: #358C75 !important;
+.driver1-name:hover .team1, .driver2-name:hover .team2{
+  color: white !important;
 }
 
 

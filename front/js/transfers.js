@@ -63,6 +63,9 @@ function place_drivers(driversArray) {
         newDiv.appendChild(spanName)
         newDiv.appendChild(spanLastName)
         manageColor(newDiv, spanLastName)
+        if(driver[4] === 1){
+            addUnRetireIcon(newDiv)
+        }
 
         //newDiv.innerHTML = driver[0];
         divPosition = "free-drivers"
@@ -146,7 +149,16 @@ function addIcon(div) {
     iconListener(iconElement)
     iconDiv.appendChild(iconElement)
     div.appendChild(iconDiv)
+}
 
+function addUnRetireIcon(div) {
+    let iconDiv = document.createElement("div");
+    iconDiv.className = "custom-unretire"
+    let iconElement = document.createElement("i");
+    iconElement.className = "bi bi-ban";
+    unretireListener(iconElement)
+    div.appendChild(iconElement)
+    div.appendChild(iconDiv)
 }
 
 /**
@@ -160,6 +172,19 @@ function iconListener(icon) {
         document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText + "'s details";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
+    })
+}
+
+function unretireListener(icon){
+    icon.addEventListener("click", function(){
+        let driverReq = {
+            command: "unretireDriver",
+            driverID: icon.parentNode.dataset.driverid,
+            driver: icon.parentNode.innerText,
+        }
+        icon.classList.add("d-none")
+        icon.parentNode.querySelector(".custom-unretire").classList.add("d-none")
+        socket.send(JSON.stringify(driverReq))
     })
 }
 
