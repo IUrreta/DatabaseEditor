@@ -542,11 +542,11 @@ a.bi-linkedin:hover {
 }
 
 .mode-line.edit{
-  background-color: #efffc1;
+  background-color: #fff7b0;
 }
 
 .mode-line.view{
-  background-color: #FFB6C1;
+  background-color: #e8b6ff;
 }
 
 .moving-line{
@@ -562,11 +562,11 @@ a.bi-linkedin:hover {
 }
 
 .moving-line.edit{
-  background: linear-gradient(to right, transparent, #f2ff36, transparent);
+  background: linear-gradient(to right, transparent, #f3e13f, transparent);
 }
 
 .moving-line.view{
-  background: linear-gradient(to right, transparent, #FF69B4, transparent);
+  background: linear-gradient(to right, transparent, #c13aff, transparent);
 }
 
 .main-panel {
@@ -790,12 +790,12 @@ a.bi-linkedin:hover {
 
 
 #dataPills .pill-line{
-  background-color: #ffd3d9;
+  background-color: #e8b6ff;
 }
 
 
 #editPills .pill-line{
-  background-color: #f4ffd2;
+  background-color: #fff7b0;
 }
 
 #predict_results{

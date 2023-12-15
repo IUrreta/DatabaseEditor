@@ -68,6 +68,29 @@ function placeRaces(races) {
     })
 }
 
+function resetPredict(){
+    raceMenu = document.querySelector("#raceMenu")
+    raceMenu.innerHTML = ""
+    dropdownRaceMenu = document.querySelector("#raceProbMenu")
+    dropdownRaceMenu.innerHTML = ""
+    let header = document.querySelector(".prob-viewer-header")
+    header.innerHTML = ""
+    let driverDiv = document.createElement("div")
+    driverDiv.classList = "viewer-header-driver bold-font"
+    driverDiv.innerText = "Driver"
+    let PositionDiv = document.createElement("div")
+    PositionDiv.classList = "viewer-header-position bold-font"
+    PositionDiv.innerText = "Pos"
+    header.appendChild(driverDiv)
+    header.appendChild(PositionDiv)
+    let dataSect = document.querySelector(".prob-viewer-data")
+    dataSect.innerHTML = ""
+    document.querySelector("#predictionFirst").querySelector(".prediction-table-data").innerHTML = ""
+    document.querySelector("#predictionSecond").querySelector(".prediction-table-data").innerHTML = ""
+    document.querySelector("#raceProbButton").innerText = "Race"
+    document.querySelector("#confirmPredict").disabled = true;
+}
+
 function placeRacesInModal(races) {
     yearProbSel = races[0]
     raceMenu = document.querySelector("#raceMenu")

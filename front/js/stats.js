@@ -278,7 +278,11 @@ function listeners_plusLess(){
     document.querySelector("#edit_stats").querySelectorAll(".bi-plus-lg").forEach(function(elem){
         elem.addEventListener("mousedown", function(){
             let input = elem.parentNode.parentNode.querySelector("input")
-            input.value = parseInt(input.value) + 1;
+            let val = parseInt(input.value) + 1;
+            if (val >= 99){
+                val = 99
+            }
+            input.value = val
             recalculateOverall()
         })
 
@@ -286,7 +290,11 @@ function listeners_plusLess(){
     document.querySelector("#edit_stats").querySelectorAll(".bi-dash-lg").forEach(function(elem){
         elem.addEventListener("mousedown", function(){
             let input = elem.parentNode.parentNode.querySelector("input")
-            input.value = parseInt(input.value) - 1;
+            let val = parseInt(input.value) - 1;
+            if (val <= 0){
+                val = 0
+            }
+            input.value = val
             recalculateOverall()
         })
     })

@@ -119,7 +119,6 @@ async def handle_command(message):
         await send_message_to_client(info_json)
 
     elif type=="calendar":
-        print(message)
         run_editCalendar(message["calendarCodes"])
         process_repack("../result", path)
         argument = type + message["calendarCodes"]
@@ -255,7 +254,6 @@ async def handle_command(message):
         await send_message_to_client(data_json_montecarlo)
 
     elif type=="unretireDriver":
-        print(message)
         unretire(message["driverID"])
         process_repack("../result", path)
         info = []
@@ -496,8 +494,11 @@ def fetch_info():
     return formatted_tuples
 
 def fetch_next_race():
-    race = cursor.execute("SELECT MIN(RaceID) FROM Races WHERE State = 0").fetchall()
-    return race[0]
+    race = cursor.execute("SELECT MIN(RaceID) FROM Races WHERE State = 0").fetchone()
+    if race[0] == None:
+        race = cursor.execute("SELECT MAX(RaceID) FROM Races WHERE State = 2").fetchone()
+        race = (race[0]+1,)
+    return race
 
 def fetch_calendar():
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()

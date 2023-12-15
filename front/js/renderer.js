@@ -533,6 +533,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 isSaveSelected = 1;
                 document.getElementById("editStatsPanel").className = "left-panel-stats d-none";
                 resetTeamEditing()
+                resetViewer()
+                resetYearButtons()
+                resetH2H()
+                hideComp()
+                resetPredict()
+                document.querySelectorAll(".config-content").forEach(function(elem){
+                    elem.textContent = ""
+                })
                 statPanelShown = 0;
                 document.querySelectorAll(".performance-show").forEach(function (elem) {
                     elem.classList.add("d-none")
