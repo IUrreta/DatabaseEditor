@@ -320,7 +320,7 @@ def get_tier(driverID):
     defence = float(driver_stats[6][0])
     reactions = float(driver_stats[7][0])
     accuracy = float(driver_stats[8][0])
-    rating = (cornering + braking*0.75 + reactions*0.5 +control*0.5 + smoothness*0.5 + accuracy*0.75 + adaptability*0.25 + overtaking*0.25+ defence*0.25)/4.75
+    rating = (cornering + braking*0.75 + reactions*0.5 +control*0.75 + smoothness*0.5 + accuracy*0.75 + adaptability*0.25 + overtaking*0.25+ defence*0.25)/4.75
     if(rating >= 86): tier = 1
     elif(rating >= 81): tier = 2
     elif(rating >= 77): tier = 3
