@@ -133,7 +133,7 @@ function resetViewer(){
     if (seasonTable) {
         seasonTable.destroy()
     }
-    pointsOrPos = "pos"
+    pointsOrPos = "points"
     if (teamsTable) {
         teamsTable.destroy()
     }

@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     socket.onmessage = (event) => {
         let message = JSON.parse(event.data);
-        console.log(message[0])
+        // console.log(message[0])
         let handler = messageHandlers[message[0]];
 
         if (handler) {
@@ -538,6 +538,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 resetH2H()
                 hideComp()
                 resetPredict()
+                removeStatsDrivers()
                 document.querySelectorAll(".config-content").forEach(function(elem){
                     elem.textContent = ""
                 })
