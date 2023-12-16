@@ -4,6 +4,7 @@ import json
 import sqlite3
 import re
 import os
+import random
 from datetime import datetime
 import shutil
 import math
@@ -321,6 +322,9 @@ def fetch_driverRetirement(driverID):
 
 def fetchDriverNumberDetails(driverID):
     num = cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder =" + str(driverID)).fetchone()
+    if num == None:
+        nums = cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL").fetchall()
+        num = random.choice(nums)
     wants1 = cursor.execute("SELECT WantsChampionDriverNumber FROM Staff_DriverData WHERE StaffID =" + str(driverID)).fetchone()
 
     return[num[0], wants1[0]]
