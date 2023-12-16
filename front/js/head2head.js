@@ -262,6 +262,14 @@ document.getElementById("annotationsToggle").addEventListener("click", function 
 
 })
 
+function hideComp(){
+    document.querySelector(".drivers-modal-zone").innerHTML = ""
+    document.querySelector("#mainH2h").classList.add("d-none")
+    document.querySelectorAll(".modal-team").forEach(function(elem){
+        elem.classList.add("d-none")
+    })
+}
+
 /**
  * Loads all the drivers into the menus of driver selection
  * @param {Object} drivers object with all the driver info

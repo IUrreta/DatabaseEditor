@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+    const noNotifications = ["ERROR", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -473,7 +473,9 @@ document.addEventListener('DOMContentLoaded', function () {
         toastFull.setAttribute('aria-atomic', 'true');
 
         toastDiv.classList.add('align-items-center');
-        line.classList.add("notification-line")
+        if (!err){
+            line.classList.add("notification-line")
+        }
 
         toastBodyDiv.classList.add('d-flex', 'toast-body');
         toastBodyDiv.textContent = msg;
@@ -533,6 +535,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 isSaveSelected = 1;
                 document.getElementById("editStatsPanel").className = "left-panel-stats d-none";
                 resetTeamEditing()
+                resetViewer()
+                resetYearButtons()
+                resetH2H()
+                hideComp()
+                resetPredict()
+                removeStatsDrivers()
+                document.querySelectorAll(".config-content").forEach(function(elem){
+                    elem.textContent = ""
+                })
                 statPanelShown = 0;
                 document.querySelectorAll(".performance-show").forEach(function (elem) {
                     elem.classList.add("d-none")

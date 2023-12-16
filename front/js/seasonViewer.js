@@ -129,6 +129,23 @@ function createDriversTable(calendar) {
 
 }
 
+function resetViewer(){
+    if (seasonTable) {
+        seasonTable.destroy()
+    }
+    pointsOrPos = "points"
+    if (teamsTable) {
+        teamsTable.destroy()
+    }
+}
+
+function resetYearButtons(){
+    document.getElementById("yearButton").textContent = "Year"
+    document.getElementById("yearButtonH2H").textContent = "Year"
+    document.getElementById("yearPredictionButton").textContent = "Year"
+    document.getElementById("yearPredictionModalButton").textContent = "Year"
+}
+
 /**
  * Creates the teams table for the calendar of the season selected
  * @param {Object} calendar calendar of the year selected

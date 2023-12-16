@@ -134,13 +134,7 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
     rightDiv.appendChild(qWeather)
     rightDiv.appendChild(rWeather)
     div.appendChild(rightDiv)
-
-
-    document.querySelector('.main-calendar-section').appendChild(div)
-}
-
-function addArrowsListeners(){
-    document.querySelector(".main-calendar").querySelectorAll(".bi-chevron-left").forEach(function(elem){
+    div.querySelectorAll(".bi-chevron-left").forEach(function(elem){
         elem.addEventListener("click", function(){
             let val = elem.parentNode.querySelector(".weather-vis").dataset.value
             newVal = Number(val) - 1
@@ -160,7 +154,7 @@ function addArrowsListeners(){
         })
     })
     
-    document.querySelector(".main-calendar").querySelectorAll(".bi-chevron-right").forEach(function(elem){
+    div.querySelectorAll(".bi-chevron-right").forEach(function(elem){
         elem.addEventListener("click", function(){
             let val = elem.parentNode.querySelector(".weather-vis").dataset.value
             newVal = Number(val) + 1
@@ -179,8 +173,9 @@ function addArrowsListeners(){
         })
     })
 
-}
 
+    document.querySelector('.main-calendar-section').appendChild(div)
+}
 
 
 function updateVisualizers(){
@@ -199,7 +194,6 @@ function load_calendar(races){
         code = races_map[elem[0]]
         addRace(code, transformWeather(elem[1]), transformWeather(elem[2]), elem[3], elem[0], elem[4])
     })
-    addArrowsListeners()
     updateVisualizers()
     updateNumbers()
     load_addRaces()
