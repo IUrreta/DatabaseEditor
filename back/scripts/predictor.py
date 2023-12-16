@@ -14,9 +14,11 @@ points_race = {
     11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0
 }
 
+conn = None
+cursor = None
 
-conn = sqlite3.connect("../result/main.db")
-cursor = conn.cursor()
+# conn = sqlite3.connect("../result/main.db")
+# cursor = conn.cursor()
 
 def collect_one_driver_inputs(driverID):
     stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = ?", (driverID,)).fetchall()
@@ -212,6 +214,10 @@ def fetch_spawnBoost(driverID):
     return res
 
 def predict(gpID, year):
+    global conn
+    global cursor
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
     model = pickle.load(open("./models/PD03LR.pkl", "rb"))
     dfT = loadDF(gpID, year)
     dfT['Prediction'] = model.predict(dfT)
@@ -229,6 +235,9 @@ def predict(gpID, year):
         dfT.drop(dfT[dfT['result'] == 0].index, inplace=True)
     dfT['Prediction'] = dfT['Prediction'].rank(method='first').astype(int)
     dict = dfT.set_index('id').T.to_dict()
+
+    conn.commit()
+    conn.close()
     return dict
 
     
@@ -243,7 +252,11 @@ def predict_with_rmse(df, gpID):
 
 async def montecarlo(gpID, year, client):
     global c
+    global conn
+    global cursor
     c = client
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
     drivers = fetch_drivers_per_year(year)
     df_sims = pd.DataFrame()
     n_sims = 89
@@ -280,8 +293,8 @@ async def montecarlo(gpID, year, client):
         dict[i] = dict[i][:-3]
         dict[i] = dict[i][:1] + last + dict[i][1:]
 
-
-
+    conn.commit()
+    conn.close()
     return dict
 
 
