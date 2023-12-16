@@ -449,7 +449,11 @@ a.bi-linkedin:hover {
 }
 
 .line-error{
-  background-color: #e95656 !important;
+  width: 100%;
+  height: 2px;
+  position: relative;
+  bottom: 7px;
+  background-color: #ff4949 !important;
 }
 
 .custom-toast{
@@ -485,7 +489,7 @@ a.bi-linkedin:hover {
 }
 
 .toast-error{
-  color: #e95656 !important;
+  color: #ff4949 !important;
 }
 
 .hide {
