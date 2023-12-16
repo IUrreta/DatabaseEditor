@@ -235,11 +235,11 @@ a.bi-linkedin:hover {
   overflow-y: scroll;
 }
 
-#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar, #raceProbMenu::-webkit-scrollbar, .prob-viewer-data::-webkit-scrollbar{
+#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar, #raceProbMenu::-webkit-scrollbar, .prob-viewer-data::-webkit-scrollbar, #patchNotesBody::-webkit-scrollbar{
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb {
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb, #patchNotesBody::-webkit-scrollbar-thumb {
   background-color: white;
   border-radius: 3px;
 }
@@ -1977,6 +1977,11 @@ a.bi-linkedin:hover {
   border-radius: 10px;
   z-index: 2;
   margin-right: 4px;
+}
+
+#patchNotesBody{
+  max-height: 700px;
+  overflow-y: scroll;
 }
 
 
