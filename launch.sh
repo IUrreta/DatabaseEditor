@@ -12,6 +12,8 @@ cd ..
 
 cd back
 pip install websockets
+pip install numpy
+pip install pandas
 python3 back.py &
 cd ..
 

@@ -6,19 +6,24 @@ import re
 import os
 from datetime import datetime
 import shutil
+import math
 from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script as run_trasnsfer
+from scripts.transfer_driver_23 import unretire
 from scripts.edit_stats_23 import run_script as run_editStats
 from scripts.custom_calendar_23 import run_script as run_editCalendar
 from scripts.car_performance_23 import run_script as run_editPerformance
 from scripts.engine_performance_23 import run_script as run_editEngine
-from scripts.head2head_23 import fetch_Head2Head as fetch_Head2Head
+from scripts.head2head_23 import fetch_Head2Head, fetch_Head2Head_team
+from scripts.edit_teams import fetch_teamData, edit_team
+from scripts.predictor import predict, montecarlo
 
 client = None
 path = None
 log = None
 conn = None
 cursor = None
+team_dict = {"1": "Ferrari", "2": "McLaren", "3": "Red Bull", "4": "Mercedes", "5": "Alpine", "6": "Williams", "7": "Haas", "8": "Alfa Romeo", "9": "AlphaTauri", "10": "Aston Martin"}
 
 
 async def handle_command(message):
@@ -29,7 +34,6 @@ async def handle_command(message):
     global log
     argument = ""
     if type == "connect":
-        #print("Connect recibido")
         log = open("../log.txt", 'a', encoding='utf-8')
         argument = type
         saves = [element for element in os.listdir("../") if ".sav" in element]
@@ -38,6 +42,7 @@ async def handle_command(message):
         saves.insert(0, "Connected Succesfully")
         data_saves = json.dumps(saves)
         await send_message_to_client(data_saves)
+        await send_message_to_client(json.dumps(["JIC"]))
 
     elif type == "saveSelected":
         save = message["save"]
@@ -58,17 +63,15 @@ async def handle_command(message):
         engines.insert(0, "Engines fetched")
         data_json_engines = json.dumps(engines)
         await send_message_to_client(data_json_engines)
-        allowCalendar = [tuple(check_claendar())]
-        allowCalendar.insert(0, "Calendar fetched")
-        data_json_calendar = json.dumps(allowCalendar)
+        calendar = fetch_calendar()
+        calendar.insert(0, "Calendar fetched")
+        data_json_calendar = json.dumps(calendar)
         await send_message_to_client(data_json_calendar)
         create_backup(path, save)
         year =  cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
         year = ["Year fetched", year]
         data_json_year = json.dumps(year)
         await send_message_to_client(data_json_year)
-
-
 
     elif type =="hire":
         argument = "hire " + message["driverID"] + " " + str(message["teamID"]) + " " + message["position"] + " " + message["salary"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " + message["year"]
@@ -135,9 +138,13 @@ async def handle_command(message):
         nums.insert(0, "Numbers fetched")
         data_json_numbers = json.dumps(nums)
         await send_message_to_client(data_json_numbers)
+        yearOfRetirement = fetch_driverRetirement(message["driverID"])
+        yearOfRetirement.insert(0, "Retirement fetched")
+        data_json_year = json.dumps(yearOfRetirement)
+        await send_message_to_client(data_json_year)
 
     elif type=="editContract":
-        argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"] + " " + str(message["driverNumber"] + " " + str(message["wantsN1"])))
+        argument = "editContract " + message["salary"] + " " + message["year"] + " " + message["signBonus"] + " " + message["raceBonus"] + " " + message["raceBonusPos"] + " " +  str(message["driverID"]) + " " + str(message["driverNumber"]) + " " + str(message["wantsN1"]) + " " + str(message["retirementAge"])
         run_trasnsfer(argument)
         process_repack("../result", path)
         info = []
@@ -179,18 +186,80 @@ async def handle_command(message):
         await send_message_to_client(data_json_drivers)
 
     elif type=="H2HConfigured":
-        h2hRes = fetch_Head2Head((message["d1"],), (message["d2"],), (message["year"],), cursor)
-        h2h = ["H2H fetched", h2hRes]
-        data_json_h2h = json.dumps(h2h)
-        await send_message_to_client(data_json_h2h)
-        d1Res = fetch_oneDriver_seasonResults((message["d1"],), (message["year"],))
-        d2Res = fetch_oneDriver_seasonResults((message["d2"],), (message["year"],))
-        h2hDrivers = [d1Res, d2Res]
+        if(message["h2h"] != -1):
+            if(message["mode"] == "driver"):
+                h2hRes = fetch_Head2Head((message["h2h"][0],), (message["h2h"][1],), (message["year"],))
+                h2h = ["H2H fetched", h2hRes]
+                data_json_h2h = json.dumps(h2h)
+                await send_message_to_client(data_json_h2h)
+            elif(message["mode"] == "team"):
+                h2hRes = fetch_Head2Head_team((message["h2h"][0],), (message["h2h"][1],), (message["year"],))
+                h2h = ["H2H fetched", h2hRes]
+                data_json_h2h = json.dumps(h2h)
+                await send_message_to_client(data_json_h2h)
+        h2hDrivers = []
+        for id in message["graph"]:
+            if(message["mode"] == "driver"):
+                res = fetch_oneDriver_seasonResults((id,), (message["year"],))
+                h2hDrivers.append(res)
+            elif(message["mode"] == "team"):
+                res = fetch_oneTeam_seasonResults((id,), (message["year"],))
+                h2hDrivers.append(res)
+        h2hDrivers.append(fetch_events_done_from(message["year"]))
         h2hDrivers.insert(0, fetch_events_from(message["year"]))
         h2hDrivers.insert(0, "H2HDriver fetched")
         data_json_h2hdrivers = json.dumps(h2hDrivers)
         await send_message_to_client(data_json_h2hdrivers)
 
+    elif type=="teamRequest":
+        teamData = fetch_teamData(message["teamID"])
+        teamData.insert(0, "TeamData Fetched")
+        data_json_teamData = json.dumps(teamData)
+        await send_message_to_client(data_json_teamData)
+
+    elif type=="editTeam":
+        edit_team(message)
+        process_repack("../result", path)
+        info = ["Succesfully edited " + str(team_dict[message["teamID"]])]
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
+        argument = message["command"]
+
+    elif type=="yearSelectedPrediction":
+        events = [fetch_predictable_events_from(message["year"])]
+        events.insert(0, message["year"])
+        events.insert(0, "Events to Predict Fetched")
+        data_json_events = json.dumps(events)
+        await send_message_to_client(data_json_events)
+
+    elif type=="yearSelectedPredictionModal":
+        events = [fetch_predictable_events_from(message["year"])]
+        events.insert(0, message["year"])
+        events.insert(0, "Events to Predict Modal Fetched")
+        data_json_events = json.dumps(events)
+        await send_message_to_client(data_json_events)
+
+    elif type=="predict":
+        prediction = predict(message["race"], message["year"])
+        prediction = list(prediction.values())
+        prediction = sorted(prediction, key=lambda x: x['result'])
+        pred_msg = ["Prediction Fetched", fetch_next_race(), prediction]
+        data_json_prediction = json.dumps(pred_msg)
+        await send_message_to_client(data_json_prediction)
+
+    elif type == "predictMontecarlo":
+        perc = await montecarlo(message["race"], message["year"], client)
+        perd_msg = ["Montecarlo Fetched", perc]
+        data_json_montecarlo = json.dumps(perd_msg)
+        await send_message_to_client(data_json_montecarlo)
+
+    elif type=="unretireDriver":
+        unretire(message["driverID"])
+        process_repack("../result", path)
+        info = []
+        info.insert(0, "Succesfully unretired " + message["driver"])
+        info_json = json.dumps(info)
+        await send_message_to_client(info_json)
 
     log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
     log.flush()
@@ -242,6 +311,12 @@ def fetch_driverNumebrs():
         if num[0] != 1 and num[0] != 0:
             numList.append(num[0])
     return numList
+
+def fetch_driverRetirement(driverID):
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    retirement_age = cursor.execute("SELECT RetirementAge FROM Staff_GameData WHERE StaffID = " + str(driverID)).fetchone()
+    dob = cursor.execute("SELECT DOB FROM Staff_BasicData WHERE StaffID = " + str(driverID)).fetchone()
+    return [retirement_age[0], math.floor((day_season[0] - dob[0]) /365.25)]
 
 
 def fetchDriverNumberDetails(driverID):
@@ -300,6 +375,11 @@ def fetch_seasonResults(yearSelected):
                 seasonResults.append(driverRes)
     return seasonResults
 
+def fetch_oneTeam_seasonResults(team, year):
+    drivers = cursor.execute("SELECT DISTINCT DriverID FROM Races_Results WHERE Season = " + str(year[0]) + " AND TeamID = " + str(team[0])).fetchall()
+    results = [fetch_oneDriver_seasonResults(driver, year) for driver in drivers]
+    return results
+
 def fetch_oneDriver_seasonResults(driver, year):
     results = cursor.execute("SELECT DriverID, TeamID, FinishingPos, Points FROM Races_Results WHERE Season = " + str(year[0]) + " AND DriverID = " + str(driver[0])).fetchall()
     if results:
@@ -308,6 +388,26 @@ def fetch_oneDriver_seasonResults(driver, year):
         driverName = cursor.execute("SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = " + str(driver[0])).fetchone()
         return format_seasonResults(results, driverName, teamID, driver, year, sprintResults)
     
+
+def fetch_predictable_events_from(year):
+    last_predictable = fetch_next_race()
+    season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(year) + " AND RaceID <= " + str(last_predictable[0])).fetchall()
+    tuple_numbers = {num for tpl in season_events for num in tpl}
+    season_ids = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(year) + " AND RaceID <= " + str(last_predictable[0])).fetchall()
+    events_ids =[]
+    for i in range(len(season_ids)):
+        events_ids.append((season_ids[i][0], season_events[i][0]))
+
+    return events_ids
+
+def fetch_events_done_from(year):
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    season_ids = cursor.execute("SELECT RaceID FROM Races WHERE SeasonID = " + str(year) + " AND Day < " + str(day_season[0])).fetchall()
+    events_ids =[]
+    for i in range(len(season_ids)):
+        events_ids.append((season_ids[i][0]))
+
+    return events_ids
 
 def fetch_events_from(year):
     season_events = cursor.execute("SELECT TrackID FROM Races WHERE SeasonID = " + str(year)).fetchall()
@@ -351,19 +451,22 @@ def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
             results_list = list(formatred_results[i])
             results_list.append(0)
             formatred_results[i] = tuple(results_list)
-        if driver_with_pole[0] == driverID[0]:
-            results_list = list(formatred_results[i])
-            results_list.append(1)
-            formatred_results[i] = tuple(results_list)
-        else:
-            results_list = list(formatred_results[i])
-            results_list.append(0)
-            formatred_results[i] = tuple(results_list) 
+        QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(races_participated[i][0]) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driverID[0])).fetchone()
+        QRes = cursor.execute("SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(races_participated[i][0]) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driverID[0]) + " AND QualifyingStage = " + str(QStage[0])).fetchone()
+        results_list = list(formatred_results[i])
+        results_list.append(QRes[0])
+        formatred_results[i] = tuple(results_list)
+
 
     for tupla1 in sprints:
         for i, tupla2 in enumerate(formatred_results):
             if tupla1[0] == tupla2[0]:
                 formatred_results[i] = tupla2 + (tupla1[2], tupla1[1])
+
+    for i in range(len(formatred_results)):
+        team_in_race = cursor.execute("SELECT TeamID FROM Races_Results WHERE RaceID = " + str(formatred_results[i][0]) + " AND DriverID = " + str(driverID[0])).fetchone()
+        formatred_results[i] += (team_in_race)
+
     
     position = cursor.execute("SELECT Position FROM Races_Driverstandings WHERE RaceFormula = 1 AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driverID[0])).fetchone()
 
@@ -382,13 +485,25 @@ def fetch_drivers_per_year(year):
 
 def fetch_info():
 
-    drivers = cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID GROUP BY bas.StaffID;').fetchall()
+    drivers = cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType, gam.Retired FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID LEFT JOIN Staff_GameData gam ON dri.StaffID = gam.StaffID GROUP BY bas.StaffID;').fetchall()
     formatted_tuples = []
     for tupla in drivers:
         result = format_names_get_stats(tupla, "driver")
         formatted_tuples.append(result)
 
     return formatted_tuples
+
+def fetch_next_race():
+    race = cursor.execute("SELECT MIN(RaceID) FROM Races WHERE State = 0").fetchone()
+    if race[0] == None:
+        race = cursor.execute("SELECT MAX(RaceID) FROM Races WHERE State = 2").fetchone()
+        race = (race[0]+1,)
+    return race
+
+def fetch_calendar():
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    calendar = cursor.execute("SELECT TrackID, WeatherStateQualifying, WeatherStateRace, WeekendType, State FROM Races WHERE SeasonID = " + str(day_season[1])).fetchall()
+    return calendar
 
 def check_claendar():
     default_tracks = [2, 1, 11, 24, 22, 5, 6, 4, 7, 10, 9, 12, 13, 14, 15, 17, 19, 18, 20, 21, 23, 25, 26]
@@ -449,8 +564,10 @@ def format_names_get_stats(name, type):
         team_id = 0
         pos_in_team = 0
 
-
-    resultado = (name_formatted, name[2], team_id, pos_in_team)
+    if type == "driver":
+        resultado = (name_formatted, name[2], team_id, pos_in_team, name[6])
+    else:
+        resultado = (name_formatted, name[2], team_id, pos_in_team)
 
     if type == "driver":
         stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = " + str(name[2]) + " AND StatID BETWEEN 2 AND 10").fetchall()

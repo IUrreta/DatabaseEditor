@@ -9,8 +9,6 @@ def run_script(option=""):
     text = option.lower()
     params = text.split()
 
-    
-
     if(params[0] == "fire"):
         driver_id = (params[1],)
         position = cursor.execute("SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = " + str(driver_id[0])).fetchone()
@@ -286,13 +284,23 @@ def run_script(option=""):
 
     elif(params[0] == "editcontract"):
         params_to_update = params[1:7]
-
+        
         query = "UPDATE Staff_Contracts SET Salary=?, EndSeason=?, StartingBonus=?, RaceBonus=?, RaceBonusTargetPos=? WHERE ContractType = 0 AND StaffID =?"
         cursor.execute(query, params_to_update)
         old_num = cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = " + str(params[6])).fetchone()
         cursor.execute("UPDATE Staff_DriverNumbers SET CurrentHolder = NULL WHERE Number = " + str(old_num[0]))
         cursor.execute("UPDATE Staff_DriverNumbers SET CurrentHolder = " + str(params[6]) + " WHERE Number = " + str(params[7]))
         cursor.execute("UPDATE Staff_DriverData SET WantsChampionDriverNumber = " + str(params[8]) + " WHERE StaffID = " + str(params[6]))
+        cursor.execute("UPDATE Staff_GameData SET RetirementAge = " + str(params[9]) + " WHERE StaffID = " + str(params[6]))
+
+    conn.commit()
+    conn.close()
+
+def unretire(driverID):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = " + str(driverID))
 
     conn.commit()
     conn.close()
@@ -312,7 +320,7 @@ def get_tier(driverID):
     defence = float(driver_stats[6][0])
     reactions = float(driver_stats[7][0])
     accuracy = float(driver_stats[8][0])
-    rating = (cornering + braking*0.75 + reactions*0.5 +control*0.5 + smoothness*0.5 + accuracy*0.75 + adaptability*0.25 + overtaking*0.25+ defence*0.25)/4.75
+    rating = (cornering + braking*0.75 + reactions*0.5 +control*0.75 + smoothness*0.5 + accuracy*0.75 + adaptability*0.25 + overtaking*0.25+ defence*0.25)/4.75
     if(rating >= 86): tier = 1
     elif(rating >= 81): tier = 2
     elif(rating >= 77): tier = 3

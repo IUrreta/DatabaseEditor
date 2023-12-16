@@ -63,6 +63,9 @@ function place_drivers(driversArray) {
         newDiv.appendChild(spanName)
         newDiv.appendChild(spanLastName)
         manageColor(newDiv, spanLastName)
+        if(driver[4] === 1){
+            addUnRetireIcon(newDiv)
+        }
 
         //newDiv.innerHTML = driver[0];
         divPosition = "free-drivers"
@@ -129,6 +132,11 @@ function loadNumbers(nums) {
 
 }
 
+function loadRetirementyear(ages){
+    document.getElementById("driverAge").innerText = "Age " + ages[1]
+    document.getElementById("retirementInput").value = ages[0]
+}
+
 /**
  * Adds the edit icon
  * @param {div} div div from the driver that is going to add the icon into
@@ -141,7 +149,16 @@ function addIcon(div) {
     iconListener(iconElement)
     iconDiv.appendChild(iconElement)
     div.appendChild(iconDiv)
+}
 
+function addUnRetireIcon(div) {
+    let iconDiv = document.createElement("div");
+    iconDiv.className = "custom-unretire"
+    let iconElement = document.createElement("i");
+    iconElement.className = "bi bi-ban";
+    unretireListener(iconElement)
+    div.appendChild(iconElement)
+    div.appendChild(iconDiv)
 }
 
 /**
@@ -151,10 +168,23 @@ function addIcon(div) {
 function iconListener(icon) {
     icon.addEventListener("click", function () {
         modalType = "edit"
-        document.querySelector(".number-options").classList.remove("d-none")
-        document.getElementById("contractModalTitle").innerHTML = icon.parentNode.parentNode.innerText + "'s details";
+        document.querySelector(".number-and-retirement").classList.remove("d-none")
+        document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText + "'s details";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
+    })
+}
+
+function unretireListener(icon){
+    icon.addEventListener("click", function(){
+        let driverReq = {
+            command: "unretireDriver",
+            driverID: icon.parentNode.dataset.driverid,
+            driver: icon.parentNode.innerText,
+        }
+        icon.classList.add("d-none")
+        icon.parentNode.querySelector(".custom-unretire").classList.add("d-none")
+        socket.send(JSON.stringify(driverReq))
     })
 }
 
@@ -237,10 +267,11 @@ function clearModal() {
  */
 function editContract() {
     let values = []
-    document.querySelectorAll(".rounded-input").forEach(function (elem) {
+    document.querySelector(".contract-options").querySelectorAll(".rounded-input").forEach(function (elem) {
         values.push(elem.value)
     })
     let number = document.querySelector("#numberButton").textContent
+    let age = document.querySelector("#retirementInput").value
     let wants1;
     if(document.querySelector("#driverNumber1").checked){
         wants1 = 1;
@@ -259,7 +290,8 @@ function editContract() {
         raceBonusPos: values[4],
         driverNumber: number,
         wantsN1: wants1,
-        driver: driverEditingName
+        driver: driverEditingName,
+        retirementAge: age
     }
     socket.send(JSON.stringify(data))
 }
@@ -361,6 +393,17 @@ document.getElementById("cancelButton").addEventListener('click', function () {
 })
 
 /**
+ * Listeners for the buttons on the retirement age selector
+ */
+document.querySelector(".retirement-options").querySelector(".bi-plus-lg").addEventListener("click", function(){
+    document.querySelector(".retirement-options").querySelector("input").value = Number(document.querySelector(".retirement-options").querySelector("input").value) + 1
+})
+
+document.querySelector(".retirement-options").querySelector(".bi-dash-lg").addEventListener("click", function(){
+    document.querySelector(".retirement-options").querySelector("input").value -= 1
+})
+
+/**
  * Manages the interaction to drag drivers
  */
 interact('.free-driver').draggable({
@@ -414,7 +457,8 @@ interact('.free-driver').draggable({
                         target.dataset.teamid = inverted_dict[teamDestiniy]
                         updateColor(target)
                         posInTeam = element.id.charAt(2)
-                        document.getElementById("contractModalTitle").innerHTML = target.innerText + "'s contract with " + name_dict[teamDestiniy];
+                        document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
+                        document.getElementById("driverAge").innerText = ""
                         if (autoContractToggle.checked) {
                             if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
                                 signDriver("fireandhire")
@@ -423,7 +467,7 @@ interact('.free-driver').draggable({
                         }
                         else {
                             modalType = "hire"
-                            document.querySelector(".number-options").classList.add("d-none")
+                            document.querySelector(".number-and-retirement").classList.add("d-none")
                             myModal.show()
 
                         }

@@ -11,32 +11,49 @@
   <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../node_modules/interactjs/dist/interact.min.js"></script>
   <script src="../node_modules/chart.js/dist/chart.umd.js"></script>
+  <script src="../node_modules/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js"></script>
+  <script src="../node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.min.js"></script>
   <title>Database Editor for F1 Manager 23</title>
 </head>
 
 <body class="font">
   <div class="modal custom-modal fade" id="contractModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-      <div class="modal-content cusotm-modal">
+      <div class="modal-content custom-modal">
         <div class="modal-header custom-header">
           <h4 class="modal-title bold-font" id="contractModalTitle"></h4>
+          <h4 class="bold-font" id="driverAge" style="margin-bottom: 0px;"></h4>
         </div>
         <div class="modal-body number-and-contract">
-          <div class="number-options pb-3">
-            <h5 class="modal-subtitle bold-font">Driver Number</h5>
-            <div class="number-details">
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="numberButton"
-                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Number
-              </button>
-              <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
-              </ul>
-              <div class="form-check ms-5 form-switch auto-contract">
-                <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="driverNumber1">
-                <label class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</label>
+          <div class="number-and-retirement pb-3">
+            <div class="number-options">
+              <h5 class="modal-subtitle bold-font">Driver Number</h5>
+              <div class="number-details">
+                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="numberButton"
+                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Number
+                </button>
+                <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
+                </ul>
+                <div class="form-check ms-5 mt-2 form-switch auto-contract">
+                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="driverNumber1">
+                  <label class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</label>
+                </div>
               </div>
             </div>
+            <div class="retirement-options">
+              <h5 class="modal-subtitle bold-font">Retirement age</h5>
+              <div class="input-and-buttons" style="margin-top: 0.75rem;">
+                <input type="number" class="rounded-input retirement" id="retirementInput"></input>
+                <div class="input-buttons">
+                  <i class="bi bi-plus-lg"></i>
+                  <i class="bi bi-dash-lg"></i>
+                </div>
+              </div>
+
+            </div>
           </div>
+
           <div class="contract-options">
             <h5 class="modal-subtitle bold-font">Driver contract</h5>
             <div class="contract-details pt-1">
@@ -98,6 +115,373 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal fade" id="standingsmodal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Standings info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="d-flex" style="gap: 7px;">
+            <div class="standings-list bold-font">0</div> <span> - Pole poisiton in that race</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list" style="color: #c90fd7;">0</div> <span> - Fastest lap that race</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list" style="background-color: #FDE06B; color: #18152e;">&nbsp;</div> <span> - 1st place that race</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list" style="background-color: #AEB2B8; color: #18152e;">&nbsp;</div> <span> - 2nd place that race</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list" style="background-color: #d7985a; color: #18152e;">&nbsp;</div> <span> - 3rd place that race</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list">DNF</div> <div> - Did not finish that race</div>
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="contractsModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Contracts info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="d-flex" style="gap: 7px;">
+            <div><i class="bi bi-ban"></i></div> <span> - Means the driver is retired. Click to unretire him</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div><i class="bi bi-pencil-square"></i></div> <span> - Click to edit driver's details</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div style="width: 170px;">Auto contract</div> <span> - Will give the drivers contracts automatically based on their rating</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            You can't place drivers in the F2 and F3 tab, only in the Free Drivers tab
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="performancemodal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Contracts info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="mt-2" style="gap: 7px;">
+            From the <span class="bold-font">Teams</span> tab, you will be able to edit performance from every part of any team.
+            The number you see beside the bars are the <span class="bold-font positive">Increment</span> or <span class="bold-font negative">Decrement</span>
+            in performance for that part in specific.
+          </div>
+          <div class="mt-2" style="gap: 7px;">
+            From the <span class="bold-font">Engines</span> tab, you will be able to edit directly the stats of every engine, seeing their exact performance.
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="forecastmodal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Forecast info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="mt-2" style="gap: 7px;">
+            The predictions are made with an AI model trained with the developer's own save file. You c an check out predictions
+            for previous races and for the next one in the <span class="bold-font">Race</span> tab.
+          </div>
+          <div class="mt-2" style="gap: 7px;">
+            In the <span class="bold-font">Standings</span> tab, you can configure a prediction for the rest of the season since the race you
+            select in the modal. Take into account that the sooner that race is in the season, the more races it will have to simulate and it will take longer.
+            For example, it will take much longer if you predict from the 3rd race of the season than if you predict only the last race of the season.
+            The model will run dozens of simulations of all the remaining races and calculate the amount of times a driver has finished in every position.
+            The <span class="bold-font" style="color: #5bd999;">darker </span><span class="bold-font" style="color: #7adfac;">the </span><span class="bold-font" style="color: #a2dfc0;">green </span><span class="bold-font" style="color: #c5e7d6;">is</span>, the most chances ha has to infish in that position
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="calendarmodal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Calendar info</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="d-flex" style="gap: 7px;">
+            <div><i class="standings-list bi-sun"></i></div> <span> - Sunny</span>
+          </div>
+          <div class="d-flex  mt-2" style="gap: 7px;">
+            <div><i class="standings-list bi bi-cloud-sun"></i></div> <span> - Partially cloudy</span>
+          </div>
+          <div class="d-flex  mt-2" style="gap: 7px;">
+            <div><i class=" standings-list bi bi-cloud"></i></div> <span> - Cloudy</span>
+          </div>
+          <div class="d-flex  mt-2" style="gap: 7px;">
+            <div><i class="standings-list bi bi-cloud-drizzle"></i></div> <span> - Light rain</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div><i class="standings-list bi bi-cloud-rain-heavy"></i></div> <span> - Heavy rain</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div><i class="standings-list bi bi-cloud-lightning-rain"></i></div> <span> - Storm</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div style="width: 105px;">ATA Quali</div> <span> - Q1 will be on hards, Q2 on medium tyres and Q3 with soft tyres</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            Due to how the game works, it's only possible to set one of theese 6 patterns, and it's not possible to edit
+            with more detail the forecast for the race.
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            On sprint weekends, the game will take the Qualifying forecast for the sprint race
+          </div>
+          <div class="mt-2" style="gap: 7px;">
+            You can edit the calendar whenever you want and how many times you want, however, <span class="bold-font">during the season</span> it is <span class="bold-font">discouraged</span> to edit 
+            the order or amount of races, do it at <span class="bold-font">your own risk</span>. Changing weather forecast during the season should be safe.
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="predictModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-med modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font" id="predictModalTitle">Configure prediction</h3>
+        </div>
+        <div class="modal-body custom-body" id="predictModalBody">
+          <div class="modal-subtitle bold-font">Important information</div>
+          <div class="predict-warning">
+            When you click on “Confirm”, the tool will start running dozens of simulations for each race in the
+            championship from the one selected in the dropdown button.
+            This means that the earlier the selected race is in the championship, the more races it will have to
+            simulate until the end of the championship, and the prediction will take longer.
+            Depending on your system, the simulation may take more time.
+          </div>
+          <div class="modal-subtitle bold-font pt-3">Predict championship from</div>
+          <div class="year-and-race">
+            <div>
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                id="yearPredictionModalButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Year
+              </button>
+              <ul class="dropdown-menu" id="yearPredictionModalMenu" style="font-family: Formula1;">
+              </ul>
+            </div>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="raceProbButton"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Race
+            </button>
+            <ul class="dropdown-menu" id="raceProbMenu" style="font-family: Formula1;">
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer custom-footer predict-footer">
+          <div class="bar-and-indicator">
+            <div class="progress custom-bar">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" id="predictBar" role="progressbar"
+                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="indicator bold-font">0%</div>
+          </div>
+
+          <div>
+            <button type="button" class="btn btn-secondary custom-delete" id="cancelPredict"
+              data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary custom-confirm" id="confirmPredict" disabled>Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="compDataModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Comparison data selection</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="info-modal-section">
+            <div class="modal-buttons">
+              <div>
+                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                  id="yearButtonH2H" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Year
+                </button>
+                <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
+                </ul>
+              </div>
+              <div class="drivers-teams-pills">
+                <ul class="nav nav-pills">
+                  <li class="nav-item">
+                    <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#"
+                      id="driverspillmodal">Drivers</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#"
+                      id="teamspillmodal">Teams</a>
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+
+            <div class="info-texts">
+              <div class="H2H-text">
+                <span class="bold-font text-main">H2H </span><span class="text-normal">- 0/2 drivers selected</span>
+              </div>
+              <div class="graph-text">
+                <span class="bold-font text-main">Graph </span><span class="text-normal">- 0 drivers selected</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="drivers-modal-section">
+            <div class="drivers-modal-title component-subtitle bold-font mt-3">Select drivers</div>
+            <div class="drivers-modal-zone mt-2"></div>
+          </div>
+          <div class="teams-modal-section d-none">
+            <div class="drivers-modal-title component-subtitle bold-font mt-3">Select teams</div>
+            <div class="teams-modal-zone mt-2">
+              <div class="col modal-team ferrari d-none" data-teamid="1">
+                <div class="logo-and-name">
+                  <img src="../assets/images/ferrari.png" id="ferrarilogo">
+                  <div class="team-name bold-font">FERRARI</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="1" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="1" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team mclaren d-none" data-teamid="2">
+                <div class="logo-and-name">
+                  <img src="../assets/images/mclaren.png" id="mclarenlogo">
+                  <div class="team-name bold-font">MCLAREN</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="2" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="2" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team redbull d-none" data-teamid="3">
+                <div class="logo-and-name">
+                  <img src="../assets/images/redbull.png" id="redbulllogo">
+                  <div class="team-name bold-font">RED BULL</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="3" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="3" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team merc d-none" data-teamid="4">
+                <div class="logo-and-name">
+                  <img src="../assets/images/mercedes.png" id="merclogo2">
+                  <div class="team-name bold-font">MERCEDES</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="4" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="4" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team alpine d-none" data-teamid="5">
+                <div class="logo-and-name">
+                  <img src="../assets/images/alpine.png" id="alpinelogo">
+                  <div class="team-name bold-font">ALPINE</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="5" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="5" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team williams d-none" data-teamid="6">
+                <div class="logo-and-name">
+                  <img src="../assets/images/williams.png" id="williamslogo">
+                  <div class="team-name bold-font">WILLIAMS</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="6" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="6" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team haas d-none" data-teamid="7">
+                <div class="logo-and-name">
+                  <img src="../assets/images/haas.png" id="haaslogo">
+                  <div class="team-name bold-font">HAAS</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="7" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="7" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team alpha d-none" data-teamid="8">
+                <div class="logo-and-name">
+                  <img src="../assets/images/alphatauri.png" id="alphataurilogo">
+                  <div class="team-name bold-font">ALPHA TAURI</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="8" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="8" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team alfa d-none" data-teamid="9">
+                <div class="logo-and-name">
+                  <img src="../assets/images/alfaromeo.png" id="alfalogo">
+                  <div class="team-name bold-font">ALFA ROMEO</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="9" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="9" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+              <div class="col modal-team aston d-none" data-teamid="10">
+                <div class="logo-and-name">
+                  <img src="../assets/images/astonMartin.png" id="astonlogo">
+                  <div class="team-name bold-font ps-1">ASTON MARTIN</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="10" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="10" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
+            id="confirmComparison">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="versionPanel"></div>
   <div class="patchNotesPanel">
     <i class="bi bi-list-ul" data-bs-toggle="modal" data-bs-target="#patchModal">&nbsp;Patch Notes</i>
@@ -116,6 +500,7 @@
     <div class="ms-3 bold-font save-selector">
       <div class="save-selector-title">
         SAVE SELECTOR
+        <div class="pill-line"></div>
       </div>
       <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="saveSelector"
         data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
@@ -127,13 +512,23 @@
     </div>
     <div class="script-selector bold-font ms-3">
       <div class="pill-types">
-        <div id="dataPills">VIEW</div>
-        <div id="editPills">EDIT</div>
+        <div id="iaPills">AI MODEL
+          <div class="pill-line"></div>
+        </div>
+        <div id="dataPills">VIEW
+          <div class="pill-line"></div>
+        </div>
+        <div id="editPills">EDIT
+          <div class="pill-line"></div>
+        </div>
       </div>
       <div class="pt-2 ps-3" style="padding-bottom: 0.6rem;">
         <ul class="nav nav-pills">
           <li class="nav-item">
-            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="h2hpill">COMPARISION</a>
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="predictpill">PREDICTION</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="h2hpill">COMPARISON</a>
           </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="viewerpill">STANDINGS</a>
@@ -143,6 +538,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="statspill">STATS</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="constructorspill">TEAMS</a>
           </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="calendarpill">CALENDAR</a>
@@ -156,50 +554,130 @@
 
 
   </div>
+  <div class="mode-line">
+    <div class="moving-line"></div>
+  </div>
   <div class="main-panel">
     <div class="blocking-div" id="blockDiv">
-      Select a script and a save to start editing!
+      Select a tab and a save to start editing!
+    </div>
+    <div class="script-view d-none" id="predict_results">
+      <div class="w-100 d-flex">
+        <div class="prediction-buttons ps-3">
+          <div>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+              id="yearPredictionButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Year
+            </button>
+            <ul class="dropdown-menu" id="yearPredictionMenu" style="font-family: Formula1;">
+            </ul>
+          </div>
+          <button class="custom-dropdown custom-button bold-font d-none" id="predictButton" data-bs-toggle="modal"
+            data-bs-target="#predictModal">
+            Configure
+          </button>
+          <div class="config-content bold-font ms-4" id="predictConfigContent"></div>
+        </div>
+        <div class="title bold-font py-3 w-100">
+          Forecast
+          <i class="info-titles bold-font" id="forecastinfo" data-bs-toggle="modal" data-bs-target="#forecastmodal">?</i>
+        </div>
+        <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#"
+                id="predictionpill">Races</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="probpill">Standings</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="d-flex" id="mainPrediction">
+        <div class="d-flex w-100" id="mainPred">
+          <div class="col-3 main-viewer-section" id="raceMenu">
+          </div>
+          <div class="main-viewer-section" id="predictionMenu">
+            <div class="prediction-table" id="predictionFirst">
+              <div class="prediction-table-header">
+                <div class="header-label bold-font driver-prediction">Driver</div>
+                <div class="header-label bold-font prediction-prediction">Prediction</div>
+                <div class="header-label bold-font position-prediction">Position</div>
+              </div>
+              <div class="prediction-table-data">
+              </div>
+            </div>
+            <div class="prediction-table" id="predictionSecond">
+              <div class="prediction-table-header">
+                <div class="header-label bold-font driver-prediction">Driver</div>
+                <div class="header-label bold-font prediction-prediction">Prediction</div>
+                <div class="header-label bold-font position-prediction">Position</div>
+              </div>
+              <div class="prediction-table-data">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-none d-flex" id="mainProb">
+          <div class="main-viewer-section" id="probViewer">
+            <div class="prob-viewer-header">
+              <div class="viewer-header-driver bold-font">Driver</div>
+              <div class="viewer-header-position bold-font">Pos</div>
+            </div>
+            <div class="prob-viewer-data"></div>
+          </div>
+        </div>
+
+      </div>
+
+
     </div>
     <div class="script-view d-none" id="head2head_viewer">
       <div class="col">
         <div class="col h2h-title">
-          <div class="ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute;">
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButtonH2H"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Year
+          <div class="ps-3"
+            style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center;">
+            <button class="custom-dropdown custom-button bold-font" id="compDataButton" data-bs-toggle="modal"
+              data-bs-target="#compDataModal">
+              Data
             </button>
-            <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
-            </ul>
+            <div class="config-content bold-font ms-4" id="compConfigContent"></div>
           </div>
-          <div class="buttons-h2h"
-            style="position: absolute; right: 20px; margin-top: 0.5rem !important; margin-bottom: 1rem !important; ">
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="driver2Button"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Driver 2
+          <div class="ps-3"
+            style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center; right: 20px;">
+            <div class="form-check annotations form-switch ms-3 pt-2">
+              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="annotationsToggle"
+                checked>
+              <label class="form-check-label" for="flexSwitchCheckDefault">Annotations</label>
+            </div>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
+              id="graphTypeButton" data-bs-toggle="dropdown">
+              Race form
             </button>
-            <ul class="dropdown-menu" id="d2Menu" style="font-family: Formula1;">
-            </ul>
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="driver1Button"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Driver 1
-            </button>
-            <ul class="dropdown-menu driversDropDownH2H" id="d1Menu" style="font-family: Formula1;">
+            <ul class="dropdown-menu" id="graphTypeDropdown" style="font-family: Formula1;">
+              <a class="dropdown-item" style="cursor: pointer;" id="raceForm">Race form</a>
+              <a class="dropdown-item" style="cursor: pointer;" id="qualiForm">Qualifying form</a>
+              <a class="dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
             </ul>
           </div>
           <div class="title bold-font py-3">
-            Driver Compraision
+            Comparison
           </div>
         </div>
         <div class="d-flex d-none" id="mainH2h">
           <div class="col-3 main-viewer-section">
+            <div class="blocking-h2h">Select at leat 2 drivers for H2H!</div>
             <div class="driver-names">
               <div class="driver1-name">
                 <div class="driver1-first">&nbsp;</div>
                 <div class="driver1-second bold-font">&nbsp;</div>
+                <div class="team1 bold-font d-none">&nbsp;</div>
               </div>
               <div class="driver2-name">
                 <div class="driver2-first">&nbsp;</div>
                 <div class="driver2-second bold-font">&nbsp;</div>
+                <div class="team2 bold-font d-none">&nbsp;</div>
               </div>
             </div>
             <div class="one-statH2H" id="raceh2h">
@@ -273,7 +751,7 @@
             <div class="one-statH2H" id="bestrh2h">
               <div class="name-H2H bold-font">
                 <i class="bi bi-chevron-left d-none"></i>
-                <div class="only-name">BEST RACEe</div>
+                <div class="only-name">BEST RACE</div>
                 <i class="bi bi-chevron-right d-none"></i>
               </div>
               <div class="bar-space">
@@ -324,8 +802,10 @@
               </div>
             </div>
           </div>
-          <div class="col-9 main-viewer-section" style="max-width: 71.7vw;">
+          <div class="col-9 main-viewer-section" style="max-width: 72.5vw; margin-left: 0px;">
             <canvas id="driverGraph"></canvas>
+            <canvas class="d-none" id="progressionGraph"></canvas>
+            <canvas class="d-none" id="qualiGraph"></canvas>
           </div>
         </div>
       </div>
@@ -333,13 +813,26 @@
     </div>
     <div class="script-view d-none" id="season_viewer">
       <div class="col">
-        <div class=" ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute;">
-          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButton"
-            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Year
-          </button>
-          <ul class="dropdown-menu" id="yearMenu" style="font-family: Formula1;">
-          </ul>
+        <div class="year-drivers-teams ps-3">
+          <div>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButton"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Year
+            </button>
+            <ul class="dropdown-menu" id="yearMenu" style="font-family: Formula1;">
+            </ul>
+          </div>
+          <div class="drivers-teams-pills">
+            <ul class="nav nav-pills">
+              <li class="nav-item">
+                <a class="nav-link bold-font scriptPills active" data-bs-toggle="pill" href="#"
+                  id="driverspill">Drivers</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="teamspill">Teams</a>
+              </li>
+            </ul>
+          </div>
         </div>
         <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
           <ul class="nav nav-pills">
@@ -353,9 +846,11 @@
         </div>
         <div class="title bold-font py-3">
           Season Results
+          <i class="info-titles bold-font" id="standingsinfo" data-bs-toggle="modal" data-bs-target="#standingsmodal">?</i>
         </div>
-        <div class="main-viewer-section" id="officialCalendarList">
+        <div class="main-viewer-section">
           <div id="seasonresults-table"></div>
+          <div class="d-none" id="seasonresults-teams-table"></div>
         </div>
       </div>
 
@@ -385,6 +880,7 @@
         <div class="trasnfer-top-panel">
           <div class="title transfer-title bold-font py-3">
             Contracted drivers
+            <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal" data-bs-target="#contractsModal">?</i>
           </div>
           <div class="form-check form-switch auto-contract">
             <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="autoContractToggle">
@@ -699,7 +1195,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">REAR WING</span>
                   <div class="input-and-buttons">
@@ -708,7 +1205,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">SIDEPODS</span>
                   <div class="input-and-buttons">
@@ -717,7 +1215,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">FLOOR</span>
                   <div class="input-and-buttons">
@@ -726,7 +1225,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">SUSPENSION</span>
                   <div class="input-and-buttons">
@@ -735,7 +1235,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
               </div>
               <div class="main-panel-stats d-none" id="engineerStats">
                 <div class="one-stat-panel">
@@ -746,7 +1247,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">FEEDBACK</span>
                   <div class="input-and-buttons">
@@ -755,7 +1257,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">COMPOSURE</span>
                   <div class="input-and-buttons">
@@ -764,7 +1267,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
               </div>
               <div class="main-panel-stats d-none" id="aeroStats">
                 <div class="one-stat-panel">
@@ -775,7 +1279,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">DRS</span>
                   <div class="input-and-buttons">
@@ -784,7 +1289,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">HIGH SPEED PERFORMANCE</span>
                   <div class="input-and-buttons">
@@ -793,7 +1299,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel">
                   <span class="bold-font">MEDIUM SPEED PERFORMANCE</span>
                   <div class="input-and-buttons">
@@ -802,7 +1309,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">LOW SPEED PERFORMANCE</span>
                   <div class="input-and-buttons">
@@ -811,7 +1319,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">DRAG</span>
                   <div class="input-and-buttons">
@@ -820,7 +1329,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel">
                   <span class="bold-font">AIRFLOW</span>
                   <div class="input-and-buttons">
@@ -829,7 +1339,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">SENSITIVITY</span>
                   <div class="input-and-buttons">
@@ -838,7 +1349,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
               </div>
               <div class="main-panel-stats d-none" id="directorStats">
                 <div class="one-stat-panel">
@@ -849,7 +1361,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">APTITUDE</span>
                   <div class="input-and-buttons">
@@ -858,7 +1371,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">LEADERSHIP</span>
                   <div class="input-and-buttons">
@@ -867,7 +1381,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
                 <div class="one-stat-panel staff">
                   <span class="bold-font">PROCESSES</span>
                   <div class="input-and-buttons">
@@ -876,7 +1391,8 @@
                       <i class="bi bi-plus-lg"></i>
                       <i class="bi bi-dash-lg"></i>
                     </div>
-                  </div>                </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -909,48 +1425,556 @@
                 </div>
               </div>
               <div class="confirm-section">
-                <div class="btn custom-confirm" id="confirmbtn">Save changes</div>
+                <div class="btn custom-confirm bold-font" id="confirmbtn">Save changes</div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <div class="script-view d-none" id="edit_teams">
+      <div class="w-100">
+        <div class="ps-3"
+          style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center;">
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="teamButton"
+            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Team
+          </button>
+          <ul class="dropdown-menu" id="teamMenu" style="font-family: Formula1;">
+            <a class="dropdown-item feborder-down bold-font" style="cursor: pointer;" data-teamid="1">
+              <img src="../assets/images/ferrari.png" id="ferrarilogo">
+              <div class="team-menu-name">
+                FERRARI
+              </div>
+            </a>
+            <a class="dropdown-item mcborder-down bold-font" style="cursor: pointer;" data-teamid="2">
+              <img src="../assets/images/mclaren.png" id="mclarenlogo">
+              <div class="team-menu-name">
+                MCLAREN
+              </div>
+            </a>
+            <a class="dropdown-item rbborder-down bold-font" style="cursor: pointer;" data-teamid="3">
+              <img src="../assets/images/redbull.png" id="redbulllogo">
+              <div class="team-menu-name">RED BULL</div>
+            </a>
+            <a class="dropdown-item meborder-down bold-font" style="cursor: pointer;" data-teamid="4">
+              <img src="../assets/images/mercedes.png" id="merclogo">
+              <div class="team-menu-name ps-1">
+                MERCEDES
+              </div>
+            </a>
+            <a class="dropdown-item alborder-down bold-font" style="cursor: pointer;" data-teamid="5">
+              <img src="../assets/images/alpine.png" id="alpinelogo">
+              <div class="team-menu-name ps-1">
+                ALPINE
+              </div>
+            </a>
+            <a class="dropdown-item wiborder-down bold-font" style="cursor: pointer;" data-teamid="6">
+              <img src="../assets/images/williams.png" id="williamslogo">
+              <div class="team-menu-name ps-1">
+                WILLIAMS
+              </div>
+            </a>
+            <a class="dropdown-item haborder-down bold-font" style="cursor: pointer;" data-teamid="7">
+              <img src="../assets/images/haas.png" id="haaslogo">
+              <div class="team-menu-name ps-1">
+                HAAS
+              </div>
+            </a>
+            <a class="dropdown-item atborder-down bold-font" style="cursor: pointer;" data-teamid="8">
+              <img src="../assets/images/alphatauri.png" id="alphataurilogo">
+              <div class="team-menu-name">
+                ALPHA TAURI
+              </div>
+            </a>
+            <a class="dropdown-item afborder-down bold-font" style="cursor: pointer;" data-teamid="9">
+              <img src="../assets/images/alfaromeo.png" id="alfalogo">
+              <div class="team-menu-name">
+                ALFA ROMEO
+              </div>
+            </a>
+            <a class="dropdown-item asborder-down bold-font" style="cursor: pointer;" data-teamid="10">
+              <img src="../assets/images/astonMartin.png" id="astonlogo" class="ps-0">
+              <div class="team-menu-name">
+                ASTON MARTIN
+              </div>
+            </a>
+          </ul>
+        </div>
+        <div class="title bold-font py-3">
+          Team editor
+        </div>
+      </div>
+      <div class="main-viewer-section team-viewer d-none">
+        <div id="viewer-first">
+          <div class="viewer-component">
+            <div class="first-component" id="seasonObjective">
+              <div class="component-subtitle bold-font">Season Objective</div>
+              <div class="input-and-buttons">
+                <input type="number" class="custom-input-number" id="seasonObjectiveInput" value="4"></input>
+                <div class="input-buttons">
+                  <i class="bi bi-chevron-up"></i>
+                  <i class="bi bi-chevron-down"></i>
+                </div>
+              </div>
+            </div>
+            <div class="second-component">
+              <div class="component-subtitle bold-font">Long-term Objective</div>
+              <div id="objAndYear">
+                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                  id="objectiveButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Long-term objective
+                </button>
+                <ul class="dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
+                  <a class="dropdown-item" style="cursor: pointer;" id="longTermObj0">Constructor's champion</a>
+                  <a class="dropdown-item" style="cursor: pointer;" id="longTermObj1">Podium contender</a>
+                  <a class="dropdown-item" style="cursor: pointer;" id="longTermObj2">Points contender</a>
+                </ul>
+                <div class="input-and-buttons">
+                  <input type="number" class="custom-input-number" id="longTermInput" value="2024"></input>
+                  <div class="input-buttons">
+                    <i class="bi bi-chevron-up"></i>
+                    <i class="bi bi-chevron-down"></i>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+          <div class="viewer-component">
+            <div class="first-component" id="teamBudget">
+              <div class="component-subtitle bold-font">Budget</div>
+              <div class="input-and-buttons">
+                <input type="string" class="custom-input-number" id="teamBudgetInput" value="40000000"></input>
+                <div class="input-buttons">
+                  <i class="bi bi-plus-lg"></i>
+                  <i class="bi bi-dash-lg"></i>
+                </div>
+              </div>
+            </div>
+            <div class="second-component" id="costCap">
+              <div class="component-subtitle bold-font">Cost cap spent</div>
+              <div class="input-and-buttons">
+                <input type="string" class="custom-input-number" id="costCapInput" value="120000000"></input>
+                <div class="input-buttons">
+                  <i class="bi bi-plus-lg"></i>
+                  <i class="bi bi-dash-lg"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="viewer-component">
+            <div class="first-component" id="confidence">
+              <div class="component-subtitle bold-font">Board confidence</div>
+              <div class="blocking-confidence d-none">Only available when editing player's team</div>
+              <div class="input-and-buttons">
+                <input type="number" class="custom-input-number" id="confidenceInput" value="48"></input>
+                <div class="input-buttons">
+                  <i class="bi bi-plus-lg"></i>
+                  <i class="bi bi-dash-lg"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="facility-component">
+            <div class="component-subtitle bold-font">Staff facilities</div>
+            <div class="facility " id="facility9">
+              <div class="facility-name">Team hub</div>
+              <i class="bi bi-chevron-left"></i>
+              <div class="facility-level-indicator" data-value="3">
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+              </div>
+              <i class="bi bi-chevron-right"></i>
+              <div class="facility-condition">
+                Condition:
+                <div class="input-and-buttons">
+                  <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                  <div class="input-buttons">
+                    <i class="bi bi-chevron-up"></i>
+                    <i class="bi bi-chevron-down"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="facility " id="facility14">
+              <div class="facility-name">Scouting department</div>
+              <i class="bi bi-chevron-left"></i>
+              <div class="facility-level-indicator" data-value="3">
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+              </div>
+              <i class="bi bi-chevron-right"></i>
+              <div class="facility-condition">
+                Condition:
+                <div class="input-and-buttons">
+                  <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                  <div class="input-buttons">
+                    <i class="bi bi-chevron-up"></i>
+                    <i class="bi bi-chevron-down"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="facility " id="facility4">
+              <div class="facility-name">Race simulator</div>
+              <i class="bi bi-chevron-left"></i>
+              <div class="facility-level-indicator" data-value="3">
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+                <div class="level"></div>
+              </div>
+              <i class="bi bi-chevron-right"></i>
+              <div class="facility-condition">
+                Condition:
+                <div class="input-and-buttons">
+                  <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                  <div class="input-buttons">
+                    <i class="bi bi-chevron-up"></i>
+                    <i class="bi bi-chevron-down"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+        <div class="separator"></div>
+        <div id="viewer-second">
+          <div class="facility-component-lg">
+            <div class="main-second-viewer">
+              <div class="component-subtitle bold-font">
+                <div>Car development facilities</div>
+                <button class="custom-dropdown custom-button" id="carDevButton" data-state="show"
+                  data-bs-toggle="collapse" data-bs-target="#carDevCollapse">
+                  Hide
+                </button>
+              </div>
+              <div class="collapse show" id="carDevCollapse">
+                <div class="facility " id="facility3">
+                  <div class="facility-name">Factory</div>
+                  <i class="bi bi-chevron-left"></i>
+                  <div class="facility-level-indicator" data-value="3">
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                  <div class="facility-condition">
+                    Condition:
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-chevron-up"></i>
+                        <i class="bi bi-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="facility " id="facility2">
+                  <div class="facility-name">Design centre</div>
+                  <i class="bi bi-chevron-left"></i>
+                  <div class="facility-level-indicator" data-value="3">
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                  <div class="facility-condition">
+                    Condition:
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-chevron-up"></i>
+                        <i class="bi bi-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="facility " id="facility5">
+                  <div class="facility-name">Wind tunnel</div>
+                  <i class="bi bi-chevron-left"></i>
+                  <div class="facility-level-indicator" data-value="3">
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                  <div class="facility-condition">
+                    Condition:
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-chevron-up"></i>
+                        <i class="bi bi-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="facility " id="facility6">
+                  <div class="facility-name">CFD simulator</div>
+                  <i class="bi bi-chevron-left"></i>
+                  <div class="facility-level-indicator" data-value="3">
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                  <div class="facility-condition">
+                    Condition:
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-chevron-up"></i>
+                        <i class="bi bi-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="facility " id="facility7">
+                  <div class="facility-name">Suspension simulator</div>
+                  <i class="bi bi-chevron-left"></i>
+                  <div class="facility-level-indicator" data-value="3">
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                  <div class="facility-condition">
+                    Condition:
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-chevron-up"></i>
+                        <i class="bi bi-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="facility " id="facility8">
+                  <div class="facility-name">Car part test centre</div>
+                  <i class="bi bi-chevron-left"></i>
+                  <div class="facility-level-indicator" data-value="3">
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                  <div class="facility-condition">
+                    Condition:
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-chevron-up"></i>
+                        <i class="bi bi-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="component-subtitle bold-font">
+                <div>Operations facilities</div>
+                <button class="custom-dropdown custom-button" id="operationButton" data-state="hide"
+                  data-bs-toggle="collapse" data-bs-target="#operationCollapse">
+                  Show
+                </button>
+
+              </div>
+              <div class="collapse" id="operationCollapse">
+                <div class="facility " id="facility15">
+                  <div class="facility-name">Board room</div>
+                  <i class="bi bi-chevron-left"></i>
+                  <div class="facility-level-indicator" data-value="3">
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                  <div class="facility-condition">
+                    Condition:
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-chevron-up"></i>
+                        <i class="bi bi-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="facility " id="facility13">
+                  <div class="facility-name">Hospitality centre</div>
+                  <i class="bi bi-chevron-left"></i>
+                  <div class="facility-level-indicator" data-value="3">
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                  <div class="facility-condition">
+                    Condition:
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-chevron-up"></i>
+                        <i class="bi bi-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="facility " id="facility1">
+                  <div class="facility-name">Weather centre</div>
+                  <i class="bi bi-chevron-left"></i>
+                  <div class="facility-level-indicator" data-value="3">
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                  <div class="facility-condition">
+                    Condition:
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-chevron-up"></i>
+                        <i class="bi bi-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="facility " id="facility10">
+                  <div class="facility-name">Helipad</div>
+                  <i class="bi bi-chevron-left"></i>
+                  <div class="facility-level-indicator" data-value="3">
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                  <div class="facility-condition">
+                    Condition:
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-chevron-up"></i>
+                        <i class="bi bi-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="facility " id="facility11">
+                  <div class="facility-name">Memorabilia Room</div>
+                  <i class="bi bi-chevron-left"></i>
+                  <div class="facility-level-indicator" data-value="3">
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                  <div class="facility-condition">
+                    Condition:
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-chevron-up"></i>
+                        <i class="bi bi-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="facility" id="facility12">
+                  <div class="facility-name">Tour centre</div>
+                  <i class="bi bi-chevron-left"></i>
+                  <div class="facility-level-indicator" data-value="3">
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                    <div class="level"></div>
+                  </div>
+                  <i class="bi bi-chevron-right"></i>
+                  <div class="facility-condition">
+                    Condition:
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-chevron-up"></i>
+                        <i class="bi bi-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="save-button-zone">
+              <div class="btn custom-confirm bold-font" id="confirmTeam">Save changes</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
     <div class="script-view d-none" id="custom_calendar">
       <div class="blocking-div d-none" id="calendarBlockDiv">
         There is already a modified calendar or you already did the first race! Try again next season!
       </div>
-      <div class="col-9">
+      <div class="main-calendar">
+        <div class="prediction-buttons ps-3" style="gap: 10px;">
+          <div>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+              id="addRaceButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Add race
+            </button>
+            <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
+            </ul>
+          </div>
+          <button class="custom-dropdown custom-button bold-font" id="deleteTracks">
+            Delete race
+          </button>
+        </div>
         <div class="title bold-font py-3">
-          New calendar
+          Calendar
+          <i class="info-titles bold-font" id="calendarinfo" data-bs-toggle="modal" data-bs-target="#calendarmodal">?</i>
+        </div>
+        <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px; top:0;">
+          <div class="btn custom-confirm option-buttons bold-font" id="confirmCalendar">Save changes</div>
         </div>
         <div class="main-calendar-section" id="officialCalendarList">
 
         </div>
       </div>
-      <div class="col-3">
-        <div class="title bold-font py-3">
-          Options
-        </div>
-        <div class="main-options-section">
-          <div class="option-buttons">
-            <button type="button" class="btn btn-primary dropdown-toggle addTracks-button" data-bs-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false" style="font-family: Formula1; width: 100%; height: 100%;"
-              id="addRaceButton">
-              Add race
-            </button>
-            <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
 
-            </ul>
-          </div>
-          <div class="btn custom-delete option-buttons" id="deleteTracks">Delete races</div>
-          <div class="save-calendar-section">
-            <div class="btn custom-confirm option-buttons" id="confirmCalendar">Save changes</div>
-          </div>
-
-        </div>
-
-      </div>
     </div>
     <div class="script-view d-none" id="car_performance">
       <div class="col-3">
@@ -1047,6 +2071,7 @@
         <div class="trasnfer-top-panel">
           <div class="title transfer-title bold-font py-3">
             Performance
+            <i class="info-titles bold-font" id="perfoemanceinfo" data-bs-toggle="modal" data-bs-target="#performancemodal">?</i>
           </div>
         </div>
         <div class="main-columns-drag-section performance-section">
@@ -1148,7 +2173,7 @@
 
 
             <div class="confirm-area" style="padding-top: 18px;">
-              <div class="btn custom-confirm" id="confirmEnginebtn">Save changes</div>
+              <div class="btn custom-confirm bold-font" id="confirmEnginebtn">Save changes</div>
             </div>
           </div>
           <div class="performance-show teams-show d-none">
@@ -1271,7 +2296,7 @@
               <div class="performance-data bold-font">0%</div>
             </div>
             <div class="confirm-area">
-              <div class="btn custom-confirm" id="confirmPerformancebtn">Save changes</div>
+              <div class="btn custom-confirm bold-font" id="confirmPerformancebtn">Save changes</div>
             </div>
           </div>
 
@@ -1282,6 +2307,7 @@
   <footer class="footer">
     <div class="socials">
       <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor">&nbsp;DDBB Editor</a>
+      <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259">&nbsp;My profile</a>
       <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_">&nbsp;@ignaciourreta_</a>
       <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta">&nbsp;ignaciourreta</a>
       <a class="bi bi-heart" href="https://www.buymeacoffee.com/iUrreta">&nbsp;Support me</a>
@@ -1303,6 +2329,8 @@
   <script src="./js/performance.js"></script>
   <script src="./js/seasonViewer.js"></script>
   <script src="./js/head2head.js"></script>
+  <script src="./js/teams.js"></script>
+  <script src="./js/predictions.js"></script>
 </body>
 
 </html>

@@ -1,13 +1,19 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, shell } = require('electron')
 const path = require('path')
+const { setupTitlebar, attachTitlebarToWindow } = require("custom-electron-titlebar/main");
+
+
 
 function createWindow () {
+  setupTitlebar();
   const mainWindow = new BrowserWindow({
     width: 1700,
     height: 1020,
     icon: path.join(__dirname, "assets/images/logo2.png"),
+    titleBarStyle: 'hidden',
     webPreferences: {
+
       preload: path.join(__dirname, 'front/preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
@@ -20,10 +26,14 @@ function createWindow () {
     event.preventDefault();
     shell.openExternal(url);
   });
-  mainWindow.removeMenu()
+  
+  attachTitlebarToWindow(mainWindow);
+  mainWindow.setMenu(null)
+  
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
+
   
 
 }

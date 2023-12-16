@@ -13,6 +13,10 @@ let countries_dict = {
     "bra0": "Brazil","veg0": "Vegas","uae0": "Abu Dhbai"
 };
 
+let weather_dict = {
+    0: "bi bi-sun", 1:"bi bi-cloud-sun", 2: "bi bi-cloud", 3: "bi bi-cloud-drizzle", 4: "bi bi-cloud-rain-heavy", 5: "bi bi-cloud-lightning-rain"
+}
+
 let deleting = false;
 let deleted = false;
 
@@ -40,60 +44,190 @@ function reubicate(div0,div1,beforeAfter) {
  * Adds a race in the calendar div
  * @param {string} code Code from the race
  */
-function addRace(code) {
+function addRace(code, rainQ, rainR, type, trackID, state) {
     let imageUrl = codes_dict[code];
 
     let div = document.createElement('div');
+    let leftDiv = document.createElement('div');
+    leftDiv.className = "left-race"
+    let rightDiv = document.createElement('div');
+    rightDiv.className = "right-race"
     div.classList.add('race-calendar');
-    div.setAttribute('data-code',code);
+    div.dataset.trackid = trackID
+    div.dataset.rainQ = rainQ
+    div.dataset.rainR = rainR
+    div.dataset.type = type
+    div.dataset.state = state
+    if(state === 2){
+        div.classList.add("completed")
+        let compDiv = document.createElement('div');
+        compDiv.classList.add('complete-div');
+        let divText = document.createElement('div');
+        divText.innerHTML = "Completed";
+        divText.className = "bold-font"
+        divText.style.fontSize = "18px"
+        compDiv.appendChild(divText)
+        div.appendChild(compDiv)
+    }
 
     let upperDiv = document.createElement('div');
-    upperDiv.classList.add('upper-race','bold-font');
-    upperDiv.textContent = code.slice(0,-1).toUpperCase();
+    upperDiv.className = "upper-text-and-flag"
+    let textDiv = document.createElement('div');
+    textDiv.classList.add('upper-race','bold-font');
+    textDiv.textContent = code.slice(0,-1).toUpperCase();
 
     const img = document.createElement('img');
     img.src = imageUrl;
     img.classList.add('flag');
 
+    upperDiv.appendChild(textDiv);
     upperDiv.appendChild(img);
 
-    const lowerDiv = document.createElement('div');
+    let lowerDiv = document.createElement('div');
     lowerDiv.classList.add('lower-race');
 
-    lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint weekend</label></div><div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>";
+    lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint</label></div><div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>";
     let SprintInput = lowerDiv.querySelector(".sprint-input")
     let ATAInput = lowerDiv.querySelector(".ata-input")
     SprintInput.addEventListener("click",function (event) {
         if (ATAInput.checked) ATAInput.checked = false
-        if (SprintInput.checked) changeFormat(div,"1")
-        else changeFormat(div,"0")
-
+        if (SprintInput.checked) div.dataset.type = 1
+        else div.dataset.type = 0
     })
     ATAInput.addEventListener("click",function (event) {
         if (SprintInput.checked) SprintInput.checked = false
-        if (ATAInput.checked) changeFormat(div,"2")
-        else changeFormat(div,"0")
-
+        if (ATAInput.checked) div.dataset.type = 2
+        else div.dataset.type = 0
     })
-    div.appendChild(upperDiv);
-    div.appendChild(lowerDiv);
+    leftDiv.appendChild(upperDiv);
+    leftDiv.appendChild(lowerDiv);
+    if(type === 1){
+        lowerDiv.children[0].firstChild.click()
+    }
+    else if(type === 2){
+        lowerDiv.children[1].firstChild.click()
+    }
+    div.appendChild(leftDiv)
+    let qWeather = document.createElement('div');
+    qWeather.className = "full-quali-weather"
+    let qName = document.createElement('div');
+    qName.className = "session-name bold-font"
+    qName.innerText ="Q"
+    let wSelector = document.createElement('div');
+    wSelector.className = "weather-selector"
+    let leftArrow = document.createElement('i');
+    leftArrow.className = "bi bi-chevron-left"
+    let rightArrow = document.createElement('i');
+    rightArrow.className = "bi bi-chevron-right"
+    let wVis = document.createElement('div');
+    wVis.className = "weather-vis"
+    wVis.dataset.value = Number(rainQ)
+
+    wSelector.appendChild(leftArrow)
+    wSelector.appendChild(wVis)
+    wSelector.appendChild(rightArrow)
+    qWeather.appendChild(qName)
+    qWeather.appendChild(wSelector)
+    let rWeather = qWeather.cloneNode(true)
+    rWeather.firstChild.innerText = "R"
+    rWeather.children[1].children[1].dataset.value = Number(rainR)
+    rightDiv.appendChild(qWeather)
+    rightDiv.appendChild(rWeather)
+    div.appendChild(rightDiv)
+    div.querySelectorAll(".bi-chevron-left").forEach(function(elem){
+        elem.addEventListener("click", function(){
+            let val = elem.parentNode.querySelector(".weather-vis").dataset.value
+            newVal = Number(val) - 1
+            if(newVal === -1){
+                newVal = 5
+            }
+            elem.parentNode.querySelector(".weather-vis").dataset.value = newVal
+            if (elem.parentNode.parentNode.firstChild.innerText === "Q"){
+                elem.parentNode.parentNode.parentNode.parentNode.dataset.rainQ = newVal
+            }
+            else if (elem.parentNode.parentNode.firstChild.innerText === "R"){
+                elem.parentNode.parentNode.parentNode.parentNode.dataset.rainR = newVal
+            }
+            
+            updateVisualizers()
+            
+        })
+    })
+    
+    div.querySelectorAll(".bi-chevron-right").forEach(function(elem){
+        elem.addEventListener("click", function(){
+            let val = elem.parentNode.querySelector(".weather-vis").dataset.value
+            newVal = Number(val) + 1
+            if(newVal === 6){
+                newVal = 0
+            }
+            elem.parentNode.querySelector(".weather-vis").dataset.value = newVal
+            if (elem.parentNode.parentNode.firstChild.innerText === "Q"){
+                elem.parentNode.parentNode.parentNode.parentNode.dataset.rainQ = newVal
+            }
+            else if (elem.parentNode.parentNode.firstChild.innerText === "R"){
+                elem.parentNode.parentNode.parentNode.parentNode.dataset.rainR = newVal
+            }
+            updateVisualizers()
+            
+        })
+    })
+
 
     document.querySelector('.main-calendar-section').appendChild(div)
+}
 
 
+function updateVisualizers(){
+    document.querySelector(".main-calendar").querySelectorAll(".weather-vis").forEach(function(elem){
+        elem.innerHTML = ""
+        let val = elem.dataset.value
+        let icon = document.createElement("i")
+        icon.className = weather_dict[val]
+        elem.appendChild(icon)
+    })
+}
+
+function load_calendar(races){
+    document.querySelector('.main-calendar-section').innerHTML = ""
+    races.forEach(function(elem){
+        code = races_map[elem[0]]
+        addRace(code, transformWeather(elem[1]), transformWeather(elem[2]), elem[3], elem[0], elem[4])
+    })
+    updateVisualizers()
+    updateNumbers()
+    load_addRaces()
 
 }
 
-/**
- * Creates all the races
- */
-function create_races() {
-    document.querySelector('.main-calendar-section').innerHTML = ""
-    for (let dataCode of Object.keys(codes_dict)) {
-        addRace(dataCode)
+function updateNumbers(){
+    document.querySelectorAll(".left-race").forEach(function(elem, index){
+        elem.firstChild.firstChild.textContent = index + 1 + " " + races_names[elem.parentNode.dataset.trackid]
+    })
+}
 
+
+function transformWeather(state){
+    let realWeather;
+    if(state === 1){
+        realWeather = 0
     }
-    load_addRaces()
+    else if(state === 2){
+        realWeather = 1
+    }
+    else if(state === 4){
+        realWeather = 2
+    }
+    else if(state === 8){
+        realWeather = 3
+    }
+    else if(state === 16){
+        realWeather = 4
+    }
+    else if(state === 32){
+        realWeather = 5
+    }
+    return realWeather;
 }
 
 /**
@@ -126,7 +260,7 @@ function load_addRaces() {
         a.href = '#';
         a.textContent = elem;
         a.dataset.code = dataCode
-
+        a.dataset.trackid = invertedRacesMap[dataCode]
         let imageUrl = codes_dict[dataCode];
         let img = document.createElement('img');
         img.src = imageUrl;
@@ -148,7 +282,9 @@ function listenerRaces() {
     document.querySelectorAll('#addTrackMenu a').forEach(item => {
         item.addEventListener("click",function () {
             if (document.querySelector(".main-calendar-section").childElementCount < 23) {
-                addRace(item.dataset.code)
+                addRace(item.dataset.code, 0, 0, 0, item.dataset.trackid, 0)
+                updateVisualizers()
+                updateNumbers()
             }
         })
     })
@@ -162,32 +298,38 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
         document.querySelectorAll(".delete-div").forEach(function (elem) {
             elem.parentNode.removeChild(elem)
         })
-        this.className = "btn custom-delete option-buttons"
+        this.className = "custom-dropdown custom-button bold-font"
         document.querySelectorAll(".race-calendar").forEach(function (elem) {
-            elem.classList = "race-calendar";
+            if(elem.firstChild.className !== "complete-div"){
+                elem.classList = "race-calendar";
+            }
+            
 
         })
 
     }
     else {
         document.querySelectorAll(".race-calendar").forEach(function (elem) {
-            elem.classList = "race-calendar deleting";
-            let div = document.createElement('div');
-            div.classList.add('delete-div');
-            let divText = document.createElement('div');
-            divText.innerHTML = "Delete";
-            divText.className = "bold-font"
-            divText.style.fontSize = "18px"
-            div.appendChild(divText);
-            elem.insertBefore(div,elem.firstChild);
-            divText.addEventListener("click",function () {
-                let race = divText.parentNode.parentNode;
-                divText.parentNode.parentNode.parentNode.removeChild(race);
-                deleted = true;
-            })
+            if(elem.firstChild.className !== "complete-div"){
+                elem.classList = "race-calendar deleting";
+                let div = document.createElement('div');
+                div.classList.add('delete-div');
+                let divText = document.createElement('div');
+                divText.innerHTML = "Delete";
+                divText.className = "bold-font"
+                divText.style.fontSize = "18px"
+                div.appendChild(divText);
+                elem.insertBefore(div,elem.firstChild);
+                divText.addEventListener("click",function () {
+                    let race = divText.parentNode.parentNode;
+                    divText.parentNode.parentNode.parentNode.removeChild(race);
+                    deleted = true;
+                })
+            }
+
 
         })
-        this.className = "btn custom-delete option-buttons delete-mode"
+        this.className = "custom-dropdown custom-button bold-font delete-mode"
 
     }
 
@@ -199,11 +341,9 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
  */
 document.getElementById("confirmCalendar").addEventListener("click",function () {
     let dataCodesString = '';
-    let children = document.querySelector('.main-calendar-section').children;
 
-    Array.from(children).forEach((child) => {
-        dataCodesString += child.dataset.code + ' ';
-
+    document.querySelectorAll(".race-calendar").forEach((race) => {
+        dataCodesString += race.dataset.trackid.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString()  + race.dataset.state.toString() + ' ';
     });
 
 
@@ -213,11 +353,6 @@ document.getElementById("confirmCalendar").addEventListener("click",function () 
         calendarCodes: dataCodesString
     }
     socket.send(JSON.stringify(dataCalendar))
-    document.getElementById("calendarBlockDiv").className = "blocking-div"
-
-    if (deleted) {
-        document.getElementById("addRaceButton").disabled = true;
-    }
 })
 
 /**
@@ -260,6 +395,7 @@ interact('.race-calendar').draggable({
                         } else {
                             reubicate(target,element,"before")
                         }
+                        updateNumbers()
 
                     }
                 }

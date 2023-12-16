@@ -41,7 +41,7 @@ function place_drivers_editStats(driversArray) {
         newDiv.appendChild(nameDiv)
         let statsString = '';
 
-        for (let i = 4; i <= 14; i++) {
+        for (let i = 5; i <= 15; i++) {
             statsString += driver[i] + ' ';
         }
         newDiv.dataset.stats = statsString;
@@ -260,7 +260,7 @@ function calculateOverall(stats, type) {
         let reactions = statsArray[7];
         let accuracy = statsArray[8];
 
-        rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.5 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 4.75;
+        rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.75 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 4.75;
 
     }
     else if(type === "staff"){
@@ -275,18 +275,26 @@ function calculateOverall(stats, type) {
 }
 
 function listeners_plusLess(){
-    document.querySelectorAll(".bi-plus-lg").forEach(function(elem){
+    document.querySelector("#edit_stats").querySelectorAll(".bi-plus-lg").forEach(function(elem){
         elem.addEventListener("mousedown", function(){
             let input = elem.parentNode.parentNode.querySelector("input")
-            input.value = parseInt(input.value) + 1;
+            let val = parseInt(input.value) + 1;
+            if (val >= 99){
+                val = 99
+            }
+            input.value = val
             recalculateOverall()
         })
 
     })
-    document.querySelectorAll(".bi-dash-lg").forEach(function(elem){
+    document.querySelector("#edit_stats").querySelectorAll(".bi-dash-lg").forEach(function(elem){
         elem.addEventListener("mousedown", function(){
             let input = elem.parentNode.parentNode.querySelector("input")
-            input.value = parseInt(input.value) - 1;
+            let val = parseInt(input.value) - 1;
+            if (val <= 0){
+                val = 0
+            }
+            input.value = val
             recalculateOverall()
         })
     })

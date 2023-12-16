@@ -55,6 +55,7 @@ body::-webkit-scrollbar-thumb {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  max-height: 35px;
 }
 
 .socials a,
@@ -71,6 +72,18 @@ body::-webkit-scrollbar-thumb {
   color: #dedde6;
 }
 
+.socials a {
+  display: inline-block;
+  overflow: hidden;
+  max-width: 27px;
+  white-space: nowrap;
+  transition: max-width 0.5s ease-in-out, color 0.3s;
+}
+
+.socials a:hover {
+  max-width: 180px;  /* Ajusta este valor según el tamaño máximo que desees para el texto */
+}
+
 .update-info {
   transition: color 0.4s;
   text-decoration: none;
@@ -79,7 +92,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .bi-exclamation-diamond {
-  color: #ff8080;
+  color: #e95656;
 }
 
 .bi-exclamation-lg,
@@ -94,16 +107,20 @@ body::-webkit-scrollbar-thumb {
 }
 
 a.bi-reddit:hover {
-  color: #FFA07A;
+  color: #fc6e28;
 }
 
 a.bi-twitter-x:hover,
 #byname:hover {
-  color: #8fc7f0;
+  color: #2ca4ee;
 }
 
 a.bi-heart:hover {
-  color: #ffa4b2;
+  color: #ef51f5;
+}
+
+a.bi-linkedin:hover {
+  color: #0077b5 ;
 }
 
 
@@ -141,6 +158,11 @@ a.bi-heart:hover {
   font-size: 28px;
 }
 
+.standings-list{
+  width: 65px;
+  text-align: center;
+}
+
 .trasnfer-top-panel {
   display: flex;
   justify-content: space-between;
@@ -158,13 +180,52 @@ a.bi-heart:hover {
   padding-right: 2rem;
 }
 
+.info-modal-section{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.H2H-text span.text-main{
+  color: #34c297;
+}
+
+.graph-text span.text-main{
+  color: #34bdc2;
+}
+
+.h2h-highlight {
+  animation: h2h-animation 0.3s forwards;
+}
+
+.graph-highlight {
+  animation: graph-animation 0.3s forwards;
+}
+
+@keyframes h2h-animation {
+  0%, 100% { color: #dedde6; }
+  50% { color: #88ebcd; }
+}
+
+@keyframes graph-animation {
+  0%, 100% { color: #dedde6; }
+  50% { color: #95ebee; }
+}
+
+.annotations {
+  color: #dedde6;
+  font-size: 20px;
+  padding-right: 1rem;
+}
+
 .number-details {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-#d1Menu, #d2Menu{
+#d1Menu, #d2Menu, #teamMenu, #raceProbMenu{
   max-height: 200px;
   overflow-y: scroll;
 }
@@ -174,11 +235,11 @@ a.bi-heart:hover {
   overflow-y: scroll;
 }
 
-#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar {
+#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar, #raceProbMenu::-webkit-scrollbar, .prob-viewer-data::-webkit-scrollbar{
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb {
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb {
   background-color: white;
   border-radius: 3px;
 }
@@ -201,7 +262,7 @@ a.bi-heart:hover {
   border-bottom: 2px solid white  ;
 }
 
-.modal-subtitle {
+.modal-subtitle, .component-subtitle{
   color: #dedde6;
 }
 
@@ -251,6 +312,24 @@ a.bi-heart:hover {
   display: flex;
 }
 
+.number-and-retirement{
+  display: flex;
+  flex-direction: row;
+}
+
+.number-options{
+  width: 66%;
+}
+
+.retirement-options i{
+  color: #dedde6;
+  border-radius: 7.5px !important;
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 20px !important;
+  margin-left: 5px !important;
+}
+
 @keyframes colorChangeNeg {
 
   0%,
@@ -261,7 +340,7 @@ a.bi-heart:hover {
   }
 
   50% {
-    border: 2px solid #ff8080;
+    border: 2px solid #e95656;
     border-radius: 10px;
     background-color: #21202e;
   }
@@ -277,7 +356,7 @@ a.bi-heart:hover {
   }
 
   50% {
-    border: 2px solid #9fdf9f;
+    border: 2px solid #5bd999;
     border-radius: 10px;
     background-color: #21202e;
   }
@@ -304,17 +383,29 @@ a.bi-heart:hover {
   justify-content: center;
 }
 
+.cet-menubar{
+  opacity: 0 !important;
+}
+
+.cet-title{
+  font-family: 'Formula1' !important;
+}
+
 .versionPanel {
   position: fixed;
-  top: 10px;
+  top: 40px;
   left: 10px;
   color: white;
 
 }
 
+.cet-container{
+  overflow: hidden !important;
+}
+
 .patchNotesPanel {
   position: fixed;
-  top: 40px;
+  top: 70px;
   left: 10px;
 }
 
@@ -345,15 +436,24 @@ a.bi-heart:hover {
 }
 
 .notification-line{
-  width: 100%;
+  width: 0%;
   height: 2px;
   background-color: white;
   position: relative;
   bottom: 7px;
+  transition: width 3s linear;
+}
+
+.notification-line.start{
+  width: 100%;
 }
 
 .line-error{
-  background-color: #ff8080 !important;
+  width: 100%;
+  height: 2px;
+  position: relative;
+  bottom: 7px;
+  background-color: #ff4949 !important;
 }
 
 .custom-toast{
@@ -366,25 +466,30 @@ a.bi-heart:hover {
 }
 
 .bar-space{
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding: 0 5px;
 }
 
 .driver1-number{
   font-size: 18px;
   margin-right: 10px;
   transition: color 0.4s;
+  width: 12.5%;
+  text-align: right;
 }
 
 .driver2-number{
   font-size: 18px;
   margin-left: 10px;
+  width: 12.5%;
   transition: color 0.4s;
 }
 
 .toast-error{
-  color: #ff8080 !important;
+  color: #ff4949 !important;
 }
 
 .hide {
@@ -419,10 +524,53 @@ a.bi-heart:hover {
 .tools-panel {
   color: white;
   background-color: #18152e;
-  border-bottom: 1px solid #797599;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+@keyframes move {
+  0%   {left: -300px;}
+  100% {left: 100%;}
+}
+
+.mode-line {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background-color: #797599;
+}
+
+.mode-line.ai{
+  background-color: #baffea;
+}
+
+.mode-line.edit{
+  background-color: #fff7b0;
+}
+
+.mode-line.view{
+  background-color: #e8b6ff;
+}
+
+.moving-line{
+  position: absolute;
+  width: 300px;
+  height: 1px;
+  background: transparent;
+  animation: move 10s linear infinite;
+}
+
+.moving-line.ai{
+  background: linear-gradient(to right, transparent, #00ffb3, transparent);
+}
+
+.moving-line.edit{
+  background: linear-gradient(to right, transparent, #f3e13f, transparent);
+}
+
+.moving-line.view{
+  background: linear-gradient(to right, transparent, #c13aff, transparent);
 }
 
 .main-panel {
@@ -464,7 +612,7 @@ a.bi-heart:hover {
   border: 2px solid transparent !important;
   border-radius: 10px !important;
   color: white !important;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s !important;
 }
 
 #numberButton{
@@ -484,8 +632,8 @@ a.bi-heart:hover {
 }
 
 .addTracks-button {
+  margin-top: 0.4rem;
   max-width: 210px;
-  margin-top: 0.6rem;
   background-color: #797599 !important;
   margin-bottom: 1%;
   border: 2px solid transparent !important;
@@ -524,6 +672,18 @@ a.bi-heart:hover {
   height: 10px;
   width: 20px;
   margin-left: 10px;
+}
+
+#edit_teams{
+  display: flex;
+  flex-direction: column;
+}
+
+#objAndYear{
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
 }
 
 .main-columns-drag-section {
@@ -569,6 +729,23 @@ a.bi-heart:hover {
   margin-bottom: 2rem;
 }
 
+.pill-line{
+  height: 1.3px;
+  width: 0%;
+  background-color: #dedde6;
+  transition: width 0.4s, color 0.4s;
+}
+
+.pill-line.activeType{
+  width: 100%;
+  background-color: white;
+}
+
+.activeSelected .pill-line{
+  width: 100%;
+  background-color: white;
+}
+
 .categoryPills,
 .scriptPills {
   padding-top: 6px !important;
@@ -587,20 +764,183 @@ a.bi-heart:hover {
 }
 
 .pill-types .activeType{
-  color: white !important;
+  color: white;
 }
+
 
 #editPills{
   position: absolute;
   z-index: 1;
-  right: 280px;
+  right: 350px;
   transition: color 0.4s;
 }
 
 #dataPills{
   z-index: 1 !important;
-  padding-left: 150px;
+  padding-left: 144px;
   transition: color 0.4s;
+}
+#iaPills{
+  z-index: 1 !important;
+  padding-left: 36px;
+  transition: color 0.4s;
+  
+}
+
+
+#iaPills .pill-line{
+  background-color: #c7ffee;
+}
+
+
+#dataPills .pill-line{
+  background-color: #e8b6ff;
+}
+
+
+#editPills .pill-line{
+  background-color: #fff7b0;
+}
+
+#predict_results{
+  flex-direction: column;
+}
+
+#probText{
+  padding-top: 2px;
+  color: #dedde6;
+}
+
+#probSelector{
+  display: flex;
+  align-items: center;
+}
+
+#raceProbButton, #yearPredictionModalButton{
+  margin-top: 0.45rem !important;
+}
+
+#probViewer{
+  width: 1670px;
+  height: 660px;
+  max-height: 660px;
+}
+
+.prob-viewer-data{
+  overflow-y: scroll;
+  max-height: 621px;
+}
+
+.prob-viewer-header, .prob-viewer-row{
+  display: flex;
+  flex-direction: row;
+  color: #dedde6;
+}
+
+.prob-viewer-header .viewer-header-data, .prob-viewer-row .viewer-header-data {
+  margin-left: 4px;
+}
+
+.prob-viewer-header{
+  border-bottom: 1px solid white;
+}
+
+.viewer-header-driver{
+  width: 210px;
+  padding: 0px 7px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.prob-viewer-row{
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.prob-viewer-row:hover{
+  background-color: #625e86 ;
+  cursor: pointer;
+}
+
+.prob-viewer-row .viewer-header-driver span.bold-font{
+  transition: background-color 0.3s, color 0.3s;
+  margin-left: 4px;
+}
+
+.prob-viewer-row .viewer-header-driver span{
+  transition: background-color 0.3s, color 0.05s;
+}
+
+
+.prob-viewer-row .viewer-header-driver span.bold-font{
+  transition: color 0.3s;
+}
+
+
+.prob-viewer-row:hover .viewer-header-driver{
+  background-color: #dedde6;
+  color: #18152e;
+}
+
+.prob-viewer-row:hover .viewer-header-driver span{
+  color: #18152e !important;
+}
+
+.prob-viewer-row .viewer-header-position {
+  transition: background-color 0.3s, color 0.3s;
+  padding-top: 4px;
+  text-align: center;
+}
+
+.prob-viewer-row:hover .viewer-header-position {
+  background-color: #dedde6;
+  color: #18152e !important;
+}
+
+
+.viewer-header-position{
+  width: 50px;
+  text-align: center;
+  padding-top: 4px;
+}
+
+.viewer-header-pos, .viewer-header-data{
+  flex: 1 0 0;
+  text-align: center;
+  /* background-color: wheat; */
+}
+
+.viewer-header-pos{
+  padding-top: 4px;
+  padding-left: 4px;
+}
+
+.viewer-header-data{
+  border-radius: 5px;
+  color: rgb(24, 21, 46);
+  transition: border 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  margin-top: 3px;
+}
+
+.viewer-header-data.i75-100{
+  background-color: #5bd999;
+}
+
+.viewer-header-data.i50-75{
+  background-color: #7adfac;
+}
+
+.viewer-header-data.i25-50{
+  background-color: #a2dfc0;
+}
+
+.viewer-header-data.i0-25{
+  background-color: #c5e7d6;
 }
 
 .save-selector-title{
@@ -665,13 +1005,13 @@ a.bi-heart:hover {
 }
 
 .delete-mode {
-  background-color: #ff8080 !important;
+  background-color: #e95656 !important;
   border-color: #d66f6f !important;
   transition: border-color 0.4s;
 }
 
 .custom-delete:hover {
-  background-color: #ff8080 !important;
+  background-color: #e95656 !important;
   border-color: #d35f5f !important;
 }
 
@@ -694,20 +1034,66 @@ a.bi-heart:hover {
 
 [tabulator-field^="race"] {
   font-size: 13px;
-  /* Establece el tamaño de fuente a 13px */
   border: none !important;
 }
 
 [tabulator-field="driver"],
-[tabulator-field="points"] {
+[tabulator-field="points"],
+[tabulator-field="team"]{
   background-color: #464166 !important;
 }
 
+[tabulator-field="team"]{
+  padding-left: 0 !important;
+}
+
+#seasonresults-teams-table [tabulator-field^="race"] {
+  padding: 0px !important;
+}
+
+#seasonresults-teams-table [tabulator-field="team"] {
+  font-family: Formula1Bold;
+}
 
 
 #seasonresults-table {
   background-color: transparent !important;
   border: none !important;
+}
+
+.year-drivers-teams{
+  padding-top: 0.6rem;
+  padding-bottom: 0.7rem;
+  position: absolute;
+  display: flex;
+  gap: 10px;
+}
+
+.prediction-buttons{
+  padding-top: 0.6rem;
+  padding-bottom: 0.7rem;
+  position: absolute;
+  display: flex;
+}
+
+#deleteTracks{
+  transition: background-color 0.2s, border-color 0.3s !important;
+}
+
+.year-and-race{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.drivers-teams-pills{
+  display: flex;
+  align-items: flex-end;
+}
+
+.modal-buttons{
+  gap: 10px;
+  display: flex;
 }
 
 .main-viewer-section .tabulator-tableholder::-webkit-scrollbar {
@@ -717,6 +1103,16 @@ a.bi-heart:hover {
 .main-viewer-section .tabulator-tableholder::-webkit-scrollbar-thumb {
   background-color: white;
   border-radius: 3px !important;
+}
+
+.team-table-logo-name{
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border-right: 4px solid transparent;
+  transition: border 0.3s;
+  width: 100%;
+  height: 100%;
 }
 
 .tabulator-col-content {
@@ -744,7 +1140,7 @@ a.bi-heart:hover {
   background-color: #494561 !important;
   cursor: pointer !important;
   color: #dedde6 !important;
-  transition: background-color 0.3s !important;
+  transition: background-color 0.3s, color 0.3s !important;
 }
 
 .main-viewer-section .tabulator-row-even {
@@ -756,7 +1152,26 @@ a.bi-heart:hover {
 .main-viewer-section .tabulator-row:hover {
   background-color: #625e86 !important;
   cursor: pointer !important;
-  color: #dedde6 !important;
+}
+
+.main-viewer-section .tabulator-row [tabulator-field^="race"] {
+  transition: color 0.3s;
+}
+
+.main-viewer-section .tabulator-row:hover [tabulator-field^="race"] {
+  color: white;
+}
+
+[tabulator-field="team"]{
+  transition: background-color 0.3s, color 0.3s;
+  padding-right: 0px !important;
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+.tabulator-row:hover [tabulator-field="team"] {
+  background-color: #625e86 !important;
+  color: white !important;
 }
 
 .tabulator-row:hover [tabulator-field="driver"] {
@@ -765,13 +1180,14 @@ a.bi-heart:hover {
   border-right: 1.5px solid #dedde6 !important;
 }
 
+
 .tabulator-row:hover [tabulator-field="points"] {
   color: #110f24;
   background-color: #dedde6 !important;
   border-left: 1.5px solid #dedde6 !important;
 }
 
-[tabulator-field="driver"] span.bold-font {
+[tabulator-field="driver"] span.bold-font{
   transition: color 0.3s;
 }
 
@@ -810,6 +1226,11 @@ a.bi-heart:hover {
   font-size: 15px;
 }
 
+.main-calendar{
+  width: 100%;
+  margin-right: 14px;
+}
+
 .main-calendar-section {
   margin-left: 14px;
   border: 1px solid #797599;
@@ -845,13 +1266,6 @@ a.bi-heart:hover {
   justify-content: flex-end;
 }
 
-.option-buttons {
-  margin: 10px;
-  width: 210px !important;
-  height: 41px !important;
-
-}
-
 .buttons-h2h{
   display: flex;
   gap: 10px;
@@ -874,12 +1288,63 @@ a.bi-heart:hover {
   transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   display: flex;
   cursor: grab !important;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
+  padding-left: 12px;
   max-height: 112px;
+  gap: 10px;
 
 }
+
+.upper-text-and-flag{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.left-race{
+  width: 60%;
+  gap: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.right-race{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.full-quali-weather{
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.session-name{
+  font-size: 24px;
+}
+
+.weather-vis{
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  background-color: #292738;
+  border: 1.5px solid rgb(44, 43, 59);
+  font-size: 22px;
+  text-align: center;
+}
+
+.weather-selector{
+  display: flex;
+  flex-direction: row;
+  margin-left: 5px;
+  font-size: 24px;
+  padding-top: 2px;
+}
+
+.weather-selector i{
+  cursor: pointer;
+}
+
 
 .race-calendar:hover {
   border-color: white;
@@ -887,16 +1352,54 @@ a.bi-heart:hover {
   background-color: #4e4b69;
 }
 
+.race-calendar .bi-chevron-left, .race-calendar .bi-chevron-right {
+  transition: color 0.3s;
+}
+
+.race-calendar:hover .bi-chevron-left, .race-calendar:hover .bi-chevron-right {
+  color: #dedde6;
+}
+
+.race-calendar .bi-chevron-left:hover, .race-calendar .bi-chevron-right:hover {
+  color: white;
+}
+
 .deleting:hover {
   border: 2px solid transparent !important;
 }
 
+.complete-div {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 100.9%;
+  height: 101.9%;
+  background-color: rgba(128, 128, 128, 0.829);
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2.5px solid transparent;
+  border-radius: 10px;
+  color: #5bd999;
+  transition: color 0.4s, border-color 0.4s;
+  cursor: default;
+}
+
+.complete-div:hover{
+  border-color: #5bd999;
+}
+
+.completed:hover{
+  border-color: transparent;
+}
+
 .delete-div {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: -1px;
+  left: -1px;
+  width: 100.9%;
+  height: 101.9%;
   background-color: rgba(128, 128, 128, 0.829);
   z-index: 9998;
   display: flex;
@@ -910,8 +1413,8 @@ a.bi-heart:hover {
 }
 
 .delete-div:hover {
-  color: #ff8080;
-  border-color: #ff8080;
+  color: #f15353;
+  border-color: #f15353;
 }
 
 
@@ -920,8 +1423,7 @@ a.bi-heart:hover {
   font-size: 22px;
   display: flex;
   flex-direction: row;
-  width: 100%;
-  justify-content: space-around;
+  gap: 10px;
 }
 
 .flag {
@@ -985,22 +1487,25 @@ a.bi-heart:hover {
 
 #F2pill {
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s;
+  transition: border-color 0.4s, background-color 0.4s, color 0.4s;
 }
 
 #F2pill:hover {
   border: 2px solid #38c8f0;
   background-color: #388cd5;
+  color: white !important;
+
 }
 
 #F3pill {
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s;
+  transition: border-color 0.4s, background-color 0.4s, color 0.4s;
 }
 
 #F3pill:hover {
   border: 2px solid rgb(255, 72, 72);
   background-color: rgb(207, 46, 46);
+  color: white !important;
 }
 
 #F2pill.active {
@@ -1012,8 +1517,6 @@ a.bi-heart:hover {
 }
 
 .one-statH2H {
-  padding-left: 10px;
-  padding-right: 10px;
   padding-top: 5px;
   display: flex;
   flex-direction: column;
@@ -1027,6 +1530,7 @@ a.bi-heart:hover {
   border: 2px solid transparent;
   transition: border-color 0.4s, background-color 0.4s;
   align-items: center;
+  min-height: 66px;
 }
 
 .one-statH2H:hover {
@@ -1185,7 +1689,7 @@ a.bi-heart:hover {
 }
 
 .custom-H2H {
-  width: 280px;
+  width: 75%;
   display: flex;
   flex-direction: row;
   background-color: #1f1b3b;
@@ -1225,7 +1729,7 @@ a.bi-heart:hover {
 .red-part {
   width: 300px;
   height: 3px;
-  background-color: #ff8080;
+  background-color: #e95656;
   position: relative;
 }
 
@@ -1246,7 +1750,7 @@ a.bi-heart:hover {
 .green-part {
   width: 0%;
   height: 100%;
-  background-color: #9fdf9f;
+  background-color: #5bd999;
   position: absolute;
   top: 0;
   left: 0;
@@ -1338,7 +1842,18 @@ a.bi-heart:hover {
 
 .custom-modal {
   min-width: 600px !important;
+  z-index: 2000 !important;
+  border-radius: 50% !important;
 }
+
+.drivers-modal-zone, .teams-modal-zone{
+  border: 1px solid #797599;
+  border-radius: 10px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
 
 .contract-details div{
   color: #dedde6;
@@ -1348,6 +1863,8 @@ a.bi-heart:hover {
   color: white !important;
   border-bottom: 1px solid #797599 !important;
   background-color: #393744 !important;
+  display: flex;
+  justify-content: space-around;
 
 }
 
@@ -1372,6 +1889,14 @@ a.bi-heart:hover {
   transition: border-color 0.4s;
   background-color: rgb(99, 99, 110);
   color: #ebeaf0;
+}
+
+.rounded-input.retirement{
+  max-width: 75px;
+}
+
+.rounded-input.retirement::selection{
+  background-color: transparent;
 }
 
 .custom-disabled {
@@ -1404,7 +1929,8 @@ a.bi-heart:hover {
 }
 
 .team,
-.engine {
+.engine,
+.race {
   background-color: #3f3c57;
   border: 2px solid transparent;
   border-radius: 10px;
@@ -1417,15 +1943,124 @@ a.bi-heart:hover {
   font-size: 18px;
 }
 
+.driver-info{
+  background-color: #3f3c57;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 8px;
+  cursor: pointer !important;
+  margin: 13px 8px;
+  color: #dedde6;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  position: relative;
+  font-size: 18px;
+  display: flex;
+  flex-direction: row;
+}
+
+.race{
+  font-size: 24px;
+  text-transform: uppercase;
+  padding: 5px 0;
+  padding-left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.race-flag{
+  min-width: 80px;
+  max-width: 80px;
+  min-height: 45px;
+  max-height: 45px;
+  border-radius: 10px;
+  z-index: 2;
+  margin-right: 4px;
+}
+
+
+#raceMenu{
+  max-height: 660px;
+  overflow-y: scroll;
+  height: 660px;
+}
+
+.config-content{
+  color: #756f9b;
+  font-size: 22px;
+}
+
+#compConfigContent{
+  margin-top: 9px;
+}
+
+#predictConfigContent{
+  margin-top: 12px;
+}
+
+
+#predictionMenu{
+  margin-left: 0px;
+  margin-right: 14px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.prediction-table{
+  width: 50%;
+}
+
+.prediction-table-header, .prediction-table-driver{
+  display: flex;
+  flex-direction: row;
+  color: #dedde6;
+  font-size: 20px;
+  margin: 10px 20px;
+}
+
+.driver-prediction{
+  width: 50%;
+}
+
+.position-prediction{
+  width: 25%;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding-left: 40px;
+}
+
+.position-prediction > :first-child{
+  min-width: 50px;
+  margin-left: 20px;
+}
+
+.position-prediction > :nth-child(2){
+  min-width: 50px;
+}
+
+.prediction-prediction{
+  width: 25%;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+
+
 .team:hover,
-.engine:hover {
+.engine:hover,
+.race:hover, .driver-info:hover {
   border-color: white;
   color: white;
   background-color: #4e4b69;
 }
 
 .team.selected,
-.engine.selected {
+.engine.selected,
+.race.selected {
   color: #110f24;
   background-color: #dedde6;
 }
@@ -1447,6 +2082,114 @@ a.bi-heart:hover {
   font-size: 15px;
 }
 
+.H2Hradio{
+  border: 2px solid transparent;
+  border-radius: 7px;
+  color: #dedde6;
+  background-color: #797599;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  height: 28px;
+  font-size: 16px;
+  padding: 0 3px;
+  cursor: pointer;
+}
+
+.GraphButton{
+  border: 2px solid transparent;
+  border-radius: 7px;
+  color: #dedde6;
+  background-color: #797599;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  height: 28px;
+  font-size: 16px;
+  padding: 0 3px;
+  cursor: pointer;
+}
+
+.buttons-drivers-modal{
+  display: flex;
+  gap: 4px;
+}
+
+.H2Hradio:hover, .GraphButton:hover{
+  color: white;
+  background-color: #807ca1;
+  border-color: white;
+}
+
+.H2Hradio.activated{
+  background-color: #34c297;
+  border-color: #88ebcd;
+  color: white;
+}
+
+.GraphButton.activated{
+  background-color: #34bdc2;
+  border-color: #95ebee;
+  color: white;
+}
+
+
+
+.modal-dialog-lg{
+  min-width: 1300px !important;
+}
+
+.modal-dialog-med{
+  min-width: 900px !important;
+}
+
+.predict-footer{
+  display: flex !important;
+  justify-content: space-between !important;
+}
+
+.custom-bar{
+  width: 350px;
+  --bs-progress-bar-bg: #0ebb63 !important;
+}
+
+.bar-and-indicator{
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.indicator{
+  color: #5bd999;
+}
+
+.modal-driver{
+  background-color: #4e4b69;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 6px;
+  margin: 8px;
+  color: #dedde6;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  position: relative;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-team{
+  background-color: #4e4b69;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 0px 6px;
+  margin: 8px;
+  color: #dedde6;
+  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  position: relative;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .free-driver .custom-icon {
   color: transparent;
   transition: opacity 0.4s;
@@ -1461,8 +2204,41 @@ a.bi-heart:hover {
   justify-content: flex-end;
 }
 
-.custom-icon i {
+.free-driver .custom-unretire{
+  color: transparent;
+  transition: opacity 0.4s;
+  background-image: linear-gradient(to left, #4e4b69, transparent);
+  width: 80px;
+  height: 20px;
+  opacity: 0;
+  z-index: 3;
+  display: flex;
+  position: absolute;
+  right: 10px;
+  top: 7.5px;
+  justify-content: flex-end;
+}
+
+.free-driver:hover .custom-unretire{
+  opacity: 1;
+}
+
+.custom-icon .bi-pencil-square {
   transition: color 0.4s;
+}
+
+.free-driver .bi-ban{
+  opacity: 1 !important;
+  transition: color 0.4s;
+  color: white;
+  z-index: 10;
+  position: absolute;
+  right: 8px;
+  cursor: pointer;
+}
+
+.free-driver .bi-ban:hover{
+  color: #e95656;
 }
 
 .custom-icon i:hover {
@@ -1470,10 +2246,21 @@ a.bi-heart:hover {
   cursor: pointer;
 }
 
+.info-titles{
+  color: #756f9b;
+  font-size: 22px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.info-titles:hover{
+  color: #a49ecc;
+}
+
+
 .free-driver:hover .custom-icon {
   color: #9d98b8;
   opacity: 1;
-
 }
 
 #free-drivers {
@@ -1487,6 +2274,52 @@ a.bi-heart:hover {
   color: white;
   background-color: #4e4b69;
 }
+
+.modal-driver:hover, .modal-team:hover{
+  border-color: white;
+  color: white;
+  background-color: #4e4b69;
+}
+
+.modal-team.ferrari:hover{
+  color: #F91536;
+}
+
+.modal-team.redbull:hover{
+  color: #3671C6;
+}
+
+.modal-team.mclaren:hover{
+  color: #F58020;
+}
+
+.modal-team.merc:hover{
+  color: #6CD3BF;
+}
+
+.modal-team.alpine:hover{
+  color: #2293D1;
+}
+
+.modal-team.williams:hover{
+  color: #37BEDD;
+}
+
+.modal-team.haas:hover{
+  color: #B6BABD;
+}
+
+.modal-team.alpha:hover{
+  color: #5E8FAA;;
+}
+
+.modal-team.alfa:hover{
+  color: #C92D4B;
+}
+
+.modal-team.aston:hover{
+  color: #358C75;
+} 
 
 .blocking-div {
   position: absolute;
@@ -1502,6 +2335,35 @@ a.bi-heart:hover {
   color: white;
   backdrop-filter: blur(3px);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.blocking-confidence{
+  background-color: rgba(128, 128, 128, 0.5);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  backdrop-filter: blur(3px);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  width: 46%;
+  height: 7%;
+  position: absolute;
+  border-radius: 10px;
+}
+.blocking-h2h{
+  background-color: rgba(128, 128, 128, 0.5);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  backdrop-filter: blur(3px);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  width: 24.9%;
+  height: 658px;
+  position: absolute;
+  border-radius: 10px;
 }
 
 #calendarBlockDiv {
@@ -1553,11 +2415,11 @@ a.bi-heart:hover {
 }
 
 .positive {
-  color: #9fdf9f;
+  color: #5bd999;
 }
 
 .negative {
-  color: #ff8080;
+  color: #e95656;
 }
 
 .input-and-buttons{
@@ -1627,7 +2489,7 @@ a.bi-heart:hover {
   height: 56px;
   border: 2px solid transparent;
   font-size: 20px;
-  transition: background-color 0.4s, color 0.4s !important;
+  transition: background-color 0.4s, color 0.4s, border-color 0.4s !important;
 
 }
 
@@ -1720,7 +2582,189 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
-#redbulllogo {
+.team-viewer{
+  display: flex;
+  flex-direction: row;
+  height: 660px;
+  padding: 4px 20px;
+}
+
+.team-viewer .input-buttons{
+  font-size: 18px;
+}
+
+#teamBudgetInput{
+  min-width: 160px;
+}
+
+
+#costCapInput{
+  min-width: 170px;
+}
+
+.team-header{
+  font-size: 44px;
+  height: 55px;
+  width: 100%;
+}
+
+.viewer-component{
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+}
+
+.facility-component{
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.facility-component-lg{
+  margin-top: 5px;
+}
+
+.facility, .facility-level-indicator{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.facility{
+  margin-top: 5px;
+  justify-content: space-between;
+}
+
+.facility-level-indicator{
+  gap: 6px;
+  margin: 0 10px;
+  padding-top: 1px;
+}
+
+.facility-name{
+  width: 25%;
+  color: #dedde6;
+}
+
+.custom-button{
+  height: 40px;
+  font-size: 16px;
+  padding: 0 10px;
+}
+
+#teamMenu a{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+
+#viewer-first{
+  width: 49%;
+  padding-right: 20px;
+}
+
+#viewer-second{
+  width: 50%;
+  padding-left: 20px;
+}
+
+.separator{
+  margin-top: 30px;
+  width: 1px;
+  background-color: rgb(99, 99, 110);
+  height: 85%;
+}
+
+.main-second-viewer{
+  min-height: 580px;
+}
+
+.save-button-zone{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: 100%
+}
+
+.level{
+  height: 8px;
+  width: 42px;
+  background-color: rgb(99, 99, 110);
+  transition: background-color 0.2s;
+}
+
+.level.activated{
+  background-color: white !important;
+}
+
+.viewer-component .custom-input-number, .facility-component .custom-input-number, .facility-component-lg .custom-input-number{
+  background-color: rgb(99, 99, 110) !important;
+  text-align: center;
+  padding: 8px;
+  height: 39.2px !important;
+}
+
+#confidenceInput{
+  min-width: 70px !important;
+}
+
+.condition-input{
+  max-width: 80px;
+}
+
+.facility-condition{
+  margin-left: 45px;
+  gap: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#longTermInput{
+  min-width: 90px;
+}
+
+#objectiveButton{
+  padding-left: 6px;
+  margin-top: 5px !important;
+  color: #ebebee;
+}
+
+.first-component, .second-component{
+  width: 50%;
+}
+
+#edit_teams i{
+  transition: color 0.4s;
+  font-size: 20px;
+  color: #dedde6;
+  transition: background-color 0.4s, color 0.4s;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+
+}
+
+#edit_teams i:hover{
+  cursor: pointer;
+  color: white !important;
+  background-color: #6f698f !important;
+}
+
+.component-subtitle{
+  font-size: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#redbulllogo, #rblogo {
   width: 55px;
   height: 45px;
   padding-bottom: 8px;
@@ -1728,7 +2772,7 @@ input::-webkit-inner-spin-button {
   padding-top: 7px;
 }
 
-#ferrarilogo {
+#ferrarilogo, #felogo {
   width: 35px;
   height: 40px;
   padding-bottom: 6px;
@@ -1736,15 +2780,24 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#merclogo {
+#merclogo, #melogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
-  padding-top: 9px;
+  padding-top: 7px;
   padding-left: 10px;
 }
 
-#alpinelogo {
+#merclogo2 {
+  width: 40px;
+  height: 40px;
+  padding-bottom: 5px;
+  padding-top: 7px;
+  padding-left: 5px;
+  padding-right: 4px;
+}
+
+#alpinelogo, #allogo {
   width: 45px;
   height: 40px;
   padding-bottom: 6px;
@@ -1753,7 +2806,7 @@ input::-webkit-inner-spin-button {
   transition: opacity 0.4s;
 }
 
-#mclarenlogo {
+#mclarenlogo, #mclogo {
   width: 40px;
   height: 40px;
   padding-bottom: 4px;
@@ -1761,7 +2814,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#alfalogo {
+#alfalogo, #aflogo {
   width: 40px;
   height: 40px;
   padding-bottom: 3px;
@@ -1769,7 +2822,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#astonlogo {
+#astonlogo, #aslogo {
   width: 50px;
   height: 45px;
   padding-bottom: 5px;
@@ -1777,7 +2830,7 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
-#haaslogo {
+#haaslogo, #halogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -1785,7 +2838,7 @@ input::-webkit-inner-spin-button {
   padding-left: 6px;
 }
 
-#alphataurilogo {
+#alphataurilogo, #atlogo {
   width: 45px;
   height: 45px;
   padding-bottom: 12px;
@@ -1793,7 +2846,7 @@ input::-webkit-inner-spin-button {
   padding-top: 12px;
 }
 
-#williamslogo {
+#williamslogo, #wilogo {
   width: 45px;
   height: 45px;
   padding-bottom: 11px;
@@ -1801,45 +2854,140 @@ input::-webkit-inner-spin-button {
   padding-top: 10px;
 }
 
+.team1, .team2{
+  max-width: 150px;
+  text-align: center;
+}
+
+.driver1-name .team1, .driver2-name .team2{
+  color: #dedde6 !important;
+  transition: color 0.4s;
+}
+
+.driver1-name:hover .team1, .driver2-name:hover .team2{
+  color: white !important;
+}
+
 
 #redbull, .rbborder-down:hover {
   border-bottom: 2px solid #3671C6 !important;
+}
+
+.tabulator-row:hover .rbborder-right {
+  border-right: 3px solid #3671C6 !important;
+}
+
+.rbactivated{
+  background-color: #3671C6;
 }
 
 #ferrari, .feborder-down:hover {
   border-bottom: 2px solid #F91536 !important;
 }
 
+.tabulator-row:hover .feborder-right {
+  border-right: 3px solid #F91536 !important;
+}
+
+.feactivated{
+  background-color: #F91536;
+}
+
 #merc, .meborder-down:hover {
   border-bottom: 2px solid #6CD3BF !important;
+}
+
+.tabulator-row:hover .meborder-right {
+  border-right: 3px solid #6CD3BF !important;
+}
+
+.meactivated{
+  background-color: #6CD3BF;
 }
 
 #mclaren, .mcborder-down:hover {
   border-bottom: 2px solid #F58020 !important;
 }
 
+.tabulator-row:hover .mcborder-right {
+  border-right: 3px solid #F58020 !important;
+}
+
+.mcactivated{
+  background-color: #F58020;
+}
+
+
 #alpine,.alborder-down:hover {
   border-bottom: 2px solid #2293D1 !important
+}
+
+.tabulator-row:hover .alborder-right {
+  border-right: 3px solid #2293D1 !important;
+}
+
+.alactivated{
+  background-color: #2293D1;
 }
 
 #alfaromeo, .afborder-down:hover {
   border-bottom: 2px solid #C92D4B !important
 }
 
+.tabulator-row:hover .afborder-right {
+  border-right: 3px solid #C92D4B !important;
+}
+
+.afactivated{
+  background-color: #C92D4B;
+}
+
 #astonmartin, .asborder-down:hover {
   border-bottom: 2px solid #358C75 !important
+}
+
+.tabulator-row:hover .asborder-right {
+  border-right: 3px solid #358C75 !important;
+}
+
+.asactivated{
+  background-color: #358C75;
 }
 
 #alphatauri, .atborder-down:hover {
   border-bottom: 2px solid #5E8FAA !important 
 }
 
+.tabulator-row:hover .atborder-right {
+  border-right: 3px solid #5E8FAA !important;
+}
+
+.atactivated{
+  background-color: #5E8FAA;
+}
+
 #williams, .wiborder-down:hover {
   border-bottom: 2px solid #37BEDD !important
 }
 
+.tabulator-row:hover .wiborder-right {
+  border-right: 3px solid #37BEDD !important;
+}
+
+.wiactivated{
+  background-color: #37BEDD;
+}
+
 #haas, .haborder-down:hover {
   border-bottom: 2px solid #B6BABD !important
+}
+
+.tabulator-row:hover .haborder-right {
+  border-right: 3px solid #B6BABD !important;
+}
+
+.haactivated{
+  background-color: #B6BABD;
 }
 
 .rbfont {
@@ -1951,7 +3099,7 @@ input::-webkit-inner-spin-button {
 }
 
 .wibar-secondary {
-  background-color: #3792dd;
+  background-color: #f1f1f1;
 }
 
 .habar-primary {
@@ -1959,7 +3107,7 @@ input::-webkit-inner-spin-button {
 }
 
 .habar-secondary {
-  background-color: #da291c;
+  background-color: #f62039;
 }
 
 .rbborder-primary {
@@ -2031,7 +3179,7 @@ input::-webkit-inner-spin-button {
 }
 
 .wiborder-secondary {
-  border: 2px solid #3792dd;
+  border: 2px solid #f1f1f1;
 }
 
 .haborder-primary {
@@ -2039,7 +3187,11 @@ input::-webkit-inner-spin-button {
 }
 
 .haborder-secondary {
-  border: 2px solid #da291c;
+  border: 2px solid #f62039;
+}
+
+.predict-warning{
+  font-size: 14px;
 }
 
 

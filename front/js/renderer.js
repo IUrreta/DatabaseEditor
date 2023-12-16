@@ -1,5 +1,4 @@
 const socket = new WebSocket('ws://localhost:8765/');
-
 /**
  * When the socket is opened sends a connect message to the backend
  */
@@ -17,6 +16,7 @@ const simpleGit = require('simple-git');
 const { exec } = require('child_process');
 const { marked } = require('marked');
 const Tabulator = require('tabulator-tables');
+let conn = 0;
 
 let versionNow;
 const versionPanel = document.querySelector('.versionPanel');
@@ -54,7 +54,7 @@ async function getPatchNotes() {
                 let h4Element = document.createElement("h4");
                 h4Element.textContent = h1Element.textContent;
                 h4Element.classList.add("bold-font")
-                patchNotesBody.replaceChild(h4Element,h1Element);
+                patchNotesBody.replaceChild(h4Element, h1Element);
             });
 
             let h2Elements = patchNotesBody.querySelectorAll("h2");
@@ -62,7 +62,7 @@ async function getPatchNotes() {
                 let h4Element = document.createElement("h4");
                 h4Element.textContent = h1Element.textContent;
                 h4Element.classList.add("bold-font")
-                patchNotesBody.replaceChild(h4Element,h1Element);
+                patchNotesBody.replaceChild(h4Element, h1Element);
             });
         }
     } catch {
@@ -80,6 +80,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const carPill = document.getElementById("carpill");
     const viewPill = document.getElementById("viewerpill");
     const h2hPill = document.getElementById("h2hpill");
+    const constructorsPill = document.getElementById("constructorspill")
+    const predictPill = document.getElementById("predictpill")
 
     const driverTransferDiv = document.getElementById("driver_transfers");
     const editStatsDiv = document.getElementById("edit_stats");
@@ -87,10 +89,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const carPerformanceDiv = document.getElementById("car_performance");
     const viewDiv = document.getElementById("season_viewer");
     const h2hDiv = document.getElementById("head2head_viewer");
+    const teamsDiv = document.getElementById("edit_teams");
+    const predictDiv = document.getElementById("predict_results")
 
     const patchNotesBody = document.getElementById("patchNotesBody")
 
-    const scriptsArray = [h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv,]
+    const scriptsArray = [predictDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv, teamsDiv]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -100,7 +104,97 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched"]
+    const noNotifications = ["ERROR", "Montecarlo fetched","TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+
+    const messageHandlers = {
+        "ERROR": (message) => {
+            update_notifications(message[1], true);
+            manage_status(0);
+        },
+        "JIC": (message) => {
+            if(conn === 0){
+                console.log("JIC DOES ITS THING")
+                let data = {
+                    command: "connect"
+                }
+                socket.send(JSON.stringify(data))
+            }
+        },
+        "Connected Succesfully": (message) => {
+            conn = 1;
+            load_saves(message);
+            clearTimeout(connectionTimeout);
+            manage_status(1);
+            check_version();
+            listeners_plusLess();
+        },
+        "Save Loaded Succesfully": (message) => {
+            remove_drivers();
+            removeStatsDrivers();
+            place_drivers(message.slice(1));
+            place_drivers_editStats(message.slice(1));
+        },
+        "Staff Fetched": (message) => {
+            place_staff(message.slice(1));
+        },
+        "Calendar fetched": (message) => {
+            load_calendar(message.slice(1))
+        },
+        "Engines fetched": (message) => {
+            manage_engineStats(message.slice(1));
+        },
+        "Contract fetched": (message) => {
+            manage_modal(message.slice(1));
+        },
+        "Year fetched": (message) => {
+            generateYearsMenu(message.slice(1));
+        },
+        "Numbers fetched": (message) => {
+            loadNumbers(message.slice(1));
+        },
+        "Retirement fetched": (message) => {
+            loadRetirementyear(message.slice(1));
+        },
+        "H2H fetched": (message) => {
+            sprintsListeners();
+            manage_h2h_bars(message.slice(1)[0]);
+        },
+        "DriversH2H fetched": (message) => {
+            load_drivers_h2h(message.slice(1));
+        },
+        "H2HDriver fetched": (message) => {
+            load_labels_initialize_graphs(message.slice(1));
+        },
+        "Results fetched": (message) => {
+            createDriversTable(message[1]);
+            setTimeout(function () {
+                loadDriversTable(message.slice(2)); // Llamar a la función después de 1 segundo
+            }, 20);
+            createTeamsTable(message[1])
+            setTimeout(function () {
+                loadTeamsTable(message.slice(2)); // Llamar a la función después de 1 segundo
+            }, 20);
+        },
+        "TeamData Fetched": (message)=>{
+            fillLevels(message.slice(1))
+
+        },
+        "Events to Predict Fetched": (message)=>{
+            placeRaces(message.slice(1))
+        },
+        "Events to Predict Modal Fetched": (message)=>{
+            placeRacesInModal(message.slice(1))
+        },
+        "Prediction Fetched": (message)=>{
+            predictDrivers(message.slice(1))
+        },
+        "Montecarlo Fetched": (message)=>{
+            loadMontecarlo(message.slice(1))
+        },
+        "Progress": (message)=>{
+            manageProgress(message.slice(1))
+        }
+    };
 
     let latestTag;
 
@@ -108,88 +202,44 @@ document.addEventListener('DOMContentLoaded', function () {
     let scriptSelected = 0;
     let divBlocking = 1;
 
+    document.querySelectorAll(".modal").forEach(function (elem) {
+        elem.addEventListener('show.bs.modal', function () {
+            setTimeout(function () {
+                var modalBackdrop = document.querySelector('.modal-backdrop');
+                var cetContainer = document.querySelector('.cet-container');
+                cetContainer.appendChild(modalBackdrop);
+            }, 0);
+        });
+    })
 
     let connectionTimeout = setTimeout(() => {
         update_notifications("Could not connect with backend", true)
         manage_status(0)
-    }, 4000);
+    }, 8000);
+
+
 
     /**
      * Handles the receiving end from the messages sent from backend
      * @param {string} event the message tha tcomes fro the backend
      */
     socket.onmessage = (event) => {
-        // const mensaje = event.data;
-        // console.log('Mensaje recibido: ' + event.data);
+        let message = JSON.parse(event.data);
+        console.log(message[0])
+        let handler = messageHandlers[message[0]];
 
-        let message = JSON.parse(event.data)
-        //console.log(message)
-        if (message[0] === "ERROR") {
-            update_notifications(message[1], true)
-            manage_status(0)
+        if (handler) {
+            handler(message);
         }
-        else {
-            if (message[0] === "Connected Succesfully") {
-                load_saves(message)
-                clearTimeout(connectionTimeout);
-                manage_status(1)
-                check_version()
-                listeners_plusLess()
-
-
-            }
-            else if (message[0] === "Save Loaded Succesfully") {
-                remove_drivers()
-                removeStatsDrivers()
-                place_drivers(message.slice(1))
-                place_drivers_editStats(message.slice(1))
-                create_races()
-            }
-            else if (message[0] === "Staff Fetched") {
-                place_staff(message.slice(1))
-            }
-            else if (message[0] === "Calendar fetched") {
-                manage_calendarDiv(message.slice(1)[0])
-            }
-            else if (message[0] === "Engines fetched") {
-                manage_engineStats(message.slice(1))
-            }
-            else if (message[0] === "Contract fetched") {
-                manage_modal(message.slice(1))
-            }
-            else if (message[0] === "Year fetched") {
-                generateYearsMenu(message.slice(1))
-            }
-            else if (message[0] === "Numbers fetched") {
-                loadNumbers(message.slice(1))
-            }
-            else if (message[0] === "H2H fetched") {
-                sprintsListeners()
-                manage_h2h_bars(message.slice(1)[0])
-            }
-            else if(message[0] === "DriversH2H fetched"){
-                load_drivers_h2h(message.slice(1))
-            }
-            else if(message[0] === "H2HDriver fetched"){
-                load_h2h_graph(message.slice(1))
-            }
-            else if (message[0] === "Results fetched") {
-                createTable(message[1])
-                setTimeout(function () {
-                    loadTable(message.slice(2)); // Llamar a la función después de 1 segundo
-                }, 20);
-
-            }
-            if (!noNotifications.includes(message[0])) update_notifications(message[0], false)
-
+        if (!noNotifications.includes(message[0])) {
+            update_notifications(message[0], false);
         }
-
     };
 
     /**
      * Opens the log file
      */
-    logButton.addEventListener("click",function () {
+    logButton.addEventListener("click", function () {
         window.location.href = '../log.txt';
     })
 
@@ -362,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * @param {Object} info values for the contract modal that just opened
      */
     function manage_modal(info) {
-        document.querySelectorAll(".rounded-input").forEach(function (elem, index) {
+        document.querySelector(".contract-options").querySelectorAll(".rounded-input").forEach(function (elem, index) {
             elem.value = info[0][index]
         })
         document.querySelector("#numberButton").textContent = info[1][0]
@@ -379,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * @param {string} noti message of the notification
      * @param {bool} error if the notification is an error or not
      */
-    function update_notifications(noti,error) {
+    function update_notifications(noti, error) {
         let newNoti;
         newNoti = document.createElement('div');
         newNoti.className = 'notification';
@@ -388,13 +438,14 @@ document.addEventListener('DOMContentLoaded', function () {
         setTimeout(function () {
             toast.classList.remove("myShow")
         }, 500)
-
         notificationPanel.appendChild(toast);
         if (!error) {
             setTimeout(function () {
+                toast.querySelector(".notification-line").classList.add("start");
+            }, 10);
+            setTimeout(function () {
                 toast.classList.add("hide")
 
-                // Después de otros 2 segundos, eliminar el nuevo div
                 setTimeout(function () {
                     notificationPanel.removeChild(toast);
                 }, 480);
@@ -422,7 +473,9 @@ document.addEventListener('DOMContentLoaded', function () {
         toastFull.setAttribute('aria-atomic', 'true');
 
         toastDiv.classList.add('align-items-center');
-        line.classList.add("notification-line")
+        if (!err){
+            line.classList.add("notification-line")
+        }
 
         toastBodyDiv.classList.add('d-flex', 'toast-body');
         toastBodyDiv.textContent = msg;
@@ -481,6 +534,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 socket.send(JSON.stringify(dataSaves))
                 isSaveSelected = 1;
                 document.getElementById("editStatsPanel").className = "left-panel-stats d-none";
+                resetTeamEditing()
+                resetViewer()
+                resetYearButtons()
+                resetH2H()
+                hideComp()
+                resetPredict()
+                removeStatsDrivers()
+                document.querySelectorAll(".config-content").forEach(function(elem){
+                    elem.textContent = ""
+                })
                 statPanelShown = 0;
                 document.querySelectorAll(".performance-show").forEach(function (elem) {
                     elem.classList.add("d-none")
@@ -532,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.querySelector(".left-panel-stats").classList.add("d-none")
                 statPanelShown = 0;
             });
-            
+
         });
     }
 
@@ -550,8 +613,15 @@ document.addEventListener('DOMContentLoaded', function () {
     /**
      * Pills and their eventListeners
      */
+    predictPill.addEventListener("click", function () {
+        manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+        scriptSelected = 1
+        check_selected()
+        managePillsTitle("ia")
+    })
+
     h2hPill.addEventListener("click", function () {
-        manageScripts("show","hide", "hide", "hide", "hide", "hide")
+        manageScripts("hide","show", "hide", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("data")
@@ -559,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     viewPill.addEventListener("click", function () {
-        manageScripts("hide","show", "hide", "hide", "hide", "hide")
+        manageScripts("hide","hide", "show", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("data")
@@ -567,7 +637,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     driverTransferPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "show", "hide", "hide", "hide")
+        manageScripts("hide","hide", "hide", "show", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
@@ -575,34 +645,64 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     editStatsPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "hide", "show", "hide", "hide")
+        manageScripts("hide","hide", "hide", "hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
     })
 
+    constructorsPill.addEventListener("click", function () {
+        manageScripts("hide","hide", "hide", "hide", "hide", "hide", "hide", "show")
+        scriptSelected = 1
+        check_selected()
+        managePillsTitle("edit")
+    })
+    
+
     CalendarPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "hide", "hide", "show", "hide")
+        manageScripts("hide","hide", "hide", "hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
     })
 
     carPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "hide", "hide", "hide", "show")
+        manageScripts("hide","hide", "hide", "hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
         managePillsTitle("edit")
     })
 
-    function managePillsTitle(type){
-        if(type === "data"){
+    function managePillsTitle(type) {
+        if (type === "data") {
             document.querySelector("#dataPills").classList.add("activeType")
+            document.querySelector("#dataPills").querySelector(".pill-line").classList.add("activeType")
             document.querySelector("#editPills").classList.remove("activeType")
+            document.querySelector("#editPills").querySelector(".pill-line").classList.remove("activeType")
+            document.querySelector("#iaPills").classList.remove("activeType")
+            document.querySelector("#iaPills").querySelector(".pill-line").classList.remove("activeType")
+            document.querySelector(".mode-line").className = "mode-line view"
+            document.querySelector(".moving-line").className = "moving-line view"
         }
-        else if(type === "edit"){
+        else if (type === "edit") {
             document.querySelector("#editPills").classList.add("activeType")
+            document.querySelector("#editPills").querySelector(".pill-line").classList.add("activeType")
             document.querySelector("#dataPills").classList.remove("activeType")
+            document.querySelector("#dataPills").querySelector(".pill-line").classList.remove("activeType")
+            document.querySelector("#iaPills").classList.remove("activeType")
+            document.querySelector("#iaPills").querySelector(".pill-line").classList.remove("activeType")
+            document.querySelector(".mode-line").className = "mode-line edit"
+            document.querySelector(".moving-line").className = "moving-line edit"
+        }
+        else if (type === "ia") {
+            document.querySelector("#iaPills").classList.add("activeType")
+            document.querySelector("#iaPills").querySelector(".pill-line").classList.add("activeType")
+            document.querySelector("#dataPills").classList.remove("activeType")
+            document.querySelector("#dataPills").querySelector(".pill-line").classList.remove("activeType")
+            document.querySelector("#editPills").classList.remove("activeType")
+            document.querySelector("#editPills").querySelector(".pill-line").classList.remove("activeType")
+            document.querySelector(".mode-line").className = "mode-line ai"
+            document.querySelector(".moving-line").className = "moving-line ai"
         }
     }
 

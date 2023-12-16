@@ -67,7 +67,6 @@ def do_pack(from_folder, to_file):
     with open(to_file, 'wb') as f:
         f.write(new_file_content)
 
-
 def do_unpack(from_file, to_folder):
     with open(from_file, 'rb') as f:
         mm = mmap.mmap(f.fileno(), length=0, access=mmap.ACCESS_READ)
