@@ -39,8 +39,11 @@ def run_script(option=""):
                 n = random.randint(0,22)
             random_blanks.append(n)
 
+
         for el in random_blanks:
-            del weeks[el]
+            weeks[el] = 0
+
+        weeks = [i for i in weeks if i != 0] 
         
         weeks.sort()
         leap_year_count = 2
