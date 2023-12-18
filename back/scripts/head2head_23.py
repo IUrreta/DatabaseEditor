@@ -1,4 +1,5 @@
 import sqlite3
+import numpy as np
 def fetch_Head2Head(driver1ID, driver2ID, year):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
@@ -16,8 +17,6 @@ def fetch_Head2Head(driver1ID, driver2ID, year):
     polesH2H = [0,0]
     winsH2H = [0,0]
     sprintWinsH2H  = [0,0]
-    qualiPaceH2H  = [0,0]
-    racePaceH2H  = [0,0]
     d1_BestRace = 21
     d2_BestRace = 21
     d1_BestQauli = 21
@@ -26,6 +25,10 @@ def fetch_Head2Head(driver1ID, driver2ID, year):
     d2_avgPace = []
     d1_avgQPace = []
     d2_avgQPace = []
+    d1_RPositions = []
+    d2_RPositions = []
+    d1_QPositions = []
+    d2_QPositions = []
     for race in tuple_races:
         d1_QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
         d2_QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
@@ -40,11 +43,14 @@ def fetch_Head2Head(driver1ID, driver2ID, year):
                 qualiH2H[0]+= 1
             elif(d1_QRes[0] > d2_QRes[0]):
                 qualiH2H[1]+= 1
+        d1_QPositions.append(d1_QRes[0])
+        d2_QPositions.append(d2_QRes[0])
         minQ = d1_QStage[0] if d1_QStage[0] <= d2_QStage[0] else d2_QStage[0]
         d1_qLap = cursor.execute("SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0]) + " AND QualifyingStage = " + str(minQ)).fetchone()
         d2_qLap = cursor.execute("SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0]) + " AND QualifyingStage = " + str(minQ)).fetchone()
-        d1_avgQPace.append(d1_qLap[0])
-        d2_avgQPace.append(d2_qLap[0])
+        if(d1_qLap[0] != 0) and (d2_qLap[0] != 0):
+            d1_avgQPace.append(d1_qLap[0])
+            d2_avgQPace.append(d2_qLap[0])
         if(d1_QStage[0] == 3 and d1_QRes[0] == 1):
             polesH2H[0] += 1
         if(d2_QStage[0] == 3 and d2_QRes[0] == 1):
@@ -71,6 +77,8 @@ def fetch_Head2Head(driver1ID, driver2ID, year):
             d1_BestRace = d1_RRes[0]
         if(d2_RRes[0] < d2_BestRace):
             d2_BestRace = d2_RRes[0]
+        d1_RPositions.append(d1_RRes[0])
+        d2_RPositions.append(d2_RRes[0])
         d1_RDNF = cursor.execute("SELECT DNF FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
         d2_RDNF = cursor.execute("SELECT DNF FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
         if(d1_RDNF[0] == 1):
@@ -105,7 +113,15 @@ def fetch_Head2Head(driver1ID, driver2ID, year):
     qDifferences = [d2 - d1 for d1, d2 in zip(d1_avgQPace, d2_avgQPace)]
     avg_racediff = round(sum(rDifferences) / len(rDifferences), 3)
     avg_qualidiff = round(sum(qDifferences) / len(qDifferences), 3)
-    resultList = [tuple(raceH2H),tuple(qualiH2H),tuple(pointsH2H),tuple(podiumsH2H),tuple(bestRace),tuple(bestQuali),tuple(dnfH2H), tuple(winsH2H), tuple(polesH2H), tuple(sprintWinsH2H), (-avg_racediff, avg_racediff), (-avg_qualidiff, avg_qualidiff)]
+    meanRd1 = round(np.mean(d1_RPositions), 1)
+    meanRd2 = round(np.mean(d2_RPositions), 1)
+    medianRd1 = np.median(d1_RPositions)
+    medianRd2 = np.median(d2_RPositions)
+    meanQd1 = round(np.mean(d1_QPositions), 1)
+    meanQd2 = round(np.mean(d2_QPositions), 1)
+    medianQd1 = np.median(d1_QPositions)
+    medianQd2 = np.median(d2_QPositions)
+    resultList = [tuple(raceH2H),tuple(qualiH2H),tuple(pointsH2H),tuple(podiumsH2H),tuple(bestRace),tuple(bestQuali),tuple(dnfH2H), tuple(winsH2H), tuple(polesH2H), tuple(sprintWinsH2H), (-avg_racediff, avg_racediff), (-avg_qualidiff, avg_qualidiff), (meanRd1, meanRd2), (medianRd1, medianRd2), (meanQd1, meanQd2), (medianQd1, medianQd2)]
 
     conn.commit()
     conn.close()

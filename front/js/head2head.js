@@ -8,7 +8,8 @@ let d2_team
 let wins = false;
 let poles = false;
 let sprints = false;
-let racepace = false;
+let race = 0;
+let quali = 0;
 let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00" }
 let driverGraph;
 let pointsGraph;
@@ -131,21 +132,106 @@ function manage_h2h_bars(data) {
         }
         else {
             if (elem.id === "raceh2h" || elem.id === "qualih2h") {
-                relValue = (100 / (data[0][0] + data[0][1])).toFixed(2)
+                if(mode === "driver"){
+                    let index2
+                    if(elem.id === "raceh2h"){
+                        index2 = 10
+                    }
+                    else{
+                        index2 = 11
+                    }
+                    let d1Num = elem.querySelector(".avg-comparison").querySelector(".driver1-avg")
+                    d1Num.className = "driver1-avg bold-font"
+                    let d2Num = elem.querySelector(".avg-comparison").querySelector(".driver2-avg")
+                    d2Num.className = "driver2-avg bold-font"
+                    let d1 = compData[index2][0];
+                    if (compData[index2][0] > 0) {
+                        d1 = "+" + compData[index2][0]
+                        d1Num.classList.add("negative")
+                        d2Num.classList.add("positive")
+                    }
+                    d1Num.innerText = d1
+                    let d2 = compData[index2][1];
+                    if (compData[index2][1] > 0) {
+                        d2 = "+" + compData[index2][1]
+                        d1Num.classList.add("positive")
+                        d2Num.classList.add("negative")
+                    }
+                    d2Num.innerText = d2
+                }
+                if (elem.id === "qualih2h" && quali === 0){
+                    relValue = (100 / (data[0][0] + data[0][1])).toFixed(2)
+                    if (relValue == Infinity) {
+                        relValue = 0
+                    }
+                    d1_width = data[index][0] * relValue
+                    d2_width = data[index][1] * relValue
+                    elem.querySelector(".driver1-number").textContent = data[index][0]
+                    elem.querySelector(".driver2-number").textContent = data[index][1]
+                }
+                else if(elem.id === "qualih2h"){
+                    if(quali === 2){
+                        d1_width = 100 - (data[14][0] - 1) * 5
+                        d2_width = 100 - (data[14][1] - 1) * 5
+                        elem.querySelector(".driver1-number").textContent = data[14][0]
+                        elem.querySelector(".driver2-number").textContent = data[14][1]
+                    }
+                    else if(quali === 3){
+                        d1_width = 100 - (data[15][0] - 1) * 5
+                        d2_width = 100 - (data[15][1] - 1) * 5
+                        elem.querySelector(".driver1-number").textContent = data[15][0]
+                        elem.querySelector(".driver2-number").textContent = data[15][1]
+                    }
+                }
+                if (elem.id === "raceh2h" && race === 0){
+                    relValue = (100 / (data[0][0] + data[0][1])).toFixed(2)
+                    if (relValue == Infinity) {
+                        relValue = 0
+                    }
+                    d1_width = data[index][0] * relValue
+                    d2_width = data[index][1] * relValue
+                    elem.querySelector(".driver1-number").textContent = data[index][0]
+                    elem.querySelector(".driver2-number").textContent = data[index][1]
+                }
+                else if(elem.id === "raceh2h"){
+                    if(race === 2){
+                        d1_width = 100 - (data[12][0] - 1) * 5
+                        d2_width = 100 - (data[12][1] - 1) * 5
+                        elem.querySelector(".driver1-number").textContent = data[12][0]
+                        elem.querySelector(".driver2-number").textContent = data[12][1]
+                    }
+                    else if(race === 3){
+                        d1_width = 100 - (data[13][0] - 1) * 5
+                        d2_width = 100 - (data[13][1] - 1) * 5
+                        elem.querySelector(".driver1-number").textContent = data[13][0]
+                        elem.querySelector(".driver2-number").textContent = data[13][1]
+                    }
+                }
             }
             else if (elem.id === "ptsh2h") {
                 relValue = 100 / Math.max(data[index][0], data[index][1])
+                if (relValue == Infinity) {
+                    relValue = 0
+                }
+                d1_width = data[index][0] * relValue
+                d2_width = data[index][1] * relValue
+                elem.querySelector(".driver1-number").textContent = data[index][0]
+                elem.querySelector(".driver2-number").textContent = data[index][1]
             }
             else if (elem.id === "dnfh2h" || elem.id === "podiumsh2h") {
+                console.log("cojones")
                 relValue = (100 / (data[index][0] + data[index][1])).toFixed(2)
+                if (relValue == Infinity) {
+                    relValue = 0
+                }
+                d1_width = data[index][0] * relValue
+                d2_width = data[index][1] * relValue
+                console.log(d1_width)
+                console.log(d2_width)
+                elem.querySelector(".driver1-number").textContent = data[index][0]
+                elem.querySelector(".driver2-number").textContent = data[index][1]
             }
-            if (relValue == Infinity) {
-                relValue = 0
-            }
-            d1_width = data[index][0] * relValue
-            d2_width = data[index][1] * relValue
-            elem.querySelector(".driver1-number").textContent = data[index][0]
-            elem.querySelector(".driver2-number").textContent = data[index][1]
+
         }
         if (d1_width > 100) {
             d1_width = 100
@@ -227,26 +313,113 @@ function toggle_sprints() {
 
 function toggle_racePace() {
     let elem = document.querySelector("#raceh2h")
-    if (racepace) {
+    if (race === 1) {
         elem.querySelector(".only-name").textContent = "AVG PACE DIFF (s)"
-        relValue = (100 / (compData[10][0] + compData[10][1])).toFixed(2)
-        d1_width = compData[10][0] * relValue
-        d2_width = compData[10][1] * relValue
-        elem.querySelector(".driver1-number").classList.add("little")
-        elem.querySelector(".driver2-number").classList.add("little")
-        elem.querySelector(".driver1-number").textContent = compData[10][0]
-        elem.querySelector(".driver2-number").textContent = compData[10][1]
+        elem.querySelector(".bar-space").classList.add("d-none")
+        elem.querySelector(".avg-comparison").classList.remove("d-none")
+        let d1Num = elem.querySelector(".avg-comparison").querySelector(".driver1-avg")
+        d1Num.className = "driver1-avg bold-font"
+        let d2Num = elem.querySelector(".avg-comparison").querySelector(".driver2-avg")
+        d2Num.className = "driver2-avg bold-font"
+        let d1 = compData[10][0];
+        if (compData[10][0] > 0) {
+            d1 = "+" + compData[10][0]
+            d1Num.classList.add("negative")
+            d2Num.classList.add("positive")
+        }
+        d1Num.innerText = d1
+        let d2 = compData[10][1];
+        if (compData[10][1] > 0) {
+            d2 = "+" + compData[10][1]
+            d1Num.classList.add("positive")
+            d2Num.classList.add("negative")
+        }
+        d2Num.innerText = d2
     }
     else {
-        relValue = (100 / (compData[0][0] + compData[0][1])).toFixed(2)
-        d1_width = compData[0][0] * relValue
-        d2_width = compData[0][1] * relValue
-        elem.querySelector(".driver1-number").classList.remove("little")
-        elem.querySelector(".driver2-number").classList.remove("little")
-        elem.querySelector(".driver1-number").textContent = compData[0][0]
-        elem.querySelector(".driver2-number").textContent = compData[0][1]
+        elem.querySelector(".bar-space").classList.remove("d-none")
+        elem.querySelector(".avg-comparison").classList.add("d-none")
+        if(race === 0){
+            elem.querySelector(".only-name").textContent = "RACE"
+            relValue = (100 / (compData[0][0] + compData[0][1])).toFixed(2)
+            d1_width = compData[0][0] * relValue
+            d2_width = compData[0][1] * relValue
+            elem.querySelector(".driver1-number").textContent = compData[0][0]
+            elem.querySelector(".driver2-number").textContent = compData[0][1]
+        }
+        else if(race === 2){
+            elem.querySelector(".only-name").textContent = "AVG RACE"
+            d1_width = 100 - (compData[12][0] - 1) * 5
+            d2_width = 100 - (compData[12][1] - 1) * 5
+            elem.querySelector(".driver1-number").textContent = compData[12][0]
+            elem.querySelector(".driver2-number").textContent = compData[12][1]
+        }
+        else if(race === 3){
+            elem.querySelector(".only-name").textContent = "MEDIAN RACE"
+            d1_width = 100 - (compData[13][0] - 1) * 5
+            d2_width = 100 - (compData[13][1] - 1) * 5
+            elem.querySelector(".driver1-number").textContent = compData[13][0]
+            elem.querySelector(".driver2-number").textContent = compData[13][1]
+        }
+        fill_bars(elem, d1_width, d2_width)
     }
-    fill_bars(elem, d1_width, d2_width)
+
+}
+
+function toggle_qualiPace() {
+    let elem = document.querySelector("#qualih2h")
+    if (quali === 1) {
+        elem.querySelector(".only-name").textContent = "AVG QUALI DIFF (s)"
+        elem.querySelector(".bar-space").classList.add("d-none")
+        elem.querySelector(".avg-comparison").classList.remove("d-none")
+        let d1Num = elem.querySelector(".avg-comparison").querySelector(".driver1-avg")
+        d1Num.className = "driver1-avg bold-font"
+        let d2Num = elem.querySelector(".avg-comparison").querySelector(".driver2-avg")
+        d2Num.className = "driver2-avg bold-font"
+        let d1 = compData[11][0];
+        if (compData[11][0] > 0) {
+            d1 = "+" + compData[11][0]
+
+            d1Num.classList.add("negative")
+            d2Num.classList.add("positive")
+        }
+        d1Num.innerText = d1
+        let d2 = compData[11][1];
+        if (compData[11][1] > 0) {
+            d2 = "+" + compData[11][1]
+
+            d1Num.classList.add("positive")
+            d2Num.classList.add("negative")
+        }
+        d2Num.innerText = d2
+    }
+    else {
+        elem.querySelector(".bar-space").classList.remove("d-none")
+        elem.querySelector(".avg-comparison").classList.add("d-none")
+        if(quali === 0){
+            elem.querySelector(".only-name").textContent = "QUALIFYING"
+            relValue = (100 / (compData[0][0] + compData[0][1])).toFixed(2)
+            d1_width = compData[1][0] * relValue
+            d2_width = compData[1][1] * relValue
+            elem.querySelector(".driver1-number").textContent = compData[1][0]
+            elem.querySelector(".driver2-number").textContent = compData[1][1]
+        }
+        else if(quali === 2){
+            elem.querySelector(".only-name").textContent = "AVG QUALI"
+            d1_width = 100 - (compData[14][0] - 1) * 5
+            d2_width = 100 - (compData[14][1] - 1) * 5
+            elem.querySelector(".driver1-number").textContent = compData[14][0]
+            elem.querySelector(".driver2-number").textContent = compData[14][1]
+        }
+        else if(quali === 3){
+            elem.querySelector(".only-name").textContent = "MEDIAN QUALI"
+            d1_width = 100 - (compData[15][0] - 1) * 5
+            d2_width = 100 - (compData[15][1] - 1) * 5
+            elem.querySelector(".driver1-number").textContent = compData[15][0]
+            elem.querySelector(".driver2-number").textContent = compData[15][1]
+        }
+        fill_bars(elem, d1_width, d2_width)
+    }
 }
 
 /**
@@ -259,17 +432,62 @@ function sprintsListeners() {
     })
 }
 
-function racePaceListener(){
-    document.querySelector("#raceh2h").querySelectorAll("i").forEach(function (elem) {
-        elem.removeEventListener('evento', change_racePaceView);
-        elem.addEventListener("click", change_racePaceView)
+function racePaceListener() {
+    document.querySelector("#raceh2h").querySelectorAll(".bi-chevron-right").forEach(function (elem) {
+        elem.removeEventListener('evento5', increase_racePaceView);
+        elem.addEventListener("click", increase_racePaceView)
+    })
+    document.querySelector("#raceh2h").querySelectorAll(".bi-chevron-left").forEach(function (elem) {
+        elem.removeEventListener('evento6', decrease_racePaceView);
+        elem.addEventListener("click", decrease_racePaceView)
     })
 }
 
-function change_racePaceView() {
-    racepace = !racepace
+function qualiPaceListener() {
+    document.querySelector("#qualih2h").querySelectorAll(".bi-chevron-right").forEach(function (elem) {
+        elem.removeEventListener('evento3', increase_qualiPaceView);
+        elem.addEventListener("click", increase_qualiPaceView)
+    })
+    document.querySelector("#qualih2h").querySelectorAll(".bi-chevron-left").forEach(function (elem) {
+        elem.removeEventListener('evento4', decrease_qualiPaceView);
+        elem.addEventListener("click", decrease_qualiPaceView)
+    })
+}
+
+function increase_racePaceView() {
+    race += 1
+    if(race === 4){
+        race = 0
+    }
     toggle_racePace()
 }
+
+function decrease_racePaceView() {
+    race -= 1
+    if(race === -1){
+        race = 3
+    }
+    toggle_racePace()
+}
+
+function increase_qualiPaceView() {
+    quali += 1
+    if(quali === 4){
+        quali = 0
+    }
+    toggle_qualiPace()
+}
+
+function decrease_qualiPaceView() {
+    quali -= 1
+    if(quali === -1){
+        quali = 3
+    }
+    toggle_qualiPace()
+}
+
+
+
 
 /**
  * Changes the sprint view
@@ -299,10 +517,10 @@ document.getElementById("annotationsToggle").addEventListener("click", function 
 
 })
 
-function hideComp(){
+function hideComp() {
     document.querySelector(".drivers-modal-zone").innerHTML = ""
     document.querySelector("#mainH2h").classList.add("d-none")
-    document.querySelectorAll(".modal-team").forEach(function(elem){
+    document.querySelectorAll(".modal-team").forEach(function (elem) {
         elem.classList.add("d-none")
     })
 }
@@ -462,6 +680,16 @@ document.querySelector("#driverspillmodal").addEventListener("click", function (
     document.querySelector(".drivers-modal-section").classList.remove("d-none")
     document.querySelector(".teams-modal-section").classList.add("d-none")
     mode = "driver"
+    document.getElementById("qualih2h").querySelector(".name-H2H").style.justifyContent = "space-between"
+    document.getElementById("qualih2h").querySelector(".only-name").innerText = "QUALIFYING"
+    document.querySelector("#qualih2h").querySelectorAll("i").forEach(function (elem) {
+        elem.classList.remove("d-none")
+    });
+    document.getElementById("raceh2h").querySelector(".name-H2H").style.justifyContent = "space-between"
+    document.getElementById("raceh2h").querySelector(".only-name").innerText = "RACE"
+    document.querySelector("#raceh2h").querySelectorAll("i").forEach(function (elem) {
+        elem.classList.remove("d-none")
+    });
     resetH2H()
 })
 
@@ -469,6 +697,18 @@ document.querySelector("#teamspillmodal").addEventListener("click", function () 
     document.querySelector(".drivers-modal-section").classList.add("d-none")
     document.querySelector(".teams-modal-section").classList.remove("d-none")
     mode = "team"
+    race = 0
+    quali = 0
+    document.getElementById("qualih2h").querySelector(".name-H2H").style.justifyContent = "center"
+    document.getElementById("raceh2h").querySelector(".only-name").innerText = "QUALIFYING"
+    document.querySelector("#qualih2h").querySelectorAll("i").forEach(function (elem) {
+        elem.classList.add("d-none")
+    });
+    document.getElementById("raceh2h").querySelector(".name-H2H").style.justifyContent = "center"
+    document.getElementById("raceh2h").querySelector(".only-name").innerText = "RACE"
+    document.querySelector("#raceh2h").querySelectorAll("i").forEach(function (elem) {
+        elem.classList.add("d-none")
+    });
     resetH2H()
 })
 
@@ -488,7 +728,7 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
         let d1
         let d2
         document.querySelectorAll(".H2Hradio.activated").forEach(function (elem) {
-            if(mode === "driver"){
+            if (mode === "driver") {
                 if (elem.dataset.driverid === h2hList[0]) {
                     d1 = elem;
                 }
@@ -496,7 +736,7 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
                     d2 = elem
                 }
             }
-            else if(mode === "team"){
+            else if (mode === "team") {
                 if (elem.dataset.teamid === h2hTeamList[0]) {
                     d1 = elem;
                 }
@@ -510,12 +750,12 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
         nameTitleD2(d2.parentElement.parentElement)
     }
     document.querySelector("#compConfigContent").innerText = document.querySelector("#yearButtonH2H").textContent
-    if(mode === "driver"){
+    if (mode === "driver") {
         document.querySelector("#qualiForm").classList.remove("d-none")
         document.querySelector("#raceForm").classList.remove("d-none")
         document.querySelector("#raceForm").click()
     }
-    else if(mode === "team"){
+    else if (mode === "team") {
         document.querySelector("#qualiForm").classList.add("d-none")
         document.querySelector("#raceForm").classList.add("d-none")
         document.querySelector("#pointsProgression").click()
@@ -532,11 +772,11 @@ function resetH2H() {
     graphTeamList = []
     let h2htext = document.querySelector(".H2H-text").querySelector(".text-normal")
     let graphtext = document.querySelector(".graph-text").querySelector(".text-normal")
-    if(mode === "driver"){
+    if (mode === "driver") {
         h2htext.innerText = "- " + h2hCount + "/2 drivers selected"
         graphtext.innerText = "- " + graphCount + " drivers selected"
     }
-    else if(mode === "team"){
+    else if (mode === "team") {
         h2htext.innerText = "- " + h2hCount + "/2 teams selected"
         graphtext.innerText = "- " + graphCount + " teams selected"
     }

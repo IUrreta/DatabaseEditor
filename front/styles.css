@@ -489,9 +489,26 @@ a.bi-linkedin:hover {
 }
 
 .driver1-number.little, .driver2-number.little{
-  font-size: 14px;
+  font-size: 13px;
   height: 27px;
   padding-top: 5px;
+}
+
+.avg-comparison{
+  display: flex;
+  height: 27px;
+  gap: 70px;
+}
+
+.driver1-avg, .driver2-avg{
+  font-size: 18px;
+}
+
+.avg-separator{
+  width: 2px;
+  height: 20px;
+  margin-top: 3px;
+  background-color: #dedde6;
 }
 
 .toast-error{

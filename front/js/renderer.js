@@ -158,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
         "H2H fetched": (message) => {
             sprintsListeners();
             racePaceListener();
+            qualiPaceListener()
             manage_h2h_bars(message.slice(1)[0]);
         },
         "DriversH2H fetched": (message) => {
