@@ -1929,12 +1929,12 @@ a.bi-linkedin:hover {
 
 .rounded-input:hover {
   border-color: #cecece;
-
 }
 
 .rounded-input:focus {
   outline: 0px solid transparent;
   border-color: white;
+  color: white;
 }
 
 .confirm-area {
@@ -2525,13 +2525,14 @@ a.bi-linkedin:hover {
   background-color: transparent;
 }
 
-.custom-input-number:hover {
-  color: white;
-  background-color: #292738;
 
+.custom-input-number:hover {
+  background-color: #292738;
+  border-color: #cecece;
 }
 
 .custom-input-number:focus {
+  color: white;
   outline: 0px solid transparent;
   border-color: white;
 }
@@ -2755,9 +2756,8 @@ input::-webkit-inner-spin-button {
 }
 
 #objectiveButton{
-  padding-left: 6px;
   margin-top: 5px !important;
-  color: #ebebee;
+  max-width: 260px !important;
 }
 
 .first-component, .second-component{
