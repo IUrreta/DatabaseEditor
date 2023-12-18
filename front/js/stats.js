@@ -260,7 +260,7 @@ function calculateOverall(stats, type) {
         let reactions = statsArray[7];
         let accuracy = statsArray[8];
 
-        rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.5 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 4.75;
+        rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.75 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 5;
 
     }
     else if(type === "staff"){
