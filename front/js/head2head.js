@@ -432,6 +432,9 @@ function sprintsListeners() {
     })
 }
 
+/**
+ * listeners to the race head to head comparison
+ */
 function racePaceListener() {
     document.querySelector("#raceh2h").querySelectorAll(".bi-chevron-right").forEach(function (elem) {
         elem.removeEventListener('evento5', increase_racePaceView);
@@ -443,6 +446,9 @@ function racePaceListener() {
     })
 }
 
+/**
+ * listeners to the qualifying head to head comparison
+ */
 function qualiPaceListener() {
     document.querySelector("#qualih2h").querySelectorAll(".bi-chevron-right").forEach(function (elem) {
         elem.removeEventListener('evento3', increase_qualiPaceView);
@@ -454,35 +460,40 @@ function qualiPaceListener() {
     })
 }
 
+
+/**
+ * increases the race comparison showed
+ */
 function increase_racePaceView() {
     race += 1
-    if(race === 4){
-        race = 0
-    }
+    race = race % 4
     toggle_racePace()
 }
 
+/**
+ * decreases the race comparison showed
+ */
 function decrease_racePaceView() {
     race -= 1
-    if(race === -1){
-        race = 3
-    }
+    race = (race + 4) % 4
     toggle_racePace()
 }
 
+/**
+ * increases the quali comparison showed
+ */
 function increase_qualiPaceView() {
     quali += 1
-    if(quali === 4){
-        quali = 0
-    }
+    quali = quali % 4
     toggle_qualiPace()
 }
 
+/**
+ * decreases the quali comparison showed
+ */
 function decrease_qualiPaceView() {
     quali -= 1
-    if(quali === -1){
-        quali = 3
-    }
+    quali = (quali + 4) % 4
     toggle_qualiPace()
 }
 
@@ -517,6 +528,9 @@ document.getElementById("annotationsToggle").addEventListener("click", function 
 
 })
 
+/**
+ * hides the comparison
+ */
 function hideComp() {
     document.querySelector(".drivers-modal-zone").innerHTML = ""
     document.querySelector("#mainH2h").classList.add("d-none")
