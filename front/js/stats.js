@@ -68,7 +68,7 @@ function place_drivers_editStats(driversArray) {
 
     })
 
-    document.querySelectorAll(".custom-input-number").forEach(function (elem) {
+    document.querySelector("#edit_stats").querySelectorAll(".custom-input-number").forEach(function (elem) {
         elem.addEventListener("change",function () {
             document.getElementById("confirmbtn").className = "btn custom-confirm"
             if (elem.value > 99) {
