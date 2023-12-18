@@ -8,6 +8,7 @@ let d2_team
 let wins = false;
 let poles = false;
 let sprints = false;
+let racepace = false;
 let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00" }
 let driverGraph;
 let pointsGraph;
@@ -224,14 +225,50 @@ function toggle_sprints() {
     fill_bars(elem, d1_width, d2_width)
 }
 
+function toggle_racePace() {
+    let elem = document.querySelector("#raceh2h")
+    if (racepace) {
+        elem.querySelector(".only-name").textContent = "AVG PACE DIFF (s)"
+        relValue = (100 / (compData[10][0] + compData[10][1])).toFixed(2)
+        d1_width = compData[10][0] * relValue
+        d2_width = compData[10][1] * relValue
+        elem.querySelector(".driver1-number").classList.add("little")
+        elem.querySelector(".driver2-number").classList.add("little")
+        elem.querySelector(".driver1-number").textContent = compData[10][0]
+        elem.querySelector(".driver2-number").textContent = compData[10][1]
+    }
+    else {
+        relValue = (100 / (compData[0][0] + compData[0][1])).toFixed(2)
+        d1_width = compData[0][0] * relValue
+        d2_width = compData[0][1] * relValue
+        elem.querySelector(".driver1-number").classList.remove("little")
+        elem.querySelector(".driver2-number").classList.remove("little")
+        elem.querySelector(".driver1-number").textContent = compData[0][0]
+        elem.querySelector(".driver2-number").textContent = compData[0][1]
+    }
+    fill_bars(elem, d1_width, d2_width)
+}
+
 /**
  * Adds listeners for the arrows to change between sprints and races
  */
 function sprintsListeners() {
     document.querySelector("#bestrh2h").querySelectorAll("i").forEach(function (elem) {
-        elem.removeEventListener('evento', change_sprintView);
+        elem.removeEventListener('evento2', change_sprintView);
         elem.addEventListener("click", change_sprintView)
     })
+}
+
+function racePaceListener(){
+    document.querySelector("#raceh2h").querySelectorAll("i").forEach(function (elem) {
+        elem.removeEventListener('evento', change_racePaceView);
+        elem.addEventListener("click", change_racePaceView)
+    })
+}
+
+function change_racePaceView() {
+    racepace = !racepace
+    toggle_racePace()
 }
 
 /**

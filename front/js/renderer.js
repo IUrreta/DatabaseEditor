@@ -157,6 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         "H2H fetched": (message) => {
             sprintsListeners();
+            racePaceListener();
             manage_h2h_bars(message.slice(1)[0]);
         },
         "DriversH2H fetched": (message) => {
@@ -225,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     socket.onmessage = (event) => {
         let message = JSON.parse(event.data);
-        console.log(message[0])
+        console.log(message)
         let handler = messageHandlers[message[0]];
 
         if (handler) {

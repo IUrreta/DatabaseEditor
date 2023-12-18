@@ -488,6 +488,12 @@ a.bi-linkedin:hover {
   transition: color 0.4s;
 }
 
+.driver1-number.little, .driver2-number.little{
+  font-size: 14px;
+  height: 27px;
+  padding-top: 5px;
+}
+
 .toast-error{
   color: #ff4949 !important;
 }
@@ -1683,7 +1689,7 @@ a.bi-linkedin:hover {
   transition: color 0.4s;
 }
 
-#bestrh2h .name-H2H{
+#bestrh2h .name-H2H, #raceh2h .name-H2H, #qualih2h .name-H2H{
   display: flex;
   justify-content: space-between;
 }
