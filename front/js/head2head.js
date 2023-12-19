@@ -160,7 +160,7 @@ function manage_h2h_bars(data) {
                 }
                 d2Num.innerText = d2
 
-                if (elem.id === "qualih2h" && quali === 0) {
+                if (elem.id === "qualih2h") {
                     relValue = (100 / (data[0][0] + data[0][1])).toFixed(2)
                     if (relValue == Infinity) {
                         relValue = 0
@@ -169,8 +169,6 @@ function manage_h2h_bars(data) {
                     d2_width = data[index][1] * relValue
                     elem.querySelector(".driver1-number").textContent = data[index][0]
                     elem.querySelector(".driver2-number").textContent = data[index][1]
-                }
-                else if (elem.id === "qualih2h") {
                     if (quali === 2) {
                         d1_width = 100 - (data[14][0] - 1) * 5
                         d2_width = 100 - (data[14][1] - 1) * 5
@@ -184,7 +182,8 @@ function manage_h2h_bars(data) {
                         elem.querySelector(".driver2-number").textContent = data[15][1]
                     }
                 }
-                if (elem.id === "raceh2h" && race === 0) {
+
+                if (elem.id === "raceh2h") {
                     relValue = (100 / (data[0][0] + data[0][1])).toFixed(2)
                     if (relValue == Infinity) {
                         relValue = 0
@@ -193,8 +192,7 @@ function manage_h2h_bars(data) {
                     d2_width = data[index][1] * relValue
                     elem.querySelector(".driver1-number").textContent = data[index][0]
                     elem.querySelector(".driver2-number").textContent = data[index][1]
-                }
-                else if (elem.id === "raceh2h") {
+                    
                     if (race === 2) {
                         d1_width = 100 - (data[12][0] - 1) * 5
                         d2_width = 100 - (data[12][1] - 1) * 5
@@ -208,6 +206,7 @@ function manage_h2h_bars(data) {
                         elem.querySelector(".driver2-number").textContent = data[13][1]
                     }
                 }
+                
             }
             else if (elem.id === "ptsh2h") {
                 relValue = 100 / Math.max(data[index][0], data[index][1])
@@ -695,15 +694,7 @@ document.querySelector("#driverspillmodal").addEventListener("click", function (
     document.querySelector(".drivers-modal-section").classList.remove("d-none")
     document.querySelector(".teams-modal-section").classList.add("d-none")
     mode = "driver"
-    menuLength = 4
-    document.getElementById("qualih2h").querySelector(".only-name").innerText = "QUALIFYING"
-    document.querySelector("#qualih2h").querySelectorAll("i").forEach(function (elem) {
-        elem.classList.remove("d-none")
-    });
-    document.getElementById("raceh2h").querySelector(".only-name").innerText = "RACE"
-    document.querySelector("#raceh2h").querySelectorAll("i").forEach(function (elem) {
-        elem.classList.remove("d-none")
-    });
+
     resetH2H()
 })
 
@@ -711,11 +702,6 @@ document.querySelector("#teamspillmodal").addEventListener("click", function () 
     document.querySelector(".drivers-modal-section").classList.add("d-none")
     document.querySelector(".teams-modal-section").classList.remove("d-none")
     mode = "team"
-    menuLength = 2
-    race = 0
-    quali = 0
-    document.getElementById("raceh2h").querySelector(".only-name").innerText = "QUALIFYING"
-    document.getElementById("raceh2h").querySelector(".only-name").innerText = "RACE"
     resetH2H()
 })
 
@@ -761,11 +747,29 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
         document.querySelector("#qualiForm").classList.remove("d-none")
         document.querySelector("#raceForm").classList.remove("d-none")
         document.querySelector("#raceForm").click()
+        race = 0
+        quali = 0
+        menuLength = 4
+        document.getElementById("qualih2h").querySelector(".only-name").innerText = "QUALIFYING"
+        document.getElementById("raceh2h").querySelector(".only-name").innerText = "RACE"
+        document.getElementById("raceh2h").querySelector(".bar-space").classList.remove("d-none")
+        document.getElementById("raceh2h").querySelector(".avg-comparison").classList.add("d-none")
+        document.getElementById("qualih2h").querySelector(".bar-space").classList.remove("d-none")
+        document.getElementById("qualih2h").querySelector(".avg-comparison").classList.add("d-none")
     }
     else if (mode === "team") {
         document.querySelector("#qualiForm").classList.add("d-none")
         document.querySelector("#raceForm").classList.add("d-none")
         document.querySelector("#pointsProgression").click()
+        menuLength = 2
+        race = 0
+        quali = 0
+        document.getElementById("qualih2h").querySelector(".only-name").innerText = "QUALIFYING"
+        document.getElementById("raceh2h").querySelector(".only-name").innerText = "RACE"
+        document.getElementById("raceh2h").querySelector(".bar-space").classList.remove("d-none")
+        document.getElementById("raceh2h").querySelector(".avg-comparison").classList.add("d-none")
+        document.getElementById("qualih2h").querySelector(".bar-space").classList.remove("d-none")
+        document.getElementById("qualih2h").querySelector(".avg-comparison").classList.add("d-none")
     }
 
 })
