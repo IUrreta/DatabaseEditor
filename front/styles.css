@@ -1922,6 +1922,10 @@ a.bi-linkedin:hover {
   background-color: transparent;
 }
 
+.driver1-number::selection, .driver2-number::selection{
+  background-color: transparent;
+}
+
 .custom-disabled {
   background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
 }
