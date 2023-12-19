@@ -110,8 +110,8 @@ def fetch_Head2Head(driver1ID, driver2ID, year):
     bestQuali[1] = d2_BestQauli
     rDifferences = [d2 - d1 for d1, d2 in zip(d1_avgPace, d2_avgPace)]
     qDifferences = [d2 - d1 for d1, d2 in zip(d1_avgQPace, d2_avgQPace)]
-    avg_racediff = round(sum(rDifferences) / len(rDifferences), 3)
-    avg_qualidiff = round(sum(qDifferences) / len(qDifferences), 3)
+    avg_racediff = round(np.mean(rDifferences), 3)
+    avg_qualidiff = round(np.mean(qDifferences), 3)
     meanRd1 = round(np.mean(d1_RPositions), 1)
     meanRd2 = round(np.mean(d2_RPositions), 1)
     medianRd1 = np.median(d1_RPositions)
@@ -234,8 +234,8 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
 
     rDifferences = [d2 - d1 for d1, d2 in zip(d1_avgPace, d2_avgPace)]
     qDifferences = [d2 - d1 for d1, d2 in zip(d1_avgQPace, d2_avgQPace)]
-    avg_racediff = round(sum(rDifferences) / len(rDifferences), 3)
-    avg_qualidiff = round(sum(qDifferences) / len(qDifferences), 3)
+    avg_racediff = round(np.mean(rDifferences), 3)
+    avg_qualidiff = round(np.mean(qDifferences), 3)
 
     resultList = [tuple(raceH2H),tuple(qualiH2H),tuple(pointsH2H),tuple(podiumsH2H),tuple(bestRace),tuple(bestQuali),tuple(dnfH2H), tuple(winsH2H), tuple(polesH2H), tuple(sprintWinsH2H), (-avg_racediff, avg_racediff), (-avg_qualidiff, avg_qualidiff)]
 
