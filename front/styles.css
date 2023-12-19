@@ -2768,7 +2768,7 @@ input::-webkit-inner-spin-button {
   width: 50%;
 }
 
-#edit_teams i{
+#edit_teams .team-viewer i{
   transition: color 0.4s;
   font-size: 20px;
   color: #dedde6;
@@ -2782,10 +2782,17 @@ input::-webkit-inner-spin-button {
 
 }
 
-#edit_teams i:hover{
+#edit_teams .team-viewer i:hover{
   cursor: pointer;
   color: white !important;
   background-color: #6f698f !important;
+}
+
+.q-label{
+  background-color: red;
+  color: white;
+  border-radius: 5px;
+  padding: 3px;
 }
 
 .component-subtitle{
