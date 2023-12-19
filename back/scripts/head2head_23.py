@@ -100,7 +100,6 @@ def fetch_Head2Head(driver1ID, driver2ID, year):
         if(d2_SRes != None):
             if(d2_SRes[0] == 1):
                 sprintWinsH2H[1] += 1
-
     d1_Pts = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND  SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
     d2_Pts = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND  SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
     pointsH2H[0] = d1_Pts[0]
@@ -147,6 +146,10 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
     d2_BestRace = 21
     d1_BestQauli = 21
     d2_BestQauli = 21
+    d1_avgPace = []
+    d2_avgPace = []
+    d1_avgQPace = []
+    d2_avgQPace = []
     for gp in races:
         race = gp[0]
         drivers1 = cursor.execute("SELECT DISTINCT DriverID FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = " + str(race) + " AND TeamID = " + str(teamID1[0])).fetchall()
@@ -166,6 +169,12 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
                 qualiH2H[0]+= 1
             elif(d1_QRes[0] > d2_QRes[0]):
                 qualiH2H[1]+= 1
+        minQ = d1_QStage[0] if d1_QStage[0] <= d2_QStage[0] else d2_QStage[0]
+        d1_qLap = cursor.execute("SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers1) + " AND QualifyingStage = " + str(minQ)).fetchone()
+        d2_qLap = cursor.execute("SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers2) + " AND QualifyingStage = " + str(minQ)).fetchone()
+        if(d1_qLap[0] != 0) and (d2_qLap[0] != 0):
+            d1_avgQPace.append(d1_qLap[0])
+            d2_avgQPace.append(d2_qLap[0])        
         if(d1_QStage[0] == 3 and d1_QRes[0] == 1):
             polesH2H[0] += 1
         if(d2_QStage[0] == 3 and d2_QRes[0] == 1):
@@ -198,6 +207,13 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
             dnfH2H[0] += d1_RDNF[0]
         if(d2_RDNF[0] > 0):
             dnfH2H[1] += d2_RDNF[0]
+        if (d1_RDNF[0] == 0) and (d2_RDNF[0] == 0):
+            d1_raceTotal = cursor.execute("SELECT AVG(Time) FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers1)).fetchone()
+            d2_raceTotal = cursor.execute("SELECT AVG(Time) FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers2)).fetchone()
+            d1_raceLaps = cursor.execute("SELECT AVG(Laps) FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers1)).fetchone()
+            d2_raceLaps = cursor.execute("SELECT AVG(Laps) FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers2)).fetchone()
+            d1_avgPace.append(round(d1_raceTotal[0] / d1_raceLaps[0], 3))
+            d2_avgPace.append(round(d2_raceTotal[0] / d2_raceLaps[0], 3))
         d1_SRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Sprintresults  WHERE RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers1)).fetchone()
         d2_SRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Sprintresults  WHERE RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers2)).fetchone()
         if(d1_SRes != None):
@@ -215,7 +231,13 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
     bestRace[1] = d2_BestRace
     bestQuali[0] = d1_BestQauli
     bestQuali[1] = d2_BestQauli   
-    resultList = [tuple(raceH2H),tuple(qualiH2H),tuple(pointsH2H),tuple(podiumsH2H),tuple(bestRace),tuple(bestQuali),tuple(dnfH2H), tuple(winsH2H), tuple(polesH2H), tuple(sprintWinsH2H)]
+
+    rDifferences = [d2 - d1 for d1, d2 in zip(d1_avgPace, d2_avgPace)]
+    qDifferences = [d2 - d1 for d1, d2 in zip(d1_avgQPace, d2_avgQPace)]
+    avg_racediff = round(sum(rDifferences) / len(rDifferences), 3)
+    avg_qualidiff = round(sum(qDifferences) / len(qDifferences), 3)
+
+    resultList = [tuple(raceH2H),tuple(qualiH2H),tuple(pointsH2H),tuple(podiumsH2H),tuple(bestRace),tuple(bestQuali),tuple(dnfH2H), tuple(winsH2H), tuple(polesH2H), tuple(sprintWinsH2H), (-avg_racediff, avg_racediff), (-avg_qualidiff, avg_qualidiff)]
 
     conn.commit()
     conn.close()
