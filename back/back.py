@@ -34,6 +34,7 @@ async def handle_command(message):
     global cursor
     global log
     argument = ""
+    logtxt = str(message)
     if type == "connect":
         log = open("../log.txt", 'a', encoding='utf-8')
         argument = type
@@ -262,7 +263,7 @@ async def handle_command(message):
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
 
-    log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
+    log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + logtxt + "\n")
     log.flush()
 
 
