@@ -306,7 +306,6 @@ document.getElementById("teamspill").addEventListener("click", function () {
  * Even listener for the positions and points pill
  */
 document.getElementById("pospill").addEventListener("click", function () {
-    document.getElementById("driverspill").click()
     if (seasonTable) {
         seasonTable.destroy()
     }
@@ -325,7 +324,6 @@ document.getElementById("pospill").addEventListener("click", function () {
 })
 
 document.getElementById("pointspill").addEventListener("click", function () {
-    document.getElementById("driverspill").click()
     if (seasonTable) {
         seasonTable.destroy()
     }
@@ -424,7 +422,7 @@ function generateYearsMenu(actualYear) {
  */
 function loadDriversTable(allDrivers) {
     seasonResults = allDrivers;
-    allDrivers.forEach(function (driver) {
+    allDrivers.slice(0, allDrivers.length-1).forEach(function (driver) {
         addDriver(driver)
     })
     seasonTable.setSort("pos", "asc");
@@ -448,8 +446,9 @@ function loadTeamsTable(allDrivers) {
         let rowData = { team: createTeamNameAndLogo(teams_full_name_dict[team], team), points: 0, pos: pos}
         teamsTable.addData(rowData);
     }
+    console.log(allDrivers)
     setTimeout(function () {
-        addDriversDataToTeams(allDrivers.slice(0, allDrivers.length-1))
+        addDriversDataToTeams(allDrivers)
         colorTeamTable()
     }, 10);
     teamsTable.setSort("pos", "asc");
@@ -486,7 +485,7 @@ function createTeamNameAndLogo(code, teamName) {
  * @param {object} drivers all driver's results race by race
  */
 function addDriversDataToTeams(drivers) {
-    drivers.forEach(function (elem) {
+    drivers.slice(0, drivers.length-1).forEach(function (elem) {
         let data = teamsTable.getData()
         elem.slice(3).forEach((pair, index) => {
             let teamForRace = pair[pair.length - 1]
