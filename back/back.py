@@ -34,6 +34,7 @@ async def handle_command(message):
     global cursor
     global log
     argument = ""
+    logtxt = str(message)
     if type == "connect":
         log = open("../log.txt", 'a', encoding='utf-8')
         argument = type
@@ -176,6 +177,7 @@ async def handle_command(message):
         results = fetch_seasonResults(message["year"])
         results.insert(0, fetch_events_from(message["year"]))
         results.insert(0, "Results fetched")
+        results.append(fetch_teamsStadings(message["year"]))
         data_json_results = json.dumps(results)
         #argument = json.dumps(message)
         await send_message_to_client(data_json_results)
@@ -262,7 +264,7 @@ async def handle_command(message):
         info_json = json.dumps(info)
         await send_message_to_client(info_json)
 
-    log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + argument + "\n")
+    log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + logtxt + "\n")
     log.flush()
 
 
@@ -313,6 +315,10 @@ def fetch_driverNumebrs():
             numList.append(num[0])
     return numList
 
+def fetch_teamsStadings(year):
+    res = cursor.execute("SELECT TeamID, Position FROM Races_TeamStandings WHERE SeasonID = " + str(year) + " AND RaceFormula = 1").fetchall()
+    return res
+
 def fetch_driverRetirement(driverID):
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
     retirement_age = cursor.execute("SELECT RetirementAge FROM Staff_GameData WHERE StaffID = " + str(driverID)).fetchone()
@@ -359,8 +365,7 @@ def fetch_driverContract(id):
     return details
 
 def fetch_staff():
-    staff = cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0 AND (con.ContractType = 0 OR con.ContractType IS NULL OR con.ContractType = 3) GROUP BY bas.StaffID").fetchall()
-
+    staff = cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0 AND (con.ContractType = 0 OR con.ContractType IS NULL OR con.ContractType = 3) GROUP BY bas.StaffID ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID").fetchall()
     formatted_tuples = []
 
     for tupla in staff:
@@ -480,7 +485,7 @@ def format_seasonResults(results, driverName, teamID, driverID, year, sprints):
     return formatred_results
 
 def fetch_drivers_per_year(year):
-    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, res.DriverID, res.TeamID FROM Staff_BasicData bas JOIN Races_Results res ON bas.StaffID = res.DriverID WHERE Season = ' + str(year) + " GROUP BY bas.FirstName, bas.LastName, bas.StaffID, res.TeamID").fetchall()
+    drivers = cursor.execute('SELECT  bas.FirstName, bas.LastName, res.DriverID, res.TeamID FROM Staff_BasicData bas JOIN Races_Results res ON bas.StaffID = res.DriverID WHERE Season = ' + str(year) + " GROUP BY bas.FirstName, bas.LastName, bas.StaffID, res.TeamID ORDER BY res.TeamID").fetchall()
     formatted_tuples = []
     for tupla in drivers:
         result = format_names_simple(tupla)
@@ -489,7 +494,7 @@ def fetch_drivers_per_year(year):
 
 def fetch_info():
 
-    drivers = cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType, gam.Retired FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID LEFT JOIN Staff_GameData gam ON dri.StaffID = gam.StaffID GROUP BY bas.StaffID;').fetchall()
+    drivers = cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType, gam.Retired FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID LEFT JOIN Staff_GameData gam ON dri.StaffID = gam.StaffID GROUP BY bas.StaffID ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID;').fetchall()
     formatted_tuples = []
     for tupla in drivers:
         result = format_names_get_stats(tupla, "driver")
