@@ -429,7 +429,6 @@ function loadDriversTable(allDrivers) {
     })
     seasonTable.setSort("pos", "asc");
     formatTable()
-    console.log(document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.height)
     document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.maxHeight = "628px";
     document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.overflowX = "hidden";
 }
@@ -439,15 +438,21 @@ function loadDriversTable(allDrivers) {
  * @param {object} allDrivers information for all the drivers on the grid
  */
 function loadTeamsTable(allDrivers) {
+    let teamStandings = allDrivers[allDrivers.length-1]
+    let positions = {};
+    for(let i = 0; i < teamStandings.length; i++) {
+        positions[teamStandings[i][0]] = teamStandings[i][1];
+    }
     for (let team in teams_full_name_dict) {
-        let rowData = { team: createTeamNameAndLogo(teams_full_name_dict[team], team), points: 0}
-        teamsTable.addData(rowData)
+        let pos = positions[teams_full_name_dict[team]]
+        let rowData = { team: createTeamNameAndLogo(teams_full_name_dict[team], team), points: 0, pos: pos}
+        teamsTable.addData(rowData);
     }
     setTimeout(function () {
-        addDriversDataToTeams(allDrivers)
+        addDriversDataToTeams(allDrivers.slice(0, allDrivers.length-1))
         colorTeamTable()
     }, 10);
-    teamsTable.setSort("points", "desc");
+    teamsTable.setSort("pos", "asc");
     document.querySelector("#seasonresults-teams-table").querySelector(".tabulator-tableholder").style.maxHeight = "598px";
     document.querySelector("#seasonresults-teams-table").querySelector(".tabulator-tableholder").style.overflow = "hidden";
 }

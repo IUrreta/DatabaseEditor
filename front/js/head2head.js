@@ -219,15 +219,12 @@ function manage_h2h_bars(data) {
                 elem.querySelector(".driver2-number").textContent = data[index][1]
             }
             else if (elem.id === "dnfh2h" || elem.id === "podiumsh2h") {
-                console.log("cojones")
                 relValue = (100 / (data[index][0] + data[index][1])).toFixed(2)
                 if (relValue == Infinity) {
                     relValue = 0
                 }
                 d1_width = data[index][0] * relValue
                 d2_width = data[index][1] * relValue
-                console.log(d1_width)
-                console.log(d2_width)
                 elem.querySelector(".driver1-number").textContent = data[index][0]
                 elem.querySelector(".driver2-number").textContent = data[index][1]
             }

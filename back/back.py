@@ -177,6 +177,7 @@ async def handle_command(message):
         results = fetch_seasonResults(message["year"])
         results.insert(0, fetch_events_from(message["year"]))
         results.insert(0, "Results fetched")
+        results.append(fetch_teamsStadings(message["year"]))
         data_json_results = json.dumps(results)
         #argument = json.dumps(message)
         await send_message_to_client(data_json_results)
@@ -313,6 +314,10 @@ def fetch_driverNumebrs():
         if num[0] != 1 and num[0] != 0:
             numList.append(num[0])
     return numList
+
+def fetch_teamsStadings(year):
+    res = cursor.execute("SELECT TeamID, Position FROM Races_TeamStandings WHERE SeasonID = " + str(year) + " AND RaceFormula = 1").fetchall()
+    return res
 
 def fetch_driverRetirement(driverID):
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
