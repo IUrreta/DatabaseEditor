@@ -1062,7 +1062,8 @@ a.bi-linkedin:hover {
 
 [tabulator-field="driver"],
 [tabulator-field="points"],
-[tabulator-field="team"]{
+[tabulator-field="team"], 
+[tabulator-field="pos"]{
   background-color: #464166 !important;
 }
 
@@ -1079,7 +1080,7 @@ a.bi-linkedin:hover {
 }
 
 
-#seasonresults-table {
+#seasonresults-table, #seasonresults-teams-table {
   background-color: transparent !important;
   border: none !important;
 }
@@ -1142,9 +1143,19 @@ a.bi-linkedin:hover {
   border: none !important;
 }
 
+[role="columnheader"][tabulator-field="driver"], [role="columnheader"][tabulator-field="points"] {
+  font-family: "Formula1Bold";
+}
+
 [tabulator-field="driver"] {
   border-right: 1.5px solid #797599 !important;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+}
+
+[tabulator-field="pos"] {
+  border-right: 1.5px solid #797599 !important;
+  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+  font-family: "Formula1Bold";
 }
 
 
@@ -1152,6 +1163,7 @@ a.bi-linkedin:hover {
   border-left: 1.5px solid #797599 !important;
   border-right: none !important;
   transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+  font-family: "Formula1Bold";
 }
 
 .main-viewer-section .tabulator-col {
@@ -1197,7 +1209,7 @@ a.bi-linkedin:hover {
   color: white !important;
 }
 
-.tabulator-row:hover [tabulator-field="driver"] {
+.tabulator-row:hover [tabulator-field="driver"],  .tabulator-row:hover [tabulator-field="pos"]{
   color: #110f24;
   background-color: #dedde6 !important;
   border-right: 1.5px solid #dedde6 !important;

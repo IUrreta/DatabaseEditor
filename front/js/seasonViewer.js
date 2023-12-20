@@ -43,7 +43,8 @@ function createDriversTable(calendar) {
         layout: "fitColumns",
         maxWidth: "1650px",
         responsiveLayout: "hide",
-        columns: [{ title: "Driver", field: "driver", width: 175, headerSort: false, resizable: false, formatter: "html", headerHozAlign: "center" },
+        columns: [{ title: "#", field: "pos", hozAlign: "center", headerHozAlign: "center" , width:35,  headerSort: false},
+        { title: "DRIVER", field: "driver", width: 175, headerSort: false, resizable: false, formatter: "html", headerHozAlign: "left" },
         ...calendar.map((race, index) => ({
             title: '<div class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"><div class="text-in-front bold-font">' + races_names[race[1]] + '</div></div>',
             field: "race" + race[0],
@@ -51,9 +52,8 @@ function createDriversTable(calendar) {
             headerSort: false,
             resizable: false
         })),
-        { title: "Points", field: "points", hozAlign: "center", headerSort: false, headerHozAlign: "center", resizable: false },
-        { title: "Position", field: "pos", hozAlign: "center", visible: false }
-
+        { title: "POINTS", width: 75, field: "points", hozAlign: "center", headerSort: false, headerHozAlign: "center", resizable: false }
+    
         ],
         rowFormatter: function (row) {
             var rowData = row.getData();
@@ -156,7 +156,8 @@ function createTeamsTable(calendar) {
         maxWidth: "1650px",
         rowHeight: 60,
         responsiveLayout: "hide",
-        columns: [{ title: "Team", field: "team", width: 195, headerSort: false, vertAlign: "middle", resizable: false, formatter: "html", headerHozAlign: "center" },
+        columns: [{ title: "#", field: "pos", hozAlign: "center", headerHozAlign: "center",  headerSort: false, resizable: false, width:35, vertAlign: "middle"},
+        { title: "TEAM", field: "team", width: 195, headerSort: false, vertAlign: "middle", resizable: false, formatter: "html", headerHozAlign: "left" },
         ...calendar.map((race, index) => ({
             title: '<div class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"><div class="text-in-front bold-font">' + races_names[race[1]] + '</div></div>',
             field: "race" + race[0],
@@ -166,8 +167,8 @@ function createTeamsTable(calendar) {
             headerSort: false,
             resizable: false
         })),
-        { title: "Points", field: "points", hozAlign: "center", vertAlign: "middle", headerSort: false, headerHozAlign: "center", resizable: false },
-        { title: "Position", field: "pos", hozAlign: "center", visible: false }],
+        { title: "POINTS", width: 75, field: "points", hozAlign: "center", vertAlign: "middle", headerSort: false, headerHozAlign: "center", resizable: false }
+        ],
     });
 }
 
@@ -428,6 +429,7 @@ function loadDriversTable(allDrivers) {
     })
     seasonTable.setSort("pos", "asc");
     formatTable()
+    console.log(document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.height)
     document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.maxHeight = "628px";
     document.querySelector("#seasonresults-table").querySelector(".tabulator-tableholder").style.overflowX = "hidden";
 }
