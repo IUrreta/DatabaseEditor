@@ -157,7 +157,7 @@ function createTeamsTable(calendar) {
         rowHeight: 60,
         responsiveLayout: "hide",
         columns: [{ title: "#", field: "pos", hozAlign: "center", headerHozAlign: "center",  headerSort: false, resizable: false, width:35, vertAlign: "middle"},
-        { title: "TEAM", field: "team", width: 195, headerSort: false, vertAlign: "middle", resizable: false, formatter: "html", headerHozAlign: "left" },
+        { title: "TEAM", field: "team", width: 195, headerSort: false, vertAlign: "middle", resizable: false, formatter: "html", headerHozAlign: "center" },
         ...calendar.map((race, index) => ({
             title: '<div class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"><div class="text-in-front bold-font">' + races_names[race[1]] + '</div></div>',
             field: "race" + race[0],
