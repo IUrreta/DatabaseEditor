@@ -43,7 +43,8 @@ function createDriversTable(calendar) {
         layout: "fitColumns",
         maxWidth: "1650px",
         responsiveLayout: "hide",
-        columns: [{ title: "Driver", field: "driver", width: 175, headerSort: false, resizable: false, formatter: "html", headerHozAlign: "center" },
+        columns: [{ title: "#", field: "pos", hozAlign: "center", headerHozAlign: "center" , width:35,  headerSort: false},
+        { title: "DRIVER", field: "driver", width: 175, headerSort: false, resizable: false, formatter: "html", headerHozAlign: "left" },
         ...calendar.map((race, index) => ({
             title: '<div class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"><div class="text-in-front bold-font">' + races_names[race[1]] + '</div></div>',
             field: "race" + race[0],
@@ -51,9 +52,8 @@ function createDriversTable(calendar) {
             headerSort: false,
             resizable: false
         })),
-        { title: "Points", field: "points", hozAlign: "center", headerSort: false, headerHozAlign: "center", resizable: false },
-        { title: "Position", field: "pos", hozAlign: "center", visible: false }
-
+        { title: "POINTS", width: 75, field: "points", hozAlign: "center", headerSort: false, headerHozAlign: "center", resizable: false }
+    
         ],
         rowFormatter: function (row) {
             var rowData = row.getData();
@@ -156,7 +156,8 @@ function createTeamsTable(calendar) {
         maxWidth: "1650px",
         rowHeight: 60,
         responsiveLayout: "hide",
-        columns: [{ title: "Team", field: "team", width: 195, headerSort: false, vertAlign: "middle", resizable: false, formatter: "html", headerHozAlign: "center" },
+        columns: [{ title: "#", field: "pos", hozAlign: "center", headerHozAlign: "center",  headerSort: false, resizable: false, width:35, vertAlign: "middle"},
+        { title: "TEAM", field: "team", width: 195, headerSort: false, vertAlign: "middle", resizable: false, formatter: "html", headerHozAlign: "center" },
         ...calendar.map((race, index) => ({
             title: '<div class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"><div class="text-in-front bold-font">' + races_names[race[1]] + '</div></div>',
             field: "race" + race[0],
@@ -166,8 +167,8 @@ function createTeamsTable(calendar) {
             headerSort: false,
             resizable: false
         })),
-        { title: "Points", field: "points", hozAlign: "center", vertAlign: "middle", headerSort: false, headerHozAlign: "center", resizable: false },
-        { title: "Position", field: "pos", hozAlign: "center", visible: false }],
+        { title: "POINTS", width: 75, field: "points", hozAlign: "center", vertAlign: "middle", headerSort: false, headerHozAlign: "center", resizable: false }
+        ],
     });
 }
 
@@ -305,7 +306,6 @@ document.getElementById("teamspill").addEventListener("click", function () {
  * Even listener for the positions and points pill
  */
 document.getElementById("pospill").addEventListener("click", function () {
-    document.getElementById("driverspill").click()
     if (seasonTable) {
         seasonTable.destroy()
     }
@@ -324,7 +324,6 @@ document.getElementById("pospill").addEventListener("click", function () {
 })
 
 document.getElementById("pointspill").addEventListener("click", function () {
-    document.getElementById("driverspill").click()
     if (seasonTable) {
         seasonTable.destroy()
     }
@@ -423,7 +422,7 @@ function generateYearsMenu(actualYear) {
  */
 function loadDriversTable(allDrivers) {
     seasonResults = allDrivers;
-    allDrivers.forEach(function (driver) {
+    allDrivers.slice(0, allDrivers.length-1).forEach(function (driver) {
         addDriver(driver)
     })
     seasonTable.setSort("pos", "asc");
@@ -437,15 +436,22 @@ function loadDriversTable(allDrivers) {
  * @param {object} allDrivers information for all the drivers on the grid
  */
 function loadTeamsTable(allDrivers) {
-    for (let team in teams_full_name_dict) {
-        let rowData = { team: createTeamNameAndLogo(teams_full_name_dict[team], team), points: 0}
-        teamsTable.addData(rowData)
+    let teamStandings = allDrivers[allDrivers.length-1]
+    let positions = {};
+    for(let i = 0; i < teamStandings.length; i++) {
+        positions[teamStandings[i][0]] = teamStandings[i][1];
     }
+    for (let team in teams_full_name_dict) {
+        let pos = positions[teams_full_name_dict[team]]
+        let rowData = { team: createTeamNameAndLogo(teams_full_name_dict[team], team), points: 0, pos: pos}
+        teamsTable.addData(rowData);
+    }
+    console.log(allDrivers)
     setTimeout(function () {
         addDriversDataToTeams(allDrivers)
         colorTeamTable()
     }, 10);
-    teamsTable.setSort("points", "desc");
+    teamsTable.setSort("pos", "asc");
     document.querySelector("#seasonresults-teams-table").querySelector(".tabulator-tableholder").style.maxHeight = "598px";
     document.querySelector("#seasonresults-teams-table").querySelector(".tabulator-tableholder").style.overflow = "hidden";
 }
@@ -479,7 +485,7 @@ function createTeamNameAndLogo(code, teamName) {
  * @param {object} drivers all driver's results race by race
  */
 function addDriversDataToTeams(drivers) {
-    drivers.forEach(function (elem) {
+    drivers.slice(0, drivers.length-1).forEach(function (elem) {
         let data = teamsTable.getData()
         elem.slice(3).forEach((pair, index) => {
             let teamForRace = pair[pair.length - 1]

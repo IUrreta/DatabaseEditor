@@ -14,7 +14,7 @@ let countries_dict = {
 };
 
 let weather_dict = {
-    0: "bi bi-sun", 1:"bi bi-cloud-sun", 2: "bi bi-cloud", 3: "bi bi-cloud-drizzle", 4: "bi bi-cloud-rain-heavy", 5: "bi bi-cloud-lightning-rain"
+    0: "bi bi-sun", 1:"bi bi-cloud-sun", 2: "bi bi-cloud", 3: "bi bi-cloud-drizzle", 4: "bi bi-cloud-rain", 5: "bi bi-cloud-rain-heavy"
 }
 
 let deleting = false;
