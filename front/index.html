@@ -123,22 +123,34 @@
         </div>
         <div class="modal-body custom-body">
           <div class="d-flex" style="gap: 7px;">
-            <div class="standings-list bold-font">0</div> <span> - Pole poisiton in that race</span>
+            <div class="standings-list bold-font">Bold</div> <span> - Pole poisiton in that race (only drivers)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="color: #c90fd7;">0</div> <span> - Fastest lap that race</span>
+            <div class="standings-list" style="color: #c90fd7;">Purple</div> <span> - Fastest lap that race (only drivers)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: #FDE06B; color: #18152e;">&nbsp;</div> <span> - 1st place that race</span>
+            <div class="standings-list" style="background-color: #FDE06B; color: #18152e;">&nbsp;</div> <span> - 1st place that race (drivers)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: #AEB2B8; color: #18152e;">&nbsp;</div> <span> - 2nd place that race</span>
+            <div class="standings-list" style="background-color: #FDE06B; color: #18152e;">&nbsp;</div> <span> - Most points in that race (teams)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: #d7985a; color: #18152e;">&nbsp;</div> <span> - 3rd place that race</span>
+            <div class="standings-list" style="background-color: #AEB2B8; color: #18152e;">&nbsp;</div> <span> - 2nd place that race (drivers)</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list" style="background-color: #AEB2B8; color: #18152e;">&nbsp;</div> <span> - 2nd most points in that race (teams)</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list" style="background-color: #d7985a; color: #18152e;">&nbsp;</div> <span> - 3rd place that race (drivers)</span>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list" style="background-color: #d7985a; color: #18152e;">&nbsp;</div> <span> - 3rd most points in that race (teams)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list">DNF</div> <div> - Did not finish that race</div>
+          </div>
+          <div class="d-flex mt-2" style="gap: 7px;">
+            <div class="standings-list">( )</div> <div> - Sprint result</div>
           </div>
         </div>
         <div class="modal-footer custom-footer">
@@ -206,15 +218,16 @@
         </div>
         <div class="modal-body custom-body">
           <div style="gap: 7px;">
-            The predictions are made with an AI model trained with the developer's own save file. You c an check out predictions
+            The predictions are made with an AI model trained with the developer's own save file. You can check out predictions
             for previous races and for the next one in the <span class="bold-font">Race</span> tab.
           </div>
           <div class="mt-2" style="gap: 7px;">
-            In the <span class="bold-font">Standings</span> tab, you can configure a prediction for the rest of the season since the race you
+            In the <span class="bold-font">Standings</span> tab, you can configure a prediction for the rest of the season from the race you
             select in the modal. Take into account that the sooner that race is in the season, the more races it will have to simulate and it will take longer.
             For example, it will take much longer if you predict from the 3rd race of the season than if you predict only the last race of the season.
             The model will run dozens of simulations of all the remaining races and calculate the amount of times a driver has finished in every position.
-            The <span class="bold-font" style="color: #5bd999;">darker </span><span class="bold-font" style="color: #7adfac;">the </span><span class="bold-font" style="color: #a2dfc0;">green </span><span class="bold-font" style="color: #c5e7d6;">is</span>, the most chances ha has to infish in that position
+            The <span class="bold-font" style="color: #5bd999;">darker </span><span class="bold-font" style="color: #7adfac;">the </span><span class="bold-font" style="color: #a2dfc0;">green </span><span class="bold-font" style="color: #c5e7d6;">is</span>,
+            the more chances he has to finish in that position
           </div>
         </div>
         <div class="modal-footer custom-footer">
@@ -234,7 +247,13 @@
           <div style="gap: 7px;">
             The <span class="bold-font">Annotations </span>toggle will hide or show the lines marking <span class="bold-font" style="color: #FDE06B;">P1, </span>
             <span class="bold-font" style="color: #AEB2B8;">P2, </span> <span class="bold-font" style="color: #d7985a;">P3 </span> and <span class="bold-font">P10 </span> in the <span class="bold-font">Race form </span> chart and
-            <span class="bold-font q-label">Q2</span> and <span class="bold-font q-label">Q3</span> lines in the <span class="bold-font">Quali form </span> chart
+            <span class="bold-font q-label">Q2</span> and <span class="bold-font q-label">Q3</span> lines in the <span class="bold-font">Quali form </span> chart.
+          </div>
+          <div class="mt-2" style="gap: 7px;">
+            The <span class="bold-font">Points progression </span> graph has no <span class="bold-font">Annotations </span>
+          </div>
+          <div class="mt-2" style="gap: 7px;">
+            When comparing teams, only the <span class="bold-font">Points progression </span> graph will be available
           </div>
         </div>
         <div class="modal-footer custom-footer">
@@ -296,7 +315,7 @@
             <div style="width: 105px;">ATA Quali</div> <span> - Q1 will be on hards, Q2 on medium tyres and Q3 with soft tyres</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            Due to how the game works, it's only possible to set one of theese 6 patterns, and it's not possible to edit
+            Due to how the game works, it's only possible to set one of these 6 patterns, and it's not possible to edit
             with more detail the forecast for the race.
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
