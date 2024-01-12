@@ -2,14 +2,14 @@
 Friendly to use tool for editing your save files from F1 Manager 23. Supports driver transfers, calendar customization, staff stat editing, car performance editing, and much more!
 
 > [!WARNING]
-> For any issues, first take a  look at the [Troubleshoot Guide](https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide)
+> For any issues, first take a look at the [Troubleshoot Guide](https://github.com/IUrreta/DatabaseEditor/wiki/Troubleshoot-guide)
 
 ## What's the Database Editor? ##
-Basically it's just a friendly user interface that helps you make the modifications you wish for the database from your savefile from F1 Manager 23
+Basically it's just a friendly user interface that helps you to make modifications for the database from your savefile from F1 Manager 23.
 
-It's developed by the same guy (me, u/ignaciourreta on Reddit) who developed multiple scripts for the F1 Manager 22 game as the driver transfer script, custom calendar, edit stats, or edit performance of cars
+It's developed by the same guy (me, u/ignaciourreta on Reddit) who developed multiple scripts for the F1 Manager 22 game such as the driver transfer script, custom calendar, edit stats, and edit performance of cars.
 
-When I developed those scripts, more specifically the driver transfers script for the Script Manager for F1M22 I always had in mind to develop a tool like this to make it easier for the user to take advantage of my scripts
+When I developed those scripts, more specifically the driver transfers script for the Script Manager for F1M22 I always had in mind to develop a tool like this to make it easier for the user to take advantage of my scripts.
 
 ### What can I do with the Database Editor? ###
 
@@ -21,19 +21,19 @@ When I developed those scripts, more specifically the driver transfers script fo
 6. Buff or nerf any car part of any car
 7. Edit the performance and durability of any of the 4 engine suppliers
 8. Keep track of past seasons with a Wikipedia-style table for drivers and team championships
-9. Compare drivers and teams and their stats from their past seasons using the Head To Head graphic
-10. Edit all 10 teams' facilities, money, budget available from the budget cap, plus long and short-term objectives
+9. Compare drivers, teams and their stats from past seasons using the Head To Head graphic
+10. Edit all 10 teams' facilities, money, long and short-term objectives and budget available from the budget cap
 11. Unretire drivers or change their retirement age
-12. Evaluate the driver's performance based on an **AI MODEL** trained with the game's data to predict their positions in each race and championship.
+12. Evaluate the driver's performance based on an **AI MODEL** trained with the game's data to predict their positions in each race and championship
 
 > [!CAUTION]
-> For editing the **ORDER OR NUMBER** of races it is still recommended to only do it once before the season's first race.
-> Editing the weather of races can be done whenever you want though
+> For editing the **ORDER OR NUMBER** of races it is recommended to only do it before the season's first race.
+> Editing the weather of races can be done whenever you want though.
 
 ## How can I install the Database Editor? ##
-You'll need to downlaod two things: [NodeJS](https://nodejs.org/en/download) and [Python](https://www.python.org/downloads/)
+You'll need to download: [NodeJS](https://nodejs.org/en/download) and [Python](https://www.python.org/downloads/)
 
-It's all covered in the [Installation and set-up guide](https://github.com/IUrreta/DatabaseEditor/wiki/Installation-and-set%E2%80%90up-guide)
+It's all covered in the [Installation and set-up guide](https://github.com/IUrreta/DatabaseEditor/wiki/Installation-and-set%E2%80%90up-guide).
 
 > [!IMPORTANT]
 > Here you have 2-minute long video tutorials for the recommended [Git installation](https://www.youtube.com/watch?v=ashrVev0KFY) and the [Zip installation](https://www.youtube.com/watch?v=5BjV3vFMxd4)
@@ -43,7 +43,7 @@ It's all covered in the [Installation and set-up guide](https://github.com/IUrre
 It's all explained in the [Update guide](https://github.com/IUrreta/DatabaseEditor/wiki/Update-guide)
 
 > [!TIP]
-> If you installed through git, you can directly update by just clicking a button from the editor itself
+> If you installed through git, you can directly update by just clicking a button from the editor itself.
 
 
 ### Screenshots ###
