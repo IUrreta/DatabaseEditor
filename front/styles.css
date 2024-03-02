@@ -400,7 +400,7 @@ a.bi-linkedin:hover {
 }
 
 .cet-container{
-  overflow: hidden !important;
+  height: 1700px;
 }
 
 .patchNotesPanel {

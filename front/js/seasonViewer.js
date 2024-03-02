@@ -1,7 +1,7 @@
 const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0" };
 const invertedRacesMap = {"bah0": 2,"aus0": 1,"sau0": 11,"imo0": 24,"mia0": 22,"spa0": 5,"mon0": 6,"aze0": 4,"can0": 7,"gbr0": 10,"aut0": 9,"fra0": 8,"hun0": 12,"bel0": 13,"ita0": 14,"sgp0": 15,"jap0": 17,"usa0": 19,"mex0": 18,"bra0": 20,"uae0": 21,"ned0": 23,"veg0": 25,"qat0": 26};
 const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT" };
-const teams_full_name_dict = { 'FERRARI': 1, 'MCLAREN': 2, 'RED BULL': 3, 'MERCEDES': 4, 'ALPINE': 5, 'WILIIAMS': 6, 'HAAS': 7, 'ALPHA TAURI': 8, 'ALFA ROMEO': 9, 'ASTON MARTIN': 10 }
+const teams_full_name_dict = { 'FERRARI': 1, 'MCLAREN': 2, 'RED BULL': 3, 'MERCEDES': 4, 'ALPINE': 5, 'WILLIAMS': 6, 'HAAS': 7, 'ALPHA TAURI': 8, 'ALFA ROMEO': 9, 'ASTON MARTIN': 10 }
 const logos_disc = {
     1: '../assets/images/ferrari.png',
     2: '../assets/images/mclaren.png',
@@ -41,18 +41,19 @@ function createDriversTable(calendar) {
     })
     seasonTable = new Tabulator("#seasonresults-table", {
         layout: "fitColumns",
-        maxWidth: "1650px",
+        maxWidth: 1650,
         responsiveLayout: "hide",
         columns: [{ title: "#", field: "pos", hozAlign: "center", headerHozAlign: "center" , width:35,  headerSort: false},
+        // i want all the races columns to be the same width
         { title: "DRIVER", field: "driver", width: 175, headerSort: false, resizable: false, formatter: "html", headerHozAlign: "left" },
         ...calendar.map((race, index) => ({
             title: '<div class="flag-header"><img src="' + codes_dict[races_map[race[1]]] + '" alt="Image 1"><div class="text-in-front bold-font">' + races_names[race[1]] + '</div></div>',
             field: "race" + race[0],
             hozAlign: "center",
             headerSort: false,
-            resizable: false
+            resizable: false,
         })),
-        { title: "POINTS", width: 75, field: "points", hozAlign: "center", headerSort: false, headerHozAlign: "center", resizable: false }
+        { title: "PTS", field: "points", hozAlign: "center", headerSort: false, headerHozAlign: "center", resizable: false }
     
         ],
         rowFormatter: function (row) {
@@ -167,7 +168,7 @@ function createTeamsTable(calendar) {
             headerSort: false,
             resizable: false
         })),
-        { title: "POINTS", width: 75, field: "points", hozAlign: "center", vertAlign: "middle", headerSort: false, headerHozAlign: "center", resizable: false }
+        { title: "PTS", field: "points", hozAlign: "center", vertAlign: "middle", headerSort: false, headerHozAlign: "center", resizable: false }
         ],
     });
 }
