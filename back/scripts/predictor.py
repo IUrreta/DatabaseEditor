@@ -17,9 +17,6 @@ points_race = {
 conn = None
 cursor = None
 
-# conn = sqlite3.connect("../result/main.db")
-# cursor = conn.cursor()
-
 def collect_one_driver_inputs(driverID):
     stats = cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = ?", (driverID,)).fetchall()
     formated = tuple(i[0] for i in stats)
