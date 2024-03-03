@@ -5,6 +5,7 @@ import sqlite3
 import os
 from datetime import datetime
 import shutil
+
 from scripts.extractor import process_unpack, process_repack
 from scripts.transfer_driver_23 import run_script as run_trasnsfer
 from scripts.transfer_driver_23 import unretire
@@ -15,16 +16,24 @@ from scripts.engine_performance_23 import run_script as run_editEngine
 from scripts.head2head_23 import fetch_Head2Head, fetch_Head2Head_team
 from scripts.edit_teams import fetch_teamData, edit_team
 from scripts.predictor import predict, montecarlo
+
 from utils import DatabaseUtils
+from commands.commandFactory import CommandFactory
 
 team_dict = {"1": "Ferrari", "2": "McLaren", "3": "Red Bull", "4": "Mercedes", "5": "Alpine", "6": "Williams", "7": "Haas", "8": "Alfa Romeo", "9": "AlphaTauri", "10": "Aston Martin"}
 
 class ApplicationState:
-    def __init__(self, logFile):
+    def __init__(self, logFile, factory):
         self.client = None
         self.path = None
         self.log = logFile
         self.dbutils = None
+        self.factory = factory
+
+    async def new_handler(self, message, client):
+        command = self.factory.create_command(message, client)
+        print(command)
+        await command.execute()
 
     async def handle_command(self, message):
         type = message["command"]
@@ -262,18 +271,18 @@ class ApplicationState:
         self.log.flush()
 
 
-async def send_message_to_client(message):
+
+async def send_message_to_client(message, client):
     if client:
         await client.send(message)
 
 async def handle_client(websocket, path, app_state):
     print("Client connected")
-    global client
     client = websocket
     try:
         async for message in websocket:
             data = json.loads(message)
-            await app_state.handle_command(data)
+            await app_state.new_handler(data, client)
     except Exception as e:
         print(e)
         app_state.log.write("[" + str(datetime.now()) + "] EXCEPTION:" + str(e) + "\n")
@@ -291,7 +300,8 @@ async def handle_client(websocket, path, app_state):
 
 async def main():
     log = open("../log.txt", 'a', encoding='utf-8')
-    app_state = ApplicationState(log)
+    factory = CommandFactory()
+    app_state = ApplicationState(log, factory)
     await start_server(app_state)
 
 async def start_server(app_state):
@@ -306,6 +316,6 @@ def create_backup(originalFIle, saveFile):
     new_file = backup_path + "/" + saveFile
     shutil.copy(originalFIle, new_file)
 
-
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
 
