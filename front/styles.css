@@ -180,6 +180,14 @@ a.bi-linkedin:hover {
   padding-right: 2rem;
 }
 
+.team-change{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+
 .info-modal-section{
   display: flex;
   flex-direction: row;
@@ -630,6 +638,16 @@ a.bi-linkedin:hover {
 .custom-dropdown {
   max-width: 250px !important;
   margin-top: 0.6rem !important;
+  background-color: #797599 !important;
+  margin-bottom: 1% !important;
+  border: 2px solid transparent !important;
+  border-radius: 10px !important;
+  color: white !important;
+  transition: border-color 0.3s !important;
+}
+
+.custom-dropdown-no-margin {
+  max-width: 250px !important;
   background-color: #797599 !important;
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
