@@ -2,6 +2,8 @@ from commands.command import Command
 import json
 import sqlite3
 from utils import DatabaseUtils
+import os
+import shutil
 from scripts.extractor import process_unpack
 
 class SaveSelectedCommand(Command):
@@ -30,8 +32,32 @@ class SaveSelectedCommand(Command):
         calendar.insert(0, "Calendar fetched")
         data_json_calendar = json.dumps(calendar)
         await self.send_message_to_client(data_json_calendar)
-        # create_backup(Command.path, save)
+        await self.check_for_configs(save)
+        self.create_backup(Command.path, save)
         year =  Command.dbutils.fetch_year()
         year = ["Year fetched", year]
         data_json_year = json.dumps(year)
         await self.send_message_to_client(data_json_year)
+
+    def create_backup(self, originalFIle, saveFile):
+        backup_path = "./../backup"
+        if not os.path.exists(backup_path):
+            os.makedirs(backup_path)
+        new_file = backup_path + "/" + saveFile
+        shutil.copy(originalFIle, new_file)
+    
+    async def check_for_configs(self, saveName):
+        config_name = f"{saveName}_config.json"
+        config_folder = "./../configs"
+        # if there isnt the folder or the file
+        if not os.path.exists(config_folder) or not os.path.exists(config_folder + "/" + config_name):
+            print("AAAAAa")
+            info = ["Config", "ERROR"]
+            info_json = json.dumps(info)
+            await self.send_message_to_client(info_json)
+        else:
+            print("BBBBB")
+            with open(config_folder + "/" + config_name, "r") as file:
+                data = file.read()
+                await self.send_message_to_client(data)
+        

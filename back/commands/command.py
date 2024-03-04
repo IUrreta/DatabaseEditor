@@ -11,5 +11,6 @@ class Command:
         raise NotImplementedError("You must implement the execute method")
     
     async def send_message_to_client(self, message):
+        print(message)
         if self.client:
             await self.client.send(message)

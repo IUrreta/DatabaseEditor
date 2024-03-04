@@ -58,13 +58,6 @@ async def start_server(app_state):
     await server.wait_closed()
 
 
-def create_backup(originalFIle, saveFile):
-    backup_path = "./../backup"
-    if not os.path.exists(backup_path):
-        os.makedirs(backup_path)
-    new_file = backup_path + "/" + saveFile
-    shutil.copy(originalFIle, new_file)
-
 if __name__ == "__main__":
     asyncio.run(main())
 

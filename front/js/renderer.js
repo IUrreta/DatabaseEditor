@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["ERROR", "Montecarlo fetched","TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+    const noNotifications = ["Config", "ERROR", "Montecarlo fetched","TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -195,6 +195,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         "Progress": (message)=>{
             manageProgress(message.slice(1))
+        },
+        "Config": (message)=>{
+            manage_config(message.slice(1))
         }
     };
 
@@ -211,6 +214,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 var cetContainer = document.querySelector('.cet-container');
                 cetContainer.appendChild(modalBackdrop);
             }, 0);
+
         });
     })
 
@@ -554,6 +558,33 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+
+    function manage_config(info){
+        if (info[0] === "ERROR"){
+            console.log("NO CONFIG FILE OR FOLDER")
+            //show modal with id configModal
+            let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
+                keyboard: false
+            })
+            configModal.show()
+        }
+        else {
+            //notification of config loaded
+            update_notifications("Config file loaded", false)
+        }
+    }
+
+    document.querySelector("#configButton").addEventListener("click", function(){
+        //wait 0.1 seconds to show the modal
+        setTimeout(function(){
+            let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'), {
+                keyboard: false
+            })
+            configDetailModal.show()
+        }, 320)
+
+
+    })
 
     /**
      * Adds eventListeners to all the elements of the staff dropdown

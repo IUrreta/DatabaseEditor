@@ -27,7 +27,6 @@ class CommandFactory:
         pass
         
     def create_command(self, message, client):
-        print(message)
         command_type = message["command"]
         if command_type == "connect":
             return ConnectCommand(message, client)

@@ -115,6 +115,56 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal modal-lg fade" id="configModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Config file alert</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="d-flex" style="gap: 7px;">
+            <div>No custom configuration file has been found for the selected save file. Would you like to create one?</div>
+          </div>
+          <h5 class="modal-subtitle bold-font pt-3">Info</h5>
+          <div class="d-flex">
+            <div>Custom configuration files only serve to modify the aspect of the Database Editor. They will alow you
+             to change names and colors of teams like Alpha Tauri to their 2024 variations like RB Visa Cashapp
+            (or other names and teams from mods installed)</div>
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+            <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
+            id="configButton">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal modal-lg fade" id="configDetailModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Custom configuration</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="d-flex" style="gap: 7px;">
+            <div>Select the team changes you want to have for this save file</div>
+          </div>
+          <h5 class="modal-subtitle bold-font pt-3">Info</h5>
+          <div class="d-flex">
+            <div>Example</div>
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+            id="cancelButton">Close</button>
+            <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
+            id="configButton">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="standingsmodal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
