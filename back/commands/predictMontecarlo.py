@@ -1,5 +1,5 @@
 from commands.command import Command
-from scripts.predictor import montecarlo
+from scripts.predictor import PredictorUtils
 import json
 
 class PredictMontecarloCommand(Command):
@@ -7,7 +7,8 @@ class PredictMontecarloCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        perc = await montecarlo(self.message["race"], self.message["year"], self.client)
+        predictor = PredictorUtils()
+        perc = await predictor.montecarlo(self.message["race"], self.message["year"], self.client)
         perd_msg = ["Montecarlo Fetched", perc]
         data_json_montecarlo = json.dumps(perd_msg)
         await self.send_message_to_client(data_json_montecarlo)
