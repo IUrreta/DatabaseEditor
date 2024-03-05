@@ -123,25 +123,27 @@
         </div>
         <div class="modal-body custom-body">
           <div class="d-flex" style="gap: 7px;">
-            <div>No custom configuration file has been found for the selected save file. Would you like to create one?</div>
+            <div>No custom configuration file has been found for the selected save file. Would you like to create one?
+            </div>
           </div>
           <h5 class="modal-subtitle bold-font pt-3">Info</h5>
           <div class="d-flex">
             <div>Custom configuration files only serve to modify the aspect of the Database Editor. They will alow you
-             to change names and colors of teams like Alpha Tauri to their 2024 variations like RB Visa Cashapp
-            (or other names and teams from mods installed)</div>
+              to change names and colors of teams like Alpha Tauri to their 2024 variations like RB Visa Cashapp
+              (or other names and teams from mods installed)</div>
           </div>
         </div>
         <div class="modal-footer custom-footer">
           <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
             id="cancelButton">Close</button>
-            <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
+          <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
             id="configButton">Confirm</button>
         </div>
       </div>
     </div>
   </div>
-  <div class="modal custom-modal modal-lg fade" id="configDetailModal" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal custom-modal modal-lg fade" id="configDetailModal" data-bs-backdrop="static"
+    data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
         <div class="modal-header custom-header">
@@ -151,41 +153,113 @@
           <div class="d-flex" style="gap: 7px;">
             <div>Select the team changes you want to have for this save file</div>
           </div>
-          <div class="team-change mt-2">
-            <div class="bold-font logo-and-name">
-              <img src="../assets/images/alphatauri.png" class="alphataurilogo non-changable">
-              <div class="team-name">ALPHA TAURI</div>
+          <div class="main-team-changes">
+            <div class="team-change mt-2">
+              <div class="bold-font logo-and-name">
+                <img src="../assets/images/alphatauri.png" class="alphataurilogo non-changable">
+                <div class="team-name">ALPHA TAURI</div>
+              </div>
+              <div style="font-size: 35px;"><i class="bi bi-arrow-right"></i></div>
+              <div class="team-change-button" id="alphaTauriReplaceButton">
+                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown-no-margin bold-font"
+                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="alphatauri">
+                  ALPHA TAURI
+                </button>
+                <ul class="dropdown-menu team-select-menu" id="graphTypeDropdown" style="font-family: Formula1;">
+                  <a class="dropdown-item bold-font atborder-down-noC" href="#" data-value="alphatauri">
+                    <img src="../assets/images/alphatauri.png" class="alphataurilogo non-changable">
+                    <div>ALPHA TAURI</div>
+                  </a>
+                  <a class="dropdown-item bold-font visarbborder-down" href="#" data-value="visarb">
+                    <img src="../assets/images/visarb.png" class="hugologo">
+                    <div>VISA CASHAPP RB</div>
+                  </a>
+                  <a class="dropdown-item bold-font hugoborder-down" href="#" data-value="hugo">
+                    <img src="../assets/images/hugoboss.png" class="hugologo">
+                    <div>HUGO BOSS</div>
+                  </a>
+                  <a class="dropdown-item bold-font toyotaborder-down" href="#" data-value="toyota">
+                    <img src="../assets/images/toyota.png" class="toyotalogo">
+                    <div class="ms-2">TOYOTA</div>
+                  </a>
+                  <a class="dropdown-item bold-font porscheborder-down" href="#" data-value="porsche">
+                    <img src="../assets/images/porsche.png" class="ferrarilogo">
+                    <div class="ms-2">PORSCHE</div>
+                  </a>
+                  <a class="dropdown-item bold-font brawnborder-down" href="#" data-value="brawn">
+                    <img src="../assets/images/brawn.png" class="brawnlogo">
+                    <div class="ms-2">BRAWN GP</div>
+                  </a>
+                </ul>
+              </div>
             </div>
-            <div style="font-size: 35px;"><i class="bi bi-arrow-right"></i></div>
-            <div class="team-change-button" id="alphaTauriReplaceButton">
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown-no-margin bold-font"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="alphatauri">
-              ALPHA TAURI
-              </button>
-              <ul class="dropdown-menu team-select-menu" id="graphTypeDropdown" style="font-family: Formula1;">
-                <a class="dropdown-item bold-font atborder-down" href="#" data-value="alphatauri">
-                  <img src="../assets/images/alphatauri.png" class="alphataurilogo non-changable">
-                  <div>ALPHA TAURI</div>
-                </a>
-                <a class="dropdown-item bold-font visarbborder-down" href="#" data-value="visarb">
-                  <img src="../assets/images/visarb.png" class="hugologo">
-                  <div>VISA CASHAPP RB</div>
-                </a>
-                <a class="dropdown-item bold-font hugoborder-down" href="#" data-value="hugo">
-                  <img src="../assets/images/hugoboss.png" class="hugologo">
-                  <div>HUGO BOSS</div>
-                </a>
-                <a class="dropdown-item bold-font toyotaborder-down" href="#" data-value="toyota">
-                  <img src="../assets/images/toyota.png" class="toyotalogo">
-                  <div class="ms-2">TOYOTA</div>
-                </a>
-              </ul>
+            <div class="team-change mt-2">
+              <div class="bold-font logo-and-name">
+                <img src="../assets/images/alpine.png" class="alpinelogo non-changable">
+                <div class="team-name">ALPINE</div>
+              </div>
+              <div style="font-size: 35px;"><i class="bi bi-arrow-right"></i></div>
+              <div class="team-change-button" id="alpineReplaceButton">
+                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown-no-margin bold-font"
+                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="alpine">
+                  ALPINE
+                </button>
+                <ul class="dropdown-menu team-select-menu" id="graphTypeDropdown" style="font-family: Formula1;">
+                  <a class="dropdown-item bold-font alborder-down-noC" href="#" data-value="alpine">
+                    <img src="../assets/images/alpine.png" class="alpinelogo non-changable">
+                    <div class="ms-1">ALPINE</div>
+                  </a>
+                  <a class="dropdown-item bold-font andrettiborder-down" href="#" data-value="andretti">
+                    <img src="../assets/images/andretti.png" class="ferrarilogo">
+                    <div class="ms-1">ANDRETTI</div>
+                  </a>
+                  <a class="dropdown-item bold-font renaultborder-down" href="#" data-value="renault">
+                    <img src="../assets/images/renault.png" class="ferrarilogo">
+                    <div class="ms-1">RENAULT</div>
+                  </a>
+                  <a class="dropdown-item bold-font lotusborder-down" href="#" data-value="lotus">
+                    <img src="../assets/images/lotus.png" class="lotuslogo">
+                    <div class="ms-1">LOTUS</div>
+                  </a>
+                </ul>
+              </div>
+            </div>
+            <div class="team-change mt-2">
+              <div class="bold-font logo-and-name">
+                <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable">
+                <div class="team-name">ALFA ROMEO</div>
+              </div>
+              <div style="font-size: 35px;"><i class="bi bi-arrow-right"></i></div>
+              <div class="team-change-button" id="alfaReplaceButton">
+                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown-no-margin bold-font"
+                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="alfa">
+                  ALFA ROMEO
+                </button>
+                <ul class="dropdown-menu team-select-menu" id="graphTypeDropdown" style="font-family: Formula1;">
+                  <a class="dropdown-item bold-font afborder-down-noC" href="#" data-value="alfa">
+                    <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable">
+                    <div class="ms-1">ALFA ROMEO</div>
+                  </a>
+                  <a class="dropdown-item bold-font stakeborder-down" href="#" data-value="stake">
+                    <img src="../assets/images/kick.png" class="alfalogo">
+                    <div class="ms-1">STAKE SAUBER</div>
+                  </a>
+                  <a class="dropdown-item bold-font sauberborder-down" href="#" data-value="sauber">
+                    <img src="../assets/images/sauber.png" class="sauberlogo">
+                    <div class="ms-1">SAUBER</div>
+                  </a>
+                  <a class="dropdown-item bold-font audiborder-down" href="#" data-value="audi">
+                    <img src="../assets/images/audi.png" class="audilogo">
+                    <div class="ms-1">AUDI</div>
+                  </a>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
         <div class="modal-footer custom-footer">
           <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
+          <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
             id="configDetailsButton">Save</button>
         </div>
       </div>
@@ -202,31 +276,40 @@
             <div class="standings-list bold-font">Bold</div> <span> - Pole poisiton in that race (only drivers)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="color: #c90fd7;">Purple</div> <span> - Fastest lap that race (only drivers)</span>
+            <div class="standings-list" style="color: #c90fd7;">Purple</div> <span> - Fastest lap that race (only
+              drivers)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: #FDE06B; color: #18152e;">&nbsp;</div> <span> - 1st place that race (drivers)</span>
+            <div class="standings-list" style="background-color: #FDE06B; color: #18152e;">&nbsp;</div> <span> - 1st
+              place that race (drivers)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: #FDE06B; color: #18152e;">&nbsp;</div> <span> - Most points in that race (teams)</span>
+            <div class="standings-list" style="background-color: #FDE06B; color: #18152e;">&nbsp;</div> <span> - Most
+              points in that race (teams)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: #AEB2B8; color: #18152e;">&nbsp;</div> <span> - 2nd place that race (drivers)</span>
+            <div class="standings-list" style="background-color: #AEB2B8; color: #18152e;">&nbsp;</div> <span> - 2nd
+              place that race (drivers)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: #AEB2B8; color: #18152e;">&nbsp;</div> <span> - 2nd most points in that race (teams)</span>
+            <div class="standings-list" style="background-color: #AEB2B8; color: #18152e;">&nbsp;</div> <span> - 2nd
+              most points in that race (teams)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: #d7985a; color: #18152e;">&nbsp;</div> <span> - 3rd place that race (drivers)</span>
+            <div class="standings-list" style="background-color: #d7985a; color: #18152e;">&nbsp;</div> <span> - 3rd
+              place that race (drivers)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: #d7985a; color: #18152e;">&nbsp;</div> <span> - 3rd most points in that race (teams)</span>
+            <div class="standings-list" style="background-color: #d7985a; color: #18152e;">&nbsp;</div> <span> - 3rd
+              most points in that race (teams)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list">DNF</div> <div> - Did not finish that race</div>
+            <div class="standings-list">DNF</div>
+            <div> - Did not finish that race</div>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list">( )</div> <div> - Sprint result</div>
+            <div class="standings-list">( )</div>
+            <div> - Sprint result</div>
           </div>
         </div>
         <div class="modal-footer custom-footer">
@@ -250,7 +333,8 @@
             <div><i class="bi bi-pencil-square"></i></div> <span> - Click to edit driver's details</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div style="width: 170px;">Auto contract</div> <span> - Will give the drivers contracts automatically based on their rating</span>
+            <div style="width: 170px;">Auto contract</div> <span> - Will give the drivers contracts automatically based
+              on their rating</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
             You can't place drivers in the F2 and F3 tab, only in the Free Drivers tab
@@ -271,12 +355,15 @@
         </div>
         <div class="modal-body custom-body">
           <div style="gap: 7px;">
-            From the <span class="bold-font">Teams</span> tab, you will be able to edit performance from every part of any team.
-            The number you see beside the bars are the <span class="bold-font positive">Increment</span> or <span class="bold-font negative">Decrement</span>
+            From the <span class="bold-font">Teams</span> tab, you will be able to edit performance from every part of
+            any team.
+            The number you see beside the bars are the <span class="bold-font positive">Increment</span> or <span
+              class="bold-font negative">Decrement</span>
             in performance for that part in specific.
           </div>
           <div class="mt-2" style="gap: 7px;">
-            From the <span class="bold-font">Engines</span> tab, you will be able to edit directly the stats of every engine, seeing their exact performance.
+            From the <span class="bold-font">Engines</span> tab, you will be able to edit directly the stats of every
+            engine, seeing their exact performance.
           </div>
         </div>
         <div class="modal-footer custom-footer">
@@ -294,15 +381,22 @@
         </div>
         <div class="modal-body custom-body">
           <div style="gap: 7px;">
-            The predictions are made with an AI model trained with the developer's own save file. You can check out predictions
+            The predictions are made with an AI model trained with the developer's own save file. You can check out
+            predictions
             for previous races and for the next one in the <span class="bold-font">Race</span> tab.
           </div>
           <div class="mt-2" style="gap: 7px;">
-            In the <span class="bold-font">Standings</span> tab, you can configure a prediction for the rest of the season from the race you
-            select in the modal. Take into account that the sooner that race is in the season, the more races it will have to simulate and it will take longer.
-            For example, it will take much longer if you predict from the 3rd race of the season than if you predict only the last race of the season.
-            The model will run dozens of simulations of all the remaining races and calculate the amount of times a driver has finished in every position.
-            The <span class="bold-font" style="color: #5bd999;">darker </span><span class="bold-font" style="color: #7adfac;">the </span><span class="bold-font" style="color: #a2dfc0;">green </span><span class="bold-font" style="color: #c5e7d6;">is</span>,
+            In the <span class="bold-font">Standings</span> tab, you can configure a prediction for the rest of the
+            season from the race you
+            select in the modal. Take into account that the sooner that race is in the season, the more races it will
+            have to simulate and it will take longer.
+            For example, it will take much longer if you predict from the 3rd race of the season than if you predict
+            only the last race of the season.
+            The model will run dozens of simulations of all the remaining races and calculate the amount of times a
+            driver has finished in every position.
+            The <span class="bold-font" style="color: #5bd999;">darker </span><span class="bold-font"
+              style="color: #7adfac;">the </span><span class="bold-font" style="color: #a2dfc0;">green </span><span
+              class="bold-font" style="color: #c5e7d6;">is</span>,
             the more chances he has to finish in that position
           </div>
         </div>
@@ -321,12 +415,17 @@
         </div>
         <div class="modal-body custom-body">
           <div style="gap: 7px;">
-            The <span class="bold-font">Annotations </span>toggle will hide or show the lines marking <span class="bold-font" style="color: #FDE06B;">P1, </span>
-            <span class="bold-font" style="color: #AEB2B8;">P2, </span> <span class="bold-font" style="color: #d7985a;">P3 </span> and <span class="bold-font">P10 </span> in the <span class="bold-font">Race form </span> chart and
-            <span class="bold-font q-label">Q2</span> and <span class="bold-font q-label">Q3</span> lines in the <span class="bold-font">Quali form </span> chart.
+            The <span class="bold-font">Annotations </span>toggle will hide or show the lines marking <span
+              class="bold-font" style="color: #FDE06B;">P1, </span>
+            <span class="bold-font" style="color: #AEB2B8;">P2, </span> <span class="bold-font"
+              style="color: #d7985a;">P3 </span> and <span class="bold-font">P10 </span> in the <span
+              class="bold-font">Race form </span> chart and
+            <span class="bold-font q-label">Q2</span> and <span class="bold-font q-label">Q3</span> lines in the <span
+              class="bold-font">Quali form </span> chart.
           </div>
           <div class="mt-2" style="gap: 7px;">
-            The <span class="bold-font">Points progression </span> graph has no <span class="bold-font">Annotations </span>
+            The <span class="bold-font">Points progression </span> graph has no <span class="bold-font">Annotations
+            </span>
           </div>
           <div class="mt-2" style="gap: 7px;">
             When comparing teams, only the <span class="bold-font">Points progression </span> graph will be available
@@ -350,8 +449,10 @@
             The <span class="bold-font">Board confidence </span> is only editable for the player's team.
           </div>
           <div class="mt-2" style="gap: 7px;">
-            When editing the  <span class="bold-font">Cost cap spent, </span> changes will not be shown in the main cost cap screen in-game,
-            as there is no way to edit it in that window. When you design or research a new part in-game you should see changes applied in the window that appears 
+            When editing the <span class="bold-font">Cost cap spent, </span> changes will not be shown in the main cost
+            cap screen in-game,
+            as there is no way to edit it in that window. When you design or research a new part in-game you should see
+            changes applied in the window that appears
             to confirm the transaction
           </div>
         </div>
@@ -388,7 +489,8 @@
             <div><i class="standings-list bi bi-cloud-rain-heavy"></i></div> <span> - Heavy Rain</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div style="width: 105px;">ATA Quali</div> <span> - Q1 will be on hards, Q2 on medium tyres and Q3 with soft tyres</span>
+            <div style="width: 105px;">ATA Quali</div> <span> - Q1 will be on hards, Q2 on medium tyres and Q3 with soft
+              tyres</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
             Due to how the game works, it's only possible to set one of these 6 patterns, and it's not possible to edit
@@ -398,8 +500,10 @@
             On sprint weekends, the game will take the Qualifying forecast for the sprint race
           </div>
           <div class="mt-2" style="gap: 7px;">
-            You can edit the calendar whenever you want and how many times you want, however, <span class="bold-font">during the season</span> it is <span class="bold-font">discouraged</span> to edit 
-            the order or amount of races, do it at <span class="bold-font">your own risk</span>. Changing weather forecast during the season should be safe.
+            You can edit the calendar whenever you want and how many times you want, however, <span
+              class="bold-font">during the season</span> it is <span class="bold-font">discouraged</span> to edit
+            the order or amount of races, do it at <span class="bold-font">your own risk</span>. Changing weather
+            forecast during the season should be safe.
           </div>
         </div>
         <div class="modal-footer custom-footer">
@@ -551,8 +655,8 @@
               </div>
               <div class="col modal-team alpine d-none" data-teamid="5">
                 <div class="logo-and-name">
-                  <img src="../assets/images/alpine.png" class="alpinelogo">
-                  <div class="team-name bold-font">ALPINE</div>
+                  <img src="../assets/images/alpine.png" class="alpinelogo-replace alpinelogo">
+                  <div class="team-name bold-font alpine-name">ALPINE</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="5" class="H2Hradio" data-state="unchecked">H2H</div>
@@ -591,8 +695,8 @@
               </div>
               <div class="col modal-team alfa d-none" data-teamid="9">
                 <div class="logo-and-name">
-                  <img src="../assets/images/alfaromeo.png" class="alfalogo">
-                  <div class="team-name bold-font">ALFA ROMEO</div>
+                  <img src="../assets/images/alfaromeo.png" class="alfalogo alfalogo-replace">
+                  <div class="team-name bold-font alfa-name">ALFA ROMEO</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="9" class="H2Hradio" data-state="unchecked">H2H</div>
@@ -642,8 +746,9 @@
       </div>
       <div>
         <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="saveSelector"
-        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-family: Formula1; min-width: 148px;">
-        Your saves
+          data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+          style="font-family: Formula1; min-width: 148px;">
+          Your saves
         </button>
         <ul class="dropdown-menu" id="dropdownMenu" style="font-family: Formula1;">
         </ul>
@@ -721,7 +826,8 @@
         </div>
         <div class="title bold-font py-3 w-100">
           Forecast
-          <i class="info-titles bold-font" id="forecastinfo" data-bs-toggle="modal" data-bs-target="#forecastmodal">?</i>
+          <i class="info-titles bold-font" id="forecastinfo" data-bs-toggle="modal"
+            data-bs-target="#forecastmodal">?</i>
         </div>
         <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
           <ul class="nav nav-pills">
@@ -804,7 +910,8 @@
           </div>
           <div class="title bold-font py-3">
             Comparison
-            <i class="info-titles bold-font" id="comparisoninfo" data-bs-toggle="modal" data-bs-target="#comparisonmodal">?</i>
+            <i class="info-titles bold-font" id="comparisoninfo" data-bs-toggle="modal"
+              data-bs-target="#comparisonmodal">?</i>
           </div>
         </div>
         <div class="d-flex d-none" id="mainH2h">
@@ -1002,7 +1109,8 @@
         </div>
         <div class="title bold-font py-3">
           Season Results
-          <i class="info-titles bold-font" id="standingsinfo" data-bs-toggle="modal" data-bs-target="#standingsmodal">?</i>
+          <i class="info-titles bold-font" id="standingsinfo" data-bs-toggle="modal"
+            data-bs-target="#standingsmodal">?</i>
         </div>
         <div class="main-viewer-section">
           <div id="seasonresults-table"></div>
@@ -1036,7 +1144,8 @@
         <div class="trasnfer-top-panel">
           <div class="title transfer-title bold-font py-3">
             Contracted drivers
-            <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal" data-bs-target="#contractsModal">?</i>
+            <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal"
+              data-bs-target="#contractsModal">?</i>
           </div>
           <div class="form-check form-switch auto-contract">
             <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="autoContractToggle">
@@ -1088,8 +1197,8 @@
           </div>
           <div class="team-template">
             <div class="logo-and-name" id="alpine">
-              <img src="../assets/images/alpine.png" class="alpinelogo">
-              <div class="team-name bold-font">ALPINE</div>
+              <img src="../assets/images/alpine.png" class="alpinelogo-replace alpinelogo">
+              <div class="team-name bold-font alpine-name">ALPINE</div>
             </div>
             <div class="drivers-section" data-team="alpine">
               <div class="col driver-space" id="al1">
@@ -1116,8 +1225,8 @@
           </div>
           <div class="team-template">
             <div class="logo-and-name" id="alfaromeo">
-              <img src="../assets/images/alfaromeo.png" class="alfalogo">
-              <div class="team-name bold-font">ALFA ROMEO</div>
+              <img src="../assets/images/alfaromeo.png" class="alfalogo alfalogo-replace">
+              <div class="team-name bold-font alfa-name">ALFA ROMEO</div>
             </div>
             <div class="drivers-section" data-team="alfaromeo">
               <div class="col driver-space" id="af1">
@@ -1620,8 +1729,8 @@
               </div>
             </a>
             <a class="dropdown-item alborder-down bold-font" style="cursor: pointer;" data-teamid="5">
-              <img src="../assets/images/alpine.png" class="alpinelogo">
-              <div class="team-menu-name ps-1">
+              <img src="../assets/images/alpine.png" class="alpinelogo-replace alpinelogo">
+              <div class="team-menu-name ps-1 alpine-name">
                 ALPINE
               </div>
             </a>
@@ -1644,8 +1753,8 @@
               </div>
             </a>
             <a class="dropdown-item afborder-down bold-font" style="cursor: pointer;" data-teamid="9">
-              <img src="../assets/images/alfaromeo.png" class="alfalogo">
-              <div class="team-menu-name ps-1">
+              <img src="../assets/images/alfaromeo.png" class="alfalogo alfalogo-replace">
+              <div class="team-menu-name ps-1 alfa-name">
                 ALFA ROMEO
               </div>
             </a>
@@ -2109,8 +2218,8 @@
       <div class="main-calendar">
         <div class="prediction-buttons ps-3" style="gap: 10px;">
           <div>
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-              id="addRaceButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="addRaceButton"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Add race
             </button>
             <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
@@ -2122,7 +2231,8 @@
         </div>
         <div class="title bold-font py-3">
           Calendar
-          <i class="info-titles bold-font" id="calendarinfo" data-bs-toggle="modal" data-bs-target="#calendarmodal">?</i>
+          <i class="info-titles bold-font" id="calendarinfo" data-bs-toggle="modal"
+            data-bs-target="#calendarmodal">?</i>
         </div>
         <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px; top:0;">
           <div class="btn custom-confirm option-buttons bold-font" id="confirmCalendar">Save changes</div>
@@ -2154,7 +2264,8 @@
               <div class="team-title">RED BULL RACING</div>
             </div>
             <div class="col team bold-font logo-and-title" data-teamid="1" data-teamname="Ferrari">
-              <img src="../assets/images/ferrari.png" class="ferrarilogo" style="padding-bottom: 7px; padding-top: 7px;">
+              <img src="../assets/images/ferrari.png" class="ferrarilogo"
+                style="padding-bottom: 7px; padding-top: 7px;">
               <div class="team-title">FERRARI</div>
             </div>
             <div class="col team bold-font logo-and-title" data-teamid="4" data-teamname="Mercedes">
@@ -2162,17 +2273,17 @@
               <div class="team-title">MERCEDES</div>
             </div>
             <div class="col team bold-font logo-and-title" data-teamid="5" data-teamname="Alpine" id="alpineTeam">
-              <img src="../assets/images/alpine.png" class="alpinelogo">
-              <img src="../assets/images/alpine2.png" class="d-none" class="alpinelogo">
-              <div class="team-title">ALPINE</div>
+              <img src="../assets/images/alpine.png" class="alpinelogo-replace alpinelogo">
+              <img src="../assets/images/alpine2.png" class="d-none" class="alpinelogo-replace alpinelogo">
+              <div class="team-title alpine-name">ALPINE</div>
             </div>
             <div class="col team bold-font logo-and-title" data-teamid="2" data-teamname="McLaren">
               <img src="../assets/images/mclaren.png" class="mclarenlogo">
               <div class="team-title">MCLAREN</div>
             </div>
             <div class="col team bold-font logo-and-title" data-teamid="9" data-teamname="Alfa Romeo">
-              <img src="../assets/images/alfaromeo.png" class="alfalogo">
-              <div class="team-title">ALFA ROMEO</div>
+              <img src="../assets/images/alfaromeo.png" class="alfalogo alfalogo-replace">
+              <div class="team-title alfa-name">ALFA ROMEO</div>
             </div>
             <div class="col team bold-font logo-and-title" data-teamid="10" data-teamname="Aston Martin">
               <img src="../assets/images/astonMartin.png" class="astonlogo">
@@ -2196,7 +2307,8 @@
           <div class="main-columns-drag-section d-none" id="enginesDiv">
             <div class="col engine bold-font logo-and-title" data-engineid="1" data-teamEngine="1" data-stats=""
               data-teamname="Ferrari">
-              <img src="../assets/images/ferrari.png" class="ferrarilogo" style="padding-bottom: 7px; padding-top: 7px;">
+              <img src="../assets/images/ferrari.png" class="ferrarilogo"
+                style="padding-bottom: 7px; padding-top: 7px;">
               <div class="team-title">FERRARI</div>
             </div>
             <div class="col engine bold-font logo-and-title" data-engineid="10" data-teamengine="2" data-stats=""
@@ -2228,7 +2340,8 @@
         <div class="trasnfer-top-panel">
           <div class="title transfer-title bold-font py-3">
             Performance
-            <i class="info-titles bold-font" id="perfoemanceinfo" data-bs-toggle="modal" data-bs-target="#performancemodal">?</i>
+            <i class="info-titles bold-font" id="perfoemanceinfo" data-bs-toggle="modal"
+              data-bs-target="#performancemodal">?</i>
           </div>
         </div>
         <div class="main-columns-drag-section performance-section">
@@ -2464,7 +2577,8 @@
   <footer class="footer">
     <div class="socials">
       <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor">&nbsp;DDBB Editor</a>
-      <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259">&nbsp;My profile</a>
+      <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259">&nbsp;My
+        profile</a>
       <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_">&nbsp;@ignaciourreta_</a>
       <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta">&nbsp;ignaciourreta</a>
       <a class="bi bi-heart" href="https://www.buymeacoffee.com/iUrreta">&nbsp;Support me</a>

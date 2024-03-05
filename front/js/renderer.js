@@ -74,9 +74,17 @@ async function getPatchNotes() {
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    const names_configs = {"visarb": "VISA CASHAPP RB", "toyota" : "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI"}
-    const logos_configs = {"visarb": "../assets/images/visarb.png", "toyota" : "../assets/images/toyota.png", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png"}
-    const logos_classes_configs = {"visarb": "hugologo", "toyota" : "toyotalogo", "hugo": "hugologo"}
+    const names_configs = {"visarb": "VISA CASHAPP RB", "toyota" : "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI", "brawn": "BRAWN GP", "porsche": "PORSCHE",
+                            "alpine": "ALPINE", "renault": "RENAULT", "andretti": "ANDRETTI", "lotus": "LOTUS", "alfa" : "ALFA ROMEO",
+                        "audi" : "AUDI", "sauber" : "SAUBER", "stake" : "STAKE SAUBER"}
+    const logos_configs = {"visarb": "../assets/images/visarb.png", "toyota" : "../assets/images/toyota.png", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png",
+                            "brawn": "../assets/images/brawn.png", "porsche": "../assets/images/porsche.png",
+                            "alpine": "../assets/images/alpine.png", "renault": "../assets/images/renault.png", "andretti": "../assets/images/andretti.png", "lotus": "../assets/images/lotus.png",
+                            "alfa" : "../assets/images/alfaromeo.png", "audi" : "../assets/images/audi.png", "sauber" : "../assets/images/sauber.png", "stake" : "../assets/images/kick.png"}
+    const logos_classes_configs = {"visarb": "hugologo", "toyota" : "toyotalogo", "hugo": "hugologo", "alphatauri": "alphataurilogo",
+                            "porsche": "ferrarilogo", "brawn": "brawnlogo",
+                            "alpine": "alpinelogo", "renault": "ferrarilogo", "andretti": "ferrarilogo", "lotus": "lotuslogo",
+                            "alfa" : "alfalogo", "audi" : "audilogo", "sauber" : "sauberlogo", "stake" : "alfalogo"}
 
     const driverTransferPill = document.getElementById("transferpill");
     const editStatsPill = document.getElementById("statspill");
@@ -591,6 +599,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function manage_config_content(info){
         alphaTauriReplace(info["alphatauri"])
+        alpineReplace(info["alpine"])
+        alfaReplace(info["alfa"])
     }
 
     function alphaTauriReplace(info){
@@ -604,6 +614,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!elem.classList.contains("non-changable")){
                     elem.src = logos_configs[info]
                     elem.classList.remove("alphataurilogo")
+                    elem.classList.remove("toyotalogo")
+                    elem.classList.remove("hugologo")
+                    elem.classList.remove("ferrarilogo")
+                    elem.classList.remove("brawnlogo")
                     elem.classList.add(logos_classes_configs[info])
                 }
             })
@@ -621,6 +635,73 @@ document.addEventListener('DOMContentLoaded', function () {
             let alphaVarName = "--alphatauri-primary"
             let newVarName = "--alphatauri-original"
             change_css_variables(alphaVarName, newVarName)
+        }
+    }
+
+    function alpineReplace(info){
+        document.querySelector("#alpineReplaceButton").querySelector("button").textContent = names_configs[info]
+        document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value = info
+        document.querySelectorAll(".alpine-name").forEach(function(elem){
+            elem.textContent = names_configs[info]
+        })
+        if (info !== "alpine"){
+            document.querySelectorAll(".alpinelogo-replace").forEach(function(elem){
+                if (!elem.classList.contains("non-changable")){
+                    elem.src = logos_configs[info]
+                    elem.classList.remove("alpinelogo")
+                    elem.classList.remove("ferrarilogo")
+                    elem.classList.remove("lotuslogo")
+                    elem.classList.add(logos_classes_configs[info])
+                }
+            })
+            let alpineVarName = "--alpine-primary"
+            let newVarName = "--" + info + "-primary"
+            change_css_variables(alpineVarName, newVarName)
+        }
+        else{
+            document.querySelectorAll(".alpinelogo-replace").forEach(function(elem){
+                if (!elem.classList.contains("non-changable")){
+                    elem.src = logos_configs[info]
+                    elem.className = "alpinelogo-replace alpinelogo"
+                }
+            })
+            let alpineVarName = "--alpine-primary"
+            let newVarName = "--alpine-original"
+            change_css_variables(alpineVarName, newVarName)
+        }
+    }
+    
+    function alfaReplace(info){
+        document.querySelector("#alfaReplaceButton").querySelector("button").textContent = names_configs[info]
+        document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value = info
+        document.querySelectorAll(".alfa-name").forEach(function(elem){
+            elem.textContent = names_configs[info]
+        })
+        if (info !== "alfa"){
+            console.log(info)
+            document.querySelectorAll(".alfalogo-replace").forEach(function(elem){
+                if (!elem.classList.contains("non-changable")){
+                    elem.src = logos_configs[info]
+                    elem.classList.remove("alfaromeologo")
+                    elem.classList.remove("audilogo")
+                    elem.classList.remove("sauberlogo")
+                    elem.classList.add(logos_classes_configs[info])
+                }
+            })
+            let alfaVarName = "--alfa-primary"
+            let newVarName = "--" + info + "-primary"
+            change_css_variables(alfaVarName, newVarName)
+        }
+        else{
+            document.querySelectorAll(".alfalogo-replace").forEach(function(elem){
+                if (!elem.classList.contains("non-changable")){
+                    elem.src = logos_configs[info]
+                    elem.className = "alfalogo-replace alfalogo"
+                }
+            })
+            let alfaVarName = "--alfa-primary"
+            let newVarName = "--alfa-original"
+            change_css_variables(alfaVarName, newVarName)
         }
     }
 
@@ -656,13 +737,17 @@ document.addEventListener('DOMContentLoaded', function () {
         save = document.querySelector("#saveSelector").textContent
         save = save.slice(0, -4)
         alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
+        alpine = document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value
+        alfa = document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value
         let data = {
             command: "configUpdate",
             save: save,
-            alphatauri: alphatauri
+            alphatauri: alphatauri,
+            alpine: alpine,
+            alfa: alfa
         }
         socket.send(JSON.stringify(data))
-        info = {teams: {alphatauri: alphatauri}}
+        info = {teams: {alphatauri: alphatauri, alpine: alpine, alfa: alfa}}
         manage_config_content(info["teams"])
     })
 

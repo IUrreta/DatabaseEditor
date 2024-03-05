@@ -1,18 +1,28 @@
 :root {
   --alphatauri-original: #5E8FAA;
+  --alpine-original: #2293D1;
+  --andretti-primary: #fac51c;
+  --lotus-primary: #b09247;
   --visarb-primary: #596fa4;
   --toyota-primary: #EB0A1B;
-  --hugo-primary: #5E8FAA;
+  --hugo-primary: #bd9514;
   --alphatauri-primary: #5E8FAA;
+  --porsche-primary: #b12b28;
+  --brawn-primary : #d0e610;
   --ferrari-primary: #F91536;
   --mercedes-primary: #6CD3BF;
   --redbull-primary: #3671C6;
+  --stake-primary: #01e500;
+  --audi-primary: #f50537;
+  --sauber-primary: #f50537;
   --aston-primary: #358C75;
+  --alfa-original: #C92D4B;
   --alfa-primary: #C92D4B;
   --haas-primary: #B6BABD;
   --mclaren-primary: #F58020;
   --williams-primary: #37BEDD;
   --alpine-primary: #2293D1;
+  --renault-primary: #f7c82f;
 
 }
 
@@ -195,6 +205,11 @@ a.bi-linkedin:hover {
   color: #dedde6;
   font-size: 20px;
   padding-right: 2rem;
+}
+
+.main-team-changes{
+  display: flex;
+  flex-direction: column;
 }
 
 .team-change{
@@ -2949,6 +2964,30 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
+.brawnlogo{
+  width: 50px;
+  height: 45px;
+  padding-bottom: 16px;
+  margin-left: 5px;
+  padding-top: 17px;
+}
+
+.audilogo{
+  width: 45px;
+  height: 45px;
+  padding-bottom: 16px;
+  padding-left: 5px;
+  padding-top: 17px;
+}
+
+.sauberlogo{
+  width: 35px;
+  height: 35px;
+  padding-bottom: 3px;
+  padding-top: 5px;
+  padding-left: 5px;
+}
+
 .hugologo{
   width: 55px;
   height: 45px;
@@ -2970,6 +3009,14 @@ input::-webkit-inner-spin-button {
   height: 40px;
   padding-bottom: 5px;
   padding-top: 7px;
+  padding-left: 6px;
+}
+
+.lotuslogo{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 4px;
+  padding-top: 4px;
   padding-left: 6px;
 }
 
@@ -3053,8 +3100,24 @@ input::-webkit-inner-spin-button {
 }
 
 
-#alpine,.alborder-down:hover {
+#alpine, .alborder-down:hover {
   border-bottom: 2px solid var(--alpine-primary) !important
+}
+
+.alborder-down-noC:hover{
+  border-bottom: 2px solid #2293D1 !important
+}
+
+.andrettiborder-down:hover{
+  border-bottom: 2px solid var(--andretti-primary) !important
+}
+
+.renaultborder-down:hover{
+  border-bottom: 2px solid var(--renault-primary) !important
+}
+
+.lotusborder-down:hover{
+  border-bottom: 2px solid var(--lotus-primary) !important
 }
 
 .tabulator-row:hover .alborder-right {
@@ -3067,6 +3130,10 @@ input::-webkit-inner-spin-button {
 
 #alfaromeo, .afborder-down:hover {
   border-bottom: 2px solid var(--alfa-primary) !important
+}
+
+.afborder-down-noC:hover{
+  border-bottom: 2px solid #C92D4B !important
 }
 
 .tabulator-row:hover .afborder-right {
@@ -3093,13 +3160,44 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--alphatauri-primary) !important 
 }
 
+.atborder-down-noC:hover{
+  border-bottom: 2px solid #5E8FAA !important
+}
+
+.hugoborder-down:hover{
+  border-bottom: 2px solid var(--hugo-primary) !important
+
+}
+
 .visarbborder-down:hover{
   border-bottom: 2px solid var(--visarb-primary) !important
 }
 
+
 .toyotaborder-down:hover{
   border-bottom: 2px solid var(--toyota-primary) !important
 }
+
+.porscheborder-down:hover{
+  border-bottom: 2px solid var(--porsche-primary) !important
+}
+
+.brawnborder-down:hover{
+  border-bottom: 2px solid var(--brawn-primary) !important
+}
+
+.stakeborder-down:hover{
+  border-bottom: 2px solid var(--stake-primary) !important
+}
+
+.audiborder-down:hover{
+  border-bottom: 2px solid var(--audi-primary) !important
+}
+
+.sauberborder-down:hover{
+  border-bottom: 2px solid var(--sauber-primary) !important
+}
+
 
 .tabulator-row:hover .atborder-right {
   border-right: 3px solid var(--alphatauri-primary) !important;

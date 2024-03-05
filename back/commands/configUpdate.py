@@ -21,7 +21,9 @@ class ConfigUpdateCommand(Command):
         if not os.path.exists(file_path):
             data = {
                 "teams": {
-                    "alphatauri": self.message["alphatauri"]
+                    "alphatauri": self.message["alphatauri"],
+                    "alpine": self.message["alpine"],
+                    "alfa": self.message["alfa"]
                 }
             }
             with open(file_path, "w") as json_file:
@@ -31,6 +33,8 @@ class ConfigUpdateCommand(Command):
                 existing_data = json.load(json_file)
             
             existing_data["teams"]["alphatauri"] = self.message["alphatauri"]
+            existing_data["teams"]["alpine"] = self.message["alpine"]
+            existing_data["teams"]["alfa"] = self.message["alfa"]
             
             with open(file_path, "w") as json_file:
-                json.dump(existing_data, json_file)
+                json.dump(existing_data, json_file, indent=4)
