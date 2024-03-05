@@ -376,6 +376,15 @@ function new_drivers_table(data){
     
 }
 
+function new_load_drivers_table(data){
+    data.forEach(function (driver) {
+        let races_done = driver.slice(3).map(x => x[0])
+        new_addDriver(driver, races_done)
+    })
+}
+
+
+
 /**
  * Creates the year selector menu
  * @param {String} actualYear current year of the save

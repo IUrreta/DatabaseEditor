@@ -47,7 +47,7 @@ class SaveSelectedCommand(Command):
         shutil.copy(originalFIle, new_file)
     
     async def check_for_configs(self, saveName):
-        config_name = f"{saveName.split(".")[0]}_config.json"
+        config_name = f"{saveName.split('.')[0]}_config.json"
         config_folder = "./../configs"
         file_path = os.path.join(config_folder, config_name)
         if not os.path.exists(config_folder) or not os.path.exists(file_path):

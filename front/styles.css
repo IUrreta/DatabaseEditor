@@ -934,7 +934,41 @@ DRIVERS TABLE
   color: #dedde6;
 }
 
-.drivers-table-header .drivers-table-normal{
+.drivers-table-row{
+  display: flex;
+  flex-direction: row;
+  height: 30px;
+  transition: background-color 0.3s, color 0.3;
+}
+
+.drivers-table-row:hover{
+  background-color: #dedde6;
+  color: #18152e;
+}
+
+.drivers-table-row .drivers-table-normal{
+  background-color: #3c3952;
+}
+
+.drivers-table-row.odd .drivers-table-normal{
+  background-color: #494561;
+}
+
+.drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-points, .drivers-table-row .drivers-table-position{
+  background-color: #464166;
+}
+
+.drivers-table-row .drivers-table-driver{
+  border-right: 1px solid #dedde6;
+}
+
+.drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points{
+  border-right: 1px solid #dedde6;
+  border-left: 1px solid #dedde6;
+}
+
+
+.drivers-table-normal{
   flex: 1 0 0;
   text-align: center;
   display: flex;
@@ -948,7 +982,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-position{
-  width: 30px;
+  width: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -965,7 +999,7 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   transition: background-color 0.3s, color 0.3s;
-
+  padding-left: 7px;
 }
 
 .drivers-table-header .drivers-table-driver{

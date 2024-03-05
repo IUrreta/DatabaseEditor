@@ -189,6 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
             //     loadTeamsTable(message.slice(2)); // Llamar a la función después de 1 segundo
             // }, 20);
             new_drivers_table(message[1]);
+            new_load_drivers_table(message.slice(2));
         },
         "TeamData Fetched": (message)=>{
             fillLevels(message.slice(1))
