@@ -940,6 +940,9 @@ DRIVERS TABLE
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.drivers-table-header .drivers-table-normal{
   border-bottom: 1px solid #dedde6;
   border-top: 1px solid #dedde6;
 }
@@ -949,14 +952,23 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #dedde6;
+
 }
 
-.drivers-table-header .drivers-table-driver{
+.drivers-table-header .drivers-table-position{
+  border: 1px solid #dedde6;
+  border-top-left-radius: 5px; 
+}
+
+.drivers-table-driver{
   width: 210px;
   display: flex;
   align-items: center;
   transition: background-color 0.3s, color 0.3s;
+
+}
+
+.drivers-table-header .drivers-table-driver{
   border: 1px solid #dedde6;
 }
 
@@ -965,7 +977,12 @@ DRIVERS TABLE
   display: flex;
   justify-content: center;
   align-items: center;
+  
+}
+
+.drivers-table-header .drivers-table-points{
   border: 1px solid #dedde6;
+  border-top-right-radius: 5px; 
 }
 
 .prob-viewer-data{
