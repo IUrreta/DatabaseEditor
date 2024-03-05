@@ -1,3 +1,20 @@
+:root {
+  --alphatauri-original: #5E8FAA;
+  --visarb-primary: #596fa4;
+  --toyota-primary: #EB0A1B;
+  --hugo-primary: #5E8FAA;
+  --alphatauri-primary: #5E8FAA;
+  --ferrari-primary: #F91536;
+  --mercedes-primary: #6CD3BF;
+  --redbull-primary: #3671C6;
+  --aston-primary: #358C75;
+  --alfa-primary: #C92D4B;
+  --haas-primary: #B6BABD;
+  --mclaren-primary: #F58020;
+  --williams-primary: #37BEDD;
+  --alpine-primary: #2293D1;
+
+}
 
 
 @font-face {
@@ -630,6 +647,31 @@ a.bi-linkedin:hover {
   z-index: 9999 !important;
 }
 
+.general-config {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.bi-gear{
+  font-size: 25px;
+  margin-top: 0.7rem;
+  position: absolute;
+  margin-left: 0.5rem;
+  color: #797599;
+  opacity: 1;
+  transition: color 0.3s, opacity 0.3s;
+}
+
+.bi-gear.hidden{
+  opacity: 0;
+}
+
+.bi-gear:hover{
+  color: white;
+  cursor: pointer;
+}
+
 .save-selector {
   display: flex;
   flex-direction: column;
@@ -664,11 +706,11 @@ a.bi-linkedin:hover {
   justify-content: space-between;
 }
 
-.custom-dropdown:hover {
+.custom-dropdown:hover, .custom-dropdown-no-margin:hover {
   border: 2px solid white !important;
 }
 
-.custom-dropdown:active {
+.custom-dropdown:active, .custom-dropdown-no-margin:active {
   background-color: #1a1826 !important;
 }
 
@@ -2344,43 +2386,43 @@ a.bi-linkedin:hover {
 }
 
 .modal-team.ferrari:hover{
-  color: #F91536;
+  color: var(--ferrari-primary);
 }
 
 .modal-team.redbull:hover{
-  color: #3671C6;
+  color: var(--redbull-primary);
 }
 
 .modal-team.mclaren:hover{
-  color: #F58020;
+  color: var(--mclaren-primary);
 }
 
 .modal-team.merc:hover{
-  color: #6CD3BF;
+  color: var(--mercedes-primary);
 }
 
 .modal-team.alpine:hover{
-  color: #2293D1;
+  color: var(--alpine-primary);
 }
 
 .modal-team.williams:hover{
-  color: #37BEDD;
+  color: var(--williams-primary);
 }
 
 .modal-team.haas:hover{
-  color: #B6BABD;
+  color: var(--haas-primary);
 }
 
 .modal-team.alpha:hover{
-  color: #5E8FAA;;
+  color: var(--alphatauri-primary);
 }
 
 .modal-team.alfa:hover{
-  color: #C92D4B;
+  color: var(--alfa-primary);
 }
 
 .modal-team.aston:hover{
-  color: #358C75;
+  color: var(--aston-primary);
 } 
 
 .blocking-div {
@@ -2715,11 +2757,19 @@ input::-webkit-inner-spin-button {
   padding: 0 10px;
 }
 
-#teamMenu a{
+#teamMenu a, .team-select-menu a{
   display: flex;
   align-items: center;
   justify-content: flex-start;
   padding: 0;
+}
+
+.team-select-menu a{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  margin-right: 7px;
 }
 
 
@@ -2833,7 +2883,7 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
-#redbulllogo, #rblogo {
+.redbulllogo, #rblogo {
   width: 55px;
   height: 45px;
   padding-bottom: 8px;
@@ -2841,7 +2891,7 @@ input::-webkit-inner-spin-button {
   padding-top: 7px;
 }
 
-#ferrarilogo, #felogo {
+.ferrarilogo, #felogo {
   width: 35px;
   height: 40px;
   padding-bottom: 6px;
@@ -2849,7 +2899,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#merclogo, #melogo {
+.merclogo, #melogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -2857,7 +2907,7 @@ input::-webkit-inner-spin-button {
   padding-left: 10px;
 }
 
-#merclogo2 {
+.merclogo2 {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -2866,7 +2916,7 @@ input::-webkit-inner-spin-button {
   padding-right: 4px;
 }
 
-#alpinelogo, #allogo {
+.alpinelogo, #allogo {
   width: 45px;
   height: 40px;
   padding-bottom: 6px;
@@ -2875,7 +2925,7 @@ input::-webkit-inner-spin-button {
   transition: opacity 0.4s;
 }
 
-#mclarenlogo, #mclogo {
+.mclarenlogo, #mclogo {
   width: 40px;
   height: 40px;
   padding-bottom: 4px;
@@ -2883,7 +2933,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#alfalogo, #aflogo {
+.alfalogo, #aflogo {
   width: 40px;
   height: 40px;
   padding-bottom: 3px;
@@ -2891,7 +2941,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#astonlogo, #aslogo {
+.astonlogo, #aslogo {
   width: 50px;
   height: 45px;
   padding-bottom: 5px;
@@ -2899,7 +2949,23 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
-#haaslogo, #halogo {
+.hugologo{
+  width: 55px;
+  height: 45px;
+  padding-bottom: 7px;
+  padding-left: 5px;
+  padding-top: 7px;
+}
+
+.toyotalogo{
+  width: 50px;
+  height: 45px;
+  padding-bottom: 8px;
+  padding-left: 7px;
+  padding-top: 8px;
+}
+
+.haaslogo, #halogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -2907,7 +2973,7 @@ input::-webkit-inner-spin-button {
   padding-left: 6px;
 }
 
-#alphataurilogo, #atlogo {
+.alphataurilogo, #atlogo {
   width: 45px;
   height: 45px;
   padding-bottom: 12px;
@@ -2915,7 +2981,7 @@ input::-webkit-inner-spin-button {
   padding-top: 12px;
 }
 
-#williamslogo, #wilogo {
+.williamslogo, #wilogo {
   width: 45px;
   height: 45px;
   padding-bottom: 11px;
@@ -2939,168 +3005,176 @@ input::-webkit-inner-spin-button {
 
 
 #redbull, .rbborder-down:hover {
-  border-bottom: 2px solid #3671C6 !important;
+  border-bottom: 2px solid var(--redbull-primary) !important;
 }
 
 .tabulator-row:hover .rbborder-right {
-  border-right: 3px solid #3671C6 !important;
+  border-right: 3px solid var(--redbull-primary) !important;
 }
 
 .rbactivated{
-  background-color: #3671C6;
+  background-color: var(--redbull-primary);
 }
 
 #ferrari, .feborder-down:hover {
-  border-bottom: 2px solid #F91536 !important;
+  border-bottom: 2px solid var(--ferrari-primary) !important;
 }
 
 .tabulator-row:hover .feborder-right {
-  border-right: 3px solid #F91536 !important;
+  border-right: 3px solid var(--ferrari-primary) !important;
 }
 
 .feactivated{
-  background-color: #F91536;
+  background-color: var(--ferrari-primary);
 }
 
 #merc, .meborder-down:hover {
-  border-bottom: 2px solid #6CD3BF !important;
+  border-bottom: 2px solid var(--mercedes-primary) !important;
 }
 
 .tabulator-row:hover .meborder-right {
-  border-right: 3px solid #6CD3BF !important;
+  border-right: 3px solid var(--mercedes-primary) !important;
 }
 
 .meactivated{
-  background-color: #6CD3BF;
+  background-color: var(--mercedes-primary);
 }
 
 #mclaren, .mcborder-down:hover {
-  border-bottom: 2px solid #F58020 !important;
+  border-bottom: 2px solid var(--mclaren-primary) !important;
 }
 
 .tabulator-row:hover .mcborder-right {
-  border-right: 3px solid #F58020 !important;
+  border-right: 3px solid var(--mclaren-primary) !important;
 }
 
 .mcactivated{
-  background-color: #F58020;
+  background-color: var(--mclaren-primary);
 }
 
 
 #alpine,.alborder-down:hover {
-  border-bottom: 2px solid #2293D1 !important
+  border-bottom: 2px solid var(--alpine-primary) !important
 }
 
 .tabulator-row:hover .alborder-right {
-  border-right: 3px solid #2293D1 !important;
+  border-right: 3px solid var(--alpine-primary) !important;
 }
 
 .alactivated{
-  background-color: #2293D1;
+  background-color: var(--alpine-primary);
 }
 
 #alfaromeo, .afborder-down:hover {
-  border-bottom: 2px solid #C92D4B !important
+  border-bottom: 2px solid var(--alfa-primary) !important
 }
 
 .tabulator-row:hover .afborder-right {
-  border-right: 3px solid #C92D4B !important;
+  border-right: 3px solid var(--alfa-primary) !important;
 }
 
 .afactivated{
-  background-color: #C92D4B;
+  background-color: var(--alfa-primary);
 }
 
 #astonmartin, .asborder-down:hover {
-  border-bottom: 2px solid #358C75 !important
+  border-bottom: 2px solid var(--aston-primary) !important
 }
 
 .tabulator-row:hover .asborder-right {
-  border-right: 3px solid #358C75 !important;
+  border-right: 3px solid var(--aston-primary) !important;
 }
 
 .asactivated{
-  background-color: #358C75;
+  background-color: var(--aston-primary);
 }
 
-#alphatauri, .atborder-down:hover {
-  border-bottom: 2px solid #5E8FAA !important 
+#alphatauri, .atborder-down:hover, .hugoborder-down:hover{
+  border-bottom: 2px solid var(--alphatauri-primary) !important 
+}
+
+.visarbborder-down:hover{
+  border-bottom: 2px solid var(--visarb-primary) !important
+}
+
+.toyotaborder-down:hover{
+  border-bottom: 2px solid var(--toyota-primary) !important
 }
 
 .tabulator-row:hover .atborder-right {
-  border-right: 3px solid #5E8FAA !important;
+  border-right: 3px solid var(--alphatauri-primary) !important;
 }
 
 .atactivated{
-  background-color: #5E8FAA;
+  background-color: var(--alphatauri-primary);
 }
 
 #williams, .wiborder-down:hover {
-  border-bottom: 2px solid #37BEDD !important
+  border-bottom: 2px solid var(--williams-primary) !important
 }
 
 .tabulator-row:hover .wiborder-right {
-  border-right: 3px solid #37BEDD !important;
+  border-right: 3px solid var(--williams-primary) !important;
 }
 
 .wiactivated{
-  background-color: #37BEDD;
+  background-color: var(--williams-primary);
 }
 
 #haas, .haborder-down:hover {
-  border-bottom: 2px solid #B6BABD !important
+  border-bottom: 2px solid var(--haas-primary) !important
 }
 
 .tabulator-row:hover .haborder-right {
-  border-right: 3px solid #B6BABD !important;
+  border-right: 3px solid var(--haas-primary) !important;
 }
 
 .haactivated{
-  background-color: #B6BABD;
+  background-color: var(--haas-primary);
 }
 
 .rbfont {
-  color: #3671C6;
+  color: var(--redbull-primary);
 }
 
 .fefont {
-  color: #F91536;
+  color: var(--ferrari-primary);
 }
 
 .mefont {
-  color: #6CD3BF;
+  color: var(--mercedes-primary);
 }
 
 .mcfont {
-  color: #F58020;
+  color: var(--mclaren-primary);
 }
 
 .alfont {
-  color: #2293D1;
+  color: var(--alpine-primary);
 }
 
 .affont {
-  color: #C92D4B;
+  color: var(--alfa-primary);
 }
 
 .asfont {
-  color: #358C75;
+  color: var(--aston-primary);
 }
 
 .atfont {
-  color: #5E8FAA;
+  color: var(--alphatauri-primary);
 }
 
 .wifont {
-  color: #37BEDD;
+  color: var(--williams-primary);
 }
 
 .hafont {
-  color: #B6BABD;
+  color: var(--haas-primary);
 }
 
 .rbbar-primary {
-  background-color: #3671C6;
+  background-color: var(--redbull-primary);
 }
 
 .rbbar-secondary {
@@ -3108,7 +3182,7 @@ input::-webkit-inner-spin-button {
 }
 
 .febar-primary {
-  background-color: #F91536;
+  background-color: var(--ferrari-primary);
 }
 
 .febar-secondary {
@@ -3116,7 +3190,7 @@ input::-webkit-inner-spin-button {
 }
 
 .mebar-primary {
-  background-color: #6CD3BF;
+  background-color: var(--mercedes-primary);
 }
 
 .mebar-secondary {
@@ -3124,7 +3198,7 @@ input::-webkit-inner-spin-button {
 }
 
 .mcbar-primary {
-  background-color: #F58020;
+  background-color: var(--mclaren-primary);
 }
 
 .mcbar-secondary {
@@ -3132,7 +3206,7 @@ input::-webkit-inner-spin-button {
 }
 
 .albar-primary {
-  background-color: #2293D1;
+  background-color: var(--alpine-primary);
 }
 
 .albar-secondary {
@@ -3140,7 +3214,7 @@ input::-webkit-inner-spin-button {
 }
 
 .afbar-primary {
-  background-color: #C92D4B;
+  background-color: var(--alfa-primary);
 }
 
 .afbar-secondary {
@@ -3148,7 +3222,7 @@ input::-webkit-inner-spin-button {
 }
 
 .asbar-primary {
-  background-color: #358C75;
+  background-color: var(--aston-primary);
 }
 
 .asbar-secondary {
@@ -3156,7 +3230,7 @@ input::-webkit-inner-spin-button {
 }
 
 .atbar-primary {
-  background-color: #5E8FAA;
+  background-color: var(--alphatauri-primary);
 }
 
 .atbar-secondary {
@@ -3164,7 +3238,7 @@ input::-webkit-inner-spin-button {
 }
 
 .wibar-primary {
-  background-color: #37BEDD;
+  background-color: var(--williams-primary);
 }
 
 .wibar-secondary {
@@ -3172,7 +3246,7 @@ input::-webkit-inner-spin-button {
 }
 
 .habar-primary {
-  background-color: #B6BABD;
+  background-color: var(--haas-primary);
 }
 
 .habar-secondary {
@@ -3180,7 +3254,7 @@ input::-webkit-inner-spin-button {
 }
 
 .rbborder-primary {
-  border: 2px solid #3671C6;
+  border: 2px solid var(--redbull-primary);
 }
 
 .rbborder-secondary {
@@ -3188,7 +3262,7 @@ input::-webkit-inner-spin-button {
 }
 
 .feborder-primary {
-  border: 2px solid #F91536;
+  border: 2px solid var(--ferrari-primary);
 }
 
 .feborder-secondary {
@@ -3196,7 +3270,7 @@ input::-webkit-inner-spin-button {
 }
 
 .meborder-primary {
-  border: 2px solid #6CD3BF;
+  border: 2px solid var(var(--mercedes-primary));
 }
 
 .meborder-secondary {
@@ -3204,7 +3278,7 @@ input::-webkit-inner-spin-button {
 }
 
 .mcborder-primary {
-  border: 2px solid #F58020;
+  border: 2px solid var(--mclaren-primary);
 }
 
 .mcborder-secondary {
@@ -3212,7 +3286,7 @@ input::-webkit-inner-spin-button {
 }
 
 .alborder-primary {
-  border: 2px solid #2293D1;
+  border: 2px solid var(--alpine-primary);
 }
 
 .alborder-secondary {
@@ -3220,7 +3294,7 @@ input::-webkit-inner-spin-button {
 }
 
 .afborder-primary {
-  border: 2px solid #C92D4B;
+  border: 2px solid var(--alfa-primary);
 }
 
 .afborder-secondary {
@@ -3228,7 +3302,7 @@ input::-webkit-inner-spin-button {
 }
 
 .asborder-primary {
-  border: 2px solid #358C75;
+  border: 2px solid var(--aston-primary);
 }
 
 .asborder-secondary {
@@ -3236,7 +3310,7 @@ input::-webkit-inner-spin-button {
 }
 
 .atborder-primary {
-  border: 2px solid #5E8FAA;
+  border: 2px solid var(--alphatauri-primary);
 }
 
 .atborder-secondary {
@@ -3244,7 +3318,7 @@ input::-webkit-inner-spin-button {
 }
 
 .wiborder-primary {
-  border: 2px solid #37BEDD;
+  border: 2px solid var(--williams-primary);
 }
 
 .wiborder-secondary {
@@ -3252,7 +3326,7 @@ input::-webkit-inner-spin-button {
 }
 
 .haborder-primary {
-  border: 2px solid #B6BABD;
+  border: 2px solid var(--haas-primary);
 }
 
 .haborder-secondary {

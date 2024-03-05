@@ -47,17 +47,19 @@ class SaveSelectedCommand(Command):
         shutil.copy(originalFIle, new_file)
     
     async def check_for_configs(self, saveName):
-        config_name = f"{saveName}_config.json"
+        config_name = f"{saveName.split(".")[0]}_config.json"
         config_folder = "./../configs"
-        # if there isnt the folder or the file
-        if not os.path.exists(config_folder) or not os.path.exists(config_folder + "/" + config_name):
-            print("AAAAAa")
+        file_path = os.path.join(config_folder, config_name)
+        if not os.path.exists(config_folder) or not os.path.exists(file_path):
             info = ["Config", "ERROR"]
             info_json = json.dumps(info)
             await self.send_message_to_client(info_json)
         else:
-            print("BBBBB")
-            with open(config_folder + "/" + config_name, "r") as file:
+            with open(file_path, "r") as file:
                 data = file.read()
-                await self.send_message_to_client(data)
+                data = json.loads(data)
+                data = data["teams"]
+                info = ["Config", data]
+                info = json.dumps(info)
+                await self.send_message_to_client(info)
         

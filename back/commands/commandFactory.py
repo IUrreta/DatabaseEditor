@@ -20,6 +20,7 @@ from commands.yearSelectedPredictionModal import YearSelectedPredictionModalComm
 from commands.predict import PredictCommand
 from commands.predictMontecarlo import PredictMontecarloCommand
 from commands.unretire import UnretireCommand
+from commands.configUpdate import ConfigUpdateCommand
 
 
 class CommandFactory:
@@ -72,6 +73,8 @@ class CommandFactory:
             return PredictMontecarloCommand(message, client)
         elif command_type == "unretireDriver":
             return UnretireCommand(message, client)
+        elif command_type == "configUpdate":
+            return ConfigUpdateCommand(message, client)
         # Aquí podrías añadir más comandos según sea necesario
         else:
             raise ValueError("Unknown command type")

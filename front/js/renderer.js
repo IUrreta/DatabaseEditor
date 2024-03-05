@@ -74,6 +74,10 @@ async function getPatchNotes() {
 
 document.addEventListener('DOMContentLoaded', function () {
 
+    const names_configs = {"visarb": "VISA CASHAPP RB", "toyota" : "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI"}
+    const logos_configs = {"visarb": "../assets/images/visarb.png", "toyota" : "../assets/images/toyota.png", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png"}
+    const logos_classes_configs = {"visarb": "hugologo", "toyota" : "toyotalogo", "hugo": "hugologo"}
+
     const driverTransferPill = document.getElementById("transferpill");
     const editStatsPill = document.getElementById("statspill");
     const CalendarPill = document.getElementById("calendarpill");
@@ -559,9 +563,16 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    document.querySelector(".bi-gear").addEventListener("click", function () {
+        let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'), {
+            keyboard: false
+        })
+        configDetailModal.show()
+    })
+
     function manage_config(info){
         if (info[0] === "ERROR"){
-            console.log("NO CONFIG FILE OR FOLDER")
+            document.querySelector(".bi-gear").classList.add("hidden")
             //show modal with id configModal
             let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
                 keyboard: false
@@ -569,9 +580,54 @@ document.addEventListener('DOMContentLoaded', function () {
             configModal.show()
         }
         else {
-            //notification of config loaded
-            update_notifications("Config file loaded", false)
+            document.querySelector(".bi-gear").classList.remove("hidden")
+            manage_config_content(info[0])
+            setTimeout(function(){
+                update_notifications("Config file loaded", false)
+                
+            }, 500)
         }
+    }
+
+    function manage_config_content(info){
+        alphaTauriReplace(info["alphatauri"])
+    }
+
+    function alphaTauriReplace(info){
+        document.querySelector("#alphaTauriReplaceButton").querySelector("button").textContent = names_configs[info]
+        document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
+        document.querySelectorAll(".at-name").forEach(function(elem){
+            elem.textContent = names_configs[info]
+        })
+        if (info !== "alphatauri"){
+            document.querySelectorAll(".atlogo-replace").forEach(function(elem){
+                if (!elem.classList.contains("non-changable")){
+                    elem.src = logos_configs[info]
+                    elem.classList.remove("alphataurilogo")
+                    elem.classList.add(logos_classes_configs[info])
+                }
+            })
+            let alphaVarName = "--alphatauri-primary"
+            let newVarName = "--" + info + "-primary"
+            change_css_variables(alphaVarName, newVarName)
+        }
+        else{
+            document.querySelectorAll(".atlogo-replace").forEach(function(elem){
+                if (!elem.classList.contains("non-changable")){
+                    elem.src = logos_configs[info]
+                    elem.className = "atlogo-replace alphataurilogo"
+                }
+            })
+            let alphaVarName = "--alphatauri-primary"
+            let newVarName = "--alphatauri-original"
+            change_css_variables(alphaVarName, newVarName)
+        }
+    }
+
+    function change_css_variables(oldVar, newVar){
+        let root = document.documentElement;  
+        let newVal = getComputedStyle(root).getPropertyValue(newVar).trim();
+        root.style.setProperty(oldVar, newVal);
     }
 
     document.querySelector("#configButton").addEventListener("click", function(){
@@ -585,6 +641,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     })
+
+    //select all team-change-button
+    document.querySelectorAll(".team-change-button").forEach(function(elem){
+        elem.querySelectorAll("a").forEach(function(a){
+            a.addEventListener("click", function(){
+                elem.querySelector("button").textContent = a.textContent
+                elem.querySelector("button").dataset.value = a.dataset.value
+            })
+        })
+    })
+
+    document.querySelector("#configDetailsButton").addEventListener("click", function(){
+        save = document.querySelector("#saveSelector").textContent
+        save = save.slice(0, -4)
+        alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
+        let data = {
+            command: "configUpdate",
+            save: save,
+            alphatauri: alphatauri
+        }
+        socket.send(JSON.stringify(data))
+        info = {teams: {alphatauri: alphatauri}}
+        manage_config_content(info["teams"])
+    })
+
 
     /**
      * Adds eventListeners to all the elements of the staff dropdown
