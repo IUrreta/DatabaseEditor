@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             "alfa" : "../assets/images/alfaromeo.png", "audi" : "../assets/images/audi.png", "sauber" : "../assets/images/sauber.png", "stake" : "../assets/images/kick.png"}
     const logos_classes_configs = {"visarb": "hugologo", "toyota" : "toyotalogo", "hugo": "hugologo", "alphatauri": "alphataurilogo",
                             "porsche": "ferrarilogo", "brawn": "brawnlogo",
-                            "alpine": "alpinelogo", "renault": "ferrarilogo", "andretti": "ferrarilogo", "lotus": "lotuslogo",
+                            "alpine": "alpinelogo", "renault": "ferrarilogo", "andretti": "andrettilogo", "lotus": "lotuslogo",
                             "alfa" : "alfalogo", "audi" : "audilogo", "sauber" : "sauberlogo", "stake" : "alfalogo"}
 
     const driverTransferPill = document.getElementById("transferpill");
@@ -603,6 +603,9 @@ document.addEventListener('DOMContentLoaded', function () {
         alphaTauriReplace(info["alphatauri"])
         alpineReplace(info["alpine"])
         alfaReplace(info["alfa"])
+        update_logo("alpine", logos_configs[info["alpine"]], info["alpine"])
+        update_logo("alfa", logos_configs[info["alfa"]], info["alfa"])
+        update_logo("alphatauri", logos_configs[info["alphatauri"]], info["alphatauri"])
     }
 
     function alphaTauriReplace(info){

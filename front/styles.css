@@ -918,10 +918,14 @@ a.bi-linkedin:hover {
   margin-top: 0.45rem !important;
 }
 
-#probViewer, .drivers-table{
+#probViewer{
   width: 1670px;
   height: 660px;
   max-height: 660px;
+}
+
+.drivers-table{
+  width: 1670px;
 }
 
 /*
@@ -948,6 +952,12 @@ DRIVERS TABLE
 
 .drivers-table-row:hover .drivers-table-driver, .drivers-table-row:hover .drivers-table-position, .drivers-table-row:hover .drivers-table-points, 
 .drivers-table-row:hover .drivers-table-normal{
+  background-color: #dedde6;
+  color: #18152e;
+}
+
+.drivers-table-row.odd:hover .drivers-table-driver, .drivers-table-row.odd:hover .drivers-table-position, .drivers-table-row.odd:hover .drivers-table-points, 
+.drivers-table-row.odd:hover .drivers-table-normal{
   background-color: #dedde6;
   color: #18152e;
 }
@@ -1013,6 +1023,8 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 1;
+  transition: opacity 0.3s;
 }
 
 .drivers-table-logo-div{
@@ -1027,6 +1039,19 @@ DRIVERS TABLE
 .logo-up-down{
   padding-top: 5px;
   padding-bottom: 5px;
+}
+
+.logo-up-down-extra{
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+
+.logo-extra-small{
+  padding: 8px 4px;
+}
+
+.logo-stake-table{
+  padding: 2px 0px;
 }
 
 .drivers-table-header .drivers-table-position{
@@ -1045,6 +1070,7 @@ DRIVERS TABLE
 .drivers-table-row .drivers-table-driver{
   width: 180px;
   border-right: 0px solid transparent;
+  gap: 5px;
 }
 
 
@@ -3099,6 +3125,14 @@ input::-webkit-inner-spin-button {
   padding-bottom: 6px;
   padding-top: 8px;
   padding-left: 5px;
+}
+
+.andrettilogo {
+  width: 35px;
+  height: 40px;
+  padding-bottom: 3px;
+  padding-top: 8px;
+  padding-left: 3px;
 }
 
 .merclogo, #melogo {
