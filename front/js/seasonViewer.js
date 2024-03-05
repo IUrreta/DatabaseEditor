@@ -307,40 +307,74 @@ document.getElementById("teamspill").addEventListener("click", function () {
  * Even listener for the positions and points pill
  */
 document.getElementById("pospill").addEventListener("click", function () {
-    if (seasonTable) {
-        seasonTable.destroy()
-    }
-    pointsOrPos = "pos"
-    createDriversTable(calendarData)
-    setTimeout(function () {
-        loadDriversTable(seasonResults)
-    }, 10);
-    if (teamsTable) {
-        teamsTable.destroy()
-    }
-    createTeamsTable(calendarData)
-    setTimeout(function () {
-        loadTeamsTable(seasonResults)
-    }, 10);
+    // if (seasonTable) {
+    //     seasonTable.destroy()
+    // }
+    // pointsOrPos = "pos"
+    // createDriversTable(calendarData)
+    // setTimeout(function () {
+    //     loadDriversTable(seasonResults)
+    // }, 10);
+    // if (teamsTable) {
+    //     teamsTable.destroy()
+    // }
+    // createTeamsTable(calendarData)
+    // setTimeout(function () {
+    //     loadTeamsTable(seasonResults)
+    // }, 10);
 })
 
 document.getElementById("pointspill").addEventListener("click", function () {
-    if (seasonTable) {
-        seasonTable.destroy()
-    }
-    pointsOrPos = "points"
-    createDriversTable(calendarData)
-    setTimeout(function () {
-        loadDriversTable(seasonResults)
-    }, 10);
-    if (teamsTable) {
-        teamsTable.destroy()
-    }
-    createTeamsTable(calendarData)
-    setTimeout(function () {
-        loadTeamsTable(seasonResults)
-    }, 10);
+    // if (seasonTable) {
+    //     seasonTable.destroy()
+    // }
+    // pointsOrPos = "points"
+    // createDriversTable(calendarData)
+    // setTimeout(function () {
+    //     loadDriversTable(seasonResults)
+    // }, 10);
+    // if (teamsTable) {
+    //     teamsTable.destroy()
+    // }
+    // createTeamsTable(calendarData)
+    // setTimeout(function () {
+    //     loadTeamsTable(seasonResults)
+    // }, 10);
 })
+
+function new_drivers_table(data){
+    console.log(data)
+    let header = document.querySelector(".drivers-table-header")
+    header.innerHTML = ""
+    let driverDiv = document.createElement("div")
+    driverDiv.classList = "drivers-table-driver bold-font"
+    driverDiv.innerText = "DRIVER"
+    let PositionDiv = document.createElement("div")
+    PositionDiv.classList = "drivers-table-position bold-font"
+    PositionDiv.innerText = "#"
+    header.appendChild(PositionDiv)
+    header.appendChild(driverDiv)
+    data.forEach(function(elem){
+        let headerPos = document.createElement("div")
+        headerPos.className = "drivers-table-normal bold-font flag-header"
+        let headerPosFlag = document.createElement("img")
+        race = races_map[elem[1]]
+        flag_src = codes_dict[race]
+        headerPosFlag.src = flag_src
+        let headerPosDiv = document.createElement("div")
+        headerPosDiv.classList.add("text-in-front")
+        headerPosDiv.classList.add("bold-font")
+        headerPosDiv.innerText = races_names[elem[1]]
+        headerPos.appendChild(headerPosFlag)
+        headerPos.appendChild(headerPosDiv)
+        header.appendChild(headerPos)
+    }) 
+    let PointsDiv = document.createElement("div")
+    PointsDiv.classList = "drivers-table-points bold-font"
+    PointsDiv.innerText = "POINTS"
+    header.appendChild(PointsDiv)
+    
+}
 
 /**
  * Creates the year selector menu

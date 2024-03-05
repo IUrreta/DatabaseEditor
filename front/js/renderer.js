@@ -180,14 +180,15 @@ document.addEventListener('DOMContentLoaded', function () {
             load_labels_initialize_graphs(message.slice(1));
         },
         "Results fetched": (message) => {
-            createDriversTable(message[1]);
-            setTimeout(function () {
-                loadDriversTable(message.slice(2)); // Llamar a la función después de 1 segundo
-            }, 20);
-            createTeamsTable(message[1])
-            setTimeout(function () {
-                loadTeamsTable(message.slice(2)); // Llamar a la función después de 1 segundo
-            }, 20);
+            // createDriversTable(message[1]);
+            // setTimeout(function () {
+            //     loadDriversTable(message.slice(2)); // Llamar a la función después de 1 segundo
+            // }, 20);
+            // createTeamsTable(message[1])
+            // setTimeout(function () {
+            //     loadTeamsTable(message.slice(2)); // Llamar a la función después de 1 segundo
+            // }, 20);
+            new_drivers_table(message[1]);
         },
         "TeamData Fetched": (message)=>{
             fillLevels(message.slice(1))
