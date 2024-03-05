@@ -355,6 +355,7 @@ function new_drivers_table(data){
     header.appendChild(PositionDiv)
     header.appendChild(driverDiv)
     data.forEach(function(elem){
+        races_ids.push(elem[0])
         let headerPos = document.createElement("div")
         headerPos.className = "drivers-table-normal bold-font flag-header"
         let headerPosFlag = document.createElement("img")
@@ -377,12 +378,71 @@ function new_drivers_table(data){
 }
 
 function new_load_drivers_table(data){
-    data.forEach(function (driver) {
+    data.forEach(function (driver, index) {
+        let odd = index % 2 === 0 ? "odd" : "even"
         let races_done = driver.slice(3).map(x => x[0])
         new_addDriver(driver, races_done)
     })
 }
 
+function new_addDriver(driver, races_done, odd) {
+    let data = document.querySelector(".drivers-table-data")
+    console.log(driver)
+    let row = document.createElement("div")
+    row.classList = "drivers-table-row"
+    if (odd) {
+        row.classList.add("odd")
+    }
+    let nameDiv = document.createElement("div");
+    nameDiv.classList = "drivers-table-driver"
+    let name = driver[0].split(" ")
+    let spanName = document.createElement("span")
+    let spanLastName = document.createElement("span")
+    spanName.textContent = name[0] + " "
+    spanLastName.textContent = " " + name[1].toUpperCase()
+    spanLastName.classList.add("bold-font")
+    spanLastName.dataset.teamid = driver[1]
+    nameDiv.appendChild(spanName)
+    nameDiv.appendChild(spanLastName)
+    manageColor(spanLastName, spanLastName)
+    let posDiv = document.createElement("div")
+    posDiv.classList = "drivers-table-position bold-font"
+    posDiv.innerText = driver[2]
+    row.appendChild(posDiv)
+    row.appendChild(nameDiv)
+
+    let driverpoints = 0
+    races_ids.forEach(function (raceid) {
+        let raceDiv = document.createElement("div")
+        raceDiv.classList = "drivers-table-normal"
+        if (races_done.includes(raceid)){
+            let index = races_done.indexOf(raceid)
+            let race = driver[index+3]
+            raceDiv.dataset.pos = race[1]
+            raceDiv.dataset.points = race[2]
+            raceDiv.dataset.fastlap = race[3]
+            raceDiv.dataset.qualy = race[4]
+            if (race.length > 6){ //sprint 
+                raceDiv.dataset.sprintpos = race[6]
+                raceDiv.dataset.sprintpoints = race[5]
+            }
+            if (raceDiv.dataset.points !== "-1"){
+                driverpoints += parseInt(raceDiv.dataset.points)
+            }
+            raceDiv.innerText = raceDiv.dataset.points
+            row.appendChild(raceDiv)
+        }
+        else{
+            raceDiv.innerText = "-"
+            row.appendChild(raceDiv)
+        }
+    })
+    let pointsDiv = document.createElement("div")
+    pointsDiv.classList = "drivers-table-points bold-font"
+    pointsDiv.innerText = driverpoints
+    row.appendChild(pointsDiv)
+    data.appendChild(row)
+}
 
 
 /**
