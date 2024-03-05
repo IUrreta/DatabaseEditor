@@ -941,9 +941,19 @@ DRIVERS TABLE
   transition: background-color 0.3s, color 0.3;
 }
 
-.drivers-table-row:hover{
+.drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points,
+.drivers-table-row .drivers-table-normal{
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.drivers-table-row:hover .drivers-table-driver, .drivers-table-row:hover .drivers-table-position, .drivers-table-row:hover .drivers-table-points, 
+.drivers-table-row:hover .drivers-table-normal{
   background-color: #dedde6;
   color: #18152e;
+}
+
+.drivers-table-row:hover span.bold-font{
+  color: #18152e !important;
 }
 
 .drivers-table-row .drivers-table-normal{
