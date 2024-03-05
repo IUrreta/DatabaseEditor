@@ -952,6 +952,14 @@ DRIVERS TABLE
   color: #18152e;
 }
 
+.drivers-table-row:hover{
+  cursor: pointer;
+}
+
+.drivers-table-row span.bold-font{
+  transition: color 0.3s;
+}
+
 .drivers-table-row:hover span.bold-font{
   color: #18152e !important;
 }
@@ -999,6 +1007,28 @@ DRIVERS TABLE
 
 }
 
+.drivers-table-logo{
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drivers-table-logo-div{
+  background-color: #464166;
+  border-right: 1px solid #dedde6;
+}
+
+.drivers-table-logo{
+  padding: 0px 2px;
+}
+
+.logo-up-down{
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
 .drivers-table-header .drivers-table-position{
   border: 1px solid #dedde6;
   border-top-left-radius: 5px; 
@@ -1011,6 +1041,13 @@ DRIVERS TABLE
   transition: background-color 0.3s, color 0.3s;
   padding-left: 7px;
 }
+
+.drivers-table-row .drivers-table-driver{
+  width: 180px;
+  border-right: 0px solid transparent;
+}
+
+
 
 .drivers-table-header .drivers-table-driver{
   border: 1px solid #dedde6;
@@ -1028,6 +1065,51 @@ DRIVERS TABLE
   border: 1px solid #dedde6;
   border-top-right-radius: 5px; 
 }
+
+.fehoverback, .ashoverback, .mehoverback, .rbhoverback, .mchoverback, .alhoverback, .hahoverback, .wihoverback, .athoverback, .afhoverback{
+  transition: background-color 0.3s;
+}
+
+.drivers-table-row:hover .fehoverback{
+  background-color: var(--ferrari-primary)
+}
+
+.drivers-table-row:hover .ashoverback{
+  background-color: var(--aston-primary)
+}
+
+.drivers-table-row:hover .mehoverback{
+  background-color: var(--mercedes-primary)
+}
+
+.drivers-table-row:hover .rbhoverback{
+  background-color: var(--redbull-primary)
+}
+
+.drivers-table-row:hover .mchoverback{
+  background-color: var(--mclaren-primary)
+}
+
+.drivers-table-row:hover .alhoverback{
+  background-color: var(--alpine-primary)
+}
+
+.drivers-table-row:hover .hahoverback{
+  background-color: var(--haas-primary)
+}
+
+.drivers-table-row:hover .wihoverback{
+  background-color: var(--williams-primary)
+}
+
+.drivers-table-row:hover .athoverback{
+  background-color: var(--alphatauri-primary)
+}
+
+.drivers-table-row:hover .afhoverback{
+  background-color: var(--alfa-primary)
+}
+
 
 .prob-viewer-data{
   overflow-y: scroll;

@@ -410,6 +410,17 @@ function new_addDriver(driver, races_done, odd) {
     posDiv.innerText = driver[2]
     row.appendChild(posDiv)
     row.appendChild(nameDiv)
+    let logoDiv = document.createElement("div")
+    logoDiv.classList = "drivers-table-logo-div"
+    let logo = document.createElement("img")
+    logo.classList = "drivers-table-logo"
+    if (driver[1] !== 10){
+        logo.classList.add("logo-up-down")
+    }
+    logoDiv.classList.add(team_dict[driver[1]]+"hoverback")
+    logo.setAttribute("src", logos_disc[driver[1]])
+    logoDiv.appendChild(logo)
+    row.appendChild(logoDiv)
 
     let driverpoints = 0
     races_ids.forEach(function (raceid) {
