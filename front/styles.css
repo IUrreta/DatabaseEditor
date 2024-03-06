@@ -945,6 +945,22 @@ DRIVERS TABLE
   transition: background-color 0.3s, color 0.3;
 }
 
+.drivers-table-data{
+  max-height: 620px;
+  overflow-y: auto;
+  font-size: 15px;
+}
+
+.drivers-table-data::-webkit-scrollbar {
+  width: 4px !important;
+  margin-left: 4px;
+}
+
+.drivers-table-data::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px !important;
+}
+
 .drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points,
 .drivers-table-row .drivers-table-normal{
   transition: color 0.3s, background-color 0.3s;
@@ -1068,7 +1084,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-row .drivers-table-driver{
-  width: 180px;
+  width: 179px;
   border-right: 0px solid transparent;
   gap: 5px;
 }
