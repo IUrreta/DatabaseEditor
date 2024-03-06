@@ -29,6 +29,7 @@ class CommandFactory:
         
     def create_command(self, message, client):
         command_type = message["command"]
+        print(message)
         if command_type == "connect":
             return ConnectCommand(message, client)
         elif command_type == "saveSelected":

@@ -366,7 +366,7 @@ function signDriver(type) {
     }
     else if (type === "autocontract") {
         let dataAuto = {
-            command: "autocontract",
+            command: "autoContract",
             driverID: draggable.dataset.driverid,
             teamID: inverted_dict[teamDestiniy],
             position: posInTeam,
