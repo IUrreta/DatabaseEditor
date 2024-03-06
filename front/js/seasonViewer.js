@@ -311,13 +311,18 @@ document.getElementById("teamspill").addEventListener("click",function () {
  */
 document.getElementById("pospill").addEventListener("click",function () {
     pointsOrPos = "pos"
+    new_drivers_table(calendarData)
+    new_load_drivers_table(seasonResults)
 })
 
 document.getElementById("pointspill").addEventListener("click",function () {
     pointsOrPos = "points"
+    new_drivers_table(calendarData)
+    new_load_drivers_table(seasonResults)
 })
 
 function new_drivers_table(data) {
+    calendarData = data
     races_ids = []
     console.log(data)
     let header = document.querySelector(".drivers-table-header")
@@ -394,6 +399,7 @@ function new_color_drivers_table() {
 }
 
 function new_load_drivers_table(data) {
+    seasonResults = data
     let datazone = document.querySelector(".drivers-table-data")
     datazone.innerHTML = ""
     data = data.slice(0,-1)
