@@ -1074,8 +1074,13 @@ DRIVERS TABLE
 }
 
 .logo-up-down-extra{
-  padding-top: 9px;
-  padding-bottom: 9px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.logo-brawn-table{
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
 .logo-extra-small{
@@ -1085,6 +1090,7 @@ DRIVERS TABLE
 .logo-stake-table{
   padding: 2px 0px;
 }
+
 
 .drivers-table-header .drivers-table-position{
   border: 1px solid #797599;

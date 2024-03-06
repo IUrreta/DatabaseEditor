@@ -754,6 +754,7 @@ document.addEventListener('DOMContentLoaded', function () {
         socket.send(JSON.stringify(data))
         info = {teams: {alphatauri: alphatauri, alpine: alpine, alfa: alfa}}
         manage_config_content(info["teams"])
+        reloadTables()
     })
 
 

@@ -33,6 +33,11 @@ let alphaReplace = "alphatauri"
 let alpineReplace = "alpine"
 let alfaReplace = "alfa"
 
+let driversTableLogosDict = {
+    "stake" : "logo-stake-table", "audi" : "logo-up-down-extra", "alfa" : "logo-up-down", "visarb" : "logo-up-down", "hugo" : "logo-stake-table",
+    "brawn" : "logo-brawn-table", "toyota" : "logo-up-down", "alphatauri" : "logo-extra-small", 
+}
+
 /**
  * Creates the main table for the calendar of the season selected
  * @param {Object} calendar calendar of the year selected
@@ -334,7 +339,6 @@ function change_points_pos_drivers(){
 function new_drivers_table(data) {
     calendarData = data
     races_ids = []
-    console.log(data)
     let header = document.querySelector(".drivers-table-header")
     header.innerHTML = ""
     let driverDiv = document.createElement("div")
@@ -372,7 +376,6 @@ function checkscroll() {
     let datazone = document.querySelector(".drivers-table-data")
     let pointscol = document.querySelector(".drivers-table-header").querySelector(".drivers-table-points")
     if (datazone.scrollHeight > datazone.clientHeight) {
-        console.log("SCROLL")
         pointscol.style.width = "84px"
     }
     else {
@@ -442,47 +445,26 @@ function update_logo(team,logo,newTeam) {
     else if (team === "alphatauri") {
         alphaReplace = newTeam
         logos_disc[8] = logo
-        if (newTeam === "visarb") {
-            let logos = document.querySelector(".drivers-table").querySelectorAll("img[data-teamid='8']")
-            logos.forEach(function (elem) {
-                elem.classList.remove("logo-extra-small")
-            })
-        }
-        else if (newTeam === "alphatauri") {
-            let logos = document.querySelector(".drivers-table").querySelectorAll("img[data-teamid='8']")
-            logos.forEach(function (elem) {
-                elem.classList.add("logo-extra-small")
-            })
-
-        }
     }
     else if (team === "alfa") {
         alfaReplace = newTeam
         logos_disc[9] = logo
-        if (newTeam === "audi") {
-            let logos = document.querySelector(".drivers-table").querySelectorAll("img[data-teamid='8']")
-            logos.forEach(function (elem) {
-                elem.className = "drivers-table-logo logo-up-down-extra"
-            })
-        }
-        else if (newTeam === "stake") {
-            let logos = document.querySelector(".drivers-table").querySelectorAll("img[data-teamid='8']")
-            logos.forEach(function (elem) {
-                elem.className = "drivers-table-logo logo-stake-table"
-            })
-        }
-        else if (newTeam === "alfa") {
-            let logos = document.querySelector(".drivers-table").querySelectorAll("img[data-teamid='8']")
-            logos.forEach(function (elem) {
-                elem.className = "drivers-table-logo logo-up-down"
-            })
-        }
     }
 }
 
+function reloadTables(){
+    let datazone = document.querySelector(".drivers-table-data")
+    //if not empty
+    if (datazone.innerHTML !== "") {
+        new_drivers_table(calendarData)
+        new_load_drivers_table(seasonResults)
+    }
+}
+
+
 function new_addDriver(driver,races_done,odd) {
     let data = document.querySelector(".drivers-table-data")
-    console.log(driver)
+
     let row = document.createElement("div")
     row.classList = "drivers-table-row"
     if (odd) {
@@ -490,7 +472,6 @@ function new_addDriver(driver,races_done,odd) {
     }
     let nameDiv = document.createElement("div");
     nameDiv.classList = "drivers-table-driver"
-    console.log(driver[0])
     let name = driver[0].split(" ")
     let spanName = document.createElement("span")
     let spanLastName = document.createElement("span")
@@ -512,18 +493,14 @@ function new_addDriver(driver,races_done,odd) {
     let logo = document.createElement("img")
     logo.classList = "drivers-table-logo"
     logo.dataset.teamid = driver[1]
-    console.log(driver[1] === 2)
     if (driver[1] !== 10) { //different to aston
         logo.classList.add("logo-up-down")
     }
-    if (driver[1] === 8 && alphaReplace === "alphatauri") { //alphatauri
-        logo.classList.add("logo-extra-small")
+    if (driver[1] === 8) { //alphatauri
+        logo.classList.add(driversTableLogosDict[alphaReplace])
     }
-    if (driver[1] === 9 && alfaReplace === "audi") { //alfa
-        logo.classList.add("logo-up-down-extra")
-    }
-    if (driver[1] === 9 && alfaReplace === "stake") {
-        logo.classList.add("logo-stake-table")
+    if (driver[1] === 9) { //alfa
+        logo.classList.add(driversTableLogosDict[alfaReplace])
     }
     logoDiv.classList.add(team_dict[driver[1]] + "hoverback")
     logo.setAttribute("src",logos_disc[driver[1]])
@@ -561,9 +538,7 @@ function new_addDriver(driver,races_done,odd) {
     pointsDiv.innerText = driverpoints
     row.appendChild(pointsDiv)
     row.addEventListener("hover",function (elem) {
-        console.log("A")
         if (elem.dataset.teamid === 2) {
-            console.log("B")
             let logo = this.querySelector(".drivers-table-logo")
             logo.style.opacity = "0"
             let logo2 = this.querySelector(".drivers-table-logo").nextElementSibling
@@ -618,12 +593,10 @@ function manageText(raceDiv) {
 }
 
 function hoverListeners() {
-    console.log("BROMA 2")
     document.querySelectorAll(".drivers-table-row").forEach(function (row) {
-        console.log("AAAAAAAAAAA")
         row.addEventListener("mouseenter",function () {
-            console.log(this.dataset.teamid)
-            if (this.dataset.teamid === "2" || this.dataset.teamid === "6" || (this.dataset.teamid === "5" && alpineReplace !== "alpine	")) {
+            if (this.dataset.teamid === "2" || this.dataset.teamid === "6" || (this.dataset.teamid === "5" && alpineReplace !== "alpine")
+            || (this.dataset.teamid === "9" && alfaReplace === "sauber") || (this.dataset.teamid === "8" && (alphaReplace === "brawn" || alphaReplace === "hugo" || alphaReplace === "toyota")) ) {
 
                 let logo = this.querySelector(".drivers-table-logo");
                 let new_src = logos_disc[this.dataset.teamid].slice(0,-4) + "2" + logo.src.slice(-4);
@@ -637,7 +610,8 @@ function hoverListeners() {
             }
         });
         row.addEventListener("mouseleave",function () {
-            if (this.dataset.teamid === "2" || this.dataset.teamid === "6" || (this.dataset.teamid === "5" && alpineReplace !== "alpine")) {
+            if (this.dataset.teamid === "2" || this.dataset.teamid === "6" || (this.dataset.teamid === "5" && alpineReplace !== "alpine")
+            || (this.dataset.teamid === "9" && alfaReplace === "sauber") || (this.dataset.teamid === "8" && (alphaReplace === "brawn" || alphaReplace === "hugo" || alphaReplace === "toyota")) ) {
                 let logo = this.querySelector(".drivers-table-logo");
                 let new_src = logos_disc[this.dataset.teamid].slice(0,-4) + logo.src.slice(-4);
                 setTimeout(function () {
@@ -761,7 +735,6 @@ function loadTeamsTable(allDrivers) {
         let rowData = { team: createTeamNameAndLogo(teams_full_name_dict[team],team),points: 0,pos: pos }
         teamsTable.addData(rowData);
     }
-    console.log(allDrivers)
     setTimeout(function () {
         addDriversDataToTeams(allDrivers)
         colorTeamTable()
