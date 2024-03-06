@@ -311,15 +311,25 @@ document.getElementById("teamspill").addEventListener("click",function () {
  */
 document.getElementById("pospill").addEventListener("click",function () {
     pointsOrPos = "pos"
-    new_drivers_table(calendarData)
-    new_load_drivers_table(seasonResults)
+    change_points_pos_drivers()
 })
 
 document.getElementById("pointspill").addEventListener("click",function () {
     pointsOrPos = "points"
-    new_drivers_table(calendarData)
-    new_load_drivers_table(seasonResults)
+    change_points_pos_drivers()
 })
+
+function change_points_pos_drivers(){
+    let datazone = document.querySelector(".drivers-table-data")
+    let rows = datazone.querySelectorAll(".drivers-table-row")
+    rows.forEach(function (row,index) {
+        let cells = row.querySelectorAll(".drivers-table-normal")
+        cells.forEach(function (cell) {
+            let newCell = manageText(cell)
+            cell.innerText = newCell.innerText
+        })
+    })
+}
 
 function new_drivers_table(data) {
     calendarData = data
@@ -353,7 +363,7 @@ function new_drivers_table(data) {
     })
     let PointsDiv = document.createElement("div")
     PointsDiv.classList = "drivers-table-points bold-font"
-    PointsDiv.innerText = "POINTS"
+    PointsDiv.innerText = "PTS"
     header.appendChild(PointsDiv)
 
 }
@@ -363,10 +373,10 @@ function checkscroll() {
     let pointscol = document.querySelector(".drivers-table-header").querySelector(".drivers-table-points")
     if (datazone.scrollHeight > datazone.clientHeight) {
         console.log("SCROLL")
-        pointscol.style.width = "104px"
+        pointscol.style.width = "84px"
     }
     else {
-        pointscol.style.width = "100px"
+        pointscol.style.width = "80px"
     }
 }
 
@@ -566,6 +576,9 @@ function new_addDriver(driver,races_done,odd) {
 function manageText(raceDiv) {
     let racePart = ""
     let sprintPart = ""
+    if (raceDiv.innerText === "-") {
+        return raceDiv
+    }
     if (raceDiv.dataset.points !== "-1") {
         if (pointsOrPos === "points") {
             racePart = raceDiv.dataset.points

@@ -1096,7 +1096,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-points{
-  width: 100px;
+  width: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
