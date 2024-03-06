@@ -966,14 +966,30 @@ DRIVERS TABLE
   transition: color 0.3s, background-color 0.3s;
 }
 
-.drivers-table-row:hover .drivers-table-driver, .drivers-table-row:hover .drivers-table-position, .drivers-table-row:hover .drivers-table-points, 
+.drivers-table-row:hover .drivers-table-driver, 
 .drivers-table-row:hover .drivers-table-normal{
   background-color: #dedde6;
   color: #18152e;
 }
 
-.drivers-table-row.odd:hover .drivers-table-driver, .drivers-table-row.odd:hover .drivers-table-position, .drivers-table-row.odd:hover .drivers-table-points, 
+.drivers-table-row.odd:hover .drivers-table-driver, 
 .drivers-table-row.odd:hover .drivers-table-normal{
+  background-color: #dedde6;
+  color: #18152e;
+}
+
+.drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points{
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+}
+
+.drivers-table-row:hover .drivers-table-position{
+  border-right: 1px solid #dedde6;
+  background-color: #dedde6;
+  color: #18152e;
+}
+
+.drivers-table-row:hover .drivers-table-points{
+  border-left: 1px solid #dedde6;
   background-color: #dedde6;
   color: #18152e;
 }
@@ -1003,12 +1019,12 @@ DRIVERS TABLE
 }
 
 .drivers-table-row .drivers-table-driver{
-  border-right: 1px solid #dedde6;
+  border-right: 1px solid #797599;
 }
 
 .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points{
-  border-right: 1px solid #dedde6;
-  border-left: 1px solid #dedde6;
+  border-right: 1px solid #797599;
+  border-left: 1px solid #797599;
 }
 
 
@@ -1021,8 +1037,8 @@ DRIVERS TABLE
 }
 
 .drivers-table-header .drivers-table-normal{
-  border-bottom: 1px solid #dedde6;
-  border-top: 1px solid #dedde6;
+  border-bottom: 1px solid #797599;
+  border-top: 1px solid #797599;
 }
 
 .drivers-table-position{
@@ -1045,7 +1061,7 @@ DRIVERS TABLE
 
 .drivers-table-logo-div{
   background-color: #464166;
-  border-right: 1px solid #dedde6;
+  border-right: 1px solid #797599;
 }
 
 .drivers-table-logo{
@@ -1071,7 +1087,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-header .drivers-table-position{
-  border: 1px solid #dedde6;
+  border: 1px solid #797599;
   border-top-left-radius: 5px; 
 }
 
@@ -1092,7 +1108,9 @@ DRIVERS TABLE
 
 
 .drivers-table-header .drivers-table-driver{
-  border: 1px solid #dedde6;
+  border-top: 1px solid #797599;
+  border-bottom: 1px solid #797599;
+  border-right: 1px solid #797599;
 }
 
 .drivers-table-points{
@@ -1104,12 +1122,16 @@ DRIVERS TABLE
 }
 
 .drivers-table-header .drivers-table-points{
-  border: 1px solid #dedde6;
+  border: 1px solid #797599;
   border-top-right-radius: 5px; 
 }
 
-.fehoverback, .ashoverback, .mehoverback, .rbhoverback, .mchoverback, .alhoverback, .hahoverback, .wihoverback, .athoverback, .afhoverback{
-  transition: background-color 0.3s;
+.drivers-table-row:hover .drivers-table-logo-div{
+  border-right: 1px solid #dedde6;
+}
+
+.drivers-table-row .drivers-table-logo-div{
+  transition: border-color 0.3s, background-color 0.3s;
 }
 
 .drivers-table-row:hover .fehoverback{
