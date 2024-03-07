@@ -499,7 +499,7 @@ function manage_teams_table_logos() {
             logo.className = "teams-table-logo-inner williams-team-table-logo"
             logo.src = "../assets/images/williams2.png"
         }
-        else if (logo.dataset.teamid === 7) {
+        else if (logo.dataset.teamid === "7") {
             logo.className = "teams-table-logo-inner haas-team-table-logo"
         }
         else if (logo.dataset.teamid === "8") {
@@ -599,7 +599,6 @@ function manage_teams_table_names(){
 function new_color_teams_table() {
     let datazone = document.querySelector(".teams-table-data")
     calendarData.forEach(function (race) {
-        console.log(race)
         let id = race[0]
         let colCells = datazone.querySelectorAll(".teams-table-normal[data-raceid='" + id + "']");
         if (colCells.length > 0) {
@@ -694,7 +693,6 @@ function new_load_teams_table(data) {
     pairTeamPos.forEach(function (pair) {
         pairTeamPosDict[pair[0]] = pair[1]
     })
-    console.log(pairTeamPos)
     data = data.slice(0, -1)
     let datazone = document.querySelector(".teams-table-data")
     datazone.innerHTML = ""
@@ -1002,7 +1000,6 @@ function manageTeamsText(raceDiv) {
         }
 
         let text = d1Pos + "<br>" + d2Pos
-        console.log(text)
         if (d1SprPos !== "" && d2SprPos !== "") {
             text = d1Pos + "(" + d1SprPos + ")" + "<br>" + d2Pos + "(" + d2SprPos + ")"
         }

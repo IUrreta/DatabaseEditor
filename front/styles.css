@@ -1209,9 +1209,12 @@ DRIVERS TABLE
   width: 149.5px;
   border-right: 1px solid #797599;
   gap: 5px;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
 
-
+.teams-table-row:hover .teams-table-team{
+  border-right: 1px solid #dedde6;
+}
 
 .drivers-table-header .drivers-table-driver, .teams-table-header .teams-table-team{
   border-top: 1px solid #797599;
