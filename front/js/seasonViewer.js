@@ -29,6 +29,7 @@ let races_ids = []
 let seasonResults;
 let calendarData;
 let pointsOrPos = "points"
+let driverOrTeams = "drivers"
 let alphaReplace = "alphatauri"
 let alpineReplace = "alpine"
 let alfaReplace = "alfa"
@@ -303,11 +304,13 @@ function colorTeamTable() {
 document.getElementById("driverspill").addEventListener("click",function () {
     document.querySelector(".teams-table").classList.add("d-none")
     document.querySelector(".drivers-table").classList.remove("d-none")
+    driverOrTeams = "drivers"
 })
 
 document.getElementById("teamspill").addEventListener("click",function () {
     document.querySelector(".teams-table").classList.remove("d-none")
     document.querySelector(".drivers-table").classList.add("d-none")
+    driverOrTeams = "teams"
 
 })
 
@@ -345,7 +348,7 @@ function change_points_pos_teams() {
         let cells = row.querySelectorAll(".teams-table-normal")
         cells.forEach(function (cell) {
             let newCell = manageTeamsText(cell)
-            cell.innerText = newCell.innerText
+            cell.innerHTML = newCell.innerHTML
         })
     })
 
@@ -514,7 +517,6 @@ function reloadTables() {
 }
 
 function new_load_teams_table(data) {
-    console.log(data)
     data = data.slice(0,-1)
     let datazone = document.querySelector(".teams-table-data")
     datazone.innerHTML = ""
@@ -522,7 +524,6 @@ function new_load_teams_table(data) {
     data.forEach(function (driver) {
         let races = driver.slice(3)
         races.forEach(function (race) {
-            console.log(race)
             let team = race[race.length - 1]
             teamData[team].push(race)
         })
@@ -538,7 +539,6 @@ function new_load_teams_table(data) {
             teamData[team].push([])
         }
     }
-    console.log(teamData)
     //iterate through combined_dict
     for (let team in combined_dict) {
         new_addTeam(teamData[team],combined_dict[team])
@@ -625,7 +625,7 @@ function new_addTeam(teamData,name) {
                 raceDiv.innerText = "-"
             }
             let newText = manageTeamsText(raceDiv)
-            raceDiv.innerText = newText.innerText
+            raceDiv.innerHTML = newText.innerHTML
             row.appendChild(raceDiv)
         }
 
@@ -795,9 +795,11 @@ function manageTeamsText(raceDiv) {
         if (raceDiv.dataset.sprintpos2 !== undefined) {
             d2SprPos = raceDiv.dataset.sprintpos2
         }
-        let text = d1Pos + "\n" + d2Pos
+
+        let text = d1Pos + "<br>" + d2Pos
+        console.log(text)
         if (d1SprPos !== "" && d2SprPos !== "") {
-            text = d1Pos + "(" + d1SprPos + ")\n" + d2Pos + "(" + d2SprPos + ")"
+            text = d1Pos + "(" + d1SprPos + ")"+ "<br>" + d2Pos + "(" + d2SprPos + ")"
         }
         raceDiv.innerHTML = text
     }
