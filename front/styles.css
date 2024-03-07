@@ -924,7 +924,7 @@ a.bi-linkedin:hover {
   max-height: 660px;
 }
 
-.drivers-table{
+.drivers-table, .teams-table{
   width: 1670px;
 }
 
@@ -932,7 +932,7 @@ a.bi-linkedin:hover {
 DRIVERS TABLE
 */
 
-.drivers-table-header{
+.drivers-table-header, .teams-table-header{
   display: flex;
   flex-direction: row;
   color: #dedde6;
@@ -945,7 +945,14 @@ DRIVERS TABLE
   transition: background-color 0.3s, color 0.3;
 }
 
-.drivers-table-data{
+.teams-table-row{
+  display: flex;
+  flex-direction: row;
+  height: 50px;
+  transition: background-color 0.3s, color 0.3;
+}
+
+.drivers-table-data, .teams-table-data{
   max-height: 620px;
   overflow-y: auto;
   font-size: 15px;
@@ -962,23 +969,28 @@ DRIVERS TABLE
 }
 
 .drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points,
-.drivers-table-row .drivers-table-normal{
+.drivers-table-row .drivers-table-normal, .teams-table-row .teams-table-normal, .teams-table-row .teams-table-driver,
+.teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
   transition: color 0.3s, background-color 0.3s;
 }
 
 .drivers-table-row:hover .drivers-table-driver, 
-.drivers-table-row:hover .drivers-table-normal{
+.drivers-table-row:hover .drivers-table-normal, .teams-table-row:hover .teams-table-normal,
+.teams-table-row:hover .teams-table-driver{
   background-color: #dedde6;
   color: #18152e;
 }
 
 .drivers-table-row.odd:hover .drivers-table-driver, 
-.drivers-table-row.odd:hover .drivers-table-normal{
+.drivers-table-row.odd:hover .drivers-table-normal,
+.teams-table-row.odd:hover .teams-table-normal,
+.teams-table-row.odd:hover .teams-table-driver{
   background-color: #dedde6;
   color: #18152e;
 }
 
-.drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points{
+.drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points,
+.teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
   transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
 
@@ -994,7 +1006,7 @@ DRIVERS TABLE
   color: #18152e;
 }
 
-.drivers-table-row:hover{
+.drivers-table-row:hover, .teams-table-row:hover{
   cursor: pointer;
 }
 
@@ -1006,29 +1018,30 @@ DRIVERS TABLE
   color: #18152e !important;
 }
 
-.drivers-table-row .drivers-table-normal{
+.drivers-table-row .drivers-table-normal, .teams-table-row .teams-table-normal{
   background-color: #3c3952;
 }
 
-.drivers-table-row.odd .drivers-table-normal{
+.drivers-table-row.odd .drivers-table-normal, .teams-table-row.odd .teams-table-normal{
   background-color: #494561;
 }
 
-.drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-points, .drivers-table-row .drivers-table-position{
+.drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-points, .drivers-table-row .drivers-table-position,
+.teams-table-row .teams-table-team, .teams-table-row .teams-table-points, .teams-table-row .teams-table-position{
   background-color: #464166;
 }
 
-.drivers-table-row .drivers-table-driver{
+.drivers-table-row .drivers-table-driver, .teams-table-row .teams-table-team{
   border-right: 1px solid #797599;
 }
 
-.drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points{
+.drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points, .teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
   border-right: 1px solid #797599;
   border-left: 1px solid #797599;
 }
 
 
-.drivers-table-normal{
+.drivers-table-normal, .teams-table-normal{
   flex: 1 0 0;
   text-align: center;
   display: flex;
@@ -1036,12 +1049,12 @@ DRIVERS TABLE
   align-items: center;
 }
 
-.drivers-table-header .drivers-table-normal{
+.drivers-table-header .drivers-table-normal, .teams-table-header .teams-table-normal{
   border-bottom: 1px solid #797599;
   border-top: 1px solid #797599;
 }
 
-.drivers-table-position{
+.drivers-table-position, .teams-table-position{
   width: 40px;
   display: flex;
   align-items: center;
@@ -1092,12 +1105,12 @@ DRIVERS TABLE
 }
 
 
-.drivers-table-header .drivers-table-position{
+.drivers-table-header .drivers-table-position, .teams-table-header .teams-table-position{
   border: 1px solid #797599;
   border-top-left-radius: 5px; 
 }
 
-.drivers-table-driver{
+.drivers-table-driver, .teams-table-team{
   width: 210px;
   display: flex;
   align-items: center;
@@ -1111,15 +1124,21 @@ DRIVERS TABLE
   gap: 5px;
 }
 
+.teams-table-row .teams-table-team{
+  width: 210px;
+  border-right: 0px solid transparent;
+  gap: 5px;
+}
 
 
-.drivers-table-header .drivers-table-driver{
+
+.drivers-table-header .drivers-table-driver, .teams-table-header .teams-table-team{
   border-top: 1px solid #797599;
   border-bottom: 1px solid #797599;
   border-right: 1px solid #797599;
 }
 
-.drivers-table-points{
+.drivers-table-points, .teams-table-points{
   width: 80px;
   display: flex;
   justify-content: center;
@@ -1127,7 +1146,7 @@ DRIVERS TABLE
   
 }
 
-.drivers-table-header .drivers-table-points{
+.drivers-table-header .drivers-table-points, .teams-table-header .teams-table-points{
   border: 1px solid #797599;
   border-top-right-radius: 5px; 
 }

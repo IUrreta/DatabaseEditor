@@ -190,6 +190,8 @@ document.addEventListener('DOMContentLoaded', function () {
             // }, 20);
             new_drivers_table(message[1]);
             new_load_drivers_table(message.slice(2));
+            new_teams_table(message[1]);
+            new_load_teams_table(message.slice(2));
         },
         "TeamData Fetched": (message)=>{
             fillLevels(message.slice(1))
