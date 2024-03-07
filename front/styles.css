@@ -976,7 +976,7 @@ DRIVERS TABLE
 
 .drivers-table-row:hover .drivers-table-driver, 
 .drivers-table-row:hover .drivers-table-normal, .teams-table-row:hover .teams-table-normal,
-.teams-table-row:hover .teams-table-driver{
+.teams-table-row:hover .teams-table-team{
   background-color: #dedde6;
   color: #18152e;
 }
@@ -984,7 +984,7 @@ DRIVERS TABLE
 .drivers-table-row.odd:hover .drivers-table-driver, 
 .drivers-table-row.odd:hover .drivers-table-normal,
 .teams-table-row.odd:hover .teams-table-normal,
-.teams-table-row.odd:hover .teams-table-driver{
+.teams-table-row.odd:hover .teams-table-team{
   background-color: #dedde6;
   color: #18152e;
 }
@@ -994,13 +994,13 @@ DRIVERS TABLE
   transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
 
-.drivers-table-row:hover .drivers-table-position{
+.drivers-table-row:hover .drivers-table-position, .teams-table-row:hover .teams-table-position{
   border-right: 1px solid #dedde6;
   background-color: #dedde6;
   color: #18152e;
 }
 
-.drivers-table-row:hover .drivers-table-points{
+.drivers-table-row:hover .drivers-table-points, .teams-table-row:hover .teams-table-points{
   border-left: 1px solid #dedde6;
   background-color: #dedde6;
   color: #18152e;
@@ -1062,6 +1062,58 @@ DRIVERS TABLE
 
 }
 
+.ferrari-team-table-logo{
+  padding: 8px !important;
+}
+
+.mclaren-team-table-logo{
+  margin-right: 3px !important;
+}
+
+.redbull-team-table-logo{
+  padding: 10px 2px !important;
+}
+
+.merc-team-table-logo{
+  padding: 9px !important;
+}
+
+.alpine-team-table-logo{
+  padding: 9px 6px !important;
+}
+
+.williams-team-table-logo{
+  padding: 10px 6px !important;
+}
+
+.haas-team-table-logo{
+  padding: 7px !important;
+}
+
+.alphatauri-team-table-logo{
+  padding: 15px 9px !important;
+}
+
+.hugo-team-table-logo{
+  padding: 5px 1px !important;
+}
+
+.toyota-team-table-logo{
+  padding: 13px 8px !important;
+}
+
+.porsche-team-table-logo{
+  padding: 11px !important;
+}
+
+.brawn-team-table-logo{
+  padding: 24px 6px !important;
+}
+
+.audi-team-table-logo{
+  padding: 20px 5px !important;
+}
+
 .drivers-table-logo{
   width: 30px;
   height: 30px;
@@ -1071,6 +1123,35 @@ DRIVERS TABLE
   opacity: 1;
   transition: opacity 0.3s;
 }
+
+.teams-table-logo{
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid #797599;
+  border-bottom: 1px solid #797599;
+  border-right: 1px solid #797599;
+  transition: border-height 0.3s;
+}
+
+.teams-table-row:hover .teams-table-logo{
+  border-right: 0px solid #dedde6;
+  border-bottom: 0px solid #dedde6;
+  border-top: 0px solid #dedde6;
+}
+
+.teams-table-logo-inner{
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+
 
 .drivers-table-logo-div{
   background-color: #464166;
@@ -1115,18 +1196,18 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   transition: background-color 0.3s, color 0.3s;
-  padding-left: 7px;
+  padding-left: 4px;
 }
 
 .drivers-table-row .drivers-table-driver{
   width: 179px;
   border-right: 0px solid transparent;
-  gap: 5px;
+  gap: 3px;
 }
 
 .teams-table-row .teams-table-team{
-  width: 210px;
-  border-right: 0px solid transparent;
+  width: 149.5px;
+  border-right: 1px solid #797599;
   gap: 5px;
 }
 
@@ -1163,7 +1244,15 @@ DRIVERS TABLE
   background-color: var(--ferrari-primary)
 }
 
+.teams-table-row .feiconback{
+  background-color: var(--ferrari-primary)
+}
+
 .drivers-table-row:hover .ashoverback{
+  background-color: var(--aston-primary)
+}
+
+.teams-table-row .asiconback{
   background-color: var(--aston-primary)
 }
 
@@ -1171,7 +1260,15 @@ DRIVERS TABLE
   background-color: var(--mercedes-primary)
 }
 
+.teams-table-row .meiconback{
+  background-color: var(--mercedes-primary)
+}
+
 .drivers-table-row:hover .rbhoverback{
+  background-color: var(--redbull-primary)
+}
+
+.teams-table-row .rbiconback{
   background-color: var(--redbull-primary)
 }
 
@@ -1179,7 +1276,15 @@ DRIVERS TABLE
   background-color: var(--mclaren-primary)
 }
 
+.teams-table-row .mciconback{
+  background-color: var(--mclaren-primary)
+}
+
 .drivers-table-row:hover .alhoverback{
+  background-color: var(--alpine-primary)
+}
+
+.teams-table-row .aliconback{
   background-color: var(--alpine-primary)
 }
 
@@ -1187,7 +1292,15 @@ DRIVERS TABLE
   background-color: var(--haas-primary)
 }
 
+.teams-table-row .haiconback{
+  background-color: var(--haas-primary)
+}
+
 .drivers-table-row:hover .wihoverback{
+  background-color: var(--williams-primary)
+}
+
+.teams-table-row .wiiconback{
   background-color: var(--williams-primary)
 }
 
@@ -1195,7 +1308,15 @@ DRIVERS TABLE
   background-color: var(--alphatauri-primary)
 }
 
+.teams-table-row .aticonback{
+  background-color: var(--alphatauri-primary)
+}
+
 .drivers-table-row:hover .afhoverback{
+  background-color: var(--alfa-primary)
+}
+
+.teams-table-row .aficonback{
   background-color: var(--alfa-primary)
 }
 
