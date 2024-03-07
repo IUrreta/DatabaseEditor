@@ -517,6 +517,13 @@ function reloadTables() {
 }
 
 function new_load_teams_table(data) {
+    let pairTeamPos = data[data.length - 1]
+    //create dict with dirst element of pair as key and second as value
+    let pairTeamPosDict = {}
+    pairTeamPos.forEach(function (pair) {
+        pairTeamPosDict[pair[0]] = pair[1]
+    })
+    console.log(pairTeamPos)
     data = data.slice(0,-1)
     let datazone = document.querySelector(".teams-table-data")
     datazone.innerHTML = ""
@@ -539,23 +546,23 @@ function new_load_teams_table(data) {
             teamData[team].push([])
         }
     }
-    //iterate through combined_dict
-    for (let team in combined_dict) {
-        new_addTeam(teamData[team],combined_dict[team])
+    for (let team in combined_copy) {
+        let pos = pairTeamPosDict[team]
+        new_addTeam(teamData[team],combined_dict[team], pos)
     }
 }
 
-function new_addTeam(teamData,name) {
+function new_addTeam(teamData,name, pos) {
     let data = document.querySelector(".teams-table-data")
     let row = document.createElement("div")
     row.classList = "teams-table-row"
     let nameDiv = document.createElement("div");
     nameDiv.classList = "teams-table-team bold-font"
-    nameDiv.innerText = name
+    nameDiv.innerText = name.toUpperCase()
     row.appendChild(nameDiv)
     let posDiv = document.createElement("div")
     posDiv.classList = "teams-table-position bold-font"
-    posDiv.innerText = "A"
+    posDiv.innerText = pos
     row.appendChild(posDiv)
     row.appendChild(nameDiv)
     let driverCounted = 0
