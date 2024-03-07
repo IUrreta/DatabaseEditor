@@ -317,11 +317,13 @@ document.getElementById("teamspill").addEventListener("click",function () {
 document.getElementById("pospill").addEventListener("click",function () {
     pointsOrPos = "pos"
     change_points_pos_drivers()
+    change_points_pos_teams()
 })
 
 document.getElementById("pointspill").addEventListener("click",function () {
     pointsOrPos = "points"
     change_points_pos_drivers()
+    change_points_pos_teams()
 })
 
 function change_points_pos_drivers() {
@@ -334,6 +336,19 @@ function change_points_pos_drivers() {
             cell.innerText = newCell.innerText
         })
     })
+}
+
+function change_points_pos_teams() {
+    let datazone = document.querySelector(".teams-table-data")
+    let rows = datazone.querySelectorAll(".teams-table-row")
+    rows.forEach(function (row,index) {
+        let cells = row.querySelectorAll(".teams-table-normal")
+        cells.forEach(function (cell) {
+            let newCell = manageTeamsText(cell)
+            cell.innerText = newCell.innerText
+        })
+    })
+
 }
 
 function new_drivers_table(data) {
@@ -494,12 +509,15 @@ function reloadTables() {
         new_drivers_table(calendarData)
         new_load_drivers_table(seasonResults)
         new_teams_table(calendarData)
+        new_load_teams_table(seasonResults)
     }
 }
 
 function new_load_teams_table(data) {
     console.log(data)
     data = data.slice(0,-1)
+    let datazone = document.querySelector(".teams-table-data")
+    datazone.innerHTML = ""
     let teamData = { 1: [],2: [],3: [],4: [],5: [],6: [],7: [],8: [],9: [],10: [] }
     data.forEach(function (driver) {
         let races = driver.slice(3)
@@ -540,7 +558,6 @@ function new_addTeam(teamData,name) {
     posDiv.innerText = "A"
     row.appendChild(posDiv)
     row.appendChild(nameDiv)
-    data.appendChild(row)
     let driverCounted = 0
     let teampoints = 0
     //only take pair indexes
@@ -555,7 +572,7 @@ function new_addTeam(teamData,name) {
                 let driver2Points = 0
                 let driver1Pos = 0
                 let driver2Pos = 0
-                if (driver1[2] === "-1") {
+                if (driver1[2] === -1) {
                     driver1Points = 0
                     driver1Pos = "DNF"
                 }
@@ -563,7 +580,7 @@ function new_addTeam(teamData,name) {
                     driver1Points = driver1[2]
                     driver1Pos = driver1[1]
                 }
-                if (driver2[2] === "-1") {
+                if (driver2[2] === -1) {
                     driver2Points = 0
                     driver2Pos = "DNF"
                 }
@@ -575,12 +592,13 @@ function new_addTeam(teamData,name) {
                 raceDiv.dataset.pos1 = driver1Pos
                 raceDiv.dataset.pos2 = driver2Pos
                 raceDiv.innerText = raceDiv.dataset.points
+                teampoints += parseInt(raceDiv.dataset.points)
                 if (race.length > 6) {
                     let d1SprintPoints = 0
                     let d2SprintPoints = 0
                     let d1SprintPos = 0
                     let d2SprintPos = 0
-                    if (driver1[5] === "-1") {
+                    if (driver1[5] === -1) {
                         d1SprintPoints = 0
                         d1SprintPos = "DNF"
                     }
@@ -588,7 +606,7 @@ function new_addTeam(teamData,name) {
                         d1SprintPoints = driver1[5]
                         d1SprintPos = driver1[6]
                     }
-                    if (driver2[5] === "-1") {
+                    if (driver2[5] === -1) {
                         d2SprintPoints = 0
                         d2SprintPos = "DNF"
                     }
@@ -598,24 +616,30 @@ function new_addTeam(teamData,name) {
                     }
                     raceDiv.dataset.sprintpoints = parseInt(d1SprintPoints) + parseInt(d2SprintPoints)
                     raceDiv.dataset.sprintpos1 = d1SprintPos
+                    teampoints += parseInt(raceDiv.dataset.sprintpoints)
                     raceDiv.dataset.sprintpos2 = d2SprintPos
-                    raceDiv.innerText = raceDiv.dataset.points + "(" + raceDiv.dataset.sprintpoints + ")"
+                    
                 }
             }
             else {
                 raceDiv.innerText = "-"
             }
-
+            let newText = manageTeamsText(raceDiv)
+            raceDiv.innerText = newText.innerText
             row.appendChild(raceDiv)
         }
 
     })
+    let pointsDiv = document.createElement("div")
+    pointsDiv.classList = "teams-table-points bold-font"
+    pointsDiv.innerText = teampoints
+    row.appendChild(pointsDiv)
+    data.appendChild(row)
 }
 
 
 function new_addDriver(driver,races_done,odd) {
     let data = document.querySelector(".drivers-table-data")
-
     let row = document.createElement("div")
     row.classList = "drivers-table-row"
     if (odd) {
@@ -712,7 +736,6 @@ function manageText(raceDiv) {
         else {
             racePart = raceDiv.dataset.pos
         }
-
     }
     else {
         racePart = "DNF"
@@ -741,6 +764,44 @@ function manageText(raceDiv) {
     }
     return raceDiv
 
+}
+
+function manageTeamsText(raceDiv) {
+    if (raceDiv.innerText === "-") {
+        return raceDiv
+    }
+    if (pointsOrPos === "points") {
+        if (raceDiv.sprintPoints !== undefined){
+            raceDiv.innerText = raceDiv.dataset.points + "(" + raceDiv.dataset.sprintpoints + ")"
+        }
+        else{
+            raceDiv.innerText = raceDiv.dataset.points
+        }
+    }
+    else{
+        let d1Pos = "DNF"
+        let d2Pos = "DNF"
+        let d1SprPos = ""
+        let d2SprPos = ""
+        if (raceDiv.dataset.pos1 !== "DNF") {
+            d1Pos = raceDiv.dataset.pos1
+        }
+        if (raceDiv.dataset.pos2 !== "DNF") {
+            d2Pos = raceDiv.dataset.pos2
+        }
+        if (raceDiv.dataset.sprintpos1 !== undefined) {
+            d1SprPos = raceDiv.dataset.sprintpos1
+        }
+        if (raceDiv.dataset.sprintpos2 !== undefined) {
+            d2SprPos = raceDiv.dataset.sprintpos2
+        }
+        let text = d1Pos + "\n" + d2Pos
+        if (d1SprPos !== "" && d2SprPos !== "") {
+            text = d1Pos + "(" + d1SprPos + ")\n" + d2Pos + "(" + d2SprPos + ")"
+        }
+        raceDiv.innerHTML = text
+    }
+    return raceDiv
 }
 
 function hoverListeners() {

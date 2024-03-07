@@ -948,7 +948,7 @@ DRIVERS TABLE
 .teams-table-row{
   display: flex;
   flex-direction: row;
-  height: 50px;
+  height: 60px;
   transition: background-color 0.3s, color 0.3;
 }
 
