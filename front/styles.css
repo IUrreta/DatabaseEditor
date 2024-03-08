@@ -1,4 +1,22 @@
 :root {
+  /*
+  GENERAL COLORS
+  */
+  --background-general: #110f24;
+  --slight-contract: #797599;
+  --text-general: #dedde6;
+  --negative-general: #e95656;
+  --h2h-general: #34c297;
+  --graph-general: #34bdc2;
+  --h2h-detail: #88ebcd;
+  --graph-detail: #95ebee;
+  --tools-general: #18152e;
+  --component-general: #3f3c57;
+
+
+  /*
+  TEAMS COLORS
+  */
   --alphatauri-original: #5E8FAA;
   --alpine-original: #2293D1;
   --andretti-primary: #fac51c;
@@ -24,6 +42,7 @@
   --alpine-primary: #2293D1;
   --renault-primary: #f7c82f;
 
+
 }
 
 
@@ -43,7 +62,7 @@
 
 
 body {
-  background-color: #110f24 !important;
+  background-color: var(--background-general) !important;
   max-height: 930px;
   overflow-x: hidden;
 }
@@ -63,7 +82,7 @@ body::-webkit-scrollbar-thumb {
 
 #byname {
   text-decoration: none;
-  color: #797599;
+  color: var( --slight-contract);
   transition: color 0.4s;
 }
 
@@ -72,9 +91,9 @@ body::-webkit-scrollbar-thumb {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #18152e;
-  color: #797599;
-  border-top: 1px solid #797599;
+  background-color: var(--tools-general);
+  color: var( --slight-contract);
+  border-top: 1px solid var( --slight-contract);
   text-align: center;
   padding: 5px 0;
   font-size: 16px;
@@ -90,13 +109,13 @@ body::-webkit-scrollbar-thumb {
   cursor: pointer !important;
   padding: 0 7px;
   transition: color 0.3s;
-  color: #797599;
+  color: var( --slight-contract);
   text-decoration: none;
 }
 
 .socials a:hover,
 .footer i:hover {
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .socials a {
@@ -114,12 +133,12 @@ body::-webkit-scrollbar-thumb {
 .update-info {
   transition: color 0.4s;
   text-decoration: none;
-  color: #797599;
+  color: var( --slight-contract);
   cursor: default;
 }
 
 .bi-exclamation-diamond {
-  color: #e95656;
+  color: var( --negative-general);
 }
 
 .bi-exclamation-lg,
@@ -202,7 +221,7 @@ a.bi-linkedin:hover {
 }
 
 .auto-contract {
-  color: #dedde6;
+  color: var( --text-general);
   font-size: 20px;
   padding-right: 2rem;
 }
@@ -228,11 +247,11 @@ a.bi-linkedin:hover {
 }
 
 .H2H-text span.text-main{
-  color: #34c297;
+  color: var( --h2h-general);
 }
 
 .graph-text span.text-main{
-  color: #34bdc2;
+  color: var( --graph-general);
 }
 
 .h2h-highlight {
@@ -244,17 +263,17 @@ a.bi-linkedin:hover {
 }
 
 @keyframes h2h-animation {
-  0%, 100% { color: #dedde6; }
-  50% { color: #88ebcd; }
+  0%, 100% { color: var( --text-general); }
+  50% { color: var( --h2h-detail); }
 }
 
 @keyframes graph-animation {
-  0%, 100% { color: #dedde6; }
-  50% { color: #95ebee; }
+  0%, 100% { color: var( --text-general); }
+  50% { color: var( --graph-detail); }
 }
 
 .annotations {
-  color: #dedde6;
+  color: var( --text-general);
   font-size: 20px;
   padding-right: 1rem;
 }
@@ -285,7 +304,7 @@ a.bi-linkedin:hover {
 }
 
 .dropdown-menu{
-  background-color: #797599 !important;
+  background-color: var( --slight-contract) !important;
   border: none !important;
   border-radius: 10px;
 
@@ -303,7 +322,7 @@ a.bi-linkedin:hover {
 }
 
 .modal-subtitle, .component-subtitle{
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .stats-title {
@@ -362,7 +381,7 @@ a.bi-linkedin:hover {
 }
 
 .retirement-options i{
-  color: #dedde6;
+  color: var( --text-general);
   border-radius: 7.5px !important;
   width: 20px !important;
   height: 20px !important;
@@ -380,7 +399,7 @@ a.bi-linkedin:hover {
   }
 
   50% {
-    border: 2px solid #e95656;
+    border: 2px solid var( --negative-general);
     border-radius: 10px;
     background-color: #21202e;
   }
@@ -415,7 +434,7 @@ a.bi-linkedin:hover {
 
 .main-title {
   text-align: left;
-  background-color: #18152e;
+  background-color: var(--tools-general);
   padding-top: 1rem;
   padding-bottom: 0.1%;
   display: flex;
@@ -452,7 +471,7 @@ a.bi-linkedin:hover {
 .patchNotesPanel i {
   transition: color 0.4s;
   font-style: normal;
-  color: #797599;
+  color: var( --slight-contract);
   cursor: pointer;
 }
 
@@ -465,7 +484,7 @@ a.bi-linkedin:hover {
   top: 0px;
   right: 0px;
   color: white;
-  background-color: #18152e;
+  background-color: var(--tools-general);
   width: 530px;
   height: 116px;
   display: flex;
@@ -548,7 +567,7 @@ a.bi-linkedin:hover {
   width: 2px;
   height: 20px;
   margin-top: 3px;
-  background-color: #dedde6;
+  background-color: var( --text-general);
 }
 
 .toast-error{
@@ -586,7 +605,7 @@ a.bi-linkedin:hover {
 
 .tools-panel {
   color: white;
-  background-color: #18152e;
+  background-color: var(--tools-general);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -601,7 +620,7 @@ a.bi-linkedin:hover {
   position: relative;
   width: 100%;
   height: 1px;
-  background-color: #797599;
+  background-color: var( --slight-contract);
 }
 
 .mode-line.ai{
@@ -676,7 +695,7 @@ a.bi-linkedin:hover {
   margin-top: 0.7rem;
   position: absolute;
   margin-left: 0.5rem;
-  color: #797599;
+  color: var( --slight-contract);
   opacity: 1;
   transition: color 0.3s, opacity 0.3s;
 }
@@ -698,7 +717,7 @@ a.bi-linkedin:hover {
 .custom-dropdown {
   max-width: 250px !important;
   margin-top: 0.6rem !important;
-  background-color: #797599 !important;
+  background-color: var( --slight-contract) !important;
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
@@ -708,7 +727,7 @@ a.bi-linkedin:hover {
 
 .custom-dropdown-no-margin {
   max-width: 250px !important;
-  background-color: #797599 !important;
+  background-color: var( --slight-contract) !important;
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
@@ -735,7 +754,7 @@ a.bi-linkedin:hover {
 .addTracks-button {
   margin-top: 0.4rem;
   max-width: 210px;
-  background-color: #797599 !important;
+  background-color: var( --slight-contract) !important;
   margin-bottom: 1%;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
@@ -790,7 +809,7 @@ a.bi-linkedin:hover {
 .main-columns-drag-section {
   margin-left: 14px;
   margin-right: 5%;
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contract);
   color: white;
   min-height: 660px;
   max-height: 660px;
@@ -824,7 +843,7 @@ a.bi-linkedin:hover {
 .custom-hr {
   border: none;
   height: 1px;
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contract);
   margin-left: 20px;
   margin-top: 1rem;
   margin-bottom: 2rem;
@@ -833,7 +852,7 @@ a.bi-linkedin:hover {
 .pill-line{
   height: 1.3px;
   width: 0%;
-  background-color: #dedde6;
+  background-color: var( --text-general);
   transition: width 0.4s, color 0.4s;
 }
 
@@ -859,7 +878,7 @@ a.bi-linkedin:hover {
 .pill-types{
   display: flex;
   flex-direction: row;
-  color: #dedde6;
+  color: var( --text-general);
   font-size: 18px;
   width: 100%;
 }
@@ -909,7 +928,7 @@ a.bi-linkedin:hover {
 
 #probText{
   padding-top: 2px;
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 #probSelector{
@@ -938,7 +957,7 @@ DRIVERS TABLE
 .drivers-table-header, .teams-table-header{
   display: flex;
   flex-direction: row;
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .drivers-table-row{
@@ -979,15 +998,15 @@ DRIVERS TABLE
 
 .drivers-table-row:hover .drivers-table-driver, 
 .drivers-table-row:hover .drivers-table-normal, .teams-table-row:hover .teams-table-normal{
-  background-color: #dedde6;
-  color: #18152e;
+  background-color: var( --text-general);
+  color: var(--tools-general);
 }
 
 .drivers-table-row.odd:hover .drivers-table-driver, 
 .drivers-table-row.odd:hover .drivers-table-normal,
 .teams-table-row.odd:hover .teams-table-normal{
-  background-color: #dedde6;
-  color: #18152e;
+  background-color: var( --text-general);
+  color: var(--tools-general);
 }
 
 .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points,
@@ -996,15 +1015,15 @@ DRIVERS TABLE
 }
 
 .drivers-table-row:hover .drivers-table-position, .teams-table-row:hover .teams-table-position{
-  border-right: 1px solid #dedde6;
-  background-color: #dedde6;
-  color: #18152e;
+  border-right: 1px solid var( --text-general);
+  background-color: var( --text-general);
+  color: var(--tools-general);
 }
 
 .drivers-table-row:hover .drivers-table-points, .teams-table-row:hover .teams-table-points{
-  border-left: 1px solid #dedde6;
-  background-color: #dedde6;
-  color: #18152e;
+  border-left: 1px solid var( --text-general);
+  background-color: var( --text-general);
+  color: var(--tools-general);
 }
 
 .drivers-table-row:hover, .teams-table-row:hover{
@@ -1016,7 +1035,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-row:hover span.bold-font{
-  color: #18152e !important;
+  color: var(--tools-general) !important;
 }
 
 .drivers-table-row .drivers-table-normal, .teams-table-row .teams-table-normal{
@@ -1033,19 +1052,19 @@ DRIVERS TABLE
 }
 
 .teams-table-row .teams-table-team{
-  border-right: 1px solid #797599;
-  border-left: 1px solid #797599;
+  border-right: 1px solid var( --slight-contract);
+  border-left: 1px solid var( --slight-contract);
 }
 
 .teams-table-row:hover .teams-table-team{
-  background-color: #dedde6;
-  color: #18152e;
-  border-color: #dedde6;
+  background-color: var( --text-general);
+  color: var(--tools-general);
+  border-color: var( --text-general);
 }
 
 .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points, .teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
-  border-right: 1px solid #797599;
-  border-left: 1px solid #797599;
+  border-right: 1px solid var( --slight-contract);
+  border-left: 1px solid var( --slight-contract);
 }
 
 
@@ -1058,8 +1077,8 @@ DRIVERS TABLE
 }
 
 .drivers-table-header .drivers-table-normal, .teams-table-header .teams-table-normal{
-  border-bottom: 1px solid #797599;
-  border-top: 1px solid #797599;
+  border-bottom: 1px solid var( --slight-contract);
+  border-top: 1px solid var( --slight-contract);
 }
 
 .drivers-table-position, .teams-table-position{
@@ -1138,14 +1157,14 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   justify-content: center;
-  border-top: 1px solid #797599;
-  border-bottom: 1px solid #797599;
+  border-top: 1px solid var( --slight-contract);
+  border-bottom: 1px solid var( --slight-contract);
   transition: border-height 0.3s;
 }
 
 .teams-table-row:hover .teams-table-logo{
-  border-bottom: 0px solid #dedde6;
-  border-top: 0px solid #dedde6;
+  border-bottom: 0px solid var( --text-general);
+  border-top: 0px solid var( --text-general);
 }
 
 .teams-table-logo-inner{
@@ -1161,7 +1180,7 @@ DRIVERS TABLE
 
 .drivers-table-logo-div{
   background-color: #464166;
-  border-right: 1px solid #797599;
+  border-right: 1px solid var( --slight-contract);
 }
 
 .drivers-table-logo{
@@ -1193,7 +1212,7 @@ DRIVERS TABLE
 
 
 .drivers-table-header .drivers-table-position, .teams-table-header .teams-table-position{
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contract);
   border-top-left-radius: 5px; 
 }
 
@@ -1219,9 +1238,9 @@ DRIVERS TABLE
 
 
 .drivers-table-header .drivers-table-driver, .teams-table-header .teams-table-team{
-  border-top: 1px solid #797599;
-  border-bottom: 1px solid #797599;
-  border-right: 1px solid #797599;
+  border-top: 1px solid var( --slight-contract);
+  border-bottom: 1px solid var( --slight-contract);
+  border-right: 1px solid var( --slight-contract);
 }
 
 .drivers-table-points, .teams-table-points{
@@ -1233,12 +1252,12 @@ DRIVERS TABLE
 }
 
 .drivers-table-header .drivers-table-points, .teams-table-header .teams-table-points{
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contract);
   border-top-right-radius: 5px; 
 }
 
 .drivers-table-row:hover .drivers-table-logo-div{
-  border-right: 1px solid #dedde6;
+  border-right: 1px solid var( --text-general);
 }
 
 .drivers-table-row .drivers-table-logo-div{
@@ -1334,7 +1353,7 @@ DRIVERS TABLE
 .prob-viewer-header, .prob-viewer-row{
   display: flex;
   flex-direction: row;
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .prob-viewer-header .viewer-header-data, .prob-viewer-row .viewer-header-data {
@@ -1379,12 +1398,12 @@ DRIVERS TABLE
 
 
 .prob-viewer-row:hover .viewer-header-driver{
-  background-color: #dedde6;
-  color: #18152e;
+  background-color: var( --text-general);
+  color: var(--tools-general);
 }
 
 .prob-viewer-row:hover .viewer-header-driver span{
-  color: #18152e !important;
+  color: var(--tools-general) !important;
 }
 
 .prob-viewer-row .viewer-header-position {
@@ -1394,8 +1413,8 @@ DRIVERS TABLE
 }
 
 .prob-viewer-row:hover .viewer-header-position {
-  background-color: #dedde6;
-  color: #18152e !important;
+  background-color: var( --text-general);
+  color: var(--tools-general) !important;
 }
 
 
@@ -1444,7 +1463,7 @@ DRIVERS TABLE
 }
 
 .save-selector-title{
-  color: #dedde6;
+  color: var( --text-general);
   transition: color 0.4s;
 }
 
@@ -1457,8 +1476,8 @@ DRIVERS TABLE
   margin-right: 20px;
   margin-bottom: 20px;
   margin-top: 15px;
-  background-color: #18152e;
-  border: 1px solid #797599;
+  background-color: var(--tools-general);
+  border: 1px solid var( --slight-contract);
   border-radius: 10px;
   display: flex;
   justify-content: center;
@@ -1472,7 +1491,7 @@ DRIVERS TABLE
   border: 2.5px solid transparent !important;
   border-radius: 10px !important;
   color: white !important;
-  background-color: #797599 !important;
+  background-color: var( --slight-contract) !important;
   transition: border-color 0.4s, background-color 0.4s, color 0.4s !important;
 
 }
@@ -1497,7 +1516,7 @@ DRIVERS TABLE
   border: 2.5px solid transparent !important;
   border-radius: 10px !important;
   color: white !important;
-  background-color: #797599 !important;
+  background-color: var( --slight-contract) !important;
   transition: border-color 0.4s, background-color 0.4s !important;
   display: flex;
   justify-content: center;
@@ -1505,13 +1524,13 @@ DRIVERS TABLE
 }
 
 .delete-mode {
-  background-color: #e95656 !important;
+  background-color: var( --negative-general) !important;
   border-color: #d66f6f !important;
   transition: border-color 0.4s;
 }
 
 .custom-delete:hover {
-  background-color: #e95656 !important;
+  background-color: var( --negative-general) !important;
   border-color: #d35f5f !important;
 }
 
@@ -1526,41 +1545,12 @@ DRIVERS TABLE
 .main-viewer-section {
   margin-left: 14px;
   margin-right: 14px;
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contract);
   color: white;
   overflow: hidden;
   border-radius: 10px;
 }
 
-[tabulator-field^="race"] {
-  font-size: 13px;
-  border: none !important;
-}
-
-[tabulator-field="driver"],
-[tabulator-field="points"],
-[tabulator-field="team"], 
-[tabulator-field="pos"]{
-  background-color: #464166 !important;
-}
-
-[tabulator-field="team"]{
-  padding-left: 0 !important;
-}
-
-#seasonresults-teams-table [tabulator-field^="race"] {
-  padding: 0px !important;
-}
-
-#seasonresults-teams-table [tabulator-field="team"] {
-  font-family: Formula1Bold;
-}
-
-
-#seasonresults-table, #seasonresults-teams-table {
-  background-color: transparent !important;
-  border: none !important;
-}
 
 .year-drivers-teams{
   padding-top: 0.6rem;
@@ -1597,15 +1587,6 @@ DRIVERS TABLE
   display: flex;
 }
 
-.main-viewer-section .tabulator-tableholder::-webkit-scrollbar {
-  width: 4px !important;
-}
-
-.main-viewer-section .tabulator-tableholder::-webkit-scrollbar-thumb {
-  background-color: white;
-  border-radius: 3px !important;
-}
-
 .team-table-logo-name{
   display: flex;
   align-items: center;
@@ -1614,107 +1595,6 @@ DRIVERS TABLE
   transition: border 0.3s;
   width: 100%;
   height: 100%;
-}
-
-.tabulator-col-content {
-  border: none !important;
-}
-
-[role="columnheader"][tabulator-field="driver"], [role="columnheader"][tabulator-field="points"] {
-  font-family: "Formula1Bold";
-}
-
-[tabulator-field="driver"] {
-  border-right: 1.5px solid #797599 !important;
-  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
-}
-
-[tabulator-field="pos"] {
-  border-right: 1.5px solid #797599 !important;
-  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
-  font-family: "Formula1Bold";
-}
-
-
-[tabulator-field="points"] {
-  border-left: 1.5px solid #797599 !important;
-  border-right: none !important;
-  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
-  font-family: "Formula1Bold";
-}
-
-.main-viewer-section .tabulator-col {
-  background-color: #18152e !important;
-  color: #dedde6 !important;
-}
-
-.main-viewer-section .tabulator-row {
-  background-color: #494561 !important;
-  cursor: pointer !important;
-  color: #dedde6 !important;
-  transition: background-color 0.3s, color 0.3s !important;
-}
-
-.main-viewer-section .tabulator-row-even {
-  background-color: #3c3952 !important;
-  cursor: pointer !important;
-  color: #dedde6 !important;
-}
-
-.main-viewer-section .tabulator-row:hover {
-  background-color: #625e86 !important;
-  cursor: pointer !important;
-}
-
-.main-viewer-section .tabulator-row [tabulator-field^="race"] {
-  transition: color 0.3s;
-}
-
-.main-viewer-section .tabulator-row:hover [tabulator-field^="race"] {
-  color: white;
-}
-
-[tabulator-field="team"]{
-  transition: background-color 0.3s, color 0.3s;
-  padding-right: 0px !important;
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
-}
-
-.tabulator-row:hover [tabulator-field="team"] {
-  background-color: #625e86 !important;
-  color: white !important;
-}
-
-.tabulator-row:hover [tabulator-field="driver"],  .tabulator-row:hover [tabulator-field="pos"]{
-  color: #110f24;
-  background-color: #dedde6 !important;
-  border-right: 1.5px solid #dedde6 !important;
-}
-
-
-.tabulator-row:hover [tabulator-field="points"] {
-  color: #110f24;
-  background-color: #dedde6 !important;
-  border-left: 1.5px solid #dedde6 !important;
-}
-
-[tabulator-field="driver"] span.bold-font{
-  transition: color 0.3s;
-}
-
-.tabulator-row:hover [tabulator-field="driver"] span.bold-font {
-  color: #110f24;
-}
-
-
-.main-viewer-section .tabulator-table {
-  background-color: #110f24 !important;
-  overflow-x: hidden !important;
-}
-
-.tabulator-col-content:has(img) {
-  padding: 0px !important;
 }
 
 .flag-header {
@@ -1745,7 +1625,7 @@ DRIVERS TABLE
 
 .main-calendar-section {
   margin-left: 14px;
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contract);
   color: white;
   min-height: 660px;
   max-height: 660px;
@@ -1758,7 +1638,7 @@ DRIVERS TABLE
 .main-options-section {
   margin-left: 1.5rem;
   margin-right: 14px;
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contract);
   color: white;
   min-height: 660px;
   max-height: 660px;
@@ -1791,12 +1671,12 @@ DRIVERS TABLE
 
 .race-calendar {
   position: relative;
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 8px;
   margin: 10px;
-  color: #dedde6;
+  color: var( --text-general);
   transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   display: flex;
   cursor: grab !important;
@@ -1869,7 +1749,7 @@ DRIVERS TABLE
 }
 
 .race-calendar:hover .bi-chevron-left, .race-calendar:hover .bi-chevron-right {
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .race-calendar .bi-chevron-left:hover, .race-calendar .bi-chevron-right:hover {
@@ -1947,7 +1827,7 @@ DRIVERS TABLE
 
 
 .main-editStats-section {
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contract);
   color: white;
   min-height: 660px;
   max-height: 660px;
@@ -1993,7 +1873,7 @@ DRIVERS TABLE
 }
 
 .active {
-  background-color: #797599 !important;
+  background-color: var( --slight-contract) !important;
   color: #fdfdfd !important;
 }
 
@@ -2033,12 +1913,12 @@ DRIVERS TABLE
   display: flex;
   flex-direction: column;
   font-size: 20px;
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border-radius: 10px;
   margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
-  color: #dedde6;
+  color: var( --text-general);
   border: 2px solid transparent;
   transition: border-color 0.4s, background-color 0.4s;
   align-items: center;
@@ -2082,7 +1962,7 @@ DRIVERS TABLE
 .driver1-name, .driver2-name{
   display: flex;
   flex-direction: column;
-  color: #dedde6;
+  color: var( --text-general);
   background-color: #1f1b3b;
   border-radius: 10px;
   width: 100%;
@@ -2109,12 +1989,12 @@ DRIVERS TABLE
   align-items: center;
   font-size: 22px;
   padding-left: 20px;
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border-radius: 10px;
   margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
-  color: #dedde6;
+  color: var( --text-general);
   border: 2px solid transparent;
   transition: border-color 0.4s, background-color 0.4s;
 }
@@ -2241,21 +2121,21 @@ DRIVERS TABLE
 .red-part {
   width: 300px;
   height: 3px;
-  background-color: #e95656;
+  background-color: var( --negative-general);
   position: relative;
 }
 
 .disabled-part {
   width: 300px;
   height: 3px;
-  background-color: #110f24;
+  background-color: var(--background-general);
   position: relative;
 }
 
 .disabled-part-engine {
   width: 100%;
   height: 3px;
-  background-color: #110f24;
+  background-color: var(--background-general);
   position: relative;
 }
 
@@ -2290,7 +2170,7 @@ DRIVERS TABLE
 .gray-part {
   width: 100%;
   height: 100%;
-  background-color: #110f24;
+  background-color: var(--background-general);
   position: absolute;
   top: 0;
   left: 0;
@@ -2348,7 +2228,7 @@ DRIVERS TABLE
 }
 
 .custom-body {
-  color: #dedde6;
+  color: var( --text-general);
   background-color: #393744;
 }
 
@@ -2359,7 +2239,7 @@ DRIVERS TABLE
 }
 
 .drivers-modal-zone, .teams-modal-zone{
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contract);
   border-radius: 10px;
   width: 100%;
   display: grid;
@@ -2368,12 +2248,12 @@ DRIVERS TABLE
 
 
 .contract-details div{
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .custom-header {
   color: white !important;
-  border-bottom: 1px solid #797599 !important;
+  border-bottom: 1px solid var( --slight-contract) !important;
   background-color: #393744 !important;
   display: flex;
   justify-content: space-around;
@@ -2382,7 +2262,7 @@ DRIVERS TABLE
 
 .custom-footer {
   color: white !important;
-  border-top: 1px solid #797599 !important;
+  border-top: 1px solid var( --slight-contract) !important;
   background-color: #393744 !important;
 
 }
@@ -2447,26 +2327,26 @@ DRIVERS TABLE
 .team,
 .engine,
 .race {
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 4.8px;
   cursor: pointer !important;
   margin: 10px;
-  color: #dedde6;
+  color: var( --text-general);
   transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   position: relative;
   font-size: 18px;
 }
 
 .driver-info{
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 8px;
   cursor: pointer !important;
   margin: 13px 8px;
-  color: #dedde6;
+  color: var( --text-general);
   transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   position: relative;
   font-size: 18px;
@@ -2536,7 +2416,7 @@ DRIVERS TABLE
 .prediction-table-header, .prediction-table-driver{
   display: flex;
   flex-direction: row;
-  color: #dedde6;
+  color: var( --text-general);
   font-size: 20px;
   margin: 10px 20px;
 }
@@ -2582,8 +2462,8 @@ DRIVERS TABLE
 .team.selected,
 .engine.selected,
 .race.selected {
-  color: #110f24;
-  background-color: #dedde6;
+  color: var(--background-general);
+  background-color: var( --text-general);
 }
 
 .team:active .engine:active {
@@ -2591,13 +2471,13 @@ DRIVERS TABLE
 }
 
 .free-driver {
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 8px;
   cursor: grab !important;
   margin: 10px;
-  color: #dedde6;
+  color: var( --text-general);
   transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   position: relative;
   font-size: 15px;
@@ -2606,8 +2486,8 @@ DRIVERS TABLE
 .H2Hradio{
   border: 2px solid transparent;
   border-radius: 7px;
-  color: #dedde6;
-  background-color: #797599;
+  color: var( --text-general);
+  background-color: var( --slight-contract);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   height: 28px;
   font-size: 16px;
@@ -2618,8 +2498,8 @@ DRIVERS TABLE
 .GraphButton{
   border: 2px solid transparent;
   border-radius: 7px;
-  color: #dedde6;
-  background-color: #797599;
+  color: var( --text-general);
+  background-color: var( --slight-contract);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   height: 28px;
   font-size: 16px;
@@ -2639,14 +2519,14 @@ DRIVERS TABLE
 }
 
 .H2Hradio.activated{
-  background-color: #34c297;
-  border-color: #88ebcd;
+  background-color: var( --h2h-general);
+  border-color: var( --h2h-detail);
   color: white;
 }
 
 .GraphButton.activated{
-  background-color: #34bdc2;
-  border-color: #95ebee;
+  background-color: var( --graph-general);
+  border-color: var( --graph-detail);
   color: white;
 }
 
@@ -2687,7 +2567,7 @@ DRIVERS TABLE
   border-radius: 10px;
   padding: 6px;
   margin: 8px;
-  color: #dedde6;
+  color: var( --text-general);
   transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   position: relative;
   font-size: 15px;
@@ -2702,7 +2582,7 @@ DRIVERS TABLE
   border-radius: 10px;
   padding: 0px 6px;
   margin: 8px;
-  color: #dedde6;
+  color: var( --text-general);
   transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   position: relative;
   font-size: 15px;
@@ -2759,7 +2639,7 @@ DRIVERS TABLE
 }
 
 .free-driver .bi-ban:hover{
-  color: #e95656;
+  color: var( --negative-general);
 }
 
 .custom-icon i:hover {
@@ -2893,12 +2773,12 @@ DRIVERS TABLE
 }
 
 .normal-driver {
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   cursor: pointer;
   border-radius: 10px;
   padding: 8px;
   margin: 10px;
-  color: #dedde6;
+  color: var( --text-general);
   transition: border-color 0.4s, color 0.4s, background-color 0.4s;
   border: 2px solid transparent;
   display: flex;
@@ -2906,12 +2786,12 @@ DRIVERS TABLE
 }
 
 .one-stat-panel {
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border-radius: 10px;
   padding-left: 10px;
   margin: 10px;
   margin-left: 20px;
-  color: #dedde6;
+  color: var( --text-general);
   transition: border-color 0.4s, background-color 0.4s;
   min-height: 70px;
   border: 2px solid transparent;
@@ -2927,7 +2807,7 @@ DRIVERS TABLE
 }
 
 .one-stat-panel span{
-  color: #dedde6;
+  color: var( --text-general);
   transition: color 0.4s;
 }
 
@@ -2940,7 +2820,7 @@ DRIVERS TABLE
 }
 
 .negative {
-  color: #e95656;
+  color: var( --negative-general);
 }
 
 .input-and-buttons{
@@ -2984,7 +2864,7 @@ DRIVERS TABLE
 
 
 .scriptPills {
-  color: #dedde6 !important;
+  color: var( --text-general) !important;
   border: 2px solid transparent !important;
   transition: border-color 0.4s, background-color 0.4s , color 0.4s !important;
 }
@@ -2996,7 +2876,7 @@ DRIVERS TABLE
 }
 
 .scriptPills.active {
-  background-color: #797599 !important;
+  background-color: var( --slight-contract) !important;
   color: white !important;
 }
 
@@ -3005,7 +2885,7 @@ DRIVERS TABLE
   border-radius: 10px;
   padding: 10px;
   margin-right: 7px;
-  color: #dedde6;
+  color: var( --text-general);
   max-width: 60px;
   height: 56px;
   border: 2px solid transparent;
@@ -3048,8 +2928,8 @@ input::-webkit-inner-spin-button {
 }
 
 .normal-driver.clicked {
-  color: #110f24;
-  background-color: #dedde6;
+  color: var(--background-general);
+  background-color: var( --text-general);
 }
 
 
@@ -3165,7 +3045,7 @@ input::-webkit-inner-spin-button {
 
 .facility-name{
   width: 25%;
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .custom-button{
@@ -3268,7 +3148,7 @@ input::-webkit-inner-spin-button {
 #edit_teams .team-viewer i{
   transition: color 0.4s;
   font-size: 20px;
-  color: #dedde6;
+  color: var( --text-general);
   transition: background-color 0.4s, color 0.4s;
   width: 25px;
   height: 25px;
@@ -3452,7 +3332,7 @@ input::-webkit-inner-spin-button {
 }
 
 .driver1-name .team1, .driver2-name .team2{
-  color: #dedde6 !important;
+  color: var( --text-general) !important;
   transition: color 0.4s;
 }
 
@@ -3465,20 +3345,12 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--redbull-primary) !important;
 }
 
-.tabulator-row:hover .rbborder-right {
-  border-right: 3px solid var(--redbull-primary) !important;
-}
-
 .rbactivated{
   background-color: var(--redbull-primary);
 }
 
 #ferrari, .feborder-down:hover {
   border-bottom: 2px solid var(--ferrari-primary) !important;
-}
-
-.tabulator-row:hover .feborder-right {
-  border-right: 3px solid var(--ferrari-primary) !important;
 }
 
 .feactivated{
@@ -3489,20 +3361,12 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--mercedes-primary) !important;
 }
 
-.tabulator-row:hover .meborder-right {
-  border-right: 3px solid var(--mercedes-primary) !important;
-}
-
 .meactivated{
   background-color: var(--mercedes-primary);
 }
 
 #mclaren, .mcborder-down:hover {
   border-bottom: 2px solid var(--mclaren-primary) !important;
-}
-
-.tabulator-row:hover .mcborder-right {
-  border-right: 3px solid var(--mclaren-primary) !important;
 }
 
 .mcactivated{
@@ -3530,9 +3394,6 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--lotus-primary) !important
 }
 
-.tabulator-row:hover .alborder-right {
-  border-right: 3px solid var(--alpine-primary) !important;
-}
 
 .alactivated{
   background-color: var(--alpine-primary);
@@ -3546,9 +3407,6 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid #C92D4B !important
 }
 
-.tabulator-row:hover .afborder-right {
-  border-right: 3px solid var(--alfa-primary) !important;
-}
 
 .afactivated{
   background-color: var(--alfa-primary);
@@ -3556,10 +3414,6 @@ input::-webkit-inner-spin-button {
 
 #astonmartin, .asborder-down:hover {
   border-bottom: 2px solid var(--aston-primary) !important
-}
-
-.tabulator-row:hover .asborder-right {
-  border-right: 3px solid var(--aston-primary) !important;
 }
 
 .asactivated{
@@ -3609,9 +3463,6 @@ input::-webkit-inner-spin-button {
 }
 
 
-.tabulator-row:hover .atborder-right {
-  border-right: 3px solid var(--alphatauri-primary) !important;
-}
 
 .atactivated{
   background-color: var(--alphatauri-primary);
@@ -3621,9 +3472,6 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--williams-primary) !important
 }
 
-.tabulator-row:hover .wiborder-right {
-  border-right: 3px solid var(--williams-primary) !important;
-}
 
 .wiactivated{
   background-color: var(--williams-primary);
@@ -3631,10 +3479,6 @@ input::-webkit-inner-spin-button {
 
 #haas, .haborder-down:hover {
   border-bottom: 2px solid var(--haas-primary) !important
-}
-
-.tabulator-row:hover .haborder-right {
-  border-right: 3px solid var(--haas-primary) !important;
 }
 
 .haactivated{
