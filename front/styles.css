@@ -606,14 +606,17 @@ a.bi-linkedin:hover {
 
 .mode-line.ai{
   background-color: #baffea;
+  /* box-shadow: 0 0 6px 1px #baffea; */
 }
 
 .mode-line.edit{
   background-color: #fff7b0;
+  /* box-shadow: 0 0 6px 1px #fff7b0; */
 }
 
 .mode-line.view{
   background-color: #e8b6ff;
+  /* box-shadow: 0 0 6px 1px #e8b6ff; */
 }
 
 .moving-line{
@@ -975,16 +978,14 @@ DRIVERS TABLE
 }
 
 .drivers-table-row:hover .drivers-table-driver, 
-.drivers-table-row:hover .drivers-table-normal, .teams-table-row:hover .teams-table-normal,
-.teams-table-row:hover .teams-table-team{
+.drivers-table-row:hover .drivers-table-normal, .teams-table-row:hover .teams-table-normal{
   background-color: #dedde6;
   color: #18152e;
 }
 
 .drivers-table-row.odd:hover .drivers-table-driver, 
 .drivers-table-row.odd:hover .drivers-table-normal,
-.teams-table-row.odd:hover .teams-table-normal,
-.teams-table-row.odd:hover .teams-table-team{
+.teams-table-row.odd:hover .teams-table-normal{
   background-color: #dedde6;
   color: #18152e;
 }
@@ -1031,8 +1032,15 @@ DRIVERS TABLE
   background-color: #464166;
 }
 
-.drivers-table-row .drivers-table-driver, .teams-table-row .teams-table-team{
+.teams-table-row .teams-table-team{
   border-right: 1px solid #797599;
+  border-left: 1px solid #797599;
+}
+
+.teams-table-row:hover .teams-table-team{
+  background-color: #dedde6;
+  color: #18152e;
+  border-color: #dedde6;
 }
 
 .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points, .teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
@@ -1132,12 +1140,10 @@ DRIVERS TABLE
   justify-content: center;
   border-top: 1px solid #797599;
   border-bottom: 1px solid #797599;
-  border-right: 1px solid #797599;
   transition: border-height 0.3s;
 }
 
 .teams-table-row:hover .teams-table-logo{
-  border-right: 0px solid #dedde6;
   border-bottom: 0px solid #dedde6;
   border-top: 0px solid #dedde6;
 }
@@ -1195,7 +1201,7 @@ DRIVERS TABLE
   width: 210px;
   display: flex;
   align-items: center;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
   padding-left: 4px;
 }
 
@@ -1207,14 +1213,10 @@ DRIVERS TABLE
 
 .teams-table-row .teams-table-team{
   width: 149.5px;
-  border-right: 1px solid #797599;
   gap: 5px;
   transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
 
-.teams-table-row:hover .teams-table-team{
-  border-right: 1px solid #dedde6;
-}
 
 .drivers-table-header .drivers-table-driver, .teams-table-header .teams-table-team{
   border-top: 1px solid #797599;
