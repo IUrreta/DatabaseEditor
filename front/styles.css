@@ -3,7 +3,7 @@
   GENERAL COLORS
   */
   --background-general: #110f24;
-  --slight-contract: #797599;
+  --slight-contrast: #797599;
   --text-general: #dedde6;
   --negative-general: #e95656;
   --h2h-general: #34c297;
@@ -12,6 +12,8 @@
   --graph-detail: #95ebee;
   --tools-general: #18152e;
   --component-general: #3f3c57;
+  --component-general-hover: #4e4b69;
+  --overall-holder: #21202e;
 
 
   /*
@@ -82,7 +84,7 @@ body::-webkit-scrollbar-thumb {
 
 #byname {
   text-decoration: none;
-  color: var( --slight-contract);
+  color: var( --slight-contrast);
   transition: color 0.4s;
 }
 
@@ -92,8 +94,8 @@ body::-webkit-scrollbar-thumb {
   left: 0;
   width: 100%;
   background-color: var(--tools-general);
-  color: var( --slight-contract);
-  border-top: 1px solid var( --slight-contract);
+  color: var( --slight-contrast);
+  border-top: 1px solid var( --slight-contrast);
   text-align: center;
   padding: 5px 0;
   font-size: 16px;
@@ -109,7 +111,7 @@ body::-webkit-scrollbar-thumb {
   cursor: pointer !important;
   padding: 0 7px;
   transition: color 0.3s;
-  color: var( --slight-contract);
+  color: var( --slight-contrast);
   text-decoration: none;
 }
 
@@ -133,7 +135,7 @@ body::-webkit-scrollbar-thumb {
 .update-info {
   transition: color 0.4s;
   text-decoration: none;
-  color: var( --slight-contract);
+  color: var( --slight-contrast);
   cursor: default;
 }
 
@@ -304,7 +306,7 @@ a.bi-linkedin:hover {
 }
 
 .dropdown-menu{
-  background-color: var( --slight-contract) !important;
+  background-color: var( --slight-contrast) !important;
   border: none !important;
   border-radius: 10px;
 
@@ -353,7 +355,7 @@ a.bi-linkedin:hover {
 }
 
 .overall-holder {
-  background-color: #21202e;
+  background-color: var(--overall-holder);
   border: 2px solid white;
   border-radius: 10px;
   width: 66px;
@@ -395,13 +397,13 @@ a.bi-linkedin:hover {
   100% {
     border: 2px solid white;
     border-radius: 10px;
-    background-color: #21202e;
+    background-color: var(--overall-holder);
   }
 
   50% {
     border: 2px solid var( --negative-general);
     border-radius: 10px;
-    background-color: #21202e;
+    background-color: var(--overall-holder);
   }
 }
 
@@ -411,13 +413,13 @@ a.bi-linkedin:hover {
   100% {
     border: 2px solid white;
     border-radius: 10px;
-    background-color: #21202e;
+    background-color: var(--overall-holder);
   }
 
   50% {
     border: 2px solid #5bd999;
     border-radius: 10px;
-    background-color: #21202e;
+    background-color: var(--overall-holder);
   }
 }
 
@@ -471,7 +473,7 @@ a.bi-linkedin:hover {
 .patchNotesPanel i {
   transition: color 0.4s;
   font-style: normal;
-  color: var( --slight-contract);
+  color: var( --slight-contrast);
   cursor: pointer;
 }
 
@@ -620,7 +622,7 @@ a.bi-linkedin:hover {
   position: relative;
   width: 100%;
   height: 1px;
-  background-color: var( --slight-contract);
+  background-color: var( --slight-contrast);
 }
 
 .mode-line.ai{
@@ -695,7 +697,7 @@ a.bi-linkedin:hover {
   margin-top: 0.7rem;
   position: absolute;
   margin-left: 0.5rem;
-  color: var( --slight-contract);
+  color: var( --slight-contrast);
   opacity: 1;
   transition: color 0.3s, opacity 0.3s;
 }
@@ -717,7 +719,7 @@ a.bi-linkedin:hover {
 .custom-dropdown {
   max-width: 250px !important;
   margin-top: 0.6rem !important;
-  background-color: var( --slight-contract) !important;
+  background-color: var( --slight-contrast) !important;
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
@@ -727,7 +729,7 @@ a.bi-linkedin:hover {
 
 .custom-dropdown-no-margin {
   max-width: 250px !important;
-  background-color: var( --slight-contract) !important;
+  background-color: var( --slight-contrast) !important;
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
@@ -754,7 +756,7 @@ a.bi-linkedin:hover {
 .addTracks-button {
   margin-top: 0.4rem;
   max-width: 210px;
-  background-color: var( --slight-contract) !important;
+  background-color: var( --slight-contrast) !important;
   margin-bottom: 1%;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
@@ -809,7 +811,7 @@ a.bi-linkedin:hover {
 .main-columns-drag-section {
   margin-left: 14px;
   margin-right: 5%;
-  border: 1px solid var( --slight-contract);
+  border: 1px solid var(--slight-contract);
   color: white;
   min-height: 660px;
   max-height: 660px;
@@ -843,7 +845,7 @@ a.bi-linkedin:hover {
 .custom-hr {
   border: none;
   height: 1px;
-  border: 1px solid var( --slight-contract);
+  border: 1px solid var( --slight-contrast);
   margin-left: 20px;
   margin-top: 1rem;
   margin-bottom: 2rem;
@@ -1052,8 +1054,8 @@ DRIVERS TABLE
 }
 
 .teams-table-row .teams-table-team{
-  border-right: 1px solid var( --slight-contract);
-  border-left: 1px solid var( --slight-contract);
+  border-right: 1px solid var( --slight-contrast);
+  border-left: 1px solid var( --slight-contrast);
 }
 
 .teams-table-row:hover .teams-table-team{
@@ -1063,8 +1065,8 @@ DRIVERS TABLE
 }
 
 .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points, .teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
-  border-right: 1px solid var( --slight-contract);
-  border-left: 1px solid var( --slight-contract);
+  border-right: 1px solid var( --slight-contrast);
+  border-left: 1px solid var( --slight-contrast);
 }
 
 
@@ -1077,8 +1079,8 @@ DRIVERS TABLE
 }
 
 .drivers-table-header .drivers-table-normal, .teams-table-header .teams-table-normal{
-  border-bottom: 1px solid var( --slight-contract);
-  border-top: 1px solid var( --slight-contract);
+  border-bottom: 1px solid var( --slight-contrast);
+  border-top: 1px solid var( --slight-contrast);
 }
 
 .drivers-table-position, .teams-table-position{
@@ -1157,8 +1159,8 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   justify-content: center;
-  border-top: 1px solid var( --slight-contract);
-  border-bottom: 1px solid var( --slight-contract);
+  border-top: 1px solid var( --slight-contrast);
+  border-bottom: 1px solid var( --slight-contrast);
   transition: border-height 0.3s;
 }
 
@@ -1180,7 +1182,7 @@ DRIVERS TABLE
 
 .drivers-table-logo-div{
   background-color: #464166;
-  border-right: 1px solid var( --slight-contract);
+  border-right: 1px solid var( --slight-contrast);
 }
 
 .drivers-table-logo{
@@ -1212,7 +1214,7 @@ DRIVERS TABLE
 
 
 .drivers-table-header .drivers-table-position, .teams-table-header .teams-table-position{
-  border: 1px solid var( --slight-contract);
+  border: 1px solid var( --slight-contrast);
   border-top-left-radius: 5px; 
 }
 
@@ -1238,9 +1240,9 @@ DRIVERS TABLE
 
 
 .drivers-table-header .drivers-table-driver, .teams-table-header .teams-table-team{
-  border-top: 1px solid var( --slight-contract);
-  border-bottom: 1px solid var( --slight-contract);
-  border-right: 1px solid var( --slight-contract);
+  border-top: 1px solid var( --slight-contrast);
+  border-bottom: 1px solid var( --slight-contrast);
+  border-right: 1px solid var( --slight-contrast);
 }
 
 .drivers-table-points, .teams-table-points{
@@ -1252,7 +1254,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-header .drivers-table-points, .teams-table-header .teams-table-points{
-  border: 1px solid var( --slight-contract);
+  border: 1px solid var( --slight-contrast);
   border-top-right-radius: 5px; 
 }
 
@@ -1477,7 +1479,7 @@ DRIVERS TABLE
   margin-bottom: 20px;
   margin-top: 15px;
   background-color: var(--tools-general);
-  border: 1px solid var( --slight-contract);
+  border: 1px solid var( --slight-contrast);
   border-radius: 10px;
   display: flex;
   justify-content: center;
@@ -1491,7 +1493,7 @@ DRIVERS TABLE
   border: 2.5px solid transparent !important;
   border-radius: 10px !important;
   color: white !important;
-  background-color: var( --slight-contract) !important;
+  background-color: var( --slight-contrast) !important;
   transition: border-color 0.4s, background-color 0.4s, color 0.4s !important;
 
 }
@@ -1516,7 +1518,7 @@ DRIVERS TABLE
   border: 2.5px solid transparent !important;
   border-radius: 10px !important;
   color: white !important;
-  background-color: var( --slight-contract) !important;
+  background-color: var( --slight-contrast) !important;
   transition: border-color 0.4s, background-color 0.4s !important;
   display: flex;
   justify-content: center;
@@ -1545,7 +1547,7 @@ DRIVERS TABLE
 .main-viewer-section {
   margin-left: 14px;
   margin-right: 14px;
-  border: 1px solid var( --slight-contract);
+  border: 1px solid var( --slight-contrast);
   color: white;
   overflow: hidden;
   border-radius: 10px;
@@ -1625,7 +1627,7 @@ DRIVERS TABLE
 
 .main-calendar-section {
   margin-left: 14px;
-  border: 1px solid var( --slight-contract);
+  border: 1px solid var( --slight-contrast);
   color: white;
   min-height: 660px;
   max-height: 660px;
@@ -1638,7 +1640,7 @@ DRIVERS TABLE
 .main-options-section {
   margin-left: 1.5rem;
   margin-right: 14px;
-  border: 1px solid var( --slight-contract);
+  border: 1px solid var( --slight-contrast);
   color: white;
   min-height: 660px;
   max-height: 660px;
@@ -1741,7 +1743,7 @@ DRIVERS TABLE
 .race-calendar:hover {
   border-color: white;
   color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .race-calendar .bi-chevron-left, .race-calendar .bi-chevron-right {
@@ -1827,7 +1829,7 @@ DRIVERS TABLE
 
 
 .main-editStats-section {
-  border: 1px solid var( --slight-contract);
+  border: 1px solid var( --slight-contrast);
   color: white;
   min-height: 660px;
   max-height: 660px;
@@ -1873,7 +1875,7 @@ DRIVERS TABLE
 }
 
 .active {
-  background-color: var( --slight-contract) !important;
+  background-color: var( --slight-contrast) !important;
   color: #fdfdfd !important;
 }
 
@@ -1927,7 +1929,7 @@ DRIVERS TABLE
 
 .one-statH2H:hover {
   border-color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .one-statH2H i{
@@ -2001,7 +2003,7 @@ DRIVERS TABLE
 
 .one-performance:hover {
   border-color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .one-performance:hover .performance-name {
@@ -2239,7 +2241,7 @@ DRIVERS TABLE
 }
 
 .drivers-modal-zone, .teams-modal-zone{
-  border: 1px solid var( --slight-contract);
+  border: 1px solid var( --slight-contrast);
   border-radius: 10px;
   width: 100%;
   display: grid;
@@ -2253,7 +2255,7 @@ DRIVERS TABLE
 
 .custom-header {
   color: white !important;
-  border-bottom: 1px solid var( --slight-contract) !important;
+  border-bottom: 1px solid var( --slight-contrast) !important;
   background-color: #393744 !important;
   display: flex;
   justify-content: space-around;
@@ -2262,7 +2264,7 @@ DRIVERS TABLE
 
 .custom-footer {
   color: white !important;
-  border-top: 1px solid var( --slight-contract) !important;
+  border-top: 1px solid var( --slight-contrast) !important;
   background-color: #393744 !important;
 
 }
@@ -2456,7 +2458,7 @@ DRIVERS TABLE
 .race:hover, .driver-info:hover {
   border-color: white;
   color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .team.selected,
@@ -2487,7 +2489,7 @@ DRIVERS TABLE
   border: 2px solid transparent;
   border-radius: 7px;
   color: var( --text-general);
-  background-color: var( --slight-contract);
+  background-color: var( --slight-contrast);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   height: 28px;
   font-size: 16px;
@@ -2499,7 +2501,7 @@ DRIVERS TABLE
   border: 2px solid transparent;
   border-radius: 7px;
   color: var( --text-general);
-  background-color: var( --slight-contract);
+  background-color: var( --slight-contrast);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   height: 28px;
   font-size: 16px;
@@ -2562,7 +2564,7 @@ DRIVERS TABLE
 }
 
 .modal-driver{
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 6px;
@@ -2577,7 +2579,7 @@ DRIVERS TABLE
 }
 
 .modal-team{
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 0px 6px;
@@ -2594,7 +2596,7 @@ DRIVERS TABLE
 .free-driver .custom-icon {
   color: transparent;
   transition: opacity 0.4s;
-  background-image: linear-gradient(to left, #4e4b69, transparent);
+  background-image: linear-gradient(to left, var(--component-general-hover), transparent);
   width: 80px;
   opacity: 0;
   z-index: 3;
@@ -2608,7 +2610,7 @@ DRIVERS TABLE
 .free-driver .custom-unretire{
   color: transparent;
   transition: opacity 0.4s;
-  background-image: linear-gradient(to left, #4e4b69, transparent);
+  background-image: linear-gradient(to left, var(--component-general-hover), transparent);
   width: 80px;
   height: 20px;
   opacity: 0;
@@ -2673,13 +2675,13 @@ DRIVERS TABLE
   border-color: white;
   cursor: grab !important;
   color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .modal-driver:hover, .modal-team:hover{
   border-color: white;
   color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .modal-team.ferrari:hover{
@@ -2803,7 +2805,7 @@ DRIVERS TABLE
 
 .one-stat-panel:hover{
   border-color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .one-stat-panel span{
@@ -2876,12 +2878,12 @@ DRIVERS TABLE
 }
 
 .scriptPills.active {
-  background-color: var( --slight-contract) !important;
+  background-color: var( --slight-contrast) !important;
   color: white !important;
 }
 
 .custom-input-number {
-  background-color: #21202e;
+  background-color: var(--overall-holder);
   border-radius: 10px;
   padding: 10px;
   margin-right: 7px;
@@ -2920,7 +2922,7 @@ input::-webkit-inner-spin-button {
 .normal-driver:hover {
   border-color: white;
   color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .normal-driver:active {
