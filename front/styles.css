@@ -6,6 +6,7 @@
   --slight-contrast: #797599;
   --text-general: #dedde6;
   --negative-general: #e95656;
+  --positive-general: #5bd999;
   --h2h-general: #34c297;
   --graph-general: #34bdc2;
   --h2h-detail: #88ebcd;
@@ -14,6 +15,24 @@
   --component-general: #3f3c57;
   --component-general-hover: #4e4b69;
   --overall-holder: #21202e;
+  --dropdown-back-general: #8b87af;
+  --active-general: #1a1826;
+  --row-cell: #3c3952;
+  --row-odd-cell: #494561;
+  --special-columns: #464166;
+  --delete-div: #f15353;
+  --weather-vis-back: #292738;
+  --weather-vis-border: #2c2b3b;
+  --h2h-back: #1f1b3b;
+  --h2h-back-hover: #302a57;
+  --active-buttons-back: #5f5a7c;
+  --mid-gray-contrast: #63636e;
+
+  --f2-border: #38c8f0;
+  --f2-back: #388cd5;
+  --f2-active: #1374fc;
+  --f3-back: #cf2e2e;
+  --f3-border: #ff4848;
 
 
   /*
@@ -319,8 +338,8 @@ a.bi-linkedin:hover {
 }
 
 .dropdown-menu a:hover{
-  background-color: #8b87af !important;
-  border-bottom: 2px solid white  ;
+  background-color: var(--dropdown-back-general) !important;
+  border-bottom: 2px solid white;
 }
 
 .modal-subtitle, .component-subtitle{
@@ -417,7 +436,7 @@ a.bi-linkedin:hover {
   }
 
   50% {
-    border: 2px solid #5bd999;
+    border: 2px solid var(--positive-general);
     border-radius: 10px;
     background-color: var(--overall-holder);
   }
@@ -514,7 +533,7 @@ a.bi-linkedin:hover {
   height: 2px;
   position: relative;
   bottom: 7px;
-  background-color: #ff4949 !important;
+  background-color: var(--negative-general) !important;
 }
 
 .custom-toast{
@@ -573,7 +592,7 @@ a.bi-linkedin:hover {
 }
 
 .toast-error{
-  color: #ff4949 !important;
+  color: var(--negative-general) !important;
 }
 
 .hide {
@@ -750,7 +769,7 @@ a.bi-linkedin:hover {
 }
 
 .custom-dropdown:active, .custom-dropdown-no-margin:active {
-  background-color: #1a1826 !important;
+  background-color: var(--active-general) !important;
 }
 
 .addTracks-button {
@@ -769,7 +788,7 @@ a.bi-linkedin:hover {
 }
 
 .addTracks-button:active {
-  background-color: #1a1826;
+  background-color: var(--active-general);
 }
 
 #addTrackMenu {
@@ -1041,16 +1060,16 @@ DRIVERS TABLE
 }
 
 .drivers-table-row .drivers-table-normal, .teams-table-row .teams-table-normal{
-  background-color: #3c3952;
+  background-color: var(--row-cell);
 }
 
 .drivers-table-row.odd .drivers-table-normal, .teams-table-row.odd .teams-table-normal{
-  background-color: #494561;
+  background-color: var(--row-odd-cell);
 }
 
 .drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-points, .drivers-table-row .drivers-table-position,
 .teams-table-row .teams-table-team, .teams-table-row .teams-table-points, .teams-table-row .teams-table-position{
-  background-color: #464166;
+  background-color: var(--special-columns)
 }
 
 .teams-table-row .teams-table-team{
@@ -1181,7 +1200,7 @@ DRIVERS TABLE
 
 
 .drivers-table-logo-div{
-  background-color: #464166;
+  background-color: var(--special-columns);
   border-right: 1px solid var( --slight-contrast);
 }
 
@@ -1439,7 +1458,7 @@ DRIVERS TABLE
 
 .viewer-header-data{
   border-radius: 5px;
-  color: rgb(24, 21, 46);
+  color: var(--tools-general);
   transition: border 0.3s;
   display: flex;
   align-items: center;
@@ -1449,7 +1468,7 @@ DRIVERS TABLE
 }
 
 .viewer-header-data.i75-100{
-  background-color: #5bd999;
+  background-color: var(--positive-general);
 }
 
 .viewer-header-data.i50-75{
@@ -1721,8 +1740,8 @@ DRIVERS TABLE
   width: 35px;
   height: 35px;
   border-radius: 10px;
-  background-color: #292738;
-  border: 1.5px solid rgb(44, 43, 59);
+  background-color: var(--weather-vis-back);
+  border: 1.5px solid var(--weather-vis-border);
   font-size: 22px;
   text-align: center;
 }
@@ -1775,13 +1794,13 @@ DRIVERS TABLE
   align-items: center;
   border: 2.5px solid transparent;
   border-radius: 10px;
-  color: #5bd999;
+  color: var(--positive-general);
   transition: color 0.4s, border-color 0.4s;
   cursor: default;
 }
 
 .complete-div:hover{
-  border-color: #5bd999;
+  border-color: var(--positive-general);
 }
 
 .completed:hover{
@@ -1807,8 +1826,8 @@ DRIVERS TABLE
 }
 
 .delete-div:hover {
-  color: #f15353;
-  border-color: #f15353;
+  color: var(--delete-div);
+  border-color: var(--delete-div);
 }
 
 
@@ -1836,7 +1855,7 @@ DRIVERS TABLE
   overflow-y: auto;
   border-radius: 10px;
   scrollbar-width: thin;
-  scrollbar-color: white #e5e5e5;
+  scrollbar-color: white;
 }
 
 .main-editStats-section::-webkit-scrollbar {
@@ -1885,8 +1904,8 @@ DRIVERS TABLE
 }
 
 #F2pill:hover {
-  border: 2px solid #38c8f0;
-  background-color: #388cd5;
+  border: 2px solid var(--f2-border);
+  background-color: var(--f2-back);
   color: white !important;
 
 }
@@ -1897,13 +1916,13 @@ DRIVERS TABLE
 }
 
 #F3pill:hover {
-  border: 2px solid rgb(255, 72, 72);
-  background-color: rgb(207, 46, 46);
+  border: 2px solid var(--f3-border);
+  background-color: var(--f3-back);
   color: white !important;
 }
 
 #F2pill.active {
-  background-color: #1374fc !important;
+  background-color: var(--f2-active) !important;
 }
 
 #F3pill.active {
@@ -1965,7 +1984,7 @@ DRIVERS TABLE
   display: flex;
   flex-direction: column;
   color: var( --text-general);
-  background-color: #1f1b3b;
+  background-color: var(--h2h-back);
   border-radius: 10px;
   width: 100%;
   margin-left: 5px;
@@ -1977,7 +1996,7 @@ DRIVERS TABLE
 
 .driver1-name:hover, .driver2-name:hover {
   color: white;
-  background-color: #302a57;
+  background-color: var(--h2h-back-hover);
 }
 
 .driver1-second, .driver2-second{
@@ -2041,8 +2060,8 @@ DRIVERS TABLE
 }
 
 .performance-buttons i:active{
-  background-color: #5f5a7c !important;
-  color: rgb(226, 226, 226) !important;
+  background-color: var(--active-buttons-back) !important;
+  color: #e2e2e2 !important;
   transition-duration: 0s;
 }
 
@@ -2086,7 +2105,7 @@ DRIVERS TABLE
   width: 75%;
   display: flex;
   flex-direction: row;
-  background-color: #1f1b3b;
+  background-color: var(--h2h-back);
   height: 7px;
   margin-top: 5px;
 }
@@ -2113,7 +2132,7 @@ DRIVERS TABLE
 
 .driver2-space, .driver1-space{
   width: 50%;
-  background-color: #1f1b3b;
+  background-color: var(--h2h-back);
   height: 6px;
 }
 
@@ -2144,7 +2163,7 @@ DRIVERS TABLE
 .green-part {
   width: 0%;
   height: 100%;
-  background-color: #5bd999;
+  background-color: var(--positive-general);
   position: absolute;
   top: 0;
   left: 0;
@@ -2281,7 +2300,7 @@ DRIVERS TABLE
   max-width: 210px;
   outline: none;
   transition: border-color 0.4s;
-  background-color: rgb(99, 99, 110);
+  background-color: var(--mid-gray-contrast);
   color: #ebeaf0;
 }
 
@@ -2469,7 +2488,7 @@ DRIVERS TABLE
 }
 
 .team:active .engine:active {
-  background-color: #1a1826;
+  background-color: var(--active-general);
 }
 
 .free-driver {
@@ -2560,7 +2579,7 @@ DRIVERS TABLE
 }
 
 .indicator{
-  color: #5bd999;
+  color: var(--positive-general);
 }
 
 .modal-driver{
@@ -2818,7 +2837,7 @@ DRIVERS TABLE
 }
 
 .positive {
-  color: #5bd999;
+  color: var(--positive-general);
 }
 
 .negative {
@@ -2859,8 +2878,8 @@ DRIVERS TABLE
 }
 
 .input-buttons i:active{
-  background-color: #5f5a7c !important;
-  color: rgb(226, 226, 226) !important;
+  background-color: var(--active-buttons-back) !important;
+  color: #e2e2e2 !important;
   transition-duration: 0s;
 }
 
@@ -2902,7 +2921,7 @@ DRIVERS TABLE
 
 
 .custom-input-number:hover {
-  background-color: #292738;
+  background-color: var(--weather-vis-back);
   border-color: #cecece;
 }
 
@@ -2926,7 +2945,7 @@ input::-webkit-inner-spin-button {
 }
 
 .normal-driver:active {
-  background-color: #1a1826;
+  background-color: var(--active-general);
 }
 
 .normal-driver.clicked {
@@ -2940,7 +2959,7 @@ input::-webkit-inner-spin-button {
 }
 
 .team-template {
-  background-color: #1f1b3b;
+  background-color: var(--h2h-back);
   border-radius: 10px;
   border: none;
   color: white;
@@ -3085,7 +3104,7 @@ input::-webkit-inner-spin-button {
 .separator{
   margin-top: 30px;
   width: 1px;
-  background-color: rgb(99, 99, 110);
+  background-color: var(--mid-gray-contrast);
   height: 85%;
 }
 
@@ -3103,7 +3122,7 @@ input::-webkit-inner-spin-button {
 .level{
   height: 8px;
   width: 42px;
-  background-color: rgb(99, 99, 110);
+  background-color: var(--mid-gray-contrast);
   transition: background-color 0.2s;
 }
 
@@ -3112,7 +3131,7 @@ input::-webkit-inner-spin-button {
 }
 
 .viewer-component .custom-input-number, .facility-component .custom-input-number, .facility-component-lg .custom-input-number{
-  background-color: rgb(99, 99, 110) !important;
+  background-color: var(--mid-gray-contrast) !important;
   text-align: center;
   padding: 8px;
   height: 39.2px !important;
