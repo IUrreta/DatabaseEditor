@@ -77,6 +77,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const names_configs = {"visarb": "VISA CASHAPP RB", "toyota" : "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI", "brawn": "BRAWN GP", "porsche": "PORSCHE",
                             "alpine": "ALPINE", "renault": "RENAULT", "andretti": "ANDRETTI", "lotus": "LOTUS", "alfa" : "ALFA ROMEO",
                         "audi" : "AUDI", "sauber" : "SAUBER", "stake" : "STAKE SAUBER"}
+    const pretty_names = {"visarb": "Visa Cashapp RB", "toyota" : "Toyota", "hugo": "Hugo Boss", "alphatauri": "Alpha Tauri", "brawn": "Brawn GP", "porsche": "Porsche",
+                            "alpine": "Alpine", "renault": "Renault", "andretti": "Andretti", "lotus": "Lotus", "alfa" : "Alfa Romeo",
+                        "audi" : "Audi", "sauber" : "Sauber", "stake" : "Stake Sauber"}
     const logos_configs = {"visarb": "../assets/images/visarb.png", "toyota" : "../assets/images/toyota.png", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png",
                             "brawn": "../assets/images/brawn.png", "porsche": "../assets/images/porsche.png",
                             "alpine": "../assets/images/alpine.png", "renault": "../assets/images/renault.png", "andretti": "../assets/images/andretti.png", "lotus": "../assets/images/lotus.png",
@@ -180,14 +183,6 @@ document.addEventListener('DOMContentLoaded', function () {
             load_labels_initialize_graphs(message.slice(1));
         },
         "Results fetched": (message) => {
-            // createDriversTable(message[1]);
-            // setTimeout(function () {
-            //     loadDriversTable(message.slice(2)); // Llamar a la función después de 1 segundo
-            // }, 20);
-            // createTeamsTable(message[1])
-            // setTimeout(function () {
-            //     loadTeamsTable(message.slice(2)); // Llamar a la función después de 1 segundo
-            // }, 20);
             new_drivers_table(message[1]);
             new_load_drivers_table(message.slice(2));
             new_teams_table(message[1]);
@@ -613,6 +608,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function alphaTauriReplace(info){
         document.querySelector("#alphaTauriReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
+        combined_dict[8] = pretty_names[info]
         document.querySelectorAll(".at-name").forEach(function(elem){
             elem.textContent = names_configs[info]
         })
@@ -631,6 +627,8 @@ document.addEventListener('DOMContentLoaded', function () {
             let alphaVarName = "--alphatauri-primary"
             let newVarName = "--" + info + "-primary"
             change_css_variables(alphaVarName, newVarName)
+            let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
+            colors_dict["80"] = value
         }
         else{
             document.querySelectorAll(".atlogo-replace").forEach(function(elem){
@@ -642,12 +640,15 @@ document.addEventListener('DOMContentLoaded', function () {
             let alphaVarName = "--alphatauri-primary"
             let newVarName = "--alphatauri-original"
             change_css_variables(alphaVarName, newVarName)
+            let value = getComputedStyle(document.documentElement).getPropertyValue("--alphatauri-original").trim();
+            colors_dict["80"] = value
         }
     }
 
     function alpineReplace(info){
         document.querySelector("#alpineReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value = info
+        combined_dict[5] = pretty_names[info]
         document.querySelectorAll(".alpine-name").forEach(function(elem){
             elem.textContent = names_configs[info]
         })
@@ -664,6 +665,8 @@ document.addEventListener('DOMContentLoaded', function () {
             let alpineVarName = "--alpine-primary"
             let newVarName = "--" + info + "-primary"
             change_css_variables(alpineVarName, newVarName)
+            let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
+            colors_dict["50"] = value
         }
         else{
             document.querySelectorAll(".alpinelogo-replace").forEach(function(elem){
@@ -675,12 +678,15 @@ document.addEventListener('DOMContentLoaded', function () {
             let alpineVarName = "--alpine-primary"
             let newVarName = "--alpine-original"
             change_css_variables(alpineVarName, newVarName)
+            let value = getComputedStyle(document.documentElement).getPropertyValue("--alpine-original").trim();
+            colors_dict["50"] = value
         }
     }
     
     function alfaReplace(info){
         document.querySelector("#alfaReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value = info
+        combined_dict[9] = pretty_names[info]
         document.querySelectorAll(".alfa-name").forEach(function(elem){
             elem.textContent = names_configs[info]
         })
@@ -698,6 +704,8 @@ document.addEventListener('DOMContentLoaded', function () {
             let alfaVarName = "--alfa-primary"
             let newVarName = "--" + info + "-primary"
             change_css_variables(alfaVarName, newVarName)
+            let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
+            colors_dict["90"] = value
         }
         else{
             document.querySelectorAll(".alfalogo-replace").forEach(function(elem){
@@ -709,6 +717,8 @@ document.addEventListener('DOMContentLoaded', function () {
             let alfaVarName = "--alfa-primary"
             let newVarName = "--alfa-original"
             change_css_variables(alfaVarName, newVarName)
+            let value = getComputedStyle(document.documentElement).getPropertyValue("--alfa-original").trim();
+            colors_dict["90"] = value
         }
     }
 
