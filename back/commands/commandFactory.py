@@ -24,6 +24,14 @@ from commands.configUpdate import ConfigUpdateCommand
 
 
 class CommandFactory:
+    command_dict = {"connect": ConnectCommand, "saveSelected": SaveSelectedCommand, "requestDriver": RequestDriverCommand, "hire": HireCommand,
+                    "fire": FireCommand, "autoContract": AutoContractCommand, "swap": SwapCommand, "editStats": EditStatsCommand,
+                    "calendar": CalendarCommand, "editContract": EditContractCommand, "editPerformance": EditPerformanceCommand,
+                    "editEngine": EditEngineCommand, "yearSelected": YearSelectedCommand, "yearSelectedH2H": YearSelectedH2HCommand,
+                    "H2HConfigured": H2HConfiguredCommand, "teamRequest": TeamRequestCommand, "editTeam": EditTeamCommand, 
+                    "yearSelectedPrediction": YearSelectedPredictionCommand, "yearSelectedPredictionModal": YearSelectedPredictionModalCommand, 
+                    "predict": PredictCommand, "predictMontecarlo": PredictMontecarloCommand, "unretireDriver": UnretireCommand, 
+                    "configUpdate": ConfigUpdateCommand}
     def __init__(self):
         pass
         
