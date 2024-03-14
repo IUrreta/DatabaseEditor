@@ -836,7 +836,7 @@ a.bi-linkedin:hover {
 .main-columns-drag-section {
   margin-left: 14px;
   margin-right: 5%;
-  border: 1px solid var(--slight-contract);
+  border: 1px solid var(--slight-contrast);
   color: white;
   min-height: 660px;
   max-height: 660px;
