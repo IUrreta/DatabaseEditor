@@ -27,6 +27,12 @@
   --h2h-back-hover: #302a57;
   --active-buttons-back: #5f5a7c;
   --mid-gray-contrast: #63636e;
+  --awaiting-color: #8a8a8a;
+  --mode-line-edit: #fff7b0;
+  --mode-line-ai: #baffea;
+  --mode-line-view: #e8b6ff;
+  --prob-viewer-hover: #625e86;
+  --custom-modal-back: #393744;
 
   --f2-border: #38c8f0;
   --f2-back: #388cd5;
@@ -204,7 +210,7 @@ a.bi-linkedin:hover {
 }
 
 .awaiting {
-  color: #8a8a8a;
+  color: var(--awaiting-color);
 }
 
 
@@ -645,18 +651,18 @@ a.bi-linkedin:hover {
 }
 
 .mode-line.ai{
-  background-color: #baffea;
-  /* box-shadow: 0 0 6px 1px #baffea; */
+  background-color: var(--mode-line-ai);
+  /* box-shadow: 0 0 6px 1px var(--mode-line-ai); */
 }
 
 .mode-line.edit{
-  background-color: #fff7b0;
+  background-color: var(--mode-line-edit);
   /* box-shadow: 0 0 6px 1px #fff7b0; */
 }
 
 .mode-line.view{
-  background-color: #e8b6ff;
-  /* box-shadow: 0 0 6px 1px #e8b6ff; */
+  background-color: var(--mode-line-view);
+  /* box-shadow: 0 0 6px 1px var(--mode-line-view); */
 }
 
 .moving-line{
@@ -930,17 +936,17 @@ a.bi-linkedin:hover {
 
 
 #iaPills .pill-line{
-  background-color: #c7ffee;
+  background-color: var(--mode-line-ai);
 }
 
 
 #dataPills .pill-line{
-  background-color: #e8b6ff;
+  background-color: var(--mode-line-view);
 }
 
 
 #editPills .pill-line{
-  background-color: #fff7b0;
+  background-color: var(--mode-line-edit);
 }
 
 #predict_results{
@@ -1399,7 +1405,7 @@ DRIVERS TABLE
 }
 
 .prob-viewer-row:hover{
-  background-color: #625e86 ;
+  background-color: var(--prob-viewer-hover);
   cursor: pointer;
 }
 
@@ -2232,25 +2238,25 @@ DRIVERS TABLE
 
 .collapse-number {
   color: white;
-  background-color: #393744;
+  background-color: var(--custom-modal-back);
 }
 
 .contract-details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   color: white;
-  background-color: #393744;
+  background-color: var(--custom-modal-back);
 }
 
 .number-and-contract {
   display: flex;
   flex-direction: column;
-  background-color: #393744;
+  background-color: var(--custom-modal-back);
 }
 
 .custom-body {
   color: var( --text-general);
-  background-color: #393744;
+  background-color: var(--custom-modal-back);
 }
 
 .custom-modal {
@@ -2275,7 +2281,7 @@ DRIVERS TABLE
 .custom-header {
   color: white !important;
   border-bottom: 1px solid var( --slight-contrast) !important;
-  background-color: #393744 !important;
+  background-color: var(--custom-modal-back) !important;
   display: flex;
   justify-content: space-around;
 
@@ -2284,7 +2290,7 @@ DRIVERS TABLE
 .custom-footer {
   color: white !important;
   border-top: 1px solid var( --slight-contrast) !important;
-  background-color: #393744 !important;
+  background-color: var(--custom-modal-back) !important;
 
 }
 
