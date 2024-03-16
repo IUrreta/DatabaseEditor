@@ -33,6 +33,8 @@
   --mode-line-view: #e8b6ff;
   --prob-viewer-hover: #625e86;
   --custom-modal-back: #393744;
+  --text-in-front: #eeedf3;
+  --background--buttons-hover: #6f698f;
 
   --f2-border: #38c8f0;
   --f2-back: #388cd5;
@@ -55,18 +57,26 @@
   --porsche-primary: #c50c28;
   --brawn-primary : #d0e610;
   --ferrari-primary: #ff2800;
+  --geneal-secondary: #f1f1f1;
   --mercedes-primary: #6CD3BF;
   --redbull-primary: #3671C6;
+  --redbull-secondary: #ffd300;
   --stake-primary: #01e500;
   --audi-primary: #f50537;
   --sauber-primary: #f50537;
   --aston-primary: #358C75;
+  --aston-secondary: #c3dc00;
   --alfa-original: #C92D4B;
   --alfa-primary: #C92D4B;
+  --alfa-secondary: #f1f1f1;
+  --alphatauri-secondary: #f1f1f1;
   --haas-primary: #B6BABD;
+  --haas-secondary: #f62039;
   --mclaren-primary: #F58020;
+  --mclaren-secondary: #47c7fc;
   --williams-primary: #37BEDD;
   --alpine-primary: #2293D1;
+  --alpine-secondary: #fd48c7;
   --renault-primary: #f7c82f;
 
 
@@ -1640,7 +1650,7 @@ DRIVERS TABLE
 .text-in-front {
   position: absolute;
   z-index: 4;
-  color: #eeedf3;
+  color: var(--text-in-front);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   font-size: 15px;
 }
@@ -2061,7 +2071,7 @@ DRIVERS TABLE
 }
 
 .performance-buttons i:hover{
-  background-color: #6f698f !important;
+  background-color: var(--background--buttons-hover) !important;
   color: white !important;
 }
 
@@ -2879,7 +2889,7 @@ DRIVERS TABLE
 }
 
 .input-buttons i:hover{
-  background-color: #6f698f !important;
+  background-color: var(--background--buttons-hover) !important;
   color: white !important;
 }
 
@@ -3189,7 +3199,7 @@ input::-webkit-inner-spin-button {
 #edit_teams .team-viewer i:hover{
   cursor: pointer;
   color: white !important;
-  background-color: #6f698f !important;
+  background-color: var(--background--buttons-hover) !important;
 }
 
 .q-label{
@@ -3557,7 +3567,7 @@ input::-webkit-inner-spin-button {
 }
 
 .rbbar-secondary {
-  background-color: #ffd300;
+  background-color: var(--redbul-secondary);
 }
 
 .febar-primary {
@@ -3565,7 +3575,7 @@ input::-webkit-inner-spin-button {
 }
 
 .febar-secondary {
-  background-color: #f1f1f1;
+  background-color: var(--general-secondary);
 }
 
 .mebar-primary {
@@ -3573,7 +3583,7 @@ input::-webkit-inner-spin-button {
 }
 
 .mebar-secondary {
-  background-color: #fcfcfc;
+  background-color: var(--general-secondary);
 }
 
 .mcbar-primary {
@@ -3581,7 +3591,7 @@ input::-webkit-inner-spin-button {
 }
 
 .mcbar-secondary {
-  background-color: #47c7fc;
+  background-color: var(--mclaren-secondary);
 }
 
 .albar-primary {
@@ -3589,7 +3599,7 @@ input::-webkit-inner-spin-button {
 }
 
 .albar-secondary {
-  background-color: #fd48c7;
+  background-color: var(--alpine-secondary);
 }
 
 .afbar-primary {
@@ -3597,7 +3607,7 @@ input::-webkit-inner-spin-button {
 }
 
 .afbar-secondary {
-  background-color: #f1f1f1;
+  background-color: var(--alfa-secondary);
 }
 
 .asbar-primary {
@@ -3605,7 +3615,7 @@ input::-webkit-inner-spin-button {
 }
 
 .asbar-secondary {
-  background-color: #c3dc00;
+  background-color: var(--aston-secondary);
 }
 
 .atbar-primary {
@@ -3613,7 +3623,7 @@ input::-webkit-inner-spin-button {
 }
 
 .atbar-secondary {
-  background-color: #f1f1f1;
+  background-color: var(--alphatauri-secondary);
 }
 
 .wibar-primary {
@@ -3621,7 +3631,7 @@ input::-webkit-inner-spin-button {
 }
 
 .wibar-secondary {
-  background-color: #f1f1f1;
+  background-color: var(--general-secondary);
 }
 
 .habar-primary {
@@ -3629,7 +3639,7 @@ input::-webkit-inner-spin-button {
 }
 
 .habar-secondary {
-  background-color: #f62039;
+  background-color: var(--haas-secondary);
 }
 
 .rbborder-primary {
@@ -3637,7 +3647,7 @@ input::-webkit-inner-spin-button {
 }
 
 .rbborder-secondary {
-  border: 2px solid #ffd300;
+  border: 2px solid var(--redbul-secondary);
 }
 
 .feborder-primary {
@@ -3645,7 +3655,7 @@ input::-webkit-inner-spin-button {
 }
 
 .feborder-secondary {
-  border: 2px solid #f1f1f1;
+  border: 2px solid var(--general-secondary);
 }
 
 .meborder-primary {
@@ -3653,7 +3663,7 @@ input::-webkit-inner-spin-button {
 }
 
 .meborder-secondary {
-  border: 2px solid #fcfcfc;
+  border: 2px solid var(--general-secondary);
 }
 
 .mcborder-primary {
@@ -3661,7 +3671,7 @@ input::-webkit-inner-spin-button {
 }
 
 .mcborder-secondary {
-  border: 2px solid #47c7fc;
+  border: 2px solid var(--mclaren-secondary);
 }
 
 .alborder-primary {
@@ -3669,7 +3679,7 @@ input::-webkit-inner-spin-button {
 }
 
 .alborder-secondary {
-  border: 2px solid #fd48c7;
+  border: 2px solid var(--alpine-secondary);
 }
 
 .afborder-primary {
@@ -3677,7 +3687,7 @@ input::-webkit-inner-spin-button {
 }
 
 .afborder-secondary {
-  border: 2px solid #f1f1f1;
+  border: 2px solid var(--alfa-secondary);
 }
 
 .asborder-primary {
@@ -3685,7 +3695,7 @@ input::-webkit-inner-spin-button {
 }
 
 .asborder-secondary {
-  border: 2px solid #c3dc00;
+  border: 2px solid var(--aston-secondary);
 }
 
 .atborder-primary {
@@ -3693,7 +3703,7 @@ input::-webkit-inner-spin-button {
 }
 
 .atborder-secondary {
-  border: 2px solid #f1f1f1;
+  border: 2px solid var(--alphatauri-secondary);
 }
 
 .wiborder-primary {
@@ -3701,7 +3711,7 @@ input::-webkit-inner-spin-button {
 }
 
 .wiborder-secondary {
-  border: 2px solid #f1f1f1;
+  border: 2px solid var(--general-secondary);
 }
 
 .haborder-primary {
@@ -3709,7 +3719,7 @@ input::-webkit-inner-spin-button {
 }
 
 .haborder-secondary {
-  border: 2px solid #f62039;
+  border: 2px solid var(--haas-secondary);
 }
 
 .predict-warning{
