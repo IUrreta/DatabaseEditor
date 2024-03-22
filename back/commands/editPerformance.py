@@ -8,11 +8,10 @@ class EditPerformanceCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        argument = self.message["teamID"] + " " + self.message["performanceArray"]
+        argument = f"{self.message['teamID']} {self.message['performanceArray']}"
         run_editPerformance(argument)
         process_repack("../result", Command.path)
         info = []
-        info.insert(0, "Succesfully edited " + self.message["teamName"] + "'s car performance")
+        info.inser(0, f"Succesfully edited {self.message['teamName']}'s car performance")
         info_json = json.dumps(info)
         await self.send_message_to_client(info_json)
-        argument = "editPerformance " +  self.message["teamID"] + " " + self.message["performanceArray"]

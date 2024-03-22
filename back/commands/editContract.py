@@ -8,10 +8,10 @@ class EditContractCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        argument = "editContract " + self.message["salary"] + " " + self.message["year"] + " " + self.message["signBonus"] + " " + self.message["raceBonus"] + " " + self.message["raceBonusPos"] + " " +  str(self.message["driverID"]) + " " + str(self.message["driverNumber"]) + " " + str(self.message["wantsN1"]) + " " + str(self.message["retirementAge"])
+        argument = f"editContract {self.message['salary']} {self.message['year']} {self.message['signBonus']} {self.message['raceBonus']} {self.message['raceBonusPos']} {self.message['driverID']} {self.message['driverNumber']} {self.message['wantsN1']} {self.message['retirementAge']}"
         run_trasnsfer(argument)
         process_repack("../result", Command.path)
         info = []
-        info.insert(0, "Succesfully edited " + self.message["driver"] + "'s details")
+        info.insert(0, f"Succesfully edited {self.message['driver']}'s details")
         info_json = json.dumps(info)
         await self.send_message_to_client(info_json)

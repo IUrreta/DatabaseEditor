@@ -11,5 +11,4 @@ class YearSelectedCommand(Command):
         results.insert(0, "Results fetched")
         results.append(self.dbutils.fetch_teamsStadings(self.message["year"]))
         data_json_results = json.dumps(results)
-        #argument = json.dumps(message)
         await self.send_message_to_client(data_json_results)

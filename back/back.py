@@ -17,7 +17,7 @@ class ApplicationState:
         # print(command) #for debugging
         await command.execute()
         logtxt = str(message)
-        self.log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + logtxt + "\n")
+        self.log.write(f"[{str(datetime.now())}] INFO: Command executed: {logtxt}\n")
         self.log.flush()
 
 
@@ -34,7 +34,7 @@ async def handle_client(websocket, path, app_state):
             await app_state.new_handler(data, client)
     except Exception as e:
         print(e)
-        app_state.log.write("[" + str(datetime.now()) + "] EXCEPTION:" + str(e) + "\n")
+        app_state.log.write(f"[{str(datetime.now())}] EXCEPTION: {str(e)}\n")
         app_state.log.flush()
         info = []
         info.insert(0, "ERROR")

@@ -15,22 +15,22 @@ class DatabaseUtils:
         return numList
 
     def fetch_teamsStadings(self, year):
-        res = self.cursor.execute("SELECT TeamID, Position FROM Races_TeamStandings WHERE SeasonID = " + str(year) + " AND RaceFormula = 1").fetchall()
+        res = self.cursor.execute(f"SELECT TeamID, Position FROM Races_TeamStandings WHERE SeasonID = {year} AND RaceFormula = 1").fetchall()
         return res
 
     def fetch_driverRetirement(self, driverID):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
-        retirement_age = self.cursor.execute("SELECT RetirementAge FROM Staff_GameData WHERE StaffID = " + str(driverID)).fetchone()
-        dob = self.cursor.execute("SELECT DOB FROM Staff_BasicData WHERE StaffID = " + str(driverID)).fetchone()
+        retirement_age = self.cursor.execute(f"SELECT RetirementAge FROM Staff_GameData WHERE StaffID = {driverID}").fetchone()
+        dob = self.cursor.execute(f"SELECT DOB FROM Staff_BasicData WHERE StaffID = {driverID}").fetchone()
         return [retirement_age[0], math.floor((day_season[0] - dob[0]) /365.25)]
 
 
     def fetchDriverNumberDetails(self, driverID):
-        num = self.cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder =" + str(driverID)).fetchone()
+        num = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driverID}").fetchone()
         if num == None:
             nums = self.cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL").fetchall()
             num = random.choice(nums)
-        wants1 = self.cursor.execute("SELECT WantsChampionDriverNumber FROM Staff_DriverData WHERE StaffID =" + str(driverID)).fetchone()
+        wants1 = self.cursor.execute(f"SELECT WantsChampionDriverNumber FROM Staff_DriverData WHERE StaffID = {driverID}").fetchone()
 
         return[num[0], wants1[0]]
 

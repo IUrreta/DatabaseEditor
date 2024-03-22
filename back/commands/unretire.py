@@ -11,6 +11,6 @@ class UnretireCommand(Command):
         unretire(self.message["driverID"])
         process_repack("../result", Command.path)
         info = []
-        info.insert(0, "Succesfully unretired " + self.message["driver"])
+        info.insert(0, f"Succesfully unretired {self.message['driver']}")
         info_json = json.dumps(info)
         await self.send_message_to_client(info_json)
