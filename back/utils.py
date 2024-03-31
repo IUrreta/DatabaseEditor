@@ -158,7 +158,7 @@ class DatabaseUtils:
                 results_list = list(formatred_results[i])
                 results_list.append(0)
                 formatred_results[i] = tuple(results_list)
-            QStage = self.cursor.execute(f"SELECT MAX(Qualifying) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {races_participated[i][0]} AND SeasonID = {year[0]} AND DriverID = {driverID[0]}").fetchone()
+            QStage = self.cursor.execute(f"SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {races_participated[i][0]} AND SeasonID = {year[0]} AND DriverID = {driverID[0]}").fetchone()
             QRes = self.cursor.execute(f"SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {races_participated[i][0]} AND SeasonID = {year[0]} AND DriverID = {driverID[0]} AND QualifyingStage = {QStage[0]}").fetchone()
             results_list = list(formatred_results[i])
             results_list.append(QRes[0])

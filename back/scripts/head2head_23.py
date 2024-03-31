@@ -1,5 +1,6 @@
 import sqlite3
 import numpy as np
+
 def fetch_Head2Head(driver1ID, driver2ID, year):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()

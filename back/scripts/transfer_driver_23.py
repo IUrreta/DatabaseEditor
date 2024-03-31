@@ -355,8 +355,5 @@ def get_driver_id(name):
 
     return driver_id
 
-def get_description():
-    return "Allows you to transfer driver between teams. Please read the readme before use.  \nAuthor: u/ignaciourreta"
-
 if __name__ == '__main__':
     run_script()
