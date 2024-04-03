@@ -84,7 +84,7 @@ class DatabaseUtils:
         return seasonResults
 
     def fetch_oneTeam_seasonResults(self, team, year):
-        drivers = self.cursor.execute(f"SELECT DISTINCT DriverID DROM Races_Results WHERE Season = {year[0]} AND TeamID = {team[0]}").fetchall()
+        drivers = self.cursor.execute(f"SELECT DISTINCT DriverID FROM Races_Results WHERE Season = {year[0]} AND TeamID = {team[0]}").fetchall()
         results = [self.fetch_oneDriver_seasonResults(driver, year) for driver in drivers]
         return results
 

@@ -31,10 +31,10 @@ def fetch_Head2Head(driver1ID, driver2ID, year):
     d1_QPositions = []
     d2_QPositions = []
     for race in tuple_races:
-        d1_QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
-        d2_QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
-        d1_QRes = cursor.execute("SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0]) + " AND QualifyingStage = " + str(d1_QStage[0])).fetchone()
-        d2_QRes = cursor.execute("SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0]) + " AND QualifyingStage = " + str(d2_QStage[0])).fetchone()
+        d1_QStage = cursor.execute(f"SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND SeasonID = {year[0]} AND DriverID = {driver1ID[0]}").fetchone()
+        d2_QStage = cursor.execute(f"SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND SeasonID = {year[0]} AND DriverID = {driver2ID[0]}").fetchone()
+        d1_QRes = cursor.execute(f"SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND SeasonID = {year[0]} AND DriverID = {driver1ID[0]} AND QualifyingStage = {d1_QStage[0]}").fetchone()
+        d2_QRes = cursor.execute(f"SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND SeasonID = {year[0]} AND DriverID = {driver2ID[0]} AND QualifyingStage = {d2_QStage[0]}").fetchone()
         if(d1_QStage[0] < d2_QStage[0]):
             qualiH2H[1]+= 1
         elif(d1_QStage[0] > d2_QStage[0]):
@@ -47,8 +47,9 @@ def fetch_Head2Head(driver1ID, driver2ID, year):
         d1_QPositions.append(d1_QRes[0])
         d2_QPositions.append(d2_QRes[0])
         minQ = d1_QStage[0] if d1_QStage[0] <= d2_QStage[0] else d2_QStage[0]
-        d1_qLap = cursor.execute("SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0]) + " AND QualifyingStage = " + str(minQ)).fetchone()
-        d2_qLap = cursor.execute("SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0]) + " AND QualifyingStage = " + str(minQ)).fetchone()
+        d1_qLap = cursor.execute(f"SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND SeasonID = {year[0]} AND DriverID = {driver1ID[0]} AND QualifyingStage = {minQ}").fetchone()
+        d2_qLap = cursor.execute(f"SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND SeasonID = {year[0]} AND DriverID = {driver2ID[0]} AND QualifyingStage = {minQ}").fetchone()
+
         if(d1_qLap[0] != 0) and (d2_qLap[0] != 0):
             d1_avgQPace.append(d1_qLap[0])
             d2_avgQPace.append(d2_qLap[0])
@@ -60,8 +61,8 @@ def fetch_Head2Head(driver1ID, driver2ID, year):
             d1_BestQauli = d1_QRes[0]
         if(d2_QRes[0] < d2_BestQauli):
             d2_BestQauli = d2_QRes[0]
-        d1_RRes = cursor.execute("SELECT FinishingPos FROM Races_Results  WHERE RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
-        d2_RRes = cursor.execute("SELECT FinishingPos FROM Races_Results  WHERE RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
+        d1_RRes = cursor.execute(f"SELECT FinishingPos FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID = {driver1ID[0]}").fetchone()
+        d2_RRes = cursor.execute(f"SELECT FinishingPos FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID = {driver2ID[0]}").fetchone()
         if(d1_RRes[0] == 1):
             winsH2H[0] += 1
         if(d2_RRes[0] == 1):
@@ -80,29 +81,35 @@ def fetch_Head2Head(driver1ID, driver2ID, year):
             d2_BestRace = d2_RRes[0]
         d1_RPositions.append(d1_RRes[0])
         d2_RPositions.append(d2_RRes[0])
-        d1_RDNF = cursor.execute("SELECT DNF FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
-        d2_RDNF = cursor.execute("SELECT DNF FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
-        if(d1_RDNF[0] == 1):
+        d1_RDNF = cursor.execute(f"SELECT DNF FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID = {driver1ID[0]}").fetchone()
+        d2_RDNF = cursor.execute(f"SELECT DNF FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID = {driver2ID[0]}").fetchone()
+
+        if d1_RDNF[0] == 1:
             dnfH2H[0] += 1
-        if(d2_RDNF[0] == 1):
+        if d2_RDNF[0] == 1:
             dnfH2H[1] += 1  
-        if (d1_RDNF[0] != 1) and (d2_RDNF[0] != 1):
-            d1_raceTotal = cursor.execute("SELECT Time FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
-            d2_raceTotal = cursor.execute("SELECT Time FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
-            d1_raceLaps = cursor.execute("SELECT Laps FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
-            d2_raceLaps = cursor.execute("SELECT Laps FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
+
+        if d1_RDNF[0] != 1 and d2_RDNF[0] != 1:
+            d1_raceTotal = cursor.execute(f"SELECT Time FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID = {driver1ID[0]}").fetchone()
+            d2_raceTotal = cursor.execute(f"SELECT Time FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID = {driver2ID[0]}").fetchone()
+            d1_raceLaps = cursor.execute(f"SELECT Laps FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID = {driver1ID[0]}").fetchone()
+            d2_raceLaps = cursor.execute(f"SELECT Laps FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID = {driver2ID[0]}").fetchone()
             d1_avgPace.append(round(d1_raceTotal[0] / d1_raceLaps[0], 3))
             d2_avgPace.append(round(d2_raceTotal[0] / d2_raceLaps[0], 3))
-        d1_SRes = cursor.execute("SELECT FinishingPos FROM Races_Sprintresults  WHERE RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
-        d2_SRes = cursor.execute("SELECT FinishingPos FROM Races_Sprintresults  WHERE RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
-        if(d1_SRes != None):
-            if(d1_SRes[0] == 1):
+
+        d1_SRes = cursor.execute(f"SELECT FinishingPos FROM Races_Sprintresults WHERE RaceID = {race} AND SeasonID = {year[0]} AND DriverID = {driver1ID[0]}").fetchone()
+        d2_SRes = cursor.execute(f"SELECT FinishingPos FROM Races_Sprintresults WHERE RaceID = {race} AND SeasonID = {year[0]} AND DriverID = {driver2ID[0]}").fetchone()
+
+        if d1_SRes != None:
+            if d1_SRes[0] == 1:
                 sprintWinsH2H[0] += 1
-        if(d2_SRes != None):
-            if(d2_SRes[0] == 1):
+        if d2_SRes != None:
+            if d2_SRes[0] == 1:
                 sprintWinsH2H[1] += 1
-    d1_Pts = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND  SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver1ID[0])).fetchone()
-    d2_Pts = cursor.execute("SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND  SeasonID = " + str(year[0]) + " AND DriverID = " + str(driver2ID[0])).fetchone()
+
+        d1_Pts = cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = {year[0]} AND DriverID = {driver1ID[0]}").fetchone()
+        d2_Pts = cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = {year[0]} AND DriverID = {driver2ID[0]}").fetchone()
+
     pointsH2H[0] = d1_Pts[0]
     pointsH2H[1] = d2_Pts[0]
     bestRace[0] = d1_BestRace
@@ -132,7 +139,7 @@ def fetch_Head2Head(driver1ID, driver2ID, year):
 def fetch_Head2Head_team(teamID1, teamID2, year):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
-    races = cursor.execute("SELECT DISTINCT RaceID FROM Races_Results WHERE Season = "  + str(year[0])).fetchall()
+    races = cursor.execute(f"SELECT DISTINCT RaceID FROM Races_Results WHERE Season = {year[0]}").fetchall()
     raceH2H = [0,0]
     qualiH2H = [0,0]
     dnfH2H = [0,0]
@@ -153,14 +160,21 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
     d2_avgQPace = []
     for gp in races:
         race = gp[0]
-        drivers1 = cursor.execute("SELECT DISTINCT DriverID FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = " + str(race) + " AND TeamID = " + str(teamID1[0])).fetchall()
-        drivers2 = cursor.execute("SELECT DISTINCT DriverID FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = " + str(race) + " AND TeamID = " + str(teamID2[0])).fetchall()
+        drivers1 = cursor.execute(f"SELECT DISTINCT DriverID FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND TeamID = {teamID1[0]}").fetchall()
+        drivers2 = cursor.execute(f"SELECT DISTINCT DriverID FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND TeamID = {teamID2[0]}").fetchall()
+
+        # Convertir listas de tuples a tuples de valores para usar en SQL
         drivers1 = tuple(i[0] for i in drivers1)
         drivers2 = tuple(i[0] for i in drivers2)
-        d1_QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers1)).fetchone()
-        d2_QStage = cursor.execute("SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers2)).fetchone()
-        d1_QRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers1) + " AND QualifyingStage = " + str(d1_QStage[0])).fetchone()
-        d2_QRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers2) + " AND QualifyingStage = " + str(d2_QStage[0])).fetchone()
+        drivers1_str = ','.join(str(i) for i in drivers1)
+        drivers2_str = ','.join(str(i) for i in drivers2)
+
+        d1_QStage = cursor.execute(f"SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND SeasonID = {year[0]} AND DriverID IN ({drivers1_str})").fetchone()
+        d2_QStage = cursor.execute(f"SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND SeasonID = {year[0]} AND DriverID IN ({drivers2_str})").fetchone()
+
+        d1_QRes = cursor.execute(f"SELECT MIN(FinishingPos) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND SeasonID = {year[0]} AND DriverID IN ({drivers1_str}) AND QualifyingStage = {d1_QStage[0]}").fetchone()
+        d2_QRes = cursor.execute(f"SELECT MIN(FinishingPos) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND SeasonID = {year[0]} AND DriverID IN ({drivers2_str}) AND QualifyingStage = {d2_QStage[0]}").fetchone()
+
         if(d1_QStage[0] < d2_QStage[0]):
             qualiH2H[1]+= 1
         elif(d1_QStage[0] > d2_QStage[0]):
@@ -171,8 +185,8 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
             elif(d1_QRes[0] > d2_QRes[0]):
                 qualiH2H[1]+= 1
         minQ = d1_QStage[0] if d1_QStage[0] <= d2_QStage[0] else d2_QStage[0]
-        d1_qLap = cursor.execute("SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers1) + " AND QualifyingStage = " + str(minQ)).fetchone()
-        d2_qLap = cursor.execute("SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers2) + " AND QualifyingStage = " + str(minQ)).fetchone()
+        d1_qLap = cursor.execute(f"SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND SeasonID = {year[0]} AND DriverID IN ({drivers1_str}) AND QualifyingStage = {minQ}").fetchone()
+        d2_qLap = cursor.execute(f"SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {race} AND SeasonID = {year[0]} AND DriverID IN ({drivers2_str}) AND QualifyingStage = {minQ}").fetchone()
         if(d1_qLap[0] != 0) and (d2_qLap[0] != 0):
             d1_avgQPace.append(d1_qLap[0])
             d2_avgQPace.append(d2_qLap[0])        
@@ -184,8 +198,8 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
             d1_BestQauli = d1_QRes[0]
         if(d2_QRes[0] < d2_BestQauli):
             d2_BestQauli = d2_QRes[0]
-        d1_RRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Results  WHERE RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers1)).fetchone()
-        d2_RRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Results  WHERE RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers2)).fetchone()
+        d1_RRes = cursor.execute(f"SELECT MIN(FinishingPos) FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID IN ({drivers1_str})").fetchone()
+        d2_RRes = cursor.execute(f"SELECT MIN(FinishingPos) FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID IN ({drivers2_str})").fetchone()
         if(d1_RRes[0] == 1):
             winsH2H[0] += 1
         if(d2_RRes[0] == 1):
@@ -202,29 +216,36 @@ def fetch_Head2Head_team(teamID1, teamID2, year):
             d1_BestRace = d1_RRes[0]
         if(d2_RRes[0] < d2_BestRace):
             d2_BestRace = d2_RRes[0]
-        d1_RDNF = cursor.execute("SELECT SUM(DNF) FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers1)).fetchone()
-        d2_RDNF = cursor.execute("SELECT SUM(DNF) FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers2)).fetchone()
-        if(d1_RDNF[0] > 0):
+        d1_RDNF = cursor.execute(f"SELECT SUM(DNF) FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID IN ({drivers1_str})").fetchone()
+        d2_RDNF = cursor.execute(f"SELECT SUM(DNF) FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID IN ({drivers2_str})").fetchone()
+
+        if d1_RDNF[0] > 0:
             dnfH2H[0] += d1_RDNF[0]
-        if(d2_RDNF[0] > 0):
+        if d2_RDNF[0] > 0:
             dnfH2H[1] += d2_RDNF[0]
-        if (d1_RDNF[0] == 0) and (d2_RDNF[0] == 0):
-            d1_raceTotal = cursor.execute("SELECT AVG(Time) FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers1)).fetchone()
-            d2_raceTotal = cursor.execute("SELECT AVG(Time) FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers2)).fetchone()
-            d1_raceLaps = cursor.execute("SELECT AVG(Laps) FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers1)).fetchone()
-            d2_raceLaps = cursor.execute("SELECT AVG(Laps) FROM Races_Results WHERE  RaceID =" + str(race) + " AND Season = " + str(year[0]) + " AND DriverID IN " + str(drivers2)).fetchone()
-            d1_avgPace.append(round(d1_raceTotal[0] / d1_raceLaps[0], 3))
-            d2_avgPace.append(round(d2_raceTotal[0] / d2_raceLaps[0], 3))
-        d1_SRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Sprintresults  WHERE RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers1)).fetchone()
-        d2_SRes = cursor.execute("SELECT MIN(FinishingPos) FROM Races_Sprintresults  WHERE RaceID =" + str(race) + " AND SeasonID = " + str(year[0]) + " AND DriverID IN " + str(drivers2)).fetchone()
-        if(d1_SRes != None):
-            if(d1_SRes[0] == 1):
-                sprintWinsH2H[0] += 1
-        if(d2_SRes != None):
-            if(d2_SRes[0] == 1):
-                sprintWinsH2H[1] += 1
-    d1_Pts = cursor.execute("SELECT Points FROM Races_TeamStandings WHERE RaceFormula = 1 AND  SeasonID = " + str(year[0]) + " AND TeamID = " + str(teamID1[0])).fetchone()
-    d2_Pts = cursor.execute("SELECT Points FROM Races_TeamStandings WHERE RaceFormula = 1 AND  SeasonID = " + str(year[0]) + " AND TeamID = " + str(teamID2[0])).fetchone()
+
+        if d1_RDNF[0] == 0 and d2_RDNF[0] == 0:
+            d1_raceTotal = cursor.execute(f"SELECT AVG(Time) FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID IN ({drivers1_str})").fetchone()
+            d2_raceTotal = cursor.execute(f"SELECT AVG(Time) FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID IN ({drivers2_str})").fetchone()
+            d1_raceLaps = cursor.execute(f"SELECT AVG(Laps) FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID IN ({drivers1_str})").fetchone()
+            d2_raceLaps = cursor.execute(f"SELECT AVG(Laps) FROM Races_Results WHERE RaceID = {race} AND Season = {year[0]} AND DriverID IN ({drivers2_str})").fetchone()
+            
+            # Asegurándose de no dividir por cero
+            if d1_raceLaps[0] and d1_raceTotal[0]:
+                d1_avgPace.append(round(d1_raceTotal[0] / d1_raceLaps[0], 3))
+            if d2_raceLaps[0] and d2_raceTotal[0]:
+                d2_avgPace.append(round(d2_raceTotal[0] / d2_raceLaps[0], 3))
+
+        d1_SRes = cursor.execute(f"SELECT MIN(FinishingPos) FROM Races_Sprintresults WHERE RaceID = {race} AND SeasonID = {year[0]} AND DriverID IN ({drivers1_str})").fetchone()
+        d2_SRes = cursor.execute(f"SELECT MIN(FinishingPos) FROM Races_Sprintresults WHERE RaceID = {race} AND SeasonID = {year[0]} AND DriverID IN ({drivers2_str})").fetchone()
+
+        if d1_SRes and d1_SRes[0] == 1:
+            sprintWinsH2H[0] += 1
+        if d2_SRes and d2_SRes[0] == 1:
+            sprintWinsH2H[1] += 1
+
+        d1_Pts = cursor.execute(f"SELECT Points FROM Races_TeamStandings WHERE RaceFormula = 1 AND SeasonID = {year[0]} AND TeamID = {teamID1[0]}").fetchone()
+        d2_Pts = cursor.execute(f"SELECT Points FROM Races_TeamStandings WHERE RaceFormula = 1 AND SeasonID = {year[0]} AND TeamID = {teamID2[0]}").fetchone()
     pointsH2H[0] = d1_Pts[0]
     pointsH2H[0] = d1_Pts[0]
     pointsH2H[1] = d2_Pts[0]
