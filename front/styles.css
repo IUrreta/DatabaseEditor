@@ -749,6 +749,7 @@ a.bi-linkedin:hover {
 
 .bi-gear.hidden{
   opacity: 0;
+  pointer-events: none;
 }
 
 .bi-gear:hover{
@@ -991,10 +992,6 @@ a.bi-linkedin:hover {
   width: 1670px;
   height: 660px;
   max-height: 660px;
-}
-
-.drivers-table, .teams-table{
-  width: 1670px;
 }
 
 /*

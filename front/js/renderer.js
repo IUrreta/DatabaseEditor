@@ -580,7 +580,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function manage_config(info){
         if (info[0] === "ERROR"){
             document.querySelector(".bi-gear").classList.add("hidden")
-            //show modal with id configModal
             let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
                 keyboard: false
             })
