@@ -34,7 +34,7 @@ let alpineReplace = "alpine"
 let alfaReplace = "alfa"
 
 let driversTableLogosDict = {
-    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-up-down", "sauber":"logo-williams-table", "visarb": "logo-up-down", "hugo": "logo-stake-table",
+    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-williams-table", "sauber":"logo-williams-table", "visarb": "logo-up-down", "hugo": "logo-stake-table",
     "brawn": "logo-brawn-table", "toyota": "logo-williams-table", "alphatauri": "logo-extra-small", "porsche": "logo-porsche-table",
      "renault": "logo-ferrari-table", "andretti": "logo-ferrari-table", "lotus": "logo-up-down", "alpine": "logo-up-down"
 }
