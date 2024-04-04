@@ -114,14 +114,7 @@ body {
   overflow-x: hidden;
 }
 
-body::-webkit-scrollbar {
-  width: 6px;
-}
 
-body::-webkit-scrollbar-thumb {
-  background-color: white;
-  border-radius: 6px;
-}
 
 .font {
   font-family: 'Formula1';
@@ -149,6 +142,19 @@ body::-webkit-scrollbar-thumb {
   flex-direction: row;
   justify-content: space-between;
   max-height: 35px;
+}
+
+.scroll-wrapper{
+  overflow-y: auto;
+}
+
+.scroll-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-wrapper::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 6px;
 }
 
 .socials a,
@@ -505,10 +511,6 @@ a.bi-linkedin:hover {
 
 }
 
-.cet-container{
-  height: 1700px;
-}
-
 .patchNotesPanel {
   position: fixed;
   top: 70px;
@@ -708,7 +710,7 @@ a.bi-linkedin:hover {
 .main-panel {
   display: flex;
   position: relative;
-  min-height: 78vh;
+  height: 100%;
 }
 
 .script-view {

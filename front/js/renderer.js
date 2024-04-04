@@ -218,6 +218,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let scriptSelected = 0;
     let divBlocking = 1;
 
+    adjust_containter()
+
     document.querySelectorAll(".modal").forEach(function (elem) {
         elem.addEventListener('show.bs.modal', function () {
             setTimeout(function () {
@@ -277,6 +279,26 @@ document.addEventListener('DOMContentLoaded', function () {
             status.textContent = '\xa0' + "Disconnected"
         }
     }
+
+    /**
+     * Manages the height of the main container
+     */
+    function adjust_containter(){
+        setTimeout(function(){
+            document.querySelector(".cet-container").style.position = "relative"
+            document.querySelector(".cet-container").style.overflowX = "hidden"
+        }, 0)
+    }
+
+    function ajustScrollWrapper() {
+        var windowHeight = window.innerHeight - 265;
+        console.log(windowHeight)
+        document.querySelector('.scroll-wrapper').style.height = windowHeight + 'px';
+      }
+
+    window.addEventListener('resize', ajustScrollWrapper);
+    window.addEventListener('load', ajustScrollWrapper);
+
 
     /**
      * Checks with the github api if there is a newer version of the tool
