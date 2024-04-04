@@ -605,6 +605,7 @@ document.addEventListener('DOMContentLoaded', function () {
         update_logo("alphatauri", logos_configs[info["alphatauri"]], info["alphatauri"])
     }
 
+
     function alphaTauriReplace(info){
         document.querySelector("#alphaTauriReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
@@ -629,6 +630,12 @@ document.addEventListener('DOMContentLoaded', function () {
             change_css_variables(alphaVarName, newVarName)
             let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
             colors_dict["80"] = value
+            alphaVarName = "--alphatauri-secondary"
+            newVarName = "--" + info + "-secondary"
+            change_css_variables(alphaVarName, newVarName)
+            value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
+            colors_dict["81"] = value
+
         }
         else{
             document.querySelectorAll(".atlogo-replace").forEach(function(elem){
@@ -642,6 +649,11 @@ document.addEventListener('DOMContentLoaded', function () {
             change_css_variables(alphaVarName, newVarName)
             let value = getComputedStyle(document.documentElement).getPropertyValue("--alphatauri-original").trim();
             colors_dict["80"] = value
+            alphaVarName = "--alphatauri-secondary"
+            newVarName = "--alphatauri-secondary-original"
+            change_css_variables(alphaVarName, newVarName)
+            value = getComputedStyle(document.documentElement).getPropertyValue("--alphatauri-secondary-original").trim();
+            colors_dict["81"] = value
         }
     }
 
@@ -667,6 +679,11 @@ document.addEventListener('DOMContentLoaded', function () {
             change_css_variables(alpineVarName, newVarName)
             let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
             colors_dict["50"] = value
+            alpineVarName = "--alpine-secondary"
+            newVarName = "--" + info + "-secondary"
+            change_css_variables(alpineVarName, newVarName)
+            value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
+            colors_dict["51"] = value
         }
         else{
             document.querySelectorAll(".alpinelogo-replace").forEach(function(elem){
@@ -680,6 +697,11 @@ document.addEventListener('DOMContentLoaded', function () {
             change_css_variables(alpineVarName, newVarName)
             let value = getComputedStyle(document.documentElement).getPropertyValue("--alpine-original").trim();
             colors_dict["50"] = value
+            alpineVarName = "--alpine-secondary"
+            newVarName = "--alpine-secondary-original"
+            change_css_variables(alpineVarName, newVarName)
+            value = getComputedStyle(document.documentElement).getPropertyValue("--alpine-secondary-original").trim();
+            colors_dict["51"] = value
         }
     }
     
@@ -706,6 +728,11 @@ document.addEventListener('DOMContentLoaded', function () {
             change_css_variables(alfaVarName, newVarName)
             let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
             colors_dict["90"] = value
+            alfaVarName = "--alfa-secondary"
+            newVarName = "--" + info + "-secondary"
+            change_css_variables(alfaVarName, newVarName)
+            value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
+            colors_dict["91"] = value
         }
         else{
             document.querySelectorAll(".alfalogo-replace").forEach(function(elem){
@@ -719,6 +746,11 @@ document.addEventListener('DOMContentLoaded', function () {
             change_css_variables(alfaVarName, newVarName)
             let value = getComputedStyle(document.documentElement).getPropertyValue("--alfa-original").trim();
             colors_dict["90"] = value
+            alfaVarName = "--alfa-secondary"
+            newVarName = "--alfa-secondary-original"
+            change_css_variables(alfaVarName, newVarName)
+            value = getComputedStyle(document.documentElement).getPropertyValue("--alfa-secondary-original").trim();
+            colors_dict["91"] = value
         }
     }
 
