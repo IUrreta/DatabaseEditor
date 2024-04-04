@@ -11,13 +11,15 @@ def run_script(option=""):
 
     if(params[0] == "fire"):
         driver_id = (params[1],)
-        position = cursor.execute("SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = " + str(driver_id[0])).fetchone()
-        cursor.execute("DELETE FROM Staff_Contracts WHERE StaffID = " + str(driver_id[0]))     #deletes the driver you're replacing current contract
+        position = cursor.execute(f"SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = {driver_id[0]}").fetchone()
+        cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driver_id[0]}")
+    #deletes the driver you're replacing current contract
         if(position[0] != 3):
-            cursor.execute("UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = " + str(driver_id[0]))        #takes him out of his car
-            engineer_id = cursor.execute("SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = " + str(driver_id[0])).fetchone()
-            if(engineer_id != None):
-                cursor.execute("UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = " + str(engineer_id[0]) + " AND DriverID = " + str(driver_id[0]))
+            cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = {driver_id[0]}")  # takes him out of his car
+        engineer_id = cursor.execute(f"SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = {driver_id[0]}").fetchone()
+        if engineer_id is not None:
+            cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = {engineer_id[0]} AND DriverID = {driver_id[0]}")
+
     elif(params[0] == "hire"):
 
         driver_id = (params[1],)
@@ -62,7 +64,7 @@ def run_script(option=""):
                 starting_bonus = str(0)
                 race_bonus = str(0)
                 has_bonus = False
-            driver_birth_date = cursor.execute("SELECT DOB_ISO FROM Staff_BasicData WHERE StaffID = " + str(driver_id[0])).fetchone()
+            driver_birth_date = cursor.execute(f"SELECT DOB_ISO FROM Staff_BasicData WHERE StaffID = {driver_id[0]}").fetchone()
             yob = driver_birth_date[0].split("-")[0]
             if(year[0] - int(yob) > 34):
                 year_end = str(random.randint(1, 2) + year[0])
@@ -70,7 +72,7 @@ def run_script(option=""):
             #print(tier)
             
             if(has_bonus):
-                prestige_values = cursor.execute("SELECT PtsFromConstructorResults, PtsFromDriverResults, PtsFromSeasonsEntered, PtsFromChampionshipsWon FROM Board_Prestige WHERE SeasonID = " + str(year[0]) +  " AND TeamID = " + str(new_team_id)).fetchall()
+                prestige_values = cursor.execute(f"SELECT PtsFromConstructorResults, PtsFromDriverResults, PtsFromSeasonsEntered, PtsFromChampionshipsWon FROM Board_Prestige WHERE SeasonID = {year[0]} AND TeamID = {new_team_id}").fetchall()
                 prestige = 0
                 for i in range(len(prestige_values)):
                     prestige += prestige_values[i][0]
@@ -89,9 +91,9 @@ def run_script(option=""):
             else: race_bonus_pos = str(1) 
             
             if(len(params) != 4):
-                number_1s_team = len(cursor.execute("SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_BasicData com ON con.StaffID = com.StaffID  WHERE con.ContractType = 0 AND con.TeamID = " + str(new_team_id) + " AND con.PosInTeam = 1").fetchall())
-                number_2s_team = len(cursor.execute("SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_BasicData com ON con.StaffID = com.StaffID  WHERE con.ContractType = 0 AND con.TeamID = " + str(new_team_id) + " AND con.PosInTeam = 2").fetchall())
-                number_3s_team = len(cursor.execute("SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_BasicData com ON con.StaffID = com.StaffID  WHERE con.ContractType = 0 AND con.TeamID = " + str(new_team_id) + " AND con.PosInTeam = 3").fetchall())
+                number_1s_team = len(cursor.execute(f"SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_BasicData com ON con.StaffID = com.StaffID WHERE con.ContractType = 0 AND con.TeamID = {new_team_id} AND con.PosInTeam = 1").fetchall())
+                number_2s_team = len(cursor.execute(f"SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_BasicData com ON con.StaffID = com.StaffID WHERE con.ContractType = 0 AND con.TeamID = {new_team_id} AND con.PosInTeam = 2").fetchall())
+                number_3s_team = len(cursor.execute(f"SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_BasicData com ON con.StaffID = com.StaffID WHERE con.ContractType = 0 AND con.TeamID = {new_team_id} AND con.PosInTeam = 3").fetchall())
                 if(number_1s_team != 1): car_in_team = 1
                 elif(number_2s_team != 1): car_in_team = 2
                 elif(number_3s_team != 1): car_in_team = 3
