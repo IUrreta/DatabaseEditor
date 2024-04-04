@@ -14,6 +14,7 @@
   --tools-general: #18152e;
   --component-general: #3f3c57;
   --component-general-hover: #4e4b69;
+  --component-general-hover-extra: #5d5a7c;
   --overall-holder: #21202e;
   --dropdown-back-general: #8b87af;
   --active-general: #1a1826;
@@ -2750,7 +2751,8 @@ DRIVERS TABLE
 .modal-driver:hover, .modal-team:hover{
   border-color: white;
   color: white;
-  background-color: var(--component-general-hover);
+  background-color: var(--component-general-hover-extra);
+  cursor: default;
 }
 
 .modal-team.ferrari:hover{

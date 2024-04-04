@@ -43,7 +43,7 @@ class SaveSelectedCommand(Command):
         backup_path = "./../backup"
         if not os.path.exists(backup_path):
             os.makedirs(backup_path)
-        new_file = backup_path + "/" + saveFile
+        new_file = f"{backup_path}/{saveFile}"
         shutil.copy(originalFIle, new_file)
     
     async def check_for_configs(self, saveName):

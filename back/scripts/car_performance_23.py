@@ -49,7 +49,6 @@ def run_script(option=""):
                 new_value = old_value + delta
                 new_valueUnit = old_valueUnit + decimal.Decimal(deltaUnit)
                 cursor.execute(f"UPDATE Parts_Designs_StatValues SET Value = {new_value}, UnitValue = {new_valueUnit} WHERE DesignID = {design} AND PartStat = {k}")
-                #print("Old value for stat " + str(k) + " from design " + str(design) + ": [" + str(old_value) + ", " + str(old_valueUnit) + "], new values: [" + str(new_value) + ", " + str(new_valueUnit) + "]")
                 if(doneExp < len(listStats)):
                     expertise_value = cursor.execute(f"SELECT Expertise FROM Parts_TeamExpertise WHERE PartType = {partsType[i]} AND PartStat = {k} AND TeamID = {team_id}").fetchone()
                     if expertise_value is None:
@@ -63,7 +62,6 @@ def run_script(option=""):
                         old_expertise = round(decimal.Decimal(expertise_value[0]), 10)
                         new_expertise = old_expertise + expertiseDelta
                         cursor.execute(f"UPDATE Parts_TeamExpertise SET Expertise = {new_expertise} WHERE PartType = {partsType[i]} AND PartStat = {k} AND TeamID = {team_id}")
-                        #print("Old Expertise: " + str(old_expertise) + ", new expertise: " + str(new_expertise))   
                         doneExp += 1
    
     conn.commit()

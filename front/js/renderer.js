@@ -643,7 +643,13 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
         combined_dict[8] = pretty_names[info]
         document.querySelectorAll(".at-name").forEach(function(elem){
-            elem.textContent = names_configs[info]
+            //if it has the class complete, put names_configs[info], else out VCARB
+            if (elem.classList.contains("complete")){
+                elem.textContent = names_configs[info]
+            }
+            else{
+                elem.textContent = "VCARB"
+            }
         })
         if (info !== "alphatauri"){
             document.querySelectorAll(".atlogo-replace").forEach(function(elem){
