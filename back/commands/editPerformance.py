@@ -12,6 +12,6 @@ class EditPerformanceCommand(Command):
         run_editPerformance(argument)
         process_repack("../result", Command.path)
         info = []
-        info.inser(0, f"Succesfully edited {self.message['teamName']}'s car performance")
+        info.insert(0, f"Succesfully edited {self.team_replace_dict[self.message['teamName']]}'s car performance")
         info_json = json.dumps(info)
         await self.send_message_to_client(info_json)

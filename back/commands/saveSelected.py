@@ -58,6 +58,9 @@ class SaveSelectedCommand(Command):
             with open(file_path, "r") as file:
                 data = file.read()
                 data = json.loads(data)
+                self.replace_team("Alpha Tauri", data["teams"]["alphatauri"])
+                self.replace_team("Alpine", data["teams"]["alpine"])
+                self.replace_team("Alfa Romeo", data["teams"]["alfa"])
                 msgData = data
                 info = ["Config", msgData]
                 info = json.dumps(info)

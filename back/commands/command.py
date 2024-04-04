@@ -1,4 +1,13 @@
 class Command:
+
+    team_replace_dict = {"Alpha Tauri": "Alpha Tauri", "Alpine": "Alpine", "Alfa Romeo": "Alfa Romeo", "Aston Martin": "Aston Martin",
+                        "Ferrari": "Ferrari", "Haas": "Haas", "McLaren": "McLaren", "Mercedes": "Mercedes",
+                        "Red Bull": "Red Bull", "Williams": "Williams"}
+    
+    pretty_names = {"visarb": "Visa Cashapp RB", "toyota" : "Toyota", "hugo": "Hugo Boss", "alphatauri": "Alpha Tauri", "brawn": "Brawn GP", "porsche": "Porsche",
+                        "alpine": "Alpine", "renault": "Renault", "andretti": "Andretti", "lotus": "Lotus", "alfa" : "Alfa Romeo",
+                    "audi" : "Audi", "sauber" : "Sauber", "stake" : "Stake Sauber"}
+
     dbutils = None
     path = None
 
@@ -14,3 +23,6 @@ class Command:
         print(message)
         if self.client:
             await self.client.send(message)
+
+    def replace_team(self, original_team, new_team):
+        self.team_replace_dict[original_team] = self.pretty_names[new_team]

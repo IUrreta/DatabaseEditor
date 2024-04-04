@@ -4,6 +4,7 @@ from commands.command import Command
 
 
 class ConfigUpdateCommand(Command):
+
     def __init__(self, message, client):
         super().__init__(message, client)
 
@@ -41,3 +42,6 @@ class ConfigUpdateCommand(Command):
             
             with open(file_path, "w") as json_file:
                 json.dump(existing_data, json_file, indent=4)
+        self.replace_team("Alpha Tauri", self.message["alphatauri"])
+        self.replace_team("Alpine", self.message["alpine"])
+        self.replace_team("Alfa Romeo", self.message["alfa"])

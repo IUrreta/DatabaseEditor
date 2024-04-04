@@ -33,6 +33,7 @@ class CommandFactory:
                     "predict": PredictCommand, "predictMontecarlo": PredictMontecarloCommand, "unretireDriver": UnretireCommand, 
                     "configUpdate": ConfigUpdateCommand}
     
+
     def __init__(self):
         pass
         
