@@ -57,7 +57,7 @@
   --porsche-primary: #c50c28;
   --brawn-primary : #d0e610;
   --ferrari-primary: #ff2800;
-  --geneal-secondary: #f1f1f1;
+  --general-secondary: #f1f1f1;
   --mercedes-primary: #6CD3BF;
   --redbull-primary: #3671C6;
   --redbull-secondary: #ffd300;
@@ -2991,6 +2991,7 @@ input::-webkit-inner-spin-button {
 .logo-and-name {
   display: flex;
   flex-direction: row;
+  max-height: 46px;
 }
 
 .logo-and-title {
@@ -3565,7 +3566,7 @@ input::-webkit-inner-spin-button {
 }
 
 .rbbar-secondary {
-  background-color: var(--redbul-secondary);
+  background-color: var(--redbull-secondary);
 }
 
 .febar-primary {
@@ -3645,7 +3646,7 @@ input::-webkit-inner-spin-button {
 }
 
 .rbborder-secondary {
-  border: 2px solid var(--redbul-secondary);
+  border: 2px solid var(--redbull-secondary);
 }
 
 .feborder-primary {

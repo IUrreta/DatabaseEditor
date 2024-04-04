@@ -21,58 +21,49 @@ class PredictorUtils:
 
 
     def collect_one_driver_inputs(self, driverID):
-        stats = self.cursor.execute("SELECT Val FROM Staff_PerformanceStats WHERE StaffID = ?", (driverID,)).fetchall()
+        stats = self.cursor.execute(f"SELECT Val FROM Staff_PerformanceStats WHERE StaffID = {driverID}").fetchall()
         formated = tuple(i[0] for i in stats)
         return formated
 
 
     def last_3_races(self):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
-        races = self.cursor.execute("SELECT DISTINCT RaceID FRom Races_Results Where Season = " + str(day_season[1]) + " ORDER BY RaceID DESC").fetchall()
+        races = self.cursor.execute(f"SELECT DISTINCT RaceID FROM Races_Results WHERE Season = {day_season[1]} ORDER BY RaceID DESC").fetchall()
         return races
 
     def last_3_races_prior_to(self, raceID):
-        races = self.cursor.execute("SELECT DISTINCT RaceID FRom Races_Results Where RaceID < " + raceID + " ORDER BY RaceID DESC LIMIT 3").fetchall()
+        races = self.cursor.execute(f"SELECT DISTINCT RaceID FROM Races_Results WHERE RaceID < {raceID} ORDER BY RaceID DESC LIMIT 3").fetchall()
         return races
 
     def race_results_last_3(self, races, driverID):
         gps = tuple(i[0] for i in races)
         res = []
         for gp in gps:
-            result = self.cursor.execute("SELECT FinishingPos FROM Races_Results WHERE RaceID = " + str(gp) + " AND DriverID = " + str(driverID)).fetchone()
+            result = self.cursor.execute(f"SELECT FinishingPos FROM Races_Results WHERE RaceID = {gp} AND DriverID = {driverID}").fetchone()
             res.append(result)
-        results = []
-        for j in res:
-            if bool(j):
-                results.append(j[0])
-            else:
-                results.append(j)
-        results = tuple(results)
-        return results
+        results = [j[0] for j in res if j]
+        return tuple(results)
 
     def quali_results_last_3(self, races, driverID):
         qualis = []
         gps = tuple(i[0] for i in races)
         for gp in gps:
-            quali = self.cursor.execute("SELECT MAX(QualifyingStage), FinishingPos FROM Races_QualifyingResults WHERE RaceID = " + str(gp) + " AND DriverID = " + str(driverID)).fetchone()
+            quali = self.cursor.execute(f"SELECT MAX(QualifyingStage), FinishingPos FROM Races_QualifyingResults WHERE RaceID = {gp} AND DriverID = {driverID}").fetchone()
             qualis.append(quali)
         results = tuple(j[1] for j in qualis)
         return results
 
     def race_result_in(self, race, driverID):
-        res = self.cursor.execute("SELECT FinishingPos FROM Races_Results WHERE RaceID = " + str(race) + " AND DriverID = " + str(driverID)).fetchone()
+        res = self.cursor.execute(f"SELECT FinishingPos FROM Races_Results WHERE RaceID = {race} AND DriverID = {driverID}").fetchone()
         return tuple(res)
 
     def check_if_driver_race(self, race, driverID):
-        res = self.cursor.execute("SELECT FinishingPos FROM Races_Results WHERE RaceID = " + str(race) + " AND DriverID = " + str(driverID)).fetchone()
+        res = self.cursor.execute(f"SELECT FinishingPos FROM Races_Results WHERE RaceID = {race} AND DriverID = {driverID}").fetchone()
         return bool(res)
 
     def fetch_drivers_per_year(self, year):
-        drivers = self.cursor.execute('SELECT  bas.FirstName, bas.LastName, res.DriverID, res.TeamID FROM Staff_BasicData bas JOIN Races_Results res ON bas.StaffID = res.DriverID WHERE Season = ' + str(year) + " GROUP BY bas.FirstName, bas.LastName, bas.StaffID, res.TeamID").fetchall()
-        formatted_tuples = []
-        for tupla in drivers:
-            result = self.format_names_simple(tupla)
-            formatted_tuples.append(result)
+        drivers = self.cursor.execute(f"SELECT bas.FirstName, bas.LastName, res.DriverID, res.TeamID FROM Staff_BasicData bas JOIN Races_Results res ON bas.StaffID = res.DriverID WHERE Season = {year} GROUP BY bas.FirstName, bas.LastName, bas.StaffID, res.TeamID").fetchall()
+        formatted_tuples = [self.format_names_simple(tupla) for tupla in drivers]
         return formatted_tuples
 
     def format_names_simple(self, name):
@@ -96,14 +87,14 @@ class PredictorUtils:
         if cadena and cadena[-1].isdigit():
             cadena = cadena[:-1]
         return cadena
-
+    
     def fetch_next_race(self):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
-        last = self.cursor.execute("SELECT MIN(RaceID) FROM Races WHERE Day > " + str(day_season[0])).fetchone()
+        last = self.cursor.execute(f"SELECT MIN(RaceID) FROM Races WHERE Day > {day_season[0]}").fetchone()
         return last[0]
 
     def fetch_remaining_races(self, gpID, year):
-        races = self.cursor.execute("SELECT RaceID FROM Races WHERE RaceID >= " + str(gpID) + " AND SeasonID = " + year).fetchall()
+        races = self.cursor.execute(f"SELECT RaceID FROM Races WHERE RaceID >= {gpID} AND SeasonID = {year}").fetchall()
         return races
         
     async def send_message_to_client(self, message):
@@ -150,36 +141,36 @@ class PredictorUtils:
         return dfT
 
     def rebuild_driverStandings_until(self, raceid):
-        year = self.cursor.execute("SELECT SeasonID FROm Races WHERE RaceID = " + str(raceid)).fetchone()
+        year = self.cursor.execute(f"SELECT SeasonID FROM Races WHERE RaceID = {raceid}").fetchone()
         drivers = self.fetch_drivers_per_year(year[0])
         idList = [driver[1] for driver in drivers]
         results = []
         for driver in idList:
-            points = self.cursor.execute("SELECT SUM(Points) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0])).fetchone()
+            points = self.cursor.execute(f"SELECT SUM(Points) FROM Races_Results WHERE RaceID < {raceid} AND DriverID = {driver} AND Season = {year[0]}").fetchone()
             results.append((driver, points))
         df = pd.DataFrame(results, columns=['id', 'points'])
         df['points'] = df['points'].apply(lambda x: x[0])
         return df
 
     def rebuild_driverStandings_with_pos(self, raceid):
-        year = self.cursor.execute("SELECT SeasonID FROm Races WHERE RaceID = " + str(raceid)).fetchone()
+        year = self.cursor.execute(f"SELECT SeasonID FROM Races WHERE RaceID = {raceid}").fetchone()
         drivers = self.fetch_drivers_per_year(year[0])
         idList = [driver[1] for driver in drivers]
         results = []
         for driver in idList:
-            points = self.cursor.execute("SELECT SUM(Points) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0])).fetchone()
-            sprintPoints = self.cursor.execute("SELECT SUM(ChampionshipPoints) FROM Races_SprintResults WHERE RaceFormula = 1 AND RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND SeasonID = " + str(year[0])).fetchone()
+            points = self.cursor.execute(f"SELECT SUM(Points) FROM Races_Results WHERE RaceID < {raceid} AND DriverID = {driver} AND Season = {year[0]}").fetchone()
+            sprintPoints = self.cursor.execute(f"SELECT SUM(ChampionshipPoints) FROM Races_SprintResults WHERE RaceFormula = 1 AND RaceID < {raceid} AND DriverID = {driver} AND SeasonID = {year[0]}").fetchone()
             if points[0] == None :
                 points = (0,)
             if sprintPoints[0] == None:
                 sprintPoints = (0,)
             points = (points[0] + sprintPoints[0], )
-            position = self.cursor.execute("SELECT MIN(FinishingPos) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0])).fetchone()
+            position = self.cursor.execute(f"SELECT MIN(FinishingPos) FROM Races_Results WHERE RaceID < {raceid} AND DriverID = {driver} AND Season = {year[0]}").fetchone()
             if(position[0] == None):
                 position = (21,)
                 times = (1,)
             else:
-                times = self.cursor.execute("SELECT COUNT(*) FROM Races_Results WHERE RaceID < " + str(raceid) + " AND DriverID = " + str(driver) + " AND Season = " + str(year[0]) + " AND FinishingPos = " + str(position[0])).fetchone()
+                times = self.cursor.execute(f"SELECT COUNT(*) FROM Races_Results WHERE RaceID < {raceid} AND DriverID = {driver} AND Season = {year[0]} AND FinishingPos = {position[0]}").fetchone()
             results.append((driver, points, position, times))
         data = [[item[0], item[1][0], item[2][0], item[3][0]] for item in results]
         df = pd.DataFrame(data, columns=['id', 'points', 'bestPos', 'timesAchieved'])
@@ -192,9 +183,9 @@ class PredictorUtils:
 
 
     def fetch_points_until(self, raceid, driverid):
-        year = self.cursor.execute("SELECT SeasonID FROm Races WHERE RaceID = " + str(raceid)).fetchone()
-        points = self.cursor.execute("SELECT SUM(Points) FROM Races_Results WHERE RaceID <= " + str(raceid) + " AND DriverID = " + str(driverid) + " AND Season = " + str(year[0])).fetchone()
-        nRaces = self.cursor.execute("SELECT COUNT(RaceID) FROM Races_Results WHERE RaceID <= " + str(raceid) + " AND DriverID = " + str(driverid) + " AND Season = " + str(year[0])).fetchone()
+        year = self.cursor.execute(f"SELECT SeasonID FROM Races WHERE RaceID = {raceid}").fetchone()
+        points = self.cursor.execute(f"SELECT SUM(Points) FROM Races_Results WHERE RaceID <= {raceid} AND DriverID = {driverid} AND Season = {year[0]}").fetchone()
+        nRaces = self.cursor.execute(f"SELECT COUNT(RaceID) FROM Races_Results WHERE RaceID <= {raceid} AND DriverID = {driverid} AND Season = {year[0]}").fetchone()
         if(nRaces[0] != 0):
             maxPoints = nRaces[0] * 26
             pctPoints = (points[0]*100)/maxPoints
@@ -203,12 +194,12 @@ class PredictorUtils:
         return pctPoints
 
     def fetch_avg_position_until(self, raceid, driverid):
-        year = self.cursor.execute("SELECT SeasonID FROm Races WHERE RaceID = " + str(raceid)).fetchone()
-        pos = self.cursor.execute("SELECT AVG(FinishingPos) FROM Races_Results WHERE RaceID <= " + str(raceid) + " AND DriverID = " + str(driverid) + " AND Season = " + str(year[0])).fetchone()
+        year = self.cursor.execute(f"SELECT SeasonID FROM Races WHERE RaceID = {raceid}").fetchone()
+        pos = self.cursor.execute(f"SELECT AVG(FinishingPos) FROM Races_Results WHERE RaceID <= {raceid} AND DriverID = {driverid} AND Season = {year[0]}").fetchone()
         return pos[0]
 
     def fetch_spawnBoost(self, driverID):
-        res = self.cursor.execute("SELECT PermaTraitSpawnBoost FROm Staff_GameData WHERE StaffID = " + str(driverID)).fetchone()
+        res = self.cursor.execute(f"SELECT PermaTraitSpawnBoost FROM Staff_GameData WHERE StaffID = {driverID}").fetchone()
         return res
 
     def predict(self, gpID, year):
