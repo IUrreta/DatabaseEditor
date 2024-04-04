@@ -1,4 +1,4 @@
-# Database Editor for F1 Manager 23 #
+![Header](assets/images/header.png)
 Friendly to use tool for editing your save files from F1 Manager 23. Supports driver transfers, calendar customization, staff stat editing and car performance editing, and much more!
 
 > [!WARNING]
