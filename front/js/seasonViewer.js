@@ -32,6 +32,7 @@ let pointsOrPos = "points"
 let alphaReplace = "alphatauri"
 let alpineReplace = "alpine"
 let alfaReplace = "alfa"
+let isYearSelected = false
 
 let driversTableLogosDict = {
     "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-williams-table", "sauber":"logo-williams-table", "visarb": "logo-up-down", "hugo": "logo-stake-table",
@@ -51,6 +52,8 @@ function resetViewer() {
 
 function resetYearButtons() {
     document.getElementById("yearButton").textContent = "Year"
+    isYearSelected = false
+    manage_show_tables()
     document.getElementById("yearButtonH2H").textContent = "Year"
     document.getElementById("yearPredictionButton").textContent = "Year"
     document.getElementById("yearPredictionModalButton").textContent = "Year"
@@ -62,17 +65,32 @@ function resetYearButtons() {
  * Pills for the drivers and teams tables
  */
 document.getElementById("driverspill").addEventListener("click", function () {
-    document.querySelector(".teams-table").classList.add("d-none")
-    document.querySelector(".drivers-table").classList.remove("d-none")
     driverOrTeams = "drivers"
+    manage_show_tables()
 })
 
 document.getElementById("teamspill").addEventListener("click", function () {
-    document.querySelector(".teams-table").classList.remove("d-none")
-    document.querySelector(".drivers-table").classList.add("d-none")
     driverOrTeams = "teams"
-
+    manage_show_tables()
 })
+
+
+function manage_show_tables(){
+    if (isYearSelected){
+        if (driverOrTeams === "drivers") {
+            document.querySelector(".teams-table").classList.add("d-none")
+            document.querySelector(".drivers-table").classList.remove("d-none")
+        }
+        else {
+            document.querySelector(".teams-table").classList.remove("d-none")
+            document.querySelector(".drivers-table").classList.add("d-none")
+        }
+    }
+    else{
+        document.querySelector(".teams-table").classList.add("d-none")
+        document.querySelector(".drivers-table").classList.add("d-none")
+    }
+}
 
 /**
  * Even listener for the positions and points pill
@@ -882,7 +900,8 @@ function generateYearsMenu(actualYear) {
                 command: "yearSelected",
                 year: a.textContent
             }
-
+            isYearSelected = true
+            manage_show_tables()
             socket.send(JSON.stringify(dataYear))
         })
         let a2 = document.createElement("a");

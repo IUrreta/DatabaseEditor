@@ -7,6 +7,8 @@
   --text-general: #dedde6;
   --negative-general: #e95656;
   --positive-general: #5bd999;
+  --positive-general-darker: #3f8a6b;
+  --positive--general-darker2: #2f6a4b;
   --h2h-general: #34c297;
   --graph-general: #34bdc2;
   --h2h-detail: #88ebcd;
@@ -124,7 +126,7 @@ body {
 #byname {
   text-decoration: none;
   color: var( --slight-contrast);
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 .footer {
@@ -185,7 +187,7 @@ body {
 }
 
 .update-info {
-  transition: color 0.4s;
+  transition: color 0.3s;
   text-decoration: none;
   color: var( --slight-contrast);
   cursor: default;
@@ -475,12 +477,12 @@ a.bi-linkedin:hover {
 
 
 .alertNeg {
-  animation: colorChangeNeg 0.4s infinite;
+  animation: colorChangeNeg 0.3s infinite;
   margin-bottom: 0px !important;
 }
 
 .alertPos {
-  animation: colorChangePos 0.4s infinite;
+  animation: colorChangePos 0.3s infinite;
   margin-bottom: 0px !important;
 }
 
@@ -517,7 +519,7 @@ a.bi-linkedin:hover {
 }
 
 .patchNotesPanel i {
-  transition: color 0.4s;
+  transition: color 0.3s;
   font-style: normal;
   color: var( --slight-contrast);
   cursor: pointer;
@@ -583,7 +585,7 @@ a.bi-linkedin:hover {
 .driver1-number{
   font-size: 18px;
   margin-right: 10px;
-  transition: color 0.4s;
+  transition: color 0.3s;
   width: 12.5%;
   text-align: right;
 }
@@ -592,7 +594,7 @@ a.bi-linkedin:hover {
   font-size: 18px;
   margin-left: 10px;
   width: 12.5%;
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 .driver1-number.little, .driver2-number.little{
@@ -902,7 +904,7 @@ a.bi-linkedin:hover {
   height: 1.3px;
   width: 0%;
   background-color: var( --text-general);
-  transition: width 0.4s, color 0.4s;
+  transition: width 0.3s, color 0.3s;
 }
 
 .pill-line.activeType{
@@ -941,18 +943,18 @@ a.bi-linkedin:hover {
   position: absolute;
   z-index: 1;
   right: 350px;
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 #dataPills{
   z-index: 1 !important;
   padding-left: 144px;
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 #iaPills{
   z-index: 1 !important;
   padding-left: 36px;
-  transition: color 0.4s;
+  transition: color 0.3s;
   
 }
 
@@ -1536,7 +1538,7 @@ DRIVERS TABLE
 
 .save-selector-title{
   color: var( --text-general);
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 .save-selector-title.activeSelected{
@@ -1564,7 +1566,7 @@ DRIVERS TABLE
   border-radius: 10px !important;
   color: white !important;
   background-color: var( --slight-contrast) !important;
-  transition: border-color 0.4s, background-color 0.4s, color 0.4s !important;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s !important;
 
 }
 
@@ -1575,12 +1577,12 @@ DRIVERS TABLE
 
 
 .custom-confirm:hover {
-  background-color: #A569BD !important;
-  border-color: #8E44AD !important;
+  background-color: var(--positive-general) !important;
+  border-color: var(--positive-general) !important;
 }
 
 .custom-confirm:active {
-  background-color: #6f4680 !important;
+  background-color: var(--positive-general-darker) !important;
 }
 
 .custom-delete {
@@ -1589,7 +1591,7 @@ DRIVERS TABLE
   border-radius: 10px !important;
   color: white !important;
   background-color: var( --slight-contrast) !important;
-  transition: border-color 0.4s, background-color 0.4s !important;
+  transition: border-color 0.3s, background-color 0.3s !important;
   display: flex;
   justify-content: center;
 
@@ -1598,7 +1600,7 @@ DRIVERS TABLE
 .delete-mode {
   background-color: var( --negative-general) !important;
   border-color: #d66f6f !important;
-  transition: border-color 0.4s;
+  transition: border-color 0.3s;
 }
 
 .custom-delete:hover {
@@ -1749,7 +1751,7 @@ DRIVERS TABLE
   padding: 8px;
   margin: 10px;
   color: var( --text-general);
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   display: flex;
   cursor: grab !important;
   padding-left: 12px;
@@ -1846,7 +1848,7 @@ DRIVERS TABLE
   border: 2.5px solid transparent;
   border-radius: 10px;
   color: var(--positive-general);
-  transition: color 0.4s, border-color 0.4s;
+  transition: color 0.3s, border-color 0.3s;
   cursor: default;
 }
 
@@ -1872,7 +1874,7 @@ DRIVERS TABLE
   border: 2.5px solid transparent;
   border-radius: 10px;
   color: white;
-  transition: color 0.4s, border-color 0.4s;
+  transition: color 0.3s, border-color 0.3s;
   cursor: pointer;
 }
 
@@ -1951,7 +1953,7 @@ DRIVERS TABLE
 
 #F2pill {
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s, color 0.4s;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
 
 #F2pill:hover {
@@ -1963,7 +1965,7 @@ DRIVERS TABLE
 
 #F3pill {
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s, color 0.4s;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
 
 #F3pill:hover {
@@ -1992,7 +1994,7 @@ DRIVERS TABLE
   margin-right: 10px;
   color: var( --text-general);
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s;
+  transition: border-color 0.3s, background-color 0.3s;
   align-items: center;
   min-height: 66px;
 }
@@ -2004,7 +2006,7 @@ DRIVERS TABLE
 
 .one-statH2H i{
   cursor: pointer;
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 .one-statH2H i:hover{
@@ -2042,7 +2044,7 @@ DRIVERS TABLE
   margin-right: 5px;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.4s, color 0.4s;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .driver1-name:hover, .driver2-name:hover {
@@ -2068,7 +2070,7 @@ DRIVERS TABLE
   margin-right: 10px;
   color: var( --text-general);
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s;
+  transition: border-color 0.3s, background-color 0.3s;
 }
 
 .one-performance:hover {
@@ -2096,7 +2098,7 @@ DRIVERS TABLE
   cursor: pointer;
   background-color: transparent;
   border-radius: 10px;
-  transition: background-color 0.4s, color 0.4s;
+  transition: background-color 0.3s, color 0.3s;
   background-color: transparent;
   width: 25px;
   height: 25px;
@@ -2118,13 +2120,13 @@ DRIVERS TABLE
 
 .performance-name {
   width: 200px;
-  transition: color 0.4s;
+  transition: color 0.3s;
   cursor: default !important;
 }
 
 .performance-name-engine {
   width: 300px;
-  transition: color 0.4s;
+  transition: color 0.3s;
   cursor: default !important;
 }
 
@@ -2138,13 +2140,13 @@ DRIVERS TABLE
 
 .name-H2H{
   width: 100%;
-  transition: color 0.4s;
+  transition: color 0.3s;
   cursor: default !important;
   text-align: center;
 }
 
 .only-name{
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 #bestrh2h .name-H2H, #raceh2h .name-H2H, #qualih2h .name-H2H{
@@ -2165,7 +2167,7 @@ DRIVERS TABLE
   float: right;
   width: 0%;
   height: 7px;
-  transition: width 0.4s;
+  transition: width 0.3s;
 }
 
 .h2h-top{
@@ -2178,7 +2180,7 @@ DRIVERS TABLE
   float: left;
   width: 0%;
   height: 7px;
-  transition: width 0.4s;
+  transition: width 0.3s;
 }
 
 .driver2-space, .driver1-space{
@@ -2350,7 +2352,7 @@ DRIVERS TABLE
   padding: 8px 12px;
   max-width: 210px;
   outline: none;
-  transition: border-color 0.4s;
+  transition: border-color 0.3s;
   background-color: var(--mid-gray-contrast);
   color: #ebeaf0;
 }
@@ -2406,7 +2408,7 @@ DRIVERS TABLE
   cursor: pointer !important;
   margin: 10px;
   color: var( --text-general);
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 18px;
 }
@@ -2419,7 +2421,7 @@ DRIVERS TABLE
   cursor: pointer !important;
   margin: 13px 8px;
   color: var( --text-general);
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 18px;
   display: flex;
@@ -2550,7 +2552,7 @@ DRIVERS TABLE
   cursor: grab !important;
   margin: 10px;
   color: var( --text-general);
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 15px;
 }
@@ -2640,7 +2642,7 @@ DRIVERS TABLE
   padding: 6px;
   margin: 8px;
   color: var( --text-general);
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 15px;
   display: flex;
@@ -2655,7 +2657,7 @@ DRIVERS TABLE
   padding: 0px 6px;
   margin: 8px;
   color: var( --text-general);
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 15px;
   display: flex;
@@ -2665,7 +2667,7 @@ DRIVERS TABLE
 
 .free-driver .custom-icon {
   color: transparent;
-  transition: opacity 0.4s;
+  transition: opacity 0.3s;
   background-image: linear-gradient(to left, var(--component-general-hover), transparent);
   width: 80px;
   opacity: 0;
@@ -2679,7 +2681,7 @@ DRIVERS TABLE
 
 .free-driver .custom-unretire{
   color: transparent;
-  transition: opacity 0.4s;
+  transition: opacity 0.3s;
   background-image: linear-gradient(to left, var(--component-general-hover), transparent);
   width: 80px;
   height: 20px;
@@ -2697,12 +2699,12 @@ DRIVERS TABLE
 }
 
 .custom-icon .bi-pencil-square {
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 .free-driver .bi-ban{
   opacity: 1 !important;
-  transition: color 0.4s;
+  transition: color 0.3s;
   color: white;
   z-index: 10;
   position: absolute;
@@ -2852,7 +2854,7 @@ DRIVERS TABLE
   padding: 8px;
   margin: 10px;
   color: var( --text-general);
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
@@ -2865,7 +2867,7 @@ DRIVERS TABLE
   margin: 10px;
   margin-left: 20px;
   color: var( --text-general);
-  transition: border-color 0.4s, background-color 0.4s;
+  transition: border-color 0.3s, background-color 0.3s;
   min-height: 70px;
   border: 2px solid transparent;
   display: flex;
@@ -2881,7 +2883,7 @@ DRIVERS TABLE
 
 .one-stat-panel span{
   color: var( --text-general);
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 .one-stat-panel:hover span{
@@ -2915,7 +2917,7 @@ DRIVERS TABLE
   cursor: pointer;
   background-color: transparent;
   border-radius: 10px;
-  transition: background-color 0.4s, color 0.4s;
+  transition: background-color 0.3s, color 0.3s;
   background-color: transparent;
   width: 25px;
   height: 25px;
@@ -2939,7 +2941,7 @@ DRIVERS TABLE
 .scriptPills {
   color: var( --text-general) !important;
   border: 2px solid transparent !important;
-  transition: border-color 0.4s, background-color 0.4s , color 0.4s !important;
+  transition: border-color 0.3s, background-color 0.3s , color 0.3s !important;
 }
 
 .scriptPills:hover {
@@ -2963,7 +2965,7 @@ DRIVERS TABLE
   height: 56px;
   border: 2px solid transparent;
   font-size: 20px;
-  transition: background-color 0.4s, color 0.4s, border-color 0.4s !important;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s !important;
 
 }
 
@@ -3220,10 +3222,10 @@ input::-webkit-inner-spin-button {
 }
 
 #edit_teams .team-viewer i{
-  transition: color 0.4s;
+  transition: color 0.3s;
   font-size: 20px;
   color: var( --text-general);
-  transition: background-color 0.4s, color 0.4s;
+  transition: background-color 0.3s, color 0.3s;
   width: 25px;
   height: 25px;
   display: flex;
@@ -3301,7 +3303,7 @@ input::-webkit-inner-spin-button {
   padding-bottom: 6px;
   padding-top: 9px;
   padding-left: 5px;
-  transition: opacity 0.4s;
+  transition: opacity 0.3s;
 }
 
 .mclarenlogo, #mclogo {
@@ -3406,7 +3408,7 @@ input::-webkit-inner-spin-button {
 
 .driver1-name .team1, .driver2-name .team2{
   color: var( --text-general) !important;
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 .driver1-name:hover .team1, .driver2-name:hover .team2{
