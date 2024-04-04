@@ -1133,6 +1133,10 @@ DRIVERS TABLE
 
 }
 
+.aston-team-table-logo{
+  padding: 6px 0 !important;
+}
+
 .ferrari-team-table-logo{
   padding: 8px !important;
 }
@@ -1142,7 +1146,7 @@ DRIVERS TABLE
 }
 
 .redbull-team-table-logo{
-  padding: 10px 2px !important;
+  padding: 13px 0px !important;
 }
 
 .merc-team-table-logo{
@@ -1232,13 +1236,36 @@ DRIVERS TABLE
 }
 
 .logo-up-down{
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding: 5px 0;
+}
+
+.logo-up-down-little{
+  padding: 2px 1px;
+}
+
+.logo-up-down-mid{
+  padding: 6px 0px;
 }
 
 .logo-up-down-extra{
   padding-top: 10px;
   padding-bottom: 10px;
+}
+
+.logo-ferrari-table{
+  padding: 4px 1px;
+}
+
+.logo-porsche-table{
+  padding: 5px 2px;
+}
+
+.logo-williams-table{
+  padding: 6px 2px;;
+}
+
+.logo-reduce{
+  padding: 4px;
 }
 
 .logo-brawn-table{
@@ -3324,7 +3351,6 @@ input::-webkit-inner-spin-button {
 }
 
 .hugologo{
-  width: 55px;
   height: 45px;
   padding-bottom: 7px;
   padding-left: 5px;

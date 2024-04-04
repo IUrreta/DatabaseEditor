@@ -34,8 +34,9 @@ let alpineReplace = "alpine"
 let alfaReplace = "alfa"
 
 let driversTableLogosDict = {
-    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-up-down", "visarb": "logo-up-down", "hugo": "logo-stake-table",
-    "brawn": "logo-brawn-table", "toyota": "logo-up-down", "alphatauri": "logo-extra-small",
+    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-up-down", "sauber":"logo-williams-table", "visarb": "logo-up-down", "hugo": "logo-stake-table",
+    "brawn": "logo-brawn-table", "toyota": "logo-williams-table", "alphatauri": "logo-extra-small", "porsche": "logo-porsche-table",
+     "renault": "logo-ferrari-table", "andretti": "logo-ferrari-table", "lotus": "logo-up-down", "alpine": "logo-up-down"
 }
 
 function resetViewer() {
@@ -304,6 +305,9 @@ function manage_teams_table_logos() {
                 logo.className = "teams-table-logo-inner ferrari-team-table-logo"
                 logo.src = "../assets/images/sauber2.png"
             }
+        }
+        else if (logo.dataset.teamid === "10") {
+            logo.className = "teams-table-logo-inner aston-team-table-logo"
         }
     })
 }
@@ -640,14 +644,29 @@ function new_addDriver(driver, races_done, odd) {
     let logo = document.createElement("img")
     logo.classList = "drivers-table-logo"
     logo.dataset.teamid = driver[1]
-    if (driver[1] !== 10) { //different to aston
-        logo.classList.add("logo-up-down")
+    if (driver[1] === 1) { //ferrari
+        logo.classList.add("logo-ferrari-table")
+    }
+    if (driver[1] === 2) { //mclaren
+        logo.classList.add("logo-reduce")
+    }
+    if (driver[1] === 3) { //redbull
+        logo.classList.add("logo-up-down-mid")
+    }
+    if (driver[1] === 4 || driver[1] === 7 || driver[1] === 6) { //mercedes or williams or haas
+        logo.classList.add("logo-williams-table")
+    }
+    if (driver[1] === 5) { //different to aston
+        logo.classList.add(driversTableLogosDict[alpineReplace])
     }
     if (driver[1] === 8) { //alphatauri
         logo.classList.add(driversTableLogosDict[alphaReplace])
     }
     if (driver[1] === 9) { //alfa
         logo.classList.add(driversTableLogosDict[alfaReplace])
+    }
+    if (driver[1] === 10) { 
+        logo.classList.add("logo-up-down-little")
     }
     logoDiv.classList.add(team_dict[driver[1]] + "hoverback")
     logo.setAttribute("src", logos_disc[driver[1]])
