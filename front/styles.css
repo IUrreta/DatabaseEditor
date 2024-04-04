@@ -288,8 +288,6 @@ a.bi-linkedin:hover {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
-  justify-content: space-between;
 }
 
 .info-modal-section{
@@ -739,7 +737,7 @@ a.bi-linkedin:hover {
   gap: 10px;
 }
 
-.bi-gear{
+.bi-file-earmark-binary{
   font-size: 25px;
   margin-top: 0.7rem;
   position: absolute;
@@ -749,12 +747,12 @@ a.bi-linkedin:hover {
   transition: color 0.3s, opacity 0.3s;
 }
 
-.bi-gear.hidden{
+.bi-file-earmark-binary.hidden{
   opacity: 0;
   pointer-events: none;
 }
 
-.bi-gear:hover{
+.bi-file-earmark-binary:hover{
   color: white;
   cursor: pointer;
 }

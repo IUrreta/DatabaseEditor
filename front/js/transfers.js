@@ -383,7 +383,7 @@ function signDriver(type) {
 /**
  * Event listener for the cancel button on the modal
  */
-document.getElementById("cancelButton").addEventListener('click', function () {
+document.getElementById("cancelConfigButton").addEventListener('click', function () {
     if (modalType === "hire") {
         originalParent.appendChild(draggable);
         draggable.dataset.teamid = inverted_dict[teamOrigin.dataset.team]

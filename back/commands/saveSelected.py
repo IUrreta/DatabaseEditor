@@ -58,8 +58,8 @@ class SaveSelectedCommand(Command):
             with open(file_path, "r") as file:
                 data = file.read()
                 data = json.loads(data)
-                data = data["teams"]
-                info = ["Config", data]
+                msgData = data
+                info = ["Config", msgData]
                 info = json.dumps(info)
                 await self.send_message_to_client(info)
         

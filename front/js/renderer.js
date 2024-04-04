@@ -292,7 +292,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function ajustScrollWrapper() {
         var windowHeight = window.innerHeight - 265;
-        console.log(windowHeight)
         document.querySelector('.scroll-wrapper').style.height = windowHeight + 'px';
       }
 
@@ -592,7 +591,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    document.querySelector(".bi-gear").addEventListener("click", function () {
+    document.querySelector(".bi-file-earmark-binary").addEventListener("click", function () {
         let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'), {
             keyboard: false
         })
@@ -600,24 +599,36 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     function manage_config(info){
-        if (info[0] === "ERROR"){
-            document.querySelector(".bi-gear").classList.add("hidden")
+        if (info[0] === "ERROR"){ //No file detected -> show modal
+            document.querySelector(".bi-file-earmark-binary").classList.add("hidden")
             let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
                 keyboard: false
             })
             configModal.show()
         }
-        else {
-            document.querySelector(".bi-gear").classList.remove("hidden")
-            manage_config_content(info[0])
-            setTimeout(function(){
-                update_notifications("Config file loaded", false)
-                
-            }, 500)
+        else { //File detected -> check if ask to show modal or not
+            if (info[0]["ask"] === 1){
+                document.querySelector(".bi-file-earmark-binary").classList.add("hidden")
+                let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
+                    keyboard: false
+                })
+                configModal.show()
+            }
+            else{
+                document.querySelector(".bi-file-earmark-binary").classList.remove("hidden")
+                manage_config_content(info[0])
+                if (info[0]["ask"] === 2){
+                    setTimeout(function(){
+                        update_notifications("Config file loaded", false)
+                    }, 500)
+                }
+            }
+
         }
     }
 
     function manage_config_content(info){
+        info = info["teams"]
         alphaTauriReplace(info["alphatauri"])
         alpineReplace(info["alpine"])
         alfaReplace(info["alfa"])
@@ -734,7 +745,6 @@ document.addEventListener('DOMContentLoaded', function () {
             elem.textContent = names_configs[info]
         })
         if (info !== "alfa"){
-            console.log(info)
             document.querySelectorAll(".alfalogo-replace").forEach(function(elem){
                 if (!elem.classList.contains("non-changable")){
                     elem.src = logos_configs[info]
@@ -814,14 +824,36 @@ document.addEventListener('DOMContentLoaded', function () {
             save: save,
             alphatauri: alphatauri,
             alpine: alpine,
-            alfa: alfa
+            alfa: alfa,
+            ask: 2
         }
         socket.send(JSON.stringify(data))
         info = {teams: {alphatauri: alphatauri, alpine: alpine, alfa: alfa}}
-        manage_config_content(info["teams"])
+        manage_config_content(info)
         reloadTables()
+        document.querySelector(".bi-file-earmark-binary").classList.remove("hidden")
     })
 
+    document.querySelector("#cancelConfigButton").addEventListener("click", function(){
+        save = document.querySelector("#saveSelector").textContent
+        save = save.slice(0, -4)
+        let ask = !document.querySelector("#ask").checked
+        if (ask){
+            ask = 1
+        }
+        else{
+            ask = 0
+        }
+        let data = {
+            command: "configUpdate",
+            save: save,
+            alphatauri: "alphatauri",
+            alpine: "alpine",
+            alfa: "alfa",
+            ask: ask
+        }
+        socket.send(JSON.stringify(data))
+    })
 
     /**
      * Adds eventListeners to all the elements of the staff dropdown
