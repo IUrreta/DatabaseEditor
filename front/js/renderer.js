@@ -653,6 +653,8 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         if (info !== "alphatauri"){
             document.querySelectorAll(".atlogo-replace").forEach(function(elem){
+                console.log(elem.src)
+                console.log(elem.classList)
                 if (!elem.classList.contains("non-changable")){
                     elem.src = logos_configs[info]
                     elem.classList.remove("alphataurilogo")
@@ -662,6 +664,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     elem.classList.remove("brawnlogo")
                     elem.classList.add(logos_classes_configs[info])
                 }
+                if (elem.classList.contains("secondary")){
+                    elem.src = elem.src.slice(0, -4) + "2.png"
+                }
+
             })
             let alphaVarName = "--alphatauri-primary"
             let newVarName = "--" + info + "-primary"
@@ -680,6 +686,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!elem.classList.contains("non-changable")){
                     elem.src = logos_configs[info]
                     elem.className = "atlogo-replace alphataurilogo"
+                }
+                if (elem.classList.contains("secondary")){
+                    elem.src = elem.src.slice(0, -4) + "2.png"
                 }
             })
             let alphaVarName = "--alphatauri-primary"
@@ -711,6 +720,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     elem.classList.remove("lotuslogo")
                     elem.classList.add(logos_classes_configs[info])
                 }
+                if (elem.classList.contains("secondary")){
+                    elem.src = elem.src.slice(0, -4) + "2.png"
+                }
             })
             let alpineVarName = "--alpine-primary"
             let newVarName = "--" + info + "-primary"
@@ -728,6 +740,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!elem.classList.contains("non-changable")){
                     elem.src = logos_configs[info]
                     elem.className = "alpinelogo-replace alpinelogo"
+                }
+                if (elem.classList.contains("secondary")){
+                    elem.src = elem.src.slice(0, -4) + "2.png"
                 }
             })
             let alpineVarName = "--alpine-primary"

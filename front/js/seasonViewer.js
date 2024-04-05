@@ -32,6 +32,7 @@ let pointsOrPos = "points"
 let alphaReplace = "alphatauri"
 let alpineReplace = "alpine"
 let alfaReplace = "alfa"
+let driverOrTeams = "drivers"
 let isYearSelected = false
 
 let driversTableLogosDict = {
