@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     socket.onmessage = (event) => {
         let message = JSON.parse(event.data);
-        console.log(message)
+        // console.log(message)
         let handler = messageHandlers[message[0]];
 
         if (handler) {
@@ -653,8 +653,6 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         if (info !== "alphatauri"){
             document.querySelectorAll(".atlogo-replace").forEach(function(elem){
-                console.log(elem.src)
-                console.log(elem.classList)
                 if (!elem.classList.contains("non-changable")){
                     elem.src = logos_configs[info]
                     elem.classList.remove("alphataurilogo")
@@ -665,7 +663,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     elem.classList.add(logos_classes_configs[info])
                 }
                 if (elem.classList.contains("secondary")){
-                    elem.src = elem.src.slice(0, -4) + "2.png"
+                    if (info !== "toyota"){
+                        elem.src = elem.src.slice(0, -4) + "2.png"
+                    }
                 }
 
             })
@@ -685,7 +685,12 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll(".atlogo-replace").forEach(function(elem){
                 if (!elem.classList.contains("non-changable")){
                     elem.src = logos_configs[info]
-                    elem.className = "atlogo-replace alphataurilogo"
+                    elem.classList.remove("alphataurilogo")
+                    elem.classList.remove("toyotalogo")
+                    elem.classList.remove("hugologo")
+                    elem.classList.remove("ferrarilogo")
+                    elem.classList.remove("brawnlogo")
+                    elem.classList.add("alphataurilogo")
                 }
                 if (elem.classList.contains("secondary")){
                     elem.src = elem.src.slice(0, -4) + "2.png"
@@ -739,7 +744,10 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll(".alpinelogo-replace").forEach(function(elem){
                 if (!elem.classList.contains("non-changable")){
                     elem.src = logos_configs[info]
-                    elem.className = "alpinelogo-replace alpinelogo"
+                    elem.classList.remove("alpinelogo")
+                    elem.classList.remove("ferrarilogo")
+                    elem.classList.remove("lotuslogo")
+                    elem.classList.add("alpinelogo")
                 }
                 if (elem.classList.contains("secondary")){
                     elem.src = elem.src.slice(0, -4) + "2.png"

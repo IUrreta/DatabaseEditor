@@ -20,7 +20,7 @@ class Command:
         raise NotImplementedError("You must implement the execute method")
     
     async def send_message_to_client(self, message):
-        print(message)
+        # print(message) #for debugging
         if self.client:
             await self.client.send(message)
 

@@ -39,7 +39,7 @@ class CommandFactory:
         
     def create_command(self, message, client):
         command_type = message["command"]
-        print(message)
+        # print(message) #for debugging
         if command_type in self.command_dict:
             return self.command_dict[command_type](message, client)
         else:

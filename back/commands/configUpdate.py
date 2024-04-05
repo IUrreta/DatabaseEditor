@@ -9,7 +9,6 @@ class ConfigUpdateCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        print(self.message)
         self.create_folder_file()
 
 
