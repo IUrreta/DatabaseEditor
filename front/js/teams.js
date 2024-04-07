@@ -3,6 +3,19 @@ let currYear;
 let originalCostCap;
 let longTermObj;
 
+const original_dict = {
+    1: "Ferrari",
+    2: "McLaren",
+    3: "Red Bull",
+    4: "Mercedes",
+    5: "Alpine",
+    6: "Williams",
+    7: "Haas",
+    8: "Alpha Tauri",
+    9: "Alfa Romeo",
+    10: "Aston Martin"
+}
+
 /**
  * Listener for the team menu buttons
  */
@@ -292,7 +305,8 @@ document.querySelector("#confirmTeam").addEventListener("click", function(){
         longTermYear: longTermYearData,
         teamBudget: teamBudgetData,
         costCapEdit: costCapTransactionData,
-        confidence : confidenceData
+        confidence : confidenceData,
+        teamName : original_dict[teamCod]
 
     }
     socket.send(JSON.stringify(data))

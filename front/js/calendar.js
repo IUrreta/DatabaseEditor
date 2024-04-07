@@ -191,7 +191,7 @@ function updateVisualizers(){
 function load_calendar(races){
     document.querySelector('.main-calendar-section').innerHTML = ""
     races.forEach(function(elem){
-        code = races_map[elem[0]]
+        let code = races_map[elem[0]]
         addRace(code, transformWeather(elem[1]), transformWeather(elem[2]), elem[3], elem[0], elem[4])
     })
     updateVisualizers()

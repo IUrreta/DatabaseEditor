@@ -25,7 +25,7 @@ let h2hTeamList = []
 let graphTeamList = []
 let mode = "driver"
 
-const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD", "#B6BABD", "#c3dc00"]
+const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD", "#B6BABD", "#c3dc00", "#d0e610", "#fac51c", "#b09247", "#f7c82f"]
 let combined_dict = {
     1: "Ferrari",
     2: "McLaren",
