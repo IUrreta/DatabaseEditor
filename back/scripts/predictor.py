@@ -40,6 +40,8 @@ class PredictorUtils:
         res = []
         for gp in gps:
             result = self.cursor.execute(f"SELECT FinishingPos FROM Races_Results WHERE RaceID = {gp} AND DriverID = {driverID}").fetchone()
+            if not result:
+                result = (20,)
             res.append(result)
         results = [j[0] for j in res if j]
         return tuple(results)
