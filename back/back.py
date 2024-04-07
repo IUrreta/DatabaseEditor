@@ -26,7 +26,7 @@ async def send_message_to_client(message, client):
         await client.send(message)
 
 async def handle_client(websocket, path, app_state):
-    print("Client connected")
+    # print("Client connected")
     client = websocket
     try:
         async for message in websocket:
