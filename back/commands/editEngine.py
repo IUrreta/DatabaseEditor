@@ -8,10 +8,10 @@ class EditEngineCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        argument = self.message["engineID"] +  " " + self.message["teamEngineID"] + " " +  self.message["performanceArray"]
+        argument = f"{self.message['engineID']} {self.message['teamEngineID']} {self.message['performanceArray']}"
         run_editEngine(argument)
         process_repack("../result", Command.path)
         info = []
-        info.insert(0, "Succesfully edited all " + self.message["team"] + " engines performance")
+        info.insert(0, f"Succesfully edited all {self.team_replace_dict[self.message['team']]} engines performance")
         info_json = json.dumps(info)
         await self.send_message_to_client(info_json)

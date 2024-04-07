@@ -6,4 +6,5 @@ log.txt
 **/build/back
 **/__pycache__
 *.sav
+configs
 

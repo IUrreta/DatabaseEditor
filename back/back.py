@@ -17,7 +17,7 @@ class ApplicationState:
         # print(command) #for debugging
         await command.execute()
         logtxt = str(message)
-        self.log.write("[" + str(datetime.now()) + "] INFO: Command executed: " + logtxt + "\n")
+        self.log.write(f"[{str(datetime.now())}] INFO: Command executed: {logtxt}\n")
         self.log.flush()
 
 
@@ -26,7 +26,7 @@ async def send_message_to_client(message, client):
         await client.send(message)
 
 async def handle_client(websocket, path, app_state):
-    print("Client connected")
+    # print("Client connected")
     client = websocket
     try:
         async for message in websocket:
@@ -34,7 +34,7 @@ async def handle_client(websocket, path, app_state):
             await app_state.new_handler(data, client)
     except Exception as e:
         print(e)
-        app_state.log.write("[" + str(datetime.now()) + "] EXCEPTION:" + str(e) + "\n")
+        app_state.log.write(f"[{str(datetime.now())}] EXCEPTION: {str(e)}\n")
         app_state.log.flush()
         info = []
         info.insert(0, "ERROR")
@@ -57,13 +57,6 @@ async def start_server(app_state):
     server = await websockets.serve(lambda ws, path: handle_client(ws, path, app_state), "localhost", 8765)
     await server.wait_closed()
 
-
-def create_backup(originalFIle, saveFile):
-    backup_path = "./../backup"
-    if not os.path.exists(backup_path):
-        os.makedirs(backup_path)
-    new_file = backup_path + "/" + saveFile
-    shutil.copy(originalFIle, new_file)
 
 if __name__ == "__main__":
     asyncio.run(main())

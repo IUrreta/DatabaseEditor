@@ -1,3 +1,99 @@
+:root {
+  /*
+  GENERAL COLORS
+  */
+  --background-general: #110f24;
+  --slight-contrast: #797599;
+  --text-general: #dedde6;
+  --negative-general: #e95656;
+  --positive-general: #5bd999;
+  --positive-general-darker: #3f8a6b;
+  --positive--general-darker2: #2f6a4b;
+  --h2h-general: #34c297;
+  --graph-general: #34bdc2;
+  --h2h-detail: #88ebcd;
+  --graph-detail: #95ebee;
+  --tools-general: #18152e;
+  --component-general: #3f3c57;
+  --component-general-hover: #4e4b69;
+  --component-general-hover-extra: #5d5a7c;
+  --overall-holder: #21202e;
+  --dropdown-back-general: #8b87af;
+  --active-general: #1a1826;
+  --row-cell: #3c3952;
+  --row-odd-cell: #494561;
+  --special-columns: #464166;
+  --delete-div: #f15353;
+  --weather-vis-back: #292738;
+  --weather-vis-border: #2c2b3b;
+  --h2h-back: #1f1b3b;
+  --h2h-back-hover: #302a57;
+  --active-buttons-back: #5f5a7c;
+  --mid-gray-contrast: #63636e;
+  --awaiting-color: #8a8a8a;
+  --mode-line-edit: #fff7b0;
+  --mode-line-ai: #baffea;
+  --mode-line-view: #e8b6ff;
+  --prob-viewer-hover: #625e86;
+  --custom-modal-back: #393744;
+  --text-in-front: #eeedf3;
+  --background--buttons-hover: #6f698f;
+
+  --f2-border: #38c8f0;
+  --f2-back: #388cd5;
+  --f2-active: #1374fc;
+  --f3-back: #cf2e2e;
+  --f3-border: #ff4848;
+
+
+  /*
+  TEAMS COLORS
+  */
+  --alphatauri-original: #5E8FAA;
+  --alphatauri-secondary-original: #f1f1f1;
+  --alpine-original: #2293D1;
+  --alpine-secondary-original: #fd48c7;
+  --andretti-primary: #fac51c;
+  --andretti-secondary: #1e7696;
+  --lotus-primary: #b09247;
+  --lotus-secondary: #595959;
+  --visarb-primary: #596fa4;
+  --visarb-secondary: #f1f1f1;
+  --toyota-primary: #EB0A1B;
+  --toyota-secondary: #f1f1f1;
+  --hugo-primary: #bd9514;
+  --hugo-secondary: #f1f1f1;
+  --alphatauri-primary: #5E8FAA;
+  --porsche-primary: #c50c28;
+  --porsche-secondary: #f1f1f1;
+  --brawn-primary : #d0e610;
+  --brawn-secondary: #f1f1f1;
+  --ferrari-primary: #ff2800;
+  --general-secondary: #f1f1f1;
+  --mercedes-primary: #6CD3BF;
+  --redbull-primary: #3671C6;
+  --redbull-secondary: #ffd300;
+  --stake-primary: #01e500;
+  --stake-secondary: #595959;
+  --audi-primary: #f50537;
+  --audi-secondary: #f1f1f1;
+  --sauber-primary: #f50537;
+  --aston-primary: #358C75;
+  --aston-secondary: #c3dc00;
+  --alfa-original: #C92D4B;
+  --alfa-secondary-original: #f1f1f1;
+  --alfa-primary: #C92D4B;
+  --alfa-secondary: #f1f1f1;
+  --alphatauri-secondary: #f1f1f1;
+  --haas-primary: #B6BABD;
+  --haas-secondary: #f62039;
+  --mclaren-primary: #F58020;
+  --mclaren-secondary: #47c7fc;
+  --williams-primary: #37BEDD;
+  --alpine-primary: #2293D1;
+  --alpine-secondary: #fd48c7;
+  --renault-primary: #f7c82f;
+}
 
 
 @font-face {
@@ -16,19 +112,12 @@
 
 
 body {
-  background-color: #110f24 !important;
+  background-color: var(--background-general) !important;
   max-height: 930px;
   overflow-x: hidden;
 }
 
-body::-webkit-scrollbar {
-  width: 6px;
-}
 
-body::-webkit-scrollbar-thumb {
-  background-color: white;
-  border-radius: 6px;
-}
 
 .font {
   font-family: 'Formula1';
@@ -36,8 +125,8 @@ body::-webkit-scrollbar-thumb {
 
 #byname {
   text-decoration: none;
-  color: #797599;
-  transition: color 0.4s;
+  color: var( --slight-contrast);
+  transition: color 0.3s;
 }
 
 .footer {
@@ -45,9 +134,9 @@ body::-webkit-scrollbar-thumb {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #18152e;
-  color: #797599;
-  border-top: 1px solid #797599;
+  background-color: var(--tools-general);
+  color: var( --slight-contrast);
+  border-top: 1px solid var( --slight-contrast);
   text-align: center;
   padding: 5px 0;
   font-size: 16px;
@@ -58,18 +147,31 @@ body::-webkit-scrollbar-thumb {
   max-height: 35px;
 }
 
+.scroll-wrapper{
+  overflow-y: auto;
+}
+
+.scroll-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-wrapper::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 6px;
+}
+
 .socials a,
 .footer i {
   cursor: pointer !important;
   padding: 0 7px;
   transition: color 0.3s;
-  color: #797599;
+  color: var( --slight-contrast);
   text-decoration: none;
 }
 
 .socials a:hover,
 .footer i:hover {
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .socials a {
@@ -85,14 +187,14 @@ body::-webkit-scrollbar-thumb {
 }
 
 .update-info {
-  transition: color 0.4s;
+  transition: color 0.3s;
   text-decoration: none;
-  color: #797599;
+  color: var( --slight-contrast);
   cursor: default;
 }
 
 .bi-exclamation-diamond {
-  color: #e95656;
+  color: var( --negative-general);
 }
 
 .bi-exclamation-lg,
@@ -137,7 +239,7 @@ a.bi-linkedin:hover {
 }
 
 .awaiting {
-  color: #8a8a8a;
+  color: var(--awaiting-color);
 }
 
 
@@ -175,9 +277,20 @@ a.bi-linkedin:hover {
 }
 
 .auto-contract {
-  color: #dedde6;
+  color: var( --text-general);
   font-size: 20px;
   padding-right: 2rem;
+}
+
+.main-team-changes{
+  display: flex;
+  flex-direction: column;
+}
+
+.team-change{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .info-modal-section{
@@ -188,11 +301,11 @@ a.bi-linkedin:hover {
 }
 
 .H2H-text span.text-main{
-  color: #34c297;
+  color: var( --h2h-general);
 }
 
 .graph-text span.text-main{
-  color: #34bdc2;
+  color: var( --graph-general);
 }
 
 .h2h-highlight {
@@ -204,17 +317,17 @@ a.bi-linkedin:hover {
 }
 
 @keyframes h2h-animation {
-  0%, 100% { color: #dedde6; }
-  50% { color: #88ebcd; }
+  0%, 100% { color: var( --text-general); }
+  50% { color: var( --h2h-detail); }
 }
 
 @keyframes graph-animation {
-  0%, 100% { color: #dedde6; }
-  50% { color: #95ebee; }
+  0%, 100% { color: var( --text-general); }
+  50% { color: var( --graph-detail); }
 }
 
 .annotations {
-  color: #dedde6;
+  color: var( --text-general);
   font-size: 20px;
   padding-right: 1rem;
 }
@@ -245,7 +358,7 @@ a.bi-linkedin:hover {
 }
 
 .dropdown-menu{
-  background-color: #797599 !important;
+  background-color: var( --slight-contrast) !important;
   border: none !important;
   border-radius: 10px;
 
@@ -258,12 +371,12 @@ a.bi-linkedin:hover {
 }
 
 .dropdown-menu a:hover{
-  background-color: #8b87af !important;
-  border-bottom: 2px solid white  ;
+  background-color: var(--dropdown-back-general) !important;
+  border-bottom: 2px solid white;
 }
 
 .modal-subtitle, .component-subtitle{
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .stats-title {
@@ -294,7 +407,7 @@ a.bi-linkedin:hover {
 }
 
 .overall-holder {
-  background-color: #21202e;
+  background-color: var(--overall-holder);
   border: 2px solid white;
   border-radius: 10px;
   width: 66px;
@@ -322,7 +435,7 @@ a.bi-linkedin:hover {
 }
 
 .retirement-options i{
-  color: #dedde6;
+  color: var( --text-general);
   border-radius: 7.5px !important;
   width: 20px !important;
   height: 20px !important;
@@ -336,13 +449,13 @@ a.bi-linkedin:hover {
   100% {
     border: 2px solid white;
     border-radius: 10px;
-    background-color: #21202e;
+    background-color: var(--overall-holder);
   }
 
   50% {
-    border: 2px solid #e95656;
+    border: 2px solid var( --negative-general);
     border-radius: 10px;
-    background-color: #21202e;
+    background-color: var(--overall-holder);
   }
 }
 
@@ -352,30 +465,30 @@ a.bi-linkedin:hover {
   100% {
     border: 2px solid white;
     border-radius: 10px;
-    background-color: #21202e;
+    background-color: var(--overall-holder);
   }
 
   50% {
-    border: 2px solid #5bd999;
+    border: 2px solid var(--positive-general);
     border-radius: 10px;
-    background-color: #21202e;
+    background-color: var(--overall-holder);
   }
 }
 
 
 .alertNeg {
-  animation: colorChangeNeg 0.4s infinite;
+  animation: colorChangeNeg 0.3s infinite;
   margin-bottom: 0px !important;
 }
 
 .alertPos {
-  animation: colorChangePos 0.4s infinite;
+  animation: colorChangePos 0.3s infinite;
   margin-bottom: 0px !important;
 }
 
 .main-title {
   text-align: left;
-  background-color: #18152e;
+  background-color: var(--tools-general);
   padding-top: 1rem;
   padding-bottom: 0.1%;
   display: flex;
@@ -399,10 +512,6 @@ a.bi-linkedin:hover {
 
 }
 
-.cet-container{
-  height: 1700px;
-}
-
 .patchNotesPanel {
   position: fixed;
   top: 70px;
@@ -410,9 +519,9 @@ a.bi-linkedin:hover {
 }
 
 .patchNotesPanel i {
-  transition: color 0.4s;
+  transition: color 0.3s;
   font-style: normal;
-  color: #797599;
+  color: var( --slight-contrast);
   cursor: pointer;
 }
 
@@ -425,7 +534,7 @@ a.bi-linkedin:hover {
   top: 0px;
   right: 0px;
   color: white;
-  background-color: #18152e;
+  background-color: var(--tools-general);
   width: 530px;
   height: 116px;
   display: flex;
@@ -453,7 +562,7 @@ a.bi-linkedin:hover {
   height: 2px;
   position: relative;
   bottom: 7px;
-  background-color: #ff4949 !important;
+  background-color: var(--negative-general) !important;
 }
 
 .custom-toast{
@@ -476,7 +585,7 @@ a.bi-linkedin:hover {
 .driver1-number{
   font-size: 18px;
   margin-right: 10px;
-  transition: color 0.4s;
+  transition: color 0.3s;
   width: 12.5%;
   text-align: right;
 }
@@ -485,7 +594,7 @@ a.bi-linkedin:hover {
   font-size: 18px;
   margin-left: 10px;
   width: 12.5%;
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 .driver1-number.little, .driver2-number.little{
@@ -508,11 +617,11 @@ a.bi-linkedin:hover {
   width: 2px;
   height: 20px;
   margin-top: 3px;
-  background-color: #dedde6;
+  background-color: var( --text-general);
 }
 
 .toast-error{
-  color: #ff4949 !important;
+  color: var(--negative-general) !important;
 }
 
 .hide {
@@ -546,7 +655,7 @@ a.bi-linkedin:hover {
 
 .tools-panel {
   color: white;
-  background-color: #18152e;
+  background-color: var(--tools-general);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -561,19 +670,22 @@ a.bi-linkedin:hover {
   position: relative;
   width: 100%;
   height: 1px;
-  background-color: #797599;
+  background-color: var( --slight-contrast);
 }
 
 .mode-line.ai{
-  background-color: #baffea;
+  background-color: var(--mode-line-ai);
+  /* box-shadow: 0 0 6px 1px var(--mode-line-ai); */
 }
 
 .mode-line.edit{
-  background-color: #fff7b0;
+  background-color: var(--mode-line-edit);
+  /* box-shadow: 0 0 6px 1px #fff7b0; */
 }
 
 .mode-line.view{
-  background-color: #e8b6ff;
+  background-color: var(--mode-line-view);
+  /* box-shadow: 0 0 6px 1px var(--mode-line-view); */
 }
 
 .moving-line{
@@ -599,7 +711,7 @@ a.bi-linkedin:hover {
 .main-panel {
   display: flex;
   position: relative;
-  min-height: 78vh;
+  height: 100%;
 }
 
 .script-view {
@@ -622,6 +734,32 @@ a.bi-linkedin:hover {
   z-index: 9999 !important;
 }
 
+.general-config {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.bi-file-earmark-binary{
+  font-size: 25px;
+  margin-top: 0.7rem;
+  position: absolute;
+  margin-left: 0.5rem;
+  color: var( --slight-contrast);
+  opacity: 1;
+  transition: color 0.3s, opacity 0.3s;
+}
+
+.bi-file-earmark-binary.hidden{
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bi-file-earmark-binary:hover{
+  color: white;
+  cursor: pointer;
+}
+
 .save-selector {
   display: flex;
   flex-direction: column;
@@ -630,7 +768,17 @@ a.bi-linkedin:hover {
 .custom-dropdown {
   max-width: 250px !important;
   margin-top: 0.6rem !important;
-  background-color: #797599 !important;
+  background-color: var( --slight-contrast) !important;
+  margin-bottom: 1% !important;
+  border: 2px solid transparent !important;
+  border-radius: 10px !important;
+  color: white !important;
+  transition: border-color 0.3s !important;
+}
+
+.custom-dropdown-no-margin {
+  max-width: 250px !important;
+  background-color: var( --slight-contrast) !important;
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
@@ -646,18 +794,18 @@ a.bi-linkedin:hover {
   justify-content: space-between;
 }
 
-.custom-dropdown:hover {
+.custom-dropdown:hover, .custom-dropdown-no-margin:hover {
   border: 2px solid white !important;
 }
 
-.custom-dropdown:active {
-  background-color: #1a1826 !important;
+.custom-dropdown:active, .custom-dropdown-no-margin:active {
+  background-color: var(--active-general) !important;
 }
 
 .addTracks-button {
   margin-top: 0.4rem;
   max-width: 210px;
-  background-color: #797599 !important;
+  background-color: var( --slight-contrast) !important;
   margin-bottom: 1%;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
@@ -670,7 +818,7 @@ a.bi-linkedin:hover {
 }
 
 .addTracks-button:active {
-  background-color: #1a1826;
+  background-color: var(--active-general);
 }
 
 #addTrackMenu {
@@ -712,7 +860,7 @@ a.bi-linkedin:hover {
 .main-columns-drag-section {
   margin-left: 14px;
   margin-right: 5%;
-  border: 1px solid #797599;
+  border: 1px solid var(--slight-contrast);
   color: white;
   min-height: 660px;
   max-height: 660px;
@@ -746,7 +894,7 @@ a.bi-linkedin:hover {
 .custom-hr {
   border: none;
   height: 1px;
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contrast);
   margin-left: 20px;
   margin-top: 1rem;
   margin-bottom: 2rem;
@@ -755,8 +903,8 @@ a.bi-linkedin:hover {
 .pill-line{
   height: 1.3px;
   width: 0%;
-  background-color: #dedde6;
-  transition: width 0.4s, color 0.4s;
+  background-color: var( --text-general);
+  transition: width 0.3s, color 0.3s;
 }
 
 .pill-line.activeType{
@@ -781,7 +929,7 @@ a.bi-linkedin:hover {
 .pill-types{
   display: flex;
   flex-direction: row;
-  color: #dedde6;
+  color: var( --text-general);
   font-size: 18px;
   width: 100%;
 }
@@ -795,34 +943,34 @@ a.bi-linkedin:hover {
   position: absolute;
   z-index: 1;
   right: 350px;
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 #dataPills{
   z-index: 1 !important;
   padding-left: 144px;
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 #iaPills{
   z-index: 1 !important;
   padding-left: 36px;
-  transition: color 0.4s;
+  transition: color 0.3s;
   
 }
 
 
 #iaPills .pill-line{
-  background-color: #c7ffee;
+  background-color: var(--mode-line-ai);
 }
 
 
 #dataPills .pill-line{
-  background-color: #e8b6ff;
+  background-color: var(--mode-line-view);
 }
 
 
 #editPills .pill-line{
-  background-color: #fff7b0;
+  background-color: var(--mode-line-edit);
 }
 
 #predict_results{
@@ -831,7 +979,7 @@ a.bi-linkedin:hover {
 
 #probText{
   padding-top: 2px;
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 #probSelector{
@@ -849,6 +997,428 @@ a.bi-linkedin:hover {
   max-height: 660px;
 }
 
+/*
+DRIVERS TABLE
+*/
+
+.drivers-table-header, .teams-table-header{
+  display: flex;
+  flex-direction: row;
+  color: var( --text-general);
+}
+
+.drivers-table-row{
+  display: flex;
+  flex-direction: row;
+  height: 30px;
+  transition: background-color 0.3s, color 0.3;
+}
+
+.teams-table-row{
+  display: flex;
+  flex-direction: row;
+  height: 60px;
+  transition: background-color 0.3s, color 0.3;
+}
+
+.drivers-table-data, .teams-table-data{
+  max-height: 620px;
+  overflow-y: auto;
+  font-size: 15px;
+}
+
+.drivers-table-data::-webkit-scrollbar {
+  width: 4px !important;
+  margin-left: 4px;
+}
+
+.drivers-table-data::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 3px !important;
+}
+
+.drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points,
+.drivers-table-row .drivers-table-normal, .teams-table-row .teams-table-normal, .teams-table-row .teams-table-driver,
+.teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.drivers-table-row:hover .drivers-table-driver, 
+.drivers-table-row:hover .drivers-table-normal, .teams-table-row:hover .teams-table-normal{
+  background-color: var( --text-general);
+  color: var(--tools-general);
+}
+
+.drivers-table-row.odd:hover .drivers-table-driver, 
+.drivers-table-row.odd:hover .drivers-table-normal,
+.teams-table-row.odd:hover .teams-table-normal{
+  background-color: var( --text-general);
+  color: var(--tools-general);
+}
+
+.drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points,
+.teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+}
+
+.drivers-table-row:hover .drivers-table-position, .teams-table-row:hover .teams-table-position{
+  border-right: 1px solid var( --text-general);
+  background-color: var( --text-general);
+  color: var(--tools-general);
+}
+
+.drivers-table-row:hover .drivers-table-points, .teams-table-row:hover .teams-table-points{
+  border-left: 1px solid var( --text-general);
+  background-color: var( --text-general);
+  color: var(--tools-general);
+}
+
+.drivers-table-row:hover, .teams-table-row:hover{
+  cursor: pointer;
+}
+
+.drivers-table-row span.bold-font{
+  transition: color 0.3s;
+}
+
+.drivers-table-row:hover span.bold-font{
+  color: var(--tools-general) !important;
+}
+
+.drivers-table-row .drivers-table-normal, .teams-table-row .teams-table-normal{
+  background-color: var(--row-cell);
+}
+
+.drivers-table-row.odd .drivers-table-normal, .teams-table-row.odd .teams-table-normal{
+  background-color: var(--row-odd-cell);
+}
+
+.drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-points, .drivers-table-row .drivers-table-position,
+.teams-table-row .teams-table-team, .teams-table-row .teams-table-points, .teams-table-row .teams-table-position{
+  background-color: var(--special-columns)
+}
+
+.teams-table-row .teams-table-team{
+  border-right: 1px solid var( --slight-contrast);
+  border-left: 1px solid var( --slight-contrast);
+}
+
+.teams-table-row:hover .teams-table-team{
+  background-color: var( --text-general);
+  color: var(--tools-general);
+  border-color: var( --text-general);
+}
+
+.drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points, .teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
+  border-right: 1px solid var( --slight-contrast);
+  border-left: 1px solid var( --slight-contrast);
+}
+
+
+.drivers-table-normal, .teams-table-normal{
+  flex: 1 0 0;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.drivers-table-header .drivers-table-normal, .teams-table-header .teams-table-normal{
+  border-bottom: 1px solid var( --slight-contrast);
+  border-top: 1px solid var( --slight-contrast);
+}
+
+.drivers-table-position, .teams-table-position{
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.aston-team-table-logo{
+  padding: 6px 0 !important;
+}
+
+.ferrari-team-table-logo{
+  padding: 8px !important;
+}
+
+.mclaren-team-table-logo{
+  margin-right: 3px !important;
+}
+
+.redbull-team-table-logo{
+  padding: 13px 0px !important;
+}
+
+.merc-team-table-logo{
+  padding: 9px !important;
+}
+
+.alpine-team-table-logo{
+  padding: 9px 6px !important;
+}
+
+.williams-team-table-logo{
+  padding: 10px 6px !important;
+}
+
+.haas-team-table-logo{
+  padding: 7px !important;
+}
+
+.alphatauri-team-table-logo{
+  padding: 15px 9px !important;
+}
+
+.hugo-team-table-logo{
+  padding: 5px 1px !important;
+}
+
+.toyota-team-table-logo{
+  padding: 13px 8px !important;
+}
+
+.porsche-team-table-logo{
+  padding: 11px !important;
+}
+
+.brawn-team-table-logo{
+  padding: 24px 6px !important;
+}
+
+.audi-team-table-logo{
+  padding: 20px 5px !important;
+}
+
+.drivers-table-logo{
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+.teams-table-logo{
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid var( --slight-contrast);
+  border-bottom: 1px solid var( --slight-contrast);
+  transition: border-height 0.3s;
+}
+
+.teams-table-row:hover .teams-table-logo{
+  border-bottom: 0px solid var( --text-general);
+  border-top: 0px solid var( --text-general);
+}
+
+.teams-table-logo-inner{
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+
+
+.drivers-table-logo-div{
+  background-color: var(--special-columns);
+  border-right: 1px solid var( --slight-contrast);
+}
+
+.drivers-table-logo{
+  padding: 0px 2px;
+}
+
+.logo-up-down{
+  padding: 5px 0;
+}
+
+.logo-up-down-little{
+  padding: 2px 1px;
+}
+
+.logo-up-down-mid{
+  padding: 6px 0px;
+}
+
+.logo-up-down-extra{
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.logo-ferrari-table{
+  padding: 4px 1px;
+}
+
+.logo-porsche-table{
+  padding: 5px 2px;
+}
+
+.logo-williams-table{
+  padding: 6px 2px;;
+}
+
+.logo-reduce{
+  padding: 4px;
+}
+
+.logo-brawn-table{
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.logo-extra-small{
+  padding: 8px 4px;
+}
+
+.logo-stake-table{
+  padding: 2px 0px;
+}
+
+
+.drivers-table-header .drivers-table-position, .teams-table-header .teams-table-position{
+  border: 1px solid var( --slight-contrast);
+  border-top-left-radius: 5px; 
+}
+
+.drivers-table-driver, .teams-table-team{
+  width: 210px;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  padding-left: 4px;
+}
+
+.drivers-table-row .drivers-table-driver{
+  width: 179px;
+  border-right: 0px solid transparent;
+  gap: 3px;
+}
+
+.teams-table-row .teams-table-team{
+  width: 149.5px;
+  gap: 5px;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+}
+
+
+.drivers-table-header .drivers-table-driver, .teams-table-header .teams-table-team{
+  border-top: 1px solid var( --slight-contrast);
+  border-bottom: 1px solid var( --slight-contrast);
+  border-right: 1px solid var( --slight-contrast);
+}
+
+.drivers-table-points, .teams-table-points{
+  width: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.drivers-table-header .drivers-table-points, .teams-table-header .teams-table-points{
+  border: 1px solid var( --slight-contrast);
+  border-top-right-radius: 5px; 
+}
+
+.drivers-table-row:hover .drivers-table-logo-div{
+  border-right: 1px solid var( --text-general);
+}
+
+.drivers-table-row .drivers-table-logo-div{
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+.drivers-table-row:hover .fehoverback{
+  background-color: var(--ferrari-primary)
+}
+
+.teams-table-row .feiconback{
+  background-color: var(--ferrari-primary)
+}
+
+.drivers-table-row:hover .ashoverback{
+  background-color: var(--aston-primary)
+}
+
+.teams-table-row .asiconback{
+  background-color: var(--aston-primary)
+}
+
+.drivers-table-row:hover .mehoverback{
+  background-color: var(--mercedes-primary)
+}
+
+.teams-table-row .meiconback{
+  background-color: var(--mercedes-primary)
+}
+
+.drivers-table-row:hover .rbhoverback{
+  background-color: var(--redbull-primary)
+}
+
+.teams-table-row .rbiconback{
+  background-color: var(--redbull-primary)
+}
+
+.drivers-table-row:hover .mchoverback{
+  background-color: var(--mclaren-primary)
+}
+
+.teams-table-row .mciconback{
+  background-color: var(--mclaren-primary)
+}
+
+.drivers-table-row:hover .alhoverback{
+  background-color: var(--alpine-primary)
+}
+
+.teams-table-row .aliconback{
+  background-color: var(--alpine-primary)
+}
+
+.drivers-table-row:hover .hahoverback{
+  background-color: var(--haas-primary)
+}
+
+.teams-table-row .haiconback{
+  background-color: var(--haas-primary)
+}
+
+.drivers-table-row:hover .wihoverback{
+  background-color: var(--williams-primary)
+}
+
+.teams-table-row .wiiconback{
+  background-color: var(--williams-primary)
+}
+
+.drivers-table-row:hover .athoverback{
+  background-color: var(--alphatauri-primary)
+}
+
+.teams-table-row .aticonback{
+  background-color: var(--alphatauri-primary)
+}
+
+.drivers-table-row:hover .afhoverback{
+  background-color: var(--alfa-primary)
+}
+
+.teams-table-row .aficonback{
+  background-color: var(--alfa-primary)
+}
+
+
 .prob-viewer-data{
   overflow-y: scroll;
   max-height: 621px;
@@ -857,7 +1427,7 @@ a.bi-linkedin:hover {
 .prob-viewer-header, .prob-viewer-row{
   display: flex;
   flex-direction: row;
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .prob-viewer-header .viewer-header-data, .prob-viewer-row .viewer-header-data {
@@ -882,7 +1452,7 @@ a.bi-linkedin:hover {
 }
 
 .prob-viewer-row:hover{
-  background-color: #625e86 ;
+  background-color: var(--prob-viewer-hover);
   cursor: pointer;
 }
 
@@ -902,12 +1472,12 @@ a.bi-linkedin:hover {
 
 
 .prob-viewer-row:hover .viewer-header-driver{
-  background-color: #dedde6;
-  color: #18152e;
+  background-color: var( --text-general);
+  color: var(--tools-general);
 }
 
 .prob-viewer-row:hover .viewer-header-driver span{
-  color: #18152e !important;
+  color: var(--tools-general) !important;
 }
 
 .prob-viewer-row .viewer-header-position {
@@ -917,8 +1487,8 @@ a.bi-linkedin:hover {
 }
 
 .prob-viewer-row:hover .viewer-header-position {
-  background-color: #dedde6;
-  color: #18152e !important;
+  background-color: var( --text-general);
+  color: var(--tools-general) !important;
 }
 
 
@@ -941,7 +1511,7 @@ a.bi-linkedin:hover {
 
 .viewer-header-data{
   border-radius: 5px;
-  color: rgb(24, 21, 46);
+  color: var(--tools-general);
   transition: border 0.3s;
   display: flex;
   align-items: center;
@@ -951,7 +1521,7 @@ a.bi-linkedin:hover {
 }
 
 .viewer-header-data.i75-100{
-  background-color: #5bd999;
+  background-color: var(--positive-general);
 }
 
 .viewer-header-data.i50-75{
@@ -967,8 +1537,8 @@ a.bi-linkedin:hover {
 }
 
 .save-selector-title{
-  color: #dedde6;
-  transition: color 0.4s;
+  color: var( --text-general);
+  transition: color 0.3s;
 }
 
 .save-selector-title.activeSelected{
@@ -980,8 +1550,8 @@ a.bi-linkedin:hover {
   margin-right: 20px;
   margin-bottom: 20px;
   margin-top: 15px;
-  background-color: #18152e;
-  border: 1px solid #797599;
+  background-color: var(--tools-general);
+  border: 1px solid var( --slight-contrast);
   border-radius: 10px;
   display: flex;
   justify-content: center;
@@ -995,8 +1565,8 @@ a.bi-linkedin:hover {
   border: 2.5px solid transparent !important;
   border-radius: 10px !important;
   color: white !important;
-  background-color: #797599 !important;
-  transition: border-color 0.4s, background-color 0.4s, color 0.4s !important;
+  background-color: var( --slight-contrast) !important;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s !important;
 
 }
 
@@ -1007,12 +1577,12 @@ a.bi-linkedin:hover {
 
 
 .custom-confirm:hover {
-  background-color: #A569BD !important;
-  border-color: #8E44AD !important;
+  background-color: var(--positive-general) !important;
+  border-color: var(--positive-general) !important;
 }
 
 .custom-confirm:active {
-  background-color: #6f4680 !important;
+  background-color: var(--positive-general-darker) !important;
 }
 
 .custom-delete {
@@ -1020,21 +1590,21 @@ a.bi-linkedin:hover {
   border: 2.5px solid transparent !important;
   border-radius: 10px !important;
   color: white !important;
-  background-color: #797599 !important;
-  transition: border-color 0.4s, background-color 0.4s !important;
+  background-color: var( --slight-contrast) !important;
+  transition: border-color 0.3s, background-color 0.3s !important;
   display: flex;
   justify-content: center;
 
 }
 
 .delete-mode {
-  background-color: #e95656 !important;
+  background-color: var( --negative-general) !important;
   border-color: #d66f6f !important;
-  transition: border-color 0.4s;
+  transition: border-color 0.3s;
 }
 
 .custom-delete:hover {
-  background-color: #e95656 !important;
+  background-color: var( --negative-general) !important;
   border-color: #d35f5f !important;
 }
 
@@ -1049,41 +1619,12 @@ a.bi-linkedin:hover {
 .main-viewer-section {
   margin-left: 14px;
   margin-right: 14px;
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contrast);
   color: white;
   overflow: hidden;
   border-radius: 10px;
 }
 
-[tabulator-field^="race"] {
-  font-size: 13px;
-  border: none !important;
-}
-
-[tabulator-field="driver"],
-[tabulator-field="points"],
-[tabulator-field="team"], 
-[tabulator-field="pos"]{
-  background-color: #464166 !important;
-}
-
-[tabulator-field="team"]{
-  padding-left: 0 !important;
-}
-
-#seasonresults-teams-table [tabulator-field^="race"] {
-  padding: 0px !important;
-}
-
-#seasonresults-teams-table [tabulator-field="team"] {
-  font-family: Formula1Bold;
-}
-
-
-#seasonresults-table, #seasonresults-teams-table {
-  background-color: transparent !important;
-  border: none !important;
-}
 
 .year-drivers-teams{
   padding-top: 0.6rem;
@@ -1120,15 +1661,6 @@ a.bi-linkedin:hover {
   display: flex;
 }
 
-.main-viewer-section .tabulator-tableholder::-webkit-scrollbar {
-  width: 4px !important;
-}
-
-.main-viewer-section .tabulator-tableholder::-webkit-scrollbar-thumb {
-  background-color: white;
-  border-radius: 3px !important;
-}
-
 .team-table-logo-name{
   display: flex;
   align-items: center;
@@ -1137,107 +1669,6 @@ a.bi-linkedin:hover {
   transition: border 0.3s;
   width: 100%;
   height: 100%;
-}
-
-.tabulator-col-content {
-  border: none !important;
-}
-
-[role="columnheader"][tabulator-field="driver"], [role="columnheader"][tabulator-field="points"] {
-  font-family: "Formula1Bold";
-}
-
-[tabulator-field="driver"] {
-  border-right: 1.5px solid #797599 !important;
-  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
-}
-
-[tabulator-field="pos"] {
-  border-right: 1.5px solid #797599 !important;
-  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
-  font-family: "Formula1Bold";
-}
-
-
-[tabulator-field="points"] {
-  border-left: 1.5px solid #797599 !important;
-  border-right: none !important;
-  transition: color 0.3s, background-color 0.3s, border-color 0.3s;
-  font-family: "Formula1Bold";
-}
-
-.main-viewer-section .tabulator-col {
-  background-color: #18152e !important;
-  color: #dedde6 !important;
-}
-
-.main-viewer-section .tabulator-row {
-  background-color: #494561 !important;
-  cursor: pointer !important;
-  color: #dedde6 !important;
-  transition: background-color 0.3s, color 0.3s !important;
-}
-
-.main-viewer-section .tabulator-row-even {
-  background-color: #3c3952 !important;
-  cursor: pointer !important;
-  color: #dedde6 !important;
-}
-
-.main-viewer-section .tabulator-row:hover {
-  background-color: #625e86 !important;
-  cursor: pointer !important;
-}
-
-.main-viewer-section .tabulator-row [tabulator-field^="race"] {
-  transition: color 0.3s;
-}
-
-.main-viewer-section .tabulator-row:hover [tabulator-field^="race"] {
-  color: white;
-}
-
-[tabulator-field="team"]{
-  transition: background-color 0.3s, color 0.3s;
-  padding-right: 0px !important;
-  padding-top: 0px !important;
-  padding-bottom: 0px !important;
-}
-
-.tabulator-row:hover [tabulator-field="team"] {
-  background-color: #625e86 !important;
-  color: white !important;
-}
-
-.tabulator-row:hover [tabulator-field="driver"],  .tabulator-row:hover [tabulator-field="pos"]{
-  color: #110f24;
-  background-color: #dedde6 !important;
-  border-right: 1.5px solid #dedde6 !important;
-}
-
-
-.tabulator-row:hover [tabulator-field="points"] {
-  color: #110f24;
-  background-color: #dedde6 !important;
-  border-left: 1.5px solid #dedde6 !important;
-}
-
-[tabulator-field="driver"] span.bold-font{
-  transition: color 0.3s;
-}
-
-.tabulator-row:hover [tabulator-field="driver"] span.bold-font {
-  color: #110f24;
-}
-
-
-.main-viewer-section .tabulator-table {
-  background-color: #110f24 !important;
-  overflow-x: hidden !important;
-}
-
-.tabulator-col-content:has(img) {
-  padding: 0px !important;
 }
 
 .flag-header {
@@ -1249,14 +1680,14 @@ a.bi-linkedin:hover {
 
 .flag-header img {
   width: 100%;
-  height: 29px;
+  height: 33px;
   opacity: 0.45;
 }
 
 .text-in-front {
   position: absolute;
   z-index: 4;
-  color: #eeedf3;
+  color: var(--text-in-front);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   font-size: 15px;
 }
@@ -1268,7 +1699,7 @@ a.bi-linkedin:hover {
 
 .main-calendar-section {
   margin-left: 14px;
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contrast);
   color: white;
   min-height: 660px;
   max-height: 660px;
@@ -1281,7 +1712,7 @@ a.bi-linkedin:hover {
 .main-options-section {
   margin-left: 1.5rem;
   margin-right: 14px;
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contrast);
   color: white;
   min-height: 660px;
   max-height: 660px;
@@ -1314,13 +1745,13 @@ a.bi-linkedin:hover {
 
 .race-calendar {
   position: relative;
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 8px;
   margin: 10px;
-  color: #dedde6;
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  color: var( --text-general);
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   display: flex;
   cursor: grab !important;
   padding-left: 12px;
@@ -1362,8 +1793,8 @@ a.bi-linkedin:hover {
   width: 35px;
   height: 35px;
   border-radius: 10px;
-  background-color: #292738;
-  border: 1.5px solid rgb(44, 43, 59);
+  background-color: var(--weather-vis-back);
+  border: 1.5px solid var(--weather-vis-border);
   font-size: 22px;
   text-align: center;
 }
@@ -1384,7 +1815,7 @@ a.bi-linkedin:hover {
 .race-calendar:hover {
   border-color: white;
   color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .race-calendar .bi-chevron-left, .race-calendar .bi-chevron-right {
@@ -1392,7 +1823,7 @@ a.bi-linkedin:hover {
 }
 
 .race-calendar:hover .bi-chevron-left, .race-calendar:hover .bi-chevron-right {
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .race-calendar .bi-chevron-left:hover, .race-calendar .bi-chevron-right:hover {
@@ -1416,13 +1847,13 @@ a.bi-linkedin:hover {
   align-items: center;
   border: 2.5px solid transparent;
   border-radius: 10px;
-  color: #5bd999;
-  transition: color 0.4s, border-color 0.4s;
+  color: var(--positive-general);
+  transition: color 0.3s, border-color 0.3s;
   cursor: default;
 }
 
 .complete-div:hover{
-  border-color: #5bd999;
+  border-color: var(--positive-general);
 }
 
 .completed:hover{
@@ -1443,13 +1874,13 @@ a.bi-linkedin:hover {
   border: 2.5px solid transparent;
   border-radius: 10px;
   color: white;
-  transition: color 0.4s, border-color 0.4s;
+  transition: color 0.3s, border-color 0.3s;
   cursor: pointer;
 }
 
 .delete-div:hover {
-  color: #f15353;
-  border-color: #f15353;
+  color: var(--delete-div);
+  border-color: var(--delete-div);
 }
 
 
@@ -1470,14 +1901,14 @@ a.bi-linkedin:hover {
 
 
 .main-editStats-section {
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contrast);
   color: white;
   min-height: 660px;
   max-height: 660px;
   overflow-y: auto;
   border-radius: 10px;
   scrollbar-width: thin;
-  scrollbar-color: white #e5e5e5;
+  scrollbar-color: white;
 }
 
 .main-editStats-section::-webkit-scrollbar {
@@ -1516,35 +1947,35 @@ a.bi-linkedin:hover {
 }
 
 .active {
-  background-color: #797599 !important;
+  background-color: var( --slight-contrast) !important;
   color: #fdfdfd !important;
 }
 
 #F2pill {
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s, color 0.4s;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
 
 #F2pill:hover {
-  border: 2px solid #38c8f0;
-  background-color: #388cd5;
+  border: 2px solid var(--f2-border);
+  background-color: var(--f2-back);
   color: white !important;
 
 }
 
 #F3pill {
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s, color 0.4s;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
 
 #F3pill:hover {
-  border: 2px solid rgb(255, 72, 72);
-  background-color: rgb(207, 46, 46);
+  border: 2px solid var(--f3-border);
+  background-color: var(--f3-back);
   color: white !important;
 }
 
 #F2pill.active {
-  background-color: #1374fc !important;
+  background-color: var(--f2-active) !important;
 }
 
 #F3pill.active {
@@ -1556,26 +1987,26 @@ a.bi-linkedin:hover {
   display: flex;
   flex-direction: column;
   font-size: 20px;
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border-radius: 10px;
   margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
-  color: #dedde6;
+  color: var( --text-general);
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s;
+  transition: border-color 0.3s, background-color 0.3s;
   align-items: center;
   min-height: 66px;
 }
 
 .one-statH2H:hover {
   border-color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .one-statH2H i{
   cursor: pointer;
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 .one-statH2H i:hover{
@@ -1605,20 +2036,20 @@ a.bi-linkedin:hover {
 .driver1-name, .driver2-name{
   display: flex;
   flex-direction: column;
-  color: #dedde6;
-  background-color: #1f1b3b;
+  color: var( --text-general);
+  background-color: var(--h2h-back);
   border-radius: 10px;
   width: 100%;
   margin-left: 5px;
   margin-right: 5px;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.4s, color 0.4s;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .driver1-name:hover, .driver2-name:hover {
   color: white;
-  background-color: #302a57;
+  background-color: var(--h2h-back-hover);
 }
 
 .driver1-second, .driver2-second{
@@ -1632,19 +2063,19 @@ a.bi-linkedin:hover {
   align-items: center;
   font-size: 22px;
   padding-left: 20px;
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border-radius: 10px;
   margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
-  color: #dedde6;
+  color: var( --text-general);
   border: 2px solid transparent;
-  transition: border-color 0.4s, background-color 0.4s;
+  transition: border-color 0.3s, background-color 0.3s;
 }
 
 .one-performance:hover {
   border-color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .one-performance:hover .performance-name {
@@ -1667,7 +2098,7 @@ a.bi-linkedin:hover {
   cursor: pointer;
   background-color: transparent;
   border-radius: 10px;
-  transition: background-color 0.4s, color 0.4s;
+  transition: background-color 0.3s, color 0.3s;
   background-color: transparent;
   width: 25px;
   height: 25px;
@@ -1677,25 +2108,25 @@ a.bi-linkedin:hover {
 }
 
 .performance-buttons i:hover{
-  background-color: #6f698f !important;
+  background-color: var(--background--buttons-hover) !important;
   color: white !important;
 }
 
 .performance-buttons i:active{
-  background-color: #5f5a7c !important;
-  color: rgb(226, 226, 226) !important;
+  background-color: var(--active-buttons-back) !important;
+  color: #e2e2e2 !important;
   transition-duration: 0s;
 }
 
 .performance-name {
   width: 200px;
-  transition: color 0.4s;
+  transition: color 0.3s;
   cursor: default !important;
 }
 
 .performance-name-engine {
   width: 300px;
-  transition: color 0.4s;
+  transition: color 0.3s;
   cursor: default !important;
 }
 
@@ -1709,13 +2140,13 @@ a.bi-linkedin:hover {
 
 .name-H2H{
   width: 100%;
-  transition: color 0.4s;
+  transition: color 0.3s;
   cursor: default !important;
   text-align: center;
 }
 
 .only-name{
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 #bestrh2h .name-H2H, #raceh2h .name-H2H, #qualih2h .name-H2H{
@@ -1727,7 +2158,7 @@ a.bi-linkedin:hover {
   width: 75%;
   display: flex;
   flex-direction: row;
-  background-color: #1f1b3b;
+  background-color: var(--h2h-back);
   height: 7px;
   margin-top: 5px;
 }
@@ -1736,7 +2167,7 @@ a.bi-linkedin:hover {
   float: right;
   width: 0%;
   height: 7px;
-  transition: width 0.4s;
+  transition: width 0.3s;
 }
 
 .h2h-top{
@@ -1749,12 +2180,12 @@ a.bi-linkedin:hover {
   float: left;
   width: 0%;
   height: 7px;
-  transition: width 0.4s;
+  transition: width 0.3s;
 }
 
 .driver2-space, .driver1-space{
   width: 50%;
-  background-color: #1f1b3b;
+  background-color: var(--h2h-back);
   height: 6px;
 }
 
@@ -1764,28 +2195,28 @@ a.bi-linkedin:hover {
 .red-part {
   width: 300px;
   height: 3px;
-  background-color: #e95656;
+  background-color: var( --negative-general);
   position: relative;
 }
 
 .disabled-part {
   width: 300px;
   height: 3px;
-  background-color: #110f24;
+  background-color: var(--background-general);
   position: relative;
 }
 
 .disabled-part-engine {
   width: 100%;
   height: 3px;
-  background-color: #110f24;
+  background-color: var(--background-general);
   position: relative;
 }
 
 .green-part {
   width: 0%;
   height: 100%;
-  background-color: #5bd999;
+  background-color: var(--positive-general);
   position: absolute;
   top: 0;
   left: 0;
@@ -1813,7 +2244,7 @@ a.bi-linkedin:hover {
 .gray-part {
   width: 100%;
   height: 100%;
-  background-color: #110f24;
+  background-color: var(--background-general);
   position: absolute;
   top: 0;
   left: 0;
@@ -1854,25 +2285,25 @@ a.bi-linkedin:hover {
 
 .collapse-number {
   color: white;
-  background-color: #393744;
+  background-color: var(--custom-modal-back);
 }
 
 .contract-details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   color: white;
-  background-color: #393744;
+  background-color: var(--custom-modal-back);
 }
 
 .number-and-contract {
   display: flex;
   flex-direction: column;
-  background-color: #393744;
+  background-color: var(--custom-modal-back);
 }
 
 .custom-body {
-  color: #dedde6;
-  background-color: #393744;
+  color: var( --text-general);
+  background-color: var(--custom-modal-back);
 }
 
 .custom-modal {
@@ -1882,7 +2313,7 @@ a.bi-linkedin:hover {
 }
 
 .drivers-modal-zone, .teams-modal-zone{
-  border: 1px solid #797599;
+  border: 1px solid var( --slight-contrast);
   border-radius: 10px;
   width: 100%;
   display: grid;
@@ -1891,13 +2322,13 @@ a.bi-linkedin:hover {
 
 
 .contract-details div{
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .custom-header {
   color: white !important;
-  border-bottom: 1px solid #797599 !important;
-  background-color: #393744 !important;
+  border-bottom: 1px solid var( --slight-contrast) !important;
+  background-color: var(--custom-modal-back) !important;
   display: flex;
   justify-content: space-around;
 
@@ -1905,8 +2336,8 @@ a.bi-linkedin:hover {
 
 .custom-footer {
   color: white !important;
-  border-top: 1px solid #797599 !important;
-  background-color: #393744 !important;
+  border-top: 1px solid var( --slight-contrast) !important;
+  background-color: var(--custom-modal-back) !important;
 
 }
 
@@ -1921,8 +2352,8 @@ a.bi-linkedin:hover {
   padding: 8px 12px;
   max-width: 210px;
   outline: none;
-  transition: border-color 0.4s;
-  background-color: rgb(99, 99, 110);
+  transition: border-color 0.3s;
+  background-color: var(--mid-gray-contrast);
   color: #ebeaf0;
 }
 
@@ -1970,27 +2401,27 @@ a.bi-linkedin:hover {
 .team,
 .engine,
 .race {
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 4.8px;
   cursor: pointer !important;
   margin: 10px;
-  color: #dedde6;
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  color: var( --text-general);
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 18px;
 }
 
 .driver-info{
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 8px;
   cursor: pointer !important;
   margin: 13px 8px;
-  color: #dedde6;
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  color: var( --text-general);
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 18px;
   display: flex;
@@ -2059,7 +2490,7 @@ a.bi-linkedin:hover {
 .prediction-table-header, .prediction-table-driver{
   display: flex;
   flex-direction: row;
-  color: #dedde6;
+  color: var( --text-general);
   font-size: 20px;
   margin: 10px 20px;
 }
@@ -2099,29 +2530,29 @@ a.bi-linkedin:hover {
 .race:hover, .driver-info:hover {
   border-color: white;
   color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .team.selected,
 .engine.selected,
 .race.selected {
-  color: #110f24;
-  background-color: #dedde6;
+  color: var(--background-general);
+  background-color: var( --text-general);
 }
 
 .team:active .engine:active {
-  background-color: #1a1826;
+  background-color: var(--active-general);
 }
 
 .free-driver {
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 8px;
   cursor: grab !important;
   margin: 10px;
-  color: #dedde6;
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  color: var( --text-general);
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 15px;
 }
@@ -2129,8 +2560,8 @@ a.bi-linkedin:hover {
 .H2Hradio{
   border: 2px solid transparent;
   border-radius: 7px;
-  color: #dedde6;
-  background-color: #797599;
+  color: var( --text-general);
+  background-color: var( --slight-contrast);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   height: 28px;
   font-size: 16px;
@@ -2141,8 +2572,8 @@ a.bi-linkedin:hover {
 .GraphButton{
   border: 2px solid transparent;
   border-radius: 7px;
-  color: #dedde6;
-  background-color: #797599;
+  color: var( --text-general);
+  background-color: var( --slight-contrast);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   height: 28px;
   font-size: 16px;
@@ -2162,14 +2593,14 @@ a.bi-linkedin:hover {
 }
 
 .H2Hradio.activated{
-  background-color: #34c297;
-  border-color: #88ebcd;
+  background-color: var( --h2h-general);
+  border-color: var( --h2h-detail);
   color: white;
 }
 
 .GraphButton.activated{
-  background-color: #34bdc2;
-  border-color: #95ebee;
+  background-color: var( --graph-general);
+  border-color: var( --graph-detail);
   color: white;
 }
 
@@ -2201,17 +2632,17 @@ a.bi-linkedin:hover {
 }
 
 .indicator{
-  color: #5bd999;
+  color: var(--positive-general);
 }
 
 .modal-driver{
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 6px;
   margin: 8px;
-  color: #dedde6;
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  color: var( --text-general);
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 15px;
   display: flex;
@@ -2220,13 +2651,13 @@ a.bi-linkedin:hover {
 }
 
 .modal-team{
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 0px 6px;
   margin: 8px;
-  color: #dedde6;
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  color: var( --text-general);
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 15px;
   display: flex;
@@ -2236,8 +2667,8 @@ a.bi-linkedin:hover {
 
 .free-driver .custom-icon {
   color: transparent;
-  transition: opacity 0.4s;
-  background-image: linear-gradient(to left, #4e4b69, transparent);
+  transition: opacity 0.3s;
+  background-image: linear-gradient(to left, var(--component-general-hover), transparent);
   width: 80px;
   opacity: 0;
   z-index: 3;
@@ -2250,8 +2681,8 @@ a.bi-linkedin:hover {
 
 .free-driver .custom-unretire{
   color: transparent;
-  transition: opacity 0.4s;
-  background-image: linear-gradient(to left, #4e4b69, transparent);
+  transition: opacity 0.3s;
+  background-image: linear-gradient(to left, var(--component-general-hover), transparent);
   width: 80px;
   height: 20px;
   opacity: 0;
@@ -2268,12 +2699,12 @@ a.bi-linkedin:hover {
 }
 
 .custom-icon .bi-pencil-square {
-  transition: color 0.4s;
+  transition: color 0.3s;
 }
 
 .free-driver .bi-ban{
   opacity: 1 !important;
-  transition: color 0.4s;
+  transition: color 0.3s;
   color: white;
   z-index: 10;
   position: absolute;
@@ -2282,7 +2713,7 @@ a.bi-linkedin:hover {
 }
 
 .free-driver .bi-ban:hover{
-  color: #e95656;
+  color: var( --negative-general);
 }
 
 .custom-icon i:hover {
@@ -2316,53 +2747,54 @@ a.bi-linkedin:hover {
   border-color: white;
   cursor: grab !important;
   color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .modal-driver:hover, .modal-team:hover{
   border-color: white;
   color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover-extra);
+  cursor: default;
 }
 
 .modal-team.ferrari:hover{
-  color: #F91536;
+  color: var(--ferrari-primary);
 }
 
 .modal-team.redbull:hover{
-  color: #3671C6;
+  color: var(--redbull-primary);
 }
 
 .modal-team.mclaren:hover{
-  color: #F58020;
+  color: var(--mclaren-primary);
 }
 
 .modal-team.merc:hover{
-  color: #6CD3BF;
+  color: var(--mercedes-primary);
 }
 
 .modal-team.alpine:hover{
-  color: #2293D1;
+  color: var(--alpine-primary);
 }
 
 .modal-team.williams:hover{
-  color: #37BEDD;
+  color: var(--williams-primary);
 }
 
 .modal-team.haas:hover{
-  color: #B6BABD;
+  color: var(--haas-primary);
 }
 
 .modal-team.alpha:hover{
-  color: #5E8FAA;;
+  color: var(--alphatauri-primary);
 }
 
 .modal-team.alfa:hover{
-  color: #C92D4B;
+  color: var(--alfa-primary);
 }
 
 .modal-team.aston:hover{
-  color: #358C75;
+  color: var(--aston-primary);
 } 
 
 .blocking-div {
@@ -2416,26 +2848,26 @@ a.bi-linkedin:hover {
 }
 
 .normal-driver {
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   cursor: pointer;
   border-radius: 10px;
   padding: 8px;
   margin: 10px;
-  color: #dedde6;
-  transition: border-color 0.4s, color 0.4s, background-color 0.4s;
+  color: var( --text-general);
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
 }
 
 .one-stat-panel {
-  background-color: #3f3c57;
+  background-color: var(--component-general);
   border-radius: 10px;
   padding-left: 10px;
   margin: 10px;
   margin-left: 20px;
-  color: #dedde6;
-  transition: border-color 0.4s, background-color 0.4s;
+  color: var( --text-general);
+  transition: border-color 0.3s, background-color 0.3s;
   min-height: 70px;
   border: 2px solid transparent;
   display: flex;
@@ -2446,12 +2878,12 @@ a.bi-linkedin:hover {
 
 .one-stat-panel:hover{
   border-color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .one-stat-panel span{
-  color: #dedde6;
-  transition: color 0.4s;
+  color: var( --text-general);
+  transition: color 0.3s;
 }
 
 .one-stat-panel:hover span{
@@ -2459,11 +2891,11 @@ a.bi-linkedin:hover {
 }
 
 .positive {
-  color: #5bd999;
+  color: var(--positive-general);
 }
 
 .negative {
-  color: #e95656;
+  color: var( --negative-general);
 }
 
 .input-and-buttons{
@@ -2485,7 +2917,7 @@ a.bi-linkedin:hover {
   cursor: pointer;
   background-color: transparent;
   border-radius: 10px;
-  transition: background-color 0.4s, color 0.4s;
+  transition: background-color 0.3s, color 0.3s;
   background-color: transparent;
   width: 25px;
   height: 25px;
@@ -2495,21 +2927,21 @@ a.bi-linkedin:hover {
 }
 
 .input-buttons i:hover{
-  background-color: #6f698f !important;
+  background-color: var(--background--buttons-hover) !important;
   color: white !important;
 }
 
 .input-buttons i:active{
-  background-color: #5f5a7c !important;
-  color: rgb(226, 226, 226) !important;
+  background-color: var(--active-buttons-back) !important;
+  color: #e2e2e2 !important;
   transition-duration: 0s;
 }
 
 
 .scriptPills {
-  color: #dedde6 !important;
+  color: var( --text-general) !important;
   border: 2px solid transparent !important;
-  transition: border-color 0.4s, background-color 0.4s , color 0.4s !important;
+  transition: border-color 0.3s, background-color 0.3s , color 0.3s !important;
 }
 
 .scriptPills:hover {
@@ -2519,21 +2951,21 @@ a.bi-linkedin:hover {
 }
 
 .scriptPills.active {
-  background-color: #797599 !important;
+  background-color: var( --slight-contrast) !important;
   color: white !important;
 }
 
 .custom-input-number {
-  background-color: #21202e;
+  background-color: var(--overall-holder);
   border-radius: 10px;
   padding: 10px;
   margin-right: 7px;
-  color: #dedde6;
+  color: var( --text-general);
   max-width: 60px;
   height: 56px;
   border: 2px solid transparent;
   font-size: 20px;
-  transition: background-color 0.4s, color 0.4s, border-color 0.4s !important;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s !important;
 
 }
 
@@ -2543,7 +2975,7 @@ a.bi-linkedin:hover {
 
 
 .custom-input-number:hover {
-  background-color: #292738;
+  background-color: var(--weather-vis-back);
   border-color: #cecece;
 }
 
@@ -2563,16 +2995,16 @@ input::-webkit-inner-spin-button {
 .normal-driver:hover {
   border-color: white;
   color: white;
-  background-color: #4e4b69;
+  background-color: var(--component-general-hover);
 }
 
 .normal-driver:active {
-  background-color: #1a1826;
+  background-color: var(--active-general);
 }
 
 .normal-driver.clicked {
-  color: #110f24;
-  background-color: #dedde6;
+  color: var(--background-general);
+  background-color: var( --text-general);
 }
 
 
@@ -2581,7 +3013,7 @@ input::-webkit-inner-spin-button {
 }
 
 .team-template {
-  background-color: #1f1b3b;
+  background-color: var(--h2h-back);
   border-radius: 10px;
   border: none;
   color: white;
@@ -2599,6 +3031,7 @@ input::-webkit-inner-spin-button {
 .logo-and-name {
   display: flex;
   flex-direction: row;
+  max-height: 46px;
 }
 
 .logo-and-title {
@@ -2688,7 +3121,7 @@ input::-webkit-inner-spin-button {
 
 .facility-name{
   width: 25%;
-  color: #dedde6;
+  color: var( --text-general);
 }
 
 .custom-button{
@@ -2697,11 +3130,19 @@ input::-webkit-inner-spin-button {
   padding: 0 10px;
 }
 
-#teamMenu a{
+#teamMenu a, .team-select-menu a{
   display: flex;
   align-items: center;
   justify-content: flex-start;
   padding: 0;
+}
+
+.team-select-menu a{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  margin-right: 7px;
 }
 
 
@@ -2718,7 +3159,7 @@ input::-webkit-inner-spin-button {
 .separator{
   margin-top: 30px;
   width: 1px;
-  background-color: rgb(99, 99, 110);
+  background-color: var(--mid-gray-contrast);
   height: 85%;
 }
 
@@ -2736,7 +3177,7 @@ input::-webkit-inner-spin-button {
 .level{
   height: 8px;
   width: 42px;
-  background-color: rgb(99, 99, 110);
+  background-color: var(--mid-gray-contrast);
   transition: background-color 0.2s;
 }
 
@@ -2745,7 +3186,7 @@ input::-webkit-inner-spin-button {
 }
 
 .viewer-component .custom-input-number, .facility-component .custom-input-number, .facility-component-lg .custom-input-number{
-  background-color: rgb(99, 99, 110) !important;
+  background-color: var(--mid-gray-contrast) !important;
   text-align: center;
   padding: 8px;
   height: 39.2px !important;
@@ -2781,10 +3222,10 @@ input::-webkit-inner-spin-button {
 }
 
 #edit_teams .team-viewer i{
-  transition: color 0.4s;
+  transition: color 0.3s;
   font-size: 20px;
-  color: #dedde6;
-  transition: background-color 0.4s, color 0.4s;
+  color: var( --text-general);
+  transition: background-color 0.3s, color 0.3s;
   width: 25px;
   height: 25px;
   display: flex;
@@ -2797,7 +3238,7 @@ input::-webkit-inner-spin-button {
 #edit_teams .team-viewer i:hover{
   cursor: pointer;
   color: white !important;
-  background-color: #6f698f !important;
+  background-color: var(--background--buttons-hover) !important;
 }
 
 .q-label{
@@ -2815,7 +3256,7 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
-#redbulllogo, #rblogo {
+.redbulllogo, #rblogo {
   width: 55px;
   height: 45px;
   padding-bottom: 8px;
@@ -2823,7 +3264,7 @@ input::-webkit-inner-spin-button {
   padding-top: 7px;
 }
 
-#ferrarilogo, #felogo {
+.ferrarilogo, #felogo {
   width: 35px;
   height: 40px;
   padding-bottom: 6px;
@@ -2831,7 +3272,15 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#merclogo, #melogo {
+.andrettilogo {
+  width: 35px;
+  height: 40px;
+  padding-bottom: 3px;
+  padding-top: 8px;
+  padding-left: 3px;
+}
+
+.merclogo, #melogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -2839,7 +3288,7 @@ input::-webkit-inner-spin-button {
   padding-left: 10px;
 }
 
-#merclogo2 {
+.merclogo2 {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -2848,16 +3297,16 @@ input::-webkit-inner-spin-button {
   padding-right: 4px;
 }
 
-#alpinelogo, #allogo {
+.alpinelogo, #allogo {
   width: 45px;
   height: 40px;
   padding-bottom: 6px;
   padding-top: 9px;
   padding-left: 5px;
-  transition: opacity 0.4s;
+  transition: opacity 0.3s;
 }
 
-#mclarenlogo, #mclogo {
+.mclarenlogo, #mclogo {
   width: 40px;
   height: 40px;
   padding-bottom: 4px;
@@ -2865,7 +3314,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#alfalogo, #aflogo {
+.alfalogo, #aflogo {
   width: 40px;
   height: 40px;
   padding-bottom: 3px;
@@ -2873,7 +3322,7 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-#astonlogo, #aslogo {
+.astonlogo, #aslogo {
   width: 50px;
   height: 45px;
   padding-bottom: 5px;
@@ -2881,7 +3330,46 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
-#haaslogo, #halogo {
+.brawnlogo{
+  width: 50px;
+  height: 45px;
+  padding-bottom: 16px;
+  margin-left: 5px;
+  padding-top: 17px;
+}
+
+.audilogo{
+  width: 45px;
+  height: 45px;
+  padding-bottom: 16px;
+  padding-left: 5px;
+  padding-top: 17px;
+}
+
+.sauberlogo{
+  width: 35px;
+  height: 35px;
+  padding-bottom: 3px;
+  padding-top: 5px;
+  padding-left: 5px;
+}
+
+.hugologo{
+  height: 45px;
+  padding-bottom: 7px;
+  padding-left: 5px;
+  padding-top: 7px;
+}
+
+.toyotalogo{
+  width: 50px;
+  height: 45px;
+  padding-bottom: 9px;
+  padding-left: 7px;
+  padding-top: 6px;
+}
+
+.haaslogo, #halogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -2889,7 +3377,15 @@ input::-webkit-inner-spin-button {
   padding-left: 6px;
 }
 
-#alphataurilogo, #atlogo {
+.lotuslogo{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 4px;
+  padding-top: 4px;
+  padding-left: 6px;
+}
+
+.alphataurilogo, #atlogo {
   width: 45px;
   height: 45px;
   padding-bottom: 12px;
@@ -2897,7 +3393,7 @@ input::-webkit-inner-spin-button {
   padding-top: 12px;
 }
 
-#williamslogo, #wilogo {
+.williamslogo, #wilogo {
   width: 45px;
   height: 45px;
   padding-bottom: 11px;
@@ -2911,8 +3407,8 @@ input::-webkit-inner-spin-button {
 }
 
 .driver1-name .team1, .driver2-name .team2{
-  color: #dedde6 !important;
-  transition: color 0.4s;
+  color: var( --text-general) !important;
+  transition: color 0.3s;
 }
 
 .driver1-name:hover .team1, .driver2-name:hover .team2{
@@ -2921,324 +3417,347 @@ input::-webkit-inner-spin-button {
 
 
 #redbull, .rbborder-down:hover {
-  border-bottom: 2px solid #3671C6 !important;
-}
-
-.tabulator-row:hover .rbborder-right {
-  border-right: 3px solid #3671C6 !important;
+  border-bottom: 2px solid var(--redbull-primary) !important;
 }
 
 .rbactivated{
-  background-color: #3671C6;
+  background-color: var(--redbull-primary);
 }
 
 #ferrari, .feborder-down:hover {
-  border-bottom: 2px solid #F91536 !important;
-}
-
-.tabulator-row:hover .feborder-right {
-  border-right: 3px solid #F91536 !important;
+  border-bottom: 2px solid var(--ferrari-primary) !important;
 }
 
 .feactivated{
-  background-color: #F91536;
+  background-color: var(--ferrari-primary);
 }
 
 #merc, .meborder-down:hover {
-  border-bottom: 2px solid #6CD3BF !important;
-}
-
-.tabulator-row:hover .meborder-right {
-  border-right: 3px solid #6CD3BF !important;
+  border-bottom: 2px solid var(--mercedes-primary) !important;
 }
 
 .meactivated{
-  background-color: #6CD3BF;
+  background-color: var(--mercedes-primary);
 }
 
 #mclaren, .mcborder-down:hover {
-  border-bottom: 2px solid #F58020 !important;
-}
-
-.tabulator-row:hover .mcborder-right {
-  border-right: 3px solid #F58020 !important;
+  border-bottom: 2px solid var(--mclaren-primary) !important;
 }
 
 .mcactivated{
-  background-color: #F58020;
+  background-color: var(--mclaren-primary);
 }
 
 
-#alpine,.alborder-down:hover {
+#alpine, .alborder-down:hover {
+  border-bottom: 2px solid var(--alpine-primary) !important
+}
+
+.alborder-down-noC:hover{
   border-bottom: 2px solid #2293D1 !important
 }
 
-.tabulator-row:hover .alborder-right {
-  border-right: 3px solid #2293D1 !important;
+.andrettiborder-down:hover{
+  border-bottom: 2px solid var(--andretti-primary) !important
 }
 
+.renaultborder-down:hover{
+  border-bottom: 2px solid var(--renault-primary) !important
+}
+
+.lotusborder-down:hover{
+  border-bottom: 2px solid var(--lotus-primary) !important
+}
+
+
 .alactivated{
-  background-color: #2293D1;
+  background-color: var(--alpine-primary);
 }
 
 #alfaromeo, .afborder-down:hover {
+  border-bottom: 2px solid var(--alfa-primary) !important
+}
+
+.afborder-down-noC:hover{
   border-bottom: 2px solid #C92D4B !important
 }
 
-.tabulator-row:hover .afborder-right {
-  border-right: 3px solid #C92D4B !important;
-}
 
 .afactivated{
-  background-color: #C92D4B;
+  background-color: var(--alfa-primary);
 }
 
 #astonmartin, .asborder-down:hover {
-  border-bottom: 2px solid #358C75 !important
-}
-
-.tabulator-row:hover .asborder-right {
-  border-right: 3px solid #358C75 !important;
+  border-bottom: 2px solid var(--aston-primary) !important
 }
 
 .asactivated{
-  background-color: #358C75;
+  background-color: var(--aston-primary);
 }
 
-#alphatauri, .atborder-down:hover {
-  border-bottom: 2px solid #5E8FAA !important 
+#alphatauri, .atborder-down:hover, .hugoborder-down:hover{
+  border-bottom: 2px solid var(--alphatauri-primary) !important 
 }
 
-.tabulator-row:hover .atborder-right {
-  border-right: 3px solid #5E8FAA !important;
+.atborder-down-noC:hover{
+  border-bottom: 2px solid #5E8FAA !important
 }
+
+.hugoborder-down:hover{
+  border-bottom: 2px solid var(--hugo-primary) !important
+
+}
+
+.visarbborder-down:hover{
+  border-bottom: 2px solid var(--visarb-primary) !important
+}
+
+
+.toyotaborder-down:hover{
+  border-bottom: 2px solid var(--toyota-primary) !important
+}
+
+.porscheborder-down:hover{
+  border-bottom: 2px solid var(--porsche-primary) !important
+}
+
+.brawnborder-down:hover{
+  border-bottom: 2px solid var(--brawn-primary) !important
+}
+
+.stakeborder-down:hover{
+  border-bottom: 2px solid var(--stake-primary) !important
+}
+
+.audiborder-down:hover{
+  border-bottom: 2px solid var(--audi-primary) !important
+}
+
+.sauberborder-down:hover{
+  border-bottom: 2px solid var(--sauber-primary) !important
+}
+
+
 
 .atactivated{
-  background-color: #5E8FAA;
+  background-color: var(--alphatauri-primary);
 }
 
 #williams, .wiborder-down:hover {
-  border-bottom: 2px solid #37BEDD !important
+  border-bottom: 2px solid var(--williams-primary) !important
 }
 
-.tabulator-row:hover .wiborder-right {
-  border-right: 3px solid #37BEDD !important;
-}
 
 .wiactivated{
-  background-color: #37BEDD;
+  background-color: var(--williams-primary);
 }
 
 #haas, .haborder-down:hover {
-  border-bottom: 2px solid #B6BABD !important
-}
-
-.tabulator-row:hover .haborder-right {
-  border-right: 3px solid #B6BABD !important;
+  border-bottom: 2px solid var(--haas-primary) !important
 }
 
 .haactivated{
-  background-color: #B6BABD;
+  background-color: var(--haas-primary);
 }
 
 .rbfont {
-  color: #3671C6;
+  color: var(--redbull-primary);
 }
 
 .fefont {
-  color: #F91536;
+  color: var(--ferrari-primary);
 }
 
 .mefont {
-  color: #6CD3BF;
+  color: var(--mercedes-primary);
 }
 
 .mcfont {
-  color: #F58020;
+  color: var(--mclaren-primary);
 }
 
 .alfont {
-  color: #2293D1;
+  color: var(--alpine-primary);
 }
 
 .affont {
-  color: #C92D4B;
+  color: var(--alfa-primary);
 }
 
 .asfont {
-  color: #358C75;
+  color: var(--aston-primary);
 }
 
 .atfont {
-  color: #5E8FAA;
+  color: var(--alphatauri-primary);
 }
 
 .wifont {
-  color: #37BEDD;
+  color: var(--williams-primary);
 }
 
 .hafont {
-  color: #B6BABD;
+  color: var(--haas-primary);
 }
 
 .rbbar-primary {
-  background-color: #3671C6;
+  background-color: var(--redbull-primary);
 }
 
 .rbbar-secondary {
-  background-color: #ffd300;
+  background-color: var(--redbull-secondary);
 }
 
 .febar-primary {
-  background-color: #F91536;
+  background-color: var(--ferrari-primary);
 }
 
 .febar-secondary {
-  background-color: #f1f1f1;
+  background-color: var(--general-secondary);
 }
 
 .mebar-primary {
-  background-color: #6CD3BF;
+  background-color: var(--mercedes-primary);
 }
 
 .mebar-secondary {
-  background-color: #fcfcfc;
+  background-color: var(--general-secondary);
 }
 
 .mcbar-primary {
-  background-color: #F58020;
+  background-color: var(--mclaren-primary);
 }
 
 .mcbar-secondary {
-  background-color: #47c7fc;
+  background-color: var(--mclaren-secondary);
 }
 
 .albar-primary {
-  background-color: #2293D1;
+  background-color: var(--alpine-primary);
 }
 
 .albar-secondary {
-  background-color: #fd48c7;
+  background-color: var(--alpine-secondary);
 }
 
 .afbar-primary {
-  background-color: #C92D4B;
+  background-color: var(--alfa-primary);
 }
 
 .afbar-secondary {
-  background-color: #f1f1f1;
+  background-color: var(--alfa-secondary);
 }
 
 .asbar-primary {
-  background-color: #358C75;
+  background-color: var(--aston-primary);
 }
 
 .asbar-secondary {
-  background-color: #c3dc00;
+  background-color: var(--aston-secondary);
 }
 
 .atbar-primary {
-  background-color: #5E8FAA;
+  background-color: var(--alphatauri-primary);
 }
 
 .atbar-secondary {
-  background-color: #f1f1f1;
+  background-color: var(--alphatauri-secondary);
 }
 
 .wibar-primary {
-  background-color: #37BEDD;
+  background-color: var(--williams-primary);
 }
 
 .wibar-secondary {
-  background-color: #f1f1f1;
+  background-color: var(--general-secondary);
 }
 
 .habar-primary {
-  background-color: #B6BABD;
+  background-color: var(--haas-primary);
 }
 
 .habar-secondary {
-  background-color: #f62039;
+  background-color: var(--haas-secondary);
 }
 
 .rbborder-primary {
-  border: 2px solid #3671C6;
+  border: 2px solid var(--redbull-primary);
 }
 
 .rbborder-secondary {
-  border: 2px solid #ffd300;
+  border: 2px solid var(--redbull-secondary);
 }
 
 .feborder-primary {
-  border: 2px solid #F91536;
+  border: 2px solid var(--ferrari-primary);
 }
 
 .feborder-secondary {
-  border: 2px solid #f1f1f1;
+  border: 2px solid var(--general-secondary);
 }
 
 .meborder-primary {
-  border: 2px solid #6CD3BF;
+  border: 2px solid var(var(--mercedes-primary));
 }
 
 .meborder-secondary {
-  border: 2px solid #fcfcfc;
+  border: 2px solid var(--general-secondary);
 }
 
 .mcborder-primary {
-  border: 2px solid #F58020;
+  border: 2px solid var(--mclaren-primary);
 }
 
 .mcborder-secondary {
-  border: 2px solid #47c7fc;
+  border: 2px solid var(--mclaren-secondary);
 }
 
 .alborder-primary {
-  border: 2px solid #2293D1;
+  border: 2px solid var(--alpine-primary);
 }
 
 .alborder-secondary {
-  border: 2px solid #fd48c7;
+  border: 2px solid var(--alpine-secondary);
 }
 
 .afborder-primary {
-  border: 2px solid #C92D4B;
+  border: 2px solid var(--alfa-primary);
 }
 
 .afborder-secondary {
-  border: 2px solid #f1f1f1;
+  border: 2px solid var(--alfa-secondary);
 }
 
 .asborder-primary {
-  border: 2px solid #358C75;
+  border: 2px solid var(--aston-primary);
 }
 
 .asborder-secondary {
-  border: 2px solid #c3dc00;
+  border: 2px solid var(--aston-secondary);
 }
 
 .atborder-primary {
-  border: 2px solid #5E8FAA;
+  border: 2px solid var(--alphatauri-primary);
 }
 
 .atborder-secondary {
-  border: 2px solid #f1f1f1;
+  border: 2px solid var(--alphatauri-secondary);
 }
 
 .wiborder-primary {
-  border: 2px solid #37BEDD;
+  border: 2px solid var(--williams-primary);
 }
 
 .wiborder-secondary {
-  border: 2px solid #f1f1f1;
+  border: 2px solid var(--general-secondary);
 }
 
 .haborder-primary {
-  border: 2px solid #B6BABD;
+  border: 2px solid var(--haas-primary);
 }
 
 .haborder-secondary {
-  border: 2px solid #f62039;
+  border: 2px solid var(--haas-secondary);
 }
 
 .predict-warning{

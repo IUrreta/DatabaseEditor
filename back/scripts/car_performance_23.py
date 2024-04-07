@@ -22,7 +22,7 @@ def run_script(option=""):
 
 
     for i in range(len(partsType)):
-        designs = cursor.execute("SELECT DesignID FROM Parts_Designs WHERE PartType = " + str(partsType[i]) + " AND TeamID = " + team_id).fetchall()
+        designs = cursor.execute(f"SELECT DesignID FROM Parts_Designs WHERE PartType = {partsType[i]} AND TeamID = {team_id}").fetchall()
         listDesigns = []
         doneExp = 0
         for j in designs:
@@ -31,7 +31,7 @@ def run_script(option=""):
 
         for design in listDesigns:
             listStats = []
-            stats = cursor.execute("SELECT PartStat FROM Parts_Designs_StatValues WHERE DesignID = " + str(design)).fetchall()
+            stats = cursor.execute(f"SELECT PartStat FROM Parts_Designs_StatValues WHERE DesignID = {design}").fetchall()
             for stat in stats:
                 if stat != (15,):
                     listStats.append(stat[0])
@@ -43,15 +43,14 @@ def run_script(option=""):
                     ratio = 0.1
                 delta = buffs_dict[buffs[i]]
                 deltaUnit = delta*ratio
-                values = cursor.execute("SELECT Value, UnitValue FROM Parts_Designs_StatValues WHERE DesignID = " + str(design) + " AND PartStat = " + str(k)).fetchone()
+                values = cursor.execute(f"SELECT Value, UnitValue FROM Parts_Designs_StatValues WHERE DesignID = {design} AND PartStat = {k}").fetchone()
                 old_value = round(decimal.Decimal(values[0]), 10)
                 old_valueUnit = round(decimal.Decimal(values[1]), 10)
                 new_value = old_value + delta
                 new_valueUnit = old_valueUnit + decimal.Decimal(deltaUnit)
-                cursor.execute("UPDATE Parts_Designs_StatValues SET Value = " + str(new_value) + ", UnitValue = " + str(new_valueUnit) + " WHERE DesignID = " + str(design) + " AND PartStat = " + str(k))
-                #print("Old value for stat " + str(k) + " from design " + str(design) + ": [" + str(old_value) + ", " + str(old_valueUnit) + "], new values: [" + str(new_value) + ", " + str(new_valueUnit) + "]")
+                cursor.execute(f"UPDATE Parts_Designs_StatValues SET Value = {new_value}, UnitValue = {new_valueUnit} WHERE DesignID = {design} AND PartStat = {k}")
                 if(doneExp < len(listStats)):
-                    expertise_value = cursor.execute("SELECT Expertise FROM Parts_TeamExpertise WHERE PartType = " + str(partsType[i]) + " AND PartStat = " + str(k) + " AND TeamID = " + str(team_id)).fetchone() 
+                    expertise_value = cursor.execute(f"SELECT Expertise FROM Parts_TeamExpertise WHERE PartType = {partsType[i]} AND PartStat = {k} AND TeamID = {team_id}").fetchone()
                     if expertise_value is None:
                         print("Done!")
                     else:
@@ -62,15 +61,12 @@ def run_script(option=""):
                         expertiseDelta
                         old_expertise = round(decimal.Decimal(expertise_value[0]), 10)
                         new_expertise = old_expertise + expertiseDelta
-                        cursor.execute("UPDATE Parts_TeamExpertise SET Expertise = " + str(new_expertise) + " WHERE PartType = " + str(partsType[i]) + " AND PartStat = " + str(k) + " AND TeamID = " + str(team_id))
-                        #print("Old Expertise: " + str(old_expertise) + ", new expertise: " + str(new_expertise))   
+                        cursor.execute(f"UPDATE Parts_TeamExpertise SET Expertise = {new_expertise} WHERE PartType = {partsType[i]} AND PartStat = {k} AND TeamID = {team_id}")
                         doneExp += 1
    
     conn.commit()
     conn.close()
 
-def get_description():
-    return "Choose a new team to manage by typing its name as an argument.\nAuthor: Tahkare"
 
 if __name__ == '__main__':
     run_script()
