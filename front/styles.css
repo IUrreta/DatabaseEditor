@@ -3697,7 +3697,7 @@ input::-webkit-inner-spin-button {
 }
 
 .meborder-primary {
-  border: 2px solid var(var(--mercedes-primary));
+  border: 2px solid var(--mercedes-primary);
 }
 
 .meborder-secondary {
