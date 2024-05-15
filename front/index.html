@@ -730,31 +730,15 @@
       </div>
     </div>
   </div>
-  <div class="versionPanel"></div>
-  <div class="patchNotesPanel">
-    <i class="bi bi-list-ul" data-bs-toggle="modal" data-bs-target="#patchModal">&nbsp;Patch Notes</i>
-  </div>
-  <div class="upper-panel">
-    <div class="title main-title">
-      <div style="display: flex; flex-direction: column;">
-        <h1 class="bold-font">Database Editor for F1M23</h1>
-        <h3 class="font">by <a href="https://twitter.com/ignaciourreta_" id="byname">@ignaciourreta_</a></h3>
-      </div>
-    </div>
-  </div>
   <div class="notification-panel pe-3 pt-3" id="notificationPanel">
   </div>
   <div class="tools-panel">
-    <div class="ms-3 bold-font save-selector">
-      <div class="save-selector-title">
-        SAVE SELECTOR
-        <div class="pill-line"></div>
-      </div>
+    <div class="ms-3 bold-font save-selector py-2">
       <div>
-        <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="saveSelector"
+        <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown-no-margin" id="saveSelector"
           data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
           style="font-family: Formula1; min-width: 148px;">
-          Your saves
+          Select save
         </button>
         <ul class="dropdown-menu" id="dropdownMenu" style="font-family: Formula1;">
         </ul>
@@ -763,18 +747,7 @@
 
     </div>
     <div class="script-selector bold-font ms-3">
-      <div class="pill-types">
-        <div id="iaPills">AI MODEL
-          <div class="pill-line"></div>
-        </div>
-        <div id="dataPills">VIEW
-          <div class="pill-line"></div>
-        </div>
-        <div id="editPills">EDIT
-          <div class="pill-line"></div>
-        </div>
-      </div>
-      <div class="pt-2 ps-3" style="padding-bottom: 0.6rem;">
+      <div class="py-2 ps-3">
         <ul class="nav nav-pills">
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="predictpill">PREDICTION</a>
@@ -803,6 +776,7 @@
         </ul>
       </div>
     </div>
+    <div class="versionPanel" data-bs-toggle="modal" data-bs-target="#patchModal"></div>
 
 
   </div>

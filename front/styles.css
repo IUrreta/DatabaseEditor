@@ -501,7 +501,7 @@ a.bi-linkedin:hover {
 }
 
 .cet-title{
-  font-family: 'Formula1' !important;
+  font-family: 'Formula1Bold' !important;
 }
 
 .versionPanel {
@@ -534,7 +534,6 @@ a.bi-linkedin:hover {
   top: 0px;
   right: 0px;
   color: white;
-  background-color: var(--tools-general);
   width: 530px;
   height: 116px;
   display: flex;
@@ -542,6 +541,7 @@ a.bi-linkedin:hover {
   text-align: center;
   align-items: flex-end;
   gap: 10px;
+  pointer-events: none;
 }
 
 .notification-line{
@@ -658,7 +658,6 @@ a.bi-linkedin:hover {
   background-color: var(--tools-general);
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
 }
 
 @keyframes move {
@@ -742,11 +741,10 @@ a.bi-linkedin:hover {
 
 .bi-file-earmark-binary{
   font-size: 25px;
-  margin-top: 0.7rem;
-  position: absolute;
-  margin-left: 0.5rem;
+  margin: 0 0.3rem;
   color: var( --slight-contrast);
   opacity: 1;
+  position: absolute;
   transition: color 0.3s, opacity 0.3s;
 }
 
