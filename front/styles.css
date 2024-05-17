@@ -3018,6 +3018,7 @@ DRIVERS TABLE
   position: absolute;
   left: 10px;
   cursor: pointer;
+  pointer-events: none;
 }
 
 .pill-line{
@@ -3075,7 +3076,7 @@ DRIVERS TABLE
 }
 
 .edit-pills::before{
-  background: radial-gradient(ellipse 70% 150% at center 120%, var(--mode-line-edit), transparent 70%);
+  background: radial-gradient(ellipse 70% 160% at center 110%, var(--mode-line-edit), transparent 70%);
 }
 
 .edit-pills .pill-line{
@@ -3084,7 +3085,7 @@ DRIVERS TABLE
 
 
 .view-pills::before{
-  background: radial-gradient(ellipse 70% 150% at center 115%, var(--mode-line-view), transparent 70%);
+  background: radial-gradient(ellipse 70% 160% at center 110%, var(--mode-line-view), transparent 70%);
 }
 
 .view-pills .pill-line{
