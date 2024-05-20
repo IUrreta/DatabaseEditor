@@ -788,6 +788,57 @@ a.bi-linkedin:hover {
   transition: border-color 0.3s !important;
 }
 
+.dropdown-line{
+  height: 2px;
+  width: 0%;
+  background-color: var( ---general);
+  transition: width 0.3s, color 0.3s;
+}
+
+.new-custom-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse 70% 150% at center bottom, rgba(255, 255, 255, 0.6), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  transition-delay: 0.15s;
+  pointer-events: none;
+}
+
+.new-custom-dropdown:hover::before {
+  opacity: 1;
+}
+
+.new-custom-dropdown:not(:hover)::before {
+  transition-delay: 0s; /* No delay when not hovering */
+}
+
+#saveSelector:focus::before{
+  opacity: 1;
+}
+
+#saveSelector:focus ~ .dropdown-line{
+  width: 100%;
+  background-color: var(--white-general);
+}
+
+.new-custom-dropdown {
+  max-width: 250px !important;
+  background-color: transparent !important;
+  color: var(--white-general) !important;
+  border: 0px !important;
+  position: relative;
+}
+
+.new-custom-dropdown:hover ~ .dropdown-line{
+  width: 100%;
+  background-color: var(--text-general);
+}
+
 #numberButton{
   min-width: 100px;
   display: flex;
@@ -900,23 +951,6 @@ a.bi-linkedin:hover {
   margin-left: 20px;
   margin-top: 1rem;
   margin-bottom: 2rem;
-}
-
-.pill-line{
-  height: 1.3px;
-  width: 0%;
-  background-color: var( --text-general);
-  transition: width 0.3s, color 0.3s;
-}
-
-.pill-line.activeType{
-  width: 100%;
-  background-color: var(--white-general);
-}
-
-.activeSelected .pill-line{
-  width: 100%;
-  background-color: var(--white-general);
 }
 
 .categoryPills,
