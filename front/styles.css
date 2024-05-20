@@ -42,6 +42,7 @@
   --ai-transparent: #baffea99;
   --edit-transparent: #fff7b099;
   --view-transparent: #e8b6ff99;
+  --white-gradient: #ffffff99;
 
   --f2-border: #38c8f0;
   --f2-back: #388cd5;
@@ -753,6 +754,29 @@ a.bi-linkedin:hover {
   position: relative;
   transition: width 0.2s;
   cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.gear-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse 70% 150% at center bottom, var(--white-gradient), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  transition-delay: 0.15s;
+  pointer-events: none;
+}
+
+.gear-container:hover::before {
+  opacity: 1;
+}
+
+.gear-container:not(:hover)::before {
+  transition-delay: 0s;
 }
 
 .gear-container.shown{
@@ -841,8 +865,8 @@ a.bi-linkedin:hover {
   background-color: var(--text-general);
   transition: width 0.2s, color 0.2s;
   position: absolute;
-  bottom: 2px;
-  left: 0;
+  bottom: 0;
+  left: -2px;
 }
 
 .new-custom-dropdown::before {
@@ -852,7 +876,7 @@ a.bi-linkedin:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(ellipse 70% 150% at center bottom, rgba(255, 255, 255, 0.6), transparent 70%);
+  background: radial-gradient(ellipse 70% 150% at center bottom, var(--white-gradient), transparent 70%);
   opacity: 0;
   transition: opacity 0.25s ease;
   transition-delay: 0.15s;
@@ -880,7 +904,6 @@ a.bi-linkedin:hover {
 
 #saveSelector:focus + .dropdown-line{
   width: 100%;
-  background-color: var(--white-general);
 }
 
 .new-custom-dropdown {
@@ -1013,7 +1036,7 @@ a.bi-linkedin:hover {
 
 .categoryPills,
 .scriptPills, .generalPills {
-  padding: 6px 12px;
+  padding: 6px 12px !important;
   border-radius: 10px !important;
 }
 
