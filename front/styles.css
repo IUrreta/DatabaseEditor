@@ -799,7 +799,7 @@ a.bi-linkedin:hover {
   opacity: 0;
   transition: opacity 0.10s;
   position: absolute;
-  left: 10px;
+  left: 8px;
   cursor: pointer;
   pointer-events: none;
   bottom: 7px;
@@ -809,7 +809,7 @@ a.bi-linkedin:hover {
   color: var( --text-general);
   opacity: 1;
   transition: color 0.3s, opacity 0.1s;
-  left: 12px;
+  left: 10px;
   font-size: 20px;
   position: absolute;
   bottom: 5px;
