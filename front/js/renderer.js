@@ -562,7 +562,6 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('#dropdownMenu a').forEach(item => {
             item.addEventListener("click", function () {
                 const saveSelector = document.getElementById('saveSelector');
-                document.querySelector(".save-selector-title").classList.add("activeSelected")
                 let saveSelected = item.innerHTML
                 saveSelector.innerHTML = saveSelected;
                 let dataSaves = {
@@ -572,6 +571,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 socket.send(JSON.stringify(dataSaves))
                 isSaveSelected = 1;
                 document.getElementById("editStatsPanel").className = "left-panel-stats d-none";
+                document.querySelector(".gear-container").classList.add("shown")
                 resetTeamEditing()
                 resetViewer()
                 resetYearButtons()
@@ -591,7 +591,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    document.querySelector(".bi-file-earmark-binary").addEventListener("click", function () {
+    document.querySelector(".gear-container").addEventListener("click", function () {
         let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'), {
             keyboard: false
         })
@@ -600,7 +600,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function manage_config(info){
         if (info[0] === "ERROR"){ //No file detected -> show modal
-            document.querySelector(".bi-file-earmark-binary").classList.add("hidden")
+            document.querySelector(".bi-gear").classList.add("hidden")
             let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
                 keyboard: false
             })
@@ -608,14 +608,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         else { //File detected -> check if ask to show modal or not
             if (info[0]["ask"] === 1){
-                document.querySelector(".bi-file-earmark-binary").classList.add("hidden")
+                document.querySelector(".bi-gear").classList.add("hidden")
                 let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
                     keyboard: false
                 })
                 configModal.show()
             }
             else{
-                document.querySelector(".bi-file-earmark-binary").classList.remove("hidden")
+                document.querySelector(".bi-gear").classList.remove("hidden")
                 manage_config_content(info[0])
                 if (info[0]["ask"] === 2){
                     setTimeout(function(){
@@ -860,7 +860,7 @@ document.addEventListener('DOMContentLoaded', function () {
         info = {teams: {alphatauri: alphatauri, alpine: alpine, alfa: alfa}}
         manage_config_content(info)
         reloadTables()
-        document.querySelector(".bi-file-earmark-binary").classList.remove("hidden")
+        document.querySelector(".bi-gear").classList.remove("hidden")
     })
 
     document.querySelector("#cancelConfigButton").addEventListener("click", function(){
@@ -882,7 +882,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ask: ask
         }
         socket.send(JSON.stringify(data))
-        document.querySelector(".bi-file-earmark-binary").classList.remove("hidden")
+        document.querySelector(".bi-gear").classList.remove("hidden")
     })
 
     /**
@@ -949,14 +949,12 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
-        managePillsTitle("ia")
     })
 
     h2hPill.addEventListener("click", function () {
         manageScripts("hide","show", "hide", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
-        managePillsTitle("data")
 
     })
 
@@ -964,7 +962,6 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("hide","hide", "show", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
-        managePillsTitle("data")
 
     })
 
@@ -972,7 +969,6 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("hide","hide", "hide", "show", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
-        managePillsTitle("edit")
 
     })
 
@@ -980,14 +976,12 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("hide","hide", "hide", "hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
-        managePillsTitle("edit")
     })
 
     constructorsPill.addEventListener("click", function () {
         manageScripts("hide","hide", "hide", "hide", "hide", "hide", "hide", "show")
         scriptSelected = 1
         check_selected()
-        managePillsTitle("edit")
     })
     
 
@@ -995,48 +989,14 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("hide","hide", "hide", "hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
-        managePillsTitle("edit")
     })
 
     carPill.addEventListener("click", function () {
         manageScripts("hide","hide", "hide", "hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
-        managePillsTitle("edit")
     })
 
-    function managePillsTitle(type) {
-        if (type === "data") {
-            document.querySelector("#dataPills").classList.add("activeType")
-            document.querySelector("#dataPills").querySelector(".pill-line").classList.add("activeType")
-            document.querySelector("#editPills").classList.remove("activeType")
-            document.querySelector("#editPills").querySelector(".pill-line").classList.remove("activeType")
-            document.querySelector("#iaPills").classList.remove("activeType")
-            document.querySelector("#iaPills").querySelector(".pill-line").classList.remove("activeType")
-            document.querySelector(".mode-line").className = "mode-line view"
-            document.querySelector(".moving-line").className = "moving-line view"
-        }
-        else if (type === "edit") {
-            document.querySelector("#editPills").classList.add("activeType")
-            document.querySelector("#editPills").querySelector(".pill-line").classList.add("activeType")
-            document.querySelector("#dataPills").classList.remove("activeType")
-            document.querySelector("#dataPills").querySelector(".pill-line").classList.remove("activeType")
-            document.querySelector("#iaPills").classList.remove("activeType")
-            document.querySelector("#iaPills").querySelector(".pill-line").classList.remove("activeType")
-            document.querySelector(".mode-line").className = "mode-line edit"
-            document.querySelector(".moving-line").className = "moving-line edit"
-        }
-        else if (type === "ia") {
-            document.querySelector("#iaPills").classList.add("activeType")
-            document.querySelector("#iaPills").querySelector(".pill-line").classList.add("activeType")
-            document.querySelector("#dataPills").classList.remove("activeType")
-            document.querySelector("#dataPills").querySelector(".pill-line").classList.remove("activeType")
-            document.querySelector("#editPills").classList.remove("activeType")
-            document.querySelector("#editPills").querySelector(".pill-line").classList.remove("activeType")
-            document.querySelector(".mode-line").className = "mode-line ai"
-            document.querySelector(".moving-line").className = "moving-line ai"
-        }
-    }
 
     /**
      * Manages the stats of the divs associated with the pills

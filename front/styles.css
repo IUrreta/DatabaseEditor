@@ -4,6 +4,7 @@
   */
   --background-general: #110f24;
   --slight-contrast: #797599;
+  --white-general: #f3f3f3;
   --text-general: #dedde6;
   --negative-general: #e95656;
   --positive-general: #5bd999;
@@ -38,6 +39,10 @@
   --custom-modal-back: #393744;
   --text-in-front: #eeedf3;
   --background--buttons-hover: #6f698f;
+  --ai-transparent: #baffea99;
+  --edit-transparent: #fff7b099;
+  --view-transparent: #e8b6ff99;
+  --white-gradient: #ffffff99;
 
   --f2-border: #38c8f0;
   --f2-back: #388cd5;
@@ -156,7 +161,7 @@ body {
 }
 
 .scroll-wrapper::-webkit-scrollbar-thumb {
-  background-color: white;
+  background-color: var(--white-general);
   border-radius: 6px;
 }
 
@@ -256,7 +261,7 @@ a.bi-linkedin:hover {
 
 .title {
   text-align: center;
-  color: white;
+  color: var(--white-general);
   font-size: 28px;
 }
 
@@ -353,7 +358,7 @@ a.bi-linkedin:hover {
 }
 
 #numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb, #patchNotesBody::-webkit-scrollbar-thumb {
-  background-color: white;
+  background-color: var(--white-general);
   border-radius: 3px;
 }
 
@@ -365,14 +370,14 @@ a.bi-linkedin:hover {
 }
 
 .dropdown-menu a{
-  color: white !important;
+  color: var(--white-general) !important;
   border: 2px solid transparent;
   transition: border-color 0.3s, background-color 0.3s;
 }
 
 .dropdown-menu a:hover{
   background-color: var(--dropdown-back-general) !important;
-  border-bottom: 2px solid white;
+  border-bottom: 2px solid var(--white-general);
 }
 
 .modal-subtitle, .component-subtitle{
@@ -381,7 +386,7 @@ a.bi-linkedin:hover {
 
 .stats-title {
   text-align: left;
-  color: white;
+  color: var(--white-general);
   font-size: 26px;
   padding-left: 20px;
   padding-top: 20px;
@@ -408,7 +413,7 @@ a.bi-linkedin:hover {
 
 .overall-holder {
   background-color: var(--overall-holder);
-  border: 2px solid white;
+  border: 2px solid var(--white-general);
   border-radius: 10px;
   width: 66px;
   height: 56px;
@@ -447,7 +452,7 @@ a.bi-linkedin:hover {
 
   0%,
   100% {
-    border: 2px solid white;
+    border: 2px solid var(--white-general);
     border-radius: 10px;
     background-color: var(--overall-holder);
   }
@@ -463,7 +468,7 @@ a.bi-linkedin:hover {
 
   0%,
   100% {
-    border: 2px solid white;
+    border: 2px solid var(--white-general);
     border-radius: 10px;
     background-color: var(--overall-holder);
   }
@@ -501,14 +506,14 @@ a.bi-linkedin:hover {
 }
 
 .cet-title{
-  font-family: 'Formula1' !important;
+  font-family: 'Formula1Bold' !important;
 }
 
 .versionPanel {
   position: fixed;
   top: 40px;
   left: 10px;
-  color: white;
+  color: var(--white-general);
 
 }
 
@@ -526,15 +531,14 @@ a.bi-linkedin:hover {
 }
 
 .patchNotesPanel i:hover {
-  color: white;
+  color: var(--white-general);
 }
 
 .notification-panel {
   position: absolute;
   top: 0px;
   right: 0px;
-  color: white;
-  background-color: var(--tools-general);
+  color: var(--white-general);
   width: 530px;
   height: 116px;
   display: flex;
@@ -542,12 +546,13 @@ a.bi-linkedin:hover {
   text-align: center;
   align-items: flex-end;
   gap: 10px;
+  pointer-events: none;
 }
 
 .notification-line{
   width: 0%;
   height: 2px;
-  background-color: white;
+  background-color: var(--white-general);
   position: relative;
   bottom: 7px;
   transition: width 3s linear;
@@ -567,7 +572,7 @@ a.bi-linkedin:hover {
 
 .custom-toast{
   background-color: rgba(187, 182, 236, 0.5) !important;
-  color: white;
+  color: var(--white-general);
   border-radius: 10px !important;
   width: 420px !important;
   backdrop-filter: blur(3px);
@@ -654,11 +659,10 @@ a.bi-linkedin:hover {
 }
 
 .tools-panel {
-  color: white;
+  color: var(--white-general);
   background-color: var(--tools-general);
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
 }
 
 @keyframes move {
@@ -728,6 +732,7 @@ a.bi-linkedin:hover {
   flex-direction: column;
   align-items: center;
   margin-right: 20px;
+  transition: transform 0.3s ease;
 }
 
 .dropdown-menu {
@@ -740,29 +745,90 @@ a.bi-linkedin:hover {
   gap: 10px;
 }
 
-.bi-file-earmark-binary{
-  font-size: 25px;
-  margin-top: 0.7rem;
-  position: absolute;
-  margin-left: 0.5rem;
-  color: var( --slight-contrast);
-  opacity: 1;
-  transition: color 0.3s, opacity 0.3s;
+.gear-container{
+  font-size: 16px;
+  width: 0px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: width 0.2s;
+  cursor: pointer;
+  border: 2px solid transparent;
 }
 
-.bi-file-earmark-binary.hidden{
+.gear-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse 70% 150% at center bottom, var(--white-gradient), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  transition-delay: 0.15s;
+  pointer-events: none;
+}
+
+.gear-container:hover::before {
+  opacity: 1;
+}
+
+.gear-container:not(:hover)::before {
+  transition-delay: 0s;
+}
+
+.gear-container.shown{
+  width: 44px;
+}
+
+.gear-container:hover .bi-gear{
+  opacity: 0;
+}
+
+.gear-container:hover .standard-line, .gear-container:hover{
+  width: 177px;
+}
+
+.gear-container:hover .standard-label{
+  opacity: 1;
+}
+
+.standard-label{
+  opacity: 0;
+  transition: opacity 0.10s;
+  position: absolute;
+  left: 8px;
+  cursor: pointer;
+  pointer-events: none;
+  bottom: 7px;
+}
+
+ .bi-gear{
+  color: var( --text-general);
+  opacity: 1;
+  transition: color 0.3s, opacity 0.1s;
+  left: 10px;
+  font-size: 20px;
+  position: absolute;
+  bottom: 5px;
+}
+
+.bi-gear.hidden{
   opacity: 0;
   pointer-events: none;
 }
 
-.bi-file-earmark-binary:hover{
-  color: white;
-  cursor: pointer;
+.bi-gear:hover .standard-line{
+  width: 100%;
+  background-color: var(--text-general);
 }
 
 .save-selector {
   display: flex;
   flex-direction: column;
+  transition: width 0.3s;
 }
 
 .custom-dropdown {
@@ -772,7 +838,7 @@ a.bi-linkedin:hover {
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
-  color: white !important;
+  color: var(--white-general) !important;
   transition: border-color 0.3s !important;
 }
 
@@ -782,8 +848,76 @@ a.bi-linkedin:hover {
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
-  color: white !important;
+  color: var(--white-general) !important;
   transition: border-color 0.3s !important;
+}
+
+.dropdown-line{
+  height: 2px;
+  width: 0%;
+  background-color: var(--text-general);
+  transition: width 0.3s, color 0.3s;
+}
+
+.standard-line{
+  height: 2px;
+  width: 0%;
+  background-color: var(--text-general);
+  transition: width 0.2s, color 0.2s;
+  position: absolute;
+  bottom: 0;
+  left: -2px;
+}
+
+.new-custom-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse 70% 150% at center bottom, var(--white-gradient), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  transition-delay: 0.15s;
+  pointer-events: none;
+}
+
+.new-custom-dropdown:hover::before {
+  opacity: 1;
+}
+
+.new-custom-dropdown:not(:hover)::before {
+  transition-delay: 0s; /* No delay when not hovering */
+}
+
+#saveSelector{
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+#saveSelector:focus::before{
+  opacity: 1;
+}
+
+#saveSelector:focus + .dropdown-line{
+  width: 100%;
+}
+
+.new-custom-dropdown {
+  max-width: 250px !important;
+  background-color: transparent !important;
+  color: var(--white-general) !important;
+  border: 0px !important;
+  position: relative;
+  padding: 6px 10px !important;
+}
+
+.new-custom-dropdown:hover + .dropdown-line{
+  width: 100%;
+  background-color: var(--text-general);
 }
 
 #numberButton{
@@ -795,7 +929,7 @@ a.bi-linkedin:hover {
 }
 
 .custom-dropdown:hover, .custom-dropdown-no-margin:hover {
-  border: 2px solid white !important;
+  border: 2px solid var(--white-general) !important;
 }
 
 .custom-dropdown:active, .custom-dropdown-no-margin:active {
@@ -814,7 +948,7 @@ a.bi-linkedin:hover {
 }
 
 .addTracks-button:hover {
-  border: 2px solid white !important;
+  border: 2px solid var(--white-general) !important;
 }
 
 .addTracks-button:active {
@@ -831,7 +965,7 @@ a.bi-linkedin:hover {
 }
 
 #addTrackMenu::-webkit-scrollbar-thumb {
-  background-color: white;
+  background-color: var(--white-general);
   border-radius: 3px;
 }
 
@@ -861,13 +995,13 @@ a.bi-linkedin:hover {
   margin-left: 14px;
   margin-right: 5%;
   border: 1px solid var(--slight-contrast);
-  color: white;
+  color: var(--white-general);
   min-height: 660px;
   max-height: 660px;
   overflow-y: auto;
   border-radius: 10px;
   scrollbar-width: thin;
-  scrollbar-color: white #e5e5e5;
+  scrollbar-color: var(--white-general) #e5e5e5;
 }
 
 .main-panel-stats {
@@ -900,29 +1034,9 @@ a.bi-linkedin:hover {
   margin-bottom: 2rem;
 }
 
-.pill-line{
-  height: 1.3px;
-  width: 0%;
-  background-color: var( --text-general);
-  transition: width 0.3s, color 0.3s;
-}
-
-.pill-line.activeType{
-  width: 100%;
-  background-color: white;
-}
-
-.activeSelected .pill-line{
-  width: 100%;
-  background-color: white;
-}
-
 .categoryPills,
-.scriptPills {
-  padding-top: 6px !important;
-  padding-bottom: 6px !important;
-  padding-left: 12px !important;
-  padding-right: 12px !important;
+.scriptPills, .generalPills {
+  padding: 6px 12px !important;
   border-radius: 10px !important;
 }
 
@@ -935,7 +1049,7 @@ a.bi-linkedin:hover {
 }
 
 .pill-types .activeType{
-  color: white;
+  color: var(--white-general);
 }
 
 
@@ -1033,7 +1147,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-data::-webkit-scrollbar-thumb {
-  background-color: white;
+  background-color: var(--white-general);
   border-radius: 3px !important;
 }
 
@@ -1435,7 +1549,7 @@ DRIVERS TABLE
 }
 
 .prob-viewer-header{
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid var(--white-general);
 }
 
 .viewer-header-driver{
@@ -1542,7 +1656,7 @@ DRIVERS TABLE
 }
 
 .save-selector-title.activeSelected{
-  color: white !important;
+  color: var(--white-general) !important;
 }
 
 .confirm-section {
@@ -1564,7 +1678,7 @@ DRIVERS TABLE
   width: 160px;
   border: 2.5px solid transparent !important;
   border-radius: 10px !important;
-  color: white !important;
+  color: var(--white-general) !important;
   background-color: var( --slight-contrast) !important;
   transition: border-color 0.3s, background-color 0.3s, color 0.3s !important;
 
@@ -1589,7 +1703,7 @@ DRIVERS TABLE
   width: 160px;
   border: 2.5px solid transparent !important;
   border-radius: 10px !important;
-  color: white !important;
+  color: var(--white-general) !important;
   background-color: var( --slight-contrast) !important;
   transition: border-color 0.3s, background-color 0.3s !important;
   display: flex;
@@ -1613,14 +1727,14 @@ DRIVERS TABLE
 }
 
 .delete-mode:hover {
-  border-color: white !important;
+  border-color: var(--white-general) !important;
 }
 
 .main-viewer-section {
   margin-left: 14px;
   margin-right: 14px;
   border: 1px solid var( --slight-contrast);
-  color: white;
+  color: var(--white-general);
   overflow: hidden;
   border-radius: 10px;
 }
@@ -1700,7 +1814,7 @@ DRIVERS TABLE
 .main-calendar-section {
   margin-left: 14px;
   border: 1px solid var( --slight-contrast);
-  color: white;
+  color: var(--white-general);
   min-height: 660px;
   max-height: 660px;
   overflow-y: auto;
@@ -1713,7 +1827,7 @@ DRIVERS TABLE
   margin-left: 1.5rem;
   margin-right: 14px;
   border: 1px solid var( --slight-contrast);
-  color: white;
+  color: var(--white-general);
   min-height: 660px;
   max-height: 660px;
   overflow-y: auto;
@@ -1813,8 +1927,8 @@ DRIVERS TABLE
 
 
 .race-calendar:hover {
-  border-color: white;
-  color: white;
+  border-color: var(--white-general);
+  color: var(--white-general);
   background-color: var(--component-general-hover);
 }
 
@@ -1827,7 +1941,7 @@ DRIVERS TABLE
 }
 
 .race-calendar .bi-chevron-left:hover, .race-calendar .bi-chevron-right:hover {
-  color: white;
+  color: var(--white-general);
 }
 
 .deleting:hover {
@@ -1873,7 +1987,7 @@ DRIVERS TABLE
   align-items: center;
   border: 2.5px solid transparent;
   border-radius: 10px;
-  color: white;
+  color: var(--white-general);
   transition: color 0.3s, border-color 0.3s;
   cursor: pointer;
 }
@@ -1902,13 +2016,13 @@ DRIVERS TABLE
 
 .main-editStats-section {
   border: 1px solid var( --slight-contrast);
-  color: white;
+  color: var(--white-general);
   min-height: 660px;
   max-height: 660px;
   overflow-y: auto;
   border-radius: 10px;
   scrollbar-width: thin;
-  scrollbar-color: white;
+  scrollbar-color: var(--white-general);
 }
 
 .main-editStats-section::-webkit-scrollbar {
@@ -1916,7 +2030,7 @@ DRIVERS TABLE
 }
 
 .main-editStats-section::-webkit-scrollbar-thumb {
-  background-color: white;
+  background-color: var(--white-general);
   border-radius: 3px;
 }
 
@@ -1936,7 +2050,7 @@ DRIVERS TABLE
 
 
 .main-columns-drag-section::-webkit-scrollbar-thumb {
-  background-color: white;
+  background-color: var(--white-general);
   border-radius: 3px;
 }
 
@@ -1946,7 +2060,7 @@ DRIVERS TABLE
   color: #dbdbdb !important;
 }
 
-.active {
+.categoryPills.active {
   background-color: var( --slight-contrast) !important;
   color: #fdfdfd !important;
 }
@@ -1959,7 +2073,7 @@ DRIVERS TABLE
 #F2pill:hover {
   border: 2px solid var(--f2-border);
   background-color: var(--f2-back);
-  color: white !important;
+  color: var(--white-general) !important;
 
 }
 
@@ -1971,7 +2085,7 @@ DRIVERS TABLE
 #F3pill:hover {
   border: 2px solid var(--f3-border);
   background-color: var(--f3-back);
-  color: white !important;
+  color: var(--white-general) !important;
 }
 
 #F2pill.active {
@@ -2000,7 +2114,7 @@ DRIVERS TABLE
 }
 
 .one-statH2H:hover {
-  border-color: white;
+  border-color: var(--white-general);
   background-color: var(--component-general-hover);
 }
 
@@ -2011,16 +2125,16 @@ DRIVERS TABLE
 
 .one-statH2H i:hover{
   cursor: pointer;
-  color: white;
+  color: var(--white-general);
 }
 
 
 .one-statH2H:hover .name-H2H .only-name{
-  color: white;
+  color: var(--white-general);
 }
 
 .one-statH2H:hover .driver1-number, .one-statH2H:hover .driver2-number{
-  color: white;
+  color: var(--white-general);
 }
 
 .driver-names{
@@ -2048,7 +2162,7 @@ DRIVERS TABLE
 }
 
 .driver1-name:hover, .driver2-name:hover {
-  color: white;
+  color: var(--white-general);
   background-color: var(--h2h-back-hover);
 }
 
@@ -2074,12 +2188,12 @@ DRIVERS TABLE
 }
 
 .one-performance:hover {
-  border-color: white;
+  border-color: var(--white-general);
   background-color: var(--component-general-hover);
 }
 
 .one-performance:hover .performance-name {
-  color: white;
+  color: var(--white-general);
 }
 
 .performance-buttons {
@@ -2109,7 +2223,7 @@ DRIVERS TABLE
 
 .performance-buttons i:hover{
   background-color: var(--background--buttons-hover) !important;
-  color: white !important;
+  color: var(--white-general) !important;
 }
 
 .performance-buttons i:active{
@@ -2278,20 +2392,20 @@ DRIVERS TABLE
 
 .btn-number {
   background-color: transparent !important;
-  color: white !important;
+  color: var(--white-general) !important;
   padding-left: 0px !important;
   border: none !important;
 }
 
 .collapse-number {
-  color: white;
+  color: var(--white-general);
   background-color: var(--custom-modal-back);
 }
 
 .contract-details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  color: white;
+  color: var(--white-general);
   background-color: var(--custom-modal-back);
 }
 
@@ -2326,7 +2440,7 @@ DRIVERS TABLE
 }
 
 .custom-header {
-  color: white !important;
+  color: var(--white-general) !important;
   border-bottom: 1px solid var( --slight-contrast) !important;
   background-color: var(--custom-modal-back) !important;
   display: flex;
@@ -2335,7 +2449,7 @@ DRIVERS TABLE
 }
 
 .custom-footer {
-  color: white !important;
+  color: var(--white-general) !important;
   border-top: 1px solid var( --slight-contrast) !important;
   background-color: var(--custom-modal-back) !important;
 
@@ -2380,8 +2494,8 @@ DRIVERS TABLE
 
 .rounded-input:focus {
   outline: 0px solid transparent;
-  border-color: white;
-  color: white;
+  border-color: var(--white-general);
+  color: var(--white-general);
 }
 
 .confirm-area {
@@ -2528,8 +2642,8 @@ DRIVERS TABLE
 .team:hover,
 .engine:hover,
 .race:hover, .driver-info:hover {
-  border-color: white;
-  color: white;
+  border-color: var(--white-general);
+  color: var(--white-general);
   background-color: var(--component-general-hover);
 }
 
@@ -2587,21 +2701,21 @@ DRIVERS TABLE
 }
 
 .H2Hradio:hover, .GraphButton:hover{
-  color: white;
+  color: var(--white-general);
   background-color: #807ca1;
-  border-color: white;
+  border-color: var(--white-general);
 }
 
 .H2Hradio.activated{
   background-color: var( --h2h-general);
   border-color: var( --h2h-detail);
-  color: white;
+  color: var(--white-general);
 }
 
 .GraphButton.activated{
   background-color: var( --graph-general);
   border-color: var( --graph-detail);
-  color: white;
+  color: var(--white-general);
 }
 
 
@@ -2705,7 +2819,7 @@ DRIVERS TABLE
 .free-driver .bi-ban{
   opacity: 1 !important;
   transition: color 0.3s;
-  color: white;
+  color: var(--white-general);
   z-index: 10;
   position: absolute;
   right: 8px;
@@ -2717,7 +2831,7 @@ DRIVERS TABLE
 }
 
 .custom-icon i:hover {
-  color: white;
+  color: var(--white-general);
   cursor: pointer;
 }
 
@@ -2744,15 +2858,15 @@ DRIVERS TABLE
 
 
 .free-driver:hover {
-  border-color: white;
+  border-color: var(--white-general);
   cursor: grab !important;
-  color: white;
+  color: var(--white-general);
   background-color: var(--component-general-hover);
 }
 
 .modal-driver:hover, .modal-team:hover{
-  border-color: white;
-  color: white;
+  border-color: var(--white-general);
+  color: var(--white-general);
   background-color: var(--component-general-hover-extra);
   cursor: default;
 }
@@ -2808,7 +2922,7 @@ DRIVERS TABLE
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: var(--white-general);
   backdrop-filter: blur(3px);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
@@ -2819,7 +2933,7 @@ DRIVERS TABLE
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: var(--white-general);
   backdrop-filter: blur(3px);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   width: 46%;
@@ -2833,7 +2947,7 @@ DRIVERS TABLE
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: var(--white-general);
   backdrop-filter: blur(3px);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   width: 24.9%;
@@ -2877,7 +2991,7 @@ DRIVERS TABLE
 }
 
 .one-stat-panel:hover{
-  border-color: white;
+  border-color: var(--white-general);
   background-color: var(--component-general-hover);
 }
 
@@ -2887,7 +3001,7 @@ DRIVERS TABLE
 }
 
 .one-stat-panel:hover span{
-  color: white;
+  color: var(--white-general);
 }
 
 .positive {
@@ -2928,7 +3042,7 @@ DRIVERS TABLE
 
 .input-buttons i:hover{
   background-color: var(--background--buttons-hover) !important;
-  color: white !important;
+  color: var(--white-general) !important;
 }
 
 .input-buttons i:active{
@@ -2937,22 +3051,165 @@ DRIVERS TABLE
   transition-duration: 0s;
 }
 
+.generalPills{
+  color: var( --text-general) !important;
+  border: 2px solid transparent !important;
+  transition: border-color 0.3s, background-color 0.3s , color 0.3s, width 0.3s !important;
+}
+
+.generalPills:hover {
+  border-color: var(--white-general) !important;
+  background-color: #58556c;
+  color: var(--white-general) !important;
+}
+
+.generalPills.active {
+  background-color: var( --slight-contrast) !important;
+  color: var(--white-general) !important;
+}
+
 
 .scriptPills {
   color: var( --text-general) !important;
   border: 2px solid transparent !important;
-  transition: border-color 0.3s, background-color 0.3s , color 0.3s !important;
+  transition: border-color 0.3s, background-color 0.3s , color 0.3s, width 0.2s !important;
+  width: 44px;
+  height: 40px;
+  display: flex;
+  position: relative;
+  background: none;
 }
+
+
+#predictpill:hover, #predictpill:hover .pill-line, #predictpill.active .pill-line, #predictpill.active{
+  width: 120px;
+}
+
+
+#h2hpill:hover, #h2hpill:hover .pill-line, #h2hpill.active .pill-line, #h2hpill.active{
+  width: 150px;
+}
+
+#viewerpill:hover, #viewerpill:hover .pill-line, #viewerpill.active .pill-line, #viewerpill.active{
+  width: 134px;
+}
+
+#transferpill:hover, #transferpill:hover .pill-line, #transferpill.active .pill-line, #transferpill.active{
+  width: 133px;
+}
+
+#statspill:hover, #statspill:hover .pill-line, #statspill.active .pill-line, #statspill.active{
+  width: 138px;
+}
+
+#constructorspill:hover, #constructorspill:hover .pill-line, #constructorspill.active .pill-line, #constructorspill.active{
+  width: 95px;
+}
+
+#calendarpill:hover, #calendarpill:hover .pill-line, #calendarpill.active .pill-line, #calendarpill.active{
+  width: 130px;
+}
+
+#carpill:hover, #carpill:hover .pill-line, #carpill.active .pill-line, #carpill.active{
+  width: 171px;
+}
+
+
+
+.pill-icon{
+  opacity: 1;
+  transition: opacity 0.10s;
+  font-size: 20px;
+  position: absolute;
+  bottom: 5px;
+}
+
+.pill-label{
+  opacity: 0;
+  transition: opacity 0.10s;
+  position: absolute;
+  left: 10px;
+  cursor: pointer;
+  pointer-events: none;
+}
+
+.pill-line{
+  width: 0px;
+  height: 2px;
+  transition: width 0.2s, background-color 0.2s;
+  background-color: var(--white-general);
+  position: absolute;
+  bottom: 0;
+  left: -2px;
+}
+
+.scriptPills:hover .pill-icon, .scriptPills.active .pill-icon{
+  opacity: 0;
+}
+
+.scriptPills:hover .pill-label, .scriptPills.active .pill-label{
+  opacity: 1;
+}
+
 
 .scriptPills:hover {
-  border-color: white !important;
-  background-color: #58556c;
-  color: white !important;
+  width: 135px;
 }
 
-.scriptPills.active {
-  background-color: var( --slight-contrast) !important;
-  color: white !important;
+.scriptPills::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse 70% 150% at center bottom, rgba(255, 255, 255, 0.6), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  transition-delay: 0.15s;
+  pointer-events: none;
+}
+
+.scriptPills.active{
+  background-color: transparent !important;
+}
+
+.scriptPills.active::before {
+  opacity: 1;
+  transition-delay: 0s; /* Asegurarse de que no haya retraso en el estado activo */
+}
+
+.ai-pills::before{
+  background: radial-gradient(ellipse 75% 160% at center 110%, var(--mode-line-ai), transparent 70%);
+}
+
+.ai-pills .pill-line{
+  background-color: var(--ai-transparent);
+}
+
+.edit-pills::before{
+  background: radial-gradient(ellipse 70% 160% at center 110%, var(--mode-line-edit), transparent 70%);
+}
+
+.edit-pills .pill-line{
+  background-color: var(--edit-transparent);
+}
+
+
+.view-pills::before{
+  background: radial-gradient(ellipse 70% 160% at center 110%, var(--mode-line-view), transparent 70%);
+}
+
+.view-pills .pill-line{
+  background-color: var(--view-transparent);
+}
+
+.scriptPills:hover::before {
+  opacity: 1;
+}
+
+.scriptPills:not(:hover)::before {
+  transition-delay: 0s; /* No delay when not hovering */
 }
 
 .custom-input-number {
@@ -2980,9 +3237,9 @@ DRIVERS TABLE
 }
 
 .custom-input-number:focus {
-  color: white;
+  color: var(--white-general);
   outline: 0px solid transparent;
-  border-color: white;
+  border-color: var(--white-general);
 }
 
 
@@ -2993,8 +3250,8 @@ input::-webkit-inner-spin-button {
 }
 
 .normal-driver:hover {
-  border-color: white;
-  color: white;
+  border-color: var(--white-general);
+  color: var(--white-general);
   background-color: var(--component-general-hover);
 }
 
@@ -3016,7 +3273,7 @@ input::-webkit-inner-spin-button {
   background-color: var(--h2h-back);
   border-radius: 10px;
   border: none;
-  color: white;
+  color: var(--white-general);
   margin: 10px;
   margin-top: 0px;
   max-height: 140px;
@@ -3182,7 +3439,7 @@ input::-webkit-inner-spin-button {
 }
 
 .level.activated{
-  background-color: white !important;
+  background-color: var(--white-general) !important;
 }
 
 .viewer-component .custom-input-number, .facility-component .custom-input-number, .facility-component-lg .custom-input-number{
@@ -3237,13 +3494,13 @@ input::-webkit-inner-spin-button {
 
 #edit_teams .team-viewer i:hover{
   cursor: pointer;
-  color: white !important;
+  color: var(--white-general) !important;
   background-color: var(--background--buttons-hover) !important;
 }
 
 .q-label{
   background-color: red;
-  color: white;
+  color: var(--white-general);
   border-radius: 5px;
   padding: 3px;
 }
@@ -3412,7 +3669,7 @@ input::-webkit-inner-spin-button {
 }
 
 .driver1-name:hover .team1, .driver2-name:hover .team2{
-  color: white !important;
+  color: var(--white-general) !important;
 }
 
 
