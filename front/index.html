@@ -92,10 +92,16 @@
 
         </div>
         <div class="modal-footer custom-footer">
-          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-            id="cancelButton">Close</button>
-          <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
-            id="confirmButton">Confirm</button>
+          <div class="pos-relative">
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+              id="cancelButton">Close</button>
+            <div class="dropdown-line"></div>
+          </div>
+          <div class="pos-relative">
+            <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
+              id="confirmButton">Confirm</button>
+            <div class="dropdown-line"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -537,20 +543,24 @@
           </div>
           <div class="modal-subtitle bold-font pt-3">Predict championship from</div>
           <div class="year-and-race">
-            <div>
+            <div class="pos-relative">
               <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
                 id="yearPredictionModalButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Year
               </button>
+              <div class="dropdown-line"></div>
               <ul class="dropdown-menu" id="yearPredictionModalMenu" style="font-family: Formula1;">
               </ul>
             </div>
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="raceProbButton"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Race
-            </button>
-            <ul class="dropdown-menu" id="raceProbMenu" style="font-family: Formula1;">
-            </ul>
+            <div class="pos-relative">
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                id="raceProbButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Race
+              </button>
+              <div class="dropdown-line"></div>
+              <ul class="dropdown-menu" id="raceProbMenu" style="font-family: Formula1;">
+              </ul>
+            </div>
           </div>
         </div>
         <div class="modal-footer custom-footer predict-footer">
@@ -561,11 +571,16 @@
             </div>
             <div class="indicator bold-font">0%</div>
           </div>
-
-          <div>
-            <button type="button" class="btn btn-secondary custom-delete" id="cancelPredict"
-              data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary custom-confirm" id="confirmPredict" disabled>Confirm</button>
+          <div class="d-flex">
+            <div class="pos-relative">
+              <button type="button" class="btn btn-secondary custom-delete bold-font" id="cancelPredict"
+                data-bs-dismiss="modal">Close</button>
+              <div class="dropdown-line"></div>
+            </div>
+            <div class="pos-relative">
+              <button type="button" class="btn btn-primary custom-confirm bold-font" id="confirmPredict" disabled>Confirm</button>
+              <div class="dropdown-line"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -717,7 +732,8 @@
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="10" class="H2Hradio" data-state="unchecked">H2H</div>
-                  <div data-teamid="10" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
+                  <div data-teamid="10" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i>
+                  </div>
                 </div>
               </div>
             </div>
@@ -836,13 +852,17 @@
                 id="yearPredictionButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Year
               </button>
+              <div class="dropdown-line"></div>
               <ul class="dropdown-menu" id="yearPredictionMenu" style="font-family: Formula1;">
               </ul>
             </div>
-            <button class="custom-dropdown custom-button bold-font d-none" id="predictButton" data-bs-toggle="modal"
-              data-bs-target="#predictModal">
-              Configure
-            </button>
+            <div>
+              <button class="custom-dropdown custom-button bold-font d-none" id="predictButton" data-bs-toggle="modal"
+                data-bs-target="#predictModal">
+                Configure
+              </button>
+              <div class="dropdown-line"></div>
+            </div>
             <div class="config-content bold-font ms-4" id="predictConfigContent"></div>
           </div>
           <div class="title bold-font py-3 w-100">
@@ -853,11 +873,16 @@
           <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
             <ul class="nav nav-pills">
               <li class="nav-item">
-                <a class="nav-link bold-font generalPills active" data-bs-toggle="pill" href="#"
-                  id="predictionpill">Races</a>
+                <a class="nav-link bold-font generalPills active" data-bs-toggle="pill" href="#" id="predictionpill">
+                  <label class="bold-font basic-label">Races</label>
+                  <div class="pill-line"></div>
+                </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link bold-font generalPills" data-bs-toggle="pill" href="#" id="probpill">Standings</a>
+                <a class="nav-link bold-font generalPills" data-bs-toggle="pill" href="#" id="probpill">
+                  <label class="bold-font basic-label">Standings</label>
+                  <div class="pill-line"></div>
+                </a>
               </li>
             </ul>
           </div>
@@ -876,6 +901,7 @@
                 <div class="prediction-table-data">
                 </div>
               </div>
+              <div class="separator-2"></div>
               <div class="prediction-table" id="predictionSecond">
                 <div class="prediction-table-header">
                   <div class="header-label bold-font driver-prediction">Driver</div>

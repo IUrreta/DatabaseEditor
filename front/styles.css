@@ -5,11 +5,15 @@
   --background: #161616;
   --generals: #202020;
   --superficials: #272727;
+  --dropdown-back: #292929;
   --elements: #313131;
+  --dropdown-hover: #363636;
   --dark-text: #b1b1b1;
   --negative-text: #292929;
   --new-primary: #c89efc;
   --new-primary-transparent: #c89efc99;
+  --text-selected: #e7d3ff;
+  --new-secondary: #9AD2CB;
 
 
   --background-general: #110f24;
@@ -372,22 +376,47 @@ a.bi-linkedin:hover {
 }
 
 .dropdown-menu{
-  background-color: var( --slight-contrast) !important;
+  background-color: var(--dropdown-back) !important;
   border: none !important;
-  border-radius: 10px;
-
+  box-shadow: 0 2px 6px 1px black;
+  margin-top: 1px !important;
 }
 
 .dropdown-menu a{
+  background-color: var(--dropdown-back) !important;
   color: var(--white-general) !important;
-  border: 2px solid transparent;
-  transition: border-color 0.3s, background-color 0.3s;
+  border-bottom: 2px solid transparent !important;
+  transition: background-color 0.2s, color 0.2s, border-bottom 0.2s;
 }
 
 .dropdown-menu a:hover{
-  background-color: var(--dropdown-back-general) !important;
-  border-bottom: 2px solid var(--white-general);
+  background-color: var(--dropdown-hover) !important;
+  color: var(--text-selected) !important;
+  border-bottom: 2px solid var(--new-primary) !important;
 }
+
+.dropdown-manu a::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse 70% 150% at center bottom, var(--new-primary), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.dropdown-menu a:hover::before{
+  opacity: 1;
+}
+
+.dropdown-menu a:not(:hover)::before {
+  transition-delay: 0s;
+}
+
+
 
 .modal-subtitle, .component-subtitle{
   color: var( --text-general);
@@ -842,13 +871,61 @@ a.bi-linkedin:hover {
 
 .custom-dropdown {
   max-width: 250px !important;
+  min-width: 100px !important;
+  justify-content: space-between;
   margin-top: 0.6rem !important;
-  background-color: var( --slight-contrast) !important;
-  margin-bottom: 1% !important;
-  border: 2px solid transparent !important;
-  border-radius: 10px !important;
   color: var(--white-general) !important;
-  transition: border-color 0.3s !important;
+  transition: color 0.2s !important;
+  background-color: transparent !important;
+  border: 0px !important;
+  position: relative;
+  padding: 6px 10px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: space-around;
+}
+
+
+.custom-dropdown:focus::before {
+  opacity: 1;
+}
+
+.custom-dropdown:focus + .dropdown-line{
+  width: 100%;
+}
+
+.custom-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse 70% 150% at center bottom, var(--new-primary), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  transition-delay: 0.15s;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.custom-dropdown:hover::before {
+  opacity: 1;
+}
+
+.custom-dropdown:not(:hover)::before {
+  transition-delay: 0s; 
+}
+
+.custom-dropdown + .dropdown-line{
+  width: 0%;
+  background-color: var(--new-primary-transparent);
+}
+
+
+.custom-dropdown:hover + .dropdown-line{
+  width: 100%;
+  background-color: var(--new-primary-transparent);
 }
 
 .custom-dropdown-no-margin {
@@ -902,9 +979,6 @@ a.bi-linkedin:hover {
 
 #saveSelector{
   min-width: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
 }
 
 #saveSelector:focus::before{
@@ -922,6 +996,9 @@ a.bi-linkedin:hover {
   border: 0px !important;
   position: relative;
   padding: 6px 10px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 
 .new-custom-dropdown:hover + .dropdown-line{
@@ -937,11 +1014,11 @@ a.bi-linkedin:hover {
   justify-content: space-between;
 }
 
-.custom-dropdown:hover, .custom-dropdown-no-margin:hover {
+.custom-dropdown-no-margin:hover {
   border: 2px solid var(--white-general) !important;
 }
 
-.custom-dropdown:active, .custom-dropdown-no-margin:active {
+.custom-dropdown-no-margin:active {
   background-color: var(--active-general) !important;
 }
 
@@ -1684,13 +1761,46 @@ DRIVERS TABLE
 }
 
 .custom-confirm {
-  width: 160px;
+  width: 140px;
   border: 2.5px solid transparent !important;
+  border-left: 0px !important;
+  border-right: 0px !important;
   border-radius: 10px !important;
   color: var(--white-general) !important;
-  background-color: var( --slight-contrast) !important;
   transition: border-color 0.3s, background-color 0.3s, color 0.3s !important;
+  background-color: transparent !important;
+}
 
+.custom-confirm::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse 70% 150% at center bottom, var(--new-primary), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  transition-delay: 0.15s;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.custom-confirm:hover::before {
+  opacity: 1;
+}
+
+.custom-confirm:not(:hover)::before {
+  transition-delay: 0s; /* No delay when not hovering */
+}
+
+.custom-confirm + .dropdown-line{
+  width: 0%;
+  background-color: var(--new-primary);
+}
+
+.custom-confirm:hover + .dropdown-line{
+  width: 100%;
 }
 
 .extra-inputs {
@@ -1699,40 +1809,55 @@ DRIVERS TABLE
 }
 
 
-.custom-confirm:hover {
-  background-color: var(--positive-general) !important;
-  border-color: var(--positive-general) !important;
-}
-
-.custom-confirm:active {
-  background-color: var(--positive-general-darker) !important;
-}
-
 .custom-delete {
-  width: 160px;
+  width: 140px;
   border: 2.5px solid transparent !important;
+  border-left: 0px !important;
+  border-right: 0px !important;
   border-radius: 10px !important;
   color: var(--white-general) !important;
-  background-color: var( --slight-contrast) !important;
-  transition: border-color 0.3s, background-color 0.3s !important;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s !important;
+  background-color: transparent !important;
   display: flex;
   justify-content: center;
+}
 
+.custom-delete::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse 70% 150% at center bottom, var(--negative-general), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  transition-delay: 0.15s;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.custom-delete:hover::before {
+  opacity: 1;
+}
+
+.custom-delete:not(:hover)::before {
+  transition-delay: 0s; /* No delay when not hovering */
+}
+
+.custom-delete + .dropdown-line{
+  width: 0%;
+  background-color: var(--negative-general);
+}
+
+.custom-delete:hover + .dropdown-line{
+  width: 100%;
 }
 
 .delete-mode {
   background-color: var( --negative-general) !important;
   border-color: #d66f6f !important;
   transition: border-color 0.3s;
-}
-
-.custom-delete:hover {
-  background-color: var( --negative-general) !important;
-  border-color: #d35f5f !important;
-}
-
-.custom-delete:active {
-  background-color: #a35050 !important;
 }
 
 .delete-mode:hover {
@@ -2426,7 +2551,12 @@ DRIVERS TABLE
 
 .custom-body {
   color: var( --text-general);
-  background-color: var(--custom-modal-back);
+  background-color: var(--generals);
+  z-index: -2;
+}
+
+.pos-relative{
+  position: relative;
 }
 
 .custom-modal {
@@ -2451,7 +2581,7 @@ DRIVERS TABLE
 .custom-header {
   color: var(--white-general) !important;
   border-bottom: 1px solid var( --slight-contrast) !important;
-  background-color: var(--custom-modal-back) !important;
+  background-color: var(--generals) !important;
   display: flex;
   justify-content: space-around;
 
@@ -2460,6 +2590,7 @@ DRIVERS TABLE
 .custom-footer {
   color: var(--white-general) !important;
   background-color: var(--generals) !important;
+  z-index: -3;  
 }
 
 ::-webkit-input-placeholder {
@@ -2534,6 +2665,7 @@ DRIVERS TABLE
 
 .driver-info{
   border-radius: 10px;
+  cursor: default !important;
   padding: 10px;
   margin: 9px 8px;
   color: var(--text-general);
@@ -2965,7 +3097,7 @@ DRIVERS TABLE
 
 .custom-bar{
   width: 350px;
-  --bs-progress-bar-bg: #0ebb63 !important;
+  --bs-progress-bar-bg: var(--new-primary) !important;
 }
 
 .bar-and-indicator{
@@ -2976,7 +3108,7 @@ DRIVERS TABLE
 }
 
 .indicator{
-  color: var(--positive-general);
+  color: var(--new-primary);
 }
 
 .modal-driver{
@@ -3282,25 +3414,63 @@ DRIVERS TABLE
 }
 
 .generalPills{
-  color: var( --text-general) !important;
-  border: 2px solid transparent !important;
-  transition: border-color 0.3s, background-color 0.3s , color 0.3s, width 0.3s !important;
+  color: var(--text-general) !important;
+  border: 0px 2px solid transparent !important;
+  transition: border-color 0.3s, background-color 0.3s , color 0.3s, width 0.2s !important;
+  display: flex;
+  position: relative;
+  background: none;
+  cursor:  pointer !important;
 }
 
-.generalPills:hover {
-  border-color: var(--white-general) !important;
-  background-color: #58556c;
-  color: var(--white-general) !important;
+.basic-label{
+  cursor: pointer;
 }
 
-.generalPills.active {
-  background-color: var( --slight-contrast) !important;
-  color: var(--white-general) !important;
+.generalPills::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse 70% 150% at center bottom, var(--new-primary), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  transition-delay: 0.15s;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.generalPills:hover::before {
+  opacity: 1;
+}
+
+.generalPills:not(:hover)::before {
+  transition-delay: 0s;
+}
+
+.generalPills.active::before {
+  opacity: 1;
+  transition-delay: 0s;
+}
+
+.generalPills.active{
+  background-color: transparent !important;
+}
+
+.generalPills .pill-line{
+  background-color: var(--new-primary-transparent);
+  width: 0%;
+}
+
+.generalPills:hover .pill-line, .generalPills.active .pill-line{
+  width: 100%;
 }
 
 
 .scriptPills {
-  color: var( --text-general) !important;
+  color: var(--text-general) !important;
   border: 2px solid transparent !important;
   transition: border-color 0.3s, background-color 0.3s , color 0.3s, width 0.2s !important;
   width: 44px;
@@ -3652,6 +3822,14 @@ input::-webkit-inner-spin-button {
   width: 1px;
   background-color: var(--mid-gray-contrast);
   height: 85%;
+}
+
+.separator-2{
+  margin-top: 30px;
+  width: 1px;
+  background-color: var(--elements);
+  height: 90%;
+
 }
 
 .main-second-viewer{
