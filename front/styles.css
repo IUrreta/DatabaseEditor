@@ -731,6 +731,7 @@ a.bi-linkedin:hover {
   flex-direction: column;
   align-items: center;
   margin-right: 20px;
+  transition: transform 0.3s ease;
 }
 
 .dropdown-menu {
@@ -743,28 +744,67 @@ a.bi-linkedin:hover {
   gap: 10px;
 }
 
-.bi-file-earmark-binary{
-  font-size: 25px;
-  margin: 0 0.3rem;
-  color: var( --slight-contrast);
-  opacity: 1;
-  position: absolute;
-  transition: color 0.3s, opacity 0.3s;
+.gear-container{
+  font-size: 16px;
+  width: 0px;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: width 0.2s;
+  cursor: pointer;
 }
 
-.bi-file-earmark-binary.hidden{
+.gear-container.shown{
+  width: 44px;
+}
+
+.gear-container:hover .bi-gear{
+  opacity: 0;
+}
+
+.gear-container:hover .standard-line, .gear-container:hover{
+  width: 177px;
+}
+
+.gear-container:hover .standard-label{
+  opacity: 1;
+}
+
+.standard-label{
+  opacity: 0;
+  transition: opacity 0.10s;
+  position: absolute;
+  left: 10px;
+  cursor: pointer;
+  pointer-events: none;
+  bottom: 7px;
+}
+
+ .bi-gear{
+  color: var( --text-general);
+  opacity: 1;
+  transition: color 0.3s, opacity 0.1s;
+  left: 12px;
+  font-size: 20px;
+  position: absolute;
+  bottom: 5px;
+}
+
+.bi-gear.hidden{
   opacity: 0;
   pointer-events: none;
 }
 
-.bi-file-earmark-binary:hover{
-  color: var(--white-general);
-  cursor: pointer;
+.bi-gear:hover .standard-line{
+  width: 100%;
+  background-color: var(--text-general);
 }
 
 .save-selector {
   display: flex;
   flex-direction: column;
+  transition: width 0.3s;
 }
 
 .custom-dropdown {
@@ -791,8 +831,18 @@ a.bi-linkedin:hover {
 .dropdown-line{
   height: 2px;
   width: 0%;
-  background-color: var( ---general);
+  background-color: var(--text-general);
   transition: width 0.3s, color 0.3s;
+}
+
+.standard-line{
+  height: 2px;
+  width: 0%;
+  background-color: var(--text-general);
+  transition: width 0.2s, color 0.2s;
+  position: absolute;
+  bottom: 2px;
+  left: 0;
 }
 
 .new-custom-dropdown::before {
@@ -817,11 +867,18 @@ a.bi-linkedin:hover {
   transition-delay: 0s; /* No delay when not hovering */
 }
 
+#saveSelector{
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
 #saveSelector:focus::before{
   opacity: 1;
 }
 
-#saveSelector:focus ~ .dropdown-line{
+#saveSelector:focus + .dropdown-line{
   width: 100%;
   background-color: var(--white-general);
 }
@@ -832,9 +889,10 @@ a.bi-linkedin:hover {
   color: var(--white-general) !important;
   border: 0px !important;
   position: relative;
+  padding: 6px 10px !important;
 }
 
-.new-custom-dropdown:hover ~ .dropdown-line{
+.new-custom-dropdown:hover + .dropdown-line{
   width: 100%;
   background-color: var(--text-general);
 }
@@ -955,10 +1013,7 @@ a.bi-linkedin:hover {
 
 .categoryPills,
 .scriptPills, .generalPills {
-  padding-top: 6px !important;
-  padding-bottom: 6px !important;
-  padding-left: 12px !important;
-  padding-right: 12px !important;
+  padding: 6px 12px;
   border-radius: 10px !important;
 }
 
