@@ -43,12 +43,15 @@ function placeRaces(races) {
     races[1].forEach(function (race) {
         let newDiv = document.createElement("div");
         newDiv.className = "race bold-font"
-        newDiv.textContent = names_full[races_names[race[1]]]
+        let nameDiv = document.createElement("div");
+        nameDiv.className = "front-gradient"
+        nameDiv.textContent = names_full[races_names[race[1]]]
         newDiv.dataset.raceid = race[0]
         let img = document.createElement("img")
         img.setAttribute("src", codes_dict[races_map[race[1]]])
-        img.className = "race-flag"
+        img.className = "race-flag front-gradient"
         img.style.float = "right"
+        newDiv.appendChild(nameDiv)
         newDiv.appendChild(img)
         raceMenu.appendChild(newDiv)
         newDiv.addEventListener("click", function () {
@@ -275,6 +278,8 @@ function predictDrivers(drivers) {
         nameDiv.classList = "driver-prediction"
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
+        mainDiv.dataset.teamid = driver.Team;
+        gradientHover(mainDiv)
         spanLastName.dataset.teamid = driver.Team;
         spanName.textContent = name[0] + " "
         spanLastName.textContent = name[1].toUpperCase()

@@ -2,6 +2,16 @@
   /*
   GENERAL COLORS
   */
+  --background: #161616;
+  --generals: #202020;
+  --superficials: #272727;
+  --elements: #313131;
+  --dark-text: #b1b1b1;
+  --negative-text: #292929;
+  --new-primary: #c89efc;
+  --new-primary-transparent: #c89efc99;
+
+
   --background-general: #110f24;
   --slight-contrast: #797599;
   --white-general: #f3f3f3;
@@ -117,7 +127,7 @@
 
 
 body {
-  background-color: var(--background-general) !important;
+  background-color: var(--background) !important;
   max-height: 930px;
   overflow-x: hidden;
 }
@@ -139,9 +149,8 @@ body {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: var(--tools-general);
-  color: var( --slight-contrast);
-  border-top: 1px solid var( --slight-contrast);
+  background-color: var(--generals);
+  color: var(--dark-text);
   text-align: center;
   padding: 5px 0;
   font-size: 16px;
@@ -170,13 +179,13 @@ body {
   cursor: pointer !important;
   padding: 0 7px;
   transition: color 0.3s;
-  color: var( --slight-contrast);
+  color: var(--dark-text);
   text-decoration: none;
 }
 
 .socials a:hover,
 .footer i:hover {
-  color: var( --text-general);
+  color: var(--dark-text);
 }
 
 .socials a {
@@ -194,12 +203,12 @@ body {
 .update-info {
   transition: color 0.3s;
   text-decoration: none;
-  color: var( --slight-contrast);
+  color: var(--dark-text);
   cursor: default;
 }
 
 .bi-exclamation-diamond {
-  color: var( --negative-general);
+  color: var(--negative-general);
 }
 
 .bi-exclamation-lg,
@@ -660,7 +669,7 @@ a.bi-linkedin:hover {
 
 .tools-panel {
   color: var(--white-general);
-  background-color: var(--tools-general);
+  background-color: var(--generals);
   display: flex;
   flex-direction: row;
 }
@@ -674,7 +683,7 @@ a.bi-linkedin:hover {
   position: relative;
   width: 100%;
   height: 1px;
-  background-color: var( --slight-contrast);
+  background-color: var(--slight-contrast);
 }
 
 .mode-line.ai{
@@ -994,7 +1003,7 @@ a.bi-linkedin:hover {
 .main-columns-drag-section {
   margin-left: 14px;
   margin-right: 5%;
-  border: 1px solid var(--slight-contrast);
+  background-color: var(--generals);
   color: var(--white-general);
   min-height: 660px;
   max-height: 660px;
@@ -1733,7 +1742,7 @@ DRIVERS TABLE
 .main-viewer-section {
   margin-left: 14px;
   margin-right: 14px;
-  border: 1px solid var( --slight-contrast);
+  background-color: var(--generals);
   color: var(--white-general);
   overflow: hidden;
   border-radius: 10px;
@@ -2450,9 +2459,7 @@ DRIVERS TABLE
 
 .custom-footer {
   color: var(--white-general) !important;
-  border-top: 1px solid var( --slight-contrast) !important;
-  background-color: var(--custom-modal-back) !important;
-
+  background-color: var(--generals) !important;
 }
 
 ::-webkit-input-placeholder {
@@ -2513,28 +2520,23 @@ DRIVERS TABLE
 }
 
 .team,
-.engine,
-.race {
-  background-color: var(--component-general);
+.engine{
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 4.8px;
   cursor: pointer !important;
   margin: 10px;
-  color: var( --text-general);
+  color: var(--text-general);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 18px;
 }
 
 .driver-info{
-  background-color: var(--component-general);
-  border: 2px solid transparent;
   border-radius: 10px;
-  padding: 8px;
-  cursor: pointer !important;
-  margin: 13px 8px;
-  color: var( --text-general);
+  padding: 10px;
+  margin: 9px 8px;
+  color: var(--text-general);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 18px;
@@ -2542,7 +2544,196 @@ DRIVERS TABLE
   flex-direction: row;
 }
 
+.rb-gradient::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 200%, var(--redbull-primary), var(--elements) 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.rb-gradient:hover::before{
+  opacity: 1;
+}
+
+.mc-gradient::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 200%, var(--mclaren-primary), var(--elements) 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.mc-gradient:hover::before{
+  opacity: 1;
+}
+
+.as-gradient::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 200%, var(--aston-primary), var(--elements) 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.as-gradient:hover::before{
+  opacity: 1;
+}
+
+.al-gradient::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 200%, var(--alpine-primary), var(--elements) 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.al-gradient:hover::before{
+  opacity: 1;
+}
+
+.af-gradient::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 200%, var(--alfa-primary), var(--elements) 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.af-gradient:hover::before{
+  opacity: 1;
+}
+
+.ha-gradient::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 200%, var(--haas-primary), var(--elements) 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.ha-gradient:hover::before{
+  opacity: 1;
+}
+
+.wi-gradient::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 200%, var(--williams-primary), var(--elements) 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.wi-gradient:hover::before{
+  opacity: 1;
+}
+
+.at-gradient::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 200%, var(--alphatauri-primary), var(--elements) 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.at-gradient:hover::before{
+  opacity: 1;
+}
+
+
+.fe-gradient::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 200%, var(--ferrari-primary), var(--elements) 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.fe-gradient:hover::before{
+  opacity: 1;
+}
+
+.me-gradient::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 200%, var(--mercedes-primary), var(--elements) 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.me-gradient:hover::before{
+  opacity: 1;
+}
+
+
+
 .race{
+  border-radius: 10px;
+  cursor: pointer !important;
+  margin: 10px;
+  color: var(--text-general);
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  position: relative;
   font-size: 24px;
   text-transform: uppercase;
   padding: 5px 0;
@@ -2606,12 +2797,18 @@ DRIVERS TABLE
   flex-direction: row;
   color: var( --text-general);
   font-size: 20px;
-  margin: 10px 20px;
+  margin: 20px 20px;
 }
 
 .driver-prediction{
   width: 50%;
+  z-index: 100;
 }
+
+.prediction-table-header .driver-prediction, .prediction-table-header .position-prediction, .prediction-table-header .prediction-prediction{
+  text-transform: uppercase;
+}
+
 
 .position-prediction{
   width: 25%;
@@ -2619,6 +2816,7 @@ DRIVERS TABLE
   justify-content: center;
   gap: 15px;
   padding-left: 40px;
+  z-index: 100;
 }
 
 .position-prediction > :first-child{
@@ -2635,21 +2833,53 @@ DRIVERS TABLE
   display: flex;
   justify-content: center;
   gap: 15px;
+  z-index: 100;
+}
+
+.front-gradient{
+  z-index: 10;
+}
+
+.race::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 180%, var(--new-primary), var(--elements) 50%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.race:hover::before{
+  opacity: 1;
+}
+
+.race.selected::before{
+  opacity: 0;
+}
+
+.race.selected{
+  border-radius: 10px;
+  background: radial-gradient(circle at -5% 190%, var(--new-primary), var(--elements) 85%);
+  color: var(--negative-text);
+  border-color: transparent;
 }
 
 
 
 .team:hover,
-.engine:hover,
-.race:hover, .driver-info:hover {
+.engine:hover{
   border-color: var(--white-general);
   color: var(--white-general);
   background-color: var(--component-general-hover);
 }
 
 .team.selected,
-.engine.selected,
-.race.selected {
+.engine.selected{
   color: var(--background-general);
   background-color: var( --text-general);
 }
@@ -2659,13 +2889,13 @@ DRIVERS TABLE
 }
 
 .free-driver {
-  background-color: var(--component-general);
+  background-color: var(--elements);
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 8px;
   cursor: grab !important;
   margin: 10px;
-  color: var( --text-general);
+  color: var(--text-general);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 15px;
@@ -3163,7 +3393,7 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(ellipse 70% 150% at center bottom, rgba(255, 255, 255, 0.6), transparent 70%);
+  background: radial-gradient(ellipse 70% 150% at center bottom, var(--new-primary), transparent 70%);
   opacity: 0;
   transition: opacity 0.25s ease;
   transition-delay: 0.15s;
@@ -3177,6 +3407,10 @@ DRIVERS TABLE
 .scriptPills.active::before {
   opacity: 1;
   transition-delay: 0s; /* Asegurarse de que no haya retraso en el estado activo */
+}
+
+.scriptPills .pill-line{
+  background-color: var(--new-primary-transparent);
 }
 
 .ai-pills::before{
@@ -3270,7 +3504,7 @@ input::-webkit-inner-spin-button {
 }
 
 .team-template {
-  background-color: var(--h2h-back);
+  background-color: var(--superficials);
   border-radius: 10px;
   border: none;
   color: var(--white-general);
