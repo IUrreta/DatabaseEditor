@@ -39,8 +39,8 @@
   --overall-holder: #21202e;
   --dropdown-back-general: #8b87af;
   --active-general: #1a1826;
-  --row-cell: #3c3952;
-  --row-odd-cell: #494561;
+  --row-cell: #110D14;
+  --row-odd-cell: #15121B;
   --special-columns: #464166;
   --delete-div: #f15353;
   --weather-vis-back: #292738;
@@ -1275,14 +1275,14 @@ DRIVERS TABLE
 
 .drivers-table-row:hover .drivers-table-driver, 
 .drivers-table-row:hover .drivers-table-normal, .teams-table-row:hover .teams-table-normal{
-  background-color: var( --text-general);
+  background-color: var(--text-general);
   color: var(--tools-general);
 }
 
 .drivers-table-row.odd:hover .drivers-table-driver, 
 .drivers-table-row.odd:hover .drivers-table-normal,
 .teams-table-row.odd:hover .teams-table-normal{
-  background-color: var( --text-general);
+  background-color: var(--text-general);
   color: var(--tools-general);
 }
 
@@ -1291,15 +1291,16 @@ DRIVERS TABLE
   transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
 
-.drivers-table-row:hover .drivers-table-position, .teams-table-row:hover .teams-table-position{
-  border-right: 1px solid var( --text-general);
-  background-color: var( --text-general);
+.drivers-table-row:hover .drivers-table-position, .teams-table-row:hover .teams-table-position,
+.drivers-table-row-odd:hover .drivers-table-position, .teams-table-row-odd:hover .teams-table-position{
+  border-right: 1px solid var(--text-general);
+  background-color: var( --text-general) !important;
   color: var(--tools-general);
 }
 
 .drivers-table-row:hover .drivers-table-points, .teams-table-row:hover .teams-table-points{
   border-left: 1px solid var( --text-general);
-  background-color: var( --text-general);
+  background-color: var( --text-general) !important;
   color: var(--tools-general);
 }
 
@@ -1315,15 +1316,16 @@ DRIVERS TABLE
   color: var(--tools-general) !important;
 }
 
-.drivers-table-row .drivers-table-normal, .teams-table-row .teams-table-normal{
-  background-color: var(--row-cell);
+.drivers-table-row .drivers-table-normal, .teams-table-row .teams-table-normal, .drivers-table-row .drivers-table-driver,
+ .drivers-table-row .drivers-table-points, .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-logo-div{
+  background-color: var(--elements);
 }
 
-.drivers-table-row.odd .drivers-table-normal, .teams-table-row.odd .teams-table-normal{
-  background-color: var(--row-odd-cell);
+.drivers-table-row.odd .drivers-table-normal, .teams-table-row.odd .teams-table-normal, .drivers-table-row.odd .drivers-table-driver,
+ .drivers-table-row.odd .drivers-table-points, .drivers-table-row.odd .drivers-table-position, .drivers-table-row.odd .drivers-table-logo-div{
+  background-color: var(--elements-hover);
 }
 
-.drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-points, .drivers-table-row .drivers-table-position,
 .teams-table-row .teams-table-team, .teams-table-row .teams-table-points, .teams-table-row .teams-table-position{
   background-color: var(--special-columns)
 }
@@ -1460,7 +1462,6 @@ DRIVERS TABLE
 
 
 .drivers-table-logo-div{
-  background-color: var(--special-columns);
   border-right: 1px solid var( --slight-contrast);
 }
 
