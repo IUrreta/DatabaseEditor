@@ -565,7 +565,10 @@ function load_drivers_h2h(drivers) {
         let h2hBut = document.createElement("div")
         h2hBut.dataset.driverid = driver[1]
         h2hBut.dataset.teamid = driver[2]
-        h2hBut.innerText = "H2H"
+        let h2hLabel = document.createElement("div")
+        h2hLabel.innerText = "H2H"
+        h2hLabel.className = "front-gradient no-pointer pos-relative"
+        h2hBut.appendChild(h2hLabel)
         h2hBut.className = "H2Hradio"
         h2hBut.dataset.state = "unchecked"
         h2hBut.addEventListener("click", function () {
@@ -595,7 +598,7 @@ function load_drivers_h2h(drivers) {
         let graphIcon = document.createElement("i")
         graphBut.dataset.driverid = driver[1]
         graphBut.dataset.teamid = driver[2]
-        graphIcon.className = "bi bi-graph-up"
+        graphIcon.className = "bi bi-graph-up front-gradient no-pointer pos-relative "
         graphBut.appendChild(graphIcon)
         graphBut.className = "GraphButton"
         graphBut.dataset.state = "unchecked"

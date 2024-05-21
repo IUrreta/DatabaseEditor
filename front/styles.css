@@ -4,7 +4,7 @@
   */
   --background: #161616;
   --generals: #202020;
-  --superficials: #272727;
+  --superficials: #262626;
   --dropdown-back: #292929;
   --elements: #313131;
   --dropdown-hover: #363636;
@@ -13,6 +13,7 @@
   --new-primary: #c89efc;
   --new-primary-transparent: #c89efc99;
   --text-selected: #e7d3ff;
+  --text-selected-secondary: #a8cec9;
   --new-secondary: #9AD2CB;
   --table-hover: #4a4a4a;
   --elements-hover: #3a3a3a;
@@ -364,12 +365,12 @@ a.bi-linkedin:hover {
 
 @keyframes h2h-animation {
   0%, 100% { color: var( --text-general); }
-  50% { color: var( --h2h-detail); }
+  50% { color: var( --text-selected); }
 }
 
 @keyframes graph-animation {
   0%, 100% { color: var( --text-general); }
-  50% { color: var( --graph-detail); }
+  50% { color: var( --text-selected-secondary); }
 }
 
 .annotations {
@@ -1939,6 +1940,7 @@ DRIVERS TABLE
   color: var(--white-general);
   overflow: hidden;
   border-radius: 10px;
+  box-shadow: 0px 0px 10px 2px var(--box-shadow);
 }
 
 
@@ -2639,6 +2641,7 @@ DRIVERS TABLE
   display: grid;
   background-color: var(--superficials);
   grid-template-columns: repeat(4, 1fr);
+  box-shadow: 0px 0px 10px 2px var(--box-shadow);
 }
 
 
@@ -2737,12 +2740,20 @@ DRIVERS TABLE
   padding: 10px;
   margin: 9px 8px;
   color: var(--text-general);
+  background-color: var(--dropdown-hover);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 18px;
   display: flex;
   flex-direction: row;
+  box-shadow: 0px 0px 10px 1px var(--box-shadow);
 }
+
+.driver-info:hover, .race:hover{
+  background-color: var(--elements-hover);
+}
+
+
 
 .rb-gradient::before{
   border-radius: 10px;
@@ -3212,6 +3223,7 @@ DRIVERS TABLE
   cursor: pointer !important;
   margin: 10px;
   color: var(--text-general);
+  background-color: var(--elements);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 24px;
@@ -3221,6 +3233,7 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-shadow: 0px 0px 10px 1px var(--box-shadow);
 }
 
 
@@ -3382,8 +3395,7 @@ DRIVERS TABLE
 }
 
 .H2Hradio{
-  border: 2px solid transparent;
-  border-radius: 7px;
+  border-bottom: 2px solid transparent;
   color: var( --text-general);
   background-color: transparent;
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
@@ -3392,11 +3404,23 @@ DRIVERS TABLE
   padding: 0 3px;
   cursor: pointer;
   z-index: 100;
+  position: relative;
+}
+
+.H2Hradio::before{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, var(--new-primary) 3%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
 .GraphButton{
-  border: 2px solid transparent;
-  border-radius: 7px;
+  border-bottom: 2px solid transparent;
   color: var( --text-general);
   background-color: transparent;
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
@@ -3405,32 +3429,56 @@ DRIVERS TABLE
   padding: 0 3px;
   cursor: pointer;
   z-index: 100;
+  position: relative;
 }
+
+.GraphButton::before{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, var(--new-secondary) 3%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
 
 .buttons-drivers-modal{
   display: flex;
   gap: 4px;
 }
 
-.H2Hradio:hover, .GraphButton:hover{
-  color: var(--white-general);
-  background-color: #807ca1;
-  border-color: var(--white-general);
+.H2Hradio:hover{
+  border-bottom: 2px solid var(--new-primary)
+}
+
+.GraphButton:hover{
+  border-bottom: 2px solid var(--new-secondary)
 }
 
 .H2Hradio.activated{
-  background-color: var( --h2h-general);
-  border-color: var( --h2h-detail);
-  color: var(--white-general);
+  border-bottom: 2px solid var(--new-primary);
+  color: var(--text-general);
+}
+
+.H2Hradio.activated::before{
+  opacity: 1;
 }
 
 .GraphButton.activated{
-  background-color: var( --graph-general);
-  border-color: var( --graph-detail);
-  color: var(--white-general);
+  border-bottom: 2px solid var(--new-secondary);
+  color: var(--text-general);
 }
 
+.GraphButton.activated::before{
+  opacity: 1;
+}
 
+.no-pointer{
+  pointer-events: none;
+}
 
 .modal-dialog-lg{
   min-width: 1300px !important;
@@ -3473,6 +3521,7 @@ DRIVERS TABLE
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 0 10px 1px var(--box-shadow);
 }
 
 .modal-team{
@@ -3487,6 +3536,7 @@ DRIVERS TABLE
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 0 10px 1px var(--box-shadow);
 }
 
 .free-driver .custom-icon {
@@ -3577,7 +3627,6 @@ DRIVERS TABLE
 .modal-driver:hover, .modal-team:hover{
   background-color: var(--elements-hover);
   cursor: default;
-  box-shadow: 0 0 10px 0 var(--box-shadow);
 }
 
 .modal-team.ferrari:hover{
