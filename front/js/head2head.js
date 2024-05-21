@@ -25,7 +25,6 @@ let h2hTeamList = []
 let graphTeamList = []
 let mode = "driver"
 
-const gradient_light_colors = ["--andretti-primary", "--mercedes-primary", "--williams-primary", "--brawn-primary", "--stake-primary"]
 const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD", "#B6BABD", "#c3dc00", "#d0e610", "#fac51c", "#b09247", "#f7c82f"]
 let combined_dict = {
     1: "Ferrari",
@@ -558,6 +557,8 @@ function load_drivers_h2h(drivers) {
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
         spanLastName.dataset.teamid = driver[2];
+        newDiv.dataset.teamid = driver[2];
+        gradientHover(newDiv, 2)
         spanName.textContent = name[0] + " "
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
@@ -625,6 +626,7 @@ function load_drivers_h2h(drivers) {
         let buttons = document.createElement("div")
         buttons.classList = "buttons-drivers-modal"
         let nameAndSurName = document.createElement("div")
+        nameAndSurName.classList = "front-gradient"
         nameAndSurName.appendChild(spanName)
         nameAndSurName.appendChild(spanLastName)
         buttons.appendChild(h2hBut)

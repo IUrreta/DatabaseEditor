@@ -117,8 +117,11 @@ function gradientHover(div, type){
     if (type === 0){
         hoverClass = team_dict[team] + "-gradient"
     }
-    else{
+    else if (type === 1){
         hoverClass = team_dict[team] + "-gradient-small"
+    }
+    else{
+        hoverClass = team_dict[team] + "-gradient-mid"
     }
     div.classList.add(hoverClass)
 }

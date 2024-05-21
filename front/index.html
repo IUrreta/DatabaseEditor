@@ -578,7 +578,8 @@
               <div class="dropdown-line"></div>
             </div>
             <div class="pos-relative">
-              <button type="button" class="btn btn-primary custom-confirm bold-font" id="confirmPredict" disabled>Confirm</button>
+              <button type="button" class="btn btn-primary custom-confirm bold-font" id="confirmPredict"
+                disabled>Confirm</button>
               <div class="dropdown-line"></div>
             </div>
           </div>
@@ -588,7 +589,7 @@
   </div>
   <div class="modal custom-modal fade" id="compDataModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-lg modal-dialog-centered" role="document">
-      <div class="modal-content">
+      <div class="modal-content custom-modal">
         <div class="modal-header custom-header">
           <h3 class="modal-title bold-font">Comparison data selection</h3>
         </div>
@@ -596,22 +597,31 @@
           <div class="info-modal-section">
             <div class="modal-buttons">
               <div>
-                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                  id="yearButtonH2H" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Year
-                </button>
-                <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
-                </ul>
+                <div>
+                  <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                    id="yearButtonH2H" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Year
+                  </button>
+                  <div class="dropdown-line"></div>
+                  <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
+                  </ul>
+                </div>
               </div>
               <div class="drivers-teams-pills">
                 <ul class="nav nav-pills">
                   <li class="nav-item">
                     <a class="nav-link bold-font generalPills active" data-bs-toggle="pill" href="#"
-                      id="driverspillmodal">Drivers</a>
+                      id="driverspillmodal">
+                      <div class="basic-label bold-font">Drivers</div>
+                      <div class="pill-line"></div>
+                    </a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link bold-font generalPills" data-bs-toggle="pill" href="#"
-                      id="teamspillmodal">Teams</a>
+                      id="teamspillmodal">
+                      <div class="basic-label bold-font">Teams</div>
+                      <div class="pill-line"></div>
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -635,100 +645,100 @@
           <div class="teams-modal-section d-none">
             <div class="drivers-modal-title component-subtitle bold-font mt-3">Select teams</div>
             <div class="teams-modal-zone mt-2">
-              <div class="col modal-team ferrari d-none" data-teamid="1">
+              <div class="col modal-team fe-gradient-mid d-none" data-teamid="1">
                 <div class="logo-and-name">
-                  <img src="../assets/images/ferrari.png" class="ferrarilogo">
-                  <div class="team-name bold-font">FERRARI</div>
+                  <img src="../assets/images/ferrari.png" class="ferrarilogo front-gradient">
+                  <div class="team-name bold-font front-gradient">FERRARI</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="1" class="H2Hradio" data-state="unchecked">H2H</div>
                   <div data-teamid="1" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team mclaren d-none" data-teamid="2">
+              <div class="col modal-team mc-gradient-mid d-none" data-teamid="2">
                 <div class="logo-and-name">
-                  <img src="../assets/images/mclaren.png" class="mclarenlogo">
-                  <div class="team-name bold-font">MCLAREN</div>
+                  <img src="../assets/images/mclaren.png" class="mclarenlogo front-gradient">
+                  <div class="team-name bold-font front-gradient">MCLAREN</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="2" class="H2Hradio" data-state="unchecked">H2H</div>
                   <div data-teamid="2" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team redbull d-none" data-teamid="3">
+              <div class="col modal-team rb-gradient-mid d-none" data-teamid="3">
                 <div class="logo-and-name">
-                  <img src="../assets/images/redbull.png" class="redbulllogo">
-                  <div class="team-name bold-font">RED BULL</div>
+                  <img src="../assets/images/redbull.png" class="redbulllogo front-gradient">
+                  <div class="team-name bold-font front-gradient">RED BULL</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="3" class="H2Hradio" data-state="unchecked">H2H</div>
                   <div data-teamid="3" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team merc d-none" data-teamid="4">
+              <div class="col modal-team me-gradient-mid d-none" data-teamid="4">
                 <div class="logo-and-name">
-                  <img src="../assets/images/mercedes.png" class="merclogo2">
-                  <div class="team-name bold-font">MERCEDES</div>
+                  <img src="../assets/images/mercedes.png" class="merclogo2 front-gradient">
+                  <div class="team-name bold-font front-gradient">MERCEDES</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="4" class="H2Hradio" data-state="unchecked">H2H</div>
                   <div data-teamid="4" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team alpine d-none" data-teamid="5">
+              <div class="col modal-team al-gradient-mid d-none" data-teamid="5">
                 <div class="logo-and-name">
-                  <img src="../assets/images/alpine.png" class="alpinelogo-replace alpinelogo">
-                  <div class="team-name bold-font alpine-name">ALPINE</div>
+                  <img src="../assets/images/alpine.png" class="alpinelogo-replace alpinelogo front-gradient">
+                  <div class="team-name bold-font front-gradient alpine-name">ALPINE</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="5" class="H2Hradio" data-state="unchecked">H2H</div>
                   <div data-teamid="5" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team williams d-none" data-teamid="6">
+              <div class="col modal-team wi-gradient-mid d-none" data-teamid="6">
                 <div class="logo-and-name">
-                  <img src="../assets/images/williams.png" class="williamslogo">
-                  <div class="team-name bold-font">WILLIAMS</div>
+                  <img src="../assets/images/williams.png" class="williamslogo front-gradient">
+                  <div class="team-name bold-font front-gradient">WILLIAMS</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="6" class="H2Hradio" data-state="unchecked">H2H</div>
                   <div data-teamid="6" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team haas d-none" data-teamid="7">
+              <div class="col modal-team ha-gradient-mid d-none" data-teamid="7">
                 <div class="logo-and-name">
-                  <img src="../assets/images/haas.png" class="haaslogo">
-                  <div class="team-name bold-font">HAAS</div>
+                  <img src="../assets/images/haas.png" class="haaslogo front-gradient">
+                  <div class="team-name bold-font front-gradient">HAAS</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="7" class="H2Hradio" data-state="unchecked">H2H</div>
                   <div data-teamid="7" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team alpha d-none" data-teamid="8">
+              <div class="col modal-team at-gradient-mid d-none" data-teamid="8">
                 <div class="logo-and-name">
-                  <img src="../assets/images/alphatauri.png" class="atlogo-replace alphataurilogo">
-                  <div class="team-name bold-font at-name">ALPHA TAURI</div>
+                  <img src="../assets/images/alphatauri.png" class="atlogo-replace alphataurilogo front-gradient">
+                  <div class="team-name bold-font front-gradient at-name">ALPHA TAURI</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="8" class="H2Hradio" data-state="unchecked">H2H</div>
                   <div data-teamid="8" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team alfa d-none" data-teamid="9">
+              <div class="col modal-team af-gradient-mid d-none" data-teamid="9">
                 <div class="logo-and-name">
-                  <img src="../assets/images/alfaromeo.png" class="alfalogo alfalogo-replace">
-                  <div class="team-name bold-font alfa-name">ALFA ROMEO</div>
+                  <img src="../assets/images/alfaromeo.png" class="alfalogo alfalogo-replace front-gradient">
+                  <div class="team-name bold-font front-gradient alfa-name">ALFA ROMEO</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="9" class="H2Hradio" data-state="unchecked">H2H</div>
                   <div data-teamid="9" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i></div>
                 </div>
               </div>
-              <div class="col modal-team aston d-none" data-teamid="10">
+              <div class="col modal-team as-gradient-mid d-none" data-teamid="10">
                 <div class="logo-and-name">
-                  <img src="../assets/images/astonMartin.png" class="astonlogo">
-                  <div class="team-name bold-font ps-1">ASTON MARTIN</div>
+                  <img src="../assets/images/astonMartin.png" class="astonlogo front-gradient">
+                  <div class="team-name bold-font ps-1 front-gradient">ASTON MARTIN</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="10" class="H2Hradio" data-state="unchecked">H2H</div>
@@ -740,9 +750,15 @@
           </div>
         </div>
         <div class="modal-footer custom-footer">
-          <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
+          <div class="pos-relative">
+            <button type="button" class="btn btn-secondary custom-delete bold-font" data-bs-dismiss="modal">Close</button>
+            <div class="dropdown-line"></div>
+          </div>
+          <div class="pos-relative">
+            <button type="button" class="btn btn-primary custom-confirm bold-font" data-bs-dismiss="modal"
             id="confirmComparison">Confirm</button>
+            <div class="dropdown-line"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -930,12 +946,15 @@
       <div class="script-view d-none" id="head2head_viewer">
         <div class="col">
           <div class="col h2h-title">
-            <div class="ps-3"
-              style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center;">
-              <button class="custom-dropdown custom-button bold-font" id="compDataButton" data-bs-toggle="modal"
-                data-bs-target="#compDataModal">
-                Data
-              </button>
+            <div class="ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items:
+              center;">
+              <div>
+                <button class="custom-dropdown bold-font" id="compDataButton" data-bs-toggle="modal"
+                  data-bs-target="#compDataModal">
+                  Data
+                </button>
+                <div class="dropdown-line"></div>
+              </div>
               <div class="config-content bold-font ms-4" id="compConfigContent"></div>
             </div>
             <div class="ps-3"
@@ -945,15 +964,18 @@
                   checked>
                 <label class="form-check-label" for="flexSwitchCheckDefault">Annotations</label>
               </div>
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
-                id="graphTypeButton" data-bs-toggle="dropdown">
-                Race form
-              </button>
-              <ul class="dropdown-menu" id="graphTypeDropdown" style="font-family: Formula1;">
-                <a class="dropdown-item" style="cursor: pointer;" id="raceForm">Race form</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="qualiForm">Qualifying form</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
-              </ul>
+              <div>
+                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
+                  id="graphTypeButton" data-bs-toggle="dropdown">
+                  Race form
+                </button>
+                <div class="dropdown-line"></div>
+                <ul class="dropdown-menu" id="graphTypeDropdown" style="font-family: Formula1;">
+                  <a class="dropdown-item" style="cursor: pointer;" id="raceForm">Race form</a>
+                  <a class="dropdown-item" style="cursor: pointer;" id="qualiForm">Qualifying form</a>
+                  <a class="dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
+                </ul>
+              </div>
             </div>
             <div class="title bold-font py-3">
               Comparison

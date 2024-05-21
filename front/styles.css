@@ -15,6 +15,8 @@
   --text-selected: #e7d3ff;
   --new-secondary: #9AD2CB;
   --table-hover: #4a4a4a;
+  --elements-hover: #3a3a3a;
+  --box-shadow: #00000033;
 
 
   --background-general: #110f24;
@@ -113,6 +115,31 @@
   --alpine-primary: #2293D1;
   --alpine-secondary: #fd48c7;
   --renault-primary: #f7c82f;
+
+  --redbull-primary-transparent: #3671C699;
+  --ferrari-primary-transparent: #ff280099;
+  --mercedes-primary-transparent: #6CD3BF99;
+  --mclaren-primary-transparent: #F5802099;
+  --williams-primary-transparent: #37BEDD99;
+  --haas-primary-transparent: #B6BABD99;
+  --alphatauri-primary-transparent: #5E8FAA99;
+  --alphatauri-primary-transparent-original: #5E8FAA99;
+  --sauber-primary-transparent: #f5053799;
+  --alpine-primary-transparent: #2293D199;
+  --alpine-primary-transparent-original: #2293D199;
+  --renault-primary-transparent: #f7c82f99;
+  --aston-primary-transparent: #358C7599;
+  --alfa-primary-transparent: #C92D4B99;
+  --alfa-primary-transparent-original: #C92D4B99;
+  --audi-primary-transparent: #f5053799;
+  --porsche-primary-transparent: #c50c2899;
+  --brawn-primary-transparent: #d0e61099;
+  --stake-primary-transparent: #01e50099;
+  --visarb-primary-transparent: #596fa499;
+  --hugo-primary-transparent: #bd951499;
+  --lotus-primary-transparent: #b0924799;
+  --andretti-primary-transparent: #fac51c99;
+  
 }
 
 
@@ -320,11 +347,11 @@ a.bi-linkedin:hover {
 }
 
 .H2H-text span.text-main{
-  color: var( --h2h-general);
+  color: var( --new-primary);
 }
 
 .graph-text span.text-main{
-  color: var( --graph-general);
+  color: var( --new-secondary);
 }
 
 .h2h-highlight {
@@ -833,6 +860,7 @@ a.bi-linkedin:hover {
 .gear-container:hover .standard-label{
   opacity: 1;
 }
+
 
 .standard-label{
   opacity: 0;
@@ -2606,10 +2634,10 @@ DRIVERS TABLE
 }
 
 .drivers-modal-zone, .teams-modal-zone{
-  border: 1px solid var( --slight-contrast);
   border-radius: 10px;
   width: 100%;
   display: grid;
+  background-color: var(--superficials);
   grid-template-columns: repeat(4, 1fr);
 }
 
@@ -2724,7 +2752,21 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--redbull-primary), var(--elements) 25%);
+  background: radial-gradient(circle at -5% 200%, var(--redbull-primary), transparent 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.rb-gradient-mid::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 150%, var(--redbull-primary), transparent 25%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
@@ -2738,13 +2780,13 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--redbull-primary), var(--table-hover) 15%);
+  background: radial-gradient(circle at -5% 200%, var(--redbull-primary-transparent), transparent 30%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
 }
 
-.rb-gradient:hover::before, .rb-gradient-small:hover::before{
+.rb-gradient:hover::before, .rb-gradient-small:hover::before, .rb-gradient-mid:hover::before{
   opacity: 1;
 }
 
@@ -2756,7 +2798,21 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--mclaren-primary), var(--elements) 25%);
+  background: radial-gradient(circle at -5% 200%, var(--mclaren-primary), transparent 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.mc-gradient-mid::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 150%, var(--mclaren-primary), transparent 25%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
@@ -2770,13 +2826,13 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--mclaren-primary), var(--table-hover) 15%);
+  background: radial-gradient(circle at -5% 200%, var(--mclaren-primary-transparent),transparent 30%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
 }
 
-.mc-gradient:hover::before, .mc-gradient-small:hover::before{
+.mc-gradient:hover::before, .mc-gradient-small:hover::before, .mc-gradient-mid:hover::before{
   opacity: 1;
 }
 
@@ -2788,7 +2844,21 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--aston-primary), var(--elements) 25%);
+  background: radial-gradient(circle at -5% 200%, var(--aston-primary), transparent 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.as-gradient-mid::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 150%, var(--aston-primary), transparent 25%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
@@ -2802,13 +2872,13 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--aston-primary), var(--table-hover) 15%);
+  background: radial-gradient(circle at -5% 200%, var(--aston-primary-transparent), transparent 30%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
 }
 
-.as-gradient:hover::before, .as-gradient-small:hover::before{
+.as-gradient:hover::before, .as-gradient-small:hover::before, .as-gradient-mid:hover::before{
   opacity: 1;
 }
 
@@ -2820,7 +2890,21 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--alpine-primary), var(--elements) 25%);
+  background: radial-gradient(circle at -5% 200%, var(--alpine-primary), transparent 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.al-gradient-mid::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 150%, var(--alpine-primary-transparent), transparent 25%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
@@ -2834,13 +2918,13 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--alpine-primary), var(--table-hover) 15%);
+  background: radial-gradient(circle at -5% 200%, var(--alpine-primary-transparent), transparent 30%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
 }
 
-.al-gradient:hover::before, .al-gradient-small:hover::before{
+.al-gradient:hover::before, .al-gradient-small:hover::before, .al-gradient-mid:hover::before{
   opacity: 1;
 }
 
@@ -2852,7 +2936,7 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--alfa-primary), var(--elements) 25%);
+  background: radial-gradient(circle at -5% 200%, var(--alfa-primary), transparent 25%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
@@ -2866,13 +2950,27 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--alfa-primary), var(--table-hover) 15%);
+  background: radial-gradient(circle at -5% 200%, var(--alfa-primary-transparent), transparent 30%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
 }
 
-.af-gradient:hover::before, .af-gradient-small:hover::before{
+.af-gradient-mid::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 150%, var(--alfa-primary), transparent 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.af-gradient:hover::before, .af-gradient-small:hover::before, .af-gradient-mid:hover::before{
   opacity: 1;
 }
 
@@ -2884,7 +2982,7 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--haas-primary), var(--elements) 25%);
+  background: radial-gradient(circle at -5% 200%, var(--haas-primary),transparent  25%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
@@ -2898,13 +2996,27 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--haas-primary), var(--table-hover) 15%);
+  background: radial-gradient(circle at -5% 200%, var(--haas-primary-transparent), transparent 30%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
 }
 
-.ha-gradient:hover::before, .ha-gradient-small:hover::before{
+.ha-gradient-mid::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 150%, var(--haas-primary), transparent 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.ha-gradient:hover::before, .ha-gradient-small:hover::before, .ha-gradient-mid:hover::before{
   opacity: 1;
 }
 
@@ -2916,7 +3028,7 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--williams-primary), var(--elements) 25%);
+  background: radial-gradient(circle at -5% 200%, var(--williams-primary), transparent 25%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
@@ -2930,13 +3042,27 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--williams-primary), var(--table-hover) 15%);
+  background: radial-gradient(circle at -5% 200%, var(--williams-primary-transparent), transparent 30%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
 }
 
-.wi-gradient:hover::before, .wi-gradient-small:hover::before{
+.wi-gradient-mid::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 150%, var(--williams-primary), transparent 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.wi-gradient:hover::before, .wi-gradient-small:hover::before, .wi-gradient-mid:hover::before{
   opacity: 1;
 }
 
@@ -2948,7 +3074,7 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--alphatauri-primary), var(--elements) 25%);
+  background: radial-gradient(circle at -5% 200%, var(--alphatauri-primary),transparent 25%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
@@ -2962,13 +3088,27 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--alphatauri-primary), var(--table-hover) 15%);
+  background: radial-gradient(circle at -5% 200%, var(--alphatauri-primary-transparent), transparent 30%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
 }
 
-.at-gradient:hover::before, .at-gradient-small:hover::before{
+.at-gradient-mid::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 150%, var(--alphatauri-primary), transparent 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.at-gradient:hover::before, .at-gradient-small:hover::before, .at-gradient-mid:hover::before{
   opacity: 1;
 }
 
@@ -2981,7 +3121,7 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--ferrari-primary), var(--elements) 25%);
+  background: radial-gradient(circle at -5% 200%, var(--ferrari-primary), transparent 25%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
@@ -2995,13 +3135,27 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--ferrari-primary), var(--table-hover) 15%);
+  background: radial-gradient(circle at -5% 200%, var(--ferrari-primary-transparent), transparent 30%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
 }
 
-.fe-gradient:hover::before, .fe-gradient-small:hover::before{
+.fe-gradient-mid::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 150%, var(--ferrari-primary), transparent 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.fe-gradient:hover::before, .fe-gradient-small:hover::before, .fe-gradient-mid:hover::before{
   opacity: 1;
 }
 
@@ -3013,7 +3167,21 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--mercedes-primary), var(--elements) 25%);
+  background: radial-gradient(circle at -5% 200%, var(--mercedes-primary), transparent 25%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+}
+
+.me-gradient-mid::before{
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -5% 150%, var(--mercedes-primary), transparent 25%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
@@ -3027,13 +3195,13 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--mercedes-primary), var(--table-hover) 15%);
+  background: radial-gradient(circle at -5% 200%, var(--mercedes-primary-transparent), transparent 30%);
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
 }
 
-.me-gradient:hover::before, .me-gradient-small:hover::before{
+.me-gradient:hover::before, .me-gradient-small:hover::before, .me-gradient-mid:hover::before{
   opacity: 1;
 }
 
@@ -3079,8 +3247,8 @@ DRIVERS TABLE
 }
 
 .config-content{
-  color: #756f9b;
-  font-size: 22px;
+  color: var(--text-selected);
+  font-size: 20px;
 }
 
 #compConfigContent{
@@ -3217,24 +3385,26 @@ DRIVERS TABLE
   border: 2px solid transparent;
   border-radius: 7px;
   color: var( --text-general);
-  background-color: var( --slight-contrast);
+  background-color: transparent;
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   height: 28px;
   font-size: 16px;
   padding: 0 3px;
   cursor: pointer;
+  z-index: 100;
 }
 
 .GraphButton{
   border: 2px solid transparent;
   border-radius: 7px;
   color: var( --text-general);
-  background-color: var( --slight-contrast);
+  background-color: transparent;
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   height: 28px;
   font-size: 16px;
   padding: 0 3px;
   cursor: pointer;
+  z-index: 100;
 }
 
 .buttons-drivers-modal{
@@ -3292,10 +3462,9 @@ DRIVERS TABLE
 }
 
 .modal-driver{
-  background-color: var(--component-general-hover);
-  border: 2px solid transparent;
+  background-color: var(--elements);
   border-radius: 10px;
-  padding: 6px;
+  padding: 8px;
   margin: 8px;
   color: var( --text-general);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
@@ -3307,10 +3476,9 @@ DRIVERS TABLE
 }
 
 .modal-team{
-  background-color: var(--component-general-hover);
-  border: 2px solid transparent;
+  background-color: var(--elements);
   border-radius: 10px;
-  padding: 0px 6px;
+  padding: 2px 8px;
   margin: 8px;
   color: var( --text-general);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
@@ -3407,10 +3575,9 @@ DRIVERS TABLE
 }
 
 .modal-driver:hover, .modal-team:hover{
-  border-color: var(--white-general);
-  color: var(--white-general);
-  background-color: var(--component-general-hover-extra);
+  background-color: var(--elements-hover);
   cursor: default;
+  box-shadow: 0 0 10px 0 var(--box-shadow);
 }
 
 .modal-team.ferrari:hover{
@@ -3716,7 +3883,7 @@ DRIVERS TABLE
 .pill-line{
   width: 0px;
   height: 2px;
-  transition: width 0.2s, background-color 0.2s;
+  transition: width 0.3s, background-color 0.3s;
   background-color: var(--white-general);
   position: absolute;
   bottom: 0;

@@ -679,6 +679,9 @@ document.addEventListener('DOMContentLoaded', function () {
             change_css_variables(alphaVarName, newVarName)
             value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
             colors_dict["81"] = value
+            alphaVarName = "--alphatauri-primary-transparent"
+            newVarName = "--" + info + "-primary-transparent"
+            change_css_variables(alphaVarName, newVarName)
 
         }
         else{
@@ -706,6 +709,9 @@ document.addEventListener('DOMContentLoaded', function () {
             change_css_variables(alphaVarName, newVarName)
             value = getComputedStyle(document.documentElement).getPropertyValue("--alphatauri-secondary-original").trim();
             colors_dict["81"] = value
+            alphaVarName = "--alphatauri-primary-transparent"
+            newVarName = "--alphatauri-primary-transparent-original"
+            change_css_variables(alphaVarName, newVarName)
         }
     }
 
@@ -739,6 +745,9 @@ document.addEventListener('DOMContentLoaded', function () {
             change_css_variables(alpineVarName, newVarName)
             value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
             colors_dict["51"] = value
+            alpineVarName = "--alpine-primary-transparent"
+            newVarName = "--" + info + "-primary-transparent"
+            change_css_variables(alpineVarName, newVarName)
         }
         else{
             document.querySelectorAll(".alpinelogo-replace").forEach(function(elem){
@@ -763,6 +772,9 @@ document.addEventListener('DOMContentLoaded', function () {
             change_css_variables(alpineVarName, newVarName)
             value = getComputedStyle(document.documentElement).getPropertyValue("--alpine-secondary-original").trim();
             colors_dict["51"] = value
+            alpineVarName = "--alpine-primary-transparent"
+            newVarName = "--alpine-primary-transparent-original"
+            change_css_variables(alpineVarName, newVarName)
         }
     }
     
@@ -793,6 +805,9 @@ document.addEventListener('DOMContentLoaded', function () {
             change_css_variables(alfaVarName, newVarName)
             value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
             colors_dict["91"] = value
+            alfaVarName = "--alfa-primary-transparent"
+            newVarName = "--" + info + "-primary-transparent"
+            change_css_variables(alfaVarName, newVarName)
         }
         else{
             document.querySelectorAll(".alfalogo-replace").forEach(function(elem){
@@ -811,6 +826,9 @@ document.addEventListener('DOMContentLoaded', function () {
             change_css_variables(alfaVarName, newVarName)
             value = getComputedStyle(document.documentElement).getPropertyValue("--alfa-secondary-original").trim();
             colors_dict["91"] = value
+            alfaVarName = "--alfa-primary-transparent"
+            newVarName = "--alfa-primary-transparent-original"
+            change_css_variables(alfaVarName, newVarName)
         }
     }
 
