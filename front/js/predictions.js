@@ -27,6 +27,7 @@ const names_full = {
     "QAT": "Qatar"
 };
 
+
 let yearSel;
 let yearProbSel;
 let racePredicted;
@@ -202,12 +203,20 @@ function loadMontecarlo(data){
     drivers.forEach(function(elem, index){
         let row = document.createElement("div")
         row.classList = "prob-viewer-row"
+        if (index % 2 === 0) {
+            row.classList.add("prob-row-even")
+        }
+        else {
+            row.classList.add("prob-row-odd")
+        }
         let nameDiv = document.createElement("div")
         nameDiv.classList = "viewer-header-driver"
         let name = elem[1].split(" ")
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
         spanLastName.dataset.teamid = elem[2];
+        row.dataset.teamid = elem[2];
+        gradientHover(row, 1)
         spanName.textContent = name[0] + " "
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
@@ -247,6 +256,7 @@ function loadMontecarlo(data){
 }
 
 
+
 function orderDrivers(lista, camp) {
     return lista.sort((a, b) => a[camp] - b[camp]);
 }
@@ -279,7 +289,7 @@ function predictDrivers(drivers) {
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
         mainDiv.dataset.teamid = driver.Team;
-        gradientHover(mainDiv)
+        gradientHover(mainDiv, 0)
         spanLastName.dataset.teamid = driver.Team;
         spanName.textContent = name[0] + " "
         spanLastName.textContent = name[1].toUpperCase()

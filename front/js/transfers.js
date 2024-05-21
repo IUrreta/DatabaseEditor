@@ -111,9 +111,15 @@ function manageColor(div, lastName) {
     }
 }
 
-function gradientHover(div){
+function gradientHover(div, type){
     let team = div.dataset.teamid
-    let hoverClass = team_dict[team] + "-gradient"
+    let hoverClass;
+    if (type === 0){
+        hoverClass = team_dict[team] + "-gradient"
+    }
+    else{
+        hoverClass = team_dict[team] + "-gradient-small"
+    }
     div.classList.add(hoverClass)
 }
 
