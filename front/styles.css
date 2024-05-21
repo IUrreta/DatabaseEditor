@@ -216,6 +216,82 @@ body {
   text-decoration: none;
 }
 
+.save-info{
+  display: flex;
+  justify-content: center;
+  cursor: default;
+}
+
+.socials{
+  display: flex;
+  justify-content: start;
+}
+
+.twenty-three, .twenty-four{
+  color: var(--dark-text);
+  transition: color 0.3s, border-color 0.3s;
+  width: 50px;
+  position: relative;
+}
+
+.twenty-three::before{
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: radial-gradient(circle at 100% 180%, var(--new-secondary), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: -1;
+}
+
+.twenty-four::before{
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: radial-gradient(circle at 0% 180%, var(--new-primary), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: -1;
+}
+
+.twenty-three{
+  border-right: 1px solid var(--dark-text);
+}
+
+.twenty-four{
+  border-left: 1px solid var(--dark-text);
+}
+
+.twenty-three.activated{
+  color: var(--text-general);
+  border-color: var(--new-secondary);
+}
+
+.twenty-four.activated{
+  color: var(--text-general);
+  border-color: var(--new-primary);
+}
+
+.twenty-three.activated::before{
+  opacity: 1;
+}
+
+.twenty-four.activated .front-gradient, .twenty-three.activated .front-gradient{
+  text-shadow: 0 0 5px black;
+}
+
+.twenty-four.activated::before{
+  opacity: 1;
+}
+
 .socials a:hover,
 .footer i:hover {
   color: var(--dark-text);
@@ -234,10 +310,38 @@ body {
 }
 
 .update-info {
-  transition: color 0.3s;
+  transition: color 0.3s, opacity 0.2s;
   text-decoration: none;
   color: var(--dark-text);
   cursor: default;
+  padding-right: 10px;
+}
+
+.update-info.hide{
+  opacity: 0;
+  width: 0;
+  padding-right: 0;
+}
+
+.update-info.hide::before{
+  width: 0;
+}
+
+.version-panel{
+  transition: opacity 0.2s, color 0.2s;
+  opacity: 0;
+  width: 0;
+}
+
+.version-panel.show{
+  opacity: 1;
+  width: 100%;
+  padding-right: 10px;
+  cursor: pointer;
+}
+
+.version-panel:hover{
+  color: var(--text-selected);
 }
 
 .bi-exclamation-diamond {
@@ -272,11 +376,14 @@ a.bi-linkedin:hover {
   color: #0077b5 ;
 }
 
+.status, .socials, .save-info{
+  width: 33%;
+}
+
 
 .status {
   display: flex;
   flex-direction: row;
-  width: 700px;
   justify-content: flex-end;
 }
 
@@ -576,14 +683,6 @@ a.bi-linkedin:hover {
   font-family: 'Formula1Bold' !important;
 }
 
-.versionPanel {
-  position: fixed;
-  top: 40px;
-  left: 10px;
-  color: var(--white-general);
-
-}
-
 .patchNotesPanel {
   position: fixed;
   top: 70px;
@@ -821,7 +920,9 @@ a.bi-linkedin:hover {
   position: relative;
   transition: width 0.2s;
   cursor: pointer;
-  border: 2px solid transparent;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+
 }
 
 .gear-container::before {
@@ -3647,14 +3748,25 @@ DRIVERS TABLE
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(128, 128, 128, 0.5);
   z-index: 100;
   display: flex;
   justify-content: center;
   align-items: center;
   color: var(--white-general);
-  backdrop-filter: blur(3px);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--background);
+}
+
+.splash-text{
+  color: var(--dark-text);
+  display: flex;
+  justify-content: center;
+}
+
+.splash-logo{
+  height: 370px;
+  margin-bottom: 30px;
 }
 
 .blocking-confidence{

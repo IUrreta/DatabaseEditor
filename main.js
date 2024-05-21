@@ -10,7 +10,7 @@ function createWindow () {
   const mainWindow = new BrowserWindow({
     width: 1700,
     height: 1020,
-    icon: path.join(__dirname, "assets/images/logo2.png"),
+    icon: path.join(__dirname, "assets/images/logoAlter.png"),
     titleBarStyle: 'hidden',
     webPreferences: {
 

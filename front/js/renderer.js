@@ -19,7 +19,7 @@ const Tabulator = require('tabulator-tables');
 let conn = 0;
 
 let versionNow;
-const versionPanel = document.querySelector('.versionPanel');
+const versionPanel = document.querySelector('.version-panel');
 const parchModalTitle = document.getElementById("patchModalTitle")
 
 const repoOwner = 'IUrreta';
@@ -314,6 +314,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         updateInfo.textContent = '\xa0' + "Development branch"
                         updateInfo.classList.remove("bi-cloud")
                         updateInfo.classList.add("bi-code-slash")
+                        setTimeout(() => {
+                            updateInfo.classList.add("hide")
+                            versionPanel.classList.add("show")
+                        }, 4000);
 
                     }
                     else {
@@ -339,6 +343,10 @@ document.addEventListener('DOMContentLoaded', function () {
                             updateInfo.textContent = '\xa0' + "Up to date"
                             updateInfo.classList.remove("bi-cloud")
                             updateInfo.classList.add("bi-check2")
+                            setTimeout(() => {
+                                updateInfo.classList.add("hide")
+                                versionPanel.classList.add("show")
+                            }, 4000);
                         }
                         else {
                             updateInfo.textContent = '\xa0' + "New update available"

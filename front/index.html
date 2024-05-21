@@ -846,8 +846,6 @@
         </ul>
       </div>
     </div>
-    <div class="versionPanel d-none" data-bs-toggle="modal" data-bs-target="#patchModal"></div>
-
 
   </div>
   <!-- <div class="mode-line">
@@ -858,7 +856,12 @@
 
     <div class="main-panel">
       <div class="blocking-div" id="blockDiv">
-        Select a tab and a save to start editing!
+        <img src="../assets/images/splash-logo.png" class="splash-logo">
+        <div>
+          <div class="splash-text">Welcome to the Database Editor for F1 Manager</div>
+          <div class="splash-text">Please select a save file</div>
+          <div class="splash-text">and a window to start editing</div>
+        </div>
       </div>
       <div class="script-view d-none" id="predict_results">
         <div class="w-100 d-flex">
@@ -2689,9 +2692,20 @@
       <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta">&nbsp;ignaciourreta</a>
       <a class="bi bi-heart" href="https://www.buymeacoffee.com/iUrreta">&nbsp;Support me</a>
     </div>
+    <div class="save-info">
+      <div class="twenty-three bold-font">
+        <div class="front-gradient">23</div>
+      </div>
+      <div class="twenty-four bold-font">
+        <div class="front-gradient">24</div>
+      </div>
+    </div>
     <div class="status">
       <i class="bi bi-file-text" id="logFileButton" style="padding-right: 10px;"></i>
-      <a class="bi bi-cloud update-info" style="padding-right: 10px;">&nbsp;Checking for updates...</a>
+      <div class="pos-relative d-flex">
+        <a class="bi bi-cloud update-info">&nbsp;Checking for updates...</a>
+        <div class="version-panel" data-bs-toggle="modal" data-bs-target="#patchModal"></div>
+      </div>
       <div class="bi bi-circle-fill status-info awaiting">&nbsp;Waiting for connection...</div>
 
     </div>
