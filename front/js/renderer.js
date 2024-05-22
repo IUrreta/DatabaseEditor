@@ -882,6 +882,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ask: ask
         }
         socket.send(JSON.stringify(data))
+        document.querySelector(".bi-file-earmark-binary").classList.remove("hidden")
     })
 
     /**
