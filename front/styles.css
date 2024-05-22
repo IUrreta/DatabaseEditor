@@ -3965,6 +3965,177 @@ DRIVERS TABLE
   align-items: center;
 }
 
+.team-menu-logo{
+  width: 50px;
+}
+
+.team-menu-aston{
+  width: 50px;
+  height: 45px;
+  padding-bottom: 5px;
+  padding-left: 2px;
+  padding-top: 5px;
+  padding-right: 3px;
+}
+
+.team-menu-audi{
+  width: 45px;
+  height: 45px;
+  padding-bottom: 16px;
+  padding-left: 3px;
+  padding-top: 17px;
+}
+
+.changable-team-menu-visarb{
+  height: 45px !important;
+  padding-bottom: 7px !important;
+  padding-left: 6px !important;
+  padding-top: 7px !important;
+}
+
+.team-menu-haas{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 5px;
+  padding-top: 7px;
+  padding-left: 6px;
+}
+
+.team-menu-williams{
+  width: 45px;
+  height: 45px;
+  padding-bottom: 11px;
+  padding-left: 7px;
+  padding-top: 10px;
+  padding-right: 4px;
+}
+
+.changable-team-menu-brawn{
+  width: 50px !important;
+  height: 45px !important;
+  padding-bottom: 18px !important;
+  padding-left: 5px !important;
+  padding-top: 18px !important;
+  padding-right: 5px !important;
+  margin-left: 0px !important;
+}
+
+.changable-team-menu-andretti{
+  width: 40px !important;
+  height: 40px !important;
+  padding-bottom: 3px !important;
+  padding-top: 8px !important;
+  padding-left: 7px !important;
+}
+
+.team-menu-merc{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 5px;
+  padding-top: 7px;
+  padding-left: 8px;
+}
+
+.team-menu-redbull{
+  width: 45px;
+  height: 40px;
+  padding-bottom: 8px;
+  padding-left: 3px;
+  padding-top: 7px;
+}
+
+.team-menu-mclaren{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 4px;
+  padding-top: 7px;
+  padding-left: 6px;
+}
+
+.team-menu-ferrari{
+  width: 50px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-top: 8px;
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+.changable-team-menu-alpine{
+  width: 43px !important;
+  height: 40px !important;
+  padding-bottom: 6px !important;
+  padding-top: 9px !important;
+  padding-left: 6px !important;
+}
+
+.changable-team-menu-alphatauri{
+  width: 45px !important;
+  height: 45px !important;
+  padding-bottom: 12px !important;
+  padding-left: 8px !important;
+  padding-top: 12px !important;
+  padding-right: 4px !important;
+}
+
+.changable-team-menu-alfa{
+  width: 40px !important;
+  height: 40px !important;
+  padding-bottom: 3px !important;
+  padding-top: 5px !important;
+  padding-left: 7px !important;
+}
+
+.team-menu-renault{
+  width: 45px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-top: 8px;
+  padding-left: 10px;
+  padding-right: 5px;
+}
+
+.changable-team-menu-hugo{
+  height: 45px !important;
+  width: 50px !important;
+  padding-bottom: 7px !important;
+  padding-top: 7px !important;
+}
+
+.changable-team-menu-stake, .changable-team-menu-sauber{
+  width: 40px !important;
+  height: 40px !important;
+  padding-bottom: 3px !important;
+  padding-top: 5px !important;
+  padding-left: 7px !important;
+}
+
+.changable-team-menu-lotus{
+  width: 40px !important;
+  height: 40px !important;
+  padding-bottom: 4px !important;
+  padding-top: 4px !important;
+  padding-left: 6px !important;
+}
+
+.changable-team-menu-toyota{
+  width: 50px !important;
+  height: 45px !important;
+  padding-bottom: 9px !important;
+  padding-left: 5px !important;
+  padding-top: 8px !important;
+  padding-right: 6px !important;
+}
+
+.changable-team-menu-porsche{
+  width: 45px !important;
+  height: 40px !important;
+  padding-bottom: 6px !important;
+  padding-top: 8px !important;
+  padding-left: 10px !important;
+  padding-right: 5px !important;
+}
+
 #teamButton{
   z-index: 2;
 } 

@@ -652,11 +652,11 @@ document.addEventListener('DOMContentLoaded', function () {
         combined_dict[8] = pretty_names[info]
         document.querySelectorAll(".at-name").forEach(function(elem){
             //if it has the class complete, put names_configs[info], else out VCARB
-            if (elem.classList.contains("complete")){
-                elem.textContent = names_configs[info]
+            if (info === "visarb" && !elem.classList.contains("complete")){
+                elem.textContent = "VCARB"
             }
             else{
-                elem.textContent = "VCARB"
+                elem.textContent = names_configs[info]
             }
         })
         if (info !== "alphatauri"){
@@ -721,6 +721,15 @@ document.addEventListener('DOMContentLoaded', function () {
             newVarName = "--alphatauri-primary-transparent-original"
             change_css_variables(alphaVarName, newVarName)
         }
+        document.querySelectorAll(".team-menu-alphatauri-replace").forEach(function(elem){
+            let classes = elem.className.split(" ")
+            classes.forEach(function(cl){
+                if (cl.includes("changable")){
+                    elem.classList.remove(cl)
+                    elem.classList.add("changable-team-menu-" + info)
+                }
+            })
+        })
     }
 
     function alpineReplace(info){
@@ -784,6 +793,15 @@ document.addEventListener('DOMContentLoaded', function () {
             newVarName = "--alpine-primary-transparent-original"
             change_css_variables(alpineVarName, newVarName)
         }
+        document.querySelectorAll(".team-menu-alpine-replace").forEach(function(elem){
+            let classes = elem.className.split(" ")
+            classes.forEach(function(cl){
+                if (cl.includes("changable")){
+                    elem.classList.remove(cl)
+                    elem.classList.add("changable-team-menu-" + info)
+                }
+            })
+        })
     }
     
     function alfaReplace(info){
@@ -838,6 +856,15 @@ document.addEventListener('DOMContentLoaded', function () {
             newVarName = "--alfa-primary-transparent-original"
             change_css_variables(alfaVarName, newVarName)
         }
+        document.querySelectorAll(".team-menu-alfa-replace").forEach(function(elem){
+            let classes = elem.className.split(" ")
+            classes.forEach(function(cl){
+                if (cl.includes("changable")){
+                    elem.classList.remove(cl)
+                    elem.classList.add("changable-team-menu-" + info)
+                }
+            })
+        })
     }
 
     function change_css_variables(oldVar, newVar){
