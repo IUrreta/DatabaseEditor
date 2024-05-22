@@ -617,8 +617,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link bold-font generalPills" data-bs-toggle="pill" href="#"
-                      id="teamspillmodal">
+                    <a class="nav-link bold-font generalPills" data-bs-toggle="pill" href="#" id="teamspillmodal">
                       <div class="basic-label bold-font">Teams</div>
                       <div class="pill-line"></div>
                     </a>
@@ -751,12 +750,13 @@
         </div>
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete bold-font" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary custom-delete bold-font"
+              data-bs-dismiss="modal">Close</button>
             <div class="dropdown-line"></div>
           </div>
           <div class="pos-relative">
             <button type="button" class="btn btn-primary custom-confirm bold-font" data-bs-dismiss="modal"
-            id="confirmComparison">Confirm</button>
+              id="confirmComparison">Confirm</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -1161,8 +1161,7 @@
             <div class="drivers-teams-pills">
               <ul class="nav nav-pills">
                 <li class="nav-item">
-                  <a class="nav-link bold-font generalPills active" data-bs-toggle="pill" href="#"
-                    id="driverspill">
+                  <a class="nav-link bold-font generalPills active" data-bs-toggle="pill" href="#" id="driverspill">
                     <div class="basic-label bold-font">Drivers</div>
                     <div class="pill-line"></div>
                   </a>
@@ -1191,8 +1190,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link bold-font generalPills active" data-bs-toggle="pill" href="#"
-                  id="pointspill">
+                <a class="nav-link bold-font generalPills active" data-bs-toggle="pill" href="#" id="pointspill">
                   <div class="basic-label bold-font">Points</div>
                   <div class="pill-line"></div>
                 </a>
@@ -1804,13 +1802,14 @@
         </div>
       </div>
       <div class="script-view d-none" id="edit_teams">
-        <div class="w-100">
-          <div class="ps-3"
-            style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center;">
+        <div class="w-100 d-flex">
+          <div class="ps-3 pos-relative"
+            style="padding-top: 0.6rem; padding-bottom: 0.7rem;">
             <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="teamButton"
               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Team
             </button>
+            <div class="dropdown-line"></div>
             <ul class="dropdown-menu" id="teamMenu" style="font-family: Formula1;">
               <a class="dropdown-item feborder-down bold-font" style="cursor: pointer;" data-teamid="1">
                 <img src="../assets/images/ferrari.png" class="ferrarilogo">
@@ -1872,9 +1871,9 @@
               </a>
             </ul>
           </div>
-          <div class="title bold-font py-3">
+          <div class="title bold-font py-3" id="teamTitle">
             Team editor
-            <i class="info-titles bold-font" id="teameditortinfo" data-bs-toggle="modal"
+            <i class="info-titles bold-font ps-2" id="teameditortinfo" data-bs-toggle="modal"
               data-bs-target="#teammodal">?</i>
           </div>
         </div>
@@ -1894,15 +1893,18 @@
               <div class="second-component">
                 <div class="component-subtitle bold-font">Long-term Objective</div>
                 <div id="objAndYear">
-                  <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                    id="objectiveButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Long-term objective
-                  </button>
-                  <ul class="dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
-                    <a class="dropdown-item" style="cursor: pointer;" id="longTermObj0">Constructor's champion</a>
-                    <a class="dropdown-item" style="cursor: pointer;" id="longTermObj1">Podium contender</a>
-                    <a class="dropdown-item" style="cursor: pointer;" id="longTermObj2">Points contender</a>
-                  </ul>
+                  <div>
+                    <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                      id="objectiveButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <div class="front-gradient objective-label">Constructor's champion</div>
+                    </button>
+                    <div class="dropdown-line"></div>
+                    <ul class="dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
+                      <a class="dropdown-item" style="cursor: pointer;" id="longTermObj0">Constructor's champion</a>
+                      <a class="dropdown-item" style="cursor: pointer;" id="longTermObj1">Podium contender</a>
+                      <a class="dropdown-item" style="cursor: pointer;" id="longTermObj2">Points contender</a>
+                    </ul>
+                  </div>
                   <div class="input-and-buttons">
                     <input type="number" class="custom-input-number" id="longTermInput" value="2024"></input>
                     <div class="input-buttons">

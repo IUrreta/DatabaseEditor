@@ -252,14 +252,14 @@ function fill_bars(elem, d1_width, d2_width) {
     document.querySelector(".driver1-name").className = "driver1-name"
     document.querySelector(".driver2-name").className = "driver2-name"
     elem.querySelector(".driver1-bar").classList.add(team_dict[h2hTeamList[0]] + "bar-primary")
-    document.querySelector(".driver1-name").classList.add(team_dict[h2hTeamList[0]] + "border-primary")
+    document.querySelector(".driver1-name").classList.add(team_dict[h2hTeamList[0]] + "-back-gradient-primary")
     if (h2hTeamList[0] === h2hTeamList[1]) {
         elem.querySelector(".driver2-bar").classList.add(team_dict[h2hTeamList[1]] + "bar-secondary")
-        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "border-secondary")
+        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-gradient-secondary")
     }
     else {
         elem.querySelector(".driver2-bar").classList.add(team_dict[h2hTeamList[1]] + "bar-primary")
-        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "border-primary")
+        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-gradient-primary")
     }
     elem.querySelector(".driver1-bar").style.width = d1_width + "%"
     elem.querySelector(".driver2-bar").style.width = d2_width + "%"
@@ -1231,7 +1231,7 @@ function createRaceChart(labelsArray) {
                 scales: {
                     x: {
                         grid: {
-                            color: '#191630'
+                            color: '#292929'
                         },
                         ticks: {
                             color: "#dedde6",
@@ -1245,7 +1245,7 @@ function createRaceChart(labelsArray) {
                         min: 1,
                         max: 20,
                         grid: {
-                            color: '#191630'
+                            color: '#292929'
                         },
                         ticks: {
                             color: "#dedde6",
@@ -1348,7 +1348,7 @@ function createQualiChart(labelsArray) {
                 scales: {
                     x: {
                         grid: {
-                            color: '#191630'
+                            color: '#292929'
                         },
                         ticks: {
                             color: "#dedde6",
@@ -1362,7 +1362,7 @@ function createQualiChart(labelsArray) {
                         min: 1,
                         max: 20,
                         grid: {
-                            color: '#191630'
+                            color: '#292929'
                         },
                         ticks: {
                             color: "#dedde6",
@@ -1471,7 +1471,7 @@ function createPointsChart(labelsArray) {
                 scales: {
                     x: {
                         grid: {
-                            color: '#191630'
+                            color: '#292929'
                         },
                         ticks: {
                             color: "#dedde6",
@@ -1482,7 +1482,7 @@ function createPointsChart(labelsArray) {
                     },
                     y: {
                         grid: {
-                            color: '#191630'
+                            color: '#292929'
                         },
                         ticks: {
                             color: "#dedde6",

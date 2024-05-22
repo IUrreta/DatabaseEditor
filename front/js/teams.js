@@ -48,7 +48,7 @@ function resetTeamEditing(){
  */
 document.querySelector("#objectiveMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click", function () {
-        document.querySelector("#objectiveButton").innerText = elem.textContent
+        document.querySelector(".objective-label").innerText = elem.textContent
         longTermObj = elem.id[elem.id.length-1]
     })
 

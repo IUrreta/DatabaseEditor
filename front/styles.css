@@ -1612,7 +1612,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-row .drivers-table-driver{
-  width: 179px;
+  width: 180px;
   border-right: 0px solid transparent;
   gap: 3px;
 }
@@ -2378,7 +2378,7 @@ DRIVERS TABLE
   display: flex;
   flex-direction: column;
   font-size: 20px;
-  background-color: var(--component-general);
+  background-color: var(--elements);
   border-radius: 10px;
   margin-top: 10px;
   margin-left: 10px;
@@ -2388,21 +2388,22 @@ DRIVERS TABLE
   transition: border-color 0.3s, background-color 0.3s;
   align-items: center;
   min-height: 66px;
+  box-shadow: 0px 0px 10px 1px var(--box-shadow);
 }
 
 .one-statH2H:hover {
-  border-color: var(--white-general);
-  background-color: var(--component-general-hover);
+  background-color: var(--elements-hover);
 }
 
 .one-statH2H i{
   cursor: pointer;
-  transition: color 0.3s;
+  transition: color 0.2s, transform 0.2s ease-in-out;
 }
 
 .one-statH2H i:hover{
   cursor: pointer;
-  color: var(--white-general);
+  color: var(--text-selected);
+  transform: scale(1.1);
 }
 
 
@@ -2427,8 +2428,8 @@ DRIVERS TABLE
 .driver1-name, .driver2-name{
   display: flex;
   flex-direction: column;
-  color: var( --text-general);
-  background-color: var(--h2h-back);
+  color: var(--text-general);
+  background-color: var(--elements);
   border-radius: 10px;
   width: 100%;
   margin-left: 5px;
@@ -2436,16 +2437,18 @@ DRIVERS TABLE
   justify-content: center;
   align-items: center;
   transition: background-color 0.3s, color 0.3s;
+  box-shadow: 0px 0px 10px 1px var(--box-shadow);
 }
 
 .driver1-name:hover, .driver2-name:hover {
   color: var(--white-general);
-  background-color: var(--h2h-back-hover);
+  background-color: var(--elements-hover);
 }
 
 .driver1-second, .driver2-second{
   margin-top: -6px;
 }
+
 
 .one-performance {
   padding: 10px;
@@ -2576,7 +2579,7 @@ DRIVERS TABLE
 
 .driver2-space, .driver1-space{
   width: 50%;
-  background-color: var(--h2h-back);
+  background-color: var(--background);
   height: 6px;
 }
 
@@ -2874,6 +2877,14 @@ DRIVERS TABLE
   opacity: 1;
 }
 
+.rb-back-gradient-primary{
+  background: radial-gradient(circle at 5% 100%, var(--redbull-primary), var(--elements) 35%);
+}
+
+.rb-back-gradient-secondary{
+  background: radial-gradient(circle at 5% 100%, var(--redbull-secondary), var(--elements) 35%);
+}
+
 .mc-gradient::before{
   border-radius: 10px;
   content: '';
@@ -2914,6 +2925,14 @@ DRIVERS TABLE
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
+}
+
+.mc-back-gradient-primary{
+  background: radial-gradient(circle at 5% 100%, var(--mclaren-primary), var(--elements) 35%);
+}
+
+.mc-back-gradient-secondary{
+  background: radial-gradient(circle at 5% 100%, var(--mclaren-secondary), var(--elements) 35%);
 }
 
 .mc-gradient:hover::before, .mc-gradient-small:hover::before, .mc-gradient-mid:hover::before{
@@ -2962,6 +2981,14 @@ DRIVERS TABLE
   z-index: 0;
 }
 
+.as-back-gradient-primary{
+  background: radial-gradient(circle at 5% 100%, var(--aston-primary), var(--elements) 35%);
+}
+
+.as-back-gradient-secondary{
+  background: radial-gradient(circle at 5% 100%, var(--aston-secondary), var(--elements) 35%);
+}
+
 .as-gradient:hover::before, .as-gradient-small:hover::before, .as-gradient-mid:hover::before{
   opacity: 1;
 }
@@ -3006,6 +3033,14 @@ DRIVERS TABLE
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
+}
+
+.al-back-gradient-primary{
+  background: radial-gradient(circle at 5% 100%, var(--alpine-primary), var(--elements) 35%);
+}
+
+.al-back-gradient-secondary{
+  background: radial-gradient(circle at 5% 100%, var(--alpine-secondary), var(--elements) 35%);
 }
 
 .al-gradient:hover::before, .al-gradient-small:hover::before, .al-gradient-mid:hover::before{
@@ -3054,6 +3089,14 @@ DRIVERS TABLE
   z-index: 0;
 }
 
+.af-back-gradient-primary{
+  background: radial-gradient(circle at 5% 100%, var(--alfa-primary), var(--elements) 35%);
+}
+
+.af-back-gradient-secondary{
+  background: radial-gradient(circle at 5% 100%, var(--alfa-secondary), var(--elements) 35%);
+}
+
 .af-gradient:hover::before, .af-gradient-small:hover::before, .af-gradient-mid:hover::before{
   opacity: 1;
 }
@@ -3098,6 +3141,14 @@ DRIVERS TABLE
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
+}
+
+.ha-back-gradient-primary{
+  background: radial-gradient(circle at 5% 100%, var(--haas-primary), var(--elements) 35%);
+}
+
+.ha-back-gradient-secondary{
+  background: radial-gradient(circle at 5% 100%, var(--haas-secondary), var(--elements) 35%);
 }
 
 .ha-gradient:hover::before, .ha-gradient-small:hover::before, .ha-gradient-mid:hover::before{
@@ -3146,6 +3197,14 @@ DRIVERS TABLE
   z-index: 0;
 }
 
+.wi-back-gradient-primary{
+  background: radial-gradient(circle at 5% 100%, var(--williams-primary), var(--elements) 35%);
+}
+
+.wi-back-gradient-secondary{
+  background: radial-gradient(circle at 5% 100%, var(--general-secondary), var(--elements) 35%);
+}
+
 .wi-gradient:hover::before, .wi-gradient-small:hover::before, .wi-gradient-mid:hover::before{
   opacity: 1;
 }
@@ -3190,6 +3249,14 @@ DRIVERS TABLE
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
+}
+
+.at-back-gradient-primary{
+  background: radial-gradient(circle at 5% 100%, var(--alphatauri-primary), var(--elements) 35%);
+}
+
+.at-back-gradient-secondary{
+  background: radial-gradient(circle at 5% 100%, var(--alphatauri-secondary), var(--elements) 35%);
 }
 
 .at-gradient:hover::before, .at-gradient-small:hover::before, .at-gradient-mid:hover::before{
@@ -3239,6 +3306,14 @@ DRIVERS TABLE
   z-index: 0;
 }
 
+.fe-back-gradient-primary{
+  background: radial-gradient(circle at 5% 100%, var(--ferrari-primary), var(--elements) 35%);
+}
+
+.fe-back-gradient-secondary{
+  background: radial-gradient(circle at 5% 100%, var(--general-secondary), var(--elements) 35%);
+}
+
 .fe-gradient:hover::before, .fe-gradient-small:hover::before, .fe-gradient-mid:hover::before{
   opacity: 1;
 }
@@ -3283,6 +3358,14 @@ DRIVERS TABLE
   opacity: 0;
   transition: opacity 0.3s;
   z-index: 0;
+}
+
+.me-back-gradient-primary{
+  background: radial-gradient(circle at 5% 100%, var(--mercedes-primary), var(--elements) 35%);
+}
+
+.me-back-gradient-secondary{
+  background: radial-gradient(circle at 5% 100%, var(--general-secondary), var(--elements) 35%);
 }
 
 .me-gradient:hover::before, .me-gradient-small:hover::before, .me-gradient-mid:hover::before{
@@ -3873,7 +3956,7 @@ DRIVERS TABLE
   cursor: pointer;
   background-color: transparent;
   border-radius: 10px;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.2s, color 0.2s, transform 0.2;
   background-color: transparent;
   width: 25px;
   height: 25px;
@@ -3882,9 +3965,22 @@ DRIVERS TABLE
   align-items: center;
 }
 
+#teamButton{
+  z-index: 2;
+} 
+
+#teamTitle{
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  z-index: 1;
+  position: absolute;
+  align-items: baseline;
+}
+
 .input-buttons i:hover{
-  background-color: var(--background--buttons-hover) !important;
-  color: var(--white-general) !important;
+  transform: scale(1.1);
+  color: var(--text-selected) !important;
 }
 
 .input-buttons i:active{
@@ -4366,6 +4462,10 @@ input::-webkit-inner-spin-button {
   max-width: 260px !important;
 }
 
+#objectiveButton::before{
+  z-index: 0 !important;
+}
+
 .first-component, .second-component{
   width: 50%;
 }
@@ -4374,7 +4474,7 @@ input::-webkit-inner-spin-button {
   transition: color 0.3s;
   font-size: 20px;
   color: var( --text-general);
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
   width: 25px;
   height: 25px;
   display: flex;
@@ -4386,8 +4486,8 @@ input::-webkit-inner-spin-button {
 
 #edit_teams .team-viewer i:hover{
   cursor: pointer;
-  color: var(--white-general) !important;
-  background-color: var(--background--buttons-hover) !important;
+  color: var(--text-selected) !important;
+  transform: scale(1.1);
 }
 
 .q-label{
@@ -4558,10 +4658,6 @@ input::-webkit-inner-spin-button {
 .driver1-name .team1, .driver2-name .team2{
   color: var( --text-general) !important;
   transition: color 0.3s;
-}
-
-.driver1-name:hover .team1, .driver2-name:hover .team2{
-  color: var(--white-general) !important;
 }
 
 
