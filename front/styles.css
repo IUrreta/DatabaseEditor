@@ -1017,14 +1017,6 @@ a.bi-linkedin:hover {
 }
 
 
-.custom-dropdown:focus::before {
-  opacity: 1;
-}
-
-.custom-dropdown:focus + .dropdown-line{
-  width: 100%;
-}
-
 .custom-dropdown::before {
   content: '';
   position: absolute;
@@ -4154,11 +4146,6 @@ DRIVERS TABLE
   color: var(--text-selected) !important;
 }
 
-.input-buttons i:active{
-  background-color: var(--active-buttons-back) !important;
-  color: #e2e2e2 !important;
-  transition-duration: 0s;
-}
 
 .generalPills{
   color: var(--text-general) !important;
@@ -4364,17 +4351,18 @@ DRIVERS TABLE
 }
 
 .custom-input-number {
-  background-color: var(--overall-holder);
-  border-radius: 10px;
+  background-color: transparent;
   padding: 10px;
   margin-right: 7px;
-  color: var( --text-general);
+  color: var(--text-general);
   max-width: 60px;
   height: 56px;
-  border: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  border-right: 0px solid;
+  border-left: 0px solid;
+  border-top: 0px solid;
   font-size: 20px;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s !important;
-
 }
 
 .custom-input-number::selection{
@@ -4383,14 +4371,13 @@ DRIVERS TABLE
 
 
 .custom-input-number:hover {
-  background-color: var(--weather-vis-back);
-  border-color: #cecece;
+  border-color: var(--text-selected);
 }
 
 .custom-input-number:focus {
-  color: var(--white-general);
+  color: var(--text-selected);
   outline: 0px solid transparent;
-  border-color: var(--white-general);
+  border-color: var(--new-primary);
 }
 
 
@@ -4602,7 +4589,7 @@ input::-webkit-inner-spin-button {
 }
 
 .viewer-component .custom-input-number, .facility-component .custom-input-number, .facility-component-lg .custom-input-number{
-  background-color: var(--mid-gray-contrast) !important;
+  background-color: transparent !important;
   text-align: center;
   padding: 8px;
   height: 39.2px !important;
@@ -4633,7 +4620,7 @@ input::-webkit-inner-spin-button {
   max-width: 260px !important;
 }
 
-#objectiveButton::before{
+#objectiveButton::before, #carDevButton::before, #operationButton::before{
   z-index: 0 !important;
 }
 
@@ -4657,7 +4644,7 @@ input::-webkit-inner-spin-button {
 
 #edit_teams .team-viewer i:hover{
   cursor: pointer;
-  color: var(--text-selected) !important;
+  color: var(--new-primary) !important;
   transform: scale(1.1);
 }
 

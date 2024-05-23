@@ -1803,8 +1803,7 @@
       </div>
       <div class="script-view d-none" id="edit_teams">
         <div class="w-100 d-flex">
-          <div class="ps-3 pos-relative"
-            style="padding-top: 0.6rem; padding-bottom: 0.7rem;">
+          <div class="ps-3 pos-relative" style="padding-top: 0.6rem; padding-bottom: 0.7rem;">
             <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="teamButton"
               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Team
@@ -1837,14 +1836,15 @@
                 <div class="team-menu-logo">
                   <img src="../assets/images/mercedes.png" class="team-menu-merc">
                 </div>
-  
+
                 <div class="team-menu-name">
                   MERCEDES
                 </div>
               </a>
               <a class="dropdown-item alborder-down bold-font" style="cursor: pointer;" data-teamid="5">
                 <div class="team-menu-logo">
-                  <img src="../assets/images/alpine.png" class="alpinelogo-replace alpinelogo team-menu-alpine-replace changable-team-menu-alpine">
+                  <img src="../assets/images/alpine.png"
+                    class="alpinelogo-replace alpinelogo team-menu-alpine-replace changable-team-menu-alpine">
                 </div>
                 <div class="team-menu-name alpine-name">
                   ALPINE
@@ -1868,7 +1868,8 @@
               </a>
               <a class="dropdown-item atborder-down bold-font" style="cursor: pointer;" data-teamid="8">
                 <div class="team-menu-logo">
-                  <img src="../assets/images/alphatauri.png" class="atlogo-replace alphataurilogo team-menu-alphatauri-replace changable-team-menu-alphatauri">
+                  <img src="../assets/images/alphatauri.png"
+                    class="atlogo-replace alphataurilogo team-menu-alphatauri-replace changable-team-menu-alphatauri">
                 </div>
                 <div class="team-menu-name at-name">
                   ALPHA TAURI
@@ -1876,7 +1877,8 @@
               </a>
               <a class="dropdown-item afborder-down bold-font" style="cursor: pointer;" data-teamid="9">
                 <div class="team-menu-logo">
-                  <img src="../assets/images/alfaromeo.png" class="alfalogo-replace alfalogo team-menu-alfa-replace changable-team-menu-alfa">
+                  <img src="../assets/images/alfaromeo.png"
+                    class="alfalogo-replace alfalogo team-menu-alfa-replace changable-team-menu-alfa">
                 </div>
                 <div class="team-menu-name alfa-name">
                   ALFA ROMEO
@@ -2051,10 +2053,13 @@
               <div class="main-second-viewer">
                 <div class="component-subtitle bold-font">
                   <div>Car development facilities</div>
-                  <button class="custom-dropdown custom-button" id="carDevButton" data-state="show"
-                    data-bs-toggle="collapse" data-bs-target="#carDevCollapse">
-                    Hide
-                  </button>
+                  <div>
+                    <button class="custom-dropdown custom-button" id="carDevButton" data-state="show"
+                      data-bs-toggle="collapse" data-bs-target="#carDevCollapse">
+                      <div class="front-gradient">Hide</div>
+                    </button>
+                    <div class="dropdown-line"></div>
+                  </div>
                 </div>
                 <div class="collapse show" id="carDevCollapse">
                   <div class="facility " id="facility3">
@@ -2192,11 +2197,13 @@
                 </div>
                 <div class="component-subtitle bold-font">
                   <div>Operations facilities</div>
-                  <button class="custom-dropdown custom-button" id="operationButton" data-state="hide"
-                    data-bs-toggle="collapse" data-bs-target="#operationCollapse">
-                    Show
-                  </button>
-
+                  <div>
+                    <button class="custom-dropdown custom-button" id="operationButton" data-state="hide"
+                      data-bs-toggle="collapse" data-bs-target="#operationCollapse">
+                      <div class="front-gradient">Show</div>
+                    </button>
+                    <div class="dropdown-line"></div>
+                  </div>
                 </div>
                 <div class="collapse" id="operationCollapse">
                   <div class="facility " id="facility15">

@@ -172,11 +172,11 @@ document.querySelector("#carDevButton").addEventListener("click", function () {
     }
     if (document.querySelector("#carDevButton").dataset.state === "show") {
         document.querySelector("#carDevButton").dataset.state = "hide"
-        document.querySelector("#carDevButton").innerText = "Show"
+        document.querySelector("#carDevButton").querySelector(".front-gradient").innerText = "Show"
     }
     else {
         document.querySelector("#carDevButton").dataset.state = "show"
-        document.querySelector("#carDevButton").innerText = "Hide"
+        document.querySelector("#carDevButton").querySelector(".front-gradient").innerText = "Hide"
 
     }
 
@@ -189,11 +189,11 @@ document.querySelector("#operationButton").addEventListener("click", function ()
     }
     if (document.querySelector("#operationButton").dataset.state === "show") {
         document.querySelector("#operationButton").dataset.state = "hide"
-        document.querySelector("#operationButton").innerText = "Show"
+        document.querySelector("#operationButton").querySelector(".front-gradient").innerText = "Show"
     }
     else {
         document.querySelector("#operationButton").dataset.state = "show"
-        document.querySelector("#operationButton").innerText = "Hide"
+        document.querySelector("#operationButton").querySelector(".front-gradient").innerText = "Hide"
     }
 
 
