@@ -2388,12 +2388,12 @@ DRIVERS TABLE
   background-color: var(--elements-hover);
 }
 
-.one-statH2H i{
+.one-statH2H i, .name-and-stat i{
   cursor: pointer;
   transition: color 0.2s, transform 0.2s ease-in-out;
 }
 
-.one-statH2H i:hover{
+.one-statH2H i:hover, .name-and-stat i:hover{
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.1);
@@ -3934,8 +3934,13 @@ DRIVERS TABLE
 .one-stat-progress{
   position: absolute;
   background-color: var(--new-primary);
-  width: 86%;
+  transition: width 0.2s;
   height: 100%;
+}
+
+.stat-number{
+  display: flex;
+  align-items: center;
 }
 
 .one-stat-panel:hover{

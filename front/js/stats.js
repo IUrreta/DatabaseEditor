@@ -284,6 +284,7 @@ function listeners_plusLess(){
             }
             input.value = val
             recalculateOverall()
+            manage_stat_bar(elem, val)
         })
 
     })
@@ -296,8 +297,17 @@ function listeners_plusLess(){
             }
             input.value = val
             recalculateOverall()
+            manage_stat_bar(elem, val)
         })
     })
+}
+
+function manage_stat_bar(element, value){
+    let container = element.parentNode.parentNode.parentNode
+    console.log(container)
+    let bar = container.querySelector(".one-stat-progress")
+    let percentage = value + "%"
+    bar.style.width = percentage
 }
 
 /**
@@ -309,7 +319,10 @@ function load_stats(div) {
 
     let inputArray = document.querySelectorAll(".elegible")
     inputArray.forEach(function (input,index) {
-        inputArray[index].value = statsArray[index]
+        let value = statsArray[index]
+        input.value = value
+        //get sibling of input
+        manage_stat_bar(input, value)
     });
 }
 
