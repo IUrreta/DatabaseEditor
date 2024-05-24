@@ -1296,7 +1296,7 @@ a.bi-linkedin:hover {
   background-color: var(--mode-line-edit);
 }
 
-#predict_results{
+#predict_results, #edit_stats{
   flex-direction: column;
 }
 
@@ -2284,7 +2284,7 @@ DRIVERS TABLE
 
 
 .main-editStats-section {
-  border: 1px solid var( --slight-contrast);
+  background-color: var(--generals);
   color: var(--white-general);
   min-height: 660px;
   max-height: 660px;
@@ -2292,6 +2292,7 @@ DRIVERS TABLE
   border-radius: 10px;
   scrollbar-width: thin;
   scrollbar-color: var(--white-general);
+  box-shadow: 0px 0px 10px 2px var(--box-shadow);
 }
 
 .main-editStats-section::-webkit-scrollbar {
@@ -3892,29 +3893,59 @@ DRIVERS TABLE
 }
 
 .one-stat-panel {
-  background-color: var(--component-general);
+  background-color: var(--elements);
   border-radius: 10px;
   padding-left: 10px;
+  padding-right: 10px;
   margin: 10px;
-  margin-left: 20px;
   color: var( --text-general);
   transition: border-color 0.3s, background-color 0.3s;
   min-height: 70px;
-  border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
   align-items: center;
   max-height: 70px;
+  flex-direction: column;
+  box-shadow: 0 0 10px 1px var(--box-shadow);
+}
+
+.name-and-stat{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.bar-container{
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  display: flex;
+}
+
+.one-stat-bar{
+  width: 100%;
+  height: 4px;
+  background-color: var(--generals);
+  position: relative;
+}
+
+.one-stat-progress{
+  position: absolute;
+  background-color: var(--new-primary);
+  width: 86%;
+  height: 100%;
 }
 
 .one-stat-panel:hover{
-  border-color: var(--white-general);
-  background-color: var(--component-general-hover);
+  background-color: var(--elements-hover);
 }
 
 .one-stat-panel span{
   color: var( --text-general);
   transition: color 0.3s;
+  padding-top: 4px;
 }
 
 .one-stat-panel:hover span{
@@ -4352,6 +4383,17 @@ DRIVERS TABLE
 
 .custom-input-number {
   background-color: transparent;
+  padding: 3px;
+  color: var(--text-general);
+  max-width: 40px;
+  border: 0px solid;
+  font-size: 20px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s !important;
+  text-align: center;
+}
+
+.old-custom-input-number{
+  background-color: transparent;
   padding: 10px;
   margin-right: 7px;
   color: var(--text-general);
@@ -4370,11 +4412,11 @@ DRIVERS TABLE
 }
 
 
-.custom-input-number:hover {
+.custom-input-number:hover , .old-custom-input-number:hover{
   border-color: var(--text-selected);
 }
 
-.custom-input-number:focus {
+.custom-input-number:focus , .old-custom-input-number:focus{
   color: var(--text-selected);
   outline: 0px solid transparent;
   border-color: var(--new-primary);

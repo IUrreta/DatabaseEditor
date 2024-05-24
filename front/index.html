@@ -1401,390 +1401,367 @@
         </div>
       </div>
       <div class="script-view d-none" id="edit_stats">
-        <div class="col-3">
-          <div class=" ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem;">
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffButton"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Staff Type
-            </button>
-            <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
-              <a class="dropdown-item" href="#" data-list="fulldriverlist" data-spaceStats="driverStats">Drivers</a>
-              <a class="dropdown-item" href="#" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical
-                Chiefs</a>
-              <a class="dropdown-item" href="#" data-list="fullEngineerList" data-spaceStats="engineerStats">Race
-                Engineers</a>
-              <a class="dropdown-item" href="#" data-list="fullAeroList" data-spaceStats="aeroStats">Head of
-                Aerodynamics</a>
-              <a class="dropdown-item" href="#" data-list="fullDirectorList" data-spaceStats="directorStats">Sporting
-                Directors</a>
-            </ul>
-          </div>
-          <div id="StaffLists">
-            <div class="main-editStats-section staff-list" id="placeholder">
-            </div>
-            <div class="main-editStats-section staff-list d-none" id="fulldriverlist">
-            </div>
-            <div class="main-editStats-section staff-list d-none" id="fullTechnicalList">
-            </div>
-            <div class="main-editStats-section staff-list d-none" id="fullEngineerList">
-            </div>
-            <div class="main-editStats-section staff-list d-none" id="fullAeroList">
-            </div>
-            <div class="main-editStats-section staff-list d-none" id="fullDirectorList">
-            </div>
-
-          </div>
-
+        <div class=" ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute;">
+          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffButton"
+            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Staff Type
+          </button>
+          <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
+            <a class="dropdown-item" href="#" data-list="fulldriverlist" data-spaceStats="driverStats">Drivers</a>
+            <a class="dropdown-item" href="#" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical
+              Chiefs</a>
+            <a class="dropdown-item" href="#" data-list="fullEngineerList" data-spaceStats="engineerStats">Race
+              Engineers</a>
+            <a class="dropdown-item" href="#" data-list="fullAeroList" data-spaceStats="aeroStats">Head of
+              Aerodynamics</a>
+            <a class="dropdown-item" href="#" data-list="fullDirectorList" data-spaceStats="directorStats">Sporting
+              Directors</a>
+          </ul>
         </div>
-        <div class="col-9">
-          <div class="title bold-font py-3">
-            Stats
+        <div class="title bold-font py-3">
+          Stats
+        </div>
+        <div class="d-flex">
+          <div class="col-3">
+            <div id="StaffLists">
+              <div class="main-editStats-section staff-list" id="placeholder">
+              </div>
+              <div class="main-editStats-section staff-list d-none" id="fulldriverlist">
+              </div>
+              <div class="main-editStats-section staff-list d-none" id="fullTechnicalList">
+              </div>
+              <div class="main-editStats-section staff-list d-none" id="fullEngineerList">
+              </div>
+              <div class="main-editStats-section staff-list d-none" id="fullAeroList">
+              </div>
+              <div class="main-editStats-section staff-list d-none" id="fullDirectorList">
+              </div>
+
+            </div>
+
           </div>
-          <div class="main-editStats-section" id="driverstats">
-            <div class="left-panel-stats d-none" id="editStatsPanel">
-              <div class="upper-section-stats">
-                <div class="stats-title bold-font" id="driverStatsTitle"></div>
-                <div class="ovrcombined">
-                  <div class="overall-holder bold-font" id="ovrholder"></div>
-                  <div class="ovr bold-font">
-                    OVR
+          <div class="col-9">
+            <div class="main-editStats-section" id="driverstats">
+              <div class="left-panel-stats d-none" id="editStatsPanel">
+                <div class="upper-section-stats">
+                  <div class="stats-title bold-font" id="driverStatsTitle"></div>
+                  <div class="ovrcombined">
+                    <div class="overall-holder bold-font" id="ovrholder"></div>
+                    <div class="ovr bold-font">
+                      OVR
+                    </div>
                   </div>
-                </div>
 
-              </div>
-              <div class="main-panel-space">
-                <div class="main-panel-stats" id="driverStats">
-                  <div class="one-stat-panel">
-                    <span class="bold-font">CORNERING</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number elegible">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel">
-                    <span class="bold-font">BRAKING</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number elegible">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel">
-                    <span class="bold-font">CONTROL</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number elegible">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel">
-                    <span class="bold-font">SMOOTHNESS</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number elegible">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel">
-                    <span class="bold-font">ADAPTABILITY</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number elegible">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel">
-                    <span class="bold-font">OVERTAKING</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number elegible">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel">
-                    <span class="bold-font">DEFENCE</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number elegible">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel">
-                    <span class="bold-font">REACTIONS</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number elegible">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel">
-                    <span class="bold-font">ACCURACY</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number elegible">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-                <div class="main-panel-stats d-none" id="chiefStats">
-                  <div class="one-stat-panel">
-                    <span class="bold-font">CHASIS</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
+                <div class="main-panel-space">
+                  <div class="main-panel-stats" id="driverStats">
+                    <div class="one-stat-panel">
+                      <div class="name-and-stat">
+                        <span class="bold-font">CORNERING</span>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="number" class="custom-input-number elegible">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div> 
+                      <div class="bar-container">
+                        <div class="one-stat-bar">
+                          <div class="one-stat-progress"></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">FRONT WING</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">REAR WING</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">SIDEPODS</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">FLOOR</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">SUSPENSION</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="main-panel-stats d-none" id="engineerStats">
-                  <div class="one-stat-panel">
-                    <span class="bold-font">FRIENDLINESS</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">FEEDBACK</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">COMPOSURE</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="main-panel-stats d-none" id="aeroStats">
-                  <div class="one-stat-panel">
-                    <span class="bold-font">COOLING</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">DRS</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">HIGH SPEED PERFORMANCE</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel">
-                    <span class="bold-font">MEDIUM SPEED PERFORMANCE</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">LOW SPEED PERFORMANCE</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">DRAG</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel">
-                    <span class="bold-font">AIRFLOW</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">SENSITIVITY</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="main-panel-stats d-none" id="directorStats">
-                  <div class="one-stat-panel">
-                    <span class="bold-font">TRAINING</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">APTITUDE</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">LEADERSHIP</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="one-stat-panel staff">
-                    <span class="bold-font">PROCESSES</span>
-                    <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number">
-                      <div class="input-buttons">
-                        <i class="bi bi-plus-lg"></i>
-                        <i class="bi bi-dash-lg"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-
-
-              <div class="bottom-panel">
-                <div style="min-width: 33%;" id="specialStatsPanel">
-                  <div class="custom-hr"></div>
-                  <div class="extra-atributes">
-                    <div class="one-stat-panel extra-inputs">
-                      <span class="bold-font">GROWTH</span>
+                    <div class="one-stat-panel">
+                      <span class="bold-font">BRAKING</span>
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number elegible" id="growthInput">
+                        <input type="number" class="custom-input-number elegible">
                         <div class="input-buttons">
                           <i class="bi bi-plus-lg"></i>
                           <i class="bi bi-dash-lg"></i>
                         </div>
                       </div>
                     </div>
-                    <div class="one-stat-panel extra-inputs">
-                      <span class="bold-font">AGRESSION</span>
+                    <div class="one-stat-panel">
+                      <span class="bold-font">CONTROL</span>
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number elegible" id="agressionInput">
+                        <input type="number" class="custom-input-number elegible">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel">
+                      <span class="bold-font">SMOOTHNESS</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number elegible">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel">
+                      <span class="bold-font">ADAPTABILITY</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number elegible">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel">
+                      <span class="bold-font">OVERTAKING</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number elegible">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel">
+                      <span class="bold-font">DEFENCE</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number elegible">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel">
+                      <span class="bold-font">REACTIONS</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number elegible">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel">
+                      <span class="bold-font">ACCURACY</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number elegible">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="main-panel-stats d-none" id="chiefStats">
+                    <div class="one-stat-panel">
+                      <span class="bold-font">CHASIS</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">FRONT WING</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">REAR WING</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">SIDEPODS</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">FLOOR</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">SUSPENSION</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="main-panel-stats d-none" id="engineerStats">
+                    <div class="one-stat-panel">
+                      <span class="bold-font">FRIENDLINESS</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">FEEDBACK</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">COMPOSURE</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="main-panel-stats d-none" id="aeroStats">
+                    <div class="one-stat-panel">
+                      <span class="bold-font">COOLING</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">DRS</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">HIGH SPEED PERFORMANCE</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel">
+                      <span class="bold-font">MEDIUM SPEED PERFORMANCE</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">LOW SPEED PERFORMANCE</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">DRAG</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel">
+                      <span class="bold-font">AIRFLOW</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">SENSITIVITY</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="main-panel-stats d-none" id="directorStats">
+                    <div class="one-stat-panel">
+                      <span class="bold-font">TRAINING</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">APTITUDE</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">LEADERSHIP</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
+                        <div class="input-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="one-stat-panel staff">
+                      <span class="bold-font">PROCESSES</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number">
                         <div class="input-buttons">
                           <i class="bi bi-plus-lg"></i>
                           <i class="bi bi-dash-lg"></i>
@@ -1793,8 +1770,38 @@
                     </div>
                   </div>
                 </div>
-                <div class="confirm-section">
-                  <div class="btn custom-confirm bold-font" id="confirmbtn">Save changes</div>
+
+
+
+                <div class="bottom-panel">
+                  <div style="min-width: 33%;" id="specialStatsPanel">
+                    <div class="custom-hr"></div>
+                    <div class="extra-atributes">
+                      <div class="one-stat-panel extra-inputs">
+                        <span class="bold-font">GROWTH</span>
+                        <div class="input-and-buttons">
+                          <input type="number" class="custom-input-number elegible" id="growthInput">
+                          <div class="input-buttons">
+                            <i class="bi bi-plus-lg"></i>
+                            <i class="bi bi-dash-lg"></i>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel extra-inputs">
+                        <span class="bold-font">AGRESSION</span>
+                        <div class="input-and-buttons">
+                          <input type="number" class="custom-input-number elegible" id="agressionInput">
+                          <div class="input-buttons">
+                            <i class="bi bi-plus-lg"></i>
+                            <i class="bi bi-dash-lg"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="confirm-section">
+                    <div class="btn custom-confirm bold-font" id="confirmbtn">Save changes</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1906,7 +1913,7 @@
               <div class="first-component" id="seasonObjective">
                 <div class="component-subtitle bold-font">Season Objective</div>
                 <div class="input-and-buttons">
-                  <input type="number" class="custom-input-number" id="seasonObjectiveInput" value="4"></input>
+                  <input type="number" class="old-custom-input-number" id="seasonObjectiveInput" value="4"></input>
                   <div class="input-buttons">
                     <i class="bi bi-chevron-up"></i>
                     <i class="bi bi-chevron-down"></i>
@@ -1929,7 +1936,7 @@
                     </ul>
                   </div>
                   <div class="input-and-buttons">
-                    <input type="number" class="custom-input-number" id="longTermInput" value="2024"></input>
+                    <input type="number" class="old-custom-input-number" id="longTermInput" value="2024"></input>
                     <div class="input-buttons">
                       <i class="bi bi-chevron-up"></i>
                       <i class="bi bi-chevron-down"></i>
@@ -1944,7 +1951,7 @@
               <div class="first-component" id="teamBudget">
                 <div class="component-subtitle bold-font">Budget</div>
                 <div class="input-and-buttons">
-                  <input type="string" class="custom-input-number" id="teamBudgetInput" value="40000000"></input>
+                  <input type="string" class="old-custom-input-number" id="teamBudgetInput" value="40000000"></input>
                   <div class="input-buttons">
                     <i class="bi bi-plus-lg"></i>
                     <i class="bi bi-dash-lg"></i>
@@ -1954,7 +1961,7 @@
               <div class="second-component" id="costCap">
                 <div class="component-subtitle bold-font">Cost cap spent</div>
                 <div class="input-and-buttons">
-                  <input type="string" class="custom-input-number" id="costCapInput" value="120000000"></input>
+                  <input type="string" class="old-custom-input-number" id="costCapInput" value="120000000"></input>
                   <div class="input-buttons">
                     <i class="bi bi-plus-lg"></i>
                     <i class="bi bi-dash-lg"></i>
@@ -1967,7 +1974,7 @@
                 <div class="component-subtitle bold-font">Board confidence</div>
                 <div class="blocking-confidence d-none">Only available when editing player's team</div>
                 <div class="input-and-buttons">
-                  <input type="number" class="custom-input-number" id="confidenceInput" value="48"></input>
+                  <input type="number" class="old-custom-input-number" id="confidenceInput" value="48"></input>
                   <div class="input-buttons">
                     <i class="bi bi-plus-lg"></i>
                     <i class="bi bi-dash-lg"></i>
@@ -1991,7 +1998,7 @@
                 <div class="facility-condition">
                   Condition:
                   <div class="input-and-buttons">
-                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                     <div class="input-buttons">
                       <i class="bi bi-chevron-up"></i>
                       <i class="bi bi-chevron-down"></i>
@@ -2013,7 +2020,7 @@
                 <div class="facility-condition">
                   Condition:
                   <div class="input-and-buttons">
-                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                     <div class="input-buttons">
                       <i class="bi bi-chevron-up"></i>
                       <i class="bi bi-chevron-down"></i>
@@ -2035,7 +2042,7 @@
                 <div class="facility-condition">
                   Condition:
                   <div class="input-and-buttons">
-                    <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                    <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                     <div class="input-buttons">
                       <i class="bi bi-chevron-up"></i>
                       <i class="bi bi-chevron-down"></i>
@@ -2076,7 +2083,7 @@
                     <div class="facility-condition">
                       Condition:
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                         <div class="input-buttons">
                           <i class="bi bi-chevron-up"></i>
                           <i class="bi bi-chevron-down"></i>
@@ -2098,7 +2105,7 @@
                     <div class="facility-condition">
                       Condition:
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                         <div class="input-buttons">
                           <i class="bi bi-chevron-up"></i>
                           <i class="bi bi-chevron-down"></i>
@@ -2120,7 +2127,7 @@
                     <div class="facility-condition">
                       Condition:
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                         <div class="input-buttons">
                           <i class="bi bi-chevron-up"></i>
                           <i class="bi bi-chevron-down"></i>
@@ -2142,7 +2149,7 @@
                     <div class="facility-condition">
                       Condition:
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                         <div class="input-buttons">
                           <i class="bi bi-chevron-up"></i>
                           <i class="bi bi-chevron-down"></i>
@@ -2164,7 +2171,7 @@
                     <div class="facility-condition">
                       Condition:
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                         <div class="input-buttons">
                           <i class="bi bi-chevron-up"></i>
                           <i class="bi bi-chevron-down"></i>
@@ -2186,7 +2193,7 @@
                     <div class="facility-condition">
                       Condition:
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                         <div class="input-buttons">
                           <i class="bi bi-chevron-up"></i>
                           <i class="bi bi-chevron-down"></i>
@@ -2220,7 +2227,7 @@
                     <div class="facility-condition">
                       Condition:
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                         <div class="input-buttons">
                           <i class="bi bi-chevron-up"></i>
                           <i class="bi bi-chevron-down"></i>
@@ -2242,7 +2249,7 @@
                     <div class="facility-condition">
                       Condition:
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                         <div class="input-buttons">
                           <i class="bi bi-chevron-up"></i>
                           <i class="bi bi-chevron-down"></i>
@@ -2264,7 +2271,7 @@
                     <div class="facility-condition">
                       Condition:
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                         <div class="input-buttons">
                           <i class="bi bi-chevron-up"></i>
                           <i class="bi bi-chevron-down"></i>
@@ -2286,7 +2293,7 @@
                     <div class="facility-condition">
                       Condition:
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                         <div class="input-buttons">
                           <i class="bi bi-chevron-up"></i>
                           <i class="bi bi-chevron-down"></i>
@@ -2308,7 +2315,7 @@
                     <div class="facility-condition">
                       Condition:
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                         <div class="input-buttons">
                           <i class="bi bi-chevron-up"></i>
                           <i class="bi bi-chevron-down"></i>
@@ -2330,7 +2337,7 @@
                     <div class="facility-condition">
                       Condition:
                       <div class="input-and-buttons">
-                        <input type="number" class="custom-input-number condition-input" value="0.80"></input>
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
                         <div class="input-buttons">
                           <i class="bi bi-chevron-up"></i>
                           <i class="bi bi-chevron-down"></i>
