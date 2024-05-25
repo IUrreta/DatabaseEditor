@@ -25,35 +25,6 @@
           <h4 class="bold-font" id="driverAge" style="margin-bottom: 0px;"></h4>
         </div>
         <div class="modal-body number-and-contract">
-          <div class="number-and-retirement pb-3">
-            <div class="number-options">
-              <h5 class="modal-subtitle bold-font">Driver Number</h5>
-              <div class="number-details">
-                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown" id="numberButton"
-                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Number
-                </button>
-                <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
-                </ul>
-                <div class="form-check ms-5 mt-2 form-switch auto-contract">
-                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="driverNumber1">
-                  <label class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</label>
-                </div>
-              </div>
-            </div>
-            <div class="retirement-options">
-              <h5 class="modal-subtitle bold-font">Retirement age</h5>
-              <div class="input-and-buttons" style="margin-top: 0.75rem;">
-                <input type="number" class="rounded-input retirement" id="retirementInput"></input>
-                <div class="input-buttons">
-                  <i class="bi bi-plus-lg"></i>
-                  <i class="bi bi-dash-lg"></i>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
           <div class="contract-options">
             <h5 class="modal-subtitle bold-font">Driver contract</h5>
             <div class="contract-details pt-1">
@@ -1463,7 +1434,7 @@
                           <input type="number" class="custom-input-number elegible">
                           <i class="bi bi-plus-lg"></i>
                         </div>
-                      </div> 
+                      </div>
                       <div class="bar-container">
                         <div class="one-stat-bar">
                           <div class="one-stat-progress"></div>
@@ -1478,7 +1449,7 @@
                           <input type="number" class="custom-input-number elegible">
                           <i class="bi bi-plus-lg"></i>
                         </div>
-                      </div> 
+                      </div>
                       <div class="bar-container">
                         <div class="one-stat-bar">
                           <div class="one-stat-progress"></div>
@@ -1493,7 +1464,7 @@
                           <input type="number" class="custom-input-number elegible">
                           <i class="bi bi-plus-lg"></i>
                         </div>
-                      </div> 
+                      </div>
                       <div class="bar-container">
                         <div class="one-stat-bar">
                           <div class="one-stat-progress"></div>
@@ -1508,7 +1479,7 @@
                           <input type="number" class="custom-input-number elegible">
                           <i class="bi bi-plus-lg"></i>
                         </div>
-                      </div> 
+                      </div>
                       <div class="bar-container">
                         <div class="one-stat-bar">
                           <div class="one-stat-progress"></div>
@@ -1523,7 +1494,7 @@
                           <input type="number" class="custom-input-number elegible">
                           <i class="bi bi-plus-lg"></i>
                         </div>
-                      </div> 
+                      </div>
                       <div class="bar-container">
                         <div class="one-stat-bar">
                           <div class="one-stat-progress"></div>
@@ -1538,7 +1509,7 @@
                           <input type="number" class="custom-input-number elegible">
                           <i class="bi bi-plus-lg"></i>
                         </div>
-                      </div> 
+                      </div>
                       <div class="bar-container">
                         <div class="one-stat-bar">
                           <div class="one-stat-progress"></div>
@@ -1553,7 +1524,7 @@
                           <input type="number" class="custom-input-number elegible">
                           <i class="bi bi-plus-lg"></i>
                         </div>
-                      </div> 
+                      </div>
                       <div class="bar-container">
                         <div class="one-stat-bar">
                           <div class="one-stat-progress"></div>
@@ -1568,7 +1539,7 @@
                           <input type="number" class="custom-input-number elegible">
                           <i class="bi bi-plus-lg"></i>
                         </div>
-                      </div> 
+                      </div>
                       <div class="bar-container">
                         <div class="one-stat-bar">
                           <div class="one-stat-progress"></div>
@@ -1583,7 +1554,7 @@
                           <input type="number" class="custom-input-number elegible">
                           <i class="bi bi-plus-lg"></i>
                         </div>
-                      </div> 
+                      </div>
                       <div class="bar-container">
                         <div class="one-stat-bar">
                           <div class="one-stat-progress"></div>
@@ -1814,43 +1785,72 @@
 
 
                 <div class="bottom-panel">
-                  <div style="min-width: 33%;" id="specialStatsPanel">
+                  <div id="specialStatsPanel">
                     <div class="custom-hr"></div>
-                    <div class="extra-atributes">
-                      <div class="one-stat-panel">
-                        <div class="name-and-stat">
-                          <span class="bold-font">GROWTH</span>
-                          <div class="stat-number">
-                            <i class="bi bi-dash-lg"></i>
-                            <input type="number" class="custom-input-number elegible" id="growthInput">
-                            <i class="bi bi-plus-lg"></i>
+                    <div class="attribute-and-preferences">
+                      <div class="extra-atributes">
+                        <div class="one-stat-panel">
+                          <div class="name-and-stat">
+                            <span class="bold-font">GROWTH</span>
+                            <div class="stat-number">
+                              <i class="bi bi-dash-lg"></i>
+                              <input type="number" class="custom-input-number elegible" id="growthInput">
+                              <i class="bi bi-plus-lg"></i>
+                            </div>
                           </div>
-                        </div> 
-                        <div class="bar-container">
-                          <div class="one-stat-bar">
-                            <div class="one-stat-progress"></div>
+                          <div class="bar-container">
+                            <div class="one-stat-bar">
+                              <div class="one-stat-progress"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="one-stat-panel">
+                          <div class="name-and-stat">
+                            <span class="bold-font">AGRESSION</span>
+                            <div class="stat-number">
+                              <i class="bi bi-dash-lg"></i>
+                              <input type="number" class="custom-input-number elegible" id="agressionInput">
+                              <i class="bi bi-plus-lg"></i>
+                            </div>
+                          </div>
+                          <div class="bar-container">
+                            <div class="one-stat-bar">
+                              <div class="one-stat-progress"></div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div class="one-stat-panel">
-                        <div class="name-and-stat">
-                          <span class="bold-font">AGRESSION</span>
-                          <div class="stat-number">
-                            <i class="bi bi-dash-lg"></i>
-                            <input type="number" class="custom-input-number elegible" id="agressionInput">
-                            <i class="bi bi-plus-lg"></i>
+                      <div class="number-and-retirement pb-3">
+                        <div class="number-options">
+                          <span class="modal-subtitle bold-font">DRIVER NUMBER</span>
+                          <div class="number-details">
+                            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown"
+                              id="numberButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Number
+                            </button>
+                            <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
+                            </ul>
+                            <div class="form-check ms-5 mt-2 form-switch">
+                              <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                                id="driverNumber1">
+                              <span class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</span>
+                            </div>
                           </div>
-                        </div> 
-                        <div class="bar-container">
-                          <div class="one-stat-bar">
-                            <div class="one-stat-progress"></div>
+                        </div>
+                        <div class="retirement-options">
+                          <span class="modal-subtitle bold-font">RETIREMENT AGE</span>
+                          <div class="input-and-buttons" style="margin-top: 0.75rem;">
+                            <input type="number" class="rounded-input retirement" id="retirementInput"></input>
+                            <div class="input-buttons">
+                              <i class="bi bi-plus-lg"></i>
+                              <i class="bi bi-dash-lg"></i>
+                            </div>
                           </div>
+
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="confirm-section">
-                    <div class="btn custom-confirm bold-font" id="confirmbtn">Save changes</div>
+
                   </div>
                 </div>
               </div>

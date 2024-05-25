@@ -607,6 +607,15 @@ a.bi-linkedin:hover {
 .number-and-retirement{
   display: flex;
   flex-direction: row;
+  width: 66%;
+  background-color: var(--elements);
+  padding: 10px;
+  border-radius: 10px;
+  margin-right: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  box-shadow: 0 0 10px 1px var(--box-shadow);
 }
 
 .number-options{
@@ -1221,6 +1230,12 @@ a.bi-linkedin:hover {
 
 .extra-atributes {
   display: grid;
+  width: 34%;
+}
+
+.attribute-and-preferences{
+  display: flex;
+  flex-direction: row;
 }
 
 .bottom-panel {
@@ -1236,9 +1251,14 @@ a.bi-linkedin:hover {
   border: none;
   height: 1px;
   border: 1px solid var( --slight-contrast);
-  margin-left: 20px;
+  margin-left: 10px;
+  margin-right: 10px;
   margin-top: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+}
+
+#specialStatsPanel{
+  width: 100%;
 }
 
 .categoryPills,
