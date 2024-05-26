@@ -574,30 +574,20 @@ a.bi-linkedin:hover {
 }
 
 .ovr {
-  display: flex;
-  flex-direction: column-reverse;
   font-size: 24px;
-  margin-right: 10px;
-
 }
 
 .ovrcombined {
   display: flex;
+  width: 125px;
+  align-items: baseline;
+  padding-top: 6px;
+  justify-content: space-between;
+  margin-right: 8px;
 }
 
 .overall-holder {
-  background-color: var(--overall-holder);
-  border: 2px solid var(--white-general);
-  border-radius: 10px;
-  width: 66px;
-  height: 56px;
-  margin-top: 13px;
-  margin-right: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
-
+  font-size: 40px;
 }
 
 .upper-panel {
@@ -635,15 +625,13 @@ a.bi-linkedin:hover {
 
   0%,
   100% {
-    border: 2px solid var(--white-general);
-    border-radius: 10px;
-    background-color: var(--overall-holder);
+    background-color: transparent;
+    color: var(--white-general);
   }
 
   50% {
-    border: 2px solid var( --negative-general);
-    border-radius: 10px;
-    background-color: var(--overall-holder);
+    background-color: transparent;
+    color: var(--negative-general);
   }
 }
 
@@ -651,15 +639,13 @@ a.bi-linkedin:hover {
 
   0%,
   100% {
-    border: 2px solid var(--white-general);
-    border-radius: 10px;
-    background-color: var(--overall-holder);
+    background-color: transparent;
+    color: var(--white-general);
   }
 
   50% {
-    border: 2px solid var(--positive-general);
-    border-radius: 10px;
-    background-color: var(--overall-holder);
+    background-color: transparent;
+    color: var(--positive-general);
   }
 }
 
@@ -3500,7 +3486,7 @@ DRIVERS TABLE
   z-index: 10;
 }
 
-.race::before{
+.race::before, .normal-driver::before{
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -3514,15 +3500,15 @@ DRIVERS TABLE
   pointer-events: none;
 }
 
-.race:hover::before{
+.race:hover::before, .normal-driver:hover::before{
   opacity: 1;
 }
 
-.race.selected::before{
+.race.selected::before, .normal-driver.clicked::before{
   opacity: 0;
 }
 
-.race.selected{
+.race.selected, .normal-driver.clicked{
   border-radius: 10px;
   background: radial-gradient(circle at -5% 190%, var(--new-primary), var(--elements) 85%);
   color: var(--negative-text);
@@ -3898,16 +3884,16 @@ DRIVERS TABLE
 }
 
 .normal-driver {
-  background-color: var(--component-general);
+  background-color: var(--elements);
   cursor: pointer;
   border-radius: 10px;
-  padding: 8px;
+  padding: 10px;
   margin: 10px;
   color: var( --text-general);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
-  border: 2px solid transparent;
   display: flex;
   justify-content: space-between;
+  position: relative;
 }
 
 .one-stat-panel {
@@ -4453,23 +4439,25 @@ input::-webkit-inner-spin-button {
 }
 
 .normal-driver:hover {
-  border-color: var(--white-general);
-  color: var(--white-general);
-  background-color: var(--component-general-hover);
+  background-color: var(--elements-hover);
 }
 
-.normal-driver:active {
-  background-color: var(--active-general);
+.normal-driver:hover .surname {
+  color: var(--text-general) !important;
 }
 
-.normal-driver.clicked {
-  color: var(--background-general);
-  background-color: var( --text-general);
+.normal-driver.clicked .surname{
+  color: var(--negative-text) !important;
+}
+
+.normal-driver.clicked .small-ovr{
+  color: var(--text-general) !important;
 }
 
 
-.normal-driver.clicked .surname {
-  color: inherit !important;
+.normal-driver span, .normal-driver .bold-font{
+  z-index: 3;
+  position: relative;
 }
 
 .team-template {

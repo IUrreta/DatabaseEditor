@@ -62,6 +62,7 @@ function place_drivers_editStats(driversArray) {
         ovr = calculateOverall(statsString, "driver")
         ovrDiv.innerHTML = ovr
         ovrDiv.classList.add("bold-font")
+        ovrDiv.classList.add("small-ovr")
         newDiv.appendChild(ovrDiv)
         document.getElementById(divPosition).appendChild(newDiv)
 
@@ -177,14 +178,14 @@ function recalculateOverall() {
         document.getElementById("ovrholder").className = "overall-holder bold-font alertNeg";
         setTimeout(() => {
             document.getElementById("ovrholder").className = "overall-holder bold-font"
-        },400);
+        },300);
     }
     else if(oldovr < ovr){
         document.getElementById("ovrholder").innerHTML = ovr;
         document.getElementById("ovrholder").className = "overall-holder bold-font alertPos";
         setTimeout(() => {
             document.getElementById("ovrholder").className = "overall-holder bold-font"
-        },400);
+        },300);
     }
 
 }
@@ -304,7 +305,6 @@ function listeners_plusLess(){
 
 function manage_stat_bar(element, value){
     let container = element.parentNode.parentNode.parentNode
-    console.log(container)
     let bar = container.querySelector(".one-stat-progress")
     let percentage = value + "%"
     bar.style.width = percentage
