@@ -154,6 +154,7 @@ function place_staff(staffArray) {
         ovr = calculateOverall(statsString, "staff")
         ovrDiv.innerHTML = ovr
         ovrDiv.classList.add("bold-font")
+        ovrDiv.classList.add("small-ovr")
         newDiv.appendChild(ovrDiv)
         document.getElementById(divPosition).appendChild(newDiv)
 

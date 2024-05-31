@@ -1211,7 +1211,6 @@ a.bi-linkedin:hover {
 .main-panel-stats {
   display: grid;
   grid-template-columns: repeat(3, 0.33fr);
-  min-height: 270px;
 }
 
 .extra-atributes {
