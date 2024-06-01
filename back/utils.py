@@ -68,8 +68,12 @@ class DatabaseUtils:
         formatted_tuples = []
 
         for tupla in staff:
+            id = tupla[2]
             result = self.format_names_get_stats(tupla, "staff"+str(tupla[4]))
+            retirement = self.fetch_driverRetirement(id)
+            result += tuple(retirement)
             formatted_tuples.append(result)
+            
 
         return formatted_tuples
 
@@ -194,7 +198,10 @@ class DatabaseUtils:
         drivers = self.cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType, gam.Retired FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID LEFT JOIN Staff_GameData gam ON dri.StaffID = gam.StaffID GROUP BY bas.StaffID ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID;').fetchall()
         formatted_tuples = []
         for tupla in drivers:
+            id = tupla[2]
             result = self.format_names_get_stats(tupla, "driver")
+            retirement = self.fetch_driverRetirement(id)
+            result += tuple(retirement)
             formatted_tuples.append(result)
 
         return formatted_tuples

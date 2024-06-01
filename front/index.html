@@ -1372,23 +1372,26 @@
         </div>
       </div>
       <div class="script-view d-none" id="edit_stats">
-        <div class=" ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute;">
-          <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffButton"
-            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Staff Type
-          </button>
-          <div class="dropdown-line"></div> 
-          <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
-            <a class="dropdown-item" href="#" data-list="fulldriverlist" data-spaceStats="driverStats">Drivers</a>
-            <a class="dropdown-item" href="#" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical
-              Chiefs</a>
-            <a class="dropdown-item" href="#" data-list="fullEngineerList" data-spaceStats="engineerStats">Race
-              Engineers</a>
-            <a class="dropdown-item" href="#" data-list="fullAeroList" data-spaceStats="aeroStats">Head of
-              Aerodynamics</a>
-            <a class="dropdown-item" href="#" data-list="fullDirectorList" data-spaceStats="directorStats">Sporting
-              Directors</a>
-          </ul>
+        <div class="d-flex ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; align-items: baseline; gap: 20px;">
+          <div>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffButton"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Staff Type
+            </button>
+            <div class="dropdown-line"></div>
+            <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
+              <a class="dropdown-item" href="#" data-list="fulldriverlist" data-spaceStats="driverStats">Drivers</a>
+              <a class="dropdown-item" href="#" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical
+                Chiefs</a>
+              <a class="dropdown-item" href="#" data-list="fullEngineerList" data-spaceStats="engineerStats">Race
+                Engineers</a>
+              <a class="dropdown-item" href="#" data-list="fullAeroList" data-spaceStats="aeroStats">Head of
+                Aerodynamics</a>
+              <a class="dropdown-item" href="#" data-list="fullDirectorList" data-spaceStats="directorStats">Sporting
+                Directors</a>
+            </ul>
+          </div>
+          <input class="text-filter" type="text" id="nameFilter" placeholder="Filter by name"></input>
         </div>
         <div class="title bold-font py-3">
           Stats
@@ -1413,10 +1416,22 @@
 
           </div>
           <div class="col-9">
-            <div class="main-editStats-section" id="driverstats">
+            <div class="main-editStats-section">
               <div class="left-panel-stats d-none" id="editStatsPanel">
                 <div class="upper-section-stats">
-                  <div class="stats-title bold-font" id="driverStatsTitle"></div>
+                  <div class="stats-title bold-font">
+                    <div id="driverStatsTitle"></div>
+                  </div>
+                  <div class="age-holder bold-font">
+                    <div class="actual-age">Age 56</div>
+                    <div class="retirement-age">
+                      <div class="actual-retirement">Ret 56</div>
+                      <div class="retirement-buttons">
+                        <i class="bi bi-plus-lg"></i>
+                        <i class="bi bi-dash-lg"></i>
+                      </div>
+                    </div>
+                  </div>
                   <div class="ovrcombined">
                     <div class="overall-holder bold-font" id="ovrholder"></div>
                     <div class="ovr bold-font">
@@ -1922,34 +1937,23 @@
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div class="number-and-retirement pb-3">
-                        <div class="number-options">
-                          <span class="modal-subtitle bold-font">DRIVER NUMBER</span>
-                          <div class="number-details">
-                            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown"
-                              id="numberButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              Number
-                            </button>
-                            <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
-                            </ul>
-                            <div class="form-check ms-5 mt-2 form-switch">
-                              <input class="form-check-input custom-toggle" type="checkbox" role="switch"
-                                id="driverNumber1">
-                              <span class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</span>
+                        <div class="one-stat-panel">
+                          <div class="name-and-stat">
+                            <span class="bold-font">DRIVER NUMBER</span>
+                            <div class="number-details">
+                              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown"
+                                id="numberButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Number
+                              </button>
+                              <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
+                              </ul>
+                              <div class="form-check ms-5 mt-2 form-switch">
+                                <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                                  id="driverNumber1">
+                                <span class="form-check-label" for="flexSwitchCheckDefault">Number 1 if WC</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div class="retirement-options">
-                          <span class="modal-subtitle bold-font">RETIREMENT AGE</span>
-                          <div class="input-and-buttons" style="margin-top: 0.75rem;">
-                            <input type="number" class="rounded-input retirement" id="retirementInput"></input>
-                            <div class="input-buttons">
-                              <i class="bi bi-plus-lg"></i>
-                              <i class="bi bi-dash-lg"></i>
-                            </div>
-                          </div>
-
                         </div>
                       </div>
                     </div>

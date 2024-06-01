@@ -59,6 +59,9 @@ function place_drivers_editStats(driversArray) {
             recalculateOverall()
 
         });
+        newDiv.dataset.age = driver[driver.length - 1]
+        newDiv.dataset.retirement = driver[driver.length - 2]
+
         ovr = calculateOverall(statsString, "driver")
         ovrDiv.innerHTML = ovr
         ovrDiv.classList.add("bold-font")
@@ -151,13 +154,15 @@ function place_staff(staffArray) {
             recalculateOverall()
 
         });
+
+        newDiv.dataset.age = staff[staff.length - 1]
+        newDiv.dataset.retirement = staff[staff.length - 2]
         ovr = calculateOverall(statsString, "staff")
         ovrDiv.innerHTML = ovr
         ovrDiv.classList.add("bold-font")
         ovrDiv.classList.add("small-ovr")
         newDiv.appendChild(ovrDiv)
         document.getElementById(divPosition).appendChild(newDiv)
-
 
     })
 
@@ -277,7 +282,7 @@ function calculateOverall(stats, type) {
 }
 
 function listeners_plusLess(){
-    document.querySelector("#edit_stats").querySelectorAll(".bi-plus-lg").forEach(function(elem){
+    document.querySelector("#driverStats").querySelectorAll(".bi-plus-lg").forEach(function(elem){
         elem.addEventListener("mousedown", function(){
             let input = elem.parentNode.parentNode.querySelector("input")
             let val = parseInt(input.value) + 1;
@@ -290,7 +295,7 @@ function listeners_plusLess(){
         })
 
     })
-    document.querySelector("#edit_stats").querySelectorAll(".bi-dash-lg").forEach(function(elem){
+    document.querySelector("#driverStats").querySelectorAll(".bi-dash-lg").forEach(function(elem){
         elem.addEventListener("mousedown", function(){
             let input = elem.parentNode.parentNode.querySelector("input")
             let val = parseInt(input.value) - 1;
@@ -302,7 +307,42 @@ function listeners_plusLess(){
             manage_stat_bar(elem, val)
         })
     })
+
+    document.querySelector(".retirement-buttons").querySelector(".bi-plus-lg").addEventListener("mousedown", function(){
+        let retirement = document.querySelector(".actual-retirement")
+        let age = retirement.innerText.split(" ")[1]
+        let val = parseInt(age) + 1;
+        retirement.innerText = "Ret " + val
+    })
+
+    document.querySelector(".retirement-buttons").querySelector(".bi-dash-lg").addEventListener("mousedown", function(){
+        let retirement = document.querySelector(".actual-retirement")
+        let age = retirement.innerText.split(" ")[1]
+        let val = parseInt(age) - 1;
+        retirement.innerText = "Ret " + val
+    })
+
+    document.querySelector("#nameFilter").addEventListener("input", function(event){
+        console.log("change")
+        let text = event.target.value
+        let elements = document.querySelectorAll(".normal-driver")
+        elements.forEach(function(elem){
+            let first_name = elem.children[0].children[0].innerText
+            let last_name = elem.children[0].children[1].innerText
+            let full_name = first_name + " " + last_name
+            let minus = full_name.toLowerCase()
+            let name = text.toLowerCase()
+            if(minus.includes(name)){
+                elem.classList.remove("d-none")
+            }
+            else{
+                elem.classList.add("d-none")
+            }
+        })
+    })
 }
+
+
 
 function manage_stat_bar(element, value){
     let container = element.parentNode.parentNode.parentNode
@@ -325,6 +365,10 @@ function load_stats(div) {
         //get sibling of input
         manage_stat_bar(input, value)
     });
+    let actualAge = document.querySelector(".actual-age")
+    let retirementAge = document.querySelector(".actual-retirement")
+    actualAge.innerText = "Age " + div.dataset.age
+    retirementAge.innerText = "Ret " + div.dataset.retirement
 }
 
 /**

@@ -564,6 +564,60 @@ a.bi-linkedin:hover {
   font-size: 26px;
   padding-left: 20px;
   padding-top: 20px;
+  display: flex;
+  gap: 50px;
+}
+
+.age-holder{
+  color: var(--dark-text);
+  display: flex;
+  gap: 25px;
+  font-size: 26px;
+  padding-top: 20px;
+  margin-right: 100px;
+}
+
+.text-filter{
+  background-color: transparent;
+  color: var(--white-general);
+  border-bottom: 2px solid transparent;
+  border-right: 0px;
+  border-left: 0px;
+  border-top: 0px;
+  transition: color 0.2s, border-color 0.2s;
+  height: 36px;
+  padding: 6px;
+}
+
+.text-filter:hover{
+  border-bottom: 2px solid var(--text-selected);
+}
+
+.text-filter:focus{
+  color: var(--text-selected);
+  border-bottom: 2px solid var(--new-primary);
+}
+
+.text-filter:focus-visible{
+  outline: none;
+}
+
+
+.retirement-age{
+  display: flex;
+  gap: 3px;
+}
+
+.retirement-buttons{
+  font-size: 18px;
+  display: flex;
+  flex-direction: column;
+  margin-top: 3px;
+}
+
+.retirement-buttons i{
+  height: 20px;
+  display: flex;
 }
 
 .upper-section-stats {
@@ -1037,13 +1091,13 @@ a.bi-linkedin:hover {
 
 .custom-dropdown + .dropdown-line{
   width: 0%;
-  background-color: var(--new-primary-transparent);
+  background-color: var(--new-primary);
 }
 
 
 .custom-dropdown:hover + .dropdown-line{
   width: 100%;
-  background-color: var(--new-primary-transparent);
+  background-color: var(--new-primary);
 }
 
 .custom-dropdown-no-margin {
@@ -1215,7 +1269,8 @@ a.bi-linkedin:hover {
 
 .extra-atributes {
   display: grid;
-  width: 34%;
+  width: 100%;
+  grid-template-columns: repeat(3, 0.33fr);
 }
 
 .attribute-and-preferences{
@@ -2391,12 +2446,12 @@ DRIVERS TABLE
   background-color: var(--elements-hover);
 }
 
-.one-statH2H i, .name-and-stat i{
+.one-statH2H i, .name-and-stat i, .retirement-buttons i{
   cursor: pointer;
   transition: color 0.2s, transform 0.2s ease-in-out;
 }
 
-.one-statH2H i:hover, .name-and-stat i:hover{
+.one-statH2H i:hover, .name-and-stat i:hover, .retirement-buttons i:hover{
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.1);
@@ -4233,7 +4288,7 @@ DRIVERS TABLE
 }
 
 .generalPills .pill-line{
-  background-color: var(--new-primary-transparent);
+  background-color: var(--new-primary);
   width: 0%;
 }
 
@@ -4353,7 +4408,7 @@ DRIVERS TABLE
 }
 
 .scriptPills .pill-line{
-  background-color: var(--new-primary-transparent);
+  background-color: var(--new-primary);
 }
 
 .ai-pills::before{
@@ -4402,17 +4457,17 @@ DRIVERS TABLE
 
 .old-custom-input-number{
   background-color: transparent;
-  padding: 10px;
+  padding: 6px;
   margin-right: 7px;
   color: var(--text-general);
   max-width: 60px;
-  height: 56px;
   border-bottom: 2px solid transparent;
   border-right: 0px solid;
   border-left: 0px solid;
   border-top: 0px solid;
   font-size: 20px;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s !important;
+  text-align: center;
 }
 
 .custom-input-number::selection{
