@@ -632,6 +632,10 @@ a.bi-linkedin:hover {
   pointer-events: none;
 }
 
+.filter-pills:hover .basic-label{
+  transform: scale(1.1);
+}
+
 .filter-container.focused{
   background-color: var(--generals);
   box-shadow: 0 0 10px 1px var(--box-shadow);
@@ -652,7 +656,11 @@ a.bi-linkedin:hover {
 }
 
 #freefilter.active .pill-line{
-  background-color: var(--new-primary);
+  width: 0%;
+}
+
+#freefilter:hover .pill-line{
+  width: 100%;
 }
 
 #freefilter.active .basic-label{
@@ -668,7 +676,11 @@ a.bi-linkedin:hover {
 }
 
 #F1filter.active .pill-line{
-  background-color: var(--text-general);
+  width: 0%;
+}
+
+#F1filter:hover .pill-line{
+  width: 100%;
 }
 
 #F1filter.active .basic-label{
@@ -684,7 +696,11 @@ a.bi-linkedin:hover {
 }
 
 #F2filter.active .pill-line{
-  background-color: var(--f2-border);
+  width: 0%;
+}
+
+#F2filter:hover .pill-line{
+  width: 100%;
 }
 
 #F2filter.active .basic-label{
@@ -700,7 +716,11 @@ a.bi-linkedin:hover {
 }
 
 #F3filter.active .pill-line{
-  background-color: var(--f3-border);
+  width: 0%;
+}
+
+#F3filter:hover .pill-line{
+  width: 100%;
 }
 
 #F3filter.active .basic-label{
@@ -4435,7 +4455,7 @@ DRIVERS TABLE
 
 .basic-label{
   cursor: pointer;
-  transition: color 0.3s;
+  transition: color 0.3s, transform 0.3s;
 }
 
 .generalPills::before {
