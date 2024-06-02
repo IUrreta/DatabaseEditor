@@ -2531,6 +2531,7 @@ DRIVERS TABLE
   scrollbar-width: thin;
   scrollbar-color: var(--white-general);
   box-shadow: 0px 0px 10px 2px var(--box-shadow);
+  margin-right: 14px;
 }
 
 .main-editStats-section::-webkit-scrollbar {
