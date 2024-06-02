@@ -594,6 +594,35 @@ a.bi-linkedin:hover {
   transition: color 0.2s, border-color 0.2s;
   height: 36px;
   padding: 6px;
+  width: 145px;
+}
+
+.filter-icon{
+  color: var(--dark-text);
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s, tranform 0.2s;
+}
+
+.filter-icon:hover{
+  color: var(--new-primary);
+  transform: scale(1.1);
+}
+
+.category-filters{
+  width: 0%;
+  height: 36px;
+  overflow: hidden;
+  transition: width 0.3s ease-in-out;
+}
+
+
+.category-filters.expanded{
+  width: 100%;
+}
+
+.filter-pills{
+  display: inline-block;
 }
 
 .text-filter:hover{

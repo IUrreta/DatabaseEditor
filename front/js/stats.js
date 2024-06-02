@@ -340,6 +340,24 @@ function listeners_plusLess(){
             }
         })
     })
+
+    document.querySelector("#filterIcon").addEventListener("click", function(){
+        document.querySelector(".category-filters").classList.toggle("expanded")
+    })
+
+    document.querySelectorAll(".filter-pills").forEach(function(elem){
+        elem.addEventListener("click", function(event){
+            let isActive = elem.classList.contains('active');
+
+            document.querySelectorAll('.filter-pills').forEach(function(el) {
+                el.classList.remove('active');
+            });
+
+            if (!isActive) {
+                elem.classList.add('active');
+            }
+        })
+    })
 }
 
 
