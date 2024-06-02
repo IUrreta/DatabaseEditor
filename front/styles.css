@@ -18,6 +18,10 @@
   --table-hover: #4a4a4a;
   --elements-hover: #3a3a3a;
   --box-shadow: #00000033;
+  --table-first: #fde06b;
+  --table-second: #aeb2b8;
+  --table-third: #d7985a;
+  --text-outline: #000000;
 
 
   --background-general: #110f24;
@@ -489,7 +493,10 @@ a.bi-linkedin:hover {
 .number-details {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: baseline;
+  width: 100%;
+  justify-content: flex-end;
+  gap: 15px;
 }
 
 #d1Menu, #d2Menu, #teamMenu, #raceProbMenu{
@@ -1081,6 +1088,10 @@ a.bi-linkedin:hover {
   z-index: -1;
 }
 
+#numberButton::before{
+  z-index: 0 !important;
+}
+
 .custom-dropdown:hover::before {
   opacity: 1;
 }
@@ -1184,6 +1195,7 @@ a.bi-linkedin:hover {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  margin-top: 0 !important;
 }
 
 .custom-dropdown-no-margin:hover {
@@ -1382,6 +1394,54 @@ a.bi-linkedin:hover {
 DRIVERS TABLE
 */
 
+.first{
+  background-color: var(--table-first) !important;
+  color: var(--negative-text) !important;
+}
+
+.drivers-table-row.odd:hover .first, .drivers-table-row:hover .first,
+.teams-table-row.odd:hover .first, .teams-table-row:hover .first{
+  background-color: var(--text-general) !important;
+  color: var(--table-first) !important;
+  text-shadow: 
+  -1px -1px 0 var(--text-outline),  
+  1px -1px 0 var(--text-outline),
+  -1px 1px 0 var(--text-outline),
+  1px 1px 0 var(--text-outline);
+}
+
+.second{
+  background-color: var(--table-second) !important;
+  color: var(--negative-text) !important;
+}
+
+.drivers-table-row.odd:hover .second, .drivers-table-row:hover .second,
+.teams-table-row.odd:hover .second, .teams-table-row:hover .second{
+  background-color: var(--text-general) !important;
+  color: var(--table-second) !important;
+  text-shadow: 
+  -1px -1px 0 var(--text-outline),  
+  1px -1px 0 var(--text-outline),
+  -1px 1px 0 var(--text-outline),
+  1px 1px 0 var(--text-outline);
+}
+
+.third{
+  background-color: var(--table-third) !important;
+  color: var(--negative-text) !important;
+}
+
+.drivers-table-row.odd:hover .third, .drivers-table-row:hover .third, 
+.teams-table-row.odd:hover .third, .teams-table-row:hover .third{
+  background-color: var(--text-general) !important;
+  color: var(--table-third) !important;
+  text-shadow: 
+  -1px -1px 0 var(--text-outline),  
+  1px -1px 0 var(--text-outline),
+  -1px 1px 0 var(--text-outline),
+  1px 1px 0 var(--text-outline);
+}
+
 .drivers-table-header, .teams-table-header{
   display: flex;
   flex-direction: row;
@@ -1421,7 +1481,7 @@ DRIVERS TABLE
 .drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points,
 .drivers-table-row .drivers-table-normal, .teams-table-row .teams-table-normal, .teams-table-row .teams-table-driver,
 .teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
-  transition: color 0.3s, background-color 0.3s;
+  transition: color 0.3s, background-color 0.3s, text-shadow 0.3s;
 }
 
 .drivers-table-row:hover .drivers-table-driver, 
@@ -3973,6 +4033,7 @@ DRIVERS TABLE
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  height: 36px !important;
 }
 
 .bar-container{

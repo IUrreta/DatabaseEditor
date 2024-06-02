@@ -228,16 +228,16 @@ function new_color_drivers_table() {
         let cells = row.querySelectorAll(".drivers-table-normal")
         cells.forEach(function (cell) {
             if (cell.dataset.pos === "1") {
-                cell.style.backgroundColor = "#FDE06B"
-                cell.style.color = "#18152e"
+                cell.classList.add("first")
+                console.log(cell)
             }
             else if (cell.dataset.pos === "2") {
-                cell.style.backgroundColor = "#AEB2B8"
-                cell.style.color = "#18152e"
+                cell.classList.add("second")
+                console.log(cell)
             }
             else if (cell.dataset.pos === "3") {
-                cell.style.backgroundColor = "#d7985a"
-                cell.style.color = "#18152e"
+                cell.classList.add("third")
+                console.log(cell)
             }
             if (cell.dataset.fastlap === "1") {
                 cell.style.color = "#c90fd7"
@@ -404,15 +404,15 @@ function new_color_teams_table() {
             });
             values.sort((a, b) => b[0] - a[0]);
             let topThree = values.slice(0, 3);
-            colCells[topThree[0][1]].style.backgroundColor = "#FDE06B";
+            colCells[topThree[0][1]].classList.add("first");
             if (colCells[topThree[0][1]].dataset.fastlap1 !== "1" && colCells[topThree[0][1]].dataset.fastlap2 !== "1") {
                 colCells[topThree[0][1]].style.color = "#18152e";
             }
-            colCells[topThree[1][1]].style.backgroundColor = "#AEB2B8";
+            colCells[topThree[1][1]].classList.add("second");
             if (colCells[topThree[1][1]].dataset.fastlap1 !== "1" && colCells[topThree[1][1]].dataset.fastlap2 !== "1") {
                 colCells[topThree[1][1]].style.color = "#18152e";
             }
-            colCells[topThree[2][1]].style.backgroundColor = "#d7985a";
+            colCells[topThree[2][1]].classList.add("third");
             if (colCells[topThree[2][1]].dataset.fastlap1 !== "1" && colCells[topThree[2][1]].dataset.fastlap2 !== "1") {
                 colCells[topThree[2][1]].style.color = "#18152e";
             }

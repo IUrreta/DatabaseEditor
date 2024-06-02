@@ -201,7 +201,8 @@ class DatabaseUtils:
             id = tupla[2]
             result = self.format_names_get_stats(tupla, "driver")
             retirement = self.fetch_driverRetirement(id)
-            result += tuple(retirement)
+            driver_number = self.fetchDriverNumberDetails(id)
+            result += tuple(driver_number) + tuple(retirement)
             formatted_tuples.append(result)
 
         return formatted_tuples

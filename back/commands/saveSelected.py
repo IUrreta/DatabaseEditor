@@ -38,6 +38,10 @@ class SaveSelectedCommand(Command):
         year = ["Year fetched", year]
         data_json_year = json.dumps(year)
         await self.send_message_to_client(data_json_year)
+        nums = Command.dbutils.fetch_driverNumebrs()
+        nums.insert(0, "Numbers fetched")
+        data_json_numbers = json.dumps(nums)
+        await self.send_message_to_client(data_json_numbers)
 
     def create_backup(self, originalFIle, saveFile):
         backup_path = "./../backup"
