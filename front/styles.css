@@ -70,7 +70,7 @@
   --f2-back: #388cd5;
   --f2-active: #1374fc;
   --f3-back: #cf2e2e;
-  --f3-border: #ff4848;
+  --f3-border: #ff7968;
 
 
   /*
@@ -609,21 +609,112 @@ a.bi-linkedin:hover {
   transform: scale(1.1);
 }
 
-.category-filters{
-  width: 0%;
-  height: 36px;
-  overflow: hidden;
-  transition: width 0.3s ease-in-out;
+.filter-container{
+  background-color: transparent;
+  border-radius: 10px;
+  box-shadow: 0 0 0 0 var(--box-shadow);
+  transition: background-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 4px 12px;
 }
 
-
-.category-filters.expanded{
-  width: 100%;
+.filter-pills::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0% !important;
+  height: 0% !important;
+  background: transparent !important;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.filter-pills{
-  display: inline-block;
+.filter-container.focused{
+  background-color: var(--generals);
+  box-shadow: 0 0 10px 1px var(--box-shadow);
+
 }
+
+.category-filters, .order-filters{
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.category-filters.show, .order-filters.show{
+  opacity: 1;
+}
+
+.category-filters .basic-label{
+  color: var(--dark-text);
+}
+
+#freefilter.active .pill-line{
+  background-color: var(--new-primary);
+}
+
+#freefilter.active .basic-label{
+  color: var(--new-primary);
+}
+
+#freefilter:hover .pill-line{
+  background-color: var(--new-primary);
+}
+
+#freefilter:hover .basic-label{
+  color: var(--new-primary);
+}
+
+#F1filter.active .pill-line{
+  background-color: var(--text-general);
+}
+
+#F1filter.active .basic-label{
+  color: var(--text-general);
+}
+
+#F1filter:hover .pill-line{
+  background-color: var(--text-general);
+}
+
+#F1filter:hover .basic-label{
+  color: var(--text-general);
+}
+
+#F2filter.active .pill-line{
+  background-color: var(--f2-border);
+}
+
+#F2filter.active .basic-label{
+  color: var(--f2-border);
+}
+
+#F2filter:hover .pill-line{
+  background-color: var(--f2-border);
+}
+
+#F2filter:hover .basic-label{
+  color: var(--f2-border);
+}
+
+#F3filter.active .pill-line{
+  background-color: var(--f3-border);
+}
+
+#F3filter.active .basic-label{
+  color: var(--f3-border);
+}
+
+#F3filter:hover .pill-line{
+  background-color: var(--f3-border);
+}
+
+#F3filter:hover .basic-label{
+  color: var(--f3-border);
+}
+
 
 .text-filter:hover{
   border-bottom: 2px solid var(--text-selected);
@@ -4343,6 +4434,7 @@ DRIVERS TABLE
 
 .basic-label{
   cursor: pointer;
+  transition: color 0.3s;
 }
 
 .generalPills::before {

@@ -342,7 +342,8 @@ function listeners_plusLess(){
     })
 
     document.querySelector("#filterIcon").addEventListener("click", function(){
-        document.querySelector(".category-filters").classList.toggle("expanded")
+        document.querySelector(".category-filters").classList.toggle("show")
+        document.querySelector(".filter-container").classList.toggle("focused")
     })
 
     document.querySelectorAll(".filter-pills").forEach(function(elem){
