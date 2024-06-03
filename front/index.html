@@ -1391,7 +1391,6 @@
                 Directors</a>
             </ul>
           </div>
-          <input class="text-filter" type="text" id="nameFilter" placeholder="Search..."></input>
           <div class="filter-container">
             <i class="bi bi-funnel filter-icon" id="filterIcon"></i>
             <div class="category-filters">
@@ -1430,18 +1429,26 @@
         </div>
         <div class="d-flex">
           <div class="col-3">
-            <div id="StaffLists">
-              <div class="main-editStats-section staff-list" id="placeholder">
+            <div class= "main-editStats-section" id="StaffLists">
+              <div class="search-and-order">
+                <input class="text-filter" type="text" id="nameFilter" placeholder="Search..."></input>
+                <div class="order-space" data-state="0">
+                  <i class="bi bi-sort-numeric-up-alt"></i>
+                  <i class="bi bi-sort-numeric-down hidden"></i>
+                </div>
+                
               </div>
-              <div class="main-editStats-section staff-list d-none" id="fulldriverlist">
+              <div class="staff-list" id="placeholder">
               </div>
-              <div class="main-editStats-section staff-list d-none" id="fullTechnicalList">
+              <div class="staff-list d-none" id="fulldriverlist">
               </div>
-              <div class="main-editStats-section staff-list d-none" id="fullEngineerList">
+              <div class="staff-list d-none" id="fullTechnicalList">
               </div>
-              <div class="main-editStats-section staff-list d-none" id="fullAeroList">
+              <div class="staff-list d-none" id="fullEngineerList">
               </div>
-              <div class="main-editStats-section staff-list d-none" id="fullDirectorList">
+              <div class="staff-list d-none" id="fullAeroList">
+              </div>
+              <div class="staff-list d-none" id="fullDirectorList">
               </div>
 
             </div>

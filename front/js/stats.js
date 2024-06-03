@@ -1,3 +1,5 @@
+const { stat } = require("original-fs");
+
 let driverStatTitle = document.getElementById("driverStatsTitle")
 let statPanelShown = 0;
 let typeOverall = "driver";
@@ -124,7 +126,7 @@ function place_staff(staffArray) {
         let ovrDiv = document.createElement("div");
 
         newDiv.className = "col normal-driver";
-        newDiv.dataset.staffid = staff[1];
+        newDiv.dataset.driverid = staff[1];
         let nameDiv = document.createElement("div");
         newDiv.dataset.teamid = staff[2];
         let name = staff[0].split(" ")
@@ -209,9 +211,6 @@ document.getElementById("confirmbtn").addEventListener("click",function () {
     let id;
     if(document.querySelector(".clicked").dataset.driverid){
         id = document.querySelector(".clicked").dataset.driverid
-    }
-    else{
-        id = document.querySelector(".clicked").dataset.staffid
     }
     let driverName = getName(document.querySelector(".clicked"))
     document.querySelector(".clicked").dataset.stats = stats
@@ -359,6 +358,155 @@ function listeners_plusLess(){
             }
         })
     })
+
+    document.querySelector("#F1filter").addEventListener("click", function(event){
+        if (!event.target.classList.contains("active")){
+            let elements = document.querySelectorAll(".normal-driver")
+            elements.forEach(function(elem){
+                elem.classList.remove("d-none")
+            })
+        }
+        else{
+            let elements = document.querySelectorAll(".normal-driver")
+            elements.forEach(function(elem){
+                if(parseInt(elem.dataset.teamid) <= 10 && parseInt(elem.dataset.teamid) > 0){
+                    elem.classList.remove("d-none")
+                }
+                else{
+                    elem.classList.add("d-none")
+                }
+            })
+        }
+    })
+
+    document.querySelector("#F2filter").addEventListener("click", function(event){
+        if (!event.target.classList.contains("active")){
+            let elements = document.querySelectorAll(".normal-driver")
+            elements.forEach(function(elem){
+                elem.classList.remove("d-none")
+            })
+        }
+        else{
+            let elements = document.querySelectorAll(".normal-driver")
+            elements.forEach(function(elem){
+                if(parseInt(elem.dataset.teamid) <= 21 && parseInt(elem.dataset.teamid) > 10){
+                    elem.classList.remove("d-none")
+                }
+                else{
+                    elem.classList.add("d-none")
+                }
+            })
+        }
+    })
+
+    document.querySelector("#F3filter").addEventListener("click", function(event){
+        if (!event.target.classList.contains("active")){
+            let elements = document.querySelectorAll(".normal-driver")
+            elements.forEach(function(elem){
+                elem.classList.remove("d-none")
+            })
+        }
+        else{
+            let elements = document.querySelectorAll(".normal-driver")
+            elements.forEach(function(elem){
+                if(parseInt(elem.dataset.teamid) <= 31 && parseInt(elem.dataset.teamid) > 21){
+                    elem.classList.remove("d-none")
+                }
+                else{
+                    elem.classList.add("d-none")
+                }
+            })
+        }
+    })
+
+    document.querySelector("#freefilter").addEventListener("click", function(event){
+        if (!event.target.classList.contains("active")){
+            let elements = document.querySelectorAll(".normal-driver")
+            elements.forEach(function(elem){
+                elem.classList.remove("d-none")
+            })
+        }
+        else{
+            let elements = document.querySelectorAll(".normal-driver")
+            elements.forEach(function(elem){
+                if(parseInt(elem.dataset.teamid) == 0){
+                    elem.classList.remove("d-none")
+                }
+                else{
+                    elem.classList.add("d-none")
+                }
+            })
+        }
+    })
+
+    document.querySelector(".order-space").querySelectorAll("i").forEach(function(elem){
+        console.log(elem)
+        elem.addEventListener("click", function(event){
+            let parent = elem.parentNode
+            let state = parent.dataset.state
+            let orderNumUp = document.querySelector(".bi-sort-numeric-up-alt")
+            let orderNumDown = document.querySelector(".bi-sort-numeric-down")
+            parent.dataset.state = (parseInt(state) + 1) % 3
+            console.log("state: " + state)
+            if (parent.dataset.state == 0){
+                orderNumUp.classList.remove("active")
+                orderNumUp.classList.remove("hidden")
+                orderNumDown.classList.add("hidden")
+            }
+            else if (parent.dataset.state == 1){
+                orderNumDown.classList.add("hidden")
+                orderNumDown.classList.add("active")
+                orderNumUp.classList.add("active")
+                orderNumUp.classList.remove("hidden")
+
+            }
+            else if (parent.dataset.state == 2){
+                orderNumUp.classList.remove("active")
+                orderNumUp.classList.add("hidden")
+                orderNumDown.classList.add("active")
+                orderNumDown.classList.remove("hidden")
+            }
+            manage_order(parseInt(parent.dataset.state))
+        })
+    })
+}
+
+function manage_order(state) {
+    let elements = document.querySelectorAll(".normal-driver");
+    let array = Array.from(elements);
+    
+    // Crear un objeto para almacenar los padres originales
+    let parents = {};
+    array.forEach(elem => {
+        parents[elem.dataset.driverid] = elem.parentNode; // Asumiendo que cada .normal-driver tiene un data-id único
+    });
+
+    let sortedArray = array.sort(function(a, b) {
+        let ovrA = parseInt(a.children[1].innerText);
+        let ovrB = parseInt(b.children[1].innerText);
+        let teamA = parseInt(a.dataset.teamid);
+        let teamB = parseInt(b.dataset.teamid);
+        if (state == 0) {
+            if (teamA === 0) return 1;
+            if (teamB === 0) return -1;
+            return teamA - teamB;
+        } else if (state == 1) {
+            return ovrB - ovrA;
+        } else {
+            return ovrA - ovrB;
+        }
+    });
+
+    // Limpiar los contenedores
+    document.querySelectorAll(".staff-list").forEach(function(elem) {
+        elem.innerHTML = "";
+    });
+
+    // Volver a colocar los elementos ordenados en sus padres originales
+    sortedArray.forEach(function(elem) {
+        let parent = parents[elem.dataset.driverid];
+        parent.appendChild(elem);
+    });
 }
 
 

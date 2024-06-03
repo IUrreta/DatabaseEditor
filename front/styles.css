@@ -735,6 +735,51 @@ a.bi-linkedin:hover {
   color: var(--f3-border);
 }
 
+#StaffLists{
+  margin-left: 14px;
+}
+
+#nameFilter{
+  margin-top: 5px;
+}
+
+.search-and-order{
+  margin-left: 10px;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.order-space{
+  margin-right: 20px;
+  width: 23px;
+  height: 35px;
+  position: relative;
+}
+
+.search-and-order i{
+  font-size: 24px;
+  transition: opacity 0.15s, transform 0.2s, color 0.2s;
+  color: var(--dark-text);
+  position: absolute;
+  z-index: 1;
+}
+
+.order-space i:hover{
+  transform: scale(1.1);
+  color: var(--text-selected);
+}
+
+.search-and-order i.active{
+  color: var(--new-primary);
+}
+
+.search-and-order i.hidden{
+  opacity: 0;
+  z-index: 0;
+}
+
 
 .text-filter:hover{
   border-bottom: 2px solid var(--text-selected);
@@ -2546,7 +2591,6 @@ DRIVERS TABLE
   color: var(--white-general);
   min-height: 660px;
   max-height: 660px;
-  overflow-y: auto;
   border-radius: 10px;
   scrollbar-width: thin;
   scrollbar-color: var(--white-general);
@@ -2554,19 +2598,18 @@ DRIVERS TABLE
   margin-right: 14px;
 }
 
-.main-editStats-section::-webkit-scrollbar {
+.staff-list::-webkit-scrollbar {
   width: 4px;
 }
 
-.main-editStats-section::-webkit-scrollbar-thumb {
+.staff-list::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
 
 .staff-list {
-  margin-left: 14px;
-  margin-right: 5%;
-  min-height: 660px;
+  overflow-y: auto;
+  height: 610px;
 }
 
 #driverstats {
@@ -4456,6 +4499,7 @@ DRIVERS TABLE
 .basic-label{
   cursor: pointer;
   transition: color 0.3s, transform 0.3s;
+  pointer-events: none;
 }
 
 .generalPills::before {
@@ -4572,6 +4616,7 @@ DRIVERS TABLE
   position: absolute;
   bottom: 0;
   left: -2px;
+  pointer-events: none;
 }
 
 .scriptPills:hover .pill-icon, .scriptPills.active .pill-icon{
