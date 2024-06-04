@@ -1,6 +1,6 @@
 {
   "name": "Database Editor F1M23",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "description": "A tool that will let you edit your save file from F1M23",
   "main": "main.js",
   "scripts": {
