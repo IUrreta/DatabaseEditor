@@ -819,6 +819,21 @@ a.bi-linkedin:hover {
   min-height: 71px;
 }
 
+#numberName{
+  position: relative;
+}
+
+#numberName .name-and-stat{
+  position: absolute;
+  margin-left: 20px;
+}
+
+#numberName .number-details{
+  position: absolute;
+  margin-right: 50px;
+  margin-top: 15px;
+}
+
 .ovr {
   font-size: 24px;
 }

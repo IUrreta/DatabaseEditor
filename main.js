@@ -9,7 +9,7 @@ function createWindow () {
   setupTitlebar();
   const mainWindow = new BrowserWindow({
     width: 1700,
-    height: 1020,
+    height: 875,
     icon: path.join(__dirname, "assets/images/logoAlter.png"),
     titleBarStyle: 'hidden',
     webPreferences: {

@@ -63,6 +63,8 @@ function place_drivers_editStats(driversArray) {
         });
         newDiv.dataset.age = driver[driver.length - 1]
         newDiv.dataset.retirement = driver[driver.length - 2]
+        newDiv.dataset.numWC = driver[driver.length - 3]
+        newDiv.dataset.number = driver[driver.length - 4]
 
         ovr = calculateOverall(statsString, "driver")
         ovrDiv.innerHTML = ovr
@@ -534,8 +536,18 @@ function load_stats(div) {
     });
     let actualAge = document.querySelector(".actual-age")
     let retirementAge = document.querySelector(".actual-retirement")
+    let numberButton = document.querySelector("#numberButton")
+    let numberWC = document.querySelector("#driverNumber1")
     actualAge.innerText = "Age " + div.dataset.age
     retirementAge.innerText = "Ret " + div.dataset.retirement
+    numberButton.innerText = div.dataset.number
+    console.log(div.dataset.numWC)
+    if (div.dataset.numWC === "0"){
+        numberWC.checked = false
+    }
+    else{
+        numberWC.checked = true
+    }
 }
 
 /**

@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function ajustScrollWrapper() {
-        var windowHeight = window.innerHeight - 265;
+        var windowHeight = window.innerHeight - 120;
         document.querySelector('.scroll-wrapper').style.height = windowHeight + 'px';
       }
 

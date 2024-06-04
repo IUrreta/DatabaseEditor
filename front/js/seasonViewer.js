@@ -229,15 +229,12 @@ function new_color_drivers_table() {
         cells.forEach(function (cell) {
             if (cell.dataset.pos === "1") {
                 cell.classList.add("first")
-                console.log(cell)
             }
             else if (cell.dataset.pos === "2") {
                 cell.classList.add("second")
-                console.log(cell)
             }
             else if (cell.dataset.pos === "3") {
                 cell.classList.add("third")
-                console.log(cell)
             }
             if (cell.dataset.fastlap === "1") {
                 cell.style.color = "#c90fd7"
