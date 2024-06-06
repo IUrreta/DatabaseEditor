@@ -4793,6 +4793,67 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
+.team-performance {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.performance-bar{
+  height: 5px;
+  width: 100%;
+  background-color: var(--background);
+  position: relative;
+  margin: 4px 0;
+}
+
+.performance-bar-progress{
+  width: 50%;
+  height: 5px;
+  position: absolute;
+  border-right: 1px solid var(--text-general);
+}
+
+.performance-bar-progress.rb{
+  background-color: var(--redbull-primary);
+}
+
+.performance-bar-progress.fe{
+  background-color: var(--ferrari-primary);
+}
+
+.performance-bar-progress.mc{
+  background-color: var(--mclaren-primary);
+}
+
+.performance-bar-progress.me{
+  background-color: var(--mercedes-primary);
+}
+
+.performance-bar-progress.al{
+  background-color: var(--alpine-primary);
+}
+
+.performance-bar-progress.wi{
+  background-color: var(--williams-primary);
+}
+
+.performance-bar-progress.ha{
+  background-color: var(--haas-primary);
+}
+
+.performance-bar-progress.at{
+  background-color: var(--alphatauri-primary);
+}
+
+.performance-bar-progress.as{
+  background-color: var(--aston-primary);
+}
+
+.performance-bar-progress.af{
+  background-color: var(--alfa-primary);
+}
+
 .logo-and-name {
   display: flex;
   flex-direction: row;
@@ -4809,8 +4870,7 @@ input::-webkit-inner-spin-button {
 .team-title {
   display: flex;
   align-items: center;
-  font-size: 24px;
-  padding-left: 8px;
+  font-size: 18px;
 }
 
 

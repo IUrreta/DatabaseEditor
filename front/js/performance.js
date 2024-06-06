@@ -11,6 +11,59 @@ let teamSelected;
 let engineSelected;
 let teamEngineSelected;
 
+function normalizeData(data) {
+    let values = Object.values(data);
+    
+    let min = Math.min(...values);
+    let max = Math.max(...values);
+    
+    let adjustedMin = min - 5;
+    let adjustedMax = max + 5;
+    
+    let normalizedData = {};
+    for (let key in data) {
+        if (data.hasOwnProperty(key)) {
+            normalizedData[key] = ((data[key] - adjustedMin) / (adjustedMax - adjustedMin)) * 100;
+        }
+    }
+    
+    return normalizedData;
+}
+
+
+
+function load_performance(teams) {
+    // let teams = normalizeData(teams);
+    console.log(teams)
+    for (let key in teams) {
+        if (teams.hasOwnProperty(key)) {
+            let teamPerformance = document.querySelector(`#teamsDiv .team-performance[data-teamid='${key}']`);
+            
+            if (teamPerformance) {
+                let performanceBarProgress = teamPerformance.querySelector('.performance-bar-progress');
+                
+                if (performanceBarProgress) {
+                    performanceBarProgress.style.width = teams[key] + '%';
+                    performanceBarProgress.dataset.overall = teams[key];
+                }
+            }
+        }
+    }
+}
+
+function order_by(criterion){
+    if (criterion === "overall"){
+        let teams = document.querySelectorAll(".team-performance");
+        let teamsArray = Array.from(teams);
+        teamsArray.sort(function(a,b){
+            return b.querySelector(".performance-bar-progress").dataset.overall - a.querySelector(".performance-bar-progress").dataset.overall;
+        })
+        teamsArray.forEach(function(team){
+            document.getElementById("teamsDiv").appendChild(team);
+        })
+    }
+}
+
 /**
  * Pills that manage engines and teams screens and lists
  */

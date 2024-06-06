@@ -209,6 +209,10 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         "Config": (message)=>{
             manage_config(message.slice(1))
+        },
+        "Performance fetched": (message)=>{
+            load_performance(message[1])
+            order_by("overall")
         }
     };
 
