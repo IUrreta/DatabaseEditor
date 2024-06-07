@@ -212,6 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         "Performance fetched": (message)=>{
             load_performance(message[1])
+            load_attributes(message[2])
             order_by("overall")
         }
     };

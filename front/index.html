@@ -2637,8 +2637,28 @@
 
       </div>
       <div class="script-view d-none" id="car_performance">
-        <div class="col-3">
-          <div class="pb-3 ps-3" style="padding-top: 1.1rem;">
+        <div class="pos-relative">
+          <div class="pb-3 ps-3" style="padding-top: 0.5rem; position: absolute;"> 
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="attributeButton"
+              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Overall
+            </button>
+            <div class="dropdown-line"></div>
+            <ul class="dropdown-menu" id="attributeMenu" style="font-family: Formula1;">
+              <a class="dropdown-item" href="#" data-attribute="top_speed">Top speed</a>
+              <a class="dropdown-item" href="#" data-attribute="acceleration">Acceleration</a>
+              <a class="dropdown-item" href="#" data-attribute="low_speed">Low speed</a>
+              <a class="dropdown-item" href="#" data-attribute="medium_speed">Medium speed</a>
+              <a class="dropdown-item" href="#" data-attribute="high_speed">High speed</a>
+              <a class="dropdown-item" href="#" data-attribute="drs">DRS Effectiveness</a>
+              <a class="dropdown-item" href="#" data-attribute="dirty_air">Dirty air tolerance</a>
+              <a class="dropdown-item" href="#" data-attribute="brake_cooling">Brake cooling</a>
+              <a class="dropdown-item" href="#" data-attribute="engine_cooling">Engine cooling</a>
+              <a class="dropdown-item" href="#" data-attribute="overall">Overall</a>
+
+            </ul>
+          </div>
+          <div class="pb-3 pe-3" style="padding-top: 1.1rem; position: absolute; right: 0;">
             <ul class="nav nav-pills">
               <li class="nav-item">
                 <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"
@@ -2650,338 +2670,342 @@
               </li>
             </ul>
           </div>
-          <div class="teams-engines">
-            <div class="main-columns-drag-section" id="teamsDiv">
-              <div class="col team bold-font team-performance" data-teamid="3" data-teamname="Red Bull">
-                <div class="team-title">RED BULL RACING</div>
-                <div class="performance-bar">
-                  <div class="performance-bar-progress rb" data-overall="0" data-topseed="0" data-acceleration="0" data-lowspeed="0" data-medspeed="0" data-highspeed="0" data-brakecool="0" data-enginecool="0"></div>
-                </div>
-              </div>
-              <div class="col team bold-font team-performance" data-teamid="1" data-teamname="Ferrari">
-                <div class="team-title">FERRARI</div>
-                <div class="performance-bar">
-                  <div class="performance-bar-progress fe" data-overall="0" data-topseed="0" data-acceleration="0" data-lowspeed="0" data-medspeed="0" data-highspeed="0" data-brakecool="0" data-enginecool="0"></div>
-                </div>
-              </div>
-              <div class="col team bold-font team-performance" data-teamid="4" data-teamname="Mercedes">
-                <div class="team-title">MERCEDES</div>
-                <div class="performance-bar">
-                  <div class="performance-bar-progress me" data-overall="0" data-topseed="0" data-acceleration="0" data-lowspeed="0" data-medspeed="0" data-highspeed="0" data-brakecool="0" data-enginecool="0"></div>
-                </div>
-              </div>
-              <div class="col team bold-font team-performance" data-teamid="5" data-teamname="Alpine" id="alpineTeam">
-                <div class="team-title alpine-name">ALPINE</div>
-                <div class="performance-bar">
-                  <div class="performance-bar-progress al" data-overall="0" data-topseed="0" data-acceleration="0" data-lowspeed="0" data-medspeed="0" data-highspeed="0" data-brakecool="0" data-enginecool="0"></div>
-                </div>
-              </div>
-              <div class="col team bold-font team-performance" data-teamid="2" data-teamname="McLaren">
-                <div class="team-title">MCLAREN</div>
-                <div class="performance-bar">
-                  <div class="performance-bar-progress mc" data-overall="0" data-topseed="0" data-acceleration="0" data-lowspeed="0" data-medspeed="0" data-highspeed="0" data-brakecool="0" data-enginecool="0"></div>
-                </div>
-              </div>
-              <div class="col team bold-font team-performance" data-teamid="9" data-teamname="Alfa Romeo">
-                <div class="team-title alfa-name">ALFA ROMEO</div>
-                <div class="performance-bar">
-                  <div class="performance-bar-progress af" data-overall="0" data-topseed="0" data-acceleration="0" data-lowspeed="0" data-medspeed="0" data-highspeed="0" data-brakecool="0" data-enginecool="0"></div>
-                </div>
-              </div>
-              <div class="col team bold-font team-performance" data-teamid="10" data-teamname="Aston Martin">
-                <div class="team-title">ASTON MARTIN</div>
-                <div class="performance-bar">
-                  <div class="performance-bar-progress as" data-overall="0" data-topseed="0" data-acceleration="0" data-lowspeed="0" data-medspeed="0" data-highspeed="0" data-brakecool="0" data-enginecool="0"></div>
-                </div>
-              </div>
-              <div class="col team bold-font team-performance" data-teamid="7" data-teamname="Haas">
-                <div class="team-title">HAAS</div>
-                <div class="performance-bar">
-                  <div class="performance-bar-progress ha" data-overall="0" data-topseed="0" data-acceleration="0" data-lowspeed="0" data-medspeed="0" data-highspeed="0" data-brakecool="0" data-enginecool="0"></div>
-                </div>
-              </div>
-              <div class="col team bold-font team-performance" data-teamid="8" data-teamname="Alpha Tauri"
-                id="alphaTauriTeam">
-                <div class="team-title at-name complete">ALPHA TAURI</div>
-                <div class="performance-bar">
-                  <div class="performance-bar-progress at" data-overall="0" data-topseed="0" data-acceleration="0" data-lowspeed="0" data-medspeed="0" data-highspeed="0" data-brakecool="0" data-enginecool="0"></div>
-                </div>
-              </div>
-              <div class="col team bold-font team-performance" data-teamid="6" data-teamname="Williams">
-                <div class="team-title">WILLIAMS</div>
-                <div class="performance-bar">
-                  <div class="performance-bar-progress wi" data-overall="0" data-topseed="0" data-acceleration="0" data-lowspeed="0" data-medspeed="0" data-highspeed="0" data-brakecool="0" data-enginecool="0"></div>
-                </div>
-              </div>
-            </div>
-            <div class="main-columns-drag-section d-none" id="enginesDiv">
-              <div class="col engine bold-font logo-and-title" data-engineid="1" data-teamEngine="1" data-stats=""
-                data-teamname="Ferrari">
-                <img src="../assets/images/ferrari.png" class="ferrarilogo"
-                  style="padding-bottom: 7px; padding-top: 7px;">
-                <div class="team-title">FERRARI</div>
-              </div>
-              <div class="col engine bold-font logo-and-title" data-engineid="10" data-teamengine="2" data-stats=""
-                data-teamname="Renault" id="renaultengine">
-                <img src="../assets/images/renault.png" class="" class="ferrarilogo"
-                  style="padding-top: 5px; padding-left: 7px; padding-bottom: 5px;">
-                <img src="../assets/images/renault2.png" class="d-none" class="ferrarilogo"
-                  style="padding-top: 5px; padding-left: 7px; padding-bottom: 5px;">
-                <div class="team-title">RENAULT</div>
-              </div>
-              <div class="col engine bold-font logo-and-title" data-engineid="4" data-teamEngine="3" data-stats=""
-                data-teamname="Red Bull">
-                <img src="../assets/images/redbull.png" class="redbulllogo">
-                <div class="team-title">RED BULL PT</div>
-              </div>
-              <div class="col engine bold-font logo-and-title" data-engineid="7" data-teamEngine="4" data-stats=""
-                data-teamname="Mercedes">
-                <img src="../assets/images/mercedes.png" class="merclogo" style="padding-top: 6px; padding-left: 7px;">
-                <div class="team-title">MERCEDES</div>
-              </div>
-
-
-            </div>
-
-          </div>
-
-        </div>
-        <div class="col-9">
-          <div class="trasnfer-top-panel">
-            <div class="title transfer-title bold-font py-3">
-              Performance
-              <i class="info-titles bold-font" id="perfoemanceinfo" data-bs-toggle="modal"
-                data-bs-target="#performancemodal">?</i>
-            </div>
-          </div>
-          <div class="main-columns-drag-section performance-section">
-            <div class="performance-show engines-show d-none">
-              <div class="one-performance perf-engine" style="margin-top: 0px;">
-                <div class="performance-name-engine">Fuel Efficiency</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0" data-type="engine">
-                  <div class="disabled-part-engine">
-                    <div class="white-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-
-              <div class="one-performance perf-engine">
-                <div class="performance-name-engine">Power</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0" data-type="engine">
-                  <div class="disabled-part-engine">
-                    <div class="white-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-              <div class="one-performance perf-engine">
-                <div class="performance-name-engine">Performance Threshold</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0" data-type="engine">
-                  <div class="disabled-part-engine">
-                    <div class="white-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-
-              <div class="one-performance perf-engine">
-                <div class="performance-name-engine">Performance Loss</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0" data-type="engine">
-                  <div class="disabled-part-engine">
-                    <div class="white-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-
-              <div class="one-performance perf-engine">
-                <div class="performance-name-engine">Operational Range</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0" data-type="engine">
-                  <div class="disabled-part-engine">
-                    <div class="white-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-              <div class="one-performance perf-engine">
-                <div class="performance-name-engine">ERS Durability</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0" data-type="engine">
-                  <div class="disabled-part-engine">
-                    <div class="white-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-              <div class="one-performance perf-engine">
-                <div class="performance-name-engine">Gearbox Durability</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0" data-type="engine">
-                  <div class="disabled-part-engine">
-                    <div class="white-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-
-
-              <div class="confirm-area" style="padding-top: 18px;">
-                <div class="btn custom-confirm bold-font" id="confirmEnginebtn">Save changes</div>
-              </div>
-            </div>
-            <div class="performance-show teams-show d-none">
-              <div class="one-performance" style="margin-top: 0px;">
-                <div class="performance-name">Chassis</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0">
-                  <div class="negative-zone">
-                    <div class="red-part">
-                      <div class="gray-part"></div>
-                    </div>
-                  </div>
-                  <div class="separation-zone"></div>
-                  <div class="disabled-part">
-                    <div class="green-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-
-              <div class="one-performance">
-                <div class="performance-name">Front Wing</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0">
-                  <div class="negative-zone">
-                    <div class="red-part">
-                      <div class="gray-part"></div>
-                    </div>
-                  </div>
-                  <div class="separation-zone"></div>
-                  <div class="disabled-part">
-                    <div class="green-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-              <div class="one-performance">
-                <div class="performance-name">Rear Wing</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0">
-                  <div class="negative-zone">
-                    <div class="red-part">
-                      <div class="gray-part"></div>
-                    </div>
-                  </div>
-                  <div class="separation-zone"></div>
-                  <div class="disabled-part">
-                    <div class="green-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-
-              <div class="one-performance">
-                <div class="performance-name">Sidepods</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0">
-                  <div class="negative-zone">
-                    <div class="red-part">
-                      <div class="gray-part"></div>
-                    </div>
-                  </div>
-                  <div class="separation-zone"></div>
-                  <div class="disabled-part">
-                    <div class="green-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-
-              <div class="one-performance">
-                <div class="performance-name">Floor</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0">
-                  <div class="negative-zone">
-                    <div class="red-part">
-                      <div class="gray-part"></div>
-                    </div>
-                  </div>
-                  <div class="separation-zone"></div>
-                  <div class="disabled-part">
-                    <div class="green-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-
-              <div class="one-performance">
-                <div class="performance-name">Suspension</div>
-                <div class="performance-buttons">
-                  <i class="bi bi-dash-lg"></i>
-                  <i class="bi bi-plus-lg"></i>
-                </div>
-                <div class="custom-progress" data-progress="0">
-                  <div class="negative-zone">
-                    <div class="red-part">
-                      <div class="gray-part"></div>
-                    </div>
-                  </div>
-                  <div class="separation-zone"></div>
-                  <div class="disabled-part">
-                    <div class="green-part"></div>
-                  </div>
-                </div>
-                <div class="performance-data bold-font">0%</div>
-              </div>
-              <div class="confirm-area">
-                <div class="btn custom-confirm bold-font" id="confirmPerformancebtn">Save changes</div>
-              </div>
-            </div>
-
+          <div class="title bold-font py-3">
+            Performance
+            <i class="info-titles bold-font" id="perfoemanceinfo" data-bs-toggle="modal"
+              data-bs-target="#performancemodal">?</i>
           </div>
         </div>
+        <div class="d-flex">
+          <div class="col-3">
+            <div class="teams-engines">
+              <div class="main-columns-drag-section" id="teamsDiv">
+                <div class="col team bold-font team-performance" data-teamid="3" data-teamname="Red Bull">
+                  <div class="team-title">RED BULL RACING</div>
+                  <div class="performance-bar">
+                    <div class="performance-bar-progress rb" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                  </div>
+                </div>
+                <div class="col team bold-font team-performance" data-teamid="1" data-teamname="Ferrari">
+                  <div class="team-title">FERRARI</div>
+                  <div class="performance-bar">
+                    <div class="performance-bar-progress fe" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                  </div>
+                </div>
+                <div class="col team bold-font team-performance" data-teamid="4" data-teamname="Mercedes">
+                  <div class="team-title">MERCEDES</div>
+                  <div class="performance-bar">
+                    <div class="performance-bar-progress me" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                  </div>
+                </div>
+                <div class="col team bold-font team-performance" data-teamid="5" data-teamname="Alpine" id="alpineTeam">
+                  <div class="team-title alpine-name">ALPINE</div>
+                  <div class="performance-bar">
+                    <div class="performance-bar-progress al" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                  </div>
+                </div>
+                <div class="col team bold-font team-performance" data-teamid="2" data-teamname="McLaren">
+                  <div class="team-title">MCLAREN</div>
+                  <div class="performance-bar">
+                    <div class="performance-bar-progress mc" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                  </div>
+                </div>
+                <div class="col team bold-font team-performance" data-teamid="9" data-teamname="Alfa Romeo">
+                  <div class="team-title alfa-name">ALFA ROMEO</div>
+                  <div class="performance-bar">
+                    <div class="performance-bar-progress af" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                  </div>
+                </div>
+                <div class="col team bold-font team-performance" data-teamid="10" data-teamname="Aston Martin">
+                  <div class="team-title">ASTON MARTIN</div>
+                  <div class="performance-bar">
+                    <div class="performance-bar-progress as" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                  </div>
+                </div>
+                <div class="col team bold-font team-performance" data-teamid="7" data-teamname="Haas">
+                  <div class="team-title">HAAS</div>
+                  <div class="performance-bar">
+                    <div class="performance-bar-progress ha" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                  </div>
+                </div>
+                <div class="col team bold-font team-performance" data-teamid="8" data-teamname="Alpha Tauri"
+                  id="alphaTauriTeam">
+                  <div class="team-title at-name complete">ALPHA TAURI</div>
+                  <div class="performance-bar">
+                    <div class="performance-bar-progress at" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                  </div>
+                </div>
+                <div class="col team bold-font team-performance" data-teamid="6" data-teamname="Williams">
+                  <div class="team-title">WILLIAMS</div>
+                  <div class="performance-bar">
+                    <div class="performance-bar-progress wi" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="main-columns-drag-section d-none" id="enginesDiv">
+                <div class="col engine bold-font logo-and-title" data-engineid="1" data-teamEngine="1" data-stats=""
+                  data-teamname="Ferrari">
+                  <img src="../assets/images/ferrari.png" class="ferrarilogo"
+                    style="padding-bottom: 7px; padding-top: 7px;">
+                  <div class="team-title">FERRARI</div>
+                </div>
+                <div class="col engine bold-font logo-and-title" data-engineid="10" data-teamengine="2" data-stats=""
+                  data-teamname="Renault" id="renaultengine">
+                  <img src="../assets/images/renault.png" class="" class="ferrarilogo"
+                    style="padding-top: 5px; padding-left: 7px; padding-bottom: 5px;">
+                  <img src="../assets/images/renault2.png" class="d-none" class="ferrarilogo"
+                    style="padding-top: 5px; padding-left: 7px; padding-bottom: 5px;">
+                  <div class="team-title">RENAULT</div>
+                </div>
+                <div class="col engine bold-font logo-and-title" data-engineid="4" data-teamEngine="3" data-stats=""
+                  data-teamname="Red Bull">
+                  <img src="../assets/images/redbull.png" class="redbulllogo">
+                  <div class="team-title">RED BULL PT</div>
+                </div>
+                <div class="col engine bold-font logo-and-title" data-engineid="7" data-teamEngine="4" data-stats=""
+                  data-teamname="Mercedes">
+                  <img src="../assets/images/mercedes.png" class="merclogo" style="padding-top: 6px; padding-left: 7px;">
+                  <div class="team-title">MERCEDES</div>
+                </div>
+  
+  
+              </div>
+  
+            </div>
+  
+          </div>
+          <div class="col-9">
+  
+            <div class="main-columns-drag-section performance-section">
+              <div class="performance-show engines-show d-none">
+                <div class="one-performance perf-engine" style="margin-top: 0px;">
+                  <div class="performance-name-engine">Fuel Efficiency</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0" data-type="engine">
+                    <div class="disabled-part-engine">
+                      <div class="white-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+  
+                <div class="one-performance perf-engine">
+                  <div class="performance-name-engine">Power</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0" data-type="engine">
+                    <div class="disabled-part-engine">
+                      <div class="white-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+                <div class="one-performance perf-engine">
+                  <div class="performance-name-engine">Performance Threshold</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0" data-type="engine">
+                    <div class="disabled-part-engine">
+                      <div class="white-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+  
+                <div class="one-performance perf-engine">
+                  <div class="performance-name-engine">Performance Loss</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0" data-type="engine">
+                    <div class="disabled-part-engine">
+                      <div class="white-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+  
+                <div class="one-performance perf-engine">
+                  <div class="performance-name-engine">Operational Range</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0" data-type="engine">
+                    <div class="disabled-part-engine">
+                      <div class="white-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+                <div class="one-performance perf-engine">
+                  <div class="performance-name-engine">ERS Durability</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0" data-type="engine">
+                    <div class="disabled-part-engine">
+                      <div class="white-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+                <div class="one-performance perf-engine">
+                  <div class="performance-name-engine">Gearbox Durability</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0" data-type="engine">
+                    <div class="disabled-part-engine">
+                      <div class="white-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+  
+  
+                <div class="confirm-area" style="padding-top: 18px;">
+                  <div class="btn custom-confirm bold-font" id="confirmEnginebtn">Save changes</div>
+                </div>
+              </div>
+              <div class="performance-show teams-show d-none">
+                <div class="one-performance" style="margin-top: 0px;">
+                  <div class="performance-name">Chassis</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0">
+                    <div class="negative-zone">
+                      <div class="red-part">
+                        <div class="gray-part"></div>
+                      </div>
+                    </div>
+                    <div class="separation-zone"></div>
+                    <div class="disabled-part">
+                      <div class="green-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+  
+                <div class="one-performance">
+                  <div class="performance-name">Front Wing</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0">
+                    <div class="negative-zone">
+                      <div class="red-part">
+                        <div class="gray-part"></div>
+                      </div>
+                    </div>
+                    <div class="separation-zone"></div>
+                    <div class="disabled-part">
+                      <div class="green-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+                <div class="one-performance">
+                  <div class="performance-name">Rear Wing</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0">
+                    <div class="negative-zone">
+                      <div class="red-part">
+                        <div class="gray-part"></div>
+                      </div>
+                    </div>
+                    <div class="separation-zone"></div>
+                    <div class="disabled-part">
+                      <div class="green-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+  
+                <div class="one-performance">
+                  <div class="performance-name">Sidepods</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0">
+                    <div class="negative-zone">
+                      <div class="red-part">
+                        <div class="gray-part"></div>
+                      </div>
+                    </div>
+                    <div class="separation-zone"></div>
+                    <div class="disabled-part">
+                      <div class="green-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+  
+                <div class="one-performance">
+                  <div class="performance-name">Floor</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0">
+                    <div class="negative-zone">
+                      <div class="red-part">
+                        <div class="gray-part"></div>
+                      </div>
+                    </div>
+                    <div class="separation-zone"></div>
+                    <div class="disabled-part">
+                      <div class="green-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+  
+                <div class="one-performance">
+                  <div class="performance-name">Suspension</div>
+                  <div class="performance-buttons">
+                    <i class="bi bi-dash-lg"></i>
+                    <i class="bi bi-plus-lg"></i>
+                  </div>
+                  <div class="custom-progress" data-progress="0">
+                    <div class="negative-zone">
+                      <div class="red-part">
+                        <div class="gray-part"></div>
+                      </div>
+                    </div>
+                    <div class="separation-zone"></div>
+                    <div class="disabled-part">
+                      <div class="green-part"></div>
+                    </div>
+                  </div>
+                  <div class="performance-data bold-font">0%</div>
+                </div>
+                <div class="confirm-area">
+                  <div class="btn custom-confirm bold-font" id="confirmPerformancebtn">Save changes</div>
+                </div>
+              </div>
+  
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

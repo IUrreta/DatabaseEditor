@@ -48,7 +48,7 @@ def make_attributes_readable(attributes):
 def calculate_overall_performance(attributes):
     ovr = 0
     for attribute in attributes:
-        ovr += attributes[attribute] * attributes_contributions[attribute]
+        ovr += attributes[attribute] * attributes_contributions2[attribute]
 
     return round(ovr, 2)
 
@@ -104,8 +104,25 @@ def get_performance_all_teams():
 
     return teams
 
+def get_attributes_all_teams():
+    teams = {}
+    contributors = get_contributors_dict()
+    parts = get_best_parts()
+    for i in range(1, 11):
+        dict = get_car_stats(parts[i])
+        part_stats = get_part_stats_dict(dict)
+        attributes = calculate_car_attributes(contributors, part_stats)
+        teams[i] = attributes
+
+    return teams
+
 
 if __name__ == '__main__':
     #debugging
-    teams = get_performance_all_teams()
-    print(teams)
+    contributors = get_contributors_dict()
+    parts = get_best_parts()
+    dict = get_car_stats(parts[9])
+    part_stats = get_part_stats_dict(dict)
+    attributes = calculate_car_attributes(contributors, part_stats)
+    attributes = make_attributes_readable(attributes)
+    print(attributes)

@@ -1566,7 +1566,7 @@ a.bi-linkedin:hover {
   background-color: var(--mode-line-edit);
 }
 
-#predict_results, #edit_stats{
+#predict_results, #edit_stats, #car_performance{
   flex-direction: column;
 }
 
@@ -4808,7 +4808,7 @@ input::-webkit-inner-spin-button {
 }
 
 .performance-bar-progress{
-  width: 50%;
+  width: 0%;
   height: 5px;
   position: absolute;
   border-right: 1px solid var(--text-general);

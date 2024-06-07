@@ -51,18 +51,39 @@ function load_performance(teams) {
     }
 }
 
-function order_by(criterion){
-    if (criterion === "overall"){
-        let teams = document.querySelectorAll(".team-performance");
-        let teamsArray = Array.from(teams);
-        teamsArray.sort(function(a,b){
-            return b.querySelector(".performance-bar-progress").dataset.overall - a.querySelector(".performance-bar-progress").dataset.overall;
-        })
-        teamsArray.forEach(function(team){
-            document.getElementById("teamsDiv").appendChild(team);
-        })
+function load_attributes(teams) {
+    console.log(teams)
+    for (let key in teams) {
+        for (let attribute in teams[key]) {
+            let team = document.querySelector(`#teamsDiv .team-performance[data-teamid='${key}']`);
+            let bar = team.querySelector(`.performance-bar-progress`);
+            let attributeValue = teams[key][attribute];
+            bar.dataset[attribute] = attributeValue.toFixed(3);
+        }
     }
 }
+
+function order_by(criterion){
+    let teams = document.querySelectorAll(".team-performance");
+    let teamsArray = Array.from(teams);
+    teamsArray.sort(function(a,b){
+        return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
+    })
+    teamsArray.forEach(function(team){
+        document.getElementById("teamsDiv").appendChild(team);
+        let bar = team.querySelector(".performance-bar-progress");
+        bar.style.width = bar.dataset[criterion] + "%";
+    })
+}
+
+
+document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function(elem){
+    elem.addEventListener("click",function(){
+        order_by(elem.dataset.attribute);
+        document.querySelector("#attributeButton").innerText = elem.innerText;
+    })
+})
+    
 
 /**
  * Pills that manage engines and teams screens and lists
