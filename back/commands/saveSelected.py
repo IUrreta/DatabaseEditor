@@ -5,7 +5,7 @@ from utils import DatabaseUtils
 import os
 import shutil
 from scripts.extractor import process_unpack
-from scripts.car_analysis import get_performance_all_teams, get_attributes_all_teams
+from scripts.car_analysis import get_performance_all_teams, get_attributes_all_teams, get_performance_all_teams_season
 
 class SaveSelectedCommand(Command):
     def __init__(self, message, client):
@@ -47,6 +47,11 @@ class SaveSelectedCommand(Command):
         performance.insert(0, "Performance fetched")
         data_json_performance = json.dumps(performance)
         await self.send_message_to_client(data_json_performance)
+        performances, races = get_performance_all_teams_season()
+        performances_season = [performances, races]
+        performances_season.insert(0, "Season performance fetched")
+        data_json_performances_season = json.dumps(performances_season)
+        await self.send_message_to_client(data_json_performances_season)
 
     def create_backup(self, originalFIle, saveFile):
         backup_path = "./../backup"

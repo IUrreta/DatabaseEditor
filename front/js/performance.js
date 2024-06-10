@@ -10,6 +10,7 @@ const divsTeamsArray = [teamsDiv,enginesDiv]
 let teamSelected;
 let engineSelected;
 let teamEngineSelected;
+let performanceGraph;
 
 function normalizeData(data) {
     let values = Object.values(data);
@@ -361,4 +362,133 @@ function manage_bar(bar,progress) {
     }
 
     bar.parentNode.querySelector(".performance-data").innerHTML = progress * 10 + "%"
+}
+
+function load_performance_graph(data){
+    let labelsArray = []
+    data[1].forEach(function (elem) {
+        labelsArray.push(races_names[elem[2]])
+    })
+    createPerformanceChart(labelsArray)
+    performanceGraph.update()
+    let teamPerformances = {};
+
+    // Inicializar un array vacío para cada equipo
+    for (let i = 1; i <= 10; i++) {
+        teamPerformances[i] = [];
+    }
+    let minValue = Number.POSITIVE_INFINITY;
+    let maxValue = Number.NEGATIVE_INFINITY;
+    data[0].forEach(race => {
+        for (let team in race) {
+            let value = race[team];
+            teamPerformances[team].push(value);
+            if (value < minValue) {
+                minValue = value;
+            }
+            if (value > maxValue) {
+                maxValue = value;
+            }
+        }
+    });
+    let yAxisMin = minValue - 5;
+    let yAxisMax = maxValue + 5;
+    for (let team in teamPerformances) {
+        let color = colors_dict[team + "0"];
+        let data = teamPerformances[team];
+        performanceGraph.data.datasets.push({
+            label: combined_dict[team],
+            data: data,
+            borderColor: color,
+            backgroundColor: color,
+            pointRadius: 0,
+            fill: false,
+            tension: 0.1
+        });
+    }
+    performanceGraph.options.scales.y.min = yAxisMin;
+    performanceGraph.options.scales.y.max = yAxisMax;
+    performanceGraph.update();
+}
+
+/**
+ * Creates the head to head race chart
+ * @param {Array} labelsArray array with all the labels for the races
+ */
+function createPerformanceChart(labelsArray) {
+    console.log(labelsArray)
+    const dataD = {
+        labels: labelsArray,
+    };
+    performanceGraph = new Chart(
+        document.getElementById('performanceGraph'),
+        {
+            type: 'line',
+            data: dataD,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index'
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: '#292929'
+                        },
+                        ticks: {
+                            color: "#dedde6",
+                            font: {
+                                family: "Formula1Bold"
+                            }
+                        }
+                    },
+                    y: {
+                        min: 0,
+                        max: 100,
+                        grid: {
+                            color: '#292929'
+                        },
+                        ticks: {
+                            color: "#dedde6",
+                            font: {
+                                family: "Formula1Bold"
+                            }
+                        }
+
+                    }
+                },
+                plugins: {
+                    datalabels: {
+                        display: false
+                    },
+                    legend: {
+                        labels: {
+                            boxHeight: 2,
+                            boxWidth: 25,
+                            color: "#dedde6",
+                            font: {
+                                family: "Formula1"
+                            }
+                        },
+                        display: false,
+                    },
+                    tooltip: {
+                        titleFont: {
+                            family: 'Formula1Bold',
+                            size: 16
+
+                        },
+                        bodyFont: {
+                            family: 'Formula1',
+                            size: 14
+                        }
+                    }
+
+                }
+
+
+            }
+        }
+    );
 }

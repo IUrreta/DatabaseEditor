@@ -19,6 +19,23 @@ def get_best_parts():
    
     return teams
 
+def get_best_parts_until(day):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    season = day_season[1]
+    
+    teams = {}
+    for i in range(1, 11):
+        designs = {}
+        for j in range(3, 9):
+            designs[j] = cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {j} AND TeamID = {i} AND ValidFrom = {season} AND ((DayCompleted > 0 AND DayCompleted < {day}) OR DayCreated < 0)").fetchall()
+        engine = cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = 0 AND TeamID = {i}").fetchall()
+        designs[0] = engine
+        teams[i] = designs
+   
+    return teams
+
 
 def get_car_stats(design_dict):
     conn = sqlite3.connect("../result/main.db")
@@ -91,10 +108,41 @@ def calculate_car_attributes(contributors, parts_stats):
 
     return attributes_dict
 
-def get_performance_all_teams():
+def get_races_days():
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+    
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    season = day_season[1]
+    
+    races = cursor.execute(f"SELECT RaceID, Day, TrackID FROM Races WHERE SeasonID = {season} AND State = 2").fetchall()
+    
+    first_race_state_0 = cursor.execute(f"SELECT RaceID, Day, TrackID FROM Races WHERE SeasonID = {season} AND State = 0 ORDER BY Day ASC LIMIT 1").fetchone()
+    
+    if first_race_state_0:
+        races.append(first_race_state_0)
+    
+    conn.close()
+    
+    return races
+
+def get_all_races():
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    season = day_season[1]
+    races = cursor.execute(f"SELECT RaceID, Day, TrackID FROM Races WHERE SeasonID = {season}").fetchall()
+    return races
+
+
+
+def get_performance_all_teams(day=None):
     teams = {}
     contributors = get_contributors_dict()
-    parts = get_best_parts()
+    if day is None:
+        parts = get_best_parts()
+    else:
+        parts = get_best_parts_until(day)
     for i in range(1, 11):
         dict = get_car_stats(parts[i])
         part_stats = get_part_stats_dict(dict)
@@ -103,6 +151,19 @@ def get_performance_all_teams():
         teams[i] = ovr     
 
     return teams
+
+def get_performance_all_teams_season():
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+    races = get_races_days()
+    races_performances = []
+    for race_day in races:
+        performances = get_performance_all_teams(race_day[1])
+        races_performances.append(performances)
+
+    all_races = get_all_races()
+    return races_performances, all_races
+
 
 def get_attributes_all_teams():
     teams = {}
@@ -119,10 +180,5 @@ def get_attributes_all_teams():
 
 if __name__ == '__main__':
     #debugging
-    contributors = get_contributors_dict()
-    parts = get_best_parts()
-    dict = get_car_stats(parts[9])
-    part_stats = get_part_stats_dict(dict)
-    attributes = calculate_car_attributes(contributors, part_stats)
-    attributes = make_attributes_readable(attributes)
-    print(attributes)
+    performances = get_performance_all_teams_season()
+    print(performances)
