@@ -72,6 +72,70 @@ async function getPatchNotes() {
 
 }
 
+function editModeHandler() {
+    console.log("STATS")
+    let stats = "";
+    document.querySelectorAll(".elegible").forEach(function (elem) {
+        stats += elem.value + " ";
+    });
+    stats = stats.slice(0, -1);
+
+    let id;
+    if (document.querySelector(".clicked").dataset.driverid) {
+        id = document.querySelector(".clicked").dataset.driverid;
+    }
+    let driverName = getName(document.querySelector(".clicked"));
+    document.querySelector(".clicked").dataset.stats = stats;
+    let new_ovr = calculateOverall(stats, typeOverall);
+    document.querySelector(".clicked").childNodes[1].innerHTML = new_ovr;
+
+    let dataStats = {
+        command: "editStats",
+        driverID: id,
+        driver: driverName,
+        statsArray: stats,
+        typeStaff: typeEdit
+    };
+
+    socket.send(JSON.stringify(dataStats));
+}
+
+function calendarModeHandler() {
+    console.log("CALENDARIO")
+    let dataCodesString = '';
+
+    document.querySelectorAll(".race-calendar").forEach((race) => {
+        dataCodesString += race.dataset.trackid.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString() + race.dataset.state.toString() + ' ';
+    });
+
+    dataCodesString = dataCodesString.trim();
+    let dataCalendar = {
+        command: "calendar",
+        calendarCodes: dataCodesString
+    };
+
+    socket.send(JSON.stringify(dataCalendar));
+}
+
+function manageSaveButton(show, mode){
+    let button = document.querySelector(".save-button")
+    button.removeEventListener("click", editModeHandler);
+    button.removeEventListener("click", calendarModeHandler);
+    if (!show){
+        button.classList.add("d-none")
+    }
+    else{
+        button.classList.remove("d-none")
+    }
+
+    if (mode === "stats"){
+        button.addEventListener("click", editModeHandler);
+    }
+    else if (mode === "calendar"){
+        button.addEventListener("click", calendarModeHandler);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
     const names_configs = {"visarb": "VISA CASHAPP RB", "toyota" : "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI", "brawn": "BRAWN GP", "porsche": "PORSCHE",
@@ -119,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Config", "ERROR", "Montecarlo fetched","TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+    const noNotifications = ["Performance fetched","Season performance fetched","Config", "ERROR", "Montecarlo fetched","TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -217,6 +281,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         "Season performance fetched": (message)=>{
             load_performance_graph(message.slice(1))
+        },
+        "Parts stats fetched": (message)=>{
+            load_parts_stats(message.slice(1)[0])
         },
     };
 
@@ -1010,39 +1077,42 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        manageSaveButton(false)
     })
 
     h2hPill.addEventListener("click", function () {
         manageScripts("hide","show", "hide", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
-
+        manageSaveButton(false)
     })
 
     viewPill.addEventListener("click", function () {
         manageScripts("hide","hide", "show", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
-
-    })
+        manageSaveButton(false)
+    })  
 
     driverTransferPill.addEventListener("click", function () {
         manageScripts("hide","hide", "hide", "show", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
-
+        manageSaveButton(false)
     })
 
     editStatsPill.addEventListener("click", function () {
         manageScripts("hide","hide", "hide", "hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        manageSaveButton(true, "stats")
     })
 
     constructorsPill.addEventListener("click", function () {
         manageScripts("hide","hide", "hide", "hide", "hide", "hide", "hide", "show")
         scriptSelected = 1
         check_selected()
+        manageSaveButton(true)
     })
     
 
@@ -1050,12 +1120,14 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("hide","hide", "hide", "hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
+        manageSaveButton(true, "calendar")
     })
 
     carPill.addEventListener("click", function () {
         manageScripts("hide","hide", "hide", "hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
+        manageSaveButton(false)
     })
 
 

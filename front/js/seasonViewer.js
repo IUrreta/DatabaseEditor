@@ -654,7 +654,6 @@ function new_addDriver(driver, races_done, odd) {
     posDiv.classList = "drivers-table-position bold-font"
     posDiv.innerText = driver[2]
     row.appendChild(posDiv)
-    row.appendChild(nameDiv)
     let logoDiv = document.createElement("div")
     logoDiv.classList = "drivers-table-logo-div"
     let logo = document.createElement("img")
@@ -688,6 +687,7 @@ function new_addDriver(driver, races_done, odd) {
     logo.setAttribute("src", logos_disc[driver[1]])
     logoDiv.appendChild(logo)
     row.appendChild(logoDiv)
+    row.appendChild(nameDiv)
     let driverpoints = 0
     races_ids.forEach(function (raceid) {
         let raceDiv = document.createElement("div")

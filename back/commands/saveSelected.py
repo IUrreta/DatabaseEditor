@@ -43,15 +43,15 @@ class SaveSelectedCommand(Command):
         nums.insert(0, "Numbers fetched")
         data_json_numbers = json.dumps(nums)
         await self.send_message_to_client(data_json_numbers)
-        performance = [get_performance_all_teams(), get_attributes_all_teams()]
-        performance.insert(0, "Performance fetched")
-        data_json_performance = json.dumps(performance)
-        await self.send_message_to_client(data_json_performance)
         performances, races = get_performance_all_teams_season()
         performances_season = [performances, races]
         performances_season.insert(0, "Season performance fetched")
         data_json_performances_season = json.dumps(performances_season)
         await self.send_message_to_client(data_json_performances_season)
+        performance = [performances[-1], get_attributes_all_teams()]
+        performance.insert(0, "Performance fetched")
+        data_json_performance = json.dumps(performance)
+        await self.send_message_to_client(data_json_performance)
 
     def create_backup(self, originalFIle, saveFile):
         backup_path = "./../backup"

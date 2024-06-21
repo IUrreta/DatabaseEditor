@@ -336,24 +336,6 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
     deleting = !deleting
 })
 
-/**
- * Event listener for the confirm button
- */
-document.getElementById("confirmCalendar").addEventListener("click",function () {
-    let dataCodesString = '';
-
-    document.querySelectorAll(".race-calendar").forEach((race) => {
-        dataCodesString += race.dataset.trackid.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString()  + race.dataset.state.toString() + ' ';
-    });
-
-
-    dataCodesString = dataCodesString.trim();
-    let dataCalendar = {
-        command: "calendar",
-        calendarCodes: dataCodesString
-    }
-    socket.send(JSON.stringify(dataCalendar))
-})
 
 /**
  * Manages the interaction with the race divs

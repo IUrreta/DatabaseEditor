@@ -3,21 +3,24 @@ import sqlite3
 from .constants import *
 
 def get_best_parts():
+    teams = {}
+    for i in range(1, 11):
+        teams[i] = get_parts_from_team(i)
+   
+    return teams
+
+def get_parts_from_team(team_id):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
     season = day_season[1]
     
-    teams = {}
-    for i in range(1, 11):
-        designs = {}
-        for j in range(3, 9):
-            designs[j] = cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {j} AND TeamID = {i} AND ValidFrom = {season} AND (DayCompleted > 0 OR DayCreated < 0)").fetchall()
-        engine = cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = 0 AND TeamID = {i}").fetchall()
-        designs[0] = engine
-        teams[i] = designs
-   
-    return teams
+    designs = {}
+    for j in range(3, 9):
+        designs[j] = cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {j} AND TeamID = {team_id} AND ValidFrom = {season} AND (DayCompleted > 0 OR DayCreated < 0)").fetchall()
+    engine = cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = 0 AND TeamID = {team_id}").fetchall()
+    designs[0] = engine
+    return designs
 
 def get_best_parts_until(day):
     conn = sqlite3.connect("../result/main.db")
@@ -48,6 +51,16 @@ def get_car_stats(design_dict):
 
     return stats_values
 
+def get_unitvalue_from_parts(design_dict):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+
+    stats_values = {}
+    for part in design_dict:
+        result  = cursor.execute(f"SELECT PartStat, UnitValue FROM Parts_Designs_StatValues WHERE DesignID = {design_dict[part][0][0]}").fetchall()
+        stats_values[parts[part]] = {stat[0]: stat[1] for stat in result}
+
+    return stats_values
 
 
 def convert_percentage_to_value(attribute, percentage, min_max):
@@ -136,7 +149,7 @@ def get_all_races():
 
 
 
-def get_performance_all_teams(day=None):
+def get_performance_all_teams(day=None, previous=None):
     teams = {}
     contributors = get_contributors_dict()
     if day is None:
@@ -148,6 +161,9 @@ def get_performance_all_teams(day=None):
         part_stats = get_part_stats_dict(dict)
         attributes = calculate_car_attributes(contributors, part_stats)
         ovr = calculate_overall_performance(attributes)
+        if previous:
+            if previous[i] > ovr:
+                ovr = previous[i]
         teams[i] = ovr     
 
     return teams
@@ -157,9 +173,11 @@ def get_performance_all_teams_season():
     cursor = conn.cursor()
     races = get_races_days()
     races_performances = []
+    previous = None
     for race_day in races:
-        performances = get_performance_all_teams(race_day[1])
+        performances = get_performance_all_teams(race_day[1], previous)
         races_performances.append(performances)
+        previous = performances
 
     all_races = get_all_races()
     return races_performances, all_races

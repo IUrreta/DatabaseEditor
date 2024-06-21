@@ -78,7 +78,6 @@ function place_drivers_editStats(driversArray) {
 
     document.querySelector("#edit_stats").querySelectorAll(".custom-input-number").forEach(function (elem) {
         elem.addEventListener("change",function () {
-            document.getElementById("confirmbtn").className = "btn custom-confirm"
             if (elem.value > 99) {
                 elem.value = 99;
             }
@@ -203,33 +202,7 @@ function recalculateOverall() {
 /**
  * eventListeenr for the confirm button for the stats
  */
-document.getElementById("confirmbtn").addEventListener("click",function () {
-    let stats = ""
-    document.querySelectorAll(".elegible").forEach(function (elem) {
-        stats += elem.value + " "
-    })
-    stats = stats.slice(0,-1);
 
-    let id;
-    if(document.querySelector(".clicked").dataset.driverid){
-        id = document.querySelector(".clicked").dataset.driverid
-    }
-    let driverName = getName(document.querySelector(".clicked"))
-    document.querySelector(".clicked").dataset.stats = stats
-    let new_ovr = calculateOverall(stats, typeOverall)
-    document.querySelector(".clicked").childNodes[1].innerHTML = new_ovr
-
-    let dataStats = {
-        command: "editStats",
-        driverID: id,
-        driver: driverName,
-        statsArray: stats,
-        typeStaff: typeEdit
-    }
-
-    socket.send(JSON.stringify(dataStats))
-
-})
 
 /**
  * Gets the named with a space between name and lastname
@@ -282,46 +255,91 @@ function calculateOverall(stats, type) {
     return Math.round(rating)
 }
 
+function updateStat(input, increment) {
+    let val = parseInt(input.value) + increment;
+    if (val > 99) val = 99;
+    if (val < 0) val = 0;
+    input.value = val;
+    recalculateOverall();
+    manage_stat_bar(input, val);
+}
+
 function listeners_plusLess(){
-    document.querySelector("#driverStats").querySelectorAll(".bi-plus-lg").forEach(function(elem){
-        elem.addEventListener("mousedown", function(){
-            let input = elem.parentNode.parentNode.querySelector("input")
-            let val = parseInt(input.value) + 1;
-            if (val >= 99){
-                val = 99
-            }
-            input.value = val
-            recalculateOverall()
-            manage_stat_bar(elem, val)
-        })
+    document.querySelectorAll("#editStatsPanel .bi-plus-lg").forEach(button => {
+        let intervalId;
+        button.addEventListener('mousedown', function() {
+            let input = this.parentNode.parentNode.querySelector("input");
+            updateStat(input, 1);
+            intervalId = setInterval(() => {
+                updateStat(input, 1);
+            }, 100);
+        });
 
-    })
-    document.querySelector("#driverStats").querySelectorAll(".bi-dash-lg").forEach(function(elem){
-        elem.addEventListener("mousedown", function(){
-            let input = elem.parentNode.parentNode.querySelector("input")
-            let val = parseInt(input.value) - 1;
-            if (val <= 0){
-                val = 0
-            }
-            input.value = val
-            recalculateOverall()
-            manage_stat_bar(elem, val)
-        })
-    })
+        button.addEventListener('mouseup', function() {
+            clearInterval(intervalId);
+        });
 
-    document.querySelector(".retirement-buttons").querySelector(".bi-plus-lg").addEventListener("mousedown", function(){
-        let retirement = document.querySelector(".actual-retirement")
-        let age = retirement.innerText.split(" ")[1]
-        let val = parseInt(age) + 1;
-        retirement.innerText = "Ret " + val
-    })
+        button.addEventListener('mouseleave', function() {
+            clearInterval(intervalId);
+        });
+    });
 
-    document.querySelector(".retirement-buttons").querySelector(".bi-dash-lg").addEventListener("mousedown", function(){
-        let retirement = document.querySelector(".actual-retirement")
-        let age = retirement.innerText.split(" ")[1]
-        let val = parseInt(age) - 1;
-        retirement.innerText = "Ret " + val
-    })
+    document.querySelectorAll("#editStatsPanel .bi-dash-lg").forEach(button => {
+        let intervalId;
+        button.addEventListener('mousedown', function() {
+            let input = this.parentNode.parentNode.querySelector("input");
+            updateStat(input, -1);
+            intervalId = setInterval(() => {
+                updateStat(input, -1);
+            }, 100);
+        });
+
+        button.addEventListener('mouseup', function() {
+            clearInterval(intervalId);
+        });
+
+        button.addEventListener('mouseleave', function() {
+            clearInterval(intervalId);
+        });
+    });
+
+    document.querySelector(".retirement-buttons .bi-plus-lg").addEventListener('mousedown', function() {
+        let intervalId;
+        let retirement = document.querySelector(".actual-retirement");
+        function updateRetirement(increment) {
+            let age = parseInt(retirement.innerText.split(" ")[1]) + increment;
+            retirement.innerText = "Ret " + age;
+        }
+        updateRetirement(1);
+        intervalId = setInterval(() => {
+            updateRetirement(1);
+        }, 100);
+        this.addEventListener('mouseup', function() {
+            clearInterval(intervalId);
+        });
+        this.addEventListener('mouseleave', function() {
+            clearInterval(intervalId);
+        });
+    });
+
+    document.querySelector(".retirement-buttons .bi-dash-lg").addEventListener('mousedown', function() {
+        let intervalId;
+        let retirement = document.querySelector(".actual-retirement");
+        function updateRetirement(increment) {
+            let age = parseInt(retirement.innerText.split(" ")[1]) + increment;
+            retirement.innerText = "Ret " + age;
+        }
+        updateRetirement(-1);
+        intervalId = setInterval(() => {
+            updateRetirement(-1);
+        }, 100);
+        this.addEventListener('mouseup', function() {
+            clearInterval(intervalId);
+        });
+        this.addEventListener('mouseleave', function() {
+            clearInterval(intervalId);
+        });
+    });
 
     document.querySelector("#nameFilter").addEventListener("input", function(event){
         console.log("change")

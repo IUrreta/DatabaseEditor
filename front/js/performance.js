@@ -154,18 +154,6 @@ function removeSelected() {
     let elemsSelected = document.querySelectorAll('.selected');
     elemsSelected.forEach(item => {
         item.classList.remove('selected')
-        if (item.id === "alpineTeam") {
-            document.getElementById("alpineTeam").firstElementChild.classList.remove("d-none")
-            document.getElementById("alpineTeam").children[1].classList.add("d-none")
-        }
-        else if (item.id === "alphaTauriTeam") {
-            document.getElementById("alphaTauriTeam").firstElementChild.classList.remove("d-none")
-            document.getElementById("alphaTauriTeam").children[1].classList.add("d-none")
-        }
-        else if (item.id === "renaultengine") {
-            document.getElementById("renaultengine").firstElementChild.classList.remove("d-none")
-            document.getElementById("renaultengine").children[1].classList.add("d-none")
-        }
     });
 }
 
@@ -175,10 +163,16 @@ function removeSelected() {
 document.querySelectorAll(".team").forEach(function (elem) {
     elem.addEventListener("click",function () {
         removeSelected()
+        manageSaveButton(true)
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
+        let teamRequest = {
+            command: "performanceRequest",
+            teamID: teamSelected,
+        }
+        socket.send(JSON.stringify(teamRequest))
+        document.querySelector("#performanceGraph").classList.add("d-none")
         document.querySelector(".teams-show").classList.remove("d-none")
-        resetBars()
     })
 })
 
@@ -192,6 +186,72 @@ document.querySelectorAll(".engine").forEach(function (elem) {
         resetBarsEngines(elem)
     })
 })
+
+function load_parts_stats(data) {
+    console.log(data)
+    for (let key in data) {
+        let part = document.querySelector(`.part-performance[data-part='${key}']`)
+        console.log(`.part-performance[data-part='${key}']`)
+        for (let stat in data[key]) {
+            if (stat !== "15"){
+                console.log(`.part-performance-stat[data-attribute='${stat}']`)
+                let stat_input = part.querySelector(`.part-performance-stat[data-attribute='${stat}']`).querySelector(".custom-input-number")
+                if (stat === "7" || stat === "8" || stat === "9" ){
+                    stat_input.value = data[key][stat].toFixed(2) + " kN"
+                }
+                else{
+                    stat_input.value = data[key][stat].toFixed(2) + " %"
+                }
+            }
+        }
+    }
+}
+
+document.querySelector(".performance-show").querySelectorAll('.bi-plus-lg').forEach(button => {
+    let intervalId;
+    button.addEventListener('mousedown', function() {
+      const input = this.previousElementSibling; 
+      updateValue(input, 0.01);
+      intervalId = setInterval(() => {
+        updateValue(input, 0.01);
+      }, 100); 
+    });
+
+    button.addEventListener('mouseup', function() {
+      clearInterval(intervalId);
+    });
+
+    button.addEventListener('mouseleave', function() {
+      clearInterval(intervalId);
+    });
+  });
+
+    document.querySelector(".performance-show").querySelectorAll('.bi-dash-lg').forEach(button => {
+    let intervalId;
+    button.addEventListener('mousedown', function() {
+        const input = this.nextElementSibling;
+        updateValue(input, -0.01);
+        intervalId = setInterval(() => {
+        updateValue(input, -0.01);
+        }, 100);
+    });
+    
+    button.addEventListener('mouseup', function() {
+        clearInterval(intervalId);
+    });
+
+    button.addEventListener('mouseleave', function() {
+        clearInterval(intervalId);
+    });
+});
+
+  
+  function updateValue(input, increment) {
+    let value = input.value.split(' ')[0];
+    let unit = input.value.split(' ')[1]; 
+    value = parseFloat(value) + increment; 
+    input.value = value.toFixed(2) + ' ' + unit; 
+  }
 
 /**
  * Puts the bars of the engine to their appropiate values
@@ -369,6 +429,9 @@ function load_performance_graph(data){
     data[1].forEach(function (elem) {
         labelsArray.push(races_names[elem[2]])
     })
+    if (typeof performanceGraph !== 'undefined' && performanceGraph !== null) {
+        performanceGraph.destroy();
+    }
     createPerformanceChart(labelsArray)
     performanceGraph.update()
     let teamPerformances = {};

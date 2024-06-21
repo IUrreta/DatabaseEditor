@@ -14,7 +14,6 @@ class ApplicationState:
 
     async def new_handler(self, message, client):
         command = self.factory.create_command(message, client)
-        # print(command) #for debugging
         # print(message) #for debugging
         await command.execute()
         logtxt = str(message)

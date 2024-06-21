@@ -231,6 +231,27 @@ body {
   justify-content: start;
 }
 
+.save-button {
+  position: fixed;
+  bottom: 60px;
+  right: -155px;
+  z-index: 1000;
+  padding: 13px 15px;
+  background-color: var(--text-general);
+  color: var(--negative-text);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: right 0.2s, background-color 0.2s, color 0.2s;
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+.save-button:hover {
+  right: -7px; 
+  background-color: var(--new-primary);
+}
+
 .twenty-three, .twenty-four{
   color: var(--dark-text);
   transition: color 0.3s, border-color 0.3s;
@@ -460,6 +481,10 @@ a.bi-linkedin:hover {
 
 .H2H-text span.text-main{
   color: var( --new-primary);
+}
+
+.graphs{
+  padding: 10px;
 }
 
 .graph-text span.text-main{
@@ -2759,6 +2784,57 @@ DRIVERS TABLE
   margin-top: -6px;
 }
 
+.part-performance{
+  background-color: var(--elements);
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 1px var(--box-shadow);
+  padding: 5px 10px;
+
+}
+
+.part-performance-title{
+  text-transform: uppercase;
+  font-family: 'Formula1Bold';
+  font-size: 20px;
+  color: var(--text-general);
+}
+
+.part-performance-stat{
+  display: flex;
+  justify-content: space-between;
+  color: var(--dark-text);
+}
+
+.part-performance-stats{
+  margin-top: 8px;
+}
+
+.part-performance-stat .custom-input-number{
+  font-size: 16px;
+  max-width: 85px;
+}
+
+.part-performance-stat i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s ease-in-out;
+}
+
+.part-performance-stat i:hover{
+  cursor: pointer;
+  color: var(--text-selected);
+  transform: scale(1.1);
+}
+
+.teams-show{
+  display: grid;
+  grid-template-columns: repeat(3, 0.333fr);
+  grid-template-rows: repeat(2, 1fr);
+  width: 100%;
+  gap: 8px;
+  padding: 0 8px;
+  flex: 1;
+}
+
 
 .one-performance {
   padding: 10px;
@@ -2974,10 +3050,11 @@ DRIVERS TABLE
 }
 
 .performance-section {
-  padding-top: 10px;
+  padding: 10px 0;
   overflow-y: hidden;
   margin-left: 0%;
   margin-right: 14px;
+  display: flex;
 }
 
 .btn-number {

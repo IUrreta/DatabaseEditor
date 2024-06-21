@@ -21,6 +21,7 @@ from commands.predict import PredictCommand
 from commands.predictMontecarlo import PredictMontecarloCommand
 from commands.unretire import UnretireCommand
 from commands.configUpdate import ConfigUpdateCommand
+from commands.performanceRequest import PerformanceRequestCommand
 
 
 class CommandFactory:
@@ -31,7 +32,7 @@ class CommandFactory:
                     "H2HConfigured": H2HConfiguredCommand, "teamRequest": TeamRequestCommand, "editTeam": EditTeamCommand, 
                     "yearSelectedPrediction": YearSelectedPredictionCommand, "yearSelectedPredictionModal": YearSelectedPredictionModalCommand, 
                     "predict": PredictCommand, "predictMontecarlo": PredictMontecarloCommand, "unretireDriver": UnretireCommand, 
-                    "configUpdate": ConfigUpdateCommand}
+                    "configUpdate": ConfigUpdateCommand, "performanceRequest": PerformanceRequestCommand}
     
 
     def __init__(self):
