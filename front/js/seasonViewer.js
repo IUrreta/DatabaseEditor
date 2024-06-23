@@ -237,7 +237,7 @@ function new_color_drivers_table() {
                 cell.classList.add("third")
             }
             if (cell.dataset.fastlap === "1") {
-                cell.style.color = "#c90fd7"
+                cell.classList.add("fastest")
             }
             if (cell.dataset.qualy === "1") {
                 cell.style.fontFamily = "Formula1Bold"

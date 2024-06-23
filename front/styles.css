@@ -88,7 +88,7 @@
   --andretti-secondary: #1e7696;
   --lotus-primary: #b09247;
   --lotus-secondary: #595959;
-  --visarb-primary: #596fa4;
+  --visarb-primary: #6c8ff3;
   --visarb-secondary: #f1f1f1;
   --toyota-primary: #EB0A1B;
   --toyota-secondary: #f1f1f1;
@@ -101,8 +101,8 @@
   --brawn-secondary: #f1f1f1;
   --ferrari-primary: #ff2800;
   --general-secondary: #f1f1f1;
-  --mercedes-primary: #6CD3BF;
-  --redbull-primary: #3671C6;
+  --mercedes-primary: #28f4ce;
+  --redbull-primary: #3172bf;
   --redbull-secondary: #ffd300;
   --stake-primary: #01e500;
   --stake-secondary: #595959;
@@ -118,19 +118,19 @@
   --alphatauri-secondary: #f1f1f1;
   --haas-primary: #B6BABD;
   --haas-secondary: #f62039;
-  --mclaren-primary: #F58020;
+  --mclaren-primary: #ff7e08;
   --mclaren-secondary: #47c7fc;
   --williams-primary: #37BEDD;
   --alpine-primary: #2293D1;
   --alpine-secondary: #fd48c7;
   --renault-primary: #f7c82f;
 
-  --redbull-primary-transparent: #3672c630;
+  --redbull-primary-transparent: #3172bf30;
   --redbull-secondary-transparent: #ffd30030;
   --ferrari-primary-transparent: #ff280030;
   --general-secondary-transparent: #f1f1f130;
-  --mercedes-primary-transparent: #6CD3BF30;
-  --mclaren-primary-transparent: #F5802030;
+  --mercedes-primary-transparent: #28f4ce30;
+  --mclaren-primary-transparent: #ff7e0830;
   --mclaren-secondary-transparent: #47c7fc30;
   --williams-primary-transparent: #37BEDD30;
   --haas-primary-transparent: #B6BABD30;
@@ -1676,6 +1676,15 @@ DRIVERS TABLE
   color: var(--negative-text) !important;
 }
 
+.fastest{
+  color: #c90fd7 !important;
+}
+
+
+.drivers-table-row.odd:hover .fastest, .drivers-table-row:hover .fastest{
+  color: #d204e0 !important;
+}
+
 .drivers-table-header, .teams-table-header{
   display: flex;
   flex-direction: row;
@@ -2581,6 +2590,7 @@ DRIVERS TABLE
   color: var(--positive-general);
   transition: color 0.3s, border-color 0.3s;
   cursor: default;
+  backdrop-filter: blur(5px);
 }
 
 .complete-div:hover{
@@ -4077,53 +4087,103 @@ DRIVERS TABLE
   background-color: var(--general-secondary-transparent);
 }
 
+.rb-transparent.selected{
+  background-color: var(--redbull-primary-transparent) !important;
+  color: var(--white-general) !important;
+}
 
-.rb-transparent.selected, .modal-team.rb-transparent:hover{
+.mc-transparent.selected{
+  background-color: var(--mclaren-primary-transparent) !important;
+  color: var(--white-general) !important;
+}
+
+.as-transparent.selected{
+  background-color: var(--aston-primary-transparent) !important;
+  color: var(--white-general) !important;
+}
+
+.al-transparent.selected{
+  background-color: var(--alpine-primary-transparent) !important;
+  color: var(--white-general) !important;
+}
+
+.af-transparent.selected{
+  background-color: var(--alfa-primary-transparent) !important;
+  color: var(--white-general) !important;
+}
+
+.ha-transparent.selected{
+  background-color: var(--haas-primary-transparent) !important;
+  color: var(--white-general) !important;
+}
+
+.wi-transparent.selected{
+  background-color: var(--williams-primary-transparent) !important;
+  color: var(--white-general) !important;
+}
+
+.at-transparent.selected{
+  background-color: var(--alphatauri-primary-transparent) !important;
+  color: var(--white-general) !important;
+}
+
+.fe-transparent.selected{
+  background-color: var(--ferrari-primary-transparent) !important;
+  color: var(--white-general) !important;
+}
+
+.me-transparent.selected{
+  background-color: var(--mercedes-primary-transparent) !important;
+  color: var(--white-general) !important;
+}
+
+
+.modal-team.rb-transparent:hover{
   background-color: var(--redbull-primary-transparent);
   color: var(--redbull-primary);
 }
 
-.mc-transparent.selected, .modal-team.mc-transparent:hover{
+.modal-team.mc-transparent:hover{
   background-color: var(--mclaren-primary-transparent);
   color: var(--mclaren-primary);
 }
 
-.as-transparent.selected, .modal-team.as-transparent:hover{
+.modal-team.as-transparent:hover{
   background-color: var(--aston-primary-transparent);
   color: var(--aston-primary);
 }
 
-.al-transparent.selected, .modal-team.al-transparent:hover{
+.modal-team.al-transparent:hover{
   background-color: var(--alpine-primary-transparent);
   color: var(--alpine-primary);
 }
 
-.af-transparent.selected, .modal-team.af-transparent:hover{
+.modal-team.af-transparent:hover{
   background-color: var(--alfa-primary-transparent);
   color: var(--alfa-primary);
 }
 
-.ha-transparent.selected, .modal-team.ha-transparent:hover{
+.modal-team.ha-transparent:hover{
   background-color: var(--haas-primary-transparent);
   color: var(--haas-primary);
 }
 
-.wi-transparent.selected, .modal-team.wi-transparent:hover{
+.modal-team.wi-transparent:hover{
   background-color: var(--williams-primary-transparent);
   color: var(--williams-primary);
 }
 
-.at-transparent.selected, .modal-team.at-transparent:hover{
+.modal-team.at-transparent:hover{
   background-color: var(--alphatauri-primary-transparent);
   color: var(--alphatauri-primary);
 }
 
-.fe-transparent.selected, .modal-team.fe-transparent:hover{
+.modal-team.fe-transparent:hover{
   background-color: var(--ferrari-primary-transparent);
   color: var(--ferrari-primary);
 }
 
-.me-transparent.selected, .modal-team.me-transparent:hover{
+.modal-team.me-transparent:hover{
   background-color: var(--mercedes-primary-transparent);
   color: var(--mercedes-primary);
 }
@@ -4772,7 +4832,7 @@ DRIVERS TABLE
 .generalPills{
   color: var(--text-general) !important;
   border: 0px 2px solid transparent !important;
-  transition: border-color 0.3s, background-color 0.3s , color 0.3s, width 0.2s !important;
+  transition: border-color 0.3s, background-color 0.3s , color 0.2s, width 0.2s !important;
   display: flex;
   position: relative;
   background: none;
@@ -4804,6 +4864,10 @@ DRIVERS TABLE
   opacity: 1;
 }
 
+.generalPills:hover, .scriptPills:hover {
+  color: var(--white-general) !important;
+}
+
 .generalPills:not(:hover)::before {
   transition-delay: 0s;
 }
@@ -4815,6 +4879,7 @@ DRIVERS TABLE
 
 .generalPills.active{
   background-color: transparent !important;
+  color: var(--white-general) !important;
 }
 
 .generalPills .pill-line{
@@ -4931,6 +4996,7 @@ DRIVERS TABLE
 
 .scriptPills.active{
   background-color: transparent !important;
+  color: var(--white-general) !important;
 }
 
 .scriptPills.active::before {
