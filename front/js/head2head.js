@@ -252,14 +252,14 @@ function fill_bars(elem, d1_width, d2_width) {
     document.querySelector(".driver1-name").className = "driver1-name"
     document.querySelector(".driver2-name").className = "driver2-name"
     elem.querySelector(".driver1-bar").classList.add(team_dict[h2hTeamList[0]] + "bar-primary")
-    document.querySelector(".driver1-name").classList.add(team_dict[h2hTeamList[0]] + "-back-gradient-primary")
+    document.querySelector(".driver1-name").classList.add(team_dict[h2hTeamList[0]] + "-back-transparent")
     if (h2hTeamList[0] === h2hTeamList[1]) {
         elem.querySelector(".driver2-bar").classList.add(team_dict[h2hTeamList[1]] + "bar-secondary")
-        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-gradient-secondary")
+        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-transparent-secondary")
     }
     else {
         elem.querySelector(".driver2-bar").classList.add(team_dict[h2hTeamList[1]] + "bar-primary")
-        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-gradient-primary")
+        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-transparent")
     }
     elem.querySelector(".driver1-bar").style.width = d1_width + "%"
     elem.querySelector(".driver2-bar").style.width = d2_width + "%"
@@ -558,7 +558,7 @@ function load_drivers_h2h(drivers) {
         let spanLastName = document.createElement("span")
         spanLastName.dataset.teamid = driver[2];
         newDiv.dataset.teamid = driver[2];
-        gradientHover(newDiv, 2)
+        newDiv.classList.add(team_dict[driver[2]] + "-transparent")
         spanName.textContent = name[0] + " "
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
@@ -567,7 +567,7 @@ function load_drivers_h2h(drivers) {
         h2hBut.dataset.teamid = driver[2]
         let h2hLabel = document.createElement("div")
         h2hLabel.innerText = "H2H"
-        h2hLabel.className = "front-gradient no-pointer pos-relative"
+        h2hLabel.className = "no-pointer pos-relative"
         h2hBut.appendChild(h2hLabel)
         h2hBut.className = "H2Hradio"
         h2hBut.dataset.state = "unchecked"
@@ -598,7 +598,7 @@ function load_drivers_h2h(drivers) {
         let graphIcon = document.createElement("i")
         graphBut.dataset.driverid = driver[1]
         graphBut.dataset.teamid = driver[2]
-        graphIcon.className = "bi bi-graph-up front-gradient no-pointer pos-relative "
+        graphIcon.className = "bi bi-graph-up no-pointer pos-relative "
         graphBut.appendChild(graphIcon)
         graphBut.className = "GraphButton"
         graphBut.dataset.state = "unchecked"
@@ -629,7 +629,6 @@ function load_drivers_h2h(drivers) {
         let buttons = document.createElement("div")
         buttons.classList = "buttons-drivers-modal"
         let nameAndSurName = document.createElement("div")
-        nameAndSurName.classList = "front-gradient"
         nameAndSurName.appendChild(spanName)
         nameAndSurName.appendChild(spanLastName)
         buttons.appendChild(h2hBut)

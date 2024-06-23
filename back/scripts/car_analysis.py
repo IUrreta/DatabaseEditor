@@ -168,6 +168,26 @@ def get_performance_all_teams(day=None, previous=None):
 
     return teams
 
+def overwrite_performance_team(team_id, performance):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+    day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+    day = day_season[0]
+    team_parts = get_best_parts_until(day)[int(team_id)]
+    for part in team_parts:
+        if part != 0:
+            design = team_parts[part][0][0]
+            part_name = parts[part]
+            stats = performance[part_name]
+            for stat in stats:
+                stat_num = float(stats[stat])
+                value = unitValueToValue[int(stat)](stat_num)
+                cursor.execute(f"UPDATE Parts_Designs_StatValues SET UnitValue = {stats[stat]} WHERE DesignID = {design} AND PartStat = {stat}")
+                cursor.execute(f"UPDATE Parts_Designs_StatValues SET Value = {value} WHERE DesignID = {design} AND PartStat = {stat}")
+
+    conn.commit()
+    conn.close()
+
 def get_performance_all_teams_season():
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()

@@ -73,7 +73,6 @@ async function getPatchNotes() {
 }
 
 function editModeHandler() {
-    console.log("STATS")
     let stats = "";
     document.querySelectorAll(".elegible").forEach(function (elem) {
         stats += elem.value + " ";
@@ -117,10 +116,60 @@ function calendarModeHandler() {
     socket.send(JSON.stringify(dataCalendar));
 }
 
+function teamsModeHandler() {
+    let seasonObjData = document.querySelector("#seasonObjectiveInput").value;
+    let longTermData = longTermObj;
+    let longTermYearData = document.querySelector("#longTermInput").value;
+    let teamBudgetData =  document.querySelector("#teamBudgetInput").value.replace(/[$,]/g, "");
+    let costCapTransactionData = originalCostCap - document.querySelector("#costCapInput").value.replace(/[$,]/g, "");
+    let confidenceData = document.querySelector("#confidenceInput").value;
+    let facilitiesData = gatherData()
+    let data = {
+        command: "editTeam",
+        teamID: teamCod,
+        facilities: facilitiesData,
+        seasonObj: seasonObjData,
+        longTermObj : longTermData,
+        longTermYear: longTermYearData,
+        teamBudget: teamBudgetData,
+        costCapEdit: costCapTransactionData,
+        confidence : confidenceData,
+        teamName : original_dict[teamCod]
+
+    }
+    socket.send(JSON.stringify(data))
+}
+
+function performanceModeHandler() {
+    console.log("AAAAAAAAAA")
+    let parts = {};
+    document.querySelectorAll(".part-performance").forEach(function (elem) {
+        let part = elem.dataset.part;
+        let stats = {};
+        elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
+           let statNum = stat.dataset.attribute;
+           let value = stat.querySelector("input").value.split(" ")[0];
+           stats[statNum] = value;
+        });
+        parts[part] = stats;
+    })
+    let data = {
+        command: "editPerformance",
+        teamID: teamSelected,
+        parts: parts,
+        teamName: document.querySelector(".selected").dataset.teamname
+    }
+    socket.send(JSON.stringify(data))
+
+}
+
 function manageSaveButton(show, mode){
+    console.log(mode)
     let button = document.querySelector(".save-button")
     button.removeEventListener("click", editModeHandler);
     button.removeEventListener("click", calendarModeHandler);
+    button.removeEventListener("click", teamsModeHandler);
+    button.removeEventListener("click", performanceModeHandler);
     if (!show){
         button.classList.add("d-none")
     }
@@ -133,6 +182,12 @@ function manageSaveButton(show, mode){
     }
     else if (mode === "calendar"){
         button.addEventListener("click", calendarModeHandler);
+    }
+    else if (mode === "teams"){
+        button.addEventListener("click", teamsModeHandler);
+    }
+    else if (mode === "performance"){
+        button.addEventListener("click", performanceModeHandler);
     }
 }
 
@@ -765,7 +820,9 @@ document.addEventListener('DOMContentLoaded', function () {
             alphaVarName = "--alphatauri-primary-transparent"
             newVarName = "--" + info + "-primary-transparent"
             change_css_variables(alphaVarName, newVarName)
-
+            alphaVarName = "--alphatauri-secondary-transparent"
+            newVarName = "--" + info + "-secondary-transparent"
+            change_css_variables(alphaVarName, newVarName)
         }
         else{
             document.querySelectorAll(".atlogo-replace").forEach(function(elem){
@@ -794,6 +851,9 @@ document.addEventListener('DOMContentLoaded', function () {
             colors_dict["81"] = value
             alphaVarName = "--alphatauri-primary-transparent"
             newVarName = "--alphatauri-primary-transparent-original"
+            change_css_variables(alphaVarName, newVarName)
+            alphaVarName = "--alphatauri-secondary-transparent"
+            newVarName = "--alphatauri-secondary-transparent-original"
             change_css_variables(alphaVarName, newVarName)
         }
         document.querySelectorAll(".team-menu-alphatauri-replace").forEach(function(elem){
@@ -840,6 +900,9 @@ document.addEventListener('DOMContentLoaded', function () {
             alpineVarName = "--alpine-primary-transparent"
             newVarName = "--" + info + "-primary-transparent"
             change_css_variables(alpineVarName, newVarName)
+            alpineVarName = "--alpine-secondary-transparent"
+            newVarName = "--" + info + "-secondary-transparent"
+            change_css_variables(alpineVarName, newVarName)
         }
         else{
             document.querySelectorAll(".alpinelogo-replace").forEach(function(elem){
@@ -866,6 +929,9 @@ document.addEventListener('DOMContentLoaded', function () {
             colors_dict["51"] = value
             alpineVarName = "--alpine-primary-transparent"
             newVarName = "--alpine-primary-transparent-original"
+            change_css_variables(alpineVarName, newVarName)
+            alpineVarName = "--alpine-secondary-transparent"
+            newVarName = "--alpine-secondary-transparent-original"
             change_css_variables(alpineVarName, newVarName)
         }
         document.querySelectorAll(".team-menu-alpine-replace").forEach(function(elem){
@@ -909,6 +975,9 @@ document.addEventListener('DOMContentLoaded', function () {
             alfaVarName = "--alfa-primary-transparent"
             newVarName = "--" + info + "-primary-transparent"
             change_css_variables(alfaVarName, newVarName)
+            alfaVarName = "--alfa-secondary-transparent"
+            newVarName = "--" + info + "-secondary-transparent"
+            change_css_variables(alfaVarName, newVarName)
         }
         else{
             document.querySelectorAll(".alfalogo-replace").forEach(function(elem){
@@ -929,6 +998,9 @@ document.addEventListener('DOMContentLoaded', function () {
             colors_dict["91"] = value
             alfaVarName = "--alfa-primary-transparent"
             newVarName = "--alfa-primary-transparent-original"
+            change_css_variables(alfaVarName, newVarName)
+            alfaVarName = "--alfa-secondary-transparent"
+            newVarName = "--alfa-secondary-transparent-original"
             change_css_variables(alfaVarName, newVarName)
         }
         document.querySelectorAll(".team-menu-alfa-replace").forEach(function(elem){
@@ -1112,7 +1184,7 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("hide","hide", "hide", "hide", "hide", "hide", "hide", "show")
         scriptSelected = 1
         check_selected()
-        manageSaveButton(true)
+        manageSaveButton(true, "teams")
     })
     
 
@@ -1127,7 +1199,7 @@ document.addEventListener('DOMContentLoaded', function () {
         manageScripts("hide","hide", "hide", "hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
-        manageSaveButton(false)
+        manageSaveButton(true, "performance")
     })
 
 

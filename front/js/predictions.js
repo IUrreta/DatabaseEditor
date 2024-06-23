@@ -45,7 +45,6 @@ function placeRaces(races) {
         let newDiv = document.createElement("div");
         newDiv.className = "race bold-font"
         let nameDiv = document.createElement("div");
-        nameDiv.className = "front-gradient"
         nameDiv.textContent = names_full[races_names[race[1]]]
         newDiv.dataset.raceid = race[0]
         let img = document.createElement("img")
@@ -216,7 +215,7 @@ function loadMontecarlo(data){
         let spanLastName = document.createElement("span")
         spanLastName.dataset.teamid = elem[2];
         row.dataset.teamid = elem[2];
-        gradientHover(row, 1)
+        row.classList.add(team_dict[elem[2]] + "-transparent")
         spanName.textContent = name[0] + " "
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
@@ -289,7 +288,7 @@ function predictDrivers(drivers) {
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
         mainDiv.dataset.teamid = driver.Team;
-        gradientHover(mainDiv, 0)
+        mainDiv.classList.add(team_dict[driver.Team] + "-transparent")
         spanLastName.dataset.teamid = driver.Team;
         spanName.textContent = name[0] + " "
         spanLastName.textContent = name[1].toUpperCase()

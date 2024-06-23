@@ -41,6 +41,7 @@ function place_drivers_editStats(driversArray) {
         nameDiv.appendChild(spanLastName)
         manageColor(newDiv, spanLastName)
         newDiv.appendChild(nameDiv)
+        newDiv.classList.add(team_dict[driver[2]] + "-transparent")
         let statsString = '';
 
         for (let i = 5; i <= 15; i++) {
@@ -141,7 +142,7 @@ function place_staff(staffArray) {
         nameDiv.appendChild(spanLastName)
         manageColor(newDiv, spanLastName)
         newDiv.appendChild(nameDiv)
-
+        newDiv.classList.add(team_dict[staff[2]] + "-transparent")
         newDiv.dataset.stats = statsString;
         newDiv.addEventListener('click',() => {
             let elementosClicked = document.querySelectorAll('.clicked');

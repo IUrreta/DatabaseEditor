@@ -4,7 +4,7 @@ const enginesPill = document.getElementById("enginesPill");
 const teamsDiv = document.getElementById("teamsDiv");
 const enginesDiv = document.getElementById("enginesDiv");
 
-const divsTeamsArray = [teamsDiv,enginesDiv]
+const divsTeamsArray = [teamsDiv, enginesDiv]
 
 
 let teamSelected;
@@ -14,20 +14,20 @@ let performanceGraph;
 
 function normalizeData(data) {
     let values = Object.values(data);
-    
+
     let min = Math.min(...values);
     let max = Math.max(...values);
-    
+
     let adjustedMin = min - 5;
     let adjustedMax = max + 5;
-    
+
     let normalizedData = {};
     for (let key in data) {
         if (data.hasOwnProperty(key)) {
             normalizedData[key] = ((data[key] - adjustedMin) / (adjustedMax - adjustedMin)) * 100;
         }
     }
-    
+
     return normalizedData;
 }
 
@@ -39,10 +39,10 @@ function load_performance(teams) {
     for (let key in teams) {
         if (teams.hasOwnProperty(key)) {
             let teamPerformance = document.querySelector(`#teamsDiv .team-performance[data-teamid='${key}']`);
-            
+
             if (teamPerformance) {
                 let performanceBarProgress = teamPerformance.querySelector('.performance-bar-progress');
-                
+
                 if (performanceBarProgress) {
                     performanceBarProgress.style.width = teams[key] + '%';
                     performanceBarProgress.dataset.overall = teams[key];
@@ -64,13 +64,13 @@ function load_attributes(teams) {
     }
 }
 
-function order_by(criterion){
+function order_by(criterion) {
     let teams = document.querySelectorAll(".team-performance");
     let teamsArray = Array.from(teams);
-    teamsArray.sort(function(a,b){
+    teamsArray.sort(function (a, b) {
         return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
     })
-    teamsArray.forEach(function(team){
+    teamsArray.forEach(function (team) {
         document.getElementById("teamsDiv").appendChild(team);
         let bar = team.querySelector(".performance-bar-progress");
         bar.style.width = bar.dataset[criterion] + "%";
@@ -78,26 +78,26 @@ function order_by(criterion){
 }
 
 
-document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function(elem){
-    elem.addEventListener("click",function(){
+document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function (elem) {
+    elem.addEventListener("click", function () {
         order_by(elem.dataset.attribute);
         document.querySelector("#attributeButton").innerText = elem.innerText;
     })
 })
-    
+
 
 /**
  * Pills that manage engines and teams screens and lists
  */
-teamsPill.addEventListener("click",function () {
-    manageTeamsEngines("show","hide")
+teamsPill.addEventListener("click", function () {
+    manageTeamsEngines("show", "hide")
     document.querySelector(".engines-show").classList.add("d-none")
     document.querySelector(".teams-show").classList.add("d-none")
     removeSelected()
 })
 
-enginesPill.addEventListener("click",function () {
-    manageTeamsEngines("hide","show")
+enginesPill.addEventListener("click", function () {
+    manageTeamsEngines("hide", "show")
     document.querySelector(".teams-show").classList.add("d-none")
     document.querySelector(".engines-show").classList.add("d-none")
     removeSelected()
@@ -108,7 +108,7 @@ enginesPill.addEventListener("click",function () {
  * @param  {Array} divs state of the list divs of engines and teams
  */
 function manageTeamsEngines(...divs) {
-    divsTeamsArray.forEach(function (div,index) {
+    divsTeamsArray.forEach(function (div, index) {
         if (divs[index] === "show") {
             div.className = "main-columns-drag-section"
         }
@@ -130,7 +130,7 @@ function manage_engineStats(msg) {
             engineStats += stat + " "
         })
         engineStats.trim()
-        place_engineStats(engineId,engineStats)
+        place_engineStats(engineId, engineStats)
     })
 }
 
@@ -139,11 +139,11 @@ function manage_engineStats(msg) {
  * @param {string} engineId if of the engine to place the stats in
  * @param {string} engineStats string with all the stats of the engineid manufacturer
  */
-function place_engineStats(engineId,engineStats) {
+function place_engineStats(engineId, engineStats) {
     var element = document.querySelector('[data-engineId="' + engineId + '"]');
-    element.setAttribute('data-stats',"");
+    element.setAttribute('data-stats', "");
     if (element) {
-        element.setAttribute('data-stats',engineStats);
+        element.setAttribute('data-stats', engineStats);
     }
 }
 
@@ -161,9 +161,10 @@ function removeSelected() {
  * eventListeners for all teams and engines
  */
 document.querySelectorAll(".team").forEach(function (elem) {
-    elem.addEventListener("click",function () {
+    elem.addEventListener("click", function () {
         removeSelected()
-        manageSaveButton(true)
+        manageSaveButton(true, "performance")
+        document.querySelector(".performance-graph-button").classList.remove("active")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         let teamRequest = {
@@ -177,7 +178,7 @@ document.querySelectorAll(".team").forEach(function (elem) {
 })
 
 document.querySelectorAll(".engine").forEach(function (elem) {
-    elem.addEventListener("click",function () {
+    elem.addEventListener("click", function () {
         removeSelected()
         elem.classList.toggle('selected');
         engineSelected = elem.dataset.engineid;
@@ -190,17 +191,19 @@ document.querySelectorAll(".engine").forEach(function (elem) {
 function load_parts_stats(data) {
     console.log(data)
     for (let key in data) {
-        let part = document.querySelector(`.part-performance[data-part='${key}']`)
-        console.log(`.part-performance[data-part='${key}']`)
-        for (let stat in data[key]) {
-            if (stat !== "15"){
-                console.log(`.part-performance-stat[data-attribute='${stat}']`)
-                let stat_input = part.querySelector(`.part-performance-stat[data-attribute='${stat}']`).querySelector(".custom-input-number")
-                if (stat === "7" || stat === "8" || stat === "9" ){
-                    stat_input.value = data[key][stat].toFixed(2) + " kN"
-                }
-                else{
-                    stat_input.value = data[key][stat].toFixed(2) + " %"
+        if (key !== "engine") {
+            let part = document.querySelector(`.part-performance[data-part='${key}']`)
+            console.log(`.part-performance[data-part='${key}']`)
+            for (let stat in data[key]) {
+                if (stat !== "15") {
+                    console.log(`.part-performance-stat[data-attribute='${stat}']`)
+                    let stat_input = part.querySelector(`.part-performance-stat[data-attribute='${stat}']`).querySelector(".custom-input-number")
+                    if (stat === "7" || stat === "8" || stat === "9") {
+                        stat_input.value = data[key][stat].toFixed(2) + " kN"
+                    }
+                    else {
+                        stat_input.value = data[key][stat].toFixed(2) + " %"
+                    }
                 }
             }
         }
@@ -209,49 +212,57 @@ function load_parts_stats(data) {
 
 document.querySelector(".performance-show").querySelectorAll('.bi-plus-lg').forEach(button => {
     let intervalId;
-    button.addEventListener('mousedown', function() {
-      const input = this.previousElementSibling; 
-      updateValue(input, 0.01);
-      intervalId = setInterval(() => {
+    button.addEventListener('mousedown', function () {
+        const input = this.previousElementSibling;
         updateValue(input, 0.01);
-      }, 100); 
-    });
-
-    button.addEventListener('mouseup', function() {
-      clearInterval(intervalId);
-    });
-
-    button.addEventListener('mouseleave', function() {
-      clearInterval(intervalId);
-    });
-  });
-
-    document.querySelector(".performance-show").querySelectorAll('.bi-dash-lg').forEach(button => {
-    let intervalId;
-    button.addEventListener('mousedown', function() {
-        const input = this.nextElementSibling;
-        updateValue(input, -0.01);
         intervalId = setInterval(() => {
-        updateValue(input, -0.01);
+            updateValue(input, 0.01);
         }, 100);
     });
-    
-    button.addEventListener('mouseup', function() {
+
+    button.addEventListener('mouseup', function () {
         clearInterval(intervalId);
     });
 
-    button.addEventListener('mouseleave', function() {
+    button.addEventListener('mouseleave', function () {
         clearInterval(intervalId);
     });
 });
 
-  
-  function updateValue(input, increment) {
+document.querySelector(".performance-show").querySelectorAll('.bi-dash-lg').forEach(button => {
+    let intervalId;
+    button.addEventListener('mousedown', function () {
+        const input = this.nextElementSibling;
+        updateValue(input, -0.01);
+        intervalId = setInterval(() => {
+            updateValue(input, -0.01);
+        }, 100);
+    });
+
+    button.addEventListener('mouseup', function () {
+        clearInterval(intervalId);
+    });
+
+    button.addEventListener('mouseleave', function () {
+        clearInterval(intervalId);
+    });
+});
+
+
+function updateValue(input, increment) {
     let value = input.value.split(' ')[0];
-    let unit = input.value.split(' ')[1]; 
-    value = parseFloat(value) + increment; 
-    input.value = value.toFixed(2) + ' ' + unit; 
-  }
+    let unit = input.value.split(' ')[1];
+    value = parseFloat(value) + increment;
+    input.value = value.toFixed(2) + ' ' + unit;
+}
+
+
+document.querySelector(".performance-graph-button").addEventListener("click", function () {
+    removeSelected()
+    document.querySelector(".performance-graph-button").classList.toggle("active")
+    document.querySelector(".teams-show").classList.add("d-none")
+    document.querySelector("#performanceGraph").classList.remove("d-none")
+})
 
 /**
  * Puts the bars of the engine to their appropiate values
@@ -260,11 +271,11 @@ document.querySelector(".performance-show").querySelectorAll('.bi-plus-lg').forE
 function resetBarsEngines(div) {
     let statsString = div.dataset.stats
     var statsArray = statsString.split(' ').map(function (item) {
-        return parseFloat(item,10) / 10;
+        return parseFloat(item, 10) / 10;
     });
-    document.querySelector(".engines-show").querySelectorAll(".custom-progress").forEach(function (elem,index) {
+    document.querySelector(".engines-show").querySelectorAll(".custom-progress").forEach(function (elem, index) {
         elem.dataset.progress = statsArray[index]
-        manage_bar(elem,elem.dataset.progress)
+        manage_bar(elem, elem.dataset.progress)
     })
 }
 
@@ -274,14 +285,14 @@ function resetBarsEngines(div) {
 function resetBars() {
     document.querySelectorAll(".custom-progress").forEach(function (elem) {
         elem.dataset.progress = 0
-        manage_bar(elem,elem.dataset.progress)
+        manage_bar(elem, elem.dataset.progress)
     })
 }
 
 /**
  * eventListeners for the confirm button for engines and teams
  */
-document.getElementById("confirmEnginebtn").addEventListener("click",function () {
+document.getElementById("confirmEnginebtn").addEventListener("click", function () {
     let performanes = "";
     let progresses = ""
     document.querySelector(".engines-show").querySelectorAll(".custom-progress").forEach(function (elem) {
@@ -289,8 +300,8 @@ document.getElementById("confirmEnginebtn").addEventListener("click",function ()
         performanes += dataProgress + ' ';
         progresses += dataProgress * 10 + " "
     });
-    performanes = performanes.slice(0,-1);
-    progresses = progresses.slice(0,-1);
+    performanes = performanes.slice(0, -1);
+    progresses = progresses.slice(0, -1);
     document.querySelector(".selected").dataset.stats = progresses
     let dataPerformance = {
         command: "editEngine",
@@ -302,7 +313,7 @@ document.getElementById("confirmEnginebtn").addEventListener("click",function ()
     socket.send(JSON.stringify(dataPerformance))
 })
 
-document.getElementById("confirmPerformancebtn").addEventListener("click",function () {
+document.getElementById("confirmPerformancebtn").addEventListener("click", function () {
     let performanes = "";
 
     document.querySelector(".teams-show").querySelectorAll('.custom-progress').forEach(function (element) {
@@ -310,7 +321,7 @@ document.getElementById("confirmPerformancebtn").addEventListener("click",functi
 
         performanes += dataProgress + ' ';
     });
-    performanes = performanes.slice(0,-1);
+    performanes = performanes.slice(0, -1);
     let dataPerformance = {
         command: "editPerformance",
         teamID: teamSelected,
@@ -325,33 +336,33 @@ document.getElementById("confirmPerformancebtn").addEventListener("click",functi
  * eventlisteners for the buttons to add or remove from a bar, depending on if its an engine bar or team
  */
 document.querySelector("#car_performance").querySelectorAll(".bi-dash-lg").forEach(function (elem) {
-    elem.addEventListener("click",function () {
+    elem.addEventListener("click", function () {
         let performanceArea = elem.parentNode.parentNode
         let bar = performanceArea.querySelector(".custom-progress")
 
         if (bar.dataset.type === "engine") {
             if (bar.dataset.progress > 0) {
-                let value = parseFloat(bar.dataset.progress,10) - 0.125
+                let value = parseFloat(bar.dataset.progress, 10) - 0.125
                 bar.dataset.progress = value
             }
         }
         else {
             if (bar.dataset.progress >= -9) {
-                let value = parseInt(bar.dataset.progress,10) - 1
+                let value = parseInt(bar.dataset.progress, 10) - 1
                 bar.dataset.progress = value
             }
         }
 
-        manage_bar(bar,bar.dataset.progress)
+        manage_bar(bar, bar.dataset.progress)
     })
 })
 
 document.querySelector("#car_performance").querySelectorAll(".bi-plus-lg").forEach(function (elem) {
-    elem.addEventListener("click",function () {
+    elem.addEventListener("click", function () {
         let performanceArea = elem.parentNode.parentNode
         let bar = performanceArea.querySelector(".custom-progress")
         if (bar.dataset.type === "engine") {
-            let value = parseFloat(bar.dataset.progress,10) + 0.125
+            let value = parseFloat(bar.dataset.progress, 10) + 0.125
             if (value > 10) {
                 value = 10
             }
@@ -359,28 +370,28 @@ document.querySelector("#car_performance").querySelectorAll(".bi-plus-lg").forEa
         }
         else {
             if (bar.dataset.progress <= 9) {
-                let value = parseInt(bar.dataset.progress,10) + 1
+                let value = parseInt(bar.dataset.progress, 10) + 1
                 bar.dataset.progress = value
             }
         }
-        manage_bar(bar,bar.dataset.progress)
+        manage_bar(bar, bar.dataset.progress)
     })
 })
 
 /**
  * eventListeners on Alpine and AT teams and Renault engine to change the icon
  */
-document.getElementById("alpineTeam").addEventListener("click",function () {
+document.getElementById("alpineTeam").addEventListener("click", function () {
     document.getElementById("alpineTeam").firstElementChild.classList.add("d-none")
     document.getElementById("alpineTeam").children[1].classList.remove("d-none")
 })
 
-document.getElementById("alphaTauriTeam").addEventListener("click",function () {
+document.getElementById("alphaTauriTeam").addEventListener("click", function () {
     document.getElementById("alphaTauriTeam").firstElementChild.classList.add("d-none")
     document.getElementById("alphaTauriTeam").children[1].classList.remove("d-none")
 })
 
-document.getElementById("renaultengine").addEventListener("click",function () {
+document.getElementById("renaultengine").addEventListener("click", function () {
     document.getElementById("renaultengine").firstElementChild.classList.add("d-none")
     document.getElementById("renaultengine").children[1].classList.remove("d-none")
 })
@@ -390,7 +401,7 @@ document.getElementById("renaultengine").addEventListener("click",function () {
  * @param {div} bar bar that is about to be edited
  * @param {int} progress number that determines the progress of the bar 
  */
-function manage_bar(bar,progress) {
+function manage_bar(bar, progress) {
     if (bar.dataset.type === "engine") {
         let whiteDiv = bar.querySelector(".white-part")
         let newProgress = progress * 10
@@ -424,7 +435,7 @@ function manage_bar(bar,progress) {
     bar.parentNode.querySelector(".performance-data").innerHTML = progress * 10 + "%"
 }
 
-function load_performance_graph(data){
+function load_performance_graph(data) {
     let labelsArray = []
     data[1].forEach(function (elem) {
         labelsArray.push(races_names[elem[2]])

@@ -285,33 +285,6 @@ document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-left").forEa
 
 })
 
-/**
- * Confirm button listener
- */
-document.querySelector("#confirmTeam").addEventListener("click", function(){
-    let seasonObjData = document.querySelector("#seasonObjectiveInput").value;
-    let longTermData = longTermObj;
-    let longTermYearData = document.querySelector("#longTermInput").value;
-    let teamBudgetData =  document.querySelector("#teamBudgetInput").value.replace(/[$,]/g, "");
-    let costCapTransactionData = originalCostCap - document.querySelector("#costCapInput").value.replace(/[$,]/g, "");
-    let confidenceData = document.querySelector("#confidenceInput").value;
-    let facilitiesData = gatherData()
-    let data = {
-        command: "editTeam",
-        teamID: teamCod,
-        facilities: facilitiesData,
-        seasonObj: seasonObjData,
-        longTermObj : longTermData,
-        longTermYear: longTermYearData,
-        teamBudget: teamBudgetData,
-        costCapEdit: costCapTransactionData,
-        confidence : confidenceData,
-        teamName : original_dict[teamCod]
-
-    }
-    socket.send(JSON.stringify(data))
-})
-
 
 /**
  * Collects the data for each facility

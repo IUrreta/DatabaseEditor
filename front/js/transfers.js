@@ -111,21 +111,6 @@ function manageColor(div, lastName) {
     }
 }
 
-function gradientHover(div, type){
-    let team = div.dataset.teamid
-    let hoverClass;
-    if (type === 0){
-        hoverClass = team_dict[team] + "-gradient"
-    }
-    else if (type === 1){
-        hoverClass = team_dict[team] + "-gradient-small"
-    }
-    else{
-        hoverClass = team_dict[team] + "-gradient-mid"
-    }
-    div.classList.add(hoverClass)
-}
-
 /**
  * Loads all the numbers into the number menu
  * @param {Object} nums all numbers array

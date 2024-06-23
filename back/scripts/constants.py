@@ -18,6 +18,28 @@ stats = {
     16 : "special_weight"
 }
 
+unitValueToValue = {
+    0: lambda x: x * 10,
+    1: lambda x: x * 10,
+    2: lambda x: x * 10,
+    3: lambda x: x * 10,
+    4: lambda x: x * 10,
+    5: lambda x: x * 10,
+
+    6: lambda x: (x - 90) * 1000 / 10,
+
+    7: lambda x: (x - 3) / 0.002,
+    8: lambda x: (x - 5) / 0.002,
+    9: lambda x: (x - 7) / 0.001,
+
+    10: lambda x: (x - 90) * 1000 / 10,
+    11: lambda x: (85 - x) * 1000 / 20,
+    12: lambda x: (x - 70) * 1000 / 15,
+    13: lambda x: x * 10,
+    14: lambda x: (85 - x) * 1000 / 15,
+    15: lambda x: (x - 40) * 1000 / 30,
+}
+
 parts = {
     0 : "engine",
     3 : "chassis",
