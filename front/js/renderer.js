@@ -1,3 +1,23 @@
+const fs = require('fs');
+const simpleGit = require('simple-git');
+const { exec } = require('child_process');
+const path = require('path');
+const { marked } = require('marked');
+let conn = 0;
+
+const batFilePath = path.join(__dirname, '../back/startBack.bat');
+console.log(batFilePath)
+
+exec(`"${batFilePath}"`, (error, stdout, stderr) => {
+    if (error) {
+        console.log("Error launching backend")
+        console.log(`Error: ${error}`)
+        return;
+    }
+    console.log(`Resultado: ${stdout}`);
+});
+
+
 const socket = new WebSocket('ws://localhost:8765/');
 /**
  * When the socket is opened sends a connect message to the backend
@@ -11,12 +31,13 @@ socket.onopen = () => {
 
 };
 
-const fs = require('fs');
-const simpleGit = require('simple-git');
-const { exec } = require('child_process');
-const { marked } = require('marked');
-const Tabulator = require('tabulator-tables');
-let conn = 0;
+window.addEventListener('beforeunload', () => {
+    let data = {
+        command: "disconnect"
+    }
+    socket.send(JSON.stringify(data));
+    socket.close();
+});
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');

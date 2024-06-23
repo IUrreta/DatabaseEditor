@@ -22,6 +22,7 @@ class SaveSelectedCommand(Command):
         data_json_drivers = json.dumps(drivers)
         await self.send_message_to_client(data_json_drivers)
         staff = Command.dbutils.fetch_staff()
+        await self.check_for_configs(save)
         staff.insert(0, "Staff Fetched")
         data_json_staff = json.dumps(staff)
         await self.send_message_to_client(data_json_staff)
@@ -33,7 +34,6 @@ class SaveSelectedCommand(Command):
         calendar.insert(0, "Calendar fetched")
         data_json_calendar = json.dumps(calendar)
         await self.send_message_to_client(data_json_calendar)
-        await self.check_for_configs(save)
         self.create_backup(Command.path, save)
         year =  Command.dbutils.fetch_year()
         year = ["Year fetched", year]
