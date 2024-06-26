@@ -17,7 +17,12 @@ def fetch_teamData(teamID):
         confidence = cursor.execute(f"SELECT Confidence FROM Board_Confidence WHERE Season = {day_season[1]}").fetchone()
     else:
         confidence = (-1,)
-    data.extend([seasonObj, longTermObj, teamBalance, costCap, confidence, day_season[1]])
+    pit_stats = cursor.execute(f"SELECT StatID, Val FROM Staff_PitCrew_PerformanceStats WHERE TeamID = {teamID}").fetchall()
+    #convert pit_stats into a dictionary where statid is key and val is value
+    pit_dict = {}
+    for stat in pit_stats:
+        pit_dict[stat[0]] = round(stat[1], 2)
+    data.extend([seasonObj, longTermObj, teamBalance, costCap, confidence, day_season[1], pit_dict])
 
     conn.commit()
     conn.close()
@@ -39,6 +44,8 @@ def edit_team(info):
         cursor.execute(f"UPDATE Board_Confidence SET Confidence = {info['confidence']} WHERE Season = {day_season[1]}")
     cursor.execute(f"UPDATE Finance_TeamBalance SET Balance = {info['teamBudget']} WHERE TeamID = {teamID}")
     cursor.execute(f"INSERT INTO Finance_Transactions VALUES ({teamID}, {day_season[0]}, {info['costCapEdit']}, 9, -1, 1)")
+    for stat in info["pitCrew"]:
+        cursor.execute(f"UPDATE Staff_PitCrew_PerformanceStats SET Val = {info["pitCrew"][stat]} WHERE TeamID = {teamID} AND StatID = {stat}")
 
     conn.commit()
     conn.close()

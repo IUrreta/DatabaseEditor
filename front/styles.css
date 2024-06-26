@@ -2574,6 +2574,27 @@ DRIVERS TABLE
   border: 2px solid transparent !important;
 }
 
+.pit-crew-button{
+  width: 100px;
+}
+
+.pit-crew-group{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pit-crew-details{
+  display: flex;
+  flex-direction: column;
+  color: var(--text-general);
+}
+
+.pit-crew-stat{
+  width: 23%;
+}
+
 .complete-div {
   position: absolute;
   top: -1px;
@@ -5385,8 +5406,20 @@ input::-webkit-inner-spin-button {
   max-width: 260px !important;
 }
 
-#objectiveButton::before, #carDevButton::before, #operationButton::before{
+#objectiveButton::before, #carDevButton::before, #operationButton::before, #staffButton::before{
   z-index: 0 !important;
+}
+
+.pit-crew-details .one-stat-panel{
+  width: 33%;
+  margin: 5px 0;
+  /* background-color: transparent;
+  box-shadow: none; */
+}
+
+.pit-crew-details .one-stat-panel input{
+  font-size: 14px;
+  max-width: 50px;
 }
 
 .first-component, .second-component{

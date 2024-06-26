@@ -20,12 +20,12 @@ if exist "requirements.txt" (
     echo requirements.txt not found.
 )
 
-:: Ejecutar back.py
 if exist "back.py" (
     echo Executing back.py...
     python back.py
 ) else (
     echo back.py not found.
 )
+
 
 endlocal

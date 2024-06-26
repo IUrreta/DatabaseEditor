@@ -170,6 +170,9 @@ document.querySelector("#carDevButton").addEventListener("click", function () {
     if (document.querySelector("#operationButton").dataset.state === "show") {
         document.querySelector("#operationButton").click()
     }
+    if (document.querySelector("#staffButton").dataset.state === "show"){
+        document.querySelector("#staffButton").click()
+    }
     if (document.querySelector("#carDevButton").dataset.state === "show") {
         document.querySelector("#carDevButton").dataset.state = "hide"
         document.querySelector("#carDevButton").querySelector(".front-gradient").innerText = "Show"
@@ -177,7 +180,6 @@ document.querySelector("#carDevButton").addEventListener("click", function () {
     else {
         document.querySelector("#carDevButton").dataset.state = "show"
         document.querySelector("#carDevButton").querySelector(".front-gradient").innerText = "Hide"
-
     }
 
 
@@ -186,6 +188,9 @@ document.querySelector("#carDevButton").addEventListener("click", function () {
 document.querySelector("#operationButton").addEventListener("click", function () {
     if (document.querySelector("#carDevButton").dataset.state === "show") {
         document.querySelector("#carDevButton").click()
+    }
+    if (document.querySelector("#staffButton").dataset.state === "show"){
+        document.querySelector("#staffButton").click()
     }
     if (document.querySelector("#operationButton").dataset.state === "show") {
         document.querySelector("#operationButton").dataset.state = "hide"
@@ -197,6 +202,23 @@ document.querySelector("#operationButton").addEventListener("click", function ()
     }
 
 
+})
+
+document.querySelector("#staffButton").addEventListener("click", function () {
+    if (document.querySelector("#operationButton").dataset.state === "show") {
+        document.querySelector("#operationButton").click()
+    }
+    if (document.querySelector("#carDevButton").dataset.state === "show") {
+        document.querySelector("#carDevButton").click()
+    }
+    if (document.querySelector("#staffButton").dataset.state === "show") {
+        document.querySelector("#staffButton").dataset.state = "hide"
+        document.querySelector("#staffButton").querySelector(".front-gradient").innerText = "Show"
+    }
+    else {
+        document.querySelector("#staffButton").dataset.state = "show"
+        document.querySelector("#staffButton").querySelector(".front-gradient").innerText = "Hide"
+    }
 })
 
 
@@ -232,7 +254,67 @@ function fillLevels(teamData) {
     document.querySelector("#confidenceInput").value = teamData[20]
     currYear = teamData[21]
     originalCostCap = Math.abs(teamData[19][0])
+    console.log(teamData)
+    for (key in teamData[22]){
+        let pitCrewStat = document.querySelector(`.pit-crew-details .one-stat-panel[data-crewStat='${key}']`);
+        let input = pitCrewStat.querySelector("input");
+        let value = Math.round(teamData[22][key]);
+        if (key === "38"){
+            value = value / 10;
+        }
+        input.value = value + "%";
+        let bar = pitCrewStat.querySelector(".one-stat-progress");
+        bar.style.width = value + "%";
+    }
 }
+
+function updatePitStat(input, increment) {
+    let actual = input.value.split("%")[0];
+    let val = parseInt(actual) + increment;
+    if (val > 99) val = 99;
+    if (val < 0) val = 0;
+    input.value = val + "%";
+    manage_stat_bar(input, val);
+}
+
+
+document.querySelector(".pit-crew-details").querySelectorAll(".bi-plus-lg").forEach(function(elem){
+    let intervalId;
+    elem.addEventListener('mousedown', function() {
+        let input = this.parentNode.parentNode.querySelector("input");
+        updatePitStat(input, 1);
+        intervalId = setInterval(() => {
+            updatePitStat(input, 1);
+        }, 100);
+    });
+
+    elem.addEventListener('mouseup', function() {
+        clearInterval(intervalId);
+    });
+
+    elem.addEventListener('mouseleave', function() {
+        clearInterval(intervalId);
+    });
+})
+
+document.querySelector(".pit-crew-details").querySelectorAll(".bi-dash-lg").forEach(function(elem){
+    let intervalId;
+    elem.addEventListener('mousedown', function() {
+        let input = this.parentNode.parentNode.querySelector("input");
+        updatePitStat(input, -1);
+        intervalId = setInterval(() => {
+            updatePitStat(input, -1);
+        }, 100);
+    });
+
+    elem.addEventListener('mouseup', function() {
+        clearInterval(intervalId);
+    });
+
+    elem.addEventListener('mouseleave', function() {
+        clearInterval(intervalId);
+    });
+})
 
 /**
  * Manages state of blocking div for confidence
@@ -290,7 +372,7 @@ document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-left").forEa
  * Collects the data for each facility
  * @returns array with tuples for each facility
  */
-function gatherData() {
+function gather_team_data() {
     let facilities = document.getElementsByClassName('facility');
     let result = [];
 
@@ -306,4 +388,18 @@ function gatherData() {
     }
 
     return result
+}
+
+function gather_pit_crew(){
+    let pitCrewStats = document.querySelectorAll(".pit-crew-details .one-stat-panel");
+    let result = {};
+    pitCrewStats.forEach(function(elem){
+        let key = elem.dataset.crewstat;
+        let value = elem.querySelector("input").value.split("%")[0];
+        if (key === "38"){
+            value = value * 10;
+        }
+        result[key] = value;
+    });
+    return result;
 }

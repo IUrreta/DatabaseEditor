@@ -77,6 +77,33 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal fade" id="pitCrewModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h4 class="modal-title bold-font">Pit Crew editing</h4>
+        </div>
+        <div class="modal-body number-and-contract">
+          <div class="contract-options">
+            
+          </div>
+
+        </div>
+        <div class="modal-footer custom-footer">
+          <div class="pos-relative">
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+              id="cancelButton">Close</button>
+            <div class="dropdown-line"></div>
+          </div>
+          <div class="pos-relative">
+            <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
+              id="confirmButton">Confirm</button>
+            <div class="dropdown-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="patchModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
@@ -1375,7 +1402,7 @@
         <div class="d-flex ps-3"
           style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; align-items: baseline; gap: 20px;">
           <div>
-            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffButton"
+            <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffDropdown"
               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Staff Type
             </button>
@@ -2230,77 +2257,152 @@
                 </div>
               </div>
             </div>
-            <div class="facility-component">
-              <div class="component-subtitle bold-font">Staff facilities</div>
-              <div class="facility " id="facility9">
-                <div class="facility-name">Team hub</div>
-                <i class="bi bi-chevron-left"></i>
-                <div class="facility-level-indicator" data-value="3">
-                  <div class="level"></div>
-                  <div class="level"></div>
-                  <div class="level"></div>
-                  <div class="level"></div>
-                  <div class="level"></div>
-                </div>
-                <i class="bi bi-chevron-right"></i>
-                <div class="facility-condition">
-                  Condition:
-                  <div class="input-and-buttons">
-                    <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
-                    <div class="input-buttons">
-                      <i class="bi bi-chevron-up"></i>
-                      <i class="bi bi-chevron-down"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="facility " id="facility14">
-                <div class="facility-name">Scouting department</div>
-                <i class="bi bi-chevron-left"></i>
-                <div class="facility-level-indicator" data-value="3">
-                  <div class="level"></div>
-                  <div class="level"></div>
-                  <div class="level"></div>
-                  <div class="level"></div>
-                  <div class="level"></div>
-                </div>
-                <i class="bi bi-chevron-right"></i>
-                <div class="facility-condition">
-                  Condition:
-                  <div class="input-and-buttons">
-                    <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
-                    <div class="input-buttons">
-                      <i class="bi bi-chevron-up"></i>
-                      <i class="bi bi-chevron-down"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="facility " id="facility4">
-                <div class="facility-name">Race simulator</div>
-                <i class="bi bi-chevron-left"></i>
-                <div class="facility-level-indicator" data-value="3">
-                  <div class="level"></div>
-                  <div class="level"></div>
-                  <div class="level"></div>
-                  <div class="level"></div>
-                  <div class="level"></div>
-                </div>
-                <i class="bi bi-chevron-right"></i>
-                <div class="facility-condition">
-                  Condition:
-                  <div class="input-and-buttons">
-                    <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
-                    <div class="input-buttons">
-                      <i class="bi bi-chevron-up"></i>
-                      <i class="bi bi-chevron-down"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
+            <div class="viewer-component">
+              <div class="component-subtitle bold-font">Pit crew</div>
             </div>
-
+            <div class="pit-crew-details pt-2">
+              <div class="pit-crew-group">
+                <div class="one-stat-panel" data-crewStat="32">
+                  <div class="name-and-stat">
+                    <span class="bold-font">Jacks</span>
+                    <div class="stat-number">
+                      <i class="bi bi-dash-lg"></i>
+                      <input type="text" class="custom-input-number">
+                      <i class="bi bi-plus-lg"></i>
+                    </div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="one-stat-bar">
+                      <div class="one-stat-progress"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="one-stat-panel" data-crewStat="34">
+                  <div class="name-and-stat">
+                    <span class="bold-font">Wing replace</span>
+                    <div class="stat-number">
+                      <i class="bi bi-dash-lg"></i>
+                      <input type="text" class="custom-input-number">
+                      <i class="bi bi-plus-lg"></i>
+                    </div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="one-stat-bar">
+                      <div class="one-stat-progress"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="one-stat-panel" data-crewStat="35">
+                  <div class="name-and-stat">
+                    <span class="bold-font">Car release</span>
+                    <div class="stat-number">
+                      <i class="bi bi-dash-lg"></i>
+                      <input type="text" class="custom-input-number">
+                      <i class="bi bi-plus-lg"></i>
+                    </div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="one-stat-bar">
+                      <div class="one-stat-progress"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pit-crew-group mt-1">
+                <div class="one-stat-panel" data-crewStat="36">
+                  <div class="name-and-stat">
+                    <span class="bold-font">Speed</span>
+                    <div class="stat-number">
+                      <i class="bi bi-dash-lg"></i>
+                      <input type="text" class="custom-input-number">
+                      <i class="bi bi-plus-lg"></i>
+                    </div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="one-stat-bar">
+                      <div class="one-stat-progress"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="one-stat-panel" data-crewStat="38">
+                  <div class="name-and-stat">
+                    <span class="bold-font">Fatigue</span>
+                    <div class="stat-number">
+                      <i class="bi bi-dash-lg"></i>
+                      <input type="text" class="custom-input-number">
+                      <i class="bi bi-plus-lg"></i>
+                    </div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="one-stat-bar">
+                      <div class="one-stat-progress"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="one-stat-panel" data-crewStat="39">
+                  <div class="name-and-stat">
+                    <span class="bold-font">Car build</span>
+                    <div class="stat-number">
+                      <i class="bi bi-dash-lg"></i>
+                      <input type="text" class="custom-input-number">
+                      <i class="bi bi-plus-lg"></i>
+                    </div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="one-stat-bar">
+                      <div class="one-stat-progress"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pit-crew-group mt-1">
+                <div class="one-stat-panel" data-crewStat="40">
+                  <div class="name-and-stat">
+                    <span class="bold-font">Wheel gun</span>
+                    <div class="stat-number">
+                      <i class="bi bi-dash-lg"></i>
+                      <input type="text" class="custom-input-number">
+                      <i class="bi bi-plus-lg"></i>
+                    </div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="one-stat-bar">
+                      <div class="one-stat-progress"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="one-stat-panel" data-crewStat="41">
+                  <div class="name-and-stat">
+                    <span class="bold-font">Tyres off</span>
+                    <div class="stat-number">
+                      <i class="bi bi-dash-lg"></i>
+                      <input type="text" class="custom-input-number">
+                      <i class="bi bi-plus-lg"></i>
+                    </div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="one-stat-bar">
+                      <div class="one-stat-progress"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="one-stat-panel" data-crewStat="42">
+                  <div class="name-and-stat">
+                    <span class="bold-font">Tyres on</span>
+                    <div class="stat-number">
+                      <i class="bi bi-dash-lg"></i>
+                      <input type="text" class="custom-input-number">
+                      <i class="bi bi-plus-lg"></i>
+                    </div>
+                  </div>
+                  <div class="bar-container">
+                    <div class="one-stat-bar">
+                      <div class="one-stat-progress"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="separator"></div>
           <div id="viewer-second">
@@ -2594,6 +2696,91 @@
                     </div>
                   </div>
                 </div>
+                <div class="component-subtitle bold-font">
+                  <div>Staff facilities</div>
+                  <div>
+                    <button class="custom-dropdown custom-button" id="staffButton" data-state="hide"
+                      data-bs-toggle="collapse" data-bs-target="#staffColapse">
+                      <div class="front-gradient">Show</div>
+                    </button>
+                    <div class="dropdown-line"></div>
+                  </div>
+                </div>
+                <div class="collapse" id="staffColapse">
+                  <div class="facility " id="facility9">
+                    <div class="facility-name">Team hub</div>
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right"></i>
+                    <div class="facility-condition">
+                      Condition:
+                      <div class="input-and-buttons">
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
+                        <div class="input-buttons">
+                          <i class="bi bi-chevron-up"></i>
+                          <i class="bi bi-chevron-down"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="facility " id="facility14">
+                    <div class="facility-name">Scouting department</div>
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right"></i>
+                    <div class="facility-condition">
+                      Condition:
+                      <div class="input-and-buttons">
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
+                        <div class="input-buttons">
+                          <i class="bi bi-chevron-up"></i>
+                          <i class="bi bi-chevron-down"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="facility " id="facility4">
+                    <div class="facility-name">Race simulator</div>
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right"></i>
+                    <div class="facility-condition">
+                      Condition:
+                      <div class="input-and-buttons">
+                        <input type="number" class="old-custom-input-number condition-input" value="0.80"></input>
+                        <div class="input-buttons">
+                          <i class="bi bi-chevron-up"></i>
+                          <i class="bi bi-chevron-down"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="pit-crew-button">
+                  <button class="custom-dropdown custom-button" id="carDevButton" data-state="show"
+                    data-bs-toggle="modal" data-bs-target="#pitCrewModal">
+                    <div class="front-gradient bold-font">Pit crew</div>
+                  </button>
+                  <div class="dropdown-line"></div>
+                </div> -->
               </div>
             </div>
           </div>

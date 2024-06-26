@@ -8,14 +8,14 @@ let conn = 0;
 const batFilePath = path.join(__dirname, '../back/startBack.bat');
 console.log(batFilePath)
 
-exec(`"${batFilePath}"`, (error, stdout, stderr) => {
-    if (error) {
-        console.log("Error launching backend")
-        console.log(`Error: ${error}`)
-        return;
-    }
-    console.log(`Resultado: ${stdout}`);
-});
+// exec(`"${batFilePath}"`, (error, stdout, stderr) => {
+//     if (error) {
+//         console.log("Error launching backend")
+//         console.log(`Error: ${error}`)
+//         return;
+//     }
+//     console.log(`Resultado: ${stdout}`);
+// });
 
 
 const socket = new WebSocket('ws://localhost:8765/');
@@ -144,7 +144,8 @@ function teamsModeHandler() {
     let teamBudgetData =  document.querySelector("#teamBudgetInput").value.replace(/[$,]/g, "");
     let costCapTransactionData = originalCostCap - document.querySelector("#costCapInput").value.replace(/[$,]/g, "");
     let confidenceData = document.querySelector("#confidenceInput").value;
-    let facilitiesData = gatherData()
+    let facilitiesData = gather_team_data()
+    let pitCrew = gather_pit_crew()
     let data = {
         command: "editTeam",
         teamID: teamCod,
@@ -155,8 +156,8 @@ function teamsModeHandler() {
         teamBudget: teamBudgetData,
         costCapEdit: costCapTransactionData,
         confidence : confidenceData,
+        pitCrew: pitCrew,
         teamName : original_dict[teamCod]
-
     }
     socket.send(JSON.stringify(data))
 }
@@ -1112,7 +1113,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function listenersStaffGroups() {
         document.querySelectorAll('#staffMenu a').forEach(item => {
             item.addEventListener("click", function () {
-                const staffButton = document.getElementById('staffButton');
+                const staffButton = document.getElementById('staffDropdown');
                 let staffSelected = item.innerHTML
                 let staffCode = item.dataset.spacestats
                 if (staffCode === "driverStats") {
