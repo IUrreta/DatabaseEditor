@@ -25,6 +25,7 @@
   --table-third: #d7985a;
   --table-third-light: #f2cda6;
   --text-outline: #000000;
+  --blur-color: #616161d3;
 
 
   --background-general: #110f24;
@@ -99,7 +100,7 @@
   --porsche-secondary: #f1f1f1;
   --brawn-primary : #d0e610;
   --brawn-secondary: #f1f1f1;
-  --ferrari-primary: #ff2800;
+  --ferrari-primary: #f53311;
   --general-secondary: #f1f1f1;
   --mercedes-primary: #28f4ce;
   --redbull-primary: #3172bf;
@@ -109,31 +110,31 @@
   --audi-primary: #f50537;
   --audi-secondary: #f1f1f1;
   --sauber-primary: #f50537;
-  --aston-primary: #358C75;
+  --aston-primary: #07977b;
   --aston-secondary: #c3dc00;
   --alfa-original: #C92D4B;
   --alfa-secondary-original: #f1f1f1;
   --alfa-primary: #C92D4B;
   --alfa-secondary: #f1f1f1;
   --alphatauri-secondary: #f1f1f1;
-  --haas-primary: #B6BABD;
+  --haas-primary: #c1c1c7;
   --haas-secondary: #f62039;
   --mclaren-primary: #ff7e08;
   --mclaren-secondary: #47c7fc;
-  --williams-primary: #37BEDD;
+  --williams-primary: #5abef3;
   --alpine-primary: #2293D1;
   --alpine-secondary: #fd48c7;
   --renault-primary: #f7c82f;
 
   --redbull-primary-transparent: #3172bf30;
   --redbull-secondary-transparent: #ffd30030;
-  --ferrari-primary-transparent: #ff280030;
+  --ferrari-primary-transparent: #f5331130;
   --general-secondary-transparent: #f1f1f130;
   --mercedes-primary-transparent: #28f4ce30;
   --mclaren-primary-transparent: #ff7e0830;
   --mclaren-secondary-transparent: #47c7fc30;
-  --williams-primary-transparent: #37BEDD30;
-  --haas-primary-transparent: #B6BABD30;
+  --williams-primary-transparent: #5abef330;
+  --haas-primary-transparent: #c1c1c730;
   --haas-secondary-transparent: #f6203930;
   --alphatauri-primary-transparent: #5E8FAA30;
   --alphatauri-primary-transparent-original: #5E8FAA30;
@@ -145,7 +146,7 @@
   --alpine-secondary-transparent: #fd48c730;
   --alpine-secondary-transparent-original: #fd48c730;
   --renault-primary-transparent: #f7c82f30;
-  --aston-primary-transparent: #358C7530;
+  --aston-primary-transparent: #07977b30;
   --aston-secondary-transparent: #c3dc0030;
   --alfa-primary-transparent: #C92D4B30;
   --alfa-primary-transparent-original: #C92D4B30;
@@ -2439,7 +2440,6 @@ DRIVERS TABLE
 
 .main-calendar-section {
   margin-left: 14px;
-  border: 1px solid var( --slight-contrast);
   color: var(--white-general);
   min-height: 660px;
   max-height: 660px;
@@ -2447,6 +2447,8 @@ DRIVERS TABLE
   border-radius: 10px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  background-color: var(--generals);
+  box-shadow: 0px 0px 10px 2px var(--box-shadow);
 }
 
 .main-options-section {
@@ -2485,19 +2487,18 @@ DRIVERS TABLE
 
 .race-calendar {
   position: relative;
-  background-color: var(--component-general);
-  border: 2px solid transparent;
+  background-color: var(--elements);
   border-radius: 10px;
   padding: 8px;
   margin: 10px;
   color: var( --text-general);
-  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  transition: border-color 0.2s, color 0.2s, background-color 0.2s;
   display: flex;
   cursor: grab !important;
   padding-left: 12px;
   max-height: 112px;
   gap: 10px;
-
+  box-shadow: 0px 0px 10px 1px var(--box-shadow);
 }
 
 .upper-text-and-flag{
@@ -2553,13 +2554,12 @@ DRIVERS TABLE
 
 
 .race-calendar:hover {
-  border-color: var(--white-general);
   color: var(--white-general);
-  background-color: var(--component-general-hover);
+  background-color: var(--elements-hover);
 }
 
 .race-calendar .bi-chevron-left, .race-calendar .bi-chevron-right {
-  transition: color 0.3s;
+  transition: color 0.2s, transform 0.2s;
 }
 
 .race-calendar:hover .bi-chevron-left, .race-calendar:hover .bi-chevron-right {
@@ -2567,7 +2567,8 @@ DRIVERS TABLE
 }
 
 .race-calendar .bi-chevron-left:hover, .race-calendar .bi-chevron-right:hover {
-  color: var(--white-general);
+  color: var(--new-primary);
+  transform: scale(1.1);
 }
 
 .deleting:hover {
@@ -2601,21 +2602,16 @@ DRIVERS TABLE
   left: -1px;
   width: 100.9%;
   height: 101.9%;
-  background-color: rgba(128, 128, 128, 0.829);
+  background-color: var(--blur-color);
   z-index: 20;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 2.5px solid transparent;
   border-radius: 10px;
   color: var(--positive-general);
   transition: color 0.3s, border-color 0.3s;
   cursor: default;
   backdrop-filter: blur(5px);
-}
-
-.complete-div:hover{
-  border-color: var(--positive-general);
 }
 
 .completed:hover{
@@ -2794,6 +2790,42 @@ DRIVERS TABLE
   font-size: 20px;
   height: 110px;
   margin-top: 6px;
+}
+
+.driver-space{
+  width:  220px;
+  max-width:  220px;
+}
+
+.affiliates-and-arrows{
+  display: flex;
+  flex-direction: row;
+  width: 60%;
+  align-items: center;
+}
+
+.affiliates-and-arrows i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s ease-in-out;
+}
+
+.affiliates-and-arrows i:hover{
+  cursor: pointer;
+  color: var(--text-selected);
+  transform: scale(1.1);
+}
+
+.affiliates-space{
+  display: flex;
+  overflow-x: hidden !important;
+}
+
+.affiliates-space .free-driver{
+  min-width: 220px;
+}
+
+.team-template .free-driver{
+  margin: 1px 3px;
 }
 
 .driver1-name, .driver2-name{
@@ -3074,8 +3106,8 @@ DRIVERS TABLE
 
 .teams-columns {
   padding-top: 10px;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(400px, 1fr));
+  display: flex;
+  flex-direction: column;
   overflow-y: hidden;
   margin-left: 0%;
   margin-right: 14px;
@@ -4216,12 +4248,17 @@ DRIVERS TABLE
   border-radius: 10px;
   padding: 8px;
   cursor: grab !important;
-  margin: 10px;
+  margin: 5px;
   color: var(--text-general);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
   font-size: 15px;
+  overflow: hidden;
+  max-height: 42.5px;
+  display: flex;
+  gap: 3px;
 }
+
 
 .H2Hradio{
   border-bottom: 2px solid transparent;
@@ -5135,12 +5172,17 @@ input::-webkit-inner-spin-button {
 
 .team-template {
   background-color: var(--superficials);
-  border-radius: 10px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
   border: none;
   color: var(--white-general);
   margin: 10px;
   margin-top: 0px;
-  max-height: 140px;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  padding: 5px;
+  box-shadow: 0 0 10px 1px var(--box-shadow);
 }
 
 .viewer-top {
@@ -5216,6 +5258,12 @@ input::-webkit-inner-spin-button {
   max-height: 46px;
 }
 
+.new-logo-and-name{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 .logo-and-title {
   display: flex;
   flex-direction: row;
@@ -5234,6 +5282,10 @@ input::-webkit-inner-spin-button {
   padding-bottom: 10px;
   padding-left: 10px;
   padding-top: 10px;
+}
+
+.team-template .team-name {
+  min-width: 250px;
 }
 
 .perf-title {
@@ -5621,12 +5673,37 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--redbull-primary) !important;
 }
 
+.rbborder::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--redbull-primary);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+
 .rbactivated{
   background-color: var(--redbull-primary);
 }
 
 #ferrari, .feborder-down:hover {
   border-bottom: 2px solid var(--ferrari-primary) !important;
+}
+
+.feborder::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--ferrari-primary);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 .feactivated{
@@ -5637,12 +5714,36 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--mercedes-primary) !important;
 }
 
+.meborder::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--mercedes-primary);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
 .meactivated{
   background-color: var(--mercedes-primary);
 }
 
 #mclaren, .mcborder-down:hover {
   border-bottom: 2px solid var(--mclaren-primary) !important;
+}
+
+.mcborder::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--mclaren-primary);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 .mcactivated{
@@ -5656,6 +5757,18 @@ input::-webkit-inner-spin-button {
 
 .alborder-down-noC:hover{
   border-bottom: 2px solid #2293D1 !important
+}
+
+.alborder::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--alpine-primary);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 .andrettiborder-down:hover{
@@ -5683,6 +5796,18 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid #C92D4B !important
 }
 
+.afborder::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--alfa-primary);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
 
 .afactivated{
   background-color: var(--alfa-primary);
@@ -5694,6 +5819,18 @@ input::-webkit-inner-spin-button {
 
 .asactivated{
   background-color: var(--aston-primary);
+}
+
+.asborder::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--aston-primary);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 #alphatauri, .atborder-down:hover, .hugoborder-down:hover{
@@ -5738,14 +5875,36 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--sauber-primary) !important
 }
 
-
-
 .atactivated{
   background-color: var(--alphatauri-primary);
 }
 
+.atborder::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--alphatauri-primary);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
 #williams, .wiborder-down:hover {
   border-bottom: 2px solid var(--williams-primary) !important
+}
+
+.wiborder::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--williams-primary);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 
@@ -5755,6 +5914,18 @@ input::-webkit-inner-spin-button {
 
 #haas, .haborder-down:hover {
   border-bottom: 2px solid var(--haas-primary) !important
+}
+
+.haborder::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--haas-primary);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 .haactivated{
@@ -5969,8 +6140,8 @@ input::-webkit-inner-spin-button {
 .drivers-section {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
-  min-height: 64px;
+  overflow: hidden;
+  margin-bottom: 3px;
 }
 
 

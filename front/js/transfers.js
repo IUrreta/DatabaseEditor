@@ -43,6 +43,7 @@ function remove_drivers() {
     f3DriversDiv.innerHTML = ""
 }
 
+
 /**
  * Places all drivers in their respective team, category etc
  * @param {Object} driversArray List of drivers
@@ -50,6 +51,7 @@ function remove_drivers() {
 function place_drivers(driversArray) {
     let divPosition;
     driversArray.forEach((driver) => {
+        console.log(driver)
         let newDiv = document.createElement("div");
         newDiv.className = "col free-driver";
         newDiv.dataset.driverid = driver[1];
@@ -69,19 +71,38 @@ function place_drivers(driversArray) {
 
         //newDiv.innerHTML = driver[0];
         divPosition = "free-drivers"
+        let position = driver[3]
+        if(position >= 3){
+            position = 3
+        }
         if (driver[2] > 0 && driver[2] <= 10) {
             addIcon(newDiv)
-            divPosition = team_dict[driver[2]] + driver[3];
-
+            divPosition = team_dict[driver[2]] + position;
         }
 
         else if (driver[2] > 10 && driver[2] <= 21) divPosition = "f2-drivers";
         else if (driver[2] > 21 && driver[2] <= 31) divPosition = "f3-drivers";
-
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
 }
+
+document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {
+    console.log(elem)
+    elem.querySelector(".bi-chevron-right").addEventListener("click", function () {
+        console.log("AAAA")
+        let parent = elem.parentNode.parentNode
+        let affiliatesDiv = parent.querySelector(".affiliates-space")
+        affiliatesDiv.scrollBy({ left: 100, behavior: 'smooth' });
+    })
+
+    elem.querySelector(".bi-chevron-left").addEventListener("click", function () {
+        let parent = elem.parentNode.parentNode
+        let affiliatesDiv = parent.querySelector(".affiliates-space")
+        affiliatesDiv.scrollBy({ left: -100, behavior: 'smooth' });
+    })
+})
+
 
 /**
  * Updates the color from the div depending on the team, both in contract and stats view

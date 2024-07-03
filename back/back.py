@@ -4,6 +4,7 @@ import json
 import os
 from datetime import datetime
 import shutil
+import traceback
 from commands.commandFactory import CommandFactory
 
 class ApplicationState:
@@ -33,14 +34,14 @@ async def handle_client(websocket, path, app_state):
             data = json.loads(message)
             await app_state.new_handler(data, client)
     except Exception as e:
-        print(e)
-        app_state.log.write(f"[{str(datetime.now())}] EXCEPTION: {str(e)}\n")
-        app_state.log.flush()
-        info = []
-        info.insert(0, "ERROR")
-        info.insert(1, "Something went wrong. Please restart the tool")
-        info_json = json.dumps(info)
-        await send_message_to_client(info_json, client)
+        traceback.print_exc()
+        # app_state.log.write(f"[{str(datetime.now())}] EXCEPTION: {str(e)}\n")
+        # app_state.log.flush()
+        # info = []
+        # info.insert(0, "ERROR")
+        # info.insert(1, "Something went wrong. Please restart the tool")
+        # info_json = json.dumps(info)
+        # await send_message_to_client(info_json, client)
     finally:
         client = None
         # conn.commit()

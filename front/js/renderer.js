@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Performance fetched","Season performance fetched","Config", "ERROR", "Montecarlo fetched","TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+    const noNotifications = ["Game Year","Performance fetched","Season performance fetched","Config", "ERROR", "Montecarlo fetched","TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -362,6 +362,9 @@ document.addEventListener('DOMContentLoaded', function () {
         "Parts stats fetched": (message)=>{
             load_parts_stats(message.slice(1)[0])
         },
+        "Game Year": (message)=>{
+            manage_game_year(message.slice(1)[0])
+        }
     };
 
     let latestTag;
@@ -429,6 +432,17 @@ document.addEventListener('DOMContentLoaded', function () {
             status.classList.remove("positive")
             status.classList.add("negative")
             status.textContent = '\xa0' + "Disconnected"
+        }
+    }
+
+    function manage_game_year(year){
+        if (year === "24"){
+            document.getElementById("year23").classList.remove("activated")
+            document.getElementById("year24").classList.add("activated")
+        }
+        else if (year === "23"){
+            document.getElementById("year24").classList.remove("activated")
+            document.getElementById("year23").classList.add("activated")
         }
     }
 

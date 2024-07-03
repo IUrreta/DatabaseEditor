@@ -6,6 +6,13 @@ class DatabaseUtils:
     def __init__(self, connection):
         self.cursor = connection.cursor()
 
+    def check_year_save(self):
+        result = self.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='Countries_RaceRecord'").fetchone()
+        if result is not None:
+            return "24"
+        else:
+            return "23"
+
     def fetch_driverNumebrs(self):
         numbers = self.cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL").fetchall()
         numList = []
