@@ -105,7 +105,7 @@
   --mercedes-primary: #28f4ce;
   --redbull-primary: #3172bf;
   --redbull-secondary: #ffd300;
-  --stake-primary: #01e500;
+  --stake-primary: #54d650;
   --stake-secondary: #595959;
   --audi-primary: #f50537;
   --audi-secondary: #f1f1f1;
@@ -160,7 +160,7 @@
   --porsche-secondary-transparent: #f1f1f130;
   --brawn-primary-transparent: #d0e61030;
   --brawn-secondary-transparent: #f1f1f130;
-  --stake-primary-transparent: #01e50030;
+  --stake-primary-transparent: #54d65030;
   --stake-secondary-transparent: #59595930;
   --visarb-primary-transparent: #596fa430;
   --visarb-secondary-transparent: #f1f1f130;
@@ -2793,35 +2793,79 @@ DRIVERS TABLE
 }
 
 .driver-space{
-  width:  220px;
-  max-width:  220px;
+  min-width:  200px;
+  max-width:  200px;
 }
 
 .affiliates-and-arrows{
   display: flex;
   flex-direction: row;
-  width: 60%;
   align-items: center;
+  width: 63%;
 }
 
-.affiliates-and-arrows i{
+.affiliates-and-arrows .bi-chevron-right, .affiliates-and-arrows .bi-chevron-left{
   cursor: pointer;
   transition: color 0.2s, transform 0.2s ease-in-out;
 }
 
-.affiliates-and-arrows i:hover{
+.affiliates-and-arrows .bi-chevron-left{
+  left: 0;
+}
+
+.arrow-back{
+  background-color: var(--superficials);
+  height: 100%;
+  position: absolute;
+  right: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  width: 20px;
+  justify-content: center;
+  top: 0;
+  z-index: 4;
+}
+
+.affiliates-and-arrows .bi-chevron-right:hover, .affiliates-and-arrows .bi-chevron-left:hover{
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.1);
 }
 
-.affiliates-space{
+.affiliates-and-arrows {
   display: flex;
-  overflow-x: hidden !important;
+  align-items: center;
+  overflow: hidden; 
+  width: 100%; 
+  position: relative; 
+}
+
+.affiliates-and-arrows .bi-chevron-left, .affiliates-and-arrows .bi-chevron-right{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s ease-in-out;
+  position: absolute;
+  z-index: 4;
+}
+
+.arrow-left {
+  left: 0;
+}
+
+.arrow-right {
+  right: 0;
+}
+
+.affiliates-space {
+  display: flex;
+  overflow-x: hidden; 
+  flex-grow: 1; 
+  margin: 0 15px; 
 }
 
 .affiliates-space .free-driver{
-  min-width: 220px;
+  min-width: 200px;
+  max-width: 200px;
 }
 
 .team-template .free-driver{
@@ -3973,6 +4017,11 @@ DRIVERS TABLE
 .rb-transparent:hover{
   background-color: var(--redbull-primary-transparent) !important;
   color: var(--white-general) !important;
+  border-color: transparent !important;
+}
+
+.rb-transparent .custom-icon i{
+  filter: drop-shadow(0px 0px 4px var(--redbull-primary));
 }
 
 .rb-transparent:hover .surname{
@@ -3990,10 +4039,15 @@ DRIVERS TABLE
 .mc-transparent:hover{
   background-color: var(--mclaren-primary-transparent) !important;
   color: var(--white-general) !important;
+  border-color: transparent !important;
 }
 
 .mc-transparent:hover .surname{
   color: var(--mclaren-primary) !important
+}
+
+.mc-transparent .custom-icon i{
+  filter: drop-shadow(0px 0px 4px var(--mclaren-primary));
 }
 
 .mc-back-transparent{
@@ -4007,6 +4061,7 @@ DRIVERS TABLE
 .as-transparent:hover{
   background-color: var(--aston-primary-transparent) !important;
   color: var(--white-general) !important;
+  border-color: transparent !important;
 }
 
 .as-transparent:hover .surname{
@@ -4017,6 +4072,10 @@ DRIVERS TABLE
   background-color: var(--aston-primary-transparent);
 }
 
+.as-transparent .custom-icon i{
+  filter: drop-shadow(0px 0px 4px var(--aston-primary));
+}
+
 .as-back-transparent-secondary{
   background-color: var(--aston-secondary-transparent);
 }
@@ -4024,10 +4083,15 @@ DRIVERS TABLE
 .al-transparent:hover{
   background-color: var(--alpine-primary-transparent) !important;
   color: var(--white-general) !important;
+  border-color: transparent !important;
 }
 
 .al-transparent:hover .surname{
   color: var(--alpine-primary) !important
+}
+
+.al-transparent .custom-icon i{
+  filter: drop-shadow(0px 0px 4px var(--alpine-primary));
 }
 
 .al-back-transparent{
@@ -4041,10 +4105,15 @@ DRIVERS TABLE
 .af-transparent:hover{
   background-color: var(--alfa-primary-transparent)  !important;
   color: var(--white-general)  !important;
+  border-color: transparent !important;
 }
 
 .af-transparent:hover .surname{
   color: var(--alfa-primary) !important
+}
+
+.af-transparent .custom-icon i{
+  filter: drop-shadow(0px 0px 4px var(--alfa-primary));
 }
 
 .af-back-transparent{
@@ -4058,6 +4127,7 @@ DRIVERS TABLE
 .ha-transparent:hover{
   background-color: var(--haas-primary-transparent) !important;
   color: var(--white-general)   !important;
+  border-color: transparent !important;
 }
 
 .ha-transparent:hover .surname{
@@ -4068,6 +4138,10 @@ DRIVERS TABLE
   background-color: var(--haas-primary-transparent);
 }
 
+.ha-transparent .custom-icon i{
+  filter: drop-shadow(0px 0px 4px var(--haas-primary));
+}
+
 .ha-back-transparent-secondary{
   background-color: var(--haas-secondary-transparent);
 }
@@ -4075,6 +4149,7 @@ DRIVERS TABLE
 .wi-transparent:hover{
   background-color: var(--williams-primary-transparent) !important;
   color: var(--white-general) !important;
+  border-color: transparent !important;
 }
 
 .wi-transparent:hover .surname{
@@ -4085,6 +4160,10 @@ DRIVERS TABLE
   background-color: var(--williams-primary-transparent);
 }
 
+.wi-transparent .custom-icon i{
+  filter: drop-shadow(0px 0px 4px var(--williams-primary));
+}
+
 .wi-back-transparent-secondary{
   background-color: var(--general-secondary-transparent);
 }
@@ -4092,6 +4171,7 @@ DRIVERS TABLE
 .at-transparent:hover{
   background-color: var(--alphatauri-primary-transparent) !important;
   color: var(--white-general) !important;
+  border-color: transparent !important;
 }
 
 .at-transparent:hover .surname{
@@ -4102,6 +4182,10 @@ DRIVERS TABLE
   background-color: var(--alphatauri-primary-transparent);
 }
 
+.at-transparent .custom-icon i{
+  filter: drop-shadow(0px 0px 4px var(--alphatauri-primary));
+}
+
 .at-back-transparent-secondary{
   background-color: var(--alphatauri-secondary-transparent);
 }
@@ -4109,10 +4193,15 @@ DRIVERS TABLE
 .fe-transparent:hover{
   background-color: var(--ferrari-primary-transparent) !important;
   color: var(--white-general) !important;
+  border-color: transparent !important;
 }
 
 .fe-transparent:hover .surname{
   color: var(--ferrari-primary) !important;
+}
+
+.fe-transparent .custom-icon i{
+  filter: drop-shadow(0px 0px 4px var(--ferrari-primary));
 }
 
 .fe-back-transparent{
@@ -4126,10 +4215,15 @@ DRIVERS TABLE
 .me-transparent:hover{
   background-color: var(--mercedes-primary-transparent) !important;
   color: var(--white-general) !important;
+  border-color: transparent !important;
 }
 
 .me-transparent:hover .surname{
   color: var(--mercedes-primary) !important;
+}
+
+.me-transparent .custom-icon i{
+  filter: drop-shadow(0px 0px 4px var(--mercedes-primary));
 }
 
 .me-back-transparent{
@@ -4246,7 +4340,7 @@ DRIVERS TABLE
   background-color: var(--elements);
   border: 2px solid transparent;
   border-radius: 10px;
-  padding: 8px;
+  padding:  5px 6px;
   cursor: grab !important;
   margin: 5px;
   color: var(--text-general);
@@ -4257,6 +4351,7 @@ DRIVERS TABLE
   max-height: 42.5px;
   display: flex;
   gap: 3px;
+  box-shadow: 0 0 10px 1px var(--box-shadow);
 }
 
 
@@ -4395,21 +4490,27 @@ DRIVERS TABLE
 .free-driver .custom-icon {
   color: transparent;
   transition: opacity 0.3s;
-  background-image: linear-gradient(to left, var(--component-general-hover), transparent);
   width: 80px;
   opacity: 0;
   z-index: 3;
   display: flex;
   position: absolute;
   right: 10px;
-  top: 7.5px;
+  top: 5px;
   justify-content: flex-end;
+}
+
+
+
+.standardlogo{
+  width: 30px;
+  height: 30px;
 }
 
 .free-driver .custom-unretire{
   color: transparent;
   transition: opacity 0.3s;
-  background-image: linear-gradient(to left, var(--component-general-hover), transparent);
+  background: linear-gradient(to left, var(--component-general-hover), transparent);
   width: 80px;
   height: 20px;
   opacity: 0;
@@ -4461,7 +4562,7 @@ DRIVERS TABLE
 
 
 .free-driver:hover .custom-icon {
-  color: #9d98b8;
+  color: var(--dark-text);
   opacity: 1;
 }
 
@@ -5262,6 +5363,7 @@ input::-webkit-inner-spin-button {
   display: flex;
   flex-direction: row;
   align-items: center;
+  min-width: 250px;
 }
 
 .logo-and-title {
@@ -5284,9 +5386,6 @@ input::-webkit-inner-spin-button {
   padding-top: 10px;
 }
 
-.team-template .team-name {
-  min-width: 250px;
-}
 
 .perf-title {
   padding-bottom: 10px;
@@ -5514,23 +5613,24 @@ input::-webkit-inner-spin-button {
 }
 
 .redbulllogo, #rblogo {
-  width: 55px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
   padding-bottom: 8px;
   padding-left: 5px;
   padding-top: 7px;
 }
 
 .ferrarilogo, #felogo {
-  width: 35px;
+  width: 40px;
   height: 40px;
-  padding-bottom: 6px;
-  padding-top: 8px;
-  padding-left: 5px;
+  padding-bottom: 7px;
+  padding-top: 5px;
+  padding-left: 3px;
+  padding-right: 2px;
 }
 
 .andrettilogo {
-  width: 35px;
+  width: 40px;
   height: 40px;
   padding-bottom: 3px;
   padding-top: 8px;
@@ -5540,9 +5640,10 @@ input::-webkit-inner-spin-button {
 .merclogo, #melogo {
   width: 40px;
   height: 40px;
-  padding-bottom: 5px;
-  padding-top: 7px;
-  padding-left: 10px;
+  padding-bottom: 7px;
+  padding-top: 5px;
+  padding-left: 5px;
+  padding-right: 4px;
 }
 
 .merclogo2 {
@@ -5555,23 +5656,54 @@ input::-webkit-inner-spin-button {
 }
 
 .alpinelogo, #allogo {
-  width: 45px;
+  width: 40px;
   height: 40px;
-  padding-bottom: 6px;
-  padding-top: 9px;
-  padding-left: 5px;
+  padding-bottom: 9px;
+  padding-top: 8px;
+  padding-left: 2px;
+  padding-right: 2px;
   transition: opacity 0.3s;
 }
 
 .mclarenlogo, #mclogo {
   width: 40px;
   height: 40px;
-  padding-bottom: 4px;
-  padding-top: 7px;
-  padding-left: 5px;
+  padding: 2px;
 }
 
 .alfalogo, #aflogo {
+  width: 40px;
+  height: 40px;
+  padding-bottom: 3px;
+  padding-top: 1px;
+  padding-left: 1px;
+}
+
+.astonlogo, #aslogo {
+  width: 40px;
+  height: 40px;
+  padding-bottom: 5px;
+  padding-left: 1px;
+  padding-top: 5px;
+}
+
+.brawnlogo{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 16px;
+  margin-left: 5px;
+  padding-top: 17px;
+}
+
+.audilogo{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 16px;
+  padding-left: 5px;
+  padding-top: 17px;
+}
+
+.sauberlogo{
   width: 40px;
   height: 40px;
   padding-bottom: 3px;
@@ -5579,48 +5711,17 @@ input::-webkit-inner-spin-button {
   padding-left: 5px;
 }
 
-.astonlogo, #aslogo {
-  width: 50px;
-  height: 45px;
-  padding-bottom: 5px;
-  padding-left: 7px;
-  padding-top: 5px;
-}
-
-.brawnlogo{
-  width: 50px;
-  height: 45px;
-  padding-bottom: 16px;
-  margin-left: 5px;
-  padding-top: 17px;
-}
-
-.audilogo{
-  width: 45px;
-  height: 45px;
-  padding-bottom: 16px;
-  padding-left: 5px;
-  padding-top: 17px;
-}
-
-.sauberlogo{
-  width: 35px;
-  height: 35px;
-  padding-bottom: 3px;
-  padding-top: 5px;
-  padding-left: 5px;
-}
-
 .hugologo{
-  height: 45px;
+  height: 40px;
+  width: 40px;
   padding-bottom: 7px;
   padding-left: 5px;
   padding-top: 7px;
 }
 
 .toyotalogo{
-  width: 50px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
   padding-bottom: 9px;
   padding-left: 7px;
   padding-top: 6px;
@@ -5629,9 +5730,10 @@ input::-webkit-inner-spin-button {
 .haaslogo, #halogo {
   width: 40px;
   height: 40px;
-  padding-bottom: 5px;
-  padding-top: 7px;
-  padding-left: 6px;
+  padding-bottom: 6px;
+  padding-top: 4px;
+  padding-left: 3px;
+  padding-right: 2px;
 }
 
 .lotuslogo{
@@ -5643,19 +5745,20 @@ input::-webkit-inner-spin-button {
 }
 
 .alphataurilogo, #atlogo {
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
   padding-bottom: 12px;
   padding-left: 10px;
   padding-top: 12px;
 }
 
 .williamslogo, #wilogo {
-  width: 45px;
-  height: 45px;
-  padding-bottom: 11px;
-  padding-left: 12px;
-  padding-top: 10px;
+  width: 40px;
+  height: 40px;
+  padding-bottom: 9px;
+  padding-left: 6px;
+  padding-top: 8px;
+  padding-right: 6px;
 }
 
 .team1, .team2{
@@ -6139,7 +6242,6 @@ input::-webkit-inner-spin-button {
 
 .drivers-section {
   display: flex;
-  justify-content: space-between;
   overflow: hidden;
   margin-bottom: 3px;
 }

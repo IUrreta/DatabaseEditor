@@ -289,29 +289,29 @@ function resetBars() {
     })
 }
 
-/**
- * eventListeners for the confirm button for engines and teams
- */
-document.getElementById("confirmEnginebtn").addEventListener("click", function () {
-    let performanes = "";
-    let progresses = ""
-    document.querySelector(".engines-show").querySelectorAll(".custom-progress").forEach(function (elem) {
-        var dataProgress = elem.dataset.progress;
-        performanes += dataProgress + ' ';
-        progresses += dataProgress * 10 + " "
-    });
-    performanes = performanes.slice(0, -1);
-    progresses = progresses.slice(0, -1);
-    document.querySelector(".selected").dataset.stats = progresses
-    let dataPerformance = {
-        command: "editEngine",
-        engineID: engineSelected,
-        teamEngineID: teamEngineSelected,
-        team: document.querySelector(".selected").dataset.teamname,
-        performanceArray: performanes,
-    }
-    socket.send(JSON.stringify(dataPerformance))
-})
+// /**
+//  * eventListeners for the confirm button for engines and teams
+//  */
+// document.getElementById("confirmEnginebtn").addEventListener("click", function () {
+//     let performanes = "";
+//     let progresses = ""
+//     document.querySelector(".engines-show").querySelectorAll(".custom-progress").forEach(function (elem) {
+//         var dataProgress = elem.dataset.progress;
+//         performanes += dataProgress + ' ';
+//         progresses += dataProgress * 10 + " "
+//     });
+//     performanes = performanes.slice(0, -1);
+//     progresses = progresses.slice(0, -1);
+//     document.querySelector(".selected").dataset.stats = progresses
+//     let dataPerformance = {
+//         command: "editEngine",
+//         engineID: engineSelected,
+//         teamEngineID: teamEngineSelected,
+//         team: document.querySelector(".selected").dataset.teamname,
+//         performanceArray: performanes,
+//     }
+//     socket.send(JSON.stringify(dataPerformance))
+// })
 
 document.getElementById("confirmPerformancebtn").addEventListener("click", function () {
     let performanes = "";

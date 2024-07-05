@@ -64,6 +64,7 @@ function place_drivers(driversArray) {
         spanLastName.classList.add("bold-font")
         newDiv.appendChild(spanName)
         newDiv.appendChild(spanLastName)
+        newDiv.classList.add(team_dict[driver[2]] + "-transparent")
         manageColor(newDiv, spanLastName)
         if(driver[4] === 1){
             addUnRetireIcon(newDiv)
@@ -413,16 +414,6 @@ document.getElementById("cancelButton").addEventListener('click', function () {
     setTimeout(clearModal, 500);
 })
 
-/**
- * Listeners for the buttons on the retirement age selector
- */
-document.querySelector(".retirement-options").querySelector(".bi-plus-lg").addEventListener("click", function(){
-    document.querySelector(".retirement-options").querySelector("input").value = Number(document.querySelector(".retirement-options").querySelector("input").value) + 1
-})
-
-document.querySelector(".retirement-options").querySelector(".bi-dash-lg").addEventListener("click", function(){
-    document.querySelector(".retirement-options").querySelector("input").value -= 1
-})
 
 /**
  * Manages the interaction to drag drivers
