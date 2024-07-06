@@ -6,6 +6,28 @@ class DatabaseUtils:
     def __init__(self, connection):
         self.cursor = connection.cursor()
 
+
+    def argb_to_hex(self, argb):
+        hex_value = f"{argb:08X}"
+        red = int(hex_value[2:4], 16)
+        green = int(hex_value[4:6], 16)
+        blue = int(hex_value[6:8], 16)
+        print(red, green, blue)
+        
+        # Función para aclarar un color oscuro
+        def lighten_color(value):
+            return min(255, int(value + (255 - value) * 0.19))
+        
+        # Definir un umbral para considerar un color como oscuro
+        threshold = 120
+        
+        if red < threshold and green < threshold and blue < threshold:
+            red = lighten_color(red)
+            green = lighten_color(green)
+            blue = lighten_color(blue)
+        
+        return f"#{red:02X}{green:02X}{blue:02X}"
+
     def check_year_save(self):
         result = self.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='Countries_RaceRecord'").fetchone()
         if result is not None:
@@ -15,11 +37,16 @@ class DatabaseUtils:
             if match:
                 print(match.group(1))
                 name = match.group(1)
+                primary_color = self.argb_to_hex(self.cursor.execute("SELECT Colour FROM Teams_Colours WHERE TeamID = 32 AND ColourID = 0").fetchone()[0])
+                secondary_color = self.argb_to_hex(self.cursor.execute("SELECT Colour FROM Teams_Colours WHERE TeamID = 32 AND ColourID = 1").fetchone()[0])
             else:
                 name = None
-            return ["24", name]
+                primary_color = None
+                secondary_color = None
+            return ["24", name, primary_color, secondary_color]
         else:
-            return ["23"]
+            return ["23", None, None, None]
+
 
     def fetch_driverNumebrs(self):
         numbers = self.cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL").fetchall()

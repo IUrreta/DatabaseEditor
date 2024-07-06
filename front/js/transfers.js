@@ -112,6 +112,7 @@ document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {
  * @param {div} div div from the driver
  */
 function updateColor(div) {
+    console.log(div)
     let surnameDiv = div.querySelector(".bold-font")
     surnameDiv.className = "bold-font"
     manageColor(div, surnameDiv)
@@ -489,7 +490,7 @@ interact('.free-driver').draggable({
 
                     }
                     else if (element.childElementCount == 1) {
-                        if (originalParent.className === "col driver-space") {
+                        if (originalParent.className === "driver-space") {
                             driver1 = target;
                             driver2 = element.firstChild;
                             let team1 = driver1.parentNode.parentNode

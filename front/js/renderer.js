@@ -377,6 +377,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll(".modal").forEach(function (elem) {
         elem.addEventListener('show.bs.modal', function () {
+            console.log("ME CORTO LOS HUEVOS")
             setTimeout(function () {
                 var modalBackdrop = document.querySelector('.modal-backdrop');
                 var cetContainer = document.querySelector('.cet-container');
@@ -440,7 +441,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (year[0] === "24"){
             document.getElementById("year23").classList.remove("activated")
             document.getElementById("year24").classList.add("activated")
-            manage_custom_team(year[1])
+            manage_custom_team(year)
         }
         else if (year[0] === "23"){
             document.getElementById("year24").classList.remove("activated")
@@ -449,14 +450,24 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function manage_custom_team(name){
-        console.log(name)
-        if (name[1] !== null){
+    function manage_custom_team(nameColor){
+        if (nameColor[1] !== null){
             document.getElementById("customTeamTransfers").classList.remove("d-none")
-            document.querySelector(".ct-replace").textContent = name.toUpperCase()
+            document.getElementById("customTeamPerformance").classList.remove("d-none")
+            document.getElementById("customTeamPerformance").dataset.teamName = nameColor[1]
+            document.querySelectorAll(".ct-replace").forEach(function(elem){
+                elem.textContent = nameColor[1].toUpperCase()
+            })
+            let root = document.documentElement;
+            console.log(nameColor)
+            root.style.setProperty('--custom-team-primary', nameColor[2]);
+            root.style.setProperty('--custom-team-secondary', nameColor[3]);
+            root.style.setProperty('--custom-team-primary-transparent', nameColor[2] + "30");
+            root.style.setProperty('--custom-team-secondary-transparent', nameColor[3] + "30");
         }
         else{
             document.getElementById("customTeamTransfers").classList.add("d-none")
+            document.getElementById("customTeamPerformance").classList.add("d-none")
         }
     }
 
@@ -795,7 +806,10 @@ document.addEventListener('DOMContentLoaded', function () {
             configModal.show()
         }
         else { //File detected -> check if ask to show modal or not
-            if (info[0]["ask"] === 1){
+            if (info[0]["ask"] === 3){
+                manage_config_content(info[0])
+            }
+            else if (info[0]["ask"] === 1){
                 document.querySelector(".bi-gear").classList.add("hidden")
                 let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
                     keyboard: false

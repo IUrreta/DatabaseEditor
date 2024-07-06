@@ -313,24 +313,6 @@ function resetBars() {
 //     socket.send(JSON.stringify(dataPerformance))
 // })
 
-document.getElementById("confirmPerformancebtn").addEventListener("click", function () {
-    let performanes = "";
-
-    document.querySelector(".teams-show").querySelectorAll('.custom-progress').forEach(function (element) {
-        var dataProgress = element.dataset.progress;
-
-        performanes += dataProgress + ' ';
-    });
-    performanes = performanes.slice(0, -1);
-    let dataPerformance = {
-        command: "editPerformance",
-        teamID: teamSelected,
-        performanceArray: performanes,
-        teamName: document.querySelector(".selected").dataset.teamname
-    }
-
-    socket.send(JSON.stringify(dataPerformance))
-})
 
 /**
  * eventlisteners for the buttons to add or remove from a bar, depending on if its an engine bar or team
@@ -378,23 +360,6 @@ document.querySelector("#car_performance").querySelectorAll(".bi-plus-lg").forEa
     })
 })
 
-/**
- * eventListeners on Alpine and AT teams and Renault engine to change the icon
- */
-document.getElementById("alpineTeam").addEventListener("click", function () {
-    document.getElementById("alpineTeam").firstElementChild.classList.add("d-none")
-    document.getElementById("alpineTeam").children[1].classList.remove("d-none")
-})
-
-document.getElementById("alphaTauriTeam").addEventListener("click", function () {
-    document.getElementById("alphaTauriTeam").firstElementChild.classList.add("d-none")
-    document.getElementById("alphaTauriTeam").children[1].classList.remove("d-none")
-})
-
-document.getElementById("renaultengine").addEventListener("click", function () {
-    document.getElementById("renaultengine").firstElementChild.classList.add("d-none")
-    document.getElementById("renaultengine").children[1].classList.remove("d-none")
-})
 
 /**
  * Manages the progression of the bars 
@@ -451,10 +416,14 @@ function load_performance_graph(data) {
     for (let i = 1; i <= 10; i++) {
         teamPerformances[i] = [];
     }
+    teamPerformances[32] = [];
     let minValue = Number.POSITIVE_INFINITY;
     let maxValue = Number.NEGATIVE_INFINITY;
+    console.log(data[0])
     data[0].forEach(race => {
+        console.log(race)
         for (let team in race) {
+            console.log(team)
             let value = race[team];
             teamPerformances[team].push(value);
             if (value < minValue) {

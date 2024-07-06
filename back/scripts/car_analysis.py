@@ -2,9 +2,13 @@ import sqlite3
 
 from .constants import *
 
-def get_best_parts():
+def get_best_parts(custom_team=None):
     teams = {}
-    for i in range(1, 11):
+    if custom_team:
+        team_list = list(range(1, 11)) + [32]
+    else: 
+        team_list = list(range(1, 11))
+    for i in team_list:
         teams[i] = get_parts_from_team(i)
    
     return teams
@@ -22,14 +26,19 @@ def get_parts_from_team(team_id):
     designs[0] = engine
     return designs
 
-def get_best_parts_until(day):
+def get_best_parts_until(day, custom_team=None):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
     season = day_season[1]
+
+    if custom_team:
+        team_list = list(range(1, 11)) + [32]
+    else: 
+        team_list = list(range(1, 11))
     
     teams = {}
-    for i in range(1, 11):
+    for i in team_list:
         designs = {}
         for j in range(3, 9):
             designs[j] = cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {j} AND TeamID = {i} AND ValidFrom = {season} AND ((DayCompleted > 0 AND DayCompleted < {day}) OR DayCreated < 0)").fetchall()
@@ -149,14 +158,21 @@ def get_all_races():
 
 
 
-def get_performance_all_teams(day=None, previous=None):
+def get_performance_all_teams(day=None, previous=None, custom_team=None):
     teams = {}
     contributors = get_contributors_dict()
+
+    if custom_team:
+        team_list = list(range(1, 11)) + [32]
+    else: 
+        team_list = list(range(1, 11))
+
     if day is None:
         parts = get_best_parts()
     else:
-        parts = get_best_parts_until(day)
-    for i in range(1, 11):
+        parts = get_best_parts_until(day, custom_team)
+
+    for i in team_list:
         dict = get_car_stats(parts[i])
         part_stats = get_part_stats_dict(dict)
         attributes = calculate_car_attributes(contributors, part_stats)
@@ -164,7 +180,7 @@ def get_performance_all_teams(day=None, previous=None):
         if previous:
             if previous[i] > ovr:
                 ovr = previous[i]
-        teams[i] = ovr     
+        teams[i] = ovr    
 
     return teams
 
@@ -188,14 +204,14 @@ def overwrite_performance_team(team_id, performance):
     conn.commit()
     conn.close()
 
-def get_performance_all_teams_season():
+def get_performance_all_teams_season(custom_team=None):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
     races = get_races_days()
     races_performances = []
     previous = None
     for race_day in races:
-        performances = get_performance_all_teams(race_day[1], previous)
+        performances = get_performance_all_teams(race_day[1], previous, custom_team)
         races_performances.append(performances)
         previous = performances
 
@@ -203,11 +219,15 @@ def get_performance_all_teams_season():
     return races_performances, all_races
 
 
-def get_attributes_all_teams():
+def get_attributes_all_teams(custom_team=None):
     teams = {}
     contributors = get_contributors_dict()
-    parts = get_best_parts()
-    for i in range(1, 11):
+    parts = get_best_parts(custom_team)
+    if custom_team:
+        team_list = list(range(1, 11)) + [32]
+    else: 
+        team_list = list(range(1, 11))
+    for i in team_list:
         dict = get_car_stats(parts[i])
         part_stats = get_part_stats_dict(dict)
         attributes = calculate_car_attributes(contributors, part_stats)

@@ -172,6 +172,8 @@
   --lotus-secondary-transparent: #59595930;
   --andretti-primary-transparent: #fac51c30;
   --andretti-secondary-transparent: #1e769630;
+  --custom-team-primary-transparent: #ffffff30;
+  --custom-team-secondary-transparent: #ffffff30;
 }
 
 
@@ -4234,6 +4236,28 @@ DRIVERS TABLE
   background-color: var(--general-secondary-transparent);
 }
 
+.ct-transparent .custom-icon i{
+  filter: drop-shadow(0px 0px 4px var(--custom-team-primary));
+}
+
+.ct-transparent:hover{
+  background-color: var(--custom-team-primary-transparent) !important;
+  color: var(--white-general) !important;
+  border-color: transparent !important;
+}
+
+.ct-back-transparent{
+  background-color: var(--custom-team-primary-transparent);
+}
+
+.ct-back-transparent-secondary{
+  background-color: var(--custom-secondary-transparent);
+}
+
+.ct-transparent:hover .surname{
+  color: var(--custom-team-primary) !important;
+}
+
 .rb-transparent.selected{
   background-color: var(--redbull-primary-transparent) !important;
   color: var(--white-general) !important;
@@ -4283,6 +4307,7 @@ DRIVERS TABLE
   background-color: var(--mercedes-primary-transparent) !important;
   color: var(--white-general) !important;
 }
+
 
 
 .modal-team.rb-transparent:hover{
@@ -4496,7 +4521,7 @@ DRIVERS TABLE
   z-index: 3;
   display: flex;
   position: absolute;
-  right: 10px;
+  right: 6px;
   top: 5px;
   justify-content: flex-end;
 }
@@ -5352,6 +5377,10 @@ input::-webkit-inner-spin-button {
 
 .performance-bar-progress.af{
   background-color: var(--alfa-primary);
+}
+
+.performance-bar-progress.ct{
+  background-color: var(--custom-team-primary);
 }
 
 .logo-and-name {
