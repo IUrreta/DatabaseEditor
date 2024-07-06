@@ -13,13 +13,19 @@ function createWindow () {
     icon: path.join(__dirname, "assets/images/logoAlter.png"),
     titleBarStyle: 'hidden',
     webPreferences: {
-
       preload: path.join(__dirname, 'front/preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
-      
+      webgl: true, // Habilitar WebGL
+      webSecurity: false, // Deshabilitar la seguridad web si no es necesaria
+      enableBlinkFeatures: 'ResizeObserver', // Habilitar características experimentales si es necesario
+      // Opciones adicionales
+      disableBlinkFeatures: 'AcceleratedVideoDecode', // Deshabilitar decodificación de video acelerada si no es necesaria
+      experimentalFeatures: true, // Habilitar características experimentales de Chromium
+      offscreen: false, // Deshabilitar renderizado fuera de pantalla si no es necesario
+      backgroundThrottling: false // Deshabilitar la limitación en segundo plano
     }
-  })
+  });
   // and load the index.html of the app.
   mainWindow.loadFile('front/index.html')
   mainWindow.webContents.on('will-navigate', (event, url) => {

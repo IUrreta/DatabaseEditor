@@ -9,9 +9,17 @@ class DatabaseUtils:
     def check_year_save(self):
         result = self.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='Countries_RaceRecord'").fetchone()
         if result is not None:
-            return "24"
+            name = self.cursor.execute("SELECT TeamNameLocKey FROM Teams WHERE TeamID = 32").fetchone()
+            pattern = r"\[STRING_LITERAL:Value=\|(.*?)\|\]"
+            match = re.search(pattern, name[0])
+            if match:
+                print(match.group(1))
+                name = match.group(1)
+            else:
+                name = None
+            return ["24", name]
         else:
-            return "23"
+            return ["23"]
 
     def fetch_driverNumebrs(self):
         numbers = self.cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL").fetchall()

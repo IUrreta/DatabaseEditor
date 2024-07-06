@@ -308,9 +308,6 @@ document.addEventListener('DOMContentLoaded', function () {
         "Numbers fetched": (message) => {
             loadNumbers(message.slice(1));
         },
-        "Retirement fetched": (message) => {
-            loadRetirementyear(message.slice(1));
-        },
         "H2H fetched": (message) => {
             sprintsListeners();
             racePaceListener();
@@ -439,13 +436,27 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function manage_game_year(year){
-        if (year === "24"){
+        console.log(year)
+        if (year[0] === "24"){
             document.getElementById("year23").classList.remove("activated")
             document.getElementById("year24").classList.add("activated")
+            manage_custom_team(year[1])
         }
-        else if (year === "23"){
+        else if (year[0] === "23"){
             document.getElementById("year24").classList.remove("activated")
             document.getElementById("year23").classList.add("activated")
+            manage_custom_team([null, null])
+        }
+    }
+
+    function manage_custom_team(name){
+        console.log(name)
+        if (name[1] !== null){
+            document.getElementById("customTeamTransfers").classList.remove("d-none")
+            document.querySelector(".ct-replace").textContent = name.toUpperCase()
+        }
+        else{
+            document.getElementById("customTeamTransfers").classList.add("d-none")
         }
     }
 

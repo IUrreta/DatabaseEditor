@@ -9,7 +9,7 @@ class HireCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        argument = f"hire {self.message['driverID']} {self.message['teamID']} {self.message['position']} {self.message['salary']} {self.message['signBonus']} {self.message['raceBonus']} {self.message['raceBonusPos']} {self.message['year']}"
+        argument = f"hire {self.message['driverID']} {self.message['teamID']} {self.message['position']} {self.message['salary']} {self.message['signBonus']} {self.message['raceBonus']} {self.message['raceBonusPos']} {self.message['year']} {Command.year_iterarion}"
         run_trasnsfer(argument)
         process_repack("../result", Command.path)
         info = []

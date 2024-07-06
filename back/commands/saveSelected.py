@@ -19,9 +19,10 @@ class SaveSelectedCommand(Command):
         Command.dbutils = DatabaseUtils(conn)
         game_year = Command.dbutils.check_year_save()
         game_year_list = ["Game Year", game_year]
+        Command.year_iterarion = game_year[0]
         data_json_game_year = json.dumps(game_year_list)
         await self.send_message_to_client(data_json_game_year)
-        await self.check_year_config(game_year)
+        await self.check_year_config(game_year[0])
         drivers = Command.dbutils.fetch_info()
         drivers.insert(0, "Save Loaded Succesfully")
         data_json_drivers = json.dumps(drivers)

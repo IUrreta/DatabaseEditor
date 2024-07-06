@@ -27,7 +27,7 @@ let driverEditingName;
 let driver1;
 let driver2;
 
-let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as" }
+let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 32:"ct" }
 let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
 let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3" }
 
@@ -36,6 +36,9 @@ let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bu
  */
 function remove_drivers() {
     document.querySelectorAll('.driver-space').forEach(item => {
+        item.innerHTML = ""
+    });
+    document.querySelectorAll('.affiliates-space').forEach(item => {
         item.innerHTML = ""
     });
     freeDriversDiv.innerHTML = ""
@@ -51,7 +54,6 @@ function remove_drivers() {
 function place_drivers(driversArray) {
     let divPosition;
     driversArray.forEach((driver) => {
-        console.log(driver)
         let newDiv = document.createElement("div");
         newDiv.className = "col free-driver";
         newDiv.dataset.driverid = driver[1];
@@ -76,7 +78,7 @@ function place_drivers(driversArray) {
         if(position >= 3){
             position = 3
         }
-        if (driver[2] > 0 && driver[2] <= 10) {
+        if (driver[2] > 0 && driver[2] <= 10 || driver[2] === 32) {
             addIcon(newDiv)
             divPosition = team_dict[driver[2]] + position;
         }
@@ -154,10 +156,6 @@ function loadNumbers(nums) {
 
 }
 
-function loadRetirementyear(ages){
-    document.getElementById("driverAge").innerText = "Age " + ages[1]
-    document.getElementById("retirementInput").value = ages[0]
-}
 
 /**
  * Adds the edit icon
@@ -190,7 +188,6 @@ function addUnRetireIcon(div) {
 function iconListener(icon) {
     icon.addEventListener("click", function () {
         modalType = "edit"
-        document.querySelector(".number-and-retirement").classList.remove("d-none")
         document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText + "'s details";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
@@ -262,7 +259,7 @@ function manageDrivers(...divs) {
  */
 document.getElementById("confirmButton").addEventListener('click', function () {
     if (modalType === "hire") {
-        if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
+        if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "driver-space"| originalParent.className === "affiliates-space") {
             signDriver("fireandhire")
         }
         signDriver("regular")
@@ -345,7 +342,6 @@ function signDriver(type) {
             driver: driverName,
             team: name_dict[teamOrigin.dataset.team]
         }
-
         socket.send(JSON.stringify(extra))
 
     }
@@ -424,7 +420,12 @@ interact('.free-driver').draggable({
         start(event) {
             originalParent = event.target.parentNode;
             if (originalParent.className != "main-columns-drag-section") {
-                teamOrigin = originalParent.parentNode
+                if (originalParent.className === "affiliates-space") {
+                    teamOrigin = originalParent.parentNode.parentNode
+                }
+                else{
+                    teamOrigin = originalParent.parentNode
+                }
             }
             else {
                 teamOrigin = originalParent
@@ -468,18 +469,17 @@ interact('.free-driver').draggable({
                         teamDestiniy = element.parentNode.dataset.team
                         target.dataset.teamid = inverted_dict[teamDestiniy]
                         updateColor(target)
+                        console.log(element)
                         posInTeam = element.id.charAt(2)
                         document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
-                        document.getElementById("driverAge").innerText = ""
                         if (autoContractToggle.checked) {
-                            if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "col driver-space") {
+                            if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "driver-space" | originalParent.className === "affiliates-space") {
                                 signDriver("fireandhire")
                             }
                             signDriver("autocontract")
                         }
                         else {
                             modalType = "hire"
-                            document.querySelector(".number-and-retirement").classList.add("d-none")
                             myModal.show()
 
                         }

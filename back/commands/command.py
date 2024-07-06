@@ -10,6 +10,7 @@ class Command:
 
     dbutils = None
     path = None
+    year_iterarion = None
 
     def __init__(self, message, client):
         self.type = message["command"]

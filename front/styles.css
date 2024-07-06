@@ -125,6 +125,8 @@
   --alpine-primary: #2293D1;
   --alpine-secondary: #fd48c7;
   --renault-primary: #f7c82f;
+  --custom-team-primary: #ffffff;
+  --custom-team-secondary: #ffffff;
 
   --redbull-primary-transparent: #3172bf30;
   --redbull-secondary-transparent: #ffd30030;
@@ -1516,8 +1518,6 @@ a.bi-linkedin:hover {
   margin-right: 5%;
   background-color: var(--generals);
   color: var(--white-general);
-  min-height: 660px;
-  max-height: 660px;
   overflow-y: auto;
   border-radius: 10px;
   scrollbar-width: thin;
@@ -4352,6 +4352,7 @@ DRIVERS TABLE
   display: flex;
   gap: 3px;
   box-shadow: 0 0 10px 1px var(--box-shadow);
+  backdrop-filter: blur(6px);
 }
 
 
@@ -6035,6 +6036,26 @@ input::-webkit-inner-spin-button {
   background-color: var(--haas-primary);
 }
 
+#ctstom, .ctborder-down:hover {
+  border-bottom: 2px solid var(--custom-team-primary) !important
+}
+
+.ctborder::after{
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--custom-team-primary);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.ctactivated{
+  background-color: var(--custom-team-primary);
+}
+
 .rbfont {
   color: var(--redbull-primary);
 }
@@ -6073,6 +6094,10 @@ input::-webkit-inner-spin-button {
 
 .hafont {
   color: var(--haas-primary);
+}
+
+.ctfont {
+  color: var(--custom-team-primary);
 }
 
 .rbbar-primary {
@@ -6155,6 +6180,14 @@ input::-webkit-inner-spin-button {
   background-color: var(--haas-secondary);
 }
 
+.ctbar-primary {
+  background-color: var(--custom-team-primary);
+}
+
+.ctbar-secondary {
+  background-color: var(--custom-secondary);
+}
+
 .rbborder-primary {
   border: 2px solid var(--redbull-primary);
 }
@@ -6233,6 +6266,14 @@ input::-webkit-inner-spin-button {
 
 .haborder-secondary {
   border: 2px solid var(--haas-secondary);
+}
+
+.ctborder-primary {
+  border: 2px solid var(--custom-team-primary);
+}
+
+.ctborder-secondary {
+  border: 2px solid var(--custom-secondary);
 }
 
 .predict-warning{
