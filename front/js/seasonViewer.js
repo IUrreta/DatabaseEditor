@@ -12,7 +12,8 @@ const logos_disc = {
     7: '../assets/images/haas.png',
     8: '../assets/images/alphatauri.png',
     9: '../assets/images/alfaromeo.png',
-    10: '../assets/images/astonmartin.png'
+    10: '../assets/images/astonmartin.png',
+    32: '../assets/images/customTeam.png'
 };
 const points_race = {
     1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1,
@@ -495,6 +496,9 @@ function new_load_teams_table(data) {
     let datazone = document.querySelector(".teams-table-data")
     datazone.innerHTML = ""
     let teamData = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [] }
+    if (game_version === 2024 && custom_team) {
+        teamData[32] = []
+    }
     data.forEach(function (driver) {
         let races = driver.slice(3)
         races.forEach(function (race) {
@@ -502,7 +506,6 @@ function new_load_teams_table(data) {
             teamData[team].push(race)
         })
     })
-    //itearte for each team in teamData
     for (let team in teamData) {
         //order the rray by the firit element of each elmeent
         teamData[team].sort((a, b) => a[0] - b[0])
@@ -549,79 +552,81 @@ function new_addTeam(teamData, name, pos, id) {
     let driverCounted = 0
     let teampoints = 0
     //only take pair indexes
-    teamData.forEach(function (race, index) {
-        if (index % 2 === 0) {
-            let raceDiv = document.createElement("div")
-            raceDiv.classList = "teams-table-normal"
-            if (race.length > 0) {
-                let driver1 = teamData[index]
-                let driver2 = teamData[index + 1]
-                raceDiv.dataset.raceid = driver1[0]
-                let driver1Points = 0
-                let driver2Points = 0
-                let driver1Pos = 0
-                let driver2Pos = 0
-                if (driver1[2] === -1) {
-                    driver1Points = 0
-                    driver1Pos = "DNF"
-                }
-                else {
-                    driver1Points = driver1[2]
-                    driver1Pos = driver1[1]
-                }
-                if (driver2[2] === -1) {
-                    driver2Points = 0
-                    driver2Pos = "DNF"
-                }
-                else {
-                    driver2Points = driver2[2]
-                    driver2Pos = driver2[1]
-                }
-                raceDiv.dataset.points = parseInt(driver1Points) + parseInt(driver2Points)
-                raceDiv.dataset.pos1 = driver1Pos
-                raceDiv.dataset.pos2 = driver2Pos
-                raceDiv.dataset.quali1 = driver1[4]
-                raceDiv.dataset.quali2 = driver2[4]
-                raceDiv.dataset.fastlap1 = driver1[3]
-                raceDiv.dataset.fastlap2 = driver2[3]
-                teampoints += parseInt(raceDiv.dataset.points)
-                if (race.length > 6) {
-                    let d1SprintPoints = 0
-                    let d2SprintPoints = 0
-                    let d1SprintPos = 0
-                    let d2SprintPos = 0
-                    if (driver1[5] === -1) {
-                        d1SprintPoints = 0
-                        d1SprintPos = "DNF"
+    if (teamData !== undefined){
+        teamData.forEach(function (race, index) {
+            if (index % 2 === 0) {
+                let raceDiv = document.createElement("div")
+                raceDiv.classList = "teams-table-normal"
+                if (race.length > 0) {
+                    let driver1 = teamData[index]
+                    let driver2 = teamData[index + 1]
+                    raceDiv.dataset.raceid = driver1[0]
+                    let driver1Points = 0
+                    let driver2Points = 0
+                    let driver1Pos = 0
+                    let driver2Pos = 0
+                    if (driver1[2] === -1) {
+                        driver1Points = 0
+                        driver1Pos = "DNF"
                     }
                     else {
-                        d1SprintPoints = driver1[5]
-                        d1SprintPos = driver1[6]
+                        driver1Points = driver1[2]
+                        driver1Pos = driver1[1]
                     }
-                    if (driver2[5] === -1) {
-                        d2SprintPoints = 0
-                        d2SprintPos = "DNF"
+                    if (driver2[2] === -1) {
+                        driver2Points = 0
+                        driver2Pos = "DNF"
                     }
                     else {
-                        d2SprintPoints = driver2[5]
-                        d2SprintPos = driver2[6]
+                        driver2Points = driver2[2]
+                        driver2Pos = driver2[1]
                     }
-                    raceDiv.dataset.sprintpoints = parseInt(d1SprintPoints) + parseInt(d2SprintPoints)
-                    raceDiv.dataset.sprintpos1 = d1SprintPos
-                    teampoints += parseInt(raceDiv.dataset.sprintpoints)
-                    raceDiv.dataset.sprintpos2 = d2SprintPos
-
+                    raceDiv.dataset.points = parseInt(driver1Points) + parseInt(driver2Points)
+                    raceDiv.dataset.pos1 = driver1Pos
+                    raceDiv.dataset.pos2 = driver2Pos
+                    raceDiv.dataset.quali1 = driver1[4]
+                    raceDiv.dataset.quali2 = driver2[4]
+                    raceDiv.dataset.fastlap1 = driver1[3]
+                    raceDiv.dataset.fastlap2 = driver2[3]
+                    teampoints += parseInt(raceDiv.dataset.points)
+                    if (race.length > 6) {
+                        let d1SprintPoints = 0
+                        let d2SprintPoints = 0
+                        let d1SprintPos = 0
+                        let d2SprintPos = 0
+                        if (driver1[5] === -1) {
+                            d1SprintPoints = 0
+                            d1SprintPos = "DNF"
+                        }
+                        else {
+                            d1SprintPoints = driver1[5]
+                            d1SprintPos = driver1[6]
+                        }
+                        if (driver2[5] === -1) {
+                            d2SprintPoints = 0
+                            d2SprintPos = "DNF"
+                        }
+                        else {
+                            d2SprintPoints = driver2[5]
+                            d2SprintPos = driver2[6]
+                        }
+                        raceDiv.dataset.sprintpoints = parseInt(d1SprintPoints) + parseInt(d2SprintPoints)
+                        raceDiv.dataset.sprintpos1 = d1SprintPos
+                        teampoints += parseInt(raceDiv.dataset.sprintpoints)
+                        raceDiv.dataset.sprintpos2 = d2SprintPos
+    
+                    }
                 }
+                else {
+                    raceDiv.innerText = "-"
+                }
+                let newText = manageTeamsText(raceDiv)
+                raceDiv.innerHTML = newText.innerHTML
+                row.appendChild(raceDiv)
             }
-            else {
-                raceDiv.innerText = "-"
-            }
-            let newText = manageTeamsText(raceDiv)
-            raceDiv.innerHTML = newText.innerHTML
-            row.appendChild(raceDiv)
-        }
-
-    })
+    
+        })
+    }
     let pointsDiv = document.createElement("div")
     pointsDiv.classList = "teams-table-points bold-font"
     pointsDiv.innerText = teampoints
@@ -886,7 +891,7 @@ function generateYearsMenu(actualYear) {
     yearH2H.innerHTML = ""
     yearPrediction.innerHTML = ""
     yearPredictionModal.innerHTML = ""
-    for (let year = actualYear; year >= 2023; year--) {
+    for (let year = actualYear; year >= game_version; year--) {
         let a = document.createElement("a");
         a.textContent = year.toString();
         a.classList = "dropdown-item"

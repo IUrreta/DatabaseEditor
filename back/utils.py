@@ -111,10 +111,11 @@ class DatabaseUtils:
 
         for tupla in staff:
             id = tupla[2]
-            result = self.format_names_get_stats(tupla, "staff"+str(tupla[4]))
-            retirement = self.fetch_driverRetirement(id)
-            result += tuple(retirement)
-            formatted_tuples.append(result)
+            if tupla[0] != "Placeholder":
+                result = self.format_names_get_stats(tupla, "staff"+str(tupla[4]))
+                retirement = self.fetch_driverRetirement(id)
+                result += tuple(retirement)
+                formatted_tuples.append(result)
             
 
         return formatted_tuples
@@ -241,11 +242,12 @@ class DatabaseUtils:
         formatted_tuples = []
         for tupla in drivers:
             id = tupla[2]
-            result = self.format_names_get_stats(tupla, "driver")
-            retirement = self.fetch_driverRetirement(id)
-            driver_number = self.fetchDriverNumberDetails(id)
-            result += tuple(driver_number) + tuple(retirement)
-            formatted_tuples.append(result)
+            if tupla[0] != "Placeholder":
+                result = self.format_names_get_stats(tupla, "driver")
+                retirement = self.fetch_driverRetirement(id)
+                driver_number = self.fetchDriverNumberDetails(id)
+                result += tuple(driver_number) + tuple(retirement)
+                formatted_tuples.append(result)
 
         return formatted_tuples
 
@@ -310,7 +312,7 @@ class DatabaseUtils:
         nombre_match = re.search(nombre_pattern, name[0])
         apellido_match = re.search(apellido_pattern, name[1])
 
-
+        
         nombre = self.remove_number(nombre_match.group(2))
         apellido = self.remove_number(apellido_match.group(1))
         name_formatted = f"{nombre} {apellido}"

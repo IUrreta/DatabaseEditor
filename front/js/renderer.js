@@ -4,6 +4,8 @@ const { exec } = require('child_process');
 const path = require('path');
 const { marked } = require('marked');
 let conn = 0;
+let game_version = 2023;
+let custom_team = false;
 
 const batFilePath = path.join(__dirname, '../back/startBack.bat');
 console.log(batFilePath)
@@ -157,13 +159,12 @@ function teamsModeHandler() {
         costCapEdit: costCapTransactionData,
         confidence : confidenceData,
         pitCrew: pitCrew,
-        teamName : original_dict[teamCod]
+        teamName : combined_dict[teamCod]
     }
     socket.send(JSON.stringify(data))
 }
 
 function performanceModeHandler() {
-    console.log("AAAAAAAAAA")
     let parts = {};
     document.querySelectorAll(".part-performance").forEach(function (elem) {
         let part = elem.dataset.part;
@@ -441,19 +442,38 @@ document.addEventListener('DOMContentLoaded', function () {
         if (year[0] === "24"){
             document.getElementById("year23").classList.remove("activated")
             document.getElementById("year24").classList.add("activated")
+            document.getElementById("drs24").classList.remove("d-none")
+            document.getElementById("drs24").dataset.attribute = "3"
+            game_version = 2024
             manage_custom_team(year)
+            document.querySelectorAll(".brake-cooling-replace").forEach(function(elem){
+                elem.textContent = "Tyre preservation"
+            })
         }
         else if (year[0] === "23"){
             document.getElementById("year24").classList.remove("activated")
             document.getElementById("year23").classList.add("activated")
+            document.getElementById("drs24").classList.add("d-none")
+            document.getElementById("drs24").dataset.attribute = "-1"
+            if (32 in combined_dict){
+                delete combined_dict[32]
+            }
+            game_version = 2023
             manage_custom_team([null, null])
+            document.querySelectorAll(".brake-cooling-replace").forEach(function(elem){
+                elem.textContent = "Brake cooling"
+            })
         }
     }
 
     function manage_custom_team(nameColor){
         if (nameColor[1] !== null){
+            custom_team = true
+            combined_dict[32] = nameColor[1]
             document.getElementById("customTeamTransfers").classList.remove("d-none")
             document.getElementById("customTeamPerformance").classList.remove("d-none")
+            document.getElementById("customTeamDropdown").classList.remove("d-none")
+            document.getElementById("customTeamComparison").classList.remove("d-none")
             document.getElementById("customTeamPerformance").dataset.teamName = nameColor[1]
             document.querySelectorAll(".ct-replace").forEach(function(elem){
                 elem.textContent = nameColor[1].toUpperCase()
@@ -464,10 +484,15 @@ document.addEventListener('DOMContentLoaded', function () {
             root.style.setProperty('--custom-team-secondary', nameColor[3]);
             root.style.setProperty('--custom-team-primary-transparent', nameColor[2] + "30");
             root.style.setProperty('--custom-team-secondary-transparent', nameColor[3] + "30");
+            colors_dict["320"] = nameColor[2]
+            colors_dict["321"] = nameColor[3]
         }
         else{
+            custom_team = false
             document.getElementById("customTeamTransfers").classList.add("d-none")
             document.getElementById("customTeamPerformance").classList.add("d-none")
+            document.getElementById("customTeamDropdown").classList.add("d-none")
+            document.getElementById("customTeamComparison").classList.add("d-none")
         }
     }
 

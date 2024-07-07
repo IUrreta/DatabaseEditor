@@ -1517,7 +1517,7 @@ a.bi-linkedin:hover {
 
 .main-columns-drag-section {
   margin-left: 14px;
-  margin-right: 5%;
+  margin-right: 14px;
   background-color: var(--generals);
   color: var(--white-general);
   overflow-y: auto;
@@ -1709,7 +1709,6 @@ DRIVERS TABLE
 }
 
 .drivers-table-data, .teams-table-data{
-  max-height: 620px;
   overflow-y: auto;
   font-size: 15px;
 }
@@ -2075,6 +2074,10 @@ DRIVERS TABLE
 
 .teams-table-row .aficonback{
   background-color: var(--alfa-primary)
+}
+
+.teams-table-row .cticonback{
+  background-color: var(--custom-team-primary)
 }
 
 
@@ -2891,7 +2894,6 @@ DRIVERS TABLE
 
 .driver1-name:hover, .driver2-name:hover {
   color: var(--white-general);
-  background-color: var(--elements-hover);
 }
 
 .driver1-second, .driver2-second{
@@ -3169,6 +3171,7 @@ DRIVERS TABLE
   margin-left: 0%;
   margin-right: 14px;
   display: flex;
+  height: 100%;
 }
 
 .btn-number {
@@ -3209,7 +3212,7 @@ DRIVERS TABLE
 .custom-modal {
   min-width: 600px !important;
   z-index: 2000 !important;
-  border-radius: 50% !important;
+  border-radius: 10px !important;
 }
 
 .drivers-modal-zone, .teams-modal-zone{
@@ -4251,7 +4254,7 @@ DRIVERS TABLE
 }
 
 .ct-back-transparent-secondary{
-  background-color: var(--custom-secondary-transparent);
+  background-color: var(--custom-team-secondary-transparent);
 }
 
 .ct-transparent:hover .surname{
@@ -4853,6 +4856,14 @@ DRIVERS TABLE
 }
 
 .team-menu-haas{
+  width: 40px;
+  height: 40px;
+  padding-bottom: 5px;
+  padding-top: 7px;
+  padding-left: 6px;
+}
+
+.team-menu-custom{
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -5642,11 +5653,15 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
+.logo-margin-top{
+  margin-top: 2px;
+
+}
+
 .redbulllogo, #rblogo {
   width: 40px;
   height: 40px;
   padding-bottom: 8px;
-  padding-left: 5px;
   padding-top: 7px;
 }
 
@@ -5758,6 +5773,15 @@ input::-webkit-inner-spin-button {
 }
 
 .haaslogo, #halogo {
+  width: 40px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-top: 4px;
+  padding-left: 3px;
+  padding-right: 2px;
+}
+
+.customlogo{
   width: 40px;
   height: 40px;
   padding-bottom: 6px;
@@ -6214,7 +6238,7 @@ input::-webkit-inner-spin-button {
 }
 
 .ctbar-secondary {
-  background-color: var(--custom-secondary);
+  background-color: var(--custom-team-secondary);
 }
 
 .rbborder-primary {
@@ -6302,7 +6326,7 @@ input::-webkit-inner-spin-button {
 }
 
 .ctborder-secondary {
-  border: 2px solid var(--custom-secondary);
+  border: 2px solid var(--custom-team-secondary);
 }
 
 .predict-warning{

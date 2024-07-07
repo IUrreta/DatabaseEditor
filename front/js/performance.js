@@ -405,6 +405,7 @@ function load_performance_graph(data) {
     data[1].forEach(function (elem) {
         labelsArray.push(races_names[elem[2]])
     })
+    labelsArray.unshift("")
     if (typeof performanceGraph !== 'undefined' && performanceGraph !== null) {
         performanceGraph.destroy();
     }
@@ -419,11 +420,11 @@ function load_performance_graph(data) {
     teamPerformances[32] = [];
     let minValue = Number.POSITIVE_INFINITY;
     let maxValue = Number.NEGATIVE_INFINITY;
-    console.log(data[0])
-    data[0].forEach(race => {
-        console.log(race)
+    let first = data[0][0]
+    let performances = [first, ...data[0]]
+    console.log(performances)
+    performances.forEach(race => {
         for (let team in race) {
-            console.log(team)
             let value = race[team];
             teamPerformances[team].push(value);
             if (value < minValue) {

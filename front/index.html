@@ -643,7 +643,7 @@
             <div class="teams-modal-zone mt-2">
               <div class="col modal-team fe-transparent d-none" data-teamid="1">
                 <div class="logo-and-name">
-                  <img src="../assets/images/ferrari.png" class="ferrarilogo front-gradient">
+                  <img src="../assets/images/ferrari.png" class="ferrarilogo front-gradient logo-margin-top">
                   <div class="team-name bold-font front-gradient">FERRARI</div>
                 </div>
                 <div class="buttons-drivers-modal">
@@ -653,7 +653,7 @@
               </div>
               <div class="col modal-team mc-transparent d-none" data-teamid="2">
                 <div class="logo-and-name">
-                  <img src="../assets/images/mclaren.png" class="mclarenlogo front-gradient">
+                  <img src="../assets/images/mclaren.png" class="mclarenlogo front-gradient logo-margin-top">
                   <div class="team-name bold-font front-gradient">MCLAREN</div>
                 </div>
                 <div class="buttons-drivers-modal">
@@ -663,7 +663,7 @@
               </div>
               <div class="col modal-team rb-transparent d-none" data-teamid="3">
                 <div class="logo-and-name">
-                  <img src="../assets/images/redbull.png" class="redbulllogo front-gradient">
+                  <img src="../assets/images/redbull.png" class="redbulllogo front-gradient logo-margin-top">
                   <div class="team-name bold-font front-gradient">RED BULL</div>
                 </div>
                 <div class="buttons-drivers-modal">
@@ -693,7 +693,7 @@
               </div>
               <div class="col modal-team wi-transparent d-none" data-teamid="6">
                 <div class="logo-and-name">
-                  <img src="../assets/images/williams.png" class="williamslogo front-gradient">
+                  <img src="../assets/images/williams.png" class="williamslogo front-gradient logo-margin-top">
                   <div class="team-name bold-font front-gradient">WILLIAMS</div>
                 </div>
                 <div class="buttons-drivers-modal">
@@ -703,7 +703,7 @@
               </div>
               <div class="col modal-team ha-transparent d-none" data-teamid="7">
                 <div class="logo-and-name">
-                  <img src="../assets/images/haas.png" class="haaslogo front-gradient">
+                  <img src="../assets/images/haas.png" class="haaslogo front-gradient logo-margin-top">
                   <div class="team-name bold-font front-gradient">HAAS</div>
                 </div>
                 <div class="buttons-drivers-modal">
@@ -723,7 +723,7 @@
               </div>
               <div class="col modal-team af-transparent d-none" data-teamid="9">
                 <div class="logo-and-name">
-                  <img src="../assets/images/alfaromeo.png" class="alfalogo alfalogo-replace front-gradient">
+                  <img src="../assets/images/alfaromeo.png" class="alfalogo alfalogo-replace front-gradient logo-margin-top">
                   <div class="team-name bold-font front-gradient alfa-name">ALFA ROMEO</div>
                 </div>
                 <div class="buttons-drivers-modal">
@@ -739,6 +739,17 @@
                 <div class="buttons-drivers-modal">
                   <div data-teamid="10" class="H2Hradio" data-state="unchecked">H2H</div>
                   <div data-teamid="10" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col modal-team ct-transparent d-none" data-teamid="32" id="customTeamComparison">
+                <div class="logo-and-name">
+                  <img src="../assets/images/customTeam.png" class="customlogo front-gradient logo-margin-top">
+                  <div class="team-name bold-font ps-1 front-gradient ct-replace">CUSTOM TEAM</div>
+                </div>
+                <div class="buttons-drivers-modal">
+                  <div data-teamid="32" class="H2Hradio" data-state="unchecked">H2H</div>
+                  <div data-teamid="32" class="GraphButton" data-state="unchecked"><i class="bi bi-graph-up"></i>
                   </div>
                 </div>
               </div>
@@ -1446,7 +1457,7 @@
             </div>
             <div class="team-template ctborder d-none" id="customTeamTransfers">
               <div class="new-logo-and-name">
-                <img src="" class="haaslogo">
+                <img src="../assets/images/customTeam.png" class="customlogo">
                 <div class="team-name bold-font ct-replace">CUSTOM TEAM</div>
               </div>
               <div class="drivers-section" data-team="custom">
@@ -2242,6 +2253,14 @@
                   ASTON MARTIN
                 </div>
               </a>
+              <a class="dropdown-item ctborder-down bold-font" style="cursor: pointer;" data-teamid="32" id="customTeamDropdown">
+                <div class="team-menu-logo">
+                  <img src="../assets/images/customTeam.png" class="team-menu-custom">
+                </div>
+                <div class="team-menu-name ct-replace" style="margin-right: 5px;">
+                  CUSTOM TEAM
+                </div>
+              </a>
             </ul>
           </div>
           <div class="title bold-font py-3" id="teamTitle">
@@ -2902,7 +2921,7 @@
                 <a class="dropdown-item" href="#" data-attribute="high_speed">High speed</a>
                 <a class="dropdown-item" href="#" data-attribute="drs">DRS Effectiveness</a>
                 <a class="dropdown-item" href="#" data-attribute="dirty_air">Dirty air tolerance</a>
-                <a class="dropdown-item" href="#" data-attribute="brake_cooling">Brake cooling</a>
+                <a class="dropdown-item brake-cooling-replace" href="#" data-attribute="brake_cooling">Brake cooling</a>
                 <a class="dropdown-item" href="#" data-attribute="engine_cooling">Engine cooling</a>
                 <a class="dropdown-item" href="#" data-attribute="overall">Overall</a>
               </ul>
@@ -3093,6 +3112,14 @@
                         <i class="bi bi-plus-lg"></i>
                       </div>
                     </div>
+                    <div class="part-performance-stat" data-attribute="3" id="drs24">
+                      <div class="part-performance-stat-title">DRS Delta</div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash-lg"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus-lg"></i>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div class="part-performance" data-part="front_wing">
@@ -3115,7 +3142,7 @@
                       </div>
                     </div>
                     <div class="part-performance-stat" data-attribute="2">
-                      <div class="part-performance-stat-title">Brake cooling</div>
+                      <div class="part-performance-stat-title brake-cooling-replace">Brake cooling</div>
                       <div class="stat-number">
                         <i class="bi bi-dash-lg"></i>
                         <input type="text" class="custom-input-number">
@@ -3250,7 +3277,7 @@
                       </div>
                     </div>
                     <div class="part-performance-stat" data-attribute="2">
-                      <div class="part-performance-stat-title">Brake cooling</div>
+                      <div class="part-performance-stat-title brake-cooling-replace">Brake cooling</div>
                       <div class="stat-number">
                         <i class="bi bi-dash-lg"></i>
                         <input type="text" class="custom-input-number">

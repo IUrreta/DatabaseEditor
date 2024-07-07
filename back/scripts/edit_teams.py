@@ -5,6 +5,8 @@ def fetch_teamData(teamID):
     cursor = conn.cursor()
     levCon = cursor.execute(f"SELECT BuildingID, DegradationValue FROM Buildings_HQ WHERE TeamID = {teamID}").fetchall()
     data = [(x, round(y, 2)) for x, y in levCon]
+    if teamID == "32":
+        data.append(("160", 1))
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
     days = cursor.execute(f"SELECT Min(Day), Max(Day) FROM Seasons_Deadlines WHERE SeasonID = {day_season[1]}").fetchone()
     costCap = cursor.execute(f"SELECT SUM(value) as Value FROM Finance_Transactions WHERE Day >= {days[0]} AND Day < {days[1]} AND AffectsCostCap = 1 AND TeamID = {teamID}").fetchall()

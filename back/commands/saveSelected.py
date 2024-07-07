@@ -18,6 +18,7 @@ class SaveSelectedCommand(Command):
         conn = sqlite3.connect("../result/main.db")
         Command.dbutils = DatabaseUtils(conn)
         game_year = Command.dbutils.check_year_save()
+        self.update_team_dict(game_year[1])
         game_year_list = ["Game Year", game_year]
         Command.year_iterarion = game_year[0]
         data_json_game_year = json.dumps(game_year_list)
@@ -58,6 +59,10 @@ class SaveSelectedCommand(Command):
         performance.insert(0, "Performance fetched")
         data_json_performance = json.dumps(performance)
         await self.send_message_to_client(data_json_performance)
+
+    def update_team_dict(self, name):
+        if name is not None:
+            self.team_replace_dict[name] = name
 
     def create_backup(self, originalFIle, saveFile):
         backup_path = "./../backup"
