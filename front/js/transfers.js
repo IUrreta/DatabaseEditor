@@ -290,15 +290,6 @@ function editContract() {
     document.querySelector(".contract-options").querySelectorAll(".rounded-input").forEach(function (elem) {
         values.push(elem.value)
     })
-    let number = document.querySelector("#numberButton").textContent
-    let age = document.querySelector("#retirementInput").value
-    let wants1;
-    if(document.querySelector("#driverNumber1").checked){
-        wants1 = 1;
-    }
-    else{
-        wants1 = 0;
-    }
 
     let data = {
         command: "editContract",
@@ -308,10 +299,7 @@ function editContract() {
         signBonus: values[2],
         raceBonus: values[3],
         raceBonusPos: values[4],
-        driverNumber: number,
-        wantsN1: wants1,
         driver: driverEditingName,
-        retirementAge: age
     }
     socket.send(JSON.stringify(data))
 }

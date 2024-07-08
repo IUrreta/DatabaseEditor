@@ -9,7 +9,6 @@ class EditPerformanceCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        print(self.message)
         overwrite_performance_team(self.message['teamID'], self.message['parts'])
         process_repack("../result", Command.path)
         info = []

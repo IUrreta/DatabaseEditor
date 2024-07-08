@@ -110,13 +110,34 @@ function editModeHandler() {
     document.querySelector(".clicked").dataset.stats = stats;
     let new_ovr = calculateOverall(stats, typeOverall);
     document.querySelector(".clicked").childNodes[1].innerHTML = new_ovr;
-
+    let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
+    document.querySelector(".clicked").dataset.retirement = retirement;
+    let driverNum = document.getElementById("numberButton").textContent;
+    let wants1;
+    if(document.querySelector("#driverNumber1").checked){
+        wants1 = 1;
+    }
+    else{
+        wants1 = 0;
+    }
+    let mentality = -1
+    if (document.querySelector(".clicked").dataset.mentality0){
+        mentality = ""
+        document.querySelectorAll(".mentality-level-indicator").forEach(function(elem, index){
+            mentality += elem.dataset.value + " "
+            document.querySelector(".clicked").dataset["mentality" + index] = elem.dataset.value
+        })
+    }
     let dataStats = {
         command: "editStats",
         driverID: id,
         driver: driverName,
         statsArray: stats,
-        typeStaff: typeEdit
+        typeStaff: typeEdit,
+        retirement: retirement,
+        driverNum: driverNum,
+        wants1: wants1,
+        mentality: mentality
     };
 
     socket.send(JSON.stringify(dataStats));
@@ -261,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["24 Year" ,"Game Year","Performance fetched","Season performance fetched","Config", "ERROR", "Montecarlo fetched","TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+    const noNotifications = ["Parts stats fetched", "24 Year" ,"Game Year","Performance fetched","Season performance fetched","Config", "ERROR", "Montecarlo fetched","TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -378,7 +399,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll(".modal").forEach(function (elem) {
         elem.addEventListener('show.bs.modal', function () {
-            console.log("ME CORTO LOS HUEVOS")
             setTimeout(function () {
                 var modalBackdrop = document.querySelector('.modal-backdrop');
                 var cetContainer = document.querySelector('.cet-container');
@@ -701,19 +721,15 @@ document.addEventListener('DOMContentLoaded', function () {
         let toast = createToast(noti, error)
         setTimeout(function () {
             toast.classList.remove("myShow")
-        }, 500)
+        }, 300)
         notificationPanel.appendChild(toast);
         if (!error) {
             setTimeout(function () {
-                toast.querySelector(".notification-line").classList.add("start");
-            }, 10);
-            setTimeout(function () {
                 toast.classList.add("hide")
-
                 setTimeout(function () {
                     notificationPanel.removeChild(toast);
-                }, 480);
-            }, 3000);
+                }, 280);
+            }, 4000);
         }
     }
 
@@ -725,10 +741,14 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     function createToast(msg, err) {
         let toastFull = document.createElement('div');
-        let toastDiv = document.createElement('div');
+        let toastIcon = document.createElement('div');
         let toastBodyDiv = document.createElement('div');
-        let line = document.createElement('div');
+        let generalDiv = document.createElement('div');
+        let icon = document.createElement('i');
+        let cross = document.createElement('i');
 
+
+        generalDiv.classList.add('d-flex', "align-items-center")
         // Asignar clases y atributos
         toastFull.classList.add('toast', "d-flex", "myShow", "d-block", "custom-toast")
         toastFull.style.flexDirection = "column"
@@ -736,25 +756,34 @@ document.addEventListener('DOMContentLoaded', function () {
         toastFull.setAttribute('aria-live', 'assertive');
         toastFull.setAttribute('aria-atomic', 'true');
 
-        toastDiv.classList.add('align-items-center');
-        if (!err){
-            line.classList.add("notification-line")
+        toastIcon.classList.add("toast-icon")
+        if (!err) {
+            icon.className = "bi bi-check-circle"
+            toastIcon.classList.add("success")
         }
+        else{
+            icon.className = "bi bi-x-circle"
+            toastIcon.classList.add("error")
+        }
+        toastIcon.appendChild(icon)
 
-        toastBodyDiv.classList.add('d-flex', 'toast-body');
+        toastBodyDiv.classList.add('d-flex', 'toast-body', "custom-toast-body");
         toastBodyDiv.textContent = msg;
         toastBodyDiv.style.opacity = "1"
         toastBodyDiv.style.color = "white"
         toastBodyDiv.style.zIndex = "6"
 
-        if (err) {
-            toastBodyDiv.classList.add("toast-error")
-            line.classList.add("line-error")
-        }
-
-        toastDiv.appendChild(toastBodyDiv);
-        toastFull.appendChild(toastDiv)
-        toastFull.appendChild(line)
+        generalDiv.appendChild(toastIcon)
+        generalDiv.appendChild(toastBodyDiv)
+        toastFull.appendChild(generalDiv)
+        toastFull.appendChild(cross)
+        cross.className = "bi bi-x custom-toast-cross"
+        cross.addEventListener("click", function () {
+            toastFull.classList.add("hide")
+            setTimeout(function () {
+                notificationPanel.removeChild(toastFull);
+            }, 280);
+        })
 
         return toastFull;
     }

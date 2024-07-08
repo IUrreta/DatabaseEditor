@@ -84,23 +84,31 @@ function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
 
     upperDiv.appendChild(textDiv);
     upperDiv.appendChild(img);
-
+    let ATAInput;
     let lowerDiv = document.createElement('div');
     lowerDiv.classList.add('lower-race');
-
-    lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint</label></div><div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>";
+    lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint</label></div>";
+    if (game_version === 2023){
+        lowerDiv.innerHTML += "<div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>";
+        ATAInput = lowerDiv.querySelector(".ata-input")
+    }
     let SprintInput = lowerDiv.querySelector(".sprint-input")
-    let ATAInput = lowerDiv.querySelector(".ata-input")
+    
     SprintInput.addEventListener("click",function (event) {
-        if (ATAInput.checked) ATAInput.checked = false
+        if (game_version === 2023){
+            if (ATAInput.checked) ATAInput.checked = false
+        }
         if (SprintInput.checked) div.dataset.type = 1
         else div.dataset.type = 0
     })
-    ATAInput.addEventListener("click",function (event) {
-        if (SprintInput.checked) SprintInput.checked = false
-        if (ATAInput.checked) div.dataset.type = 2
-        else div.dataset.type = 0
-    })
+    if (game_version === 2023){
+        ATAInput.addEventListener("click",function (event) {
+            if (SprintInput.checked) SprintInput.checked = false
+            if (ATAInput.checked) div.dataset.type = 2
+            else div.dataset.type = 0
+        })
+    }
+
     leftDiv.appendChild(upperDiv);
     leftDiv.appendChild(lowerDiv);
     if(type === 1){

@@ -105,5 +105,6 @@ class SaveSelectedCommand(Command):
                 msgData = data
                 info = ["Config", msgData]
                 info = json.dumps(info)
-                await self.send_message_to_client(info)
+                if data["ask"] != 3:
+                    await self.send_message_to_client(info)
         

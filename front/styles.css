@@ -26,6 +26,7 @@
   --table-third-light: #f2cda6;
   --text-outline: #000000;
   --blur-color: #616161d3;
+  --toast-background : #5a5b5c;
 
   --mentality-enthusiastic: #c055e3;
   --mentality-positive: #10ffff;
@@ -1052,12 +1053,53 @@ a.bi-linkedin:hover {
 }
 
 .custom-toast{
-  background-color: rgba(187, 182, 236, 0.5) !important;
+  background-color: var(--toast-background) !important;
   color: var(--white-general);
   border-radius: 10px !important;
-  width: 420px !important;
-  backdrop-filter: blur(3px);
+  min-width: 420px !important;
   z-index: 9999 !important;
+  flex-direction: row !important;
+  position: relative !important;
+  justify-content: space-between !important;
+}
+
+.toast-icon{
+  font-size: 26px;
+  height: 65%;
+  border-right: 2px solid transparent;
+  display: flex;
+  padding: 0 10px;
+  align-items: center;
+}
+
+.custom-toast-body{
+  font-size: 16px;
+  text-align: left;
+}
+
+.toast-icon.success{
+  border-color: var(--positive-general);
+  color: var(--positive-general)
+}
+
+.toast-icon.error{
+  border-color: var(--negative-general);
+  color: var(--negative-general);
+}
+
+.custom-toast-cross{
+  padding: 10px;
+  font-size: 30px;
+  color: var(--dark-text);
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.custom-toast-cross:hover{
+  color: var(--text-selected);
+  transform: scale(1.1);
 }
 
 .bar-space{
@@ -1111,11 +1153,11 @@ a.bi-linkedin:hover {
 }
 
 .hide {
-  animation: fadeOut 0.5s;
+  animation: fadeOut 0.3s;
 }
 
 .myShow{
-  animation: myFadeIn 0.5s;
+  animation: myFadeIn 0.3s;
 }
 
 @keyframes fadeOut {
@@ -2526,6 +2568,7 @@ DRIVERS TABLE
   gap: 4px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 .right-race{

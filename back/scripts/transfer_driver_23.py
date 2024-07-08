@@ -306,12 +306,8 @@ def run_script(option=""):
         
         query = "UPDATE Staff_Contracts SET Salary=?, EndSeason=?, StartingBonus=?, RaceBonus=?, RaceBonusTargetPos=? WHERE ContractType = 0 AND StaffID =?"
         cursor.execute(query, params_to_update)
-        old_num = cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {params[6]}").fetchone()
-        if old_num is not None:
-            cursor.execute(f"UPDATE Staff_DriverNumbers SET CurrentHolder = NULL WHERE Number = {old_num[0]}")
-        cursor.execute(f"UPDATE Staff_DriverNumbers SET CurrentHolder = {params[6]} WHERE Number = {params[7]}")
-        cursor.execute(f"UPDATE Staff_DriverData SET WantsChampionDriverNumber = {params[8]} WHERE StaffID = {params[6]}")
-        cursor.execute(f"UPDATE Staff_GameData SET RetirementAge = {params[9]} WHERE StaffID = {params[6]}")
+
+
 
 
     conn.commit()

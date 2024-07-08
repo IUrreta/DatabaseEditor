@@ -259,7 +259,6 @@ class DatabaseUtils:
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
                     if mentality:
-                        print(mentality)
                         result += tuple(mentality[0]) + tuple(mentality[1]) + tuple(mentality[2])
                 formatted_tuples.append(result)
 
