@@ -44,7 +44,8 @@ function reubicate(div0,div1,beforeAfter) {
  * Adds a race in the calendar div
  * @param {string} code Code from the race
  */
-function addRace(code, rainQ, rainR, type, trackID, state) {
+function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
+    console.log(code, rainQ, rainR, type, trackID, state)
     let imageUrl = codes_dict[code];
 
     let div = document.createElement('div');
@@ -56,6 +57,7 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
     div.dataset.trackid = trackID
     div.dataset.rainQ = rainQ
     div.dataset.rainR = rainR
+    div.dataset.rainP = rainP
     div.dataset.type = type
     div.dataset.state = state
     if(state === 2){
@@ -112,7 +114,7 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
     qWeather.className = "full-quali-weather"
     let qName = document.createElement('div');
     qName.className = "session-name bold-font"
-    qName.innerText ="Q"
+    qName.innerText ="Sat"
     let wSelector = document.createElement('div');
     wSelector.className = "weather-selector"
     let leftArrow = document.createElement('i');
@@ -129,8 +131,12 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
     qWeather.appendChild(qName)
     qWeather.appendChild(wSelector)
     let rWeather = qWeather.cloneNode(true)
-    rWeather.firstChild.innerText = "R"
+    rWeather.firstChild.innerText = "Sun"
     rWeather.children[1].children[1].dataset.value = Number(rainR)
+    let pWeather = qWeather.cloneNode(true)
+    pWeather.firstChild.innerText = "Fri"
+    pWeather.children[1].children[1].dataset.value = Number(rainP)
+    rightDiv.appendChild(pWeather)
     rightDiv.appendChild(qWeather)
     rightDiv.appendChild(rWeather)
     div.appendChild(rightDiv)
@@ -142,11 +148,14 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
                 newVal = 5
             }
             elem.parentNode.querySelector(".weather-vis").dataset.value = newVal
-            if (elem.parentNode.parentNode.firstChild.innerText === "Q"){
+            if (elem.parentNode.parentNode.firstChild.innerText === "Sat"){
                 elem.parentNode.parentNode.parentNode.parentNode.dataset.rainQ = newVal
             }
-            else if (elem.parentNode.parentNode.firstChild.innerText === "R"){
+            else if (elem.parentNode.parentNode.firstChild.innerText === "Sun"){
                 elem.parentNode.parentNode.parentNode.parentNode.dataset.rainR = newVal
+            }
+            else if (elem.parentNode.parentNode.firstChild.innerText === "Fri"){
+                elem.parentNode.parentNode.parentNode.parentNode.dataset.rainP = newVal
             }
             
             updateVisualizers()
@@ -162,11 +171,14 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
                 newVal = 0
             }
             elem.parentNode.querySelector(".weather-vis").dataset.value = newVal
-            if (elem.parentNode.parentNode.firstChild.innerText === "Q"){
+            if (elem.parentNode.parentNode.firstChild.innerText === "Sat"){
                 elem.parentNode.parentNode.parentNode.parentNode.dataset.rainQ = newVal
             }
-            else if (elem.parentNode.parentNode.firstChild.innerText === "R"){
+            else if (elem.parentNode.parentNode.firstChild.innerText === "Sun"){
                 elem.parentNode.parentNode.parentNode.parentNode.dataset.rainR = newVal
+            }
+            else if (elem.parentNode.parentNode.firstChild.innerText === "Fri"){
+                elem.parentNode.parentNode.parentNode.parentNode.dataset.rainP = newVal
             }
             updateVisualizers()
             
@@ -192,7 +204,7 @@ function load_calendar(races){
     document.querySelector('.main-calendar-section').innerHTML = ""
     races.forEach(function(elem){
         let code = races_map[elem[0]]
-        addRace(code, transformWeather(elem[1]), transformWeather(elem[2]), elem[3], elem[0], elem[4])
+        addRace(code, transformWeather(elem[1]), transformWeather(elem[2]), transformWeather(elem[3]), elem[4], elem[0], elem[5])
     })
     updateVisualizers()
     updateNumbers()

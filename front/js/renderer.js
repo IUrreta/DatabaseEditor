@@ -127,7 +127,7 @@ function calendarModeHandler() {
     let dataCodesString = '';
 
     document.querySelectorAll(".race-calendar").forEach((race) => {
-        dataCodesString += race.dataset.trackid.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString() + race.dataset.state.toString() + ' ';
+        dataCodesString += race.dataset.trackid.toString() + race.dataset.rainP.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString() + race.dataset.state.toString() + ' ';
     });
 
     dataCodesString = dataCodesString.trim();
@@ -486,6 +486,7 @@ document.addEventListener('DOMContentLoaded', function () {
             root.style.setProperty('--custom-team-secondary-transparent', nameColor[3] + "30");
             colors_dict["320"] = nameColor[2]
             colors_dict["321"] = nameColor[3]
+            updateMaxYAxis(22)
         }
         else{
             custom_team = false
@@ -493,6 +494,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("customTeamPerformance").classList.add("d-none")
             document.getElementById("customTeamDropdown").classList.add("d-none")
             document.getElementById("customTeamComparison").classList.add("d-none")
+            updateMaxYAxis(20)
         }
     }
 
@@ -1186,11 +1188,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (staffCode === "driverStats") {
                     typeOverall = "driver"
                     typeEdit = "0"
-                    document.getElementById("specialStatsPanel").classList.remove("d-none")
+                    document.getElementById("driverSpecialAttributes").classList.remove("d-none")
                 }
                 else {
                     typeOverall = "staff"
-                    document.getElementById("specialStatsPanel").classList.add("d-none")
+                    document.getElementById("driverSpecialAttributes").classList.add("d-none")
                     if (staffCode === "chiefStats") {
                         typeEdit = "1"
                     }

@@ -66,6 +66,9 @@ class DatabaseUtils:
         dob = self.cursor.execute(f"SELECT DOB FROM Staff_BasicData WHERE StaffID = {driverID}").fetchone()
         return [retirement_age[0], math.floor((day_season[0] - dob[0]) /365.25)]
 
+    def fetch_mentality(self, staffID):
+        morale = self.cursor.execute(f"SELECT Opinion FROM Staff_Mentality_AreaOpinions WHERE StaffID = {staffID}").fetchall()
+        return morale
 
     def fetchDriverNumberDetails(self, driverID):
         num = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driverID}").fetchone()
@@ -105,7 +108,7 @@ class DatabaseUtils:
         season = self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
         return season[0]
 
-    def fetch_staff(self):
+    def fetch_staff(self, game_year):
         staff = self.cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0 AND (con.ContractType = 0 OR con.ContractType IS NULL OR con.ContractType = 3) GROUP BY bas.StaffID ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID").fetchall()
         formatted_tuples = []
 
@@ -115,6 +118,12 @@ class DatabaseUtils:
                 result = self.format_names_get_stats(tupla, "staff"+str(tupla[4]))
                 retirement = self.fetch_driverRetirement(id)
                 result += tuple(retirement)
+                if game_year == "24":
+                    mentality = self.fetch_mentality(id)
+                    if mentality:
+                        result += tuple(mentality[0]) + tuple(mentality[1]) + tuple(mentality[2])
+                    else:
+                        result += (-1,)
                 formatted_tuples.append(result)
             
 
@@ -237,7 +246,7 @@ class DatabaseUtils:
             formatted_tuples.append(result)
         return formatted_tuples
 
-    def fetch_info(self):
+    def fetch_info(self, game_year):
         drivers = self.cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType, gam.Retired FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID LEFT JOIN Staff_GameData gam ON dri.StaffID = gam.StaffID GROUP BY bas.StaffID ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID;').fetchall()
         formatted_tuples = []
         for tupla in drivers:
@@ -247,6 +256,11 @@ class DatabaseUtils:
                 retirement = self.fetch_driverRetirement(id)
                 driver_number = self.fetchDriverNumberDetails(id)
                 result += tuple(driver_number) + tuple(retirement)
+                if game_year == "24":
+                    mentality = self.fetch_mentality(id)
+                    if mentality:
+                        print(mentality)
+                        result += tuple(mentality[0]) + tuple(mentality[1]) + tuple(mentality[2])
                 formatted_tuples.append(result)
 
         return formatted_tuples
@@ -260,7 +274,7 @@ class DatabaseUtils:
 
     def fetch_calendar(self):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
-        calendar = self.cursor.execute(f"SELECT TrackID, WeatherStateQualifying, WeatherStateRace, WeekendType, State FROM Races WHERE SeasonID = {day_season[1]}").fetchall()
+        calendar = self.cursor.execute(f"SELECT TrackID, WeatherStatePractice, WeatherStateQualifying, WeatherStateRace, WeekendType, State FROM Races WHERE SeasonID = {day_season[1]}").fetchall()
         return calendar
 
     def check_claendar(self):

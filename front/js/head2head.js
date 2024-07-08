@@ -1209,6 +1209,13 @@ function findLastNonNaNIndex(arr) {
     return -1; // Devuelve -1 si todos los valores son NaN
 }
 
+function updateMaxYAxis(newMax) {
+    driverGraph.options.scales.y.max = newMax;
+    qualiGraph.options.scales.y.max = newMax;
+    driverGraph.update();
+    qualiGraph.update();
+}
+
 /**
  * Creates the head to head race chart
  * @param {Array} labelsArray array with all the labels for the races

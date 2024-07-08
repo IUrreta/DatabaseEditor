@@ -27,6 +27,11 @@
   --text-outline: #000000;
   --blur-color: #616161d3;
 
+  --mentality-enthusiastic: #c055e3;
+  --mentality-positive: #10ffff;
+  --mentality-neutral: #f3f3f3;
+  --mentality-negative: #e9de35;
+  --mentality-demoralized: #dd3356;
 
   --background-general: #110f24;
   --slight-contrast: #797599;
@@ -83,7 +88,7 @@
   */
   --alphatauri-original: #5E8FAA;
   --alphatauri-secondary-original: #f1f1f1;
-  --alpine-original: #2293D1;
+  --alpine-original: #0679c5;
   --alpine-secondary-original: #fd48c7;
   --andretti-primary: #fac51c;
   --andretti-secondary: #1e7696;
@@ -122,7 +127,7 @@
   --mclaren-primary: #ff7e08;
   --mclaren-secondary: #47c7fc;
   --williams-primary: #5abef3;
-  --alpine-primary: #2293D1;
+  --alpine-primary: #0679c5;
   --alpine-secondary: #fd48c7;
   --renault-primary: #f7c82f;
   --custom-team-primary: #ffffff;
@@ -143,8 +148,8 @@
   --alphatauri-secondary-transparent: #f1f1f130;
   --alphatauri-secondary-transparent-original: #f1f1f130;
   --sauber-primary-transparent: #f5053730;
-  --alpine-primary-transparent: #2293D130;
-  --alpine-primary-transparent-original: #2293D130;
+  --alpine-primary-transparent: #0679c530;
+  --alpine-primary-transparent-original: #0679c530;
   --alpine-secondary-transparent: #fd48c730;
   --alpine-secondary-transparent-original: #fd48c730;
   --renault-primary-transparent: #f7c82f30;
@@ -164,7 +169,7 @@
   --brawn-secondary-transparent: #f1f1f130;
   --stake-primary-transparent: #54d65030;
   --stake-secondary-transparent: #59595930;
-  --visarb-primary-transparent: #596fa430;
+  --visarb-primary-transparent: #596fa460;
   --visarb-secondary-transparent: #f1f1f130;
   --hugo-primary-transparent: #bd951430;
   --hugo-secondary-transparent: #f1f1f130;
@@ -1539,7 +1544,7 @@ a.bi-linkedin:hover {
 
 .attribute-and-preferences{
   display: flex;
-  flex-direction: row;
+  flex-direction: column ;
 }
 
 .bottom-panel {
@@ -1973,7 +1978,7 @@ DRIVERS TABLE
 }
 
 .teams-table-row .teams-table-team{
-  width: 149.5px;
+  width: 150px;
   gap: 5px;
   transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
@@ -2454,6 +2459,8 @@ DRIVERS TABLE
   grid-template-columns: repeat(5, 1fr);
   background-color: var(--generals);
   box-shadow: 0px 0px 10px 2px var(--box-shadow);
+  gap: 8px;
+  padding: 8px;
 }
 
 .main-options-section {
@@ -2495,7 +2502,6 @@ DRIVERS TABLE
   background-color: var(--elements);
   border-radius: 10px;
   padding: 8px;
-  margin: 10px;
   color: var( --text-general);
   transition: border-color 0.2s, color 0.2s, background-color 0.2s;
   display: flex;
@@ -2509,7 +2515,10 @@ DRIVERS TABLE
 .upper-text-and-flag{
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
+  position: relative;
+  align-items: center;
+  width: 95px;
 }
 
 .left-race{
@@ -2523,25 +2532,27 @@ DRIVERS TABLE
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 2px;
 }
 
 .full-quali-weather{
   display: flex;
   flex-direction: row;
   gap: 4px;
+  justify-content: space-between;
 }
 
 .session-name{
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .weather-vis{
-  width: 35px;
-  height: 35px;
+  width: 30px;
+  height: 30px;
   border-radius: 10px;
   background-color: var(--weather-vis-back);
   border: 1.5px solid var(--weather-vis-border);
-  font-size: 22px;
+  font-size: 19px;
   text-align: center;
 }
 
@@ -2549,7 +2560,7 @@ DRIVERS TABLE
   display: flex;
   flex-direction: row;
   margin-left: 5px;
-  font-size: 24px;
+  font-size: 20px;
   padding-top: 2px;
 }
 
@@ -2649,16 +2660,20 @@ DRIVERS TABLE
 
 
 .upper-race {
-  font-size: 22px;
+  font-size: 21px;
   display: flex;
   flex-direction: row;
   gap: 10px;
+  position: absolute;
+  z-index: 2;
+  text-shadow: 2px 2px 4px var(--negative-text);
 }
 
 .flag {
-  width: 65px;
-  height: 35px;
+  width: 95px;
+  height: 45px;
   border-radius: 10px;
+  opacity: 0.45;
 }
 
 
@@ -4751,6 +4766,10 @@ DRIVERS TABLE
   height: 36px !important;
 }
 
+.name-and-stat.mentality{
+  padding: 4px 0;
+}
+
 .bar-container{
   height: 100%;
   width: 100%;
@@ -5475,7 +5494,7 @@ input::-webkit-inner-spin-button {
   margin-top: 5px;
 }
 
-.facility, .facility-level-indicator{
+.facility, .facility-level-indicator, .mentality-level-indicator{
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -5486,10 +5505,11 @@ input::-webkit-inner-spin-button {
   justify-content: space-between;
 }
 
-.facility-level-indicator{
+.facility-level-indicator, .mentality-level-indicator{
   gap: 6px;
   margin: 0 10px;
   padding-top: 1px;
+  flex-grow: 1;
 }
 
 .facility-name{
@@ -5557,9 +5577,71 @@ input::-webkit-inner-spin-button {
 
 .level{
   height: 8px;
-  width: 42px;
+  width: 20%;
   background-color: var(--mid-gray-contrast);
   transition: background-color 0.2s;
+}
+
+.mentality-level{
+  height: 6px;
+  width: 20%;
+  background-color: var(--mid-gray-contrast);
+  transition: background-color 0.2s;
+}
+
+.mentality-and-emoji.demoralized{
+  color : var(--mentality-demoralized);
+}
+
+.mentality-level.demoralized{
+  background-color: var(--mentality-demoralized);
+}
+
+.mentality-and-emoji.negative{
+  color : var(--mentality-negative);
+}
+
+.mentality-level.negative{
+  background-color: var(--mentality-negative);
+}
+
+.mentality-and-emoji.positive{
+  color : var(--mentality-positive);
+
+}
+
+.mentality-level.positive{
+  background-color: var(--mentality-positive);
+}
+
+.mentality-and-emoji.enthusiastic{
+  color : var(--mentality-enthusiastic);
+}
+
+.mentality-and-emoji.neutral{
+  color : var(--mentality-neutral);
+}
+
+.mentality-level.neutral{
+  background-color: var(--mentality-neutral);
+}
+
+.mentality-level.enthusiastic{
+  background-color: var(--mentality-enthusiastic);
+}
+
+.bar-container i{
+  transition: transform 0.2s, color 0.2s;
+  cursor: pointer;
+}
+
+.bar-container i:hover{
+  transform: scale(1.1);
+  color: var(--new-primary);
+}
+
+.name-and-emoji{
+  transition: color 0.2s;
 }
 
 .level.activated{

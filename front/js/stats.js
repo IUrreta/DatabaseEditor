@@ -4,6 +4,7 @@ let driverStatTitle = document.getElementById("driverStatsTitle")
 let statPanelShown = 0;
 let typeOverall = "driver";
 let typeEdit;
+let mentality_dict = {0:"enthusiastic", 1:"positive", 2:"neutral", 3:"negative", 4:"demoralized"}
 
 /**
  * Removes all the staff from their list
@@ -62,10 +63,21 @@ function place_drivers_editStats(driversArray) {
             recalculateOverall()
 
         });
-        newDiv.dataset.age = driver[driver.length - 1]
-        newDiv.dataset.retirement = driver[driver.length - 2]
-        newDiv.dataset.numWC = driver[driver.length - 3]
-        newDiv.dataset.number = driver[driver.length - 4]
+        if (game_version === 2024 && driver.length > 20){
+            newDiv.dataset.age = driver[driver.length - 4]
+            newDiv.dataset.retirement = driver[driver.length - 5]
+            newDiv.dataset.numWC = driver[driver.length - 6]
+            newDiv.dataset.number = driver[driver.length - 7]
+            newDiv.dataset.mentality0 = driver[driver.length - 3]
+            newDiv.dataset.mentality1 = driver[driver.length - 2]
+            newDiv.dataset.mentality2 = driver[driver.length - 1]
+        }
+        else{
+            newDiv.dataset.age = driver[driver.length - 1]
+            newDiv.dataset.retirement = driver[driver.length - 2]
+            newDiv.dataset.numWC = driver[driver.length - 3]
+            newDiv.dataset.number = driver[driver.length - 4]
+        }
 
         ovr = calculateOverall(statsString, "driver")
         ovrDiv.innerHTML = ovr
@@ -158,9 +170,17 @@ function place_staff(staffArray) {
             recalculateOverall()
 
         });
-
-        newDiv.dataset.age = staff[staff.length - 1]
-        newDiv.dataset.retirement = staff[staff.length - 2]
+        if (game_version === 2024 && staff[staff.length - 1] !== -1){
+            newDiv.dataset.age = staff[staff.length - 4]
+            newDiv.dataset.retirement = staff[staff.length - 4]
+            newDiv.dataset.mentality0 = staff[staff.length - 3]
+            newDiv.dataset.mentality1 = staff[staff.length - 2]
+            newDiv.dataset.mentality2 = staff[staff.length - 1]
+        }
+        else{
+            newDiv.dataset.age = staff[staff.length - 2]
+            newDiv.dataset.retirement = staff[staff.length - 3]
+        }
         ovr = calculateOverall(statsString, "staff")
         ovrDiv.innerHTML = ovr
         ovrDiv.classList.add("bold-font")
@@ -567,7 +587,90 @@ function load_stats(div) {
     else{
         numberWC.checked = true
     }
+    if(div.dataset.mentality0){
+        for (i = 0; i < 3; i++){
+            let mentality = div.dataset["mentality" + i]
+            let indicator = document.getElementById("mentality" + i)
+            indicator.parentNode.parentNode.classList.remove("d-none")
+            indicator.dataset.value = mentality
+            let inverted_value = 5 - mentality
+            let levels = indicator.querySelectorAll('.mentality-level');
+            let mentality_class = mentality_dict[mentality]
+            for (j = 0; j < 5; j++){
+                levels[j].className = "mentality-level"
+                if (j <= inverted_value - 1){
+                    levels[j].classList.add(mentality_class)
+                }
+            }
+            let nameEmoji = indicator.parentNode.parentNode.querySelector(".mentality-and-emoji")
+            nameEmoji.innerText = capitalizeFirstLetter(mentality_class)
+            nameEmoji.className = "mentality-and-emoji"
+            nameEmoji.classList.add(mentality_class)
+        }
+    }
+    else{
+        for (i = 0; i < 3; i++){
+            let indicator = document.getElementById("mentality" + i)
+            indicator.parentNode.parentNode.classList.add("d-none")
+        }
+    }
 }
+
+document.querySelectorAll(".bar-container .bi-chevron-right").forEach(function(elem){
+    elem.addEventListener("click", function () {
+        let indicator = elem.parentNode.querySelector(".mentality-level-indicator")
+        let value = parseInt(indicator.getAttribute('data-value')) - 1;
+        if (value < 0) {
+            value = 0
+        }
+        let inverted_value = 5 - value
+
+        indicator.setAttribute('data-value', value);
+        let levels = indicator.querySelectorAll('.mentality-level');
+        let mentality_class = mentality_dict[value]
+        console.log(value)
+        for (j = 0; j < 5; j++){
+            levels[j].className = "mentality-level"
+            if (j <= inverted_value - 1){
+                levels[j].classList.add(mentality_class)
+            }
+        }
+        let nameEmoji = elem.parentNode.parentNode.querySelector(".mentality-and-emoji")
+        nameEmoji.innerText = capitalizeFirstLetter(mentality_class)
+        nameEmoji.className = "mentality-and-emoji"
+        nameEmoji.classList.add(mentality_class)
+    })
+})
+
+document.querySelectorAll(".bar-container .bi-chevron-left").forEach(function(elem){
+    elem.addEventListener("click", function () {
+        let indicator = elem.parentNode.querySelector(".mentality-level-indicator")
+        let value = parseInt(indicator.getAttribute('data-value')) + 1;
+        if (value > 4) {
+            value = 4
+        }
+        let inverted_value = 5 - value
+        indicator.setAttribute('data-value', value);
+        let levels = indicator.querySelectorAll('.mentality-level');
+        let mentality_class = mentality_dict[value]
+        for (j = 0; j < 5; j++){
+            levels[j].className = "mentality-level"
+            if (j <= inverted_value - 1){
+                levels[j].classList.add(mentality_class)
+            }
+        }
+        let nameEmoji = elem.parentNode.parentNode.querySelector(".mentality-and-emoji")
+        nameEmoji.innerText = capitalizeFirstLetter(mentality_class)
+        nameEmoji.className = "mentality-and-emoji"
+        nameEmoji.classList.add(mentality_class)
+    })
+})
+
+function capitalizeFirstLetter(str) {
+    if (!str) return str; // Manejo de cadena vacía
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  }
+
 
 /**
  * Generates the name title on the main panel of the edit stats
