@@ -409,7 +409,7 @@ interact('.free-driver').draggable({
         start(event) {
             originalParent = event.target.parentNode;
             if (originalParent.className != "main-columns-drag-section") {
-                if (originalParent.className === "affiliates-space") {
+                if (originalParent.className.contains("affiliates-space")) {
                     teamOrigin = originalParent.parentNode.parentNode
                 }
                 else{
@@ -452,17 +452,16 @@ interact('.free-driver').draggable({
                 const rect = element.getBoundingClientRect();
                 if (event.clientX >= rect.left && event.clientX <= rect.right &&
                     event.clientY >= rect.top && event.clientY <= rect.bottom) {
-                    if (element.childElementCount < 1) {
+                    if (element.classList.contains("affiliates-space") && game_version === 2024) {
+                        posInTeam = 3 + element.childElementCount
+                        teamDestiniy = element.parentNode.parentNode.dataset.team
                         destinationParent = element;
                         element.appendChild(target);
-                        teamDestiniy = element.parentNode.dataset.team
                         target.dataset.teamid = inverted_dict[teamDestiniy]
                         updateColor(target)
-                        console.log(element)
-                        posInTeam = element.id.charAt(2)
                         document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
                         if (autoContractToggle.checked) {
-                            if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "driver-space" | originalParent.className === "affiliates-space") {
+                            if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space")) {
                                 signDriver("fireandhire")
                             }
                             signDriver("autocontract")
@@ -470,40 +469,63 @@ interact('.free-driver').draggable({
                         else {
                             modalType = "hire"
                             myModal.show()
-
                         }
                         if (target.querySelector(".custom-icon") === null) {
                             addIcon(target)
                         }
-
                     }
-                    else if (element.childElementCount == 1) {
-                        if (originalParent.className === "driver-space") {
-                            driver1 = target;
-                            driver2 = element.firstChild;
-                            let team1 = driver1.parentNode.parentNode
-                            let team2 = driver2.parentNode.parentNode
-                            driver1.dataset.teamid = inverted_dict[team2.dataset.team]
-                            updateColor(driver1)
-                            driver2.dataset.teamid = inverted_dict[team1.dataset.team]
-                            updateColor(driver2)
-                            if (driver1 !== driver2) {
-                                let data = {
-                                    command: "swap",
-                                    driver1ID: target.dataset.driverid,
-                                    driver2ID: element.firstChild.dataset.driverid,
-                                    driver1: target.innerText,
-                                    driver2: element.firstChild.innerText,
+                    else{
+                        if (element.childElementCount < 1) {
+                            posInTeam = element.id.charAt(2)
+                            teamDestiniy = element.parentNode.dataset.team
+                            destinationParent = element;
+                            element.appendChild(target);
+                            target.dataset.teamid = inverted_dict[teamDestiniy]
+                            updateColor(target)
+                            console.log(element)
+                            document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
+                            if (autoContractToggle.checked) {
+                                if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space")) {
+                                    signDriver("fireandhire")
                                 }
-
-                                socket.send(JSON.stringify(data))
-                                manage_swap()
+                                signDriver("autocontract")
                             }
-
+                            else {
+                                modalType = "hire"
+                                myModal.show()
+                            }
+                            if (target.querySelector(".custom-icon") === null) {
+                                addIcon(target)
+                            }
+    
                         }
-
+                        else if (element.childElementCount == 1) {
+                            if (originalParent.className === "driver-space") {
+                                driver1 = target;
+                                driver2 = element.firstChild;
+                                let team1 = driver1.parentNode.parentNode
+                                let team2 = driver2.parentNode.parentNode
+                                driver1.dataset.teamid = inverted_dict[team2.dataset.team]
+                                updateColor(driver1)
+                                driver2.dataset.teamid = inverted_dict[team1.dataset.team]
+                                updateColor(driver2)
+                                if (driver1 !== driver2) {
+                                    let data = {
+                                        command: "swap",
+                                        driver1ID: target.dataset.driverid,
+                                        driver2ID: element.firstChild.dataset.driverid,
+                                        driver1: target.innerText,
+                                        driver2: element.firstChild.innerText,
+                                    }
+    
+                                    socket.send(JSON.stringify(data))
+                                    manage_swap()
+                                }
+    
+                            }
+    
+                        }
                     }
-
                 }
             });
 

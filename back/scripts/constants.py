@@ -242,8 +242,8 @@ high_speed_downforce_factors = {
 }   
 
 drs_delta_factors = {
-    5: 0.5,
-    3: 0.5
+    5: 0.75,
+    3: 0.25
 }
 
 ### ATTRIBUTE CONTRIBUTORS ###

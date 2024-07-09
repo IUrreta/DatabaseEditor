@@ -12,6 +12,7 @@ class FireCommand(Command):
         argument = f"fire {self.message['driverID']}"
         run_trasnsfer(argument)
         process_repack("../result", Command.path)
+        print(self.message)
         info = []
         info.insert(0, f"Succesfully fired {self.message['driver']} from {self.team_replace_dict[self.message['team']]}")
         info_json = json.dumps(info)

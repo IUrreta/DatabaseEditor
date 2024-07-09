@@ -816,6 +816,7 @@ a.bi-linkedin:hover {
   width: 23px;
   height: 35px;
   position: relative;
+  cursor: pointer;
 }
 
 .search-and-order i{
@@ -2923,7 +2924,9 @@ DRIVERS TABLE
   display: flex;
   overflow-x: hidden; 
   flex-grow: 1; 
-  margin: 0 15px; 
+  margin: 0 15px;
+  min-width: auto;
+  max-width: max-content; 
 }
 
 .affiliates-space .free-driver{

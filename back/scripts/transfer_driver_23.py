@@ -133,7 +133,7 @@ def run_script(option=""):
             cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driver_id[0]}, 0, 1, {day[0]}, 1, {new_team_id}, {car_in_team}, 1, '[OPINION_STRING_NEUTRAL]', {day[0]}, {year_end}, 1, '[OPINION_STRING_NEUTRAL]', {salary}, 1, '[OPINION_STRING_NEUTRAL]', {starting_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus_pos}, 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')")
         elif year_iteration == "24":
             cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driver_id[0]}, 0, {new_team_id}, {car_in_team}, {day[0]}, {year_end},  {salary}, {starting_bonus}, {race_bonus}, {race_bonus_pos}, 0.5, 0)")
-        if int(car_in_team) != 3:
+        if int(car_in_team) < 3:
             cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = {car_in_team} WHERE StaffID = {driver_id[0]}")
 
             #checks if the driver was in the standings and if it wasn't it updates the standings
