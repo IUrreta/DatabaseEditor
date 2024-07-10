@@ -237,13 +237,23 @@ body {
   overflow-y: auto;
 }
 
-.scroll-wrapper::-webkit-scrollbar {
+.scroll-wrapper::-webkit-scrollbar{
   width: 6px;
 }
 
-.scroll-wrapper::-webkit-scrollbar-thumb {
+.scroll-wrapper::-webkit-scrollbar-thumb{
   background-color: var(--white-general);
   border-radius: 6px;
+}
+
+#free-drivers::-webkit-scrollbar {
+  width: 4px !important;
+  margin-left: 4px;
+}
+
+#free-drivers::-webkit-scrollbar-thumb {
+  background-color: var(--white-general);
+  border-radius: 3px !important;
 }
 
 .socials a,
@@ -573,9 +583,13 @@ a.bi-linkedin:hover {
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb, #patchNotesBody::-webkit-scrollbar-thumb {
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb, #patchNotesBody::-webkit-scrollbar-thumb{
   background-color: var(--white-general);
   border-radius: 3px;
+}
+
+#allDrivers{
+  overflow-y: hidden;
 }
 
 .dropdown-menu{
@@ -799,7 +813,7 @@ a.bi-linkedin:hover {
   margin-left: 14px;
 }
 
-#nameFilter{
+#nameFilter, #nameFilterTransfer{
   margin-top: 5px;
 }
 
@@ -1245,6 +1259,7 @@ a.bi-linkedin:hover {
 .script-view {
   display: flex;
   width: 100%;
+  /* overflow-x: hidden; */
 }
 
 .scirpt-info {
@@ -1570,8 +1585,6 @@ a.bi-linkedin:hover {
   color: var(--white-general);
   overflow-y: auto;
   border-radius: 10px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--white-general) #e5e5e5;
 }
 
 .main-panel-stats {
@@ -1666,7 +1679,7 @@ a.bi-linkedin:hover {
   background-color: var(--mode-line-edit);
 }
 
-#predict_results, #edit_stats, #car_performance{
+#predict_results, #edit_stats, #car_performance, #driver_transfers{
   flex-direction: column;
 }
 
@@ -2901,8 +2914,8 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   overflow: hidden; 
-  width: 100%; 
   position: relative; 
+  flex-grow: 1;
 }
 
 .affiliates-and-arrows .bi-chevron-left, .affiliates-and-arrows .bi-chevron-right{
@@ -2923,15 +2936,19 @@ DRIVERS TABLE
 .affiliates-space {
   display: flex;
   overflow-x: hidden; 
-  flex-grow: 1; 
+  flex-grow: 1;
   margin: 0 15px;
-  min-width: auto;
-  max-width: max-content; 
+  min-width: 100%;
+  max-width: max-content;
+  flex-wrap: nowrap;
+  width: 100%;
+  min-height: 40px;
 }
 
-.affiliates-space .free-driver{
+.affiliates-space .free-driver {
   min-width: 200px;
   max-width: 200px;
+  flex: 0 0 auto; /* Asegura que los elementos mantengan su tamaño */
 }
 
 .team-template .free-driver{
@@ -3251,7 +3268,6 @@ DRIVERS TABLE
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   color: var(--white-general);
-  background-color: var(--custom-modal-back);
 }
 
 .number-and-contract {
@@ -4658,6 +4674,8 @@ DRIVERS TABLE
 
 #free-drivers {
   min-height: 660px;
+  max-height: 660px;
+  overflow-y: scroll;
 }
 
 
@@ -5326,6 +5344,16 @@ DRIVERS TABLE
   font-size: 20px;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s !important;
   text-align: center;
+}
+
+.contract-details .old-custom-input-number{
+  width: 70%;
+  max-width: none;
+  text-align: left;
+}
+
+.contract-details i{
+  transition: transform 0.2s, color 0.2s;
 }
 
 .custom-input-number::selection{
@@ -6466,6 +6494,7 @@ input::-webkit-inner-spin-button {
   display: flex;
   overflow: hidden;
   margin-bottom: 3px;
+  width: 100%; 
 }
 
 

@@ -189,7 +189,7 @@ function addUnRetireIcon(div) {
 function iconListener(icon) {
     icon.addEventListener("click", function () {
         modalType = "edit"
-        document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText + "'s details";
+        document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText + "'s contract";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
     })
@@ -225,20 +225,6 @@ function queryContract(elem) {
 
 }
 
-/**
- * Pills from the 3 categories
- */
-freeDriversPill.addEventListener("click", function () {
-    manageDrivers("show", "hide", "hide")
-})
-
-f2DriversPill.addEventListener("click", function () {
-    manageDrivers("hide", "show", "hide")
-})
-
-f3DriversPill.addEventListener("click", function () {
-    manageDrivers("hide", "hide", "show")
-})
 
 /**
  * Manages the state of the categorias
@@ -399,6 +385,24 @@ document.getElementById("cancelButton").addEventListener('click', function () {
     setTimeout(clearModal, 500);
 })
 
+document.querySelector("#nameFilterTransfer").addEventListener("input", function(event){
+    let text = event.target.value
+    let elements = document.querySelectorAll("#free-drivers .free-driver")
+    elements.forEach(function(elem){
+        let first_name = elem.children[0].innerText
+        let last_name = elem.children[1].innerText
+        let full_name = first_name + " " + last_name
+        let minus = full_name.toLowerCase()
+        let name = text.toLowerCase()
+        if(minus.includes(name)){
+            elem.classList.remove("d-none")
+        }
+        else{
+            elem.classList.add("d-none")
+        }
+    })
+})
+
 
 /**
  * Manages the interaction to drag drivers
@@ -409,10 +413,10 @@ interact('.free-driver').draggable({
         start(event) {
             originalParent = event.target.parentNode;
             if (originalParent.className != "main-columns-drag-section") {
-                if (originalParent.className.contains("affiliates-space")) {
+                if (originalParent.classList.contains("affiliates-space")) {
                     teamOrigin = originalParent.parentNode.parentNode
                 }
-                else{
+                else {
                     teamOrigin = originalParent.parentNode
                 }
             }
@@ -426,6 +430,7 @@ interact('.free-driver').draggable({
             target.style.width = width + "px";
             target.style.position = "fixed";
             target.style.top = position.top + "px";
+            target.style.left = position.left + "px"; // Añadir esta línea para manejar la posición izquierda
         },
         move(event) {
             const target = event.target;
@@ -443,7 +448,13 @@ interact('.free-driver').draggable({
             let target = event.target;
             target.style.position = "relative";
             target.style.top = "auto";
+            target.style.left = "auto"; // Resetear la posición izquierda
             target.style.width = "auto";
+            target.style.transform = 'none';
+            target.style.zIndex = 1;
+            target.setAttribute('data-x', 0);
+            target.setAttribute('data-y', 0);
+
             const freeDrivers = document.getElementById('free-drivers');
             const freeRect = freeDrivers.getBoundingClientRect();
 
@@ -452,6 +463,7 @@ interact('.free-driver').draggable({
                 const rect = element.getBoundingClientRect();
                 if (event.clientX >= rect.left && event.clientX <= rect.right &&
                     event.clientY >= rect.top && event.clientY <= rect.bottom) {
+                    console.log(element)
                     if (element.classList.contains("affiliates-space") && game_version === 2024) {
                         posInTeam = 3 + element.childElementCount
                         teamDestiniy = element.parentNode.parentNode.dataset.team
@@ -474,7 +486,7 @@ interact('.free-driver').draggable({
                             addIcon(target)
                         }
                     }
-                    else{
+                    else {
                         if (element.childElementCount < 1) {
                             posInTeam = element.id.charAt(2)
                             teamDestiniy = element.parentNode.dataset.team
@@ -497,10 +509,11 @@ interact('.free-driver').draggable({
                             if (target.querySelector(".custom-icon") === null) {
                                 addIcon(target)
                             }
-    
+
                         }
                         else if (element.childElementCount == 1) {
-                            if (originalParent.className === "driver-space") {
+                            console.log("AQUI")
+                            if (originalParent.classList.contains("driver-space")) {
                                 driver1 = target;
                                 driver2 = element.firstChild;
                                 let team1 = driver1.parentNode.parentNode
@@ -517,21 +530,17 @@ interact('.free-driver').draggable({
                                         driver1: target.innerText,
                                         driver2: element.firstChild.innerText,
                                     }
-    
+
                                     socket.send(JSON.stringify(data))
                                     manage_swap()
                                 }
-    
+
                             }
-    
+
                         }
                     }
                 }
             });
-
-
-            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
             if (event.clientX >= freeRect.left && event.clientX <= freeRect.right &&
                 event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
@@ -552,13 +561,6 @@ interact('.free-driver').draggable({
                     socket.send(JSON.stringify(data))
                 }
             }
-
-            target.style.transform = 'none';
-            target.setAttribute('data-x', 0);
-            target.setAttribute('data-y', 0);
-            // originalParent = undefined;
-            // destinationParent = undefined;
-            // draggable = undefined;
         }
     }
 });

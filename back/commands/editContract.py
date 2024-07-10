@@ -12,6 +12,6 @@ class EditContractCommand(Command):
         run_trasnsfer(argument)
         process_repack("../result", Command.path)
         info = []
-        info.insert(0, f"Succesfully edited {self.message['driver']}'s details")
+        info.insert(0, f"Succesfully edited {self.message['driver']}'s contract")
         info_json = json.dumps(info)
         await self.send_message_to_client(info_json)

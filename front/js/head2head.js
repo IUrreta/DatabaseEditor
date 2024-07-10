@@ -963,9 +963,18 @@ function load_labels_initialize_graphs(data) {
     }
     createPointsChart(labels)
     if (mode === "driver") {
-        createRaceChart(labels)
-        createQualiChart(labels)
+        let max = 20
+        console.log(game_version, custom_team)
+        if (game_version === 2024 && custom_team){
+            max = 22
+        }
+        else{
+            max = 20
+        }
+        createRaceChart(labels, max)
+        createQualiChart(labels, max)
         load_graphs_data(data)
+
     }
     else if (mode === "team") {
         load_teams_points_graph(data)
@@ -1220,7 +1229,7 @@ function updateMaxYAxis(newMax) {
  * Creates the head to head race chart
  * @param {Array} labelsArray array with all the labels for the races
  */
-function createRaceChart(labelsArray) {
+function createRaceChart(labelsArray, max) {
     const dataD = {
         labels: labelsArray,
     };
@@ -1250,7 +1259,7 @@ function createRaceChart(labelsArray) {
                     y: {
                         reverse: true,
                         min: 1,
-                        max: 20,
+                        max: max,
                         grid: {
                             color: '#292929'
                         },
@@ -1337,7 +1346,7 @@ function createRaceChart(labelsArray) {
  * Creates the head to head qualifying chart
  * @param {Array} labelsArray array with all the labels for the races
  */
-function createQualiChart(labelsArray) {
+function createQualiChart(labelsArray, max) {
     const dataD = {
         labels: labelsArray,
     };
@@ -1367,7 +1376,7 @@ function createQualiChart(labelsArray) {
                     y: {
                         reverse: true,
                         min: 1,
-                        max: 20,
+                        max: max,
                         grid: {
                             color: '#292929'
                         },

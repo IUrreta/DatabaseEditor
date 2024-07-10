@@ -172,7 +172,7 @@ function place_staff(staffArray) {
         });
         if (game_version === 2024 && staff[staff.length - 1] !== -1){
             newDiv.dataset.age = staff[staff.length - 4]
-            newDiv.dataset.retirement = staff[staff.length - 4]
+            newDiv.dataset.retirement = staff[staff.length - 5]
             newDiv.dataset.mentality0 = staff[staff.length - 3]
             newDiv.dataset.mentality1 = staff[staff.length - 2]
             newDiv.dataset.mentality2 = staff[staff.length - 1]

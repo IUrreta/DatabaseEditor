@@ -506,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function () {
             root.style.setProperty('--custom-team-secondary-transparent', nameColor[3] + "30");
             colors_dict["320"] = nameColor[2]
             colors_dict["321"] = nameColor[3]
-            updateMaxYAxis(22)
+
         }
         else{
             custom_team = false
@@ -514,7 +514,6 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("customTeamPerformance").classList.add("d-none")
             document.getElementById("customTeamDropdown").classList.add("d-none")
             document.getElementById("customTeamComparison").classList.add("d-none")
-            updateMaxYAxis(20)
         }
     }
 
@@ -696,16 +695,71 @@ document.addEventListener('DOMContentLoaded', function () {
      * @param {Object} info values for the contract modal that just opened
      */
     function manage_modal(info) {
-        document.querySelector(".contract-options").querySelectorAll(".rounded-input").forEach(function (elem, index) {
-            elem.value = info[0][index]
+        document.querySelector(".contract-options").querySelectorAll(".old-custom-input-number").forEach(function (elem, index) {
+            if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
+                elem.value = info[0][index].toLocaleString("en-US") + " $"
+            }
+            else{
+                elem.value = info[0][index]
+            }
+            
         })
-        document.querySelector("#numberButton").textContent = info[1][0]
-        if (info[1][1] === 1) {
-            document.querySelector("#driverNumber1").checked = true
-        }
-        else if (info[1][1] === 0) {
-            document.querySelector("#driverNumber1").checked = false
-        }
+    }
+
+    document.querySelector(".contract-details").querySelectorAll('.bi-plus-lg').forEach(button => {
+        let intervalId;
+        let increment = 10000;
+        button.addEventListener('mousedown', function () {
+            let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
+            if (input.id === "salaryInput"){
+                increment = 100000;
+            }
+            updateContractMoneyValue(input, increment);
+            intervalId = setInterval(() => {
+                updateContractMoneyValue(input, increment);
+            }, 100);
+        });
+    
+        button.addEventListener('mouseup', function () {
+            clearInterval(intervalId);
+        });
+    
+        button.addEventListener('mouseleave', function () {
+            clearInterval(intervalId);
+        });
+    });
+    
+    document.querySelector(".contract-details").querySelectorAll('.bi-dash-lg').forEach(button => {
+        let intervalId;
+        let increment = -10000;
+        button.addEventListener('mousedown', function () {
+            console.log(this)
+            console.log(this.parentNode)
+            let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
+            if (input.id === "salaryInput"){
+                increment = -100000;
+            }
+            updateContractMoneyValue(input, increment);
+            intervalId = setInterval(() => {
+                updateContractMoneyValue(input, increment);
+            }, 100);
+        });
+    
+        button.addEventListener('mouseup', function () {
+            clearInterval(intervalId);
+        });
+    
+        button.addEventListener('mouseleave', function () {
+            clearInterval(intervalId);
+        });
+    });
+    
+    
+    function updateContractMoneyValue(input, increment) {
+        let valorActual = input.value.replace(/[$,]/g, "");
+        let nuevoValor = Number(valorActual) + increment;
+        let valorFormateado = nuevoValor.toLocaleString('en-US') + '$';
+        input.value = valorFormateado;
     }
 
     /**

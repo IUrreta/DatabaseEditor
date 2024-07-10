@@ -23,38 +23,58 @@
         <div class="modal-header custom-header">
           <h4 class="modal-title bold-font" id="contractModalTitle"></h4>
         </div>
-        <div class="modal-body number-and-contract">
+        <div class="modal-body number-and-contract custom-body">
           <div class="contract-options">
             <h5 class="modal-subtitle bold-font">Driver contract</h5>
             <div class="contract-details pt-1">
               <div>
                 Salary
-                <div class="pt-1">
-                  <input type="number" class="rounded-input" id="salaryInput" placeholder="ex: 2000000">
+                <div class="input-and-buttons pt-1">
+                  <input type="text" class="old-custom-input-number" id="salaryInput" placeholder="ex: 2000000">
+                  <div class="input-buttons">
+                    <i class="bi bi-plus-lg"></i>
+                    <i class="bi bi-dash-lg"></i>
+                  </div>
                 </div>
               </div>
               <div>
                 Valid until
-                <div class="pt-1">
-                  <input type="number" class="rounded-input" id="yearInput" placeholder="ex: 2028">
+                <div class="input-and-buttons pt-1">
+                  <input type="number" class="old-custom-input-number" id="yearInput" placeholder="ex: 2028">
+                  <div class="input-buttons">
+                    <i class="bi bi-chevron-up"></i>
+                    <i class="bi bi-chevron-down"></i>
+                  </div>
                 </div>
               </div>
               <div>
                 Sign bonus
-                <div class="pt-1">
-                  <input type="number" class="rounded-input" id="signBonusInput" placeholder="ex: 10000">
+                <div class="input-and-buttons pt-1">
+                  <input type="text" class="old-custom-input-number" id="signBonusInput" placeholder="ex: 10000">
+                  <div class="input-buttons">
+                    <i class="bi bi-plus-lg"></i>
+                    <i class="bi bi-dash-lg"></i>
+                  </div>
                 </div>
               </div>
               <div class="mt-3">
                 Race bonus amount
-                <div class="pt-1">
-                  <input type="number" class="rounded-input" id="raceBonusAmt" placeholder="ex: 150000">
+                <div class="input-and-buttons pt-1">
+                  <input type="text" class="old-custom-input-number" id="raceBonusAmt" placeholder="ex: 150000">
+                  <div class="input-buttons">
+                    <i class="bi bi-plus-lg"></i>
+                    <i class="bi bi-dash-lg"></i>
+                  </div>
                 </div>
               </div>
               <div class="mt-3">
                 Race bonus position
-                <div class="pt-1">
-                  <input type="number" class="rounded-input" id="raceBonusPos" placeholder="ex: 1">
+                <div class="input-and-buttons pt-1">
+                  <input type="number" class="old-custom-input-number" id="raceBonusPos" placeholder="ex: 1">
+                  <div class="input-buttons">
+                    <i class="bi bi-chevron-up"></i>
+                    <i class="bi bi-chevron-down"></i>
+                  </div>
                 </div>
               </div>
             </div>
@@ -340,7 +360,7 @@
             <div><i class="bi bi-ban"></i></div> <span> - Means the driver is retired. Click to unretire him</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div><i class="bi bi-pencil-square"></i></div> <span> - Click to edit driver's details</span>
+            <div><i class="bi bi-pencil-square"></i></div> <span> - Click to edit driver's contract</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
             <div style="width: 170px;">Auto contract</div> <span> - Will give the drivers contracts automatically based
@@ -723,7 +743,8 @@
               </div>
               <div class="col modal-team af-transparent d-none" data-teamid="9">
                 <div class="logo-and-name">
-                  <img src="../assets/images/alfaromeo.png" class="alfalogo alfalogo-replace front-gradient logo-margin-top">
+                  <img src="../assets/images/alfaromeo.png"
+                    class="alfalogo alfalogo-replace front-gradient logo-margin-top">
                   <div class="team-name bold-font front-gradient alfa-name">ALFA ROMEO</div>
                 </div>
                 <div class="buttons-drivers-modal">
@@ -1232,244 +1253,237 @@
 
       </div>
       <div class="script-view d-none" id="driver_transfers">
-        <div class="col-2">
-          <div class="pb-3 ps-3" style="padding-top: 1.1rem;">
-            <ul class="nav nav-pills">
-              <li class="nav-item">
-                <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill" href="#"
-                  id="freepill">FREE DRIVERS</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link bold-font categoryPills" data-bs-toggle="pill" href="#" id="F2pill">F2</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link bold-font categoryPills" data-bs-toggle="pill" href="#" id="F3pill">F3</a>
-              </li>
-            </ul>
+        <div class="trasnfer-top-panel">
+          <div class="title transfer-title bold-font py-3">
+            Contracted drivers
+            <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal"
+              data-bs-target="#contractsModal">?</i>
           </div>
-          <div class="main-columns-drag-section" id="free-drivers">
+          <div class="form-check form-switch auto-contract">
+            <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="autoContractToggle">
+            <label class="form-check-label" for="flexSwitchCheckDefault">Auto contract</label>
           </div>
-          <div class="main-columns-drag-section d-none" id="f2-drivers" data-team="F2"></div>
-          <div class="main-columns-drag-section d-none" id="f3-drivers" data-team="F3"></div>
         </div>
-        <div class="col-10">
-          <div class="trasnfer-top-panel">
-            <div class="title transfer-title bold-font py-3">
-              Contracted drivers
-              <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal"
-                data-bs-target="#contractsModal">?</i>
-            </div>
-            <div class="form-check form-switch auto-contract">
-              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="autoContractToggle">
-              <label class="form-check-label" for="flexSwitchCheckDefault">Auto contract</label>
+        <div class="d-flex">
+          <div class="col-2">
+            <div class="main-columns-drag-section" id="allDrivers">
+              <div class="search-and-order">
+                <input class="text-filter" type="text" id="nameFilterTransfer" placeholder="Search..."></input>
+              </div>
+              <div id="free-drivers">
+              </div>
+              <div class="main-columns-drag-section d-none" id="f2-drivers" data-team="F2"></div>
+              <div class="main-columns-drag-section d-none" id="f3-drivers" data-team="F3"></div>
             </div>
           </div>
-          <div class="main-columns-drag-section teams-columns">
-            <div class="team-template  rbborder">
-              <div class="new-logo-and-name">
-                <img src="../assets/images/redbull.png" class="redbulllogo">
-                <div class="team-name bold-font">RED BULL RACING</div>
-              </div>
-              <div class="drivers-section" data-team="redbull">
-                <div class="driver-space" id="rb1">
+          <div class="col-10">
+            <div class="main-columns-drag-section teams-columns">
+              <div class="team-template  rbborder">
+                <div class="new-logo-and-name">
+                  <img src="../assets/images/redbull.png" class="redbulllogo">
+                  <div class="team-name bold-font">RED BULL RACING</div>
                 </div>
-                <div class="driver-space" id="rb2">
-                </div>
-                <div class="affiliates-and-arrows">
-                  <i class="bi bi-chevron-left arrow-left"></i>
-                  <div class="affiliates-space driver-space" id="rb3"></div>
-                  <div class="arrow-back">
-                    <i class="bi bi-chevron-right arrow-right"></i>
+                <div class="drivers-section" data-team="redbull">
+                  <div class="driver-space" id="rb1">
+                  </div>
+                  <div class="driver-space" id="rb2">
+                  </div>
+                  <div class="affiliates-and-arrows">
+                    <i class="bi bi-chevron-left arrow-left"></i>
+                    <div class="affiliates-space driver-space" id="rb3"></div>
+                    <div class="arrow-back">
+                      <i class="bi bi-chevron-right arrow-right"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="team-template  feborder">
-              <div class="new-logo-and-name">
-                <img src="../assets/images/ferrari.png" class="ferrarilogo">
-                <div class="team-name bold-font">FERRARI</div>
-              </div>
-              <div class="drivers-section" data-team="ferrari">
-                <div class="driver-space" id="fe1">
+              <div class="team-template  feborder">
+                <div class="new-logo-and-name">
+                  <img src="../assets/images/ferrari.png" class="ferrarilogo">
+                  <div class="team-name bold-font">FERRARI</div>
                 </div>
-                <div class="driver-space" id="fe2">
-                </div>
-                <div class="affiliates-and-arrows">
-                  <i class="bi bi-chevron-left"></i>
-                  <div class="affiliates-space driver-space" id="fe3"></div>
-                  <div class="arrow-back">
-                    <i class="bi bi-chevron-right"></i>
+                <div class="drivers-section" data-team="ferrari">
+                  <div class="driver-space" id="fe1">
+                  </div>
+                  <div class="driver-space" id="fe2">
+                  </div>
+                  <div class="affiliates-and-arrows">
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="affiliates-space driver-space" id="fe3"></div>
+                    <div class="arrow-back">
+                      <i class="bi bi-chevron-right"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="team-template  mcborder">
-              <div class="new-logo-and-name">
-                <img src="../assets/images/mclaren.png" class="mclarenlogo">
-                <div class="team-name bold-font">MCLAREN</div>
-              </div>
-              <div class="drivers-section" data-team="mclaren">
-                <div class="driver-space" id="mc1">
+              <div class="team-template  mcborder">
+                <div class="new-logo-and-name">
+                  <img src="../assets/images/mclaren.png" class="mclarenlogo">
+                  <div class="team-name bold-font">MCLAREN</div>
                 </div>
-                <div class="driver-space" id="mc2">
-                </div>
-                <div class="affiliates-and-arrows">
-                  <i class="bi bi-chevron-left"></i>
-                  <div class="affiliates-space driver-space" id="mc3"></div>
-                  <div class="arrow-back">
-                    <i class="bi bi-chevron-right"></i>
+                <div class="drivers-section" data-team="mclaren">
+                  <div class="driver-space" id="mc1">
+                  </div>
+                  <div class="driver-space" id="mc2">
+                  </div>
+                  <div class="affiliates-and-arrows">
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="affiliates-space driver-space" id="mc3"></div>
+                    <div class="arrow-back">
+                      <i class="bi bi-chevron-right"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="team-template  meborder">
-              <div class="new-logo-and-name">
-                <img src="../assets/images/mercedes.png" class="merclogo">
-                <div class="team-name bold-font">MERCEDES</div>
-              </div>
-              <div class="drivers-section" data-team="merc">
-                <div class="driver-space" id="me1">
+              <div class="team-template  meborder">
+                <div class="new-logo-and-name">
+                  <img src="../assets/images/mercedes.png" class="merclogo">
+                  <div class="team-name bold-font">MERCEDES</div>
                 </div>
-                <div class="driver-space" id="me2">
-                </div>
-                <div class="affiliates-and-arrows">
-                  <i class="bi bi-chevron-left"></i>
-                  <div class="affiliates-space driver-space" id="me3"></div>
-                  <div class="arrow-back">
-                    <i class="bi bi-chevron-right"></i>
+                <div class="drivers-section" data-team="merc">
+                  <div class="driver-space" id="me1">
+                  </div>
+                  <div class="driver-space" id="me2">
+                  </div>
+                  <div class="affiliates-and-arrows">
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="affiliates-space driver-space" id="me3"></div>
+                    <div class="arrow-back">
+                      <i class="bi bi-chevron-right"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="team-template  asborder">
-              <div class="new-logo-and-name">
-                <img src="../assets/images/astonMartin.png" class="astonlogo">
-                <div class="team-name bold-font">ASTON MARTIN</div>
-              </div>
-              <div class="drivers-section" data-team="aston">
-                <div class="driver-space" id="as1">
+              <div class="team-template  asborder">
+                <div class="new-logo-and-name">
+                  <img src="../assets/images/astonMartin.png" class="astonlogo">
+                  <div class="team-name bold-font">ASTON MARTIN</div>
                 </div>
-                <div class="driver-space" id="as2">
-                </div>
-                <div class="affiliates-and-arrows">
-                  <i class="bi bi-chevron-left"></i>
-                  <div class="affiliates-space driver-space" id="as3"></div>
-                  <div class="arrow-back">
-                    <i class="bi bi-chevron-right"></i>
+                <div class="drivers-section" data-team="aston">
+                  <div class="driver-space" id="as1">
+                  </div>
+                  <div class="driver-space" id="as2">
+                  </div>
+                  <div class="affiliates-and-arrows">
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="affiliates-space driver-space" id="as3"></div>
+                    <div class="arrow-back">
+                      <i class="bi bi-chevron-right"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="team-template  alborder">
-              <div class="new-logo-and-name">
-                <img src="../assets/images/alpine.png" class="alpinelogo alpinelogo-replace">
-                <div class="team-name bold-font alpine-name">ALPINE</div>
-              </div>
-              <div class="drivers-section" data-team="alpine">
-                <div class="driver-space" id="al1">
+              <div class="team-template  alborder">
+                <div class="new-logo-and-name">
+                  <img src="../assets/images/alpine.png" class="alpinelogo alpinelogo-replace">
+                  <div class="team-name bold-font alpine-name">ALPINE</div>
                 </div>
-                <div class="driver-space" id="al2">
-                </div>
-                <div class="affiliates-and-arrows">
-                  <i class="bi bi-chevron-left"></i>
-                  <div class="affiliates-space driver-space" id="al3"></div>
-                  <div class="arrow-back">
-                    <i class="bi bi-chevron-right"></i>
+                <div class="drivers-section" data-team="alpine">
+                  <div class="driver-space" id="al1">
+                  </div>
+                  <div class="driver-space" id="al2">
+                  </div>
+                  <div class="affiliates-and-arrows">
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="affiliates-space driver-space" id="al3"></div>
+                    <div class="arrow-back">
+                      <i class="bi bi-chevron-right"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="team-template  wiborder">
-              <div class="new-logo-and-name">
-                <img src="../assets/images/williams.png" class="williamslogo">
-                <div class="team-name bold-font">WILLIAMS</div>
-              </div>
-              <div class="drivers-section" data-team="williams">
-                <div class="driver-space" id="wi1">
+              <div class="team-template  wiborder">
+                <div class="new-logo-and-name">
+                  <img src="../assets/images/williams.png" class="williamslogo">
+                  <div class="team-name bold-font">WILLIAMS</div>
                 </div>
-                <div class="driver-space" id="wi2">
-                </div>
-                <div class="affiliates-and-arrows">
-                  <i class="bi bi-chevron-left"></i>
-                  <div class="affiliates-space driver-space" id="wi3"></div>
-                  <div class="arrow-back">
-                    <i class="bi bi-chevron-right"></i>
+                <div class="drivers-section" data-team="williams">
+                  <div class="driver-space" id="wi1">
+                  </div>
+                  <div class="driver-space" id="wi2">
+                  </div>
+                  <div class="affiliates-and-arrows">
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="affiliates-space driver-space" id="wi3"></div>
+                    <div class="arrow-back">
+                      <i class="bi bi-chevron-right"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="team-template  atborder">
-              <div class="new-logo-and-name">
-                <img src="../assets/images/alphatauri.png" class="alphataurilogo atlogo-replace">
-                <div class="team-name bold-font at-name">ALPHA TAURI</div>
-              </div>
-              <div class="drivers-section" data-team="alphatauri">
-                <div class="driver-space" id="at1">
+              <div class="team-template  atborder">
+                <div class="new-logo-and-name">
+                  <img src="../assets/images/alphatauri.png" class="alphataurilogo atlogo-replace">
+                  <div class="team-name bold-font at-name">ALPHA TAURI</div>
                 </div>
-                <div class="driver-space" id="at2">
-                </div>
-                <div class="affiliates-and-arrows">
-                  <i class="bi bi-chevron-left"></i>
-                  <div class="affiliates-space driver-space" id="at3"></div>
-                  <div class="arrow-back">
-                    <i class="bi bi-chevron-right"></i>
+                <div class="drivers-section" data-team="alphatauri">
+                  <div class="driver-space" id="at1">
+                  </div>
+                  <div class="driver-space" id="at2">
+                  </div>
+                  <div class="affiliates-and-arrows">
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="affiliates-space driver-space" id="at3"></div>
+                    <div class="arrow-back">
+                      <i class="bi bi-chevron-right"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="team-template  afborder">
-              <div class="new-logo-and-name">
-                <img src="../assets/images/alfaromeo.png" class="alfalogo alfalogo-replace">
-                <div class="team-name bold-font alfa-name">ALFA ROMEO</div>
-              </div>
-              <div class="drivers-section" data-team="alfaromeo">
-                <div class="driver-space" id="af1">
+              <div class="team-template  afborder">
+                <div class="new-logo-and-name">
+                  <img src="../assets/images/alfaromeo.png" class="alfalogo alfalogo-replace">
+                  <div class="team-name bold-font alfa-name">ALFA ROMEO</div>
                 </div>
-                <div class="driver-space" id="af2">
-                </div>
-                <div class="affiliates-and-arrows">
-                  <i class="bi bi-chevron-left"></i>
-                  <div class="affiliates-space driver-space" id="af3"></div>
-                  <div class="arrow-back">
-                    <i class="bi bi-chevron-right"></i>
+                <div class="drivers-section" data-team="alfaromeo">
+                  <div class="driver-space" id="af1">
+                  </div>
+                  <div class="driver-space" id="af2">
+                  </div>
+                  <div class="affiliates-and-arrows">
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="affiliates-space driver-space" id="af3"></div>
+                    <div class="arrow-back">
+                      <i class="bi bi-chevron-right"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="team-template  haborder">
-              <div class="new-logo-and-name">
-                <img src="../assets/images/haas.png" class="haaslogo">
-                <div class="team-name bold-font">HAAS</div>
-              </div>
-              <div class="drivers-section" data-team="haas">
-                <div class="driver-space" id="ha1">
+              <div class="team-template  haborder">
+                <div class="new-logo-and-name">
+                  <img src="../assets/images/haas.png" class="haaslogo">
+                  <div class="team-name bold-font">HAAS</div>
                 </div>
-                <div class="driver-space" id="ha2">
-                </div>
-                <div class="affiliates-and-arrows">
-                  <i class="bi bi-chevron-left"></i>
-                  <div class="affiliates-space driver-space" id="ha3"></div>
-                  <div class="arrow-back">
-                    <i class="bi bi-chevron-right"></i>
+                <div class="drivers-section" data-team="haas">
+                  <div class="driver-space" id="ha1">
+                  </div>
+                  <div class="driver-space" id="ha2">
+                  </div>
+                  <div class="affiliates-and-arrows">
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="affiliates-space driver-space" id="ha3"></div>
+                    <div class="arrow-back">
+                      <i class="bi bi-chevron-right"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="team-template ctborder d-none" id="customTeamTransfers">
-              <div class="new-logo-and-name">
-                <img src="../assets/images/customTeam.png" class="customlogo">
-                <div class="team-name bold-font ct-replace">CUSTOM TEAM</div>
-              </div>
-              <div class="drivers-section" data-team="custom">
-                <div class="driver-space" id="ct1">
+              <div class="team-template ctborder d-none" id="customTeamTransfers">
+                <div class="new-logo-and-name">
+                  <img src="../assets/images/customTeam.png" class="customlogo">
+                  <div class="team-name bold-font ct-replace">CUSTOM TEAM</div>
                 </div>
-                <div class="driver-space" id="ct2">
-                </div>
-                <div class="affiliates-and-arrows">
-                  <i class="bi bi-chevron-left"></i>
-                  <div class="affiliates-space driver-space" id="ct3"></div>
-                  <div class="arrow-back">
-                    <i class="bi bi-chevron-right"></i>
+                <div class="drivers-section" data-team="custom">
+                  <div class="driver-space" id="ct1">
+                  </div>
+                  <div class="driver-space" id="ct2">
+                  </div>
+                  <div class="affiliates-and-arrows">
+                    <i class="bi bi-chevron-left"></i>
+                    <div class="affiliates-space driver-space" id="ct3"></div>
+                    <div class="arrow-back">
+                      <i class="bi bi-chevron-right"></i>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1556,9 +1570,7 @@
               </div>
               <div class="staff-list d-none" id="fullDirectorList">
               </div>
-
             </div>
-
           </div>
           <div class="col-9">
             <div class="main-editStats-section">
@@ -2312,7 +2324,8 @@
                   ASTON MARTIN
                 </div>
               </a>
-              <a class="dropdown-item ctborder-down bold-font" style="cursor: pointer;" data-teamid="32" id="customTeamDropdown">
+              <a class="dropdown-item ctborder-down bold-font" style="cursor: pointer;" data-teamid="32"
+                id="customTeamDropdown">
                 <div class="team-menu-logo">
                   <img src="../assets/images/customTeam.png" class="team-menu-custom">
                 </div>
@@ -3097,8 +3110,8 @@
                       data-engine_cooling="0"></div>
                   </div>
                 </div>
-                <div class="col team bold-font team-performance ct-transparent" data-teamid="32" id="customTeamPerformance"
-                  data-teamname="Custom Team">
+                <div class="col team bold-font team-performance ct-transparent" data-teamid="32"
+                  id="customTeamPerformance" data-teamname="Custom Team">
                   <div class="team-title ct-replace">CUSTOM TEAM</div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress ct" data-overall="0" data-top_speed="0" data-acceleration="0"
