@@ -8,6 +8,7 @@ class EditContractCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
+        print(self.message)
         argument = f"editContract {self.message['salary']} {self.message['year']} {self.message['signBonus']} {self.message['raceBonus']} {self.message['raceBonusPos']} {self.message['driverID']}"
         run_trasnsfer(argument)
         process_repack("../result", Command.path)

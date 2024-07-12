@@ -47,7 +47,7 @@ def edit_team(info):
     cursor.execute(f"UPDATE Finance_TeamBalance SET Balance = {info['teamBudget']} WHERE TeamID = {teamID}")
     cursor.execute(f"INSERT INTO Finance_Transactions VALUES ({teamID}, {day_season[0]}, {info['costCapEdit']}, 9, -1, 1)")
     for stat in info["pitCrew"]:
-        cursor.execute(f"UPDATE Staff_PitCrew_PerformanceStats SET Val = {info["pitCrew"][stat]} WHERE TeamID = {teamID} AND StatID = {stat}")
+        cursor.execute(f"UPDATE Staff_PitCrew_PerformanceStats SET Val = {info['pitCrew'][stat]} WHERE TeamID = {teamID} AND StatID = {stat}")
 
     conn.commit()
     conn.close()

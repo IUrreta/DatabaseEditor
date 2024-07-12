@@ -25,7 +25,7 @@ class ConfigUpdateCommand(Command):
                     "alpine": self.message["alpine"],
                     "alfa": self.message["alfa"]
                 },
-                "ask": self.message["ask"]
+                "state": self.message["state"]
             }
             with open(file_path, "w") as json_file:
                 json.dump(data, json_file, indent=4)
@@ -37,7 +37,7 @@ class ConfigUpdateCommand(Command):
             existing_data["teams"]["alpine"] = self.message["alpine"]
             existing_data["teams"]["alfa"] = self.message["alfa"]
 
-            existing_data["ask"] = self.message["ask"]
+            existing_data["state"] = self.message["state"]
             
             with open(file_path, "w") as json_file:
                 json.dump(existing_data, json_file, indent=4)

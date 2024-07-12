@@ -12,7 +12,7 @@ const f3DriversDiv = document.getElementById("f3-drivers");
 
 const autoContractToggle = document.getElementById("autoContractToggle")
 
-const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
+const divsArray = [freeDriversDiv,f2DriversDiv,f3DriversDiv]
 
 
 let originalParent;
@@ -27,9 +27,9 @@ let driverEditingName;
 let driver1;
 let driver2;
 
-let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 32:"ct" }
-let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10 }
-let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3" }
+let team_dict = { 1: "fe",2: "mc",3: "rb",4: "me",5: "al",6: "wi",7: "ha",8: "at",9: "af",10: "as",32: "ct" }
+let inverted_dict = { 'ferrari': 1,'mclaren': 2,'redbull': 3,'merc': 4,'alpine': 5,'williams': 6,'haas': 7,'alphatauri': 8,'alfaromeo': 9,'astonmartin': 10 }
+let name_dict = { 'ferrari': "Ferrari",'mclaren': "McLaren",'redbull': "Red Bull",'merc': "Mercedes",'alpine': "Alpine",'williams': "Williams",'haas': "Haas",'alphatauri': "Alpha Tauri",'alfaromeo': "Alfa Romeo",'astonmartin': "Aston Martin","F2": "F2","F3": "F3" }
 
 /**
  * Removes all the drivers from teams and categories
@@ -67,15 +67,15 @@ function place_drivers(driversArray) {
         newDiv.appendChild(spanName)
         newDiv.appendChild(spanLastName)
         newDiv.classList.add(team_dict[driver[2]] + "-transparent")
-        manageColor(newDiv, spanLastName)
-        if(driver[4] === 1){
+        manageColor(newDiv,spanLastName)
+        if (driver[4] === 1) {
             addUnRetireIcon(newDiv)
         }
 
         //newDiv.innerHTML = driver[0];
         divPosition = "free-drivers"
         let position = driver[3]
-        if(position >= 3){
+        if (position >= 3) {
             position = 3
         }
         if (driver[2] > 0 && driver[2] <= 10 || driver[2] === 32) {
@@ -92,17 +92,17 @@ function place_drivers(driversArray) {
 
 document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {
     console.log(elem)
-    elem.querySelector(".bi-chevron-right").addEventListener("click", function () {
+    elem.querySelector(".bi-chevron-right").addEventListener("click",function () {
         console.log("AAAA")
         let parent = elem.parentNode.parentNode
         let affiliatesDiv = parent.querySelector(".affiliates-space")
-        affiliatesDiv.scrollBy({ left: 100, behavior: 'smooth' });
+        affiliatesDiv.scrollBy({ left: 100,behavior: 'smooth' });
     })
 
-    elem.querySelector(".bi-chevron-left").addEventListener("click", function () {
+    elem.querySelector(".bi-chevron-left").addEventListener("click",function () {
         let parent = elem.parentNode.parentNode
         let affiliatesDiv = parent.querySelector(".affiliates-space")
-        affiliatesDiv.scrollBy({ left: -100, behavior: 'smooth' });
+        affiliatesDiv.scrollBy({ left: -100,behavior: 'smooth' });
     })
 })
 
@@ -115,13 +115,13 @@ function updateColor(div) {
     console.log(div)
     let surnameDiv = div.querySelector(".bold-font")
     surnameDiv.className = "bold-font"
-    manageColor(div, surnameDiv)
+    manageColor(div,surnameDiv)
     let statsDiv = document.querySelector("#fulldriverlist").querySelector('[data-driverid="' + div.dataset.driverid + '"]')
     statsDiv.dataset.teamid = div.dataset.teamid
     surnameDiv = statsDiv.querySelector(".surname")
     surnameDiv.className = "bold-font surname"
-    manageColor(statsDiv, surnameDiv)
-
+    manageColor(statsDiv,surnameDiv)
+    div.className = "colr free-driver " + team_dict[div.dataset.teamid] + "-transparent"
 }
 
 /**
@@ -129,7 +129,7 @@ function updateColor(div) {
  * @param {div} div div from the driver
  * @param {span} lastName the lastname span from the driver
  */
-function manageColor(div, lastName) {
+function manageColor(div,lastName) {
     if (div.dataset.teamid != 0) {
         let colorClass = team_dict[div.dataset.teamid] + "font"
         lastName.classList.add(colorClass)
@@ -149,7 +149,7 @@ function loadNumbers(nums) {
         a.classList = "dropdown-item"
         a.style.cursor = "pointer"
         numsMenu.appendChild(a);
-        a.addEventListener("click", function () {
+        a.addEventListener("click",function () {
             document.getElementById("numberButton").textContent = a.textContent
         })
     })
@@ -187,7 +187,7 @@ function addUnRetireIcon(div) {
  * @param {div} icon div from the icon
  */
 function iconListener(icon) {
-    icon.addEventListener("click", function () {
+    icon.addEventListener("click",function () {
         modalType = "edit"
         document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText + "'s contract";
         queryContract(icon.parentNode.parentNode)
@@ -195,8 +195,8 @@ function iconListener(icon) {
     })
 }
 
-function unretireListener(icon){
-    icon.addEventListener("click", function(){
+function unretireListener(icon) {
+    icon.addEventListener("click",function () {
         let driverReq = {
             command: "unretireDriver",
             driverID: icon.parentNode.dataset.driverid,
@@ -206,6 +206,131 @@ function unretireListener(icon){
         icon.parentNode.querySelector(".custom-unretire").classList.add("d-none")
         socket.send(JSON.stringify(driverReq))
     })
+}
+
+/**
+ * Places all the values for the modal that just openend
+ * @param {Object} info values for the contract modal that just opened
+ */
+function manage_modal(info) {
+    document.querySelector(".contract-options").querySelectorAll(".old-custom-input-number").forEach(function (elem,index) {
+        if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
+            elem.value = info[0][index].toLocaleString("en-US") + " $"
+        }
+        else {
+            elem.value = info[0][index]
+        }
+
+    })
+}
+
+document.querySelector(".contract-details").querySelectorAll('.bi-plus-lg').forEach(button => {
+    let intervalId;
+    let increment = 10000;
+    button.addEventListener('mousedown',function () {
+        let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
+        if (input.id === "salaryInput") {
+            increment = 100000;
+        }
+        updateContractMoneyValue(input,increment);
+        intervalId = setInterval(() => {
+            updateContractMoneyValue(input,increment);
+        },100);
+    });
+
+    button.addEventListener('mouseup',function () {
+        clearInterval(intervalId);
+    });
+
+    button.addEventListener('mouseleave',function () {
+        clearInterval(intervalId);
+    });
+});
+
+document.querySelector(".contract-details").querySelectorAll('.bi-dash-lg').forEach(button => {
+    let intervalId;
+    let increment = -10000;
+    button.addEventListener('mousedown',function () {
+        let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
+        if (input.id === "salaryInput") {
+            increment = -100000;
+        }
+        updateContractMoneyValue(input,increment);
+        intervalId = setInterval(() => {
+            updateContractMoneyValue(input,increment);
+        },100);
+    });
+
+    button.addEventListener('mouseup',function () {
+        clearInterval(intervalId);
+    });
+
+    button.addEventListener('mouseleave',function () {
+        clearInterval(intervalId);
+    });
+});
+
+document.querySelector(".contract-details").querySelectorAll('.bi-chevron-up').forEach(button => {
+    let intervalId;
+    let increment = 1;
+    button.addEventListener('mousedown',function () {
+        let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
+        if (input.id == "raceBonusPos"){
+            increment = -1
+        }
+        updateContractValue(input,increment);
+        intervalId = setInterval(() => {
+            updateContractValue(input,increment);
+        },100);
+    });
+
+    button.addEventListener('mouseup',function () {
+        clearInterval(intervalId);
+    });
+
+    button.addEventListener('mouseleave',function () {
+        clearInterval(intervalId);
+    });
+});
+
+document.querySelector(".contract-details").querySelectorAll('.bi-chevron-down').forEach(button => {
+    let intervalId;
+    let increment = -1;
+    button.addEventListener('mousedown',function () {
+        let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
+        if (input.id == "raceBonusPos"){
+            increment = 1
+        }
+        updateContractValue(input,increment);
+        intervalId = setInterval(() => {
+            updateContractValue(input,increment);
+        },100);
+    });
+
+    button.addEventListener('mouseup',function () {
+        clearInterval(intervalId);
+    }
+    );
+
+    button.addEventListener('mouseleave',function () {
+        clearInterval(intervalId);
+    }
+    );
+});
+
+
+
+function updateContractMoneyValue(input,increment) {
+    let valorActual = input.value.replace(/[$,]/g,"");
+    let nuevoValor = Number(valorActual) + increment;
+    let valorFormateado = nuevoValor.toLocaleString('en-US') + '$';
+    input.value = valorFormateado;
+}
+
+function updateContractValue(input,increment) {
+    let valorActual = input.value;
+    let nuevoValor = Number(valorActual) + increment;
+    input.value = nuevoValor;
 }
 
 /**
@@ -231,7 +356,7 @@ function queryContract(elem) {
  * @param  {...string} divs the state of each div
  */
 function manageDrivers(...divs) {
-    divsArray.forEach(function (div, index) {
+    divsArray.forEach(function (div,index) {
         if (divs[index] === "show") {
             div.className = "main-columns-drag-section"
         }
@@ -244,9 +369,9 @@ function manageDrivers(...divs) {
 /**
  * Event listener for the confirm button from the modal
  */
-document.getElementById("confirmButton").addEventListener('click', function () {
+document.getElementById("confirmButton").addEventListener('click',function () {
     if (modalType === "hire") {
-        if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "driver-space"| originalParent.className === "affiliates-space") {
+        if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "driver-space" | originalParent.className === "affiliates-space") {
             signDriver("fireandhire")
         }
         signDriver("regular")
@@ -256,7 +381,7 @@ document.getElementById("confirmButton").addEventListener('click', function () {
         editContract()
         modalType = "";
     }
-    setTimeout(clearModal, 500);
+    setTimeout(clearModal,500);
 })
 
 /**
@@ -273,8 +398,13 @@ function clearModal() {
  */
 function editContract() {
     let values = []
-    document.querySelector(".contract-options").querySelectorAll(".rounded-input").forEach(function (elem) {
-        values.push(elem.value)
+    document.querySelector(".contract-options").querySelectorAll(".old-custom-input-number").forEach(function (elem) {
+        if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
+            values.push(elem.value.replace(/[$,]/g,""))
+        }
+        else {
+            values.push(elem.value)
+        }
     })
 
     let data = {
@@ -376,28 +506,28 @@ function signDriver(type) {
 /**
  * Event listener for the cancel button on the modal
  */
-document.getElementById("cancelButton").addEventListener('click', function () {
+document.getElementById("cancelButton").addEventListener('click',function () {
     if (modalType === "hire") {
         originalParent.appendChild(draggable);
         draggable.dataset.teamid = inverted_dict[teamOrigin.dataset.team]
         updateColor(draggable)
     }
-    setTimeout(clearModal, 500);
+    setTimeout(clearModal,500);
 })
 
-document.querySelector("#nameFilterTransfer").addEventListener("input", function(event){
+document.querySelector("#nameFilterTransfer").addEventListener("input",function (event) {
     let text = event.target.value
     let elements = document.querySelectorAll("#free-drivers .free-driver")
-    elements.forEach(function(elem){
+    elements.forEach(function (elem) {
         let first_name = elem.children[0].innerText
         let last_name = elem.children[1].innerText
         let full_name = first_name + " " + last_name
         let minus = full_name.toLowerCase()
         let name = text.toLowerCase()
-        if(minus.includes(name)){
+        if (minus.includes(name)) {
             elem.classList.remove("d-none")
         }
-        else{
+        else {
             elem.classList.add("d-none")
         }
     })
@@ -441,8 +571,8 @@ interact('.free-driver').draggable({
             target.style.opacity = 1;
             target.style.zIndex = 10;
 
-            target.setAttribute('data-x', x);
-            target.setAttribute('data-y', y);
+            target.setAttribute('data-x',x);
+            target.setAttribute('data-y',y);
         },
         end(event) {
             let target = event.target;
@@ -452,8 +582,8 @@ interact('.free-driver').draggable({
             target.style.width = "auto";
             target.style.transform = 'none';
             target.style.zIndex = 1;
-            target.setAttribute('data-x', 0);
-            target.setAttribute('data-y', 0);
+            target.setAttribute('data-x',0);
+            target.setAttribute('data-y',0);
 
             const freeDrivers = document.getElementById('free-drivers');
             const freeRect = freeDrivers.getBoundingClientRect();

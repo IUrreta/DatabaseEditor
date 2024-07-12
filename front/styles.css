@@ -504,6 +504,8 @@ a.bi-linkedin:hover {
   color: var( --text-general);
   font-size: 20px;
   padding-right: 2rem;
+  position: absolute;
+  right: 0;
 }
 
 .main-team-changes{

@@ -1,13 +1,14 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, shell } = require('electron')
+const { app, BrowserWindow, shell, ipcMain  } = require('electron')
 const path = require('path')
 const { setupTitlebar, attachTitlebarToWindow } = require("custom-electron-titlebar/main");
 
 
+let mainWindow;
 
 function createWindow () {
   setupTitlebar();
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1700,
     height: 875,
     icon: path.join(__dirname, "assets/images/logoAlter.png"),
@@ -61,3 +62,8 @@ app.on('window-all-closed', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+ipcMain.on('resize-window', (event, height) => {
+  let [width] = mainWindow.getSize();
+  mainWindow.setSize(width, height);
+});

@@ -3,6 +3,7 @@ const simpleGit = require('simple-git');
 const { exec } = require('child_process');
 const path = require('path');
 const { marked } = require('marked');
+const { ipcRenderer } = require('electron');
 let conn = 0;
 let game_version = 2023;
 let custom_team = false;
@@ -94,6 +95,8 @@ async function getPatchNotes() {
 
 
 }
+
+
 
 function editModeHandler() {
     let stats = "";
@@ -456,6 +459,10 @@ document.addEventListener('DOMContentLoaded', function () {
             status.textContent = '\xa0' + "Disconnected"
         }
     }
+    
+    function resizeWindowToHeight(height) {
+        ipcRenderer.send('resize-window', height);
+    }
 
     function manage_game_year(year){
         console.log(year)
@@ -471,6 +478,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
         }
         else if (year[0] === "23"){
+            resizeWindowToHeight(875)
             document.getElementById("year24").classList.remove("activated")
             document.getElementById("year23").classList.add("activated")
             document.getElementById("drs24").classList.add("d-none")
@@ -488,6 +496,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function manage_custom_team(nameColor){
         if (nameColor[1] !== null){
+            resizeWindowToHeight(920)
             custom_team = true
             combined_dict[32] = nameColor[1]
             document.getElementById("customTeamTransfers").classList.remove("d-none")
@@ -509,6 +518,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
         else{
+            resizeWindowToHeight(875)
             custom_team = false
             document.getElementById("customTeamTransfers").classList.add("d-none")
             document.getElementById("customTeamPerformance").classList.add("d-none")
@@ -691,78 +701,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /**
-     * Places all the values for the modal that just openend
-     * @param {Object} info values for the contract modal that just opened
-     */
-    function manage_modal(info) {
-        document.querySelector(".contract-options").querySelectorAll(".old-custom-input-number").forEach(function (elem, index) {
-            if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
-                elem.value = info[0][index].toLocaleString("en-US") + " $"
-            }
-            else{
-                elem.value = info[0][index]
-            }
-            
-        })
-    }
-
-    document.querySelector(".contract-details").querySelectorAll('.bi-plus-lg').forEach(button => {
-        let intervalId;
-        let increment = 10000;
-        button.addEventListener('mousedown', function () {
-            let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
-            if (input.id === "salaryInput"){
-                increment = 100000;
-            }
-            updateContractMoneyValue(input, increment);
-            intervalId = setInterval(() => {
-                updateContractMoneyValue(input, increment);
-            }, 100);
-        });
-    
-        button.addEventListener('mouseup', function () {
-            clearInterval(intervalId);
-        });
-    
-        button.addEventListener('mouseleave', function () {
-            clearInterval(intervalId);
-        });
-    });
-    
-    document.querySelector(".contract-details").querySelectorAll('.bi-dash-lg').forEach(button => {
-        let intervalId;
-        let increment = -10000;
-        button.addEventListener('mousedown', function () {
-            console.log(this)
-            console.log(this.parentNode)
-            let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
-            if (input.id === "salaryInput"){
-                increment = -100000;
-            }
-            updateContractMoneyValue(input, increment);
-            intervalId = setInterval(() => {
-                updateContractMoneyValue(input, increment);
-            }, 100);
-        });
-    
-        button.addEventListener('mouseup', function () {
-            clearInterval(intervalId);
-        });
-    
-        button.addEventListener('mouseleave', function () {
-            clearInterval(intervalId);
-        });
-    });
-    
-    
-    function updateContractMoneyValue(input, increment) {
-        let valorActual = input.value.replace(/[$,]/g, "");
-        let nuevoValor = Number(valorActual) + increment;
-        let valorFormateado = nuevoValor.toLocaleString('en-US') + '$';
-        input.value = valorFormateado;
-    }
-
-    /**
      * Places and manages the notifications that appear in the tool
      * @param {string} noti message of the notification
      * @param {bool} error if the notification is an error or not
@@ -916,10 +854,7 @@ document.addEventListener('DOMContentLoaded', function () {
             configModal.show()
         }
         else { //File detected -> check if ask to show modal or not
-            if (info[0]["ask"] === 3){
-                manage_config_content(info[0])
-            }
-            else if (info[0]["ask"] === 1){
+            if (info[0]["state"] === "ask"){
                 document.querySelector(".bi-gear").classList.add("hidden")
                 let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
                     keyboard: false
@@ -929,7 +864,7 @@ document.addEventListener('DOMContentLoaded', function () {
             else{
                 document.querySelector(".bi-gear").classList.remove("hidden")
                 manage_config_content(info[0])
-                if (info[0]["ask"] === 2){
+                if (info[0]["state"] === "changed"){
                     setTimeout(function(){
                         update_notifications("Config file loaded", false)
                     }, 500)
@@ -1228,7 +1163,7 @@ document.addEventListener('DOMContentLoaded', function () {
             alphatauri: alphatauri,
             alpine: alpine,
             alfa: alfa,
-            ask: 2
+            state: "changed"
         }
         socket.send(JSON.stringify(data))
         info = {teams: {alphatauri: alphatauri, alpine: alpine, alfa: alfa}}
@@ -1240,20 +1175,34 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector("#cancelConfigButton").addEventListener("click", function(){
         save = document.querySelector("#saveSelector").textContent
         save = save.slice(0, -4)
-        let ask = !document.querySelector("#ask").checked
-        if (ask){
-            ask = 1
+        let state;
+        let checked = document.querySelector("#ask").checked
+        if (checked){
+            state = "neverask"
         }
         else{
-            ask = 0
+            state = "ask"
+        }
+        let alpha;
+        let alpine;
+        let alfa;
+        if (game_version === 2024){
+            alpha = "visarb"
+            alpine = "alpine"
+            alfa = "stake"
+        }
+        else if (game_version === 2023){
+            alpha = "alphatauri"
+            alpine = "alpine"
+            alfa = "alfa"
         }
         let data = {
             command: "configUpdate",
             save: save,
-            alphatauri: "alphatauri",
-            alpine: "alpine",
-            alfa: "alfa",
-            ask: ask
+            alphatauri: alpha,
+            alpine: alpine,
+            alfa: alfa,
+            state: state
         }
         socket.send(JSON.stringify(data))
         document.querySelector(".bi-gear").classList.remove("hidden")
