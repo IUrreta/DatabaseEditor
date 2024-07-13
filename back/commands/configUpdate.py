@@ -27,6 +27,8 @@ class ConfigUpdateCommand(Command):
                 },
                 "state": self.message["state"]
             }
+            if self.message["icon"]:
+                data["icon"] = self.message["icon"]
             with open(file_path, "w") as json_file:
                 json.dump(data, json_file, indent=4)
         else:
@@ -38,6 +40,8 @@ class ConfigUpdateCommand(Command):
             existing_data["teams"]["alfa"] = self.message["alfa"]
 
             existing_data["state"] = self.message["state"]
+            if self.message["icon"]:
+                existing_data["icon"] = self.message["icon"]
             
             with open(file_path, "w") as json_file:
                 json.dump(existing_data, json_file, indent=4)

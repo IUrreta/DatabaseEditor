@@ -8,3 +8,6 @@ log.txt
 *.sav
 configs
 DBEditor
+assets/custom/*.png
+assets/custom/*.jpg
+assets/custom/*.jpeg

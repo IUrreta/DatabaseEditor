@@ -1930,6 +1930,10 @@ DRIVERS TABLE
   padding: 20px 5px !important;
 }
 
+.custom-team-table-logo{
+  padding: 1px !important;
+}
+
 .drivers-table-logo{
   width: 30px;
   height: 30px;
@@ -2140,6 +2144,10 @@ DRIVERS TABLE
 }
 
 .teams-table-row .cticonback{
+  background-color: var(--custom-team-primary)
+}
+
+.drivers-table-row:hover .cthoverback{
   background-color: var(--custom-team-primary)
 }
 
@@ -4951,9 +4959,9 @@ DRIVERS TABLE
 .team-menu-custom{
   width: 40px;
   height: 40px;
-  padding-bottom: 5px;
-  padding-top: 7px;
-  padding-left: 6px;
+  padding-bottom: 1px;
+  padding-top: 1px;
+  padding-left: 3px;
 }
 
 .team-menu-williams{
@@ -5942,10 +5950,6 @@ input::-webkit-inner-spin-button {
 .customlogo{
   width: 40px;
   height: 40px;
-  padding-bottom: 6px;
-  padding-top: 4px;
-  padding-left: 3px;
-  padding-right: 2px;
 }
 
 .lotuslogo{

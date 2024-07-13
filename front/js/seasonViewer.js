@@ -2,7 +2,7 @@ const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5:
 const invertedRacesMap = { "bah0": 2, "aus0": 1, "sau0": 11, "imo0": 24, "mia0": 22, "spa0": 5, "mon0": 6, "aze0": 4, "can0": 7, "gbr0": 10, "aut0": 9, "fra0": 8, "hun0": 12, "bel0": 13, "ita0": 14, "sgp0": 15, "jap0": 17, "usa0": 19, "mex0": 18, "bra0": 20, "uae0": 21, "ned0": 23, "veg0": 25, "qat0": 26, "chi0":3 };
 const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT", 3:"CHI" };
 const teams_full_name_dict = { 'FERRARI': 1, 'MCLAREN': 2, 'RED BULL': 3, 'MERCEDES': 4, 'ALPINE': 5, 'WILLIAMS': 6, 'HAAS': 7, 'ALPHA TAURI': 8, 'ALFA ROMEO': 9, 'ASTON MARTIN': 10 }
-const logos_disc = {
+let logos_disc = {
     1: '../assets/images/ferrari.png',
     2: '../assets/images/mclaren.png',
     3: '../assets/images/redbull.png',
@@ -13,7 +13,7 @@ const logos_disc = {
     8: '../assets/images/alphatauri.png',
     9: '../assets/images/alfaromeo.png',
     10: '../assets/images/astonmartin.png',
-    32: '../assets/images/customTeam.png'
+    32: '../assets/images/placeholder.png'
 };
 const points_race = {
     1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1,
@@ -325,6 +325,9 @@ function manage_teams_table_logos() {
         }
         else if (logo.dataset.teamid === "10") {
             logo.className = "teams-table-logo-inner aston-team-table-logo"
+        }
+        else if (logo.dataset.teamid === "32") {
+            logo.className = "teams-table-logo-inner custom-team-table-logo"
         }
     })
 }
@@ -673,7 +676,7 @@ function new_addDriver(driver, races_done, odd) {
     if (driver[1] === 3) { //redbull
         logo.classList.add("logo-up-down-mid")
     }
-    if (driver[1] === 4 || driver[1] === 7 || driver[1] === 6) { //mercedes or williams or haas
+    if (driver[1] === 4 || driver[1] === 7 || driver[1] === 6 ) { //mercedes or williams or haas
         logo.classList.add("logo-williams-table")
     }
     if (driver[1] === 5) { //different to aston
@@ -685,7 +688,7 @@ function new_addDriver(driver, races_done, odd) {
     if (driver[1] === 9) { //alfa
         logo.classList.add(driversTableLogosDict[alfaReplace])
     }
-    if (driver[1] === 10) { 
+    if (driver[1] === 10 || driver[1] === 32) { 
         logo.classList.add("logo-up-down-little")
     }
     logoDiv.classList.add(team_dict[driver[1]] + "hoverback")

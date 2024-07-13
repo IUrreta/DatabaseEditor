@@ -7,6 +7,8 @@ const { ipcRenderer } = require('electron');
 let conn = 0;
 let game_version = 2023;
 let custom_team = false;
+let customIconPath = null;
+
 
 const batFilePath = path.join(__dirname, '../back/startBack.bat');
 console.log(batFilePath)
@@ -527,6 +529,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    selectImageButton.addEventListener('click', () => {
+        fileInput.click();
+    });
+    
+    // Función para manejar la selección de archivo
+    fileInput.addEventListener('change', (event) => {
+        let file = event.target.files[0];
+        if (file) {
+            customIconPath = `../assets/custom/${file.name}`;
+            
+        }
+    });
+
+    function replace_custom_team_logo(path){
+        logos_disc[32] = path;
+        document.querySelectorAll(".custom-replace").forEach(function(elem){
+            console.log(elem)
+            elem.src = path
+        })
+    }
+    
+
     /**
      * Manages the height of the main container
      */
@@ -875,13 +899,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function manage_config_content(info){
-        info = info["teams"]
-        alphaTauriReplace(info["alphatauri"])
-        alpineReplace(info["alpine"])
-        alfaReplace(info["alfa"])
-        update_logo("alpine", logos_configs[info["alpine"]], info["alpine"])
-        update_logo("alfa", logos_configs[info["alfa"]], info["alfa"])
-        update_logo("alphatauri", logos_configs[info["alphatauri"]], info["alphatauri"])
+        console.log(info)
+        let teams = info["teams"]
+        alphaTauriReplace(teams["alphatauri"])
+        alpineReplace(teams["alpine"])
+        alfaReplace(teams["alfa"])
+        update_logo("alpine", logos_configs[teams["alpine"]], teams["alpine"])
+        update_logo("alfa", logos_configs[teams["alfa"]], teams["alfa"])
+        update_logo("alphatauri", logos_configs[teams["alphatauri"]], teams["alphatauri"])
+        if (info["icon"]){
+            console.log(info["icon"])
+            replace_custom_team_logo(info["icon"])
+        }
     }
 
 
@@ -1164,6 +1193,10 @@ document.addEventListener('DOMContentLoaded', function () {
             alpine: alpine,
             alfa: alfa,
             state: "changed"
+        }
+        if (customIconPath !== null){
+            data["icon"] = customIconPath
+            replace_custom_team_logo(customIconPath);
         }
         socket.send(JSON.stringify(data))
         info = {teams: {alphatauri: alphatauri, alpine: alpine, alfa: alfa}}

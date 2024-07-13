@@ -14,6 +14,9 @@ const autoContractToggle = document.getElementById("autoContractToggle")
 
 const divsArray = [freeDriversDiv,f2DriversDiv,f3DriversDiv]
 
+const selectImageButton = document.getElementById('selectImage');
+const fileInput = document.getElementById('fileInput');
+
 
 let originalParent;
 let destinationParent;
