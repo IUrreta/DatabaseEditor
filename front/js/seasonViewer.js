@@ -676,8 +676,11 @@ function new_addDriver(driver, races_done, odd) {
     if (driver[1] === 3) { //redbull
         logo.classList.add("logo-up-down-mid")
     }
-    if (driver[1] === 4 || driver[1] === 7 || driver[1] === 6 ) { //mercedes or williams or haas
+    if (driver[1] === 6 ) {
         logo.classList.add("logo-williams-table")
+    }
+    if (driver[1] === 4 || driver[1] === 7) { //mercedes  haas
+        logo.classList.add("logo-merc-table")
     }
     if (driver[1] === 5) { //different to aston
         logo.classList.add(driversTableLogosDict[alpineReplace])

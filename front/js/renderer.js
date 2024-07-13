@@ -472,6 +472,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("year23").classList.remove("activated")
             document.getElementById("year24").classList.add("activated")
             document.getElementById("drs24").classList.remove("d-none")
+            document.getElementById("teamChanges").classList.add("d-none")
             document.getElementById("drs24").dataset.attribute = "3"
             game_version = 2024
             manage_custom_team(year)
@@ -485,6 +486,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("year23").classList.add("activated")
             document.getElementById("drs24").classList.add("d-none")
             document.getElementById("drs24").dataset.attribute = "-1"
+            document.getElementById("teamChanges").classList.remove("d-none")
             if (32 in combined_dict){
                 delete combined_dict[32]
             }
@@ -505,19 +507,12 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("customTeamPerformance").classList.remove("d-none")
             document.getElementById("customTeamDropdown").classList.remove("d-none")
             document.getElementById("customTeamComparison").classList.remove("d-none")
+            document.getElementById("customizeTeam").classList.remove("d-none")
             document.getElementById("customTeamPerformance").dataset.teamName = nameColor[1]
             document.querySelectorAll(".ct-replace").forEach(function(elem){
                 elem.textContent = nameColor[1].toUpperCase()
             })
-            let root = document.documentElement;
-            console.log(nameColor)
-            root.style.setProperty('--custom-team-primary', nameColor[2]);
-            root.style.setProperty('--custom-team-secondary', nameColor[3]);
-            root.style.setProperty('--custom-team-primary-transparent', nameColor[2] + "30");
-            root.style.setProperty('--custom-team-secondary-transparent', nameColor[3] + "30");
-            colors_dict["320"] = nameColor[2]
-            colors_dict["321"] = nameColor[3]
-
+            replace_custom_team_color(nameColor[2], nameColor[3])
         }
         else{
             resizeWindowToHeight(875)
@@ -526,8 +521,24 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("customTeamPerformance").classList.add("d-none")
             document.getElementById("customTeamDropdown").classList.add("d-none")
             document.getElementById("customTeamComparison").classList.add("d-none")
+            document.getElementById("customizeTeam").classList.add("d-none")
         }
     }
+
+    function replace_custom_team_color(primary, secondary){
+        let root = document.documentElement;
+        root.style.setProperty('--custom-team-primary', primary);
+        root.style.setProperty('--custom-team-secondary', secondary);
+        root.style.setProperty('--custom-team-primary-transparent', primary + "30");
+        root.style.setProperty('--custom-team-secondary-transparent', secondary + "30");
+        colors_dict["320"] = primary
+        colors_dict["321"] = secondary
+        document.getElementById("primarySelector").value = primary
+        document.getElementById("secondarySelector").value = secondary
+        document.getElementById("primaryReader").value = primary.toUpperCase()
+        document.getElementById("secondaryReader").value = secondary.toUpperCase()
+    }
+    
 
     selectImageButton.addEventListener('click', () => {
         fileInput.click();
@@ -548,6 +559,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(elem)
             elem.src = path
         })
+        document.getElementById("selectImage").innerText = path.split("/").pop()
     }
     
 
@@ -910,8 +922,20 @@ document.addEventListener('DOMContentLoaded', function () {
         if (info["icon"]){
             console.log(info["icon"])
             replace_custom_team_logo(info["icon"])
+            customIconPath = info["icon"]
+        }
+        if (info["primaryColor"]){
+            replace_custom_team_color(info["primaryColor"], info["secondaryColor"])
         }
     }
+
+    document.querySelectorAll(".color-picker").forEach(function(elem){
+        let reader = elem.parentNode.querySelector(".color-reader")
+        elem.addEventListener("input", function(){
+            reader.value = elem.value.toUpperCase()
+        })
+        reader.value = elem.value.toUpperCase();
+    })
 
 
     function alphaTauriReplace(info){
@@ -1197,6 +1221,11 @@ document.addEventListener('DOMContentLoaded', function () {
         if (customIconPath !== null){
             data["icon"] = customIconPath
             replace_custom_team_logo(customIconPath);
+        }
+        if (custom_team){
+            data["primaryColor"] = document.getElementById("primarySelector").value
+            data["secondaryColor"] = document.getElementById("secondarySelector").value
+            replace_custom_team_color(data["primaryColor"], data["secondaryColor"])
         }
         socket.send(JSON.stringify(data))
         info = {teams: {alphatauri: alphatauri, alpine: alpine, alfa: alfa}}

@@ -1432,7 +1432,7 @@ a.bi-linkedin:hover {
 
 .custom-dropdown-no-margin {
   max-width: 250px !important;
-  background-color: var( --slight-contrast) !important;
+  background-color: var(--slight-contrast) !important;
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
@@ -2001,6 +2001,10 @@ DRIVERS TABLE
 
 .logo-williams-table{
   padding: 6px 2px;;
+}
+
+.logo-merc-table{
+  padding: 4px 2px;
 }
 
 .logo-reduce{
@@ -4463,7 +4467,7 @@ DRIVERS TABLE
   position: relative;
   font-size: 15px;
   overflow: hidden;
-  max-height: 42.5px;
+  height: 36px;
   display: flex;
   gap: 3px;
   box-shadow: 0 0 10px 1px var(--box-shadow);
@@ -5605,6 +5609,38 @@ input::-webkit-inner-spin-button {
   height: 40px;
   font-size: 16px;
   padding: 0 10px;
+}
+
+#selectImage{
+  margin-top: 0px !important;
+}
+
+.color-selector{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.color-reader{
+  background-color: transparent;
+  border: none;
+  color: var(--text-general);
+  width: 100px;
+}
+
+.color-picker{
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.custom-logo-selection{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: space-between;
 }
 
 #teamMenu a, .team-select-menu a{
