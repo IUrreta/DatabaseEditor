@@ -400,23 +400,16 @@ function new_color_teams_table() {
                     cell.style.fontFamily = "Formula1Bold"
                 }
                 if (cell.dataset.fastlap1 === "1" || cell.dataset.fastlap2 === "1") {
-                    cell.style.color = "#c90fd7"
+                    cell.classList.add("fastest")
                 }
             });
             values.sort((a, b) => b[0] - a[0]);
             let topThree = values.slice(0, 3);
             colCells[topThree[0][1]].classList.add("first");
-            if (colCells[topThree[0][1]].dataset.fastlap1 !== "1" && colCells[topThree[0][1]].dataset.fastlap2 !== "1") {
-                colCells[topThree[0][1]].style.color = "#18152e";
-            }
             colCells[topThree[1][1]].classList.add("second");
-            if (colCells[topThree[1][1]].dataset.fastlap1 !== "1" && colCells[topThree[1][1]].dataset.fastlap2 !== "1") {
-                colCells[topThree[1][1]].style.color = "#18152e";
-            }
             colCells[topThree[2][1]].classList.add("third");
-            if (colCells[topThree[2][1]].dataset.fastlap1 !== "1" && colCells[topThree[2][1]].dataset.fastlap2 !== "1") {
-                colCells[topThree[2][1]].style.color = "#18152e";
-            }
+
+
         }
     })
 }

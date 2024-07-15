@@ -745,6 +745,10 @@ a.bi-linkedin:hover {
   transition: opacity 0.3s;
 }
 
+.category-filters:not(.show) a{
+  pointer-events: none;
+}
+
 .category-filters.show, .order-filters.show{
   opacity: 1;
 }
@@ -2609,6 +2613,16 @@ DRIVERS TABLE
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
 }
 
+.race-calendar-number{
+  border-right: 2px solid var(--text-general);
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  width: 33%;
+  justify-content: center;
+  padding-right: 12px;
+}
+
 .upper-text-and-flag{
   display: flex;
   flex-direction: row;
@@ -2619,7 +2633,6 @@ DRIVERS TABLE
 }
 
 .left-race{
-  width: 60%;
   gap: 4px;
   display: flex;
   flex-direction: column;
@@ -2758,7 +2771,7 @@ DRIVERS TABLE
 
 
 .upper-race {
-  font-size: 21px;
+  font-size: 24px;
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -4426,7 +4439,10 @@ DRIVERS TABLE
   color: var(--white-general) !important;
 }
 
-
+.ct-transparent.selected{
+  background-color: var(--custom-team-primary-transparent) !important;
+  color: var(--white-general) !important;
+}
 
 .modal-team.rb-transparent:hover{
   background-color: var(--redbull-primary-transparent);

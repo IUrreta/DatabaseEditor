@@ -50,6 +50,8 @@ function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
 
     let div = document.createElement('div');
     let leftDiv = document.createElement('div');
+    let numberDiv = document.createElement('div');
+    numberDiv.className = "race-calendar-number bold-font"
     leftDiv.className = "left-race"
     let rightDiv = document.createElement('div');
     rightDiv.className = "right-race"
@@ -117,6 +119,7 @@ function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
     else if(type === 2){
         lowerDiv.children[1].firstChild.click()
     }
+    div.appendChild(numberDiv)
     div.appendChild(leftDiv)
     let qWeather = document.createElement('div');
     qWeather.className = "full-quali-weather"
@@ -215,14 +218,14 @@ function load_calendar(races){
         addRace(code, transformWeather(elem[1]), transformWeather(elem[2]), transformWeather(elem[3]), elem[4], elem[0], elem[5])
     })
     updateVisualizers()
-    updateNumbers()
+    update_numbers()
     load_addRaces()
 
 }
 
-function updateNumbers(){
-    document.querySelectorAll(".left-race").forEach(function(elem, index){
-        elem.firstChild.firstChild.textContent = index + 1 + " " + races_names[elem.parentNode.dataset.trackid]
+function update_numbers(){
+    document.querySelectorAll(".race-calendar-number").forEach(function(elem, index){
+        elem.textContent = index + 1
     })
 }
 
@@ -304,7 +307,7 @@ function listenerRaces() {
             if (document.querySelector(".main-calendar-section").childElementCount < 23) {
                 addRace(item.dataset.code, 0, 0, 0, item.dataset.trackid, 0)
                 updateVisualizers()
-                updateNumbers()
+                update_numbers()
             }
         })
     })
@@ -397,7 +400,7 @@ interact('.race-calendar').draggable({
                         } else {
                             reubicate(target,element,"before")
                         }
-                        updateNumbers()
+                        update_numbers()
 
                     }
                 }
