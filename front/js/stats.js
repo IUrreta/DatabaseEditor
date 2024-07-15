@@ -382,15 +382,15 @@ function listeners_plusLess(){
     })
 
     document.querySelector("#filterIcon").addEventListener("click", function(){
-        document.querySelector(".category-filters").classList.toggle("show")
-        document.querySelector(".filter-container").classList.toggle("focused")
+        document.getElementById("edit_stats").querySelector(".category-filters").classList.toggle("show")
+        document.getElementById("edit_stats").querySelector(".filter-container").classList.toggle("focused")
     })
 
-    document.querySelectorAll(".filter-pills").forEach(function(elem){
+    document.getElementById("edit_stats").querySelectorAll(".filter-pills").forEach(function(elem){
         elem.addEventListener("click", function(event){
             let isActive = elem.classList.contains('active');
 
-            document.querySelectorAll('.filter-pills').forEach(function(el) {
+            document.getElementById("edit_stats").querySelectorAll('.filter-pills').forEach(function(el) {
                 el.classList.remove('active');
             });
 
@@ -410,7 +410,7 @@ function listeners_plusLess(){
         else{
             let elements = document.querySelectorAll(".normal-driver")
             elements.forEach(function(elem){
-                if(parseInt(elem.dataset.teamid) <= 10 && parseInt(elem.dataset.teamid) > 0){
+                if(parseInt(elem.dataset.teamid) <= 10 && parseInt(elem.dataset.teamid) > 0 || parseInt(elem.dataset.teamid) == 32){
                     elem.classList.remove("d-none")
                 }
                 else{

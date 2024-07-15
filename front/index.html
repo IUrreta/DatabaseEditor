@@ -290,8 +290,9 @@
               Customize your team
             </h5>
             <div class="custom-logo-selection mt-3">
-              <div>
-                <div style="min-width: 119px;">
+              <div class="logo-selector">
+                <div class="bold-font">Logo</div>
+                <div style="width: max-content;">
                   <button class="custom-dropdown custom-button" id="selectImage">
                     <div class="front-gradient">Select icon</div>
                   </button>
@@ -1280,6 +1281,31 @@
       </div>
       <div class="script-view d-none" id="driver_transfers">
         <div class="trasnfer-top-panel">
+          <div class="filter-container">
+            <i class="bi bi-funnel filter-icon" id="filterIconTransfers"></i>
+            <div class="category-filters">
+              <ul class="nav nav-pills">
+                <li class="nav-item">
+                  <a class="nav-link bold-font generalPills filter-pills" href="#" id="freefilterTransfers">
+                    <div class="basic-label bold-font">FREE</div>
+                    <div class="pill-line"></div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link bold-font generalPills filter-pills" href="#" id="F2filterTransfers">
+                    <div class="basic-label bold-font">F2</div>
+                    <div class="pill-line"></div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link bold-font generalPills filter-pills" href="#" id="F3filterTransfers">
+                    <div class="basic-label bold-font">F3</div>
+                    <div class="pill-line"></div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
           <div class="title transfer-title bold-font py-3">
             Contracted drivers
             <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal"

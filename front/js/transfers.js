@@ -85,9 +85,6 @@ function place_drivers(driversArray) {
             addIcon(newDiv)
             divPosition = team_dict[driver[2]] + position;
         }
-
-        else if (driver[2] > 10 && driver[2] <= 21) divPosition = "f2-drivers";
-        else if (driver[2] > 21 && driver[2] <= 31) divPosition = "f3-drivers";
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
@@ -534,6 +531,85 @@ document.querySelector("#nameFilterTransfer").addEventListener("input",function 
             elem.classList.add("d-none")
         }
     })
+})
+
+document.querySelector("#filterIconTransfers").addEventListener("click", function(){
+    document.querySelector(".category-filters").classList.toggle("show")
+    document.querySelector(".filter-container").classList.toggle("focused")
+})
+
+document.getElementById("driver_transfers").querySelectorAll(".filter-pills").forEach(function(elem){
+    elem.addEventListener("click", function(event){
+        let isActive = elem.classList.contains('active');
+
+        document.getElementById("driver_transfers").querySelectorAll('.filter-pills').forEach(function(el) {
+            el.classList.remove('active');
+        });
+
+        if (!isActive) {
+            elem.classList.add('active');
+        }
+    })
+})
+
+document.querySelector("#F2filterTransfers").addEventListener("click", function(event){
+    if (!event.target.classList.contains("active")){
+        let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
+        elements.forEach(function(elem){
+            elem.classList.remove("d-none")
+        })
+    }
+    else{
+        let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
+        elements.forEach(function(elem){
+            if(parseInt(elem.dataset.teamid) <= 21 && parseInt(elem.dataset.teamid) > 10){
+                elem.classList.remove("d-none")
+            }
+            else{
+                elem.classList.add("d-none")
+            }
+        })
+    }
+})
+
+document.querySelector("#F3filterTransfers").addEventListener("click", function(event){
+    if (!event.target.classList.contains("active")){
+        let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
+        elements.forEach(function(elem){
+            elem.classList.remove("d-none")
+        })
+    }
+    else{
+        let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
+        elements.forEach(function(elem){
+            if(parseInt(elem.dataset.teamid) <= 31 && parseInt(elem.dataset.teamid) > 21){
+                elem.classList.remove("d-none")
+            }
+            else{
+                elem.classList.add("d-none")
+            }
+        })
+    }
+})
+
+document.querySelector("#freefilterTransfers").addEventListener("click", function(event){
+    if (!event.target.classList.contains("active")){
+        let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
+        elements.forEach(function(elem){
+            elem.classList.remove("d-none")
+        })
+    }
+    else{
+        let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
+        elements.forEach(function(elem){
+            if(parseInt(elem.dataset.teamid) == 0){
+                elem.classList.remove("d-none")
+            }
+            else{
+                elem.classList.add("d-none")
+            }
+        })
+    }
 })
 
 

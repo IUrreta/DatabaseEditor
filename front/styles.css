@@ -38,7 +38,7 @@
   --slight-contrast: #797599;
   --white-general: #f3f3f3;
   --text-general: #dedde6;
-  --text-general-transparent: #dedde68e;
+  --text-general-transparent: #dfdde7cb;
   --negative-general: #e95656;
   --positive-general: #5bd999;
   --positive-general-darker: #3f8a6b;
@@ -685,6 +685,11 @@ a.bi-linkedin:hover {
   transform: scale(1.1);
 }
 
+.trasnfer-top-panel .filter-container{
+  position: absolute;
+  margin-left: 14px;
+}
+
 .filter-container{
   background-color: transparent;
   border-radius: 10px;
@@ -731,83 +736,82 @@ a.bi-linkedin:hover {
   color: var(--dark-text);
 }
 
-#freefilter.active .pill-line{
-  width: 0%;
-}
-
-#freefilter:hover .pill-line{
+#freefilter:hover .pill-line, #freefilterTransfers:hover .pill-line{
   width: 100%;
 }
 
-#freefilter.active .basic-label{
+#freefilter.active .basic-label, #freefilterTransfers.active .basic-label{
   color: var(--new-primary);
 }
 
-#freefilter:hover .pill-line{
+#freefilter:hover .pill-line, #freefilterTransfers:hover .pill-line{
   background-color: var(--new-primary);
 }
 
-#freefilter:hover .basic-label{
+#freefilter:hover .basic-label, #freefilterTransfers:hover .basic-label{
   color: var(--new-primary);
 }
 
-#F1filter.active .pill-line{
-  width: 0%;
-}
 
-#F1filter:hover .pill-line{
+#F1filter:hover .pill-line, #F1filterTransfers:hover .pill-line{
   width: 100%;
 }
 
-#F1filter.active .basic-label{
+#F1filter .pill-line, #F1filterTransfers .pill-line{
+  background-color: var(--f1-back);
+}
+
+#F1filter.active .basic-label, #F1filterTransfers.active .basic-label{
   color: var(--text-general);
 }
 
-#F1filter:hover .pill-line{
+#F1filter:hover .pill-line, #F1filterTransfers:hover .pill-line{
   background-color: var(--text-general);
 }
 
-#F1filter:hover .basic-label{
+#F1filter:hover .basic-label, #F1filterTransfers:hover .basic-label{
   color: var(--text-general);
 }
 
-#F2filter.active .pill-line{
-  width: 0%;
-}
 
-#F2filter:hover .pill-line{
+#F2filter:hover .pill-line, #F2filterTransfers:hover .pill-line{
   width: 100%;
 }
 
-#F2filter.active .basic-label{
-  color: var(--f2-border);
-}
-
-#F2filter:hover .pill-line{
+#F2filter .pill-line, #F2filterTransfers .pill-line{
   background-color: var(--f2-border);
 }
 
-#F2filter:hover .basic-label{
+#F2filter.active .basic-label, #F2filterTransfers.active .basic-label{
   color: var(--f2-border);
 }
 
-#F3filter.active .pill-line{
-  width: 0%;
+#F2filter:hover .pill-line, #F2filterTransfers:hover .pill-line{
+  background-color: var(--f2-border);
 }
 
-#F3filter:hover .pill-line{
+#F2filter:hover .basic-label, #F2filterTransfers:hover .basic-label{
+  color: var(--f2-border);
+}
+
+
+#F3filter .pill-line, #F3filterTransfers .pill-line{
+  background-color: var(--f3-back);
+}
+
+#F3filter:hover .pill-line, #F3filterTransfers:hover .pill-line{
   width: 100%;
 }
 
-#F3filter.active .basic-label{
+#F3filter.active .basic-label, #F3filterTransfers.active .basic-label{
   color: var(--f3-border);
 }
 
-#F3filter:hover .pill-line{
+#F3filter:hover .pill-line, #F3filterTransfers:hover .pill-line{
   background-color: var(--f3-border);
 }
 
-#F3filter:hover .basic-label{
+#F3filter:hover .basic-label, #F3filterTransfers:hover .basic-label{
   color: var(--f3-border);
 }
 
@@ -817,6 +821,8 @@ a.bi-linkedin:hover {
 
 #nameFilter, #nameFilterTransfer{
   margin-top: 5px;
+  width: 100%;
+  margin-right: 10px;
 }
 
 .search-and-order{
@@ -1895,7 +1901,7 @@ DRIVERS TABLE
 }
 
 .alpine-team-table-logo{
-  padding: 9px 6px !important;
+  padding: 9px 2px !important
 }
 
 .williams-team-table-logo{
@@ -4106,9 +4112,6 @@ DRIVERS TABLE
   opacity: 0;
 }
 
-.normal-driver:hover .surname {
-  color: var(--negative-text) !important;
-}
 
 .rb-transparent:hover{
   background-color: var(--redbull-primary-transparent) !important;
@@ -5615,7 +5618,7 @@ input::-webkit-inner-spin-button {
   margin-top: 0px !important;
 }
 
-.color-selector{
+.color-selector, .logo-selector{
   display: flex;
   align-items: center;
   gap: 10px;
@@ -5638,9 +5641,8 @@ input::-webkit-inner-spin-button {
 
 .custom-logo-selection{
   display: flex;
-  flex-direction: row;
   gap: 10px;
-  justify-content: space-between;
+  flex-direction: column;
 }
 
 #teamMenu a, .team-select-menu a{
