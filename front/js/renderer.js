@@ -36,13 +36,13 @@ socket.onopen = () => {
 
 };
 
-window.addEventListener('beforeunload', () => {
-    let data = {
-        command: "disconnect"
-    }
-    socket.send(JSON.stringify(data));
-    socket.close();
-});
+// window.addEventListener('beforeunload', () => {
+//     let data = {
+//         command: "disconnect"
+//     }
+//     socket.send(JSON.stringify(data));
+//     socket.close();
+// });
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
@@ -119,16 +119,16 @@ function editModeHandler() {
     document.querySelector(".clicked").dataset.retirement = retirement;
     let driverNum = document.getElementById("numberButton").textContent;
     let wants1;
-    if(document.querySelector("#driverNumber1").checked){
+    if (document.querySelector("#driverNumber1").checked) {
         wants1 = 1;
     }
-    else{
+    else {
         wants1 = 0;
     }
     let mentality = -1
-    if (document.querySelector(".clicked").dataset.mentality0){
+    if (document.querySelector(".clicked").dataset.mentality0) {
         mentality = ""
-        document.querySelectorAll(".mentality-level-indicator").forEach(function(elem, index){
+        document.querySelectorAll(".mentality-level-indicator").forEach(function (elem, index) {
             mentality += elem.dataset.value + " "
             document.querySelector(".clicked").dataset["mentality" + index] = elem.dataset.value
         })
@@ -169,7 +169,7 @@ function teamsModeHandler() {
     let seasonObjData = document.querySelector("#seasonObjectiveInput").value;
     let longTermData = longTermObj;
     let longTermYearData = document.querySelector("#longTermInput").value;
-    let teamBudgetData =  document.querySelector("#teamBudgetInput").value.replace(/[$,]/g, "");
+    let teamBudgetData = document.querySelector("#teamBudgetInput").value.replace(/[$,]/g, "");
     let costCapTransactionData = originalCostCap - document.querySelector("#costCapInput").value.replace(/[$,]/g, "");
     let confidenceData = document.querySelector("#confidenceInput").value;
     let facilitiesData = gather_team_data()
@@ -179,13 +179,13 @@ function teamsModeHandler() {
         teamID: teamCod,
         facilities: facilitiesData,
         seasonObj: seasonObjData,
-        longTermObj : longTermData,
+        longTermObj: longTermData,
         longTermYear: longTermYearData,
         teamBudget: teamBudgetData,
         costCapEdit: costCapTransactionData,
-        confidence : confidenceData,
+        confidence: confidenceData,
         pitCrew: pitCrew,
-        teamName : combined_dict[teamCod]
+        teamName: combined_dict[teamCod]
     }
     socket.send(JSON.stringify(data))
 }
@@ -196,9 +196,9 @@ function performanceModeHandler() {
         let part = elem.dataset.part;
         let stats = {};
         elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
-           let statNum = stat.dataset.attribute;
-           let value = stat.querySelector("input").value.split(" ")[0];
-           stats[statNum] = value;
+            let statNum = stat.dataset.attribute;
+            let value = stat.querySelector("input").value.split(" ")[0];
+            stats[statNum] = value;
         });
         parts[part] = stats;
     })
@@ -212,50 +212,58 @@ function performanceModeHandler() {
 
 }
 
-function manageSaveButton(show, mode){
+function manageSaveButton(show, mode) {
     console.log(mode)
     let button = document.querySelector(".save-button")
     button.removeEventListener("click", editModeHandler);
     button.removeEventListener("click", calendarModeHandler);
     button.removeEventListener("click", teamsModeHandler);
     button.removeEventListener("click", performanceModeHandler);
-    if (!show){
+    if (!show) {
         button.classList.add("d-none")
     }
-    else{
+    else {
         button.classList.remove("d-none")
     }
 
-    if (mode === "stats"){
+    if (mode === "stats") {
         button.addEventListener("click", editModeHandler);
     }
-    else if (mode === "calendar"){
+    else if (mode === "calendar") {
         button.addEventListener("click", calendarModeHandler);
     }
-    else if (mode === "teams"){
+    else if (mode === "teams") {
         button.addEventListener("click", teamsModeHandler);
     }
-    else if (mode === "performance"){
+    else if (mode === "performance") {
         button.addEventListener("click", performanceModeHandler);
     }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    const names_configs = {"visarb": "VISA CASHAPP RB", "toyota" : "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI", "brawn": "BRAWN GP", "porsche": "PORSCHE",
-                            "alpine": "ALPINE", "renault": "RENAULT", "andretti": "ANDRETTI", "lotus": "LOTUS", "alfa" : "ALFA ROMEO",
-                        "audi" : "AUDI", "sauber" : "SAUBER", "stake" : "STAKE SAUBER"}
-    const pretty_names = {"visarb": "Visa Cashapp RB", "toyota" : "Toyota", "hugo": "Hugo Boss", "alphatauri": "Alpha Tauri", "brawn": "Brawn GP", "porsche": "Porsche",
-                            "alpine": "Alpine", "renault": "Renault", "andretti": "Andretti", "lotus": "Lotus", "alfa" : "Alfa Romeo",
-                        "audi" : "Audi", "sauber" : "Sauber", "stake" : "Stake Sauber"}
-    const logos_configs = {"visarb": "../assets/images/visarb.png", "toyota" : "../assets/images/toyota.png", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png",
-                            "brawn": "../assets/images/brawn.png", "porsche": "../assets/images/porsche.png",
-                            "alpine": "../assets/images/alpine.png", "renault": "../assets/images/renault.png", "andretti": "../assets/images/andretti.png", "lotus": "../assets/images/lotus.png",
-                            "alfa" : "../assets/images/alfaromeo.png", "audi" : "../assets/images/audi.png", "sauber" : "../assets/images/sauber.png", "stake" : "../assets/images/kick.png"}
-    const logos_classes_configs = {"visarb": "hugologo", "toyota" : "toyotalogo", "hugo": "hugologo", "alphatauri": "alphataurilogo",
-                            "porsche": "ferrarilogo", "brawn": "brawnlogo",
-                            "alpine": "alpinelogo", "renault": "ferrarilogo", "andretti": "andrettilogo", "lotus": "lotuslogo",
-                            "alfa" : "alfalogo", "audi" : "audilogo", "sauber" : "sauberlogo", "stake" : "alfalogo"}
+    const names_configs = {
+        "visarb": "VISA CASHAPP RB", "toyota": "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI", "brawn": "BRAWN GP", "porsche": "PORSCHE",
+        "alpine": "ALPINE", "renault": "RENAULT", "andretti": "ANDRETTI", "lotus": "LOTUS", "alfa": "ALFA ROMEO",
+        "audi": "AUDI", "sauber": "SAUBER", "stake": "STAKE SAUBER"
+    }
+    const pretty_names = {
+        "visarb": "Visa Cashapp RB", "toyota": "Toyota", "hugo": "Hugo Boss", "alphatauri": "Alpha Tauri", "brawn": "Brawn GP", "porsche": "Porsche",
+        "alpine": "Alpine", "renault": "Renault", "andretti": "Andretti", "lotus": "Lotus", "alfa": "Alfa Romeo",
+        "audi": "Audi", "sauber": "Sauber", "stake": "Stake Sauber"
+    }
+    const logos_configs = {
+        "visarb": "../assets/images/visarb.png", "toyota": "../assets/images/toyota.png", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png",
+        "brawn": "../assets/images/brawn.png", "porsche": "../assets/images/porsche.png",
+        "alpine": "../assets/images/alpine.png", "renault": "../assets/images/renault.png", "andretti": "../assets/images/andretti.png", "lotus": "../assets/images/lotus.png",
+        "alfa": "../assets/images/alfaromeo.png", "audi": "../assets/images/audi.png", "sauber": "../assets/images/sauber.png", "stake": "../assets/images/kick.png"
+    }
+    const logos_classes_configs = {
+        "visarb": "hugologo", "toyota": "toyotalogo", "hugo": "hugologo", "alphatauri": "alphataurilogo",
+        "porsche": "ferrarilogo", "brawn": "brawnlogo",
+        "alpine": "alpinelogo", "renault": "ferrarilogo", "andretti": "andrettilogo", "lotus": "lotuslogo",
+        "alfa": "alfalogo", "audi": "audilogo", "sauber": "sauberlogo", "stake": "alfalogo"
+    }
 
     const driverTransferPill = document.getElementById("transferpill");
     const editStatsPill = document.getElementById("statspill");
@@ -287,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Parts stats fetched", "24 Year" ,"Game Year","Performance fetched","Season performance fetched","Config", "ERROR", "Montecarlo fetched","TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+    const noNotifications = ["Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -295,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
             manage_status(0);
         },
         "JIC": (message) => {
-            if(conn === 0){
+            if (conn === 0) {
                 console.log("JIC DOES ITS THING")
                 let data = {
                     command: "connect"
@@ -353,43 +361,43 @@ document.addEventListener('DOMContentLoaded', function () {
             new_teams_table(message[1]);
             new_load_teams_table(message.slice(2));
         },
-        "TeamData Fetched": (message)=>{
+        "TeamData Fetched": (message) => {
             fillLevels(message.slice(1))
 
         },
-        "Events to Predict Fetched": (message)=>{
+        "Events to Predict Fetched": (message) => {
             placeRaces(message.slice(1))
         },
-        "Events to Predict Modal Fetched": (message)=>{
+        "Events to Predict Modal Fetched": (message) => {
             placeRacesInModal(message.slice(1))
         },
-        "Prediction Fetched": (message)=>{
+        "Prediction Fetched": (message) => {
             predictDrivers(message.slice(1))
         },
-        "Montecarlo Fetched": (message)=>{
+        "Montecarlo Fetched": (message) => {
             loadMontecarlo(message.slice(1))
         },
-        "Progress": (message)=>{
+        "Progress": (message) => {
             manageProgress(message.slice(1))
         },
-        "Config": (message)=>{
+        "Config": (message) => {
             manage_config(message.slice(1))
         },
-        "24 Year": (message)=>{
+        "24 Year": (message) => {
             manage_config(message.slice(1))
         },
-        "Performance fetched": (message)=>{
+        "Performance fetched": (message) => {
             load_performance(message[1])
             load_attributes(message[2])
             order_by("overall")
         },
-        "Season performance fetched": (message)=>{
+        "Season performance fetched": (message) => {
             load_performance_graph(message.slice(1))
         },
-        "Parts stats fetched": (message)=>{
+        "Parts stats fetched": (message) => {
             load_parts_stats(message.slice(1)[0])
         },
-        "Game Year": (message)=>{
+        "Game Year": (message) => {
             manage_game_year(message.slice(1)[0])
         }
     };
@@ -461,14 +469,39 @@ document.addEventListener('DOMContentLoaded', function () {
             status.textContent = '\xa0' + "Disconnected"
         }
     }
-    
+
     function resizeWindowToHeight(height) {
         ipcRenderer.send('resize-window', height);
     }
 
-    function manage_game_year(year){
+    ipcRenderer.on('dev-mode', (event, message) => {
+        let devConsole = document.querySelector('.dev-console');
+        document.addEventListener('keydown', (event) => {
+            if (event.ctrlKey && event.key === 'd') {
+                event.preventDefault();
+                if (devConsole) {
+                    devConsole.classList.toggle('d-none');
+                    if (!devConsole.classList.contains('d-none')) {
+                      devConsole.focus(); // Enfocar el textarea cuando se hace visible
+                    }
+                  }
+            }
+        });
+
+        if (devConsole) {
+            devConsole.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); 
+                    devConsole.value = ''; 
+                    socket.send(JSON.stringify(devConsole.value))
+                }
+            });
+        }
+    });
+
+    function manage_game_year(year) {
         console.log(year)
-        if (year[0] === "24"){
+        if (year[0] === "24") {
             document.getElementById("year23").classList.remove("activated")
             document.getElementById("year24").classList.add("activated")
             document.getElementById("drs24").classList.remove("d-none")
@@ -476,30 +509,30 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("drs24").dataset.attribute = "3"
             game_version = 2024
             manage_custom_team(year)
-            document.querySelectorAll(".brake-cooling-replace").forEach(function(elem){
+            document.querySelectorAll(".brake-cooling-replace").forEach(function (elem) {
                 elem.textContent = "Tyre preservation"
             })
         }
-        else if (year[0] === "23"){
+        else if (year[0] === "23") {
             resizeWindowToHeight(875)
             document.getElementById("year24").classList.remove("activated")
             document.getElementById("year23").classList.add("activated")
             document.getElementById("drs24").classList.add("d-none")
             document.getElementById("drs24").dataset.attribute = "-1"
             document.getElementById("teamChanges").classList.remove("d-none")
-            if (32 in combined_dict){
+            if (32 in combined_dict) {
                 delete combined_dict[32]
             }
             game_version = 2023
             manage_custom_team([null, null])
-            document.querySelectorAll(".brake-cooling-replace").forEach(function(elem){
+            document.querySelectorAll(".brake-cooling-replace").forEach(function (elem) {
                 elem.textContent = "Brake cooling"
             })
         }
     }
 
-    function manage_custom_team(nameColor){
-        if (nameColor[1] !== null){
+    function manage_custom_team(nameColor) {
+        if (nameColor[1] !== null) {
             resizeWindowToHeight(920)
             custom_team = true
             combined_dict[32] = nameColor[1]
@@ -509,12 +542,12 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("customTeamComparison").classList.remove("d-none")
             document.getElementById("customizeTeam").classList.remove("d-none")
             document.getElementById("customTeamPerformance").dataset.teamName = nameColor[1]
-            document.querySelectorAll(".ct-replace").forEach(function(elem){
+            document.querySelectorAll(".ct-replace").forEach(function (elem) {
                 elem.textContent = nameColor[1].toUpperCase()
             })
             replace_custom_team_color(nameColor[2], nameColor[3])
         }
-        else{
+        else {
             resizeWindowToHeight(875)
             custom_team = false
             document.getElementById("customTeamTransfers").classList.add("d-none")
@@ -525,7 +558,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function replace_custom_team_color(primary, secondary){
+    function replace_custom_team_color(primary, secondary) {
         let root = document.documentElement;
         root.style.setProperty('--custom-team-primary', primary);
         root.style.setProperty('--custom-team-secondary', secondary);
@@ -538,36 +571,37 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("primaryReader").value = primary.toUpperCase()
         document.getElementById("secondaryReader").value = secondary.toUpperCase()
     }
-    
+
 
     selectImageButton.addEventListener('click', () => {
         fileInput.click();
     });
-    
+
     // Función para manejar la selección de archivo
     fileInput.addEventListener('change', (event) => {
         let file = event.target.files[0];
         if (file) {
             customIconPath = `../assets/custom/${file.name}`;
-            
+
         }
     });
 
-    function replace_custom_team_logo(path){
+    function replace_custom_team_logo(path) {
         logos_disc[32] = path;
-        document.querySelectorAll(".custom-replace").forEach(function(elem){
+        document.querySelectorAll(".custom-replace").forEach(function (elem) {
             console.log(elem)
             elem.src = path
         })
+        document.querySelector(".logo-preview").src = path
         document.getElementById("selectImage").innerText = path.split("/").pop()
     }
-    
+
 
     /**
      * Manages the height of the main container
      */
-    function adjust_containter(){
-        setTimeout(function(){
+    function adjust_containter() {
+        setTimeout(function () {
             document.querySelector(".cet-container").style.position = "relative"
             document.querySelector(".cet-container").style.overflowX = "hidden"
         }, 0)
@@ -576,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function ajustScrollWrapper() {
         var windowHeight = window.innerHeight - 120;
         document.querySelector('.scroll-wrapper').style.height = windowHeight + 'px';
-      }
+    }
 
     window.addEventListener('resize', ajustScrollWrapper);
     window.addEventListener('load', ajustScrollWrapper);
@@ -789,7 +823,7 @@ document.addEventListener('DOMContentLoaded', function () {
             icon.className = "bi bi-check-circle"
             toastIcon.classList.add("success")
         }
-        else{
+        else {
             icon.className = "bi bi-x-circle"
             toastIcon.classList.add("error")
         }
@@ -862,7 +896,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 hideComp()
                 resetPredict()
                 removeStatsDrivers()
-                document.querySelectorAll(".config-content").forEach(function(elem){
+                document.querySelectorAll(".config-content").forEach(function (elem) {
                     elem.textContent = ""
                 })
                 statPanelShown = 0;
@@ -881,8 +915,8 @@ document.addEventListener('DOMContentLoaded', function () {
         configDetailModal.show()
     })
 
-    function manage_config(info){
-        if (info[0] === "ERROR"){ //No file detected -> show modal
+    function manage_config(info) {
+        if (info[0] === "ERROR") { //No file detected -> show modal
             document.querySelector(".bi-gear").classList.add("hidden")
             let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
                 keyboard: false
@@ -890,18 +924,18 @@ document.addEventListener('DOMContentLoaded', function () {
             configModal.show()
         }
         else { //File detected -> check if ask to show modal or not
-            if (info[0]["state"] === "ask"){
+            if (info[0]["state"] === "ask") {
                 document.querySelector(".bi-gear").classList.add("hidden")
                 let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
                     keyboard: false
                 })
                 configModal.show()
             }
-            else{
+            else {
                 document.querySelector(".bi-gear").classList.remove("hidden")
                 manage_config_content(info[0])
-                if (info[0]["state"] === "changed"){
-                    setTimeout(function(){
+                if (info[0]["state"] === "changed") {
+                    setTimeout(function () {
                         update_notifications("Config file loaded", false)
                     }, 500)
                 }
@@ -910,7 +944,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function manage_config_content(info){
+    function manage_config_content(info) {
         console.log(info)
         let teams = info["teams"]
         alphaTauriReplace(teams["alphatauri"])
@@ -919,41 +953,48 @@ document.addEventListener('DOMContentLoaded', function () {
         update_logo("alpine", logos_configs[teams["alpine"]], teams["alpine"])
         update_logo("alfa", logos_configs[teams["alfa"]], teams["alfa"])
         update_logo("alphatauri", logos_configs[teams["alphatauri"]], teams["alphatauri"])
-        if (info["icon"]){
+        if (info["icon"]) {
             console.log(info["icon"])
             replace_custom_team_logo(info["icon"])
             customIconPath = info["icon"]
         }
-        if (info["primaryColor"]){
+        if (info["primaryColor"]) {
             replace_custom_team_color(info["primaryColor"], info["secondaryColor"])
         }
     }
 
-    document.querySelectorAll(".color-picker").forEach(function(elem){
+    document.querySelectorAll(".color-picker").forEach(function (elem) {
         let reader = elem.parentNode.querySelector(".color-reader")
-        elem.addEventListener("input", function(){
+        elem.addEventListener("input", function () {
             reader.value = elem.value.toUpperCase()
         })
         reader.value = elem.value.toUpperCase();
     })
 
+    document.querySelectorAll(".color-reader").forEach(function (elem) {
+        elem.addEventListener("input", function () {
+            let picker = elem.parentNode.querySelector(".color-picker")
+            picker.value = elem.value.toLowerCase()
+        })
+    })
 
-    function alphaTauriReplace(info){
+
+    function alphaTauriReplace(info) {
         document.querySelector("#alphaTauriReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
         combined_dict[8] = pretty_names[info]
-        document.querySelectorAll(".at-name").forEach(function(elem){
+        document.querySelectorAll(".at-name").forEach(function (elem) {
             //if it has the class complete, put names_configs[info], else out VCARB
-            if (info === "visarb" && !elem.classList.contains("complete")){
+            if (info === "visarb" && !elem.classList.contains("complete")) {
                 elem.textContent = "VCARB"
             }
-            else{
+            else {
                 elem.textContent = names_configs[info]
             }
         })
-        if (info !== "alphatauri"){
-            document.querySelectorAll(".atlogo-replace").forEach(function(elem){
-                if (!elem.classList.contains("non-changable")){
+        if (info !== "alphatauri") {
+            document.querySelectorAll(".atlogo-replace").forEach(function (elem) {
+                if (!elem.classList.contains("non-changable")) {
                     elem.src = logos_configs[info]
                     elem.classList.remove("alphataurilogo")
                     elem.classList.remove("toyotalogo")
@@ -962,8 +1003,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     elem.classList.remove("brawnlogo")
                     elem.classList.add(logos_classes_configs[info])
                 }
-                if (elem.classList.contains("secondary")){
-                    if (info !== "toyota"){
+                if (elem.classList.contains("secondary")) {
+                    if (info !== "toyota") {
                         elem.src = elem.src.slice(0, -4) + "2.png"
                     }
                 }
@@ -986,9 +1027,9 @@ document.addEventListener('DOMContentLoaded', function () {
             newVarName = "--" + info + "-secondary-transparent"
             change_css_variables(alphaVarName, newVarName)
         }
-        else{
-            document.querySelectorAll(".atlogo-replace").forEach(function(elem){
-                if (!elem.classList.contains("non-changable")){
+        else {
+            document.querySelectorAll(".atlogo-replace").forEach(function (elem) {
+                if (!elem.classList.contains("non-changable")) {
                     elem.src = logos_configs[info]
                     elem.classList.remove("alphataurilogo")
                     elem.classList.remove("toyotalogo")
@@ -997,7 +1038,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     elem.classList.remove("brawnlogo")
                     elem.classList.add("alphataurilogo")
                 }
-                if (elem.classList.contains("secondary")){
+                if (elem.classList.contains("secondary")) {
                     elem.src = elem.src.slice(0, -4) + "2.png"
                 }
             })
@@ -1018,10 +1059,10 @@ document.addEventListener('DOMContentLoaded', function () {
             newVarName = "--alphatauri-secondary-transparent-original"
             change_css_variables(alphaVarName, newVarName)
         }
-        document.querySelectorAll(".team-menu-alphatauri-replace").forEach(function(elem){
+        document.querySelectorAll(".team-menu-alphatauri-replace").forEach(function (elem) {
             let classes = elem.className.split(" ")
-            classes.forEach(function(cl){
-                if (cl.includes("changable")){
+            classes.forEach(function (cl) {
+                if (cl.includes("changable")) {
                     elem.classList.remove(cl)
                     elem.classList.add("changable-team-menu-" + info)
                 }
@@ -1029,23 +1070,23 @@ document.addEventListener('DOMContentLoaded', function () {
         })
     }
 
-    function alpineReplace(info){
+    function alpineReplace(info) {
         document.querySelector("#alpineReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value = info
         combined_dict[5] = pretty_names[info]
-        document.querySelectorAll(".alpine-name").forEach(function(elem){
+        document.querySelectorAll(".alpine-name").forEach(function (elem) {
             elem.textContent = names_configs[info]
         })
-        if (info !== "alpine"){
-            document.querySelectorAll(".alpinelogo-replace").forEach(function(elem){
-                if (!elem.classList.contains("non-changable")){
+        if (info !== "alpine") {
+            document.querySelectorAll(".alpinelogo-replace").forEach(function (elem) {
+                if (!elem.classList.contains("non-changable")) {
                     elem.src = logos_configs[info]
                     elem.classList.remove("alpinelogo")
                     elem.classList.remove("ferrarilogo")
                     elem.classList.remove("lotuslogo")
                     elem.classList.add(logos_classes_configs[info])
                 }
-                if (elem.classList.contains("secondary")){
+                if (elem.classList.contains("secondary")) {
                     elem.src = elem.src.slice(0, -4) + "2.png"
                 }
             })
@@ -1066,16 +1107,16 @@ document.addEventListener('DOMContentLoaded', function () {
             newVarName = "--" + info + "-secondary-transparent"
             change_css_variables(alpineVarName, newVarName)
         }
-        else{
-            document.querySelectorAll(".alpinelogo-replace").forEach(function(elem){
-                if (!elem.classList.contains("non-changable")){
+        else {
+            document.querySelectorAll(".alpinelogo-replace").forEach(function (elem) {
+                if (!elem.classList.contains("non-changable")) {
                     elem.src = logos_configs[info]
                     elem.classList.remove("alpinelogo")
                     elem.classList.remove("ferrarilogo")
                     elem.classList.remove("lotuslogo")
                     elem.classList.add("alpinelogo")
                 }
-                if (elem.classList.contains("secondary")){
+                if (elem.classList.contains("secondary")) {
                     elem.src = elem.src.slice(0, -4) + "2.png"
                 }
             })
@@ -1096,27 +1137,27 @@ document.addEventListener('DOMContentLoaded', function () {
             newVarName = "--alpine-secondary-transparent-original"
             change_css_variables(alpineVarName, newVarName)
         }
-        document.querySelectorAll(".team-menu-alpine-replace").forEach(function(elem){
+        document.querySelectorAll(".team-menu-alpine-replace").forEach(function (elem) {
             let classes = elem.className.split(" ")
-            classes.forEach(function(cl){
-                if (cl.includes("changable")){
+            classes.forEach(function (cl) {
+                if (cl.includes("changable")) {
                     elem.classList.remove(cl)
                     elem.classList.add("changable-team-menu-" + info)
                 }
             })
         })
     }
-    
-    function alfaReplace(info){
+
+    function alfaReplace(info) {
         document.querySelector("#alfaReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value = info
         combined_dict[9] = pretty_names[info]
-        document.querySelectorAll(".alfa-name").forEach(function(elem){
+        document.querySelectorAll(".alfa-name").forEach(function (elem) {
             elem.textContent = names_configs[info]
         })
-        if (info !== "alfa"){
-            document.querySelectorAll(".alfalogo-replace").forEach(function(elem){
-                if (!elem.classList.contains("non-changable")){
+        if (info !== "alfa") {
+            document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
+                if (!elem.classList.contains("non-changable")) {
                     elem.src = logos_configs[info]
                     elem.classList.remove("alfaromeologo")
                     elem.classList.remove("audilogo")
@@ -1141,9 +1182,9 @@ document.addEventListener('DOMContentLoaded', function () {
             newVarName = "--" + info + "-secondary-transparent"
             change_css_variables(alfaVarName, newVarName)
         }
-        else{
-            document.querySelectorAll(".alfalogo-replace").forEach(function(elem){
-                if (!elem.classList.contains("non-changable")){
+        else {
+            document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
+                if (!elem.classList.contains("non-changable")) {
                     elem.src = logos_configs[info]
                     elem.className = "alfalogo-replace alfalogo"
                 }
@@ -1165,10 +1206,10 @@ document.addEventListener('DOMContentLoaded', function () {
             newVarName = "--alfa-secondary-transparent-original"
             change_css_variables(alfaVarName, newVarName)
         }
-        document.querySelectorAll(".team-menu-alfa-replace").forEach(function(elem){
+        document.querySelectorAll(".team-menu-alfa-replace").forEach(function (elem) {
             let classes = elem.className.split(" ")
-            classes.forEach(function(cl){
-                if (cl.includes("changable")){
+            classes.forEach(function (cl) {
+                if (cl.includes("changable")) {
                     elem.classList.remove(cl)
                     elem.classList.add("changable-team-menu-" + info)
                 }
@@ -1176,15 +1217,15 @@ document.addEventListener('DOMContentLoaded', function () {
         })
     }
 
-    function change_css_variables(oldVar, newVar){
-        let root = document.documentElement;  
+    function change_css_variables(oldVar, newVar) {
+        let root = document.documentElement;
         let newVal = getComputedStyle(root).getPropertyValue(newVar).trim();
         root.style.setProperty(oldVar, newVal);
     }
 
-    document.querySelector("#configButton").addEventListener("click", function(){
+    document.querySelector("#configButton").addEventListener("click", function () {
         //wait 0.1 seconds to show the modal
-        setTimeout(function(){
+        setTimeout(function () {
             let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'), {
                 keyboard: false
             })
@@ -1195,16 +1236,16 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     //select all team-change-button
-    document.querySelectorAll(".team-change-button").forEach(function(elem){
-        elem.querySelectorAll("a").forEach(function(a){
-            a.addEventListener("click", function(){
+    document.querySelectorAll(".team-change-button").forEach(function (elem) {
+        elem.querySelectorAll("a").forEach(function (a) {
+            a.addEventListener("click", function () {
                 elem.querySelector("button").textContent = a.textContent
                 elem.querySelector("button").dataset.value = a.dataset.value
             })
         })
     })
 
-    document.querySelector("#configDetailsButton").addEventListener("click", function(){
+    document.querySelector("#configDetailsButton").addEventListener("click", function () {
         save = document.querySelector("#saveSelector").textContent
         save = save.slice(0, -4)
         alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
@@ -1218,42 +1259,42 @@ document.addEventListener('DOMContentLoaded', function () {
             alfa: alfa,
             state: "changed"
         }
-        if (customIconPath !== null){
+        if (customIconPath !== null) {
             data["icon"] = customIconPath
             replace_custom_team_logo(customIconPath);
         }
-        if (custom_team){
+        if (custom_team) {
             data["primaryColor"] = document.getElementById("primarySelector").value
             data["secondaryColor"] = document.getElementById("secondarySelector").value
             replace_custom_team_color(data["primaryColor"], data["secondaryColor"])
         }
         socket.send(JSON.stringify(data))
-        info = {teams: {alphatauri: alphatauri, alpine: alpine, alfa: alfa}}
+        info = { teams: { alphatauri: alphatauri, alpine: alpine, alfa: alfa } }
         manage_config_content(info)
         reloadTables()
         document.querySelector(".bi-gear").classList.remove("hidden")
     })
 
-    document.querySelector("#cancelConfigButton").addEventListener("click", function(){
+    document.querySelector("#cancelConfigButton").addEventListener("click", function () {
         save = document.querySelector("#saveSelector").textContent
         save = save.slice(0, -4)
         let state;
         let checked = document.querySelector("#ask").checked
-        if (checked){
+        if (checked) {
             state = "neverask"
         }
-        else{
+        else {
             state = "ask"
         }
         let alpha;
         let alpine;
         let alfa;
-        if (game_version === 2024){
+        if (game_version === 2024) {
             alpha = "visarb"
             alpine = "alpine"
             alfa = "stake"
         }
-        else if (game_version === 2023){
+        else if (game_version === 2023) {
             alpha = "alphatauri"
             alpine = "alpine"
             alfa = "alfa"
@@ -1338,50 +1379,50 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     h2hPill.addEventListener("click", function () {
-        manageScripts("hide","show", "hide", "hide", "hide", "hide", "hide", "hide")
+        manageScripts("hide", "show", "hide", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
     })
 
     viewPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "show", "hide", "hide", "hide", "hide", "hide")
+        manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
-    })  
+    })
 
     driverTransferPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "hide", "show", "hide", "hide", "hide", "hide")
+        manageScripts("hide", "hide", "hide", "show", "hide", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
     })
 
     editStatsPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "hide", "hide", "show", "hide", "hide", "hide")
+        manageScripts("hide", "hide", "hide", "hide", "show", "hide", "hide", "hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(true, "stats")
     })
 
     constructorsPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "hide", "hide", "hide", "hide", "hide", "show")
+        manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
         scriptSelected = 1
         check_selected()
         manageSaveButton(true, "teams")
     })
-    
+
 
     CalendarPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "hide", "hide", "hide", "show", "hide", "hide")
+        manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide", "hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(true, "calendar")
     })
 
     carPill.addEventListener("click", function () {
-        manageScripts("hide","hide", "hide", "hide", "hide", "hide", "show", "hide")
+        manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show", "hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(true, "performance")

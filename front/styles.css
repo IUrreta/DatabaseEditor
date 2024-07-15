@@ -27,6 +27,7 @@
   --text-outline: #000000;
   --blur-color: #616161d3;
   --toast-background : #5a5b5c;
+  --console-transparent: #42424299;
 
   --mentality-enthusiastic: #c055e3;
   --mentality-positive: #10ffff;
@@ -412,6 +413,22 @@ body {
 
 .version-panel:hover{
   color: var(--text-selected);
+}
+
+.dev-console{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--console-transparent);
+  color: var(--text-general);
+  border: none;
+  font-family: 'Courier New', Courier, monospace;
+  z-index: 1000;
+}
+
+.dev-console:focus-visible{
+  outline: none;
 }
 
 .bi-exclamation-diamond {
@@ -874,6 +891,10 @@ a.bi-linkedin:hover {
 }
 
 .text-filter:focus-visible{
+  outline: none;
+}
+
+.color-reader:focus-visible{
   outline: none;
 }
 
@@ -5622,6 +5643,13 @@ input::-webkit-inner-spin-button {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.logo-preview{
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+  border: solid 1px var(--toast-background);
 }
 
 .color-reader{

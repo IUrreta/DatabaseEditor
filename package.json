@@ -4,7 +4,8 @@
   "description": "A tool that will let you edit your save file from F1 Manager games",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "start:dev": "electron . --dev"
   },
   "repository": "https://github.com/IUrreta/DatabaseEditor",
   "author": "IUrreta",

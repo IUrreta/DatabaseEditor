@@ -1,12 +1,12 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, shell, ipcMain  } = require('electron')
+const { app, BrowserWindow, shell, ipcMain } = require('electron')
 const path = require('path')
 const { setupTitlebar, attachTitlebarToWindow } = require("custom-electron-titlebar/main");
 
 
 let mainWindow;
 
-function createWindow () {
+function createWindow() {
   setupTitlebar();
   mainWindow = new BrowserWindow({
     width: 1700,
@@ -18,7 +18,7 @@ function createWindow () {
       preload: path.join(__dirname, 'front/preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
-      
+
     }
   });
   // and load the index.html of the app.
@@ -27,17 +27,28 @@ function createWindow () {
     event.preventDefault();
     shell.openExternal(url);
   });
-  
+
   attachTitlebarToWindow(mainWindow);
   mainWindow.setMenu(null)
-  
+
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 
-  
+  const args = process.argv.slice(2);
+  console.log(process.argv);
+  const isDevMode = args.includes('--dev');
+
+  if (isDevMode) {
+    mainWindow.webContents.openDevTools();
+    mainWindow.webContents.once('did-finish-load', () => {
+      mainWindow.webContents.send('dev-mode', 'Dev mode enabled');
+    });
+  }
 
 }
+
+
 
 
 // This method will be called when Electron has finished
