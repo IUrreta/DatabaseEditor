@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     const logos_classes_configs = {
         "visarb": "hugologo", "toyota": "toyotalogo", "hugo": "hugologo", "alphatauri": "alphataurilogo",
-        "porsche": "ferrarilogo", "brawn": "brawnlogo",
+        "porsche": "porschelogo", "brawn": "brawnlogo",
         "alpine": "alpinelogo", "renault": "ferrarilogo", "andretti": "andrettilogo", "lotus": "lotuslogo",
         "alfa": "alfalogo", "audi": "audilogo", "sauber": "sauberlogo", "stake": "alfalogo"
     }

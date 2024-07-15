@@ -694,7 +694,7 @@ a.bi-linkedin:hover {
   color: var(--dark-text);
   font-size: 20px;
   cursor: pointer;
-  transition: color 0.2s, tranform 0.2s;
+  transition: color 0.2s, transform 0.2s;
 }
 
 .filter-icon:hover{
@@ -1876,6 +1876,10 @@ DRIVERS TABLE
 
 .teams-table-row .teams-table-team, .teams-table-row .teams-table-points, .teams-table-row .teams-table-position{
   background-color: var(--elements)
+}
+
+.teams-table-row .teams-table-team{
+  padding-left: 7px;
 }
 
 .teams-table-row.odd .teams-table-team, .teams-table-row.odd .teams-table-points, .teams-table-row.odd .teams-table-position{
@@ -5922,12 +5926,16 @@ input::-webkit-inner-spin-button {
   padding-right: 2px;
 }
 
+.porschelogo{
+  width: 40px;
+  height: 40px;
+  padding: 5px;
+}
+
 .andrettilogo {
   width: 40px;
   height: 40px;
-  padding-bottom: 3px;
-  padding-top: 8px;
-  padding-left: 3px;
+  padding: 6px 4px;
 }
 
 .merclogo, #melogo {
@@ -5967,9 +5975,7 @@ input::-webkit-inner-spin-button {
 .alfalogo, #aflogo {
   width: 40px;
   height: 40px;
-  padding-bottom: 3px;
-  padding-top: 1px;
-  padding-left: 1px;
+  padding: 3px;
 }
 
 .astonlogo, #aslogo {
@@ -5983,41 +5989,31 @@ input::-webkit-inner-spin-button {
 .brawnlogo{
   width: 40px;
   height: 40px;
-  padding-bottom: 16px;
-  margin-left: 5px;
-  padding-top: 17px;
+  padding: 15px 0;
 }
 
 .audilogo{
   width: 40px;
   height: 40px;
-  padding-bottom: 16px;
-  padding-left: 5px;
-  padding-top: 17px;
+  padding: 12px 0;
 }
 
 .sauberlogo{
   width: 40px;
   height: 40px;
-  padding-bottom: 3px;
-  padding-top: 5px;
-  padding-left: 5px;
+  padding: 6px 5px;
 }
 
 .hugologo{
   height: 40px;
   width: 40px;
-  padding-bottom: 7px;
-  padding-left: 5px;
-  padding-top: 7px;
+  padding: 5px 0;
 }
 
 .toyotalogo{
   width: 40px;
   height: 40px;
-  padding-bottom: 9px;
-  padding-left: 7px;
-  padding-top: 6px;
+  padding: 7px 2px;
 }
 
 .haaslogo, #halogo {
@@ -6037,9 +6033,7 @@ input::-webkit-inner-spin-button {
 .lotuslogo{
   width: 40px;
   height: 40px;
-  padding-bottom: 4px;
-  padding-top: 4px;
-  padding-left: 6px;
+  padding: 1px 0px;
 }
 
 .alphataurilogo, #atlogo {
