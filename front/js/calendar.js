@@ -45,7 +45,6 @@ function reubicate(div0,div1,beforeAfter) {
  * @param {string} code Code from the race
  */
 function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
-    console.log(code, rainQ, rainR, type, trackID, state)
     let imageUrl = codes_dict[code];
 
     let div = document.createElement('div');

@@ -36,7 +36,6 @@ function createWindow() {
   // mainWindow.webContents.openDevTools()
 
   const args = process.argv.slice(2);
-  console.log(process.argv);
   const isDevMode = args.includes('--dev');
 
   if (isDevMode) {

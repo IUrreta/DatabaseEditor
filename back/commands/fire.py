@@ -9,10 +9,9 @@ class FireCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        argument = f"fire {self.message['driverID']}"
+        argument = f"fire {self.message['driverID']} {self.message['teamID']}"
         run_trasnsfer(argument)
         process_repack("../result", Command.path)
-        print(self.message)
         info = []
         info.insert(0, f"Succesfully fired {self.message['driver']} from {self.team_replace_dict[self.message['team']]}")
         info_json = json.dumps(info)

@@ -17,6 +17,9 @@ const divsArray = [freeDriversDiv,f2DriversDiv,f3DriversDiv]
 const selectImageButton = document.getElementById('selectImage');
 const fileInput = document.getElementById('fileInput');
 
+const f2_teams = [11,12,13,14,15,16,17,18,19,20,21]
+const f3_teams = [22,23,24,25,26,27,28,29,30,31]
+
 
 let originalParent;
 let destinationParent;
@@ -29,6 +32,7 @@ let driverEditingID;
 let driverEditingName;
 let driver1;
 let driver2;
+let originalTeamId
 
 let team_dict = { 1: "fe",2: "mc",3: "rb",4: "me",5: "al",6: "wi",7: "ha",8: "at",9: "af",10: "as",32: "ct" }
 let inverted_dict = { 'ferrari': 1,'mclaren': 2,'redbull': 3,'merc': 4,'alpine': 5,'williams': 6,'haas': 7,'alphatauri': 8,'alfaromeo': 9,'astonmartin': 10 }
@@ -91,9 +95,7 @@ function place_drivers(driversArray) {
 }
 
 document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {
-    console.log(elem)
     elem.querySelector(".bi-chevron-right").addEventListener("click",function () {
-        console.log("AAAA")
         let parent = elem.parentNode.parentNode
         let affiliatesDiv = parent.querySelector(".affiliates-space")
         affiliatesDiv.scrollBy({ left: 100,behavior: 'smooth' });
@@ -112,7 +114,6 @@ document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {
  * @param {div} div div from the driver
  */
 function updateColor(div) {
-    console.log(div)
     let surnameDiv = div.querySelector(".bold-font")
     surnameDiv.className = "bold-font"
     manageColor(div,surnameDiv)
@@ -441,13 +442,25 @@ function signDriver(type) {
     let driverName = draggable.innerText
 
     if (type === "fireandhire") {
-        let extra = {
+        let data = {
             command: "fire",
             driverID: draggable.dataset.driverid,
             driver: driverName,
-            team: name_dict[teamOrigin.dataset.team]
+            team: name_dict[teamOrigin.dataset.team],
+            teamID: originalTeamId
         }
-        socket.send(JSON.stringify(extra))
+        if (!data["team"]){
+            if (f2_teams.includes(originalTeamId)){
+                data["team"] = "F2"
+            }
+            else if (f3_teams.includes(originalTeamId)){
+                data["team"] = "F3"
+            }
+            else{
+                data["team"] = "his team"
+            }
+        }
+        socket.send(JSON.stringify(data))
 
     }
     if (type === "regular") {
@@ -672,17 +685,17 @@ interact('.free-driver').draggable({
                 const rect = element.getBoundingClientRect();
                 if (event.clientX >= rect.left && event.clientX <= rect.right &&
                     event.clientY >= rect.top && event.clientY <= rect.bottom) {
-                    console.log(element)
                     if (element.classList.contains("affiliates-space") && game_version === 2024) {
                         posInTeam = 3 + element.childElementCount
                         teamDestiniy = element.parentNode.parentNode.dataset.team
                         destinationParent = element;
-                        element.appendChild(target);
+                        element.appendChild(target)
+                        originalTeamId = parseInt(target.dataset.teamid)
                         target.dataset.teamid = inverted_dict[teamDestiniy]
                         updateColor(target)
                         document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
                         if (autoContractToggle.checked) {
-                            if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space")) {
+                            if ((game_version === 2024) && (originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
                                 signDriver("fireandhire")
                             }
                             signDriver("autocontract")
@@ -701,12 +714,15 @@ interact('.free-driver').draggable({
                             teamDestiniy = element.parentNode.dataset.team
                             destinationParent = element;
                             element.appendChild(target);
+                            originalTeamId = parseInt(target.dataset.teamid)
                             target.dataset.teamid = inverted_dict[teamDestiniy]
                             updateColor(target)
-                            console.log(element)
                             document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
                             if (autoContractToggle.checked) {
-                                if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space")) {
+                                console.log(game_version, teamOrigin)
+                                if ((game_version === 2023 && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) ||
+                                (game_version === 2024) && (originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
+                                    console.log("ENTRO BIEN")
                                     signDriver("fireandhire")
                                 }
                                 signDriver("autocontract")
@@ -721,7 +737,6 @@ interact('.free-driver').draggable({
 
                         }
                         else if (element.childElementCount == 1) {
-                            console.log("AQUI")
                             if (originalParent.classList.contains("driver-space")) {
                                 driver1 = target;
                                 driver2 = element.firstChild;
@@ -758,6 +773,7 @@ interact('.free-driver').draggable({
                 }
                 if (originalParent.id !== "free-drivers") {
                     originalParent.removeChild(draggable);
+                    originalTeamId = parseInt(target.dataset.teamid)
                     draggable.dataset.teamid = 0
                     updateColor(draggable)
                     freeDrivers.appendChild(target);
@@ -765,7 +781,19 @@ interact('.free-driver').draggable({
                         command: "fire",
                         driverID: draggable.dataset.driverid,
                         driver: draggable.innerText,
-                        team: name_dict[teamOrigin.dataset.team]
+                        team: name_dict[teamOrigin.dataset.team],
+                        teamID: originalTeamId
+                    }
+                    if (!data["team"]){
+                        if (f2_teams.includes(originalTeamId)){
+                            data["team"] = "F2"
+                        }
+                        else if (f3_teams.includes(originalTeamId)){
+                            data["team"] = "F3"
+                        }
+                        else{
+                            data["team"] = "his team"
+                        }
                     }
                     socket.send(JSON.stringify(data))
                 }

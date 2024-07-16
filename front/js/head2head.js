@@ -964,7 +964,6 @@ function load_labels_initialize_graphs(data) {
     createPointsChart(labels)
     if (mode === "driver") {
         let max = 20
-        console.log(game_version, custom_team)
         if (game_version === 2024 && custom_team){
             max = 22
         }

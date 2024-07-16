@@ -10,8 +10,9 @@ def run_script(option=""):
 
     if(params[0] == "fire"):
         driver_id = (params[1],)
+        team_id = (params[2],)
         position = cursor.execute(f"SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = {driver_id[0]}").fetchone()
-        cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driver_id[0]}")
+        cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driver_id[0]} AND ContractType = 0 AND TeamID = {team_id[0]}")
     #deletes the driver you're replacing current contract
         if(position[0] != 3):
             cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = {driver_id[0]}")  # takes him out of his car

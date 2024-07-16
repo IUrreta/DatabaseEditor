@@ -149,7 +149,6 @@ function editModeHandler() {
 }
 
 function calendarModeHandler() {
-    console.log("CALENDARIO")
     let dataCodesString = '';
 
     document.querySelectorAll(".race-calendar").forEach((race) => {
@@ -213,7 +212,6 @@ function performanceModeHandler() {
 }
 
 function manageSaveButton(show, mode) {
-    console.log(mode)
     let button = document.querySelector(".save-button")
     button.removeEventListener("click", editModeHandler);
     button.removeEventListener("click", calendarModeHandler);
@@ -434,7 +432,6 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     socket.onmessage = (event) => {
         let message = JSON.parse(event.data);
-        console.log(message)
         let handler = messageHandlers[message[0]];
 
         if (handler) {
@@ -500,7 +497,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function manage_game_year(year) {
-        console.log(year)
         if (year[0] === "24") {
             document.getElementById("year23").classList.remove("activated")
             document.getElementById("year24").classList.add("activated")
@@ -589,7 +585,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function replace_custom_team_logo(path) {
         logos_disc[32] = path;
         document.querySelectorAll(".custom-replace").forEach(function (elem) {
-            console.log(elem)
             elem.src = path
         })
         document.querySelector(".logo-preview").src = path
@@ -945,7 +940,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function manage_config_content(info) {
-        console.log(info)
         let teams = info["teams"]
         alphaTauriReplace(teams["alphatauri"])
         alpineReplace(teams["alpine"])
@@ -954,7 +948,6 @@ document.addEventListener('DOMContentLoaded', function () {
         update_logo("alfa", logos_configs[teams["alfa"]], teams["alfa"])
         update_logo("alphatauri", logos_configs[teams["alphatauri"]], teams["alphatauri"])
         if (info["icon"]) {
-            console.log(info["icon"])
             replace_custom_team_logo(info["icon"])
             customIconPath = info["icon"]
         }

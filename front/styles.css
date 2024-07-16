@@ -2622,7 +2622,7 @@ DRIVERS TABLE
   font-size: 30px;
   display: flex;
   align-items: center;
-  width: 33%;
+  width: 20%;
   justify-content: center;
   padding-right: 12px;
 }
@@ -5549,6 +5549,7 @@ input::-webkit-inner-spin-button {
   display: flex;
   flex-direction: row;
   max-height: 46px;
+  align-items: center;
 }
 
 .new-logo-and-name{
@@ -5950,10 +5951,7 @@ input::-webkit-inner-spin-button {
 .merclogo2 {
   width: 40px;
   height: 40px;
-  padding-bottom: 5px;
-  padding-top: 7px;
-  padding-left: 5px;
-  padding-right: 4px;
+  padding: 5px;
 }
 
 .alpinelogo, #allogo {
