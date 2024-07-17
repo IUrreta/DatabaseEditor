@@ -316,7 +316,7 @@ function manage_teams_table_logos() {
                 logo.className = "teams-table-logo-inner audi-team-table-logo"
             }
             else if (alfaReplace === "stake") {
-                logo.className = "teams-table-logo-inner haas-team-table-logo"
+                logo.className = "teams-table-logo-inner stake-team-table-logo"
             }
             else if (alfaReplace === "sauber") {
                 logo.className = "teams-table-logo-inner ferrari-team-table-logo"

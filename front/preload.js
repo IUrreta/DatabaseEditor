@@ -4,7 +4,7 @@ const path = require('path')
 window.addEventListener('DOMContentLoaded', () => {
   const options = {
     backgroundColor: TitlebarColor.fromHex('#161616'),
-    icon: path.join(__dirname, "../assets/images/logoVector.png"),
+    icon: path.join(__dirname, "../assets/images/logoAlter.png"),
     iconSize: 30,
     titleHorizontalAlignment: 'left'
   };

@@ -467,8 +467,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function resizeWindowToHeight(height) {
-        ipcRenderer.send('resize-window', height);
+    function resizeWindowToHeight(mode) {
+        if (mode === "11teams") {
+            ipcRenderer.send('resize-window', 930);
+            document.querySelectorAll(".main-resizable").forEach(function (elem) {
+                elem.style.height = "720.5px"
+            })
+            document.querySelectorAll(".staff-list").forEach(function (elem) {
+                elem.style.height = "672px"
+            })
+        }
+        else if (mode === "10teams"){
+            ipcRenderer.send('resize-window', 875);
+            document.querySelectorAll(".main-resizable").forEach(function (elem) {
+                elem.style.height = "660px"
+            })
+            document.querySelectorAll(".staff-list").forEach(function (elem) {
+                elem.style.height = "612px"
+            })
+        }        
     }
 
     ipcRenderer.on('dev-mode', (event, message) => {
@@ -510,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
         }
         else if (year[0] === "23") {
-            resizeWindowToHeight(875)
+            resizeWindowToHeight("10teams")
             document.getElementById("year24").classList.remove("activated")
             document.getElementById("year23").classList.add("activated")
             document.getElementById("drs24").classList.add("d-none")
@@ -529,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function manage_custom_team(nameColor) {
         if (nameColor[1] !== null) {
-            resizeWindowToHeight(920)
+            resizeWindowToHeight("11teams")
             custom_team = true
             combined_dict[32] = nameColor[1]
             document.getElementById("customTeamTransfers").classList.remove("d-none")
@@ -544,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function () {
             replace_custom_team_color(nameColor[2], nameColor[3])
         }
         else {
-            resizeWindowToHeight(875)
+            resizeWindowToHeight("10teams")
             custom_team = false
             document.getElementById("customTeamTransfers").classList.add("d-none")
             document.getElementById("customTeamPerformance").classList.add("d-none")
@@ -578,8 +595,8 @@ document.addEventListener('DOMContentLoaded', function () {
         let file = event.target.files[0];
         if (file) {
             customIconPath = `../assets/custom/${file.name}`;
-
         }
+        document.querySelector(".logo-preview").src = customIconPath
     });
 
     function replace_custom_team_logo(path) {

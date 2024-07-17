@@ -39,7 +39,7 @@
   --slight-contrast: #797599;
   --white-general: #f3f3f3;
   --text-general: #dedde6;
-  --text-general-transparent: #dfdde7cb;
+  --text-general-transparent: #e9e8f0be;
   --negative-general: #e95656;
   --positive-general: #5bd999;
   --positive-general-darker: #3f8a6b;
@@ -135,7 +135,7 @@
   --custom-team-primary: #ffffff;
   --custom-team-secondary: #ffffff;
 
-  --redbull-primary-transparent: #3172bf30;
+  --redbull-primary-transparent: #3172bf45;
   --redbull-secondary-transparent: #ffd30030;
   --ferrari-primary-transparent: #f5331130;
   --general-secondary-transparent: #f1f1f130;
@@ -1283,10 +1283,25 @@ a.bi-linkedin:hover {
   background: linear-gradient(to right, transparent, #c13aff, transparent);
 }
 
+.background{
+  background-color: var(--new-primary); /* Azul claro */
+  background-image: url('../assets/images/background.svg');
+  background-size: cover; /* Ajusta el tamaño de la imagen al tamaño del contenedor */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
+  height: 100%; /* Asegura que el fondo cubra toda la altura de la ventana */
+  margin: 0;
+  position: absolute;
+  width: 100.2%;
+  z-index: -5;
+  left: -2px;
+}
+
 .main-panel {
   display: flex;
   position: relative;
   height: 100%;
+  overflow-x: hidden;
 }
 
 .script-view {
@@ -1618,6 +1633,7 @@ a.bi-linkedin:hover {
   color: var(--white-general);
   overflow-y: auto;
   border-radius: 10px;
+  box-shadow: 0px 0px 10px 6px var(--box-shadow);
 }
 
 .main-panel-stats {
@@ -1939,6 +1955,10 @@ DRIVERS TABLE
 
 .haas-team-table-logo{
   padding: 7px !important;
+}
+
+.stake-team-table-logo{
+  padding: 3px !important;
 }
 
 .alphatauri-team-table-logo{
@@ -2478,7 +2498,7 @@ DRIVERS TABLE
   color: var(--white-general);
   overflow: hidden;
   border-radius: 10px;
-  box-shadow: 0px 0px 10px 2px var(--box-shadow);
+  box-shadow: 0px 0px 10px 6px var(--box-shadow);
 }
 
 
@@ -2563,7 +2583,7 @@ DRIVERS TABLE
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   background-color: var(--generals);
-  box-shadow: 0px 0px 10px 2px var(--box-shadow);
+  box-shadow: 0px 0px 10px 6px var(--box-shadow);
   gap: 8px;
   padding: 8px;
 }
@@ -2796,12 +2816,11 @@ DRIVERS TABLE
 .main-editStats-section {
   background-color: var(--generals);
   color: var(--white-general);
-  min-height: 660px;
-  max-height: 660px;
+  height: 660px;
   border-radius: 10px;
   scrollbar-width: thin;
   scrollbar-color: var(--white-general);
-  box-shadow: 0px 0px 10px 2px var(--box-shadow);
+  box-shadow: 0px 0px 10px 6px var(--box-shadow);
   margin-right: 14px;
 }
 
@@ -3302,7 +3321,6 @@ DRIVERS TABLE
 }
 
 .performance-section {
-  padding: 10px 0;
   overflow-y: hidden;
   margin-left: 0%;
   margin-right: 14px;
@@ -4731,17 +4749,14 @@ DRIVERS TABLE
 }
 
 #free-drivers {
-  min-height: 660px;
-  max-height: 660px;
   overflow-y: scroll;
 }
 
 
 .free-driver:hover {
-  border-color: var(--white-general);
   cursor: grab !important;
-  color: var(--white-general);
-  background-color: var(--component-general-hover);
+  background-color: var(--text-general-transparent);
+  color: var(--negative-text);
 }
 
 .modal-driver:hover, .modal-team:hover{
@@ -5472,6 +5487,7 @@ input::-webkit-inner-spin-button {
   position: relative;
   padding: 5px;
   box-shadow: 0 0 10px 1px var(--box-shadow);
+  flex-grow: 1;
 }
 
 .viewer-top {
@@ -5588,8 +5604,7 @@ input::-webkit-inner-spin-button {
 .team-viewer{
   display: flex;
   flex-direction: row;
-  height: 660px;
-  padding: 4px 20px;
+  padding: 12px 12px;
 }
 
 .team-viewer .input-buttons{
@@ -5660,10 +5675,27 @@ input::-webkit-inner-spin-button {
   margin-top: 0px !important;
 }
 
-.color-selector, .logo-selector{
+.color-selector {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.logo-selector{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.logo-and-preview{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+}
+
+.colors-selector .bold-font{
+  width: 22%;
 }
 
 .logo-preview{
@@ -5690,8 +5722,14 @@ input::-webkit-inner-spin-button {
 
 .custom-logo-selection{
   display: flex;
-  gap: 10px;
+  gap: 20px;
   flex-direction: column;
+}
+
+.colors-selector{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 #teamMenu a, .team-select-menu a{
@@ -5914,8 +5952,7 @@ input::-webkit-inner-spin-button {
 .redbulllogo, #rblogo {
   width: 40px;
   height: 40px;
-  padding-bottom: 8px;
-  padding-top: 7px;
+  padding: 8px 0;
 }
 
 .ferrarilogo, #felogo {

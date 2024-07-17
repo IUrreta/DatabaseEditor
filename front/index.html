@@ -133,7 +133,7 @@
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
             <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-            id="cancelButton">Close</button>
+              id="cancelButton">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -295,25 +295,33 @@
             <div class="custom-logo-selection mt-3">
               <div class="logo-selector">
                 <div class="bold-font">Logo</div>
-                <div style="width: max-content;">
-                  <button class="custom-dropdown custom-button" id="selectImage">
-                    <div class="front-gradient">Select icon</div>
-                  </button>
-                  <div class="dropdown-line"></div>
+                <div>
+                  Place your custom logo on the assets/custom folder and then select it from the Select icon button
                 </div>
-                <input class="d-none" type="file" id="fileInput" accept="image/*">
-                <img class="logo-preview"></img>
+                <div class="logo-and-preview">
+                  <div style="width: max-content;">
+                    <button class="custom-dropdown custom-button" id="selectImage">
+                      <div class="front-gradient">Select icon</div>
+                    </button>
+                    <div class="dropdown-line"></div>
+                  </div>
+                  <input class="d-none" type="file" id="fileInput" accept="image/*">
+                  <img class="logo-preview"></img>
+                </div>
               </div>
-              <div class="color-selector">
-                <div class="bold-font">Primary color</div>
-                <input class="color-picker" type="color" id="primarySelector">
-                <input class="color-reader" type="text"  id="primaryReader">
+              <div class="colors-selector">
+                <div class="color-selector">
+                  <div class="bold-font">Primary color</div>
+                  <input class="color-picker" type="color" id="primarySelector">
+                  <input class="color-reader" type="text" id="primaryReader">
+                </div>
+                <div class="color-selector">
+                  <div class="bold-font">Secondary color</div>
+                  <input class="color-picker" type="color" id="secondarySelector">
+                  <input class="color-reader" type="text" id="secondaryReader">
+                </div>
               </div>
-              <div class="color-selector">
-                <div class="bold-font">Secondary color</div>
-                <input class="color-picker" type="color" id="secondarySelector">
-                <input class="color-reader" type="text"  id="secondaryReader">
-              </div>
+
             </div>
           </div>
         </div>
@@ -325,7 +333,7 @@
           </div>
           <div class="pos-relative">
             <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
-            id="configDetailsButton">Save</button>
+              id="configDetailsButton">Save</button>
             <div class="dropdown-line"></div>
           </div>
 
@@ -383,7 +391,7 @@
         <div class="modal-footer custom-footer">
           <div class="pos-relativ">
             <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-            id="cancelButton">Close</button>
+              id="cancelButton">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -414,7 +422,7 @@
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
             <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-            id="cancelButton">Close</button>
+              id="cancelButton">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -443,7 +451,7 @@
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
             <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-            id="cancelButton">Close</button>
+              id="cancelButton">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -480,7 +488,7 @@
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
             <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-            id="cancelButton">Close</button>
+              id="cancelButton">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -514,7 +522,7 @@
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
             <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-            id="cancelButton">Close</button>
+              id="cancelButton">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -542,7 +550,7 @@
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
             <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-            id="cancelButton">Close</button>
+              id="cancelButton">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -595,7 +603,7 @@
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
             <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-            id="cancelButton">Close</button>
+              id="cancelButton">Close</button>
             <div class="dropdown-line">
             </div>
           </div>
@@ -943,9 +951,9 @@
     <div class="moving-line"></div>
   </div> -->
   <div class="scroll-wrapper">
-
     <button class="save-button bold-font d-none">Save changes</button>
     <div class="main-panel">
+      <div class="background"></div>
       <div class="blocking-div" id="blockDiv">
         <img src="../assets/images/splash-logo.png" class="splash-logo">
         <div>
@@ -1353,7 +1361,7 @@
         </div>
         <div class="d-flex">
           <div class="col-2">
-            <div class="main-columns-drag-section" id="allDrivers">
+            <div class="main-columns-drag-section main-resizable" id="allDrivers">
               <div class="search-and-order">
                 <input class="text-filter" type="text" id="nameFilterTransfer" placeholder="Search..."></input>
               </div>
@@ -1364,7 +1372,7 @@
             </div>
           </div>
           <div class="col-10">
-            <div class="main-columns-drag-section teams-columns">
+            <div class="main-columns-drag-section teams-columns main-resizable">
               <div class="team-template  rbborder">
                 <div class="new-logo-and-name">
                   <img src="../assets/images/redbull.png" class="redbulllogo">
@@ -1527,7 +1535,7 @@
                   </div>
                   <div class="driver-space" id="af2">
                   </div>
-                  <div class="affiliates-and-arrows"  data-team="alfaromeo">
+                  <div class="affiliates-and-arrows" data-team="alfaromeo">
                     <i class="bi bi-chevron-left"></i>
                     <div class="affiliates-space driver-space" id="af3"></div>
                     <div class="arrow-back">
@@ -1636,7 +1644,7 @@
         </div>
         <div class="d-flex">
           <div class="col-3">
-            <div class="main-editStats-section" id="StaffLists">
+            <div class="main-editStats-section main-resizable" id="StaffLists">
               <div class="search-and-order">
                 <input class="text-filter" type="text" id="nameFilter" placeholder="Search..."></input>
                 <div class="order-space" data-state="0">
@@ -1660,7 +1668,7 @@
             </div>
           </div>
           <div class="col-9">
-            <div class="main-editStats-section">
+            <div class="main-editStats-section main-resizable">
               <div class="left-panel-stats d-none" id="editStatsPanel">
                 <div class="upper-section-stats">
                   <div class="stats-title bold-font">
@@ -3109,7 +3117,7 @@
         <div class="d-flex">
           <div class="col-3">
             <div class="teams-engines">
-              <div class="main-columns-drag-section" id="teamsDiv">
+              <div class="main-columns-drag-section main-resizable" id="teamsDiv">
                 <div class="col team bold-font team-performance rb-transparent" data-teamid="3"
                   data-teamname="Red Bull">
                   <div class="team-title">RED BULL RACING</div>
@@ -3241,7 +3249,7 @@
 
           </div>
           <div class="col-9">
-            <div class="main-columns-drag-section performance-section d-flex">
+            <div class="main-columns-drag-section performance-section d-flex main-resizable">
               <canvas class="graphs" id="performanceGraph"></canvas>
               <div class="performance-show teams-show d-none">
                 <div class="part-performance" data-part="chassis">
