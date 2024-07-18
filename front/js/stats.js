@@ -34,7 +34,7 @@ function place_drivers_editStats(driversArray) {
         let name = driver[0].split(" ")
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
-        spanName.textContent = name[0] + " "
+        spanName.textContent = insert_space(name[0]) + " "
         spanLastName.textContent = " "+ name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
         spanLastName.classList.add("surname")
@@ -64,19 +64,21 @@ function place_drivers_editStats(driversArray) {
 
         });
         if (game_version === 2024 && driver.length > 20){
-            newDiv.dataset.age = driver[driver.length - 4]
-            newDiv.dataset.retirement = driver[driver.length - 5]
-            newDiv.dataset.numWC = driver[driver.length - 6]
-            newDiv.dataset.number = driver[driver.length - 7]
+            newDiv.dataset.superLicense = driver[driver.length - 4]
+            newDiv.dataset.age = driver[driver.length - 5]
+            newDiv.dataset.retirement = driver[driver.length - 6]
+            newDiv.dataset.numWC = driver[driver.length - 7]
+            newDiv.dataset.number = driver[driver.length - 8]
             newDiv.dataset.mentality0 = driver[driver.length - 3]
             newDiv.dataset.mentality1 = driver[driver.length - 2]
             newDiv.dataset.mentality2 = driver[driver.length - 1]
         }
         else{
-            newDiv.dataset.age = driver[driver.length - 1]
-            newDiv.dataset.retirement = driver[driver.length - 2]
-            newDiv.dataset.numWC = driver[driver.length - 3]
-            newDiv.dataset.number = driver[driver.length - 4]
+            newDiv.dataset.superLicense = driver[driver.length - 1]
+            newDiv.dataset.age = driver[driver.length - 2]
+            newDiv.dataset.retirement = driver[driver.length - 3]
+            newDiv.dataset.numWC = driver[driver.length - 4]
+            newDiv.dataset.number = driver[driver.length - 5]
         }
 
         ovr = calculateOverall(statsString, "driver")
@@ -363,7 +365,6 @@ function listeners_plusLess(){
     });
 
     document.querySelector("#nameFilter").addEventListener("input", function(event){
-        console.log("change")
         let text = event.target.value
         let elements = document.querySelectorAll(".normal-driver")
         elements.forEach(function(elem){
@@ -481,14 +482,12 @@ function listeners_plusLess(){
     })
 
     document.querySelector(".order-space").querySelectorAll("i").forEach(function(elem){
-        console.log(elem)
         elem.addEventListener("click", function(event){
             let parent = elem.parentNode
             let state = parent.dataset.state
             let orderNumUp = document.querySelector(".bi-sort-numeric-up-alt")
             let orderNumDown = document.querySelector(".bi-sort-numeric-down")
             parent.dataset.state = (parseInt(state) + 1) % 3
-            console.log("state: " + state)
             if (parent.dataset.state == 0){
                 orderNumUp.classList.remove("active")
                 orderNumUp.classList.remove("hidden")
@@ -511,6 +510,54 @@ function listeners_plusLess(){
         })
     })
 }
+
+    /**
+     * Adds eventListeners to all the elements of the staff dropdown
+     */
+    function listenersStaffGroups() {
+        document.querySelectorAll('#staffMenu a').forEach(item => {
+            item.addEventListener("click", function () {
+                const staffButton = document.getElementById('staffDropdown');
+                let staffSelected = item.innerHTML
+                let staffCode = item.dataset.spacestats
+                if (staffCode === "driverStats") {
+                    typeOverall = "driver"
+                    typeEdit = "0"
+                    document.getElementById("driverSpecialAttributes").classList.remove("d-none")
+                    document.querySelector(".super-license-holder").classList.remove("d-none")
+                }
+                else {
+                    typeOverall = "staff"
+                    document.getElementById("driverSpecialAttributes").classList.add("d-none")
+                    document.querySelector(".super-license-holder").classList.add("d-none")
+                    if (staffCode === "chiefStats") {
+                        typeEdit = "1"
+                    }
+                    if (staffCode === "engineerStats") {
+                        typeEdit = "2"
+                    }
+                    if (staffCode === "aeroStats") {
+                        typeEdit = "3"
+                    }
+                    if (staffCode === "directorStats") {
+                        typeEdit = "4"
+                    }
+
+                }
+                staffButton.innerHTML = staffSelected;
+                change_elegibles(item.dataset.spacestats)
+                document.querySelectorAll(".staff-list").forEach(function (elem) {
+                    elem.classList.add("d-none")
+                    if (item.dataset.list == elem.id) {
+                        elem.classList.remove("d-none")
+                    }
+                })
+                document.querySelector(".left-panel-stats").classList.add("d-none")
+                statPanelShown = 0;
+            });
+
+        });
+    }
 
 function manage_order(state) {
     let elements = document.querySelectorAll(".normal-driver");
@@ -580,12 +627,17 @@ function load_stats(div) {
     actualAge.innerText = "Age " + div.dataset.age
     retirementAge.innerText = "Ret " + div.dataset.retirement
     numberButton.innerText = div.dataset.number
-    console.log(div.dataset.numWC)
     if (div.dataset.numWC === "0"){
         numberWC.checked = false
     }
     else{
         numberWC.checked = true
+    }
+    if (div.dataset.superLicense === "1"){
+        document.querySelector("#superLicense").checked = true
+    }
+    else{
+        document.querySelector("#superLicense").checked = false
     }
     if(div.dataset.mentality0){
         for (i = 0; i < 3; i++){
@@ -628,7 +680,6 @@ document.querySelectorAll(".bar-container .bi-chevron-right").forEach(function(e
         indicator.setAttribute('data-value', value);
         let levels = indicator.querySelectorAll('.mentality-level');
         let mentality_class = mentality_dict[value]
-        console.log(value)
         for (j = 0; j < 5; j++){
             levels[j].className = "mentality-level"
             if (j <= inverted_value - 1){

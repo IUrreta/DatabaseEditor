@@ -59,7 +59,7 @@ def run_script(option=""):
                     has_bonus = False
                     race_bonus = str(0)
             elif(tier == 4):
-                salary = str(round(random.uniform(0.2, 1.9),3)*1000000)
+                salary = str(round(random.uniform(0.2, 1.2),3)*1000000)
                 year_end = str(random.randint(1, 2) + year[0])   
                 starting_bonus = str(0)
                 race_bonus = str(0)
@@ -318,7 +318,8 @@ def unretire(driverID):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
 
-    cursor.execute(f"UPDATE Staff_Contracts SET PosInTeam = 1 WHERE StaffID = {driverID}")
+    cursor.execute(f"UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = {driverID}")
+    cursor.execute(f"UPDATE Staff_DriverData SET HasSuperLicense = 1 WHERE StaffID = {driverID}")
 
     conn.commit()
     conn.close()
@@ -339,9 +340,9 @@ def get_tier(driverID):
     reactions = float(driver_stats[7][0])
     accuracy = float(driver_stats[8][0])
     rating = (cornering + braking*0.75 + reactions*0.5 +control*0.75 + smoothness*0.5 + accuracy*0.75 + adaptability*0.25 + overtaking*0.25+ defence*0.25)/5
-    if(rating >= 86): tier = 1
-    elif(rating >= 81): tier = 2
-    elif(rating >= 77): tier = 3
+    if(rating >= 89): tier = 1
+    elif(rating >= 85): tier = 2
+    elif(rating >= 80): tier = 3
     else: tier = 4
 
     conn.commit()

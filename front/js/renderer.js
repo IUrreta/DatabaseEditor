@@ -98,6 +98,89 @@ async function getPatchNotes() {
 
 }
 
+/**
+ * Places and manages the notifications that appear in the tool
+ * @param {string} noti message of the notification
+ * @param {bool} error if the notification is an error or not
+ */
+function update_notifications(noti, code) {
+    let newNoti;
+    newNoti = document.createElement('div');
+    newNoti.className = 'notification';
+    newNoti.textContent = noti;
+    let toast = createToast(noti, code)
+    setTimeout(function () {
+        toast.classList.remove("myShow")
+    }, 300)
+    notificationPanel.appendChild(toast);
+    if (code !== "error") {
+        setTimeout(function () {
+            toast.classList.add("hide")
+            setTimeout(function () {
+                notificationPanel.removeChild(toast);
+            }, 280);
+        }, 4000);
+    }
+}
+
+/**
+ * Creates the toast with the message and the error status
+ * @param {string} msg string with the notification message
+ * @param {boolean} err if it's an error or not
+ * @returns 
+ */
+function createToast(msg, cod) {
+    let toastFull = document.createElement('div');
+    let toastIcon = document.createElement('div');
+    let toastBodyDiv = document.createElement('div');
+    let generalDiv = document.createElement('div');
+    let icon = document.createElement('i');
+    let cross = document.createElement('i');
+
+
+    generalDiv.classList.add('d-flex', "align-items-center")
+    // Asignar clases y atributos
+    toastFull.classList.add('toast', "d-flex", "myShow", "d-block", "custom-toast")
+    toastFull.style.flexDirection = "column"
+    toastFull.setAttribute('role', 'alert');
+    toastFull.setAttribute('aria-live', 'assertive');
+    toastFull.setAttribute('aria-atomic', 'true');
+
+    toastIcon.classList.add("toast-icon")
+    if (cod === "ok") {
+        icon.className = "bi bi-check-circle"
+        toastIcon.classList.add("success")
+    }
+    else if (cod === "error") {
+        icon.className = "bi bi-x-circle"
+        toastIcon.classList.add("error")
+    }
+    else if (cod === "monaco"){
+        icon.className = "bi bi-heartbreak"
+        toastIcon.classList.add("error")
+    }
+    toastIcon.appendChild(icon)
+
+    toastBodyDiv.classList.add('d-flex', 'toast-body', "custom-toast-body");
+    toastBodyDiv.textContent = msg;
+    toastBodyDiv.style.opacity = "1"
+    toastBodyDiv.style.color = "white"
+    toastBodyDiv.style.zIndex = "6"
+
+    generalDiv.appendChild(toastIcon)
+    generalDiv.appendChild(toastBodyDiv)
+    toastFull.appendChild(generalDiv)
+    toastFull.appendChild(cross)
+    cross.className = "bi bi-x custom-toast-cross"
+    cross.addEventListener("click", function () {
+        toastFull.classList.add("hide")
+        setTimeout(function () {
+            notificationPanel.removeChild(toastFull);
+        }, 280);
+    })
+
+    return toastFull;
+}
 
 
 function editModeHandler() {
@@ -118,12 +201,18 @@ function editModeHandler() {
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     document.querySelector(".clicked").dataset.retirement = retirement;
     let driverNum = document.getElementById("numberButton").textContent;
-    let wants1;
+    let wants1, superLicense;
     if (document.querySelector("#driverNumber1").checked) {
         wants1 = 1;
     }
     else {
         wants1 = 0;
+    }
+    if (document.getElementById("superLicense").checked) {
+        superLicense = 1;
+    }
+    else {
+        superLicense = 0;
     }
     let mentality = -1
     if (document.querySelector(".clicked").dataset.mentality0) {
@@ -142,7 +231,8 @@ function editModeHandler() {
         retirement: retirement,
         driverNum: driverNum,
         wants1: wants1,
-        mentality: mentality
+        mentality: mentality,
+        superLicense: superLicense
     };
 
     socket.send(JSON.stringify(dataStats));
@@ -297,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const messageHandlers = {
         "ERROR": (message) => {
-            update_notifications(message[1], true);
+            update_notifications(message[1], "error");
             manage_status(0);
         },
         "JIC": (message) => {
@@ -420,7 +510,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 
     let connectionTimeout = setTimeout(() => {
-        update_notifications("Could not connect with backend", true)
+        update_notifications("Could not connect with backend", "error")
         manage_status(0)
     }, 8000);
 
@@ -432,13 +522,14 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     socket.onmessage = (event) => {
         let message = JSON.parse(event.data);
+        console.log(message) //DEBUG
         let handler = messageHandlers[message[0]];
 
         if (handler) {
             handler(message);
         }
         if (!noNotifications.includes(message[0])) {
-            update_notifications(message[0], false);
+            update_notifications(message[0], "ok");
         }
     };
 
@@ -477,6 +568,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 elem.style.height = "672px"
             })
             document.getElementById("free-drivers").style.height = "672px"
+            document.getElementById("raceMenu").style.height = "686px"
         }
         else if (mode === "10teams"){
             ipcRenderer.send('resize-window', 875);
@@ -487,6 +579,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 elem.style.height = "612px"
             })
             document.getElementById("free-drivers").style.height = "612px"
+            document.getElementById("raceMenu").style.height = "660px"
         }        
     }
 
@@ -751,7 +844,7 @@ document.addEventListener('DOMContentLoaded', function () {
             git.pull("origin", "release", (error, update) => {
                 addSpinner()
                 if (error) {
-                    update_notifications("Update automatically failed, please update manually", true)
+                    update_notifications("Update automatically failed, please update manually", "error")
                     updateInfo.classList.remove("bi-cloud-download")
                     updateInfo.classList.add("bi-exclamation-lg")
                     updateInfo.setAttribute('href', 'https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
@@ -787,85 +880,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    /**
-     * Places and manages the notifications that appear in the tool
-     * @param {string} noti message of the notification
-     * @param {bool} error if the notification is an error or not
-     */
-    function update_notifications(noti, error) {
-        let newNoti;
-        newNoti = document.createElement('div');
-        newNoti.className = 'notification';
-        newNoti.textContent = noti;
-        let toast = createToast(noti, error)
-        setTimeout(function () {
-            toast.classList.remove("myShow")
-        }, 300)
-        notificationPanel.appendChild(toast);
-        if (!error) {
-            setTimeout(function () {
-                toast.classList.add("hide")
-                setTimeout(function () {
-                    notificationPanel.removeChild(toast);
-                }, 280);
-            }, 4000);
-        }
-    }
-
-    /**
-     * Creates the toast with the message and the error status
-     * @param {string} msg string with the notification message
-     * @param {boolean} err if it's an error or not
-     * @returns 
-     */
-    function createToast(msg, err) {
-        let toastFull = document.createElement('div');
-        let toastIcon = document.createElement('div');
-        let toastBodyDiv = document.createElement('div');
-        let generalDiv = document.createElement('div');
-        let icon = document.createElement('i');
-        let cross = document.createElement('i');
-
-
-        generalDiv.classList.add('d-flex', "align-items-center")
-        // Asignar clases y atributos
-        toastFull.classList.add('toast', "d-flex", "myShow", "d-block", "custom-toast")
-        toastFull.style.flexDirection = "column"
-        toastFull.setAttribute('role', 'alert');
-        toastFull.setAttribute('aria-live', 'assertive');
-        toastFull.setAttribute('aria-atomic', 'true');
-
-        toastIcon.classList.add("toast-icon")
-        if (!err) {
-            icon.className = "bi bi-check-circle"
-            toastIcon.classList.add("success")
-        }
-        else {
-            icon.className = "bi bi-x-circle"
-            toastIcon.classList.add("error")
-        }
-        toastIcon.appendChild(icon)
-
-        toastBodyDiv.classList.add('d-flex', 'toast-body', "custom-toast-body");
-        toastBodyDiv.textContent = msg;
-        toastBodyDiv.style.opacity = "1"
-        toastBodyDiv.style.color = "white"
-        toastBodyDiv.style.zIndex = "6"
-
-        generalDiv.appendChild(toastIcon)
-        generalDiv.appendChild(toastBodyDiv)
-        toastFull.appendChild(generalDiv)
-        toastFull.appendChild(cross)
-        cross.className = "bi bi-x custom-toast-cross"
-        cross.addEventListener("click", function () {
-            toastFull.classList.add("hide")
-            setTimeout(function () {
-                notificationPanel.removeChild(toastFull);
-            }, 280);
-        })
-
-        return toastFull;
-    }
 
 
     /**
@@ -953,7 +967,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 manage_config_content(info[0])
                 if (info[0]["state"] === "changed") {
                     setTimeout(function () {
-                        update_notifications("Config file loaded", false)
+                        update_notifications("Config file loaded", "ok")
                     }, 500)
                 }
             }
@@ -1326,51 +1340,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector(".bi-gear").classList.remove("hidden")
     })
 
-    /**
-     * Adds eventListeners to all the elements of the staff dropdown
-     */
-    function listenersStaffGroups() {
-        document.querySelectorAll('#staffMenu a').forEach(item => {
-            item.addEventListener("click", function () {
-                const staffButton = document.getElementById('staffDropdown');
-                let staffSelected = item.innerHTML
-                let staffCode = item.dataset.spacestats
-                if (staffCode === "driverStats") {
-                    typeOverall = "driver"
-                    typeEdit = "0"
-                    document.getElementById("driverSpecialAttributes").classList.remove("d-none")
-                }
-                else {
-                    typeOverall = "staff"
-                    document.getElementById("driverSpecialAttributes").classList.add("d-none")
-                    if (staffCode === "chiefStats") {
-                        typeEdit = "1"
-                    }
-                    if (staffCode === "engineerStats") {
-                        typeEdit = "2"
-                    }
-                    if (staffCode === "aeroStats") {
-                        typeEdit = "3"
-                    }
-                    if (staffCode === "directorStats") {
-                        typeEdit = "4"
-                    }
 
-                }
-                staffButton.innerHTML = staffSelected;
-                change_elegibles(item.dataset.spacestats)
-                document.querySelectorAll(".staff-list").forEach(function (elem) {
-                    elem.classList.add("d-none")
-                    if (item.dataset.list == elem.id) {
-                        elem.classList.remove("d-none")
-                    }
-                })
-                document.querySelector(".left-panel-stats").classList.add("d-none")
-                statPanelShown = 0;
-            });
-
-        });
-    }
 
     /**
      * checks if a save and a script have been selected to unlock the tool

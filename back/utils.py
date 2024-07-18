@@ -255,7 +255,8 @@ class DatabaseUtils:
                 result = self.format_names_get_stats(tupla, "driver")
                 retirement = self.fetch_driverRetirement(id)
                 driver_number = self.fetchDriverNumberDetails(id)
-                result += tuple(driver_number) + tuple(retirement)
+                superlicense = self.fetch_superlicense(id)
+                result += tuple(driver_number) + tuple(retirement) + superlicense
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
                     if mentality:
@@ -263,6 +264,10 @@ class DatabaseUtils:
                 formatted_tuples.append(result)
 
         return formatted_tuples
+    
+    def fetch_superlicense(self, driverID):
+        superlicense = self.cursor.execute(f"SELECT HasSuperLicense FROM Staff_DriverData WHERE StaffID = {driverID}").fetchone()
+        return superlicense
 
     def fetch_next_race(self):
         race = self.cursor.execute("SELECT MIN(RaceID) FROM Races WHERE State = 0").fetchone()

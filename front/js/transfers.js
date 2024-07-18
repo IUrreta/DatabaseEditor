@@ -53,6 +53,10 @@ function remove_drivers() {
     f3DriversDiv.innerHTML = ""
 }
 
+function insert_space(str) {
+    return str.replace(/([A-Z])/g, ' $1').trim();
+}
+
 
 /**
  * Places all drivers in their respective team, category etc
@@ -68,7 +72,7 @@ function place_drivers(driversArray) {
         let name = driver[0].split(" ")
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
-        spanName.textContent = name[0] + " "
+        spanName.textContent = insert_space(name[0]) + " "
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
         newDiv.appendChild(spanName)
@@ -175,7 +179,6 @@ function addIcon(div) {
 
 function addUnRetireIcon(div) {
     let iconDiv = document.createElement("div");
-    iconDiv.className = "custom-unretire"
     let iconElement = document.createElement("i");
     iconElement.className = "bi bi-ban";
     unretireListener(iconElement)
@@ -204,7 +207,6 @@ function unretireListener(icon) {
             driver: icon.parentNode.innerText,
         }
         icon.classList.add("d-none")
-        icon.parentNode.querySelector(".custom-unretire").classList.add("d-none")
         socket.send(JSON.stringify(driverReq))
     })
 }

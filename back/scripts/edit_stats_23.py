@@ -49,5 +49,14 @@ def edit_mentality(mentality):
     conn.commit()
     conn.close()
 
+def edit_superlicense(driverID, value):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+
+    cursor.execute(f"UPDATE Staff_DriverData SET HasSuperLicense = {value}, HasRacedEnoughToJoinF1 = {value} WHERE StaffID = {driverID}")
+
+    conn.commit()
+    conn.close()
+
 if __name__ == '__main__':
     edit_stats()

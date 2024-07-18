@@ -11,6 +11,7 @@
   --dark-text: #b1b1b1;
   --negative-text: #292929;
   --new-primary: #c89efc;
+  --new-primary-dark: #ba82ff;
   --new-primary-transparent: #c89efc99;
   --text-selected: #e7d3ff;
   --text-selected-secondary: #a8cec9;
@@ -499,6 +500,20 @@ a.bi-linkedin:hover {
   text-align: center;
   color: var(--white-general);
   font-size: 28px;
+  padding: 16px 0;
+  flex: 1;
+}
+
+.title-buttons-left{
+  position: absolute;
+  gap: 20px;
+  padding-left: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.title-buttons-left .custom-dropdown{
+  margin: 0 !important;
 }
 
 .standings-list{
@@ -506,7 +521,7 @@ a.bi-linkedin:hover {
   text-align: center;
 }
 
-.trasnfer-top-panel {
+.transfer-top-panel, .general-top-panel {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -524,6 +539,40 @@ a.bi-linkedin:hover {
   position: absolute;
   right: 0;
 }
+
+input[role="switch"] {
+  border: none;
+}
+
+input[role="switch"]:focus {
+  box-shadow: none;
+}
+
+input[role="switch"]:not(:checked):focus {
+  --bs-form-switch-bg: url('../../../../assets/images/thumb.svg');
+}
+
+input[role="switch"]:checked {
+  background-color: var(--new-primary-dark);
+}
+
+input[type="checkbox"]{
+  border: none;
+}
+
+input[type="checkbox"]:focus{
+  box-shadow: none;
+}
+
+input[type="checkbox"]:checked {
+  background-color: var(--new-primary-dark);
+}
+
+.custom-footer button{
+  font-family: "Formula1Bold";
+}
+
+
 
 .main-team-changes{
   display: flex;
@@ -674,7 +723,6 @@ a.bi-linkedin:hover {
   gap: 25px;
   font-size: 26px;
   padding-top: 20px;
-  margin-right: 100px;
 }
 
 .text-filter{
@@ -702,7 +750,7 @@ a.bi-linkedin:hover {
   transform: scale(1.1);
 }
 
-.trasnfer-top-panel .filter-container{
+.transfer-top-panel .filter-container{
   position: absolute;
   margin-left: 14px;
 }
@@ -779,7 +827,7 @@ a.bi-linkedin:hover {
 }
 
 #F1filter .pill-line, #F1filterTransfers .pill-line{
-  background-color: var(--f1-back);
+  background-color: var(--white-general);
 }
 
 #F1filter.active .basic-label, #F1filterTransfers.active .basic-label{
@@ -1557,12 +1605,14 @@ a.bi-linkedin:hover {
 }
 
 #numberButton{
-  min-width: 100px;
-  display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
   margin-top: 0 !important;
+  font-size: 20px;
+}
+
+.number-details .form-check{
+  font-size: 18px;
 }
 
 .custom-dropdown-no-margin:hover {
@@ -2487,14 +2537,25 @@ DRIVERS TABLE
   width: 100%;
 }
 
-.delete-mode {
-  background-color: var( --negative-general) !important;
-  border-color: #d66f6f !important;
-  transition: border-color 0.3s;
+.delete-mode:not(:hover) {
+  background-color: transparent !important;
+  color: var(--negative-general) !important;
 }
 
-.delete-mode:hover {
-  border-color: var(--white-general) !important;
+.delete-mode:not(:hover) .dropdown-line{
+  width: 0%;
+}
+
+.trash-and-text{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  font-size: 18px;
+}
+
+.trash-and-text:hover{
+  cursor: pointer;
 }
 
 .main-viewer-section {
@@ -2524,8 +2585,38 @@ DRIVERS TABLE
 }
 
 #deleteTracks{
-  transition: background-color 0.2s, border-color 0.3s !important;
+  transition: background-color 0.2s, border-color 0.3s, color 0.3s !important;
+  height: 36px;
 }
+
+#deleteTracks+.dropdown-line{
+  background-color: var(--negative-general);
+}
+
+#deleteTracks::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse 70% 150% at center bottom, var(--negative-general), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  transition-delay: 0.15s;
+  pointer-events: none;
+  z-index: -1;
+}
+
+#deleteTracks:hover::before {
+  opacity: 1;
+}
+
+#deleteTracks:not(:hover)::before {
+  transition-delay: 0s; /* No delay when not hovering */
+}
+
+
 
 .year-and-race{
   display: flex;
@@ -2643,6 +2734,7 @@ DRIVERS TABLE
   gap: 8px;
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
   justify-content: space-between;
+  border: none;
 }
 
 .race-calendar-number{
@@ -2693,8 +2785,8 @@ DRIVERS TABLE
   width: 30px;
   height: 30px;
   border-radius: 10px;
-  background-color: var(--weather-vis-back);
-  border: 1.5px solid var(--weather-vis-border);
+  background-color: var(--superficials);
+  border: none;
   font-size: 19px;
   text-align: center;
 }
@@ -2728,10 +2820,6 @@ DRIVERS TABLE
 .race-calendar .bi-chevron-left:hover, .race-calendar .bi-chevron-right:hover {
   color: var(--new-primary);
   transform: scale(1.1);
-}
-
-.deleting:hover {
-  border: 2px solid transparent !important;
 }
 
 .pit-crew-button{
@@ -2783,21 +2871,21 @@ DRIVERS TABLE
   left: -1px;
   width: 100.9%;
   height: 101.9%;
-  background-color: rgba(128, 128, 128, 0.829);
-  z-index: 9998;
+  background-color: var(--blur-color);
+  z-index: 20;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 2.5px solid transparent;
   border-radius: 10px;
-  color: var(--white-general);
+  color: var(--text-general);
   transition: color 0.3s, border-color 0.3s;
-  cursor: pointer;
+  cursor: default;
+  backdrop-filter: blur(5px);
+  border: none;
 }
 
 .delete-div:hover {
   color: var(--delete-div);
-  border-color: var(--delete-div);
 }
 
 
@@ -2962,7 +3050,6 @@ DRIVERS TABLE
 .affiliates-and-arrows{
   display: flex;
   flex-direction: row;
-  align-items: center;
   width: 63%;
 }
 
@@ -3028,6 +3115,7 @@ DRIVERS TABLE
   flex-wrap: nowrap;
   width: 100%;
   min-height: 40px;
+  align-items: center;
 }
 
 .affiliates-space .free-driver {
@@ -4528,6 +4616,15 @@ DRIVERS TABLE
   backdrop-filter: blur(6px);
 }
 
+.free-driver:hover .bi-ban{
+  color: var(--negative-text);
+}
+
+.bi-ban:hover{
+  color: var(--negative-general);
+  cursor: pointer;
+}
+
 
 .H2Hradio{
   border-bottom: 2px solid transparent;
@@ -4681,24 +4778,6 @@ DRIVERS TABLE
   height: 30px;
 }
 
-.free-driver .custom-unretire{
-  color: transparent;
-  transition: opacity 0.3s;
-  background: linear-gradient(to left, var(--component-general-hover), transparent);
-  width: 80px;
-  height: 20px;
-  opacity: 0;
-  z-index: 3;
-  display: flex;
-  position: absolute;
-  right: 10px;
-  top: 7.5px;
-  justify-content: flex-end;
-}
-
-.free-driver:hover .custom-unretire{
-  opacity: 1;
-}
 
 .custom-icon .bi-pencil-square {
   transition: color 0.3s;
@@ -4884,6 +4963,13 @@ DRIVERS TABLE
   max-height: 70px;
   flex-direction: column;
   box-shadow: 0 0 10px 1px var(--box-shadow);
+}
+
+.super-license-holder{
+  display: flex !important;
+  font-size: 20px;
+  padding-top: 24px;
+  gap: 14px;
 }
 
 .name-and-stat{
@@ -5158,14 +5244,6 @@ DRIVERS TABLE
   z-index: 2;
 } 
 
-#teamTitle{
-  display: flex;
-  width: 100%;
-  justify-content: center;
-  z-index: 1;
-  position: absolute;
-  align-items: baseline;
-}
 
 .input-buttons i:hover{
   transform: scale(1.1);
@@ -6604,6 +6682,7 @@ input::-webkit-inner-spin-button {
   overflow: hidden;
   margin-bottom: 3px;
   width: 100%; 
+  align-items: center;
 }
 
 

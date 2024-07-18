@@ -335,17 +335,25 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
             if(elem.firstChild.className !== "complete-div"){
                 elem.classList = "race-calendar deleting";
                 let div = document.createElement('div');
+                let trashicon = document.createElement('i');
+                let trashandtext = document.createElement('div');
+                let text = document.createElement('span');
+                text.classList = "bold-font"
+                text.innerText = "Delete";
+                trashandtext.classList.add('trash-and-text')
+                trashicon.className = "bi bi-trash-fill";
                 div.classList.add('delete-div');
-                let divText = document.createElement('div');
-                divText.innerHTML = "Delete";
-                divText.className = "bold-font"
-                divText.style.fontSize = "18px"
-                div.appendChild(divText);
+                trashandtext.appendChild(trashicon);
+                trashandtext.appendChild(text);
+                div.appendChild(trashandtext);
                 elem.insertBefore(div,elem.firstChild);
-                divText.addEventListener("click",function () {
-                    let race = divText.parentNode.parentNode;
-                    divText.parentNode.parentNode.parentNode.removeChild(race);
+                trashandtext.addEventListener("click",function () {
+                    let race = trashandtext.parentNode.parentNode;
+                    trashandtext.parentNode.parentNode.parentNode.removeChild(race);
                     deleted = true;
+                    if (race.dataset.trackid === "6"){
+                        update_notifications("Why'd you do that?", "monaco")
+                    }
                 })
             }
 

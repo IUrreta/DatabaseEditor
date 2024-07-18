@@ -35,7 +35,6 @@ function normalizeData(data) {
 
 function load_performance(teams) {
     // let teams = normalizeData(teams);
-    console.log(teams)
     for (let key in teams) {
         if (teams.hasOwnProperty(key)) {
             let teamPerformance = document.querySelector(`#teamsDiv .team-performance[data-teamid='${key}']`);
@@ -53,7 +52,6 @@ function load_performance(teams) {
 }
 
 function load_attributes(teams) {
-    console.log(teams)
     for (let key in teams) {
         for (let attribute in teams[key]) {
             let team = document.querySelector(`#teamsDiv .team-performance[data-teamid='${key}']`);
@@ -189,14 +187,11 @@ document.querySelectorAll(".engine").forEach(function (elem) {
 })
 
 function load_parts_stats(data) {
-    console.log(data)
     for (let key in data) {
         if (key !== "engine") {
             let part = document.querySelector(`.part-performance[data-part='${key}']`)
-            console.log(`.part-performance[data-part='${key}']`)
             for (let stat in data[key]) {
                 if (stat !== "15") {
-                    console.log(`.part-performance-stat[data-attribute='${stat}']`)
                     let stat_input = part.querySelector(`.part-performance-stat[data-attribute='${stat}']`).querySelector(".custom-input-number")
                     if (stat === "7" || stat === "8" || stat === "9") {
                         stat_input.value = data[key][stat].toFixed(2) + " kN"
@@ -422,7 +417,6 @@ function load_performance_graph(data) {
     let maxValue = Number.NEGATIVE_INFINITY;
     let first = data[0][0]
     let performances = [first, ...data[0]]
-    console.log(performances)
     performances.forEach(race => {
         for (let team in race) {
             let value = race[team];
@@ -460,7 +454,6 @@ function load_performance_graph(data) {
  * @param {Array} labelsArray array with all the labels for the races
  */
 function createPerformanceChart(labelsArray) {
-    console.log(labelsArray)
     const dataD = {
         labels: labelsArray,
     };
