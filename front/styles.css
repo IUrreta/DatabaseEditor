@@ -1285,7 +1285,7 @@ a.bi-linkedin:hover {
 
 .background{
   background-color: var(--new-primary); /* Azul claro */
-  background-image: url('../assets/images/background.svg');
+  background-image: url('../assets/images/background2.svg');
   background-size: cover; /* Ajusta el tamaño de la imagen al tamaño del contenedor */
   background-position: center; /* Centra la imagen */
   background-repeat: no-repeat; /* Evita que la imagen se repita */
@@ -1295,6 +1295,8 @@ a.bi-linkedin:hover {
   width: 100.2%;
   z-index: -5;
   left: -2px;
+  opacity: 0.8;
+
 }
 
 .main-panel {
@@ -1747,9 +1749,13 @@ a.bi-linkedin:hover {
 }
 
 #probViewer{
-  width: 1670px;
+  width: 100%;
   height: 660px;
   max-height: 660px;
+}
+
+#mainProb{
+  width: 100%;
 }
 
 /*
@@ -2586,7 +2592,9 @@ DRIVERS TABLE
   box-shadow: 0px 0px 10px 6px var(--box-shadow);
   gap: 8px;
   padding: 8px;
+  grid-auto-rows: min-content;
 }
+
 
 .main-options-section {
   margin-left: 1.5rem;
@@ -2631,10 +2639,10 @@ DRIVERS TABLE
   transition: border-color 0.2s, color 0.2s, background-color 0.2s;
   display: flex;
   cursor: grab !important;
-  padding-left: 12px;
   max-height: 112px;
-  gap: 10px;
+  gap: 8px;
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
+  justify-content: space-between;
 }
 
 .race-calendar-number{
@@ -3482,10 +3490,14 @@ DRIVERS TABLE
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
 }
 
-.driver-info:hover, .race:hover{
+.driver-info:hover{
   background-color: var(--elements-hover);
 }
 
+.race:hover{
+  background-color: var(--text-general-transparent);
+  color: var(--negative-text);
+}
 
 
 .rb-gradient::before{
@@ -4146,27 +4158,7 @@ DRIVERS TABLE
   z-index: 10;
 }
 
-.race::before{
-  border-radius: 10px;
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at -5% 180%, var(--new-primary), var(--elements) 50%);
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  pointer-events: none;
-}
 
-.race:hover::before{
-  opacity: 1;
-}
-
-.race.selected::before{
-  opacity: 0;
-}
 
 
 .rb-transparent:hover{

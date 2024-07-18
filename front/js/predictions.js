@@ -33,6 +33,7 @@ let yearProbSel;
 let racePredicted;
 let raceName;
 let probRace;
+let mid_grid = 10;
 
 
 function placeRaces(races) {
@@ -356,19 +357,18 @@ function predictDrivers(drivers) {
         mainDiv.appendChild(predictionDiv)
         mainDiv.appendChild(positionDiv)
         if(nextRace){
-            if (driver.Prediction <= 10) {
+            if (driver.Prediction <= mid_grid) {
                 document.querySelector("#predictionFirst").querySelector(".prediction-table-data").appendChild(mainDiv)
             }
-            else if (driver.Prediction > 10) {
+            else if (driver.Prediction > mid_grid) {
                 document.querySelector("#predictionSecond").querySelector(".prediction-table-data").appendChild(mainDiv)
             }
         }
         else{
-
-            if (driver.result <= 10 && driver.result != 0) {
+            if (driver.result <= mid_grid && driver.result != 0) {
                 document.querySelector("#predictionFirst").querySelector(".prediction-table-data").appendChild(mainDiv)
             }
-            else if (driver.result > 10 && driver.result != 0) {
+            else if (driver.result > mid_grid && driver.result != 0) {
                 document.querySelector("#predictionSecond").querySelector(".prediction-table-data").appendChild(mainDiv)
             }
         }

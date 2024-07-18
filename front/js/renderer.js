@@ -476,6 +476,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll(".staff-list").forEach(function (elem) {
                 elem.style.height = "672px"
             })
+            document.getElementById("free-drivers").style.height = "672px"
         }
         else if (mode === "10teams"){
             ipcRenderer.send('resize-window', 875);
@@ -485,6 +486,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll(".staff-list").forEach(function (elem) {
                 elem.style.height = "612px"
             })
+            document.getElementById("free-drivers").style.height = "612px"
         }        
     }
 
@@ -537,6 +539,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 delete combined_dict[32]
             }
             game_version = 2023
+            mid_grid = 10;
             manage_custom_team([null, null])
             document.querySelectorAll(".brake-cooling-replace").forEach(function (elem) {
                 elem.textContent = "Brake cooling"
@@ -559,6 +562,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 elem.textContent = nameColor[1].toUpperCase()
             })
             replace_custom_team_color(nameColor[2], nameColor[3])
+            mid_grid = 11;
         }
         else {
             resizeWindowToHeight("10teams")
@@ -568,6 +572,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("customTeamDropdown").classList.add("d-none")
             document.getElementById("customTeamComparison").classList.add("d-none")
             document.getElementById("customizeTeam").classList.add("d-none")
+            mid_grid = 10;
         }
     }
 
