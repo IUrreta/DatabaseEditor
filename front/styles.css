@@ -3169,7 +3169,7 @@ DRIVERS TABLE
   margin-top: -6px;
 }
 
-.part-performance{
+.part-performance, .engine-performance{
   background-color: var(--elements);
   border-radius: 10px;
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
@@ -3177,24 +3177,65 @@ DRIVERS TABLE
 
 }
 
-.part-performance-title{
+.engine-fe{
+  border-bottom: 2px solid var(--ferrari-primary);
+}
+
+.engine-rb{
+  border-bottom: 2px solid var(--redbull-primary);
+}
+
+.engine-re{
+  border-bottom: 2px solid var(--renault-primary);
+}
+
+.engine-me{
+  border-bottom: 2px solid var(--mercedes-primary);
+}
+
+.part-performance-title, .engine-performance-title{
   text-transform: uppercase;
   font-family: 'Formula1Bold';
   font-size: 20px;
   color: var(--text-general);
 }
 
-.part-performance-stat{
+.engine-performance-title{
+  max-width: max-content;
+}
+
+.part-performance-stat, .engine-performance-stat{
   display: flex;
   justify-content: space-between;
   color: var(--dark-text);
 }
 
-.part-performance-stats{
+.engine-performance-stat{
+  position: relative;
+  align-items: baseline;
+  margin: 4px 0;
+}
+
+.engine-performance-bar{
+  position: absolute;
+  bottom: 1px;
+  left: 0;
+  height: 2px;
+  width: 83%;
+}
+
+.engine-performance-progress{
+  width: 50%;
+  height: 2px;
+  transition: width 0.2s;
+  background-color: var(--new-primary);
+}
+
+.part-performance-stats, .engine-performance-stats{
   margin-top: 8px;
 }
 
-.part-performance-stat .custom-input-number{
+.part-performance-stat .custom-input-number, .engine-performance-stat .custom-input-number{
   font-size: 16px;
   max-width: 85px;
 }
@@ -3210,14 +3251,18 @@ DRIVERS TABLE
   transform: scale(1.1);
 }
 
-.teams-show{
+.teams-show, .engines-show{
   display: grid;
   grid-template-columns: repeat(3, 0.333fr);
   grid-template-rows: repeat(2, 1fr);
-  width: 100%;
   gap: 8px;
   padding: 8px;
   flex: 1;
+}
+
+.engines-show{
+  grid-template-columns: repeat(2, 0.5fr);
+  grid-template-rows: repeat(2, 1fr);
 }
 
 

@@ -88,62 +88,42 @@ document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function 
  * Pills that manage engines and teams screens and lists
  */
 teamsPill.addEventListener("click", function () {
-    manageTeamsEngines("show", "hide")
-    document.querySelector(".engines-show").classList.add("d-none")
-    document.querySelector(".teams-show").classList.add("d-none")
+    document.querySelector("#enginesPerformance").classList.add("d-none")
+    document.querySelector("#teamsPerformance").classList.remove("d-none")
     removeSelected()
 })
 
 enginesPill.addEventListener("click", function () {
-    manageTeamsEngines("hide", "show")
-    document.querySelector(".teams-show").classList.add("d-none")
-    document.querySelector(".engines-show").classList.add("d-none")
+    document.querySelector("#teamsPerformance").classList.add("d-none")
+    document.querySelector("#enginesPerformance").classList.remove("d-none")
     removeSelected()
 })
 
-/**
- * manages if to show or hide teams/engines list
- * @param  {Array} divs state of the list divs of engines and teams
- */
-function manageTeamsEngines(...divs) {
-    divsTeamsArray.forEach(function (div, index) {
-        if (divs[index] === "show") {
-            div.className = "main-columns-drag-section"
-        }
-        else {
-            div.className = "main-columns-drag-section d-none"
-        }
-    })
-}
+
 
 /**
  * Manages the engine stats for all manufacturers
- * @param {Object} msg engine stats for all manufacturers
+ * @param {Object} engineData engine stats for all manufacturers
  */
-function manage_engineStats(msg) {
-    msg.forEach(function (elem) {
+function manage_engineStats(engineData) {
+    engineData.forEach(function (elem) {
         let engineId = elem[0]
-        let engineStats = ""
-        elem[1].forEach(function (stat) {
-            engineStats += stat + " "
-        })
-        engineStats.trim()
-        place_engineStats(engineId, engineStats)
+        let engineStats = elem[1];
+        let engine = document.querySelector(`[data-engineId="${engineId}"]`);
+        console.log(engine)
+        for (let key in engineStats) {
+            let value = engineStats[key];
+            let attribute = engine.querySelector(`.engine-performance-stat[data-attribute="${key}"]`);
+            console.log(attribute)
+            let input = attribute.querySelector(".custom-input-number");
+            console.log(input)
+            let bar = attribute.querySelector(".engine-performance-progress");
+            input.value = value.toFixed(1) + " %";
+            bar.style.width = value + "%";
+        }
     })
 }
 
-/**
- * Places the stats engineStats of engineid in its div
- * @param {string} engineId if of the engine to place the stats in
- * @param {string} engineStats string with all the stats of the engineid manufacturer
- */
-function place_engineStats(engineId, engineStats) {
-    var element = document.querySelector('[data-engineId="' + engineId + '"]');
-    element.setAttribute('data-stats', "");
-    if (element) {
-        element.setAttribute('data-stats', engineStats);
-    }
-}
 
 /**
  * removes the team or engine selected anc changes the icon if necesssary

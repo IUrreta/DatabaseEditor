@@ -86,15 +86,15 @@ class DatabaseUtils:
         gearboxes_ids = [3,12,6,9]
         lista = []
         for i in range(len(engines_ids)):
-            statList = []
+            result_dict = {}
             for stat in stats_ids:
-                res = self.cursor.execute(f"SELECT UnitValue FROM Parts_Designs_StatValues WHERE DesignID = {engines_ids[i]} AND PartStat = {stat}").fetchone()
-                statList.append(res[0])
+                res = self.cursor.execute(f"SELECT PartStat, UnitValue FROM Parts_Designs_StatValues WHERE DesignID = {engines_ids[i]} AND PartStat = {stat}").fetchone()
+                result_dict[res[0]] = res[1]
             ers_res = self.cursor.execute(f"SELECT UnitValue FROM Parts_Designs_StatValues WHERE DesignID = {ers_ids[i]} AND PartStat = 15").fetchone()
-            statList.append(ers_res[0])
+            result_dict[18] = ers_res[0]
             gearbox_res = self.cursor.execute(f"SELECT UnitValue FROM Parts_Designs_StatValues WHERE DesignID = {gearboxes_ids[i]} AND PartStat = 15").fetchone()
-            statList.append(gearbox_res[0])
-            engineInfo = (engines_ids[i], statList)
+            result_dict[19] = gearbox_res[0]
+            engineInfo = (engines_ids[i], result_dict)
             lista.append(engineInfo)
 
         return lista

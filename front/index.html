@@ -3155,7 +3155,7 @@
               data-bs-target="#performancemodal">?</i>
           </div>
         </div>
-        <div class="d-flex">
+        <div class="d-flex" id="teamsPerformance">
           <div class="col-3">
             <div class="teams-engines">
               <div class="main-columns-drag-section main-resizable" id="teamsDiv">
@@ -3256,38 +3256,7 @@
                   </div>
                 </div>
               </div>
-              <div class="main-columns-drag-section d-none" id="enginesDiv">
-                <div class="col engine bold-font logo-and-title" data-engineid="1" data-teamEngine="1" data-stats=""
-                  data-teamname="Ferrari">
-                  <img src="../assets/images/ferrari.png" class="ferrarilogo"
-                    style="padding-bottom: 7px; padding-top: 7px;">
-                  <div class="team-title">FERRARI</div>
-                </div>
-                <div class="col engine bold-font logo-and-title" data-engineid="10" data-teamengine="2" data-stats=""
-                  data-teamname="Renault" id="renaultengine">
-                  <img src="../assets/images/renault.png" class="" class="ferrarilogo"
-                    style="padding-top: 5px; padding-left: 7px; padding-bottom: 5px;">
-                  <img src="../assets/images/renault2.png" class="d-none" class="ferrarilogo"
-                    style="padding-top: 5px; padding-left: 7px; padding-bottom: 5px;">
-                  <div class="team-title">RENAULT</div>
-                </div>
-                <div class="col engine bold-font logo-and-title" data-engineid="4" data-teamEngine="3" data-stats=""
-                  data-teamname="Red Bull">
-                  <img src="../assets/images/redbull.png" class="redbulllogo">
-                  <div class="team-title">RED BULL PT</div>
-                </div>
-                <div class="col engine bold-font logo-and-title" data-engineid="7" data-teamEngine="4" data-stats=""
-                  data-teamname="Mercedes">
-                  <img src="../assets/images/mercedes.png" class="merclogo"
-                    style="padding-top: 6px; padding-left: 7px;">
-                  <div class="team-title">MERCEDES</div>
-                </div>
-
-
-              </div>
-
             </div>
-
           </div>
           <div class="col-9">
             <div class="main-columns-drag-section performance-section d-flex main-resizable">
@@ -3573,6 +3542,336 @@
                 </div>
               </div>
 
+            </div>
+          </div>
+        </div>
+        <div class="main-columns-drag-section main-resizable engines-show d-none" id="enginesPerformance">
+          <div class="engine-performance" data-engineid="1">
+            <div class="engine-performance-title engine-fe">FERRARI</div>
+            <div class="engine-performance-stats">
+              <div class="engine-performance-stat" data-attribute="6">
+                <div class="part-performance-stat-title">Power</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="10">
+                <div class="part-performance-stat-title">Fuel efficiency</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat engine24" data-attribute="11">
+                <div class="part-performance-stat-title">Performance threshold</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat engine24" data-attribute="12">
+                <div class="part-performance-stat-title">Performance loss</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="14">
+                <div class="part-performance-stat-title">Engine durability</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="18">
+                <div class="part-performance-stat-title">ERS durability</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="19">
+                <div class="part-performance-stat-title">Gearbox durability</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="engine-performance" data-engineid="4">
+            <div class="engine-performance-title engine-rb">HONDA RBPT</div>
+            <div class="engine-performance-stats">
+              <div class="engine-performance-stat" data-attribute="6">
+                <div class="part-performance-stat-title">Power</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="10">
+                <div class="part-performance-stat-title">Fuel efficiency</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat engine24" data-attribute="11">
+                <div class="part-performance-stat-title">Performance threshold</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat engine24" data-attribute="12">
+                <div class="part-performance-stat-title">Performance loss</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="14">
+                <div class="part-performance-stat-title">Engine durability</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="18">
+                <div class="part-performance-stat-title">ERS durability</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="19">
+                <div class="part-performance-stat-title">Gearbox durability</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="engine-performance" data-engineid="7">
+            <div class="engine-performance-title engine-me">MERCEDES</div>
+            <div class="engine-performance-stats">
+              <div class="engine-performance-stat" data-attribute="6">
+                <div class="part-performance-stat-title">Power</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="10">
+                <div class="part-performance-stat-title">Fuel efficiency</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat engine24" data-attribute="11">
+                <div class="part-performance-stat-title">Performance threshold</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat engine24" data-attribute="12">
+                <div class="part-performance-stat-title">Performance loss</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="14">
+                <div class="part-performance-stat-title">Engine durability</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="18">
+                <div class="part-performance-stat-title">ERS durability</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="19">
+                <div class="part-performance-stat-title">Gearbox durability</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="engine-performance" data-engineid="10">
+            <div class="engine-performance-title engine-re">RENAULT</div>
+            <div class="engine-performance-stats">
+              <div class="engine-performance-stat" data-attribute="6">
+                <div class="part-performance-stat-title">Power</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="10">
+                <div class="part-performance-stat-title">Fuel efficiency</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat engine24" data-attribute="11">
+                <div class="part-performance-stat-title">Performance threshold</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat engine24" data-attribute="12">
+                <div class="part-performance-stat-title">Performance loss</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="14">
+                <div class="part-performance-stat-title">Engine durability</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="18">
+                <div class="part-performance-stat-title">ERS durability</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
+              <div class="engine-performance-stat" data-attribute="19">
+                <div class="part-performance-stat-title">Gearbox durability</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash-lg"></i>
+                  <input type="text" class="custom-input-number">
+                  <i class="bi bi-plus-lg"></i>
+                </div>
+                <div class="engine-performance-bar">
+                  <div class="engine-performance-progress"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

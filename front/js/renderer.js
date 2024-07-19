@@ -565,6 +565,9 @@ document.addEventListener('DOMContentLoaded', function () {
             ipcRenderer.send('resize-window', 930);
             document.querySelectorAll(".main-resizable").forEach(function (elem) {
                 elem.style.height = "720.5px"
+                if (elem.id === "enginesPerformance") {
+                    elem.style.maxHeight = "720px"
+                }
             })
             document.querySelectorAll(".staff-list").forEach(function (elem) {
                 elem.style.height = "672px"
@@ -576,6 +579,9 @@ document.addEventListener('DOMContentLoaded', function () {
             ipcRenderer.send('resize-window', 875);
             document.querySelectorAll(".main-resizable").forEach(function (elem) {
                 elem.style.height = "660px"
+                if (elem.id === "enginesPerformance") {
+                    elem.style.maxHeight = "660px"
+                }
             })
             document.querySelectorAll(".staff-list").forEach(function (elem) {
                 elem.style.height = "612px"
@@ -622,6 +628,9 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll(".brake-cooling-replace").forEach(function (elem) {
                 elem.textContent = "Tyre preservation"
             })
+            document.querySelectorAll(".engine24").forEach(function (elem) {
+                elem.classList.add("d-none")
+            })
         }
         else if (year[0] === "23") {
             resizeWindowToHeight("10teams")
@@ -638,6 +647,9 @@ document.addEventListener('DOMContentLoaded', function () {
             manage_custom_team([null, null])
             document.querySelectorAll(".brake-cooling-replace").forEach(function (elem) {
                 elem.textContent = "Brake cooling"
+            })
+            document.querySelectorAll(".engine24").forEach(function (elem) {
+                elem.classList.remove("d-none")
             })
         }
     }

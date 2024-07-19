@@ -39,11 +39,9 @@ def edit_stats(option=""):
 def edit_mentality(mentality):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
-    print("AAAAA")
     driver_id = mentality.split()[0]
     mentality = mentality.split()[1:]
     for index, value in enumerate(mentality):
-        print(value, index)
         cursor.execute(f"UPDATE Staff_Mentality_AreaOpinions SET Opinion = {value} WHERE StaffID = {driver_id} AND Category = {index}")
 
     conn.commit()
