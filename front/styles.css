@@ -5486,7 +5486,7 @@ DRIVERS TABLE
   background-color: transparent;
   padding: 3px;
   color: var(--text-general);
-  max-width: 40px;
+  max-width: 52px;
   border: 0px solid;
   font-size: 20px;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s !important;

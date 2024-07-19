@@ -258,7 +258,7 @@ function fillLevels(teamData) {
 function updatePitStat(input, increment) {
     let actual = input.value.split("%")[0];
     let val = parseInt(actual) + increment;
-    if (val > 99) val = 99;
+    if (val > 100) val = 100;
     if (val < 0) val = 0;
     input.value = val + "%";
     manage_stat_bar(input, val);

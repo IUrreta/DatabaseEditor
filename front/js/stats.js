@@ -1,3 +1,4 @@
+const { parse } = require("marked");
 const { stat } = require("original-fs");
 
 let driverStatTitle = document.getElementById("driverStatsTitle")
@@ -68,9 +69,13 @@ function place_drivers_editStats(driversArray) {
         newDiv.dataset.retirement = driver["retirement_age"]
         newDiv.dataset.numWC = driver["wants1"]
         newDiv.dataset.number = driver["driver_number"]
-        newDiv.dataset.mentality0 = driver["mentality0"]
-        newDiv.dataset.mentality1 = driver["mentality1"]
-        newDiv.dataset.mentality2 = driver["mentality2"]
+        newDiv.dataset.raceFormula = driver["race_formula"]
+        if (driver["mentality0"]){
+            newDiv.dataset.mentality0 = driver["mentality0"]
+            newDiv.dataset.mentality1 = driver["mentality1"]
+            newDiv.dataset.mentality2 = driver["mentality2"]
+        }
+        newDiv.dataset.marketability = driver["marketability"]
         ovr = calculateOverall(statsString, "driver")
         ovrDiv.innerHTML = ovr
         ovrDiv.classList.add("bold-font")
@@ -83,8 +88,8 @@ function place_drivers_editStats(driversArray) {
 
     document.querySelector("#edit_stats").querySelectorAll(".custom-input-number").forEach(function (elem) {
         elem.addEventListener("change",function () {
-            if (elem.value > 99) {
-                elem.value = 99;
+            if (elem.value > 100) {
+                elem.value = 100;
             }
             recalculateOverall()
         });
@@ -162,16 +167,13 @@ function place_staff(staffArray) {
             recalculateOverall()
 
         });
-        if (game_version === 2024 && staff[staff.length - 1] !== -1){
-            newDiv.dataset.age = staff[staff.length - 4]
-            newDiv.dataset.retirement = staff[staff.length - 5]
-            newDiv.dataset.mentality0 = staff[staff.length - 3]
-            newDiv.dataset.mentality1 = staff[staff.length - 2]
-            newDiv.dataset.mentality2 = staff[staff.length - 1]
-        }
-        else{
-            newDiv.dataset.age = staff[staff.length - 2]
-            newDiv.dataset.retirement = staff[staff.length - 3]
+        newDiv.dataset.age = staff["age"]
+        newDiv.dataset.retirement = staff["retirement_age"]
+        newDiv.dataset.raceFormula = staff["race_formula"]
+        if (staff["mentality0"]){
+            newDiv.dataset.mentality0 = staff["mentality0"]
+            newDiv.dataset.mentality1 = staff["mentality1"]
+            newDiv.dataset.mentality2 = staff["mentality2"]
         }
         ovr = calculateOverall(statsString, "staff")
         ovrDiv.innerHTML = ovr
@@ -270,7 +272,7 @@ function calculateOverall(stats, type) {
 
 function updateStat(input, increment) {
     let val = parseInt(input.value) + increment;
-    if (val > 99) val = 99;
+    if (val > 100) val = 100;
     if (val < 0) val = 0;
     input.value = val;
     recalculateOverall();
@@ -420,7 +422,7 @@ function listeners_plusLess(){
         else{
             let elements = document.querySelectorAll(".normal-driver")
             elements.forEach(function(elem){
-                if(parseInt(elem.dataset.teamid) <= 10 && parseInt(elem.dataset.teamid) > 0 || parseInt(elem.dataset.teamid) == 32){
+                if(parseInt(elem.dataset.raceFormula) === 1){
                     elem.classList.remove("d-none")
                 }
                 else{
@@ -440,7 +442,7 @@ function listeners_plusLess(){
         else{
             let elements = document.querySelectorAll(".normal-driver")
             elements.forEach(function(elem){
-                if(parseInt(elem.dataset.teamid) <= 21 && parseInt(elem.dataset.teamid) > 10){
+                if(parseInt(elem.dataset.raceFormula) === 2){
                     elem.classList.remove("d-none")
                 }
                 else{
@@ -460,7 +462,7 @@ function listeners_plusLess(){
         else{
             let elements = document.querySelectorAll(".normal-driver")
             elements.forEach(function(elem){
-                if(parseInt(elem.dataset.teamid) <= 31 && parseInt(elem.dataset.teamid) > 21){
+                if(parseInt(elem.dataset.raceFormula) === 3){
                     elem.classList.remove("d-none")
                 }
                 else{
@@ -480,7 +482,7 @@ function listeners_plusLess(){
         else{
             let elements = document.querySelectorAll(".normal-driver")
             elements.forEach(function(elem){
-                if(parseInt(elem.dataset.teamid) == 0){
+                if(parseInt(elem.dataset.raceFormula) === 4){
                     elem.classList.remove("d-none")
                 }
                 else{
@@ -674,6 +676,14 @@ function load_stats(div) {
             let indicator = document.getElementById("mentality" + i)
             indicator.parentNode.parentNode.classList.add("d-none")
         }
+    }
+    if (div.dataset.marketability){
+        document.querySelector("#marketability").classList.remove("d-none")
+        document.getElementById("marketabilityInput").value = div.dataset.marketability
+        document.getElementById("marketabilityBar").style.width = div.dataset.marketability + "%"
+    }
+    else{
+        document.querySelector("#marketability").classList.add("d-none")
     }
 }
 

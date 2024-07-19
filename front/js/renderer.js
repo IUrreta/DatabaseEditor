@@ -222,6 +222,7 @@ function editModeHandler() {
             document.querySelector(".clicked").dataset["mentality" + index] = elem.dataset.value
         })
     }
+    let marketability = document.getElementById("marketabilityInput").value;
     let dataStats = {
         command: "editStats",
         driverID: id,
@@ -232,7 +233,8 @@ function editModeHandler() {
         driverNum: driverNum,
         wants1: wants1,
         mentality: mentality,
-        superLicense: superLicense
+        superLicense: superLicense,
+        marketability: marketability
     };
 
     socket.send(JSON.stringify(dataStats));

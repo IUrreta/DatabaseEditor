@@ -117,14 +117,22 @@ class DatabaseUtils:
             if tupla[0] != "Placeholder":
                 result = self.format_names_get_stats(tupla, "staff"+str(tupla[4]))
                 retirement = self.fetch_driverRetirement(id)
-                result += tuple(retirement)
+                race_formula = self.fetch_raceFormula(id)
+                if race_formula[0] == None:
+                    race_formula = (4,)
+                data_dict = {i: result[i] for i in range(len(result))}
+                data_dict["retirement_age"] = retirement[0]
+                data_dict["age"] = retirement[1]
+                data_dict["race_formula"] = race_formula[0]
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
                     if mentality:
-                        result += tuple(mentality[0]) + tuple(mentality[1]) + tuple(mentality[2])
+                        data_dict["mentality0"] = mentality[0][0]
+                        data_dict["mentality1"] = mentality[1][0]
+                        data_dict["mentality2"] = mentality[2][0]
                     else:
                         result += (-1,)
-                formatted_tuples.append(result)
+                formatted_tuples.append(data_dict)
             
 
         return formatted_tuples
@@ -247,13 +255,16 @@ class DatabaseUtils:
         return formatted_tuples
 
     def fetch_info(self, game_year):
-        drivers = self.cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType, gam.Retired FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID LEFT JOIN Staff_GameData gam ON dri.StaffID = gam.StaffID GROUP BY bas.StaffID ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID;').fetchall()
+        drivers = self.cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType, gam.Retired, COUNT(*) FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID LEFT JOIN Staff_GameData gam ON dri.StaffID = gam.StaffID GROUP BY bas.StaffID ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID;').fetchall()
         formatted_tuples = []
         for tupla in drivers:
             id = tupla[2]
             if tupla[0] != "Placeholder":
                 result = self.format_names_get_stats(tupla, "driver")
                 retirement = self.fetch_driverRetirement(id)
+                race_formula = self.fetch_raceFormula(id)
+                if race_formula[0] == None:
+                    race_formula = (4,)
                 driver_number = self.fetchDriverNumberDetails(id)
                 superlicense = self.fetch_superlicense(id)
                 data_dict = {i: result[i] for i in range(len(result))}
@@ -262,6 +273,7 @@ class DatabaseUtils:
                 data_dict["retirement_age"] = retirement[0]
                 data_dict["age"] = retirement[1]
                 data_dict["superlicense"] = superlicense[0]
+                data_dict["race_formula"] = race_formula[0]
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
                     if mentality:
@@ -274,6 +286,10 @@ class DatabaseUtils:
                 formatted_tuples.append(data_dict)
 
         return formatted_tuples
+    
+    def fetch_raceFormula(self, driverID):
+        category = self.cursor.execute(f"SELECT MAX(CASE WHEN (TeamID <= 10 OR TeamID = 32) THEN 1 WHEN TeamID BETWEEN 11 AND 21 THEN 2 WHEN TeamID BETWEEN 22 AND 31 THEN 3 ELSE 4 END) FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = {driverID}").fetchone()
+        return category
     
     def fetch_marketability(self, driverID):
         marketability = self.cursor.execute(f"SELECT Marketability FROM Staff_DriverData WHERE StaffID = {driverID}").fetchone()
