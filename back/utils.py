@@ -256,14 +256,28 @@ class DatabaseUtils:
                 retirement = self.fetch_driverRetirement(id)
                 driver_number = self.fetchDriverNumberDetails(id)
                 superlicense = self.fetch_superlicense(id)
-                result += tuple(driver_number) + tuple(retirement) + superlicense
+                data_dict = {i: result[i] for i in range(len(result))}
+                data_dict["driver_number"] = driver_number[0]
+                data_dict["wants1"] = driver_number[1]
+                data_dict["retirement_age"] = retirement[0]
+                data_dict["age"] = retirement[1]
+                data_dict["superlicense"] = superlicense[0]
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
                     if mentality:
-                        result += tuple(mentality[0]) + tuple(mentality[1]) + tuple(mentality[2])
-                formatted_tuples.append(result)
+                        data_dict["mentality0"] = mentality[0][0]
+                        data_dict["mentality1"] = mentality[1][0]
+                        data_dict["mentality2"] = mentality[2][0]                
+                if game_year == "24":
+                    marketability = self.fetch_marketability(id)
+                    data_dict["marketability"] = marketability[0]
+                formatted_tuples.append(data_dict)
 
         return formatted_tuples
+    
+    def fetch_marketability(self, driverID):
+        marketability = self.cursor.execute(f"SELECT Marketability FROM Staff_DriverData WHERE StaffID = {driverID}").fetchone()
+        return marketability
     
     def fetch_superlicense(self, driverID):
         superlicense = self.cursor.execute(f"SELECT HasSuperLicense FROM Staff_DriverData WHERE StaffID = {driverID}").fetchone()

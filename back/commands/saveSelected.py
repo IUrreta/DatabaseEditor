@@ -25,6 +25,8 @@ class SaveSelectedCommand(Command):
         await self.send_message_to_client(data_json_game_year)
         await self.check_year_config(game_year[0])
         drivers = Command.dbutils.fetch_info(game_year[0])
+        print(type(drivers[0]))
+        print(drivers[0])
         drivers.insert(0, "Save Loaded Succesfully")
         data_json_drivers = json.dumps(drivers)
         await self.send_message_to_client(data_json_drivers)

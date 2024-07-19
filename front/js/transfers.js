@@ -193,7 +193,8 @@ function addUnRetireIcon(div) {
 function iconListener(icon) {
     icon.addEventListener("click",function () {
         modalType = "edit"
-        document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText + "'s contract";
+        console.log(icon.parentNode.parentNode.innerText.replace(/\n/g, ' '))
+        document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g, ' ') + "'s contract";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
     })
@@ -532,6 +533,12 @@ document.getElementById("cancelButton").addEventListener('click',function () {
 
 document.querySelector("#nameFilterTransfer").addEventListener("input",function (event) {
     let text = event.target.value
+    if (text !== "") {
+        document.querySelector("#filterTransfersContainer").querySelector(".bi-x").classList.remove("d-none")
+    }
+    else {
+        document.querySelector("#filterTransfersContainer").querySelector(".bi-x").classList.add("d-none")
+    }
     let elements = document.querySelectorAll("#free-drivers .free-driver")
     elements.forEach(function (elem) {
         let first_name = elem.children[0].innerText

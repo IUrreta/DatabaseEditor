@@ -168,12 +168,12 @@
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
             <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-            id="cancelConfigButton">No</button>
+              id="cancelConfigButton">No</button>
             <div class="dropdown-line"></div>
           </div>
           <div class="pos-relative">
             <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
-            id="configButton">Yes</button>
+              id="configButton">Yes</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -1369,7 +1369,10 @@
           <div class="col-2">
             <div class="main-columns-drag-section main-resizable" id="allDrivers">
               <div class="search-and-order">
-                <input class="text-filter" type="text" id="nameFilterTransfer" placeholder="Search..."></input>
+                <div class="text-filter-container" id="filterTransfersContainer">
+                  <input class="text-filter" type="text" id="nameFilterTransfer" placeholder="Search...">
+                  <i class="bi bi-x d-none"></i>
+                </div>
               </div>
               <div id="free-drivers">
               </div>
@@ -1653,7 +1656,10 @@
           <div class="col-3">
             <div class="main-editStats-section main-resizable" id="StaffLists">
               <div class="search-and-order">
-                <input class="text-filter" type="text" id="nameFilter" placeholder="Search..."></input>
+                <div class="text-filter-container" id="filterContainer">
+                  <input class="text-filter" type="text" id="nameFilter" placeholder="Search...">
+                  <i class="bi bi-x d-none"></i>
+                </div>
                 <div class="order-space" data-state="0">
                   <i class="bi bi-sort-numeric-up-alt"></i>
                   <i class="bi bi-sort-numeric-down hidden"></i>
@@ -1693,7 +1699,7 @@
                   </div>
                   <div class="super-license-holder form-check form-switch">
                     <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="superLicense">
-                  <span class="form-check-label" for="flexSwitchCheckDefault">Super License</span>
+                    <span class="form-check-label" for="flexSwitchCheckDefault">Super License</span>
                   </div>
                   <div class="ovrcombined">
                     <div class="overall-holder bold-font" id="ovrholder"></div>

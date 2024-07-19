@@ -29,6 +29,7 @@
   --blur-color: #616161d3;
   --toast-background : #5a5b5c;
   --console-transparent: #42424299;
+  --separator: #4a4a4a;
 
   --mentality-enthusiastic: #c055e3;
   --mentality-positive: #10ffff;
@@ -214,7 +215,7 @@ body {
 
 #byname {
   text-decoration: none;
-  color: var( --slight-contrast);
+  color: var(--separator);
   transition: color 0.3s;
 }
 
@@ -735,7 +736,28 @@ input[type="checkbox"]:checked {
   transition: color 0.2s, border-color 0.2s;
   height: 36px;
   padding: 6px;
-  width: 145px;
+  width: 100%;
+
+}
+
+.text-filter-container{
+  margin-top: 5px;
+  width: 100%;
+  margin-right: 10px;
+  position: relative;
+}
+
+.text-filter-container .bi-x{
+  color: var(--dark-text);
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s, opacity 0.2s;
+  position: absolute;
+  right: 0px;
+}
+
+.text-filter-container .bi-x:hover{
+  color: var(--new-primary);
+  transform: scale(1.1);
 }
 
 .filter-icon{
@@ -888,11 +910,6 @@ input[type="checkbox"]:checked {
   margin-left: 14px;
 }
 
-#nameFilter, #nameFilterTransfer{
-  margin-top: 5px;
-  width: 100%;
-  margin-right: 10px;
-}
 
 .search-and-order{
   margin-left: 10px;
@@ -1104,7 +1121,7 @@ input[type="checkbox"]:checked {
 .patchNotesPanel i {
   transition: color 0.3s;
   font-style: normal;
-  color: var( --slight-contrast);
+  color: var(--separator);
   cursor: pointer;
 }
 
@@ -1293,7 +1310,7 @@ input[type="checkbox"]:checked {
   position: relative;
   width: 100%;
   height: 1px;
-  background-color: var(--slight-contrast);
+  background-color: var(--separator);
 }
 
 .mode-line.ai{
@@ -1528,7 +1545,7 @@ input[type="checkbox"]:checked {
 
 .custom-dropdown-no-margin {
   max-width: 250px !important;
-  background-color: var(--slight-contrast) !important;
+  background-color: var(--separator) !important;
   margin-bottom: 1% !important;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
@@ -1626,7 +1643,7 @@ input[type="checkbox"]:checked {
 .addTracks-button {
   margin-top: 0.4rem;
   max-width: 210px;
-  background-color: var( --slight-contrast) !important;
+  background-color: var(--separator) !important;
   margin-bottom: 1%;
   border: 2px solid transparent !important;
   border-radius: 10px !important;
@@ -1715,12 +1732,13 @@ input[type="checkbox"]:checked {
 
 .custom-hr {
   border: none;
-  height: 1px;
-  border: 1px solid var( --slight-contrast);
+  height: 2px;
+  /* border: 1px solid var(--separator); */
   margin-left: 10px;
   margin-right: 10px;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  background-color: var(--separator);
 }
 
 #specialStatsPanel{
@@ -2061,8 +2079,8 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   justify-content: center;
-  border-top: 1px solid var( --slight-contrast);
-  border-bottom: 1px solid var( --slight-contrast);
+  border-top: 1px solid var(--separator);
+  border-bottom: 1px solid var(--separator);
   transition: border-height 0.3s;
 }
 
@@ -2434,7 +2452,7 @@ DRIVERS TABLE
   margin-bottom: 20px;
   margin-top: 15px;
   background-color: var(--tools-general);
-  border: 1px solid var( --slight-contrast);
+  border: 1px solid var(--separator);
   border-radius: 10px;
   display: flex;
   justify-content: center;
@@ -2690,7 +2708,7 @@ DRIVERS TABLE
 .main-options-section {
   margin-left: 1.5rem;
   margin-right: 14px;
-  border: 1px solid var( --slight-contrast);
+  border: 1px solid var(--separator);
   color: var(--white-general);
   min-height: 660px;
   max-height: 660px;
@@ -2738,7 +2756,7 @@ DRIVERS TABLE
 }
 
 .race-calendar-number{
-  border-right: 2px solid var(--text-general);
+  border-right: 2px solid var(--separator);
   font-size: 30px;
   display: flex;
   align-items: center;
@@ -2955,7 +2973,7 @@ DRIVERS TABLE
 }
 
 .categoryPills.active {
-  background-color: var( --slight-contrast) !important;
+  background-color: var(--separator) !important;
   color: #fdfdfd !important;
 }
 
@@ -3198,7 +3216,7 @@ DRIVERS TABLE
   grid-template-rows: repeat(2, 1fr);
   width: 100%;
   gap: 8px;
-  padding: 0 8px;
+  padding: 8px;
   flex: 1;
 }
 
@@ -3480,7 +3498,7 @@ DRIVERS TABLE
 
 .custom-header {
   color: var(--white-general) !important;
-  border-bottom: 1px solid var( --slight-contrast) !important;
+  border-bottom: 1px solid var(--separator) !important;
   background-color: var(--generals) !important;
   display: flex;
   justify-content: space-around;
@@ -3491,6 +3509,7 @@ DRIVERS TABLE
   color: var(--white-general) !important;
   background-color: var(--generals) !important;
   z-index: -3;  
+  border-top: 1px solid var(--separator) !important;
 }
 
 ::-webkit-input-placeholder {
@@ -5829,18 +5848,16 @@ input::-webkit-inner-spin-button {
 }
 
 .separator{
-  margin-top: 30px;
-  width: 1px;
-  background-color: var(--mid-gray-contrast);
-  height: 85%;
+  width: 2px;
+  background-color: var(--separator);
+  height: 100%;
 }
 
 .separator-2{
   margin-top: 30px;
-  width: 1px;
+  width: 2px;
   background-color: var(--elements);
   height: 90%;
-
 }
 
 .main-second-viewer{

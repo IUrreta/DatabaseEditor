@@ -63,24 +63,14 @@ function place_drivers_editStats(driversArray) {
             recalculateOverall()
 
         });
-        if (game_version === 2024 && driver.length > 20){
-            newDiv.dataset.superLicense = driver[driver.length - 4]
-            newDiv.dataset.age = driver[driver.length - 5]
-            newDiv.dataset.retirement = driver[driver.length - 6]
-            newDiv.dataset.numWC = driver[driver.length - 7]
-            newDiv.dataset.number = driver[driver.length - 8]
-            newDiv.dataset.mentality0 = driver[driver.length - 3]
-            newDiv.dataset.mentality1 = driver[driver.length - 2]
-            newDiv.dataset.mentality2 = driver[driver.length - 1]
-        }
-        else{
-            newDiv.dataset.superLicense = driver[driver.length - 1]
-            newDiv.dataset.age = driver[driver.length - 2]
-            newDiv.dataset.retirement = driver[driver.length - 3]
-            newDiv.dataset.numWC = driver[driver.length - 4]
-            newDiv.dataset.number = driver[driver.length - 5]
-        }
-
+        newDiv.dataset.superLicense = driver["superlicense"]
+        newDiv.dataset.age = driver["age"]
+        newDiv.dataset.retirement = driver["retirement_age"]
+        newDiv.dataset.numWC = driver["wants1"]
+        newDiv.dataset.number = driver["driver_number"]
+        newDiv.dataset.mentality0 = driver["mentality0"]
+        newDiv.dataset.mentality1 = driver["mentality1"]
+        newDiv.dataset.mentality2 = driver["mentality2"]
         ovr = calculateOverall(statsString, "driver")
         ovrDiv.innerHTML = ovr
         ovrDiv.classList.add("bold-font")
@@ -366,6 +356,12 @@ function listeners_plusLess(){
 
     document.querySelector("#nameFilter").addEventListener("input", function(event){
         let text = event.target.value
+        if (text !== "") {
+            document.querySelector("#filterContainer").querySelector(".bi-x").classList.remove("d-none")
+        }
+        else {
+            document.querySelector("#filterContainer").querySelector(".bi-x").classList.add("d-none")
+        }
         let elements = document.querySelectorAll(".normal-driver")
         elements.forEach(function(elem){
             let first_name = elem.children[0].children[0].innerText
@@ -379,6 +375,19 @@ function listeners_plusLess(){
             else{
                 elem.classList.add("d-none")
             }
+        })
+    })
+
+    document.querySelectorAll(".text-filter-container .bi-x").forEach(function(elem){
+        elem.addEventListener("click", function(){
+            let input = elem.parentNode.querySelector("input")
+            input.value = ""
+            elem.classList.add("d-none")
+            let event = new Event('input', {
+                bubbles: true,
+                cancelable: true
+            });
+            input.dispatchEvent(event);
         })
     })
 
