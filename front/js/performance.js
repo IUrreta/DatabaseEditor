@@ -92,6 +92,7 @@ teamsPill.addEventListener("click", function () {
     teamsEngine = "teams"
     document.querySelector("#enginesPerformance").classList.add("d-none")
     document.querySelector("#teamsPerformance").classList.remove("d-none")
+    document.querySelector("#carAttributeSelector").classList.remove("d-none")
     removeSelected()
 })
 
@@ -99,6 +100,7 @@ enginesPill.addEventListener("click", function () {
     teamsEngine = "engines"
     document.querySelector("#teamsPerformance").classList.add("d-none")
     document.querySelector("#enginesPerformance").classList.remove("d-none")
+    document.querySelector("#carAttributeSelector").classList.add("d-none")
     removeSelected()
 })
 

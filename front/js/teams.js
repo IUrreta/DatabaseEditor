@@ -253,7 +253,26 @@ function fillLevels(teamData) {
         let bar = pitCrewStat.querySelector(".one-stat-progress");
         bar.style.width = value + "%";
     }
+    let engineManufacturer = teamData[23];
+    console.log(`#engineMenu a[data-engine='${engineManufacturer}']`)
+    document.querySelector(`#engineMenu a[data-engine='${engineManufacturer}']`).click();
+    if (teamCod === "1" || teamCod === "3" || teamCod === "4" || teamCod === "5"){
+        document.querySelector(".blocking-engine").classList.remove("d-none");
+    }
+    else{
+        document.querySelector(".blocking-engine").classList.add("d-none");
+    }
 }
+
+
+document.querySelectorAll("#engineMenu a").forEach(function(elem){
+    elem.addEventListener("click", function(){
+        let engineiD = elem.dataset.engine;
+        let engine = elem.innerText;
+        document.querySelector("#engineLabel").innerText = engine;
+        document.querySelector("#engineButton").dataset.value = engineiD;
+    })
+})
 
 function updatePitStat(input, increment) {
     let actual = input.value.split("%")[0];

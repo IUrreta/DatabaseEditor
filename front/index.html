@@ -2546,6 +2546,23 @@
                   </div>
                 </div>
               </div>
+              <div class="second-component" id="engineSelector">
+                <div class="component-subtitle bold-font">Engine</div>
+                <div class="blocking-engine d-none">Can't change a works team</div>
+                <div style="max-width: max-content;">
+                  <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                    id="engineButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="0">
+                    <div class="front-gradient objective-label" id="engineLabel">Engine</div>
+                  </button>
+                  <div class="dropdown-line"></div>
+                  <ul class="dropdown-menu" id="engineMenu" style="font-family: Formula1;">
+                    <a class="dropdown-item" style="cursor: pointer;" data-engine="1">Ferrari</a>
+                    <a class="dropdown-item" style="cursor: pointer;" data-engine="4">Honda RBPT</a>
+                    <a class="dropdown-item" style="cursor: pointer;"data-engine="7">Mercedes</a>
+                    <a class="dropdown-item" style="cursor: pointer;"data-engine="10">Renault</a>
+                  </ul>
+                </div>
+              </div>
             </div>
             <div class="viewer-component">
               <div class="component-subtitle bold-font">Pit crew</div>
@@ -3114,7 +3131,7 @@
       <div class="script-view d-none" id="car_performance">
         <div class="pos-relative">
           <div class="pb-3 ps-3 d-flex"
-            style="padding-top: 0.5rem; position: absolute; align-items: center; gap: 10px;">
+            style="padding-top: 0.5rem; position: absolute; align-items: center; gap: 10px;" id="carAttributeSelector">
             <div>
               <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
                 id="attributeButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -3142,7 +3159,7 @@
               <li class="nav-item">
                 <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"
                   data-section=".teams-section" href="#" id="teamsPill">
-                  <div class="basic-label bold-font">TEAMS</div>
+                  <div class="basic-label bold-font">CARS</div>
                   <div class="pill-line"></div>
                 </a>
               </li>

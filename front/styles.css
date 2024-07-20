@@ -3193,11 +3193,12 @@ DRIVERS TABLE
   border-bottom: 2px solid var(--mercedes-primary);
 }
 
+
 .part-performance-title, .engine-performance-title{
   text-transform: uppercase;
   font-family: 'Formula1Bold';
   font-size: 20px;
-  color: var(--text-general);
+  color: var(--white-general);
 }
 
 .engine-performance-title{
@@ -3207,7 +3208,7 @@ DRIVERS TABLE
 .part-performance-stat, .engine-performance-stat{
   display: flex;
   justify-content: space-between;
-  color: var(--dark-text);
+  color: var(--text-general);
 }
 
 .engine-performance-stat{
@@ -4965,22 +4966,24 @@ DRIVERS TABLE
   margin-bottom: 30px;
 }
 
-.blocking-confidence{
-  background-color: rgba(128, 128, 128, 0.5);
+.blocking-confidence, .blocking-engine{
+  background-color: var(--blur-color);
   z-index: 100;
   display: flex;
-  justify-content: center;
-  align-items: center;
   color: var(--white-general);
   backdrop-filter: blur(3px);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  width: 46%;
+  width: 20%;
   height: 7%;
   position: absolute;
   border-radius: 10px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 }
+
 .blocking-h2h{
-  background-color: rgba(128, 128, 128, 0.5);
+  background-color: var(--blur-color);
   z-index: 100;
   display: flex;
   justify-content: center;
@@ -6021,7 +6024,7 @@ input::-webkit-inner-spin-button {
   max-width: 260px !important;
 }
 
-#objectiveButton::before, #carDevButton::before, #operationButton::before, #staffButton::before{
+#objectiveButton::before, #carDevButton::before, #operationButton::before, #staffButton::before, #engineButton::before{
   z-index: 0 !important;
 }
 
