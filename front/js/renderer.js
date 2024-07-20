@@ -13,15 +13,19 @@ let customIconPath = null;
 const batFilePath = path.join(__dirname,'../back/startBack.bat');
 console.log(batFilePath)
 
-// exec(`"${batFilePath}"`, (error, stdout, stderr) => {
-//     if (error) {
-//         console.log("Error launching backend")
-//         console.log(`Error: ${error}`)
-//         return;
-//     }
-//     console.log(`Resultado: ${stdout}`);
-// });
 
+function start_back(){
+    exec(`"${batFilePath}"`, (error, stdout, stderr) => {
+        if (error) {
+            console.log("Error launching backend")
+            console.log(`Error: ${error}`)
+            return;
+        }
+        console.log(`Result: ${stdout}`);
+    });
+}
+
+start_back()
 
 const socket = new WebSocket('ws://localhost:8765/');
 /**
