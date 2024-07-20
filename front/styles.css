@@ -3240,12 +3240,12 @@ DRIVERS TABLE
   max-width: 85px;
 }
 
-.part-performance-stat i{
+.part-performance-stat i, .engine-performance-stat i{
   cursor: pointer;
   transition: color 0.2s, transform 0.2s ease-in-out;
 }
 
-.part-performance-stat i:hover{
+.part-performance-stat i:hover, .engine-performance-stat i:hover{
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.1);

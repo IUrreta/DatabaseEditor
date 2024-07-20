@@ -10,7 +10,7 @@ let custom_team = false;
 let customIconPath = null;
 
 
-const batFilePath = path.join(__dirname, '../back/startBack.bat');
+const batFilePath = path.join(__dirname,'../back/startBack.bat');
 console.log(batFilePath)
 
 // exec(`"${batFilePath}"`, (error, stdout, stderr) => {
@@ -80,7 +80,7 @@ async function getPatchNotes() {
                 let h4Element = document.createElement("h4");
                 h4Element.textContent = h1Element.textContent;
                 h4Element.classList.add("bold-font")
-                patchNotesBody.replaceChild(h4Element, h1Element);
+                patchNotesBody.replaceChild(h4Element,h1Element);
             });
 
             let h2Elements = patchNotesBody.querySelectorAll("h2");
@@ -88,7 +88,7 @@ async function getPatchNotes() {
                 let h4Element = document.createElement("h4");
                 h4Element.textContent = h1Element.textContent;
                 h4Element.classList.add("bold-font")
-                patchNotesBody.replaceChild(h4Element, h1Element);
+                patchNotesBody.replaceChild(h4Element,h1Element);
             });
         }
     } catch {
@@ -103,23 +103,23 @@ async function getPatchNotes() {
  * @param {string} noti message of the notification
  * @param {bool} error if the notification is an error or not
  */
-function update_notifications(noti, code) {
+function update_notifications(noti,code) {
     let newNoti;
     newNoti = document.createElement('div');
     newNoti.className = 'notification';
     newNoti.textContent = noti;
-    let toast = createToast(noti, code)
+    let toast = createToast(noti,code)
     setTimeout(function () {
         toast.classList.remove("myShow")
-    }, 300)
+    },300)
     notificationPanel.appendChild(toast);
     if (code !== "error") {
         setTimeout(function () {
             toast.classList.add("hide")
             setTimeout(function () {
                 notificationPanel.removeChild(toast);
-            }, 280);
-        }, 4000);
+            },280);
+        },4000);
     }
 }
 
@@ -129,7 +129,7 @@ function update_notifications(noti, code) {
  * @param {boolean} err if it's an error or not
  * @returns 
  */
-function createToast(msg, cod) {
+function createToast(msg,cod) {
     let toastFull = document.createElement('div');
     let toastIcon = document.createElement('div');
     let toastBodyDiv = document.createElement('div');
@@ -138,13 +138,13 @@ function createToast(msg, cod) {
     let cross = document.createElement('i');
 
 
-    generalDiv.classList.add('d-flex', "align-items-center")
+    generalDiv.classList.add('d-flex',"align-items-center")
     // Asignar clases y atributos
-    toastFull.classList.add('toast', "d-flex", "myShow", "d-block", "custom-toast")
+    toastFull.classList.add('toast',"d-flex","myShow","d-block","custom-toast")
     toastFull.style.flexDirection = "column"
-    toastFull.setAttribute('role', 'alert');
-    toastFull.setAttribute('aria-live', 'assertive');
-    toastFull.setAttribute('aria-atomic', 'true');
+    toastFull.setAttribute('role','alert');
+    toastFull.setAttribute('aria-live','assertive');
+    toastFull.setAttribute('aria-atomic','true');
 
     toastIcon.classList.add("toast-icon")
     if (cod === "ok") {
@@ -155,13 +155,13 @@ function createToast(msg, cod) {
         icon.className = "bi bi-x-circle"
         toastIcon.classList.add("error")
     }
-    else if (cod === "monaco"){
+    else if (cod === "monaco") {
         icon.className = "bi bi-heartbreak"
         toastIcon.classList.add("error")
     }
     toastIcon.appendChild(icon)
 
-    toastBodyDiv.classList.add('d-flex', 'toast-body', "custom-toast-body");
+    toastBodyDiv.classList.add('d-flex','toast-body',"custom-toast-body");
     toastBodyDiv.textContent = msg;
     toastBodyDiv.style.opacity = "1"
     toastBodyDiv.style.color = "white"
@@ -172,11 +172,11 @@ function createToast(msg, cod) {
     toastFull.appendChild(generalDiv)
     toastFull.appendChild(cross)
     cross.className = "bi bi-x custom-toast-cross"
-    cross.addEventListener("click", function () {
+    cross.addEventListener("click",function () {
         toastFull.classList.add("hide")
         setTimeout(function () {
             notificationPanel.removeChild(toastFull);
-        }, 280);
+        },280);
     })
 
     return toastFull;
@@ -188,7 +188,7 @@ function editModeHandler() {
     document.querySelectorAll(".elegible").forEach(function (elem) {
         stats += elem.value + " ";
     });
-    stats = stats.slice(0, -1);
+    stats = stats.slice(0,-1);
 
     let id;
     if (document.querySelector(".clicked").dataset.driverid) {
@@ -196,12 +196,12 @@ function editModeHandler() {
     }
     let driverName = getName(document.querySelector(".clicked"));
     document.querySelector(".clicked").dataset.stats = stats;
-    let new_ovr = calculateOverall(stats, typeOverall);
+    let new_ovr = calculateOverall(stats,typeOverall);
     document.querySelector(".clicked").childNodes[1].innerHTML = new_ovr;
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     document.querySelector(".clicked").dataset.retirement = retirement;
     let driverNum = document.getElementById("numberButton").textContent;
-    let wants1, superLicense;
+    let wants1,superLicense;
     if (document.querySelector("#driverNumber1").checked) {
         wants1 = 1;
     }
@@ -217,7 +217,7 @@ function editModeHandler() {
     let mentality = -1
     if (document.querySelector(".clicked").dataset.mentality0) {
         mentality = ""
-        document.querySelectorAll(".mentality-level-indicator").forEach(function (elem, index) {
+        document.querySelectorAll(".mentality-level-indicator").forEach(function (elem,index) {
             mentality += elem.dataset.value + " "
             document.querySelector(".clicked").dataset["mentality" + index] = elem.dataset.value
         })
@@ -257,11 +257,12 @@ function calendarModeHandler() {
 }
 
 function teamsModeHandler() {
+
     let seasonObjData = document.querySelector("#seasonObjectiveInput").value;
     let longTermData = longTermObj;
     let longTermYearData = document.querySelector("#longTermInput").value;
-    let teamBudgetData = document.querySelector("#teamBudgetInput").value.replace(/[$,]/g, "");
-    let costCapTransactionData = originalCostCap - document.querySelector("#costCapInput").value.replace(/[$,]/g, "");
+    let teamBudgetData = document.querySelector("#teamBudgetInput").value.replace(/[$,]/g,"");
+    let costCapTransactionData = originalCostCap - document.querySelector("#costCapInput").value.replace(/[$,]/g,"");
     let confidenceData = document.querySelector("#confidenceInput").value;
     let facilitiesData = gather_team_data()
     let pitCrew = gather_pit_crew()
@@ -282,33 +283,43 @@ function teamsModeHandler() {
 }
 
 function performanceModeHandler() {
-    let parts = {};
-    document.querySelectorAll(".part-performance").forEach(function (elem) {
-        let part = elem.dataset.part;
-        let stats = {};
-        elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
-            let statNum = stat.dataset.attribute;
-            let value = stat.querySelector("input").value.split(" ")[0];
-            stats[statNum] = value;
-        });
-        parts[part] = stats;
-    })
-    let data = {
-        command: "editPerformance",
-        teamID: teamSelected,
-        parts: parts,
-        teamName: document.querySelector(".selected").dataset.teamname
+    let data;
+    if (teamsEngine === "teams") {
+        let parts = {};
+        document.querySelectorAll(".part-performance").forEach(function (elem) {
+            let part = elem.dataset.part;
+            let stats = {};
+            elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
+                let statNum = stat.dataset.attribute;
+                let value = stat.querySelector("input").value.split(" ")[0];
+                stats[statNum] = value;
+            });
+            parts[part] = stats;
+        })
+        data = {
+            command: "editPerformance",
+            teamID: teamSelected,
+            parts: parts,
+            teamName: document.querySelector(".selected").dataset.teamname
+        }
+    }
+    else if (teamsEngine === "engines") {
+        let engineData = gather_engines_data()
+        data = {
+            command: "editEngine",
+            engines: engineData,
+        }
     }
     socket.send(JSON.stringify(data))
 
 }
 
-function manageSaveButton(show, mode) {
+function manageSaveButton(show,mode) {
     let button = document.querySelector(".save-button")
-    button.removeEventListener("click", editModeHandler);
-    button.removeEventListener("click", calendarModeHandler);
-    button.removeEventListener("click", teamsModeHandler);
-    button.removeEventListener("click", performanceModeHandler);
+    button.removeEventListener("click",editModeHandler);
+    button.removeEventListener("click",calendarModeHandler);
+    button.removeEventListener("click",teamsModeHandler);
+    button.removeEventListener("click",performanceModeHandler);
     if (!show) {
         button.classList.add("d-none")
     }
@@ -317,42 +328,42 @@ function manageSaveButton(show, mode) {
     }
 
     if (mode === "stats") {
-        button.addEventListener("click", editModeHandler);
+        button.addEventListener("click",editModeHandler);
     }
     else if (mode === "calendar") {
-        button.addEventListener("click", calendarModeHandler);
+        button.addEventListener("click",calendarModeHandler);
     }
     else if (mode === "teams") {
-        button.addEventListener("click", teamsModeHandler);
+        button.addEventListener("click",teamsModeHandler);
     }
     else if (mode === "performance") {
-        button.addEventListener("click", performanceModeHandler);
+        button.addEventListener("click",performanceModeHandler);
     }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded',function () {
 
     const names_configs = {
-        "visarb": "VISA CASHAPP RB", "toyota": "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI", "brawn": "BRAWN GP", "porsche": "PORSCHE",
-        "alpine": "ALPINE", "renault": "RENAULT", "andretti": "ANDRETTI", "lotus": "LOTUS", "alfa": "ALFA ROMEO",
-        "audi": "AUDI", "sauber": "SAUBER", "stake": "STAKE SAUBER"
+        "visarb": "VISA CASHAPP RB","toyota": "TOYOTA","hugo": "HUGO BOSS","alphatauri": "ALPHA TAURI","brawn": "BRAWN GP","porsche": "PORSCHE",
+        "alpine": "ALPINE","renault": "RENAULT","andretti": "ANDRETTI","lotus": "LOTUS","alfa": "ALFA ROMEO",
+        "audi": "AUDI","sauber": "SAUBER","stake": "STAKE SAUBER"
     }
     const pretty_names = {
-        "visarb": "Visa Cashapp RB", "toyota": "Toyota", "hugo": "Hugo Boss", "alphatauri": "Alpha Tauri", "brawn": "Brawn GP", "porsche": "Porsche",
-        "alpine": "Alpine", "renault": "Renault", "andretti": "Andretti", "lotus": "Lotus", "alfa": "Alfa Romeo",
-        "audi": "Audi", "sauber": "Sauber", "stake": "Stake Sauber"
+        "visarb": "Visa Cashapp RB","toyota": "Toyota","hugo": "Hugo Boss","alphatauri": "Alpha Tauri","brawn": "Brawn GP","porsche": "Porsche",
+        "alpine": "Alpine","renault": "Renault","andretti": "Andretti","lotus": "Lotus","alfa": "Alfa Romeo",
+        "audi": "Audi","sauber": "Sauber","stake": "Stake Sauber"
     }
     const logos_configs = {
-        "visarb": "../assets/images/visarb.png", "toyota": "../assets/images/toyota.png", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png",
-        "brawn": "../assets/images/brawn.png", "porsche": "../assets/images/porsche.png",
-        "alpine": "../assets/images/alpine.png", "renault": "../assets/images/renault.png", "andretti": "../assets/images/andretti.png", "lotus": "../assets/images/lotus.png",
-        "alfa": "../assets/images/alfaromeo.png", "audi": "../assets/images/audi.png", "sauber": "../assets/images/sauber.png", "stake": "../assets/images/kick.png"
+        "visarb": "../assets/images/visarb.png","toyota": "../assets/images/toyota.png","hugo": "../assets/images/hugoboss.png","alphatauri": "../assets/images/alphatauri.png",
+        "brawn": "../assets/images/brawn.png","porsche": "../assets/images/porsche.png",
+        "alpine": "../assets/images/alpine.png","renault": "../assets/images/renault.png","andretti": "../assets/images/andretti.png","lotus": "../assets/images/lotus.png",
+        "alfa": "../assets/images/alfaromeo.png","audi": "../assets/images/audi.png","sauber": "../assets/images/sauber.png","stake": "../assets/images/kick.png"
     }
     const logos_classes_configs = {
-        "visarb": "hugologo", "toyota": "toyotalogo", "hugo": "hugologo", "alphatauri": "alphataurilogo",
-        "porsche": "porschelogo", "brawn": "brawnlogo",
-        "alpine": "alpinelogo", "renault": "ferrarilogo", "andretti": "andrettilogo", "lotus": "lotuslogo",
-        "alfa": "alfalogo", "audi": "audilogo", "sauber": "sauberlogo", "stake": "alfalogo"
+        "visarb": "hugologo","toyota": "toyotalogo","hugo": "hugologo","alphatauri": "alphataurilogo",
+        "porsche": "porschelogo","brawn": "brawnlogo",
+        "alpine": "alpinelogo","renault": "ferrarilogo","andretti": "andrettilogo","lotus": "lotuslogo",
+        "alfa": "alfalogo","audi": "audilogo","sauber": "sauberlogo","stake": "alfalogo"
     }
 
     const driverTransferPill = document.getElementById("transferpill");
@@ -375,7 +386,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const patchNotesBody = document.getElementById("patchNotesBody")
 
-    const scriptsArray = [predictDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv, teamsDiv]
+    const scriptsArray = [predictDiv,h2hDiv,viewDiv,driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv,teamsDiv]
 
     const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -385,11 +396,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+    const noNotifications = ["Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
-            update_notifications(message[1], "error");
+            update_notifications(message[1],"error");
             manage_status(0);
         },
         "JIC": (message) => {
@@ -501,20 +512,20 @@ document.addEventListener('DOMContentLoaded', function () {
     adjust_containter()
 
     document.querySelectorAll(".modal").forEach(function (elem) {
-        elem.addEventListener('show.bs.modal', function () {
+        elem.addEventListener('show.bs.modal',function () {
             setTimeout(function () {
                 var modalBackdrop = document.querySelector('.modal-backdrop');
                 var cetContainer = document.querySelector('.cet-container');
                 cetContainer.appendChild(modalBackdrop);
-            }, 0);
+            },0);
 
         });
     })
 
     let connectionTimeout = setTimeout(() => {
-        update_notifications("Could not connect with backend", "error")
+        update_notifications("Could not connect with backend","error")
         manage_status(0)
-    }, 8000);
+    },8000);
 
 
 
@@ -531,14 +542,14 @@ document.addEventListener('DOMContentLoaded', function () {
             handler(message);
         }
         if (!noNotifications.includes(message[0])) {
-            update_notifications(message[0], "ok");
+            update_notifications(message[0],"ok");
         }
     };
 
     /**
      * Opens the log file
      */
-    logButton.addEventListener("click", function () {
+    logButton.addEventListener("click",function () {
         window.location.href = '../log.txt';
     })
 
@@ -562,7 +573,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function resizeWindowToHeight(mode) {
         if (mode === "11teams") {
-            ipcRenderer.send('resize-window', 930);
+            ipcRenderer.send('resize-window',930);
             document.querySelectorAll(".main-resizable").forEach(function (elem) {
                 elem.style.height = "720.5px"
                 if (elem.id === "enginesPerformance") {
@@ -575,8 +586,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("free-drivers").style.height = "672px"
             document.getElementById("raceMenu").style.height = "686px"
         }
-        else if (mode === "10teams"){
-            ipcRenderer.send('resize-window', 875);
+        else if (mode === "10teams") {
+            ipcRenderer.send('resize-window',875);
             document.querySelectorAll(".main-resizable").forEach(function (elem) {
                 elem.style.height = "660px"
                 if (elem.id === "enginesPerformance") {
@@ -588,28 +599,28 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             document.getElementById("free-drivers").style.height = "612px"
             document.getElementById("raceMenu").style.height = "660px"
-        }        
+        }
     }
 
-    ipcRenderer.on('dev-mode', (event, message) => {
+    ipcRenderer.on('dev-mode',(event,message) => {
         let devConsole = document.querySelector('.dev-console');
-        document.addEventListener('keydown', (event) => {
+        document.addEventListener('keydown',(event) => {
             if (event.ctrlKey && event.key === 'd') {
                 event.preventDefault();
                 if (devConsole) {
                     devConsole.classList.toggle('d-none');
                     if (!devConsole.classList.contains('d-none')) {
-                      devConsole.focus(); // Enfocar el textarea cuando se hace visible
+                        devConsole.focus(); // Enfocar el textarea cuando se hace visible
                     }
-                  }
+                }
             }
         });
 
         if (devConsole) {
-            devConsole.addEventListener('keydown', (event) => {
+            devConsole.addEventListener('keydown',(event) => {
                 if (event.key === 'Enter') {
-                    event.preventDefault(); 
-                    devConsole.value = ''; 
+                    event.preventDefault();
+                    devConsole.value = '';
                     socket.send(JSON.stringify(devConsole.value))
                 }
             });
@@ -644,7 +655,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             game_version = 2023
             mid_grid = 10;
-            manage_custom_team([null, null])
+            manage_custom_team([null,null])
             document.querySelectorAll(".brake-cooling-replace").forEach(function (elem) {
                 elem.textContent = "Brake cooling"
             })
@@ -668,7 +679,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll(".ct-replace").forEach(function (elem) {
                 elem.textContent = nameColor[1].toUpperCase()
             })
-            replace_custom_team_color(nameColor[2], nameColor[3])
+            replace_custom_team_color(nameColor[2],nameColor[3])
             mid_grid = 11;
         }
         else {
@@ -683,12 +694,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function replace_custom_team_color(primary, secondary) {
+    function replace_custom_team_color(primary,secondary) {
         let root = document.documentElement;
-        root.style.setProperty('--custom-team-primary', primary);
-        root.style.setProperty('--custom-team-secondary', secondary);
-        root.style.setProperty('--custom-team-primary-transparent', primary + "30");
-        root.style.setProperty('--custom-team-secondary-transparent', secondary + "30");
+        root.style.setProperty('--custom-team-primary',primary);
+        root.style.setProperty('--custom-team-secondary',secondary);
+        root.style.setProperty('--custom-team-primary-transparent',primary + "30");
+        root.style.setProperty('--custom-team-secondary-transparent',secondary + "30");
         colors_dict["320"] = primary
         colors_dict["321"] = secondary
         document.getElementById("primarySelector").value = primary
@@ -698,12 +709,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    selectImageButton.addEventListener('click', () => {
+    selectImageButton.addEventListener('click',() => {
         fileInput.click();
     });
 
     // Función para manejar la selección de archivo
-    fileInput.addEventListener('change', (event) => {
+    fileInput.addEventListener('change',(event) => {
         let file = event.target.files[0];
         if (file) {
             customIconPath = `../assets/custom/${file.name}`;
@@ -728,7 +739,7 @@ document.addEventListener('DOMContentLoaded', function () {
         setTimeout(function () {
             document.querySelector(".cet-container").style.position = "relative"
             document.querySelector(".cet-container").style.overflowX = "hidden"
-        }, 0)
+        },0)
     }
 
     function ajustScrollWrapper() {
@@ -736,8 +747,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector('.scroll-wrapper').style.height = windowHeight + 'px';
     }
 
-    window.addEventListener('resize', ajustScrollWrapper);
-    window.addEventListener('load', ajustScrollWrapper);
+    window.addEventListener('resize',ajustScrollWrapper);
+    window.addEventListener('load',ajustScrollWrapper);
 
 
     /**
@@ -758,7 +769,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         setTimeout(() => {
                             updateInfo.classList.add("hide")
                             versionPanel.classList.add("show")
-                        }, 4000);
+                        },4000);
 
                     }
                     else {
@@ -787,7 +798,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             setTimeout(() => {
                                 updateInfo.classList.add("hide")
                                 versionPanel.classList.add("show")
-                            }, 4000);
+                            },4000);
                         }
                         else {
                             updateInfo.textContent = '\xa0' + "New update available"
@@ -798,7 +809,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             }
                             else {
                                 updateInfo.classList.add("bi-exclamation-lg")
-                                updateInfo.setAttribute('href', 'https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                                updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
                             }
 
                         }
@@ -843,7 +854,7 @@ document.addEventListener('DOMContentLoaded', function () {
         outsideDiv.style.paddingRight = "10px"
         outsideDiv.className = "outside-div"
         outsideDiv.appendChild(spinnerDiv)
-        statusDiv.insertBefore(outsideDiv, statusDiv.children[2]);
+        statusDiv.insertBefore(outsideDiv,statusDiv.children[2]);
     }
 
     /**
@@ -853,28 +864,28 @@ document.addEventListener('DOMContentLoaded', function () {
         let repoPath = './';
         let git = simpleGit(repoPath);
 
-        document.querySelector(".bi-cloud-download").addEventListener("click", function () {
+        document.querySelector(".bi-cloud-download").addEventListener("click",function () {
 
-            git.pull("origin", "release", (error, update) => {
+            git.pull("origin","release",(error,update) => {
                 addSpinner()
                 if (error) {
-                    update_notifications("Update automatically failed, please update manually", "error")
+                    update_notifications("Update automatically failed, please update manually","error")
                     updateInfo.classList.remove("bi-cloud-download")
                     updateInfo.classList.add("bi-exclamation-lg")
-                    updateInfo.setAttribute('href', 'https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
+                    updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
                     document.querySelector(".status").removeChild(document.querySelector(".outside-div"))
-                    updateInfo.removeEventListener("click", arguments.callee)
+                    updateInfo.removeEventListener("click",arguments.callee)
                 } else {
                     //console.log('Git pull exitoso:',update);
                     setTimeout(() => {
-                        exec('restart.vbs', (error, stdout, stderr) => {
+                        exec('restart.vbs',(error,stdout,stderr) => {
                             if (error) {
                                 //console.error(`Error: ${error}`);
                                 return;
                             }
                             //console.log(`Resultado: ${stdout}`);
                         });
-                    }, 500);
+                    },500);
                 }
             });
         })
@@ -922,7 +933,7 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     function listenersSaves() {
         document.querySelectorAll('#dropdownMenu a').forEach(item => {
-            item.addEventListener("click", function () {
+            item.addEventListener("click",function () {
                 const saveSelector = document.getElementById('saveSelector');
                 let saveSelected = item.innerHTML
                 saveSelector.innerHTML = saveSelected;
@@ -953,8 +964,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    document.querySelector(".gear-container").addEventListener("click", function () {
-        let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'), {
+    document.querySelector(".gear-container").addEventListener("click",function () {
+        let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'),{
             keyboard: false
         })
         configDetailModal.show()
@@ -963,7 +974,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function manage_config(info) {
         if (info[0] === "ERROR") { //No file detected -> show modal
             document.querySelector(".bi-gear").classList.add("hidden")
-            let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
+            let configModal = new bootstrap.Modal(document.getElementById('configModal'),{
                 keyboard: false
             })
             configModal.show()
@@ -971,7 +982,7 @@ document.addEventListener('DOMContentLoaded', function () {
         else { //File detected -> check if ask to show modal or not
             if (info[0]["state"] === "ask") {
                 document.querySelector(".bi-gear").classList.add("hidden")
-                let configModal = new bootstrap.Modal(document.getElementById('configModal'), {
+                let configModal = new bootstrap.Modal(document.getElementById('configModal'),{
                     keyboard: false
                 })
                 configModal.show()
@@ -981,8 +992,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 manage_config_content(info[0])
                 if (info[0]["state"] === "changed") {
                     setTimeout(function () {
-                        update_notifications("Config file loaded", "ok")
-                    }, 500)
+                        update_notifications("Config file loaded","ok")
+                    },500)
                 }
             }
 
@@ -994,28 +1005,28 @@ document.addEventListener('DOMContentLoaded', function () {
         alphaTauriReplace(teams["alphatauri"])
         alpineReplace(teams["alpine"])
         alfaReplace(teams["alfa"])
-        update_logo("alpine", logos_configs[teams["alpine"]], teams["alpine"])
-        update_logo("alfa", logos_configs[teams["alfa"]], teams["alfa"])
-        update_logo("alphatauri", logos_configs[teams["alphatauri"]], teams["alphatauri"])
+        update_logo("alpine",logos_configs[teams["alpine"]],teams["alpine"])
+        update_logo("alfa",logos_configs[teams["alfa"]],teams["alfa"])
+        update_logo("alphatauri",logos_configs[teams["alphatauri"]],teams["alphatauri"])
         if (info["icon"]) {
             replace_custom_team_logo(info["icon"])
             customIconPath = info["icon"]
         }
         if (info["primaryColor"]) {
-            replace_custom_team_color(info["primaryColor"], info["secondaryColor"])
+            replace_custom_team_color(info["primaryColor"],info["secondaryColor"])
         }
     }
 
     document.querySelectorAll(".color-picker").forEach(function (elem) {
         let reader = elem.parentNode.querySelector(".color-reader")
-        elem.addEventListener("input", function () {
+        elem.addEventListener("input",function () {
             reader.value = elem.value.toUpperCase()
         })
         reader.value = elem.value.toUpperCase();
     })
 
     document.querySelectorAll(".color-reader").forEach(function (elem) {
-        elem.addEventListener("input", function () {
+        elem.addEventListener("input",function () {
             let picker = elem.parentNode.querySelector(".color-picker")
             picker.value = elem.value.toLowerCase()
         })
@@ -1048,27 +1059,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 if (elem.classList.contains("secondary")) {
                     if (info !== "toyota") {
-                        elem.src = elem.src.slice(0, -4) + "2.png"
+                        elem.src = elem.src.slice(0,-4) + "2.png"
                     }
                 }
 
             })
             let alphaVarName = "--alphatauri-primary"
             let newVarName = "--" + info + "-primary"
-            change_css_variables(alphaVarName, newVarName)
+            change_css_variables(alphaVarName,newVarName)
             let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
             colors_dict["80"] = value
             alphaVarName = "--alphatauri-secondary"
             newVarName = "--" + info + "-secondary"
-            change_css_variables(alphaVarName, newVarName)
+            change_css_variables(alphaVarName,newVarName)
             value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
             colors_dict["81"] = value
             alphaVarName = "--alphatauri-primary-transparent"
             newVarName = "--" + info + "-primary-transparent"
-            change_css_variables(alphaVarName, newVarName)
+            change_css_variables(alphaVarName,newVarName)
             alphaVarName = "--alphatauri-secondary-transparent"
             newVarName = "--" + info + "-secondary-transparent"
-            change_css_variables(alphaVarName, newVarName)
+            change_css_variables(alphaVarName,newVarName)
         }
         else {
             document.querySelectorAll(".atlogo-replace").forEach(function (elem) {
@@ -1082,25 +1093,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     elem.classList.add("alphataurilogo")
                 }
                 if (elem.classList.contains("secondary")) {
-                    elem.src = elem.src.slice(0, -4) + "2.png"
+                    elem.src = elem.src.slice(0,-4) + "2.png"
                 }
             })
             let alphaVarName = "--alphatauri-primary"
             let newVarName = "--alphatauri-original"
-            change_css_variables(alphaVarName, newVarName)
+            change_css_variables(alphaVarName,newVarName)
             let value = getComputedStyle(document.documentElement).getPropertyValue("--alphatauri-original").trim();
             colors_dict["80"] = value
             alphaVarName = "--alphatauri-secondary"
             newVarName = "--alphatauri-secondary-original"
-            change_css_variables(alphaVarName, newVarName)
+            change_css_variables(alphaVarName,newVarName)
             value = getComputedStyle(document.documentElement).getPropertyValue("--alphatauri-secondary-original").trim();
             colors_dict["81"] = value
             alphaVarName = "--alphatauri-primary-transparent"
             newVarName = "--alphatauri-primary-transparent-original"
-            change_css_variables(alphaVarName, newVarName)
+            change_css_variables(alphaVarName,newVarName)
             alphaVarName = "--alphatauri-secondary-transparent"
             newVarName = "--alphatauri-secondary-transparent-original"
-            change_css_variables(alphaVarName, newVarName)
+            change_css_variables(alphaVarName,newVarName)
         }
         document.querySelectorAll(".team-menu-alphatauri-replace").forEach(function (elem) {
             let classes = elem.className.split(" ")
@@ -1130,25 +1141,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     elem.classList.add(logos_classes_configs[info])
                 }
                 if (elem.classList.contains("secondary")) {
-                    elem.src = elem.src.slice(0, -4) + "2.png"
+                    elem.src = elem.src.slice(0,-4) + "2.png"
                 }
             })
             let alpineVarName = "--alpine-primary"
             let newVarName = "--" + info + "-primary"
-            change_css_variables(alpineVarName, newVarName)
+            change_css_variables(alpineVarName,newVarName)
             let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
             colors_dict["50"] = value
             alpineVarName = "--alpine-secondary"
             newVarName = "--" + info + "-secondary"
-            change_css_variables(alpineVarName, newVarName)
+            change_css_variables(alpineVarName,newVarName)
             value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
             colors_dict["51"] = value
             alpineVarName = "--alpine-primary-transparent"
             newVarName = "--" + info + "-primary-transparent"
-            change_css_variables(alpineVarName, newVarName)
+            change_css_variables(alpineVarName,newVarName)
             alpineVarName = "--alpine-secondary-transparent"
             newVarName = "--" + info + "-secondary-transparent"
-            change_css_variables(alpineVarName, newVarName)
+            change_css_variables(alpineVarName,newVarName)
         }
         else {
             document.querySelectorAll(".alpinelogo-replace").forEach(function (elem) {
@@ -1160,25 +1171,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     elem.classList.add("alpinelogo")
                 }
                 if (elem.classList.contains("secondary")) {
-                    elem.src = elem.src.slice(0, -4) + "2.png"
+                    elem.src = elem.src.slice(0,-4) + "2.png"
                 }
             })
             let alpineVarName = "--alpine-primary"
             let newVarName = "--alpine-original"
-            change_css_variables(alpineVarName, newVarName)
+            change_css_variables(alpineVarName,newVarName)
             let value = getComputedStyle(document.documentElement).getPropertyValue("--alpine-original").trim();
             colors_dict["50"] = value
             alpineVarName = "--alpine-secondary"
             newVarName = "--alpine-secondary-original"
-            change_css_variables(alpineVarName, newVarName)
+            change_css_variables(alpineVarName,newVarName)
             value = getComputedStyle(document.documentElement).getPropertyValue("--alpine-secondary-original").trim();
             colors_dict["51"] = value
             alpineVarName = "--alpine-primary-transparent"
             newVarName = "--alpine-primary-transparent-original"
-            change_css_variables(alpineVarName, newVarName)
+            change_css_variables(alpineVarName,newVarName)
             alpineVarName = "--alpine-secondary-transparent"
             newVarName = "--alpine-secondary-transparent-original"
-            change_css_variables(alpineVarName, newVarName)
+            change_css_variables(alpineVarName,newVarName)
         }
         document.querySelectorAll(".team-menu-alpine-replace").forEach(function (elem) {
             let classes = elem.className.split(" ")
@@ -1210,20 +1221,20 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             let alfaVarName = "--alfa-primary"
             let newVarName = "--" + info + "-primary"
-            change_css_variables(alfaVarName, newVarName)
+            change_css_variables(alfaVarName,newVarName)
             let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
             colors_dict["90"] = value
             alfaVarName = "--alfa-secondary"
             newVarName = "--" + info + "-secondary"
-            change_css_variables(alfaVarName, newVarName)
+            change_css_variables(alfaVarName,newVarName)
             value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
             colors_dict["91"] = value
             alfaVarName = "--alfa-primary-transparent"
             newVarName = "--" + info + "-primary-transparent"
-            change_css_variables(alfaVarName, newVarName)
+            change_css_variables(alfaVarName,newVarName)
             alfaVarName = "--alfa-secondary-transparent"
             newVarName = "--" + info + "-secondary-transparent"
-            change_css_variables(alfaVarName, newVarName)
+            change_css_variables(alfaVarName,newVarName)
         }
         else {
             document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
@@ -1234,20 +1245,20 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             let alfaVarName = "--alfa-primary"
             let newVarName = "--alfa-original"
-            change_css_variables(alfaVarName, newVarName)
+            change_css_variables(alfaVarName,newVarName)
             let value = getComputedStyle(document.documentElement).getPropertyValue("--alfa-original").trim();
             colors_dict["90"] = value
             alfaVarName = "--alfa-secondary"
             newVarName = "--alfa-secondary-original"
-            change_css_variables(alfaVarName, newVarName)
+            change_css_variables(alfaVarName,newVarName)
             value = getComputedStyle(document.documentElement).getPropertyValue("--alfa-secondary-original").trim();
             colors_dict["91"] = value
             alfaVarName = "--alfa-primary-transparent"
             newVarName = "--alfa-primary-transparent-original"
-            change_css_variables(alfaVarName, newVarName)
+            change_css_variables(alfaVarName,newVarName)
             alfaVarName = "--alfa-secondary-transparent"
             newVarName = "--alfa-secondary-transparent-original"
-            change_css_variables(alfaVarName, newVarName)
+            change_css_variables(alfaVarName,newVarName)
         }
         document.querySelectorAll(".team-menu-alfa-replace").forEach(function (elem) {
             let classes = elem.className.split(" ")
@@ -1260,20 +1271,20 @@ document.addEventListener('DOMContentLoaded', function () {
         })
     }
 
-    function change_css_variables(oldVar, newVar) {
+    function change_css_variables(oldVar,newVar) {
         let root = document.documentElement;
         let newVal = getComputedStyle(root).getPropertyValue(newVar).trim();
-        root.style.setProperty(oldVar, newVal);
+        root.style.setProperty(oldVar,newVal);
     }
 
-    document.querySelector("#configButton").addEventListener("click", function () {
+    document.querySelector("#configButton").addEventListener("click",function () {
         //wait 0.1 seconds to show the modal
         setTimeout(function () {
-            let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'), {
+            let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'),{
                 keyboard: false
             })
             configDetailModal.show()
-        }, 320)
+        },320)
 
 
     })
@@ -1281,16 +1292,16 @@ document.addEventListener('DOMContentLoaded', function () {
     //select all team-change-button
     document.querySelectorAll(".team-change-button").forEach(function (elem) {
         elem.querySelectorAll("a").forEach(function (a) {
-            a.addEventListener("click", function () {
+            a.addEventListener("click",function () {
                 elem.querySelector("button").textContent = a.textContent
                 elem.querySelector("button").dataset.value = a.dataset.value
             })
         })
     })
 
-    document.querySelector("#configDetailsButton").addEventListener("click", function () {
+    document.querySelector("#configDetailsButton").addEventListener("click",function () {
         save = document.querySelector("#saveSelector").textContent
-        save = save.slice(0, -4)
+        save = save.slice(0,-4)
         alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
         alpine = document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value
         alfa = document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value
@@ -1309,18 +1320,18 @@ document.addEventListener('DOMContentLoaded', function () {
         if (custom_team) {
             data["primaryColor"] = document.getElementById("primarySelector").value
             data["secondaryColor"] = document.getElementById("secondarySelector").value
-            replace_custom_team_color(data["primaryColor"], data["secondaryColor"])
+            replace_custom_team_color(data["primaryColor"],data["secondaryColor"])
         }
         socket.send(JSON.stringify(data))
-        info = { teams: { alphatauri: alphatauri, alpine: alpine, alfa: alfa } }
+        info = { teams: { alphatauri: alphatauri,alpine: alpine,alfa: alfa } }
         manage_config_content(info)
         reloadTables()
         document.querySelector(".bi-gear").classList.remove("hidden")
     })
 
-    document.querySelector("#cancelConfigButton").addEventListener("click", function () {
+    document.querySelector("#cancelConfigButton").addEventListener("click",function () {
         save = document.querySelector("#saveSelector").textContent
-        save = save.slice(0, -4)
+        save = save.slice(0,-4)
         let state;
         let checked = document.querySelector("#ask").checked
         if (checked) {
@@ -1370,61 +1381,61 @@ document.addEventListener('DOMContentLoaded', function () {
     /**
      * Pills and their eventListeners
      */
-    predictPill.addEventListener("click", function () {
-        manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+    predictPill.addEventListener("click",function () {
+        manageScripts("show","hide","hide","hide","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
     })
 
-    h2hPill.addEventListener("click", function () {
-        manageScripts("hide", "show", "hide", "hide", "hide", "hide", "hide", "hide")
+    h2hPill.addEventListener("click",function () {
+        manageScripts("hide","show","hide","hide","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
     })
 
-    viewPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide")
+    viewPill.addEventListener("click",function () {
+        manageScripts("hide","hide","show","hide","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
     })
 
-    driverTransferPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "show", "hide", "hide", "hide", "hide")
+    driverTransferPill.addEventListener("click",function () {
+        manageScripts("hide","hide","hide","show","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
     })
 
-    editStatsPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "hide", "show", "hide", "hide", "hide")
+    editStatsPill.addEventListener("click",function () {
+        manageScripts("hide","hide","hide","hide","show","hide","hide","hide")
         scriptSelected = 1
         check_selected()
-        manageSaveButton(true, "stats")
+        manageSaveButton(true,"stats")
     })
 
-    constructorsPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
+    constructorsPill.addEventListener("click",function () {
+        manageScripts("hide","hide","hide","hide","hide","hide","hide","show")
         scriptSelected = 1
         check_selected()
-        manageSaveButton(true, "teams")
+        manageSaveButton(true,"teams")
     })
 
 
-    CalendarPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide", "hide")
+    CalendarPill.addEventListener("click",function () {
+        manageScripts("hide","hide","hide","hide","hide","show","hide","hide")
         scriptSelected = 1
         check_selected()
-        manageSaveButton(true, "calendar")
+        manageSaveButton(true,"calendar")
     })
 
-    carPill.addEventListener("click", function () {
-        manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show", "hide")
+    carPill.addEventListener("click",function () {
+        manageScripts("hide","hide","hide","hide","hide","hide","show","hide")
         scriptSelected = 1
         check_selected()
-        manageSaveButton(true, "performance")
+        manageSaveButton(true,"performance")
     })
 
 
@@ -1433,7 +1444,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * @param  {Array} divs array of state of the divs
      */
     function manageScripts(...divs) {
-        scriptsArray.forEach(function (div, index) {
+        scriptsArray.forEach(function (div,index) {
             if (divs[index] === "show") {
                 div.className = "script-view"
             }

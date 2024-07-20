@@ -38,6 +38,8 @@ unitValueToValue = {
     13: lambda x: x * 10,
     14: lambda x: (85 - x) * 1000 / 15,
     15: lambda x: (x - 40) * 1000 / 30,
+    18: lambda x: (x - 40) * 1000 / 30,
+    19: lambda x: (x - 40) * 1000 / 30
 }
 
 parts = {

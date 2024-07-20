@@ -11,6 +11,7 @@ let teamSelected;
 let engineSelected;
 let teamEngineSelected;
 let performanceGraph;
+let teamsEngine = "teams"
 
 function normalizeData(data) {
     let values = Object.values(data);
@@ -88,16 +89,35 @@ document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function 
  * Pills that manage engines and teams screens and lists
  */
 teamsPill.addEventListener("click", function () {
+    teamsEngine = "teams"
     document.querySelector("#enginesPerformance").classList.add("d-none")
     document.querySelector("#teamsPerformance").classList.remove("d-none")
     removeSelected()
 })
 
 enginesPill.addEventListener("click", function () {
+    teamsEngine = "engines"
     document.querySelector("#teamsPerformance").classList.add("d-none")
     document.querySelector("#enginesPerformance").classList.remove("d-none")
     removeSelected()
 })
+
+function gather_engines_data(){
+    let engines = document.querySelectorAll(".engine-performance")
+    let enginesData = {}
+    engines.forEach(function(engine){
+        let engineID = engine.dataset.engineid
+        let engineStats = {}
+        engine.querySelectorAll(".engine-performance-stat").forEach(function(stat){
+            let attribute = stat.dataset.attribute
+            let value = stat.querySelector(".custom-input-number").value.split(" ")[0]
+            engineStats[attribute] = value
+        })
+        enginesData[engineID] = engineStats
+    })
+    return enginesData
+
+}
 
 
 
@@ -204,6 +224,28 @@ document.querySelector(".performance-show").querySelectorAll('.bi-plus-lg').forE
     });
 });
 
+document.querySelector(".engines-show").querySelectorAll('.bi-plus-lg').forEach(button => {
+    let intervalId;
+    let bar = button.parentNode.parentNode.querySelector(".engine-performance-progress");  
+    button.addEventListener('mousedown', function () {
+        const input = this.previousElementSibling;
+        updateValue(input, 0.1);
+        bar.style.width = input.value.split(' ')[0] + "%";
+        intervalId = setInterval(() => {
+            updateValue(input, 0.1);
+            bar.style.width = input.value.split(' ')[0] + "%";
+        }, 100);
+    });
+
+    button.addEventListener('mouseup', function () {
+        clearInterval(intervalId);
+    });
+
+    button.addEventListener('mouseleave', function () {
+        clearInterval(intervalId);
+    });
+});
+
 document.querySelector(".performance-show").querySelectorAll('.bi-dash-lg').forEach(button => {
     let intervalId;
     button.addEventListener('mousedown', function () {
@@ -211,6 +253,28 @@ document.querySelector(".performance-show").querySelectorAll('.bi-dash-lg').forE
         updateValue(input, -0.01);
         intervalId = setInterval(() => {
             updateValue(input, -0.01);
+        }, 100);
+    });
+
+    button.addEventListener('mouseup', function () {
+        clearInterval(intervalId);
+    });
+
+    button.addEventListener('mouseleave', function () {
+        clearInterval(intervalId);
+    });
+});
+
+document.querySelector(".engines-show").querySelectorAll('.bi-dash-lg').forEach(button => {
+    let intervalId;
+    let bar = button.parentNode.parentNode.querySelector(".engine-performance-progress");   
+    button.addEventListener('mousedown', function () {
+        const input = this.nextElementSibling;
+        updateValue(input, -0.1);
+        bar.style.width = input.value.split(' ')[0] + "%";
+        intervalId = setInterval(() => {
+            updateValue(input, -0.1);
+            bar.style.width = input.value.split(' ')[0] + "%";
         }, 100);
     });
 
@@ -288,52 +352,6 @@ function resetBars() {
 //     socket.send(JSON.stringify(dataPerformance))
 // })
 
-
-/**
- * eventlisteners for the buttons to add or remove from a bar, depending on if its an engine bar or team
- */
-document.querySelector("#car_performance").querySelectorAll(".bi-dash-lg").forEach(function (elem) {
-    elem.addEventListener("click", function () {
-        let performanceArea = elem.parentNode.parentNode
-        let bar = performanceArea.querySelector(".custom-progress")
-
-        if (bar.dataset.type === "engine") {
-            if (bar.dataset.progress > 0) {
-                let value = parseFloat(bar.dataset.progress, 10) - 0.125
-                bar.dataset.progress = value
-            }
-        }
-        else {
-            if (bar.dataset.progress >= -9) {
-                let value = parseInt(bar.dataset.progress, 10) - 1
-                bar.dataset.progress = value
-            }
-        }
-
-        manage_bar(bar, bar.dataset.progress)
-    })
-})
-
-document.querySelector("#car_performance").querySelectorAll(".bi-plus-lg").forEach(function (elem) {
-    elem.addEventListener("click", function () {
-        let performanceArea = elem.parentNode.parentNode
-        let bar = performanceArea.querySelector(".custom-progress")
-        if (bar.dataset.type === "engine") {
-            let value = parseFloat(bar.dataset.progress, 10) + 0.125
-            if (value > 10) {
-                value = 10
-            }
-            bar.dataset.progress = value
-        }
-        else {
-            if (bar.dataset.progress <= 9) {
-                let value = parseInt(bar.dataset.progress, 10) + 1
-                bar.dataset.progress = value
-            }
-        }
-        manage_bar(bar, bar.dataset.progress)
-    })
-})
 
 
 /**
