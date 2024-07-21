@@ -35,8 +35,8 @@ let driver2;
 let originalTeamId
 
 let team_dict = { 1: "fe",2: "mc",3: "rb",4: "me",5: "al",6: "wi",7: "ha",8: "at",9: "af",10: "as",32: "ct" }
-let inverted_dict = { 'ferrari': 1,'mclaren': 2,'redbull': 3,'merc': 4,'alpine': 5,'williams': 6,'haas': 7,'alphatauri': 8,'alfaromeo': 9,'astonmartin': 10 }
-let name_dict = { 'ferrari': "Ferrari",'mclaren': "McLaren",'redbull': "Red Bull",'merc': "Mercedes",'alpine': "Alpine",'williams': "Williams",'haas': "Haas",'alphatauri': "Alpha Tauri",'alfaromeo': "Alfa Romeo",'astonmartin': "Aston Martin","F2": "F2","F3": "F3" }
+let inverted_dict = {'ferrari': 1,'mclaren': 2,'redbull': 3,'merc': 4,'alpine': 5,'williams': 6,'haas': 7,'alphatauri': 8,'alfaromeo': 9,'astonmartin': 10, 'custom': 32 }
+let name_dict = { 'ferrari': "Ferrari",'mclaren': "McLaren",'redbull': "Red Bull",'merc': "Mercedes",'alpine': "Alpine",'williams': "Williams",'haas': "Haas",'alphatauri': "Alpha Tauri",'alfaromeo': "Alfa Romeo",'astonmartin': "Aston Martin","F2": "F2","F3": "F3", "custom": "Custom Team" }
 
 /**
  * Removes all the drivers from teams and categories
@@ -443,7 +443,7 @@ function manage_swap() {
  */
 function signDriver(type) {
     let driverName = draggable.innerText
-
+    console.log(teamOrigin)
     if (type === "fireandhire") {
         let data = {
             command: "fire",
@@ -452,6 +452,7 @@ function signDriver(type) {
             team: name_dict[teamOrigin.dataset.team],
             teamID: originalTeamId
         }
+        console.log(data)
         if (!data["team"]){
             if (f2_teams.includes(originalTeamId)){
                 data["team"] = "F2"
@@ -504,6 +505,7 @@ function signDriver(type) {
 
     }
     else if (type === "autocontract") {
+        console.log(teamDestiniy)
         let dataAuto = {
             command: "autoContract",
             driverID: draggable.dataset.driverid,

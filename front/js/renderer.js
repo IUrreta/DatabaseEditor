@@ -686,6 +686,7 @@ document.addEventListener('DOMContentLoaded',function () {
             document.querySelectorAll(".ct-replace").forEach(function (elem) {
                 elem.textContent = nameColor[1].toUpperCase()
             })
+            name_dict["custom"] = nameColor[1]
             replace_custom_team_color(nameColor[2],nameColor[3])
             mid_grid = 11;
             relative_grid= 4.54;
