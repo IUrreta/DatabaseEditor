@@ -12,6 +12,7 @@ let engineSelected;
 let teamEngineSelected;
 let performanceGraph;
 let teamsEngine = "teams"
+let viewingGraph = true;
 
 function normalizeData(data) {
     let values = Object.values(data);
@@ -94,6 +95,12 @@ teamsPill.addEventListener("click", function () {
     document.querySelector("#teamsPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.remove("d-none")
     removeSelected()
+    if (viewingGraph) {
+        document.querySelector(".save-button").classList.add("d-none")
+    }
+    else {
+        document.querySelector(".save-button").classList.remove("d-none")
+    }
 })
 
 enginesPill.addEventListener("click", function () {
@@ -102,6 +109,7 @@ enginesPill.addEventListener("click", function () {
     document.querySelector("#enginesPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.add("d-none")
     removeSelected()
+    document.querySelector(".save-button").classList.remove("d-none")
 })
 
 function gather_engines_data(){
@@ -174,6 +182,8 @@ document.querySelectorAll(".team").forEach(function (elem) {
         socket.send(JSON.stringify(teamRequest))
         document.querySelector("#performanceGraph").classList.add("d-none")
         document.querySelector(".teams-show").classList.remove("d-none")
+        document.querySelector(".save-button").classList.remove("d-none")
+        viewingGraph = false;
     })
 })
 
@@ -303,6 +313,8 @@ document.querySelector(".performance-graph-button").addEventListener("click", fu
     document.querySelector(".performance-graph-button").classList.toggle("active")
     document.querySelector(".teams-show").classList.add("d-none")
     document.querySelector("#performanceGraph").classList.remove("d-none")
+    document.querySelector(".save-button").classList.add("d-none")
+    viewingGraph = true;
 })
 
 /**

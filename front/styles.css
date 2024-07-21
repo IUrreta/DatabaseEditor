@@ -295,6 +295,10 @@ body {
   font-size: 18px;
 }
 
+.important-text{
+  color: var(--new-primary-dark);
+}
+
 .save-button .save-label{
   transition: opacity 0.2s;
   cursor: pointer;

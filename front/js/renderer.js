@@ -1447,7 +1447,7 @@ document.addEventListener('DOMContentLoaded',function () {
         manageScripts("hide","hide","hide","hide","hide","hide","show","hide")
         scriptSelected = 1
         check_selected()
-        manageSaveButton(true,"performance")
+        manageSaveButton(!viewingGraph,"performance")
     })
 
 
