@@ -64,9 +64,9 @@ def edit_team(info):
     cursor.execute(f"INSERT INTO Finance_Transactions VALUES ({teamID}, {day_season[0]}, {info['costCapEdit']}, 9, -1, 1)")
     for stat in info["pitCrew"]:
         cursor.execute(f"UPDATE Staff_PitCrew_PerformanceStats SET Val = {info['pitCrew'][stat]} WHERE TeamID = {teamID} AND StatID = {stat}")
-    oldEngineID = cursor.execute(f"SELECT DesignID FROM Parts_Designs WHERE TeamID = {teamID} AND ValidFrom = {day_season[1]} AND PartType = 0").fetchone()
-    oldERSID = cursor.execute(f"SELECT DesignID FROM Parts_Designs WHERE TeamID = {teamID} AND ValidFrom = {day_season[1]} AND PartType = 1").fetchone()
-    oldGearboxID = cursor.execute(f"SELECT DesignID FROM Parts_Designs WHERE TeamID = {teamID} AND ValidFrom = {day_season[1]} AND PartType = 2").fetchone()
+    oldEngineID = cursor.execute(f"SELECT DesignID FROM Parts_Designs WHERE TeamID = {teamID}  AND PartType = 0").fetchone()
+    oldERSID = cursor.execute(f"SELECT DesignID FROM Parts_Designs WHERE TeamID = {teamID}  AND PartType = 1").fetchone()
+    oldGearboxID = cursor.execute(f"SELECT DesignID FROM Parts_Designs WHERE TeamID = {teamID}  AND PartType = 2").fetchone()
     newEngineID = info['engine']
     newErsID = ers_dict[newEngineID]
     newGearboxID = gearbox_dict[newEngineID]

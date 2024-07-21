@@ -14,18 +14,18 @@ const batFilePath = path.join(__dirname,'../back/startBack.bat');
 console.log(batFilePath)
 
 
-function start_back(){
-    exec(`"${batFilePath}"`, (error, stdout, stderr) => {
-        if (error) {
-            console.log("Error launching backend")
-            console.log(`Error: ${error}`)
-            return;
-        }
-        console.log(`Result: ${stdout}`);
-    });
-}
+// function start_back(){
+//     exec(`"${batFilePath}"`, (error, stdout, stderr) => {
+//         if (error) {
+//             console.log("Error launching backend")
+//             console.log(`Error: ${error}`)
+//             return;
+//         }
+//         console.log(`Result: ${stdout}`);
+//     });
+// }
 
-start_back()
+// start_back()
 
 const socket = new WebSocket('ws://localhost:8765/');
 /**
@@ -661,6 +661,7 @@ document.addEventListener('DOMContentLoaded',function () {
             }
             game_version = 2023
             mid_grid = 10;
+            relative_grid = 5;
             manage_custom_team([null,null])
             document.querySelectorAll(".brake-cooling-replace").forEach(function (elem) {
                 elem.textContent = "Brake cooling"
@@ -687,6 +688,7 @@ document.addEventListener('DOMContentLoaded',function () {
             })
             replace_custom_team_color(nameColor[2],nameColor[3])
             mid_grid = 11;
+            relative_grid= 4.54;
         }
         else {
             resizeWindowToHeight("10teams")
@@ -697,6 +699,7 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("customTeamComparison").classList.add("d-none")
             document.getElementById("customizeTeam").classList.add("d-none")
             mid_grid = 10;
+            relative_grid= 5;
         }
     }
 

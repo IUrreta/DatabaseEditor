@@ -86,8 +86,8 @@ function manage_h2h_bars(data) {
     document.querySelectorAll(".one-statH2H").forEach(function (elem, index) {
         if (elem.id === "bestrh2h" || elem.id === "bestqh2h") {
             if (!wins && elem.id === "bestrh2h") {
-                d1_width = 100 - (data[index][0] - 1) * 5
-                d2_width = 100 - (data[index][1] - 1) * 5
+                d1_width = 100 - (data[index][0] - 1) * relative_grid
+                d2_width = 100 - (data[index][1] - 1) * relative_grid
                 if (data[index][0] <= 3) {
                     elem.querySelector(".driver1-number").textContent = pos_dict[data[index][0]]
                 }
@@ -109,8 +109,8 @@ function manage_h2h_bars(data) {
                 elem.querySelector(".driver2-number").textContent = data[index][1]
             }
             if (!poles && elem.id === "bestqh2h") {
-                d1_width = 100 - (data[index][0] - 1) * 5
-                d2_width = 100 - (data[index][1] - 1) * 5
+                d1_width = 100 - (data[index][0] - 1) * relative_grid
+                d2_width = 100 - (data[index][1] - 1) * relative_grid
                 if (data[index][0] <= 3) {
                     elem.querySelector(".driver1-number").textContent = pos_dict[data[index][0]]
                 }
@@ -171,14 +171,14 @@ function manage_h2h_bars(data) {
                     elem.querySelector(".driver1-number").textContent = data[index][0]
                     elem.querySelector(".driver2-number").textContent = data[index][1]
                     if (quali === 2) {
-                        d1_width = 100 - (data[14][0] - 1) * 5
-                        d2_width = 100 - (data[14][1] - 1) * 5
+                        d1_width = 100 - (data[14][0] - 1) * relative_grid
+                        d2_width = 100 - (data[14][1] - 1) * relative_grid
                         elem.querySelector(".driver1-number").textContent = data[14][0]
                         elem.querySelector(".driver2-number").textContent = data[14][1]
                     }
                     else if (quali === 3) {
-                        d1_width = 100 - (data[15][0] - 1) * 5
-                        d2_width = 100 - (data[15][1] - 1) * 5
+                        d1_width = 100 - (data[15][0] - 1) * relative_grid
+                        d2_width = 100 - (data[15][1] - 1) * relative_grid
                         elem.querySelector(".driver1-number").textContent = data[15][0]
                         elem.querySelector(".driver2-number").textContent = data[15][1]
                     }
@@ -195,14 +195,14 @@ function manage_h2h_bars(data) {
                     elem.querySelector(".driver2-number").textContent = data[index][1]
                     
                     if (race === 2) {
-                        d1_width = 100 - (data[12][0] - 1) * 5
-                        d2_width = 100 - (data[12][1] - 1) * 5
+                        d1_width = 100 - (data[12][0] - 1) * relative_grid
+                        d2_width = 100 - (data[12][1] - 1) * relative_grid
                         elem.querySelector(".driver1-number").textContent = data[12][0]
                         elem.querySelector(".driver2-number").textContent = data[12][1]
                     }
                     else if (race === 3) {
-                        d1_width = 100 - (data[13][0] - 1) * 5
-                        d2_width = 100 - (data[13][1] - 1) * 5
+                        d1_width = 100 - (data[13][0] - 1) * relative_grid
+                        d2_width = 100 - (data[13][1] - 1) * relative_grid
                         elem.querySelector(".driver1-number").textContent = data[13][0]
                         elem.querySelector(".driver2-number").textContent = data[13][1]
                     }

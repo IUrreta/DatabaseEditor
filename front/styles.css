@@ -282,7 +282,7 @@ body {
 .save-button {
   position: fixed;
   bottom: 60px;
-  right: -155px;
+  right: -137px;
   z-index: 1000;
   padding: 13px 15px;
   background-color: var(--text-general);
@@ -295,9 +295,42 @@ body {
   font-size: 18px;
 }
 
+.save-button .save-label{
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.save-button i{
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.save-button .save-label{
+  opacity: 0;
+}
+
+.save.button i{
+  opacity: 1;
+}
+
+.save-button:hover i{
+  opacity: 0;
+}
+
+.save-button:hover .save-label{
+  opacity: 1;
+}
+
 .save-button:hover {
   right: -7px; 
   background-color: var(--new-primary);
+}
+
+.save-button i{
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .twenty-three, .twenty-four{
@@ -4232,7 +4265,6 @@ DRIVERS TABLE
 
 
 #raceMenu{
-  max-height: 660px;
   overflow-y: scroll;
   height: 660px;
 }
