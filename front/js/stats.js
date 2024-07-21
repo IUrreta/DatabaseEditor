@@ -6,6 +6,7 @@ let statPanelShown = 0;
 let typeOverall = "driver";
 let typeEdit;
 let mentality_dict = {0:"enthusiastic", 1:"positive", 2:"neutral", 3:"negative", 4:"demoralized"}
+let oldNum;
 
 /**
  * Removes all the staff from their list
@@ -635,9 +636,10 @@ function load_stats(div) {
     let retirementAge = document.querySelector(".actual-retirement")
     let numberButton = document.querySelector("#numberButton")
     let numberWC = document.querySelector("#driverNumber1")
+    oldNum = div.dataset.number
     actualAge.innerText = "Age " + div.dataset.age
     retirementAge.innerText = "Ret " + div.dataset.retirement
-    numberButton.innerText = div.dataset.number
+    numberButton.querySelector(".front-gradient").innerText = div.dataset.number
     if (div.dataset.numWC === "0"){
         numberWC.checked = false
     }

@@ -24,3 +24,7 @@ class EditStatsCommand(Command):
         info.insert(0, f"Succesfully edited {self.message['driver']}'s stats")
         info_json = json.dumps(info)
         await self.send_message_to_client(info_json)
+        nums = Command.dbutils.fetch_driverNumebrs()
+        nums.insert(0, "Numbers fetched")
+        data_json_numbers = json.dumps(nums)
+        await self.send_message_to_client(data_json_numbers)

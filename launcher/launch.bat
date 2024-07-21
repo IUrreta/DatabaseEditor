@@ -11,10 +11,7 @@ echo Version: %version%
 cd ..
 
 cd back
-pip install websockets
-pip install numpy
-pip install pandas
-pip install scikit-learn
+pip install -r requirements.txt
 start "" /B python back.py
 cd ../
 

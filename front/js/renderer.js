@@ -204,14 +204,16 @@ function editModeHandler() {
     document.querySelector(".clicked").childNodes[1].innerHTML = new_ovr;
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     document.querySelector(".clicked").dataset.retirement = retirement;
-    let driverNum = document.getElementById("numberButton").textContent;
+    let driverNum = document.querySelector("#numberButton .front-gradient").textContent;
     let wants1,superLicense;
+    document.querySelector(".clicked").dataset.number = driverNum;
     if (document.querySelector("#driverNumber1").checked) {
         wants1 = 1;
     }
     else {
         wants1 = 0;
     }
+    document.querySelector(".clicked").dataset.numWC = wants1;
     if (document.getElementById("superLicense").checked) {
         superLicense = 1;
     }

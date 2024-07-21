@@ -155,7 +155,7 @@ function loadNumbers(nums) {
         a.style.cursor = "pointer"
         numsMenu.appendChild(a);
         a.addEventListener("click",function () {
-            document.getElementById("numberButton").textContent = a.textContent
+            document.getElementById("numberButton").querySelector(".front-gradient").textContent = a.textContent
         })
     })
 
