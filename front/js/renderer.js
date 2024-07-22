@@ -8,6 +8,7 @@ let conn = 0;
 let game_version = 2023;
 let custom_team = false;
 let customIconPath = null;
+let firstShow = false;
 
 
 const batFilePath = path.join(__dirname,'../back/startBack.bat');
@@ -322,19 +323,31 @@ function performanceModeHandler() {
 
 }
 
+function first_show_animation() {
+    let button = document.querySelector(".save-button")
+    if (!firstShow) {
+        firstShow = true;
+        button.classList.add("first-show")
+        setTimeout(function() {
+            button.classList.remove('first-show');
+          }, 3000);
+    }
+}
+
 function manageSaveButton(show,mode) {
     let button = document.querySelector(".save-button")
     button.removeEventListener("click",editModeHandler);
     button.removeEventListener("click",calendarModeHandler);
     button.removeEventListener("click",teamsModeHandler);
     button.removeEventListener("click",performanceModeHandler);
+
     if (!show) {
         button.classList.add("d-none")
     }
     else {
         button.classList.remove("d-none")
+        first_show_animation()
     }
-
     if (mode === "stats") {
         button.addEventListener("click",editModeHandler);
     }
@@ -1002,11 +1015,6 @@ document.addEventListener('DOMContentLoaded',function () {
             else {
                 document.querySelector(".bi-gear").classList.remove("hidden")
                 manage_config_content(info[0])
-                if (info[0]["state"] === "changed") {
-                    setTimeout(function () {
-                        update_notifications("Config file loaded","ok")
-                    },500)
-                }
             }
 
         }

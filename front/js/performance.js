@@ -100,6 +100,7 @@ teamsPill.addEventListener("click", function () {
     }
     else {
         document.querySelector(".save-button").classList.remove("d-none")
+        first_show_animation()
     }
 })
 
@@ -110,6 +111,7 @@ enginesPill.addEventListener("click", function () {
     document.querySelector("#carAttributeSelector").classList.add("d-none")
     removeSelected()
     document.querySelector(".save-button").classList.remove("d-none")
+    first_show_animation()
 })
 
 function gather_engines_data(){
@@ -183,6 +185,7 @@ document.querySelectorAll(".team").forEach(function (elem) {
         document.querySelector("#performanceGraph").classList.add("d-none")
         document.querySelector(".teams-show").classList.remove("d-none")
         document.querySelector(".save-button").classList.remove("d-none")
+        first_show_animation()
         viewingGraph = false;
     })
 })

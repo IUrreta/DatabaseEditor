@@ -11,7 +11,22 @@ echo Version: %version%
 cd ..
 
 cd back
-pip install -r requirements.txt
+if not exist "DBEditor" (
+    echo No virtual environment found, creating one...
+    python -m venv DBEditor
+    echo Virtual environment created.
+) else (
+    echo Virtual enviorment found.
+)
+
+call DBEditor\Scripts\activate
+
+if exist "requirements.txt" (
+    echo Installing requirements...
+    pip install -r requirements.txt
+) else (
+    echo requirements.txt not found.
+)
 start "" /B python back.py
 cd ../
 

@@ -295,6 +295,37 @@ body {
   font-size: 18px;
 }
 
+@keyframes slideAndColorChange {
+  0% {
+    right: -137px;
+    background-color: var(--text-general);
+  }
+  10% {
+    right: -7px;
+    background-color: var(--new-primary);
+  }
+  45% {
+    right: -7px;
+    background-color: var(--new-primary);
+  }
+  55% {
+    right: -7px;
+    background-color: var(--new-secondary);
+  }
+  90% {
+    right: -7px;
+    background-color: var(--new-secondary);
+  }
+  100% {
+    right: -137px;
+    background-color: var(--text-general);
+  }
+}
+
+.save-button.first-show{
+  animation: slideAndColorChange 3s forwards;
+}
+
 .important-text{
   color: var(--new-primary-dark);
 }
@@ -317,11 +348,11 @@ body {
   opacity: 1;
 }
 
-.save-button:hover i{
+.save-button:hover i, .save-button.first-show i{
   opacity: 0;
 }
 
-.save-button:hover .save-label{
+.save-button:hover .save-label, .save-button.first-show .save-label{
   opacity: 1;
 }
 
@@ -4904,14 +4935,14 @@ DRIVERS TABLE
 }
 
 .info-titles{
-  color: #756f9b;
+  color: var(--dark-text);
   font-size: 22px;
   cursor: pointer;
   transition: color 0.3s;
 }
 
 .info-titles:hover{
-  color: #a49ecc;
+  color: var(--new-primary);
 }
 
 
