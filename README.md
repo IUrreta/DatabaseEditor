@@ -45,7 +45,7 @@ When I developed those scripts, more specifically the driver transfers script fo
 
 10. Keep track of past seasons with a wikipedia-style table for drivers and teams championships
     
-![image](https://github.com/user-attachments/assets/83afdebf-7817-4d5a-8f78-4a1ec61070c2)
+![image](https://github.com/user-attachments/assets/fc787462-61f5-4e85-9ef4-c9af7845cb30)
 
 11. Compare drivers and teamas and their stats from their past seasons using the Head To Head graphic
     
