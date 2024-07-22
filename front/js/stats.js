@@ -7,6 +7,8 @@ let typeOverall = "driver";
 let typeEdit;
 let mentality_dict = {0:"enthusiastic", 1:"positive", 2:"neutral", 3:"negative", 4:"demoralized"}
 let oldNum;
+let teamOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+
 
 /**
  * Removes all the staff from their list
@@ -95,6 +97,9 @@ function place_drivers_editStats(driversArray) {
             recalculateOverall()
         });
     });
+
+    manage_order(0)
+
 }
 
 /**
@@ -586,10 +591,19 @@ function manage_order(state) {
         let ovrB = parseInt(b.children[1].innerText);
         let teamA = parseInt(a.dataset.teamid);
         let teamB = parseInt(b.dataset.teamid);
+    
         if (state == 0) {
             if (teamA === 0) return 1;
             if (teamB === 0) return -1;
-            return teamA - teamB;
+    
+            let indexA = teamOrder.indexOf(teamA);
+            let indexB = teamOrder.indexOf(teamB);
+    
+            if (indexA !== indexB) {
+                return indexA - indexB;
+            }
+    
+            return ovrB - ovrA;
         } else if (state == 1) {
             return ovrB - ovrA;
         } else {
