@@ -192,10 +192,11 @@ def run_script(option=""):
         team_2_id = cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driver_2_id[0]}").fetchone()
         year =  cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
 
-        if(position_1[0] != 3 and position_2[0] != 3):
+        if(position_1[0] < 3 and position_2[0] < 3):
             #no reserve drivers
             engineer_1_id = cursor.execute(f"SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = {driver_1_id[0]}").fetchone()
             engineer_2_id = cursor.execute(f"SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = {driver_2_id[0]}").fetchone()
+            print(engineer_1_id, engineer_2_id)
             cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = {engineer_1_id[0]} AND DriverID = {driver_1_id[0]}")
             cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = {engineer_2_id[0]} AND DriverID = {driver_2_id[0]}")
 
@@ -218,11 +219,11 @@ def run_script(option=""):
             cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = {position_1[0]} WHERE StaffID = {driver_2_id[0]}")
 
         
-        elif position_1[0] == 3 and position_2[0] == 3:
+        elif position_1[0] >= 3 and position_2[0] >= 3:
             # both reserves
             cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_2_id[0]} WHERE ContractType = 0 AND StaffID = {driver_1_id[0]}")
             cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_1_id[0]} WHERE ContractType = 0 AND StaffID = {driver_2_id[0]}")
-        elif position_1[0] == 3:
+        elif position_1[0] >= 3:
             # driver 1 reserve
             engineer_2_id = cursor.execute(f"SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = {driver_2_id[0]}").fetchone()
             cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = {engineer_2_id[0]} AND DriverID = {driver_2_id[0]}")
@@ -247,7 +248,7 @@ def run_script(option=""):
             cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_2_id[0]}, PosInTeam = {position_2[0]} WHERE ContractType = 0 AND StaffID = {driver_1_id[0]}")
             cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = {position_2[0]} WHERE StaffID = {driver_1_id[0]}")
 
-        elif(position_2[0] == 3):
+        elif(position_2[0] >= 3):
             #driver 2 reserve
             engineer_1_id = cursor.execute(f"SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = {driver_1_id[0]}").fetchone()
             cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = {engineer_1_id[0]} AND DriverID = {driver_1_id[0]}")
