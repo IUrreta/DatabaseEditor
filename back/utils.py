@@ -253,11 +253,22 @@ class DatabaseUtils:
             result = self.format_names_simple(tupla)
             formatted_tuples.append(result)
         return formatted_tuples
+    
+    def check_drives_for_32(self, tupla):
+        drives = self.cursor.execute(f"SELECT TeamID, PosInTeam FROM Staff_Contracts WHERE StaffID = {tupla[2]} AND ContractType = 0 AND TeamID = 32").fetchone()
+        if drives is not None:
+            print(tupla)
+            new_tupla = (tupla[0], tupla[1], tupla[2], 32, drives[1], tupla[5], tupla[6], tupla[7])
+            return new_tupla
+        else:
+            return tupla
 
     def fetch_info(self, game_year):
-        drivers = self.cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType, gam.Retired, COUNT(*) FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID LEFT JOIN Staff_GameData gam ON dri.StaffID = gam.StaffID GROUP BY bas.StaffID ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID;').fetchall()
+        drivers = self.cursor.execute('SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, MIN(con.ContractType) AS MinContractType, gam.Retired, COUNT(*) FROM Staff_BasicData bas JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID LEFT JOIN Staff_GameData gam ON dri.StaffID = gam.StaffID GROUP BY gam.StaffID ORDER BY con.TeamID;').fetchall()
         formatted_tuples = []
         for tupla in drivers:
+            if tupla[7] > 1:
+                tupla = self.check_drives_for_32(tupla)
             id = tupla[2]
             if tupla[0] != "Placeholder":
                 result = self.format_names_get_stats(tupla, "driver")

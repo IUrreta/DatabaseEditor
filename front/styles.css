@@ -654,6 +654,14 @@ input[type="checkbox"]:checked {
   align-items: center;
 }
 
+.team-change-button{
+  width: 33%;
+  text-align: end;
+  align-items: end;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .info-modal-section{
   display: flex;
   flex-direction: row;

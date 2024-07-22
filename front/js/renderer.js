@@ -653,7 +653,7 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("year23").classList.remove("activated")
             document.getElementById("year24").classList.add("activated")
             document.getElementById("drs24").classList.remove("d-none")
-            document.getElementById("teamChanges").classList.add("d-none")
+            // document.getElementById("teamChanges").classList.add("d-none")
             document.getElementById("drs24").dataset.attribute = "3"
             game_version = 2024
             manage_custom_team(year)
