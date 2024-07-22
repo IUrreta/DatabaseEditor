@@ -319,6 +319,7 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
     if (deleting) {
         document.querySelectorAll(".delete-div").forEach(function (elem) {
             elem.parentNode.removeChild(elem)
+            update_numbers()
         })
         this.className = "custom-dropdown custom-button bold-font"
         document.querySelectorAll(".race-calendar").forEach(function (elem) {
