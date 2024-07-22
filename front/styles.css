@@ -3131,6 +3131,7 @@ DRIVERS TABLE
 .driver-space{
   min-width:  200px;
   max-width:  200px;
+  min-height: 40px;
 }
 
 .affiliates-and-arrows{
