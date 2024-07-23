@@ -460,9 +460,6 @@ function signDriver(type) {
             else if (f3_teams.includes(originalTeamId)){
                 data["team"] = "F3"
             }
-            else{
-                data["team"] = "his team"
-            }
         }
         socket.send(JSON.stringify(data))
 
@@ -788,6 +785,7 @@ interact('.free-driver').draggable({
                     draggable.dataset.teamid = 0
                     updateColor(draggable)
                     freeDrivers.appendChild(target);
+                    console.log(teamOrigin.dataset.team)
                     let data = {
                         command: "fire",
                         driverID: draggable.dataset.driverid,
@@ -795,15 +793,13 @@ interact('.free-driver').draggable({
                         team: name_dict[teamOrigin.dataset.team],
                         teamID: originalTeamId
                     }
+                    console.log(data)
                     if (!data["team"]){
                         if (f2_teams.includes(originalTeamId)){
                             data["team"] = "F2"
                         }
                         else if (f3_teams.includes(originalTeamId)){
                             data["team"] = "F3"
-                        }
-                        else{
-                            data["team"] = "his team"
                         }
                     }
                     socket.send(JSON.stringify(data))
