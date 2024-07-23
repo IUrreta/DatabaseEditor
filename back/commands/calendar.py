@@ -9,7 +9,8 @@ class CalendarCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        run_editCalendar(self.message["calendarCodes"])
+        argument = f"{self.message['calendarCodes']} {Command.year_iterarion}"
+        run_editCalendar(argument)
         process_repack("../result", Command.path)
         info = []
         info.insert(0, "Succesfully edited the calendar")

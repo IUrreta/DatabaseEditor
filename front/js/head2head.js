@@ -11,7 +11,7 @@ let sprints = false;
 let race = 0;
 let quali = 0;
 let menuLength = 4;
-let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00" }
+let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000"}
 let driverGraph;
 let pointsGraph;
 let qualiGraph;
@@ -36,7 +36,8 @@ let combined_dict = {
     7: "Haas",
     8: "Alpha Tauri",
     9: "Alfa Romeo",
-    10: "Aston Martin"
+    10: "Aston Martin",
+    32: "Custom Team"
 }
 
 Chart.register(ChartDataLabels);
@@ -85,8 +86,8 @@ function manage_h2h_bars(data) {
     document.querySelectorAll(".one-statH2H").forEach(function (elem, index) {
         if (elem.id === "bestrh2h" || elem.id === "bestqh2h") {
             if (!wins && elem.id === "bestrh2h") {
-                d1_width = 100 - (data[index][0] - 1) * 5
-                d2_width = 100 - (data[index][1] - 1) * 5
+                d1_width = 100 - (data[index][0] - 1) * relative_grid
+                d2_width = 100 - (data[index][1] - 1) * relative_grid
                 if (data[index][0] <= 3) {
                     elem.querySelector(".driver1-number").textContent = pos_dict[data[index][0]]
                 }
@@ -108,8 +109,8 @@ function manage_h2h_bars(data) {
                 elem.querySelector(".driver2-number").textContent = data[index][1]
             }
             if (!poles && elem.id === "bestqh2h") {
-                d1_width = 100 - (data[index][0] - 1) * 5
-                d2_width = 100 - (data[index][1] - 1) * 5
+                d1_width = 100 - (data[index][0] - 1) * relative_grid
+                d2_width = 100 - (data[index][1] - 1) * relative_grid
                 if (data[index][0] <= 3) {
                     elem.querySelector(".driver1-number").textContent = pos_dict[data[index][0]]
                 }
@@ -170,14 +171,14 @@ function manage_h2h_bars(data) {
                     elem.querySelector(".driver1-number").textContent = data[index][0]
                     elem.querySelector(".driver2-number").textContent = data[index][1]
                     if (quali === 2) {
-                        d1_width = 100 - (data[14][0] - 1) * 5
-                        d2_width = 100 - (data[14][1] - 1) * 5
+                        d1_width = 100 - (data[14][0] - 1) * relative_grid
+                        d2_width = 100 - (data[14][1] - 1) * relative_grid
                         elem.querySelector(".driver1-number").textContent = data[14][0]
                         elem.querySelector(".driver2-number").textContent = data[14][1]
                     }
                     else if (quali === 3) {
-                        d1_width = 100 - (data[15][0] - 1) * 5
-                        d2_width = 100 - (data[15][1] - 1) * 5
+                        d1_width = 100 - (data[15][0] - 1) * relative_grid
+                        d2_width = 100 - (data[15][1] - 1) * relative_grid
                         elem.querySelector(".driver1-number").textContent = data[15][0]
                         elem.querySelector(".driver2-number").textContent = data[15][1]
                     }
@@ -194,14 +195,14 @@ function manage_h2h_bars(data) {
                     elem.querySelector(".driver2-number").textContent = data[index][1]
                     
                     if (race === 2) {
-                        d1_width = 100 - (data[12][0] - 1) * 5
-                        d2_width = 100 - (data[12][1] - 1) * 5
+                        d1_width = 100 - (data[12][0] - 1) * relative_grid
+                        d2_width = 100 - (data[12][1] - 1) * relative_grid
                         elem.querySelector(".driver1-number").textContent = data[12][0]
                         elem.querySelector(".driver2-number").textContent = data[12][1]
                     }
                     else if (race === 3) {
-                        d1_width = 100 - (data[13][0] - 1) * 5
-                        d2_width = 100 - (data[13][1] - 1) * 5
+                        d1_width = 100 - (data[13][0] - 1) * relative_grid
+                        d2_width = 100 - (data[13][1] - 1) * relative_grid
                         elem.querySelector(".driver1-number").textContent = data[13][0]
                         elem.querySelector(".driver2-number").textContent = data[13][1]
                     }
@@ -252,14 +253,14 @@ function fill_bars(elem, d1_width, d2_width) {
     document.querySelector(".driver1-name").className = "driver1-name"
     document.querySelector(".driver2-name").className = "driver2-name"
     elem.querySelector(".driver1-bar").classList.add(team_dict[h2hTeamList[0]] + "bar-primary")
-    document.querySelector(".driver1-name").classList.add(team_dict[h2hTeamList[0]] + "border-primary")
+    document.querySelector(".driver1-name").classList.add(team_dict[h2hTeamList[0]] + "-back-transparent")
     if (h2hTeamList[0] === h2hTeamList[1]) {
         elem.querySelector(".driver2-bar").classList.add(team_dict[h2hTeamList[1]] + "bar-secondary")
-        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "border-secondary")
+        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-transparent-secondary")
     }
     else {
         elem.querySelector(".driver2-bar").classList.add(team_dict[h2hTeamList[1]] + "bar-primary")
-        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "border-primary")
+        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-transparent")
     }
     elem.querySelector(".driver1-bar").style.width = d1_width + "%"
     elem.querySelector(".driver2-bar").style.width = d2_width + "%"
@@ -557,13 +558,18 @@ function load_drivers_h2h(drivers) {
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
         spanLastName.dataset.teamid = driver[2];
+        newDiv.dataset.teamid = driver[2];
+        newDiv.classList.add(team_dict[driver[2]] + "-transparent")
         spanName.textContent = name[0] + " "
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
         let h2hBut = document.createElement("div")
         h2hBut.dataset.driverid = driver[1]
         h2hBut.dataset.teamid = driver[2]
-        h2hBut.innerText = "H2H"
+        let h2hLabel = document.createElement("div")
+        h2hLabel.innerText = "H2H"
+        h2hLabel.className = "no-pointer pos-relative"
+        h2hBut.appendChild(h2hLabel)
         h2hBut.className = "H2Hradio"
         h2hBut.dataset.state = "unchecked"
         h2hBut.addEventListener("click", function () {
@@ -593,7 +599,7 @@ function load_drivers_h2h(drivers) {
         let graphIcon = document.createElement("i")
         graphBut.dataset.driverid = driver[1]
         graphBut.dataset.teamid = driver[2]
-        graphIcon.className = "bi bi-graph-up"
+        graphIcon.className = "bi bi-graph-up no-pointer pos-relative "
         graphBut.appendChild(graphIcon)
         graphBut.className = "GraphButton"
         graphBut.dataset.state = "unchecked"
@@ -957,9 +963,17 @@ function load_labels_initialize_graphs(data) {
     }
     createPointsChart(labels)
     if (mode === "driver") {
-        createRaceChart(labels)
-        createQualiChart(labels)
+        let max = 20
+        if (game_version === 2024 && custom_team){
+            max = 22
+        }
+        else{
+            max = 20
+        }
+        createRaceChart(labels, max)
+        createQualiChart(labels, max)
         load_graphs_data(data)
+
     }
     else if (mode === "team") {
         load_teams_points_graph(data)
@@ -1203,11 +1217,18 @@ function findLastNonNaNIndex(arr) {
     return -1; // Devuelve -1 si todos los valores son NaN
 }
 
+function updateMaxYAxis(newMax) {
+    driverGraph.options.scales.y.max = newMax;
+    qualiGraph.options.scales.y.max = newMax;
+    driverGraph.update();
+    qualiGraph.update();
+}
+
 /**
  * Creates the head to head race chart
  * @param {Array} labelsArray array with all the labels for the races
  */
-function createRaceChart(labelsArray) {
+function createRaceChart(labelsArray, max) {
     const dataD = {
         labels: labelsArray,
     };
@@ -1225,7 +1246,7 @@ function createRaceChart(labelsArray) {
                 scales: {
                     x: {
                         grid: {
-                            color: '#191630'
+                            color: '#292929'
                         },
                         ticks: {
                             color: "#dedde6",
@@ -1237,9 +1258,9 @@ function createRaceChart(labelsArray) {
                     y: {
                         reverse: true,
                         min: 1,
-                        max: 20,
+                        max: max,
                         grid: {
-                            color: '#191630'
+                            color: '#292929'
                         },
                         ticks: {
                             color: "#dedde6",
@@ -1324,7 +1345,7 @@ function createRaceChart(labelsArray) {
  * Creates the head to head qualifying chart
  * @param {Array} labelsArray array with all the labels for the races
  */
-function createQualiChart(labelsArray) {
+function createQualiChart(labelsArray, max) {
     const dataD = {
         labels: labelsArray,
     };
@@ -1342,7 +1363,7 @@ function createQualiChart(labelsArray) {
                 scales: {
                     x: {
                         grid: {
-                            color: '#191630'
+                            color: '#292929'
                         },
                         ticks: {
                             color: "#dedde6",
@@ -1354,9 +1375,9 @@ function createQualiChart(labelsArray) {
                     y: {
                         reverse: true,
                         min: 1,
-                        max: 20,
+                        max: max,
                         grid: {
-                            color: '#191630'
+                            color: '#292929'
                         },
                         ticks: {
                             color: "#dedde6",
@@ -1465,7 +1486,7 @@ function createPointsChart(labelsArray) {
                 scales: {
                     x: {
                         grid: {
-                            color: '#191630'
+                            color: '#292929'
                         },
                         ticks: {
                             color: "#dedde6",
@@ -1476,7 +1497,7 @@ function createPointsChart(labelsArray) {
                     },
                     y: {
                         grid: {
-                            color: '#191630'
+                            color: '#292929'
                         },
                         ticks: {
                             color: "#dedde6",

@@ -9,7 +9,7 @@ class AutoContractCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        argument = f"hire {self.message['driverID']} {self.message['teamID']} {self.message['position']}"
+        argument = f"hire {self.message['driverID']} {self.message['teamID']} {self.message['position']} {Command.year_iterarion}"
         run_trasnsfer(argument)
         process_repack("../result", Command.path)
         info = []

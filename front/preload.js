@@ -3,8 +3,8 @@ const path = require('path')
 
 window.addEventListener('DOMContentLoaded', () => {
   const options = {
-    backgroundColor: TitlebarColor.fromHex('#3f3c57'),
-    icon: path.join(__dirname, "../assets/images/logoVector.png"),
+    backgroundColor: TitlebarColor.fromHex('#161616'),
+    icon: path.join(__dirname, "../assets/images/logoAlter.png"),
     iconSize: 30,
     titleHorizontalAlignment: 'left'
   };

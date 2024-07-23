@@ -9,7 +9,7 @@ class FireCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        argument = f"fire {self.message['driverID']}"
+        argument = f"fire {self.message['driverID']} {self.message['teamID']}"
         run_trasnsfer(argument)
         process_repack("../result", Command.path)
         info = []
