@@ -33,13 +33,13 @@ function createWindow() {
 
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   const args = process.argv.slice(2);
   const isDevMode = args.includes('--dev');
 
   if (isDevMode) {
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
     mainWindow.webContents.once('did-finish-load', () => {
       mainWindow.webContents.send('dev-mode', 'Dev mode enabled');
     });
