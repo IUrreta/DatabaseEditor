@@ -33,7 +33,7 @@ When I developed those scripts, more specifically the driver transfers script fo
 
 7. View every car performance  across the season and compare each car attribute
 
-![image](https://github.com/user-attachments/assets/bd0bcfb8-e321-495d-bad1-410352dd1bee)
+![image](https://github.com/user-attachments/assets/5676bae3-ec3f-4426-bebc-683f306b9537)
 
 8. Edit the performance and durability of any of the 4 engines suppliers
    
