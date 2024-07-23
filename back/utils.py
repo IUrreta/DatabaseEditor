@@ -12,7 +12,6 @@ class DatabaseUtils:
         red = int(hex_value[2:4], 16)
         green = int(hex_value[4:6], 16)
         blue = int(hex_value[6:8], 16)
-        print(red, green, blue)
         
         # Función para aclarar un color oscuro
         def lighten_color(value):
@@ -35,7 +34,6 @@ class DatabaseUtils:
             pattern = r"\[STRING_LITERAL:Value=\|(.*?)\|\]"
             match = re.search(pattern, name[0])
             if match:
-                print(match.group(1))
                 name = match.group(1)
                 primary_color = self.argb_to_hex(self.cursor.execute("SELECT Colour FROM Teams_Colours WHERE TeamID = 32 AND ColourID = 0").fetchone()[0])
                 secondary_color = self.argb_to_hex(self.cursor.execute("SELECT Colour FROM Teams_Colours WHERE TeamID = 32 AND ColourID = 1").fetchone()[0])
@@ -257,7 +255,6 @@ class DatabaseUtils:
     def check_drives_for_32(self, tupla):
         drives = self.cursor.execute(f"SELECT TeamID, PosInTeam FROM Staff_Contracts WHERE StaffID = {tupla[2]} AND ContractType = 0 AND TeamID = 32").fetchone()
         if drives is not None:
-            print(tupla)
             new_tupla = (tupla[0], tupla[1], tupla[2], 32, drives[1], tupla[5], tupla[6], tupla[7])
             return new_tupla
         else:
