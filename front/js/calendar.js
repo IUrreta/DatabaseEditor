@@ -3,14 +3,14 @@ let codes_dict = {
     "mia0": "../assets/images/usa.png","imo0": "../assets/images/italy.png","mon0": "../assets/images/monaco.png","spa0": "../assets/images/spain.png","can0": "../assets/images/canada.png",
     "aut0": "../assets/images/austria.png","gbr0": "../assets/images/gbr.png","hun0": "../assets/images/hungry.png","bel0": "../assets/images/balgium.png","ned0": "../assets/images/ned.png",
     "ita0": "../assets/images/italy.png","jap0": "../assets/images/japan.png","sgp0": "../assets/images/singapore.png","qat0": "../assets/images/qatar.png","usa0": "../assets/images/usa.png","mex0": "../assets/images/mexico.png",
-    "bra0": "../assets/images/brazil.png","veg0": "../assets/images/usa.png","uae0": "../assets/images/uae.png"
+    "bra0": "../assets/images/brazil.png","veg0": "../assets/images/usa.png","uae0": "../assets/images/uae.png", "chi0": "../assets/images/china.png"
 }
 let countries_dict = {
     "bah0": "Bahrain","sau0": "Saudi Arabia","aus0": "Australia","aze0": "Azerbaijan",
     "mia0": "Miami","imo0": "Imola","mon0": "Monaco","spa0": "Spain","can0": "Canada",
     "aut0": "Austria","gbr0": "United Kingdom","hun0": "Hungary","bel0": "Belgium","ned0": "Netherlands",
     "ita0": "Italy","sgp0": "Singapore","jap0": "Japan","qat0": "Qatar","usa0": "USA","mex0": "Mexico",
-    "bra0": "Brazil","veg0": "Vegas","uae0": "Abu Dhbai"
+    "bra0": "Brazil","veg0": "Vegas","uae0": "Abu Dhbai", "chi0": "China"
 };
 
 let weather_dict = {
@@ -44,11 +44,13 @@ function reubicate(div0,div1,beforeAfter) {
  * Adds a race in the calendar div
  * @param {string} code Code from the race
  */
-function addRace(code, rainQ, rainR, type, trackID, state) {
+function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
     let imageUrl = codes_dict[code];
 
     let div = document.createElement('div');
     let leftDiv = document.createElement('div');
+    let numberDiv = document.createElement('div');
+    numberDiv.className = "race-calendar-number bold-font"
     leftDiv.className = "left-race"
     let rightDiv = document.createElement('div');
     rightDiv.className = "right-race"
@@ -56,6 +58,7 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
     div.dataset.trackid = trackID
     div.dataset.rainQ = rainQ
     div.dataset.rainR = rainR
+    div.dataset.rainP = rainP
     div.dataset.type = type
     div.dataset.state = state
     if(state === 2){
@@ -82,23 +85,31 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
 
     upperDiv.appendChild(textDiv);
     upperDiv.appendChild(img);
-
+    let ATAInput;
     let lowerDiv = document.createElement('div');
     lowerDiv.classList.add('lower-race');
-
-    lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint</label></div><div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>";
+    lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint</label></div>";
+    if (game_version === 2023){
+        lowerDiv.innerHTML += "<div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>";
+        ATAInput = lowerDiv.querySelector(".ata-input")
+    }
     let SprintInput = lowerDiv.querySelector(".sprint-input")
-    let ATAInput = lowerDiv.querySelector(".ata-input")
+    
     SprintInput.addEventListener("click",function (event) {
-        if (ATAInput.checked) ATAInput.checked = false
+        if (game_version === 2023){
+            if (ATAInput.checked) ATAInput.checked = false
+        }
         if (SprintInput.checked) div.dataset.type = 1
         else div.dataset.type = 0
     })
-    ATAInput.addEventListener("click",function (event) {
-        if (SprintInput.checked) SprintInput.checked = false
-        if (ATAInput.checked) div.dataset.type = 2
-        else div.dataset.type = 0
-    })
+    if (game_version === 2023){
+        ATAInput.addEventListener("click",function (event) {
+            if (SprintInput.checked) SprintInput.checked = false
+            if (ATAInput.checked) div.dataset.type = 2
+            else div.dataset.type = 0
+        })
+    }
+
     leftDiv.appendChild(upperDiv);
     leftDiv.appendChild(lowerDiv);
     if(type === 1){
@@ -107,12 +118,13 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
     else if(type === 2){
         lowerDiv.children[1].firstChild.click()
     }
+    div.appendChild(numberDiv)
     div.appendChild(leftDiv)
     let qWeather = document.createElement('div');
     qWeather.className = "full-quali-weather"
     let qName = document.createElement('div');
     qName.className = "session-name bold-font"
-    qName.innerText ="Q"
+    qName.innerText ="Sat"
     let wSelector = document.createElement('div');
     wSelector.className = "weather-selector"
     let leftArrow = document.createElement('i');
@@ -129,8 +141,12 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
     qWeather.appendChild(qName)
     qWeather.appendChild(wSelector)
     let rWeather = qWeather.cloneNode(true)
-    rWeather.firstChild.innerText = "R"
+    rWeather.firstChild.innerText = "Sun"
     rWeather.children[1].children[1].dataset.value = Number(rainR)
+    let pWeather = qWeather.cloneNode(true)
+    pWeather.firstChild.innerText = "Fri"
+    pWeather.children[1].children[1].dataset.value = Number(rainP)
+    rightDiv.appendChild(pWeather)
     rightDiv.appendChild(qWeather)
     rightDiv.appendChild(rWeather)
     div.appendChild(rightDiv)
@@ -142,11 +158,14 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
                 newVal = 5
             }
             elem.parentNode.querySelector(".weather-vis").dataset.value = newVal
-            if (elem.parentNode.parentNode.firstChild.innerText === "Q"){
+            if (elem.parentNode.parentNode.firstChild.innerText === "Sat"){
                 elem.parentNode.parentNode.parentNode.parentNode.dataset.rainQ = newVal
             }
-            else if (elem.parentNode.parentNode.firstChild.innerText === "R"){
+            else if (elem.parentNode.parentNode.firstChild.innerText === "Sun"){
                 elem.parentNode.parentNode.parentNode.parentNode.dataset.rainR = newVal
+            }
+            else if (elem.parentNode.parentNode.firstChild.innerText === "Fri"){
+                elem.parentNode.parentNode.parentNode.parentNode.dataset.rainP = newVal
             }
             
             updateVisualizers()
@@ -162,11 +181,14 @@ function addRace(code, rainQ, rainR, type, trackID, state) {
                 newVal = 0
             }
             elem.parentNode.querySelector(".weather-vis").dataset.value = newVal
-            if (elem.parentNode.parentNode.firstChild.innerText === "Q"){
+            if (elem.parentNode.parentNode.firstChild.innerText === "Sat"){
                 elem.parentNode.parentNode.parentNode.parentNode.dataset.rainQ = newVal
             }
-            else if (elem.parentNode.parentNode.firstChild.innerText === "R"){
+            else if (elem.parentNode.parentNode.firstChild.innerText === "Sun"){
                 elem.parentNode.parentNode.parentNode.parentNode.dataset.rainR = newVal
+            }
+            else if (elem.parentNode.parentNode.firstChild.innerText === "Fri"){
+                elem.parentNode.parentNode.parentNode.parentNode.dataset.rainP = newVal
             }
             updateVisualizers()
             
@@ -192,17 +214,17 @@ function load_calendar(races){
     document.querySelector('.main-calendar-section').innerHTML = ""
     races.forEach(function(elem){
         let code = races_map[elem[0]]
-        addRace(code, transformWeather(elem[1]), transformWeather(elem[2]), elem[3], elem[0], elem[4])
+        addRace(code, transformWeather(elem[1]), transformWeather(elem[2]), transformWeather(elem[3]), elem[4], elem[0], elem[5])
     })
     updateVisualizers()
-    updateNumbers()
+    update_numbers()
     load_addRaces()
 
 }
 
-function updateNumbers(){
-    document.querySelectorAll(".left-race").forEach(function(elem, index){
-        elem.firstChild.firstChild.textContent = index + 1 + " " + races_names[elem.parentNode.dataset.trackid]
+function update_numbers(){
+    document.querySelectorAll(".race-calendar-number").forEach(function(elem, index){
+        elem.textContent = index + 1
     })
 }
 
@@ -284,7 +306,7 @@ function listenerRaces() {
             if (document.querySelector(".main-calendar-section").childElementCount < 23) {
                 addRace(item.dataset.code, 0, 0, 0, item.dataset.trackid, 0)
                 updateVisualizers()
-                updateNumbers()
+                update_numbers()
             }
         })
     })
@@ -297,6 +319,7 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
     if (deleting) {
         document.querySelectorAll(".delete-div").forEach(function (elem) {
             elem.parentNode.removeChild(elem)
+            update_numbers()
         })
         this.className = "custom-dropdown custom-button bold-font"
         document.querySelectorAll(".race-calendar").forEach(function (elem) {
@@ -313,17 +336,25 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
             if(elem.firstChild.className !== "complete-div"){
                 elem.classList = "race-calendar deleting";
                 let div = document.createElement('div');
+                let trashicon = document.createElement('i');
+                let trashandtext = document.createElement('div');
+                let text = document.createElement('span');
+                text.classList = "bold-font"
+                text.innerText = "Delete";
+                trashandtext.classList.add('trash-and-text')
+                trashicon.className = "bi bi-trash-fill";
                 div.classList.add('delete-div');
-                let divText = document.createElement('div');
-                divText.innerHTML = "Delete";
-                divText.className = "bold-font"
-                divText.style.fontSize = "18px"
-                div.appendChild(divText);
+                trashandtext.appendChild(trashicon);
+                trashandtext.appendChild(text);
+                div.appendChild(trashandtext);
                 elem.insertBefore(div,elem.firstChild);
-                divText.addEventListener("click",function () {
-                    let race = divText.parentNode.parentNode;
-                    divText.parentNode.parentNode.parentNode.removeChild(race);
+                trashandtext.addEventListener("click",function () {
+                    let race = trashandtext.parentNode.parentNode;
+                    trashandtext.parentNode.parentNode.parentNode.removeChild(race);
                     deleted = true;
+                    if (race.dataset.trackid === "6"){
+                        update_notifications("Why'd you do that?", "monaco")
+                    }
                 })
             }
 
@@ -336,24 +367,6 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
     deleting = !deleting
 })
 
-/**
- * Event listener for the confirm button
- */
-document.getElementById("confirmCalendar").addEventListener("click",function () {
-    let dataCodesString = '';
-
-    document.querySelectorAll(".race-calendar").forEach((race) => {
-        dataCodesString += race.dataset.trackid.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString()  + race.dataset.state.toString() + ' ';
-    });
-
-
-    dataCodesString = dataCodesString.trim();
-    let dataCalendar = {
-        command: "calendar",
-        calendarCodes: dataCodesString
-    }
-    socket.send(JSON.stringify(dataCalendar))
-})
 
 /**
  * Manages the interaction with the race divs
@@ -395,7 +408,7 @@ interact('.race-calendar').draggable({
                         } else {
                             reubicate(target,element,"before")
                         }
-                        updateNumbers()
+                        update_numbers()
 
                     }
                 }

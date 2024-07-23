@@ -72,7 +72,7 @@ def do_unpack(from_file, to_folder):
         mm = mmap.mmap(f.fileno(), length=0, access=mmap.ACCESS_READ)
 
     # None None just before the packed DB Section.
-    none_none_sig = b'\x00\x05\x00\x00\x00\x4E\x6F\x6E\x65\x00\x05\x00\x00\x00\x4E\x6F\x6E\x65\x00\x00\x00\x00\x00'
+    none_none_sig = b'\x4E\x6F\x6E\x65\x00\x05\x00\x00\x00\x4E\x6F\x6E\x65\x00\x00\x00\x00\x00'
 
     db_section_off = mm.find(none_none_sig) + len(none_none_sig)
     #db_section_off += 4  # Unk 4 Bytes

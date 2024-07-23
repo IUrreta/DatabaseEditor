@@ -1,42 +1,53 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, shell } = require('electron')
+const { app, BrowserWindow, shell, ipcMain } = require('electron')
 const path = require('path')
 const { setupTitlebar, attachTitlebarToWindow } = require("custom-electron-titlebar/main");
 
 
+let mainWindow;
 
-function createWindow () {
+function createWindow() {
   setupTitlebar();
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1700,
-    height: 1020,
-    icon: path.join(__dirname, "assets/images/logo2.png"),
+    height: 875,
+    icon: path.join(__dirname, "assets/images/logoAlter.png"),
     titleBarStyle: 'hidden',
     webPreferences: {
 
       preload: path.join(__dirname, 'front/preload.js'),
       nodeIntegration: true,
       contextIsolation: false,
-      
+
     }
-  })
+  });
   // and load the index.html of the app.
   mainWindow.loadFile('front/index.html')
   mainWindow.webContents.on('will-navigate', (event, url) => {
     event.preventDefault();
     shell.openExternal(url);
   });
-  
+
   attachTitlebarToWindow(mainWindow);
   mainWindow.setMenu(null)
-  
+
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
-  
+  const args = process.argv.slice(2);
+  const isDevMode = args.includes('--dev');
+
+  if (isDevMode) {
+    mainWindow.webContents.openDevTools();
+    mainWindow.webContents.once('did-finish-load', () => {
+      mainWindow.webContents.send('dev-mode', 'Dev mode enabled');
+    });
+  }
 
 }
+
+
 
 
 // This method will be called when Electron has finished
@@ -61,3 +72,8 @@ app.on('window-all-closed', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+ipcMain.on('resize-window', (event, height) => {
+  let [width] = mainWindow.getSize();
+  mainWindow.setSize(width, height);
+});

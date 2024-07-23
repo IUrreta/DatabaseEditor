@@ -6,5 +6,9 @@ log.txt
 **/build/back
 **/__pycache__
 *.sav
-configs
-
+configs/*.json
+DBEditor
+assets/custom/*.png
+assets/custom/*.jpg
+assets/custom/*.jpeg
+!base24_config.json

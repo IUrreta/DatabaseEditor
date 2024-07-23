@@ -3,23 +3,22 @@ import websockets
 import json
 import os
 from datetime import datetime
-import shutil
+import logging
+import traceback
 from commands.commandFactory import CommandFactory
 
 class ApplicationState:
-    def __init__(self, logFile, factory):
+    def __init__(self, logger, factory):
         self.client = None
-        self.log = logFile
+        self.logger = logger
         self.factory = factory
 
     async def new_handler(self, message, client):
         command = self.factory.create_command(message, client)
-        # print(command) #for debugging
-        # print(message) #for debugging
+        print(message) # for debugging
         await command.execute()
         logtxt = str(message)
-        self.log.write(f"[{str(datetime.now())}] INFO: Command executed: {logtxt}\n")
-        self.log.flush()
+        self.logger.info(f"Command executed: {logtxt}")
 
 
 async def send_message_to_client(message, client):
@@ -27,38 +26,35 @@ async def send_message_to_client(message, client):
         await client.send(message)
 
 async def handle_client(websocket, path, app_state):
-    # print("Client connected")
     client = websocket
     try:
         async for message in websocket:
             data = json.loads(message)
             await app_state.new_handler(data, client)
     except Exception as e:
-        print(e)
-        app_state.log.write(f"[{str(datetime.now())}] EXCEPTION: {str(e)}\n")
-        app_state.log.flush()
-        info = []
-        info.insert(0, "ERROR")
-        info.insert(1, "Something went wrong. Please restart the tool")
+        traceback.print_exc()
+        app_state.logger.exception("Exception occurred while handling client message")
+        info = ["ERROR", "Something went wrong. Please restart the tool"]
         info_json = json.dumps(info)
         await send_message_to_client(info_json, client)
     finally:
         client = None
-        # conn.commit()
-        # conn.close()
-
 
 async def main():
-    log = open("../log.txt", 'a', encoding='utf-8')
+    logger = logging.getLogger('dbeditor')
+    logger.setLevel(logging.INFO)
+    handler = logging.FileHandler('../log.txt', encoding='utf-8')
+    formatter = logging.Formatter('%(asctime)s %(levelname)s: %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+
     factory = CommandFactory()
-    app_state = ApplicationState(log, factory)
+    app_state = ApplicationState(logger, factory)
     await start_server(app_state)
 
 async def start_server(app_state):
     server = await websockets.serve(lambda ws, path: handle_client(ws, path, app_state), "localhost", 8765)
     await server.wait_closed()
 
-
 if __name__ == "__main__":
     asyncio.run(main())
-

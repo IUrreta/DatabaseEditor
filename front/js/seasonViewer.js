@@ -1,8 +1,8 @@
-const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0" };
-const invertedRacesMap = { "bah0": 2, "aus0": 1, "sau0": 11, "imo0": 24, "mia0": 22, "spa0": 5, "mon0": 6, "aze0": 4, "can0": 7, "gbr0": 10, "aut0": 9, "fra0": 8, "hun0": 12, "bel0": 13, "ita0": 14, "sgp0": 15, "jap0": 17, "usa0": 19, "mex0": 18, "bra0": 20, "uae0": 21, "ned0": 23, "veg0": 25, "qat0": 26 };
-const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT" };
+const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0", 3:"chi0" };
+const invertedRacesMap = { "bah0": 2, "aus0": 1, "sau0": 11, "imo0": 24, "mia0": 22, "spa0": 5, "mon0": 6, "aze0": 4, "can0": 7, "gbr0": 10, "aut0": 9, "fra0": 8, "hun0": 12, "bel0": 13, "ita0": 14, "sgp0": 15, "jap0": 17, "usa0": 19, "mex0": 18, "bra0": 20, "uae0": 21, "ned0": 23, "veg0": 25, "qat0": 26, "chi0":3 };
+const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT", 3:"CHI" };
 const teams_full_name_dict = { 'FERRARI': 1, 'MCLAREN': 2, 'RED BULL': 3, 'MERCEDES': 4, 'ALPINE': 5, 'WILLIAMS': 6, 'HAAS': 7, 'ALPHA TAURI': 8, 'ALFA ROMEO': 9, 'ASTON MARTIN': 10 }
-const logos_disc = {
+let logos_disc = {
     1: '../assets/images/ferrari.png',
     2: '../assets/images/mclaren.png',
     3: '../assets/images/redbull.png',
@@ -12,7 +12,8 @@ const logos_disc = {
     7: '../assets/images/haas.png',
     8: '../assets/images/alphatauri.png',
     9: '../assets/images/alfaromeo.png',
-    10: '../assets/images/astonmartin.png'
+    10: '../assets/images/astonmartin.png',
+    32: '../assets/images/placeholder.png'
 };
 const points_race = {
     1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1,
@@ -36,7 +37,7 @@ let driverOrTeams = "drivers"
 let isYearSelected = false
 
 let driversTableLogosDict = {
-    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-williams-table", "sauber":"logo-williams-table", "visarb": "logo-up-down", "hugo": "logo-stake-table",
+    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-merc-table", "sauber":"logo-williams-table", "visarb": "logo-up-down", "hugo": "logo-stake-table",
     "brawn": "logo-brawn-table", "toyota": "logo-williams-table", "alphatauri": "logo-extra-small", "porsche": "logo-porsche-table",
      "renault": "logo-ferrari-table", "andretti": "logo-ferrari-table", "lotus": "logo-up-down", "alpine": "logo-up-down"
 }
@@ -228,19 +229,16 @@ function new_color_drivers_table() {
         let cells = row.querySelectorAll(".drivers-table-normal")
         cells.forEach(function (cell) {
             if (cell.dataset.pos === "1") {
-                cell.style.backgroundColor = "#FDE06B"
-                cell.style.color = "#18152e"
+                cell.classList.add("first")
             }
             else if (cell.dataset.pos === "2") {
-                cell.style.backgroundColor = "#AEB2B8"
-                cell.style.color = "#18152e"
+                cell.classList.add("second")
             }
             else if (cell.dataset.pos === "3") {
-                cell.style.backgroundColor = "#d7985a"
-                cell.style.color = "#18152e"
+                cell.classList.add("third")
             }
             if (cell.dataset.fastlap === "1") {
-                cell.style.color = "#c90fd7"
+                cell.classList.add("fastest")
             }
             if (cell.dataset.qualy === "1") {
                 cell.style.fontFamily = "Formula1Bold"
@@ -318,7 +316,7 @@ function manage_teams_table_logos() {
                 logo.className = "teams-table-logo-inner audi-team-table-logo"
             }
             else if (alfaReplace === "stake") {
-                logo.className = "teams-table-logo-inner haas-team-table-logo"
+                logo.className = "teams-table-logo-inner stake-team-table-logo"
             }
             else if (alfaReplace === "sauber") {
                 logo.className = "teams-table-logo-inner ferrari-team-table-logo"
@@ -327,6 +325,9 @@ function manage_teams_table_logos() {
         }
         else if (logo.dataset.teamid === "10") {
             logo.className = "teams-table-logo-inner aston-team-table-logo"
+        }
+        else if (logo.dataset.teamid === "32") {
+            logo.className = "teams-table-logo-inner custom-team-table-logo"
         }
     })
 }
@@ -399,23 +400,16 @@ function new_color_teams_table() {
                     cell.style.fontFamily = "Formula1Bold"
                 }
                 if (cell.dataset.fastlap1 === "1" || cell.dataset.fastlap2 === "1") {
-                    cell.style.color = "#c90fd7"
+                    cell.classList.add("fastest")
                 }
             });
             values.sort((a, b) => b[0] - a[0]);
             let topThree = values.slice(0, 3);
-            colCells[topThree[0][1]].style.backgroundColor = "#FDE06B";
-            if (colCells[topThree[0][1]].dataset.fastlap1 !== "1" && colCells[topThree[0][1]].dataset.fastlap2 !== "1") {
-                colCells[topThree[0][1]].style.color = "#18152e";
-            }
-            colCells[topThree[1][1]].style.backgroundColor = "#AEB2B8";
-            if (colCells[topThree[1][1]].dataset.fastlap1 !== "1" && colCells[topThree[1][1]].dataset.fastlap2 !== "1") {
-                colCells[topThree[1][1]].style.color = "#18152e";
-            }
-            colCells[topThree[2][1]].style.backgroundColor = "#d7985a";
-            if (colCells[topThree[2][1]].dataset.fastlap1 !== "1" && colCells[topThree[2][1]].dataset.fastlap2 !== "1") {
-                colCells[topThree[2][1]].style.color = "#18152e";
-            }
+            colCells[topThree[0][1]].classList.add("first");
+            colCells[topThree[1][1]].classList.add("second");
+            colCells[topThree[2][1]].classList.add("third");
+
+
         }
     })
 }
@@ -498,6 +492,9 @@ function new_load_teams_table(data) {
     let datazone = document.querySelector(".teams-table-data")
     datazone.innerHTML = ""
     let teamData = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [] }
+    if (game_version === 2024 && custom_team) {
+        teamData[32] = []
+    }
     data.forEach(function (driver) {
         let races = driver.slice(3)
         races.forEach(function (race) {
@@ -505,7 +502,6 @@ function new_load_teams_table(data) {
             teamData[team].push(race)
         })
     })
-    //itearte for each team in teamData
     for (let team in teamData) {
         //order the rray by the firit element of each elmeent
         teamData[team].sort((a, b) => a[0] - b[0])
@@ -552,79 +548,81 @@ function new_addTeam(teamData, name, pos, id) {
     let driverCounted = 0
     let teampoints = 0
     //only take pair indexes
-    teamData.forEach(function (race, index) {
-        if (index % 2 === 0) {
-            let raceDiv = document.createElement("div")
-            raceDiv.classList = "teams-table-normal"
-            if (race.length > 0) {
-                let driver1 = teamData[index]
-                let driver2 = teamData[index + 1]
-                raceDiv.dataset.raceid = driver1[0]
-                let driver1Points = 0
-                let driver2Points = 0
-                let driver1Pos = 0
-                let driver2Pos = 0
-                if (driver1[2] === -1) {
-                    driver1Points = 0
-                    driver1Pos = "DNF"
-                }
-                else {
-                    driver1Points = driver1[2]
-                    driver1Pos = driver1[1]
-                }
-                if (driver2[2] === -1) {
-                    driver2Points = 0
-                    driver2Pos = "DNF"
-                }
-                else {
-                    driver2Points = driver2[2]
-                    driver2Pos = driver2[1]
-                }
-                raceDiv.dataset.points = parseInt(driver1Points) + parseInt(driver2Points)
-                raceDiv.dataset.pos1 = driver1Pos
-                raceDiv.dataset.pos2 = driver2Pos
-                raceDiv.dataset.quali1 = driver1[4]
-                raceDiv.dataset.quali2 = driver2[4]
-                raceDiv.dataset.fastlap1 = driver1[3]
-                raceDiv.dataset.fastlap2 = driver2[3]
-                teampoints += parseInt(raceDiv.dataset.points)
-                if (race.length > 6) {
-                    let d1SprintPoints = 0
-                    let d2SprintPoints = 0
-                    let d1SprintPos = 0
-                    let d2SprintPos = 0
-                    if (driver1[5] === -1) {
-                        d1SprintPoints = 0
-                        d1SprintPos = "DNF"
+    if (teamData !== undefined){
+        teamData.forEach(function (race, index) {
+            if (index % 2 === 0) {
+                let raceDiv = document.createElement("div")
+                raceDiv.classList = "teams-table-normal"
+                if (race.length > 0) {
+                    let driver1 = teamData[index]
+                    let driver2 = teamData[index + 1]
+                    raceDiv.dataset.raceid = driver1[0]
+                    let driver1Points = 0
+                    let driver2Points = 0
+                    let driver1Pos = 0
+                    let driver2Pos = 0
+                    if (driver1[2] === -1) {
+                        driver1Points = 0
+                        driver1Pos = "DNF"
                     }
                     else {
-                        d1SprintPoints = driver1[5]
-                        d1SprintPos = driver1[6]
+                        driver1Points = driver1[2]
+                        driver1Pos = driver1[1]
                     }
-                    if (driver2[5] === -1) {
-                        d2SprintPoints = 0
-                        d2SprintPos = "DNF"
+                    if (driver2[2] === -1) {
+                        driver2Points = 0
+                        driver2Pos = "DNF"
                     }
                     else {
-                        d2SprintPoints = driver2[5]
-                        d2SprintPos = driver2[6]
+                        driver2Points = driver2[2]
+                        driver2Pos = driver2[1]
                     }
-                    raceDiv.dataset.sprintpoints = parseInt(d1SprintPoints) + parseInt(d2SprintPoints)
-                    raceDiv.dataset.sprintpos1 = d1SprintPos
-                    teampoints += parseInt(raceDiv.dataset.sprintpoints)
-                    raceDiv.dataset.sprintpos2 = d2SprintPos
-
+                    raceDiv.dataset.points = parseInt(driver1Points) + parseInt(driver2Points)
+                    raceDiv.dataset.pos1 = driver1Pos
+                    raceDiv.dataset.pos2 = driver2Pos
+                    raceDiv.dataset.quali1 = driver1[4]
+                    raceDiv.dataset.quali2 = driver2[4]
+                    raceDiv.dataset.fastlap1 = driver1[3]
+                    raceDiv.dataset.fastlap2 = driver2[3]
+                    teampoints += parseInt(raceDiv.dataset.points)
+                    if (race.length > 6) {
+                        let d1SprintPoints = 0
+                        let d2SprintPoints = 0
+                        let d1SprintPos = 0
+                        let d2SprintPos = 0
+                        if (driver1[5] === -1) {
+                            d1SprintPoints = 0
+                            d1SprintPos = "DNF"
+                        }
+                        else {
+                            d1SprintPoints = driver1[5]
+                            d1SprintPos = driver1[6]
+                        }
+                        if (driver2[5] === -1) {
+                            d2SprintPoints = 0
+                            d2SprintPos = "DNF"
+                        }
+                        else {
+                            d2SprintPoints = driver2[5]
+                            d2SprintPos = driver2[6]
+                        }
+                        raceDiv.dataset.sprintpoints = parseInt(d1SprintPoints) + parseInt(d2SprintPoints)
+                        raceDiv.dataset.sprintpos1 = d1SprintPos
+                        teampoints += parseInt(raceDiv.dataset.sprintpoints)
+                        raceDiv.dataset.sprintpos2 = d2SprintPos
+    
+                    }
                 }
+                else {
+                    raceDiv.innerText = "-"
+                }
+                let newText = manageTeamsText(raceDiv)
+                raceDiv.innerHTML = newText.innerHTML
+                row.appendChild(raceDiv)
             }
-            else {
-                raceDiv.innerText = "-"
-            }
-            let newText = manageTeamsText(raceDiv)
-            raceDiv.innerHTML = newText.innerHTML
-            row.appendChild(raceDiv)
-        }
-
-    })
+    
+        })
+    }
     let pointsDiv = document.createElement("div")
     pointsDiv.classList = "teams-table-points bold-font"
     pointsDiv.innerText = teampoints
@@ -657,7 +655,6 @@ function new_addDriver(driver, races_done, odd) {
     posDiv.classList = "drivers-table-position bold-font"
     posDiv.innerText = driver[2]
     row.appendChild(posDiv)
-    row.appendChild(nameDiv)
     let logoDiv = document.createElement("div")
     logoDiv.classList = "drivers-table-logo-div"
     let logo = document.createElement("img")
@@ -672,8 +669,11 @@ function new_addDriver(driver, races_done, odd) {
     if (driver[1] === 3) { //redbull
         logo.classList.add("logo-up-down-mid")
     }
-    if (driver[1] === 4 || driver[1] === 7 || driver[1] === 6) { //mercedes or williams or haas
+    if (driver[1] === 6 ) {
         logo.classList.add("logo-williams-table")
+    }
+    if (driver[1] === 4 || driver[1] === 7) { //mercedes  haas
+        logo.classList.add("logo-merc-table")
     }
     if (driver[1] === 5) { //different to aston
         logo.classList.add(driversTableLogosDict[alpineReplace])
@@ -684,13 +684,14 @@ function new_addDriver(driver, races_done, odd) {
     if (driver[1] === 9) { //alfa
         logo.classList.add(driversTableLogosDict[alfaReplace])
     }
-    if (driver[1] === 10) { 
+    if (driver[1] === 10 || driver[1] === 32) { 
         logo.classList.add("logo-up-down-little")
     }
     logoDiv.classList.add(team_dict[driver[1]] + "hoverback")
     logo.setAttribute("src", logos_disc[driver[1]])
     logoDiv.appendChild(logo)
     row.appendChild(logoDiv)
+    row.appendChild(nameDiv)
     let driverpoints = 0
     races_ids.forEach(function (raceid) {
         let raceDiv = document.createElement("div")
@@ -889,7 +890,7 @@ function generateYearsMenu(actualYear) {
     yearH2H.innerHTML = ""
     yearPrediction.innerHTML = ""
     yearPredictionModal.innerHTML = ""
-    for (let year = actualYear; year >= 2023; year--) {
+    for (let year = actualYear; year >= game_version; year--) {
         let a = document.createElement("a");
         a.textContent = year.toString();
         a.classList = "dropdown-item"

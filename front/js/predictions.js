@@ -27,11 +27,14 @@ const names_full = {
     "QAT": "Qatar"
 };
 
+
 let yearSel;
 let yearProbSel;
 let racePredicted;
 let raceName;
 let probRace;
+let mid_grid = 10;
+let relative_grid = 5;
 
 
 function placeRaces(races) {
@@ -43,12 +46,14 @@ function placeRaces(races) {
     races[1].forEach(function (race) {
         let newDiv = document.createElement("div");
         newDiv.className = "race bold-font"
-        newDiv.textContent = names_full[races_names[race[1]]]
+        let nameDiv = document.createElement("div");
+        nameDiv.textContent = names_full[races_names[race[1]]]
         newDiv.dataset.raceid = race[0]
         let img = document.createElement("img")
         img.setAttribute("src", codes_dict[races_map[race[1]]])
-        img.className = "race-flag"
+        img.className = "race-flag front-gradient"
         img.style.float = "right"
+        newDiv.appendChild(nameDiv)
         newDiv.appendChild(img)
         raceMenu.appendChild(newDiv)
         newDiv.addEventListener("click", function () {
@@ -199,12 +204,20 @@ function loadMontecarlo(data){
     drivers.forEach(function(elem, index){
         let row = document.createElement("div")
         row.classList = "prob-viewer-row"
+        if (index % 2 === 0) {
+            row.classList.add("prob-row-even")
+        }
+        else {
+            row.classList.add("prob-row-odd")
+        }
         let nameDiv = document.createElement("div")
         nameDiv.classList = "viewer-header-driver"
         let name = elem[1].split(" ")
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
         spanLastName.dataset.teamid = elem[2];
+        row.dataset.teamid = elem[2];
+        row.classList.add(team_dict[elem[2]] + "-transparent")
         spanName.textContent = name[0] + " "
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
@@ -244,6 +257,7 @@ function loadMontecarlo(data){
 }
 
 
+
 function orderDrivers(lista, camp) {
     return lista.sort((a, b) => a[camp] - b[camp]);
 }
@@ -275,6 +289,8 @@ function predictDrivers(drivers) {
         nameDiv.classList = "driver-prediction"
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
+        mainDiv.dataset.teamid = driver.Team;
+        mainDiv.classList.add(team_dict[driver.Team] + "-transparent")
         spanLastName.dataset.teamid = driver.Team;
         spanName.textContent = name[0] + " "
         spanLastName.textContent = name[1].toUpperCase()
@@ -342,19 +358,18 @@ function predictDrivers(drivers) {
         mainDiv.appendChild(predictionDiv)
         mainDiv.appendChild(positionDiv)
         if(nextRace){
-            if (driver.Prediction <= 10) {
+            if (driver.Prediction <= mid_grid) {
                 document.querySelector("#predictionFirst").querySelector(".prediction-table-data").appendChild(mainDiv)
             }
-            else if (driver.Prediction > 10) {
+            else if (driver.Prediction > mid_grid) {
                 document.querySelector("#predictionSecond").querySelector(".prediction-table-data").appendChild(mainDiv)
             }
         }
         else{
-
-            if (driver.result <= 10 && driver.result != 0) {
+            if (driver.result <= mid_grid && driver.result != 0) {
                 document.querySelector("#predictionFirst").querySelector(".prediction-table-data").appendChild(mainDiv)
             }
-            else if (driver.result > 10 && driver.result != 0) {
+            else if (driver.result > mid_grid && driver.result != 0) {
                 document.querySelector("#predictionSecond").querySelector(".prediction-table-data").appendChild(mainDiv)
             }
         }
