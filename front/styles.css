@@ -479,6 +479,7 @@ body {
   width: 100%;
   padding-right: 10px;
   cursor: pointer;
+  z-index: 2;
 }
 
 .version-panel:hover{
