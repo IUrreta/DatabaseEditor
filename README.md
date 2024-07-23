@@ -45,11 +45,11 @@ When I developed those scripts, more specifically the driver transfers script fo
 
 10. Keep track of past seasons with a wikipedia-style table for drivers and teams championships
     
-![image](https://github.com/user-attachments/assets/fc787462-61f5-4e85-9ef4-c9af7845cb30)
+![image](https://github.com/user-attachments/assets/ddf1738a-4901-4468-a56e-faa3390552a5)
 
 11. Compare drivers and teamas and their stats from their past seasons using the Head To Head graphic
     
-![image](https://github.com/user-attachments/assets/176abb4e-ab9f-4e53-a3c9-cf005f461ed0)
+![image](https://github.com/user-attachments/assets/b9c067de-85bf-44e6-bbdd-b00d8ca3c7bd)
 
 12. Evaluate driver's performance based on an **AI MODEL** that has been trained with the game's data to predict their positions in each race and championship.
     
