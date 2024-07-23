@@ -10,7 +10,6 @@ class EditStatsCommand(Command):
 
     async def execute(self):
         argument = f"{self.message['driverID']} {self.message['typeStaff']} {self.message['statsArray']} {self.message['retirement']} "
-        print(self.message)
         if self.message['typeStaff'] == "0":
             argument += f"{self.message['driverNum']} {self.message['wants1']}"
             edit_superlicense(self.message['driverID'], self.message['superLicense'])

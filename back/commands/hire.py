@@ -13,7 +13,6 @@ class HireCommand(Command):
         run_trasnsfer(argument)
         process_repack("../result", Command.path)
         info = []
-        print(f"Succesfully moved {self.message['driver']} into {self.team_replace_dict[self.message['team']]}")
         info.insert(0, f"Succesfully moved {self.message['driver']} into {self.team_replace_dict[self.message['team']]}")
         info_json = json.dumps(info)
         await self.send_message_to_client(info_json)

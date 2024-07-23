@@ -8,7 +8,6 @@ class EditEngineCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        print(self.message)
         run_editEngine(self.message["engines"])
         process_repack("../result", Command.path)
         info = []
