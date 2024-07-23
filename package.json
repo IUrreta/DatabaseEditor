@@ -1,10 +1,11 @@
 {
-  "name": "Database Editor F1M23",
-  "version": "2.0.0-dev",
-  "description": "A tool that will let you edit your save file from F1M23",
+  "name": "Database Editor F1 Manager",
+  "version": "2.0.0",
+  "description": "A tool that will let you edit your save file from F1 Manager games",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "start:dev": "electron . --dev"
   },
   "repository": "https://github.com/IUrreta/DatabaseEditor",
   "author": "IUrreta",
@@ -18,10 +19,9 @@
     "custom-electron-titlebar": "^4.2.7",
     "interactjs": "^1.10.17",
     "marked": "^7.0.3",
-    "simple-git": "^3.19.1",
-    "tabulator-tables": "^5.5.2"
+    "simple-git": "^3.19.1"
   },
   "devDependencies": {
-    "electron": "^25.3.1"
+    "electron": "^31.1.0"
   }
 }

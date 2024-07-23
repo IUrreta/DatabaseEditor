@@ -25,8 +25,14 @@ class ConfigUpdateCommand(Command):
                     "alpine": self.message["alpine"],
                     "alfa": self.message["alfa"]
                 },
-                "ask": self.message["ask"]
+                "state": self.message["state"]
             }
+            if self.message.get("icon"):
+                data["icon"] = self.message["icon"]
+            if self.message.get("primaryColor"):
+                data["primaryColor"] = self.message["primaryColor"]
+            if self.message.get("secondaryColor"):
+                data["secondaryColor"] = self.message["secondaryColor"]
             with open(file_path, "w") as json_file:
                 json.dump(data, json_file, indent=4)
         else:
@@ -37,7 +43,13 @@ class ConfigUpdateCommand(Command):
             existing_data["teams"]["alpine"] = self.message["alpine"]
             existing_data["teams"]["alfa"] = self.message["alfa"]
 
-            existing_data["ask"] = self.message["ask"]
+            existing_data["state"] = self.message["state"]
+            if self.message.get("icon"):
+                existing_data["icon"] = self.message["icon"]
+            if self.message.get("primaryColor"):
+                existing_data["primaryColor"] = self.message["primaryColor"]
+            if self.message.get("secondaryColor"):
+                existing_data["secondaryColor"] = self.message["secondaryColor"]
             
             with open(file_path, "w") as json_file:
                 json.dump(existing_data, json_file, indent=4)
