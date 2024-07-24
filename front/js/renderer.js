@@ -299,9 +299,13 @@ function performanceModeHandler() {
             let part = elem.dataset.part;
             let stats = {};
             elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
-                let statNum = stat.dataset.attribute;
-                let value = stat.querySelector("input").value.split(" ")[0];
-                stats[statNum] = value;
+                if (stat.dataset.attribute !== "-1") {
+                    console.log(stat)
+                    let statNum = stat.dataset.attribute;
+                    let value = stat.querySelector("input").value.split(" ")[0];
+                    console.log(value)
+                    stats[statNum] = value;
+                }
             });
             parts[part] = stats;
         })
