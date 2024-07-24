@@ -239,22 +239,30 @@ function load_parts_list(data) {
         for (let part in data[key]) {
             let partElem = document.createElement("div")
             partElem.classList.add("one-part")
+            if (index === 1) {
+                partElem.classList.add("one-part-default")
+            }
             let partTitle = document.createElement("div")
             partTitle.classList.add("one-part-title")
             partTitle.innerText = abreviations_dict[teamSelected] + "-" + pars_abreviations[key] + "-" + index
-            let flag = document.createElement("img")
-            flag.classList.add("one-part-flag")
-            let code = data[key][part][2]
-            let codeFlag = races_map[code]
-            let flagSrc = codes_dict[codeFlag]
-            flag.src = flagSrc
-            let flagName = document.createElement("div")
             let posRelative = document.createElement("div")
             posRelative.classList.add("one-part-flag-and-text")
-            flagName.classList.add("one-part-flag-title")
-            flagName.innerText = races_names[code]
-            posRelative.appendChild(flag)
-            posRelative.appendChild(flagName)
+            if (data[key][part][1] !== data[key][part][2]){
+                let flag = document.createElement("img")
+                flag.classList.add("one-part-flag")
+                let code = data[key][part][3]
+                let codeFlag = races_map[code]
+                let flagSrc = codes_dict[codeFlag]
+                flag.src = flagSrc
+                let flagName = document.createElement("div")
+                flagName.classList.add("one-part-flag-title")
+                flagName.innerText = races_names[code]
+                posRelative.appendChild(flag)
+                posRelative.appendChild(flagName)
+            }
+            else{
+                posRelative.innerText = "BASE"
+            }
             partElem.appendChild(partTitle)
             partElem.appendChild(posRelative)
             partElem.dataset.partid = part
@@ -271,12 +279,14 @@ document.querySelectorAll(".part-performance-title i").forEach(function (elem) {
         if (elem.classList.contains("clicked")) {
             generalPart.querySelector(".part-performance-stats").style.opacity = 0
             generalPart.querySelector(".part-performance-stats").style.height = "0"
+            generalPart.querySelector(".part-performance-stats").style.pointerEvents = "none"
         }
         else {
             generalPart.querySelector(".part-performance-stats").style.opacity = 1
+            generalPart.querySelector(".part-performance-stats").style.poìnterEvents = "auto"
             //wait 0.2s and restore height
             setTimeout(() => {
-                generalPart.querySelector(".part-performance-stats").style.height = "auto"
+                generalPart.querySelector(".part-performance-stats").style.height = "auto";
             }, 200);
         }
     })

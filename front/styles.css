@@ -3333,7 +3333,7 @@ DRIVERS TABLE
 .parts-list{
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   margin-top: 6px;
 }
 
@@ -3341,6 +3341,12 @@ DRIVERS TABLE
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.one-part-default{
+  border-bottom: 2px solid var(--separator);
+  margin-bottom: 3px;
+  padding: 3px 0;
 }
 
 .one-part-title{
@@ -3351,20 +3357,20 @@ DRIVERS TABLE
 
 .one-part-flag-and-text{
   position: relative;
+  font-family: 'Formula1Bold';
+  font-size: 16px;
+  color: var(--text-general);
 }
 
 .one-part-flag{
-  width: 50px;
-  height: 30px;
+  width: 48px;
+  height: 27px;
   border-radius: 5px;
   border: none;
   opacity: 0.45;
 }
 
 .one-part-flag-title{
-  font-family: 'Formula1Bold';
-  font-size: 16px;
-  color: var(--text-general);
   position: absolute;
   top: 50%;
   left: 50%;

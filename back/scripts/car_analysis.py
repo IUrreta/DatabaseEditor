@@ -23,7 +23,8 @@ class CarAnalysisUtils:
     def get_all_parts_from_team(self, team_id):
         query = """
         SELECT 
-            d.DesignID, 
+            d.DesignID,
+            d.DayCreated,
             d.DayCompleted, 
             (SELECT r.TrackID 
             FROM Races r 
@@ -74,7 +75,7 @@ class CarAnalysisUtils:
         for i in team_list:
             designs = {}
             for j in range(3, 9):
-                designs[j] = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {j} AND TeamID = {i} AND ValidFrom = {season} AND ((DayCompleted > 0 AND DayCompleted < {day}) OR DayCreated < 0)").fetchall()
+                designs[j] = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {j} AND TeamID = {i} AND ValidFrom = {season} AND ((DayCompleted > 0 AND DayCompleted <= {day}) OR DayCreated < 0)").fetchall()
             engine = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = 0 AND TeamID = {i}").fetchall()
             designs[0] = engine
             teams[i] = designs
