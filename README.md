@@ -1,4 +1,4 @@
-![DATABASE EDITOR F1 MANAGER 23](https://github.com/IUrreta/Database-Editor-Develop/assets/95303008/0f8493bb-9349-4f2a-b9f8-60a600ae3a54)
+![image](https://github.com/user-attachments/assets/cb37258e-86c5-4db2-8f86-5bab0850f45c)
 Friendly to use tool for editing your save files from F1 Manager 24 and 23. Supports driver transfers, calendar customization, staff stat editing and car performance editing, and much more!
 
 > [!WARNING]
@@ -14,46 +14,46 @@ When I developed those scripts, more specifically the driver transfers script fo
 ### What can I actually do with the Database Editor? ###
 
 1. Driver transfers
-   
-   ![image](https://github.com/user-attachments/assets/6c360742-5576-4e94-8f35-03829334a7d4)
+
+![image](https://github.com/user-attachments/assets/62f4bed0-fa3e-43ae-b64b-8fa30b4b86d7)
 
 2. Editing driver contracts
 3. Edit driver numbers
 4. Editing all staff (including drivers') stats, plus mentality and marketability
-   
-   ![image](https://github.com/user-attachments/assets/6104de3f-e052-4b21-9abc-87bf868a69fa)
+
+![image](https://github.com/user-attachments/assets/e02759f2-8da0-4d32-83bf-ee50e87c631e)
 
 5. Customize your calendar, including weather of races
    
-   ![image](https://github.com/user-attachments/assets/2d3b338c-554e-4129-ae07-9421d7e805b3)
+![image](https://github.com/user-attachments/assets/256dae43-fdc6-4261-9913-1d93b61eb5bc)
 
 6. Edit every stat from all car parts from all teams on the grid
 
-![image](https://github.com/user-attachments/assets/7ece60de-677d-4f70-ad6a-9c5cd6cc7792)
+![image](https://github.com/user-attachments/assets/9c8f934a-b4cc-46d2-a7ad-6feb85e3cb98)
 
 7. View every car performance  across the season and compare each car attribute
 
-![image](https://github.com/user-attachments/assets/5676bae3-ec3f-4426-bebc-683f306b9537)
+![image](https://github.com/user-attachments/assets/c3c8fbe6-145d-448d-acd5-8316bb4f36bb)
 
 8. Edit the performance and durability of any of the 4 engines suppliers
    
-![image](https://github.com/user-attachments/assets/cef182b4-72e3-4f6b-ac34-ef074e2c12a1)
+![image](https://github.com/user-attachments/assets/4514db0f-9ecc-4671-b0a6-f6b3f1a53076)
 
 9. Edit all 10 teams' facilities, money, budget available from the budget cap, long and short term objectives, enigne supplier and pit crew attributes
    
-![image](https://github.com/user-attachments/assets/e7b83dc0-95de-48d6-8ce1-5b3794c52a89)
+![image](https://github.com/user-attachments/assets/243059de-4921-42d7-a59f-60bc2815f4a6)
 
 10. Keep track of past seasons with a wikipedia-style table for drivers and teams championships
     
-![image](https://github.com/user-attachments/assets/ddf1738a-4901-4468-a56e-faa3390552a5)
+![image](https://github.com/user-attachments/assets/7b0fdadb-6d2c-4a72-8cee-2365bbff2c8b)
 
 11. Compare drivers and teamas and their stats from their past seasons using the Head To Head graphic
     
-![image](https://github.com/user-attachments/assets/b9c067de-85bf-44e6-bbdd-b00d8ca3c7bd)
+![image](https://github.com/user-attachments/assets/8fe39b19-a1f7-4695-9cd8-e54241f4b7fe)
 
 12. Evaluate driver's performance based on an **AI MODEL** that has been trained with the game's data to predict their positions in each race and championship.
     
-![image](https://github.com/user-attachments/assets/e9b1a937-25e6-4774-93a9-fcfa6de1f650)
+![image](https://github.com/user-attachments/assets/40e70379-773e-43ba-b98a-2d2e020e4c70)
 
 
 
