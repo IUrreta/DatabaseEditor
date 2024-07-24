@@ -9,7 +9,7 @@ class EditPerformanceCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        overwrite_performance_team(self.message['teamID'], self.message['parts'], Command.is_create_a_team)
+        overwrite_performance_team(self.message['teamID'], self.message['parts'], Command.is_create_a_team, Command.year_iterarion)
         process_repack("../result", Command.path)
         info = []
         info.insert(0, f"Succesfully edited {self.team_replace_dict[self.message['teamName']]}'s car performance")

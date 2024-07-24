@@ -184,7 +184,7 @@ def get_performance_all_teams(day=None, previous=None, custom_team=None):
 
     return teams
 
-def overwrite_performance_team(team_id, performance, custom_team=None):
+def overwrite_performance_team(team_id, performance, custom_team=None, year_iteration=None):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
@@ -198,10 +198,26 @@ def overwrite_performance_team(team_id, performance, custom_team=None):
             stats = performance[part_name]
             for stat in stats:
                 stat_num = float(stats[stat])
-                value = unitValueToValue[int(stat)](stat_num)
+                if year_iteration == "24" and int(stat) >= 7 and int(stat) <= 9:
+                    value = downforce_24_unitValueToValue[int(stat)](stat_num)
+                else:
+                    value = unitValueToValue[int(stat)](stat_num)
+                change_expertise_based(part, stat, value, int(team_id))
                 cursor.execute(f"UPDATE Parts_Designs_StatValues SET UnitValue = {stats[stat]} WHERE DesignID = {design} AND PartStat = {stat}")
                 cursor.execute(f"UPDATE Parts_Designs_StatValues SET Value = {value} WHERE DesignID = {design} AND PartStat = {stat}")
 
+    conn.commit()
+    conn.close()
+
+def change_expertise_based(part, stat, new_value, team_id):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+    current_value = cursor.execute(f"SELECT MAX(Value) FROM Parts_Designs_StatValues WHERE PartStat = {stat} AND DesignID IN (SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id})").fetchone()[0]
+    current_expertise = cursor.execute(f"SELECT Expertise FROM Parts_TeamExpertise WHERE TeamID = {team_id} AND PartType = {part} AND PartStat = {stat}").fetchone()[0]
+    new_expertise = (new_value * current_expertise) / current_value
+    # print(f"Old value for {part} {stat}: {current_value}, old expertise: {current_expertise}")
+    # print(f"New value for {part} {stat}: {new_value}, new expertise: {new_expertise}")
+    cursor.execute(f"UPDATE Parts_TeamExpertise SET Expertise = {new_expertise} WHERE TeamID = {team_id} AND PartType = {part} AND PartStat = {stat}")
     conn.commit()
     conn.close()
 
