@@ -184,12 +184,13 @@ def get_performance_all_teams(day=None, previous=None, custom_team=None):
 
     return teams
 
-def overwrite_performance_team(team_id, performance):
+def overwrite_performance_team(team_id, performance, custom_team=None):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
     day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
     day = day_season[0]
-    team_parts = get_best_parts_until(day)[int(team_id)]
+    best_parts = get_best_parts_until(day, custom_team)
+    team_parts = best_parts[int(team_id)]
     for part in team_parts:
         if part != 0:
             design = team_parts[part][0][0]

@@ -18,6 +18,10 @@ class SaveSelectedCommand(Command):
         conn = sqlite3.connect("../result/main.db")
         Command.dbutils = DatabaseUtils(conn)
         game_year = Command.dbutils.check_year_save()
+        if game_year[1] is not None:
+            Command.is_create_a_team = True
+        else:
+            Command.is_create_a_team = False
         self.update_team_dict(game_year[1])
         game_year_list = ["Game Year", game_year]
         Command.year_iterarion = game_year[0]
