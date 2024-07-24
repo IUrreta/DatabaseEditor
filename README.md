@@ -7,7 +7,7 @@ Friendly to use tool for editing your save files from F1 Manager 24 and 23. Supp
 ## What's the Database Editor? ##
 Basically it's just a friendly user interface that helps you make the modifications you wish for the database from your save file from F1 Manager 24 and 23!
 
-It's developed by the same guy (me, u/ignaciourreta on Reddit) who developed multiple scripts for the F1 Manager 22 game as the driver trasnfer script, custom calendar, edit stats, or edit performance of cars
+It's developed by the same guy (me, u/ignaciourreta on Reddit) who developed multiple scripts for the F1 Manager 22 game as the driver transfer script, custom calendar, edit stats, or edit performance of cars
 
 When I developed those scripts, more specifically the driver transfers script for the Script Manager for F1M22 I always had in mind to devlop a tool like this to make it easier to the user to take advantage of my scripts
 
