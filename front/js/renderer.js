@@ -904,7 +904,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 } else {
                     //console.log('Git pull exitoso:',update);
                     setTimeout(() => {
-                        exec('restart.vbs',(error,stdout,stderr) => {
+                        exec('restart.bat',(error,stdout,stderr) => {
                             if (error) {
                                 //console.error(`Error: ${error}`);
                                 return;
