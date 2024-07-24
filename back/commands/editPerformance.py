@@ -1,7 +1,7 @@
 from commands.command import Command
 from scripts.extractor import process_repack
 from scripts.car_performance_23 import run_script as run_editPerformance
-from scripts.car_analysis import *
+from scripts.car_analysis import CarAnalysisUtils
 import json
 
 class EditPerformanceCommand(Command):
@@ -9,7 +9,8 @@ class EditPerformanceCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        overwrite_performance_team(self.message['teamID'], self.message['parts'])
+        car_analysis = CarAnalysisUtils(self.client)
+        car_analysis.overwrite_performance_team(self.message['teamID'], self.message['parts'], Command.is_create_a_team, Command.year_iterarion)
         process_repack("../result", Command.path)
         info = []
         info.insert(0, f"Succesfully edited {self.team_replace_dict[self.message['teamName']]}'s car performance")

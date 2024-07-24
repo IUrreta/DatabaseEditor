@@ -11,6 +11,7 @@ class Command:
     dbutils = None
     path = None
     year_iterarion = None
+    is_create_a_team = False
 
     def __init__(self, message, client):
         self.type = message["command"]

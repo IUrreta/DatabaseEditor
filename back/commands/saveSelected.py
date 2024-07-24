@@ -5,7 +5,7 @@ from utils import DatabaseUtils
 import os
 import shutil
 from scripts.extractor import process_unpack
-from scripts.car_analysis import get_performance_all_teams, get_attributes_all_teams, get_performance_all_teams_season
+from scripts.car_analysis import CarAnalysisUtils
 
 class SaveSelectedCommand(Command):
     def __init__(self, message, client):
@@ -18,6 +18,10 @@ class SaveSelectedCommand(Command):
         conn = sqlite3.connect("../result/main.db")
         Command.dbutils = DatabaseUtils(conn)
         game_year = Command.dbutils.check_year_save()
+        if game_year[1] is not None:
+            Command.is_create_a_team = True
+        else:
+            Command.is_create_a_team = False
         self.update_team_dict(game_year[1])
         game_year_list = ["Game Year", game_year]
         Command.year_iterarion = game_year[0]
@@ -50,12 +54,13 @@ class SaveSelectedCommand(Command):
         nums.insert(0, "Numbers fetched")
         data_json_numbers = json.dumps(nums)
         await self.send_message_to_client(data_json_numbers)
-        performances, races = get_performance_all_teams_season(game_year[2])
+        car_analysis = CarAnalysisUtils(self.client)
+        performances, races = car_analysis.get_performance_all_teams_season(game_year[2])
         performances_season = [performances, races]
         performances_season.insert(0, "Season performance fetched")
         data_json_performances_season = json.dumps(performances_season)
         await self.send_message_to_client(data_json_performances_season)
-        performance = [performances[-1], get_attributes_all_teams(game_year[2])]
+        performance = [performances[-1], car_analysis.get_attributes_all_teams(game_year[2])]
         performance.insert(0, "Performance fetched")
         data_json_performance = json.dumps(performance)
         await self.send_message_to_client(data_json_performance)

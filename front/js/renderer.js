@@ -692,6 +692,7 @@ document.addEventListener('DOMContentLoaded',function () {
             resizeWindowToHeight("11teams")
             custom_team = true
             combined_dict[32] = nameColor[1]
+            document.getElementById("customTeamPerformance").dataset.teamname = nameColor[1]
             document.getElementById("customTeamTransfers").classList.remove("d-none")
             document.getElementById("customTeamPerformance").classList.remove("d-none")
             document.getElementById("customTeamDropdown").classList.remove("d-none")
@@ -903,7 +904,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 } else {
                     //console.log('Git pull exitoso:',update);
                     setTimeout(() => {
-                        exec('restart.vbs',(error,stdout,stderr) => {
+                        exec('restart.bat',(error,stdout,stderr) => {
                             if (error) {
                                 //console.error(`Error: ${error}`);
                                 return;
