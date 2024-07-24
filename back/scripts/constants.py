@@ -42,6 +42,12 @@ unitValueToValue = {
     19: lambda x: (x - 40) * 1000 / 30
 }
 
+downforce_24_unitValueToValue = {
+    7: lambda x: 497.6 * x - 1489.8,
+    8: lambda x: 496.8 * x - 2479.5,
+    9: lambda x: 974.048 * x - 6803.2614
+}
+
 parts = {
     0 : "engine",
     3 : "chassis",
