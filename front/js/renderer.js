@@ -300,10 +300,8 @@ function performanceModeHandler() {
             let stats = {};
             elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
                 if (stat.dataset.attribute !== "-1") {
-                    console.log(stat)
                     let statNum = stat.dataset.attribute;
                     let value = stat.querySelector("input").value.split(" ")[0];
-                    console.log(value)
                     stats[statNum] = value;
                 }
             });

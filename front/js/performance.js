@@ -156,13 +156,10 @@ function manage_engineStats(engineData) {
         let engineId = elem[0]
         let engineStats = elem[1];
         let engine = document.querySelector(`[data-engineId="${engineId}"]`);
-        console.log(engine)
         for (let key in engineStats) {
             let value = engineStats[key];
             let attribute = engine.querySelector(`.engine-performance-stat[data-attribute="${key}"]`);
-            console.log(attribute)
             let input = attribute.querySelector(".custom-input-number");
-            console.log(input)
             let bar = attribute.querySelector(".engine-performance-progress");
             input.value = value.toFixed(1) + " %";
             bar.style.width = value + "%";
@@ -239,7 +236,6 @@ function load_parts_list(data) {
         let list = document.querySelector(`.part-performance[data-part='${key}'] .parts-list`)
         list.innerHTML = ""
         let index = 1;
-        console.log(data[key])
         for (let part in data[key]) {
             let partElem = document.createElement("div")
             partElem.classList.add("one-part")
@@ -270,10 +266,8 @@ function load_parts_list(data) {
 
 document.querySelectorAll(".part-performance-title i").forEach(function (elem) {
     elem.addEventListener("click", function () {
-        console.log("AAAAAAA")
         elem.classList.toggle("clicked")
         let generalPart = elem.parentNode.parentNode
-        console.log(generalPart)
         if (elem.classList.contains("clicked")) {
             generalPart.querySelector(".part-performance-stats").style.opacity = 0
             generalPart.querySelector(".part-performance-stats").style.height = "0"
