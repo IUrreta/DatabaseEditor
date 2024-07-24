@@ -1,10 +1,16 @@
 import sqlite3
 import random
 
-mentality_areas_detailed = {
+mentality_areas = {
     0: [5, 11, 13, 9],
     1: [0, 2, 6, 7, 8, 14],
     2: [1, 3, 4, 12, 10]
+}
+
+mentality_events = {
+    0: [1, 7, 10, 13, 15, 19],
+    1: [2, 11, 12, 14, 16, 20, 21],
+    2: [0, 3, 4, 5, 6, 8, 9, 17, 18]
 }
 
 mentaility_opinions = {
@@ -22,6 +28,8 @@ mentaility_overall = {
     3: 35,
     4: 5
 }
+
+
 
 def edit_stats(option=""):
     conn = sqlite3.connect("../result/main.db")
@@ -66,11 +74,14 @@ def edit_mentality(mentality):
     sum = 0
     for area, value in enumerate(mentality):
         cursor.execute(f"UPDATE Staff_Mentality_AreaOpinions SET Opinion = {value} WHERE StaffID = {driver_id} AND Category = {area}")
-        statuses = mentality_areas_detailed[int(area)]
+        statuses = mentality_areas[int(area)]
+        events = mentality_events[int(area)]
         sum += int(value)
         for status in statuses:
             cursor.execute(f"UPDATE Staff_Mentality_Statuses SET Opinion = {value}, Value = {mentaility_opinions[int(value)]}  WHERE StaffID = {driver_id} AND Status = {status}")
-    
+        for event in events:
+            cursor.execute(f"UPDATE Staff_Mentality_Events SET Opinion = {value}, Value = {mentaility_opinions[int(value)]} WHERE StaffID = {driver_id} AND Event = {event}")
+
     average = sum // 3
     cursor.execute(f"UPDATE Staff_State SET Mentality = {mentaility_overall[average]}, MentalityOpinion = {average} WHERE StaffID = {driver_id}")
 

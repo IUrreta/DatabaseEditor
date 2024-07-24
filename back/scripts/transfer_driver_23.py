@@ -14,7 +14,7 @@ def run_script(option=""):
         position = cursor.execute(f"SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = {driver_id[0]}").fetchone()
         cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driver_id[0]} AND ContractType = 0 AND TeamID = {team_id[0]}")
     #deletes the driver you're replacing current contract
-        if(position[0] != 3):
+        if(position[0] < 3):
             cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = {driver_id[0]}")  # takes him out of his car
         engineer_id = cursor.execute(f"SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = {driver_id[0]}").fetchone()
         if engineer_id is not None:

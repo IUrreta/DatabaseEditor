@@ -3279,6 +3279,11 @@ DRIVERS TABLE
   color: var(--white-general);
 }
 
+.part-performance-title{
+  display: flex;
+  justify-content: space-between;
+}
+
 .engine-performance-title{
   max-width: max-content;
 }
@@ -3310,8 +3315,66 @@ DRIVERS TABLE
   background-color: var(--new-primary);
 }
 
+.part-performance-title i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s ease-in-out;
+}
+
+.part-performance-title i:hover{
+  cursor: pointer;
+  color: var(--new-primary);
+  transform: scale(1.1);
+}
+
+.part-performance-title i.clicked{
+  color: var(--new-primary);
+}
+
+.parts-list{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.one-part{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.one-part-title{
+  font-size: 18px;
+  font-family: 'Formula1Bold';
+  color: var(--dark-text);
+}
+
+.one-part-flag-and-text{
+  position: relative;
+}
+
+.one-part-flag{
+  width: 50px;
+  height: 30px;
+  border-radius: 5px;
+  border: none;
+  opacity: 0.45;
+}
+
+.one-part-flag-title{
+  font-family: 'Formula1Bold';
+  font-size: 18px;
+  color: var(--text-general);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-shadow: 2px 2px 4px var(--negative-text);
+}
+
 .part-performance-stats, .engine-performance-stats{
   margin-top: 8px;
+  transition: opacity 0.2s;
 }
 
 .part-performance-stat .custom-input-number, .engine-performance-stat .custom-input-number{

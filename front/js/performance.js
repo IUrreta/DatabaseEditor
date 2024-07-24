@@ -5,7 +5,21 @@ const teamsDiv = document.getElementById("teamsDiv");
 const enginesDiv = document.getElementById("enginesDiv");
 
 const divsTeamsArray = [teamsDiv, enginesDiv]
+const pars_abreviations = {"chassis": "CH", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "SU"}
 
+let abreviations_dict = {
+    1: "FERR",
+    2: "MCL",
+    3: "RBR",
+    4: "MER",
+    5: "ALP",
+    6: "WIL",
+    7: "HF",
+    8: "AT",
+    9: "AR",
+    10: "AM",
+    32: "CUS"
+}
 
 let teamSelected;
 let engineSelected;
@@ -219,6 +233,59 @@ function load_parts_stats(data) {
         }
     }
 }
+
+function load_parts_list(data) {
+    for (let key in data) {
+        let list = document.querySelector(`.part-performance[data-part='${key}'] .parts-list`)
+        list.innerHTML = ""
+        let index = 1;
+        console.log(data[key])
+        for (let part in data[key]) {
+            let partElem = document.createElement("div")
+            partElem.classList.add("one-part")
+            let partTitle = document.createElement("div")
+            partTitle.classList.add("one-part-title")
+            partTitle.innerText = abreviations_dict[teamSelected] + "-" + pars_abreviations[key] + "-" + index
+            let flag = document.createElement("img")
+            flag.classList.add("one-part-flag")
+            let code = data[key][part][2]
+            let codeFlag = races_map[code]
+            let flagSrc = codes_dict[codeFlag]
+            flag.src = flagSrc
+            let flagName = document.createElement("div")
+            let posRelative = document.createElement("div")
+            posRelative.classList.add("one-part-flag-and-text")
+            flagName.classList.add("one-part-flag-title")
+            flagName.innerText = races_names[code]
+            posRelative.appendChild(flag)
+            posRelative.appendChild(flagName)
+            partElem.appendChild(partTitle)
+            partElem.appendChild(posRelative)
+            partElem.dataset.partid = part
+            list.appendChild(partElem)
+            index++;
+        }
+    }
+}
+
+document.querySelectorAll(".part-performance-title i").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        elem.classList.toggle("clicked")
+        let generalPart = elem.parentNode.parentNode
+        console.log(generalPart)
+        if (elem.classList.contains("clicked")) {
+            generalPart.querySelector(".part-performance-stats").style.opacity = 0
+            generalPart.querySelector(".part-performance-stats").style.height = "0"
+        }
+        else {
+            generalPart.querySelector(".part-performance-stats").style.opacity = 1
+            //wait 0.2s and restore height
+            setTimeout(() => {
+                generalPart.querySelector(".part-performance-stats").style.height = "auto"
+            }, 200);
+        }
+    })
+})
 
 document.querySelector(".performance-show").querySelectorAll('.bi-plus-lg').forEach(button => {
     let intervalId;
