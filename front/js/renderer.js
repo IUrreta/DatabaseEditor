@@ -286,7 +286,7 @@ function teamsModeHandler() {
         confidence: confidenceData,
         pitCrew: pitCrew,
         engine: engine,
-        teamName: combined_dict[teamCod]
+        teamName: default_dict[teamCod]
     }
     socket.send(JSON.stringify(data))
 }
@@ -693,17 +693,14 @@ document.addEventListener('DOMContentLoaded',function () {
             resizeWindowToHeight("11teams")
             custom_team = true
             combined_dict[32] = nameColor[1]
-            document.getElementById("customTeamPerformance").dataset.teamname = nameColor[1]
             document.getElementById("customTeamTransfers").classList.remove("d-none")
             document.getElementById("customTeamPerformance").classList.remove("d-none")
             document.getElementById("customTeamDropdown").classList.remove("d-none")
             document.getElementById("customTeamComparison").classList.remove("d-none")
             document.getElementById("customizeTeam").classList.remove("d-none")
-            document.getElementById("customTeamPerformance").dataset.teamName = nameColor[1]
             document.querySelectorAll(".ct-replace").forEach(function (elem) {
                 elem.textContent = nameColor[1].toUpperCase()
             })
-            name_dict["custom"] = nameColor[1]
             replace_custom_team_color(nameColor[2],nameColor[3])
             mid_grid = 11;
             relative_grid= 4.54;

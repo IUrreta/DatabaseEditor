@@ -8,7 +8,7 @@ const divsTeamsArray = [teamsDiv, enginesDiv]
 const pars_abreviations = {"chassis": "CH", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "SU"}
 
 let abreviations_dict = {
-    1: "FERR",
+    1: "FER",
     2: "MCL",
     3: "RBR",
     4: "MER",
@@ -270,6 +270,7 @@ function load_parts_list(data) {
 
 document.querySelectorAll(".part-performance-title i").forEach(function (elem) {
     elem.addEventListener("click", function () {
+        console.log("AAAAAAA")
         elem.classList.toggle("clicked")
         let generalPart = elem.parentNode.parentNode
         console.log(generalPart)

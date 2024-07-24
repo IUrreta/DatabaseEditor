@@ -25,7 +25,22 @@ let h2hTeamList = []
 let graphTeamList = []
 let mode = "driver"
 
+
 const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD", "#B6BABD", "#c3dc00", "#d0e610", "#fac51c", "#b09247", "#f7c82f"]
+const default_dict = {
+    1: "Ferrari",
+    2: "McLaren",
+    3: "Red Bull",
+    4: "Mercedes",
+    5: "Alpine",
+    6: "Williams",
+    7: "Haas",
+    8: "Alpha Tauri",
+    9: "Alfa Romeo",
+    10: "Aston Martin",
+    32: "Custom Team"
+}
+
 let combined_dict = {
     1: "Ferrari",
     2: "McLaren",
