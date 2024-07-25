@@ -283,7 +283,7 @@ document.querySelectorAll(".part-performance-title i").forEach(function (elem) {
         }
         else {
             generalPart.querySelector(".part-performance-stats").style.opacity = 1
-            generalPart.querySelector(".part-performance-stats").style.poìnterEvents = "auto"
+            generalPart.querySelector(".part-performance-stats").style.pointerEvents = "auto"
             //wait 0.2s and restore height
             setTimeout(() => {
                 generalPart.querySelector(".part-performance-stats").style.height = "auto";

@@ -1,5 +1,5 @@
 from commands.command import Command
-from scripts.transfer_driver_23 import run_script as run_trasnsfer
+from scripts.transfer_driver_23 import TransferUtils
 from scripts.extractor import process_repack
 
 import json
@@ -9,8 +9,8 @@ class FireCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        argument = f"fire {self.message['driverID']} {self.message['teamID']}"
-        run_trasnsfer(argument)
+        transfer_utils = TransferUtils()
+        transfer_utils.fire_driver(self.message['driverID'], self.message['teamID'])
         process_repack("../result", Command.path)
         info = []
         info.insert(0, f"Succesfully fired {self.message['driver']} from {self.team_replace_dict[self.message['team']]}")
