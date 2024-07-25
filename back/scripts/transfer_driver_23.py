@@ -237,7 +237,7 @@ def run_script(option=""):
                 else:
                     cursor.execute(f"INSERT INTO Staff_RaceEngineerDriverAssignments VALUES ({engineer_2_id[0]}, {driver_1_id[0]}, 0, 0, 1)")
 
-            is_driving_in_f2 = cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driver_1_id[0]} AND ContractType = 0 WHERE TeamID > 10 AND < 32").fetchone()
+            is_driving_in_f2 = cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driver_1_id[0]} AND ContractType = 0 AND (TeamID > 10 AND  TeamID < 32)").fetchone()
             if is_driving_in_f2 is not None:
                 cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driver_1_id[0]} AND ContractType = 0 AND TeamID = {is_driving_in_f2[0]}")
 
@@ -265,7 +265,7 @@ def run_script(option=""):
                 else:
                     cursor.execute(f"INSERT INTO Staff_RaceEngineerDriverAssignments VALUES ({engineer_1_id[0]}, {driver_2_id[0]}, 0, 0, 1)")
 
-            is_driving_in_f2 = cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driver_2_id[0]} AND ContractType = 0 WHERE TeamID > 10 AND < 32").fetchone()
+            is_driving_in_f2 = cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driver_2_id[0]} AND ContractType = 0 AND (TeamID > 10 AND  TeamID < 32)").fetchone()
             if is_driving_in_f2 is not None:
                 cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driver_2_id[0]} AND ContractType = 0 AND TeamID = {is_driving_in_f2[0]}")
 

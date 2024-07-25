@@ -24,7 +24,6 @@ def run_script(engineData):
     for engine in engines_ids:
         stats = engineData[engine]
         manufacturer_id = cursor.execute(f"SELECT Value FROM Parts_Enum_EngineManufacturers WHERE EngineDesignID = {engine}").fetchone()
-        print(f"SELECT TeamID FROM Parts_teamHistory WHERE SeasonID = {year[0]} AND EngineManufacturer = {manufacturer_id}")
         teams_powered = cursor.execute(f"SELECT TeamID FROM Parts_teamHistory WHERE SeasonID = {year[0]} AND EngineManufacturer = {manufacturer_id[0]}").fetchall()
         
         true_stats = {}
