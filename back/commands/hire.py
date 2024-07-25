@@ -9,8 +9,8 @@ class HireCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        argument = f"hire {self.message['driverID']} {self.message['teamID']} {self.message['position']} {self.message['salary']} {self.message['signBonus']} {self.message['raceBonus']} {self.message['raceBonusPos']} {self.message['year']} {Command.year_iterarion}"
-        run_trasnsfer(argument)
+        argument = f"hire {self.message['driverID']} {self.message['teamID']} {self.message['position']} {self.message['salary']} {self.message['signBonus']} {self.message['raceBonus']} {self.message['raceBonusPos']} {self.message['year']}"
+        run_trasnsfer(argument, Command.year_iterarion)
         process_repack("../result", Command.path)
         info = []
         info.insert(0, f"Succesfully moved {self.message['driver']} into {self.team_replace_dict[self.message['team']]}")

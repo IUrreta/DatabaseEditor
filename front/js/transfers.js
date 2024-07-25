@@ -462,9 +462,9 @@ function signDriver(type) {
 
     }
     if (type === "regular") {
-        let salaryData = document.getElementById("salaryInput").value;
+        let salaryData = document.getElementById("salaryInput").value.replace(/[$,]/g,"");
         let yearData = document.getElementById("yearInput").value;
-        let signBonusData = document.getElementById("signBonusInput").value;
+        let signBonusData = document.getElementById("signBonusInput").value.replace(/[$,]/g,"");
         let raceBonusData;
         let raceBonusPosData;
 
@@ -474,7 +474,7 @@ function signDriver(type) {
         if (raceBonusAmt.value === "")
             raceBonusData = "0";
         else
-            raceBonusData = raceBonusAmt.value;
+            raceBonusData = raceBonusAmt.value.replace(/[$,]/g,"");
 
         if (raceBonusPos.value === "")
             raceBonusPosData = "10";
