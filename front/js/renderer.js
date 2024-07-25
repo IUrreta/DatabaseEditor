@@ -695,6 +695,7 @@ document.addEventListener('DOMContentLoaded',function () {
             resizeWindowToHeight("11teams")
             custom_team = true
             combined_dict[32] = nameColor[1]
+            abreviations_dict[32] = nameColor[1].slice(0, 3).toUpperCase()
             document.getElementById("customTeamTransfers").classList.remove("d-none")
             document.getElementById("customTeamPerformance").classList.remove("d-none")
             document.getElementById("customTeamDropdown").classList.remove("d-none")

@@ -5,16 +5,16 @@ const teamsDiv = document.getElementById("teamsDiv");
 const enginesDiv = document.getElementById("enginesDiv");
 
 const divsTeamsArray = [teamsDiv, enginesDiv]
-const pars_abreviations = {"chassis": "CH", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "SU"}
+const pars_abreviations = {"chassis": "C", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "S"}
 
 let abreviations_dict = {
-    1: "FER",
-    2: "MCL",
-    3: "RBR",
+    1: "FE",
+    2: "MC",
+    3: "RB",
     4: "MER",
     5: "ALP",
     6: "WIL",
-    7: "HF",
+    7: "HA",
     8: "AT",
     9: "AR",
     10: "AM",
