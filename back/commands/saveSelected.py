@@ -22,7 +22,7 @@ class SaveSelectedCommand(Command):
             Command.is_create_a_team = True
         else:
             Command.is_create_a_team = False
-        self.update_team_dict(game_year[1])
+        self.add_team("Custom Team", game_year[1])
         game_year_list = ["Game Year", game_year]
         Command.year_iterarion = game_year[0]
         data_json_game_year = json.dumps(game_year_list)

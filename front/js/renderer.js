@@ -12,7 +12,6 @@ let firstShow = false;
 
 
 const batFilePath = path.join(__dirname,'../back/startBack.bat');
-console.log(batFilePath)
 
 
 // function start_back(){
@@ -286,7 +285,7 @@ function teamsModeHandler() {
         confidence: confidenceData,
         pitCrew: pitCrew,
         engine: engine,
-        teamName: combined_dict[teamCod]
+        teamName: default_dict[teamCod]
     }
     socket.send(JSON.stringify(data))
 }
@@ -299,9 +298,11 @@ function performanceModeHandler() {
             let part = elem.dataset.part;
             let stats = {};
             elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
-                let statNum = stat.dataset.attribute;
-                let value = stat.querySelector("input").value.split(" ")[0];
-                stats[statNum] = value;
+                if (stat.dataset.attribute !== "-1") {
+                    let statNum = stat.dataset.attribute;
+                    let value = stat.querySelector("input").value.split(" ")[0];
+                    stats[statNum] = value;
+                }
             });
             parts[part] = stats;
         })
@@ -373,6 +374,9 @@ document.addEventListener('DOMContentLoaded',function () {
         "visarb": "Visa Cashapp RB","toyota": "Toyota","hugo": "Hugo Boss","alphatauri": "Alpha Tauri","brawn": "Brawn GP","porsche": "Porsche",
         "alpine": "Alpine","renault": "Renault","andretti": "Andretti","lotus": "Lotus","alfa": "Alfa Romeo",
         "audi": "Audi","sauber": "Sauber","stake": "Stake Sauber"
+    }
+    const abreviations_for_replacements = {"visarb": "VCARB", "toyota": "TOY", "hugo": "HUGO", "alphatauri": "AT", "brawn": "BGP", "porsche": "POR",
+        "alpine": "ALP", "renault": "REN", "andretti": "AND", "lotus": "LOT", "alfa": "ALFA", "audi": "AUDI", "sauber": "SAU", "stake": "STK"
     }
     const logos_configs = {
         "visarb": "../assets/images/visarb.png","toyota": "../assets/images/toyota.png","hugo": "../assets/images/hugoboss.png","alphatauri": "../assets/images/alphatauri.png",
@@ -518,6 +522,7 @@ document.addEventListener('DOMContentLoaded',function () {
         },
         "Parts stats fetched": (message) => {
             load_parts_stats(message.slice(1)[0])
+            load_parts_list(message.slice(1)[1])
         },
         "Game Year": (message) => {
             manage_game_year(message.slice(1)[0])
@@ -692,17 +697,15 @@ document.addEventListener('DOMContentLoaded',function () {
             resizeWindowToHeight("11teams")
             custom_team = true
             combined_dict[32] = nameColor[1]
-            document.getElementById("customTeamPerformance").dataset.teamname = nameColor[1]
+            abreviations_dict[32] = nameColor[1].slice(0, 3).toUpperCase()
             document.getElementById("customTeamTransfers").classList.remove("d-none")
             document.getElementById("customTeamPerformance").classList.remove("d-none")
             document.getElementById("customTeamDropdown").classList.remove("d-none")
             document.getElementById("customTeamComparison").classList.remove("d-none")
             document.getElementById("customizeTeam").classList.remove("d-none")
-            document.getElementById("customTeamPerformance").dataset.teamName = nameColor[1]
             document.querySelectorAll(".ct-replace").forEach(function (elem) {
                 elem.textContent = nameColor[1].toUpperCase()
             })
-            name_dict["custom"] = nameColor[1]
             replace_custom_team_color(nameColor[2],nameColor[3])
             mid_grid = 11;
             relative_grid= 4.54;
@@ -1058,6 +1061,7 @@ document.addEventListener('DOMContentLoaded',function () {
         document.querySelector("#alphaTauriReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
         combined_dict[8] = pretty_names[info]
+        abreviations_dict[8] = abreviations_for_replacements[info]
         document.querySelectorAll(".at-name").forEach(function (elem) {
             //if it has the class complete, put names_configs[info], else out VCARB
             if (info === "visarb" && !elem.classList.contains("complete")) {
@@ -1149,6 +1153,7 @@ document.addEventListener('DOMContentLoaded',function () {
         document.querySelector("#alpineReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value = info
         combined_dict[5] = pretty_names[info]
+        abreviations_dict[5] = abreviations_for_replacements[info]
         document.querySelectorAll(".alpine-name").forEach(function (elem) {
             elem.textContent = names_configs[info]
         })
@@ -1227,6 +1232,7 @@ document.addEventListener('DOMContentLoaded',function () {
         document.querySelector("#alfaReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value = info
         combined_dict[9] = pretty_names[info]
+        abreviations_dict[9] = abreviations_for_replacements[info]
         document.querySelectorAll(".alfa-name").forEach(function (elem) {
             elem.textContent = names_configs[info]
         })
