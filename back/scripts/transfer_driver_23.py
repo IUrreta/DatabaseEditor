@@ -1,7 +1,7 @@
 import sqlite3
 import random
 
-def run_script(option=""):
+def run_script(option="", year_iteration="24"):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
 
@@ -21,7 +21,6 @@ def run_script(option=""):
             cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = {engineer_id[0]} AND DriverID = {driver_id[0]}")
 
     elif(params[0] == "hire"):
-        year_iteration = params[4]
         driver_id = (params[1],)
         
         new_team = params[2].capitalize() 
@@ -29,8 +28,7 @@ def run_script(option=""):
 
         day = cursor.execute("SELECT Day FROM Player_State").fetchone()
         year =  cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
-
-        if(len(params) == 4 or len(params) == 5):
+        if(len(params) == 3 or len(params) == 4):
             tier = get_tier(driver_id)
             if(tier == 1):
                 salary = str(round(random.uniform(14, 30),3)*1000000) 
@@ -93,7 +91,7 @@ def run_script(option=""):
                     race_bonus_pos = str(1)
             else: race_bonus_pos = str(1) 
             
-            if(len(params) != 5):
+            if(len(params) != 4):
                 number_1s_team = len(cursor.execute(f"SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_BasicData com ON con.StaffID = com.StaffID WHERE con.ContractType = 0 AND con.TeamID = {new_team_id} AND con.PosInTeam = 1").fetchall())
                 number_2s_team = len(cursor.execute(f"SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_BasicData com ON con.StaffID = com.StaffID WHERE con.ContractType = 0 AND con.TeamID = {new_team_id} AND con.PosInTeam = 2").fetchall())
                 number_3s_team = len(cursor.execute(f"SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_BasicData com ON con.StaffID = com.StaffID WHERE con.ContractType = 0 AND con.TeamID = {new_team_id} AND con.PosInTeam = 3").fetchall())
@@ -117,8 +115,6 @@ def run_script(option=""):
             race_bonus_pos = params[7]
             year_end = params[8]
 
-
-
             #default values for some arguments
             if(starting_bonus == "none"):
                 starting_bonus = "0"
@@ -129,7 +125,6 @@ def run_script(option=""):
         isRetired = cursor.execute(f"SELECT Retired FROM Staff_GameData WHERE StaffID = {driver_id[0]}").fetchone()
         if isRetired[0] == 1:
             cursor.execute(f"UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = {driver_id[0]}")
-
         if year_iteration == "23":
             cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driver_id[0]}, 0, 1, {day[0]}, 1, {new_team_id}, {car_in_team}, 1, '[OPINION_STRING_NEUTRAL]', {day[0]}, {year_end}, 1, '[OPINION_STRING_NEUTRAL]', {salary}, 1, '[OPINION_STRING_NEUTRAL]', {starting_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus_pos}, 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')")
         elif year_iteration == "24":
