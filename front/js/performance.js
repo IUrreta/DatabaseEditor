@@ -16,7 +16,7 @@ let abreviations_dict = {
     6: "WIL",
     7: "HA",
     8: "AT",
-    9: "AR",
+    9: "ALFA",
     10: "AM",
     32: "CUS"
 }

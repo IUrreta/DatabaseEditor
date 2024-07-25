@@ -376,6 +376,9 @@ document.addEventListener('DOMContentLoaded',function () {
         "alpine": "Alpine","renault": "Renault","andretti": "Andretti","lotus": "Lotus","alfa": "Alfa Romeo",
         "audi": "Audi","sauber": "Sauber","stake": "Stake Sauber"
     }
+    const abreviations_for_replacements = {"visarb": "VCARB", "toyota": "TOY", "hugo": "HUGO", "alphatauri": "AT", "brawn": "BGP", "porsche": "POR",
+        "alpine": "ALP", "renault": "REN", "andretti": "AND", "lotus": "LOT", "alfa": "ALFA", "audi": "AUDI", "sauber": "SAU", "stake": "STK"
+    }
     const logos_configs = {
         "visarb": "../assets/images/visarb.png","toyota": "../assets/images/toyota.png","hugo": "../assets/images/hugoboss.png","alphatauri": "../assets/images/alphatauri.png",
         "brawn": "../assets/images/brawn.png","porsche": "../assets/images/porsche.png",
@@ -1059,6 +1062,7 @@ document.addEventListener('DOMContentLoaded',function () {
         document.querySelector("#alphaTauriReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
         combined_dict[8] = pretty_names[info]
+        abreviations_dict[8] = abreviations_for_replacements[info]
         document.querySelectorAll(".at-name").forEach(function (elem) {
             //if it has the class complete, put names_configs[info], else out VCARB
             if (info === "visarb" && !elem.classList.contains("complete")) {
@@ -1150,6 +1154,7 @@ document.addEventListener('DOMContentLoaded',function () {
         document.querySelector("#alpineReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value = info
         combined_dict[5] = pretty_names[info]
+        abreviations_dict[5] = abreviations_for_replacements[info]
         document.querySelectorAll(".alpine-name").forEach(function (elem) {
             elem.textContent = names_configs[info]
         })
@@ -1228,6 +1233,7 @@ document.addEventListener('DOMContentLoaded',function () {
         document.querySelector("#alfaReplaceButton").querySelector("button").textContent = names_configs[info]
         document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value = info
         combined_dict[9] = pretty_names[info]
+        abreviations_dict[9] = abreviations_for_replacements[info]
         document.querySelectorAll(".alfa-name").forEach(function (elem) {
             elem.textContent = names_configs[info]
         })
