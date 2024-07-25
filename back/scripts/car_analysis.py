@@ -19,6 +19,37 @@ class CarAnalysisUtils:
             teams[i] = self.get_parts_from_team(i)
     
         return teams
+    
+    def get_all_parts_from_team(self, team_id):
+        query = """
+        SELECT 
+            d.DesignID,
+            d.DayCreated,
+            d.DayCompleted, 
+            (SELECT r.TrackID 
+            FROM Races r 
+            WHERE r.Day >= d.DayCompleted 
+            ORDER BY r.Day ASC 
+            LIMIT 1) AS TrackID
+        FROM 
+            Parts_Designs d
+        WHERE 
+            d.PartType = ? 
+            AND d.TeamID = ? 
+            AND d.ValidFrom = ?
+            AND d.DayCompleted > 0
+        """
+        day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+        season = day_season[1]
+        parts_dict = {}
+        for j in range(3, 9):
+            # Ejecución de la consulta con los parámetros correspondientes
+            params = (j, team_id, season)
+            designs = self.cursor.execute(query, params).fetchall()
+            parts_dict[parts[j]] = designs  
+
+        return parts_dict
+
 
     def get_parts_from_team(self, team_id):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
@@ -44,7 +75,7 @@ class CarAnalysisUtils:
         for i in team_list:
             designs = {}
             for j in range(3, 9):
-                designs[j] = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {j} AND TeamID = {i} AND ValidFrom = {season} AND ((DayCompleted > 0 AND DayCompleted < {day}) OR DayCreated < 0)").fetchall()
+                designs[j] = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {j} AND TeamID = {i} AND ValidFrom = {season} AND ((DayCompleted > 0 AND DayCompleted <= {day}) OR DayCreated < 0)").fetchall()
             engine = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = 0 AND TeamID = {i}").fetchall()
             designs[0] = engine
             teams[i] = designs

@@ -193,7 +193,6 @@ function addUnRetireIcon(div) {
 function iconListener(icon) {
     icon.addEventListener("click",function () {
         modalType = "edit"
-        console.log(icon.parentNode.parentNode.innerText.replace(/\n/g, ' '))
         document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g, ' ') + "'s contract";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
@@ -443,7 +442,6 @@ function manage_swap() {
  */
 function signDriver(type) {
     let driverName = draggable.innerText
-    console.log(teamOrigin)
     if (type === "fireandhire") {
         let data = {
             command: "fire",
@@ -452,7 +450,6 @@ function signDriver(type) {
             team: name_dict[teamOrigin.dataset.team],
             teamID: originalTeamId
         }
-        console.log(data)
         if (!data["team"]){
             if (f2_teams.includes(originalTeamId)){
                 data["team"] = "F2"
@@ -502,7 +499,6 @@ function signDriver(type) {
 
     }
     else if (type === "autocontract") {
-        console.log(teamDestiniy)
         let dataAuto = {
             command: "autoContract",
             driverID: draggable.dataset.driverid,
@@ -727,10 +723,8 @@ interact('.free-driver').draggable({
                             updateColor(target)
                             document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
                             if (autoContractToggle.checked) {
-                                console.log(game_version, teamOrigin)
                                 if ((game_version === 2023 && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) ||
                                 (game_version === 2024) && (originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
-                                    console.log("ENTRO BIEN")
                                     signDriver("fireandhire")
                                 }
                                 signDriver("autocontract")
@@ -785,7 +779,6 @@ interact('.free-driver').draggable({
                     draggable.dataset.teamid = 0
                     updateColor(draggable)
                     freeDrivers.appendChild(target);
-                    console.log(teamOrigin.dataset.team)
                     let data = {
                         command: "fire",
                         driverID: draggable.dataset.driverid,
@@ -793,7 +786,6 @@ interact('.free-driver').draggable({
                         team: name_dict[teamOrigin.dataset.team],
                         teamID: originalTeamId
                     }
-                    console.log(data)
                     if (!data["team"]){
                         if (f2_teams.includes(originalTeamId)){
                             data["team"] = "F2"

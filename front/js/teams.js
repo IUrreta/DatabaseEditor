@@ -285,7 +285,6 @@ function fillLevels(teamData) {
         bar.style.width = value + "%";
     }
     let engineManufacturer = teamData[23];
-    console.log(`#engineMenu a[data-engine='${engineManufacturer}']`)
     document.querySelector(`#engineMenu a[data-engine='${engineManufacturer}']`).click();
     if (teamCod === "1" || teamCod === "3" || teamCod === "4" || teamCod === "5"){
         document.querySelector(".blocking-engine").classList.remove("d-none");
