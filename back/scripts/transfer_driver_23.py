@@ -157,7 +157,8 @@ def run_script(option=""):
                 cursor.execute(f"DELETE FROM Races_DriverStandings WHERE DriverID = {driver_id[0]} AND SeasonID = {year[0]} AND RaceFormula = 3")
 
 
-
+            engineer_available = None
+            engineer_available_id = None
             engineers = cursor.execute(f"SELECT con.StaffID FROM Staff_Contracts con JOIN Staff_BasicData com ON con.StaffID = com.StaffID WHERE con.TeamID = {new_team_id}").fetchall()
             # print(engineers)
             for i in range(len(engineers)):
@@ -165,12 +166,13 @@ def run_script(option=""):
                 if engineer_available[0] == 0:
                     engineer_available_id = engineers[i]
 
-            pair_exists = cursor.execute(f"SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE RaceEngineerID = {engineer_available_id[0]} AND DriverID = {driver_id[0]}").fetchone()
+            if engineer_available_id is not None:
+                pair_exists = cursor.execute(f"SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE RaceEngineerID = {engineer_available_id[0]} AND DriverID = {driver_id[0]}").fetchone()
 
-            if pair_exists is not None:
-                cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE RaceEngineerID = {engineer_available_id[0]} AND DriverID = {driver_id[0]}")
-            else:
-                cursor.execute(f"INSERT INTO Staff_RaceEngineerDriverAssignments VALUES ({engineer_available_id[0]}, {driver_id[0]}, 0, 0, 1)")
+                if pair_exists is not None:
+                    cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE RaceEngineerID = {engineer_available_id[0]} AND DriverID = {driver_id[0]}")
+                else:
+                    cursor.execute(f"INSERT INTO Staff_RaceEngineerDriverAssignments VALUES ({engineer_available_id[0]}, {driver_id[0]}, 0, 0, 1)")
 
         
 
