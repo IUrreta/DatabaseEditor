@@ -12,7 +12,6 @@ let firstShow = false;
 
 
 const batFilePath = path.join(__dirname,'../back/startBack.bat');
-console.log(batFilePath)
 
 
 // function start_back(){

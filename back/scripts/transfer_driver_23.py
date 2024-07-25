@@ -196,7 +196,6 @@ def run_script(option=""):
             #no reserve drivers
             engineer_1_id = cursor.execute(f"SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = {driver_1_id[0]}").fetchone()
             engineer_2_id = cursor.execute(f"SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = {driver_2_id[0]}").fetchone()
-            print(engineer_1_id, engineer_2_id)
             cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = {engineer_1_id[0]} AND DriverID = {driver_1_id[0]}")
             cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = {engineer_2_id[0]} AND DriverID = {driver_2_id[0]}")
 
