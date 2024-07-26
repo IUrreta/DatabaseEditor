@@ -263,9 +263,7 @@ class TransferUtils:
 
 
     def future_contract(self, teamID, driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos, position, year_iteration="24"):
-        print(teamID, driverID)
         if teamID == "-1":
-            print("Deleting future contract")
             self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3")
         else:
             already_has_future_contract = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3").fetchone()
@@ -273,18 +271,13 @@ class TransferUtils:
                 already_has_future_contract = already_has_future_contract[0]
             else:
                 already_has_future_contract = -1
-            print(already_has_future_contract, teamID)
             if int(already_has_future_contract) != int(teamID):
                 season = self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
                 day = self.get_excel_date(int(season+1))
                 self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3")
                 if year_iteration == "24":
-                    print("Creating new future contract")
-                    print(day)
-                    print(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 3, {teamID}, {position}, {day}, {endSeason}, {salary}, {startingBonus}, {raceBonus}, {raceBonusTargetPos}, 0.5, 0)")
                     self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 3, {teamID}, {position}, {day}, {endSeason}, {salary}, {startingBonus}, {raceBonus}, {raceBonusTargetPos}, 0.5, 0)")
             else:
-                print("Updating future contract")
                 self.cursor.execute(f"UPDATE Staff_Contracts SET PosInTeam = {position}, Salary = {salary}, EndSeason = {endSeason}, StartingBonus = {startingBonus}, RaceBonus = {raceBonus}, RaceBonusTargetPos = {raceBonusTargetPos} WHERE StaffID = {driverID} AND TeamID = {already_has_future_contract} AND ContractType = 3")
 
 

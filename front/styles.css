@@ -4914,6 +4914,194 @@ DRIVERS TABLE
   color: var(--mercedes-primary);
 }
 
+.future-contract-noti{
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+.noti-fe{
+  background-color: var(--ferrari-primary);
+  animation: flash-fe 1.5s infinite;
+}
+
+@keyframes flash-fe {
+  0%, 100% {
+    background-color: var(--ferrari-primary);
+    box-shadow: 0 0 8px var(--ferrari-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-rb{
+  background-color: var(--redbull-primary);
+  animation: flash-rb 1.5s infinite;
+}
+
+@keyframes flash-rb {
+  0%, 100% {
+    background-color: var(--redbull-primary);
+    box-shadow: 0 0 8px var(--redbull-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-mc{
+  background-color: var(--mclaren-primary);
+  animation: flash-mc 1.5s infinite;
+}
+
+@keyframes flash-mc {
+  0%, 100% {
+    background-color: var(--mclaren-primary);
+    box-shadow: 0 0 8px var(--mclaren-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-as{
+  background-color: var(--aston-primary);
+  animation: flash-as 1.5s infinite;
+}
+
+@keyframes flash-as {
+  0%, 100% {
+    background-color: var(--aston-primary);
+    box-shadow: 0 0 8px var(--aston-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-al{
+  background-color: var(--alpine-primary);
+  animation: flash-al 1.5s infinite;
+}
+
+@keyframes flash-al {
+  0%, 100% {
+    background-color: var(--alpine-primary);
+    box-shadow: 0 0 8px var(--alpine-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-af{
+  background-color: var(--alfa-primary);
+  animation: flash-af 1.5s infinite;
+}
+
+@keyframes flash-af {
+  0%, 100% {
+    background-color: var(--alfa-primary);
+    box-shadow: 0 0 8px var(--alfa-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-ha{
+  background-color: var(--haas-primary);
+  animation: flash-ha 1.5s infinite;
+}
+
+@keyframes flash-ha {
+  0%, 100% {
+    background-color: var(--haas-primary);
+    box-shadow: 0 0 8px var(--haas-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-wi{
+  background-color: var(--williams-primary);
+  animation: flash-wi 1.5s infinite;
+}
+
+@keyframes flash-wi {
+  0%, 100% {
+    background-color: var(--williams-primary);
+    box-shadow: 0 0 8px var(--williams-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-at{
+  background-color: var(--alphatauri-primary);
+  animation: flash-at 1.5s infinite;
+}
+
+@keyframes flash-at {
+  0%, 100% {
+    background-color: var(--alphatauri-primary);
+    box-shadow: 0 0 8px var(--alphatauri-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-me{
+  background-color: var(--mercedes-primary);
+  animation: flash-me 1.5s infinite;
+}
+
+@keyframes flash-me {
+  0%, 100% {
+    background-color: var(--mercedes-primary);
+    box-shadow: 0 0 8px var(--mercedes-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-ct{
+  background-color: var(--custom-team-primary);
+  animation: flash-ct 1.5s infinite;
+}
+
+@keyframes flash-ct {
+  0%, 100% {
+    background-color: var(--custom-team-primary);
+    box-shadow: 0 0 8px var(--custom-team-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+
+
 
 .free-driver {
   background-color: var(--elements);

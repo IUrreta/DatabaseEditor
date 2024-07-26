@@ -308,6 +308,7 @@ class DatabaseUtils:
                     race_formula = (4,)
                 driver_number = self.fetchDriverNumberDetails(id)
                 superlicense = self.fetch_superlicense(id)
+                team_future = self.fetch_for_future_contract(id)
                 data_dict = {i: result[i] for i in range(len(result))}
                 data_dict["driver_number"] = driver_number[0]
                 data_dict["wants1"] = driver_number[1]
@@ -315,6 +316,7 @@ class DatabaseUtils:
                 data_dict["age"] = retirement[1]
                 data_dict["superlicense"] = superlicense[0]
                 data_dict["race_formula"] = race_formula[0]
+                data_dict["team_future"] = team_future
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
                     if mentality:
@@ -327,6 +329,12 @@ class DatabaseUtils:
                 formatted_tuples.append(data_dict)
 
         return formatted_tuples
+    
+    def fetch_for_future_contract(self, driverID):
+        team = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3").fetchone()
+        if team is None:
+            team = (-1,)
+        return team[0]
     
     def fetch_raceFormula(self, driverID):
         category = self.cursor.execute(f"SELECT MAX(CASE WHEN (TeamID <= 10 OR TeamID = 32) THEN 1 WHEN TeamID BETWEEN 11 AND 21 THEN 2 WHEN TeamID BETWEEN 22 AND 31 THEN 3 ELSE 4 END) FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = {driverID}").fetchone()

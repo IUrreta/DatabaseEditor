@@ -78,11 +78,14 @@ function place_drivers(driversArray) {
         newDiv.appendChild(spanName)
         newDiv.appendChild(spanLastName)
         newDiv.classList.add(team_dict[driver[2]] + "-transparent")
+        console.log(driver)
+        if (driver["team_future"] !== -1){
+            add_future_team_noti(newDiv,driver["team_future"])
+        }
         manageColor(newDiv,spanLastName)
         if (driver[4] === 1) {
             addUnRetireIcon(newDiv)
         }
-
         //newDiv.innerHTML = driver[0];
         divPosition = "free-drivers"
         let position = driver[3]
@@ -96,6 +99,12 @@ function place_drivers(driversArray) {
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
+}
+
+function add_future_team_noti(driverDiv, teamID){
+    let notiDiv = document.createElement("div")
+    notiDiv.className = "future-contract-noti noti-" + team_dict[teamID]
+    driverDiv.appendChild(notiDiv)
 }
 
 document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {
@@ -501,6 +510,7 @@ function editContract() {
         }
     })
     console.log(futureValues)
+    let future_team = document.querySelector("#teamContractButton").dataset.teamid
 
     let data = {
         command: "editContract",
@@ -511,7 +521,7 @@ function editContract() {
         raceBonus: values[3],
         raceBonusPos: values[4],
         driver: driverEditingName,
-        futureTeam: document.querySelector("#teamContractButton").dataset.teamid,
+        futureTeam: future_team,
         futureSalary: futureValues[0],
         futureYear: futureValues[1],
         futureSignBonus: futureValues[2],
@@ -520,6 +530,10 @@ function editContract() {
         futurePosition: futureValues[5]
     }
     socket.send(JSON.stringify(data))
+    if (future_team !== "-1") {
+        let driverDiv = document.querySelector('.free-driver[data-driverid="' + driverEditingID + '"]')
+        add_future_team_noti(driverDiv,future_team)
+    }
 }
 
 /**
