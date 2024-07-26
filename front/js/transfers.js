@@ -461,7 +461,7 @@ document.getElementById("confirmButton").addEventListener('click',function () {
  * Clears the modal's inputs
  */
 function clearModal() {
-    document.querySelectorAll(".rounded-input").forEach(function (elem) {
+    document.querySelectorAll(".old-custom-input-number").forEach(function (elem) {
         elem.value = ""
     })
 }
@@ -717,6 +717,14 @@ document.querySelector("#freefilterTransfers").addEventListener("click",function
     }
 })
 
+function hire_modal_standars(){
+    document.querySelector(".add-contract").classList.add("d-none")
+    document.querySelector("#futureContractTitle").classList.add("d-none")
+    document.querySelector("#futureContractOptions").classList.add("d-none")
+    document.getElementById("currentContract").innerText = combined_dict[inverted_dict[teamDestiniy]].toUpperCase()
+    document.getElementById("currentContract").className = "team-contract engine-" + team_dict[inverted_dict[teamDestiniy]]
+}
+
 
 /**
  * Manages the interaction to drag drivers
@@ -794,6 +802,7 @@ interact('.free-driver').draggable({
                         }
                         else {
                             modalType = "hire"
+                            hire_modal_standars()
                             myModal.show()
                         }
                         if (target.querySelector(".custom-icon") === null) {
@@ -819,6 +828,7 @@ interact('.free-driver').draggable({
                             }
                             else {
                                 modalType = "hire"
+                                hire_modal_standars()
                                 myModal.show()
                             }
                             if (target.querySelector(".custom-icon") === null) {
