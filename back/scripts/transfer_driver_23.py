@@ -1,5 +1,6 @@
 import sqlite3
 import random
+import datetime
 
 class TransferUtils:
     def __init__(self):
@@ -260,8 +261,46 @@ class TransferUtils:
     def edit_contract(self, driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos):
         self.cursor.execute(f"UPDATE Staff_Contracts SET Salary = {salary}, EndSeason = {endSeason}, StartingBonus = {startingBonus}, RaceBonus = {raceBonus}, RaceBonusTargetPos = {raceBonusTargetPos} WHERE ContractType = 0 AND StaffID = {driverID}")
 
+
+    def future_contract(self, teamID, driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos, position, year_iteration="24"):
+        print(teamID, driverID)
+        if teamID == "-1":
+            print("Deleting future contract")
+            self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3")
+        else:
+            already_has_future_contract = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3").fetchone()
+            if already_has_future_contract is not None:
+                already_has_future_contract = already_has_future_contract[0]
+            else:
+                already_has_future_contract = -1
+            print(already_has_future_contract, teamID)
+            if int(already_has_future_contract) != int(teamID):
+                season = self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
+                day = self.get_excel_date(int(season+1))
+                self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3")
+                if year_iteration == "24":
+                    print("Creating new future contract")
+                    print(day)
+                    print(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 3, {teamID}, {position}, {day}, {endSeason}, {salary}, {startingBonus}, {raceBonus}, {raceBonusTargetPos}, 0.5, 0)")
+                    self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 3, {teamID}, {position}, {day}, {endSeason}, {salary}, {startingBonus}, {raceBonus}, {raceBonusTargetPos}, 0.5, 0)")
+            else:
+                print("Updating future contract")
+                self.cursor.execute(f"UPDATE Staff_Contracts SET PosInTeam = {position}, Salary = {salary}, EndSeason = {endSeason}, StartingBonus = {startingBonus}, RaceBonus = {raceBonus}, RaceBonusTargetPos = {raceBonusTargetPos} WHERE StaffID = {driverID} AND TeamID = {already_has_future_contract} AND ContractType = 3")
+
+
         self.conn.commit()
         self.conn.close()
+
+
+    def get_excel_date(self, year):
+        excel_start_date = datetime.datetime(1900, 1, 1)
+        
+        target_date = datetime.datetime(year, 1, 1)
+        
+        day = (target_date - excel_start_date).days + 2
+        
+        return day
+
 
     def unretire(self, driverID):
         self.cursor.execute(f"UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = {driverID}")

@@ -35,8 +35,8 @@ let driver2;
 let originalTeamId
 
 let team_dict = { 1: "fe",2: "mc",3: "rb",4: "me",5: "al",6: "wi",7: "ha",8: "at",9: "af",10: "as",32: "ct" }
-let inverted_dict = {'ferrari': 1,'mclaren': 2,'redbull': 3,'merc': 4,'alpine': 5,'williams': 6,'haas': 7,'alphatauri': 8,'alfaromeo': 9,'astonmartin': 10, 'custom': 32 }
-let name_dict = { 'ferrari': "Ferrari",'mclaren': "McLaren",'redbull': "Red Bull",'merc': "Mercedes",'alpine': "Alpine",'williams': "Williams",'haas': "Haas",'alphatauri': "Alpha Tauri",'alfaromeo': "Alfa Romeo",'astonmartin': "Aston Martin","F2": "F2","F3": "F3", "custom": "Custom Team" }
+let inverted_dict = { 'ferrari': 1,'mclaren': 2,'redbull': 3,'merc': 4,'alpine': 5,'williams': 6,'haas': 7,'alphatauri': 8,'alfaromeo': 9,'astonmartin': 10,'custom': 32 }
+let name_dict = { 'ferrari': "Ferrari",'mclaren': "McLaren",'redbull': "Red Bull",'merc': "Mercedes",'alpine': "Alpine",'williams': "Williams",'haas': "Haas",'alphatauri': "Alpha Tauri",'alfaromeo': "Alfa Romeo",'astonmartin': "Aston Martin","F2": "F2","F3": "F3","custom": "Custom Team" }
 
 /**
  * Removes all the drivers from teams and categories
@@ -54,7 +54,7 @@ function remove_drivers() {
 }
 
 function insert_space(str) {
-    return str.replace(/([A-Z])/g, ' $1').trim();
+    return str.replace(/([A-Z])/g,' $1').trim();
 }
 
 
@@ -193,7 +193,7 @@ function addUnRetireIcon(div) {
 function iconListener(icon) {
     icon.addEventListener("click",function () {
         modalType = "edit"
-        document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g, ' ') + "'s contract";
+        document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g,' ') + "'s contract";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
     })
@@ -217,7 +217,8 @@ function unretireListener(icon) {
  */
 function manage_modal(info) {
     document.getElementById("currentContract").innerText = combined_dict[info[0][5]].toUpperCase()
-    document.getElementById("currentContract").classList.add("engine-" + team_dict[info[0][5]])
+    document.getElementById("currentContract").className = "team-contract engine-" + team_dict[info[0][5]]
+    document.getElementById("yearInput").dataset.maxYear = info[2]
     document.querySelector("#currentContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem,index) {
         if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
             elem.value = info[0][index].toLocaleString("en-US") + " $"
@@ -231,14 +232,17 @@ function manage_modal(info) {
         document.querySelector(".add-contract").classList.remove("d-none")
         document.querySelector("#futureContractTitle").classList.add("d-none")
         document.querySelector("#futureContractOptions").classList.add("d-none")
+        document.querySelector("#teamContractButton").innerText = "Team"
+        document.querySelector("#teamContractButton").dataset.teamid = "-1"
     }
-    else{
+    else {
         document.querySelector(".add-contract").classList.add("d-none")
         document.querySelector("#futureContractTitle").classList.remove("d-none")
         document.querySelector("#futureContractOptions").classList.remove("d-none")
-        document.getElementById("futureYear").innerText = "Contract for " + parseInt(info[2]+1)
-        document.getElementById("futureContract").innerText = combined_dict[info[1][5]].toUpperCase()
-        document.getElementById("futureContract").classList.add("engine-" + team_dict[info[1][5]])
+        document.getElementById("futureYear").innerText = "Contract for " + parseInt(info[2] + 1)
+        document.getElementById("futureContract").innerText = combined_dict[info[1][6]].toUpperCase()
+        document.querySelector("#teamContractButton").dataset.teamid = info[1][6]
+        document.getElementById("futureContract").className = "team-contract engine-" + team_dict[info[1][6]]
         document.querySelector("#futureContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem,index) {
             if (elem.id === "salaryInputFuture" || elem.id === "signBonusInputFuture" || elem.id === "raceBonusAmtFuture") {
                 elem.value = info[1][index].toLocaleString("en-US") + " $"
@@ -250,6 +254,48 @@ function manage_modal(info) {
     }
 
 }
+
+/**
+ * Listener for the team menu buttons
+ */
+document.querySelector("#teamContractMenu").querySelectorAll("a").forEach(function (elem) {
+    elem.addEventListener("click",function () {
+        document.querySelector("#teamContractButton").innerText = elem.querySelector(".team-menu-name").innerText;
+        document.querySelector("#teamContractButton").dataset.teamid = elem.dataset.teamid;
+        document.querySelector(".add-contract").classList.add("enabled")
+    })
+})
+
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+}
+
+document.querySelector(".add-contract i").addEventListener("click",function () {
+    if (event.target.parentNode.classList.contains("enabled")) {
+        document.getElementById("yearInput").value = document.getElementById("yearInput").dataset.maxYear
+        document.querySelector("#futureYear").innerText = "Next year's contract"
+        document.querySelector("#futureContract").className = "team-contract engine-" + team_dict[document.querySelector("#teamContractButton").dataset.teamid]
+        document.querySelector("#futureContract").innerText = document.querySelector("#teamContractButton").innerText
+        document.querySelector(".add-contract").classList.add("d-none")
+        document.querySelector("#futureContractTitle").classList.remove("d-none")
+        document.querySelector("#futureContractOptions").classList.remove("d-none")
+        document.querySelector("#salaryInputFuture").value = formatNumber((parseFloat(document.querySelector("#salaryInput").value.replace(/,/g,'').split(" ")[0]) * 1.3).toFixed(0)) + " $";
+        document.querySelector("#signBonusInputFuture").value = formatNumber((parseFloat(document.querySelector("#signBonusInput").value.replace(/,/g,'').split(" ")[0]) * 1.15).toFixed(0)) + " $";
+        document.querySelector("#raceBonusAmtFuture").value = formatNumber((parseFloat(document.querySelector("#raceBonusAmt").value.replace(/,/g,'').split(" ")[0]) * 1.15).toFixed(0)) + " $";
+        document.querySelector("#raceBonusPosFuture").value = parseInt(document.querySelector("#raceBonusPos").value)
+        document.querySelector("#yearInputFuture").value = parseInt(document.querySelector("#yearInput").value) + 2
+    }
+})
+
+
+document.querySelector(".break-contract").addEventListener("click",function () {
+    document.querySelector(".add-contract").classList.remove("d-none")
+    document.querySelector("#futureContractTitle").classList.add("d-none")
+    document.querySelector("#futureContractOptions").classList.add("d-none")
+    document.querySelector("#teamContractButton").innerText = "Team"
+    document.querySelector("#teamContractButton").dataset.teamid = "-1"
+    document.querySelector(".add-contract").classList.remove("enabled")
+})
 
 document.querySelector(".contract-details").querySelectorAll('.bi-plus-lg').forEach(button => {
     let intervalId;
@@ -302,7 +348,7 @@ document.querySelector(".contract-details").querySelectorAll('.bi-chevron-up').f
     let increment = 1;
     button.addEventListener('mousedown',function () {
         let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
-        if (input.id == "raceBonusPos"){
+        if (input.id == "raceBonusPos") {
             increment = -1
         }
         updateContractValue(input,increment);
@@ -325,7 +371,7 @@ document.querySelector(".contract-details").querySelectorAll('.bi-chevron-down')
     let increment = -1;
     button.addEventListener('mousedown',function () {
         let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
-        if (input.id == "raceBonusPos"){
+        if (input.id == "raceBonusPos") {
             increment = 1
         }
         updateContractValue(input,increment);
@@ -425,7 +471,7 @@ function clearModal() {
  */
 function editContract() {
     let values = []
-    document.querySelector(".contract-options").querySelectorAll(".old-custom-input-number").forEach(function (elem) {
+    document.querySelector("#currentContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem) {
         if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
             values.push(elem.value.replace(/[$,]/g,""))
         }
@@ -433,6 +479,16 @@ function editContract() {
             values.push(elem.value)
         }
     })
+    let futureValues = []
+    document.querySelector("#futureContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem) {
+        if (elem.id === "salaryInputFuture" || elem.id === "signBonusInputFuture" || elem.id === "raceBonusAmtFuture") {
+            futureValues.push(elem.value.replace(/[$,]/g,""))
+        }
+        else {
+            futureValues.push(elem.value)
+        }
+    })
+    console.log(futureValues)
 
     let data = {
         command: "editContract",
@@ -443,6 +499,13 @@ function editContract() {
         raceBonus: values[3],
         raceBonusPos: values[4],
         driver: driverEditingName,
+        futureTeam: document.querySelector("#teamContractButton").dataset.teamid,
+        futureSalary: futureValues[0],
+        futureYear: futureValues[1],
+        futureSignBonus: futureValues[2],
+        futureRaceBonus: futureValues[3],
+        futureRaceBonusPos: futureValues[4],
+        futurePosition: futureValues[5]
     }
     socket.send(JSON.stringify(data))
 }
@@ -474,11 +537,11 @@ function signDriver(type) {
             team: name_dict[teamOrigin.dataset.team],
             teamID: originalTeamId
         }
-        if (!data["team"]){
-            if (f2_teams.includes(originalTeamId)){
+        if (!data["team"]) {
+            if (f2_teams.includes(originalTeamId)) {
                 data["team"] = "F2"
             }
-            else if (f3_teams.includes(originalTeamId)){
+            else if (f3_teams.includes(originalTeamId)) {
                 data["team"] = "F3"
             }
         }
@@ -542,6 +605,7 @@ function signDriver(type) {
  * Event listener for the cancel button on the modal
  */
 document.getElementById("cancelButton").addEventListener('click',function () {
+    document.querySelector(".add-contract").classList.remove("enabled")
     if (modalType === "hire") {
         originalParent.appendChild(draggable);
         draggable.dataset.teamid = inverted_dict[teamOrigin.dataset.team]
@@ -574,16 +638,16 @@ document.querySelector("#nameFilterTransfer").addEventListener("input",function 
     })
 })
 
-document.querySelector("#filterIconTransfers").addEventListener("click", function(){
+document.querySelector("#filterIconTransfers").addEventListener("click",function () {
     document.querySelector(".category-filters").classList.toggle("show")
     document.querySelector(".filter-container").classList.toggle("focused")
 })
 
-document.getElementById("driver_transfers").querySelectorAll(".filter-pills").forEach(function(elem){
-    elem.addEventListener("click", function(event){
+document.getElementById("driver_transfers").querySelectorAll(".filter-pills").forEach(function (elem) {
+    elem.addEventListener("click",function (event) {
         let isActive = elem.classList.contains('active');
 
-        document.getElementById("driver_transfers").querySelectorAll('.filter-pills').forEach(function(el) {
+        document.getElementById("driver_transfers").querySelectorAll('.filter-pills').forEach(function (el) {
             el.classList.remove('active');
         });
 
@@ -593,60 +657,60 @@ document.getElementById("driver_transfers").querySelectorAll(".filter-pills").fo
     })
 })
 
-document.querySelector("#F2filterTransfers").addEventListener("click", function(event){
-    if (!event.target.classList.contains("active")){
+document.querySelector("#F2filterTransfers").addEventListener("click",function (event) {
+    if (!event.target.classList.contains("active")) {
         let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
-        elements.forEach(function(elem){
+        elements.forEach(function (elem) {
             elem.classList.remove("d-none")
         })
     }
-    else{
+    else {
         let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
-        elements.forEach(function(elem){
-            if(parseInt(elem.dataset.teamid) <= 21 && parseInt(elem.dataset.teamid) > 10){
+        elements.forEach(function (elem) {
+            if (parseInt(elem.dataset.teamid) <= 21 && parseInt(elem.dataset.teamid) > 10) {
                 elem.classList.remove("d-none")
             }
-            else{
+            else {
                 elem.classList.add("d-none")
             }
         })
     }
 })
 
-document.querySelector("#F3filterTransfers").addEventListener("click", function(event){
-    if (!event.target.classList.contains("active")){
+document.querySelector("#F3filterTransfers").addEventListener("click",function (event) {
+    if (!event.target.classList.contains("active")) {
         let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
-        elements.forEach(function(elem){
+        elements.forEach(function (elem) {
             elem.classList.remove("d-none")
         })
     }
-    else{
+    else {
         let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
-        elements.forEach(function(elem){
-            if(parseInt(elem.dataset.teamid) <= 31 && parseInt(elem.dataset.teamid) > 21){
+        elements.forEach(function (elem) {
+            if (parseInt(elem.dataset.teamid) <= 31 && parseInt(elem.dataset.teamid) > 21) {
                 elem.classList.remove("d-none")
             }
-            else{
+            else {
                 elem.classList.add("d-none")
             }
         })
     }
 })
 
-document.querySelector("#freefilterTransfers").addEventListener("click", function(event){
-    if (!event.target.classList.contains("active")){
+document.querySelector("#freefilterTransfers").addEventListener("click",function (event) {
+    if (!event.target.classList.contains("active")) {
         let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
-        elements.forEach(function(elem){
+        elements.forEach(function (elem) {
             elem.classList.remove("d-none")
         })
     }
-    else{
+    else {
         let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
-        elements.forEach(function(elem){
-            if(parseInt(elem.dataset.teamid) == 0){
+        elements.forEach(function (elem) {
+            if (parseInt(elem.dataset.teamid) == 0) {
                 elem.classList.remove("d-none")
             }
-            else{
+            else {
                 elem.classList.add("d-none")
             }
         })
@@ -747,7 +811,7 @@ interact('.free-driver').draggable({
                             updateColor(target)
                             document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
                             if ((game_version === 2023 && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) ||
-                            (game_version === 2024) && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
+                                (game_version === 2024) && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
                                 signDriver("fireandhire")
                             }
                             if (autoContractToggle.checked) {
@@ -810,11 +874,11 @@ interact('.free-driver').draggable({
                         team: name_dict[teamOrigin.dataset.team],
                         teamID: originalTeamId
                     }
-                    if (!data["team"]){
-                        if (f2_teams.includes(originalTeamId)){
+                    if (!data["team"]) {
+                        if (f2_teams.includes(originalTeamId)) {
                             data["team"] = "F2"
                         }
-                        else if (f3_teams.includes(originalTeamId)){
+                        else if (f3_teams.includes(originalTeamId)) {
                             data["team"] = "F3"
                         }
                     }

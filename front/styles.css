@@ -621,11 +621,20 @@ a.bi-linkedin:hover {
   color: var(--dark-text);
 }
 
-.add-contract.enabled span, .add-contract.enabled i{
-  cursor: pointer;
+.add-contract i{
+  font-style: normal;
 }
 
-.add-contract.enabled span:hover{
+.add-contract i::before{
+  margin: 0 9px;
+}
+
+.add-contract.enabled span, .add-contract.enabled i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.add-contract.enabled i:hover{
   color: var(--new-primary);
   transform: scale(1.1);
 }
@@ -634,7 +643,7 @@ a.bi-linkedin:hover {
   margin-top: 0 !important;
 }
 
-#futureContractContainer{
+#futureContractTitle{
   border-top: 2px solid var(--separator);
 }
 
