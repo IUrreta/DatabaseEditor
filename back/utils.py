@@ -224,8 +224,12 @@ class DatabaseUtils:
                 formatred_results[i] = tuple(results_list)
             QStage = self.cursor.execute(f"SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {races_participated[i][0]} AND SeasonID = {year[0]} AND DriverID = {driverID[0]}").fetchone()
             QRes = self.cursor.execute(f"SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {races_participated[i][0]} AND SeasonID = {year[0]} AND DriverID = {driverID[0]} AND QualifyingStage = {QStage[0]}").fetchone()
+            time_difference = self.calculate_time_difference(driverID[0], races_participated[i][0])
+            pole_difference = self.calculate_time_to_pole(driverID[0], races_participated[i][0])
             results_list = list(formatred_results[i])
             results_list.append(QRes[0])
+            results_list.append(time_difference)
+            results_list.append(pole_difference)
             formatred_results[i] = tuple(results_list)
 
 
@@ -245,6 +249,33 @@ class DatabaseUtils:
         formatred_results.insert(0, teamID)
         formatred_results.insert(0, name_formatted)
         return formatred_results
+    
+    def calculate_time_to_pole(self, driverID, raceID):
+        QStage = self.cursor.execute(f"SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {raceID} AND DriverID = {driverID}").fetchone()[0]
+        pole_time = self.cursor.execute(f"SELECT MIN(FastestLap) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {raceID} AND QualifyingStage = 3 AND FastestLap IS NOT 0").fetchone()[0]
+        driver_time = self.cursor.execute(f"SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1  AND RaceID = {raceID} AND QualifyingStage = {QStage} AND DriverID = {driverID}").fetchone()[0]
+        if driver_time < pole_time:
+            time_difference = "NQ"
+        else:
+            time_difference = round(driver_time - pole_time, 2)
+            time_difference = f"+{time_difference}s"
+
+        return time_difference
+
+
+    def calculate_time_difference(self, driverID, raceID):
+        total_laps = self.cursor.execute(f"SELECT MAX(Laps) FROM Races_Results WHERE RaceID = {raceID}").fetchone()[0]
+        driver_laps = self.cursor.execute(f"SELECT Laps FROM Races_Results WHERE RaceID = {raceID} AND DriverID = {driverID}").fetchone()[0]
+        if driver_laps < total_laps:
+            time_difference = f"+{total_laps - driver_laps} L"
+        else:
+            winner_id = self.cursor.execute(f"SELECT DriverID FROM Races_Results WHERE RaceID = {raceID} AND FinishingPos = 1").fetchone()[0]
+            winner_time = self.cursor.execute(f"SELECT Time FROM Races_Results WHERE RaceID = {raceID} AND DriverID = {winner_id}").fetchone()[0]
+            driver_time = self.cursor.execute(f"SELECT Time FROM Races_Results WHERE RaceID = {raceID} AND DriverID = {driverID}").fetchone()[0]
+            time_difference = round(driver_time - winner_time, 1)
+            time_difference = f"+{time_difference}s"
+
+        return time_difference
 
     def fetch_drivers_per_year(self, year):
         drivers = self.cursor.execute(f"SELECT bas.FirstName, bas.LastName, res.DriverID, res.TeamID FROM Staff_BasicData bas JOIN Races_Results res ON bas.StaffID = res.DriverID WHERE Season = {year} GROUP BY bas.FirstName, bas.LastName, bas.StaffID, res.TeamID ORDER BY res.TeamID").fetchall()

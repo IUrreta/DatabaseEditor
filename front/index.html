@@ -1458,27 +1458,21 @@
               </ul>
             </div>
           </div>
-          <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
-            <ul class="nav nav-pills">
-              <li class="nav-item">
-                <a class="nav-link bold-font generalPills" data-bs-toggle="pill" href="#" id="qualipill">
-                  <div class="basic-label bold-font">Qualifying</div>
-                  <div class="pill-line"></div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link bold-font generalPills" data-bs-toggle="pill" href="#" id="pospill">
-                  <div class="basic-label bold-font">Positions</div>
-                  <div class="pill-line"></div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link bold-font generalPills active" data-bs-toggle="pill" href="#" id="pointspill">
-                  <div class="basic-label bold-font">Points</div>
-                  <div class="pill-line"></div>
-                </a>
-              </li>
-            </ul>
+          <div class="ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
+            <div>
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
+                id="tableTypeButton" data-bs-toggle="dropdown">
+                Points
+              </button>
+              <div class="dropdown-line"></div>
+              <ul class="dropdown-menu" id="tableTypeDropdown" style="font-family: Formula1;">
+                <a class="dropdown-item" style="cursor: pointer;" id="pointspill" data-value="points">Points</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="pospill" data-value="pos">Positions</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="qualipill" data-value="quali">Qualifying</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="gapWinner" data-value="gapWinner">Gap to winner</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="gapPole" data-value="gapPole">Gap to pole</a>
+              </ul>
+            </div>
           </div>
           <div class="title bold-font">
             Season Results
@@ -3363,7 +3357,10 @@
               <div class="main-columns-drag-section main-resizable" id="teamsDiv">
                 <div class="col team bold-font team-performance rb-transparent" data-teamid="3"
                   data-teamname="Red Bull">
-                  <div class="team-title">RED BULL RACING</div>
+                  <div class="team-title">
+                    <span class="team-title-name">RED BULL RACING</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress rb" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3371,7 +3368,10 @@
                   </div>
                 </div>
                 <div class="col team bold-font team-performance fe-transparent" data-teamid="1" data-teamname="Ferrari">
-                  <div class="team-title">FERRARI</div>
+                  <div class="team-title">
+                    <span class="team-title-name">FERRARI</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress fe" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3380,7 +3380,10 @@
                 </div>
                 <div class="col team bold-font team-performance me-transparent" data-teamid="4"
                   data-teamname="Mercedes">
-                  <div class="team-title">MERCEDES</div>
+                  <div class="team-title">
+                    <span class="team-title-name">MERCEDES</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress me" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3389,7 +3392,10 @@
                 </div>
                 <div class="col team bold-font team-performance al-transparent" data-teamid="5" data-teamname="Alpine"
                   id="alpineTeam">
-                  <div class="team-title alpine-name">ALPINE</div>
+                  <div class="team-title">
+                    <span class="team-title-name alpine-name">ALPINE</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress al" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3397,7 +3403,10 @@
                   </div>
                 </div>
                 <div class="col team bold-font team-performance mc-transparent" data-teamid="2" data-teamname="McLaren">
-                  <div class="team-title">MCLAREN</div>
+                  <div class="team-title">
+                    <span class="team-title-name">MCLAREN</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress mc" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3406,7 +3415,10 @@
                 </div>
                 <div class="col team bold-font team-performance af-transparent" data-teamid="9"
                   data-teamname="Alfa Romeo">
-                  <div class="team-title alfa-name">ALFA ROMEO</div>
+                  <div class="team-title">
+                    <span class="team-title-name alfa-name">ALFA ROMEO</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress af" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3415,7 +3427,10 @@
                 </div>
                 <div class="col team bold-font team-performance as-transparent" data-teamid="10"
                   data-teamname="Aston Martin">
-                  <div class="team-title">ASTON MARTIN</div>
+                  <div class="team-title">
+                    <span class="team-title-name">ASTON MARTIN</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress as" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3423,7 +3438,10 @@
                   </div>
                 </div>
                 <div class="col team bold-font team-performance ha-transparent" data-teamid="7" data-teamname="Haas">
-                  <div class="team-title">HAAS</div>
+                  <div class="team-title">
+                    <span class="team-title-name">HAAS</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress ha" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3432,7 +3450,10 @@
                 </div>
                 <div class="col team bold-font team-performance at-transparent" data-teamid="8"
                   data-teamname="Alpha Tauri" id="alphaTauriTeam">
-                  <div class="team-title at-name complete">ALPHA TAURI</div>
+                  <div class="team-title">
+                    <span class="team-title-name at-name complete">ALPHA TAURI</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress at" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3441,7 +3462,10 @@
                 </div>
                 <div class="col team bold-font team-performance wi-transparent" data-teamid="6"
                   data-teamname="Williams">
-                  <div class="team-title">WILLIAMS</div>
+                  <div class="team-title">
+                    <span class="team-title-name">WILLIAMS</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress wi" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3450,7 +3474,10 @@
                 </div>
                 <div class="col team bold-font team-performance ct-transparent" data-teamid="32"
                   id="customTeamPerformance" data-teamname="Custom Team">
-                  <div class="team-title ct-replace">CUSTOM TEAM</div>
+                  <div class="team-title">
+                    <span class="team-title-name ct-replace">CUSTOM TEAM</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress ct" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"

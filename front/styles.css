@@ -2140,6 +2140,7 @@ DRIVERS TABLE
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 14px;
 }
 
 .drivers-table-position, .teams-table-position{
@@ -5975,6 +5976,11 @@ input::-webkit-inner-spin-button {
   display: flex;
   align-items: center;
   font-size: 18px;
+  justify-content: space-between;
+}
+
+.team-title-value{
+  color: var(--dark-text);
 }
 
 
