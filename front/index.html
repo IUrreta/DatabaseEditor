@@ -24,7 +24,11 @@
         </div>
         <div class="modal-body number-and-contract custom-body">
           <div class="contract-options">
-            <div class="contract-details pt-1">
+            <div class="contract-title">
+              <div>Current contract</div>
+              <div class="team-contract" id="currentContract"></div>
+            </div>
+            <div class="contract-details pt-1 mb-3"  id="currentContractOptions">
               <div>
                 <h5 class="modal-subtitle bold-font">Salary</h5>
                 <div class="input-and-buttons pt-1">
@@ -76,35 +80,182 @@
                 </div>
               </div>
             </div>
+            <div class="contract-title pt-3" id="futureContractTitle">
+              <div class="year-and-break">
+                <div id="futureYear"></div>
+                <div class="break-contract ms-4">Break contract</div>
+              </div>
+              <div class="team-contract" id="futureContract"></div>
+            </div>
+            <div class="contract-details pt-1"  id="futureContractOptions">
+              <div>
+                <h5 class="modal-subtitle bold-font">Salary</h5>
+                <div class="input-and-buttons pt-1">
+                  <input type="text" class="old-custom-input-number" id="salaryInputFuture" placeholder="ex: 2000000">
+                  <div class="input-buttons">
+                    <i class="bi bi-plus-lg"></i>
+                    <i class="bi bi-dash-lg"></i>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h5 class="modal-subtitle bold-font">Valid until</h5>
+                <div class="input-and-buttons pt-1">
+                  <input type="number" class="old-custom-input-number" id="yearInputFuture" placeholder="ex: 2028">
+                  <div class="input-buttons">
+                    <i class="bi bi-chevron-up"></i>
+                    <i class="bi bi-chevron-down"></i>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h5 class="modal-subtitle bold-font">Sign bonus</h5>
+                <div class="input-and-buttons pt-1">
+                  <input type="text" class="old-custom-input-number" id="signBonusInputFuture" placeholder="ex: 10000">
+                  <div class="input-buttons">
+                    <i class="bi bi-plus-lg"></i>
+                    <i class="bi bi-dash-lg"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3">
+                <h5 class="modal-subtitle bold-font">Race bonus amount</h5>
+                <div class="input-and-buttons pt-1">
+                  <input type="text" class="old-custom-input-number" id="raceBonusAmtFuture" placeholder="ex: 150000">
+                  <div class="input-buttons">
+                    <i class="bi bi-plus-lg"></i>
+                    <i class="bi bi-dash-lg"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3">
+                <h5 class="modal-subtitle bold-font">Race bonus position</h5>
+                <div class="input-and-buttons pt-1">
+                  <input type="number" class="old-custom-input-number" id="raceBonusPosFuture" placeholder="ex: 1">
+                  <div class="input-buttons">
+                    <i class="bi bi-chevron-up"></i>
+                    <i class="bi bi-chevron-down"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3">
+                <h5 class="modal-subtitle bold-font">Position</h5>
+                <div class="input-and-buttons pt-1">
+                  <input type="number" class="old-custom-input-number" id="posInTeamFuture" placeholder="ex: 1">
+                  <div class="input-buttons">
+                    <i class="bi bi-chevron-up"></i>
+                    <i class="bi bi-chevron-down"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="add-contract">
+              <div>
+                <i class="bi bi-plus-circle"></i>
+                <span>Add future contract</span>
+              </div>
+              <div>
+                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="teamContractButton"
+                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Team
+                </button>
+                <div class="dropdown-line"></div>
+                <ul class="dropdown-menu dropdown-menu-end" id="teamContractMenu" style="font-family: Formula1;">
+                  <a class="dropdown-item feborder-down bold-font" style="cursor: pointer;" data-teamid="1">
+                    <div class="team-menu-logo">
+                      <img src="../assets/images/ferrari.png" class="team-menu-ferrari">
+                    </div>
+                    <div class="team-menu-name">
+                      FERRARI
+                    </div>
+                  </a>
+                  <a class="dropdown-item mcborder-down bold-font" style="cursor: pointer;" data-teamid="2">
+                    <div class="team-menu-logo">
+                      <img src="../assets/images/mclaren.png" class="team-menu-mclaren">
+                    </div>
+                    <div class="team-menu-name">
+                      MCLAREN
+                    </div>
+                  </a>
+                  <a class="dropdown-item rbborder-down bold-font" style="cursor: pointer;" data-teamid="3">
+                    <div class="team-menu-logo">
+                      <img src="../assets/images/redbull.png" class="team-menu-redbull">
+                    </div>
+                    <div class="team-menu-name">RED BULL</div>
+                  </a>
+                  <a class="dropdown-item meborder-down bold-font" style="cursor: pointer;" data-teamid="4">
+                    <div class="team-menu-logo">
+                      <img src="../assets/images/mercedes.png" class="team-menu-merc">
+                    </div>
+  
+                    <div class="team-menu-name">
+                      MERCEDES
+                    </div>
+                  </a>
+                  <a class="dropdown-item alborder-down bold-font" style="cursor: pointer;" data-teamid="5">
+                    <div class="team-menu-logo">
+                      <img src="../assets/images/alpine.png"
+                        class="alpinelogo-replace alpinelogo team-menu-alpine-replace changable-team-menu-alpine">
+                    </div>
+                    <div class="team-menu-name alpine-name">
+                      ALPINE
+                    </div>
+                  </a>
+                  <a class="dropdown-item wiborder-down bold-font" style="cursor: pointer;" data-teamid="6">
+                    <div class="team-menu-logo">
+                      <img src="../assets/images/williams.png" class="team-menu-williams">
+                    </div>
+                    <div class="team-menu-name">
+                      WILLIAMS
+                    </div>
+                  </a>
+                  <a class="dropdown-item haborder-down bold-font" style="cursor: pointer;" data-teamid="7">
+                    <div class="team-menu-logo">
+                      <img src="../assets/images/haas.png" class="team-menu-haas">
+                    </div>
+                    <div class="team-menu-name">
+                      HAAS
+                    </div>
+                  </a>
+                  <a class="dropdown-item atborder-down bold-font" style="cursor: pointer;" data-teamid="8">
+                    <div class="team-menu-logo">
+                      <img src="../assets/images/alphatauri.png"
+                        class="atlogo-replace alphataurilogo team-menu-alphatauri-replace changable-team-menu-alphatauri">
+                    </div>
+                    <div class="team-menu-name at-name">
+                      ALPHA TAURI
+                    </div>
+                  </a>
+                  <a class="dropdown-item afborder-down bold-font" style="cursor: pointer;" data-teamid="9">
+                    <div class="team-menu-logo">
+                      <img src="../assets/images/alfaromeo.png"
+                        class="alfalogo-replace alfalogo team-menu-alfa-replace changable-team-menu-alfa">
+                    </div>
+                    <div class="team-menu-name alfa-name">
+                      ALFA ROMEO
+                    </div>
+                  </a>
+                  <a class="dropdown-item asborder-down bold-font" style="cursor: pointer;" data-teamid="10">
+                    <div class="team-menu-logo">
+                      <img src="../assets/images/astonMartin.png" class="team-menu-aston">
+                    </div>
+                    <div class="team-menu-name" style="margin-right: 5px;">
+                      ASTON MARTIN
+                    </div>
+                  </a>
+                  <a class="dropdown-item ctborder-down bold-font" style="cursor: pointer;" data-teamid="32"
+                    id="customTeamContract">
+                    <div class="team-menu-logo">
+                      <img src="../assets/images/placeholder.png" class="team-menu-custom  custom-replace">
+                    </div>
+                    <div class="team-menu-name ct-replace" style="margin-right: 5px;">
+                      CUSTOM TEAM
+                    </div>
+                  </a>
+                </ul>
+              </div>
+            </div>
           </div>
-
-        </div>
-        <div class="modal-footer custom-footer">
-          <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-              id="cancelButton">Close</button>
-            <div class="dropdown-line"></div>
-          </div>
-          <div class="pos-relative">
-            <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
-              id="confirmButton">Confirm</button>
-            <div class="dropdown-line"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="modal custom-modal fade" id="pitCrewModal" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-      <div class="modal-content custom-modal">
-        <div class="modal-header custom-header">
-          <h4 class="modal-title bold-font">Pit Crew editing</h4>
-        </div>
-        <div class="modal-body number-and-contract">
-          <div class="contract-options">
-
-          </div>
-
         </div>
         <div class="modal-footer custom-footer">
           <div class="pos-relative">

@@ -216,7 +216,9 @@ function unretireListener(icon) {
  * @param {Object} info values for the contract modal that just opened
  */
 function manage_modal(info) {
-    document.querySelector(".contract-options").querySelectorAll(".old-custom-input-number").forEach(function (elem,index) {
+    document.getElementById("currentContract").innerText = combined_dict[info[0][5]].toUpperCase()
+    document.getElementById("currentContract").classList.add("engine-" + team_dict[info[0][5]])
+    document.querySelector("#currentContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem,index) {
         if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
             elem.value = info[0][index].toLocaleString("en-US") + " $"
         }
@@ -225,6 +227,28 @@ function manage_modal(info) {
         }
 
     })
+    if (info[1] === null) {
+        document.querySelector(".add-contract").classList.remove("d-none")
+        document.querySelector("#futureContractTitle").classList.add("d-none")
+        document.querySelector("#futureContractOptions").classList.add("d-none")
+    }
+    else{
+        document.querySelector(".add-contract").classList.add("d-none")
+        document.querySelector("#futureContractTitle").classList.remove("d-none")
+        document.querySelector("#futureContractOptions").classList.remove("d-none")
+        document.getElementById("futureYear").innerText = "Contract for " + parseInt(info[2]+1)
+        document.getElementById("futureContract").innerText = combined_dict[info[1][5]].toUpperCase()
+        document.getElementById("futureContract").classList.add("engine-" + team_dict[info[1][5]])
+        document.querySelector("#futureContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem,index) {
+            if (elem.id === "salaryInputFuture" || elem.id === "signBonusInputFuture" || elem.id === "raceBonusAmtFuture") {
+                elem.value = info[1][index].toLocaleString("en-US") + " $"
+            }
+            else {
+                elem.value = info[1][index]
+            }
+        })
+    }
+
 }
 
 document.querySelector(".contract-details").querySelectorAll('.bi-plus-lg').forEach(button => {

@@ -9,6 +9,7 @@
   --elements: #313131;
   --dropdown-hover: #363636;
   --dark-text: #b1b1b1;
+  --disabled-text: #7a7a7a;
   --negative-text: #292929;
   --new-primary: #c89efc;
   --new-primary-dark: #ba82ff;
@@ -602,6 +603,70 @@ a.bi-linkedin:hover {
   text-align: center;
 }
 
+.add-contract{
+  border: 2px dashed var(--disabled-text);
+  color: var(--disabled-text);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px;
+  transition: color 0.2s, border 0.2s, transform 0.2s;
+  padding: 8px;
+  font-size: 18px;
+}
+
+.add-contract.enabled{
+  border: 2px dashed var(--dark-text);
+  color: var(--dark-text);
+}
+
+.add-contract.enabled span, .add-contract.enabled i{
+  cursor: pointer;
+}
+
+.add-contract.enabled span:hover{
+  color: var(--new-primary);
+  transform: scale(1.1);
+}
+
+#teamContractButton{
+  margin-top: 0 !important;
+}
+
+#futureContractContainer{
+  border-top: 2px solid var(--separator);
+}
+
+.year-and-break{
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.contract-title{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24px;
+  font-family: 'Formula1Bold';
+  color: var(--white-general);
+  margin-bottom: 20px;
+}
+
+.break-contract{
+  color: var(--dark-text);
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+  font-size: 18px;
+}
+
+.break-contract:hover{
+  color: var(--negative-general);
+  transform: scale(1.1);
+}
+
 .auto-contract {
   color: var( --text-general);
   font-size: 20px;
@@ -725,11 +790,11 @@ input[type="checkbox"]:checked {
   overflow-y: scroll;
 }
 
-#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar, #raceProbMenu::-webkit-scrollbar, .prob-viewer-data::-webkit-scrollbar, #patchNotesBody::-webkit-scrollbar{
+#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #teamContractMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar, #raceProbMenu::-webkit-scrollbar, .prob-viewer-data::-webkit-scrollbar, #patchNotesBody::-webkit-scrollbar{
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb, #patchNotesBody::-webkit-scrollbar-thumb{
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #teamContractMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb, #patchNotesBody::-webkit-scrollbar-thumb{
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -3269,6 +3334,38 @@ DRIVERS TABLE
 
 .engine-me{
   border-bottom: 2px solid var(--mercedes-primary);
+}
+
+.engine-al{
+  border-bottom: 2px solid var(--alpine-primary);
+}
+
+.engine-wi{
+  border-bottom: 2px solid var(--williams-primary);
+}
+
+.engine-af{
+  border-bottom: 2px solid var(--alfa-primary);
+} 
+
+.engine-at{
+  border-bottom: 2px solid var(--alphatauri-primary);
+} 
+
+.engine-ha{
+  border-bottom: 2px solid var(--haas-primary);
+} 
+
+.engine-mc{
+  border-bottom: 2px solid var(--mclaren-primary);
+}   
+
+.engine-ct{
+  border-bottom: 2px solid var(--custom-team-primary);
+} 
+
+.engine-as{
+  border-bottom: 2px solid var(--aston-primary);
 }
 
 
@@ -6016,6 +6113,18 @@ input::-webkit-inner-spin-button {
 }
 
 #teamMenu a, .team-select-menu a{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+#teamContractMenu{
+  max-height: 250px;
+  overflow-y: scroll;
+}
+
+#teamContractMenu a{
   display: flex;
   align-items: center;
   justify-content: flex-start;

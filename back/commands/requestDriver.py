@@ -7,8 +7,6 @@ class RequestDriverCommand(Command):
 
     async def execute(self):
         contractDetails = Command.dbutils.fetch_driverContract(self.message["driverID"])
-        contractMsg = [contractDetails]
-        contractMsg.append(Command.dbutils.fetchDriverNumberDetails(self.message["driverID"]))
-        contractMsg.insert(0, "Contract fetched")
-        data_json_contract = json.dumps(contractMsg)
+        contractDetails.insert(0, "Contract fetched")
+        data_json_contract = json.dumps(contractDetails)
         await self.send_message_to_client(data_json_contract)
