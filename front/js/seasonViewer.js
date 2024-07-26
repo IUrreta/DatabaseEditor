@@ -862,7 +862,7 @@ function manageTeamsText(raceDiv) {
         raceDiv.innerHTML = d1 + "<br>" + d2
     }
     else if (pointsOrPos === "gapPole") {
-        raceDiv.innerHTML = raceDiv.dataset.gapPole1 + "<br>" + raceDiv.dataset.gapPole2
+        raceDiv.innerHTML = raceDiv.dataset.gapToPole1 + "<br>" + raceDiv.dataset.gapToPole2
     }
     return raceDiv
 }

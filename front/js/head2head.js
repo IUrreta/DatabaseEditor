@@ -1091,7 +1091,6 @@ function get_one_driver_points_format(driver, data) {
 }
 
 function load_graphs_data(data) {
-
     data.forEach(function (driv, index) {
         if (index !== 0 && index !== data.length - 1) {
             let d1_res = [];
@@ -1110,8 +1109,8 @@ function load_graphs_data(data) {
                 if (ptsThatRace === -1) {
                     ptsThatRace = 0;
                 }
-                if (elem.length === 8) {
-                    d1_points_provisional.push(ptsThatRace + elem[5])
+                if (elem.length === 10) {
+                    d1_points_provisional.push(ptsThatRace + elem[7])
                 }
                 else {
                     d1_points_provisional.push(ptsThatRace)

@@ -219,6 +219,8 @@ function manage_modal(info) {
     document.getElementById("currentContract").innerText = combined_dict[info[0][5]].toUpperCase()
     document.getElementById("currentContract").className = "team-contract engine-" + team_dict[info[0][5]]
     document.getElementById("yearInput").dataset.maxYear = info[2]
+    document.getElementById("yearInput").min = info[2]
+    document.getElementById("yearInputFuture").min = info[2] + 1
     document.querySelector("#currentContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem,index) {
         if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
             elem.value = info[0][index].toLocaleString("en-US") + " $"
@@ -284,6 +286,7 @@ document.querySelector(".add-contract i").addEventListener("click",function () {
         document.querySelector("#raceBonusAmtFuture").value = formatNumber((parseFloat(document.querySelector("#raceBonusAmt").value.replace(/,/g,'').split(" ")[0]) * 1.15).toFixed(0)) + " $";
         document.querySelector("#raceBonusPosFuture").value = parseInt(document.querySelector("#raceBonusPos").value)
         document.querySelector("#yearInputFuture").value = parseInt(document.querySelector("#yearInput").value) + 2
+        document.querySelector("#posInTeamFuture").value = 1;
     }
 })
 
@@ -297,7 +300,7 @@ document.querySelector(".break-contract").addEventListener("click",function () {
     document.querySelector(".add-contract").classList.remove("enabled")
 })
 
-document.querySelector(".contract-details").querySelectorAll('.bi-plus-lg').forEach(button => {
+document.querySelector(".contract-options").querySelectorAll('.bi-plus-lg').forEach(button => {
     let intervalId;
     let increment = 10000;
     button.addEventListener('mousedown',function () {
@@ -320,7 +323,7 @@ document.querySelector(".contract-details").querySelectorAll('.bi-plus-lg').forE
     });
 });
 
-document.querySelector(".contract-details").querySelectorAll('.bi-dash-lg').forEach(button => {
+document.querySelector(".contract-options").querySelectorAll('.bi-dash-lg').forEach(button => {
     let intervalId;
     let increment = -10000;
     button.addEventListener('mousedown',function () {
@@ -343,7 +346,7 @@ document.querySelector(".contract-details").querySelectorAll('.bi-dash-lg').forE
     });
 });
 
-document.querySelector(".contract-details").querySelectorAll('.bi-chevron-up').forEach(button => {
+document.querySelector(".contract-options").querySelectorAll('.bi-chevron-up').forEach(button => {
     let intervalId;
     let increment = 1;
     button.addEventListener('mousedown',function () {
@@ -366,7 +369,7 @@ document.querySelector(".contract-details").querySelectorAll('.bi-chevron-up').f
     });
 });
 
-document.querySelector(".contract-details").querySelectorAll('.bi-chevron-down').forEach(button => {
+document.querySelector(".contract-options").querySelectorAll('.bi-chevron-down').forEach(button => {
     let intervalId;
     let increment = -1;
     button.addEventListener('mousedown',function () {
@@ -394,16 +397,25 @@ document.querySelector(".contract-details").querySelectorAll('.bi-chevron-down')
 
 
 function updateContractMoneyValue(input,increment) {
-    let valorActual = input.value.replace(/[$,]/g,"");
-    let nuevoValor = Number(valorActual) + increment;
-    let valorFormateado = nuevoValor.toLocaleString('en-US') + '$';
-    input.value = valorFormateado;
+    let val = input.value.replace(/[$,]/g,"");
+    let new_val = Number(val) + increment;
+    if (new_val < parseInt(input.min)) {
+        new_val = input.min;
+    }
+    let formatted = new_val.toLocaleString('en-US') + '$';
+    input.value = formatted;
 }
 
 function updateContractValue(input,increment) {
-    let valorActual = input.value;
-    let nuevoValor = Number(valorActual) + increment;
-    input.value = nuevoValor;
+    let val = input.value;
+    let new_val = Number(val) + increment;
+    if (new_val < parseInt(input.min)) {
+        new_val = input.min;
+    }
+    if (new_val > parseInt(input.max)) {
+        new_val = input.max;
+    }
+    input.value = new_val;
 }
 
 /**
