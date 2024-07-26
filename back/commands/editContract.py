@@ -10,6 +10,7 @@ class EditContractCommand(Command):
     async def execute(self):
         transfer_utils = TransferUtils()
         transfer_utils.edit_contract(self.message['driverID'], self.message['salary'], self.message['year'], self.message['signBonus'], self.message['raceBonus'], self.message['raceBonusPos'])
+        transfer_utils.future_contract(self.message['futureTeam'], self.message['driverID'], self.message['futureSalary'], self.message['futureYear'], self.message['futureSignBonus'], self.message['futureRaceBonus'], self.message['futureRaceBonusPos'], self.message['futurePosition'], year_iteration=Command.year_iterarion)
         process_repack("../result", Command.path)
         info = []
         info.insert(0, f"Succesfully edited {self.message['driver']}'s contract")

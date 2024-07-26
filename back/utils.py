@@ -99,8 +99,10 @@ class DatabaseUtils:
 
 
     def fetch_driverContract(self, id):
-        details = self.cursor.execute(f"SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = {id}").fetchone()
-        return details
+        vurrent_contract = self.cursor.execute(f"SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = {id}").fetchone()
+        future_contract = self.cursor.execute(f"SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, PosInTeam, TeamID FROM Staff_Contracts WHERE ContractType = 3 AND StaffID = {id}").fetchone()
+        day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+        return [vurrent_contract, future_contract, day_season[1]]
     
     def fetch_year(self):
         season = self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
