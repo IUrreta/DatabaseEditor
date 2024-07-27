@@ -18,6 +18,7 @@ const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
 const selectImageButton = document.getElementById('selectImage');
 const fileInput = document.getElementById('fileInput');
 
+const f1_teams = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32]
 const f2_teams = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 const f3_teams = [22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
 

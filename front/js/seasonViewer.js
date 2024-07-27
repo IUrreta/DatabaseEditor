@@ -502,8 +502,10 @@ function new_load_teams_table(data) {
         }
     }
     for (let team in combined_dict) {
-        let pos = pairTeamPosDict[team]
-        new_addTeam(teamData[team],combined_dict[team],pos,team)
+        if (f1_teams.includes(parseInt(team))) {
+            let pos = pairTeamPosDict[team]
+            new_addTeam(teamData[team],combined_dict[team],pos,team)
+        }
     }
     new_color_teams_table()
     order_teams_table()
