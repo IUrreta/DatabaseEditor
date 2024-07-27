@@ -87,17 +87,17 @@ function place_drivers(driversArray) {
             add_future_team_noti(newDiv, driver["team_future"])
         }
         manageColor(newDiv, spanLastName)
-        if (driver[4] === 1) {
-            addUnRetireIcon(newDiv)
-        }
+        // if (driver[4] === 1) {
+        //     addUnRetireIcon(newDiv)
+        // }
         //newDiv.innerHTML = driver[0];
         divPosition = "free-drivers"
         let position = driver[3]
         if (position >= 3) {
             position = 3
         }
+        addIcon(newDiv)
         if (driver[2] > 0 && driver[2] <= 10 || driver[2] === 32) {
-            addIcon(newDiv)
             divPosition = team_dict[driver[2]] + position;
         }
         document.getElementById(divPosition).appendChild(newDiv)
@@ -305,12 +305,25 @@ function iconListener(icon) {
                 manage_modal_driver_staff("staff")
             }
         }
+        else if (space.id === "free-drivers"){
+            manage_modal_driver_staff("free-driver")
+        }
+        else if (space.id === "free-staff"){
+            if (event.target.parentNode.parentNode.dataset.type === "race-engineer"){
+                manage_modal_driver_staff("free-race-engineer")
+            }
+            else{
+                manage_modal_driver_staff("free-staff")
+            }
+        }
         myModal.show()
     })
 }
 
 function manage_modal_driver_staff(type){
     if (type === "staff" || type === "race-engineer"){
+        document.getElementById("currentContractTitle").classList.remove("d-none")
+        document.getElementById("currentContractOptions").classList.remove("d-none")
         document.querySelectorAll(".driver-only").forEach(function(elem){
             let input = elem.querySelector("input")
             input.disabled = true
@@ -322,6 +335,8 @@ function manage_modal_driver_staff(type){
         })
     }
     else if (type === "driver"){
+        document.getElementById("currentContractTitle").classList.remove("d-none")
+        document.getElementById("currentContractOptions").classList.remove("d-none")
         document.querySelectorAll(".driver-only").forEach(function(elem){
             let input = elem.querySelector("input")
             input.disabled = false
@@ -334,6 +349,47 @@ function manage_modal_driver_staff(type){
         let positionInput = document.querySelector("#positionInput input")
         positionInput.max = 999
 
+    }
+    else if (type === "free-driver"){
+        document.querySelectorAll(".driver-only").forEach(function(elem){
+            let input = elem.querySelector("input")
+            input.disabled = false
+            input.classList.remove("disabled")
+            let buttons = elem.querySelectorAll("i")
+            buttons.forEach(function(button){
+                button.classList.remove("disabled")
+            })
+        })
+        let positionInput = document.querySelector("#positionInput input")
+        positionInput.max = 999
+        document.getElementById("currentContractOptions").classList.add("d-none")
+        document.getElementById("futureContractOptions").classList.add("d-none")
+        document.getElementById("futureContractTitle").classList.add("d-none")
+        document.getElementById("currentContractTitle").classList.add("d-none")
+        document.querySelector(".add-contract").classList.remove("d-none")
+    }
+    else if (type === "free-staff"){
+        document.querySelectorAll(".driver-only").forEach(function(elem){
+            let input = elem.querySelector("input")
+            input.disabled = true
+            input.classList.add("disabled")
+            let buttons = elem.querySelectorAll("i")
+            buttons.forEach(function(button){
+                button.classList.add("disabled")
+            })
+        })
+        let positionInput = document.querySelector("#positionInput input")
+        positionInput.disabled = false
+        positionInput.max = 2
+        let buttons = document.querySelectorAll("#positionInput i")
+        buttons.forEach(function(button){
+            button.classList.remove("disabled")
+        })
+        document.getElementById("currentContractOptions").classList.add("d-none")
+        document.getElementById("futureContractOptions").classList.add("d-none")
+        document.getElementById("futureContractTitle").classList.add("d-none")
+        document.getElementById("currentContractTitle").classList.add("d-none")
+        document.querySelector(".add-contract").classList.remove("d-none")
     }
     if (type === "race-engineer"){
         let input = document.querySelector("#positionInput input")
@@ -365,20 +421,23 @@ function unretireListener(icon) {
  * @param {Object} info values for the contract modal that just opened
  */
 function manage_modal(info) {
-    document.getElementById("currentContract").innerText = combined_dict[info[0][5]].toUpperCase()
-    document.getElementById("currentContract").className = "team-contract engine-" + team_dict[info[0][5]]
-    document.getElementById("yearInput").dataset.maxYear = info[2]
-    document.getElementById("yearInput").min = info[2]
-    document.getElementById("yearInputFuture").min = info[2] + 1
-    document.querySelector("#currentContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem, index) {
-        if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
-            elem.value = info[0][index].toLocaleString("en-US") + " $"
-        }
-        else {
-            elem.value = info[0][index]
-        }
-
-    })
+    console.log(info)
+    if (info[0] !== null){
+        document.getElementById("currentContract").innerText = combined_dict[info[0][5]].toUpperCase()
+        document.getElementById("currentContract").className = "team-contract engine-" + team_dict[info[0][5]]
+        document.getElementById("yearInput").dataset.maxYear = info[2]
+        document.getElementById("yearInput").min = info[2]
+        document.getElementById("yearInputFuture").min = info[2] + 1
+        document.querySelector("#currentContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem, index) {
+            if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
+                elem.value = info[0][index].toLocaleString("en-US") + " $"
+            }
+            else {
+                elem.value = info[0][index]
+            }
+    
+        })
+    }   
     if (info[1] === null) {
         document.querySelector(".add-contract").classList.remove("d-none")
         document.querySelector("#futureContractTitle").classList.add("d-none")
