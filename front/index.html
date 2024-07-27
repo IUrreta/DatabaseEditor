@@ -1506,29 +1506,42 @@
       </div>
       <div class="script-view d-none" id="driver_transfers">
         <div class="transfer-top-panel">
-          <div class="filter-container">
-            <i class="bi bi-funnel filter-icon" id="filterIconTransfers"></i>
-            <div class="category-filters">
-              <ul class="nav nav-pills">
-                <li class="nav-item">
-                  <a class="nav-link bold-font generalPills filter-pills" href="#" id="freefilterTransfers">
-                    <div class="basic-label bold-font">FREE</div>
-                    <div class="pill-line"></div>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link bold-font generalPills filter-pills" href="#" id="F2filterTransfers">
-                    <div class="basic-label bold-font">F2</div>
-                    <div class="pill-line"></div>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link bold-font generalPills filter-pills" href="#" id="F3filterTransfers">
-                    <div class="basic-label bold-font">F3</div>
-                    <div class="pill-line"></div>
-                  </a>
-                </li>
+          <div class="title-buttons-left">
+            <div>
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffTransfersDropdown"
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="drivers">
+                Drivers
+              </button>
+              <div class="dropdown-line"></div>
+              <ul class="dropdown-menu" id="stafftransfersMenu" style="font-family: Formula1;">
+                <a class="dropdown-item" href="#" data-value="drivers">Drivers</a>
+                <a class="dropdown-item" href="#" data-value="staff">Staff</a>
               </ul>
+            </div>
+            <div class="filter-container">
+              <i class="bi bi-funnel filter-icon" id="filterIconTransfers"></i>
+              <div class="category-filters">
+                <ul class="nav nav-pills">
+                  <li class="nav-item">
+                    <a class="nav-link bold-font generalPills filter-pills" href="#" id="freefilterTransfers">
+                      <div class="basic-label bold-font">FREE</div>
+                      <div class="pill-line"></div>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link bold-font generalPills filter-pills" href="#" id="F2filterTransfers">
+                      <div class="basic-label bold-font">F2</div>
+                      <div class="pill-line"></div>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link bold-font generalPills filter-pills" href="#" id="F3filterTransfers">
+                      <div class="basic-label bold-font">F3</div>
+                      <div class="pill-line"></div>
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
           <div class="title transfer-title bold-font">
@@ -1552,8 +1565,7 @@
               </div>
               <div id="free-drivers">
               </div>
-              <div class="main-columns-drag-section d-none" id="f2-drivers" data-team="F2"></div>
-              <div class="main-columns-drag-section d-none" id="f3-drivers" data-team="F3"></div>
+              <div class="d-none" id="free-staff"></div>
             </div>
           </div>
           <div class="col-10">
@@ -1576,6 +1588,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="staff-section d-none" data-team="redbull" data-teamid="3">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
+                </div>
               </div>
               <div class="team-template  feborder">
                 <div class="new-logo-and-name">
@@ -1594,6 +1613,13 @@
                       <i class="bi bi-chevron-right"></i>
                     </div>
                   </div>
+                </div>
+                <div class="staff-section d-none" data-team="ferrari" data-teamid="1">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
                 </div>
               </div>
               <div class="team-template  mcborder">
@@ -1614,6 +1640,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="staff-section d-none" data-team="mclaren" data-teamid="2">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
+                </div>
               </div>
               <div class="team-template  meborder">
                 <div class="new-logo-and-name">
@@ -1632,6 +1665,13 @@
                       <i class="bi bi-chevron-right"></i>
                     </div>
                   </div>
+                </div>
+                <div class="staff-section d-none" data-team="merc" data-teamid="4">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
                 </div>
               </div>
               <div class="team-template  asborder">
@@ -1652,6 +1692,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="staff-section d-none" data-team="astonmartin" data-teamid="10">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
+                </div>
               </div>
               <div class="team-template  alborder">
                 <div class="new-logo-and-name">
@@ -1670,6 +1717,13 @@
                       <i class="bi bi-chevron-right"></i>
                     </div>
                   </div>
+                </div>
+                <div class="staff-section d-none" data-team="alpine" data-teamid="5">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
                 </div>
               </div>
               <div class="team-template  wiborder">
@@ -1690,6 +1744,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="staff-section d-none" data-team="williams"  data-teamid="6">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
+                </div>
               </div>
               <div class="team-template  atborder">
                 <div class="new-logo-and-name">
@@ -1708,6 +1769,13 @@
                       <i class="bi bi-chevron-right"></i>
                     </div>
                   </div>
+                </div>
+                <div class="staff-section d-none" data-team="alphatauri"  data-teamid="8">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
                 </div>
               </div>
               <div class="team-template  afborder">
@@ -1728,6 +1796,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="staff-section d-none" data-team="alfaromeo"  data-teamid="9">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
+                </div>
               </div>
               <div class="team-template  haborder">
                 <div class="new-logo-and-name">
@@ -1747,6 +1822,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="staff-section d-none" data-team="haas"  data-teamid="7">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
+                </div>
               </div>
               <div class="team-template ctborder d-none" id="customTeamTransfers">
                 <div class="new-logo-and-name">
@@ -1765,6 +1847,13 @@
                       <i class="bi bi-chevron-right"></i>
                     </div>
                   </div>
+                </div>
+                <div class="staff-section d-none" data-team="custom"  data-teamid="32">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
                 </div>
               </div>
             </div>

@@ -9,7 +9,7 @@ class TransferUtils:
 
     def hire_driver(self, type, driverID, teamID, position, salary=None, starting_bonus=None, race_bonus=None, race_bonus_pos=None, year_end=None, year_iteration="24"):
         if type == "auto":
-            salary, year_end, position, starting_bonus, race_bonus, race_bonus_pos = self.get_params_auto_contract(driverID, teamID, position)
+            salary, year_end, position, starting_bonus, race_bonus, race_bonus_pos = self.get_params_auto_contract(driverID, teamID, position, year_iteration=year_iteration)
         
         day = self.cursor.execute("SELECT Day FROM Player_State").fetchone()[0]
         year =  self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
@@ -19,7 +19,7 @@ class TransferUtils:
         if isRetired[0] == 1:
             self.cursor.execute(f"UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = {driverID}")
         if year_iteration == "23":
-            self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 0, 1, {day}, 1, {teamID}, {position}, 1, '[OPINION_STRING_NEUTRAL]', {day[0]}, {year_end}, 1, '[OPINION_STRING_NEUTRAL]', {salary}, 1, '[OPINION_STRING_NEUTRAL]', {starting_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus_pos}, 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')")
+            self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 0, 1, {day}, 1, {teamID}, {position}, 1, '[OPINION_STRING_NEUTRAL]', {day}, {year_end}, 1, '[OPINION_STRING_NEUTRAL]', {salary}, 1, '[OPINION_STRING_NEUTRAL]', {starting_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus_pos}, 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')")
         elif year_iteration == "24":
             self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 0, {teamID}, {position}, {day}, {year_end},  {salary}, {starting_bonus}, {race_bonus}, {race_bonus_pos}, 0.5, 0)")
         if int(position) < 3:

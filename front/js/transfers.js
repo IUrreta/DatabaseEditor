@@ -12,13 +12,15 @@ const f3DriversDiv = document.getElementById("f3-drivers");
 
 const autoContractToggle = document.getElementById("autoContractToggle")
 
-const divsArray = [freeDriversDiv,f2DriversDiv,f3DriversDiv]
+const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
 
 const selectImageButton = document.getElementById('selectImage');
 const fileInput = document.getElementById('fileInput');
 
-const f2_teams = [11,12,13,14,15,16,17,18,19,20,21]
-const f3_teams = [22,23,24,25,26,27,28,29,30,31]
+const f2_teams = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+const f3_teams = [22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+
+const staff_positions = { 1: "technical-chief", 2: "race-engineer", 3: "head-aero", 4: "sporting-director" }
 
 
 let originalParent;
@@ -34,9 +36,9 @@ let driver1;
 let driver2;
 let originalTeamId
 
-let team_dict = { 1: "fe",2: "mc",3: "rb",4: "me",5: "al",6: "wi",7: "ha",8: "at",9: "af",10: "as",32: "ct" }
-let inverted_dict = { 'ferrari': 1,'mclaren': 2,'redbull': 3,'merc': 4,'alpine': 5,'williams': 6,'haas': 7,'alphatauri': 8,'alfaromeo': 9,'astonmartin': 10,'custom': 32 }
-let name_dict = { 'ferrari': "Ferrari",'mclaren': "McLaren",'redbull': "Red Bull",'merc': "Mercedes",'alpine': "Alpine",'williams': "Williams",'haas': "Haas",'alphatauri': "Alpha Tauri",'alfaromeo': "Alfa Romeo",'astonmartin': "Aston Martin","F2": "F2","F3": "F3","custom": "Custom Team" }
+let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 32: "ct" }
+let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10, 'custom': 32 }
+let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3", "custom": "Custom Team" }
 
 /**
  * Removes all the drivers from teams and categories
@@ -49,12 +51,10 @@ function remove_drivers() {
         item.innerHTML = ""
     });
     freeDriversDiv.innerHTML = ""
-    f2DriversDiv.innerHTML = ""
-    f3DriversDiv.innerHTML = ""
 }
 
 function insert_space(str) {
-    return str.replace(/([A-Z])/g,' $1').trim();
+    return str.replace(/([A-Z])/g, ' $1').trim();
 }
 
 
@@ -78,11 +78,10 @@ function place_drivers(driversArray) {
         newDiv.appendChild(spanName)
         newDiv.appendChild(spanLastName)
         newDiv.classList.add(team_dict[driver[2]] + "-transparent")
-        console.log(driver)
-        if (driver["team_future"] !== -1){
-            add_future_team_noti(newDiv,driver["team_future"])
+        if (driver["team_future"] !== -1) {
+            add_future_team_noti(newDiv, driver["team_future"])
         }
-        manageColor(newDiv,spanLastName)
+        manageColor(newDiv, spanLastName)
         if (driver[4] === 1) {
             addUnRetireIcon(newDiv)
         }
@@ -101,23 +100,108 @@ function place_drivers(driversArray) {
     })
 }
 
-function add_future_team_noti(driverDiv, teamID){
+function place_staff(staffArray) {
+    let divPosition;
+    staffArray.forEach((staff) => {
+        let newDiv = document.createElement("div");
+        newDiv.className = "col free-driver";
+        newDiv.dataset.driverid = staff[1];
+        newDiv.dataset.teamid = staff[2];
+        let name = staff[0].split(" ")
+        let spanName = document.createElement("span")
+        let spanLastName = document.createElement("span")
+        spanName.textContent = insert_space(name[0]) + " "
+        spanLastName.textContent = " " + name[1].toUpperCase()
+        spanLastName.classList.add("bold-font")
+        newDiv.appendChild(spanName)
+        newDiv.appendChild(spanLastName)
+        newDiv.classList.add(team_dict[staff[2]] + "-transparent")
+        // if (staff["team_future"] !== -1){
+        //     add_future_team_noti(newDiv,staff["team_future"])
+        // }
+        manageColor(newDiv, spanLastName)
+        // if (staff[4] === 1) {
+        //     addUnRetireIcon(newDiv)
+        // }
+        divPosition = "free-staff"
+        let position = staff[3]
+        let staff_position = staff_positions[position]
+        console.log(staff)
+        console.log(staff_position)
+        if (staff[2] > 0 && staff[2] <= 10 || staff[2] === 32) {
+            addIcon(newDiv)
+            console.log(`.staff-section[data-teamid='${staff[2]}']`)
+            let teamDiv = document.querySelector(`.staff-section[data-teamid='${staff[2]}']`)
+            if (position !== 2) {
+                teamDiv.querySelector(`[data-type='${staff_position}']`).appendChild(newDiv)
+            }
+            else {
+                let engineer_1_has_child = teamDiv.querySelector(`[data-type='${staff_position}'][data-pos='1']`).childElementCount
+                if (engineer_1_has_child === 0) {
+                    teamDiv.querySelector(`[data-type='${staff_position}'][data-pos='1']`).appendChild(newDiv)
+                }
+                else {
+                    teamDiv.querySelector(`[data-type='${staff_position}'][data-pos='2']`).appendChild(newDiv)
+                }
+            }
+        }
+        else {
+            document.getElementById(divPosition).appendChild(newDiv)
+        }
+
+
+    })
+}
+
+document.querySelectorAll("#stafftransfersMenu a").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        document.querySelector("#staffTransfersDropdown").innerText = elem.innerText;
+        let value = elem.dataset.value;
+        document.querySelector("#staffTransfersDropdown").dataset.value = value;
+        manage_staff_drivers(value)
+    })
+})
+
+function manage_staff_drivers(value) {
+    if (value === "drivers") {
+        document.getElementById("free-drivers").classList.remove("d-none")
+        document.getElementById("free-staff").classList.add("d-none")
+        document.querySelectorAll(".drivers-section").forEach(function (elem) {
+            elem.classList.remove("d-none")
+        })
+        document.querySelectorAll(".staff-section").forEach(function (elem) {
+            elem.classList.add("d-none")
+        })
+    }
+    else {
+        document.getElementById("free-drivers").classList.add("d-none")
+        document.getElementById("free-staff").classList.remove("d-none")
+        document.querySelectorAll(".drivers-section").forEach(function (elem) {
+            elem.classList.add("d-none")
+        })
+        document.querySelectorAll(".staff-section").forEach(function (elem) {
+            elem.classList.remove("d-none")
+        })
+    }
+}
+
+function add_future_team_noti(driverDiv, teamID) {
     let notiDiv = document.createElement("div")
     notiDiv.className = "future-contract-noti noti-" + team_dict[teamID]
     driverDiv.appendChild(notiDiv)
 }
 
 document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {
-    elem.querySelector(".bi-chevron-right").addEventListener("click",function () {
+    elem.querySelector(".bi-chevron-right").addEventListener("click", function () {
         let parent = elem.parentNode.parentNode
         let affiliatesDiv = parent.querySelector(".affiliates-space")
-        affiliatesDiv.scrollBy({ left: 100,behavior: 'smooth' });
+        affiliatesDiv.scrollBy({ left: 100, behavior: 'smooth' });
     })
 
-    elem.querySelector(".bi-chevron-left").addEventListener("click",function () {
+    elem.querySelector(".bi-chevron-left").addEventListener("click", function () {
         let parent = elem.parentNode.parentNode
         let affiliatesDiv = parent.querySelector(".affiliates-space")
-        affiliatesDiv.scrollBy({ left: -100,behavior: 'smooth' });
+        affiliatesDiv.scrollBy({ left: -100, behavior: 'smooth' });
     })
 })
 
@@ -129,12 +213,12 @@ document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {
 function updateColor(div) {
     let surnameDiv = div.querySelector(".bold-font")
     surnameDiv.className = "bold-font"
-    manageColor(div,surnameDiv)
-    let statsDiv = document.querySelector("#fulldriverlist").querySelector('[data-driverid="' + div.dataset.driverid + '"]')
+    manageColor(div, surnameDiv)
+    let statsDiv = document.querySelector('.normal-driver[data-driverid="' + div.dataset.driverid + '"]')
     statsDiv.dataset.teamid = div.dataset.teamid
     surnameDiv = statsDiv.querySelector(".surname")
     surnameDiv.className = "bold-font surname"
-    manageColor(statsDiv,surnameDiv)
+    manageColor(statsDiv, surnameDiv)
     div.className = "colr free-driver " + team_dict[div.dataset.teamid] + "-transparent"
 }
 
@@ -143,7 +227,7 @@ function updateColor(div) {
  * @param {div} div div from the driver
  * @param {span} lastName the lastname span from the driver
  */
-function manageColor(div,lastName) {
+function manageColor(div, lastName) {
     if (div.dataset.teamid != 0) {
         let colorClass = team_dict[div.dataset.teamid] + "font"
         lastName.classList.add(colorClass)
@@ -163,7 +247,7 @@ function loadNumbers(nums) {
         a.classList = "dropdown-item"
         a.style.cursor = "pointer"
         numsMenu.appendChild(a);
-        a.addEventListener("click",function () {
+        a.addEventListener("click", function () {
             document.getElementById("numberButton").querySelector(".front-gradient").textContent = a.textContent
         })
     })
@@ -200,16 +284,16 @@ function addUnRetireIcon(div) {
  * @param {div} icon div from the icon
  */
 function iconListener(icon) {
-    icon.addEventListener("click",function () {
+    icon.addEventListener("click", function () {
         modalType = "edit"
-        document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g,' ') + "'s contract";
+        document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g, ' ') + "'s contract";
         queryContract(icon.parentNode.parentNode)
         myModal.show()
     })
 }
 
 function unretireListener(icon) {
-    icon.addEventListener("click",function () {
+    icon.addEventListener("click", function () {
         let driverReq = {
             command: "unretireDriver",
             driverID: icon.parentNode.dataset.driverid,
@@ -230,7 +314,7 @@ function manage_modal(info) {
     document.getElementById("yearInput").dataset.maxYear = info[2]
     document.getElementById("yearInput").min = info[2]
     document.getElementById("yearInputFuture").min = info[2] + 1
-    document.querySelector("#currentContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem,index) {
+    document.querySelector("#currentContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem, index) {
         if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
             elem.value = info[0][index].toLocaleString("en-US") + " $"
         }
@@ -254,7 +338,7 @@ function manage_modal(info) {
         document.getElementById("futureContract").innerText = combined_dict[info[1][6]].toUpperCase()
         document.querySelector("#teamContractButton").dataset.teamid = info[1][6]
         document.getElementById("futureContract").className = "team-contract engine-" + team_dict[info[1][6]]
-        document.querySelector("#futureContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem,index) {
+        document.querySelector("#futureContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem, index) {
             if (elem.id === "salaryInputFuture" || elem.id === "signBonusInputFuture" || elem.id === "raceBonusAmtFuture") {
                 elem.value = info[1][index].toLocaleString("en-US") + " $"
             }
@@ -270,7 +354,7 @@ function manage_modal(info) {
  * Listener for the team menu buttons
  */
 document.querySelector("#teamContractMenu").querySelectorAll("a").forEach(function (elem) {
-    elem.addEventListener("click",function () {
+    elem.addEventListener("click", function () {
         document.querySelector("#teamContractButton").innerText = elem.querySelector(".team-menu-name").innerText;
         document.querySelector("#teamContractButton").dataset.teamid = elem.dataset.teamid;
         document.querySelector(".add-contract").classList.add("enabled")
@@ -278,10 +362,10 @@ document.querySelector("#teamContractMenu").querySelectorAll("a").forEach(functi
 })
 
 function formatNumber(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g,",");
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-document.querySelector(".add-contract i").addEventListener("click",function () {
+document.querySelector(".add-contract i").addEventListener("click", function () {
     if (event.target.parentNode.classList.contains("enabled")) {
         document.getElementById("yearInput").value = document.getElementById("yearInput").dataset.maxYear
         document.querySelector("#futureYear").innerText = "Next year's contract"
@@ -290,9 +374,9 @@ document.querySelector(".add-contract i").addEventListener("click",function () {
         document.querySelector(".add-contract").classList.add("d-none")
         document.querySelector("#futureContractTitle").classList.remove("d-none")
         document.querySelector("#futureContractOptions").classList.remove("d-none")
-        document.querySelector("#salaryInputFuture").value = formatNumber((parseFloat(document.querySelector("#salaryInput").value.replace(/,/g,'').split(" ")[0]) * 1.3).toFixed(0)) + " $";
-        document.querySelector("#signBonusInputFuture").value = formatNumber((parseFloat(document.querySelector("#signBonusInput").value.replace(/,/g,'').split(" ")[0]) * 1.15).toFixed(0)) + " $";
-        document.querySelector("#raceBonusAmtFuture").value = formatNumber((parseFloat(document.querySelector("#raceBonusAmt").value.replace(/,/g,'').split(" ")[0]) * 1.15).toFixed(0)) + " $";
+        document.querySelector("#salaryInputFuture").value = formatNumber((parseFloat(document.querySelector("#salaryInput").value.replace(/,/g, '').split(" ")[0]) * 1.3).toFixed(0)) + " $";
+        document.querySelector("#signBonusInputFuture").value = formatNumber((parseFloat(document.querySelector("#signBonusInput").value.replace(/,/g, '').split(" ")[0]) * 1.15).toFixed(0)) + " $";
+        document.querySelector("#raceBonusAmtFuture").value = formatNumber((parseFloat(document.querySelector("#raceBonusAmt").value.replace(/,/g, '').split(" ")[0]) * 1.15).toFixed(0)) + " $";
         document.querySelector("#raceBonusPosFuture").value = parseInt(document.querySelector("#raceBonusPos").value)
         document.querySelector("#yearInputFuture").value = parseInt(document.querySelector("#yearInput").value) + 2
         document.querySelector("#posInTeamFuture").value = 1;
@@ -300,7 +384,7 @@ document.querySelector(".add-contract i").addEventListener("click",function () {
 })
 
 
-document.querySelector(".break-contract").addEventListener("click",function () {
+document.querySelector(".break-contract").addEventListener("click", function () {
     document.querySelector(".add-contract").classList.remove("d-none")
     document.querySelector("#futureContractTitle").classList.add("d-none")
     document.querySelector("#futureContractOptions").classList.add("d-none")
@@ -312,22 +396,22 @@ document.querySelector(".break-contract").addEventListener("click",function () {
 document.querySelector(".contract-options").querySelectorAll('.bi-plus-lg').forEach(button => {
     let intervalId;
     let increment = 10000;
-    button.addEventListener('mousedown',function () {
+    button.addEventListener('mousedown', function () {
         let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
         if (input.id === "salaryInput") {
             increment = 100000;
         }
-        updateContractMoneyValue(input,increment);
+        updateContractMoneyValue(input, increment);
         intervalId = setInterval(() => {
-            updateContractMoneyValue(input,increment);
-        },100);
+            updateContractMoneyValue(input, increment);
+        }, 100);
     });
 
-    button.addEventListener('mouseup',function () {
+    button.addEventListener('mouseup', function () {
         clearInterval(intervalId);
     });
 
-    button.addEventListener('mouseleave',function () {
+    button.addEventListener('mouseleave', function () {
         clearInterval(intervalId);
     });
 });
@@ -335,22 +419,22 @@ document.querySelector(".contract-options").querySelectorAll('.bi-plus-lg').forE
 document.querySelector(".contract-options").querySelectorAll('.bi-dash-lg').forEach(button => {
     let intervalId;
     let increment = -10000;
-    button.addEventListener('mousedown',function () {
+    button.addEventListener('mousedown', function () {
         let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
         if (input.id === "salaryInput") {
             increment = -100000;
         }
-        updateContractMoneyValue(input,increment);
+        updateContractMoneyValue(input, increment);
         intervalId = setInterval(() => {
-            updateContractMoneyValue(input,increment);
-        },100);
+            updateContractMoneyValue(input, increment);
+        }, 100);
     });
 
-    button.addEventListener('mouseup',function () {
+    button.addEventListener('mouseup', function () {
         clearInterval(intervalId);
     });
 
-    button.addEventListener('mouseleave',function () {
+    button.addEventListener('mouseleave', function () {
         clearInterval(intervalId);
     });
 });
@@ -358,22 +442,22 @@ document.querySelector(".contract-options").querySelectorAll('.bi-dash-lg').forE
 document.querySelector(".contract-options").querySelectorAll('.bi-chevron-up').forEach(button => {
     let intervalId;
     let increment = 1;
-    button.addEventListener('mousedown',function () {
+    button.addEventListener('mousedown', function () {
         let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
         if (input.id == "raceBonusPos") {
             increment = -1
         }
-        updateContractValue(input,increment);
+        updateContractValue(input, increment);
         intervalId = setInterval(() => {
-            updateContractValue(input,increment);
-        },100);
+            updateContractValue(input, increment);
+        }, 100);
     });
 
-    button.addEventListener('mouseup',function () {
+    button.addEventListener('mouseup', function () {
         clearInterval(intervalId);
     });
 
-    button.addEventListener('mouseleave',function () {
+    button.addEventListener('mouseleave', function () {
         clearInterval(intervalId);
     });
 });
@@ -381,23 +465,23 @@ document.querySelector(".contract-options").querySelectorAll('.bi-chevron-up').f
 document.querySelector(".contract-options").querySelectorAll('.bi-chevron-down').forEach(button => {
     let intervalId;
     let increment = -1;
-    button.addEventListener('mousedown',function () {
+    button.addEventListener('mousedown', function () {
         let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
         if (input.id == "raceBonusPos") {
             increment = 1
         }
-        updateContractValue(input,increment);
+        updateContractValue(input, increment);
         intervalId = setInterval(() => {
-            updateContractValue(input,increment);
-        },100);
+            updateContractValue(input, increment);
+        }, 100);
     });
 
-    button.addEventListener('mouseup',function () {
+    button.addEventListener('mouseup', function () {
         clearInterval(intervalId);
     }
     );
 
-    button.addEventListener('mouseleave',function () {
+    button.addEventListener('mouseleave', function () {
         clearInterval(intervalId);
     }
     );
@@ -405,8 +489,8 @@ document.querySelector(".contract-options").querySelectorAll('.bi-chevron-down')
 
 
 
-function updateContractMoneyValue(input,increment) {
-    let val = input.value.replace(/[$,]/g,"");
+function updateContractMoneyValue(input, increment) {
+    let val = input.value.replace(/[$,]/g, "");
     let new_val = Number(val) + increment;
     if (new_val < parseInt(input.min)) {
         new_val = input.min;
@@ -415,7 +499,7 @@ function updateContractMoneyValue(input,increment) {
     input.value = formatted;
 }
 
-function updateContractValue(input,increment) {
+function updateContractValue(input, increment) {
     let val = input.value;
     let new_val = Number(val) + increment;
     if (new_val < parseInt(input.min)) {
@@ -450,7 +534,7 @@ function queryContract(elem) {
  * @param  {...string} divs the state of each div
  */
 function manageDrivers(...divs) {
-    divsArray.forEach(function (div,index) {
+    divsArray.forEach(function (div, index) {
         if (divs[index] === "show") {
             div.className = "main-columns-drag-section"
         }
@@ -463,7 +547,7 @@ function manageDrivers(...divs) {
 /**
  * Event listener for the confirm button from the modal
  */
-document.getElementById("confirmButton").addEventListener('click',function () {
+document.getElementById("confirmButton").addEventListener('click', function () {
     if (modalType === "hire") {
         if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "driver-space" | originalParent.className === "affiliates-space") {
             signDriver("fireandhire")
@@ -475,7 +559,7 @@ document.getElementById("confirmButton").addEventListener('click',function () {
         editContract()
         modalType = "";
     }
-    setTimeout(clearModal,500);
+    setTimeout(clearModal, 500);
 })
 
 /**
@@ -494,7 +578,7 @@ function editContract() {
     let values = []
     document.querySelector("#currentContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem) {
         if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
-            values.push(elem.value.replace(/[$,]/g,""))
+            values.push(elem.value.replace(/[$,]/g, ""))
         }
         else {
             values.push(elem.value)
@@ -503,7 +587,7 @@ function editContract() {
     let futureValues = []
     document.querySelector("#futureContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem) {
         if (elem.id === "salaryInputFuture" || elem.id === "signBonusInputFuture" || elem.id === "raceBonusAmtFuture") {
-            futureValues.push(elem.value.replace(/[$,]/g,""))
+            futureValues.push(elem.value.replace(/[$,]/g, ""))
         }
         else {
             futureValues.push(elem.value)
@@ -532,7 +616,7 @@ function editContract() {
     socket.send(JSON.stringify(data))
     if (future_team !== "-1") {
         let driverDiv = document.querySelector('.free-driver[data-driverid="' + driverEditingID + '"]')
-        add_future_team_noti(driverDiv,future_team)
+        add_future_team_noti(driverDiv, future_team)
     }
 }
 
@@ -575,9 +659,9 @@ function signDriver(type) {
 
     }
     if (type === "regular") {
-        let salaryData = document.getElementById("salaryInput").value.replace(/[$,]/g,"");
+        let salaryData = document.getElementById("salaryInput").value.replace(/[$,]/g, "");
         let yearData = document.getElementById("yearInput").value;
-        let signBonusData = document.getElementById("signBonusInput").value.replace(/[$,]/g,"");
+        let signBonusData = document.getElementById("signBonusInput").value.replace(/[$,]/g, "");
         let raceBonusData;
         let raceBonusPosData;
 
@@ -587,7 +671,7 @@ function signDriver(type) {
         if (raceBonusAmt.value === "")
             raceBonusData = "0";
         else
-            raceBonusData = raceBonusAmt.value.replace(/[$,]/g,"");
+            raceBonusData = raceBonusAmt.value.replace(/[$,]/g, "");
 
         if (raceBonusPos.value === "")
             raceBonusPosData = "10";
@@ -630,17 +714,17 @@ function signDriver(type) {
 /**
  * Event listener for the cancel button on the modal
  */
-document.getElementById("cancelButton").addEventListener('click',function () {
+document.getElementById("cancelButton").addEventListener('click', function () {
     document.querySelector(".add-contract").classList.remove("enabled")
     if (modalType === "hire") {
         originalParent.appendChild(draggable);
         draggable.dataset.teamid = inverted_dict[teamOrigin.dataset.team]
         updateColor(draggable)
     }
-    setTimeout(clearModal,500);
+    setTimeout(clearModal, 500);
 })
 
-document.querySelector("#nameFilterTransfer").addEventListener("input",function (event) {
+document.querySelector("#nameFilterTransfer").addEventListener("input", function (event) {
     let text = event.target.value
     if (text !== "") {
         document.querySelector("#filterTransfersContainer").querySelector(".bi-x").classList.remove("d-none")
@@ -664,13 +748,13 @@ document.querySelector("#nameFilterTransfer").addEventListener("input",function 
     })
 })
 
-document.querySelector("#filterIconTransfers").addEventListener("click",function () {
+document.querySelector("#filterIconTransfers").addEventListener("click", function () {
     document.querySelector(".category-filters").classList.toggle("show")
     document.querySelector(".filter-container").classList.toggle("focused")
 })
 
 document.getElementById("driver_transfers").querySelectorAll(".filter-pills").forEach(function (elem) {
-    elem.addEventListener("click",function (event) {
+    elem.addEventListener("click", function (event) {
         let isActive = elem.classList.contains('active');
 
         document.getElementById("driver_transfers").querySelectorAll('.filter-pills').forEach(function (el) {
@@ -683,7 +767,7 @@ document.getElementById("driver_transfers").querySelectorAll(".filter-pills").fo
     })
 })
 
-document.querySelector("#F2filterTransfers").addEventListener("click",function (event) {
+document.querySelector("#F2filterTransfers").addEventListener("click", function (event) {
     if (!event.target.classList.contains("active")) {
         let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
         elements.forEach(function (elem) {
@@ -703,7 +787,7 @@ document.querySelector("#F2filterTransfers").addEventListener("click",function (
     }
 })
 
-document.querySelector("#F3filterTransfers").addEventListener("click",function (event) {
+document.querySelector("#F3filterTransfers").addEventListener("click", function (event) {
     if (!event.target.classList.contains("active")) {
         let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
         elements.forEach(function (elem) {
@@ -723,7 +807,7 @@ document.querySelector("#F3filterTransfers").addEventListener("click",function (
     }
 })
 
-document.querySelector("#freefilterTransfers").addEventListener("click",function (event) {
+document.querySelector("#freefilterTransfers").addEventListener("click", function (event) {
     if (!event.target.classList.contains("active")) {
         let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
         elements.forEach(function (elem) {
@@ -743,7 +827,7 @@ document.querySelector("#freefilterTransfers").addEventListener("click",function
     }
 })
 
-function hire_modal_standars(){
+function hire_modal_standars() {
     document.querySelector(".add-contract").classList.add("d-none")
     document.querySelector("#futureContractTitle").classList.add("d-none")
     document.querySelector("#futureContractOptions").classList.add("d-none")
@@ -789,8 +873,8 @@ interact('.free-driver').draggable({
             target.style.opacity = 1;
             target.style.zIndex = 10;
 
-            target.setAttribute('data-x',x);
-            target.setAttribute('data-y',y);
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
         },
         end(event) {
             let target = event.target;
@@ -800,53 +884,28 @@ interact('.free-driver').draggable({
             target.style.width = "auto";
             target.style.transform = 'none';
             target.style.zIndex = 1;
-            target.setAttribute('data-x',0);
-            target.setAttribute('data-y',0);
+            target.setAttribute('data-x', 0);
+            target.setAttribute('data-y', 0);
+            //is driver
+            if (event.target.parentNode.classList.contains("driver-space") | event.target.parentNode.classList.contains("affiliates-space") | event.target.parentNode.id === "free-drivers") {
+                let freeDrivers = document.getElementById('free-drivers');
+                let freeRect = freeDrivers.getBoundingClientRect();
 
-            const freeDrivers = document.getElementById('free-drivers');
-            const freeRect = freeDrivers.getBoundingClientRect();
-
-            const driverSpaceElements = document.querySelectorAll('.driver-space');
-            driverSpaceElements.forEach(function (element) {
-                const rect = element.getBoundingClientRect();
-                if (event.clientX >= rect.left && event.clientX <= rect.right &&
-                    event.clientY >= rect.top && event.clientY <= rect.bottom) {
-                    if (element.classList.contains("affiliates-space") && game_version === 2024) {
-                        posInTeam = 3 + element.childElementCount
-                        teamDestiniy = element.parentNode.parentNode.dataset.team
-                        destinationParent = element;
-                        element.appendChild(target)
-                        originalTeamId = parseInt(target.dataset.teamid)
-                        target.dataset.teamid = inverted_dict[teamDestiniy]
-                        updateColor(target)
-                        document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
-                        if ((game_version === 2024) && (originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
-                            signDriver("fireandhire")
-                        }
-                        if (autoContractToggle.checked) {
-                            signDriver("autocontract")
-                        }
-                        else {
-                            modalType = "hire"
-                            hire_modal_standars()
-                            myModal.show()
-                        }
-                        if (target.querySelector(".custom-icon") === null) {
-                            addIcon(target)
-                        }
-                    }
-                    else {
-                        if (element.childElementCount < 1) {
-                            posInTeam = element.id.charAt(2)
-                            teamDestiniy = element.parentNode.dataset.team
+                let driverSpaceElements = document.querySelectorAll('.driver-space');
+                driverSpaceElements.forEach(function (element) {
+                    let rect = element.getBoundingClientRect();
+                    if (event.clientX >= rect.left && event.clientX <= rect.right &&
+                        event.clientY >= rect.top && event.clientY <= rect.bottom) {
+                        if (element.classList.contains("affiliates-space") && game_version === 2024) {
+                            posInTeam = 3 + element.childElementCount
+                            teamDestiniy = element.parentNode.parentNode.dataset.team
                             destinationParent = element;
-                            element.appendChild(target);
+                            element.appendChild(target)
                             originalTeamId = parseInt(target.dataset.teamid)
                             target.dataset.teamid = inverted_dict[teamDestiniy]
                             updateColor(target)
                             document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
-                            if ((game_version === 2023 && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) ||
-                                (game_version === 2024) && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
+                            if ((game_version === 2024) && (originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
                                 signDriver("fireandhire")
                             }
                             if (autoContractToggle.checked) {
@@ -860,10 +919,130 @@ interact('.free-driver').draggable({
                             if (target.querySelector(".custom-icon") === null) {
                                 addIcon(target)
                             }
+                        }
+                        else {
+                            if (element.childElementCount < 1) {
+                                posInTeam = element.id.charAt(2)
+                                teamDestiniy = element.parentNode.dataset.team
+                                destinationParent = element;
+                                element.appendChild(target);
+                                originalTeamId = parseInt(target.dataset.teamid)
+                                target.dataset.teamid = inverted_dict[teamDestiniy]
+                                updateColor(target)
+                                document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
+                                if ((game_version === 2023 && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) ||
+                                    (game_version === 2024) && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
+                                    signDriver("fireandhire")
+                                }
+                                if (autoContractToggle.checked) {
+                                    signDriver("autocontract")
+                                }
+                                else {
+                                    modalType = "hire"
+                                    hire_modal_standars()
+                                    myModal.show()
+                                }
+                                if (target.querySelector(".custom-icon") === null) {
+                                    addIcon(target)
+                                }
 
+                            }
+                            else if (element.childElementCount == 1) {
+                                if (originalParent.classList.contains("driver-space")) {
+                                    driver1 = target;
+                                    driver2 = element.firstChild;
+                                    let team1 = driver1.parentNode.parentNode
+                                    let team2 = driver2.parentNode.parentNode
+                                    driver1.dataset.teamid = inverted_dict[team2.dataset.team]
+                                    updateColor(driver1)
+                                    driver2.dataset.teamid = inverted_dict[team1.dataset.team]
+                                    updateColor(driver2)
+                                    if (driver1 !== driver2) {
+                                        let data = {
+                                            command: "swap",
+                                            driver1ID: target.dataset.driverid,
+                                            driver2ID: element.firstChild.dataset.driverid,
+                                            driver1: target.innerText,
+                                            driver2: element.firstChild.innerText,
+                                        }
+
+                                        socket.send(JSON.stringify(data))
+                                        manage_swap()
+                                    }
+
+                                }
+
+                            }
+                        }
+                    }
+                });
+
+                if (event.clientX >= freeRect.left && event.clientX <= freeRect.right &&
+                    event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
+                    if (target.querySelector(".custom-icon") !== null) {
+                        draggable.removeChild(draggable.querySelector(".custom-icon"))
+                    }
+                    if (originalParent.id !== "free-drivers") {
+                        originalParent.removeChild(draggable);
+                        originalTeamId = parseInt(target.dataset.teamid)
+                        draggable.dataset.teamid = 0
+                        updateColor(draggable)
+                        freeDrivers.appendChild(target);
+                        let data = {
+                            command: "fire",
+                            driverID: draggable.dataset.driverid,
+                            driver: draggable.innerText,
+                            team: name_dict[teamOrigin.dataset.team],
+                            teamID: originalTeamId
+                        }
+                        if (!data["team"]) {
+                            if (f2_teams.includes(originalTeamId)) {
+                                data["team"] = "F2"
+                            }
+                            else if (f3_teams.includes(originalTeamId)) {
+                                data["team"] = "F3"
+                            }
+                        }
+                        socket.send(JSON.stringify(data))
+                    }
+                }
+            }
+            //is staff
+            else if (event.target.parentNode.classList.contains("staff-space") | event.target.parentNode.id === "free-staff") {
+                let tfreeStaff = document.getElementById('free-staff');
+                let staffRect = tfreeStaff.getBoundingClientRect();
+                let staffSpaceElements = document.querySelectorAll('.staff-space');
+                staffSpaceElements.forEach(function (element) {
+                    let rect = element.getBoundingClientRect();
+                    if (event.clientX >= rect.left && event.clientX <= rect.right &&
+                        event.clientY >= rect.top && event.clientY <= rect.bottom) {
+                        if (element.childElementCount < 1) {
+                            posInTeam = element.dataset.pos
+                            teamDestiniy = element.parentNode.dataset.team
+                            destinationParent = element;
+                            element.appendChild(target);
+                            originalTeamId = parseInt(target.dataset.teamid)
+                            target.dataset.teamid = inverted_dict[teamDestiniy]
+                            updateColor(target)
+                            document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
+                            if ((game_version === 2023 && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "staff-space")) ||
+                                (game_version === 2024) && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "staff-space")) {
+                                signDriver("fireandhire")
+                            }
+                            if (autoContractToggle.checked) {
+                                signDriver("autocontract")
+                            }
+                            else {
+                                modalType = "hire"
+                                hire_modal_standars()
+                                myModal.show()
+                            }
+                            if (target.querySelector(".custom-icon") === null) {
+                                addIcon(target)
+                            }
                         }
                         else if (element.childElementCount == 1) {
-                            if (originalParent.classList.contains("driver-space")) {
+                            if (originalParent.classList.contains("staff-space")) {
                                 driver1 = target;
                                 driver2 = element.firstChild;
                                 let team1 = driver1.parentNode.parentNode
@@ -889,38 +1068,39 @@ interact('.free-driver').draggable({
 
                         }
                     }
-                }
-            });
+                });
 
-            if (event.clientX >= freeRect.left && event.clientX <= freeRect.right &&
-                event.clientY >= freeRect.top && event.clientY <= freeRect.bottom) {
-                if (target.querySelector(".custom-icon") !== null) {
-                    draggable.removeChild(draggable.querySelector(".custom-icon"))
-                }
-                if (originalParent.id !== "free-drivers") {
-                    originalParent.removeChild(draggable);
-                    originalTeamId = parseInt(target.dataset.teamid)
-                    draggable.dataset.teamid = 0
-                    updateColor(draggable)
-                    freeDrivers.appendChild(target);
-                    let data = {
-                        command: "fire",
-                        driverID: draggable.dataset.driverid,
-                        driver: draggable.innerText,
-                        team: name_dict[teamOrigin.dataset.team],
-                        teamID: originalTeamId
+                if (event.clientX >= staffRect.left && event.clientX <= staffRect.right &&
+                    event.clientY >= staffRect.top && event.clientY <= staffRect.bottom) {
+                    if (target.querySelector(".custom-icon") !== null) {
+                        draggable.removeChild(draggable.querySelector(".custom-icon"))
                     }
-                    if (!data["team"]) {
-                        if (f2_teams.includes(originalTeamId)) {
-                            data["team"] = "F2"
+                    if (originalParent.id !== "free-staff") {
+                        originalParent.removeChild(draggable);
+                        originalTeamId = parseInt(target.dataset.teamid)
+                        draggable.dataset.teamid = 0
+                        updateColor(draggable)
+                        tfreeStaff.appendChild(target);
+                        let data = {
+                            command: "fire",
+                            driverID: draggable.dataset.driverid,
+                            driver: draggable.innerText,
+                            team: name_dict[teamOrigin.dataset.team],
+                            teamID: originalTeamId
                         }
-                        else if (f3_teams.includes(originalTeamId)) {
-                            data["team"] = "F3"
+                        if (!data["team"]) {
+                            if (f2_teams.includes(originalTeamId)) {
+                                data["team"] = "F2"
+                            }
+                            else if (f3_teams.includes(originalTeamId)) {
+                                data["team"] = "F3"
+                            }
                         }
+                        socket.send(JSON.stringify(data))
                     }
-                    socket.send(JSON.stringify(data))
                 }
             }
+
         }
     }
 });

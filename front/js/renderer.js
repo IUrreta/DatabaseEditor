@@ -453,6 +453,7 @@ document.addEventListener('DOMContentLoaded',function () {
         },
         "Staff Fetched": (message) => {
             place_staff(message.slice(1));
+            place_staff_editStats(message.slice(1));
         },
         "Calendar fetched": (message) => {
             load_calendar(message.slice(1))

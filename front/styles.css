@@ -250,12 +250,12 @@ body {
   border-radius: 6px;
 }
 
-#free-drivers::-webkit-scrollbar {
+#free-drivers::-webkit-scrollbar, #free-staff::-webkit-scrollbar {
   width: 4px !important;
   margin-left: 4px;
 }
 
-#free-drivers::-webkit-scrollbar-thumb {
+#free-drivers::-webkit-scrollbar-thumb, #free-staff::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px !important;
 }
@@ -921,11 +921,6 @@ input[type="checkbox"]:checked {
 .filter-icon:hover{
   color: var(--new-primary);
   transform: scale(1.1);
-}
-
-.transfer-top-panel .filter-container{
-  position: absolute;
-  margin-left: 14px;
 }
 
 .filter-container{
@@ -3212,10 +3207,19 @@ DRIVERS TABLE
   margin-top: 6px;
 }
 
-.driver-space{
+.driver-space, .staff-space{
   min-width:  200px;
   max-width:  200px;
   min-height: 40px;
+}
+
+.staff-space[data-type="technical-chief"]{
+  border-right: 1px solid var(--separator);
+  border-left: 1px solid var(--separator);
+}
+
+.staff-space[data-type="sporting-director"], .staff-space[data-type="race-engineer"][data-pos="2"], .staff-space[data-type="head-aero"]{
+  border-right: 1px solid var(--separator);
 }
 
 .affiliates-and-arrows{
@@ -4914,6 +4918,10 @@ DRIVERS TABLE
   color: var(--mercedes-primary);
 }
 
+.free-driver:hover .future-contract-noti{
+  opacity: 0;
+}
+
 .future-contract-noti{
   position: absolute;
   top: 3px;
@@ -4922,6 +4930,8 @@ DRIVERS TABLE
   height: 7px;
   border-radius: 50%;
   animation: pulse 1.5s infinite;
+  opacity: 1;
+  transition: opacity 0.2s;
 }
 
 .noti-fe{
@@ -5325,7 +5335,7 @@ DRIVERS TABLE
   opacity: 1;
 }
 
-#free-drivers {
+#free-drivers, #free-staff {
   overflow-y: scroll;
 }
 
@@ -7200,7 +7210,7 @@ input::-webkit-inner-spin-button {
 }
 
 
-.drivers-section {
+.drivers-section, .staff-section {
   display: flex;
   overflow: hidden;
   margin-bottom: 3px;
