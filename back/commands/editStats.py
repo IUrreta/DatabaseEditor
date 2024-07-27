@@ -1,6 +1,6 @@
 from commands.command import Command
 from scripts.extractor import process_repack
-from scripts.edit_stats_23 import edit_stats as run_editStats, edit_mentality, edit_superlicense, edit_marketability
+from scripts.edit_stats_23 import edit_stats as run_editStats, edit_mentality, edit_superlicense, edit_marketability, edit_retirement
 
 import json
 
@@ -13,6 +13,7 @@ class EditStatsCommand(Command):
         if self.message['typeStaff'] == "0":
             argument += f"{self.message['driverNum']} {self.message['wants1']}"
             edit_superlicense(self.message['driverID'], self.message['superLicense'])
+            edit_retirement(self.message['driverID'], self.message['isRetired'])
             if Command.year_iterarion == "24":
                 edit_marketability(self.message['driverID'], self.message['marketability'])
         run_editStats(argument)

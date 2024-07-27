@@ -24,7 +24,8 @@ const names_full = {
     "UAE": "Abu Dhabi",
     "NED": "Netherlands",
     "VEG": "Vegas",
-    "QAT": "Qatar"
+    "QAT": "Qatar",
+    "CHI": "China"
 };
 
 

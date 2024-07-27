@@ -40,9 +40,8 @@ def run_script(option=""):
             rainPBool = 1 if float(rainP) >= 8 else 0
             race_code = race[:-5]
             cursor.execute(f"UPDATE RACES SET RainQualifying = {rainQBool}, WeatherStateQualifying = {rainQ}, RainRace = {rainRBool}, WeatherStateRace = {rainR}, WeekendType = {format} WHERE RaceID = {ids[i]}")
-    
     else:
-        #for editing race order + other things
+        #for editing race number + other things
         random_blanks = []
         for i in range (0, race_blanks):
             n = random.randint(0,max_races-1)
@@ -72,8 +71,11 @@ def run_script(option=""):
         rain_tuple = (8, 16, 32)
         non_rain_tuple = (1,2,4)
         if int(last_id) == (int(first_id) - 1):
-            #for good calendars
+            #for good calendars (first race of the season isa raceID + 1 from the last race of the previous season)
             raceid = last_id
+        else:
+            #for bad calendars
+            raceid = first_id - 1
 
         #Deletion of previous race calendar
         cursor.execute(f"DELETE FROM Races WHERE State != 2 AND SeasonID = {day_season[1]}")

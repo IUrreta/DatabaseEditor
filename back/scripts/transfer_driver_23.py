@@ -1,5 +1,62 @@
 import sqlite3
 import random
+import datetime
+
+min_max_type_staff ={
+    "driver": {
+        "salary": {
+            1: (14, 30),
+            2: (7, 12),
+            3: (0.5, 6),
+            4: (0.2, 1.2)
+        },
+        "starting_bonus": {
+            1: (2, 4.5),
+            2: (1, 2),
+            3: (0, 1.6),
+            4: (0, 0)
+        },
+        "year_end": {
+            1: (1, 5),
+            2: (1, 4),
+            3: (1, 3),
+            4: (1, 2)
+        },
+        "race_bonus": {
+            1: (1.5, 2.5),
+            2: (0.9, 1.7),
+            3: (0, 0.7),
+            4: (0, 0)
+        },
+        "race_bonus_pos": {
+            1: (1, 3),
+            2: (2, 5),
+            3: (7, 10),
+            4: (9, 10)
+        }
+
+    },
+    "staff": {
+        "salary": {
+            1: (3.5, 5),
+            2: (2.5, 4),
+            3: (1.5, 3),
+            4: (0.5, 1.5)
+        },
+        "starting_bonus": {
+            1: (0.5, 1.5),
+            2: (0.5, 1),
+            3: (0, 0.5),
+            4: (0, 0.5)
+        },
+        "year_end": {
+            1: (1, 5),
+            2: (1, 4),
+            3: (1, 3),
+            4: (1, 2)
+        }   
+    }
+}
 
 class TransferUtils:
     def __init__(self):
@@ -8,7 +65,7 @@ class TransferUtils:
 
     def hire_driver(self, type, driverID, teamID, position, salary=None, starting_bonus=None, race_bonus=None, race_bonus_pos=None, year_end=None, year_iteration="24"):
         if type == "auto":
-            salary, year_end, position, starting_bonus, race_bonus, race_bonus_pos = self.get_params_auto_contract(driverID, teamID, position)
+            salary, year_end, position, starting_bonus, race_bonus, race_bonus_pos = self.get_params_auto_contract(driverID, teamID, position, year_iteration=year_iteration)
         
         day = self.cursor.execute("SELECT Day FROM Player_State").fetchone()[0]
         year =  self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
@@ -18,7 +75,7 @@ class TransferUtils:
         if isRetired[0] == 1:
             self.cursor.execute(f"UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = {driverID}")
         if year_iteration == "23":
-            self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 0, 1, {day}, 1, {teamID}, {position}, 1, '[OPINION_STRING_NEUTRAL]', {day[0]}, {year_end}, 1, '[OPINION_STRING_NEUTRAL]', {salary}, 1, '[OPINION_STRING_NEUTRAL]', {starting_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus_pos}, 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')")
+            self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 0, 1, {day}, 1, {teamID}, {position}, 1, '[OPINION_STRING_NEUTRAL]', {day}, {year_end}, 1, '[OPINION_STRING_NEUTRAL]', {salary}, 1, '[OPINION_STRING_NEUTRAL]', {starting_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus_pos}, 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')")
         elif year_iteration == "24":
             self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 0, {teamID}, {position}, {day}, {year_end},  {salary}, {starting_bonus}, {race_bonus}, {race_bonus_pos}, 0.5, 0)")
         if int(position) < 3:
@@ -79,45 +136,42 @@ class TransferUtils:
     def get_params_auto_contract(self, driverID, teamID, position,  year_iteration="24"):
         day = self.cursor.execute("SELECT Day FROM Player_State").fetchone()
         year =  self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
-        tier = self.get_tier(driverID)
-        if(tier == 1):
-            salary = str(round(random.uniform(14, 30),3)*1000000) 
-            starting_bonus = str(round(random.uniform(2, 4.5), 3)*1000000)
-            race_bonus = str(round(random.uniform(1.5, 2.5), 3)*1000000)
-            year_end = str(random.randint(1, 5) + year[0])   
-            has_bonus = True
-        elif(tier == 2):
-            salary = str(round(random.uniform(7, 12),3)*1000000) 
-            starting_bonus = str(round(random.uniform(1, 2), 3)*1000000)
-            year_end = str(random.randint(1, 4) + year[0])   
-            if(random.randint(0, 10) <= 7):
+        tier, type = self.get_tier(driverID)
+       
+        salary = str(round(random.uniform(min_max_type_staff[type]["salary"][tier][0], min_max_type_staff[type]["salary"][tier][1]), 3) * 1000000)
+        starting_bonus = str(round(random.uniform(min_max_type_staff[type]["starting_bonus"][tier][0], min_max_type_staff[type]["starting_bonus"][tier][1]), 3) * 1000000)
+        year_end = str(random.randint(min_max_type_staff[type]["year_end"][tier][0], min_max_type_staff[type]["year_end"][tier][1]) + year[0])
+
+        if type == "driver":
+            if tier == 1:
+                race_bonus = str(round(random.uniform(min_max_type_staff[type]["race_bonus"][tier][0], min_max_type_staff[type]["race_bonus"][tier][1]), 3) * 1000000)
                 has_bonus = True
-                race_bonus = str(round(random.uniform(0.9, 1.7), 3)*1000000)
-            else:
-                has_bonus = False
+            elif tier == 2:
+                if random.randint(0, 10) <= 7:
+                    race_bonus = str(round(random.uniform(min_max_type_staff[type]["race_bonus"][tier][0], min_max_type_staff[type]["race_bonus"][tier][1]), 3) * 1000000)
+                    has_bonus = True
+                else:
+                    race_bonus = str(0)
+                    has_bonus = False
+            elif tier == 3:
+                if random.randint(0, 10) <= 2:
+                    race_bonus = str(round(random.uniform(min_max_type_staff[type]["race_bonus"][tier][0], min_max_type_staff[type]["race_bonus"][tier][1]), 3) * 1000000)
+                    has_bonus = True
+                else:
+                    race_bonus = str(0)
+                    has_bonus = False
+            elif tier == 4:
                 race_bonus = str(0)
-        elif(tier == 3):
-            salary = str(round(random.uniform(0.5, 6),3)*1000000) 
-            starting_bonus = str(round(random.uniform(0, 1.6), 3)*1000000)
-            year_end = str(random.randint(1, 3) + year[0])   
-            if(random.randint(0, 10) <= 2):
-                has_bonus = True
-                race_bonus = str(round(random.uniform(0, 0.7), 3)*1000000)
-            else:
                 has_bonus = False
-                race_bonus = str(0)
-        elif(tier == 4):
-            salary = str(round(random.uniform(0.2, 1.2),3)*1000000)
-            year_end = str(random.randint(1, 2) + year[0])   
-            starting_bonus = str(0)
+        else:
             race_bonus = str(0)
             has_bonus = False
+
+
         driver_birth_date = self.cursor.execute(f"SELECT DOB_ISO FROM Staff_BasicData WHERE StaffID = {driverID}").fetchone()
         yob = driver_birth_date[0].split("-")[0]
-        if(year[0] - int(yob) > 34):
+        if(year[0] - int(yob) > 34 and type == "driver"):
             year_end = str(random.randint(1, 2) + year[0])
-
-        #print(tier)
         
         if(has_bonus):
             prestige_table_name = "Board_Prestige"
@@ -258,10 +312,43 @@ class TransferUtils:
 
 
     def edit_contract(self, driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos):
-        self.cursor.execute(f"UPDATE Staff_Contracts SET Salary = {salary}, EndSeason = {endSeason}, StartingBonus = {startingBonus}, RaceBonus = {raceBonus}, RaceBonusTargetPos = {raceBonusTargetPos} WHERE ContractType = 0 AND StaffID = {driverID}")
+        has_contract = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 0").fetchone()
+        if has_contract is not None:
+            self.cursor.execute(f"UPDATE Staff_Contracts SET Salary = {salary}, EndSeason = {endSeason}, StartingBonus = {startingBonus}, RaceBonus = {raceBonus}, RaceBonusTargetPos = {raceBonusTargetPos} WHERE ContractType = 0 AND StaffID = {driverID}")
+
+
+    def future_contract(self, teamID, driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos, position, year_iteration="24"):
+        if teamID == "-1":
+            self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3")
+        else:
+            already_has_future_contract = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3").fetchone()
+            if already_has_future_contract is not None:
+                already_has_future_contract = already_has_future_contract[0]
+            else:
+                already_has_future_contract = -1
+            if int(already_has_future_contract) != int(teamID):
+                season = self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
+                day = self.get_excel_date(int(season+1))
+                self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3")
+                if year_iteration == "24":
+                    self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 3, {teamID}, {position}, {day}, {endSeason}, {salary}, {startingBonus}, {raceBonus}, {raceBonusTargetPos}, 0.5, 0)")
+            else:
+                self.cursor.execute(f"UPDATE Staff_Contracts SET PosInTeam = {position}, Salary = {salary}, EndSeason = {endSeason}, StartingBonus = {startingBonus}, RaceBonus = {raceBonus}, RaceBonusTargetPos = {raceBonusTargetPos} WHERE StaffID = {driverID} AND TeamID = {already_has_future_contract} AND ContractType = 3")
+
 
         self.conn.commit()
         self.conn.close()
+
+
+    def get_excel_date(self, year):
+        excel_start_date = datetime.datetime(1900, 1, 1)
+        
+        target_date = datetime.datetime(year, 1, 1)
+        
+        day = (target_date - excel_start_date).days + 2
+        
+        return day
+
 
     def unretire(self, driverID):
         self.cursor.execute(f"UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = {driverID}")
@@ -272,23 +359,32 @@ class TransferUtils:
 
 
     def get_tier(self, driverID):
-        driver_stats = self.cursor.execute(f"SELECT Val FROM Staff_PerformanceStats WHERE StaffID = {driverID[0]}").fetchall()
-        cornering = float(driver_stats[0][0])
-        braking = float(driver_stats[1][0])
-        control = float(driver_stats[2][0])
-        smoothness = float(driver_stats[3][0])
-        adaptability = float(driver_stats[4][0])
-        overtaking = float(driver_stats[5][0])
-        defence = float(driver_stats[6][0])
-        reactions = float(driver_stats[7][0])
-        accuracy = float(driver_stats[8][0])
-        rating = (cornering + braking*0.75 + reactions*0.5 +control*0.75 + smoothness*0.5 + accuracy*0.75 + adaptability*0.25 + overtaking*0.25+ defence*0.25)/5
+        driver_stats = self.cursor.execute(f"SELECT Val FROM Staff_PerformanceStats WHERE StaffID = {driverID}").fetchall()
+        type = "driver"
+        if len(driver_stats) == 9:
+            cornering = float(driver_stats[0][0])
+            braking = float(driver_stats[1][0])
+            control = float(driver_stats[2][0])
+            smoothness = float(driver_stats[3][0])
+            adaptability = float(driver_stats[4][0])
+            overtaking = float(driver_stats[5][0])
+            defence = float(driver_stats[6][0])
+            reactions = float(driver_stats[7][0])
+            accuracy = float(driver_stats[8][0])
+            rating = (cornering + braking*0.75 + reactions*0.5 +control*0.75 + smoothness*0.5 + accuracy*0.75 + adaptability*0.25 + overtaking*0.25+ defence*0.25)/5
+        else:
+            type = "staff"
+            rating = 0
+            for i in range(len(driver_stats)):
+                rating += float(driver_stats[i][0])
+            rating = rating/len(driver_stats)
+
         if(rating >= 89): tier = 1
         elif(rating >= 85): tier = 2
         elif(rating >= 80): tier = 3
         else: tier = 4
 
-        return tier
+        return tier, type
 
     def get_driver_id(self, name):
         driver = name.capitalize()

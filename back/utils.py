@@ -99,29 +99,35 @@ class DatabaseUtils:
 
 
     def fetch_driverContract(self, id):
-        details = self.cursor.execute(f"SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = {id}").fetchone()
-        return details
+        vurrent_contract = self.cursor.execute(f"SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = {id}").fetchone()
+        future_contract = self.cursor.execute(f"SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, PosInTeam, TeamID FROM Staff_Contracts WHERE ContractType = 3 AND StaffID = {id}").fetchone()
+        day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+        return [vurrent_contract, future_contract, day_season[1]]
     
     def fetch_year(self):
         season = self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
         return season[0]
+    
+    def check_contract(self, id, teamID):
+        type  = self.cursor.execute(f"SELECT ContractType FROM Staff_Contracts WHERE StaffID = {id} AND TeamID = {teamID} WHERE ContractType = 0 OR ContractType = 3").fetchone()
 
     def fetch_staff(self, game_year):
-        staff = self.cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0 AND (con.ContractType = 0 OR con.ContractType IS NULL OR con.ContractType = 3) GROUP BY bas.StaffID ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID").fetchall()
+        staff = self.cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID LEFT JOIN Staff_Contracts con ON bas.StaffID = con.StaffID AND (con.ContractType = 0 OR con.ContractType IS NULL) WHERE gam.StaffType != 0 ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID;").fetchall()
         formatted_tuples = []
-
         for tupla in staff:
             id = tupla[2]
             if tupla[0] != "Placeholder":
                 result = self.format_names_get_stats(tupla, "staff"+str(tupla[4]))
                 retirement = self.fetch_driverRetirement(id)
                 race_formula = self.fetch_raceFormula(id)
+                team_future = self.fetch_for_future_contract(id)
                 if race_formula[0] == None:
                     race_formula = (4,)
                 data_dict = {i: result[i] for i in range(len(result))}
                 data_dict["retirement_age"] = retirement[0]
                 data_dict["age"] = retirement[1]
                 data_dict["race_formula"] = race_formula[0]
+                data_dict["team_future"] = team_future
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
                     if mentality:
@@ -222,8 +228,12 @@ class DatabaseUtils:
                 formatred_results[i] = tuple(results_list)
             QStage = self.cursor.execute(f"SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {races_participated[i][0]} AND SeasonID = {year[0]} AND DriverID = {driverID[0]}").fetchone()
             QRes = self.cursor.execute(f"SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {races_participated[i][0]} AND SeasonID = {year[0]} AND DriverID = {driverID[0]} AND QualifyingStage = {QStage[0]}").fetchone()
+            time_difference = self.calculate_time_difference(driverID[0], races_participated[i][0])
+            pole_difference = self.calculate_time_to_pole(driverID[0], races_participated[i][0])
             results_list = list(formatred_results[i])
             results_list.append(QRes[0])
+            results_list.append(time_difference)
+            results_list.append(pole_difference)
             formatred_results[i] = tuple(results_list)
 
 
@@ -243,6 +253,33 @@ class DatabaseUtils:
         formatred_results.insert(0, teamID)
         formatred_results.insert(0, name_formatted)
         return formatred_results
+    
+    def calculate_time_to_pole(self, driverID, raceID):
+        QStage = self.cursor.execute(f"SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {raceID} AND DriverID = {driverID}").fetchone()[0]
+        pole_time = self.cursor.execute(f"SELECT MIN(FastestLap) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {raceID} AND QualifyingStage = 3 AND FastestLap IS NOT 0").fetchone()[0]
+        driver_time = self.cursor.execute(f"SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1  AND RaceID = {raceID} AND QualifyingStage = {QStage} AND DriverID = {driverID}").fetchone()[0]
+        if driver_time < pole_time:
+            time_difference = "NQ"
+        else:
+            time_difference = round(driver_time - pole_time, 2)
+            time_difference = f"+{time_difference}s"
+
+        return time_difference
+
+
+    def calculate_time_difference(self, driverID, raceID):
+        total_laps = self.cursor.execute(f"SELECT MAX(Laps) FROM Races_Results WHERE RaceID = {raceID}").fetchone()[0]
+        driver_laps = self.cursor.execute(f"SELECT Laps FROM Races_Results WHERE RaceID = {raceID} AND DriverID = {driverID}").fetchone()[0]
+        if driver_laps < total_laps:
+            time_difference = f"+{total_laps - driver_laps} L"
+        else:
+            winner_id = self.cursor.execute(f"SELECT DriverID FROM Races_Results WHERE RaceID = {raceID} AND FinishingPos = 1").fetchone()[0]
+            winner_time = self.cursor.execute(f"SELECT Time FROM Races_Results WHERE RaceID = {raceID} AND DriverID = {winner_id}").fetchone()[0]
+            driver_time = self.cursor.execute(f"SELECT Time FROM Races_Results WHERE RaceID = {raceID} AND DriverID = {driverID}").fetchone()[0]
+            time_difference = round(driver_time - winner_time, 1)
+            time_difference = f"+{time_difference}s"
+
+        return time_difference
 
     def fetch_drivers_per_year(self, year):
         drivers = self.cursor.execute(f"SELECT bas.FirstName, bas.LastName, res.DriverID, res.TeamID FROM Staff_BasicData bas JOIN Races_Results res ON bas.StaffID = res.DriverID WHERE Season = {year} GROUP BY bas.FirstName, bas.LastName, bas.StaffID, res.TeamID ORDER BY res.TeamID").fetchall()
@@ -275,6 +312,7 @@ class DatabaseUtils:
                     race_formula = (4,)
                 driver_number = self.fetchDriverNumberDetails(id)
                 superlicense = self.fetch_superlicense(id)
+                team_future = self.fetch_for_future_contract(id)
                 data_dict = {i: result[i] for i in range(len(result))}
                 data_dict["driver_number"] = driver_number[0]
                 data_dict["wants1"] = driver_number[1]
@@ -282,6 +320,7 @@ class DatabaseUtils:
                 data_dict["age"] = retirement[1]
                 data_dict["superlicense"] = superlicense[0]
                 data_dict["race_formula"] = race_formula[0]
+                data_dict["team_future"] = team_future
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
                     if mentality:
@@ -294,6 +333,12 @@ class DatabaseUtils:
                 formatted_tuples.append(data_dict)
 
         return formatted_tuples
+    
+    def fetch_for_future_contract(self, driverID):
+        team = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3").fetchone()
+        if team is None:
+            team = (-1,)
+        return team[0]
     
     def fetch_raceFormula(self, driverID):
         category = self.cursor.execute(f"SELECT MAX(CASE WHEN (TeamID <= 10 OR TeamID = 32) THEN 1 WHEN TeamID BETWEEN 11 AND 21 THEN 2 WHEN TeamID BETWEEN 22 AND 31 THEN 3 ELSE 4 END) FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = {driverID}").fetchone()

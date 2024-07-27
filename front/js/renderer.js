@@ -155,7 +155,7 @@ function createToast(msg,cod) {
         icon.className = "bi bi-check-circle"
         toastIcon.classList.add("success")
     }
-    else if (cod === "error") {
+    else if (cod === "error" || cod === "lighterror") {
         icon.className = "bi bi-x-circle"
         toastIcon.classList.add("error")
     }
@@ -205,20 +205,32 @@ function editModeHandler() {
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     document.querySelector(".clicked").dataset.retirement = retirement;
     let driverNum = document.querySelector("#numberButton .front-gradient").textContent;
-    let wants1,superLicense;
+    let wants1,superLicense, isRetired;
     document.querySelector(".clicked").dataset.number = driverNum;
     if (document.querySelector("#driverNumber1").checked) {
         wants1 = 1;
+        document.querySelector(".clicked").dataset.numWC = 1;
     }
     else {
         wants1 = 0;
+        document.querySelector(".clicked").dataset.numWC = 0;
+    }
+    if (document.querySelector("#retiredInput").checked) {
+        isRetired = 1;
+        document.querySelector(".clicked").dataset.isRetired = 1;
+    }
+    else {
+        isRetired = 0;
+        document.querySelector(".clicked").dataset.isRetired = 0;
     }
     document.querySelector(".clicked").dataset.numWC = wants1;
     if (document.getElementById("superLicense").checked) {
         superLicense = 1;
+        document.querySelector(".clicked").dataset.superLicense = 1;
     }
     else {
         superLicense = 0;
+        document.querySelector(".clicked").dataset.superLicense = 0;
     }
     let mentality = -1
     if (document.querySelector(".clicked").dataset.mentality0) {
@@ -236,6 +248,7 @@ function editModeHandler() {
         statsArray: stats,
         typeStaff: typeEdit,
         retirement: retirement,
+        isRetired: isRetired,
         driverNum: driverNum,
         wants1: wants1,
         mentality: mentality,
@@ -449,10 +462,13 @@ document.addEventListener('DOMContentLoaded',function () {
             remove_drivers();
             removeStatsDrivers();
             place_drivers(message.slice(1));
+            sortList("free-drivers")
             place_drivers_editStats(message.slice(1));
         },
         "Staff Fetched": (message) => {
             place_staff(message.slice(1));
+            sortList("free-staff")
+            place_staff_editStats(message.slice(1));
         },
         "Calendar fetched": (message) => {
             load_calendar(message.slice(1))
@@ -610,6 +626,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 elem.style.height = "672px"
             })
             document.getElementById("free-drivers").style.height = "672px"
+            document.getElementById("free-staff").style.height = "672px"
             document.getElementById("raceMenu").style.height = "686px"
         }
         else if (mode === "10teams") {
