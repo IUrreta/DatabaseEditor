@@ -911,6 +911,7 @@ function hoverListeners() {
  */
 function generateYearsMenu(actualYear) {
     document.querySelector("#yearInput").min = actualYear
+    currentSeason = actualYear
     var yearMenu = document.querySelector("#yearMenu");
     var yearH2H = document.querySelector("#yearMenuH2H");
     var yearPrediction = document.querySelector("#yearPredictionMenu");

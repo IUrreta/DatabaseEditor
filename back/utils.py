@@ -107,11 +107,13 @@ class DatabaseUtils:
     def fetch_year(self):
         season = self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
         return season[0]
+    
+    def check_contract(self, id, teamID):
+        type  = self.cursor.execute(f"SELECT ContractType FROM Staff_Contracts WHERE StaffID = {id} AND TeamID = {teamID} WHERE ContractType = 0 OR ContractType = 3").fetchone()
 
     def fetch_staff(self, game_year):
-        staff = self.cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0 AND (con.ContractType = 0 OR con.ContractType IS NULL OR con.ContractType = 3) GROUP BY bas.StaffID ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID").fetchall()
+        staff = self.cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID LEFT JOIN Staff_Contracts con ON bas.StaffID = con.StaffID AND (con.ContractType = 0 OR con.ContractType IS NULL) WHERE gam.StaffType != 0 ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID;").fetchall()
         formatted_tuples = []
-
         for tupla in staff:
             id = tupla[2]
             if tupla[0] != "Placeholder":

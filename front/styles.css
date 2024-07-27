@@ -3366,6 +3366,14 @@ DRIVERS TABLE
 
 }
 
+.engine-f2{
+  border-bottom: 2px solid var(--f2-border);
+}
+
+.engine-f3{
+  border-bottom: 2px solid var(--f3-border);
+}
+
 .engine-fe{
   border-bottom: 2px solid var(--ferrari-primary);
 }
@@ -5326,6 +5334,10 @@ input.disabled{
   justify-content: flex-end;
 }
 
+.custom-icon i{
+  transition: transform 0.3s, color 0.3s;
+}
+
 
 
 .standardlogo{
@@ -5370,8 +5382,15 @@ input.disabled{
 
 
 .free-driver:hover .custom-icon {
-  color: var(--dark-text);
   opacity: 1;
+}
+
+#free-drivers .free-driver:hover .custom-icon i, #free-staff .free-driver:hover .custom-icon i{
+  color: var(--text-general);
+}
+
+#free-drivers .free-driver:hover .custom-icon i:hover, #free-staff .free-driver:hover .custom-icon i:hover{
+  transform: scale(1.05);
 }
 
 #free-drivers, #free-staff {
@@ -5381,8 +5400,7 @@ input.disabled{
 
 .free-driver:hover {
   cursor: grab !important;
-  background-color: var(--text-general-transparent);
-  color: var(--negative-text);
+  background-color: var(--table-hover);
 }
 
 .modal-driver:hover, .modal-team:hover{

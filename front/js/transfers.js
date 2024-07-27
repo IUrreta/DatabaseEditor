@@ -36,8 +36,9 @@ let driverEditingName;
 let driver1;
 let driver2;
 let originalTeamId
+let currentSeason;
 
-let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 32: "ct" }
+let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 32: "ct", 33: "f2", 34: "f3" }
 let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10, 'custom': 32 }
 let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3", "custom": "Custom Team" }
 
@@ -86,6 +87,7 @@ function place_drivers(driversArray) {
         if (driver["team_future"] !== -1) {
             add_future_team_noti(newDiv, driver["team_future"])
         }
+        newDiv.dataset.futureteam = driver["team_future"]
         manageColor(newDiv, spanLastName)
         // if (driver[4] === 1) {
         //     addUnRetireIcon(newDiv)
@@ -105,6 +107,31 @@ function place_drivers(driversArray) {
     })
 }
 
+function sortList(divID) {
+    let container = document.getElementById(divID);
+
+    let divs = Array.from(container.querySelectorAll('.free-driver'));
+
+    let compareFunction = (a, b) => {
+        let futureTeamA = parseInt(a.dataset.futureteam);
+        let futureTeamB = parseInt(b.dataset.futureteam);
+
+        if (futureTeamA > futureTeamB) return -1;
+        if (futureTeamA < futureTeamB) return 1;
+
+        let textA = a.firstElementChild.textContent.toLowerCase();
+        let textB = b.firstElementChild.textContent.toLowerCase();
+
+        return textA.localeCompare(textB);
+    };
+
+    divs.sort(compareFunction);
+
+    container.innerHTML = '';
+
+    divs.forEach(div => container.appendChild(div));
+}
+
 function place_staff(staffArray) {
     let divPosition;
     staffArray.forEach((staff) => {
@@ -121,9 +148,10 @@ function place_staff(staffArray) {
         newDiv.appendChild(spanName)
         newDiv.appendChild(spanLastName)
         newDiv.classList.add(team_dict[staff[2]] + "-transparent")
-        if (staff["team_future"] !== -1){
-            add_future_team_noti(newDiv,staff["team_future"])
+        if (staff["team_future"] !== -1) {
+            add_future_team_noti(newDiv, staff["team_future"])
         }
+        newDiv.dataset.futureteam = staff["team_future"]
         manageColor(newDiv, spanLastName)
         // if (staff[4] === 1) {
         //     addUnRetireIcon(newDiv)
@@ -133,8 +161,8 @@ function place_staff(staffArray) {
         let staff_position = staff_positions[position]
         newDiv.dataset.type = staff_position
         spanName.classList.add(staff_position + "-border")
+        addIcon(newDiv)
         if (staff[2] > 0 && staff[2] <= 10 || staff[2] === 32) {
-            addIcon(newDiv)
             let teamDiv = document.querySelector(`.staff-section[data-teamid='${staff[2]}']`)
             if (position !== 2) {
                 teamDiv.querySelector(`[data-type='${staff_position}']`).appendChild(newDiv)
@@ -294,25 +322,25 @@ function iconListener(icon) {
         document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g, ' ') + "'s contract";
         queryContract(icon.parentNode.parentNode)
         let space = icon.parentNode.parentNode.parentNode
-        if (space.classList.contains("driver-space") || space.classList.contains("affiliates-space")) {
+        if (space.classList.contains("driver-space") || space.classList.contains("affiliates-space") || (space.id === "free-drivers" && (f2_teams.includes(parseInt(icon.parentNode.parentNode.dataset.teamid)) || f3_teams.includes(parseInt(icon.parentNode.parentNode.dataset.teamid))))) {
             manage_modal_driver_staff("driver")
         }
-        else if (space.classList.contains("staff-space")) {
-            if (event.target.parentNode.parentNode.dataset.type === "race-engineer"){
+        else if (space.classList.contains("staff-space") || (space.id === "free-staff" && (f2_teams.includes(parseInt(icon.parentNode.parentNode.dataset.teamid)) || f3_teams.includes(parseInt(icon.parentNode.parentNode.dataset.teamid))))) {
+            if (event.target.parentNode.parentNode.dataset.type === "race-engineer") {
                 manage_modal_driver_staff("race-engineer")
             }
-            else{
+            else {
                 manage_modal_driver_staff("staff")
             }
         }
-        else if (space.id === "free-drivers"){
+        else if (space.id === "free-drivers") {
             manage_modal_driver_staff("free-driver")
         }
-        else if (space.id === "free-staff"){
-            if (event.target.parentNode.parentNode.dataset.type === "race-engineer"){
+        else if (space.id === "free-staff") {
+            if (event.target.parentNode.parentNode.dataset.type === "race-engineer") {
                 manage_modal_driver_staff("free-race-engineer")
             }
-            else{
+            else {
                 manage_modal_driver_staff("free-staff")
             }
         }
@@ -320,29 +348,29 @@ function iconListener(icon) {
     })
 }
 
-function manage_modal_driver_staff(type){
-    if (type === "staff" || type === "race-engineer"){
+function manage_modal_driver_staff(type) {
+    if (type === "staff" || type === "race-engineer") {
         document.getElementById("currentContractTitle").classList.remove("d-none")
         document.getElementById("currentContractOptions").classList.remove("d-none")
-        document.querySelectorAll(".driver-only").forEach(function(elem){
+        document.querySelectorAll(".driver-only").forEach(function (elem) {
             let input = elem.querySelector("input")
             input.disabled = true
             input.classList.add("disabled")
             let buttons = elem.querySelectorAll("i")
-            buttons.forEach(function(button){
+            buttons.forEach(function (button) {
                 button.classList.add("disabled")
             })
         })
     }
-    else if (type === "driver"){
+    else if (type === "driver") {
         document.getElementById("currentContractTitle").classList.remove("d-none")
         document.getElementById("currentContractOptions").classList.remove("d-none")
-        document.querySelectorAll(".driver-only").forEach(function(elem){
+        document.querySelectorAll(".driver-only").forEach(function (elem) {
             let input = elem.querySelector("input")
             input.disabled = false
             input.classList.remove("disabled")
             let buttons = elem.querySelectorAll("i")
-            buttons.forEach(function(button){
+            buttons.forEach(function (button) {
                 button.classList.remove("disabled")
             })
         })
@@ -350,13 +378,13 @@ function manage_modal_driver_staff(type){
         positionInput.max = 999
 
     }
-    else if (type === "free-driver"){
-        document.querySelectorAll(".driver-only").forEach(function(elem){
+    else if (type === "free-driver") {
+        document.querySelectorAll(".driver-only").forEach(function (elem) {
             let input = elem.querySelector("input")
             input.disabled = false
             input.classList.remove("disabled")
             let buttons = elem.querySelectorAll("i")
-            buttons.forEach(function(button){
+            buttons.forEach(function (button) {
                 button.classList.remove("disabled")
             })
         })
@@ -368,21 +396,44 @@ function manage_modal_driver_staff(type){
         document.getElementById("currentContractTitle").classList.add("d-none")
         document.querySelector(".add-contract").classList.remove("d-none")
     }
-    else if (type === "free-staff"){
-        document.querySelectorAll(".driver-only").forEach(function(elem){
+    else if (type === "free-staff") {
+        document.querySelectorAll(".driver-only").forEach(function (elem) {
             let input = elem.querySelector("input")
             input.disabled = true
             input.classList.add("disabled")
             let buttons = elem.querySelectorAll("i")
-            buttons.forEach(function(button){
+            buttons.forEach(function (button) {
                 button.classList.add("disabled")
             })
         })
         let positionInput = document.querySelector("#positionInput input")
-        positionInput.disabled = false
-        positionInput.max = 2
+        positionInput.disabled = true
         let buttons = document.querySelectorAll("#positionInput i")
-        buttons.forEach(function(button){
+        buttons.forEach(function (button) {
+            button.classList.add("disabled")
+        })
+        document.getElementById("currentContractOptions").classList.add("d-none")
+        document.getElementById("futureContractOptions").classList.add("d-none")
+        document.getElementById("futureContractTitle").classList.add("d-none")
+        document.getElementById("currentContractTitle").classList.add("d-none")
+        document.querySelector(".add-contract").classList.remove("d-none")
+    }
+    else if (type === "free-race-engineer") {
+        document.querySelectorAll(".driver-only").forEach(function (elem) {
+            let input = elem.querySelector("input")
+            input.disabled = true
+            input.classList.add("disabled")
+            let buttons = elem.querySelectorAll("i")
+            buttons.forEach(function (button) {
+                button.classList.add("disabled")
+            })
+        })
+        let input = document.querySelector("#positionInput input")
+        let buttons = document.querySelectorAll("#positionInput i")
+        input.disabled = false
+        input.max = 2
+        input.classList.remove("disabled")
+        buttons.forEach(function (button) {
             button.classList.remove("disabled")
         })
         document.getElementById("currentContractOptions").classList.add("d-none")
@@ -391,13 +442,13 @@ function manage_modal_driver_staff(type){
         document.getElementById("currentContractTitle").classList.add("d-none")
         document.querySelector(".add-contract").classList.remove("d-none")
     }
-    if (type === "race-engineer"){
+    if (type === "race-engineer") {
         let input = document.querySelector("#positionInput input")
         let buttons = document.querySelectorAll("#positionInput i")
         input.disabled = false
         input.max = 2
         input.classList.remove("disabled")
-        buttons.forEach(function(button){
+        buttons.forEach(function (button) {
             button.classList.remove("disabled")
         })
     }
@@ -421,10 +472,19 @@ function unretireListener(icon) {
  * @param {Object} info values for the contract modal that just opened
  */
 function manage_modal(info) {
-    console.log(info)
-    if (info[0] !== null){
+    if (info[0] !== null) {
+        let teamID;
+        if (info[0][5] <= 10 || info[0][5] === 32) {
+            teamID = info[0][5]
+        }
+        else if (f2_teams.includes(info[0][5])) {
+            teamID = 33
+        }
+        else if (f3_teams.includes(info[0][5])) {
+            teamID = 34
+        }
         document.getElementById("currentContract").innerText = combined_dict[info[0][5]].toUpperCase()
-        document.getElementById("currentContract").className = "team-contract engine-" + team_dict[info[0][5]]
+        document.getElementById("currentContract").className = "team-contract engine-" + team_dict[teamID]
         document.getElementById("yearInput").dataset.maxYear = info[2]
         document.getElementById("yearInput").min = info[2]
         document.getElementById("yearInputFuture").min = info[2] + 1
@@ -435,9 +495,9 @@ function manage_modal(info) {
             else {
                 elem.value = info[0][index]
             }
-    
+
         })
-    }   
+    }
     if (info[1] === null) {
         document.querySelector(".add-contract").classList.remove("d-none")
         document.querySelector("#futureContractTitle").classList.add("d-none")
@@ -489,11 +549,21 @@ document.querySelector(".add-contract i").addEventListener("click", function () 
         document.querySelector(".add-contract").classList.add("d-none")
         document.querySelector("#futureContractTitle").classList.remove("d-none")
         document.querySelector("#futureContractOptions").classList.remove("d-none")
-        document.querySelector("#salaryInputFuture").value = formatNumber((parseFloat(document.querySelector("#salaryInput").value.replace(/,/g, '').split(" ")[0]) * 1.3).toFixed(0)) + " $";
-        document.querySelector("#signBonusInputFuture").value = formatNumber((parseFloat(document.querySelector("#signBonusInput").value.replace(/,/g, '').split(" ")[0]) * 1.15).toFixed(0)) + " $";
-        document.querySelector("#raceBonusAmtFuture").value = formatNumber((parseFloat(document.querySelector("#raceBonusAmt").value.replace(/,/g, '').split(" ")[0]) * 1.15).toFixed(0)) + " $";
-        document.querySelector("#raceBonusPosFuture").value = parseInt(document.querySelector("#raceBonusPos").value)
-        document.querySelector("#yearInputFuture").value = parseInt(document.querySelector("#yearInput").value) + 2
+        if (document.querySelector("#salaryInput").value !== "") {
+            document.querySelector("#salaryInputFuture").value = formatNumber((parseFloat(document.querySelector("#salaryInput").value.replace(/,/g, '').split(" ")[0]) * 1.3).toFixed(0)) + " $";
+            document.querySelector("#signBonusInputFuture").value = formatNumber((parseFloat(document.querySelector("#signBonusInput").value.replace(/,/g, '').split(" ")[0]) * 1.15).toFixed(0)) + " $";
+            document.querySelector("#raceBonusAmtFuture").value = formatNumber((parseFloat(document.querySelector("#raceBonusAmt").value.replace(/,/g, '').split(" ")[0]) * 1.15).toFixed(0)) + " $";
+            document.querySelector("#raceBonusPosFuture").value = parseInt(document.querySelector("#raceBonusPos").value)
+            document.querySelector("#yearInputFuture").value = parseInt(document.querySelector("#yearInput").value) + 2
+        }
+        else {
+            document.querySelector("#salaryInputFuture").value = "1,000,000 $"
+            document.querySelector("#signBonusInputFuture").value = "100,000 $"
+            document.querySelector("#raceBonusAmtFuture").value = "0 $"
+            document.querySelector("#raceBonusPosFuture").value = "1"
+            document.querySelector("#yearInputFuture").value = parseInt(currentSeason) + 1
+        }
+
         document.querySelector("#posInTeamFuture").value = 1;
     }
 })
@@ -675,6 +745,8 @@ document.getElementById("confirmButton").addEventListener('click', function () {
         modalType = "";
     }
     setTimeout(clearModal, 500);
+    sortList("free-drivers")
+    sortList("free-staff")
 })
 
 /**
@@ -731,6 +803,12 @@ function editContract() {
     if (future_team !== "-1") {
         let driverDiv = document.querySelector('.free-driver[data-driverid="' + driverEditingID + '"]')
         add_future_team_noti(driverDiv, future_team)
+        driverDiv.dataset.futureteam = future_team
+    }
+    else{
+        let driverDiv = document.querySelector('.free-driver[data-driverid="' + driverEditingID + '"]')
+        driverDiv.querySelector(".future-contract-noti").remove()
+        driverDiv.dataset.futureteam = -1
     }
 }
 
@@ -1185,7 +1263,7 @@ interact('.free-driver').draggable({
                     let rect = element.getBoundingClientRect();
                     if (event.clientX >= rect.left && event.clientX <= rect.right &&
                         event.clientY >= rect.top && event.clientY <= rect.bottom) {
-                        if(element.dataset.type === event.target.dataset.type){
+                        if (element.dataset.type === event.target.dataset.type) {
                             if (element.childElementCount < 1) {
                                 posInTeam = element.dataset.pos
                                 teamDestiniy = element.parentNode.dataset.team
@@ -1205,10 +1283,10 @@ interact('.free-driver').draggable({
                                 else {
                                     modalType = "hire"
                                     hire_modal_standars()
-                                    if (event.target.dataset.type === "race-engineer"){
+                                    if (event.target.dataset.type === "race-engineer") {
                                         manage_modal_driver_staff("race-engineer")
                                     }
-                                    else{
+                                    else {
                                         manage_modal_driver_staff("staff")
                                     }
                                     myModal.show()
@@ -1235,17 +1313,17 @@ interact('.free-driver').draggable({
                                             driver1: target.innerText,
                                             driver2: element.firstChild.innerText,
                                         }
-    
+
                                         socket.send(JSON.stringify(data))
                                         manage_swap()
                                     }
-    
+
                                 }
-    
+
                             }
                         }
-                        else{
-                            update_notifications( "You can't change staff from different positions", "lighterror")
+                        else {
+                            update_notifications("You can't change staff from different positions", "lighterror")
                         }
 
                     }

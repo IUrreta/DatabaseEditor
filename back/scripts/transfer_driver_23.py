@@ -312,7 +312,9 @@ class TransferUtils:
 
 
     def edit_contract(self, driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos):
-        self.cursor.execute(f"UPDATE Staff_Contracts SET Salary = {salary}, EndSeason = {endSeason}, StartingBonus = {startingBonus}, RaceBonus = {raceBonus}, RaceBonusTargetPos = {raceBonusTargetPos} WHERE ContractType = 0 AND StaffID = {driverID}")
+        has_contract = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 0").fetchone()
+        if has_contract is not None:
+            self.cursor.execute(f"UPDATE Staff_Contracts SET Salary = {salary}, EndSeason = {endSeason}, StartingBonus = {startingBonus}, RaceBonus = {raceBonus}, RaceBonusTargetPos = {raceBonusTargetPos} WHERE ContractType = 0 AND StaffID = {driverID}")
 
 
     def future_contract(self, teamID, driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos, position, year_iteration="24"):

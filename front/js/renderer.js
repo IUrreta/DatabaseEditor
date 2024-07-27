@@ -449,10 +449,12 @@ document.addEventListener('DOMContentLoaded',function () {
             remove_drivers();
             removeStatsDrivers();
             place_drivers(message.slice(1));
+            sortList("free-drivers")
             place_drivers_editStats(message.slice(1));
         },
         "Staff Fetched": (message) => {
             place_staff(message.slice(1));
+            sortList("free-staff")
             place_staff_editStats(message.slice(1));
         },
         "Calendar fetched": (message) => {
