@@ -24,7 +24,7 @@
         </div>
         <div class="modal-body number-and-contract custom-body">
           <div class="contract-options">
-            <div class="contract-title">
+            <div class="contract-title" id="currentContractTitle">
               <div>Current contract</div>
               <div class="team-contract" id="currentContract"></div>
             </div>
@@ -32,7 +32,7 @@
               <div>
                 <h5 class="modal-subtitle bold-font">Salary</h5>
                 <div class="input-and-buttons pt-1">
-                  <input type="text" class="old-custom-input-number" id="salaryInput" placeholder="ex: 2000000">
+                  <input type="text" class="old-custom-input-number" id="salaryInput" placeholder="ex: 2000000" min="0">
                   <div class="input-buttons">
                     <i class="bi bi-plus-lg"></i>
                     <i class="bi bi-dash-lg"></i>
@@ -52,7 +52,7 @@
               <div>
                 <h5 class="modal-subtitle bold-font">Sign bonus</h5>
                 <div class="input-and-buttons pt-1">
-                  <input type="text" class="old-custom-input-number" id="signBonusInput" placeholder="ex: 10000">
+                  <input type="text" class="old-custom-input-number" id="signBonusInput" placeholder="ex: 10000" min="0">
                   <div class="input-buttons">
                     <i class="bi bi-plus-lg"></i>
                     <i class="bi bi-dash-lg"></i>
@@ -61,8 +61,8 @@
               </div>
               <div class="mt-3">
                 <h5 class="modal-subtitle bold-font">Race bonus amount</h5>
-                <div class="input-and-buttons pt-1">
-                  <input type="text" class="old-custom-input-number" id="raceBonusAmt" placeholder="ex: 150000">
+                <div class="input-and-buttons pt-1 driver-only">
+                  <input type="text" class="old-custom-input-number" id="raceBonusAmt" placeholder="ex: 150000" min="0">
                   <div class="input-buttons">
                     <i class="bi bi-plus-lg"></i>
                     <i class="bi bi-dash-lg"></i>
@@ -71,8 +71,8 @@
               </div>
               <div class="mt-3">
                 <h5 class="modal-subtitle bold-font">Race bonus position</h5>
-                <div class="input-and-buttons pt-1">
-                  <input type="number" class="old-custom-input-number" id="raceBonusPos" placeholder="ex: 1">
+                <div class="input-and-buttons pt-1 driver-only">
+                  <input type="number" class="old-custom-input-number" id="raceBonusPos" placeholder="ex: 1" min="1" max="22">
                   <div class="input-buttons">
                     <i class="bi bi-chevron-up"></i>
                     <i class="bi bi-chevron-down"></i>
@@ -91,7 +91,7 @@
               <div>
                 <h5 class="modal-subtitle bold-font">Salary</h5>
                 <div class="input-and-buttons pt-1">
-                  <input type="text" class="old-custom-input-number" id="salaryInputFuture" placeholder="ex: 2000000">
+                  <input type="text" class="old-custom-input-number" id="salaryInputFuture" placeholder="ex: 2000000" min="0">
                   <div class="input-buttons">
                     <i class="bi bi-plus-lg"></i>
                     <i class="bi bi-dash-lg"></i>
@@ -111,7 +111,7 @@
               <div>
                 <h5 class="modal-subtitle bold-font">Sign bonus</h5>
                 <div class="input-and-buttons pt-1">
-                  <input type="text" class="old-custom-input-number" id="signBonusInputFuture" placeholder="ex: 10000">
+                  <input type="text" class="old-custom-input-number" id="signBonusInputFuture" placeholder="ex: 10000" min="0">
                   <div class="input-buttons">
                     <i class="bi bi-plus-lg"></i>
                     <i class="bi bi-dash-lg"></i>
@@ -120,8 +120,8 @@
               </div>
               <div class="mt-3">
                 <h5 class="modal-subtitle bold-font">Race bonus amount</h5>
-                <div class="input-and-buttons pt-1">
-                  <input type="text" class="old-custom-input-number" id="raceBonusAmtFuture" placeholder="ex: 150000">
+                <div class="input-and-buttons pt-1 driver-only">
+                  <input type="text" class="old-custom-input-number" id="raceBonusAmtFuture" placeholder="ex: 150000" min="0">
                   <div class="input-buttons">
                     <i class="bi bi-plus-lg"></i>
                     <i class="bi bi-dash-lg"></i>
@@ -130,8 +130,8 @@
               </div>
               <div class="mt-3">
                 <h5 class="modal-subtitle bold-font">Race bonus position</h5>
-                <div class="input-and-buttons pt-1">
-                  <input type="number" class="old-custom-input-number" id="raceBonusPosFuture" placeholder="ex: 1">
+                <div class="input-and-buttons pt-1 driver-only">
+                  <input type="number" class="old-custom-input-number" id="raceBonusPosFuture" placeholder="ex: 1" min="1" max="22">
                   <div class="input-buttons">
                     <i class="bi bi-chevron-up"></i>
                     <i class="bi bi-chevron-down"></i>
@@ -140,8 +140,8 @@
               </div>
               <div class="mt-3">
                 <h5 class="modal-subtitle bold-font">Position</h5>
-                <div class="input-and-buttons pt-1">
-                  <input type="number" class="old-custom-input-number" id="posInTeamFuture" placeholder="ex: 1">
+                <div class="input-and-buttons pt-1 driver-only" id="positionInput">
+                  <input type="number" class="old-custom-input-number" id="posInTeamFuture" placeholder="ex: 1" min="1" max="999">
                   <div class="input-buttons">
                     <i class="bi bi-chevron-up"></i>
                     <i class="bi bi-chevron-down"></i>
@@ -1260,6 +1260,8 @@
                   <a class="dropdown-item" style="cursor: pointer;" id="raceForm">Race form</a>
                   <a class="dropdown-item" style="cursor: pointer;" id="qualiForm">Qualifying form</a>
                   <a class="dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
+                    <!-- <a class="dropdown-item" style="cursor: pointer;" id="gapToWinner">Gap to winner</a>
+                    <a class="dropdown-item" style="cursor: pointer;" id="gapToPole">Gap to pole</a> -->
                 </ul>
               </div>
             </div>
@@ -1424,6 +1426,8 @@
               <canvas class="graphs" id="driverGraph"></canvas>
               <canvas class="graphs d-none" id="progressionGraph"></canvas>
               <canvas class="graphs d-none" id="qualiGraph"></canvas>
+              <!-- <canvas class="graphs d-none" id="gapToWinnerGraph"></canvas>
+              <canvas class="graphs d-none" id="gapToPoleGraph"></canvas> -->
             </div>
           </div>
         </div>
@@ -1458,27 +1462,21 @@
               </ul>
             </div>
           </div>
-          <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
-            <ul class="nav nav-pills">
-              <li class="nav-item">
-                <a class="nav-link bold-font generalPills" data-bs-toggle="pill" href="#" id="qualipill">
-                  <div class="basic-label bold-font">Qualifying</div>
-                  <div class="pill-line"></div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link bold-font generalPills" data-bs-toggle="pill" href="#" id="pospill">
-                  <div class="basic-label bold-font">Positions</div>
-                  <div class="pill-line"></div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link bold-font generalPills active" data-bs-toggle="pill" href="#" id="pointspill">
-                  <div class="basic-label bold-font">Points</div>
-                  <div class="pill-line"></div>
-                </a>
-              </li>
-            </ul>
+          <div class="ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
+            <div>
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
+                id="tableTypeButton" data-bs-toggle="dropdown">
+                Points
+              </button>
+              <div class="dropdown-line"></div>
+              <ul class="dropdown-menu" id="tableTypeDropdown" style="font-family: Formula1;">
+                <a class="dropdown-item" style="cursor: pointer;" id="pointspill" data-value="points">Points</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="pospill" data-value="pos">Positions</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="qualipill" data-value="quali">Qualifying</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="gapWinner" data-value="gapWinner">Gap to winner</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="gapPole" data-value="gapPole">Gap to pole</a>
+              </ul>
+            </div>
           </div>
           <div class="title bold-font">
             Season Results
@@ -1508,33 +1506,46 @@
       </div>
       <div class="script-view d-none" id="driver_transfers">
         <div class="transfer-top-panel">
-          <div class="filter-container">
-            <i class="bi bi-funnel filter-icon" id="filterIconTransfers"></i>
-            <div class="category-filters">
-              <ul class="nav nav-pills">
-                <li class="nav-item">
-                  <a class="nav-link bold-font generalPills filter-pills" href="#" id="freefilterTransfers">
-                    <div class="basic-label bold-font">FREE</div>
-                    <div class="pill-line"></div>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link bold-font generalPills filter-pills" href="#" id="F2filterTransfers">
-                    <div class="basic-label bold-font">F2</div>
-                    <div class="pill-line"></div>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link bold-font generalPills filter-pills" href="#" id="F3filterTransfers">
-                    <div class="basic-label bold-font">F3</div>
-                    <div class="pill-line"></div>
-                  </a>
-                </li>
+          <div class="title-buttons-left">
+            <div>
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffTransfersDropdown"
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="drivers">
+                Drivers
+              </button>
+              <div class="dropdown-line"></div>
+              <ul class="dropdown-menu" id="stafftransfersMenu" style="font-family: Formula1;">
+                <a class="dropdown-item" href="#" data-value="drivers">Drivers</a>
+                <a class="dropdown-item" href="#" data-value="staff">Staff</a>
               </ul>
+            </div>
+            <div class="filter-container">
+              <i class="bi bi-funnel filter-icon" id="filterIconTransfers"></i>
+              <div class="category-filters">
+                <ul class="nav nav-pills">
+                  <li class="nav-item">
+                    <a class="nav-link bold-font generalPills filter-pills" href="#" id="freefilterTransfers">
+                      <div class="basic-label bold-font">FREE</div>
+                      <div class="pill-line"></div>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link bold-font generalPills filter-pills" href="#" id="F2filterTransfers">
+                      <div class="basic-label bold-font">F2</div>
+                      <div class="pill-line"></div>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link bold-font generalPills filter-pills" href="#" id="F3filterTransfers">
+                      <div class="basic-label bold-font">F3</div>
+                      <div class="pill-line"></div>
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
           <div class="title transfer-title bold-font">
-            Contracted drivers
+            Current grid
             <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal"
               data-bs-target="#contractsModal">?</i>
           </div>
@@ -1554,8 +1565,7 @@
               </div>
               <div id="free-drivers">
               </div>
-              <div class="main-columns-drag-section d-none" id="f2-drivers" data-team="F2"></div>
-              <div class="main-columns-drag-section d-none" id="f3-drivers" data-team="F3"></div>
+              <div class="d-none" id="free-staff"></div>
             </div>
           </div>
           <div class="col-10">
@@ -1578,6 +1588,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="staff-section d-none" data-team="redbull" data-teamid="3">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
+                </div>
               </div>
               <div class="team-template  feborder">
                 <div class="new-logo-and-name">
@@ -1596,6 +1613,13 @@
                       <i class="bi bi-chevron-right"></i>
                     </div>
                   </div>
+                </div>
+                <div class="staff-section d-none" data-team="ferrari" data-teamid="1">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
                 </div>
               </div>
               <div class="team-template  mcborder">
@@ -1616,6 +1640,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="staff-section d-none" data-team="mclaren" data-teamid="2">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
+                </div>
               </div>
               <div class="team-template  meborder">
                 <div class="new-logo-and-name">
@@ -1634,6 +1665,13 @@
                       <i class="bi bi-chevron-right"></i>
                     </div>
                   </div>
+                </div>
+                <div class="staff-section d-none" data-team="merc" data-teamid="4">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
                 </div>
               </div>
               <div class="team-template  asborder">
@@ -1654,6 +1692,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="staff-section d-none" data-team="astonmartin" data-teamid="10">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
+                </div>
               </div>
               <div class="team-template  alborder">
                 <div class="new-logo-and-name">
@@ -1672,6 +1717,13 @@
                       <i class="bi bi-chevron-right"></i>
                     </div>
                   </div>
+                </div>
+                <div class="staff-section d-none" data-team="alpine" data-teamid="5">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
                 </div>
               </div>
               <div class="team-template  wiborder">
@@ -1692,6 +1744,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="staff-section d-none" data-team="williams"  data-teamid="6">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
+                </div>
               </div>
               <div class="team-template  atborder">
                 <div class="new-logo-and-name">
@@ -1710,6 +1769,13 @@
                       <i class="bi bi-chevron-right"></i>
                     </div>
                   </div>
+                </div>
+                <div class="staff-section d-none" data-team="alphatauri"  data-teamid="8">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
                 </div>
               </div>
               <div class="team-template  afborder">
@@ -1730,6 +1796,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="staff-section d-none" data-team="alfaromeo"  data-teamid="9">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
+                </div>
               </div>
               <div class="team-template  haborder">
                 <div class="new-logo-and-name">
@@ -1749,6 +1822,13 @@
                     </div>
                   </div>
                 </div>
+                <div class="staff-section d-none" data-team="haas"  data-teamid="7">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
+                </div>
               </div>
               <div class="team-template ctborder d-none" id="customTeamTransfers">
                 <div class="new-logo-and-name">
@@ -1767,6 +1847,13 @@
                       <i class="bi bi-chevron-right"></i>
                     </div>
                   </div>
+                </div>
+                <div class="staff-section d-none" data-team="custom"  data-teamid="32">
+                  <div class="staff-space" data-type="technical-chief" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="1"></div>
+                  <div class="staff-space" data-type="race-engineer" data-pos="2"></div>
+                  <div class="staff-space" data-type="head-aero" data-pos="1"></div>
+                  <div class="staff-space" data-type="sporting-director" data-pos="1"></div>
                 </div>
               </div>
             </div>
@@ -1876,8 +1963,15 @@
                     </div>
                   </div>
                   <div class="super-license-holder form-check form-switch">
-                    <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="superLicense">
-                    <span class="form-check-label" for="flexSwitchCheckDefault">Super License</span>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="superLicense">
+                      <span class="form-check-label" for="flexSwitchCheckDefault">Super License</span>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="retiredInput">
+                      <span class="form-check-label" for="flexSwitchCheckDefault">Retired</span>
+                    </div>
+
                   </div>
                   <div class="ovrcombined">
                     <div class="overall-holder bold-font" id="ovrholder"></div>
@@ -3363,7 +3457,10 @@
               <div class="main-columns-drag-section main-resizable" id="teamsDiv">
                 <div class="col team bold-font team-performance rb-transparent" data-teamid="3"
                   data-teamname="Red Bull">
-                  <div class="team-title">RED BULL RACING</div>
+                  <div class="team-title">
+                    <span class="team-title-name">RED BULL RACING</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress rb" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3371,7 +3468,10 @@
                   </div>
                 </div>
                 <div class="col team bold-font team-performance fe-transparent" data-teamid="1" data-teamname="Ferrari">
-                  <div class="team-title">FERRARI</div>
+                  <div class="team-title">
+                    <span class="team-title-name">FERRARI</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress fe" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3380,7 +3480,10 @@
                 </div>
                 <div class="col team bold-font team-performance me-transparent" data-teamid="4"
                   data-teamname="Mercedes">
-                  <div class="team-title">MERCEDES</div>
+                  <div class="team-title">
+                    <span class="team-title-name">MERCEDES</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress me" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3389,7 +3492,10 @@
                 </div>
                 <div class="col team bold-font team-performance al-transparent" data-teamid="5" data-teamname="Alpine"
                   id="alpineTeam">
-                  <div class="team-title alpine-name">ALPINE</div>
+                  <div class="team-title">
+                    <span class="team-title-name alpine-name">ALPINE</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress al" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3397,7 +3503,10 @@
                   </div>
                 </div>
                 <div class="col team bold-font team-performance mc-transparent" data-teamid="2" data-teamname="McLaren">
-                  <div class="team-title">MCLAREN</div>
+                  <div class="team-title">
+                    <span class="team-title-name">MCLAREN</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress mc" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3406,7 +3515,10 @@
                 </div>
                 <div class="col team bold-font team-performance af-transparent" data-teamid="9"
                   data-teamname="Alfa Romeo">
-                  <div class="team-title alfa-name">ALFA ROMEO</div>
+                  <div class="team-title">
+                    <span class="team-title-name alfa-name">ALFA ROMEO</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress af" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3415,7 +3527,10 @@
                 </div>
                 <div class="col team bold-font team-performance as-transparent" data-teamid="10"
                   data-teamname="Aston Martin">
-                  <div class="team-title">ASTON MARTIN</div>
+                  <div class="team-title">
+                    <span class="team-title-name">ASTON MARTIN</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress as" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3423,7 +3538,10 @@
                   </div>
                 </div>
                 <div class="col team bold-font team-performance ha-transparent" data-teamid="7" data-teamname="Haas">
-                  <div class="team-title">HAAS</div>
+                  <div class="team-title">
+                    <span class="team-title-name">HAAS</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress ha" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3432,7 +3550,10 @@
                 </div>
                 <div class="col team bold-font team-performance at-transparent" data-teamid="8"
                   data-teamname="Alpha Tauri" id="alphaTauriTeam">
-                  <div class="team-title at-name complete">ALPHA TAURI</div>
+                  <div class="team-title">
+                    <span class="team-title-name at-name complete">ALPHA TAURI</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress at" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3441,7 +3562,10 @@
                 </div>
                 <div class="col team bold-font team-performance wi-transparent" data-teamid="6"
                   data-teamname="Williams">
-                  <div class="team-title">WILLIAMS</div>
+                  <div class="team-title">
+                    <span class="team-title-name">WILLIAMS</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress wi" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
@@ -3450,7 +3574,10 @@
                 </div>
                 <div class="col team bold-font team-performance ct-transparent" data-teamid="32"
                   id="customTeamPerformance" data-teamname="Custom Team">
-                  <div class="team-title ct-replace">CUSTOM TEAM</div>
+                  <div class="team-title">
+                    <span class="team-title-name ct-replace">CUSTOM TEAM</span>
+                    <span class="team-title-value"></span>
+                  </div>
                   <div class="performance-bar">
                     <div class="performance-bar-progress ct" data-overall="0" data-top_speed="0" data-acceleration="0"
                       data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"

@@ -52,6 +52,27 @@ let combined_dict = {
     8: "Alpha Tauri",
     9: "Alfa Romeo",
     10: "Aston Martin",
+    11: "Prema Racing (F2)",
+    12: "Virtuosi Racing (F2)",
+    13: "Carlin (F2)",
+    14: "Hitech GP (F2)",
+    15: "ART Grand Prix (F2)",
+    16: "MP Motorsport (F2)",
+    17: "PHM Racing (F2)",
+    18: "DAMS (F2)",
+    19: "Campo Racing (F2)",
+    20: "VAR Racing (F2)",
+    21: "Trident (F2)",
+    22: "Prema Racing (F3)",
+    23: "Trident (F3)",
+    24: "ART Grand Prix (F3)",
+    25: "Hitech GP (F3)",
+    26: "VAR Racing (F3)",
+    17: "MP Motorsport (F3)",
+    28: "Campos Racing (F3)",
+    29: "Carlin (F3)",
+    30: "Jenzzer Motorsport (F3)",
+    31: "PHM Racing (F3)",
     32: "Custom Team"
 }
 
@@ -1091,7 +1112,6 @@ function get_one_driver_points_format(driver, data) {
 }
 
 function load_graphs_data(data) {
-
     data.forEach(function (driv, index) {
         if (index !== 0 && index !== data.length - 1) {
             let d1_res = [];
@@ -1110,8 +1130,8 @@ function load_graphs_data(data) {
                 if (ptsThatRace === -1) {
                     ptsThatRace = 0;
                 }
-                if (elem.length === 8) {
-                    d1_points_provisional.push(ptsThatRace + elem[5])
+                if (elem.length === 10) {
+                    d1_points_provisional.push(ptsThatRace + elem[7])
                 }
                 else {
                     d1_points_provisional.push(ptsThatRace)

@@ -38,6 +38,11 @@
   --mentality-negative: #e9de35;
   --mentality-demoralized: #dd3356;
 
+  --technical-chief: #ec4e98;
+  --race-engineer: #bce64a;
+  --head-aero: #5097e7;
+  --sporting-director: #925aeb;
+
   --background-general: #110f24;
   --slight-contrast: #797599;
   --white-general: #f3f3f3;
@@ -250,12 +255,12 @@ body {
   border-radius: 6px;
 }
 
-#free-drivers::-webkit-scrollbar {
+#free-drivers::-webkit-scrollbar, #free-staff::-webkit-scrollbar {
   width: 4px !important;
   margin-left: 4px;
 }
 
-#free-drivers::-webkit-scrollbar-thumb {
+#free-drivers::-webkit-scrollbar-thumb, #free-staff::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px !important;
 }
@@ -577,7 +582,7 @@ a.bi-linkedin:hover {
 
 .title-buttons-left{
   position: absolute;
-  gap: 20px;
+  gap: 10px;
   padding-left: 14px;
   display: flex;
   align-items: center;
@@ -921,11 +926,6 @@ input[type="checkbox"]:checked {
 .filter-icon:hover{
   color: var(--new-primary);
   transform: scale(1.1);
-}
-
-.transfer-top-panel .filter-container{
-  position: absolute;
-  margin-left: 14px;
 }
 
 .filter-container{
@@ -2140,6 +2140,7 @@ DRIVERS TABLE
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 14px;
 }
 
 .drivers-table-position, .teams-table-position{
@@ -3217,6 +3218,42 @@ DRIVERS TABLE
   min-height: 40px;
 }
 
+.staff-space{
+  flex: 1 0 0;
+  max-width: 20%;
+  min-height: 40px;
+}
+
+.technical-chief-border{
+  border-left: 2px solid var(--technical-chief);
+  padding-left: 6px;
+}
+
+.race-engineer-border{
+  border-left: 2px solid var(--race-engineer);
+  padding-left: 6px;
+}
+
+.head-aero-border{
+  border-left: 2px solid var(--head-aero);
+  padding-left: 6px;
+}
+
+.sporting-director-border{
+  border-left: 2px solid var(--sporting-director);
+  padding-left: 6px;
+}
+
+
+.staff-space[data-type="technical-chief"]{
+  border-right: 1px solid var(--separator);
+  border-left: 1px solid var(--separator);
+}
+
+.staff-space[data-type="sporting-director"], .staff-space[data-type="race-engineer"][data-pos="2"], .staff-space[data-type="head-aero"]{
+  border-right: 1px solid var(--separator);
+}
+
 .affiliates-and-arrows{
   display: flex;
   flex-direction: row;
@@ -3327,6 +3364,14 @@ DRIVERS TABLE
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
   padding: 5px 10px;
 
+}
+
+.engine-f2{
+  border-bottom: 2px solid var(--f2-border);
+}
+
+.engine-f3{
+  border-bottom: 2px solid var(--f3-border);
 }
 
 .engine-fe{
@@ -3653,8 +3698,15 @@ DRIVERS TABLE
   height: 6px;
 }
 
+i.disabled{
+  pointer-events: none;
+  color: var(--disabled-text);
+}
 
-
+input.disabled{
+  pointer-events: none;
+  color: var(--disabled-text);
+}
 
 .red-part {
   width: 300px;
@@ -4913,6 +4965,200 @@ DRIVERS TABLE
   color: var(--mercedes-primary);
 }
 
+.free-driver:hover .future-contract-noti{
+  opacity: 0;
+}
+
+.future-contract-noti{
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.noti-fe{
+  background-color: var(--ferrari-primary);
+  animation: flash-fe 1.5s infinite;
+}
+
+@keyframes flash-fe {
+  0%, 100% {
+    background-color: var(--ferrari-primary);
+    box-shadow: 0 0 8px var(--ferrari-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-rb{
+  background-color: var(--redbull-primary);
+  animation: flash-rb 1.5s infinite;
+}
+
+@keyframes flash-rb {
+  0%, 100% {
+    background-color: var(--redbull-primary);
+    box-shadow: 0 0 8px var(--redbull-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-mc{
+  background-color: var(--mclaren-primary);
+  animation: flash-mc 1.5s infinite;
+}
+
+@keyframes flash-mc {
+  0%, 100% {
+    background-color: var(--mclaren-primary);
+    box-shadow: 0 0 8px var(--mclaren-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-as{
+  background-color: var(--aston-primary);
+  animation: flash-as 1.5s infinite;
+}
+
+@keyframes flash-as {
+  0%, 100% {
+    background-color: var(--aston-primary);
+    box-shadow: 0 0 8px var(--aston-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-al{
+  background-color: var(--alpine-primary);
+  animation: flash-al 1.5s infinite;
+}
+
+@keyframes flash-al {
+  0%, 100% {
+    background-color: var(--alpine-primary);
+    box-shadow: 0 0 8px var(--alpine-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-af{
+  background-color: var(--alfa-primary);
+  animation: flash-af 1.5s infinite;
+}
+
+@keyframes flash-af {
+  0%, 100% {
+    background-color: var(--alfa-primary);
+    box-shadow: 0 0 8px var(--alfa-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-ha{
+  background-color: var(--haas-primary);
+  animation: flash-ha 1.5s infinite;
+}
+
+@keyframes flash-ha {
+  0%, 100% {
+    background-color: var(--haas-primary);
+    box-shadow: 0 0 8px var(--haas-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-wi{
+  background-color: var(--williams-primary);
+  animation: flash-wi 1.5s infinite;
+}
+
+@keyframes flash-wi {
+  0%, 100% {
+    background-color: var(--williams-primary);
+    box-shadow: 0 0 8px var(--williams-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-at{
+  background-color: var(--alphatauri-primary);
+  animation: flash-at 1.5s infinite;
+}
+
+@keyframes flash-at {
+  0%, 100% {
+    background-color: var(--alphatauri-primary);
+    box-shadow: 0 0 8px var(--alphatauri-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-me{
+  background-color: var(--mercedes-primary);
+  animation: flash-me 1.5s infinite;
+}
+
+@keyframes flash-me {
+  0%, 100% {
+    background-color: var(--mercedes-primary);
+    box-shadow: 0 0 8px var(--mercedes-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+.noti-ct{
+  background-color: var(--custom-team-primary);
+  animation: flash-ct 1.5s infinite;
+}
+
+@keyframes flash-ct {
+  0%, 100% {
+    background-color: var(--custom-team-primary);
+    box-shadow: 0 0 8px var(--custom-team-primary);
+  }
+  50% {
+    background-color: var(--white-general);
+    box-shadow: 0 0 16px var(--white-general);
+  }
+}
+
+
+
 
 .free-driver {
   background-color: var(--elements);
@@ -4920,7 +5166,7 @@ DRIVERS TABLE
   border-radius: 10px;
   padding:  5px 6px;
   cursor: grab !important;
-  margin: 5px;
+  margin: 6px 5px;
   color: var(--text-general);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
@@ -5088,6 +5334,10 @@ DRIVERS TABLE
   justify-content: flex-end;
 }
 
+.custom-icon i{
+  transition: transform 0.3s, color 0.3s;
+}
+
 
 
 .standardlogo{
@@ -5132,19 +5382,25 @@ DRIVERS TABLE
 
 
 .free-driver:hover .custom-icon {
-  color: var(--dark-text);
   opacity: 1;
 }
 
-#free-drivers {
+#free-drivers .free-driver:hover .custom-icon i, #free-staff .free-driver:hover .custom-icon i{
+  color: var(--text-general);
+}
+
+#free-drivers .free-driver:hover .custom-icon i:hover, #free-staff .free-driver:hover .custom-icon i:hover{
+  transform: scale(1.05);
+}
+
+#free-drivers, #free-staff {
   overflow-y: scroll;
 }
 
 
 .free-driver:hover {
   cursor: grab !important;
-  background-color: var(--text-general-transparent);
-  color: var(--negative-text);
+  background-color: var(--table-hover);
 }
 
 .modal-driver:hover, .modal-team:hover{
@@ -5287,8 +5543,9 @@ DRIVERS TABLE
 .super-license-holder{
   display: flex !important;
   font-size: 20px;
-  padding-top: 24px;
-  gap: 14px;
+  align-items: baseline;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .name-and-stat{
@@ -5975,6 +6232,11 @@ input::-webkit-inner-spin-button {
   display: flex;
   align-items: center;
   font-size: 18px;
+  justify-content: space-between;
+}
+
+.team-title-value{
+  color: var(--dark-text);
 }
 
 
@@ -7006,7 +7268,7 @@ input::-webkit-inner-spin-button {
 }
 
 
-.drivers-section {
+.drivers-section, .staff-section {
   display: flex;
   overflow: hidden;
   margin-bottom: 3px;

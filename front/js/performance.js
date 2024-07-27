@@ -54,12 +54,12 @@ function load_performance(teams) {
     for (let key in teams) {
         if (teams.hasOwnProperty(key)) {
             let teamPerformance = document.querySelector(`#teamsDiv .team-performance[data-teamid='${key}']`);
-
             if (teamPerformance) {
                 let performanceBarProgress = teamPerformance.querySelector('.performance-bar-progress');
-
+                let team_value = teamPerformance.querySelector('.team-title-value');
                 if (performanceBarProgress) {
                     performanceBarProgress.style.width = teams[key] + '%';
+                    team_value.innerText = teams[key].toFixed(2) + ' %';
                     performanceBarProgress.dataset.overall = teams[key];
                 }
             }
@@ -88,6 +88,7 @@ function order_by(criterion) {
         document.getElementById("teamsDiv").appendChild(team);
         let bar = team.querySelector(".performance-bar-progress");
         bar.style.width = bar.dataset[criterion] + "%";
+        team.querySelector(".team-title-value").innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
     })
 }
 
