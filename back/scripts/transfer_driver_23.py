@@ -100,25 +100,8 @@ class TransferUtils:
                 # print("was in f3")
                 self.cursor.execute(f"DELETE FROM Races_DriverStandings WHERE DriverID = {driverID} AND SeasonID = {year} AND RaceFormula = 3")
 
+        self.rearrange_driver_engineer_pairings(teamID)
 
-            engineer_available = None
-            engineer_available_id = None
-            engineers = self.cursor.execute(f"SELECT con.StaffID FROM Staff_Contracts con JOIN Staff_BasicData com ON con.StaffID = com.StaffID WHERE con.TeamID = {teamID}").fetchall()
-            # print(engineers)
-            for i in range(len(engineers)):
-                engineer_available = self.cursor.execute(f"SELECT MAX(IsCurrentAssignment) FROM Staff_RaceEngineerDriverAssignments WHERE RaceEngineerID = {engineers[i][0]}").fetchone()
-                if engineer_available[0] == 0:
-                    engineer_available_id = engineers[i]
-
-            if engineer_available_id is not None:
-                pair_exists = self.cursor.execute(f"SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE RaceEngineerID = {engineer_available_id[0]} AND DriverID = {driverID}").fetchone()
-
-                if pair_exists is not None:
-                    self.cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE RaceEngineerID = {engineer_available_id[0]} AND DriverID = {driverID}")
-                else:
-                    self.cursor.execute(f"INSERT INTO Staff_RaceEngineerDriverAssignments VALUES ({engineer_available_id[0]}, {driverID}, 0, 0, 1)")
-
-    
         #gives new numbers to newcommers in f1
         driver_has_number = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driverID}").fetchone()
         if driver_has_number is None:
@@ -212,6 +195,28 @@ class TransferUtils:
         self.conn.commit()
         self.conn.close()
 
+    def rearrange_driver_engineer_pairings(self, teamID):
+        engineers = self.cursor.execute(f"SELECT gam.StaffID FROM Staff_GameData gam JOIN Staff_Contracts con ON gam.StaffID = con.StaffID WHERE con.TeamID = {teamID} AND con.ContractType = 0 AND gam.StaffType = 2").fetchall()
+        drivers = self.cursor.execute(f"SELECT gam.StaffID FROM Staff_GameData gam JOIN Staff_Contracts con ON gam.StaffID = con.StaffID WHERE con.TeamID = {teamID} AND con.ContractType = 0 AND gam.StaffType = 0 AND PosInTeam <= 2").fetchall()
+
+        if len(drivers) == 2 and len(engineers) == 2:
+            for driver in drivers:
+                self.cursor.execute("UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE DriverID = ?", (driver[0],))
+            for engineer in engineers:
+                self.cursor.execute("UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ?", (engineer[0],))
+
+            pair_1_exists = self.cursor.execute("SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ? AND RaceEngineerID = ?", (drivers[0][0], engineers[0][0])).fetchone()
+            pair_2_exists = self.cursor.execute("SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ? AND RaceEngineerID = ?", (drivers[1][0], engineers[1][0])).fetchone()
+            if pair_1_exists is not None:
+                self.cursor.execute("UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ? AND RaceEngineerID = ?", (drivers[0][0], engineers[0][0]))
+            else:
+                self.cursor.execute("INSERT INTO Staff_RaceEngineerDriverAssignments VALUES (?, ?, 0, 0, 1)", (engineers[0][0], drivers[0][0]))
+
+            if pair_2_exists is not None:
+                self.cursor.execute("UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ? AND RaceEngineerID = ?", (drivers[1][0], engineers[1][0]))
+            else:
+                self.cursor.execute("INSERT INTO Staff_RaceEngineerDriverAssignments VALUES (?, ?, 0, 0, 1)", (engineers[1][0], drivers[1][0]))
+
     def swap_drivers(self, driver_1_id, driver_2_id):
         position_1 = self.cursor.execute(f"SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = {driver_1_id}").fetchone()
         position_2 = self.cursor.execute(f"SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = {driver_2_id}").fetchone()
@@ -221,46 +226,20 @@ class TransferUtils:
 
         if(position_1[0] < 3 and position_2[0] < 3):
             #no reserve drivers
-            engineer_1_id = self.cursor.execute(f"SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = {driver_1_id}").fetchone()
-            engineer_2_id = self.cursor.execute(f"SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = {driver_2_id}").fetchone()
-            
-            if engineer_2_id is not None:
-                self.cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = {engineer_2_id[0]} AND DriverID = {driver_2_id}")
-                pair_1new_exists = self.cursor.execute(f"SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE RaceEngineerID = {engineer_2_id[0]} AND DriverID = {driver_1_id}").fetchone()
-                if pair_1new_exists is not None:
-                    self.cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE RaceEngineerID = {engineer_2_id[0]} AND DriverID = {driver_1_id}")
-                else:
-                    self.cursor.execute(f"INSERT INTO Staff_RaceEngineerDriverAssignments VALUES ({engineer_2_id[0]}, {driver_1_id}, 0, 0, 1)")
-
-            if engineer_1_id is not None:
-                self.cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = {engineer_1_id[0]} AND DriverID = {driver_1_id}")
-                pair_2new_exists = self.cursor.execute(f"SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE RaceEngineerID = {engineer_1_id[0]} AND DriverID = {driver_2_id}").fetchone()
-                if pair_2new_exists is not None:
-                    self.cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE RaceEngineerID = {engineer_1_id[0]} AND DriverID = {driver_2_id}")
-                else:
-                    self.cursor.execute(f"INSERT INTO Staff_RaceEngineerDriverAssignments VALUES ({engineer_1_id[0]}, {driver_2_id}, 0, 0, 1)")
-
-        
             self.cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_2_id[0]}, PosInTeam = {position_2[0]} WHERE ContractType = 0 AND StaffID = {driver_1_id}")
             self.cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_1_id[0]}, PosInTeam = {position_1[0]} WHERE ContractType = 0 AND StaffID = {driver_2_id}")
             self.cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = {position_2[0]} WHERE StaffID = {driver_1_id}")
             self.cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = {position_1[0]} WHERE StaffID = {driver_2_id}")
 
+            self.rearrange_driver_engineer_pairings(team_1_id[0])
+            self.rearrange_driver_engineer_pairings(team_2_id[0])
         
         elif position_1[0] >= 3 and position_2[0] >= 3:
             # both reserves
             self.cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_2_id[0]} WHERE ContractType = 0 AND StaffID = {driver_1_id}")
             self.cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_1_id[0]} WHERE ContractType = 0 AND StaffID = {driver_2_id}")
+
         elif position_1[0] >= 3:
-            # driver 1 reserve
-            engineer_2_id = self.cursor.execute(f"SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = {driver_2_id}").fetchone()
-            if engineer_2_id is not None:
-                self.cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = {engineer_2_id[0]} AND DriverID = {driver_2_id}")
-                pair_1new_exists = self.cursor.execute(f"SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE RaceEngineerID = {engineer_2_id[0]} AND DriverID = {driver_1_id}").fetchone()
-                if pair_1new_exists is not None:
-                    self.cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE RaceEngineerID = {engineer_2_id[0]} AND DriverID = {driver_1_id}")
-                else:
-                    self.cursor.execute(f"INSERT INTO Staff_RaceEngineerDriverAssignments VALUES ({engineer_2_id[0]}, {driver_1_id}, 0, 0, 1)")
 
             is_driving_in_f2 = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driver_1_id} AND ContractType = 0 AND (TeamID > 10 AND  TeamID < 32)").fetchone()
             if is_driving_in_f2 is not None:
@@ -278,17 +257,11 @@ class TransferUtils:
             self.cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_2_id[0]}, PosInTeam = {position_2[0]} WHERE ContractType = 0 AND StaffID = {driver_1_id} AND TeamID = {team_1_id[0]}")
             self.cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = {position_2[0]} WHERE StaffID = {driver_1_id}")
 
+            self.rearrange_driver_engineer_pairings(team_1_id[0])
+            self.rearrange_driver_engineer_pairings(team_2_id[0])
+
         elif(position_2[0] >= 3):
             #driver 2 reserve
-            engineer_1_id = self.cursor.execute(f"SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = {driver_1_id}").fetchone()
-            if engineer_1_id is not None:
-                self.cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = {engineer_1_id[0]} AND DriverID = {driver_1_id}")
-
-                pair_2new_exists = self.cursor.execute(f"SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE RaceEngineerID = {engineer_1_id[0]} AND DriverID = {driver_2_id}").fetchone()
-                if pair_2new_exists is not None:
-                    self.cursor.execute(f"UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE RaceEngineerID = {engineer_1_id[0]} AND DriverID = {driver_2_id}")
-                else:
-                    self.cursor.execute(f"INSERT INTO Staff_RaceEngineerDriverAssignments VALUES ({engineer_1_id[0]}, {driver_2_id}, 0, 0, 1)")
 
             is_driving_in_f2 = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driver_2_id} AND ContractType = 0 AND (TeamID > 10 AND  TeamID < 32)").fetchone()
             if is_driving_in_f2 is not None:
@@ -307,6 +280,9 @@ class TransferUtils:
             self.cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_1_id[0]}, PosInTeam = {position_1[0]} WHERE ContractType = 0 AND StaffID = {driver_2_id} AND TeamID = {team_2_id[0]}")
             self.cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = {position_1[0]} WHERE StaffID = {driver_2_id}")
 
+            self.rearrange_driver_engineer_pairings(team_1_id[0])
+            self.rearrange_driver_engineer_pairings(team_2_id[0])
+
         self.conn.commit()
         self.conn.close()
 
@@ -318,6 +294,7 @@ class TransferUtils:
 
 
     def future_contract(self, teamID, driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos, position, year_iteration="24"):
+        print(teamID, driverID, salary, endSeason)
         if teamID == "-1":
             self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3")
         else:
@@ -332,6 +309,8 @@ class TransferUtils:
                 self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3")
                 if year_iteration == "24":
                     self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 3, {teamID}, {position}, {day}, {endSeason}, {salary}, {startingBonus}, {raceBonus}, {raceBonusTargetPos}, 0.5, 0)")
+                elif year_iteration == "23":
+                    self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 3, 1, {day}, 1, {teamID}, {position}, 1, '[OPINION_STRING_NEUTRAL]', {day}, {endSeason}, 1, '[OPINION_STRING_NEUTRAL]', {salary}, 1, '[OPINION_STRING_NEUTRAL]', {startingBonus}, 1, '[OPINION_STRING_NEUTRAL]', {raceBonus}, 1, '[OPINION_STRING_NEUTRAL]', {raceBonusTargetPos}, 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')")
             else:
                 self.cursor.execute(f"UPDATE Staff_Contracts SET PosInTeam = {position}, Salary = {salary}, EndSeason = {endSeason}, StartingBonus = {startingBonus}, RaceBonus = {raceBonus}, RaceBonusTargetPos = {raceBonusTargetPos} WHERE StaffID = {driverID} AND TeamID = {already_has_future_contract} AND ContractType = 3")
 
