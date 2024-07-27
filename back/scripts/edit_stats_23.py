@@ -88,6 +88,15 @@ def edit_mentality(mentality):
     conn.commit()
     conn.close()
 
+def edit_retirement(driverID, value):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+
+    cursor.execute(f"UPDATE Staff_GameData SET Retired = {value} WHERE StaffID = {driverID}")
+
+    conn.commit()
+    conn.close()
+
 def edit_superlicense(driverID, value):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()

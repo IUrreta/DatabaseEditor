@@ -205,20 +205,32 @@ function editModeHandler() {
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     document.querySelector(".clicked").dataset.retirement = retirement;
     let driverNum = document.querySelector("#numberButton .front-gradient").textContent;
-    let wants1,superLicense;
+    let wants1,superLicense, isRetired;
     document.querySelector(".clicked").dataset.number = driverNum;
     if (document.querySelector("#driverNumber1").checked) {
         wants1 = 1;
+        document.querySelector(".clicked").dataset.numWC = 1;
     }
     else {
         wants1 = 0;
+        document.querySelector(".clicked").dataset.numWC = 0;
+    }
+    if (document.querySelector("#retiredInput").checked) {
+        isRetired = 1;
+        document.querySelector(".clicked").dataset.isRetired = 1;
+    }
+    else {
+        isRetired = 0;
+        document.querySelector(".clicked").dataset.isRetired = 0;
     }
     document.querySelector(".clicked").dataset.numWC = wants1;
     if (document.getElementById("superLicense").checked) {
         superLicense = 1;
+        document.querySelector(".clicked").dataset.superLicense = 1;
     }
     else {
         superLicense = 0;
+        document.querySelector(".clicked").dataset.superLicense = 0;
     }
     let mentality = -1
     if (document.querySelector(".clicked").dataset.mentality0) {
@@ -236,6 +248,7 @@ function editModeHandler() {
         statsArray: stats,
         typeStaff: typeEdit,
         retirement: retirement,
+        isRetired: isRetired,
         driverNum: driverNum,
         wants1: wants1,
         mentality: mentality,

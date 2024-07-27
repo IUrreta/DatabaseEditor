@@ -26,6 +26,7 @@ function removeStatsDrivers() {
 function place_drivers_editStats(driversArray) {
     let divPosition;
     driversArray.forEach((driver) => {
+        console.log(driver)
         divPosition = "fulldriverlist"
 
         let newDiv = document.createElement("div");
@@ -73,6 +74,7 @@ function place_drivers_editStats(driversArray) {
         newDiv.dataset.numWC = driver["wants1"]
         newDiv.dataset.number = driver["driver_number"]
         newDiv.dataset.raceFormula = driver["race_formula"]
+        newDiv.dataset.isRetired = driver[4]
         if (driver["mentality0"]){
             newDiv.dataset.mentality0 = driver["mentality0"]
             newDiv.dataset.mentality1 = driver["mentality1"]
@@ -176,6 +178,7 @@ function place_staff_editStats(staffArray) {
         newDiv.dataset.age = staff["age"]
         newDiv.dataset.retirement = staff["retirement_age"]
         newDiv.dataset.raceFormula = staff["race_formula"]
+        newDiv.dataset.isRetired = staff[4]
         if (staff["mentality0"]){
             newDiv.dataset.mentality0 = staff["mentality0"]
             newDiv.dataset.mentality1 = staff["mentality1"]
@@ -665,6 +668,12 @@ function load_stats(div) {
     }
     else{
         document.querySelector("#superLicense").checked = false
+    }
+    if (div.dataset.isRetired === "1"){
+        document.querySelector("#retiredInput").checked = true
+    }
+    else{
+        document.querySelector("#retiredInput").checked = false
     }
     if(div.dataset.mentality0){
         for (i = 0; i < 3; i++){
