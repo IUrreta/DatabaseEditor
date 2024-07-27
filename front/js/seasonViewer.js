@@ -910,6 +910,7 @@ function hoverListeners() {
  * @param {String} actualYear current year of the save
  */
 function generateYearsMenu(actualYear) {
+    document.querySelector("#yearInput").min = actualYear
     var yearMenu = document.querySelector("#yearMenu");
     var yearH2H = document.querySelector("#yearMenuH2H");
     var yearPrediction = document.querySelector("#yearPredictionMenu");

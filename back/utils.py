@@ -118,12 +118,14 @@ class DatabaseUtils:
                 result = self.format_names_get_stats(tupla, "staff"+str(tupla[4]))
                 retirement = self.fetch_driverRetirement(id)
                 race_formula = self.fetch_raceFormula(id)
+                team_future = self.fetch_for_future_contract(id)
                 if race_formula[0] == None:
                     race_formula = (4,)
                 data_dict = {i: result[i] for i in range(len(result))}
                 data_dict["retirement_age"] = retirement[0]
                 data_dict["age"] = retirement[1]
                 data_dict["race_formula"] = race_formula[0]
+                data_dict["team_future"] = team_future
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
                     if mentality:

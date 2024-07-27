@@ -61,7 +61,7 @@
               </div>
               <div class="mt-3">
                 <h5 class="modal-subtitle bold-font">Race bonus amount</h5>
-                <div class="input-and-buttons pt-1">
+                <div class="input-and-buttons pt-1 driver-only">
                   <input type="text" class="old-custom-input-number" id="raceBonusAmt" placeholder="ex: 150000" min="0">
                   <div class="input-buttons">
                     <i class="bi bi-plus-lg"></i>
@@ -71,7 +71,7 @@
               </div>
               <div class="mt-3">
                 <h5 class="modal-subtitle bold-font">Race bonus position</h5>
-                <div class="input-and-buttons pt-1">
+                <div class="input-and-buttons pt-1 driver-only">
                   <input type="number" class="old-custom-input-number" id="raceBonusPos" placeholder="ex: 1" min="1" max="22">
                   <div class="input-buttons">
                     <i class="bi bi-chevron-up"></i>
@@ -120,7 +120,7 @@
               </div>
               <div class="mt-3">
                 <h5 class="modal-subtitle bold-font">Race bonus amount</h5>
-                <div class="input-and-buttons pt-1">
+                <div class="input-and-buttons pt-1 driver-only">
                   <input type="text" class="old-custom-input-number" id="raceBonusAmtFuture" placeholder="ex: 150000" min="0">
                   <div class="input-buttons">
                     <i class="bi bi-plus-lg"></i>
@@ -130,7 +130,7 @@
               </div>
               <div class="mt-3">
                 <h5 class="modal-subtitle bold-font">Race bonus position</h5>
-                <div class="input-and-buttons pt-1">
+                <div class="input-and-buttons pt-1 driver-only">
                   <input type="number" class="old-custom-input-number" id="raceBonusPosFuture" placeholder="ex: 1" min="1" max="22">
                   <div class="input-buttons">
                     <i class="bi bi-chevron-up"></i>
@@ -140,8 +140,8 @@
               </div>
               <div class="mt-3">
                 <h5 class="modal-subtitle bold-font">Position</h5>
-                <div class="input-and-buttons pt-1">
-                  <input type="number" class="old-custom-input-number" id="posInTeamFuture" placeholder="ex: 1" min="1">
+                <div class="input-and-buttons pt-1 driver-only" id="positionInput">
+                  <input type="number" class="old-custom-input-number" id="posInTeamFuture" placeholder="ex: 1" min="1" max="999">
                   <div class="input-buttons">
                     <i class="bi bi-chevron-up"></i>
                     <i class="bi bi-chevron-down"></i>
@@ -1545,7 +1545,7 @@
             </div>
           </div>
           <div class="title transfer-title bold-font">
-            Contracted drivers
+            Current grid
             <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal"
               data-bs-target="#contractsModal">?</i>
           </div>

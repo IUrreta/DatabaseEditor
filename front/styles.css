@@ -38,6 +38,11 @@
   --mentality-negative: #e9de35;
   --mentality-demoralized: #dd3356;
 
+  --technical-chief: #ec4e98;
+  --race-engineer: #bce64a;
+  --head-aero: #5097e7;
+  --sporting-director: #925aeb;
+
   --background-general: #110f24;
   --slight-contrast: #797599;
   --white-general: #f3f3f3;
@@ -577,7 +582,7 @@ a.bi-linkedin:hover {
 
 .title-buttons-left{
   position: absolute;
-  gap: 20px;
+  gap: 10px;
   padding-left: 14px;
   display: flex;
   align-items: center;
@@ -3207,11 +3212,38 @@ DRIVERS TABLE
   margin-top: 6px;
 }
 
-.driver-space, .staff-space{
+.driver-space{
   min-width:  200px;
   max-width:  200px;
   min-height: 40px;
 }
+
+.staff-space{
+  flex: 1 0 0;
+  max-width: 20%;
+  min-height: 40px;
+}
+
+.technical-chief-border{
+  border-left: 2px solid var(--technical-chief);
+  padding-left: 6px;
+}
+
+.race-engineer-border{
+  border-left: 2px solid var(--race-engineer);
+  padding-left: 6px;
+}
+
+.head-aero-border{
+  border-left: 2px solid var(--head-aero);
+  padding-left: 6px;
+}
+
+.sporting-director-border{
+  border-left: 2px solid var(--sporting-director);
+  padding-left: 6px;
+}
+
 
 .staff-space[data-type="technical-chief"]{
   border-right: 1px solid var(--separator);
@@ -3658,8 +3690,15 @@ DRIVERS TABLE
   height: 6px;
 }
 
+i.disabled{
+  pointer-events: none;
+  color: var(--disabled-text);
+}
 
-
+input.disabled{
+  pointer-events: none;
+  color: var(--disabled-text);
+}
 
 .red-part {
   width: 300px;

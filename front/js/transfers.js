@@ -7,6 +7,7 @@ const f2DriversPill = document.getElementById("F2pill");
 const f3DriversPill = document.getElementById("F3pill");
 
 const freeDriversDiv = document.getElementById("free-drivers");
+const freeStaffDiv = document.getElementById("free-staff");
 const f2DriversDiv = document.getElementById("f2-drivers");
 const f3DriversDiv = document.getElementById("f3-drivers");
 
@@ -47,10 +48,14 @@ function remove_drivers() {
     document.querySelectorAll('.driver-space').forEach(item => {
         item.innerHTML = ""
     });
+    document.querySelectorAll('.staff-space').forEach(item => {
+        item.innerHTML = ""
+    });
     document.querySelectorAll('.affiliates-space').forEach(item => {
         item.innerHTML = ""
     });
     freeDriversDiv.innerHTML = ""
+    freeStaffDiv.innerHTML = ""
 }
 
 function insert_space(str) {
@@ -116,9 +121,9 @@ function place_staff(staffArray) {
         newDiv.appendChild(spanName)
         newDiv.appendChild(spanLastName)
         newDiv.classList.add(team_dict[staff[2]] + "-transparent")
-        // if (staff["team_future"] !== -1){
-        //     add_future_team_noti(newDiv,staff["team_future"])
-        // }
+        if (staff["team_future"] !== -1){
+            add_future_team_noti(newDiv,staff["team_future"])
+        }
         manageColor(newDiv, spanLastName)
         // if (staff[4] === 1) {
         //     addUnRetireIcon(newDiv)
@@ -126,11 +131,10 @@ function place_staff(staffArray) {
         divPosition = "free-staff"
         let position = staff[3]
         let staff_position = staff_positions[position]
-        console.log(staff)
-        console.log(staff_position)
+        newDiv.dataset.type = staff_position
+        spanName.classList.add(staff_position + "-border")
         if (staff[2] > 0 && staff[2] <= 10 || staff[2] === 32) {
             addIcon(newDiv)
-            console.log(`.staff-section[data-teamid='${staff[2]}']`)
             let teamDiv = document.querySelector(`.staff-section[data-teamid='${staff[2]}']`)
             if (position !== 2) {
                 teamDiv.querySelector(`[data-type='${staff_position}']`).appendChild(newDiv)
@@ -220,6 +224,7 @@ function updateColor(div) {
     surnameDiv.className = "bold-font surname"
     manageColor(statsDiv, surnameDiv)
     div.className = "colr free-driver " + team_dict[div.dataset.teamid] + "-transparent"
+    statsDiv.className = "colr normal-driver " + team_dict[div.dataset.teamid] + "-transparent"
 }
 
 /**
@@ -288,8 +293,59 @@ function iconListener(icon) {
         modalType = "edit"
         document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g, ' ') + "'s contract";
         queryContract(icon.parentNode.parentNode)
+        let space = icon.parentNode.parentNode.parentNode
+        if (space.classList.contains("driver-space") || space.classList.contains("affiliates-space")) {
+            manage_modal_driver_staff("driver")
+        }
+        else if (space.classList.contains("staff-space")) {
+            if (event.target.parentNode.parentNode.dataset.type === "race-engineer"){
+                manage_modal_driver_staff("race-engineer")
+            }
+            else{
+                manage_modal_driver_staff("staff")
+            }
+        }
         myModal.show()
     })
+}
+
+function manage_modal_driver_staff(type){
+    if (type === "staff" || type === "race-engineer"){
+        document.querySelectorAll(".driver-only").forEach(function(elem){
+            let input = elem.querySelector("input")
+            input.disabled = true
+            input.classList.add("disabled")
+            let buttons = elem.querySelectorAll("i")
+            buttons.forEach(function(button){
+                button.classList.add("disabled")
+            })
+        })
+    }
+    else if (type === "driver"){
+        document.querySelectorAll(".driver-only").forEach(function(elem){
+            let input = elem.querySelector("input")
+            input.disabled = false
+            input.classList.remove("disabled")
+            let buttons = elem.querySelectorAll("i")
+            buttons.forEach(function(button){
+                button.classList.remove("disabled")
+            })
+        })
+        let positionInput = document.querySelector("#positionInput input")
+        positionInput.max = 999
+
+    }
+    if (type === "race-engineer"){
+        let input = document.querySelector("#positionInput input")
+        let buttons = document.querySelectorAll("#positionInput i")
+        input.disabled = false
+        input.max = 2
+        input.classList.remove("disabled")
+        buttons.forEach(function(button){
+            button.classList.remove("disabled")
+        })
+    }
+
 }
 
 function unretireListener(icon) {
@@ -593,7 +649,6 @@ function editContract() {
             futureValues.push(elem.value)
         }
     })
-    console.log(futureValues)
     let future_team = document.querySelector("#teamContractButton").dataset.teamid
 
     let data = {
@@ -732,8 +787,22 @@ document.querySelector("#nameFilterTransfer").addEventListener("input", function
     else {
         document.querySelector("#filterTransfersContainer").querySelector(".bi-x").classList.add("d-none")
     }
-    let elements = document.querySelectorAll("#free-drivers .free-driver")
-    elements.forEach(function (elem) {
+    let driverElements = document.querySelectorAll("#free-drivers .free-driver")
+    driverElements.forEach(function (elem) {
+        let first_name = elem.children[0].innerText
+        let last_name = elem.children[1].innerText
+        let full_name = first_name + " " + last_name
+        let minus = full_name.toLowerCase()
+        let name = text.toLowerCase()
+        if (minus.includes(name)) {
+            elem.classList.remove("d-none")
+        }
+        else {
+            elem.classList.add("d-none")
+        }
+    })
+    let staffElements = document.querySelectorAll("#free-staff .free-driver")
+    staffElements.forEach(function (elem) {
         let first_name = elem.children[0].innerText
         let last_name = elem.children[1].innerText
         let full_name = first_name + " " + last_name
@@ -769,14 +838,27 @@ document.getElementById("driver_transfers").querySelectorAll(".filter-pills").fo
 
 document.querySelector("#F2filterTransfers").addEventListener("click", function (event) {
     if (!event.target.classList.contains("active")) {
-        let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
-        elements.forEach(function (elem) {
+        let driverElements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
+        driverElements.forEach(function (elem) {
+            elem.classList.remove("d-none")
+        })
+        let staffElements = document.getElementById("free-staff").querySelectorAll(".free-driver")
+        staffElements.forEach(function (elem) {
             elem.classList.remove("d-none")
         })
     }
     else {
-        let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
-        elements.forEach(function (elem) {
+        let driverElements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
+        driverElements.forEach(function (elem) {
+            if (parseInt(elem.dataset.teamid) <= 21 && parseInt(elem.dataset.teamid) > 10) {
+                elem.classList.remove("d-none")
+            }
+            else {
+                elem.classList.add("d-none")
+            }
+        })
+        let staffElements = document.getElementById("free-staff").querySelectorAll(".free-driver")
+        staffElements.forEach(function (elem) {
             if (parseInt(elem.dataset.teamid) <= 21 && parseInt(elem.dataset.teamid) > 10) {
                 elem.classList.remove("d-none")
             }
@@ -789,14 +871,27 @@ document.querySelector("#F2filterTransfers").addEventListener("click", function 
 
 document.querySelector("#F3filterTransfers").addEventListener("click", function (event) {
     if (!event.target.classList.contains("active")) {
-        let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
-        elements.forEach(function (elem) {
+        let driverElements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
+        driverElements.forEach(function (elem) {
+            elem.classList.remove("d-none")
+        })
+        let staffElements = document.getElementById("free-staff").querySelectorAll(".free-driver")
+        staffElements.forEach(function (elem) {
             elem.classList.remove("d-none")
         })
     }
     else {
-        let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
-        elements.forEach(function (elem) {
+        let driverElements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
+        driverElements.forEach(function (elem) {
+            if (parseInt(elem.dataset.teamid) <= 31 && parseInt(elem.dataset.teamid) > 21) {
+                elem.classList.remove("d-none")
+            }
+            else {
+                elem.classList.add("d-none")
+            }
+        })
+        let staffElements = document.getElementById("free-staff").querySelectorAll(".free-driver")
+        staffElements.forEach(function (elem) {
             if (parseInt(elem.dataset.teamid) <= 31 && parseInt(elem.dataset.teamid) > 21) {
                 elem.classList.remove("d-none")
             }
@@ -809,14 +904,27 @@ document.querySelector("#F3filterTransfers").addEventListener("click", function 
 
 document.querySelector("#freefilterTransfers").addEventListener("click", function (event) {
     if (!event.target.classList.contains("active")) {
-        let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
-        elements.forEach(function (elem) {
+        let driverElements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
+        driverElements.forEach(function (elem) {
+            elem.classList.remove("d-none")
+        })
+        let staffElements = document.getElementById("free-staff").querySelectorAll(".free-driver")
+        staffElements.forEach(function (elem) {
             elem.classList.remove("d-none")
         })
     }
     else {
-        let elements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
-        elements.forEach(function (elem) {
+        let driverElements = document.getElementById("free-drivers").querySelectorAll(".free-driver")
+        driverElements.forEach(function (elem) {
+            if (parseInt(elem.dataset.teamid) == 0) {
+                elem.classList.remove("d-none")
+            }
+            else {
+                elem.classList.add("d-none")
+            }
+        })
+        let staffElements = document.getElementById("free-staff").querySelectorAll(".free-driver")
+        staffElements.forEach(function (elem) {
             if (parseInt(elem.dataset.teamid) == 0) {
                 elem.classList.remove("d-none")
             }
@@ -914,6 +1022,7 @@ interact('.free-driver').draggable({
                             else {
                                 modalType = "hire"
                                 hire_modal_standars()
+                                manage_modal_driver_staff("driver")
                                 myModal.show()
                             }
                             if (target.querySelector(".custom-icon") === null) {
@@ -940,6 +1049,7 @@ interact('.free-driver').draggable({
                                 else {
                                     modalType = "hire"
                                     hire_modal_standars()
+                                    manage_modal_driver_staff("driver")
                                     myModal.show()
                                 }
                                 if (target.querySelector(".custom-icon") === null) {
@@ -1016,57 +1126,69 @@ interact('.free-driver').draggable({
                     let rect = element.getBoundingClientRect();
                     if (event.clientX >= rect.left && event.clientX <= rect.right &&
                         event.clientY >= rect.top && event.clientY <= rect.bottom) {
-                        if (element.childElementCount < 1) {
-                            posInTeam = element.dataset.pos
-                            teamDestiniy = element.parentNode.dataset.team
-                            destinationParent = element;
-                            element.appendChild(target);
-                            originalTeamId = parseInt(target.dataset.teamid)
-                            target.dataset.teamid = inverted_dict[teamDestiniy]
-                            updateColor(target)
-                            document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
-                            if ((game_version === 2023 && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "staff-space")) ||
-                                (game_version === 2024) && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "staff-space")) {
-                                signDriver("fireandhire")
-                            }
-                            if (autoContractToggle.checked) {
-                                signDriver("autocontract")
-                            }
-                            else {
-                                modalType = "hire"
-                                hire_modal_standars()
-                                myModal.show()
-                            }
-                            if (target.querySelector(".custom-icon") === null) {
-                                addIcon(target)
-                            }
-                        }
-                        else if (element.childElementCount == 1) {
-                            if (originalParent.classList.contains("staff-space")) {
-                                driver1 = target;
-                                driver2 = element.firstChild;
-                                let team1 = driver1.parentNode.parentNode
-                                let team2 = driver2.parentNode.parentNode
-                                driver1.dataset.teamid = inverted_dict[team2.dataset.team]
-                                updateColor(driver1)
-                                driver2.dataset.teamid = inverted_dict[team1.dataset.team]
-                                updateColor(driver2)
-                                if (driver1 !== driver2) {
-                                    let data = {
-                                        command: "swap",
-                                        driver1ID: target.dataset.driverid,
-                                        driver2ID: element.firstChild.dataset.driverid,
-                                        driver1: target.innerText,
-                                        driver2: element.firstChild.innerText,
-                                    }
-
-                                    socket.send(JSON.stringify(data))
-                                    manage_swap()
+                        if(element.dataset.type === event.target.dataset.type){
+                            if (element.childElementCount < 1) {
+                                posInTeam = element.dataset.pos
+                                teamDestiniy = element.parentNode.dataset.team
+                                destinationParent = element;
+                                element.appendChild(target);
+                                originalTeamId = parseInt(target.dataset.teamid)
+                                target.dataset.teamid = inverted_dict[teamDestiniy]
+                                updateColor(target)
+                                document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
+                                if ((game_version === 2023 && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "staff-space")) ||
+                                    (game_version === 2024) && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "staff-space")) {
+                                    signDriver("fireandhire")
                                 }
-
+                                if (autoContractToggle.checked) {
+                                    signDriver("autocontract")
+                                }
+                                else {
+                                    modalType = "hire"
+                                    hire_modal_standars()
+                                    if (event.target.dataset.type === "race-engineer"){
+                                        manage_modal_driver_staff("race-engineer")
+                                    }
+                                    else{
+                                        manage_modal_driver_staff("staff")
+                                    }
+                                    myModal.show()
+                                }
+                                if (target.querySelector(".custom-icon") === null) {
+                                    addIcon(target)
+                                }
                             }
-
+                            else if (element.childElementCount == 1) {
+                                if (originalParent.classList.contains("staff-space")) {
+                                    driver1 = target;
+                                    driver2 = element.firstChild;
+                                    let team1 = driver1.parentNode.parentNode
+                                    let team2 = driver2.parentNode.parentNode
+                                    driver1.dataset.teamid = inverted_dict[team2.dataset.team]
+                                    updateColor(driver1)
+                                    driver2.dataset.teamid = inverted_dict[team1.dataset.team]
+                                    updateColor(driver2)
+                                    if (driver1 !== driver2) {
+                                        let data = {
+                                            command: "swap",
+                                            driver1ID: target.dataset.driverid,
+                                            driver2ID: element.firstChild.dataset.driverid,
+                                            driver1: target.innerText,
+                                            driver2: element.firstChild.innerText,
+                                        }
+    
+                                        socket.send(JSON.stringify(data))
+                                        manage_swap()
+                                    }
+    
+                                }
+    
+                            }
                         }
+                        else{
+                            update_notifications( "You can't change staff from different positions", "lighterror")
+                        }
+
                     }
                 });
 

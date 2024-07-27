@@ -2,6 +2,62 @@ import sqlite3
 import random
 import datetime
 
+min_max_type_staff ={
+    "driver": {
+        "salary": {
+            1: (14, 30),
+            2: (7, 12),
+            3: (0.5, 6),
+            4: (0.2, 1.2)
+        },
+        "starting_bonus": {
+            1: (2, 4.5),
+            2: (1, 2),
+            3: (0, 1.6),
+            4: (0, 0)
+        },
+        "year_end": {
+            1: (1, 5),
+            2: (1, 4),
+            3: (1, 3),
+            4: (1, 2)
+        },
+        "race_bonus": {
+            1: (1.5, 2.5),
+            2: (0.9, 1.7),
+            3: (0, 0.7),
+            4: (0, 0)
+        },
+        "race_bonus_pos": {
+            1: (1, 3),
+            2: (2, 5),
+            3: (7, 10),
+            4: (9, 10)
+        }
+
+    },
+    "staff": {
+        "salary": {
+            1: (3.5, 5),
+            2: (2.5, 4),
+            3: (1.5, 3),
+            4: (0.5, 1.5)
+        },
+        "starting_bonus": {
+            1: (0.5, 1.5),
+            2: (0.5, 1),
+            3: (0, 0.5),
+            4: (0, 0.5)
+        },
+        "year_end": {
+            1: (1, 5),
+            2: (1, 4),
+            3: (1, 3),
+            4: (1, 2)
+        }   
+    }
+}
+
 class TransferUtils:
     def __init__(self):
         self.conn = sqlite3.connect("../result/main.db")
@@ -81,44 +137,41 @@ class TransferUtils:
         day = self.cursor.execute("SELECT Day FROM Player_State").fetchone()
         year =  self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
         tier, type = self.get_tier(driverID)
-        if(tier == 1):
-            salary = str(round(random.uniform(14, 30),3)*1000000) 
-            starting_bonus = str(round(random.uniform(2, 4.5), 3)*1000000)
-            race_bonus = str(round(random.uniform(1.5, 2.5), 3)*1000000)
-            year_end = str(random.randint(1, 5) + year[0])   
-            has_bonus = True
-        elif(tier == 2):
-            salary = str(round(random.uniform(7, 12),3)*1000000) 
-            starting_bonus = str(round(random.uniform(1, 2), 3)*1000000)
-            year_end = str(random.randint(1, 4) + year[0])   
-            if(random.randint(0, 10) <= 7):
+       
+        salary = str(round(random.uniform(min_max_type_staff[type]["salary"][tier][0], min_max_type_staff[type]["salary"][tier][1]), 3) * 1000000)
+        starting_bonus = str(round(random.uniform(min_max_type_staff[type]["starting_bonus"][tier][0], min_max_type_staff[type]["starting_bonus"][tier][1]), 3) * 1000000)
+        year_end = str(random.randint(min_max_type_staff[type]["year_end"][tier][0], min_max_type_staff[type]["year_end"][tier][1]) + year[0])
+
+        if type == "driver":
+            if tier == 1:
+                race_bonus = str(round(random.uniform(min_max_type_staff[type]["race_bonus"][tier][0], min_max_type_staff[type]["race_bonus"][tier][1]), 3) * 1000000)
                 has_bonus = True
-                race_bonus = str(round(random.uniform(0.9, 1.7), 3)*1000000)
-            else:
-                has_bonus = False
+            elif tier == 2:
+                if random.randint(0, 10) <= 7:
+                    race_bonus = str(round(random.uniform(min_max_type_staff[type]["race_bonus"][tier][0], min_max_type_staff[type]["race_bonus"][tier][1]), 3) * 1000000)
+                    has_bonus = True
+                else:
+                    race_bonus = str(0)
+                    has_bonus = False
+            elif tier == 3:
+                if random.randint(0, 10) <= 2:
+                    race_bonus = str(round(random.uniform(min_max_type_staff[type]["race_bonus"][tier][0], min_max_type_staff[type]["race_bonus"][tier][1]), 3) * 1000000)
+                    has_bonus = True
+                else:
+                    race_bonus = str(0)
+                    has_bonus = False
+            elif tier == 4:
                 race_bonus = str(0)
-        elif(tier == 3):
-            salary = str(round(random.uniform(0.5, 6),3)*1000000) 
-            starting_bonus = str(round(random.uniform(0, 1.6), 3)*1000000)
-            year_end = str(random.randint(1, 3) + year[0])   
-            if(random.randint(0, 10) <= 2):
-                has_bonus = True
-                race_bonus = str(round(random.uniform(0, 0.7), 3)*1000000)
-            else:
                 has_bonus = False
-                race_bonus = str(0)
-        elif(tier == 4):
-            salary = str(round(random.uniform(0.2, 1.2),3)*1000000)
-            year_end = str(random.randint(1, 2) + year[0])   
-            starting_bonus = str(0)
+        else:
             race_bonus = str(0)
             has_bonus = False
+
+
         driver_birth_date = self.cursor.execute(f"SELECT DOB_ISO FROM Staff_BasicData WHERE StaffID = {driverID}").fetchone()
         yob = driver_birth_date[0].split("-")[0]
-        if(year[0] - int(yob) > 34):
+        if(year[0] - int(yob) > 34 and type == "driver"):
             year_end = str(random.randint(1, 2) + year[0])
-
-        #print(tier)
         
         if(has_bonus):
             prestige_table_name = "Board_Prestige"
@@ -304,7 +357,6 @@ class TransferUtils:
 
 
     def get_tier(self, driverID):
-        print(driverID)
         driver_stats = self.cursor.execute(f"SELECT Val FROM Staff_PerformanceStats WHERE StaffID = {driverID}").fetchall()
         type = "driver"
         if len(driver_stats) == 9:

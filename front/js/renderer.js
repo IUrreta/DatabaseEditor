@@ -155,7 +155,7 @@ function createToast(msg,cod) {
         icon.className = "bi bi-check-circle"
         toastIcon.classList.add("success")
     }
-    else if (cod === "error") {
+    else if (cod === "error" || cod === "lighterror") {
         icon.className = "bi bi-x-circle"
         toastIcon.classList.add("error")
     }
@@ -611,6 +611,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 elem.style.height = "672px"
             })
             document.getElementById("free-drivers").style.height = "672px"
+            document.getElementById("free-staff").style.height = "672px"
             document.getElementById("raceMenu").style.height = "686px"
         }
         else if (mode === "10teams") {
