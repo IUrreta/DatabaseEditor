@@ -5382,6 +5382,7 @@ input.disabled{
 
 
 .free-driver:hover .custom-icon {
+  color: var(--text-general);
   opacity: 1;
 }
 
