@@ -80,7 +80,7 @@ class TransferUtils:
     def get_params_auto_contract(self, driverID, teamID, position,  year_iteration="24"):
         day = self.cursor.execute("SELECT Day FROM Player_State").fetchone()
         year =  self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
-        tier = self.get_tier(driverID)
+        tier, type = self.get_tier(driverID)
         if(tier == 1):
             salary = str(round(random.uniform(14, 30),3)*1000000) 
             starting_bonus = str(round(random.uniform(2, 4.5), 3)*1000000)
@@ -304,23 +304,33 @@ class TransferUtils:
 
 
     def get_tier(self, driverID):
-        driver_stats = self.cursor.execute(f"SELECT Val FROM Staff_PerformanceStats WHERE StaffID = {driverID[0]}").fetchall()
-        cornering = float(driver_stats[0][0])
-        braking = float(driver_stats[1][0])
-        control = float(driver_stats[2][0])
-        smoothness = float(driver_stats[3][0])
-        adaptability = float(driver_stats[4][0])
-        overtaking = float(driver_stats[5][0])
-        defence = float(driver_stats[6][0])
-        reactions = float(driver_stats[7][0])
-        accuracy = float(driver_stats[8][0])
-        rating = (cornering + braking*0.75 + reactions*0.5 +control*0.75 + smoothness*0.5 + accuracy*0.75 + adaptability*0.25 + overtaking*0.25+ defence*0.25)/5
+        print(driverID)
+        driver_stats = self.cursor.execute(f"SELECT Val FROM Staff_PerformanceStats WHERE StaffID = {driverID}").fetchall()
+        type = "driver"
+        if len(driver_stats) == 9:
+            cornering = float(driver_stats[0][0])
+            braking = float(driver_stats[1][0])
+            control = float(driver_stats[2][0])
+            smoothness = float(driver_stats[3][0])
+            adaptability = float(driver_stats[4][0])
+            overtaking = float(driver_stats[5][0])
+            defence = float(driver_stats[6][0])
+            reactions = float(driver_stats[7][0])
+            accuracy = float(driver_stats[8][0])
+            rating = (cornering + braking*0.75 + reactions*0.5 +control*0.75 + smoothness*0.5 + accuracy*0.75 + adaptability*0.25 + overtaking*0.25+ defence*0.25)/5
+        else:
+            type = "staff"
+            rating = 0
+            for i in range(len(driver_stats)):
+                rating += float(driver_stats[i][0])
+            rating = rating/len(driver_stats)
+
         if(rating >= 89): tier = 1
         elif(rating >= 85): tier = 2
         elif(rating >= 80): tier = 3
         else: tier = 4
 
-        return tier
+        return tier, type
 
     def get_driver_id(self, name):
         driver = name.capitalize()
