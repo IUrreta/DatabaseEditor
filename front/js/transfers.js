@@ -116,22 +116,40 @@ function place_drivers(driversArray) {
     
 }
 
+function update_name(driverID, name) {
+    let freeDiv = document.querySelector(`.free-driver[data-driverid='${driverID}']`)
+    let normalDiv = document.querySelector(`.normal-driver[data-driverid='${driverID}']`)
+    let nameContainer = freeDiv.querySelector(".name-container")
+    let nameArray = name.split(" ")
+    let new_name = nameArray[0]
+    let new_surname = nameArray.slice(1).join(" ").toUpperCase()
+    let firstNameContainer = nameContainer.childNodes[0]
+    let lastNameContainer = nameContainer.querySelector(".bold-font")
+    firstNameContainer.textContent = new_name
+    lastNameContainer.textContent = new_surname
+    firstNameContainer = normalDiv.childNodes[0].childNodes[0]
+    lastNameContainer = normalDiv.childNodes[0].querySelector(".bold-font")
+    firstNameContainer.textContent = new_name + " "
+    lastNameContainer.textContent = new_surname
+    normalDiv.dataset.name = name
+}
+
 function add_marquees(){
     setTimeout(function () {
         document.querySelectorAll('.drivers-section .name-container').forEach(container => {
             let parentWidth = container.parentNode.clientWidth
             let containerWidth = container.scrollWidth
             if (containerWidth > parentWidth) {
-                let scrollAmount = (containerWidth - parentWidth) + 5;
+                let scrollAmount = (containerWidth - parentWidth);
                 container.style.setProperty('--scroll-amount', `${scrollAmount}px`);
                 container.classList.add('overflow');
               }
         });
         document.querySelectorAll('.staff-section .name-container').forEach(container => {
-            let parentWidth = container.parentNode.parentNode.clientWidth - 5
+            let parentWidth = container.parentNode.clientWidth
             let containerWidth = container.scrollWidth
             if (containerWidth > parentWidth) {
-                let scrollAmount = (containerWidth - parentWidth) + 40;
+                let scrollAmount = (containerWidth - parentWidth)
                 container.style.setProperty('--scroll-amount', `${scrollAmount}px`);
                 container.classList.add('overflow');
               }

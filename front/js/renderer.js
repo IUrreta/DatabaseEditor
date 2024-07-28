@@ -210,6 +210,9 @@ function editModeHandler() {
     if (newName === document.querySelector(".clicked").dataset.name) {
         newName = "-1"
     }
+    else{
+        update_name(id, newName)
+    }
     let driverNum = document.querySelector("#numberButton .front-gradient").textContent;
     let wants1,superLicense, isRetired;
     document.querySelector(".clicked").dataset.number = driverNum;
