@@ -113,7 +113,7 @@ function place_drivers(driversArray) {
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
-    
+
 }
 
 function update_name(driverID, name) {
@@ -134,7 +134,7 @@ function update_name(driverID, name) {
     normalDiv.dataset.name = name
 }
 
-function add_marquees(){
+function add_marquees() {
     setTimeout(function () {
         document.querySelectorAll('.drivers-section .name-container').forEach(container => {
             let parentWidth = container.parentNode.clientWidth
@@ -143,7 +143,7 @@ function add_marquees(){
                 let scrollAmount = (containerWidth - parentWidth);
                 container.style.setProperty('--scroll-amount', `${scrollAmount}px`);
                 container.classList.add('overflow');
-              }
+            }
         });
         document.querySelectorAll('.staff-section .name-container').forEach(container => {
             let parentWidth = container.parentNode.clientWidth
@@ -152,7 +152,7 @@ function add_marquees(){
                 let scrollAmount = (containerWidth - parentWidth)
                 container.style.setProperty('--scroll-amount', `${scrollAmount}px`);
                 container.classList.add('overflow');
-              }
+            }
             else {
                 container.classList.remove("overflow")
             }
@@ -800,7 +800,7 @@ function manageDrivers(...divs) {
  */
 document.getElementById("confirmButton").addEventListener('click', function () {
     if (modalType === "hire") {
-        if (originalParent.id === "f2-drivers" | originalParent.id === "f3-drivers" | originalParent.className === "driver-space" | originalParent.className === "affiliates-space") {
+        if (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.className === "affiliates-space") {
             signDriver("fireandhire")
         }
         signDriver("regular")
@@ -1216,10 +1216,10 @@ interact('.free-driver').draggable({
                             target.dataset.teamid = inverted_dict[teamDestiniy]
                             updateColor(target)
                             document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
-                            if ((game_version === 2024) && (originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
-                                signDriver("fireandhire")
-                            }
                             if (autoContractToggle.checked) {
+                                if ((game_version === 2024) && (originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
+                                    signDriver("fireandhire")
+                                }
                                 signDriver("autocontract")
                             }
                             else {
@@ -1242,11 +1242,11 @@ interact('.free-driver').draggable({
                                 target.dataset.teamid = inverted_dict[teamDestiniy]
                                 updateColor(target)
                                 document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
-                                if ((game_version === 2023 && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) ||
-                                    (game_version === 2024) && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
-                                    signDriver("fireandhire")
-                                }
                                 if (autoContractToggle.checked) {
+                                    if ((game_version === 2023 && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) ||
+                                        (game_version === 2024) && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space"))) {
+                                        signDriver("fireandhire")
+                                    }
                                     signDriver("autocontract")
                                 }
                                 else {
@@ -1339,11 +1339,11 @@ interact('.free-driver').draggable({
                                 target.dataset.teamid = inverted_dict[teamDestiniy]
                                 updateColor(target)
                                 document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
-                                if ((game_version === 2023 && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "staff-space")) ||
-                                    (game_version === 2024) && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "staff-space")) {
-                                    signDriver("fireandhire")
-                                }
                                 if (autoContractToggle.checked) {
+                                    if ((game_version === 2023 && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "staff-space")) ||
+                                        (game_version === 2024) && (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "staff-space")) {
+                                        signDriver("fireandhire")
+                                    }
                                     signDriver("autocontract")
                                 }
                                 else {
