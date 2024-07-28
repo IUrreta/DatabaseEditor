@@ -245,6 +245,16 @@ class TransferUtils:
             if is_driving_in_f2 is not None:
                 self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driver_1_id} AND ContractType = 0 AND TeamID = {is_driving_in_f2[0]}")
 
+            was_in_f2 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driver_1_id} AND SeasonID = {year[0]} AND RaceFormula = 2").fetchone()
+            was_in_f3 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driver_1_id} AND SeasonID = {year[0]} AND RaceFormula = 3").fetchone()
+
+            if was_in_f2 is not None:
+                # print("was in f2")
+                self.cursor.execute(f"DELETE FROM Races_DriverStandings WHERE DriverID = {driver_1_id} AND SeasonID = {year[0]} AND RaceFormula = 2")
+            if was_in_f3 is not None:
+                # print("was in f3")
+                self.cursor.execute(f"DELETE FROM Races_DriverStandings WHERE DriverID = {driver_1_id} AND SeasonID = {year[0]} AND RaceFormula = 3")
+
             position_1in_standings = self.cursor.execute(f"SELECT MAX(Position) FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = {year[0]}").fetchone()
             points_driver1_in_standings = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND DriverID = {driver_1_id} AND SeasonID = {year[0]}").fetchone()
 
@@ -266,6 +276,16 @@ class TransferUtils:
             is_driving_in_f2 = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driver_2_id} AND ContractType = 0 AND (TeamID > 10 AND  TeamID < 32)").fetchone()
             if is_driving_in_f2 is not None:
                 self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driver_2_id} AND ContractType = 0 AND TeamID = {is_driving_in_f2[0]}")
+
+            was_in_f2 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driver_2_id} AND SeasonID = {year[0]} AND RaceFormula = 2").fetchone()
+            was_in_f3 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driver_2_id} AND SeasonID = {year[0]} AND RaceFormula = 3").fetchone()
+
+            if was_in_f2 is not None:
+                # print("was in f2")
+                self.cursor.execute(f"DELETE FROM Races_DriverStandings WHERE DriverID = {driver_2_id} AND SeasonID = {year[0]} AND RaceFormula = 2")
+            if was_in_f3 is not None:
+                # print("was in f3")
+                self.cursor.execute(f"DELETE FROM Races_DriverStandings WHERE DriverID = {driver_2_id} AND SeasonID = {year[0]} AND RaceFormula = 3")
 
             #checks if the driver was in the standings and if it wasn't it updates the standings
             position_2in_standings = self.cursor.execute(f"SELECT MAX(Position) FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = {year[0]}").fetchone()

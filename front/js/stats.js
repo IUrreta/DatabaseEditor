@@ -5,7 +5,7 @@ let driverStatTitle = document.getElementById("driverStatsTitle")
 let statPanelShown = 0;
 let typeOverall = "driver";
 let typeEdit;
-let mentality_dict = {0:"enthusiastic", 1:"positive", 2:"neutral", 3:"negative", 4:"demoralized"}
+let mentality_dict = { 0: "enthusiastic", 1: "positive", 2: "neutral", 3: "negative", 4: "demoralized" }
 let oldNum;
 let teamOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
 
@@ -14,7 +14,7 @@ let teamOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 11, 12, 13, 14, 15, 16, 17, 
  * Removes all the staff from their list
  */
 function removeStatsDrivers() {
-    document.querySelectorAll(".staff-list").forEach(function(elem){
+    document.querySelectorAll(".staff-list").forEach(function (elem) {
         elem.innerHTML = ""
     })
 }
@@ -26,7 +26,6 @@ function removeStatsDrivers() {
 function place_drivers_editStats(driversArray) {
     let divPosition;
     driversArray.forEach((driver) => {
-        console.log(driver)
         divPosition = "fulldriverlist"
 
         let newDiv = document.createElement("div");
@@ -40,7 +39,8 @@ function place_drivers_editStats(driversArray) {
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
         spanName.textContent = insert_space(name[0]) + " "
-        spanLastName.textContent = " "+ name[1].toUpperCase()
+        spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
+        newDiv.dataset.name = name[0] + " " + name.slice(1).join(" ").toUpperCase()
         spanLastName.classList.add("bold-font")
         spanLastName.classList.add("surname")
         nameDiv.appendChild(spanName)
@@ -54,11 +54,11 @@ function place_drivers_editStats(driversArray) {
             statsString += driver[i] + ' ';
         }
         newDiv.dataset.stats = statsString;
-        newDiv.addEventListener('click',() => {
+        newDiv.addEventListener('click', () => {
             let elementosClicked = document.querySelectorAll('.clicked');
             elementosClicked.forEach(item => item.classList.remove('clicked'));
             newDiv.classList.toggle('clicked');
-            driverStatTitle.innerHTML = manage_stats_title(newDiv);
+            driverStatTitle.value = newDiv.dataset.name
             load_stats(newDiv)
             if (statPanelShown == 0) {
                 document.getElementById("editStatsPanel").className = "left-panel-stats"
@@ -75,7 +75,7 @@ function place_drivers_editStats(driversArray) {
         newDiv.dataset.number = driver["driver_number"]
         newDiv.dataset.raceFormula = driver["race_formula"]
         newDiv.dataset.isRetired = driver[4]
-        if (driver["mentality0"]){
+        if (driver["mentality0"]) {
             newDiv.dataset.mentality0 = driver["mentality0"]
             newDiv.dataset.mentality1 = driver["mentality1"]
             newDiv.dataset.mentality2 = driver["mentality2"]
@@ -92,7 +92,7 @@ function place_drivers_editStats(driversArray) {
     })
 
     document.querySelector("#edit_stats").querySelectorAll(".custom-input-number").forEach(function (elem) {
-        elem.addEventListener("change",function () {
+        elem.addEventListener("change", function () {
             if (elem.value > 100) {
                 elem.value = 100;
             }
@@ -103,6 +103,7 @@ function place_drivers_editStats(driversArray) {
     manage_order(0)
 
 }
+
 
 /**
  * Places the staff that the backend fetched on their respective staff list
@@ -138,7 +139,7 @@ function place_staff_editStats(staffArray) {
                 statsString += staff[i] + ' ';
             }
         }
-        statsString = statsString.slice(0,-1);
+        statsString = statsString.slice(0, -1);
 
 
         let newDiv = document.createElement("div");
@@ -152,7 +153,8 @@ function place_staff_editStats(staffArray) {
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
         spanName.textContent = name[0] + " "
-        spanLastName.textContent = " "+ name[1].toUpperCase()
+        spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
+        newDiv.dataset.name = name[0] + " " + name.slice(1).join(" ").toUpperCase()
         spanLastName.classList.add("bold-font")
         spanLastName.classList.add("surname")
         nameDiv.appendChild(spanName)
@@ -161,11 +163,11 @@ function place_staff_editStats(staffArray) {
         newDiv.appendChild(nameDiv)
         newDiv.classList.add(team_dict[staff[2]] + "-transparent")
         newDiv.dataset.stats = statsString;
-        newDiv.addEventListener('click',() => {
+        newDiv.addEventListener('click', () => {
             let elementosClicked = document.querySelectorAll('.clicked');
             elementosClicked.forEach(item => item.classList.remove('clicked'));
             newDiv.classList.toggle('clicked');
-            driverStatTitle.innerHTML = manage_stats_title(newDiv);
+            driverStatTitle.value = newDiv.dataset.name
             load_stats(newDiv)
             if (statPanelShown == 0) {
                 document.getElementById("editStatsPanel").className = "left-panel-stats"
@@ -179,7 +181,7 @@ function place_staff_editStats(staffArray) {
         newDiv.dataset.retirement = staff["retirement_age"]
         newDiv.dataset.raceFormula = staff["race_formula"]
         newDiv.dataset.isRetired = staff[4]
-        if (staff["mentality0"]){
+        if (staff["mentality0"]) {
             newDiv.dataset.mentality0 = staff["mentality0"]
             newDiv.dataset.mentality1 = staff["mentality1"]
             newDiv.dataset.mentality2 = staff["mentality2"]
@@ -203,7 +205,7 @@ function recalculateOverall() {
     document.querySelectorAll(".elegible").forEach(function (elem) {
         stats += elem.value + " "
     })
-    stats = stats.slice(0,-1);
+    stats = stats.slice(0, -1);
     let oldovr = document.getElementById("ovrholder").innerHTML;
     let ovr = calculateOverall(stats, typeOverall);
     if (oldovr > ovr) {
@@ -211,14 +213,14 @@ function recalculateOverall() {
         document.getElementById("ovrholder").className = "overall-holder bold-font alertNeg";
         setTimeout(() => {
             document.getElementById("ovrholder").className = "overall-holder bold-font"
-        },300);
+        }, 300);
     }
-    else if(oldovr < ovr){
+    else if (oldovr < ovr) {
         document.getElementById("ovrholder").innerHTML = ovr;
         document.getElementById("ovrholder").className = "overall-holder bold-font alertPos";
         setTimeout(() => {
             document.getElementById("ovrholder").className = "overall-holder bold-font"
-        },300);
+        }, 300);
     }
 
 }
@@ -235,7 +237,7 @@ function recalculateOverall() {
  */
 function getName(html) {
     let name = ""
-    html.querySelectorAll('span').forEach(function(elem){
+    html.querySelectorAll('span').forEach(function (elem) {
         name += elem.innerText + " "
     })
 
@@ -268,12 +270,12 @@ function calculateOverall(stats, type) {
         rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.75 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 5;
 
     }
-    else if(type === "staff"){
+    else if (type === "staff") {
         let suma = 0;
         for (let i = 0; i < statsArray.length; i++) {
             suma += statsArray[i];
-          }
-          rating = suma / statsArray.length;
+        }
+        rating = suma / statsArray.length;
     }
 
     return Math.round(rating)
@@ -288,10 +290,10 @@ function updateStat(input, increment) {
     manage_stat_bar(input, val);
 }
 
-function listeners_plusLess(){
-    document.querySelectorAll("#editStatsPanel .bi-plus-lg").forEach(button => {
+function listeners_plusLess() {
+    document.querySelectorAll(".attirbutes-panel .bi-plus-lg").forEach(button => {
         let intervalId;
-        button.addEventListener('mousedown', function() {
+        button.addEventListener('mousedown', function () {
             let input = this.parentNode.parentNode.querySelector("input");
             updateStat(input, 1);
             intervalId = setInterval(() => {
@@ -299,18 +301,18 @@ function listeners_plusLess(){
             }, 100);
         });
 
-        button.addEventListener('mouseup', function() {
+        button.addEventListener('mouseup', function () {
             clearInterval(intervalId);
         });
 
-        button.addEventListener('mouseleave', function() {
+        button.addEventListener('mouseleave', function () {
             clearInterval(intervalId);
         });
     });
 
-    document.querySelectorAll("#editStatsPanel .bi-dash-lg").forEach(button => {
+    document.querySelectorAll(".attirbutes-panel .bi-dash-lg").forEach(button => {
         let intervalId;
-        button.addEventListener('mousedown', function() {
+        button.addEventListener('mousedown', function () {
             let input = this.parentNode.parentNode.querySelector("input");
             updateStat(input, -1);
             intervalId = setInterval(() => {
@@ -318,54 +320,59 @@ function listeners_plusLess(){
             }, 100);
         });
 
-        button.addEventListener('mouseup', function() {
+        button.addEventListener('mouseup', function () {
             clearInterval(intervalId);
         });
 
-        button.addEventListener('mouseleave', function() {
+        button.addEventListener('mouseleave', function () {
             clearInterval(intervalId);
         });
     });
 
-    document.querySelector(".retirement-buttons .bi-plus-lg").addEventListener('mousedown', function() {
-        let intervalId;
-        let retirement = document.querySelector(".actual-retirement");
-        function updateRetirement(increment) {
-            let age = parseInt(retirement.innerText.split(" ")[1]) + increment;
-            retirement.innerText = "Ret " + age;
-        }
-        updateRetirement(1);
-        intervalId = setInterval(() => {
+    document.querySelectorAll(".age-holder .bi-plus-lg").forEach(function (elem) {
+        elem.addEventListener('mousedown', function (event) {
+            let intervalId;
+            let input = event.target.parentNode.parentNode.querySelector(".age-ret");
+            function updateRetirement(increment) {
+                let age = parseInt(input.innerText.split(" ")[1]) + increment;
+
+                input.innerText = input.dataset.text + " " + age;
+            }
             updateRetirement(1);
-        }, 100);
-        this.addEventListener('mouseup', function() {
-            clearInterval(intervalId);
-        });
-        this.addEventListener('mouseleave', function() {
-            clearInterval(intervalId);
+            intervalId = setInterval(() => {
+                updateRetirement(1);
+            }, 100);
+            this.addEventListener('mouseup', function () {
+                clearInterval(intervalId);
+            });
+            this.addEventListener('mouseleave', function () {
+                clearInterval(intervalId);
+            });
         });
     });
 
-    document.querySelector(".retirement-buttons .bi-dash-lg").addEventListener('mousedown', function() {
-        let intervalId;
-        let retirement = document.querySelector(".actual-retirement");
-        function updateRetirement(increment) {
-            let age = parseInt(retirement.innerText.split(" ")[1]) + increment;
-            retirement.innerText = "Ret " + age;
-        }
-        updateRetirement(-1);
-        intervalId = setInterval(() => {
+    document.querySelectorAll(".age-holder .bi-dash-lg").forEach(function (elem) {
+        elem.addEventListener('mousedown', function (event) {
+            let intervalId;
+            let input = event.target.parentNode.parentNode.querySelector(".age-ret");
+            function updateRetirement(increment) {
+                let age = parseInt(input.innerText.split(" ")[1]) + increment;
+                input.innerText = input.dataset.text + " " + age;
+            }
             updateRetirement(-1);
-        }, 100);
-        this.addEventListener('mouseup', function() {
-            clearInterval(intervalId);
-        });
-        this.addEventListener('mouseleave', function() {
-            clearInterval(intervalId);
+            intervalId = setInterval(() => {
+                updateRetirement(-1);
+            }, 100);
+            this.addEventListener('mouseup', function () {
+                clearInterval(intervalId);
+            });
+            this.addEventListener('mouseleave', function () {
+                clearInterval(intervalId);
+            });
         });
     });
 
-    document.querySelector("#nameFilter").addEventListener("input", function(event){
+    document.querySelector("#nameFilter").addEventListener("input", function (event) {
         let text = event.target.value
         if (text !== "") {
             document.querySelector("#filterContainer").querySelector(".bi-x").classList.remove("d-none")
@@ -374,23 +381,23 @@ function listeners_plusLess(){
             document.querySelector("#filterContainer").querySelector(".bi-x").classList.add("d-none")
         }
         let elements = document.querySelectorAll(".normal-driver")
-        elements.forEach(function(elem){
+        elements.forEach(function (elem) {
             let first_name = elem.children[0].children[0].innerText
             let last_name = elem.children[0].children[1].innerText
             let full_name = first_name + " " + last_name
             let minus = full_name.toLowerCase()
             let name = text.toLowerCase()
-            if(minus.includes(name)){
+            if (minus.includes(name)) {
                 elem.classList.remove("d-none")
             }
-            else{
+            else {
                 elem.classList.add("d-none")
             }
         })
     })
 
-    document.querySelectorAll(".text-filter-container .bi-x").forEach(function(elem){
-        elem.addEventListener("click", function(){
+    document.querySelectorAll(".text-filter-container .bi-x").forEach(function (elem) {
+        elem.addEventListener("click", function () {
             let input = elem.parentNode.querySelector("input")
             input.value = ""
             elem.classList.add("d-none")
@@ -402,16 +409,16 @@ function listeners_plusLess(){
         })
     })
 
-    document.querySelector("#filterIcon").addEventListener("click", function(){
+    document.querySelector("#filterIcon").addEventListener("click", function () {
         document.getElementById("edit_stats").querySelector(".category-filters").classList.toggle("show")
         document.getElementById("edit_stats").querySelector(".filter-container").classList.toggle("focused")
     })
 
-    document.getElementById("edit_stats").querySelectorAll(".filter-pills").forEach(function(elem){
-        elem.addEventListener("click", function(event){
+    document.getElementById("edit_stats").querySelectorAll(".filter-pills").forEach(function (elem) {
+        elem.addEventListener("click", function (event) {
             let isActive = elem.classList.contains('active');
 
-            document.getElementById("edit_stats").querySelectorAll('.filter-pills').forEach(function(el) {
+            document.getElementById("edit_stats").querySelectorAll('.filter-pills').forEach(function (el) {
                 el.classList.remove('active');
             });
 
@@ -421,106 +428,106 @@ function listeners_plusLess(){
         })
     })
 
-    document.querySelector("#F1filter").addEventListener("click", function(event){
-        if (!event.target.classList.contains("active")){
+    document.querySelector("#F1filter").addEventListener("click", function (event) {
+        if (!event.target.classList.contains("active")) {
             let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function(elem){
+            elements.forEach(function (elem) {
                 elem.classList.remove("d-none")
             })
         }
-        else{
+        else {
             let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function(elem){
-                if(parseInt(elem.dataset.raceFormula) === 1){
+            elements.forEach(function (elem) {
+                if (parseInt(elem.dataset.raceFormula) === 1) {
                     elem.classList.remove("d-none")
                 }
-                else{
+                else {
                     elem.classList.add("d-none")
                 }
             })
         }
     })
 
-    document.querySelector("#F2filter").addEventListener("click", function(event){
-        if (!event.target.classList.contains("active")){
+    document.querySelector("#F2filter").addEventListener("click", function (event) {
+        if (!event.target.classList.contains("active")) {
             let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function(elem){
+            elements.forEach(function (elem) {
                 elem.classList.remove("d-none")
             })
         }
-        else{
+        else {
             let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function(elem){
-                if(parseInt(elem.dataset.raceFormula) === 2){
+            elements.forEach(function (elem) {
+                if (parseInt(elem.dataset.raceFormula) === 2) {
                     elem.classList.remove("d-none")
                 }
-                else{
+                else {
                     elem.classList.add("d-none")
                 }
             })
         }
     })
 
-    document.querySelector("#F3filter").addEventListener("click", function(event){
-        if (!event.target.classList.contains("active")){
+    document.querySelector("#F3filter").addEventListener("click", function (event) {
+        if (!event.target.classList.contains("active")) {
             let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function(elem){
+            elements.forEach(function (elem) {
                 elem.classList.remove("d-none")
             })
         }
-        else{
+        else {
             let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function(elem){
-                if(parseInt(elem.dataset.raceFormula) === 3){
+            elements.forEach(function (elem) {
+                if (parseInt(elem.dataset.raceFormula) === 3) {
                     elem.classList.remove("d-none")
                 }
-                else{
+                else {
                     elem.classList.add("d-none")
                 }
             })
         }
     })
 
-    document.querySelector("#freefilter").addEventListener("click", function(event){
-        if (!event.target.classList.contains("active")){
+    document.querySelector("#freefilter").addEventListener("click", function (event) {
+        if (!event.target.classList.contains("active")) {
             let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function(elem){
+            elements.forEach(function (elem) {
                 elem.classList.remove("d-none")
             })
         }
-        else{
+        else {
             let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function(elem){
-                if(parseInt(elem.dataset.raceFormula) === 4){
+            elements.forEach(function (elem) {
+                if (parseInt(elem.dataset.raceFormula) === 4) {
                     elem.classList.remove("d-none")
                 }
-                else{
+                else {
                     elem.classList.add("d-none")
                 }
             })
         }
     })
 
-    document.querySelector(".order-space").querySelectorAll("i").forEach(function(elem){
-        elem.addEventListener("click", function(event){
+    document.querySelector(".order-space").querySelectorAll("i").forEach(function (elem) {
+        elem.addEventListener("click", function (event) {
             let parent = elem.parentNode
             let state = parent.dataset.state
             let orderNumUp = document.querySelector(".bi-sort-numeric-up-alt")
             let orderNumDown = document.querySelector(".bi-sort-numeric-down")
             parent.dataset.state = (parseInt(state) + 1) % 3
-            if (parent.dataset.state == 0){
+            if (parent.dataset.state == 0) {
                 orderNumUp.classList.remove("active")
                 orderNumUp.classList.remove("hidden")
                 orderNumDown.classList.add("hidden")
             }
-            else if (parent.dataset.state == 1){
+            else if (parent.dataset.state == 1) {
                 orderNumDown.classList.add("hidden")
                 orderNumDown.classList.add("active")
                 orderNumUp.classList.add("active")
                 orderNumUp.classList.remove("hidden")
 
             }
-            else if (parent.dataset.state == 2){
+            else if (parent.dataset.state == 2) {
                 orderNumUp.classList.remove("active")
                 orderNumUp.classList.add("hidden")
                 orderNumDown.classList.add("active")
@@ -531,81 +538,81 @@ function listeners_plusLess(){
     })
 }
 
-    /**
-     * Adds eventListeners to all the elements of the staff dropdown
-     */
-    function listenersStaffGroups() {
-        document.querySelectorAll('#staffMenu a').forEach(item => {
-            item.addEventListener("click", function () {
-                const staffButton = document.getElementById('staffDropdown');
-                let staffSelected = item.innerHTML
-                let staffCode = item.dataset.spacestats
-                if (staffCode === "driverStats") {
-                    typeOverall = "driver"
-                    typeEdit = "0"
-                    document.getElementById("driverSpecialAttributes").classList.remove("d-none")
-                    document.querySelector(".super-license-holder").classList.remove("d-none")
+/**
+ * Adds eventListeners to all the elements of the staff dropdown
+ */
+function listenersStaffGroups() {
+    document.querySelectorAll('#staffMenu a').forEach(item => {
+        item.addEventListener("click", function () {
+            const staffButton = document.getElementById('staffDropdown');
+            let staffSelected = item.innerHTML
+            let staffCode = item.dataset.spacestats
+            if (staffCode === "driverStats") {
+                typeOverall = "driver"
+                typeEdit = "0"
+                document.getElementById("driverSpecialAttributes").classList.remove("d-none")
+                document.querySelector(".super-license-holder").classList.remove("d-none")
+            }
+            else {
+                typeOverall = "staff"
+                document.getElementById("driverSpecialAttributes").classList.add("d-none")
+                document.querySelector(".super-license-holder").classList.add("d-none")
+                if (staffCode === "chiefStats") {
+                    typeEdit = "1"
                 }
-                else {
-                    typeOverall = "staff"
-                    document.getElementById("driverSpecialAttributes").classList.add("d-none")
-                    document.querySelector(".super-license-holder").classList.add("d-none")
-                    if (staffCode === "chiefStats") {
-                        typeEdit = "1"
-                    }
-                    if (staffCode === "engineerStats") {
-                        typeEdit = "2"
-                    }
-                    if (staffCode === "aeroStats") {
-                        typeEdit = "3"
-                    }
-                    if (staffCode === "directorStats") {
-                        typeEdit = "4"
-                    }
-
+                if (staffCode === "engineerStats") {
+                    typeEdit = "2"
                 }
-                staffButton.innerHTML = staffSelected;
-                change_elegibles(item.dataset.spacestats)
-                document.querySelectorAll(".staff-list").forEach(function (elem) {
-                    elem.classList.add("d-none")
-                    if (item.dataset.list == elem.id) {
-                        elem.classList.remove("d-none")
-                    }
-                })
-                document.querySelector(".left-panel-stats").classList.add("d-none")
-                statPanelShown = 0;
-            });
+                if (staffCode === "aeroStats") {
+                    typeEdit = "3"
+                }
+                if (staffCode === "directorStats") {
+                    typeEdit = "4"
+                }
 
+            }
+            staffButton.innerHTML = staffSelected;
+            change_elegibles(item.dataset.spacestats)
+            document.querySelectorAll(".staff-list").forEach(function (elem) {
+                elem.classList.add("d-none")
+                if (item.dataset.list == elem.id) {
+                    elem.classList.remove("d-none")
+                }
+            })
+            document.querySelector(".left-panel-stats").classList.add("d-none")
+            statPanelShown = 0;
         });
-    }
+
+    });
+}
 
 function manage_order(state) {
     let elements = document.querySelectorAll(".normal-driver");
     let array = Array.from(elements);
-    
+
     // Crear un objeto para almacenar los padres originales
     let parents = {};
     array.forEach(elem => {
         parents[elem.dataset.driverid] = elem.parentNode; // Asumiendo que cada .normal-driver tiene un data-id único
     });
 
-    let sortedArray = array.sort(function(a, b) {
+    let sortedArray = array.sort(function (a, b) {
         let ovrA = parseInt(a.children[1].innerText);
         let ovrB = parseInt(b.children[1].innerText);
         let teamA = parseInt(a.dataset.teamid);
         let teamB = parseInt(b.dataset.teamid);
-    
+
         if (state == 0) {
             if (teamA === 0) return 1;
             if (teamB === 0) return -1;
-    
+
             let indexA = teamOrder.indexOf(teamA);
             let indexB = teamOrder.indexOf(teamB);
-    
+
             if (indexA !== indexB) {
                 return indexA - indexB;
             }
-    
+
             return ovrB - ovrA;
         } else if (state == 1) {
             return ovrB - ovrA;
@@ -615,12 +622,12 @@ function manage_order(state) {
     });
 
     // Limpiar los contenedores
-    document.querySelectorAll(".staff-list").forEach(function(elem) {
+    document.querySelectorAll(".staff-list").forEach(function (elem) {
         elem.innerHTML = "";
     });
 
     // Volver a colocar los elementos ordenados en sus padres originales
-    sortedArray.forEach(function(elem) {
+    sortedArray.forEach(function (elem) {
         let parent = parents[elem.dataset.driverid];
         parent.appendChild(elem);
     });
@@ -628,7 +635,7 @@ function manage_order(state) {
 
 
 
-function manage_stat_bar(element, value){
+function manage_stat_bar(element, value) {
     let container = element.parentNode.parentNode.parentNode
     let bar = container.querySelector(".one-stat-progress")
     let percentage = value + "%"
@@ -643,7 +650,7 @@ function load_stats(div) {
     let statsArray = div.dataset.stats.split(" ").map(Number);
 
     let inputArray = document.querySelectorAll(".elegible")
-    inputArray.forEach(function (input,index) {
+    inputArray.forEach(function (input, index) {
         let value = statsArray[index]
         input.value = value
         //get sibling of input
@@ -657,26 +664,26 @@ function load_stats(div) {
     actualAge.innerText = "Age " + div.dataset.age
     retirementAge.innerText = "Ret " + div.dataset.retirement
     numberButton.querySelector(".front-gradient").innerText = div.dataset.number
-    if (div.dataset.numWC === "0"){
+    if (div.dataset.numWC === "0") {
         numberWC.checked = false
     }
-    else{
+    else {
         numberWC.checked = true
     }
-    if (div.dataset.superLicense === "1"){
+    if (div.dataset.superLicense === "1") {
         document.querySelector("#superLicense").checked = true
     }
-    else{
+    else {
         document.querySelector("#superLicense").checked = false
     }
-    if (div.dataset.isRetired === "1"){
+    if (div.dataset.isRetired === "1") {
         document.querySelector("#retiredInput").checked = true
     }
-    else{
+    else {
         document.querySelector("#retiredInput").checked = false
     }
-    if(div.dataset.mentality0){
-        for (i = 0; i < 3; i++){
+    if (div.dataset.mentality0) {
+        for (i = 0; i < 3; i++) {
             let mentality = div.dataset["mentality" + i]
             let indicator = document.getElementById("mentality" + i)
             indicator.parentNode.parentNode.classList.remove("d-none")
@@ -684,9 +691,9 @@ function load_stats(div) {
             let inverted_value = 5 - mentality
             let levels = indicator.querySelectorAll('.mentality-level');
             let mentality_class = mentality_dict[mentality]
-            for (j = 0; j < 5; j++){
+            for (j = 0; j < 5; j++) {
                 levels[j].className = "mentality-level"
-                if (j <= inverted_value - 1){
+                if (j <= inverted_value - 1) {
                     levels[j].classList.add(mentality_class)
                 }
             }
@@ -696,23 +703,23 @@ function load_stats(div) {
             nameEmoji.classList.add(mentality_class)
         }
     }
-    else{
-        for (i = 0; i < 3; i++){
+    else {
+        for (i = 0; i < 3; i++) {
             let indicator = document.getElementById("mentality" + i)
             indicator.parentNode.parentNode.classList.add("d-none")
         }
     }
-    if (div.dataset.marketability){
+    if (div.dataset.marketability) {
         document.querySelector("#marketability").classList.remove("d-none")
         document.getElementById("marketabilityInput").value = div.dataset.marketability
         document.getElementById("marketabilityBar").style.width = div.dataset.marketability + "%"
     }
-    else{
+    else {
         document.querySelector("#marketability").classList.add("d-none")
     }
 }
 
-document.querySelectorAll(".bar-container .bi-chevron-right").forEach(function(elem){
+document.querySelectorAll(".bar-container .bi-chevron-right").forEach(function (elem) {
     elem.addEventListener("click", function () {
         let indicator = elem.parentNode.querySelector(".mentality-level-indicator")
         let value = parseInt(indicator.getAttribute('data-value')) - 1;
@@ -724,9 +731,9 @@ document.querySelectorAll(".bar-container .bi-chevron-right").forEach(function(e
         indicator.setAttribute('data-value', value);
         let levels = indicator.querySelectorAll('.mentality-level');
         let mentality_class = mentality_dict[value]
-        for (j = 0; j < 5; j++){
+        for (j = 0; j < 5; j++) {
             levels[j].className = "mentality-level"
-            if (j <= inverted_value - 1){
+            if (j <= inverted_value - 1) {
                 levels[j].classList.add(mentality_class)
             }
         }
@@ -737,7 +744,7 @@ document.querySelectorAll(".bar-container .bi-chevron-right").forEach(function(e
     })
 })
 
-document.querySelectorAll(".bar-container .bi-chevron-left").forEach(function(elem){
+document.querySelectorAll(".bar-container .bi-chevron-left").forEach(function (elem) {
     elem.addEventListener("click", function () {
         let indicator = elem.parentNode.querySelector(".mentality-level-indicator")
         let value = parseInt(indicator.getAttribute('data-value')) + 1;
@@ -748,9 +755,9 @@ document.querySelectorAll(".bar-container .bi-chevron-left").forEach(function(el
         indicator.setAttribute('data-value', value);
         let levels = indicator.querySelectorAll('.mentality-level');
         let mentality_class = mentality_dict[value]
-        for (j = 0; j < 5; j++){
+        for (j = 0; j < 5; j++) {
             levels[j].className = "mentality-level"
-            if (j <= inverted_value - 1){
+            if (j <= inverted_value - 1) {
                 levels[j].classList.add(mentality_class)
             }
         }
@@ -764,7 +771,7 @@ document.querySelectorAll(".bar-container .bi-chevron-left").forEach(function(el
 function capitalizeFirstLetter(str) {
     if (!str) return str; // Manejo de cadena vacía
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-  }
+}
 
 
 /**
@@ -773,14 +780,14 @@ function capitalizeFirstLetter(str) {
  * @returns the html necessary to put in the name with correct color
  */
 function manage_stats_title(html) {
-    let colorClass =""
-    if(html.dataset.teamid != 0){
+    let colorClass = ""
+    if (html.dataset.teamid != 0) {
         colorClass = team_dict[html.dataset.teamid] + "font"
     }
     let spanName = document.createElement("span")
     let spanLastName = document.createElement("span")
     let name = "<span>" + html.children[0].children[0].innerText + " </span>" + "<span class='" + colorClass + "'>" + html.children[0].children[1].innerText + "</span>"
-    
+
     //let name = html.substring(0,html.length - 2).trim();
 
     return name;

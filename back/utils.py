@@ -406,16 +406,39 @@ class DatabaseUtils:
         return resultado
 
     def format_names_get_stats(self, name, type):
-        nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
-        apellido_pattern = r'StaffName_Surname_(\w+)'
+        nombre = ""
+        apellido = ""
+        if "STRING_LITERAL" not in name[0]:
+            nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
+            nombre_match = re.search(nombre_pattern, name[0])
+            if nombre_match:
+                nombre = self.remove_number(nombre_match.group(2))
+            else:
+                nombre = ""
+        else:
+            pattern = r'\|([^|]+)\|'
+            match = re.search(pattern, name[0])
+            if match:
+                nombre = match.group(1)
+            else:
+                nombre = ""
 
-
-        nombre_match = re.search(nombre_pattern, name[0])
-        apellido_match = re.search(apellido_pattern, name[1])
+        if "STRING_LITERAL" not in name[1]:
+            apellido_pattern = r'StaffName_Surname_(\w+)'
+            apellido_match = re.search(apellido_pattern, name[1])
+            if apellido_match:
+                apellido = self.remove_number(apellido_match.group(1))
+            else:
+                apellido = ""
+        else:
+            pattern = r'\|([^|]+)\|'
+            match = re.search(pattern, name[1])
+            if match:
+                apellido = match.group(1)
+            else:
+                apellido = ""
 
         
-        nombre = self.remove_number(nombre_match.group(2))
-        apellido = self.remove_number(apellido_match.group(1))
         name_formatted = f"{nombre} {apellido}"
         team_id = name[3] if name[3] is not None else 0
         pos_in_team = name[4] if name[4] is not None else 0
