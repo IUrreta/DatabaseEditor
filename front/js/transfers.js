@@ -23,6 +23,7 @@ const f2_teams = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 const f3_teams = [22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
 
 const staff_positions = { 1: "technical-chief", 2: "race-engineer", 3: "head-aero", 4: "sporting-director" }
+const staff_pics = {1: "../assets/images/technicalChief.png", 2: "../assets/images/raceEngineer.png", 3: "../assets/images/headAero.png", 4: "../assets/images/sportingDirector.png"}
 
 
 let originalParent;
@@ -146,6 +147,11 @@ function place_staff(staffArray) {
         spanName.textContent = insert_space(name[0]) + " "
         spanLastName.textContent = " " + name[1].toUpperCase()
         spanLastName.classList.add("bold-font")
+        let staffLogo = document.createElement("img")
+        let position = staff[3]
+        staffLogo.src = staff_pics[position]
+        staffLogo.className = "staff-logo"
+        newDiv.appendChild(staffLogo)
         newDiv.appendChild(spanName)
         newDiv.appendChild(spanLastName)
         newDiv.classList.add(team_dict[staff[2]] + "-transparent")
@@ -158,10 +164,9 @@ function place_staff(staffArray) {
         //     addUnRetireIcon(newDiv)
         // }
         divPosition = "free-staff"
-        let position = staff[3]
         let staff_position = staff_positions[position]
         newDiv.dataset.type = staff_position
-        spanName.classList.add(staff_position + "-border")
+        staffLogo.classList.add(staff_position + "-border")
         addIcon(newDiv)
         if (staff[2] > 0 && staff[2] <= 10 || staff[2] === 32) {
             let teamDiv = document.querySelector(`.staff-section[data-teamid='${staff[2]}']`)

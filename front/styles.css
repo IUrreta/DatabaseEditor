@@ -3104,6 +3104,16 @@ DRIVERS TABLE
   height: 610px;
 }
 
+.staff-logo{
+  width: 27px;
+  height: 26px;
+}
+
+#free-staff .staff-logo{
+  width: 32px;
+  height: 23px;
+}
+
 #driverstats {
   margin-right: 14px;
 }
@@ -3222,24 +3232,25 @@ DRIVERS TABLE
   flex: 1 0 0;
   max-width: 20%;
   min-height: 40px;
+  padding: 0 3px;
 }
 
-.technical-chief-border{
+#free-staff .technical-chief-border{
   border-left: 2px solid var(--technical-chief);
   padding-left: 6px;
 }
 
-.race-engineer-border{
+#free-staff .race-engineer-border{
   border-left: 2px solid var(--race-engineer);
   padding-left: 6px;
 }
 
-.head-aero-border{
+#free-staff .head-aero-border{
   border-left: 2px solid var(--head-aero);
   padding-left: 6px;
 }
 
-.sporting-director-border{
+#free-staff .sporting-director-border{
   border-left: 2px solid var(--sporting-director);
   padding-left: 6px;
 }
@@ -5177,6 +5188,11 @@ input.disabled{
   gap: 3px;
   box-shadow: 0 0 10px 1px var(--box-shadow);
   backdrop-filter: blur(6px);
+  align-items: center;
+}
+
+.free-driver span:not(.bold-font){
+  max-height: 22.5px;
 }
 
 .free-driver:hover .bi-ban{
@@ -5347,7 +5363,7 @@ input.disabled{
 
 
 .custom-icon .bi-pencil-square {
-  transition: color 0.3s;
+  transition: color 0.3s, transform 0.2s;
 }
 
 .free-driver .bi-ban{
