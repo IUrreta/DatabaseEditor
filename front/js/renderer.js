@@ -203,7 +203,13 @@ function editModeHandler() {
     let new_ovr = calculateOverall(stats,typeOverall);
     document.querySelector(".clicked").childNodes[1].innerHTML = new_ovr;
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
+    let age = document.querySelector(".actual-age").textContent.split(" ")[1];
     document.querySelector(".clicked").dataset.retirement = retirement;
+    document.querySelector(".clicked").dataset.age = age;
+    let newName = document.querySelector("#driverStatsTitle").value
+    if (newName === document.querySelector(".clicked").dataset.name) {
+        newName = "-1"
+    }
     let driverNum = document.querySelector("#numberButton .front-gradient").textContent;
     let wants1,superLicense, isRetired;
     document.querySelector(".clicked").dataset.number = driverNum;
@@ -248,12 +254,14 @@ function editModeHandler() {
         statsArray: stats,
         typeStaff: typeEdit,
         retirement: retirement,
+        age: age,
         isRetired: isRetired,
         driverNum: driverNum,
         wants1: wants1,
         mentality: mentality,
         superLicense: superLicense,
-        marketability: marketability
+        marketability: marketability,
+        newName: newName
     };
 
     socket.send(JSON.stringify(dataStats));
@@ -1451,6 +1459,8 @@ document.addEventListener('DOMContentLoaded',function () {
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
+        //wait 0.3s and then add the marquee
+        add_marquees()
     })
 
     editStatsPill.addEventListener("click",function () {

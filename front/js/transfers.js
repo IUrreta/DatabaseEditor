@@ -23,7 +23,7 @@ const f2_teams = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 const f3_teams = [22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
 
 const staff_positions = { 1: "technical-chief", 2: "race-engineer", 3: "head-aero", 4: "sporting-director" }
-const staff_pics = {1: "../assets/images/technicalChief.png", 2: "../assets/images/raceEngineer.png", 3: "../assets/images/headAero.png", 4: "../assets/images/sportingDirector.png"}
+const staff_pics = { 1: "../assets/images/technicalChief.png", 2: "../assets/images/raceEngineer.png", 3: "../assets/images/headAero.png", 4: "../assets/images/sportingDirector.png" }
 
 
 let originalParent;
@@ -78,13 +78,19 @@ function place_drivers(driversArray) {
         newDiv.dataset.driverid = driver[1];
         newDiv.dataset.teamid = driver[2];
         let name = driver[0].split(" ")
+        let nameContainer = document.createElement("div")
+        let marqueeContainer = document.createElement("div")
+        marqueeContainer.className = "marquee-wrapper"
+        nameContainer.className = "name-container"
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
         spanName.textContent = insert_space(name[0]) + " "
-        spanLastName.textContent = " " + name[1].toUpperCase()
+        spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
         spanLastName.classList.add("bold-font")
-        newDiv.appendChild(spanName)
-        newDiv.appendChild(spanLastName)
+        nameContainer.appendChild(spanName)
+        nameContainer.appendChild(spanLastName)
+        marqueeContainer.appendChild(nameContainer)
+        newDiv.appendChild(marqueeContainer)
         newDiv.classList.add(team_dict[driver[2]] + "-transparent")
         if (driver["team_future"] !== -1) {
             add_future_team_noti(newDiv, driver["team_future"])
@@ -107,7 +113,36 @@ function place_drivers(driversArray) {
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
+    
 }
+
+function add_marquees(){
+    setTimeout(function () {
+        document.querySelectorAll('.drivers-section .name-container').forEach(container => {
+            let parentWidth = container.parentNode.clientWidth
+            let containerWidth = container.scrollWidth
+            if (containerWidth > parentWidth) {
+                let scrollAmount = (containerWidth - parentWidth) + 5;
+                container.style.setProperty('--scroll-amount', `${scrollAmount}px`);
+                container.classList.add('overflow');
+              }
+        });
+        document.querySelectorAll('.staff-section .name-container').forEach(container => {
+            let parentWidth = container.parentNode.parentNode.clientWidth - 5
+            let containerWidth = container.scrollWidth
+            if (containerWidth > parentWidth) {
+                let scrollAmount = (containerWidth - parentWidth) + 40;
+                container.style.setProperty('--scroll-amount', `${scrollAmount}px`);
+                container.classList.add('overflow');
+              }
+            else {
+                container.classList.remove("overflow")
+            }
+        });
+    }, 100);
+}
+
+
 
 function sortList(divID) {
     let container = document.getElementById(divID);
@@ -144,16 +179,22 @@ function place_staff(staffArray) {
         let name = staff[0].split(" ")
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
+        let marqueeContainer = document.createElement("div")
+        marqueeContainer.className = "marquee-wrapper"
+        let nameContainer = document.createElement("div")
+        nameContainer.className = "name-container"
         spanName.textContent = insert_space(name[0]) + " "
-        spanLastName.textContent = " " + name[1].toUpperCase()
+        spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
         spanLastName.classList.add("bold-font")
         let staffLogo = document.createElement("img")
         let position = staff[3]
         staffLogo.src = staff_pics[position]
         staffLogo.className = "staff-logo"
         newDiv.appendChild(staffLogo)
-        newDiv.appendChild(spanName)
-        newDiv.appendChild(spanLastName)
+        nameContainer.appendChild(spanName)
+        nameContainer.appendChild(spanLastName)
+        marqueeContainer.appendChild(nameContainer)
+        newDiv.appendChild(marqueeContainer)
         newDiv.classList.add(team_dict[staff[2]] + "-transparent")
         if (staff["team_future"] !== -1) {
             add_future_team_noti(newDiv, staff["team_future"])
@@ -197,6 +238,7 @@ document.querySelectorAll("#stafftransfersMenu a").forEach(function (elem) {
         let value = elem.dataset.value;
         document.querySelector("#staffTransfersDropdown").dataset.value = value;
         manage_staff_drivers(value)
+        add_marquees()
     })
 })
 
@@ -811,7 +853,7 @@ function editContract() {
         add_future_team_noti(driverDiv, future_team)
         driverDiv.dataset.futureteam = future_team
     }
-    else{
+    else {
         let driverDiv = document.querySelector('.free-driver[data-driverid="' + driverEditingID + '"]')
         driverDiv.querySelector(".future-contract-noti").remove()
         driverDiv.dataset.futureteam = -1

@@ -864,6 +864,15 @@ input[type="checkbox"]:checked {
   color: var( --text-general);
 }
 
+#driverStatsTitle{
+  max-width: none;
+  max-width: none;
+  text-align: left;
+  font-size: 24px;
+  width: 80%;
+}
+
+
 .stats-title {
   text-align: left;
   color: var(--white-general);
@@ -871,7 +880,15 @@ input[type="checkbox"]:checked {
   padding-left: 20px;
   padding-top: 20px;
   display: flex;
-  gap: 50px;
+  gap: 10px;
+  padding-left: 14px;
+  padding-top: 16px;
+  position: relative;
+  align-items: baseline;
+}
+
+.stats-title .bi-pencil{
+  color: var(--dark-text);
 }
 
 .age-holder{
@@ -1119,19 +1136,19 @@ input[type="checkbox"]:checked {
 }
 
 
-.retirement-age{
+.retirement-age, .age{
   display: flex;
   gap: 3px;
 }
 
-.retirement-buttons{
+.retirement-buttons, .age-buttons{
   font-size: 18px;
   display: flex;
   flex-direction: column;
   margin-top: 3px;
 }
 
-.retirement-buttons i{
+.retirement-buttons i, .age-buttons i{
   height: 20px;
   display: flex;
 }
@@ -3109,6 +3126,13 @@ DRIVERS TABLE
   height: 26px;
 }
 
+.marquee-wrapper {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+}
+
 #free-staff .staff-logo{
   width: 32px;
   height: 23px;
@@ -3192,12 +3216,12 @@ DRIVERS TABLE
   background-color: var(--elements-hover);
 }
 
-.one-statH2H i, .name-and-stat i, .retirement-buttons i{
+.one-statH2H i, .name-and-stat i, .retirement-buttons i, .age-buttons i{
   cursor: pointer;
   transition: color 0.2s, transform 0.2s ease-in-out;
 }
 
-.one-statH2H i:hover, .name-and-stat i:hover, .retirement-buttons i:hover{
+.one-statH2H i:hover, .name-and-stat i:hover, .retirement-buttons i:hover, .age-buttons i:hover{
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.1);
@@ -3345,6 +3369,7 @@ DRIVERS TABLE
 .team-template .free-driver{
   margin: 1px 3px;
 }
+
 
 .driver1-name, .driver2-name{
   display: flex;
@@ -5169,6 +5194,34 @@ input.disabled{
 }
 
 
+.name-container {
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  min-width: max-content;
+  gap: 5px;
+}
+
+.name-container span {
+  white-space: nowrap;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(calc(-1 * var(--scroll-amount)));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.name-container.overflow {
+  animation: marquee 5s linear infinite;
+}
 
 
 .free-driver {

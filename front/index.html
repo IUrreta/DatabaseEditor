@@ -1950,12 +1950,19 @@
               <div class="left-panel-stats d-none" id="editStatsPanel">
                 <div class="upper-section-stats">
                   <div class="stats-title bold-font">
-                    <div id="driverStatsTitle"></div>
+                    <i class="bi bi-pencil"></i>
+                    <input type="text" class="old-custom-input-number" id="driverStatsTitle">
                   </div>
                   <div class="age-holder bold-font">
-                    <div class="actual-age">Age 56</div>
+                    <div class="age">
+                      <div class="actual-age age-ret" data-text="Age">Age 56</div>
+                      <div class="age-buttons d-none">
+                        <i class="bi bi-plus-lg"></i>
+                        <i class="bi bi-dash-lg"></i>
+                      </div>
+                    </div>
                     <div class="retirement-age">
-                      <div class="actual-retirement">Ret 56</div>
+                      <div class="actual-retirement age-ret" data-text="Ret">Ret 56</div>
                       <div class="retirement-buttons">
                         <i class="bi bi-plus-lg"></i>
                         <i class="bi bi-dash-lg"></i>
@@ -1981,649 +1988,651 @@
                   </div>
 
                 </div>
-                <div class="main-panel-space">
-                  <div class="main-panel-stats" id="driverStats">
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">CORNERING</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
+                <div class="attirbutes-panel">
+                  <div class="main-panel-space">
+                    <div class="main-panel-stats" id="driverStats">
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">CORNERING</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
                         </div>
                       </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">BRAKING</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">CONTROL</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">SMOOTHNESS</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">ADAPTABILITY</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">OVERTAKING</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">DEFENCE</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">REACTIONS</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">ACCURACY</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">BRAKING</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
+                    <div class="main-panel-stats d-none" id="chiefStats">
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">CHASIS</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
                         </div>
                       </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">FRONT WING</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">CONTROL</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">REAR WING</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
                         </div>
                       </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">SIDEPODS</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">SMOOTHNESS</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">FLOOR</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
                         </div>
                       </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">SUSPENSION</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">ADAPTABILITY</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">OVERTAKING</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">DEFENCE</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">REACTIONS</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">ACCURACY</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
+                    <div class="main-panel-stats d-none" id="engineerStats">
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">FRIENDLINESS</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
                         </div>
                       </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">FEEDBACK</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">COMPOSURE</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="main-panel-stats d-none" id="aeroStats">
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">COOLING</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">DRS</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">HIGH SPEED PERFORMANCE</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">MEDIUM SPEED PERFORMANCE</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">LOW SPEED PERFORMANCE</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">DRAG</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">AIRFLOW</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">SENSITIVITY</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="main-panel-stats d-none" id="directorStats">
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">TRAINING</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">APTITUDE</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">LEADERSHIP</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">PROCESSES</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
+                          </div>
+                        </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="main-panel-stats d-none" id="chiefStats">
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">CHASIS</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
+                  <div class="bottom-panel">
+                    <div id="specialStatsPanel">
+                      <div class="custom-hr"></div>
+                      <div class="attribute-and-preferences">
+                        <div class="extra-atributes" id="driverSpecialAttributes">
+                          <div class="one-stat-panel">
+                            <div class="name-and-stat">
+                              <span class="bold-font">GROWTH</span>
+                              <div class="stat-number">
+                                <i class="bi bi-dash-lg"></i>
+                                <input type="number" class="custom-input-number elegible" id="growthInput">
+                                <i class="bi bi-plus-lg"></i>
+                              </div>
+                            </div>
+                            <div class="bar-container">
+                              <div class="one-stat-bar">
+                                <div class="one-stat-progress"></div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="one-stat-panel">
+                            <div class="name-and-stat">
+                              <span class="bold-font">AGRESSION</span>
+                              <div class="stat-number">
+                                <i class="bi bi-dash-lg"></i>
+                                <input type="number" class="custom-input-number elegible" id="agressionInput">
+                                <i class="bi bi-plus-lg"></i>
+                              </div>
+                            </div>
+                            <div class="bar-container">
+                              <div class="one-stat-bar">
+                                <div class="one-stat-progress"></div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="one-stat-panel" id="numberName">
+                            <div class="name-and-stat">
+                              <span class="bold-font">NUMBER</span>
+                            </div>
+                            <div class="number-details">
+                              <div>
+                                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown"
+                                  id="numberButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  <div class="front-gradient bold-font">Number</div>
+                                </button>
+                                <div class="dropdown-line"></div>
+                                <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
+                                </ul>
+                              </div>
+                              <div class="form-check ms-3 mt-2 form-switch">
+                                <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                                  id="driverNumber1">
+                                <span class="form-check-label" for="flexSwitchCheckDefault">1 if WC</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="extra-atributes">
+                          <div class="one-stat-panel" data-mentality="0">
+                            <div class="name-and-stat mentality">
+                              <span class="bold-font">PERSONAL SITUATION</span>
+                              <div class="mentality-and-emoji">
+                                <span class="mentality-state">Positive</span>
+                              </div>
+                            </div>
+                            <div class="bar-container">
+                              <i class="bi bi-chevron-left"></i>
+                              <div class="mentality-level-indicator" data-value="3" id="mentality0">
+                                <div class="mentality-level"></div>
+                                <div class="mentality-level"></div>
+                                <div class="mentality-level"></div>
+                                <div class="mentality-level"></div>
+                                <div class="mentality-level"></div>
+                              </div>
+                              <i class="bi bi-chevron-right"></i>
+                            </div>
+                          </div>
+                          <div class="one-stat-panel" data-mentality="1">
+                            <div class="name-and-stat mentality">
+                              <span class="bold-font">TEAM PERFORMANCE</span>
+                              <div class="mentality-and-emoji">
+                                <span class="mentality-state">Positive</span>
+                              </div>
+                            </div>
+                            <div class="bar-container">
+                              <i class="bi bi-chevron-left"></i>
+                              <div class="mentality-level-indicator" data-value="3" id="mentality1">
+                                <div class="mentality-level"></div>
+                                <div class="mentality-level"></div>
+                                <div class="mentality-level"></div>
+                                <div class="mentality-level"></div>
+                                <div class="mentality-level"></div>
+                              </div>
+                              <i class="bi bi-chevron-right"></i>
+                            </div>
+                          </div>
+                          <div class="one-stat-panel" data-mentality="2">
+                            <div class="name-and-stat mentality">
+                              <span class="bold-font">TEAM PRINCIPAL</span>
+                              <div class="mentality-and-emoji">
+                                <span class="mentality-state">Positive</span>
+                              </div>
+                            </div>
+                            <div class="bar-container">
+                              <i class="bi bi-chevron-left"></i>
+                              <div class="mentality-level-indicator" data-value="3" id="mentality2">
+                                <div class="mentality-level"></div>
+                                <div class="mentality-level"></div>
+                                <div class="mentality-level"></div>
+                                <div class="mentality-level"></div>
+                                <div class="mentality-level"></div>
+                              </div>
+                              <i class="bi bi-chevron-right"></i>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="extra-atributes">
+                          <div class="one-stat-panel" id="marketability">
+                            <div class="name-and-stat">
+                              <span class="bold-font">MARKETABILITY</span>
+                              <div class="stat-number">
+                                <i class="bi bi-dash-lg"></i>
+                                <input type="number" class="custom-input-number" id="marketabilityInput">
+                                <i class="bi bi-plus-lg"></i>
+                              </div>
+                            </div>
+                            <div class="bar-container">
+                              <div class="one-stat-bar">
+                                <div class="one-stat-progress" id="marketabilityBar"></div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">FRONT WING</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">REAR WING</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">SIDEPODS</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">FLOOR</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">SUSPENSION</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
+  
                     </div>
                   </div>
-                  <div class="main-panel-stats d-none" id="engineerStats">
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">FRIENDLINESS</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">FEEDBACK</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">COMPOSURE</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="main-panel-stats d-none" id="aeroStats">
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">COOLING</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">DRS</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">HIGH SPEED PERFORMANCE</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">MEDIUM SPEED PERFORMANCE</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">LOW SPEED PERFORMANCE</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">DRAG</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">AIRFLOW</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">SENSITIVITY</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="main-panel-stats d-none" id="directorStats">
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">TRAINING</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">APTITUDE</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">LEADERSHIP</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">PROCESSES</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="bottom-panel">
-                  <div id="specialStatsPanel">
-                    <div class="custom-hr"></div>
-                    <div class="attribute-and-preferences">
-                      <div class="extra-atributes" id="driverSpecialAttributes">
-                        <div class="one-stat-panel">
-                          <div class="name-and-stat">
-                            <span class="bold-font">GROWTH</span>
-                            <div class="stat-number">
-                              <i class="bi bi-dash-lg"></i>
-                              <input type="number" class="custom-input-number elegible" id="growthInput">
-                              <i class="bi bi-plus-lg"></i>
-                            </div>
-                          </div>
-                          <div class="bar-container">
-                            <div class="one-stat-bar">
-                              <div class="one-stat-progress"></div>
-                            </div>
+                  <div class="morale-panel">
+                    <div class="main-panel-stats">
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">MORALE 1</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
                           </div>
                         </div>
-                        <div class="one-stat-panel">
-                          <div class="name-and-stat">
-                            <span class="bold-font">AGRESSION</span>
-                            <div class="stat-number">
-                              <i class="bi bi-dash-lg"></i>
-                              <input type="number" class="custom-input-number elegible" id="agressionInput">
-                              <i class="bi bi-plus-lg"></i>
-                            </div>
-                          </div>
-                          <div class="bar-container">
-                            <div class="one-stat-bar">
-                              <div class="one-stat-progress"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="one-stat-panel" id="numberName">
-                          <div class="name-and-stat">
-                            <span class="bold-font">NUMBER</span>
-                          </div>
-                          <div class="number-details">
-                            <div>
-                              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown"
-                                id="numberButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <div class="front-gradient bold-font">Number</div>
-                              </button>
-                              <div class="dropdown-line"></div>
-                              <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
-                              </ul>
-                            </div>
-                            <div class="form-check ms-3 mt-2 form-switch">
-                              <input class="form-check-input custom-toggle" type="checkbox" role="switch"
-                                id="driverNumber1">
-                              <span class="form-check-label" for="flexSwitchCheckDefault">1 if WC</span>
-                            </div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
                           </div>
                         </div>
                       </div>
-                      <div class="extra-atributes">
-                        <div class="one-stat-panel" data-mentality="0">
-                          <div class="name-and-stat mentality">
-                            <span class="bold-font">PERSONAL SITUATION</span>
-                            <div class="mentality-and-emoji">
-                              <span class="mentality-state">Positive</span>
-                            </div>
-                          </div>
-                          <div class="bar-container">
-                            <i class="bi bi-chevron-left"></i>
-                            <div class="mentality-level-indicator" data-value="3" id="mentality0">
-                              <div class="mentality-level"></div>
-                              <div class="mentality-level"></div>
-                              <div class="mentality-level"></div>
-                              <div class="mentality-level"></div>
-                              <div class="mentality-level"></div>
-                            </div>
-                            <i class="bi bi-chevron-right"></i>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">MORALE 2</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
                           </div>
                         </div>
-                        <div class="one-stat-panel" data-mentality="1">
-                          <div class="name-and-stat mentality">
-                            <span class="bold-font">TEAM PERFORMANCE</span>
-                            <div class="mentality-and-emoji">
-                              <span class="mentality-state">Positive</span>
-                            </div>
-                          </div>
-                          <div class="bar-container">
-                            <i class="bi bi-chevron-left"></i>
-                            <div class="mentality-level-indicator" data-value="3" id="mentality1">
-                              <div class="mentality-level"></div>
-                              <div class="mentality-level"></div>
-                              <div class="mentality-level"></div>
-                              <div class="mentality-level"></div>
-                              <div class="mentality-level"></div>
-                            </div>
-                            <i class="bi bi-chevron-right"></i>
-                          </div>
-                        </div>
-                        <div class="one-stat-panel" data-mentality="2">
-                          <div class="name-and-stat mentality">
-                            <span class="bold-font">TEAM PRINCIPAL</span>
-                            <div class="mentality-and-emoji">
-                              <span class="mentality-state">Positive</span>
-                            </div>
-                          </div>
-                          <div class="bar-container">
-                            <i class="bi bi-chevron-left"></i>
-                            <div class="mentality-level-indicator" data-value="3" id="mentality2">
-                              <div class="mentality-level"></div>
-                              <div class="mentality-level"></div>
-                              <div class="mentality-level"></div>
-                              <div class="mentality-level"></div>
-                              <div class="mentality-level"></div>
-                            </div>
-                            <i class="bi bi-chevron-right"></i>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
                           </div>
                         </div>
                       </div>
-                      <div class="extra-atributes">
-                        <div class="one-stat-panel" id="marketability">
-                          <div class="name-and-stat">
-                            <span class="bold-font">MARKETABILITY</span>
-                            <div class="stat-number">
-                              <i class="bi bi-dash-lg"></i>
-                              <input type="number" class="custom-input-number" id="marketabilityInput">
-                              <i class="bi bi-plus-lg"></i>
-                            </div>
-                          </div>
-                          <div class="bar-container">
-                            <div class="one-stat-bar">
-                              <div class="one-stat-progress" id="marketabilityBar"></div>
-                            </div>
+                      <div class="one-stat-panel">
+                        <div class="name-and-stat">
+                          <span class="bold-font">MORALE 3</span>
+                          <div class="stat-number">
+                            <i class="bi bi-dash-lg"></i>
+                            <input type="number" class="custom-input-number elegible">
+                            <i class="bi bi-plus-lg"></i>
                           </div>
                         </div>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-                <div class="morale-panel">
-                  <div class="main-panel-stats">
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">MORALE 1</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">MORALE 2</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="one-stat-panel">
-                      <div class="name-and-stat">
-                        <span class="bold-font">MORALE 3</span>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="number" class="custom-input-number elegible">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="bar-container">
-                        <div class="one-stat-bar">
-                          <div class="one-stat-progress"></div>
+                        <div class="bar-container">
+                          <div class="one-stat-bar">
+                            <div class="one-stat-progress"></div>
+                          </div>
                         </div>
                       </div>
                     </div>
