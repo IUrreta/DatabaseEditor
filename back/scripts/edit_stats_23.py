@@ -1,5 +1,6 @@
 import sqlite3
 import random
+from datetime import datetime, timedelta
 
 mentality_areas = {
     0: [5, 11, 13, 9],
@@ -65,6 +66,54 @@ def edit_stats(option=""):
 
     conn.commit()
     conn.close()
+
+def edit_name(driverID, new_name):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+    print(new_name)
+    new_firstName = new_name.split()[0]
+    new_lastName = " ".join(new_name.split()[1:])
+    print(new_firstName, new_lastName)
+    string_literal_firstName = f"[STRING_LITERAL:Value=|{new_firstName}|]"
+    string_literal_lastName = f"[STRING_LITERAL:Value=|{new_lastName}|]"
+    cursor.execute("UPDATE Staff_BasicData SET FirstName = ?, LastName = ? WHERE StaffID = ?", (string_literal_firstName, string_literal_lastName, driverID))
+
+    conn.commit()
+    conn.close()
+
+def excel_date(date1):
+    temp = datetime(1899, 12, 30)    
+    delta = date1 - temp
+    return delta.days + 1
+
+def from_excel_date(serial):
+    return datetime(1899, 12, 30) + timedelta(days=serial - 1)
+
+def edit_age(driverID, new_age):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+    
+    current_day = cursor.execute("SELECT day FROM Player_State").fetchone()[0]
+    current_season = cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
+    current_date = from_excel_date(current_day)
+    
+    new_birth_year = int(current_season) - int(new_age)
+    
+    dob_iso = cursor.execute("SELECT DOB_ISO FROM staff_BasicData WHERE StaffID = ?", (driverID,)).fetchone()[0]
+    dob_iso_date = datetime.strptime(dob_iso, '%Y-%m-%d')
+    
+    new_dob_iso_date = dob_iso_date.replace(year=new_birth_year)
+    new_dob_iso = new_dob_iso_date.strftime('%Y-%m-%d')
+    
+    new_dob = excel_date(new_dob_iso_date)
+    
+    cursor.execute("UPDATE Staff_BasicData SET DOB = ?, DOB_ISO = ? WHERE StaffID = ?", (new_dob, new_dob_iso, driverID))
+    
+    conn.commit()
+    conn.close()
+
+    
+
 
 def edit_mentality(mentality):
     conn = sqlite3.connect("../result/main.db")
