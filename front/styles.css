@@ -2329,7 +2329,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-driver, .teams-table-team{
-  width: 210px;
+  width: calc(9.4% + 60px);
   display: flex;
   align-items: center;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
@@ -2337,13 +2337,13 @@ DRIVERS TABLE
 }
 
 .drivers-table-row .drivers-table-driver{
-  width: 180px;
+  width: calc(9.4% + 30px);
   border-right: 0px solid transparent;
   gap: 3px;
 }
 
 .teams-table-row .teams-table-team{
-  width: 150px;
+  width: 9.4%;
   gap: 5px;
   transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
