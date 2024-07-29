@@ -3394,6 +3394,29 @@ DRIVERS TABLE
   margin-top: -6px;
 }
 
+.part-name-buttons{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.part-buttons{
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.part-buttons i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s ease-in-out;
+}
+
+.part-buttons i:hover{
+  cursor: pointer;
+  color: var(--text-selected);
+  transform: scale(1.1);
+}
+
 .part-performance, .engine-performance{
   background-color: var(--elements);
   border-radius: 10px;
