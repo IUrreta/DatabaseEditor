@@ -691,6 +691,7 @@ a.bi-linkedin:hover {
 
 input[role="switch"] {
   border: none;
+  cursor: pointer;
 }
 
 input[role="switch"]:focus {
@@ -3349,15 +3350,14 @@ DRIVERS TABLE
 
 .affiliates-space {
   display: flex;
-  overflow-x: hidden; 
+  overflow-x: hidden;
   flex-grow: 1;
-  margin: 0 15px;
-  min-width: 100%;
   max-width: max-content;
   flex-wrap: nowrap;
   width: 100%;
   min-height: 40px;
   align-items: center;
+  margin-left: 15px;
 }
 
 .affiliates-space .free-driver {
