@@ -597,7 +597,7 @@ function load_drivers_h2h(drivers) {
         newDiv.dataset.teamid = driver[2];
         newDiv.classList.add(team_dict[driver[2]] + "-transparent")
         spanName.textContent = name[0] + " "
-        spanLastName.textContent = " " + name[1].toUpperCase()
+        spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
         spanLastName.classList.add("bold-font")
         let h2hBut = document.createElement("div")
         h2hBut.dataset.driverid = driver[1]
@@ -1015,7 +1015,6 @@ function load_labels_initialize_graphs(data) {
         load_teams_points_graph(data)
     }
 
-
 }
 
 function load_teams_points_graph(data) {
@@ -1082,8 +1081,8 @@ function get_one_driver_points_format(driver, data) {
         if (ptsThatRace === -1) {
             ptsThatRace = 0;
         }
-        if (elem.length === 8) {
-            d1_points_provisional.push(ptsThatRace + elem[5])
+        if (elem.length === 10) {
+            d1_points_provisional.push(ptsThatRace + elem[7])
         }
         else {
             d1_points_provisional.push(ptsThatRace)

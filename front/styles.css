@@ -5211,8 +5211,14 @@ input.disabled{
   0% {
     transform: translateX(0);
   }
+  40% {
+    transform: translateX(calc(-1 * var(--scroll-amount)));
+  }
   50% {
     transform: translateX(calc(-1 * var(--scroll-amount)));
+  }
+  90% {
+    transform: translateX(0);
   }
   100% {
     transform: translateX(0);
@@ -5220,7 +5226,7 @@ input.disabled{
 }
 
 .name-container.overflow {
-  animation: marquee 5s linear infinite;
+  animation: marquee 8.5s ease-in-out infinite;
 }
 
 
@@ -5246,6 +5252,11 @@ input.disabled{
 
 .free-driver span:not(.bold-font){
   max-height: 22.5px;
+}
+
+.free-driver span.bold-font, .normal-driver span.bold-font, .drivers-table-driver span.bold-font, .driver-prediction span.bold-font, .modal-driver span.bold-font{
+  display: inline-block;
+  transform: skewX(-9deg)
 }
 
 .free-driver:hover .bi-ban{
@@ -6305,8 +6316,17 @@ input::-webkit-inner-spin-button {
   justify-content: space-between;
 }
 
+.team-performance:hover .team-title-value{
+  color: var(--white-general);
+}
+
+.team-performance.selected .team-title-value{
+  color: var(--white-general);
+}
+
 .team-title-value{
   color: var(--dark-text);
+  transition: color 0.3s;
 }
 
 
