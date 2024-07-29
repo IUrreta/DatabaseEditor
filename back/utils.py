@@ -197,14 +197,37 @@ class DatabaseUtils:
         return events_ids
 
     def format_seasonResults(self, results, driverName, teamID, driverID, year, sprints):
-        nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
-        apellido_pattern = r'StaffName_Surname_(\w+)'
+        nombre = ""
+        apellido = ""
+        if "STRING_LITERAL" not in driverName[0]:
+            nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
+            nombre_match = re.search(nombre_pattern, driverName[0])
+            if nombre_match:
+                nombre = self.remove_number(nombre_match.group(2))
+            else:
+                nombre = ""
+        else:
+            pattern = r'\|([^|]+)\|'
+            match = re.search(pattern, driverName[0])
+            if match:
+                nombre = match.group(1)
+            else:
+                nombre = ""
 
-        nombre_match = re.search(nombre_pattern, driverName[0])
-        apellido_match = re.search(apellido_pattern, driverName[1])
-
-        nombre = self.remove_number(nombre_match.group(2))
-        apellido = self.remove_number(apellido_match.group(1))
+        if "STRING_LITERAL" not in driverName[1]:
+            apellido_pattern = r'StaffName_Surname_(\w+)'
+            apellido_match = re.search(apellido_pattern, driverName[1])
+            if apellido_match:
+                apellido = self.remove_number(apellido_match.group(1))
+            else:
+                apellido = ""
+        else:
+            pattern = r'\|([^|]+)\|'
+            match = re.search(pattern, driverName[1])
+            if match:
+                apellido = match.group(1)
+            else:
+                apellido = ""
         name_formatted = f"{nombre} {apellido}"
         
         races_participated = self.cursor.execute(f"SELECT RaceID FROM Races_Results WHERE DriverID = {driverID[0]} AND Season = {year[0]}").fetchall()
@@ -242,15 +265,16 @@ class DatabaseUtils:
                 if tupla1[0] == tupla2[0]:
                     formatred_results[i] = tupla2 + (tupla1[2], tupla1[1])
 
+        latest_team = None
         for i in range(len(formatred_results)):
             team_in_race = self.cursor.execute(f"SELECT TeamID FROM Races_Results WHERE RaceID = {formatred_results[i][0]} AND DriverID = {driverID[0]}").fetchone()
             formatred_results[i] += (team_in_race)
+            latest_team = team_in_race[0]
 
         
         position = self.cursor.execute(f"SELECT Position FROM Races_Driverstandings WHERE RaceFormula = 1 AND SeasonID = {year[0]} AND DriverID = {driverID[0]}").fetchone()
-
         formatred_results.insert(0, position[0])
-        formatred_results.insert(0, teamID)
+        formatred_results.insert(0, latest_team)
         formatred_results.insert(0, name_formatted)
         return formatred_results
     
@@ -389,17 +413,41 @@ class DatabaseUtils:
         return resultCalendar
 
     def format_names_simple(self, name):
-        nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
-        apellido_pattern = r'StaffName_Surname_(\w+)'
+        nombre = ""
+        apellido = ""
+        if "STRING_LITERAL" not in name[0]:
+            nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
+            nombre_match = re.search(nombre_pattern, name[0])
+            if nombre_match:
+                nombre = self.remove_number(nombre_match.group(2))
+            else:
+                nombre = ""
+        else:
+            pattern = r'\|([^|]+)\|'
+            match = re.search(pattern, name[0])
+            if match:
+                nombre = match.group(1)
+            else:
+                nombre = ""
 
+        if "STRING_LITERAL" not in name[1]:
+            apellido_pattern = r'StaffName_Surname_(\w+)'
+            apellido_match = re.search(apellido_pattern, name[1])
+            if apellido_match:
+                apellido = self.remove_number(apellido_match.group(1))
+            else:
+                apellido = ""
+        else:
+            pattern = r'\|([^|]+)\|'
+            match = re.search(pattern, name[1])
+            if match:
+                apellido = match.group(1)
+            else:
+                apellido = ""
 
-        nombre_match = re.search(nombre_pattern, name[0])
-        apellido_match = re.search(apellido_pattern, name[1])
-
-
-        nombre = self.remove_number(nombre_match.group(2))
-        apellido = self.remove_number(apellido_match.group(1))
         name_formatted = f"{nombre} {apellido}"
+
+
         team_id = name[3] if name[3] is not None else 0
 
         resultado = (name_formatted, name[2], team_id)

@@ -205,6 +205,7 @@ function editModeHandler() {
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     let age = document.querySelector(".actual-age").textContent.split(" ")[1];
     document.querySelector(".clicked").dataset.retirement = retirement;
+    let ageGap = parseInt(document.querySelector(".clicked").dataset.age - age);
     document.querySelector(".clicked").dataset.age = age;
     let newName = document.querySelector("#driverStatsTitle").value
     if (newName === document.querySelector(".clicked").dataset.name) {
@@ -257,7 +258,7 @@ function editModeHandler() {
         statsArray: stats,
         typeStaff: typeEdit,
         retirement: retirement,
-        age: age,
+        age: ageGap,
         isRetired: isRetired,
         driverNum: driverNum,
         wants1: wants1,
@@ -730,6 +731,7 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("customTeamPerformance").classList.remove("d-none")
             document.getElementById("customTeamDropdown").classList.remove("d-none")
             document.getElementById("customTeamComparison").classList.remove("d-none")
+            document.getElementById("customTeamContract").classList.remove("d-none")
             document.getElementById("customizeTeam").classList.remove("d-none")
             document.querySelectorAll(".ct-replace").forEach(function (elem) {
                 elem.textContent = nameColor[1].toUpperCase()
@@ -745,9 +747,13 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("customTeamPerformance").classList.add("d-none")
             document.getElementById("customTeamDropdown").classList.add("d-none")
             document.getElementById("customTeamComparison").classList.add("d-none")
+            document.getElementById("customTeamContract").classList.add("d-none")
             document.getElementById("customizeTeam").classList.add("d-none")
             mid_grid = 10;
             relative_grid= 5;
+            if (32 in combined_dict) {
+                delete combined_dict[32]
+            }
         }
     }
 

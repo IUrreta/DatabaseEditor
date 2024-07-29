@@ -290,15 +290,26 @@ function add_future_team_noti(driverDiv, teamID) {
 }
 
 document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {
-    elem.querySelector(".bi-chevron-right").addEventListener("click", function () {
-        let parent = elem.parentNode.parentNode
-        let affiliatesDiv = parent.querySelector(".affiliates-space")
-        affiliatesDiv.scrollBy({ left: 100, behavior: 'smooth' });
-    })
+    elem.querySelector(".bi-chevron-right").addEventListener("click", function (event) {
+        let parent = elem.parentNode.parentNode;
+        let affiliatesDiv = parent.querySelector(".affiliates-space");
+
+        let maxScrollLeft = affiliatesDiv.scrollWidth - affiliatesDiv.clientWidth;
+
+        let newScrollLeft = affiliatesDiv.scrollLeft + 100;
+        console.log(newScrollLeft, maxScrollLeft);
+        if (newScrollLeft > maxScrollLeft) {
+            console.log("hide")
+            event.target.parentNode.classList.add("d-none")
+        }
+
+        affiliatesDiv.scrollTo({ left: newScrollLeft, behavior: 'smooth' });
+    });
 
     elem.querySelector(".bi-chevron-left").addEventListener("click", function () {
         let parent = elem.parentNode.parentNode
         let affiliatesDiv = parent.querySelector(".affiliates-space")
+        elem.parentNode.querySelector(".bi-chevron-right").parentNode.classList.remove("d-none")
         affiliatesDiv.scrollBy({ left: -100, behavior: 'smooth' });
     })
 })

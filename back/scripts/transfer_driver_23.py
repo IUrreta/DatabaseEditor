@@ -314,7 +314,6 @@ class TransferUtils:
 
 
     def future_contract(self, teamID, driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos, position, year_iteration="24"):
-        print(teamID, driverID, salary, endSeason)
         if teamID == "-1":
             self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3")
         else:
