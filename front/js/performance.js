@@ -273,7 +273,7 @@ function load_parts_list(data) {
     }
 }
 
-document.querySelectorAll(".part-performance-title i").forEach(function (elem) {
+document.querySelectorAll(".part-performance-title .bi-caret-down-fill").forEach(function (elem) {
     elem.addEventListener("click", function () {
         elem.classList.toggle("clicked")
         let generalPart = elem.parentNode.parentNode
@@ -293,7 +293,62 @@ document.querySelectorAll(".part-performance-title i").forEach(function (elem) {
     })
 })
 
-document.querySelector(".performance-show").querySelectorAll('.bi-plus-lg').forEach(button => {
+document.querySelector(".performance-show").querySelectorAll(".part-name-buttons .bi-plus-lg").forEach(function (elem) {
+    let intervalIds = [];
+
+    elem.addEventListener("mousedown", function () {
+        let part = elem.parentNode.parentNode.parentNode.parentNode;
+        let inputs = part.querySelectorAll(".custom-input-number");
+        
+        inputs.forEach(function (input) {
+            updateValue(input, 0.1);
+            let intervalId = setInterval(() => {
+                updateValue(input, 0.1);
+            }, 100);
+            intervalIds.push(intervalId);
+        });
+    });
+
+    elem.addEventListener("mouseup", function () {
+        intervalIds.forEach(clearInterval);
+        intervalIds = [];
+    });
+
+    elem.addEventListener("mouseleave", function () {
+        intervalIds.forEach(clearInterval);
+        intervalIds = [];
+    });
+});
+
+document.querySelector(".performance-show").querySelectorAll(".part-name-buttons .bi-dash-lg").forEach(function (elem) {
+    let intervalIds = [];
+
+    elem.addEventListener("mousedown", function () {
+        let part = elem.parentNode.parentNode.parentNode.parentNode;
+        let inputs = part.querySelectorAll(".custom-input-number");
+        
+        inputs.forEach(function (input) {
+            updateValue(input, -0.1);
+            let intervalId = setInterval(() => {
+                updateValue(input, -0.1);
+            }, 100);
+            intervalIds.push(intervalId);
+        });
+    });
+
+    elem.addEventListener("mouseup", function () {
+        intervalIds.forEach(clearInterval);
+        intervalIds = [];
+    });
+
+    elem.addEventListener("mouseleave", function () {
+        intervalIds.forEach(clearInterval);
+        intervalIds = [];
+    });
+});
+
+
+document.querySelector(".performance-show").querySelectorAll('.stat-number .bi-plus-lg').forEach(button => {
     let intervalId;
     button.addEventListener('mousedown', function () {
         const input = this.previousElementSibling;
@@ -334,7 +389,7 @@ document.querySelector(".engines-show").querySelectorAll('.bi-plus-lg').forEach(
     });
 });
 
-document.querySelector(".performance-show").querySelectorAll('.bi-dash-lg').forEach(button => {
+document.querySelector(".performance-show").querySelectorAll('.stat-number .bi-dash-lg').forEach(button => {
     let intervalId;
     button.addEventListener('mousedown', function () {
         const input = this.nextElementSibling;
@@ -379,8 +434,14 @@ document.querySelector(".engines-show").querySelectorAll('.bi-dash-lg').forEach(
 function updateValue(input, increment) {
     let value = input.value.split(' ')[0];
     let unit = input.value.split(' ')[1];
-    value = parseFloat(value) + increment;
-    input.value = value.toFixed(2) + ' ' + unit;
+    value = (parseFloat(value) + increment).toFixed(2);
+    if (value > parseFloat(input.max)) {
+        value = parseFloat(input.max).toFixed(2);
+    }
+    if (value < parseFloat(input.min)) {
+        value = parseFloat(input.min).toFixed(2);
+    }
+    input.value = value + ' ' + unit;
 }
 
 
