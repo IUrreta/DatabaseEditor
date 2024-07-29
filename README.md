@@ -1,4 +1,5 @@
 ![image](https://github.com/user-attachments/assets/cb37258e-86c5-4db2-8f86-5bab0850f45c)
+
 Friendly to use tool for editing your save files from F1 Manager 24 and 23. Supports driver transfers, calendar customization, staff stat editing and car performance editing, and much more!
 
 > [!WARNING]
@@ -13,15 +14,22 @@ When I developed those scripts, more specifically the driver transfers script fo
 
 ### What can I actually do with the Database Editor? ###
 
-1. Driver transfers
+1. Driver/staff transfers
 
-![image](https://github.com/user-attachments/assets/62f4bed0-fa3e-43ae-b64b-8fa30b4b86d7)
+![image](https://github.com/user-attachments/assets/7c7657cd-2ca2-4c04-b4bb-badc1ad6f5a9)
 
-2. Editing driver contracts
-3. Edit driver numbers
-4. Editing all staff (including drivers') stats, plus mentality and marketability
+2. Editing driver/staff contracts, and adding contracts for the future
 
-![image](https://github.com/user-attachments/assets/e02759f2-8da0-4d32-83bf-ee50e87c631e)
+![image](https://github.com/user-attachments/assets/61a9e810-36d2-43ae-9ddc-196b12198f9a)
+
+3. Check out what drivers/staff have pre-contracts signed (see Hamilton and Hulkenberg with then notification icon)
+
+![image](https://github.com/user-attachments/assets/52cb1e3c-3a6c-402b-9b20-96582a99b9d9)
+
+4. Edit driver numbers
+5. Editing all staff (including drivers') stats, plus mentality and marketability, and **RENAME** any of them
+
+![image](https://github.com/user-attachments/assets/05bff58c-6a42-4200-8428-9eb673408a04)
 
 5. Customize your calendar, including weather of races
    
@@ -33,7 +41,7 @@ When I developed those scripts, more specifically the driver transfers script fo
 
 7. View every car performance  across the season and compare each car attribute
 
-![image](https://github.com/user-attachments/assets/c3c8fbe6-145d-448d-acd5-8316bb4f36bb)
+![image](https://github.com/user-attachments/assets/27052ffa-5930-430b-b7e9-407813af4703)
 
 8. Edit the performance and durability of any of the 4 engines suppliers
    
