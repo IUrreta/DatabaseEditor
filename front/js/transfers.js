@@ -297,9 +297,7 @@ document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {
         let maxScrollLeft = affiliatesDiv.scrollWidth - affiliatesDiv.clientWidth;
 
         let newScrollLeft = affiliatesDiv.scrollLeft + 100;
-        console.log(newScrollLeft, maxScrollLeft);
         if (newScrollLeft > maxScrollLeft) {
-            console.log("hide")
             event.target.parentNode.classList.add("d-none")
         }
 
