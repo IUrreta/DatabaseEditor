@@ -70,10 +70,8 @@ def edit_stats(option=""):
 def edit_name(driverID, new_name):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
-    print(new_name)
     new_firstName = new_name.split()[0]
     new_lastName = " ".join(new_name.split()[1:])
-    print(new_firstName, new_lastName)
     string_literal_firstName = f"[STRING_LITERAL:Value=|{new_firstName}|]"
     string_literal_lastName = f"[STRING_LITERAL:Value=|{new_lastName}|]"
     cursor.execute("UPDATE Staff_BasicData SET FirstName = ?, LastName = ? WHERE StaffID = ?", (string_literal_firstName, string_literal_lastName, driverID))
@@ -86,32 +84,40 @@ def excel_date(date1):
     delta = date1 - temp
     return delta.days + 1
 
-def from_excel_date(serial):
-    return datetime(1899, 12, 30) + timedelta(days=serial - 1)
 
-def edit_age(driverID, new_age):
+
+def edit_age(driverID, age_gap):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
     
-    current_day = cursor.execute("SELECT day FROM Player_State").fetchone()[0]
-    current_season = cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
-    current_date = from_excel_date(current_day)
-    
-    new_birth_year = int(current_season) - int(new_age)
-    
-    dob_iso = cursor.execute("SELECT DOB_ISO FROM staff_BasicData WHERE StaffID = ?", (driverID,)).fetchone()[0]
-    dob_iso_date = datetime.strptime(dob_iso, '%Y-%m-%d')
-    
-    new_dob_iso_date = dob_iso_date.replace(year=new_birth_year)
-    new_dob_iso = new_dob_iso_date.strftime('%Y-%m-%d')
-    
-    new_dob = excel_date(new_dob_iso_date)
-    
-    cursor.execute("UPDATE Staff_BasicData SET DOB = ?, DOB_ISO = ? WHERE StaffID = ?", (new_dob, new_dob_iso, driverID))
+    driver_birthdate = cursor.execute(f"SELECT DOB FROM Staff_BasicData WHERE StaffID = {driverID}").fetchone()[0]
+    dob_iso, dob = change_years_in_excel_date(driver_birthdate, int(age_gap))
+    date_string = dob_iso.strftime("%Y-%m-%d")
+    cursor.execute(f"UPDATE Staff_BasicData SET DOB = {dob}, DOB_ISO = {date_string} WHERE StaffID = {driverID}")
     
     conn.commit()
     conn.close()
 
+def excel_to_date(excel_date):
+    base_date = datetime(1899, 12, 30)
+    delta = timedelta(days=excel_date)
+    actual_date = base_date + delta
+    return actual_date
+
+def date_to_excel(date):
+    base_date = datetime(1899, 12, 30)
+    delta = date - base_date
+    return delta.days
+
+def change_years_in_excel_date(excel_date, years):
+    date = excel_to_date(excel_date)
+    try:
+        new_date = date.replace(year=date.year + years)
+    except ValueError:
+        new_date = date.replace(month=2, day=28, year=date.year + years)
+    
+    new_excel_date = date_to_excel(new_date)
+    return new_date, new_excel_date
     
 
 

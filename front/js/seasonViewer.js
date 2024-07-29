@@ -639,7 +639,7 @@ function new_addDriver(driver,races_done,odd) {
     let spanName = document.createElement("span")
     let spanLastName = document.createElement("span")
     spanName.textContent = name[0] + " "
-    spanLastName.textContent = " " + name[1].toUpperCase()
+    spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
     spanLastName.classList.add("bold-font")
     spanLastName.dataset.teamid = driver[1]
     row.dataset.teamid = driver[1]
@@ -786,7 +786,6 @@ function manageText(raceDiv) {
         }
     }
     else if (pointsOrPos === "gapPole") {
-        console.log("AAAAAAAa")
         raceDiv.innerText = raceDiv.dataset.gapToPole
     }
 

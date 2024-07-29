@@ -691,6 +691,7 @@ a.bi-linkedin:hover {
 
 input[role="switch"] {
   border: none;
+  cursor: pointer;
 }
 
 input[role="switch"]:focus {
@@ -2328,7 +2329,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-driver, .teams-table-team{
-  width: 210px;
+  width: calc(9.4% + 60px);
   display: flex;
   align-items: center;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
@@ -2336,13 +2337,13 @@ DRIVERS TABLE
 }
 
 .drivers-table-row .drivers-table-driver{
-  width: 180px;
+  width: calc(9.4% + 30px);
   border-right: 0px solid transparent;
   gap: 3px;
 }
 
 .teams-table-row .teams-table-team{
-  width: 150px;
+  width: 9.4%;
   gap: 5px;
   transition: border-color 0.3s, background-color 0.3s, color 0.3s;
 }
@@ -3349,15 +3350,14 @@ DRIVERS TABLE
 
 .affiliates-space {
   display: flex;
-  overflow-x: hidden; 
+  overflow-x: hidden;
   flex-grow: 1;
-  margin: 0 15px;
-  min-width: 100%;
   max-width: max-content;
   flex-wrap: nowrap;
   width: 100%;
   min-height: 40px;
   align-items: center;
+  margin-left: 15px;
 }
 
 .affiliates-space .free-driver {
@@ -5211,8 +5211,14 @@ input.disabled{
   0% {
     transform: translateX(0);
   }
+  40% {
+    transform: translateX(calc(-1 * var(--scroll-amount)));
+  }
   50% {
     transform: translateX(calc(-1 * var(--scroll-amount)));
+  }
+  90% {
+    transform: translateX(0);
   }
   100% {
     transform: translateX(0);
@@ -5220,7 +5226,7 @@ input.disabled{
 }
 
 .name-container.overflow {
-  animation: marquee 5s linear infinite;
+  animation: marquee 8.5s ease-in-out infinite;
 }
 
 
@@ -5246,6 +5252,11 @@ input.disabled{
 
 .free-driver span:not(.bold-font){
   max-height: 22.5px;
+}
+
+.free-driver span.bold-font, .normal-driver span.bold-font, .drivers-table-driver span.bold-font, .driver-prediction span.bold-font, .modal-driver span.bold-font{
+  display: inline-block;
+  transform: skewX(-9deg)
 }
 
 .free-driver:hover .bi-ban{
@@ -6305,8 +6316,17 @@ input::-webkit-inner-spin-button {
   justify-content: space-between;
 }
 
+.team-performance:hover .team-title-value{
+  color: var(--white-general);
+}
+
+.team-performance.selected .team-title-value{
+  color: var(--white-general);
+}
+
 .team-title-value{
   color: var(--dark-text);
+  transition: color 0.3s;
 }
 
 

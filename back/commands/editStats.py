@@ -19,7 +19,7 @@ class EditStatsCommand(Command):
         run_editStats(argument)
         if self.message['mentality'] != -1 and Command.year_iterarion == "24":
             edit_mentality(f"{self.message['driverID']} {self.message['mentality']}")
-        # edit_age(self.message['driverID'], self.message['age'])
+        edit_age(self.message['driverID'], self.message['age'])
         if self.message['newName'] != "-1":
             edit_name(self.message['driverID'], self.message['newName'])
         process_repack("../result", Command.path)
