@@ -3369,7 +3369,7 @@ DRIVERS TABLE
   flex-grow: 1;
   max-width: max-content;
   flex-wrap: nowrap;
-  width: 100%;
+  min-width: 100%;
   min-height: 40px;
   align-items: center;
   margin-left: 15px;
