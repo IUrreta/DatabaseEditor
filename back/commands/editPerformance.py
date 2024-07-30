@@ -16,3 +16,13 @@ class EditPerformanceCommand(Command):
         info.insert(0, f"Succesfully edited {self.team_replace_dict[self.message['teamName']]}'s car performance")
         info_json = json.dumps(info)
         await self.send_message_to_client(info_json)
+        game_year = Command.dbutils.check_year_save()
+        performances, races = car_analysis.get_performance_all_teams_season(game_year[2])
+        performances_season = [performances, races]
+        performances_season.insert(0, "Season performance fetched")
+        data_json_performances_season = json.dumps(performances_season)
+        await self.send_message_to_client(data_json_performances_season)
+        performance = [performances[-1], car_analysis.get_attributes_all_teams(game_year[2])]
+        performance.insert(0, "Performance fetched")
+        data_json_performance = json.dumps(performance)
+        await self.send_message_to_client(data_json_performance)

@@ -213,7 +213,7 @@ class CarAnalysisUtils:
         self.cursor.execute(f"INSERT INTO Parts_DesignHistoryData VALUES ({new_design_id}, 0, 0, 0, 0)")
         self.copy_from_table("building",latest_design_part_from_team, new_design_id)
         self.copy_from_table("staff",latest_design_part_from_team, new_design_id)
-        self.add_4_items(new_design_id, part)
+        self.add_4_items(new_design_id, part, team_id)
 
     def copy_from_table(self, table, latest_design_id, new_design_id):
         if table == "building":
@@ -224,12 +224,17 @@ class CarAnalysisUtils:
         for row in rows:
             self.cursor.execute(f"INSERT INTO {table_name} VALUES ({new_design_id}, {row[1]}, {row[2]}, 0)")
 
-    def add_4_items(self, new_design_id, part):
+    def add_4_items(self, new_design_id, part, team_id):
         max_item = self.cursor.execute("SELECT MAX(ItemID) FROM Parts_Items").fetchone()[0]
         for i in range(1, 5):
             max_item += 1
-            self.cursor.execute(f"INSERT INTO Parts_Items VALUES ({max_item}, {new_design_id}, {standard_buildwork_per_part[part]}, 1, {i}, NULL, NULL, 0, NULL)")
+            if i <= 2:
+                loadout_id = i
+                self.add_part_to_loadout(new_design_id, part, team_id, loadout_id, max_item)
+            self.cursor.execute(f"INSERT INTO Parts_Items VALUES ({max_item}, {new_design_id}, {standard_buildwork_per_part[part]}, 1, {i}, NULL, {loadout_id}, 0, {loadout_id})")
 
+    def add_part_to_loadout(self, design_id, part, team_id, loadout_id, item_id):
+        self.cursor.execute(f"UPDATE Parts_CarLoadout SET DesignID = {design_id}, ItemID = {item_id} WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = {loadout_id}")
 
     def overwrite_performance_team(self, team_id, performance, custom_team=None, year_iteration=None):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
@@ -257,12 +262,10 @@ class CarAnalysisUtils:
                     else:
                         value = unitValueToValue[int(stat)](stat_num)
                     if not int(new_design):
-                        print("NO NEW DESIGN")
                         self.change_expertise_based(part, stat, value, int(team_id))
                         self.cursor.execute(f"UPDATE Parts_Designs_StatValues SET UnitValue = {stats[stat]} WHERE DesignID = {design} AND PartStat = {stat}")
                         self.cursor.execute(f"UPDATE Parts_Designs_StatValues SET Value = {value} WHERE DesignID = {design} AND PartStat = {stat}")
                     else:
-                        print("NEW DESIGN")
                         self.cursor.execute(f"INSERT INTO Parts_Designs_StatValues VALUES ({new_design_id}, {stat}, {value}, {stats[stat]}, 0.5, 1, 0.1)")
                         
                 
@@ -286,8 +289,8 @@ class CarAnalysisUtils:
             current_value = self.cursor.execute(f"SELECT Value FROM Parts_Designs_StatValues WHERE PartStat = {stat} AND DesignID = {old_design}").fetchone()[0]
         current_expertise = self.cursor.execute(f"SELECT Expertise FROM Parts_TeamExpertise WHERE TeamID = {team_id} AND PartType = {part} AND PartStat = {stat}").fetchone()[0]
         new_expertise = (float(new_value) * float(current_expertise)) / float(current_value)
-        print(f"Old value for {part} {stat}: {current_value}, old expertise: {current_expertise}")
-        print(f"New value for {part} {stat}: {new_value}, new expertise: {new_expertise}")
+        # print(f"Old value for {part} {stat}: {current_value}, old expertise: {current_expertise}")
+        # print(f"New value for {part} {stat}: {new_value}, new expertise: {new_expertise}")
         self.cursor.execute(f"UPDATE Parts_TeamExpertise SET Expertise = {new_expertise} WHERE TeamID = {team_id} AND PartType = {part} AND PartStat = {stat}")
 
     def get_performance_all_teams_season(self, custom_team=None):
