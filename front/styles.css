@@ -5691,9 +5691,9 @@ input.disabled{
 .super-license-holder{
   display: flex !important;
   font-size: 20px;
-  align-items: baseline;
   flex-direction: column;
-  justify-content: flex-end;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .name-and-stat{
