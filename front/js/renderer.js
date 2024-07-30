@@ -337,6 +337,7 @@ function performanceModeHandler() {
                     stats[statNum] = value;
                 }
             });
+            stats["new"] = elem.dataset.new;
             parts[part] = stats;
         })
         data = {

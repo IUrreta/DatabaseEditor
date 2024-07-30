@@ -301,9 +301,16 @@ document.querySelector(".performance-show").querySelectorAll(".part-name-buttons
         let inputs = part.querySelectorAll(".custom-input-number");
         
         inputs.forEach(function (input) {
-            updateValue(input, 0.1);
+            let increment;
+            if (input.max === "100"){
+                increment = 0.5
+            }
+            else{
+                increment = 0.025
+            }
+            updateValue(input, increment);
             let intervalId = setInterval(() => {
-                updateValue(input, 0.1);
+                updateValue(input, increment);
             }, 100);
             intervalIds.push(intervalId);
         });
@@ -328,9 +335,15 @@ document.querySelector(".performance-show").querySelectorAll(".part-name-buttons
         let inputs = part.querySelectorAll(".custom-input-number");
         
         inputs.forEach(function (input) {
-            updateValue(input, -0.1);
+            if (input.max === "100"){
+                increment = -0.5
+            }
+            else{
+                increment = -0.025
+            }
+            updateValue(input, increment);
             let intervalId = setInterval(() => {
-                updateValue(input, -0.1);
+                updateValue(input, increment);
             }, 100);
             intervalIds.push(intervalId);
         });
@@ -429,6 +442,18 @@ document.querySelector(".engines-show").querySelectorAll('.bi-dash-lg').forEach(
         clearInterval(intervalId);
     });
 });
+
+document.querySelector(".performance-show").querySelectorAll(".new-or-existing-part div").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        let parent = elem.parentNode;
+        let options = parent.querySelectorAll("div");
+        options.forEach(function (option) {
+            option.classList.remove("active-part");
+        })
+        elem.classList.add("active-part");
+        parent.parentNode.parentNode.dataset.new = elem.dataset.new;
+    })
+})
 
 
 function updateValue(input, increment) {

@@ -552,12 +552,14 @@ function listenersStaffGroups() {
                 typeOverall = "driver"
                 typeEdit = "0"
                 document.getElementById("driverSpecialAttributes").classList.remove("d-none")
-                document.querySelector(".super-license-holder").classList.remove("d-none")
+                document.querySelector("#superLicenseSwitch").classList.remove("d-none")
+                document.querySelector("#driverCode").classList.remove("d-none")
             }
             else {
                 typeOverall = "staff"
                 document.getElementById("driverSpecialAttributes").classList.add("d-none")
-                document.querySelector(".super-license-holder").classList.add("d-none")
+                document.querySelector("#superLicenseSwitch").classList.add("d-none")
+                document.querySelector("#driverCode").classList.add("d-none")
                 if (staffCode === "chiefStats") {
                     typeEdit = "1"
                 }
