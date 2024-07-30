@@ -113,6 +113,7 @@ function place_drivers(driversArray) {
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
+    add_marquees()
 
 }
 
@@ -248,6 +249,7 @@ function place_staff(staffArray) {
 
 
     })
+    add_marquees()
 }
 
 document.querySelectorAll("#stafftransfersMenu a").forEach(function (elem) {

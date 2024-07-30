@@ -204,16 +204,56 @@ class CarAnalysisUtils:
             teams[i] = ovr    
 
         return teams
+    
+    def add_new_design(self, part, team_id, day, season, latest_design_part_from_team, new_design_id):
+        max_design_from_part = self.cursor.execute(f"SELECT MAX(DesignNumber) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id}").fetchone()[0]
+        new_max_design = max_design_from_part + 1
+        self.cursor.execute(f"UPDATE Parts_Designs_TeamData SET NewDesignsThisSeason = {new_max_design} WHERE TeamID = {team_id} AND PartType = {part}")
+        self.cursor.execute(f"INSERT INTO Parts_Designs VALUES ({new_design_id}, {part}, 6720, 6600, {day-1}, {day}, NULL, 5, 1, 0, 0, 1500, {season}, 0, 0, 4, {new_max_design}, 1, {team_id}, 1)")
+        self.cursor.execute(f"INSERT INTO Parts_DesignHistoryData VALUES ({new_design_id}, 0, 0, 0, 0)")
+        self.copy_from_table("building",latest_design_part_from_team, new_design_id)
+        self.copy_from_table("staff",latest_design_part_from_team, new_design_id)
+        self.add_4_items(new_design_id, part, team_id)
+
+    def copy_from_table(self, table, latest_design_id, new_design_id):
+        if table == "building":
+            table_name = "Parts_Designs_BuildingEffects"
+        elif table == "staff":
+            table_name = "Parts_Designs_StaffEffects"
+        rows = self.cursor.execute(f"SELECT * FROM {table_name} WHERE DesignID = {latest_design_id}").fetchall()
+        for row in rows:
+            self.cursor.execute(f"INSERT INTO {table_name} VALUES ({new_design_id}, {row[1]}, {row[2]}, 0)")
+
+    def add_4_items(self, new_design_id, part, team_id):
+        max_item = self.cursor.execute("SELECT MAX(ItemID) FROM Parts_Items").fetchone()[0]
+        for i in range(1, 5):
+            max_item += 1
+            if i <= 2:
+                loadout_id = i
+                self.add_part_to_loadout(new_design_id, part, team_id, loadout_id, max_item)
+            self.cursor.execute(f"INSERT INTO Parts_Items VALUES ({max_item}, {new_design_id}, {standard_buildwork_per_part[part]}, 1, {i}, NULL, {loadout_id}, 0, {loadout_id})")
+
+    def add_part_to_loadout(self, design_id, part, team_id, loadout_id, item_id):
+        self.cursor.execute(f"UPDATE Parts_CarLoadout SET DesignID = {design_id}, ItemID = {item_id} WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = {loadout_id}")
 
     def overwrite_performance_team(self, team_id, performance, custom_team=None, year_iteration=None):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
         day = day_season[0]
+        season = day_season[1]
         best_parts = self.get_best_parts_until(day, custom_team)
         team_parts = best_parts[int(team_id)]
         for part in team_parts:
             if part != 0:
                 design = team_parts[part][0][0]
                 part_name = parts[part]
+                new_design = performance[part_name]["new"]
+                performance[part_name].pop("new")
+                if int(new_design):
+                    max_design = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs").fetchone()[0]
+                    latest_design_part_from_team = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id}").fetchone()[0]
+                    new_design_id = max_design + 1
+                    self.add_new_design(part, int(team_id), day, season, latest_design_part_from_team, new_design_id)
+
                 stats = performance[part_name]
                 for stat in stats:
                     stat_num = float(stats[stat])
@@ -221,16 +261,34 @@ class CarAnalysisUtils:
                         value = downforce_24_unitValueToValue[int(stat)](stat_num)
                     else:
                         value = unitValueToValue[int(stat)](stat_num)
-                    self.change_expertise_based(part, stat, value, int(team_id))
-                    self.cursor.execute(f"UPDATE Parts_Designs_StatValues SET UnitValue = {stats[stat]} WHERE DesignID = {design} AND PartStat = {stat}")
-                    self.cursor.execute(f"UPDATE Parts_Designs_StatValues SET Value = {value} WHERE DesignID = {design} AND PartStat = {stat}")
-            
+                    if not int(new_design):
+                        self.change_expertise_based(part, stat, value, int(team_id))
+                        self.cursor.execute(f"UPDATE Parts_Designs_StatValues SET UnitValue = {stats[stat]} WHERE DesignID = {design} AND PartStat = {stat}")
+                        self.cursor.execute(f"UPDATE Parts_Designs_StatValues SET Value = {value} WHERE DesignID = {design} AND PartStat = {stat}")
+                    else:
+                        self.cursor.execute(f"INSERT INTO Parts_Designs_StatValues VALUES ({new_design_id}, {stat}, {value}, {stats[stat]}, 0.5, 1, 0.1)")
+                        
+                
+                if int(new_design):  #when inserting new part I only can change expertise when all the stats have been inserted, also insert standard weight
+                    self.cursor.execute(f"INSERT INTO Parts_Designs_StatValues VALUES ({new_design_id}, 15, 500, {standard_weight_per_part[part]}, 0.5, 0, 0)")
+                    for stat in stats:
+                        stat_num = float(stats[stat])
+                        if year_iteration == "24" and int(stat) >= 7 and int(stat) <= 9:
+                            value = downforce_24_unitValueToValue[int(stat)](stat_num)
+                        else:
+                            value = unitValueToValue[int(stat)](stat_num)
+                        self.change_expertise_based(part, stat, value, int(team_id), "new", latest_design_part_from_team)
+
+
         self.conn.commit()
 
-    def change_expertise_based(self,part, stat, new_value, team_id):
-        current_value = self.cursor.execute(f"SELECT MAX(Value) FROM Parts_Designs_StatValues WHERE PartStat = {stat} AND DesignID IN (SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id})").fetchone()[0]
+    def change_expertise_based(self,part, stat, new_value, team_id, type="existing", old_design=None):
+        if type == "existing":
+            current_value = self.cursor.execute(f"SELECT MAX(Value) FROM Parts_Designs_StatValues WHERE PartStat = {stat} AND DesignID IN (SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id})").fetchone()[0]
+        elif type == "new":
+            current_value = self.cursor.execute(f"SELECT Value FROM Parts_Designs_StatValues WHERE PartStat = {stat} AND DesignID = {old_design}").fetchone()[0]
         current_expertise = self.cursor.execute(f"SELECT Expertise FROM Parts_TeamExpertise WHERE TeamID = {team_id} AND PartType = {part} AND PartStat = {stat}").fetchone()[0]
-        new_expertise = (new_value * current_expertise) / current_value
+        new_expertise = (float(new_value) * float(current_expertise)) / float(current_value)
         # print(f"Old value for {part} {stat}: {current_value}, old expertise: {current_expertise}")
         # print(f"New value for {part} {stat}: {new_value}, new expertise: {new_expertise}")
         self.cursor.execute(f"UPDATE Parts_TeamExpertise SET Expertise = {new_expertise} WHERE TeamID = {team_id} AND PartType = {part} AND PartStat = {stat}")

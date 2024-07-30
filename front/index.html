@@ -1978,7 +1978,7 @@
                     </div>
                   </div>
                   <div class="super-license-holder form-check form-switch">
-                    <div class="form-check form-switch">
+                    <div class="form-check form-switch" id="superLicenseSwitch">
                       <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="superLicense">
                       <span class="form-check-label" for="flexSwitchCheckDefault">Super License</span>
                     </div>
@@ -3608,7 +3608,7 @@
             <div class="main-columns-drag-section performance-section d-flex main-resizable">
               <canvas class="graphs" id="performanceGraph"></canvas>
               <div class="performance-show teams-show d-none">
-                <div class="part-performance" data-part="chassis">
+                <div class="part-performance" data-new="0" data-part="chassis">
                   <div class="part-performance-title">
                     <div class="part-name-buttons">
                       <span>Chasis</span>
@@ -3622,41 +3622,47 @@
                   <div class="collapse parts-list" id="chasisList">
                   </div>
                   <div class="part-performance-stats">
-                    <div class="part-performance-stat" data-attribute="4">
-                      <div class="part-performance-stat-title">Drag reduction</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
+                    <div class="part-stats">
+                      <div class="part-performance-stat" data-attribute="4">
+                        <div class="part-performance-stat-title">Drag reduction</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="5">
+                        <div class="part-performance-stat-title">Engine cooling</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="13">
+                        <div class="part-performance-stat-title">Airflow middle</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number"  min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="3" id="drs24">
+                        <div class="part-performance-stat-title">DRS Delta</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number"  min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
                       </div>
                     </div>
-                    <div class="part-performance-stat" data-attribute="5">
-                      <div class="part-performance-stat-title">Engine cooling</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="13">
-                      <div class="part-performance-stat-title">Airflow middle</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number"  min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="3" id="drs24">
-                      <div class="part-performance-stat-title">DRS Delta</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number"  min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
+                    <div class="new-or-existing-part">
+                      <div class="existing-part active-part" data-new="0">Latest design</div>
+                      <div class="new-part" data-new="1">New design</div>
                     </div>
                   </div>
                 </div>
-                <div class="part-performance" data-part="front_wing">
+                <div class="part-performance" data-new="0" data-part="front_wing">
                   <div class="part-performance-title">
                     <div class="part-name-buttons">
                       <span>Front wing</span>
@@ -3670,57 +3676,63 @@
                   <div class="collapse parts-list" id="frontList">
                   </div>
                   <div class="part-performance-stats">
-                    <div class="part-performance-stat" data-attribute="0">
-                      <div class="part-performance-stat-title">Airflow front</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number"  min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
+                    <div class="part-stats">
+                      <div class="part-performance-stat" data-attribute="0">
+                        <div class="part-performance-stat-title">Airflow front</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number"  min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="1">
+                        <div class="part-performance-stat-title">Airflow sensitivity</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="2">
+                        <div class="part-performance-stat-title brake-cooling-replace">Brake cooling</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number"  min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="7">
+                        <div class="part-performance-stat-title">Low speed downforce</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number"  min="3" max="5">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="8">
+                        <div class="part-performance-stat-title">Medium speed downforce</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="5" max="7">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="9">
+                        <div class="part-performance-stat-title">High speed downforce</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="7" max="8">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
                       </div>
                     </div>
-                    <div class="part-performance-stat" data-attribute="1">
-                      <div class="part-performance-stat-title">Airflow sensitivity</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="2">
-                      <div class="part-performance-stat-title brake-cooling-replace">Brake cooling</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number"  min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="7">
-                      <div class="part-performance-stat-title">Low speed downforce</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number"  min="3" max="5">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="8">
-                      <div class="part-performance-stat-title">Medium speed downforce</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="5" max="7">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="9">
-                      <div class="part-performance-stat-title">High speed downforce</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="7" max="8">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
+                    <div class="new-or-existing-part">
+                      <div class="existing-part active-part" data-new="0">Latest design</div>
+                      <div class="new-part" data-new="1">New design</div>
                     </div>
                   </div>
                 </div>
-                <div class="part-performance" data-part="rear_wing">
+                <div class="part-performance" data-new="0" data-part="rear_wing">
                   <div class="part-performance-title">
                     <div class="part-name-buttons">
                       <span>Rear wing</span>
@@ -3734,57 +3746,63 @@
                   <div class="collapse parts-list" id="rearList">
                   </div>
                   <div class="part-performance-stats">
-                    <div class="part-performance-stat" data-attribute="1">
-                      <div class="part-performance-stat-title">Airflow sensitivity</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
+                    <div class="part-stats">
+                      <div class="part-performance-stat" data-attribute="1">
+                        <div class="part-performance-stat-title">Airflow sensitivity</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="3">
+                        <div class="part-performance-stat-title">DRS Delta</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="4">
+                        <div class="part-performance-stat-title">Drag reduction</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="7">
+                        <div class="part-performance-stat-title">Low speed downforce</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="3" max="5">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="8">
+                        <div class="part-performance-stat-title">Medium speed downforce</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="5" max="7">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="9">
+                        <div class="part-performance-stat-title">High speed downforce</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="7" max="8">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
                       </div>
                     </div>
-                    <div class="part-performance-stat" data-attribute="3">
-                      <div class="part-performance-stat-title">DRS Delta</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="4">
-                      <div class="part-performance-stat-title">Drag reduction</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="7">
-                      <div class="part-performance-stat-title">Low speed downforce</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="3" max="5">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="8">
-                      <div class="part-performance-stat-title">Medium speed downforce</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="5" max="7">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="9">
-                      <div class="part-performance-stat-title">High speed downforce</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="7" max="8">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
+                    <div class="new-or-existing-part">
+                      <div class="existing-part active-part" data-new="0">Latest design</div>
+                      <div class="new-part" data-new="1">New design</div>
                     </div>
                   </div>
                 </div>
-                <div class="part-performance" data-part="sidepods">
+                <div class="part-performance" data-new="0" data-part="sidepods">
                   <div class="part-performance-title">
                     <div class="part-name-buttons">
                       <span>Sidepods</span>
@@ -3798,41 +3816,47 @@
                   <div class="collapse parts-list" id="sidepodsList">
                   </div>
                   <div class="part-performance-stats">
-                    <div class="part-performance-stat" data-attribute="0">
-                      <div class="part-performance-stat-title">Airflow front</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
+                    <div class="part-stats">
+                      <div class="part-performance-stat" data-attribute="0">
+                        <div class="part-performance-stat-title">Airflow front</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="4">
+                        <div class="part-performance-stat-title">Drag reduction</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="5">
+                        <div class="part-performance-stat-title">Engine cooling</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="13">
+                        <div class="part-performance-stat-title">Airflow middle</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
                       </div>
                     </div>
-                    <div class="part-performance-stat" data-attribute="4">
-                      <div class="part-performance-stat-title">Drag reduction</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="5">
-                      <div class="part-performance-stat-title">Engine cooling</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="13">
-                      <div class="part-performance-stat-title">Airflow middle</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
+                    <div class="new-or-existing-part">
+                      <div class="existing-part active-part" data-new="0">Latest design</div>
+                      <div class="new-part" data-new="1">New design</div>
                     </div>
                   </div>
                 </div>
-                <div class="part-performance" data-part="suspension">
+                <div class="part-performance" data-new="0" data-part="suspension">
                   <div class="part-performance-title">
                     <div class="part-name-buttons">
                       <span>Suspension</span>
@@ -3846,57 +3870,63 @@
                   <div class="collapse parts-list" id="suspensionList">
                   </div>
                   <div class="part-performance-stats">
-                    <div class="part-performance-stat" data-attribute="0">
-                      <div class="part-performance-stat-title">Airflow front</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
+                    <div class="part-stats">
+                      <div class="part-performance-stat" data-attribute="0">
+                        <div class="part-performance-stat-title">Airflow front</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="2">
+                        <div class="part-performance-stat-title brake-cooling-replace">Brake cooling</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="4">
+                        <div class="part-performance-stat-title">Drag reduction</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="7">
+                        <div class="part-performance-stat-title">Low speed downforce</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="3" max="5">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="8">
+                        <div class="part-performance-stat-title">Medium speed downforce</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="5" max="7">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="9">
+                        <div class="part-performance-stat-title">High speed downforce</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="7" max="8">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
                       </div>
                     </div>
-                    <div class="part-performance-stat" data-attribute="2">
-                      <div class="part-performance-stat-title brake-cooling-replace">Brake cooling</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="4">
-                      <div class="part-performance-stat-title">Drag reduction</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="7">
-                      <div class="part-performance-stat-title">Low speed downforce</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="3" max="5">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="8">
-                      <div class="part-performance-stat-title">Medium speed downforce</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="5" max="7">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="9">
-                      <div class="part-performance-stat-title">High speed downforce</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="7" max="8">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
+                    <div class="new-or-existing-part">
+                      <div class="existing-part active-part" data-new="0">Latest design</div>
+                      <div class="new-part" data-new="1">New design</div>
                     </div>
                   </div>
                 </div>
-                <div class="part-performance" data-part="underfloor">
+                <div class="part-performance" data-new="0" data-part="underfloor">
                   <div class="part-performance-title">
                     <div class="part-name-buttons">
                       <span>Underfloor</span>
@@ -3910,45 +3940,51 @@
                   <div class="collapse parts-list" id="underList">
                   </div>
                   <div class="part-performance-stats">
-                    <div class="part-performance-stat" data-attribute="1">
-                      <div class="part-performance-stat-title">Airflow sensitivity</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
+                    <div class="part-stats">
+                      <div class="part-performance-stat" data-attribute="1">
+                        <div class="part-performance-stat-title">Airflow sensitivity</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="4">
+                        <div class="part-performance-stat-title">Drag reduction</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="7">
+                        <div class="part-performance-stat-title">Low speed downforce</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="3" max="5">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="8">
+                        <div class="part-performance-stat-title">Medium speed downforce</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="5" max="7">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="9">
+                        <div class="part-performance-stat-title">High speed downforce</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="7" max="8">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
                       </div>
                     </div>
-                    <div class="part-performance-stat" data-attribute="4">
-                      <div class="part-performance-stat-title">Drag reduction</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="0" max="100">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="7">
-                      <div class="part-performance-stat-title">Low speed downforce</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="3" max="5">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="8">
-                      <div class="part-performance-stat-title">Medium speed downforce</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="5" max="7">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
-                    </div>
-                    <div class="part-performance-stat" data-attribute="9">
-                      <div class="part-performance-stat-title">High speed downforce</div>
-                      <div class="stat-number">
-                        <i class="bi bi-dash-lg"></i>
-                        <input type="text" class="custom-input-number" min="7" max="8">
-                        <i class="bi bi-plus-lg"></i>
-                      </div>
+                    <div class="new-or-existing-part">
+                      <div class="existing-part active-part" data-new="0">Latest design</div>
+                      <div class="new-part" data-new="1">New design</div>
                     </div>
                   </div>
                 </div>
