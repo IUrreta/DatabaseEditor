@@ -72,7 +72,10 @@ class DatabaseUtils:
         num = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driverID}").fetchone()
         if num == None:
             nums = self.cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL").fetchall()
-            num = random.choice(nums)
+            if len(nums) > 0:
+                num = random.choice(nums)
+            else:
+                num = (0,)
         wants1 = self.cursor.execute(f"SELECT WantsChampionDriverNumber FROM Staff_DriverData WHERE StaffID = {driverID}").fetchone()
 
         return[num[0], wants1[0]]
@@ -501,6 +504,9 @@ class DatabaseUtils:
 
         if type == "driver":
             stats = self.cursor.execute(f"SELECT Val FROM Staff_PerformanceStats WHERE StaffID = {name[2]} AND StatID BETWEEN 2 AND 10").fetchall()
+            print(stats)
+            if len(stats) == 0:
+                stats = [(50,), (50,), (50,), (50,), (50,), (50,), (50,), (50,), (50,)]
             additionalStats = self.cursor.execute(f"SELECT Improvability, Aggression FROM Staff_DriverData WHERE StaffID = {name[2]}").fetchone()
             nums = resultado + tuple(stat[0] for stat in stats) + additionalStats
 

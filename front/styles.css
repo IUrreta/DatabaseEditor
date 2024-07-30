@@ -6357,6 +6357,8 @@ input::-webkit-inner-spin-button {
   padding-bottom: 10px;
   padding-left: 10px;
   padding-top: 10px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 

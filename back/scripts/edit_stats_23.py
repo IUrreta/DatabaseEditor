@@ -2,6 +2,8 @@ import sqlite3
 import random
 from datetime import datetime, timedelta
 
+driver_stats = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+
 mentality_areas = {
     0: [5, 11, 13, 9],
     1: [0, 2, 6, 7, 8, 14],
@@ -40,9 +42,17 @@ def edit_stats(option=""):
     params = text.split()
     driver_id = (params[0],)
     type = params[1]
+    print(params)
 
     if type == "0":
-        cursor.execute(f"UPDATE Staff_performanceStats SET Val = CASE StatID WHEN 2 THEN {params[2]} WHEN 3 THEN {params[3]} WHEN 4 THEN {params[4]} WHEN 5 THEN {params[5]} WHEN 6 THEN {params[6]} WHEN 7 THEN {params[7]} WHEN 8 THEN {params[8]} WHEN 9 THEN {params[9]} WHEN 10 THEN {params[10]} ELSE Val END WHERE StaffID = {driver_id[0]}")
+        is_stats = cursor.execute(f"SELECT * FROM Staff_performanceStats WHERE StaffID = {driver_id[0]}").fetchone()
+        if is_stats is not None:
+            cursor.execute(f"UPDATE Staff_performanceStats SET Val = CASE StatID WHEN 2 THEN {params[2]} WHEN 3 THEN {params[3]} WHEN 4 THEN {params[4]} WHEN 5 THEN {params[5]} WHEN 6 THEN {params[6]} WHEN 7 THEN {params[7]} WHEN 8 THEN {params[8]} WHEN 9 THEN {params[9]} WHEN 10 THEN {params[10]} ELSE Val END WHERE StaffID = {driver_id[0]}")
+        else:
+            stats_array = params[2:11]
+            for index, stat in enumerate(driver_stats):
+                new_stat = stats_array[index]
+                cursor.execute(f"INSERT INTO Staff_performanceStats (StaffID, StatID, Val, Max) VALUES ({driver_id[0]}, {stat}, {new_stat}, 100)")
         cursor.execute(f"UPDATE Staff_DriverData SET Improvability = {params[11]}, Aggression =  {params[12]} WHERE StaffID = {driver_id[0]}")
         cursor.execute(f"UPDATE Staff_GameData SET RetirementAge = {params[13]} WHERE StaffID = {driver_id[0]}")
         old_num = cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driver_id[0]}").fetchone()

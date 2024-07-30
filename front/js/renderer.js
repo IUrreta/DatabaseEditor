@@ -653,6 +653,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 elem.style.height = "612px"
             })
             document.getElementById("free-drivers").style.height = "612px"
+            document.getElementById("free-staff").style.height = "612px"
             document.getElementById("raceMenu").style.height = "660px"
         }
     }
