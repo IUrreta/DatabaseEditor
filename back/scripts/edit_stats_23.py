@@ -42,7 +42,6 @@ def edit_stats(option=""):
     params = text.split()
     driver_id = (params[0],)
     type = params[1]
-    print(params)
 
     if type == "0":
         is_stats = cursor.execute(f"SELECT * FROM Staff_performanceStats WHERE StaffID = {driver_id[0]}").fetchone()
@@ -85,6 +84,16 @@ def edit_name(driverID, new_name):
     string_literal_firstName = f"[STRING_LITERAL:Value=|{new_firstName}|]"
     string_literal_lastName = f"[STRING_LITERAL:Value=|{new_lastName}|]"
     cursor.execute("UPDATE Staff_BasicData SET FirstName = ?, LastName = ? WHERE StaffID = ?", (string_literal_firstName, string_literal_lastName, driverID))
+
+    conn.commit()
+    conn.close()
+
+def edit_code(driverID, new_code):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+
+    string_literal_code = f"[STRING_LITERAL:Value=|{new_code}|]"
+    cursor.execute(f"UPDATE Staff_DriverData SET DriverCode = ? WHERE StaffID = ?", (string_literal_code, driverID))
 
     conn.commit()
     conn.close()

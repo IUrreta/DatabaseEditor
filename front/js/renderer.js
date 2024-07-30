@@ -214,6 +214,13 @@ function editModeHandler() {
     else{
         update_name(id, newName)
     }
+    let newCode = document.querySelector("#driverCode").value
+    if (newCode === document.querySelector(".clicked").dataset.code) {
+        newCode = "-1"
+    }
+    else {
+        document.querySelector(".clicked").dataset.code = newCode
+    }
     let driverNum = document.querySelector("#numberButton .front-gradient").textContent;
     let wants1,superLicense, isRetired;
     document.querySelector(".clicked").dataset.number = driverNum;
@@ -265,7 +272,8 @@ function editModeHandler() {
         mentality: mentality,
         superLicense: superLicense,
         marketability: marketability,
-        newName: newName
+        newName: newName,
+        newCode: newCode
     };
 
     socket.send(JSON.stringify(dataStats));

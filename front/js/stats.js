@@ -74,6 +74,7 @@ function place_drivers_editStats(driversArray) {
         newDiv.dataset.numWC = driver["wants1"]
         newDiv.dataset.number = driver["driver_number"]
         newDiv.dataset.raceFormula = driver["race_formula"]
+        newDiv.dataset.driverCode = driver["driver_code"]
         newDiv.dataset.isRetired = driver[4]
         if (driver["mentality0"]) {
             newDiv.dataset.mentality0 = driver["mentality0"]
@@ -660,6 +661,8 @@ function load_stats(div) {
     let retirementAge = document.querySelector(".actual-retirement")
     let numberButton = document.querySelector("#numberButton")
     let numberWC = document.querySelector("#driverNumber1")
+    let codeInput = document.querySelector("#driverCode")
+    codeInput.value = div.dataset.driverCode
     oldNum = div.dataset.number
     actualAge.innerText = "Age " + div.dataset.age
     retirementAge.innerText = "Ret " + div.dataset.retirement
