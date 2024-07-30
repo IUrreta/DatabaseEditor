@@ -430,6 +430,18 @@ document.querySelector(".engines-show").querySelectorAll('.bi-dash-lg').forEach(
     });
 });
 
+document.querySelector(".performance-show").querySelectorAll(".new-or-existing-part div").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        let parent = elem.parentNode;
+        let options = parent.querySelectorAll("div");
+        options.forEach(function (option) {
+            option.classList.remove("active-part");
+        })
+        elem.classList.add("active-part");
+        parent.parentNode.parentNode.dataset.new = elem.dataset.new;
+    })
+})
+
 
 function updateValue(input, increment) {
     let value = input.value.split(' ')[0];

@@ -80,6 +80,10 @@ class TransferUtils:
             self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 0, {teamID}, {position}, {day}, {year_end},  {salary}, {starting_bonus}, {race_bonus}, {race_bonus_pos}, 0.5, 0)")
         if int(position) < 3:
             self.cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = {position} WHERE StaffID = {driverID}")
+            is_driving_in_f2_f3 = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 0 AND (TeamID > 10 AND  TeamID < 32)").fetchone()
+            if is_driving_in_f2_f3 is not None:
+                self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 0 AND TeamID = {is_driving_in_f2_f3[0]}")
+                self.cursor.execute(f"UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = NULL WHERE StaffID = {driverID}")
 
             #checks if the driver was in the standings and if it wasn't it updates the standings
             position_in_standings = self.cursor.execute(f"SELECT MAX(Position) FROM Races_DriverStandings WHERE SeasonID = {year} AND RaceFormula = 1").fetchone()

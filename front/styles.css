@@ -3437,7 +3437,7 @@ DRIVERS TABLE
   border-radius: 10px;
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
   padding: 5px 10px;
-
+  overflow-y: hidden;
 }
 
 .engine-f2{
@@ -3606,6 +3606,35 @@ DRIVERS TABLE
 .part-performance-stats, .engine-performance-stats{
   margin-top: 8px;
   transition: opacity 0.2s;
+}
+
+.part-performance-stats{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 89% !important;
+}
+
+.new-or-existing-part{
+  font-family: 'Formula1Bold';
+  display: flex;
+  gap: 15px;
+  padding: 6px 2px;
+}
+
+.existing-part, .new-part{
+  font-size: 16px;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.existing-part:hover, .new-part:hover{
+  cursor: pointer;
+  color: var(--text-selected);
+  transform: scale(1.05);
+}
+
+.existing-part.active-part, .new-part.active-part{
+  color: var(--new-primary);
 }
 
 .part-performance-stat .custom-input-number, .engine-performance-stat .custom-input-number{

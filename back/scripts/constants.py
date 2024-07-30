@@ -58,6 +58,24 @@ parts = {
     8 : "suspension"
 }
 
+standard_weight_per_part = {
+    3 : 5150,
+    4 : 2625,
+    5 : 3125,
+    6 : 4125,
+    7 : 3550,
+    8 : 2900
+}
+
+standard_buildwork_per_part = {
+    3: 2000,
+    4: 500,
+    5: 500,
+    6: 1500,
+    7: 1500,
+    8: 1500
+}
+
 car_attributes = {
     0 : "top_speed", 1: "acceleration", 2: "drs", 3: "low_speed", 4: "medium_speed", 5: "high_speed", 6:"dirty_air", 7: "brake_cooling", 8:"engine_cooling"
 }
