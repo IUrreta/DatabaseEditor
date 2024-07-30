@@ -72,7 +72,10 @@ class DatabaseUtils:
         num = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driverID}").fetchone()
         if num == None:
             nums = self.cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL").fetchall()
-            num = random.choice(nums)
+            if len(nums) > 0:
+                num = random.choice(nums)
+            else:
+                num = (0,)
         wants1 = self.cursor.execute(f"SELECT WantsChampionDriverNumber FROM Staff_DriverData WHERE StaffID = {driverID}").fetchone()
 
         return[num[0], wants1[0]]
@@ -337,6 +340,7 @@ class DatabaseUtils:
                 driver_number = self.fetchDriverNumberDetails(id)
                 superlicense = self.fetch_superlicense(id)
                 team_future = self.fetch_for_future_contract(id)
+                driver_code = self.fetch_driverCode(id)
                 data_dict = {i: result[i] for i in range(len(result))}
                 data_dict["driver_number"] = driver_number[0]
                 data_dict["wants1"] = driver_number[1]
@@ -345,6 +349,7 @@ class DatabaseUtils:
                 data_dict["superlicense"] = superlicense[0]
                 data_dict["race_formula"] = race_formula[0]
                 data_dict["team_future"] = team_future
+                data_dict["driver_code"] = driver_code
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
                     if mentality:
@@ -357,6 +362,29 @@ class DatabaseUtils:
                 formatted_tuples.append(data_dict)
 
         return formatted_tuples
+    
+    def fetch_driverCode(self, driverID):
+        code = self.cursor.execute(f"SELECT DriverCode FROM Staff_DriverData WHERE StaffID = {driverID}").fetchone()
+        if code is not None:
+            code = code[0]
+            if "STRING_LITERAL" not in code:
+                regex = r'\[DriverCode_(...)\]'
+                match = re.search(regex, code)
+                if match:
+                    code = match.group(1)
+                else:
+                    code = ""
+            else:
+                regex2 = r'\[STRING_LITERAL:Value=\|(...)\|\]'
+                match2 = re.search(regex2, code)
+                if match2:
+                    code = match2.group(1)
+                else:
+                    code = ""
+        else:
+            code = ""
+            
+        return code.upper()
     
     def fetch_for_future_contract(self, driverID):
         team = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3").fetchone()
@@ -501,6 +529,8 @@ class DatabaseUtils:
 
         if type == "driver":
             stats = self.cursor.execute(f"SELECT Val FROM Staff_PerformanceStats WHERE StaffID = {name[2]} AND StatID BETWEEN 2 AND 10").fetchall()
+            if len(stats) == 0:
+                stats = [(50,), (50,), (50,), (50,), (50,), (50,), (50,), (50,), (50,)]
             additionalStats = self.cursor.execute(f"SELECT Improvability, Aggression FROM Staff_DriverData WHERE StaffID = {name[2]}").fetchone()
             nums = resultado + tuple(stat[0] for stat in stats) + additionalStats
 

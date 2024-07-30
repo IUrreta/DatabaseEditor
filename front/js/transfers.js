@@ -809,7 +809,7 @@ function manageDrivers(...divs) {
  */
 document.getElementById("confirmButton").addEventListener('click', function () {
     if (modalType === "hire") {
-        if (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.className === "affiliates-space") {
+        if (f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space")) {
             signDriver("fireandhire")
         }
         signDriver("regular")

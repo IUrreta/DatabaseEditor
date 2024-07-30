@@ -870,7 +870,14 @@ input[type="checkbox"]:checked {
   max-width: none;
   text-align: left;
   font-size: 24px;
-  width: 80%;
+  width: 70%;
+}
+
+#driverCode {
+  font-size: 24px;
+  text-align: left;
+  max-width: none;
+  width: 30%;
 }
 
 
@@ -885,7 +892,15 @@ input[type="checkbox"]:checked {
   padding-left: 14px;
   padding-top: 16px;
   position: relative;
-  align-items: baseline;
+  align-items: center;
+  width: 33%;
+}
+
+.separator-3{
+  width: 3px;
+  background-color: var(--separator);
+  height: 100%;
+  margin: 20px 0;
 }
 
 .stats-title .bi-pencil{
@@ -3354,7 +3369,7 @@ DRIVERS TABLE
   flex-grow: 1;
   max-width: max-content;
   flex-wrap: nowrap;
-  width: 100%;
+  min-width: 100%;
   min-height: 40px;
   align-items: center;
   margin-left: 15px;
@@ -6357,6 +6372,8 @@ input::-webkit-inner-spin-button {
   padding-bottom: 10px;
   padding-left: 10px;
   padding-top: 10px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 
@@ -6546,6 +6563,8 @@ input::-webkit-inner-spin-button {
   background-color: var(--elements);
   height: 90%;
 }
+
+
 
 .main-second-viewer{
   min-height: 580px;
