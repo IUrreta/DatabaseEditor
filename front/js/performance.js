@@ -301,9 +301,16 @@ document.querySelector(".performance-show").querySelectorAll(".part-name-buttons
         let inputs = part.querySelectorAll(".custom-input-number");
         
         inputs.forEach(function (input) {
-            updateValue(input, 0.1);
+            let increment;
+            if (input.max === "100"){
+                increment = 0.5
+            }
+            else{
+                increment = 0.025
+            }
+            updateValue(input, increment);
             let intervalId = setInterval(() => {
-                updateValue(input, 0.1);
+                updateValue(input, increment);
             }, 100);
             intervalIds.push(intervalId);
         });
@@ -328,9 +335,15 @@ document.querySelector(".performance-show").querySelectorAll(".part-name-buttons
         let inputs = part.querySelectorAll(".custom-input-number");
         
         inputs.forEach(function (input) {
-            updateValue(input, -0.1);
+            if (input.max === "100"){
+                increment = -0.5
+            }
+            else{
+                increment = -0.025
+            }
+            updateValue(input, increment);
             let intervalId = setInterval(() => {
-                updateValue(input, -0.1);
+                updateValue(input, increment);
             }, 100);
             intervalIds.push(intervalId);
         });
