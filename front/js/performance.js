@@ -615,7 +615,8 @@ function load_performance_graph(data) {
             backgroundColor: color,
             pointRadius: 0,
             fill: false,
-            tension: 0.1
+            tension: 0.1,
+            pointHitRadius: 7
         });
     }
     performanceGraph.options.scales.y.min = yAxisMin;

@@ -287,6 +287,8 @@ class CarAnalysisUtils:
             current_value = self.cursor.execute(f"SELECT MAX(Value) FROM Parts_Designs_StatValues WHERE PartStat = {stat} AND DesignID IN (SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id})").fetchone()[0]
         elif type == "new":
             current_value = self.cursor.execute(f"SELECT Value FROM Parts_Designs_StatValues WHERE PartStat = {stat} AND DesignID = {old_design}").fetchone()[0]
+        if current_value == 0:
+            current_value = 1
         current_expertise = self.cursor.execute(f"SELECT Expertise FROM Parts_TeamExpertise WHERE TeamID = {team_id} AND PartType = {part} AND PartStat = {stat}").fetchone()[0]
         new_expertise = (float(new_value) * float(current_expertise)) / float(current_value)
         # print(f"Old value for {part} {stat}: {current_value}, old expertise: {current_expertise}")

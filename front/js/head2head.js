@@ -1040,6 +1040,7 @@ function load_teams_points_graph(data) {
                 borderWidth: 2,
                 pointRadius: 0,
                 fill: false,
+                pointHitRadius: 7,
                 datalabels: {
                     color: function () {
                         if (lightColors.indexOf(team_color) !== -1) {
@@ -1181,6 +1182,7 @@ function load_graphs_data(data) {
                 pointBackgroundColor: d1_color,
                 borderWidth: 2,
                 fill: false,
+                pointHitRadius: 7
             })
             qualiGraph.data.datasets.push({
                 label: driv[0],
@@ -1189,6 +1191,7 @@ function load_graphs_data(data) {
                 pointBackgroundColor: d1_color,
                 borderWidth: 2,
                 fill: false,
+                pointHitRadius: 7
             })
             pointsGraph.data.datasets.push({
                 label: driv[0],
@@ -1198,6 +1201,7 @@ function load_graphs_data(data) {
                 borderWidth: 2,
                 pointRadius: 0,
                 fill: false,
+                pointHitRadius: 7,
                 datalabels: {
                     color: function () {
                         if (lightColors.indexOf(d1_color) !== -1) {
