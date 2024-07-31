@@ -283,7 +283,6 @@ class CarAnalysisUtils:
         self.conn.commit()
 
     def change_expertise_based(self,part, stat, new_value, team_id, type="existing", old_design=None):
-        print(part, stat, new_value, team_id, type, old_design)
         if type == "existing":
             current_value = self.cursor.execute(f"SELECT MAX(Value) FROM Parts_Designs_StatValues WHERE PartStat = {stat} AND DesignID IN (SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id})").fetchone()[0]
         elif type == "new":

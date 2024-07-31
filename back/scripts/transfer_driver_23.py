@@ -93,7 +93,6 @@ class TransferUtils:
             if int(type) == 0:
                 if points_driver_in_standings is None:
                     points_driver_in_standings = (0,)
-                    print("adding into driver standings")
                     self.cursor.execute(f"INSERT INTO Races_DriverStandings VALUES ({year}, {driverID}, {points_driver_in_standings[0]}, {position_in_standings[0] + 1}, 0, 0, 1)")
 
                 was_in_f2 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driverID} AND SeasonID = {year} AND RaceFormula = 2").fetchone()
