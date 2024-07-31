@@ -198,9 +198,9 @@ class CarAnalysisUtils:
             part_stats = self.get_part_stats_dict(dict)
             attributes = self.calculate_car_attributes(contributors, part_stats)
             ovr = self.calculate_overall_performance(attributes)
-            if previous:
-                if previous[i] > ovr:
-                    ovr = previous[i]
+            # if previous:
+            #     if previous[i] > ovr:
+            #         ovr = previous[i]
             teams[i] = ovr    
 
         return teams
