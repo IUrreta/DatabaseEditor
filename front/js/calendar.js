@@ -45,6 +45,7 @@ function reubicate(div0,div1,beforeAfter) {
  * @param {string} code Code from the race
  */
 function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
+    console.log(state)
     let imageUrl = codes_dict[code];
 
     let div = document.createElement('div');
@@ -304,7 +305,7 @@ function listenerRaces() {
     document.querySelectorAll('#addTrackMenu a').forEach(item => {
         item.addEventListener("click",function () {
             if (document.querySelector(".main-calendar-section").childElementCount < 23) {
-                addRace(item.dataset.code, 0, 0, 0, item.dataset.trackid, 0)
+                addRace(item.dataset.code, 0, 0, 0, 0, item.dataset.trackid, 0)
                 updateVisualizers()
                 update_numbers()
             }
