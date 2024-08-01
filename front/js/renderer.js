@@ -700,6 +700,7 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("teamChanges").classList.add("d-none")
             document.getElementById("drs24").dataset.attribute = "3"
             game_version = 2024
+            max_races = 24;
             manage_custom_team(year)
             document.querySelectorAll(".brake-cooling-replace").forEach(function (elem) {
                 elem.textContent = "Tyre preservation"
@@ -720,6 +721,7 @@ document.addEventListener('DOMContentLoaded',function () {
             }
             game_version = 2023
             mid_grid = 10;
+            max_races = 23;
             relative_grid = 5;
             manage_custom_team([null,null])
             document.querySelectorAll(".brake-cooling-replace").forEach(function (elem) {

@@ -47,6 +47,43 @@ def fetch_teamData(teamID):
 
     return data
 
+def manage_cost_cap(teamID, amount, cursor):
+    remaining = int(amount)
+    if remaining > 0:
+       
+        while remaining > 0:
+            print(remaining)
+            transaction = cursor.execute("""
+                SELECT ROWID, Value, Reference 
+                FROM Finance_Transactions 
+                WHERE TeamID = ? AND AffectsCostCap = 1  AND Value < 0
+                ORDER BY Day DESC, ROWID DESC 
+                LIMIT 1
+            """, (teamID,)).fetchone()
+            
+            if transaction is None:
+                break
+            else:
+                rowid = transaction[0]
+                value = transaction[1]
+                reference = transaction[2]
+                
+                if value + remaining <= 0:
+                    amount_to_add = remaining
+                else:
+                    amount_to_add = -value
+                
+                cursor.execute("""
+                    UPDATE Finance_Transactions 
+                    SET Value = Value + ? 
+                    WHERE ROWID = ?
+                """, (amount_to_add, rowid))
+                
+                remaining -= amount_to_add
+    else:
+        day_season = cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+        cursor.execute(f"INSERT INTO Finance_Transactions VALUES ({teamID}, {day_season[0]}, {amount}, 9, -1, 1)")
+
 def edit_team(info):
     conn = sqlite3.connect("../result/main.db")
     cursor = conn.cursor()
@@ -61,7 +98,7 @@ def edit_team(info):
     if info["confidence"] != "-1":
         cursor.execute(f"UPDATE Board_Confidence SET Confidence = {info['confidence']} WHERE Season = {day_season[1]}")
     cursor.execute(f"UPDATE Finance_TeamBalance SET Balance = {info['teamBudget']} WHERE TeamID = {teamID}")
-    cursor.execute(f"INSERT INTO Finance_Transactions VALUES ({teamID}, {day_season[0]}, {info['costCapEdit']}, 9, -1, 1)")
+    manage_cost_cap(teamID, info["costCapEdit"], cursor)
     for stat in info["pitCrew"]:
         cursor.execute(f"UPDATE Staff_PitCrew_PerformanceStats SET Val = {info['pitCrew'][stat]} WHERE TeamID = {teamID} AND StatID = {stat}")
     oldEngineID = cursor.execute(f"SELECT DesignID FROM Parts_Designs WHERE TeamID = {teamID}  AND PartType = 0").fetchone()
