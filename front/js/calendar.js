@@ -303,7 +303,7 @@ function load_addRaces() {
 function listenerRaces() {
     document.querySelectorAll('#addTrackMenu a').forEach(item => {
         item.addEventListener("click",function () {
-            if (document.querySelector(".main-calendar-section").childElementCount < 23) {
+            if (document.querySelector(".main-calendar-section").childElementCount < max_races) {
                 addRace(item.dataset.code, 0, 0, 0, 0, item.dataset.trackid, 0)
                 updateVisualizers()
                 update_numbers()

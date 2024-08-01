@@ -35,6 +35,7 @@ let racePredicted;
 let raceName;
 let probRace;
 let mid_grid = 10;
+let max_races = 23;
 let relative_grid = 5;
 
 
