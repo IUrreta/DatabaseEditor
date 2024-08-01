@@ -52,7 +52,6 @@ def manage_cost_cap(teamID, amount, cursor):
     if remaining > 0:
        
         while remaining > 0:
-            print(remaining)
             transaction = cursor.execute("""
                 SELECT ROWID, Value, Reference 
                 FROM Finance_Transactions 
