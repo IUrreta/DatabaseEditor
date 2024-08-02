@@ -3635,6 +3635,7 @@ DRIVERS TABLE
   display: flex;
   gap: 15px;
   padding: 6px 2px;
+  color: var(--dark-text);
 }
 
 .existing-part, .new-part{
