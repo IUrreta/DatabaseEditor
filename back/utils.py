@@ -1,6 +1,7 @@
 import random
 import math
 import re
+from scripts.countries import countries_dict
 
 class DatabaseUtils:
     def __init__(self, connection):
@@ -124,6 +125,7 @@ class DatabaseUtils:
                 retirement = self.fetch_driverRetirement(id)
                 race_formula = self.fetch_raceFormula(id)
                 team_future = self.fetch_for_future_contract(id)
+                country_code = self.fetch_nationality(id)
                 if race_formula[0] == None:
                     race_formula = (4,)
                 data_dict = {i: result[i] for i in range(len(result))}
@@ -131,6 +133,7 @@ class DatabaseUtils:
                 data_dict["age"] = retirement[1]
                 data_dict["race_formula"] = race_formula[0]
                 data_dict["team_future"] = team_future
+                data_dict["nationality"] = country_code
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
                     if mentality:
@@ -341,6 +344,7 @@ class DatabaseUtils:
                 superlicense = self.fetch_superlicense(id)
                 team_future = self.fetch_for_future_contract(id)
                 driver_code = self.fetch_driverCode(id)
+                country_code = self.fetch_nationality(id)
                 data_dict = {i: result[i] for i in range(len(result))}
                 data_dict["driver_number"] = driver_number[0]
                 data_dict["wants1"] = driver_number[1]
@@ -350,6 +354,7 @@ class DatabaseUtils:
                 data_dict["race_formula"] = race_formula[0]
                 data_dict["team_future"] = team_future
                 data_dict["driver_code"] = driver_code
+                data_dict["nationality"] = country_code
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
                     if mentality:
@@ -362,6 +367,19 @@ class DatabaseUtils:
                 formatted_tuples.append(data_dict)
 
         return formatted_tuples
+    
+    def fetch_nationality(self, driverID):
+        code = self.cursor.execute(f"SELECT CountryID FROM Staff_BasicData WHERE StaffID = {driverID}").fetchone()[0]
+        nationality = self.cursor.execute(f"SELECT Name FROM Countries WHERE CountryID = {code}").fetchone()[0]
+        expr = r'(?<=\[Nationality_)[^\]]+'
+        result = re.search(expr, nationality)
+        if result:
+            nat = result.group(0)
+            nat_name = re.sub(r'(?<!^)([A-Z])', r' \1', nat)
+            nat_code = countries_dict.get(nat_name, "")
+            return nat_code
+        else:
+            return ""
     
     def fetch_driverCode(self, driverID):
         code = self.cursor.execute(f"SELECT DriverCode FROM Staff_DriverData WHERE StaffID = {driverID}").fetchone()
