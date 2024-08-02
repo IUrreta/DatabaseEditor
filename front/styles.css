@@ -5322,7 +5322,7 @@ input.disabled{
   opacity: 0;
   background-color: var(--elements-hover);
   color: var(--text-general);
-  transition: opacity 0.3s, background-color 0.3s, color 0.3s;
+  transition: opacity 0.2s, background-color 0.2s, color 0.2s;
   cursor: pointer;
   font-size: 14px;
   border-bottom-right-radius: 3px;

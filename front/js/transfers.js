@@ -124,7 +124,7 @@ function add_edit_container(div){
     edit_container.appendChild(pencilicon)
     edit_container.appendChild(numbersicon)
     div.appendChild(edit_container)
-    div.addEventListener("click", function () {
+    edit_container.addEventListener("click", function () {
         let id = div.dataset.driverid
         document.getElementById("statspill").click()
         console.log(id)
@@ -249,6 +249,7 @@ function place_staff(staffArray) {
         newDiv.dataset.type = staff_position
         staffLogo.classList.add(staff_position + "-border")
         addIcon(newDiv)
+        add_edit_container(newDiv)
         if (staff[2] > 0 && staff[2] <= 10 || staff[2] === 32) {
             let teamDiv = document.querySelector(`.staff-section[data-teamid='${staff[2]}']`)
             if (position !== 2) {
