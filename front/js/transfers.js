@@ -97,16 +97,13 @@ function place_drivers(driversArray) {
         }
         newDiv.dataset.futureteam = driver["team_future"]
         manageColor(newDiv, spanLastName)
-        // if (driver[4] === 1) {
-        //     addUnRetireIcon(newDiv)
-        // }
-        //newDiv.innerHTML = driver[0];
         divPosition = "free-drivers"
         let position = driver[3]
         if (position >= 3) {
             position = 3
         }
         addIcon(newDiv)
+        add_edit_container(newDiv)
         if (driver[2] > 0 && driver[2] <= 10 || driver[2] === 32) {
             divPosition = team_dict[driver[2]] + position;
         }
@@ -116,6 +113,30 @@ function place_drivers(driversArray) {
     add_marquees()
 
 }
+
+function add_edit_container(div){
+    let edit_container = document.createElement("div")
+    edit_container.className = "edit-container"
+    let numbersicon = document.createElement("i")
+    numbersicon.className = "bi bi bi-123"
+    let pencilicon = document.createElement("i")
+    pencilicon.className = "bi bi-pencil-fill"
+    edit_container.appendChild(pencilicon)
+    edit_container.appendChild(numbersicon)
+    div.appendChild(edit_container)
+    div.addEventListener("click", function () {
+        let id = div.dataset.driverid
+        document.getElementById("statspill").click()
+        console.log(id)
+        console.log(`.normal-driver[data-driverid=${id}]`)
+        let edit_stats_div = document.querySelector(`.normal-driver[data-driverid="${id}"]`)
+        let typeStaff = typeStaff_dict[edit_stats_div.dataset.type]
+        let menuClick = document.querySelector(`#staffMenu a[data-list="${typeStaff}"]`)
+        menuClick.click()
+        edit_stats_div.click()
+    })
+}
+ 
 
 function update_name(driverID, name) {
     let freeDiv = document.querySelector(`.free-driver[data-driverid='${driverID}']`)
