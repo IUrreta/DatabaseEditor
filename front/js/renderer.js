@@ -219,7 +219,7 @@ function editModeHandler() {
         newCode = "-1"
     }
     else {
-        document.querySelector(".clicked").dataset.code = newCode
+        document.querySelector(".clicked").dataset.driverCode = newCode
     }
     let driverNum = document.querySelector("#numberButton .front-gradient").textContent;
     let wants1,superLicense, isRetired;
