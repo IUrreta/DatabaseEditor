@@ -127,8 +127,6 @@ function add_edit_container(div){
     edit_container.addEventListener("click", function () {
         let id = div.dataset.driverid
         document.getElementById("statspill").click()
-        console.log(id)
-        console.log(`.normal-driver[data-driverid=${id}]`)
         let edit_stats_div = document.querySelector(`.normal-driver[data-driverid="${id}"]`)
         let typeStaff = typeStaff_dict[edit_stats_div.dataset.type]
         let menuClick = document.querySelector(`#staffMenu a[data-list="${typeStaff}"]`)

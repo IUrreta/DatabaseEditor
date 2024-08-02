@@ -80,7 +80,6 @@ function place_drivers_editStats(driversArray) {
         newDiv.dataset.driverCode = driver["driver_code"]
         newDiv.dataset.isRetired = driver[4]
         if (driver["nationality"] !== ""){
-            console.log(driver["nationality"])
             let country_code = driver["nationality"]
             let flag = document.createElement("img")
             flag.className = "name-flag"
