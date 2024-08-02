@@ -1,6 +1,6 @@
 {
   "name": "Database Editor F1 Manager",
-  "version": "2.1.12",
+  "version": "2.1.14",
   "description": "A tool that will let you edit your save file from F1 Manager games",
   "main": "main.js",
   "scripts": {
