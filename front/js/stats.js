@@ -5,6 +5,7 @@ let driverStatTitle = document.getElementById("driverStatsTitle")
 let statPanelShown = 0;
 let typeOverall = "driver";
 let typeEdit;
+let typeStaff_dict = { 0: "fulldriverlist", 1: "fullTechnicalList", 2: "fullEngineerList", 3: "fullAeroList", 4: "fullDirectorList" }
 let mentality_dict = { 0: "enthusiastic", 1: "positive", 2: "neutral", 3: "negative", 4: "demoralized" }
 let oldNum;
 let teamOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
@@ -34,7 +35,9 @@ function place_drivers_editStats(driversArray) {
         newDiv.className = "col normal-driver";
         newDiv.dataset.driverid = driver[1];
         let nameDiv = document.createElement("div");
+        nameDiv.className = "name-div-edit-stats"
         newDiv.dataset.teamid = driver[2];
+        newDiv.dataset.type = 0;
         let name = driver[0].split(" ")
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
@@ -76,6 +79,13 @@ function place_drivers_editStats(driversArray) {
         newDiv.dataset.raceFormula = driver["race_formula"]
         newDiv.dataset.driverCode = driver["driver_code"]
         newDiv.dataset.isRetired = driver[4]
+        if (driver["nationality"] !== ""){
+            let country_code = driver["nationality"]
+            let flag = document.createElement("img")
+            flag.className = "name-flag"
+            flag.src = `https://flagsapi.com/${country_code}/flat/24.png`
+            nameDiv.appendChild(flag)
+        }
         if (driver["mentality0"]) {
             newDiv.dataset.mentality0 = driver["mentality0"]
             newDiv.dataset.mentality1 = driver["mentality1"]
@@ -148,7 +158,9 @@ function place_staff_editStats(staffArray) {
 
         newDiv.className = "col normal-driver";
         newDiv.dataset.driverid = staff[1];
+        newDiv.dataset.type = staff[3];
         let nameDiv = document.createElement("div");
+        nameDiv.className = "name-div-edit-stats"
         newDiv.dataset.teamid = staff[2];
         let name = staff[0].split(" ")
         let spanName = document.createElement("span")
@@ -182,6 +194,13 @@ function place_staff_editStats(staffArray) {
         newDiv.dataset.retirement = staff["retirement_age"]
         newDiv.dataset.raceFormula = staff["race_formula"]
         newDiv.dataset.isRetired = staff[4]
+        if (staff["nationality"] !== ""){
+            let country_code = staff["nationality"]
+            let flag = document.createElement("img")
+            flag.className = "name-flag"
+            flag.src = `https://flagsapi.com/${country_code}/flat/24.png`
+            nameDiv.appendChild(flag)
+        }
         if (staff["mentality0"]) {
             newDiv.dataset.mentality0 = staff["mentality0"]
             newDiv.dataset.mentality1 = staff["mentality1"]

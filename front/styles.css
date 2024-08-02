@@ -1861,6 +1861,21 @@ input[type="checkbox"]:checked {
   max-width: 200px;
 }
 
+.name-flag{
+  margin-left: 8px;
+  width: 30px;
+  height: 24px;
+  border-radius: 20px;
+  opacity: 0.9;
+}
+
+.name-div-edit-stats{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  /* max-height: 24px; */
+}
+
 .menuFlag {
   height: 10px;
   width: 20px;
@@ -3620,6 +3635,7 @@ DRIVERS TABLE
   display: flex;
   gap: 15px;
   padding: 6px 2px;
+  color: var(--dark-text);
 }
 
 .existing-part, .new-part{
@@ -5074,8 +5090,8 @@ input.disabled{
 
 .future-contract-noti{
   position: absolute;
-  top: 3px;
-  right: 3px;
+  top: 5px;
+  right: 5px;
   width: 7px;
   height: 7px;
   border-radius: 50%;
@@ -5296,10 +5312,48 @@ input.disabled{
   animation: marquee 8.5s ease-in-out infinite;
 }
 
+.free-driver .edit-container{
+  display: flex;
+  gap: 5px;
+  position: absolute;
+  left: -5px;
+  top: -6px;
+  width: 39px;
+  opacity: 0;
+  background-color: var(--elements-hover);
+  color: var(--text-general);
+  transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom-right-radius: 3px;
+  z-index: 3;
+  padding-left: 8px;
+  padding-top: 1px;
+  height: 17px;
+  align-items: center;
+}
+
+.free-driver .bi-pencil-fill{
+  font-size: 8px;
+  height: 8PX;
+}
+
+.free-driver .bi-123{
+  height: 17px;
+}
+
+.free-driver:hover .edit-container{
+  opacity: 1;
+}
+
+.free-driver .edit-container:hover{
+  background-color: var(--text-general);
+  color: var(--negative-text);
+}
+
 
 .free-driver {
   background-color: var(--elements);
-  border: 2px solid transparent;
   border-radius: 10px;
   padding:  5px 6px;
   cursor: grab !important;
@@ -5690,10 +5744,10 @@ input.disabled{
 
 .super-license-holder{
   display: flex !important;
-  font-size: 20px;
+  font-size: 19px;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 .name-and-stat{
