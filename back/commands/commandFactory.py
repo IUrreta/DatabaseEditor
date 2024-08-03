@@ -23,6 +23,7 @@ from commands.unretire import UnretireCommand
 from commands.configUpdate import ConfigUpdateCommand
 from commands.performanceRequest import PerformanceRequestCommand
 from commands.disconnect import DisconnectCommand
+from commands.fitParts import FitPartsCommand
 
 
 class CommandFactory:
@@ -33,7 +34,8 @@ class CommandFactory:
                     "H2HConfigured": H2HConfiguredCommand, "teamRequest": TeamRequestCommand, "editTeam": EditTeamCommand, 
                     "yearSelectedPrediction": YearSelectedPredictionCommand, "yearSelectedPredictionModal": YearSelectedPredictionModalCommand, 
                     "predict": PredictCommand, "predictMontecarlo": PredictMontecarloCommand, "unretireDriver": UnretireCommand, 
-                    "configUpdate": ConfigUpdateCommand, "performanceRequest": PerformanceRequestCommand, "disconnect": DisconnectCommand}
+                    "configUpdate": ConfigUpdateCommand, "performanceRequest": PerformanceRequestCommand, "disconnect": DisconnectCommand,
+                      "fitParts": FitPartsCommand}
 
     def __init__(self):
         pass

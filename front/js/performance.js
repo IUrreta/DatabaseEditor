@@ -273,6 +273,14 @@ function load_parts_list(data) {
     }
 }
 
+document.querySelector(".fit-button").addEventListener("click", function () {
+    let data = {
+        command: "fitParts"
+
+    }
+    socket.send(JSON.stringify(data))
+})
+
 document.querySelectorAll(".part-performance-title .bi-caret-down-fill").forEach(function (elem) {
     elem.addEventListener("click", function () {
         elem.classList.toggle("clicked")

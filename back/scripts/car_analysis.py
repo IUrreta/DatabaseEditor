@@ -205,6 +205,47 @@ class CarAnalysisUtils:
 
         return teams
     
+    def fit_latest_designs_all_grid(self,  custom_team=None):
+        day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+        day = day_season[0]
+        season = day_season[1]
+        best_parts = self.get_best_parts_until(day, custom_team)
+        print(best_parts)
+        for team in best_parts:
+            self.fit_latest_designs_one_team(team, best_parts[team])
+
+
+    def fit_latest_designs_one_team(self, team_id, parts):
+        for loadout in range(1, 3):
+            for part in parts:
+                if part != 0:
+                    design = parts[part][0][0]
+                    part_name = parts[part]
+                    fitted_design = self.cursor.execute(f"SELECT DesignID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = {loadout}").fetchone()[0]
+                    if design != fitted_design:
+                        parts_available = self.cursor.execute(f"SELECT ItemID FROM Parts_Items WHERE DesignID = {design} AND AssociatedCar IS NULL").fetchall()
+                        if not parts_available:
+                            item = self.create_new_item(design, part)
+                            self.add_part_to_loadout(design, part, team_id, loadout, item)
+                            print(f"New item created for team {team_id} and part {part}, itemID: {item} added to loadout {loadout}")
+                        else:
+                            item = parts_available[0][0]
+                            self.add_part_to_loadout(design, part, team_id, loadout, item)
+                            print(f"Item {item} alredy existed, added to loadout {loadout} for team {team_id} and part {part}")
+                    else:
+                        print(f"Design {design} already fitted for team {team_id} and part {part}")
+        self.conn.commit()
+
+
+    def create_new_item(self, design_id, part):
+        max_item = self.cursor.execute("SELECT MAX(ItemID) FROM Parts_Items").fetchone()[0]
+        new_item = max_item + 1
+        number_of_manufacutres = self.cursor.execute(f"SELECT ManufactureCount FROM Parts_Designs WHERE DesignID = {design_id}").fetchone()[0]
+        new_n_manufactures = number_of_manufacutres + 1
+        self.cursor.execute(f"INSERT INTO Parts_Items VALUES ({new_item}, {design_id}, {standard_buildwork_per_part[part]}, 1, {new_n_manufactures}, NULL, NULL, 0, NULL)")
+        self.cursor.execute(f"UPDATE Parts_Designs SET ManufactureCount = {new_n_manufactures} WHERE DesignID = {design_id}")
+        return new_item
+
     def add_new_design(self, part, team_id, day, season, latest_design_part_from_team, new_design_id):
         max_design_from_part = self.cursor.execute(f"SELECT MAX(DesignNumber) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id}").fetchone()[0]
         new_max_design = max_design_from_part + 1
@@ -227,14 +268,15 @@ class CarAnalysisUtils:
     def add_4_items(self, new_design_id, part, team_id):
         max_item = self.cursor.execute("SELECT MAX(ItemID) FROM Parts_Items").fetchone()[0]
         for i in range(1, 5):
-            max_item += 1
+            max_item += 1   
+            self.cursor.execute(f"INSERT INTO Parts_Items VALUES ({max_item}, {new_design_id}, {standard_buildwork_per_part[part]}, 1, {i}, NULL, NULL, 0, NULL)")
             if i <= 2:
                 loadout_id = i
-                self.add_part_to_loadout(new_design_id, part, team_id, loadout_id, max_item)
-            self.cursor.execute(f"INSERT INTO Parts_Items VALUES ({max_item}, {new_design_id}, {standard_buildwork_per_part[part]}, 1, {i}, NULL, {loadout_id}, 0, {loadout_id})")
+                self.add_part_to_loadout(new_design_id, part, team_id, loadout_id, max_item) 
 
     def add_part_to_loadout(self, design_id, part, team_id, loadout_id, item_id):
         self.cursor.execute(f"UPDATE Parts_CarLoadout SET DesignID = {design_id}, ItemID = {item_id} WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = {loadout_id}")
+        self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = {loadout_id}, LastEquippedCar = {loadout_id} WHERE ItemID = {item_id}")
 
     def overwrite_performance_team(self, team_id, performance, custom_team=None, year_iteration=None):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()

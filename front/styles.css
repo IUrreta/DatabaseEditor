@@ -3630,6 +3630,16 @@ DRIVERS TABLE
   height: 89% !important;
 }
 
+.fit-button{
+  font-family: 'Formula1Bold';
+  color: var(--dark-text);
+}
+
+.fit-button:hover{
+  cursor: pointer;
+  color: var(--new-primary);
+}
+
 .new-or-existing-part{
   font-family: 'Formula1Bold';
   display: flex;
