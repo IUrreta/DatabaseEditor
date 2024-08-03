@@ -3578,7 +3578,11 @@ DRIVERS TABLE
   gap: 6px;
   margin-top: 6px;
   overflow-y: auto;
-  height: 304px;
+  height: 311px;
+}
+
+.parts-list.noCustom{
+  height: 268px;
 }
 
 .one-part{
@@ -3635,6 +3639,7 @@ DRIVERS TABLE
   height: 89% !important;
 }
 
+
 .fit-button{
   font-family: 'Formula1Bold';
   color: var(--dark-text);
@@ -3656,16 +3661,23 @@ DRIVERS TABLE
   font-size: 25px;
   max-height: 30px;
   align-items: center;
-  padding-bottom: 4px;
 }
 
 .spare {
   min-width: 25px;
 }
 
+.fitted-icons .n-parts{
+  font-family: "Formula1";
+  font-size: 14px;
+  max-height: 30px;
+  margin-right: 5px;
+}
+
 .fitted-icons .loadout-1{
   color: var(--new-primary);
   position: relative;
+  padding-bottom: 4px;
 }
 
 .loadout-1 .number, .loadout-2 .number{
@@ -3675,11 +3687,13 @@ DRIVERS TABLE
   bottom: 7px;
   right: 3px;
   z-index: 2;
+  padding-bottom: 4px;
 }
 
 .fitted-icons .loadout-2{
   color: var(--new-secondary);
   position: relative;
+  padding-bottom: 4px;
 }
 
 .new-or-existing-part{

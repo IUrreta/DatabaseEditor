@@ -62,10 +62,13 @@ class CarAnalysisUtils:
                     equipped_2 = 0
                 else:
                     equipped_2 = 1
+                
+                n_parts = self.cursor.execute(f"SELECT COUNT(*) FROM Parts_Items WHERE DesignID = {design_id}").fetchone()[0]
 
                 design = list(design)
                 design.append(equipped_1)
                 design.append(equipped_2)
+                design.append(n_parts)
                 design = tuple(design)
                 designs[index] = design
                 
@@ -260,7 +263,6 @@ class CarAnalysisUtils:
                         print(f"Design {design} already fitted for team {team_id} and part {part}")
                         
         self.conn.commit()
-        self.conn.close()
 
 
     def create_new_item(self, design_id, part):

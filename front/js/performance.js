@@ -247,10 +247,15 @@ function load_parts_list(data) {
             let partTitle = document.createElement("div")
             partTitle.classList.add("one-part-title")
             let partName = document.createElement("div")
+            partName.classList.add("one-part-name")
             partName.innerText = abreviations_dict[teamSelected] + "-" + pars_abreviations[key] + "-" + index
             partTitle.appendChild(partName)
             let loadoutContainer = document.createElement("div")
             loadoutContainer.classList.add("fitted-icons")
+            let n_parts = document.createElement("div")
+            n_parts.classList.add("n-parts")
+            n_parts.innerText = "x" + data[key][part][6]
+            loadoutContainer.appendChild(n_parts)
             if (data[key][part][4] === 1) {
                 let loadout = document.createElement("i")
                 loadout.classList.add("bi", "bi-check", "loadout-1")
