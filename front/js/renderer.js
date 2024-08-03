@@ -646,17 +646,24 @@ document.addEventListener('DOMContentLoaded',function () {
             document.querySelectorAll(".staff-list").forEach(function (elem) {
                 elem.style.height = "672px"
             })
+            document.querySelectorAll(".parts-list").forEach(function (elem) {
+                elem.classList.remove("noCustom")
+            })
             document.getElementById("free-drivers").style.height = "672px"
             document.getElementById("free-staff").style.height = "672px"
             document.getElementById("raceMenu").style.height = "686px"
         }
         else if (mode === "10teams") {
+            console.log("10 teams")
             ipcRenderer.send('resize-window',875);
             document.querySelectorAll(".main-resizable").forEach(function (elem) {
                 elem.style.height = "660px"
                 if (elem.id === "enginesPerformance") {
                     elem.style.maxHeight = "660px"
                 }
+            })
+            document.querySelectorAll(".parts-list").forEach(function (elem) {
+                elem.classList.add("noCustom")
             })
             document.querySelectorAll(".staff-list").forEach(function (elem) {
                 elem.style.height = "612px"

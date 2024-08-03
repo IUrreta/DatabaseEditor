@@ -805,11 +805,13 @@ input[type="checkbox"]:checked {
   overflow-y: scroll;
 }
 
-#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #teamContractMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar, #raceProbMenu::-webkit-scrollbar, .prob-viewer-data::-webkit-scrollbar, #patchNotesBody::-webkit-scrollbar{
+#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #teamContractMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar, #raceProbMenu::-webkit-scrollbar, .prob-viewer-data::-webkit-scrollbar, #patchNotesBody::-webkit-scrollbar,
+.parts-list::-webkit-scrollbar{
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #teamContractMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb, #patchNotesBody::-webkit-scrollbar-thumb{
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #teamContractMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb, #patchNotesBody::-webkit-scrollbar-thumb,
+.parts-list::-webkit-scrollbar-thumb{
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -3575,6 +3577,12 @@ DRIVERS TABLE
   flex-direction: column;
   gap: 6px;
   margin-top: 6px;
+  overflow-y: auto;
+  height: 311px;
+}
+
+.parts-list.noCustom{
+  height: 268px;
 }
 
 .one-part{
@@ -3593,6 +3601,7 @@ DRIVERS TABLE
   font-size: 18px;
   font-family: 'Formula1Bold';
   color: var(--dark-text);
+  display: flex;
 }
 
 .one-part-flag-and-text{
@@ -3628,6 +3637,63 @@ DRIVERS TABLE
   flex-direction: column;
   justify-content: space-between;
   height: 89% !important;
+}
+
+
+.fit-button{
+  font-family: 'Formula1Bold';
+  color: var(--dark-text);
+  transition: color 0.2s, transform 0.2s;
+  padding-top: 10px;
+  margin-left: 4px;
+}
+
+.fit-button:hover{
+  cursor: pointer;
+  color: var(--new-primary);
+  transform: scale(1.05);
+}
+
+.fitted-icons{
+  margin-left: 10px;
+  display: flex;
+  flex-direction: row;
+  font-size: 25px;
+  max-height: 30px;
+  align-items: center;
+}
+
+.spare {
+  min-width: 25px;
+}
+
+.fitted-icons .n-parts{
+  font-family: "Formula1";
+  font-size: 14px;
+  max-height: 30px;
+  margin-right: 5px;
+}
+
+.fitted-icons .loadout-1{
+  color: var(--new-primary);
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.loadout-1 .number, .loadout-2 .number{
+  font-size: 10px;
+  font-family: 'Formula1Bold';
+  position: absolute;
+  bottom: 7px;
+  right: 3px;
+  z-index: 2;
+  padding-bottom: 4px;
+}
+
+.fitted-icons .loadout-2{
+  color: var(--new-secondary);
+  position: relative;
+  padding-bottom: 4px;
 }
 
 .new-or-existing-part{
