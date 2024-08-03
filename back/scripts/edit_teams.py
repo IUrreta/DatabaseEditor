@@ -104,6 +104,8 @@ def edit_team(info):
     oldERSID = cursor.execute(f"SELECT DesignID FROM Parts_Designs WHERE TeamID = {teamID}  AND PartType = 1").fetchone()
     oldGearboxID = cursor.execute(f"SELECT DesignID FROM Parts_Designs WHERE TeamID = {teamID}  AND PartType = 2").fetchone()
     newEngineID = info['engine']
+    new_engine_manufacturer = cursor.execute(f"SELECT Value FROM Parts_Enum_EngineManufacturers WHERE EngineDesignID = {newEngineID}").fetchone()
+    cursor.execute(f"UPDATE Parts_TeamHistory SET EngineManufacturer = {new_engine_manufacturer[0]} WHERE TeamID = {teamID} AND SeasonID = {day_season[1]}")
     newErsID = ers_dict[newEngineID]
     newGearboxID = gearbox_dict[newEngineID]
     engine_stats = cursor.execute(f"SELECT PartStat, UnitValue, Value FROM Parts_Designs_StatValues WHERE DesignID = {newEngineID}").fetchall()
