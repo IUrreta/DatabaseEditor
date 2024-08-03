@@ -238,6 +238,7 @@ function load_parts_list(data) {
         list.innerHTML = ""
         let index = 1;
         for (let part in data[key]) {
+            console.log(data[key][part][4])
             let partElem = document.createElement("div")
             partElem.classList.add("one-part")
             if (index === 1) {
@@ -245,7 +246,41 @@ function load_parts_list(data) {
             }
             let partTitle = document.createElement("div")
             partTitle.classList.add("one-part-title")
-            partTitle.innerText = abreviations_dict[teamSelected] + "-" + pars_abreviations[key] + "-" + index
+            let partName = document.createElement("div")
+            partName.innerText = abreviations_dict[teamSelected] + "-" + pars_abreviations[key] + "-" + index
+            partTitle.appendChild(partName)
+            let loadoutContainer = document.createElement("div")
+            loadoutContainer.classList.add("fitted-icons")
+            if (data[key][part][4] === 1) {
+                let loadout = document.createElement("i")
+                loadout.classList.add("bi", "bi-check", "loadout-1")
+                loadoutContainer.appendChild(loadout)
+                let number = document.createElement("div")
+                number.classList.add("number")
+                number.innerText = "1"
+                loadout.appendChild(number)
+            }
+            else{
+                let spare = document.createElement("i")
+                spare.classList.add("spare")
+                loadoutContainer.appendChild(spare)
+            }
+            if (data[key][part][5] === 1) {
+                let loadout = document.createElement("i")
+                loadout.classList.add("bi", "bi-check", "loadout-2")
+                loadoutContainer.appendChild(loadout)
+                let number = document.createElement("div")
+                number.classList.add("number")
+                number.innerText = "2"
+                loadout.appendChild(number)
+            }
+            else{
+                let spare = document.createElement("i")
+                spare.classList.add("spare")
+                loadoutContainer.appendChild(spare)
+            }
+
+            partTitle.appendChild(loadoutContainer)
             let posRelative = document.createElement("div")
             posRelative.classList.add("one-part-flag-and-text")
             if (data[key][part][1] !== data[key][part][2]){
@@ -275,7 +310,8 @@ function load_parts_list(data) {
 
 document.querySelector(".fit-button").addEventListener("click", function () {
     let data = {
-        command: "fitParts"
+        command: "fitParts",
+        teamID: teamSelected
 
     }
     socket.send(JSON.stringify(data))

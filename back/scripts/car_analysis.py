@@ -43,9 +43,34 @@ class CarAnalysisUtils:
         season = day_season[1]
         parts_dict = {}
         for j in range(3, 9):
-            # Ejecución de la consulta con los parámetros correspondientes
             params = (j, team_id, season)
             designs = self.cursor.execute(query, params).fetchall()
+            for index, design in enumerate(designs):
+                design_id = design[0]
+                equipped_1 = self.cursor.execute(f"SELECT DesignID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {j} AND LoadoutID = 1").fetchone()
+                if equipped_1 is not None:
+                    equipped_1 = equipped_1[0]
+                if equipped_1 != design_id:
+                    equipped_1 = 0
+                else:
+                    equipped_1 = 1
+
+                equipped_2 = self.cursor.execute(f"SELECT DesignID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {j} AND LoadoutID = 2").fetchone()
+                if equipped_2 is not None:
+                    equipped_2 = equipped_2[0]
+                if equipped_2 != design_id:
+                    equipped_2 = 0
+                else:
+                    equipped_2 = 1
+
+                design = list(design)
+                design.append(equipped_1)
+                design.append(equipped_2)
+                design = tuple(design)
+                designs[index] = design
+                
+
+                        
             parts_dict[parts[j]] = designs  
 
         return parts_dict
@@ -210,7 +235,6 @@ class CarAnalysisUtils:
         day = day_season[0]
         season = day_season[1]
         best_parts = self.get_best_parts_until(day, custom_team)
-        print(best_parts)
         for team in best_parts:
             self.fit_latest_designs_one_team(team, best_parts[team])
 
@@ -234,7 +258,9 @@ class CarAnalysisUtils:
                             print(f"Item {item} alredy existed, added to loadout {loadout} for team {team_id} and part {part}")
                     else:
                         print(f"Design {design} already fitted for team {team_id} and part {part}")
+                        
         self.conn.commit()
+        self.conn.close()
 
 
     def create_new_item(self, design_id, part):
