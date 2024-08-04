@@ -15,7 +15,8 @@ class FitPartsCommand(Command):
         info.insert(0, f"Succesfully fitted all teams with their latets designs")
         info_json = json.dumps(info)
         await self.send_message_to_client(info_json)
-        design_dict = car_analysis.get_parts_from_team(self.message["teamID"])
-        parts_stats = ["Parts stats fetched", car_analysis.get_unitvalue_from_parts(design_dict), car_analysis.get_all_parts_from_team(self.message["teamID"])]
-        data_json = json.dumps(parts_stats)
-        await self.send_message_to_client(data_json)
+        if self.message.get("teamID") is not None:
+            design_dict = car_analysis.get_parts_from_team(self.message["teamID"])
+            parts_stats = ["Parts stats fetched", car_analysis.get_unitvalue_from_parts(design_dict), car_analysis.get_all_parts_from_team(self.message["teamID"])]
+            data_json = json.dumps(parts_stats)
+            await self.send_message_to_client(data_json)
