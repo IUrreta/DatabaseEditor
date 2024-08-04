@@ -260,7 +260,15 @@ class CarAnalysisUtils:
                             self.add_part_to_loadout(design, part, team_id, loadout, item)
                             print(f"Item {item} alredy existed, added to loadout {loadout} for team {team_id} and part {part}")
                     else:
-                        print(f"Design {design} already fitted for team {team_id} and part {part}")
+                        other_loadout = 1 if loadout == 2 else 2
+                        fitted_item_other = self.cursor.execute(f"SELECT ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = {other_loadout}").fetchone()
+                        fitted_item = self.cursor.execute(f"SELECT ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = {loadout}").fetchone()
+                        if fitted_item_other is not None and fitted_item is not None and fitted_item[0] == fitted_item_other[0]:
+                            item = self.create_new_item(design, part)
+                            self.add_part_to_loadout(design, part, team_id, loadout, item)
+                            print(f"Both loadouts had the same item, new item created for team {team_id} and part {part}, itemID: {item} added to loadout {loadout}")
+                        else:
+                            print(f"Design {design} already fitted for team {team_id} and part {part}")
                         
         self.conn.commit()
 
