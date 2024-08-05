@@ -337,7 +337,7 @@ function performanceModeHandler() {
                     stats[statNum] = value;
                 }
             });
-            stats["new"] = elem.dataset.new;
+            stats["designEditing"] = elem.querySelector(".part-subtitle").dataset.editing
             parts[part] = stats;
         })
         data = {
@@ -455,7 +455,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
+    const noNotifications = ["Part values fetched", "Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -563,6 +563,9 @@ document.addEventListener('DOMContentLoaded',function () {
         },
         "Game Year": (message) => {
             manage_game_year(message.slice(1)[0])
+        },
+        "Part values fetched": (message) => {
+            load_one_part(message.slice(1))
         }
     };
 

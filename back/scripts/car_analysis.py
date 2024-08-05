@@ -63,7 +63,7 @@ class CarAnalysisUtils:
                 else:
                     equipped_2 = 1
                 
-                n_parts = self.cursor.execute(f"SELECT COUNT(*) FROM Parts_Items WHERE DesignID = {design_id}").fetchone()[0]
+                n_parts = self.cursor.execute(f"SELECT COUNT(*) FROM Parts_Items WHERE DesignID = {design_id} AND BuildWork = {standard_buildwork_per_part[j]}").fetchone()[0]
 
                 design = list(design)
                 design.append(equipped_1)
@@ -126,6 +126,13 @@ class CarAnalysisUtils:
             stats_values[parts[part]] = {stat[0]: stat[1] for stat in result}
 
         return stats_values
+    
+    def get_unitvalue_from_one_part(self, design_id):
+        part_type = self.cursor.execute(f"SELECT PartType FROM Parts_Designs WHERE DesignID = {design_id}").fetchone()[0]
+        result  = self.cursor.execute(f"SELECT PartStat, UnitValue FROM Parts_Designs_StatValues WHERE DesignID = {design_id}").fetchall()
+        stats_values = {stat[0]: stat[1] for stat in result}
+        part_values = {parts[part_type]: stats_values}
+        return part_values
 
 
     def convert_percentage_to_value(self, attribute, percentage, min_max):
@@ -324,13 +331,15 @@ class CarAnalysisUtils:
             if part != 0:
                 design = team_parts[part][0][0]
                 part_name = parts[part]
-                new_design = performance[part_name]["new"]
-                performance[part_name].pop("new")
-                if int(new_design):
+                new_design = performance[part_name]["designEditing"]
+                performance[part_name].pop("designEditing")
+                if int(new_design) == -1:
                     max_design = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs").fetchone()[0]
                     latest_design_part_from_team = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id}").fetchone()[0]
                     new_design_id = max_design + 1
                     self.add_new_design(part, int(team_id), day, season, latest_design_part_from_team, new_design_id)
+                else:
+                    design = new_design
 
                 stats = performance[part_name]
                 for stat in stats:
@@ -339,7 +348,7 @@ class CarAnalysisUtils:
                         value = downforce_24_unitValueToValue[int(stat)](stat_num)
                     else:
                         value = unitValueToValue[int(stat)](stat_num)
-                    if not int(new_design):
+                    if int(new_design) != -1:
                         self.change_expertise_based(part, stat, value, int(team_id))
                         self.cursor.execute(f"UPDATE Parts_Designs_StatValues SET UnitValue = {stats[stat]} WHERE DesignID = {design} AND PartStat = {stat}")
                         self.cursor.execute(f"UPDATE Parts_Designs_StatValues SET Value = {value} WHERE DesignID = {design} AND PartStat = {stat}")
@@ -347,7 +356,7 @@ class CarAnalysisUtils:
                         self.cursor.execute(f"INSERT INTO Parts_Designs_StatValues VALUES ({new_design_id}, {stat}, {value}, {stats[stat]}, 0.5, 1, 0.1)")
                         
                 
-                if int(new_design):  #when inserting new part I only can change expertise when all the stats have been inserted, also insert standard weight
+                if int(new_design) == -1:  #when inserting new part I only can change expertise when all the stats have been inserted, also insert standard weight
                     self.cursor.execute(f"INSERT INTO Parts_Designs_StatValues VALUES ({new_design_id}, 15, 500, {standard_weight_per_part[part]}, 0.5, 0, 0)")
                     for stat in stats:
                         stat_num = float(stats[stat])

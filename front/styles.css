@@ -15,7 +15,7 @@
   --new-primary-dark: #ba82ff;
   --new-primary-transparent: #c89efc99;
   --text-selected: #e7d3ff;
-  --text-selected-secondary: #a8cec9;
+  --text-selected-secondary: #b1dbd6;
   --new-secondary: #9AD2CB;
   --table-hover: #4a4a4a;
   --elements-hover: #3a3a3a;
@@ -3621,7 +3621,7 @@ DRIVERS TABLE
 
 .one-part-flag-title{
   position: absolute;
-  top: 50%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-shadow: 2px 2px 4px var(--negative-text);
@@ -3667,6 +3667,25 @@ DRIVERS TABLE
   min-width: 25px;
 }
 
+.one-part-name{
+  transition: color 0.2s, transform 0.2s;
+}
+
+.one-part-name:hover{
+  cursor: pointer;
+  color: var(--text-selected);
+  transform: scale(1.05);
+}
+
+.one-part-name.editing{
+  color: var(--text-general);
+}
+
+.part-subtitle{
+  color: var(--dark-text);
+  font-size: 20px;
+}
+
 .fitted-icons .n-parts{
   font-family: "Formula1";
   font-size: 14px;
@@ -3674,10 +3693,31 @@ DRIVERS TABLE
   margin-right: 5px;
 }
 
-.fitted-icons .loadout-1{
+.fitted-icons i:not(.fitted){
+  color: var(--disabled-text);
+  transition: color 0.2s, transform 0.2s;
+}
+
+.fitted-icons .loadout-1.fitted{
   color: var(--new-primary);
+}
+
+.fitted-icons .loadout-1{
   position: relative;
   padding-bottom: 4px;
+}
+
+.loadout-1:not(.fitted):hover, .loadout-2:not(.fitted):hover{
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.loadout-1:not(.fitted):hover{
+  color: var(--text-selected);
+}
+
+.loadout-2:not(.fitted):hover{
+  color: var(--text-selected-secondary);
 }
 
 .loadout-1 .number, .loadout-2 .number{
@@ -3691,9 +3731,12 @@ DRIVERS TABLE
 }
 
 .fitted-icons .loadout-2{
-  color: var(--new-secondary);
   position: relative;
   padding-bottom: 4px;
+}
+
+.fitted-icons .loadout-2.fitted{
+  color: var(--new-secondary);
 }
 
 .new-or-existing-part{

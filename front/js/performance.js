@@ -235,10 +235,11 @@ function load_parts_stats(data) {
 function load_parts_list(data) {
     for (let key in data) {
         let list = document.querySelector(`.part-performance[data-part='${key}'] .parts-list`)
+        let partLoadouts = document.querySelector(`.part-performance[data-part='${key}']`)
         list.innerHTML = ""
         let index = 1;
         for (let part in data[key]) {
-            console.log(data[key][part][4])
+            console.log(data[key][part])
             let partElem = document.createElement("div")
             partElem.classList.add("one-part")
             if (index === 1) {
@@ -247,44 +248,45 @@ function load_parts_list(data) {
             let partTitle = document.createElement("div")
             partTitle.classList.add("one-part-title")
             let partName = document.createElement("div")
+            partName.dataset.designId = data[key][part][0]
             partName.classList.add("one-part-name")
-            partName.innerText = abreviations_dict[teamSelected] + "-" + pars_abreviations[key] + "-" + index
+            let partNameText = abreviations_dict[teamSelected] + "-" + pars_abreviations[key] + "-" + index
+            partName.innerText = partNameText
+            let subtitle = document.querySelector(`.part-performance[data-part='${key}'] .part-subtitle`)
+            subtitle.innerText = partNameText
+            subtitle.dataset.editing = data[key][part][0]
             partTitle.appendChild(partName)
+            add_partName_listener(partName, subtitle)
             let loadoutContainer = document.createElement("div")
             loadoutContainer.classList.add("fitted-icons")
             let n_parts = document.createElement("div")
             n_parts.classList.add("n-parts")
             n_parts.innerText = "x" + data[key][part][6]
             loadoutContainer.appendChild(n_parts)
+            let loadout1 = document.createElement("i")
+            loadout1.classList.add("bi", "bi-check", "loadout-1")
+            loadoutContainer.appendChild(loadout1)
             if (data[key][part][4] === 1) {
-                let loadout = document.createElement("i")
-                loadout.classList.add("bi", "bi-check", "loadout-1")
-                loadoutContainer.appendChild(loadout)
+                loadout1.classList.add("fitted")
                 let number = document.createElement("div")
                 number.classList.add("number")
                 number.innerText = "1"
-                loadout.appendChild(number)
+                loadout1.appendChild(number)
+                partLoadouts.dataset.loadout1 = data[key][part][0]
             }
-            else{
-                let spare = document.createElement("i")
-                spare.classList.add("spare")
-                loadoutContainer.appendChild(spare)
-            }
+            loadout_listener(loadout1, "1", partLoadouts)
+            let loadout2 = document.createElement("i")
+            loadout2.classList.add("bi", "bi-check", "loadout-2")
+            loadoutContainer.appendChild(loadout2)
             if (data[key][part][5] === 1) {
-                let loadout = document.createElement("i")
-                loadout.classList.add("bi", "bi-check", "loadout-2")
-                loadoutContainer.appendChild(loadout)
+                loadout2.classList.add("fitted")
                 let number = document.createElement("div")
                 number.classList.add("number")
                 number.innerText = "2"
-                loadout.appendChild(number)
+                loadout2.appendChild(number)
+                partLoadouts.dataset.loadout2 = data[key][part][0]
             }
-            else{
-                let spare = document.createElement("i")
-                spare.classList.add("spare")
-                loadoutContainer.appendChild(spare)
-            }
-
+            loadout_listener(loadout2, "2", partLoadouts)
             partTitle.appendChild(loadoutContainer)
             let posRelative = document.createElement("div")
             posRelative.classList.add("one-part-flag-and-text")
@@ -308,9 +310,81 @@ function load_parts_list(data) {
             partElem.appendChild(posRelative)
             partElem.dataset.partid = part
             list.appendChild(partElem)
+            if (index === data[key].length){
+                partName.classList.add("editing")
+            }
             index++;
+
         }
     }
+}
+
+function load_one_part(data) {
+    data = data[0]
+    console.log(data)
+    let key = Object.keys(data)[0]
+    let part = document.querySelector(`.part-performance[data-part='${key}']`)
+    for (let stat in data[key]) {
+        if (stat !== "15") {
+            let stat_input = part.querySelector(`.part-performance-stat[data-attribute='${stat}']`).querySelector(".custom-input-number")
+            if (stat === "7" || stat === "8" || stat === "9") {
+                stat_input.value = data[key][stat].toFixed(2) + " kN"
+            }
+            else {
+                stat_input.value = data[key][stat].toFixed(2) + " %"
+            }
+        }
+    }
+}
+
+function add_partName_listener(div, subtitle){
+    console.log(div)
+    div.addEventListener("click", function () {
+        subtitle.dataset.editing = div.dataset.designId
+        subtitle.innerText = div.innerText
+        let parts = div.parentNode.parentNode.parentNode.querySelectorAll(".one-part")
+        parts.forEach(function(part){
+            part.querySelector(".one-part-name").classList.remove("editing")
+        })
+        div.classList.add("editing")
+        let data = {
+            command: "partRequest",
+            designID: div.dataset.designId
+        }
+        socket.send(JSON.stringify(data))
+    })
+}
+
+function loadout_listener(icon, loadout_n, partTitle){
+    icon.addEventListener("click", function () {
+        let part_design = icon.parentNode.parentNode.dataset.designId
+        partTitle.dataset[`loadout${loadout_n}`] = part_design
+        if (loadout_n === "1"){
+            let oldFitted = partTitle.querySelector(".loadout-1.fitted")
+            if (oldFitted){
+                oldFitted.classList.remove("fitted")
+                oldFitted.querySelector(".number").remove()
+            }
+            icon.classList.toggle("fitted")
+            let number = document.createElement("div")
+            number.classList.add("number")
+            number.innerText = "1"
+            icon.appendChild(number)
+        }
+        else{
+            let oldFitted = partTitle.querySelector(".loadout-2.fitted")
+            if (oldFitted){
+                oldFitted.classList.remove("fitted")
+                oldFitted.querySelector(".number").remove()
+            }
+            icon.classList.toggle("fitted")
+            let number = document.createElement("div")
+            number.classList.add("number")
+            number.innerText = "2"
+            icon.appendChild(number)
+        }
+    })
+    
 }
 
 document.querySelector(".fit-button").addEventListener("click", function () {
@@ -326,6 +400,7 @@ document.querySelectorAll(".part-performance-title .bi-caret-down-fill").forEach
     elem.addEventListener("click", function () {
         elem.classList.toggle("clicked")
         let generalPart = elem.parentNode.parentNode
+        elem.parentNode.querySelector(".part-buttons").classList.toggle("d-none")
         if (elem.classList.contains("clicked")) {
             generalPart.querySelector(".part-performance-stats").style.opacity = 0
             generalPart.querySelector(".part-performance-stats").style.height = "0"
