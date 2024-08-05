@@ -3581,6 +3581,10 @@ DRIVERS TABLE
   height: 311px;
 }
 
+.parts-list.list-overflow{
+  padding-right: 6px;
+}
+
 .parts-list.noCustom{
   height: 268px;
 }
@@ -3654,6 +3658,33 @@ DRIVERS TABLE
   transform: scale(1.05);
 }
 
+.n-parts-error {
+  animation: errorAnim 0.5s;
+}
+
+.loadout-1-error {
+  animation: errorLoadout1 0.5s;
+}
+
+.loadout-2-error {
+  animation: errorLoadout2 0.5s;
+}
+
+@keyframes errorAnim {
+  0% { color: var(--negative-general); }
+  100% { color: var(--dark-text); }
+}
+
+@keyframes errorLoadout1 {
+  0% { color: var(--negative-general); }
+  100% { color: var(--new-primary); }
+}
+
+@keyframes errorLoadout2 {
+  0% { color: var(--negative-general); }
+  100% { color: var(--new-secondary); }
+}
+
 .fitted-icons{
   margin-left: 10px;
   display: flex;
@@ -3684,6 +3715,7 @@ DRIVERS TABLE
 .part-subtitle{
   color: var(--dark-text);
   font-size: 20px;
+  margin-left: -7px;
 }
 
 .n-parts-buttons{
@@ -4193,6 +4225,8 @@ input.disabled{
   position: relative;
   font-size: 18px;
 }
+
+
 
 .driver-info{
   border-radius: 10px;
@@ -6614,6 +6648,85 @@ input::-webkit-inner-spin-button {
 .team-title-value{
   color: var(--dark-text);
   transition: color 0.3s;
+}
+
+.car:hover .main-car, .team:hover .main-car{
+  border-left: 2px solid var(--white-general);
+}
+
+.car.selected .main-car, .team.selected .main-car{
+  border-left: 2px solid var(--white-general);
+}
+
+.main-car{
+  border-left: 2px solid var(--separator);
+  padding-left: 7px;
+  transition: border-color 0.3s;
+}
+
+.team .main-car{
+  padding-left: 10px;
+}
+
+.nunmber-and-car, .number-and-team{
+  display: flex;
+  flex-direction: row;
+}
+
+.performance-number{
+  width: 8%;
+  text-align: center;
+  padding-right: 4px;
+  font-size: 16px;
+  max-height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 4px;
+}
+
+.team-number{
+  width: 10%;
+  text-align: center;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 5px;
+}
+
+.car-performance.selected .value{
+  color: var(--white-general);
+}
+
+.car-performance:hover .value{
+  color: var(--white-general);
+}
+
+.car-missing-parts{
+  color: var(--negative-general);
+  font-size: 12px;
+  padding-top: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.car-missing-parts .bi-check-all{
+  color : var(--positive-general);
+  font-size: 20px;
+}
+
+.car-missing-parts .bi-exclamation-triangle-fill{
+  padding-bottom: 2px;
+  margin-left: 4px;
+}
+
+.car-missing-parts .value{
+  color: var(--dark-text);
+  transition: color 0.2s;
+  width: 56px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 

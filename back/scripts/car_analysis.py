@@ -115,7 +115,6 @@ class CarAnalysisUtils:
     def get_car_stats(self, design_dict):
         stats_values = {}
         for part in design_dict:
-            print(design_dict[part])
             if design_dict[part][0][0] is not None:
                 result  = self.cursor.execute(f"SELECT PartStat, Value FROM Parts_Designs_StatValues WHERE DesignID = {design_dict[part][0][0]}").fetchall()
                 stats_values[part] = {stat[0]: round(stat[1],3) for stat in result}
@@ -256,15 +255,15 @@ class CarAnalysisUtils:
         cars_parts = self.get_fitted_designs(custom_team=custom_team)
         for team in cars_parts:
             cars[team] = {}
-            print(team)
             for car in cars_parts[team]:
                 dict = self.get_car_stats(cars_parts[team][car])
+                missing_parts = [part for part in cars_parts[team][car] if cars_parts[team][car][part][0][0] is None]
                 part_stats = self.get_part_stats_dict(dict)
                 attributes = self.calculate_car_attributes(contributors, part_stats)
                 ovr = self.calculate_overall_performance(attributes)
                 driver_number = self.get_driver_number_with_car(team, car)
-                cars[team][car] = [ovr, driver_number]
-                print(f"Car {car} from team {team} has an overall performance of {ovr}")
+                cars[team][car] = [ovr, driver_number, missing_parts]
+                # print(f"Car {car} from team {team} has an overall performance of {ovr}")
 
         return cars
 
@@ -358,10 +357,10 @@ class CarAnalysisUtils:
             design_1 = loadouts_dict[part][0]
             design_2 = loadouts_dict[part][1]
             fitted_design_1 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 1").fetchone()
-            if fitted_design_1 is not None:
+            if fitted_design_1[0] is not None:
                 self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_1[1]}")
                 fitted_design_1 = fitted_design_1[0]
-                 
+
             if fitted_design_1 != design_1:
                 items_1 = self.cursor.execute(f"SELECT ItemID FROM Parts_Items WHERE DesignID = {design_1} AND BuildWork = {standard_buildwork_per_part[int(part)]} AND AssociatedCar IS NULL").fetchall()
                 if not items_1:
@@ -371,7 +370,7 @@ class CarAnalysisUtils:
                 self.add_part_to_loadout(design_1, int(part), team_id, 1, item_1)
 
             fitted_design_2 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 2").fetchone()
-            if fitted_design_2 is not None:
+            if fitted_design_2[0] is not None:
                 self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_2[1]}")
                 fitted_design_2 = fitted_design_2[0]
             if fitted_design_2 != design_2:

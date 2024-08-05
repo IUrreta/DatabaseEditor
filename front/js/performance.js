@@ -5,7 +5,8 @@ const teamsDiv = document.getElementById("teamsDiv");
 const enginesDiv = document.getElementById("enginesDiv");
 
 const divsTeamsArray = [teamsDiv, enginesDiv]
-const pars_abreviations = {"chassis": "C", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "S"}
+const pars_abreviations = { "chassis": "C", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "S" }
+const part_codes_abreviations = { 3: "C", 4: "FW", 5: "RW", 6: "UF", 7: "SP", 8: "S" }
 
 let abreviations_dict = {
     1: "FE",
@@ -69,19 +70,40 @@ function load_performance(teams) {
 
 function load_cars(data) {
     for (let key in data) {
-        console.log(key)
         let cars = document.querySelectorAll(`#carsDiv .car[data-teamid='${key}']`);
         cars.forEach(function (car, index) {
+            let carNumber = parseInt(car.dataset.carnumber);
             index = index + 1;
-            console.log(data[key][index])
-            let carValue = car.querySelector('.team-title-value');
-            carValue.innerText = data[key][index][0].toFixed(2) + ' %';
             let bar = car.querySelector('.performance-bar-progress');
-            bar.dataset.overall = data[key][index][0];
-            bar.style.width = data[key][index][0] + '%';
+            bar.dataset.overall = data[key][carNumber][0];
+            bar.style.width = data[key][carNumber][0] + '%';
             let name = car.querySelector('.team-title-name');
-            name.innerText = name.innerText + " #" + data[key][index][1];
-
+            name.innerText = car.dataset.teamshow + " " + carNumber.toString() + " -  #" + data[key][carNumber][1];
+            let missing_parts = data[key][carNumber][2];
+            let missing_copntainer = car.querySelector(".car-missing-parts")
+            missing_copntainer.innerHTML = ""
+            if (missing_parts.length > 0) {
+                let list = document.createElement("span")
+                let string = ""
+                missing_parts.forEach(function (part) {
+                    let partName = part_codes_abreviations[part]
+                    string += partName + " "
+                })
+                list.innerText = string
+                missing_copntainer.appendChild(list)
+                let icon = document.createElement("i")
+                icon.classList.add("bi", "bi-exclamation-triangle-fill")
+                missing_copntainer.appendChild(icon)
+            }
+            else {
+                let icon = document.createElement("i")
+                icon.classList.add("bi", "bi-check-all")
+                missing_copntainer.appendChild(icon)
+            }
+            let value = document.createElement("span")
+            value.classList.add("value")
+            value.innerText = data[key][carNumber][0].toFixed(2) + " %"
+            missing_copntainer.appendChild(value)
         })
     }
 }
@@ -98,35 +120,53 @@ function load_attributes(teams) {
 }
 
 function order_by(criterion, type) {
-    if (type === "teams"){
+    if (type === "teams") {
         let teams = document.querySelectorAll(".team-performance");
         let teamsArray = Array.from(teams);
         teamsArray.sort(function (a, b) {
             return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
         })
-        teamsArray.forEach(function (team) {
+        teamsArray.forEach(function (team, index) {
             document.getElementById("teamsDiv").appendChild(team);
             let bar = team.querySelector(".performance-bar-progress");
             bar.style.width = bar.dataset[criterion] + "%";
             team.querySelector(".team-title-value").innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
+            let number = team.querySelector(".team-number")
+            number.innerText = index + 1
         })
     }
-    else if (type === "cars"){
+    else if (type === "cars") {
         let cars = document.querySelectorAll(".car-performance");
         let carsArray = Array.from(cars);
         carsArray.sort(function (a, b) {
             return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
         })
-        carsArray.forEach(function (car) {
+        carsArray.forEach(function (car, index) {
             document.getElementById("carsDiv").appendChild(car);
             let bar = car.querySelector(".performance-bar-progress");
             bar.style.width = bar.dataset[criterion] + "%";
-            car.querySelector(".team-title-value").innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
+            let number = car.querySelector(".performance-number")
+            number.innerText = index + 1
         })
     }
 
 
 }
+
+document.getElementById("teamsCarsButton").addEventListener("click", function (elem) {
+    if (event.target.dataset.value === "teams") {
+        event.target.dataset.value = "cars";
+        event.target.className = "bi bi-person-fill"
+        document.getElementById("teamsDiv").classList.add("d-none");
+        document.getElementById("carsDiv").classList.remove("d-none");
+    }
+    else {
+        event.target.dataset.value = "teams";
+        event.target.className = "bi bi-people-fill"
+        document.getElementById("carsDiv").classList.add("d-none");
+        document.getElementById("teamsDiv").classList.remove("d-none");
+    }
+})
 
 
 document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function (elem) {
@@ -165,13 +205,13 @@ enginesPill.addEventListener("click", function () {
     first_show_animation()
 })
 
-function gather_engines_data(){
+function gather_engines_data() {
     let engines = document.querySelectorAll(".engine-performance")
     let enginesData = {}
-    engines.forEach(function(engine){
+    engines.forEach(function (engine) {
         let engineID = engine.dataset.engineid
         let engineStats = {}
-        engine.querySelectorAll(".engine-performance-stat").forEach(function(stat){
+        engine.querySelectorAll(".engine-performance-stat").forEach(function (stat) {
             let attribute = stat.dataset.attribute
             let value = stat.querySelector(".custom-input-number").value.split(" ")[0]
             engineStats[attribute] = value
@@ -222,7 +262,27 @@ document.querySelectorAll(".team").forEach(function (elem) {
     elem.addEventListener("click", function () {
         removeSelected()
         manageSaveButton(true, "performance")
-        document.querySelector(".performance-graph-button").classList.remove("active")
+        document.querySelector("#performanceGraphButton").classList.remove("active")
+        elem.classList.toggle('selected');
+        teamSelected = elem.dataset.teamid;
+        let teamRequest = {
+            command: "performanceRequest",
+            teamID: teamSelected,
+        }
+        socket.send(JSON.stringify(teamRequest))
+        document.querySelector("#performanceGraph").classList.add("d-none")
+        document.querySelector(".teams-show").classList.remove("d-none")
+        document.querySelector(".save-button").classList.remove("d-none")
+        first_show_animation()
+        viewingGraph = false;
+    })
+})
+
+document.querySelectorAll(".car").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        removeSelected()
+        manageSaveButton(true, "performance")
+        document.querySelector("#performanceGraphButton").classList.remove("active")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         let teamRequest = {
@@ -327,7 +387,7 @@ function load_parts_list(data) {
             partTitle.appendChild(loadoutContainer)
             let posRelative = document.createElement("div")
             posRelative.classList.add("one-part-flag-and-text")
-            if (data[key][part][1] !== data[key][part][2]){
+            if (data[key][part][1] !== data[key][part][2]) {
                 let flag = document.createElement("img")
                 flag.classList.add("one-part-flag")
                 let code = data[key][part][3]
@@ -340,23 +400,28 @@ function load_parts_list(data) {
                 posRelative.appendChild(flag)
                 posRelative.appendChild(flagName)
             }
-            else{
+            else {
                 posRelative.innerText = "BASE"
             }
             partElem.appendChild(partTitle)
             partElem.appendChild(posRelative)
             partElem.dataset.partid = part
             list.appendChild(partElem)
-            if (index === data[key].length){
+            if (index === data[key].length) {
                 partName.classList.add("editing")
             }
             index++;
 
         }
+        if (list.scrollHeight > list.clientHeight) {
+            list.classList.add("list-overflow");
+        } else {
+            list.classList.remove("list-overflow");
+        }
     }
 }
 
-function add_n_parts_buttons(loadoutContainer){
+function add_n_parts_buttons(loadoutContainer) {
     let buttonsContainer = document.createElement("div")
     buttonsContainer.classList.add("n-parts-buttons")
     let up = document.createElement("i")
@@ -365,18 +430,39 @@ function add_n_parts_buttons(loadoutContainer){
     down.classList.add("bi", "bi-chevron-down")
     buttonsContainer.appendChild(up)
     buttonsContainer.appendChild(down)
-    up.addEventListener("click", function(){
+    up.addEventListener("click", function () {
         let n_parts = loadoutContainer.querySelector(".n-parts")
         let n = parseInt(n_parts.innerText.split("x")[1])
         n += 1
         n_parts.innerText = "x" + n
     })
-    down.addEventListener("click", function(){
+    down.addEventListener("click", function () {
+        let fitted_parts = loadoutContainer.parentNode.querySelectorAll(".fitted")
+        let fitted_parts_numb = fitted_parts.length
         let n_parts = loadoutContainer.querySelector(".n-parts")
         let n = parseInt(n_parts.innerText.split("x")[1])
-        if (n > 1){
+        if (n > fitted_parts_numb) {
             n -= 1
+            if (n < 0){
+                n = 0
+            }
             n_parts.innerText = "x" + n
+        }
+        else{
+            fitted_parts.forEach(function (part) {
+                console.log(part)
+                let errorClass = ""
+                if (part.classList.contains("loadout-1")){
+                    errorClass = "loadout-1-error";
+                }
+                else if (part.classList.contains("loadout-2")){
+                    errorClass = "loadout-2-error";
+                }
+                part.classList.add(errorClass);
+                setTimeout(() => {
+                    part.classList.remove(errorClass);
+                }, 500);
+            })
         }
     })
     loadoutContainer.appendChild(buttonsContainer)
@@ -400,13 +486,13 @@ function load_one_part(data) {
     }
 }
 
-function add_partName_listener(div, subtitle){
+function add_partName_listener(div, subtitle) {
     console.log(div)
     div.addEventListener("click", function () {
         subtitle.dataset.editing = div.dataset.designId
         subtitle.innerText = div.innerText
         let parts = div.parentNode.parentNode.parentNode.querySelectorAll(".one-part")
-        parts.forEach(function(part){
+        parts.forEach(function (part) {
             part.querySelector(".one-part-name").classList.remove("editing")
         })
         div.classList.add("editing")
@@ -418,38 +504,46 @@ function add_partName_listener(div, subtitle){
     })
 }
 
-function loadout_listener(icon, loadout_n, partTitle){
+function loadout_listener(icon, loadout_n, partTitle) {
     icon.addEventListener("click", function () {
-        let part_design = icon.parentNode.parentNode.querySelector(".one-part-name").dataset.designId
-        partTitle.dataset[`loadout${loadout_n}`] = part_design
-        if (loadout_n === "1"){
-            let oldFitted = partTitle.querySelector(".loadout-1.fitted")
-            if (oldFitted){
-                oldFitted.classList.remove("fitted")
-                oldFitted.querySelector(".number").remove()
-            }
-            icon.classList.toggle("fitted")
-            let number = document.createElement("div")
-            number.classList.add("number")
-            number.innerText = "1"
-            icon.appendChild(number)
-        }
-        else{
-            let oldFitted = partTitle.querySelector(".loadout-2.fitted")
-            if (oldFitted){
-                oldFitted.classList.remove("fitted")
-                oldFitted.querySelector(".number").remove()
-            }
-            icon.classList.toggle("fitted")
-            let number = document.createElement("div")
-            number.classList.add("number")
-            number.innerText = "2"
-            icon.appendChild(number)
-        }
-    })
-    
-}
+        let part_design = icon.parentNode.parentNode.querySelector(".one-part-name").dataset.designId;
+        let n_parts_elem = icon.parentNode.querySelector(".n-parts");
+        let n_parts = n_parts_elem.innerText.split("x")[1];
+        let parts_fitted = icon.parentNode.parentNode.querySelectorAll(".fitted").length;
 
+        if (parts_fitted < n_parts) {
+            partTitle.dataset[`loadout${loadout_n}`] = part_design;
+            if (loadout_n === "1") {
+                let oldFitted = partTitle.querySelector(".loadout-1.fitted");
+                if (oldFitted) {
+                    oldFitted.classList.remove("fitted");
+                    oldFitted.querySelector(".number").remove();
+                }
+                icon.classList.toggle("fitted");
+                let number = document.createElement("div");
+                number.classList.add("number");
+                number.innerText = "1";
+                icon.appendChild(number);
+            } else {
+                let oldFitted = partTitle.querySelector(".loadout-2.fitted");
+                if (oldFitted) {
+                    oldFitted.classList.remove("fitted");
+                    oldFitted.querySelector(".number").remove();
+                }
+                icon.classList.toggle("fitted");
+                let number = document.createElement("div");
+                number.classList.add("number");
+                number.innerText = "2";
+                icon.appendChild(number);
+            }
+        } else {
+            n_parts_elem.classList.add("n-parts-error");
+            setTimeout(() => {
+                n_parts_elem.classList.remove("n-parts-error");
+            }, 500);
+        }
+    });
+}
 document.querySelector(".fit-button").addEventListener("click", function () {
     let data = {
         command: "fitParts",
@@ -486,13 +580,13 @@ document.querySelector(".performance-show").querySelectorAll(".part-name-buttons
     elem.addEventListener("mousedown", function () {
         let part = elem.parentNode.parentNode.parentNode.parentNode;
         let inputs = part.querySelectorAll(".custom-input-number");
-        
+
         inputs.forEach(function (input) {
             let increment;
-            if (input.max === "100"){
+            if (input.max === "100") {
                 increment = 0.5
             }
-            else{
+            else {
                 increment = 0.025
             }
             updateValue(input, increment);
@@ -520,12 +614,12 @@ document.querySelector(".performance-show").querySelectorAll(".part-name-buttons
     elem.addEventListener("mousedown", function () {
         let part = elem.parentNode.parentNode.parentNode.parentNode;
         let inputs = part.querySelectorAll(".custom-input-number");
-        
+
         inputs.forEach(function (input) {
-            if (input.max === "100"){
+            if (input.max === "100") {
                 increment = -0.5
             }
-            else{
+            else {
                 increment = -0.025
             }
             updateValue(input, increment);
@@ -569,7 +663,7 @@ document.querySelector(".performance-show").querySelectorAll('.stat-number .bi-p
 
 document.querySelector(".engines-show").querySelectorAll('.bi-plus-lg').forEach(button => {
     let intervalId;
-    let bar = button.parentNode.parentNode.querySelector(".engine-performance-progress");  
+    let bar = button.parentNode.parentNode.querySelector(".engine-performance-progress");
     button.addEventListener('mousedown', function () {
         const input = this.previousElementSibling;
         updateValue(input, 0.1);
@@ -610,7 +704,7 @@ document.querySelector(".performance-show").querySelectorAll('.stat-number .bi-d
 
 document.querySelector(".engines-show").querySelectorAll('.bi-dash-lg').forEach(button => {
     let intervalId;
-    let bar = button.parentNode.parentNode.querySelector(".engine-performance-progress");   
+    let bar = button.parentNode.parentNode.querySelector(".engine-performance-progress");
     button.addEventListener('mousedown', function () {
         const input = this.nextElementSibling;
         updateValue(input, -0.1);
@@ -657,9 +751,9 @@ function updateValue(input, increment) {
 }
 
 
-document.querySelector(".performance-graph-button").addEventListener("click", function () {
+document.querySelector("#performanceGraphButton").addEventListener("click", function () {
     removeSelected()
-    document.querySelector(".performance-graph-button").classList.toggle("active")
+    document.querySelector("#performanceGraphButton").classList.toggle("active")
     document.querySelector(".teams-show").classList.add("d-none")
     document.querySelector("#performanceGraph").classList.remove("d-none")
     document.querySelector(".save-button").classList.add("d-none")
