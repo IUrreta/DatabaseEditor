@@ -263,6 +263,7 @@ function load_parts_list(data) {
             n_parts.classList.add("n-parts")
             n_parts.innerText = "x" + data[key][part][6]
             loadoutContainer.appendChild(n_parts)
+            add_n_parts_buttons(loadoutContainer)
             let loadout1 = document.createElement("i")
             loadout1.classList.add("bi", "bi-check", "loadout-1")
             loadoutContainer.appendChild(loadout1)
@@ -319,6 +320,32 @@ function load_parts_list(data) {
     }
 }
 
+function add_n_parts_buttons(loadoutContainer){
+    let buttonsContainer = document.createElement("div")
+    buttonsContainer.classList.add("n-parts-buttons")
+    let up = document.createElement("i")
+    up.classList.add("bi", "bi-chevron-up")
+    let down = document.createElement("i")
+    down.classList.add("bi", "bi-chevron-down")
+    buttonsContainer.appendChild(up)
+    buttonsContainer.appendChild(down)
+    up.addEventListener("click", function(){
+        let n_parts = loadoutContainer.querySelector(".n-parts")
+        let n = parseInt(n_parts.innerText.split("x")[1])
+        n += 1
+        n_parts.innerText = "x" + n
+    })
+    down.addEventListener("click", function(){
+        let n_parts = loadoutContainer.querySelector(".n-parts")
+        let n = parseInt(n_parts.innerText.split("x")[1])
+        if (n > 1){
+            n -= 1
+            n_parts.innerText = "x" + n
+        }
+    })
+    loadoutContainer.appendChild(buttonsContainer)
+}
+
 function load_one_part(data) {
     data = data[0]
     console.log(data)
@@ -357,7 +384,7 @@ function add_partName_listener(div, subtitle){
 
 function loadout_listener(icon, loadout_n, partTitle){
     icon.addEventListener("click", function () {
-        let part_design = icon.parentNode.parentNode.dataset.designId
+        let part_design = icon.parentNode.parentNode.querySelector(".one-part-name").dataset.designId
         partTitle.dataset[`loadout${loadout_n}`] = part_design
         if (loadout_n === "1"){
             let oldFitted = partTitle.querySelector(".loadout-1.fitted")

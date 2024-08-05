@@ -63,7 +63,7 @@ fetch('./../launcher/version.conf')
     .then(version => {
         versionPanel.textContent = `${version}`;
         versionNow = version
-        parchModalTitle.textContent = "Version: " + version + " patch notes"
+        parchModalTitle.textContent = "Version " + version + " patch notes"
         getPatchNotes()
     });
 
@@ -327,8 +327,13 @@ function performanceModeHandler() {
     let data;
     if (teamsEngine === "teams") {
         let parts = {};
+        let n_parts_designs = {};
+        let loadouts = {}
         document.querySelectorAll(".part-performance").forEach(function (elem) {
             let part = elem.dataset.part;
+            let partID = elem.dataset.partid;
+            let loadout1 = elem.dataset.loadout1;
+            let loadout2 = elem.dataset.loadout2;
             let stats = {};
             elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
                 if (stat.dataset.attribute !== "-1") {
@@ -339,11 +344,21 @@ function performanceModeHandler() {
             });
             stats["designEditing"] = elem.querySelector(".part-subtitle").dataset.editing
             parts[part] = stats;
+            loadouts[partID] = [loadout1,loadout2]
+        })
+        document.querySelectorAll(".one-part").forEach(function (elem) {
+            let designID = elem.querySelector(".one-part-name").dataset.designId
+            let number = elem.querySelector(".n-parts").innerText.split("x")[1]
+            console.log(elem.querySelector(".n-parts"))
+            console.log(number)
+            n_parts_designs[designID] = number
         })
         data = {
             command: "editPerformance",
             teamID: teamSelected,
             parts: parts,
+            n_parts_designs: n_parts_designs,
+            loadouts: loadouts,
             teamName: document.querySelector(".selected").dataset.teamname
         }
     }

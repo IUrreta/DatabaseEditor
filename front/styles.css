@@ -3686,6 +3686,26 @@ DRIVERS TABLE
   font-size: 20px;
 }
 
+.n-parts-buttons{
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;  
+}
+
+.n-parts-buttons i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s !important;
+  max-height: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.n-parts-buttons i:hover{
+  cursor: pointer;
+  color: var(--new-primary);
+  transform: scale(1.1);
+}
+
 .fitted-icons .n-parts{
   font-family: "Formula1";
   font-size: 14px;
@@ -3705,6 +3725,7 @@ DRIVERS TABLE
 .fitted-icons .loadout-1{
   position: relative;
   padding-bottom: 4px;
+  margin-left: 6px;
 }
 
 .loadout-1:not(.fitted):hover, .loadout-2:not(.fitted):hover{

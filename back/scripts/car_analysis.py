@@ -55,6 +55,7 @@ class CarAnalysisUtils:
                 else:
                     equipped_1 = 1
 
+                
                 equipped_2 = self.cursor.execute(f"SELECT DesignID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {j} AND LoadoutID = 2").fetchone()
                 if equipped_2 is not None:
                     equipped_2 = equipped_2[0]
@@ -279,6 +280,61 @@ class CarAnalysisUtils:
                         
         self.conn.commit()
 
+    def update_items_for_design_dict(self, design_dict, team_id):
+        for design in design_dict:
+            n_parts = int(design_dict[design])
+            part_type = self.cursor.execute(f"SELECT PartType FROM Parts_Designs WHERE DesignID = {design}").fetchone()[0]
+            actual_parts = self.cursor.execute(f"SELECT COUNT(*) FROM Parts_Items WHERE DesignID = {design} AND BuildWork = {standard_buildwork_per_part[part_type]}").fetchone()
+            if actual_parts is not None:
+                actual_parts = actual_parts[0]
+            else:
+                actual_parts = 0
+            diff = n_parts - actual_parts
+            print(n_parts)
+            print(f"Difference for design {design}: {diff}")
+            if diff > 0:
+                while diff > 0:
+                    self.create_new_item(design, part_type)
+                    diff -= 1
+            elif diff < 0:
+                while diff < 0:
+                    self.delete_item(design)
+                    diff += 1
+
+        self.conn.commit()
+
+    def fit_loadouts_dict(self, loadouts_dict, team_id):
+        for part in loadouts_dict:
+            design_1 = loadouts_dict[part][0]
+            design_2 = loadouts_dict[part][1]
+            fitted_design_1 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 1").fetchone()
+            if fitted_design_1 is not None:
+                self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_1[1]}")
+                fitted_design_1 = fitted_design_1[0]
+                 
+            if fitted_design_1 != design_1:
+                items_1 = self.cursor.execute(f"SELECT ItemID FROM Parts_Items WHERE DesignID = {design_1} AND BuildWork = {standard_buildwork_per_part[int(part)]} AND AssociatedCar IS NULL").fetchall()
+                if not items_1:
+                    item_1 = self.create_new_item(design_1, int(part))
+                else:
+                    item_1 = items_1[0][0]
+                self.add_part_to_loadout(design_1, int(part), team_id, 1, item_1)
+
+            fitted_design_2 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 2").fetchone()
+            if fitted_design_2 is not None:
+                self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_2[1]}")
+                fitted_design_2 = fitted_design_2[0]
+            if fitted_design_2 != design_2:
+                items_2 = self.cursor.execute(f"SELECT ItemID FROM Parts_Items WHERE DesignID = {design_2} AND BuildWork = {standard_buildwork_per_part[int(part)]} AND AssociatedCar IS NULL").fetchall()
+                if not items_2:
+                    item_2 = self.create_new_item(design_2, int(part))
+                else:
+                    item_2 = items_2[0][0]
+                self.add_part_to_loadout(design_2, int(part), team_id, 2, item_2)
+
+        self.conn.commit()
+
+
 
     def create_new_item(self, design_id, part):
         max_item = self.cursor.execute("SELECT MAX(ItemID) FROM Parts_Items").fetchone()[0]
@@ -288,6 +344,11 @@ class CarAnalysisUtils:
         self.cursor.execute(f"INSERT INTO Parts_Items VALUES ({new_item}, {design_id}, {standard_buildwork_per_part[part]}, 1, {new_n_manufactures}, NULL, NULL, 0, NULL)")
         self.cursor.execute(f"UPDATE Parts_Designs SET ManufactureCount = {new_n_manufactures} WHERE DesignID = {design_id}")
         return new_item
+    
+    def delete_item(self, design_id):
+        part_type = self.cursor.execute(f"SELECT PartType FROM Parts_Designs WHERE DesignID = {design_id}").fetchone()[0]
+        item = self.cursor.execute(f"SELECT ItemID FROM Parts_Items WHERE DesignID = {design_id} AND BuildWork = {standard_buildwork_per_part[part_type]}").fetchone()[0]
+        self.cursor.execute(f"DELETE FROM Parts_Items WHERE ItemID = {item}")
 
     def add_new_design(self, part, team_id, day, season, latest_design_part_from_team, new_design_id):
         max_design_from_part = self.cursor.execute(f"SELECT MAX(DesignNumber) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id}").fetchone()[0]
