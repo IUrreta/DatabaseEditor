@@ -4182,6 +4182,18 @@ input.disabled{
   font-size: 18px;
 }
 
+.car{
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 4px;
+  cursor: pointer !important;
+  margin: 4px 6px;
+  color: var(--text-general);
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  position: relative;
+  font-size: 18px;
+}
+
 .driver-info{
   border-radius: 10px;
   cursor: default !important;
@@ -6474,10 +6486,14 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
-.team-performance {
+.team-performance, .car-performance {
   display: flex;
   flex-direction: column;
   gap: 1px;
+}
+
+.car-performance{
+  gap:0px
 }
 
 .performance-bar{
@@ -6486,6 +6502,16 @@ input::-webkit-inner-spin-button {
   background-color: var(--background);
   position: relative;
   margin: 4px 0;
+}
+
+.car .performance-bar{
+  height: 3px;
+  margin: 0px;
+  margin-top: 2px;
+}
+
+.car .performance-bar-progress{
+  height: 3px;
 }
 
 .performance-bar-progress{
@@ -6558,6 +6584,16 @@ input::-webkit-inner-spin-button {
   flex-direction: row;
   height: 54.5px;
 
+}
+
+.car-title{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  height: 13.5px;
+  padding-bottom: 4px;
 }
 
 .team-title {

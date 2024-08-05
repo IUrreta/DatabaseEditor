@@ -567,7 +567,7 @@ document.addEventListener('DOMContentLoaded',function () {
         "Performance fetched": (message) => {
             load_performance(message[1])
             load_attributes(message[2])
-            order_by("overall")
+            order_by("overall", "teams")
         },
         "Season performance fetched": (message) => {
             load_performance_graph(message.slice(1))
@@ -581,6 +581,10 @@ document.addEventListener('DOMContentLoaded',function () {
         },
         "Part values fetched": (message) => {
             load_one_part(message.slice(1))
+        },
+        "Cars fetched": (message) => {
+            load_cars(message.slice(1)[0])
+            order_by("overall", "cars")
         }
     };
 

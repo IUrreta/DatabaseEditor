@@ -115,8 +115,12 @@ class CarAnalysisUtils:
     def get_car_stats(self, design_dict):
         stats_values = {}
         for part in design_dict:
-            result  = self.cursor.execute(f"SELECT PartStat, Value FROM Parts_Designs_StatValues WHERE DesignID = {design_dict[part][0][0]}").fetchall()
-            stats_values[part] = {stat[0]: round(stat[1],3) for stat in result}
+            print(design_dict[part])
+            if design_dict[part][0][0] is not None:
+                result  = self.cursor.execute(f"SELECT PartStat, Value FROM Parts_Designs_StatValues WHERE DesignID = {design_dict[part][0][0]}").fetchall()
+                stats_values[part] = {stat[0]: round(stat[1],3) for stat in result}
+            else:
+                stats_values[part] = {stat: 0 for stat in default_parts_stats[part]}
 
         return stats_values
 
@@ -241,6 +245,54 @@ class CarAnalysisUtils:
 
         return teams
     
+    def get_performance_all_cars(self, custom_team=None):
+        cars = {}
+        contributors = self.get_contributors_dict()
+        if custom_team:
+            team_list = list(range(1, 11)) + [32]
+        else: 
+            team_list = list(range(1, 11))
+
+        cars_parts = self.get_fitted_designs(custom_team=custom_team)
+        for team in cars_parts:
+            cars[team] = {}
+            print(team)
+            for car in cars_parts[team]:
+                dict = self.get_car_stats(cars_parts[team][car])
+                part_stats = self.get_part_stats_dict(dict)
+                attributes = self.calculate_car_attributes(contributors, part_stats)
+                ovr = self.calculate_overall_performance(attributes)
+                driver_number = self.get_driver_number_with_car(team, car)
+                cars[team][car] = [ovr, driver_number]
+                print(f"Car {car} from team {team} has an overall performance of {ovr}")
+
+        return cars
+
+    def get_driver_number_with_car(self, team_id, car_id):
+        driver_id = self.cursor.execute(f"SELECT con.StaffID FROM Staff_Contracts con JOIN Staff_GameData gam ON con.StaffID = gam.StaffID WHERE con.TeamID = {team_id} AND gam.StaffType = 0 AND con.ContractType = 0 AND con.PosInTeam = {car_id}").fetchone()[0]
+        number = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driver_id}").fetchone()[0]
+        return number
+    
+    def get_fitted_designs(self, custom_team=None):
+        teams = {}
+        if custom_team:
+            team_list = list(range(1, 11)) + [32]
+        else: 
+            team_list = list(range(1, 11))
+        for team in team_list:
+            teams[team] = {}
+            for loadout in range(1, 3):
+                designs = {}
+                for part in range(3, 9):
+                    designs[part] = self.cursor.execute(f"SELECT DesignID FROM Parts_CarLoadout WHERE TeamID = {team} AND PartType = {part} AND LoadoutID = {loadout}").fetchall()
+                engine = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = 0 AND TeamID = {team}").fetchall()
+                designs[0] = engine
+                teams[team][loadout] = designs
+                
+
+        return teams
+
+    
     def fit_latest_designs_all_grid(self,  custom_team=None):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
         day = day_season[0]
@@ -290,8 +342,6 @@ class CarAnalysisUtils:
             else:
                 actual_parts = 0
             diff = n_parts - actual_parts
-            print(n_parts)
-            print(f"Difference for design {design}: {diff}")
             if diff > 0:
                 while diff > 0:
                     self.create_new_item(design, part_type)

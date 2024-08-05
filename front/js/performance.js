@@ -67,6 +67,25 @@ function load_performance(teams) {
     }
 }
 
+function load_cars(data) {
+    for (let key in data) {
+        console.log(key)
+        let cars = document.querySelectorAll(`#carsDiv .car[data-teamid='${key}']`);
+        cars.forEach(function (car, index) {
+            index = index + 1;
+            console.log(data[key][index])
+            let carValue = car.querySelector('.team-title-value');
+            carValue.innerText = data[key][index][0].toFixed(2) + ' %';
+            let bar = car.querySelector('.performance-bar-progress');
+            bar.dataset.overall = data[key][index][0];
+            bar.style.width = data[key][index][0] + '%';
+            let name = car.querySelector('.team-title-name');
+            name.innerText = name.innerText + " #" + data[key][index][1];
+
+        })
+    }
+}
+
 function load_attributes(teams) {
     for (let key in teams) {
         for (let attribute in teams[key]) {
@@ -78,18 +97,35 @@ function load_attributes(teams) {
     }
 }
 
-function order_by(criterion) {
-    let teams = document.querySelectorAll(".team-performance");
-    let teamsArray = Array.from(teams);
-    teamsArray.sort(function (a, b) {
-        return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
-    })
-    teamsArray.forEach(function (team) {
-        document.getElementById("teamsDiv").appendChild(team);
-        let bar = team.querySelector(".performance-bar-progress");
-        bar.style.width = bar.dataset[criterion] + "%";
-        team.querySelector(".team-title-value").innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
-    })
+function order_by(criterion, type) {
+    if (type === "teams"){
+        let teams = document.querySelectorAll(".team-performance");
+        let teamsArray = Array.from(teams);
+        teamsArray.sort(function (a, b) {
+            return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
+        })
+        teamsArray.forEach(function (team) {
+            document.getElementById("teamsDiv").appendChild(team);
+            let bar = team.querySelector(".performance-bar-progress");
+            bar.style.width = bar.dataset[criterion] + "%";
+            team.querySelector(".team-title-value").innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
+        })
+    }
+    else if (type === "cars"){
+        let cars = document.querySelectorAll(".car-performance");
+        let carsArray = Array.from(cars);
+        carsArray.sort(function (a, b) {
+            return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
+        })
+        carsArray.forEach(function (car) {
+            document.getElementById("carsDiv").appendChild(car);
+            let bar = car.querySelector(".performance-bar-progress");
+            bar.style.width = bar.dataset[criterion] + "%";
+            car.querySelector(".team-title-value").innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
+        })
+    }
+
+
 }
 
 
