@@ -27,21 +27,22 @@ When I developed those scripts, more specifically the driver transfers script fo
 ![image](https://github.com/user-attachments/assets/52cb1e3c-3a6c-402b-9b20-96582a99b9d9)
 
 4. Edit driver numbers
-5. Editing all staff (including drivers') stats, plus mentality and marketability, and **RENAME** any of them
+5. Editing all staff (including drivers') stats, plus mentality and marketability, and **RENAME** any of them (including abreviations for drivers)
 
-![image](https://github.com/user-attachments/assets/05bff58c-6a42-4200-8428-9eb673408a04)
+![image](https://github.com/user-attachments/assets/97845351-d882-4316-ab49-f3411424be57)
 
 6. Customize your calendar, including weather of races
    
 ![image](https://github.com/user-attachments/assets/256dae43-fdc6-4261-9913-1d93b61eb5bc)
 
-7. Edit every stat from all car parts from all teams on the grid
+7. Edit every stat from all designs from all teams on the grid, and manage the inventory from every part and every team for any car
 
-![image](https://github.com/user-attachments/assets/9c8f934a-b4cc-46d2-a7ad-6feb85e3cb98)
+![image](https://github.com/user-attachments/assets/4161e37f-6374-4bd2-b0a6-0d29920a1b92)
+
 
 8. View every car performance  across the season and compare each car attribute
 
-![image](https://github.com/user-attachments/assets/27052ffa-5930-430b-b7e9-407813af4703)
+![image](https://github.com/user-attachments/assets/2495b9dc-671d-4da0-8648-c9dcf37c9914)
 
 9. Edit the performance and durability of any of the 4 engines suppliers
    
@@ -49,7 +50,7 @@ When I developed those scripts, more specifically the driver transfers script fo
 
 10. Edit all 10 teams' facilities, money, budget available from the budget cap, long and short term objectives, enigne supplier and pit crew attributes
    
-![image](https://github.com/user-attachments/assets/243059de-4921-42d7-a59f-60bc2815f4a6)
+![image](https://github.com/user-attachments/assets/de295f52-bd40-4e29-8a88-0174a607dea8)
 
 11. Keep track of past seasons with a wikipedia-style table for drivers and teams championships
     
