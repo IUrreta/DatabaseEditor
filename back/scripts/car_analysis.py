@@ -266,6 +266,26 @@ class CarAnalysisUtils:
                 # print(f"Car {car} from team {team} has an overall performance of {ovr}")
 
         return cars
+    
+    def get_attributes_all_cars(self, custom_team=None):
+        cars = {}
+        contributors = self.get_contributors_dict()
+        if custom_team:
+            team_list = list(range(1, 11)) + [32]
+        else: 
+            team_list = list(range(1, 11))
+
+        cars_parts = self.get_fitted_designs(custom_team=custom_team)
+        for team in cars_parts:
+            cars[team] = {}
+            for car in cars_parts[team]:
+                dict = self.get_car_stats(cars_parts[team][car])
+                part_stats = self.get_part_stats_dict(dict)
+                attributes = self.calculate_car_attributes(contributors, part_stats)
+                # attributes = self.make_attributes_readable(attributes) # comment to send them in form of percentages to UI
+                cars[team][car] = attributes
+
+        return cars
 
     def get_driver_number_with_car(self, team_id, car_id):
         driver_id = self.cursor.execute(f"SELECT con.StaffID FROM Staff_Contracts con JOIN Staff_GameData gam ON con.StaffID = gam.StaffID WHERE con.TeamID = {team_id} AND gam.StaffType = 0 AND con.ContractType = 0 AND con.PosInTeam = {car_id}").fetchone()[0]

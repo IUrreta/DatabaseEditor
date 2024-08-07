@@ -120,36 +120,50 @@ function load_attributes(teams) {
     }
 }
 
-function order_by(criterion, type) {
-    if (type === "teams") {
-        let teams = document.querySelectorAll(".team-performance");
-        let teamsArray = Array.from(teams);
-        teamsArray.sort(function (a, b) {
-            return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
-        })
-        teamsArray.forEach(function (team, index) {
-            document.getElementById("teamsDiv").appendChild(team);
-            let bar = team.querySelector(".performance-bar-progress");
-            bar.style.width = bar.dataset[criterion] + "%";
-            team.querySelector(".team-title-value").innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
-            let number = team.querySelector(".team-number")
-            number.innerText = index + 1
-        })
+function load_car_attributes(teams) {
+    for (let key in teams) {
+        for (let car in teams[key]) {
+            let carDiv = document.querySelector(`#carsDiv .car[data-teamid='${key}'][data-carnumber='${car}']`);
+            for (let attribute in teams[key][car]) {
+                let bar = carDiv.querySelector(`.performance-bar-progress`);
+                let attributeValue = teams[key][car][attribute];
+                bar.dataset[attribute] = attributeValue.toFixed(3);
+            }
+        }
     }
-    else if (type === "cars") {
-        let cars = document.querySelectorAll(".car-performance");
-        let carsArray = Array.from(cars);
-        carsArray.sort(function (a, b) {
-            return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
-        })
-        carsArray.forEach(function (car, index) {
-            document.getElementById("carsDiv").appendChild(car);
-            let bar = car.querySelector(".performance-bar-progress");
-            bar.style.width = bar.dataset[criterion] + "%";
-            let number = car.querySelector(".performance-number")
-            number.innerText = index + 1
-        })
-    }
+}
+
+function order_by(criterion) {
+    let teams = document.querySelectorAll(".team-performance");
+    let teamsArray = Array.from(teams);
+    teamsArray.sort(function (a, b) {
+        return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
+    })
+    teamsArray.forEach(function (team, index) {
+        document.getElementById("teamsDiv").appendChild(team);
+        let bar = team.querySelector(".performance-bar-progress");
+        bar.style.width = bar.dataset[criterion] + "%";
+        team.querySelector(".team-title-value").innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
+        let number = team.querySelector(".team-number")
+        number.innerText = index + 1
+    })
+
+    let cars = document.querySelectorAll(".car-performance");
+    let carsArray = Array.from(cars);
+    carsArray.sort(function (a, b) {
+        return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
+    })
+    carsArray.forEach(function (car, index) {
+        document.getElementById("carsDiv").appendChild(car);
+        let bar = car.querySelector(".performance-bar-progress");
+        bar.style.width = bar.dataset[criterion] + "%";
+        let number = car.querySelector(".performance-number")
+        console.log(car.querySelector(".car-missing-parts"))
+        let value = car.querySelector(".car-missing-parts .value")
+        value.innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
+        number.innerText = index + 1
+    })
+
 
 
 }
@@ -547,7 +561,7 @@ function add_partName_listener(div, subtitle, type = "old") {
         if (type === "new") {
             subtitle.dataset.editing = -1
         }
-        else{
+        else {
             subtitle.dataset.editing = div.dataset.designId
         }
         subtitle.innerText = div.innerText

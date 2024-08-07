@@ -28,6 +28,7 @@ class EditPerformanceCommand(Command):
         data_json_performance = json.dumps(performance)
         await self.send_message_to_client(data_json_performance)
         cars = car_analysis.get_performance_all_cars(game_year[2])
-        cars = ["Cars fetched", cars]
+        att = car_analysis.get_attributes_all_cars(game_year[2])
+        cars = ["Cars fetched", cars, att]
         data_json_cars = json.dumps(cars)
         await self.send_message_to_client(data_json_cars)

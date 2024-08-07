@@ -5628,7 +5628,7 @@ input.disabled{
   transform: scale(1.1);
 }
 
-.performance-graph-button.active{
+.performance-graph-button i.active{
   color: var(--new-primary);
 }
 
