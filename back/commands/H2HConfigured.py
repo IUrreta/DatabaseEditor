@@ -1,5 +1,5 @@
 from commands.command import Command
-from scripts.head2head_23 import fetch_Head2Head, fetch_Head2Head_team
+from scripts.head2head import fetch_Head2Head, fetch_Head2Head_team
 import json
 
 class H2HConfiguredCommand(Command):

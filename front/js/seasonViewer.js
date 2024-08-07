@@ -638,7 +638,7 @@ function new_addDriver(driver,races_done,odd) {
     let name = driver[0].split(" ")
     let spanName = document.createElement("span")
     let spanLastName = document.createElement("span")
-    spanName.textContent = name[0] + " "
+    spanName.textContent = insert_space(name[0]) + " "
     spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
     spanLastName.classList.add("bold-font")
     spanLastName.dataset.teamid = driver[1]

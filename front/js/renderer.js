@@ -63,7 +63,7 @@ fetch('./../launcher/version.conf')
     .then(version => {
         versionPanel.textContent = `${version}`;
         versionNow = version
-        parchModalTitle.textContent = "Version: " + version + " patch notes"
+        parchModalTitle.textContent = "Version " + version + " patch notes"
         getPatchNotes()
     });
 
@@ -327,8 +327,13 @@ function performanceModeHandler() {
     let data;
     if (teamsEngine === "teams") {
         let parts = {};
+        let n_parts_designs = {};
+        let loadouts = {}
         document.querySelectorAll(".part-performance").forEach(function (elem) {
             let part = elem.dataset.part;
+            let partID = elem.dataset.partid;
+            let loadout1 = elem.dataset.loadout1;
+            let loadout2 = elem.dataset.loadout2;
             let stats = {};
             elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
                 if (stat.dataset.attribute !== "-1") {
@@ -337,13 +342,21 @@ function performanceModeHandler() {
                     stats[statNum] = value;
                 }
             });
-            stats["new"] = elem.dataset.new;
+            stats["designEditing"] = elem.querySelector(".part-subtitle").dataset.editing
             parts[part] = stats;
+            loadouts[partID] = [loadout1,loadout2]
+        })
+        document.querySelectorAll(".one-part").forEach(function (elem) {
+            let designID = elem.querySelector(".one-part-name").dataset.designId
+            let number = elem.querySelector(".n-parts").innerText.split("x")[1]
+            n_parts_designs[designID] = number
         })
         data = {
             command: "editPerformance",
             teamID: teamSelected,
             parts: parts,
+            n_parts_designs: n_parts_designs,
+            loadouts: loadouts,
             teamName: document.querySelector(".selected").dataset.teamname
         }
     }
@@ -455,7 +468,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
+    const noNotifications = ["Cars fetched","Part values fetched", "Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -560,9 +573,18 @@ document.addEventListener('DOMContentLoaded',function () {
         "Parts stats fetched": (message) => {
             load_parts_stats(message.slice(1)[0])
             load_parts_list(message.slice(1)[1])
+            update_max_design(message.slice(1)[2])
         },
         "Game Year": (message) => {
             manage_game_year(message.slice(1)[0])
+        },
+        "Part values fetched": (message) => {
+            load_one_part(message.slice(1))
+        },
+        "Cars fetched": (message) => {
+            load_cars(message.slice(1)[0])
+            load_car_attributes(message.slice(1)[1])
+            order_by("overall")
         }
     };
 
@@ -654,7 +676,6 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("raceMenu").style.height = "686px"
         }
         else if (mode === "10teams") {
-            console.log("10 teams")
             ipcRenderer.send('resize-window',875);
             document.querySelectorAll(".main-resizable").forEach(function (elem) {
                 elem.style.height = "660px"
@@ -746,6 +767,9 @@ document.addEventListener('DOMContentLoaded',function () {
             custom_team = true
             combined_dict[32] = nameColor[1]
             abreviations_dict[32] = nameColor[1].slice(0, 3).toUpperCase()
+            document.querySelectorAll(".ct-teamname").forEach(function (elem) {
+                elem.dataset.teamshow = nameColor[1]
+            })
             document.getElementById("customTeamTransfers").classList.remove("d-none")
             document.getElementById("customTeamPerformance").classList.remove("d-none")
             document.getElementById("customTeamDropdown").classList.remove("d-none")
@@ -754,6 +778,9 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("customizeTeam").classList.remove("d-none")
             document.querySelectorAll(".ct-replace").forEach(function (elem) {
                 elem.textContent = nameColor[1].toUpperCase()
+            })
+            document.querySelectorAll(".custom-car-performance").forEach(function (elem) {
+                elem.classList.remove("d-none")
             })
             replace_custom_team_color(nameColor[2],nameColor[3])
             mid_grid = 11;
@@ -768,6 +795,9 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("customTeamComparison").classList.add("d-none")
             document.getElementById("customTeamContract").classList.add("d-none")
             document.getElementById("customizeTeam").classList.add("d-none")
+            document.querySelectorAll(".custom-car-performance").forEach(function (elem) {
+                elem.classList.add("d-none")
+            })
             mid_grid = 10;
             relative_grid= 5;
             if (32 in combined_dict) {
@@ -1115,6 +1145,9 @@ document.addEventListener('DOMContentLoaded',function () {
         document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
         combined_dict[8] = pretty_names[info]
         abreviations_dict[8] = abreviations_for_replacements[info]
+        document.querySelectorAll(".at-teamname").forEach(function (elem) {
+            elem.dataset.teamshow = pretty_names[info]
+        })
         document.querySelectorAll(".at-name").forEach(function (elem) {
             //if it has the class complete, put names_configs[info], else out VCARB
             if (info === "visarb" && !elem.classList.contains("complete")) {
@@ -1207,6 +1240,9 @@ document.addEventListener('DOMContentLoaded',function () {
         document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value = info
         combined_dict[5] = pretty_names[info]
         abreviations_dict[5] = abreviations_for_replacements[info]
+        document.querySelectorAll(".al-teamname").forEach(function (elem) {
+            elem.dataset.teamshow = pretty_names[info]
+        })
         document.querySelectorAll(".alpine-name").forEach(function (elem) {
             elem.textContent = names_configs[info]
         })
@@ -1286,6 +1322,9 @@ document.addEventListener('DOMContentLoaded',function () {
         document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value = info
         combined_dict[9] = pretty_names[info]
         abreviations_dict[9] = abreviations_for_replacements[info]
+        document.querySelectorAll(".af-teamname").forEach(function (elem) {
+            elem.dataset.teamshow = pretty_names[info]
+        })
         document.querySelectorAll(".alfa-name").forEach(function (elem) {
             elem.textContent = names_configs[info]
         })

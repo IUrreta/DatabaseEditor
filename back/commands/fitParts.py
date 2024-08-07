@@ -20,3 +20,9 @@ class FitPartsCommand(Command):
             parts_stats = ["Parts stats fetched", car_analysis.get_unitvalue_from_parts(design_dict), car_analysis.get_all_parts_from_team(self.message["teamID"])]
             data_json = json.dumps(parts_stats)
             await self.send_message_to_client(data_json)
+        game_year = Command.dbutils.check_year_save()
+        cars = car_analysis.get_performance_all_cars(game_year[2])
+        att = car_analysis.get_attributes_all_cars(game_year[2])
+        cars = ["Cars fetched", cars, att]
+        data_json_cars = json.dumps(cars)
+        await self.send_message_to_client(data_json_cars)
