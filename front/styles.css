@@ -2170,7 +2170,7 @@ DRIVERS TABLE
 }
 
 .teams-table-row .teams-table-team{
-  padding-left: 7px;
+  padding: 0 7px;
 }
 
 .teams-table-row.odd .teams-table-team, .teams-table-row.odd .teams-table-points, .teams-table-row.odd .teams-table-position{
@@ -2331,7 +2331,7 @@ DRIVERS TABLE
 }
 
 .logo-williams-table{
-  padding: 6px 2px;;
+  padding: 6px 4px;
 }
 
 .logo-merc-table{
@@ -2372,6 +2372,7 @@ DRIVERS TABLE
   width: calc(9.4% + 30px);
   border-right: 0px solid transparent;
   gap: 3px;
+  overflow: hidden;
 }
 
 .teams-table-row .teams-table-team{
@@ -2531,6 +2532,7 @@ DRIVERS TABLE
   align-items: center;
   transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
   z-index: 3;
+  overflow: hidden;
 }
 
 .prob-viewer-row{
@@ -3732,9 +3734,34 @@ DRIVERS TABLE
   align-items: center;
 }
 
-.n-parts-buttons i:hover{
+.new-part{
+  border: none;
+  border-radius: 10px;
+  padding-left: 4px;
   cursor: pointer;
+  max-width: max-content;
+  transition: border-color 0.2s, color 0.2s, transform 0.2s;
+  color: var(--dark-text);
+}
+
+.new-part i{
+  font-style: normal;
+}
+
+.new-part:hover{
   color: var(--new-primary);
+  transform: scale(1.05);
+}
+
+.new-part ::before{
+  margin-right: 5px;
+}
+
+
+
+.n-parts-buttons .bi-chevron-up:hover, .n-parts-buttons .bi-chevron-down:hover{
+  cursor: pointer;
+  color: var(--new-primary) !important;
   transform: scale(1.1);
 }
 
@@ -3800,18 +3827,18 @@ DRIVERS TABLE
   color: var(--dark-text);
 }
 
-.existing-part, .new-part{
+.existing-part{
   font-size: 16px;
   transition: color 0.2s, transform 0.2s;
 }
 
-.existing-part:hover, .new-part:hover{
+.existing-part:hover{
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.05);
 }
 
-.existing-part.active-part, .new-part.active-part{
+.existing-part.active-part{
   color: var(--new-primary);
 }
 
@@ -5551,7 +5578,13 @@ input.disabled{
   max-height: 22.5px;
 }
 
-.free-driver span.bold-font, .normal-driver span.bold-font, .drivers-table-driver span.bold-font, .driver-prediction span.bold-font, .modal-driver span.bold-font{
+.drivers-table-row .drivers-table-driver span:not(.bold-font), .viewer-header-driver span:not(.bold-font){
+  max-height: 22.5px;
+  white-space: nowrap;
+}
+
+.free-driver span.bold-font, .normal-driver span.bold-font, .drivers-table-driver span.bold-font, .driver-prediction span.bold-font, .modal-driver span.bold-font,
+.viewer-header-driver span.bold-font{
   display: inline-block;
   transform: skewX(-9deg)
 }

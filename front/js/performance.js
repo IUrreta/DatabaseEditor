@@ -28,6 +28,7 @@ let teamEngineSelected;
 let performanceGraph;
 let teamsEngine = "teams"
 let viewingGraph = true;
+let actualMaxDesign = 0;
 
 function normalizeData(data) {
     let values = Object.values(data);
@@ -223,6 +224,9 @@ function gather_engines_data() {
 }
 
 
+function update_max_design(data) {
+    actualMaxDesign = parseInt(data) + 1;
+}
 
 /**
  * Manages the engine stats for all manufacturers
@@ -413,12 +417,69 @@ function load_parts_list(data) {
             index++;
 
         }
+        add_new_part_button(list)
         if (list.scrollHeight > list.clientHeight) {
             list.classList.add("list-overflow");
         } else {
             list.classList.remove("list-overflow");
         }
     }
+}
+
+function add_new_part_button(list) {
+    let new_part_div = document.createElement("div")
+    new_part_div.classList.add("new-part")
+    let icon = document.createElement("i")
+    let generalPart = list.parentNode
+    icon.classList.add("bi", "bi-plus-circle")
+    icon.textContent = "Add new part"
+    new_part_div.appendChild(icon)
+    list.appendChild(new_part_div)
+    icon.addEventListener("click", function () {
+        let previousPart = list.childNodes[list.childNodes.length - 2]
+        let previous_name = previousPart.querySelector(".one-part-name").innerText
+        let new_name = previous_name.split("-")[0] + "-" + previous_name.split("-")[1] + "-" + (parseInt(previous_name.split("-")[2]) + 1)
+        let part = document.createElement("div")
+        part.classList.add("one-part")
+        let partTitle = document.createElement("div")
+        partTitle.classList.add("one-part-title")
+        let partName = document.createElement("div")
+        partName.dataset.designId = actualMaxDesign
+        partName.classList.add("one-part-name")
+        partName.innerText = new_name
+        let subtitle = list.parentNode.querySelector(`.part-subtitle`)
+        subtitle.dataset.editing = "-1"
+        actualMaxDesign += 1
+        subtitle.innerText = new_name
+        partTitle.appendChild(partName)
+        let parts = list.querySelectorAll(".one-part")
+        parts.forEach(function (part) {
+            part.querySelector(".one-part-name").classList.remove("editing")
+        })
+        add_partName_listener(partName, subtitle, "new")
+        let loadoutContainer = document.createElement("div")
+        loadoutContainer.classList.add("fitted-icons")
+        let n_parts = document.createElement("div")
+        n_parts.classList.add("n-parts")
+        n_parts.innerText = "x0"
+        loadoutContainer.appendChild(n_parts)
+        add_n_parts_buttons(loadoutContainer)
+        let loadout1 = document.createElement("i")
+        loadout1.classList.add("bi", "bi-check", "loadout-1")
+        loadoutContainer.appendChild(loadout1)
+        loadout_listener(loadout1, "1", generalPart)
+        let loadout2 = document.createElement("i")
+        loadout2.classList.add("bi", "bi-check", "loadout-2")
+        loadoutContainer.appendChild(loadout2)
+        loadout_listener(loadout2, "2", generalPart)
+        partTitle.appendChild(loadoutContainer)
+        part.appendChild(partTitle)
+        list.insertBefore(part, new_part_div)
+        partName.classList.add("editing")
+        new_part_div.remove()
+        add_new_part_button(list)
+
+    })
 }
 
 function add_n_parts_buttons(loadoutContainer) {
@@ -443,19 +504,19 @@ function add_n_parts_buttons(loadoutContainer) {
         let n = parseInt(n_parts.innerText.split("x")[1])
         if (n > fitted_parts_numb) {
             n -= 1
-            if (n < 0){
+            if (n < 0) {
                 n = 0
             }
             n_parts.innerText = "x" + n
         }
-        else{
+        else {
             fitted_parts.forEach(function (part) {
                 console.log(part)
                 let errorClass = ""
-                if (part.classList.contains("loadout-1")){
+                if (part.classList.contains("loadout-1")) {
                     errorClass = "loadout-1-error";
                 }
-                else if (part.classList.contains("loadout-2")){
+                else if (part.classList.contains("loadout-2")) {
                     errorClass = "loadout-2-error";
                 }
                 part.classList.add(errorClass);
@@ -486,21 +547,28 @@ function load_one_part(data) {
     }
 }
 
-function add_partName_listener(div, subtitle) {
+function add_partName_listener(div, subtitle, type = "old") {
     console.log(div)
     div.addEventListener("click", function () {
-        subtitle.dataset.editing = div.dataset.designId
+        if (type === "new") {
+            subtitle.dataset.editing = -1
+        }
+        else{
+            subtitle.dataset.editing = div.dataset.designId
+        }
         subtitle.innerText = div.innerText
         let parts = div.parentNode.parentNode.parentNode.querySelectorAll(".one-part")
         parts.forEach(function (part) {
             part.querySelector(".one-part-name").classList.remove("editing")
         })
         div.classList.add("editing")
-        let data = {
-            command: "partRequest",
-            designID: div.dataset.designId
+        if (type === "old") {
+            let data = {
+                command: "partRequest",
+                designID: div.dataset.designId
+            }
+            socket.send(JSON.stringify(data))
         }
-        socket.send(JSON.stringify(data))
     })
 }
 

@@ -575,6 +575,7 @@ document.addEventListener('DOMContentLoaded',function () {
         "Parts stats fetched": (message) => {
             load_parts_stats(message.slice(1)[0])
             load_parts_list(message.slice(1)[1])
+            update_max_design(message.slice(1)[2])
         },
         "Game Year": (message) => {
             manage_game_year(message.slice(1)[0])
