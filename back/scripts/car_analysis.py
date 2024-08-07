@@ -55,6 +55,7 @@ class CarAnalysisUtils:
                 else:
                     equipped_1 = 1
 
+                
                 equipped_2 = self.cursor.execute(f"SELECT DesignID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {j} AND LoadoutID = 2").fetchone()
                 if equipped_2 is not None:
                     equipped_2 = equipped_2[0]
@@ -63,7 +64,7 @@ class CarAnalysisUtils:
                 else:
                     equipped_2 = 1
                 
-                n_parts = self.cursor.execute(f"SELECT COUNT(*) FROM Parts_Items WHERE DesignID = {design_id}").fetchone()[0]
+                n_parts = self.cursor.execute(f"SELECT COUNT(*) FROM Parts_Items WHERE DesignID = {design_id} AND BuildWork = {standard_buildwork_per_part[j]}").fetchone()[0]
 
                 design = list(design)
                 design.append(equipped_1)
@@ -114,8 +115,11 @@ class CarAnalysisUtils:
     def get_car_stats(self, design_dict):
         stats_values = {}
         for part in design_dict:
-            result  = self.cursor.execute(f"SELECT PartStat, Value FROM Parts_Designs_StatValues WHERE DesignID = {design_dict[part][0][0]}").fetchall()
-            stats_values[part] = {stat[0]: round(stat[1],3) for stat in result}
+            if design_dict[part][0][0] is not None:
+                result  = self.cursor.execute(f"SELECT PartStat, Value FROM Parts_Designs_StatValues WHERE DesignID = {design_dict[part][0][0]}").fetchall()
+                stats_values[part] = {stat[0]: round(stat[1],3) for stat in result}
+            else:
+                stats_values[part] = {stat: 0 for stat in default_parts_stats[part]}
 
         return stats_values
 
@@ -126,6 +130,13 @@ class CarAnalysisUtils:
             stats_values[parts[part]] = {stat[0]: stat[1] for stat in result}
 
         return stats_values
+    
+    def get_unitvalue_from_one_part(self, design_id):
+        part_type = self.cursor.execute(f"SELECT PartType FROM Parts_Designs WHERE DesignID = {design_id}").fetchone()[0]
+        result  = self.cursor.execute(f"SELECT PartStat, UnitValue FROM Parts_Designs_StatValues WHERE DesignID = {design_id}").fetchall()
+        stats_values = {stat[0]: stat[1] for stat in result}
+        part_values = {parts[part_type]: stats_values}
+        return part_values
 
 
     def convert_percentage_to_value(self, attribute, percentage, min_max):
@@ -233,6 +244,74 @@ class CarAnalysisUtils:
 
         return teams
     
+    def get_performance_all_cars(self, custom_team=None):
+        cars = {}
+        contributors = self.get_contributors_dict()
+        if custom_team:
+            team_list = list(range(1, 11)) + [32]
+        else: 
+            team_list = list(range(1, 11))
+
+        cars_parts = self.get_fitted_designs(custom_team=custom_team)
+        for team in cars_parts:
+            cars[team] = {}
+            for car in cars_parts[team]:
+                dict = self.get_car_stats(cars_parts[team][car])
+                missing_parts = [part for part in cars_parts[team][car] if cars_parts[team][car][part][0][0] is None]
+                part_stats = self.get_part_stats_dict(dict)
+                attributes = self.calculate_car_attributes(contributors, part_stats)
+                ovr = self.calculate_overall_performance(attributes)
+                driver_number = self.get_driver_number_with_car(team, car)
+                cars[team][car] = [ovr, driver_number, missing_parts]
+                # print(f"Car {car} from team {team} has an overall performance of {ovr}")
+
+        return cars
+    
+    def get_attributes_all_cars(self, custom_team=None):
+        cars = {}
+        contributors = self.get_contributors_dict()
+        if custom_team:
+            team_list = list(range(1, 11)) + [32]
+        else: 
+            team_list = list(range(1, 11))
+
+        cars_parts = self.get_fitted_designs(custom_team=custom_team)
+        for team in cars_parts:
+            cars[team] = {}
+            for car in cars_parts[team]:
+                dict = self.get_car_stats(cars_parts[team][car])
+                part_stats = self.get_part_stats_dict(dict)
+                attributes = self.calculate_car_attributes(contributors, part_stats)
+                # attributes = self.make_attributes_readable(attributes) # comment to send them in form of percentages to UI
+                cars[team][car] = attributes
+
+        return cars
+
+    def get_driver_number_with_car(self, team_id, car_id):
+        driver_id = self.cursor.execute(f"SELECT con.StaffID FROM Staff_Contracts con JOIN Staff_GameData gam ON con.StaffID = gam.StaffID WHERE con.TeamID = {team_id} AND gam.StaffType = 0 AND con.ContractType = 0 AND con.PosInTeam = {car_id}").fetchone()[0]
+        number = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driver_id}").fetchone()[0]
+        return number
+    
+    def get_fitted_designs(self, custom_team=None):
+        teams = {}
+        if custom_team:
+            team_list = list(range(1, 11)) + [32]
+        else: 
+            team_list = list(range(1, 11))
+        for team in team_list:
+            teams[team] = {}
+            for loadout in range(1, 3):
+                designs = {}
+                for part in range(3, 9):
+                    designs[part] = self.cursor.execute(f"SELECT DesignID FROM Parts_CarLoadout WHERE TeamID = {team} AND PartType = {part} AND LoadoutID = {loadout}").fetchall()
+                engine = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = 0 AND TeamID = {team}").fetchall()
+                designs[0] = engine
+                teams[team][loadout] = designs
+                
+
+        return teams
+
+    
     def fit_latest_designs_all_grid(self,  custom_team=None):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
         day = day_season[0]
@@ -254,11 +333,11 @@ class CarAnalysisUtils:
                         if not parts_available:
                             item = self.create_new_item(design, part)
                             self.add_part_to_loadout(design, part, team_id, loadout, item)
-                            print(f"New item created for team {team_id} and part {part}, itemID: {item} added to loadout {loadout}")
+                            # print(f"New item created for team {team_id} and part {part}, itemID: {item} added to loadout {loadout}")
                         else:
                             item = parts_available[0][0]
                             self.add_part_to_loadout(design, part, team_id, loadout, item)
-                            print(f"Item {item} alredy existed, added to loadout {loadout} for team {team_id} and part {part}")
+                            # print(f"Item {item} alredy existed, added to loadout {loadout} for team {team_id} and part {part}")
                     else:
                         other_loadout = 1 if loadout == 2 else 2
                         fitted_item_other = self.cursor.execute(f"SELECT ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = {other_loadout}").fetchone()
@@ -266,11 +345,64 @@ class CarAnalysisUtils:
                         if fitted_item_other is not None and fitted_item is not None and fitted_item[0] == fitted_item_other[0]:
                             item = self.create_new_item(design, part)
                             self.add_part_to_loadout(design, part, team_id, loadout, item)
-                            print(f"Both loadouts had the same item, new item created for team {team_id} and part {part}, itemID: {item} added to loadout {loadout}")
-                        else:
-                            print(f"Design {design} already fitted for team {team_id} and part {part}")
+                            # print(f"Both loadouts had the same item, new item created for team {team_id} and part {part}, itemID: {item} added to loadout {loadout}")
+                        # else:
+                        #     print(f"Design {design} already fitted for team {team_id} and part {part}")
                         
         self.conn.commit()
+
+    def update_items_for_design_dict(self, design_dict, team_id):
+        for design in design_dict:
+            n_parts = int(design_dict[design])
+            part_type = self.cursor.execute(f"SELECT PartType FROM Parts_Designs WHERE DesignID = {design}").fetchone()[0]
+            actual_parts = self.cursor.execute(f"SELECT COUNT(*) FROM Parts_Items WHERE DesignID = {design} AND BuildWork = {standard_buildwork_per_part[part_type]}").fetchone()
+            if actual_parts is not None:
+                actual_parts = actual_parts[0]
+            else:
+                actual_parts = 0
+            diff = n_parts - actual_parts
+            if diff > 0:
+                while diff > 0:
+                    self.create_new_item(design, part_type)
+                    diff -= 1
+            elif diff < 0:
+                while diff < 0:
+                    self.delete_item(design)
+                    diff += 1
+
+        self.conn.commit()
+
+    def fit_loadouts_dict(self, loadouts_dict, team_id):
+        for part in loadouts_dict:
+            design_1 = loadouts_dict[part][0]
+            design_2 = loadouts_dict[part][1]
+            fitted_design_1 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 1").fetchone()
+            if fitted_design_1[0] is not None:
+                self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_1[1]}")
+                fitted_design_1 = fitted_design_1[0]
+
+            if fitted_design_1 != design_1:
+                items_1 = self.cursor.execute(f"SELECT ItemID FROM Parts_Items WHERE DesignID = {design_1} AND BuildWork = {standard_buildwork_per_part[int(part)]} AND AssociatedCar IS NULL").fetchall()
+                if not items_1:
+                    item_1 = self.create_new_item(design_1, int(part))
+                else:
+                    item_1 = items_1[0][0]
+                self.add_part_to_loadout(design_1, int(part), team_id, 1, item_1)
+
+            fitted_design_2 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 2").fetchone()
+            if fitted_design_2[0] is not None:
+                self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_2[1]}")
+                fitted_design_2 = fitted_design_2[0]
+            if fitted_design_2 != design_2:
+                items_2 = self.cursor.execute(f"SELECT ItemID FROM Parts_Items WHERE DesignID = {design_2} AND BuildWork = {standard_buildwork_per_part[int(part)]} AND AssociatedCar IS NULL").fetchall()
+                if not items_2:
+                    item_2 = self.create_new_item(design_2, int(part))
+                else:
+                    item_2 = items_2[0][0]
+                self.add_part_to_loadout(design_2, int(part), team_id, 2, item_2)
+
+        self.conn.commit()
+
 
 
     def create_new_item(self, design_id, part):
@@ -281,6 +413,11 @@ class CarAnalysisUtils:
         self.cursor.execute(f"INSERT INTO Parts_Items VALUES ({new_item}, {design_id}, {standard_buildwork_per_part[part]}, 1, {new_n_manufactures}, NULL, NULL, 0, NULL)")
         self.cursor.execute(f"UPDATE Parts_Designs SET ManufactureCount = {new_n_manufactures} WHERE DesignID = {design_id}")
         return new_item
+    
+    def delete_item(self, design_id):
+        part_type = self.cursor.execute(f"SELECT PartType FROM Parts_Designs WHERE DesignID = {design_id}").fetchone()[0]
+        item = self.cursor.execute(f"SELECT ItemID FROM Parts_Items WHERE DesignID = {design_id} AND BuildWork = {standard_buildwork_per_part[part_type]}").fetchone()[0]
+        self.cursor.execute(f"DELETE FROM Parts_Items WHERE ItemID = {item}")
 
     def add_new_design(self, part, team_id, day, season, latest_design_part_from_team, new_design_id):
         max_design_from_part = self.cursor.execute(f"SELECT MAX(DesignNumber) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id}").fetchone()[0]
@@ -324,13 +461,16 @@ class CarAnalysisUtils:
             if part != 0:
                 design = team_parts[part][0][0]
                 part_name = parts[part]
-                new_design = performance[part_name]["new"]
-                performance[part_name].pop("new")
-                if int(new_design):
+                new_design = performance[part_name]["designEditing"]
+                performance[part_name].pop("designEditing")
+                if int(new_design) == -1:
                     max_design = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs").fetchone()[0]
                     latest_design_part_from_team = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id}").fetchone()[0]
                     new_design_id = max_design + 1
+                    # print(f"New design: {new_design_id} for part {part_name} from team {team_id}")
                     self.add_new_design(part, int(team_id), day, season, latest_design_part_from_team, new_design_id)
+                else:
+                    design = new_design
 
                 stats = performance[part_name]
                 for stat in stats:
@@ -339,7 +479,7 @@ class CarAnalysisUtils:
                         value = downforce_24_unitValueToValue[int(stat)](stat_num)
                     else:
                         value = unitValueToValue[int(stat)](stat_num)
-                    if not int(new_design):
+                    if int(new_design) != -1:
                         self.change_expertise_based(part, stat, value, int(team_id))
                         self.cursor.execute(f"UPDATE Parts_Designs_StatValues SET UnitValue = {stats[stat]} WHERE DesignID = {design} AND PartStat = {stat}")
                         self.cursor.execute(f"UPDATE Parts_Designs_StatValues SET Value = {value} WHERE DesignID = {design} AND PartStat = {stat}")
@@ -347,7 +487,7 @@ class CarAnalysisUtils:
                         self.cursor.execute(f"INSERT INTO Parts_Designs_StatValues VALUES ({new_design_id}, {stat}, {value}, {stats[stat]}, 0.5, 1, 0.1)")
                         
                 
-                if int(new_design):  #when inserting new part I only can change expertise when all the stats have been inserted, also insert standard weight
+                if int(new_design) == -1:  #when inserting new part I only can change expertise when all the stats have been inserted, also insert standard weight
                     self.cursor.execute(f"INSERT INTO Parts_Designs_StatValues VALUES ({new_design_id}, 15, 500, {standard_weight_per_part[part]}, 0.5, 0, 0)")
                     for stat in stats:
                         stat_num = float(stats[stat])
@@ -401,3 +541,7 @@ class CarAnalysisUtils:
             teams[i] = attributes
 
         return teams
+    
+
+    def fetch_max_design(self):
+        return self.cursor.execute("SELECT MAX(DesignID) FROM Parts_Designs").fetchone()[0]

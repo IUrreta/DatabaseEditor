@@ -596,7 +596,7 @@ function load_drivers_h2h(drivers) {
         spanLastName.dataset.teamid = driver[2];
         newDiv.dataset.teamid = driver[2];
         newDiv.classList.add(team_dict[driver[2]] + "-transparent")
-        spanName.textContent = name[0] + " "
+        spanName.textContent = insert_space(name[0]) + " "
         spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
         spanLastName.classList.add("bold-font")
         let h2hBut = document.createElement("div")

@@ -220,7 +220,7 @@ function loadMontecarlo(data){
         spanLastName.dataset.teamid = elem[2];
         row.dataset.teamid = elem[2];
         row.classList.add(team_dict[elem[2]] + "-transparent")
-        spanName.textContent = name[0] + " "
+        spanName.textContent = insert_space(name[0]) + " "
         spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
         spanLastName.classList.add("bold-font")
         manageColor(spanLastName, spanLastName)
@@ -294,7 +294,7 @@ function predictDrivers(drivers) {
         mainDiv.dataset.teamid = driver.Team;
         mainDiv.classList.add(team_dict[driver.Team] + "-transparent")
         spanLastName.dataset.teamid = driver.Team;
-        spanName.textContent = name[0] + " "
+        spanName.textContent = insert_space(name[0]) + " "
         spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
         spanLastName.classList.add("bold-font")
         manageColor(spanLastName, spanLastName)

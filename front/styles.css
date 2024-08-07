@@ -15,7 +15,7 @@
   --new-primary-dark: #ba82ff;
   --new-primary-transparent: #c89efc99;
   --text-selected: #e7d3ff;
-  --text-selected-secondary: #a8cec9;
+  --text-selected-secondary: #b1dbd6;
   --new-secondary: #9AD2CB;
   --table-hover: #4a4a4a;
   --elements-hover: #3a3a3a;
@@ -2170,7 +2170,7 @@ DRIVERS TABLE
 }
 
 .teams-table-row .teams-table-team{
-  padding-left: 7px;
+  padding: 0 7px;
 }
 
 .teams-table-row.odd .teams-table-team, .teams-table-row.odd .teams-table-points, .teams-table-row.odd .teams-table-position{
@@ -2331,7 +2331,7 @@ DRIVERS TABLE
 }
 
 .logo-williams-table{
-  padding: 6px 2px;;
+  padding: 6px 4px;
 }
 
 .logo-merc-table{
@@ -2372,6 +2372,7 @@ DRIVERS TABLE
   width: calc(9.4% + 30px);
   border-right: 0px solid transparent;
   gap: 3px;
+  overflow: hidden;
 }
 
 .teams-table-row .teams-table-team{
@@ -2531,6 +2532,7 @@ DRIVERS TABLE
   align-items: center;
   transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
   z-index: 3;
+  overflow: hidden;
 }
 
 .prob-viewer-row{
@@ -3581,6 +3583,10 @@ DRIVERS TABLE
   height: 311px;
 }
 
+.parts-list.list-overflow{
+  padding-right: 6px;
+}
+
 .parts-list.noCustom{
   height: 268px;
 }
@@ -3621,7 +3627,7 @@ DRIVERS TABLE
 
 .one-part-flag-title{
   position: absolute;
-  top: 50%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-shadow: 2px 2px 4px var(--negative-text);
@@ -3654,6 +3660,33 @@ DRIVERS TABLE
   transform: scale(1.05);
 }
 
+.n-parts-error {
+  animation: errorAnim 0.5s;
+}
+
+.loadout-1-error {
+  animation: errorLoadout1 0.5s;
+}
+
+.loadout-2-error {
+  animation: errorLoadout2 0.5s;
+}
+
+@keyframes errorAnim {
+  0% { color: var(--negative-general); }
+  100% { color: var(--dark-text); }
+}
+
+@keyframes errorLoadout1 {
+  0% { color: var(--negative-general); }
+  100% { color: var(--new-primary); }
+}
+
+@keyframes errorLoadout2 {
+  0% { color: var(--negative-general); }
+  100% { color: var(--new-secondary); }
+}
+
 .fitted-icons{
   margin-left: 10px;
   display: flex;
@@ -3667,6 +3700,71 @@ DRIVERS TABLE
   min-width: 25px;
 }
 
+.one-part-name{
+  transition: color 0.2s, transform 0.2s;
+}
+
+.one-part-name:hover{
+  cursor: pointer;
+  color: var(--text-selected);
+  transform: scale(1.05);
+}
+
+.one-part-name.editing{
+  color: var(--text-general);
+}
+
+.part-subtitle{
+  color: var(--dark-text);
+  font-size: 20px;
+  margin-left: -7px;
+}
+
+.n-parts-buttons{
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;  
+}
+
+.n-parts-buttons i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s !important;
+  max-height: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.new-part{
+  border: none;
+  border-radius: 10px;
+  padding-left: 4px;
+  cursor: pointer;
+  max-width: max-content;
+  transition: border-color 0.2s, color 0.2s, transform 0.2s;
+  color: var(--dark-text);
+}
+
+.new-part i{
+  font-style: normal;
+}
+
+.new-part:hover{
+  color: var(--new-primary);
+  transform: scale(1.05);
+}
+
+.new-part ::before{
+  margin-right: 5px;
+}
+
+
+
+.n-parts-buttons .bi-chevron-up:hover, .n-parts-buttons .bi-chevron-down:hover{
+  cursor: pointer;
+  color: var(--new-primary) !important;
+  transform: scale(1.1);
+}
+
 .fitted-icons .n-parts{
   font-family: "Formula1";
   font-size: 14px;
@@ -3674,10 +3772,32 @@ DRIVERS TABLE
   margin-right: 5px;
 }
 
-.fitted-icons .loadout-1{
+.fitted-icons i:not(.fitted){
+  color: var(--disabled-text);
+  transition: color 0.2s, transform 0.2s;
+}
+
+.fitted-icons .loadout-1.fitted{
   color: var(--new-primary);
+}
+
+.fitted-icons .loadout-1{
   position: relative;
   padding-bottom: 4px;
+  margin-left: 6px;
+}
+
+.loadout-1:not(.fitted):hover, .loadout-2:not(.fitted):hover{
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.loadout-1:not(.fitted):hover{
+  color: var(--text-selected);
+}
+
+.loadout-2:not(.fitted):hover{
+  color: var(--text-selected-secondary);
 }
 
 .loadout-1 .number, .loadout-2 .number{
@@ -3691,9 +3811,12 @@ DRIVERS TABLE
 }
 
 .fitted-icons .loadout-2{
-  color: var(--new-secondary);
   position: relative;
   padding-bottom: 4px;
+}
+
+.fitted-icons .loadout-2.fitted{
+  color: var(--new-secondary);
 }
 
 .new-or-existing-part{
@@ -3704,18 +3827,18 @@ DRIVERS TABLE
   color: var(--dark-text);
 }
 
-.existing-part, .new-part{
+.existing-part{
   font-size: 16px;
   transition: color 0.2s, transform 0.2s;
 }
 
-.existing-part:hover, .new-part:hover{
+.existing-part:hover{
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.05);
 }
 
-.existing-part.active-part, .new-part.active-part{
+.existing-part.active-part{
   color: var(--new-primary);
 }
 
@@ -4117,6 +4240,20 @@ input.disabled{
   position: relative;
   font-size: 18px;
 }
+
+.car{
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 4px;
+  cursor: pointer !important;
+  margin: 4px 6px;
+  color: var(--text-general);
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  position: relative;
+  font-size: 18px;
+}
+
+
 
 .driver-info{
   border-radius: 10px;
@@ -5441,7 +5578,13 @@ input.disabled{
   max-height: 22.5px;
 }
 
-.free-driver span.bold-font, .normal-driver span.bold-font, .drivers-table-driver span.bold-font, .driver-prediction span.bold-font, .modal-driver span.bold-font{
+.drivers-table-row .drivers-table-driver span:not(.bold-font), .viewer-header-driver span:not(.bold-font){
+  max-height: 22.5px;
+  white-space: nowrap;
+}
+
+.free-driver span.bold-font, .normal-driver span.bold-font, .drivers-table-driver span.bold-font, .driver-prediction span.bold-font, .modal-driver span.bold-font,
+.viewer-header-driver span.bold-font{
   display: inline-block;
   transform: skewX(-9deg)
 }
@@ -5485,7 +5628,7 @@ input.disabled{
   transform: scale(1.1);
 }
 
-.performance-graph-button.active{
+.performance-graph-button i.active{
   color: var(--new-primary);
 }
 
@@ -6410,10 +6553,14 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
-.team-performance {
+.team-performance, .car-performance {
   display: flex;
   flex-direction: column;
   gap: 1px;
+}
+
+.car-performance{
+  gap:0px
 }
 
 .performance-bar{
@@ -6422,6 +6569,16 @@ input::-webkit-inner-spin-button {
   background-color: var(--background);
   position: relative;
   margin: 4px 0;
+}
+
+.car .performance-bar{
+  height: 3px;
+  margin: 0px;
+  margin-top: 2px;
+}
+
+.car .performance-bar-progress{
+  height: 3px;
 }
 
 .performance-bar-progress{
@@ -6496,6 +6653,16 @@ input::-webkit-inner-spin-button {
 
 }
 
+.car-title{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  height: 13.5px;
+  padding-bottom: 4px;
+}
+
 .team-title {
   display: flex;
   align-items: center;
@@ -6514,6 +6681,85 @@ input::-webkit-inner-spin-button {
 .team-title-value{
   color: var(--dark-text);
   transition: color 0.3s;
+}
+
+.car:hover .main-car, .team:hover .main-car{
+  border-left: 2px solid var(--white-general);
+}
+
+.car.selected .main-car, .team.selected .main-car{
+  border-left: 2px solid var(--white-general);
+}
+
+.main-car{
+  border-left: 2px solid var(--separator);
+  padding-left: 7px;
+  transition: border-color 0.3s;
+}
+
+.team .main-car{
+  padding-left: 10px;
+}
+
+.nunmber-and-car, .number-and-team{
+  display: flex;
+  flex-direction: row;
+}
+
+.performance-number{
+  width: 8%;
+  text-align: center;
+  padding-right: 4px;
+  font-size: 16px;
+  max-height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 4px;
+}
+
+.team-number{
+  width: 10%;
+  text-align: center;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 5px;
+}
+
+.car-performance.selected .value{
+  color: var(--white-general);
+}
+
+.car-performance:hover .value{
+  color: var(--white-general);
+}
+
+.car-missing-parts{
+  color: var(--negative-general);
+  font-size: 12px;
+  padding-top: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.car-missing-parts .bi-check-all{
+  color : var(--positive-general);
+  font-size: 20px;
+}
+
+.car-missing-parts .bi-exclamation-triangle-fill{
+  padding-bottom: 2px;
+  margin-left: 4px;
+}
+
+.car-missing-parts .value{
+  color: var(--dark-text);
+  transition: color 0.2s;
+  width: 56px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 
@@ -6581,6 +6827,73 @@ input::-webkit-inner-spin-button {
 .facility{
   margin-top: 5px;
   justify-content: space-between;
+  position: relative;
+  height: 65px;
+}
+
+.condition-container{
+  position: absolute;
+  bottom: -9px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+}
+
+.condition-container-bar{
+  width: 100%;
+  background-color: var(--background);
+  height: 2px;
+  margin-right: 8px;
+}
+
+.condition-container-bar-progress{
+  width: 33%;
+  background-color: var(--positive-general);
+  height: 2px;
+  transition: width 0.2s;
+}
+
+.condition-container-buttons{
+  display: flex;
+  flex-direction: row;
+  font-size: 24px;
+}
+
+.condition-container-buttons i{
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.condition-container-value{
+  font-family: "Formula1Bold";
+  color: var(--positive-general);
+  width: 60px;
+  text-align: right;
+}
+
+.condition-container-buttons i:hover{
+  transform: scale(1.05);
+  color: var(--positive-general);
+}
+
+.facility-refurbish{
+  width: 5%;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.facility-refurbish svg{
+  width: 28px;
+  padding-bottom: 11px;
+  transition: color 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+
+.facility-refurbish svg:hover{
+  color: var(--positive-general);
+  transform: scale(1.1);
 }
 
 .facility-level-indicator, .mentality-level-indicator{
@@ -6591,7 +6904,7 @@ input::-webkit-inner-spin-button {
 }
 
 .facility-name{
-  width: 25%;
+  width: 30%;
   color: var( --text-general);
 }
 
@@ -6851,7 +7164,7 @@ input::-webkit-inner-spin-button {
   width: 50%;
 }
 
-#edit_teams .team-viewer i{
+#edit_teams .team-viewer .bi-chevron-left, #edit_teams .team-viewer .bi-chevron-right{
   transition: color 0.3s;
   font-size: 20px;
   color: var( --text-general);
@@ -6865,7 +7178,7 @@ input::-webkit-inner-spin-button {
 
 }
 
-#edit_teams .team-viewer i:hover{
+#edit_teams .team-viewer .bi-chevron-left:hover, #edit_teams .team-viewer .bi-chevron-right:hover{
   cursor: pointer;
   color: var(--new-primary) !important;
   transform: scale(1.1);

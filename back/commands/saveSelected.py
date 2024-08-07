@@ -64,6 +64,11 @@ class SaveSelectedCommand(Command):
         performance.insert(0, "Performance fetched")
         data_json_performance = json.dumps(performance)
         await self.send_message_to_client(data_json_performance)
+        cars = car_analysis.get_performance_all_cars(game_year[2])
+        att = car_analysis.get_attributes_all_cars(game_year[2])
+        cars = ["Cars fetched", cars, att]
+        data_json_cars = json.dumps(cars)
+        await self.send_message_to_client(data_json_cars)
 
     def update_team_dict(self, name):
         if name is not None:

@@ -43,7 +43,7 @@ function place_drivers_editStats(driversArray) {
         let spanLastName = document.createElement("span")
         spanName.textContent = insert_space(name[0]) + " "
         spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
-        newDiv.dataset.name = name[0] + " " + name.slice(1).join(" ")
+        newDiv.dataset.name = insert_space(name[0]) + " " + name.slice(1).join(" ")
         spanLastName.classList.add("bold-font")
         spanLastName.classList.add("surname")
         nameDiv.appendChild(spanName)
@@ -165,9 +165,9 @@ function place_staff_editStats(staffArray) {
         let name = staff[0].split(" ")
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
-        spanName.textContent = name[0] + " "
+        spanName.textContent = insert_space(name[0]) + " "
         spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
-        newDiv.dataset.name = name[0] + " " + name.slice(1).join(" ")
+        newDiv.dataset.name = insert_space(name[0]) + " " + name.slice(1).join(" ")
         spanLastName.classList.add("bold-font")
         spanLastName.classList.add("surname")
         nameDiv.appendChild(spanName)
