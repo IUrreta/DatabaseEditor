@@ -313,11 +313,11 @@ class CarAnalysisUtils:
                         if not parts_available:
                             item = self.create_new_item(design, part)
                             self.add_part_to_loadout(design, part, team_id, loadout, item)
-                            print(f"New item created for team {team_id} and part {part}, itemID: {item} added to loadout {loadout}")
+                            # print(f"New item created for team {team_id} and part {part}, itemID: {item} added to loadout {loadout}")
                         else:
                             item = parts_available[0][0]
                             self.add_part_to_loadout(design, part, team_id, loadout, item)
-                            print(f"Item {item} alredy existed, added to loadout {loadout} for team {team_id} and part {part}")
+                            # print(f"Item {item} alredy existed, added to loadout {loadout} for team {team_id} and part {part}")
                     else:
                         other_loadout = 1 if loadout == 2 else 2
                         fitted_item_other = self.cursor.execute(f"SELECT ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = {other_loadout}").fetchone()
@@ -325,16 +325,15 @@ class CarAnalysisUtils:
                         if fitted_item_other is not None and fitted_item is not None and fitted_item[0] == fitted_item_other[0]:
                             item = self.create_new_item(design, part)
                             self.add_part_to_loadout(design, part, team_id, loadout, item)
-                            print(f"Both loadouts had the same item, new item created for team {team_id} and part {part}, itemID: {item} added to loadout {loadout}")
-                        else:
-                            print(f"Design {design} already fitted for team {team_id} and part {part}")
+                            # print(f"Both loadouts had the same item, new item created for team {team_id} and part {part}, itemID: {item} added to loadout {loadout}")
+                        # else:
+                        #     print(f"Design {design} already fitted for team {team_id} and part {part}")
                         
         self.conn.commit()
 
     def update_items_for_design_dict(self, design_dict, team_id):
         for design in design_dict:
             n_parts = int(design_dict[design])
-            print(design, n_parts)
             part_type = self.cursor.execute(f"SELECT PartType FROM Parts_Designs WHERE DesignID = {design}").fetchone()[0]
             actual_parts = self.cursor.execute(f"SELECT COUNT(*) FROM Parts_Items WHERE DesignID = {design} AND BuildWork = {standard_buildwork_per_part[part_type]}").fetchone()
             if actual_parts is not None:
@@ -444,12 +443,11 @@ class CarAnalysisUtils:
                 part_name = parts[part]
                 new_design = performance[part_name]["designEditing"]
                 performance[part_name].pop("designEditing")
-                print(new_design)
                 if int(new_design) == -1:
                     max_design = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs").fetchone()[0]
                     latest_design_part_from_team = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id}").fetchone()[0]
                     new_design_id = max_design + 1
-                    print(f"New design: {new_design_id} for part {part_name} from team {team_id}")
+                    # print(f"New design: {new_design_id} for part {part_name} from team {team_id}")
                     self.add_new_design(part, int(team_id), day, season, latest_design_part_from_team, new_design_id)
                 else:
                     design = new_design

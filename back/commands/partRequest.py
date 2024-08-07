@@ -1,6 +1,5 @@
 from commands.command import Command
 from scripts.extractor import process_repack
-from scripts.car_performance_23 import run_script as run_editPerformance
 from scripts.car_analysis import CarAnalysisUtils
 import json
 

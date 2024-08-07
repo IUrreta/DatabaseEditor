@@ -161,7 +161,6 @@ addContinuousListener(document.querySelector("#teamBudget"), ".bi-plus-lg, .bi-d
 
 
 function updateCondition(input, increment, bar) {
-    console.log(bar)
     let actual = input.innerText.split("%")[0];
     let val = parseInt(actual) + increment;
     if (val > 100) val = 100;

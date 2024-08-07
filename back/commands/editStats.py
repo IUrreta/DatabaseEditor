@@ -1,6 +1,6 @@
 from commands.command import Command
 from scripts.extractor import process_repack
-from scripts.edit_stats_23 import edit_stats as run_editStats, edit_mentality, edit_superlicense, edit_marketability, edit_retirement, edit_age, edit_name, edit_code
+from scripts.edit_stats import edit_stats as run_editStats, edit_mentality, edit_superlicense, edit_marketability, edit_retirement, edit_age, edit_name, edit_code
 
 import json
 
@@ -10,10 +10,10 @@ class EditStatsCommand(Command):
 
     async def execute(self):
         argument = f"{self.message['driverID']} {self.message['typeStaff']} {self.message['statsArray']} {self.message['retirement']} "
+        edit_retirement(self.message['driverID'], self.message['isRetired'])
         if self.message['typeStaff'] == "0":
             argument += f"{self.message['driverNum']} {self.message['wants1']}"
             edit_superlicense(self.message['driverID'], self.message['superLicense'])
-            edit_retirement(self.message['driverID'], self.message['isRetired'])
             if Command.year_iterarion == "24":
                 edit_marketability(self.message['driverID'], self.message['marketability'])
         run_editStats(argument)

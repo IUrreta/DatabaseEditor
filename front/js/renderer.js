@@ -349,8 +349,6 @@ function performanceModeHandler() {
         document.querySelectorAll(".one-part").forEach(function (elem) {
             let designID = elem.querySelector(".one-part-name").dataset.designId
             let number = elem.querySelector(".n-parts").innerText.split("x")[1]
-            console.log(elem.querySelector(".n-parts"))
-            console.log(number)
             n_parts_designs[designID] = number
         })
         data = {
@@ -677,7 +675,6 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("raceMenu").style.height = "686px"
         }
         else if (mode === "10teams") {
-            console.log("10 teams")
             ipcRenderer.send('resize-window',875);
             document.querySelectorAll(".main-resizable").forEach(function (elem) {
                 elem.style.height = "660px"

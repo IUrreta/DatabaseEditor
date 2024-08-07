@@ -1,5 +1,5 @@
 from commands.command import Command
-from scripts.transfer_driver_23 import TransferUtils
+from scripts.transfer_driver import TransferUtils
 from scripts.extractor import process_repack
 
 import json

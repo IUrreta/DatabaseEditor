@@ -339,7 +339,6 @@ function load_parts_list(data) {
         list.innerHTML = ""
         let index = 1;
         for (let part in data[key]) {
-            console.log(data[key][part])
             let partElem = document.createElement("div")
             partElem.classList.add("one-part")
             if (index === 1) {
@@ -477,8 +476,6 @@ function add_new_part_button(list) {
         list.insertBefore(part, new_part_div)
         partName.classList.add("editing")
         new_part_div.remove()
-        add_new_part_button(list)
-
     })
 }
 
@@ -511,7 +508,6 @@ function add_n_parts_buttons(loadoutContainer) {
         }
         else {
             fitted_parts.forEach(function (part) {
-                console.log(part)
                 let errorClass = ""
                 if (part.classList.contains("loadout-1")) {
                     errorClass = "loadout-1-error";
@@ -531,7 +527,6 @@ function add_n_parts_buttons(loadoutContainer) {
 
 function load_one_part(data) {
     data = data[0]
-    console.log(data)
     let key = Object.keys(data)[0]
     let part = document.querySelector(`.part-performance[data-part='${key}']`)
     for (let stat in data[key]) {
@@ -548,7 +543,6 @@ function load_one_part(data) {
 }
 
 function add_partName_listener(div, subtitle, type = "old") {
-    console.log(div)
     div.addEventListener("click", function () {
         if (type === "new") {
             subtitle.dataset.editing = -1

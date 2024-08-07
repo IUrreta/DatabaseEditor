@@ -6844,7 +6844,7 @@ input::-webkit-inner-spin-button {
   width: 100%;
   background-color: var(--background);
   height: 2px;
-  margin-right: 20px;
+  margin-right: 8px;
 }
 
 .condition-container-bar-progress{

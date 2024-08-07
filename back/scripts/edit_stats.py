@@ -112,7 +112,6 @@ def edit_age(driverID, age_gap):
     driver_birthdate = cursor.execute(f"SELECT DOB FROM Staff_BasicData WHERE StaffID = {driverID}").fetchone()[0]
     dob_iso, dob = change_years_in_excel_date(driver_birthdate, int(age_gap))
     date_string = f'{dob_iso.year}-{dob_iso.month}-{dob_iso.day}'
-    print(f"UPDATE Staff_BasicData SET DOB = {dob}, DOB_ISO = {date_string} WHERE StaffID = {driverID}")
     cursor.execute(f"UPDATE Staff_BasicData SET DOB = {dob}, DOB_ISO = '{date_string}' WHERE StaffID = {driverID}")
     
     conn.commit()

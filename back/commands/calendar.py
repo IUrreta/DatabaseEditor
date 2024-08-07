@@ -1,6 +1,6 @@
 from commands.command import Command
 from scripts.extractor import process_repack
-from scripts.custom_calendar_23 import run_script as run_editCalendar
+from scripts.custom_calendar import run_script as run_editCalendar
 
 import json
 
