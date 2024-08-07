@@ -6827,6 +6827,73 @@ input::-webkit-inner-spin-button {
 .facility{
   margin-top: 5px;
   justify-content: space-between;
+  position: relative;
+  height: 65px;
+}
+
+.condition-container{
+  position: absolute;
+  bottom: -9px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+}
+
+.condition-container-bar{
+  width: 100%;
+  background-color: var(--background);
+  height: 2px;
+  margin-right: 20px;
+}
+
+.condition-container-bar-progress{
+  width: 33%;
+  background-color: var(--positive-general);
+  height: 2px;
+  transition: width 0.2s;
+}
+
+.condition-container-buttons{
+  display: flex;
+  flex-direction: row;
+  font-size: 24px;
+}
+
+.condition-container-buttons i{
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.condition-container-value{
+  font-family: "Formula1Bold";
+  color: var(--positive-general);
+  width: 60px;
+  text-align: right;
+}
+
+.condition-container-buttons i:hover{
+  transform: scale(1.05);
+  color: var(--positive-general);
+}
+
+.facility-refurbish{
+  width: 5%;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.facility-refurbish svg{
+  width: 28px;
+  padding-bottom: 11px;
+  transition: color 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+
+.facility-refurbish svg:hover{
+  color: var(--positive-general);
+  transform: scale(1.1);
 }
 
 .facility-level-indicator, .mentality-level-indicator{
@@ -6837,7 +6904,7 @@ input::-webkit-inner-spin-button {
 }
 
 .facility-name{
-  width: 25%;
+  width: 30%;
   color: var( --text-general);
 }
 
@@ -7097,7 +7164,7 @@ input::-webkit-inner-spin-button {
   width: 50%;
 }
 
-#edit_teams .team-viewer i{
+#edit_teams .team-viewer .bi-chevron-left, #edit_teams .team-viewer .bi-chevron-right{
   transition: color 0.3s;
   font-size: 20px;
   color: var( --text-general);
@@ -7111,7 +7178,7 @@ input::-webkit-inner-spin-button {
 
 }
 
-#edit_teams .team-viewer i:hover{
+#edit_teams .team-viewer .bi-chevron-left:hover, #edit_teams .team-viewer .bi-chevron-right:hover{
   cursor: pointer;
   color: var(--new-primary) !important;
   transform: scale(1.1);
