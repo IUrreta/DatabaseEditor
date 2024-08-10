@@ -288,7 +288,10 @@ class CarAnalysisUtils:
         return cars
 
     def get_driver_number_with_car(self, team_id, car_id):
-        driver_id = self.cursor.execute(f"SELECT con.StaffID FROM Staff_Contracts con JOIN Staff_GameData gam ON con.StaffID = gam.StaffID WHERE con.TeamID = {team_id} AND gam.StaffType = 0 AND con.ContractType = 0 AND con.PosInTeam = {car_id}").fetchone()[0]
+        driver_id = self.cursor.execute(f"SELECT con.StaffID FROM Staff_Contracts con JOIN Staff_GameData gam ON con.StaffID = gam.StaffID WHERE con.TeamID = {team_id} AND gam.StaffType = 0 AND con.ContractType = 0 AND con.PosInTeam = {car_id}").fetchone()
+        if driver_id is None:
+            return None
+        driver_id = driver_id[0]
         number = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driver_id}").fetchone()[0]
         return number
     
