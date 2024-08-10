@@ -292,7 +292,10 @@ class CarAnalysisUtils:
         if driver_id is None:
             return None
         driver_id = driver_id[0]
-        number = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driver_id}").fetchone()[0]
+        number = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driver_id}").fetchone()
+        if number is None:
+            return None
+        number = number[0]
         return number
     
     def get_fitted_designs(self, custom_team=None):
