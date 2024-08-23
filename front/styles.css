@@ -6769,6 +6769,7 @@ input::-webkit-inner-spin-button {
   padding-top: 10px;
   overflow: hidden;
   white-space: nowrap;
+  text-transform: uppercase;
 }
 
 
@@ -7279,13 +7280,14 @@ input::-webkit-inner-spin-button {
 .brawnlogo{
   width: 40px;
   height: 40px;
-  padding: 15px 0;
+  padding: 16px 0px;
+  padding-left: 4px;
 }
 
 .audilogo{
   width: 40px;
   height: 40px;
-  padding: 12px 0;
+  padding: 12px 2px;
 }
 
 .sauberlogo{
@@ -7298,6 +7300,12 @@ input::-webkit-inner-spin-button {
   height: 40px;
   width: 40px;
   padding: 5px 0;
+}
+
+.visarblogo{
+  height: 40px;
+  width: 40px;
+  padding: 5px 2px;
 }
 
 .toyotalogo{
@@ -7329,9 +7337,7 @@ input::-webkit-inner-spin-button {
 .alphataurilogo, #atlogo {
   width: 40px;
   height: 40px;
-  padding-bottom: 12px;
-  padding-left: 10px;
-  padding-top: 12px;
+  padding: 12px 4px;
 }
 
 .williamslogo, #wilogo {
