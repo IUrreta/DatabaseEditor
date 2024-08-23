@@ -379,33 +379,36 @@ class CarAnalysisUtils:
         self.conn.commit()
 
     def fit_loadouts_dict(self, loadouts_dict, team_id):
+        print(loadouts_dict)
         for part in loadouts_dict:
             design_1 = loadouts_dict[part][0]
             design_2 = loadouts_dict[part][1]
             fitted_design_1 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 1").fetchone()
-            if fitted_design_1[0] is not None:
-                self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_1[1]}")
-                fitted_design_1 = fitted_design_1[0]
+            if design_1 is not None:
+                if fitted_design_1[0] is not None:
+                    self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_1[1]}")
+                    fitted_design_1 = fitted_design_1[0]
 
-            if fitted_design_1 != design_1:
-                items_1 = self.cursor.execute(f"SELECT ItemID FROM Parts_Items WHERE DesignID = {design_1} AND BuildWork = {standard_buildwork_per_part[int(part)]} AND AssociatedCar IS NULL").fetchall()
-                if not items_1:
-                    item_1 = self.create_new_item(design_1, int(part))
-                else:
-                    item_1 = items_1[0][0]
-                self.add_part_to_loadout(design_1, int(part), team_id, 1, item_1)
+                if fitted_design_1 != design_1:
+                    items_1 = self.cursor.execute(f"SELECT ItemID FROM Parts_Items WHERE DesignID = {design_1} AND BuildWork = {standard_buildwork_per_part[int(part)]} AND AssociatedCar IS NULL").fetchall()
+                    if not items_1:
+                        item_1 = self.create_new_item(design_1, int(part))
+                    else:
+                        item_1 = items_1[0][0]
+                    self.add_part_to_loadout(design_1, int(part), team_id, 1, item_1)
 
-            fitted_design_2 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 2").fetchone()
-            if fitted_design_2[0] is not None:
-                self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_2[1]}")
-                fitted_design_2 = fitted_design_2[0]
-            if fitted_design_2 != design_2:
-                items_2 = self.cursor.execute(f"SELECT ItemID FROM Parts_Items WHERE DesignID = {design_2} AND BuildWork = {standard_buildwork_per_part[int(part)]} AND AssociatedCar IS NULL").fetchall()
-                if not items_2:
-                    item_2 = self.create_new_item(design_2, int(part))
-                else:
-                    item_2 = items_2[0][0]
-                self.add_part_to_loadout(design_2, int(part), team_id, 2, item_2)
+            if design_2 is not None:
+                fitted_design_2 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 2").fetchone()
+                if fitted_design_2[0] is not None:
+                    self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_2[1]}")
+                    fitted_design_2 = fitted_design_2[0]
+                if fitted_design_2 != design_2:
+                    items_2 = self.cursor.execute(f"SELECT ItemID FROM Parts_Items WHERE DesignID = {design_2} AND BuildWork = {standard_buildwork_per_part[int(part)]} AND AssociatedCar IS NULL").fetchall()
+                    if not items_2:
+                        item_2 = self.create_new_item(design_2, int(part))
+                    else:
+                        item_2 = items_2[0][0]
+                    self.add_part_to_loadout(design_2, int(part), team_id, 2, item_2)
 
         self.conn.commit()
 
@@ -507,14 +510,16 @@ class CarAnalysisUtils:
         self.conn.commit()
 
     def change_expertise_based(self,part, stat, new_value, team_id, type="existing", old_design=None):
+        day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
         if type == "existing":
-            current_value = self.cursor.execute(f"SELECT MAX(Value) FROM Parts_Designs_StatValues WHERE PartStat = {stat} AND DesignID IN (SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id})").fetchone()[0]
+            current_value = self.cursor.execute(f"SELECT MAX(Value) FROM Parts_Designs_StatValues WHERE PartStat = {stat} AND DesignID IN (SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id} AND ValidFrom = {day_season[1]})").fetchone()[0]
         elif type == "new":
             current_value = self.cursor.execute(f"SELECT Value FROM Parts_Designs_StatValues WHERE PartStat = {stat} AND DesignID = {old_design}").fetchone()[0]
         if current_value == 0:
             current_value = 1
-        current_expertise = self.cursor.execute(f"SELECT Expertise FROM Parts_TeamExpertise WHERE TeamID = {team_id} AND PartType = {part} AND PartStat = {stat}").fetchone()[0]
-        new_expertise = (float(new_value) * float(current_expertise)) / float(current_value)
+        # current_expertise = self.cursor.execute(f"SELECT Expertise FROM Parts_TeamExpertise WHERE TeamID = {team_id} AND PartType = {part} AND PartStat = {stat}").fetchone()[0]
+        # new_expertise = (float(new_value) * float(current_expertise)) / float(current_value)
+        new_expertise = current_value / 0.8
         # print(f"Old value for {part} {stat}: {current_value}, old expertise: {current_expertise}")
         # print(f"New value for {part} {stat}: {new_value}, new expertise: {new_expertise}")
         self.cursor.execute(f"UPDATE Parts_TeamExpertise SET Expertise = {new_expertise} WHERE TeamID = {team_id} AND PartType = {part} AND PartStat = {stat}")
