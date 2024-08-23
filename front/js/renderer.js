@@ -432,7 +432,7 @@ document.addEventListener('DOMContentLoaded',function () {
         "alfa": "../assets/images/alfaromeo.png","audi": "../assets/images/audi.png","sauber": "../assets/images/sauber.png","stake": "../assets/images/kick.png"
     }
     const logos_classes_configs = {
-        "visarb": "hugologo","toyota": "toyotalogo","hugo": "hugologo","alphatauri": "alphataurilogo",
+        "visarb": "visarblogo","toyota": "toyotalogo","hugo": "hugologo","alphatauri": "alphataurilogo",
         "porsche": "porschelogo","brawn": "brawnlogo",
         "alpine": "alpinelogo","renault": "ferrarilogo","andretti": "andrettilogo","lotus": "lotuslogo",
         "alfa": "alfalogo","audi": "audilogo","sauber": "sauberlogo","stake": "alfalogo"
@@ -725,7 +725,6 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("year23").classList.remove("activated")
             document.getElementById("year24").classList.add("activated")
             document.getElementById("drs24").classList.remove("d-none")
-            document.getElementById("teamChanges").classList.add("d-none")
             document.getElementById("drs24").dataset.attribute = "3"
             game_version = 2024
             max_races = 24;
@@ -743,7 +742,6 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("year23").classList.add("activated")
             document.getElementById("drs24").classList.add("d-none")
             document.getElementById("drs24").dataset.attribute = "-1"
-            document.getElementById("teamChanges").classList.remove("d-none")
             if (32 in combined_dict) {
                 delete combined_dict[32]
             }
@@ -759,6 +757,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 elem.classList.remove("d-none")
             })
         }
+        replace_modal_teams(game_version)
     }
 
     function manage_custom_team(nameColor) {
@@ -1164,6 +1163,7 @@ document.addEventListener('DOMContentLoaded',function () {
                     elem.classList.remove("alphataurilogo")
                     elem.classList.remove("toyotalogo")
                     elem.classList.remove("hugologo")
+                    elem.classList.remove("visarblogo")
                     elem.classList.remove("ferrarilogo")
                     elem.classList.remove("brawnlogo")
                     elem.classList.add(logos_classes_configs[info])
@@ -1199,6 +1199,7 @@ document.addEventListener('DOMContentLoaded',function () {
                     elem.classList.remove("alphataurilogo")
                     elem.classList.remove("toyotalogo")
                     elem.classList.remove("hugologo")
+                    elem.classList.remove("visarblogo")
                     elem.classList.remove("ferrarilogo")
                     elem.classList.remove("brawnlogo")
                     elem.classList.add("alphataurilogo")
@@ -1394,6 +1395,23 @@ document.addEventListener('DOMContentLoaded',function () {
         let root = document.documentElement;
         let newVal = getComputedStyle(root).getPropertyValue(newVar).trim();
         root.style.setProperty(oldVar,newVal);
+    }
+
+    function replace_modal_teams(version){
+        if (version === 2024) {
+            document.getElementById("alphaModalLogo").src = logos_configs["visarb"]
+            document.getElementById("alphaModalLogo").className = "visarblogo non-changable"
+            document.getElementById("alphaModalName").textContent = pretty_names["visarb"]
+            document.getElementById("alfaModalLogo").src = logos_configs["stake"]
+            document.getElementById("alfaModalName").textContent = pretty_names["stake"]
+        }
+        else if (version === 2023) {
+            document.getElementById("alphaModalLogo").src = logos_configs["alphatauri"]
+            document.getElementById("alphaModalLogo").className = "alphataurilogo non-changable"
+            document.getElementById("alphaModalName").textContent = pretty_names["alphatauri"]
+            document.getElementById("alfaModalLogo").src = logos_configs["alfa"]
+            document.getElementById("alfaModalName").textContent = pretty_names["alfa"]
+        }
     }
 
     document.querySelector("#configButton").addEventListener("click",function () {
