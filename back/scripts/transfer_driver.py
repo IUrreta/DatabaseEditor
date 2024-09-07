@@ -108,7 +108,9 @@ class TransferUtils:
                 #gives new numbers to newcommers in f1
                 driver_has_number = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driverID}").fetchone()
                 if driver_has_number is None:
+                    self.free_numbers_not_f1()
                     free_numbers = self.cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL AND Number != 0").fetchall()
+                    print(free_numbers)
                     rand_index = random.randrange(len(free_numbers))
                     new_num = free_numbers[rand_index]
                     self.cursor.execute(f"UPDATE Staff_DriverNumbers SET CurrentHolder = {driverID} WHERE Number = {new_num[0]}")
@@ -119,6 +121,18 @@ class TransferUtils:
 
         self.conn.commit()
         self.conn.close()
+
+    def free_numbers_not_f1(self):
+        numbers = self.cursor.execute("SELECT CurrentHolder, Number FROM Staff_DriverNumbers WHERE Number != 0 AND CurrentHolder IS NOT NULL").fetchall()
+        for driver, number in numbers:
+            print(driver, number)
+            team_id = self.cursor.execute(f"SELECT MIN(TeamID) FROM Staff_Contracts WHERE StaffID = {driver} AND ContractType = 0").fetchone()
+            if team_id[0] is not None:
+                if team_id[0] > 10 and team_id[0] < 32:
+                    self.cursor.execute(f"UPDATE Staff_DriverNumbers SET CurrentHolder = NULL WHERE Number = {number}")
+
+        self.conn.commit()
+
 
     def fetch_type_staff(self, driverID):
         type = self.cursor.execute(f"SELECT StaffType FROM Staff_GameData WHERE StaffID = {driverID}").fetchone()
@@ -160,7 +174,6 @@ class TransferUtils:
 
 
         driver_birth_date = self.cursor.execute(f"SELECT DOB_ISO FROM Staff_BasicData WHERE StaffID = {driverID}").fetchone()
-        print(driver_birth_date)
         yob = driver_birth_date[0].split("-")[0]
         if(year[0] - int(yob) > 34 and type == "driver"):
             year_end = str(random.randint(1, 2) + year[0])
@@ -256,7 +269,6 @@ class TransferUtils:
                 self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driver_1_id} AND ContractType = 0 AND TeamID = {is_driving_in_f2[0]}")
 
             type = self.fetch_type_staff(driver_1_id)
-            print(f"TYPE: {type}")
             if int(type) == 0:
                 was_in_f2 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driver_1_id} AND SeasonID = {year[0]} AND RaceFormula = 2").fetchone()
                 was_in_f3 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driver_1_id} AND SeasonID = {year[0]} AND RaceFormula = 3").fetchone()
@@ -292,7 +304,6 @@ class TransferUtils:
 
 
             type = self.fetch_type_staff(driver_1_id)
-            print(f"TYPE: {type}")
             if int(type) == 0:
                 was_in_f2 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driver_2_id} AND SeasonID = {year[0]} AND RaceFormula = 2").fetchone()
                 was_in_f3 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driver_2_id} AND SeasonID = {year[0]} AND RaceFormula = 3").fetchone()
@@ -377,7 +388,6 @@ class TransferUtils:
 
     def get_tier(self, driverID):
         driver_stats = self.cursor.execute(f"SELECT Val FROM Staff_PerformanceStats WHERE StaffID = {driverID}").fetchall()
-        print(driver_stats)
         type = "driver"
         if len(driver_stats) == 9:
             cornering = float(driver_stats[0][0])
@@ -431,11 +441,9 @@ class TransferUtils:
     def fix_driver_standings(self):
         year =  self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
         drivers_in_standings = self.cursor.execute(f"SELECT DriverID FROM Races_DriverStandings WHERE SeasonID = {year[0]} AND RaceFormula = 1").fetchall()
-        print(drivers_in_standings)
         for driver in drivers_in_standings:
             driver_id = driver[0]
             is_driver = self.cursor.execute(f"SELECT StaffType FROM Staff_GameData WHERE StaffID = {driver_id}").fetchone()
-            print(driver_id, is_driver)
             if is_driver[0] != 0:
                 self.cursor.execute(f"DELETE FROM Races_DriverStandings WHERE DriverID = {driver_id} AND SeasonID = {year[0]} AND RaceFormula = 1")
 

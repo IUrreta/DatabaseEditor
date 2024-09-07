@@ -379,7 +379,6 @@ class CarAnalysisUtils:
         self.conn.commit()
 
     def fit_loadouts_dict(self, loadouts_dict, team_id):
-        print(loadouts_dict)
         for part in loadouts_dict:
             design_1 = loadouts_dict[part][0]
             design_2 = loadouts_dict[part][1]
@@ -396,10 +395,8 @@ class CarAnalysisUtils:
                     else:
                         item_1 = items_1[0][0]
                     self.add_part_to_loadout(design_1, int(part), team_id, 1, item_1)
-            print(design_2)
             if design_2 is not None:
                 fitted_design_2 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 2").fetchone()
-                print(fitted_design_2)
                 if fitted_design_2[0] is not None and fitted_design_2[1] is not None:
                     self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_2[1]}")
                     fitted_design_2 = fitted_design_2[0]
