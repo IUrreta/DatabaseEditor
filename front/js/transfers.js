@@ -831,7 +831,7 @@ function manageDrivers(...divs) {
  */
 document.getElementById("confirmButton").addEventListener('click', function () {
     if (modalType === "hire") {
-        if (((f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId)) && !destinationParent.classList.contains("affiliates-space")  ) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space")) {
+        if (((f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId)) && !destinationParent.classList.contains("affiliates-space")  ) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space") | originalParent.className === "staff-space") {
             signDriver("fireandhire")
         }
         signDriver("regular")
