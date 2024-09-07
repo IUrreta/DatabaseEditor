@@ -158,7 +158,6 @@ function order_by(criterion) {
         let bar = car.querySelector(".performance-bar-progress");
         bar.style.width = bar.dataset[criterion] + "%";
         let number = car.querySelector(".performance-number")
-        console.log(car.querySelector(".car-missing-parts"))
         let value = car.querySelector(".car-missing-parts .value")
         value.innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
         number.innerText = index + 1

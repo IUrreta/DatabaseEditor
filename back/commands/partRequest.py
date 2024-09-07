@@ -8,7 +8,6 @@ class PartRequestCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        print(self.message)
         car_analysis = CarAnalysisUtils(self.client)
         part_values = ["Part values fetched", car_analysis.get_unitvalue_from_one_part(self.message['designID'])]
         data_json_part_values = json.dumps(part_values)
