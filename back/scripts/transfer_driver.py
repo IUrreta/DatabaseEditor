@@ -110,7 +110,6 @@ class TransferUtils:
                 if driver_has_number is None:
                     self.free_numbers_not_f1()
                     free_numbers = self.cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL AND Number != 0").fetchall()
-                    print(free_numbers)
                     rand_index = random.randrange(len(free_numbers))
                     new_num = free_numbers[rand_index]
                     self.cursor.execute(f"UPDATE Staff_DriverNumbers SET CurrentHolder = {driverID} WHERE Number = {new_num[0]}")
@@ -125,7 +124,6 @@ class TransferUtils:
     def free_numbers_not_f1(self):
         numbers = self.cursor.execute("SELECT CurrentHolder, Number FROM Staff_DriverNumbers WHERE Number != 0 AND CurrentHolder IS NOT NULL").fetchall()
         for driver, number in numbers:
-            print(driver, number)
             team_id = self.cursor.execute(f"SELECT MIN(TeamID) FROM Staff_Contracts WHERE StaffID = {driver} AND ContractType = 0").fetchone()
             if team_id[0] is not None:
                 if team_id[0] > 10 and team_id[0] < 32:
