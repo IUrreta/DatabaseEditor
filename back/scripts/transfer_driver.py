@@ -69,7 +69,7 @@ class TransferUtils:
         
         day = self.cursor.execute("SELECT Day FROM Player_State").fetchone()[0]
         year =  self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()[0]
-
+        staff_type = self.fetch_type_staff(driverID)
 
         isRetired = self.cursor.execute(f"SELECT Retired FROM Staff_GameData WHERE StaffID = {driverID}").fetchone()
         if isRetired[0] == 1:
@@ -78,7 +78,7 @@ class TransferUtils:
             self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 0, 1, {day}, 1, {teamID}, {position}, 1, '[OPINION_STRING_NEUTRAL]', {day}, {year_end}, 1, '[OPINION_STRING_NEUTRAL]', {salary}, 1, '[OPINION_STRING_NEUTRAL]', {starting_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus}, 1, '[OPINION_STRING_NEUTRAL]', {race_bonus_pos}, 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')")
         elif year_iteration == "24":
             self.cursor.execute(f"INSERT INTO Staff_Contracts VALUES ({driverID}, 0, {teamID}, {position}, {day}, {year_end},  {salary}, {starting_bonus}, {race_bonus}, {race_bonus_pos}, 0.5, 0)")
-        if int(position) < 3:
+        if int(position) < 3 and staff_type == 0:
             self.cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = {position} WHERE StaffID = {driverID}")
             is_driving_in_f2_f3 = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 0 AND (TeamID > 10 AND  TeamID < 32)").fetchone()
             if is_driving_in_f2_f3 is not None:
@@ -89,8 +89,8 @@ class TransferUtils:
             position_in_standings = self.cursor.execute(f"SELECT MAX(Position) FROM Races_DriverStandings WHERE SeasonID = {year} AND RaceFormula = 1").fetchone()
             points_driver_in_standings = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driverID} AND SeasonID = {year} AND RaceFormula = 1").fetchone()
 
-            type = self.fetch_type_staff(driverID)
-            if int(type) == 0:
+
+            if int(staff_type) == 0:
                 if points_driver_in_standings is None:
                     points_driver_in_standings = (0,)
                     self.cursor.execute(f"INSERT INTO Races_DriverStandings VALUES ({year}, {driverID}, {points_driver_in_standings[0]}, {position_in_standings[0] + 1}, 0, 0, 1)")
@@ -115,6 +115,7 @@ class TransferUtils:
         
         
         self.rearrange_driver_engineer_pairings(teamID)
+        self.fix_driver_standings()
 
         self.conn.commit()
         self.conn.close()
@@ -159,6 +160,7 @@ class TransferUtils:
 
 
         driver_birth_date = self.cursor.execute(f"SELECT DOB_ISO FROM Staff_BasicData WHERE StaffID = {driverID}").fetchone()
+        print(driver_birth_date)
         yob = driver_birth_date[0].split("-")[0]
         if(year[0] - int(yob) > 34 and type == "driver"):
             year_end = str(random.randint(1, 2) + year[0])
@@ -230,9 +232,11 @@ class TransferUtils:
         team_1_id = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driver_1_id}").fetchone()
         team_2_id = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driver_2_id}").fetchone()
         year =  self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
+        type_1 = self.fetch_type_staff(driver_1_id)
+        type_2 = self.fetch_type_staff(driver_2_id)
+        is_staff = type_1 == 1 or type_2 == 1
 
-        if(position_1[0] < 3 and position_2[0] < 3):
-            #no reserve drivers
+        if(position_1[0] < 3 and position_2[0] < 3) and not is_staff:
             self.cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_2_id[0]}, PosInTeam = {position_2[0]} WHERE ContractType = 0 AND StaffID = {driver_1_id}")
             self.cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_1_id[0]}, PosInTeam = {position_1[0]} WHERE ContractType = 0 AND StaffID = {driver_2_id}")
             self.cursor.execute(f"UPDATE Staff_DriverData SET AssignedCarNumber = {position_2[0]} WHERE StaffID = {driver_1_id}")
@@ -241,8 +245,7 @@ class TransferUtils:
             self.rearrange_driver_engineer_pairings(team_1_id[0])
             self.rearrange_driver_engineer_pairings(team_2_id[0])
         
-        elif position_1[0] >= 3 and position_2[0] >= 3:
-            # both reserves
+        elif (position_1[0] >= 3 and position_2[0] >= 3) or is_staff:
             self.cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_2_id[0]} WHERE ContractType = 0 AND StaffID = {driver_1_id}")
             self.cursor.execute(f"UPDATE Staff_Contracts SET TeamID = {team_1_id[0]} WHERE ContractType = 0 AND StaffID = {driver_2_id}")
 
@@ -253,6 +256,7 @@ class TransferUtils:
                 self.cursor.execute(f"DELETE FROM Staff_Contracts WHERE StaffID = {driver_1_id} AND ContractType = 0 AND TeamID = {is_driving_in_f2[0]}")
 
             type = self.fetch_type_staff(driver_1_id)
+            print(f"TYPE: {type}")
             if int(type) == 0:
                 was_in_f2 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driver_1_id} AND SeasonID = {year[0]} AND RaceFormula = 2").fetchone()
                 was_in_f3 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driver_1_id} AND SeasonID = {year[0]} AND RaceFormula = 3").fetchone()
@@ -288,6 +292,7 @@ class TransferUtils:
 
 
             type = self.fetch_type_staff(driver_1_id)
+            print(f"TYPE: {type}")
             if int(type) == 0:
                 was_in_f2 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driver_2_id} AND SeasonID = {year[0]} AND RaceFormula = 2").fetchone()
                 was_in_f3 = self.cursor.execute(f"SELECT Points FROM Races_DriverStandings WHERE DriverID = {driver_2_id} AND SeasonID = {year[0]} AND RaceFormula = 3").fetchone()
@@ -314,6 +319,8 @@ class TransferUtils:
 
             self.rearrange_driver_engineer_pairings(team_1_id[0])
             self.rearrange_driver_engineer_pairings(team_2_id[0])
+
+        self.fix_driver_standings()
 
         self.conn.commit()
         self.conn.close()
@@ -370,6 +377,7 @@ class TransferUtils:
 
     def get_tier(self, driverID):
         driver_stats = self.cursor.execute(f"SELECT Val FROM Staff_PerformanceStats WHERE StaffID = {driverID}").fetchall()
+        print(driver_stats)
         type = "driver"
         if len(driver_stats) == 9:
             cornering = float(driver_stats[0][0])
@@ -382,12 +390,14 @@ class TransferUtils:
             reactions = float(driver_stats[7][0])
             accuracy = float(driver_stats[8][0])
             rating = (cornering + braking*0.75 + reactions*0.5 +control*0.75 + smoothness*0.5 + accuracy*0.75 + adaptability*0.25 + overtaking*0.25+ defence*0.25)/5
-        else:
+        elif len(driver_stats) > 0:
             type = "staff"
             rating = 0
             for i in range(len(driver_stats)):
                 rating += float(driver_stats[i][0])
             rating = rating/len(driver_stats)
+        else:
+            rating = 0
 
         if(rating >= 89): tier = 1
         elif(rating >= 85): tier = 2
@@ -416,3 +426,17 @@ class TransferUtils:
         # print(name, driver_id)
 
         return driver_id
+    
+
+    def fix_driver_standings(self):
+        year =  self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
+        drivers_in_standings = self.cursor.execute(f"SELECT DriverID FROM Races_DriverStandings WHERE SeasonID = {year[0]} AND RaceFormula = 1").fetchall()
+        print(drivers_in_standings)
+        for driver in drivers_in_standings:
+            driver_id = driver[0]
+            is_driver = self.cursor.execute(f"SELECT StaffType FROM Staff_GameData WHERE StaffID = {driver_id}").fetchone()
+            print(driver_id, is_driver)
+            if is_driver[0] != 0:
+                self.cursor.execute(f"DELETE FROM Races_DriverStandings WHERE DriverID = {driver_id} AND SeasonID = {year[0]} AND RaceFormula = 1")
+
+

@@ -385,7 +385,7 @@ class CarAnalysisUtils:
             design_2 = loadouts_dict[part][1]
             fitted_design_1 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 1").fetchone()
             if design_1 is not None:
-                if fitted_design_1[0] is not None:
+                if fitted_design_1[0] is not None and fitted_design_1[1] is not None:
                     self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_1[1]}")
                     fitted_design_1 = fitted_design_1[0]
 
@@ -396,10 +396,11 @@ class CarAnalysisUtils:
                     else:
                         item_1 = items_1[0][0]
                     self.add_part_to_loadout(design_1, int(part), team_id, 1, item_1)
-
+            print(design_2)
             if design_2 is not None:
                 fitted_design_2 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 2").fetchone()
-                if fitted_design_2[0] is not None:
+                print(fitted_design_2)
+                if fitted_design_2[0] is not None and fitted_design_2[1] is not None:
                     self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = {fitted_design_2[1]}")
                     fitted_design_2 = fitted_design_2[0]
                 if fitted_design_2 != design_2:
