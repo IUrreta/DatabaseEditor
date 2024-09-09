@@ -154,7 +154,7 @@ class CarAnalysisUtils:
     def calculate_overall_performance(self, attributes):
         ovr = 0
         for attribute in attributes:
-            ovr += attributes[attribute] * attributes_contributions2[attribute]
+            ovr += attributes[attribute] * attributes_contributions3[attribute]
 
         return round(ovr, 2)
 

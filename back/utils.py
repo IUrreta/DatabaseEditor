@@ -67,7 +67,8 @@ class DatabaseUtils:
 
     def fetch_mentality(self, staffID):
         morale = self.cursor.execute(f"SELECT Opinion FROM Staff_Mentality_AreaOpinions WHERE StaffID = {staffID}").fetchall()
-        return morale
+        global_mentality = self.cursor.execute(f"SELECT MentalityOpinion FROM Staff_State WHERE StaffID = {staffID}").fetchone()
+        return [morale, global_mentality]
 
     def fetchDriverNumberDetails(self, driverID):
         num = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driverID}").fetchone()
@@ -136,10 +137,12 @@ class DatabaseUtils:
                 data_dict["nationality"] = country_code
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
-                    if mentality:
-                        data_dict["mentality0"] = mentality[0][0]
-                        data_dict["mentality1"] = mentality[1][0]
-                        data_dict["mentality2"] = mentality[2][0]
+                    print(mentality)
+                    data_dict["global_mentality"] = mentality[1][0]   
+                    if mentality[0]:
+                        data_dict["mentality0"] = mentality[0][0][0]
+                        data_dict["mentality1"] = mentality[0][1][0]
+                        data_dict["mentality2"] = mentality[0][2][0]   
                     else:
                         result += (-1,)
                 formatted_tuples.append(data_dict)
@@ -357,10 +360,12 @@ class DatabaseUtils:
                 data_dict["nationality"] = country_code
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
-                    if mentality:
-                        data_dict["mentality0"] = mentality[0][0]
-                        data_dict["mentality1"] = mentality[1][0]
-                        data_dict["mentality2"] = mentality[2][0]                
+                    print(mentality)
+                    data_dict["global_mentality"] = mentality[1][0]    
+                    if mentality[0]:
+                        data_dict["mentality0"] = mentality[0][0][0]
+                        data_dict["mentality1"] = mentality[0][1][0]
+                        data_dict["mentality2"] = mentality[0][2][0]   
                 if game_year == "24":
                     marketability = self.fetch_marketability(id)
                     data_dict["marketability"] = marketability[0]

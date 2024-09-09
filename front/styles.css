@@ -49,7 +49,9 @@
   --text-general: #dedde6;
   --text-general-transparent: #e9e8f0be;
   --negative-general: #e95656;
+  --negative-general-clicked: #cf2626;
   --positive-general: #5bd999;
+  --positive-general-clicked: #11ac5e;
   --positive-general-darker: #3f8a6b;
   --positive--general-darker2: #2f6a4b;
   --h2h-general: #34c297;
@@ -1194,16 +1196,34 @@ input[type="checkbox"]:checked {
 }
 
 .ovr {
-  font-size: 24px;
+  font-size: 21px;
 }
 
 .ovrcombined {
   display: flex;
-  width: 125px;
+  width: 116px;
   align-items: baseline;
   padding-top: 6px;
   justify-content: space-between;
   margin-right: 8px;
+  position: relative;
+}
+
+.mentality-change-ovr{
+  position: absolute;
+  top: 13px;
+  right: 29px;
+  font-size: 16px;
+  font-family: "Formula1Bold";
+  width: 24px;
+}
+
+.mentality-change-ovr.positive{
+  color: var(--positive-general);
+}
+
+.mentality-change-ovr.negative{
+  color: var(--negative-general);
 }
 
 .overall-holder {
@@ -6521,6 +6541,32 @@ input::-webkit-inner-spin-button {
   color: var(--negative-text) !important;
 }
 
+.small-ovr{
+  gap: 5px;
+  display: flex;
+  overflow: hidden;
+}
+
+.small-ovr span{
+  width: 25px;
+}
+
+.mentality-small-ovr-positive{
+  color: var(--positive-general);
+}
+
+.normal-driver.clicked .mentality-small-ovr-positive{
+  color: var(--positive-general-clicked);
+}
+
+.mentality-small-ovr-negative{
+  color: var(--negative-general);
+}
+
+.normal-driver.clicked .mentality-small-ovr-negative{
+  color: var(--negative-general-clicked);
+}
+
 .race.selected, .normal-driver.clicked, .fe-transparent.clicked:hover, .mc-transparent.clicked:hover, .me-transparent.clicked:hover, .al-transparent.clicked:hover, .wi-transparent.clicked:hover, .ha-transparent.clicked:hover, .at-transparent.clicked:hover, .as-transparent.clicked:hover, .af-transparent.clicked:hover, .rb-transparent.clicked:hover{
   background: var(--text-general) !important;
   color: var(--negative-text) !important;
@@ -6905,7 +6951,7 @@ input::-webkit-inner-spin-button {
 }
 
 .facility-name{
-  width: 30%;
+  width: 46%;
   color: var( --text-general);
 }
 
@@ -7118,6 +7164,10 @@ input::-webkit-inner-spin-button {
   text-align: center;
   padding: 8px;
   height: 39.2px !important;
+}
+
+.facility .bi-chevron-right{
+  margin-right: 60px;
 }
 
 #confidenceInput{

@@ -187,6 +187,18 @@ attributes_contributions2 = {
     "engine_cooling": 0.01
 }
 
+attributes_contributions3 = {
+    "top_speed": 0.144,
+    "acceleration": 0.058,
+    "drs": 0.115,
+    "low_speed": 0.195,
+    "medium_speed": 0.195,
+    "high_speed": 0.195,
+    "dirty_air": 0.029,
+    "brake_cooling": 0.058,
+    "engine_cooling": 0.01
+}
+
 ########
 
 fuel_efficiency_factors = {
