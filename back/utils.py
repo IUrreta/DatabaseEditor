@@ -137,7 +137,6 @@ class DatabaseUtils:
                 data_dict["nationality"] = country_code
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
-                    print(mentality)
                     data_dict["global_mentality"] = mentality[1][0]   
                     if mentality[0]:
                         data_dict["mentality0"] = mentality[0][0][0]
@@ -360,7 +359,6 @@ class DatabaseUtils:
                 data_dict["nationality"] = country_code
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
-                    print(mentality)
                     data_dict["global_mentality"] = mentality[1][0]    
                     if mentality[0]:
                         data_dict["mentality0"] = mentality[0][0][0]

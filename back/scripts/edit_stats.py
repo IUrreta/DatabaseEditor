@@ -190,5 +190,66 @@ def edit_marketability(driverID, value):
     conn.commit()
     conn.close()
 
+def edit_freeze_mentality(state):
+    conn = sqlite3.connect("../result/main.db")
+    cursor = conn.cursor()
+
+    if state == 0:
+        cursor.execute("DROP TRIGGER IF EXISTS update_Opinion_After_Insert;")
+        cursor.execute("DROP TRIGGER IF EXISTS update_Opinion_After_Update;")
+        cursor.execute("DROP TRIGGER IF EXISTS clear_Staff_Mentality_Statuses;")
+        cursor.execute("DROP TRIGGER IF EXISTS clear_Staff_Mentality_Events;")
+        cursor.execute("DROP TRIGGER IF EXISTS reset_Staff_State;")
+
+    else:
+        cursor.execute("""
+            CREATE TRIGGER IF NOT EXISTS update_Opinion_After_Insert
+            AFTER INSERT ON Staff_Mentality_AreaOpinions
+            BEGIN
+                UPDATE Staff_Mentality_AreaOpinions
+                SET Opinion = 2
+                WHERE Opinion != 2;
+            END;
+        """)
+
+        cursor.execute("""
+            CREATE TRIGGER IF NOT EXISTS update_Opinion_After_Update
+            AFTER UPDATE OF Opinion ON Staff_Mentality_AreaOpinions
+            BEGIN
+                UPDATE Staff_Mentality_AreaOpinions
+                SET Opinion = 2
+                WHERE Opinion != 2;
+            END;
+        """)
+
+        cursor.execute("""
+            CREATE TRIGGER IF NOT EXISTS clear_Staff_Mentality_Statuses
+            AFTER INSERT ON Staff_Mentality_Statuses
+            BEGIN
+                DELETE FROM Staff_Mentality_Statuses;
+            END;
+        """)
+
+        cursor.execute("""
+            CREATE TRIGGER IF NOT EXISTS clear_Staff_Mentality_Events
+            AFTER INSERT ON Staff_Mentality_Events
+            BEGIN
+                DELETE FROM Staff_Mentality_Events;
+            END;
+        """)
+
+        cursor.execute("""
+            CREATE TRIGGER IF NOT EXISTS reset_Staff_State
+            AFTER UPDATE ON Staff_State
+            BEGIN
+                UPDATE Staff_State
+                SET Mentality = 50, MentalityOpinion = 2;
+            END;
+        """)
+
+    conn.commit()
+    conn.close()
+
+
 if __name__ == '__main__':
     edit_stats()

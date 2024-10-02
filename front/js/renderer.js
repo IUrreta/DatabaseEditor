@@ -200,8 +200,51 @@ function editModeHandler() {
     }
     let driverName = getName(document.querySelector(".clicked"));
     document.querySelector(".clicked").dataset.stats = stats;
-    let new_ovr = calculateOverall(stats,typeOverall);
-    document.querySelector(".clicked").childNodes[1].innerHTML = new_ovr;
+    let globalMentality = 2
+    let mentality = -1
+    if (document.querySelector(".clicked").dataset.mentality0) {
+        mentality = ""
+        document.querySelectorAll(".mentality-level-indicator").forEach(function (elem,index) {
+            mentality += elem.dataset.value + " "
+            document.querySelector(".clicked").dataset["mentality" + index] = elem.dataset.value
+            globalMentality += parseInt(elem.dataset.value)
+        })
+        globalMentality = Math.floor(globalMentality / 3)
+    }
+    console.log(globalMentality)
+    document.querySelector(".clicked").dataset.globalMentality = globalMentality
+    let new_ovr = calculateOverall(stats,typeOverall, globalMentality);
+    console.log( document.querySelector(".clicked").childNodes[1], new_ovr)
+    document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = ""
+    if (new_ovr[1] !== new_ovr[0]) {
+        document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr[1];
+    }
+    document.querySelector(".clicked").childNodes[1].childNodes[1].textContent = new_ovr[0];
+    if (globalMentality < 2){
+        document.querySelector(".clicked").childNodes[1].childNodes[0].className = "mentality-small-ovr-positive"
+    }
+    else if (globalMentality > 2){
+        document.querySelector(".clicked").childNodes[1].childNodes[0].className = "mentality-small-ovr-negative"
+    }
+    let inputArray = document.querySelectorAll(".elegible")
+    inputArray.forEach(function (input, index) {
+        manage_mentality_modifiers(input, globalMentality)
+    })
+    let diff = parseInt(new_ovr[1]) - parseInt(new_ovr[0])
+    let mentalitydiff = document.querySelector(".mentality-change-ovr")
+    if (diff > 0) {
+        mentalitydiff.textContent = "+" + diff
+        mentalitydiff.classList.add("positive")
+    }
+    else if (diff < 0) {
+        mentalitydiff.textContent = diff
+        mentalitydiff.classList.add("negative")
+    }
+    else{
+        mentalitydiff.textContent = ""
+        mentalitydiff.classList.remove("positive")
+        mentalitydiff.classList.remove("negative")
+    }
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     let age = document.querySelector(".actual-age").textContent.split(" ")[1];
     document.querySelector(".clicked").dataset.retirement = retirement;
@@ -249,15 +292,13 @@ function editModeHandler() {
         superLicense = 0;
         document.querySelector(".clicked").dataset.superLicense = 0;
     }
-    let mentality = -1
-    if (document.querySelector(".clicked").dataset.mentality0) {
-        mentality = ""
-        document.querySelectorAll(".mentality-level-indicator").forEach(function (elem,index) {
-            mentality += elem.dataset.value + " "
-            document.querySelector(".clicked").dataset["mentality" + index] = elem.dataset.value
-        })
-    }
     let marketability = document.getElementById("marketabilityInput").value;
+    let mentalityFrozen = 0;
+    if (document.getElementById("freezeMentalityToggle").checked) {
+        mentalityFrozen = 1;
+    }
+    let saveSelector = document.getElementById('saveSelector');
+    let saveSelected = saveSelector.innerHTML
     let dataStats = {
         command: "editStats",
         driverID: id,
@@ -273,7 +314,9 @@ function editModeHandler() {
         superLicense: superLicense,
         marketability: marketability,
         newName: newName,
-        newCode: newCode
+        newCode: newCode,
+        mentalityFrozen: mentalityFrozen,
+        saveName : saveSelected
     };
 
     socket.send(JSON.stringify(dataStats));
@@ -1102,7 +1145,12 @@ document.addEventListener('DOMContentLoaded',function () {
                 document.querySelector(".bi-gear").classList.remove("hidden")
                 manage_config_content(info[0])
             }
-
+            if (info[0]["mentalityFrozen"] === 1){
+                document.getElementById("freezeMentalityToggle").checked = true
+            }
+            else{
+                document.getElementById("freezeMentalityToggle").checked = false
+            }
         }
     }
 

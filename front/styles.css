@@ -590,6 +590,14 @@ a.bi-linkedin:hover {
   align-items: center;
 }
 
+.title-buttons-right{
+  position: absolute;
+  right: 0;
+  gap: 10px;
+  display: flex;
+  align-items: center;
+}
+
 .title-buttons-left .custom-dropdown{
   margin: 0 !important;
 }
@@ -689,6 +697,12 @@ a.bi-linkedin:hover {
   padding-right: 2rem;
   position: absolute;
   right: 0;
+}
+
+.freeze-mentality{
+  color: var( --text-general);
+  font-size: 20px;
+  padding-right: 2rem;
 }
 
 input[role="switch"] {
@@ -1205,24 +1219,27 @@ input[type="checkbox"]:checked {
   align-items: baseline;
   padding-top: 6px;
   justify-content: space-between;
-  margin-right: 8px;
+  width: 120px;
   position: relative;
+  gap: 5px;
 }
 
 .mentality-change-ovr{
   position: absolute;
   top: 13px;
-  right: 29px;
+  right: 27px;
   font-size: 16px;
   font-family: "Formula1Bold";
   width: 24px;
 }
 
-.mentality-change-ovr.positive{
+
+
+.mentality-change-ovr.positive, .mentality-modifier.positive{
   color: var(--positive-general);
 }
 
-.mentality-change-ovr.negative{
+.mentality-change-ovr.negative, .mentality-modifier.negative{
   color: var(--negative-general);
 }
 
@@ -1928,13 +1945,13 @@ input[type="checkbox"]:checked {
 
 .main-panel-stats {
   display: grid;
-  grid-template-columns: repeat(3, 0.33fr);
+  grid-template-columns: repeat(3, 0.34fr);
 }
 
 .extra-atributes {
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(3, 0.33fr);
+  grid-template-columns: repeat(3, 0.34fr);
 }
 
 .attribute-and-preferences{
@@ -3674,7 +3691,14 @@ DRIVERS TABLE
   margin-left: 4px;
 }
 
-.fit-button:hover{
+.reset-mentality-button{
+  font-family: 'Formula1Bold';
+  color: var(--dark-text);
+  transition: color 0.2s, transform 0.2s;
+  margin-right: 4px;
+}
+
+.fit-button:hover, .reset-mentality-button:hover{
   cursor: pointer;
   color: var(--new-primary);
   transform: scale(1.05);
