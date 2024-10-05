@@ -22,6 +22,16 @@ let abreviations_dict = {
     32: "CUS"
 }
 
+let engine_stats_dict = {
+    10: "Power",
+    6: "Fuel efficiency",
+    11: "Performance threshold",
+    12: "Performance loss",
+    14: "Engine durability",
+    18: "ERS durability",
+    19: "Gearbox durability",
+}
+
 let teamSelected;
 let engineSelected;
 let teamEngineSelected;
@@ -199,6 +209,7 @@ teamsPill.addEventListener("click", function () {
     document.querySelector("#enginesPerformance").classList.add("d-none")
     document.querySelector("#teamsPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.remove("d-none")
+    document.querySelector("#customEnginesButtonContainer").classList.add("d-none")
     removeSelected()
     if (viewingGraph) {
         document.querySelector(".save-button").classList.add("d-none")
@@ -214,6 +225,7 @@ enginesPill.addEventListener("click", function () {
     document.querySelector("#teamsPerformance").classList.add("d-none")
     document.querySelector("#enginesPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.add("d-none")
+    document.querySelector("#customEnginesButtonContainer").classList.remove("d-none")
     removeSelected()
     document.querySelector(".save-button").classList.remove("d-none")
     first_show_animation()
@@ -619,7 +631,7 @@ function loadout_listener(icon, loadout_n, partTitle) {
         }
     });
 }
-document.querySelector(".fit-button").addEventListener("click", function () {
+document.querySelector("#fitButton").addEventListener("click", function () {
     let data = {
         command: "fitParts",
         teamID: teamSelected
@@ -860,29 +872,45 @@ function resetBars() {
     })
 }
 
-// /**
-//  * eventListeners for the confirm button for engines and teams
-//  */
-// document.getElementById("confirmEnginebtn").addEventListener("click", function () {
-//     let performanes = "";
-//     let progresses = ""
-//     document.querySelector(".engines-show").querySelectorAll(".custom-progress").forEach(function (elem) {
-//         var dataProgress = elem.dataset.progress;
-//         performanes += dataProgress + ' ';
-//         progresses += dataProgress * 10 + " "
-//     });
-//     performanes = performanes.slice(0, -1);
-//     progresses = progresses.slice(0, -1);
-//     document.querySelector(".selected").dataset.stats = progresses
-//     let dataPerformance = {
-//         command: "editEngine",
-//         engineID: engineSelected,
-//         teamEngineID: teamEngineSelected,
-//         team: document.querySelector(".selected").dataset.teamname,
-//         performanceArray: performanes,
-//     }
-//     socket.send(JSON.stringify(dataPerformance))
-// })
+function add_custom_engine(name, stats) {
+    let generalEngineDiv = document.createElement("div")
+    let engineTitle = document.createElement("input")
+    engineTitle.type = "text"
+    engineTitle.value = "PRUEBA"
+    let engineStats = document.createElement("div")
+    generalEngineDiv.classList.add("engine-performance")
+    engineTitle.classList.add("engine-performance-title")
+    engineStats.classList.add("engine-performance-stats")
+    for (key in engine_stats_dict) {
+        if ((key !== "Performance threshold" || key !== "Performance Loss" && game_version === "2024") || (game_version === "2023")) {
+                let stat = document.createElement("div")
+                stat.classList.add("engine-performance-stat")
+                let statTitle = document.createElement("div")
+                statTitle.classList.add("part-performance-stat-title")
+                statTitle.innerText = engine_stats_dict[key]
+                let stat_number = document.createElement("div")
+                stat_number.classList.add("stat-number")
+                stat_number.innerHTML = '<i class="bi bi-dash-lg"></i> <input type="text" class="custom-input-number"> <i class="bi bi-plus-lg"></i>'
+                let bar = document.createElement("div")
+                bar.classList.add("engine-performance-bar")
+                let bar_progress = document.createElement("div")
+                bar_progress.classList.add("engine-performance-progress")
+                stat.appendChild(statTitle)
+                stat.appendChild(stat_number)
+                bar.appendChild(bar_progress)
+                stat.appendChild(bar)
+                engineStats.appendChild(stat)
+        }
+    }
+    generalEngineDiv.appendChild(engineTitle)
+    generalEngineDiv.appendChild(engineStats)
+    document.querySelector(".custom-engines-div").appendChild(generalEngineDiv)
+}
+
+document.querySelector("#addCustomEngineButton").addEventListener("click", function () {
+    add_custom_engine("", "")
+})
+
 
 
 

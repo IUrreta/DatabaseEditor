@@ -618,6 +618,7 @@ a.bi-linkedin:hover {
   text-align: center;
 }
 
+
 .add-contract{
   border: 2px dashed var(--disabled-text);
   color: var(--disabled-text);
@@ -3488,6 +3489,42 @@ DRIVERS TABLE
   transform: scale(1.1);
 }
 
+.custom-engines-div{
+  display: flex;
+  flex-direction: column;
+}
+
+.add-engine{
+  border: 2px dashed var(--dark-text);
+  color: var(--dark-text);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px;
+  transition: color 0.2s, border 0.2s, transform 0.2s;
+  padding: 8px;
+  font-size: 18px;
+}
+
+.add-engine i{
+  font-style: normal;
+}
+
+.add-engine i::before{
+  margin: 0 9px;
+}
+
+.add-engine span, .add-engine i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.add-engine i:hover{
+  color: var(--new-primary);
+  transform: scale(1.05);
+}
+
 .part-performance, .engine-performance{
   background-color: var(--elements);
   border-radius: 10px;
@@ -3552,12 +3589,26 @@ DRIVERS TABLE
   border-bottom: 2px solid var(--aston-primary);
 }
 
+input.engine-performance-title{
+  background-color: transparent;
+  border-bottom: 2px solid transparent;
+  border-right: 0px solid;
+  border-left: 0px solid;
+  border-top: 0px solid;
+}
+
+input.engine-performance-title:hover, input.engine-performance-title:focus{
+  border-bottom: 2px solid var(--new-primary);
+  outline: none;
+  color: var(--text-selected);
+}
 
 .part-performance-title, .engine-performance-title{
   text-transform: uppercase;
   font-family: 'Formula1Bold';
   font-size: 20px;
   color: var(--white-general);
+  transition: color 0.2s, border-color 0.2s;
 }
 
 .part-performance-title{

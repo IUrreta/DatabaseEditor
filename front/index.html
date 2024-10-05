@@ -16,6 +16,33 @@
 </head>
 
 <body class="font">
+  <div class="modal custom-modal fade" id="enginesModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h4 class="modal-title bold-font">Edit custom engines</h4>
+        </div>
+        <div class="modal-body number-and-contract custom-body">
+          <div class="add-engine">
+            <i class="bi bi-plus-circle" id="addCustomEngineButton">Add custom engine</i>
+          </div>
+          <div class="custom-engines-div"></div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <div class="pos-relative">
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
+              id="cancelCustomEnginesButton">Close</button>
+            <div class="dropdown-line"></div>
+          </div>
+          <div class="pos-relative">
+            <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
+              id="confirmCustomEnginesButton">Confirm</button>
+            <div class="dropdown-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="contractModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
@@ -3539,7 +3566,10 @@
             </div>
             <div class="performance-graph-button"><i class="bi bi-graph-up active" id="performanceGraphButton"></i>
             </div>
-            <div class="fit-button">Fit latest designs</div>
+            <div class="fit-button" id="fitButton">Fit latest designs</div>
+          </div>
+          <div class="title-buttons-left d-none" style="top: 15px;" id="customEnginesButtonContainer">
+            <div class="fit-button" id="customEngines" data-bs-toggle="modal" data-bs-target="#enginesModal">Custom engines</div>
           </div>
           <div class="pb-3 pe-3" style="padding-top: 1.1rem; position: absolute; right: 0;">
             <ul class="nav nav-pills">
