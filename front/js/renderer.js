@@ -628,6 +628,9 @@ document.addEventListener('DOMContentLoaded',function () {
             load_cars(message.slice(1)[0])
             load_car_attributes(message.slice(1)[1])
             order_by("overall")
+        },
+        "Custom Engines fetched": (message) => {
+            load_custom_engines(message.slice(1))
         }
     };
 

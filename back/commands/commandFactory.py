@@ -25,6 +25,7 @@ from commands.performanceRequest import PerformanceRequestCommand
 from commands.disconnect import DisconnectCommand
 from commands.fitParts import FitPartsCommand
 from commands.partRequest import PartRequestCommand
+from commands.customEngines import customEnginesCommand
 
 
 class CommandFactory:
@@ -36,7 +37,7 @@ class CommandFactory:
                     "yearSelectedPrediction": YearSelectedPredictionCommand, "yearSelectedPredictionModal": YearSelectedPredictionModalCommand, 
                     "predict": PredictCommand, "predictMontecarlo": PredictMontecarloCommand, "unretireDriver": UnretireCommand, 
                     "configUpdate": ConfigUpdateCommand, "performanceRequest": PerformanceRequestCommand, "disconnect": DisconnectCommand,
-                      "fitParts": FitPartsCommand, "partRequest": PartRequestCommand}
+                      "fitParts": FitPartsCommand, "partRequest": PartRequestCommand, "customEngines": customEnginesCommand}
 
     def __init__(self):
         pass

@@ -132,6 +132,8 @@ function add_edit_container(div){
         let menuClick = document.querySelector(`#staffMenu a[data-list="${typeStaff}"]`)
         menuClick.click()
         edit_stats_div.click()
+
+        edit_stats_div.scrollIntoView({ behavior: "smooth", block: "center" })
     })
 }
  

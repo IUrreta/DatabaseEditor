@@ -902,6 +902,10 @@ function add_custom_engine(name, stats) {
         caret.classList.toggle("clicked")
     })
 
+    trash.addEventListener("click", function () {
+        generalEngineDiv.remove()
+    })
+
     caret.setAttribute("data-bs-toggle", "collapse");
     caret.setAttribute("data-bs-target", `#${engineStatsId}`);
 
@@ -911,6 +915,7 @@ function add_custom_engine(name, stats) {
         if ((game_version === 2024 && key !== "11" && key !== "12") || game_version === 2023) {
                 let stat = document.createElement("div")
                 stat.classList.add("engine-performance-stat")
+                stat.dataset.attribute = key
                 let statTitle = document.createElement("div")
                 statTitle.classList.add("part-performance-stat-title")
                 statTitle.innerText = engine_stats_dict[key]
@@ -988,6 +993,40 @@ document.querySelector("#addCustomEngineButton").addEventListener("click", funct
     add_custom_engine("", "")
 })
 
+document.querySelector("#confirmCustomEnginesButton").addEventListener("click", function () {
+    let engines = document.querySelectorAll(".custom-engines-div .engine-performance")
+    let enginesData = {}
+    engines.forEach(function (engine) {
+        //id is title in lowercase
+        let engineID = engine.querySelector(".engine-performance-title").value.toLowerCase()
+        let engineStats = {}
+        engine.querySelectorAll(".engine-performance-stat").forEach(function (stat) {
+            let attribute = stat.dataset.attribute
+            let value = stat.querySelector(".custom-input-number").value.split(" ")[0]
+            engineStats[attribute] = value
+        })
+        enginesData[engineID] = engineStats
+    })
+    let saveSelector = document.getElementById('saveSelector');
+    let saveSelected = saveSelector.innerHTML;
+    let data = {
+        command: "customEngines",
+        saveSelected: saveSelected,
+        enginesData: enginesData
+    }
+
+    console.log(data)
+    socket.send(JSON.stringify(data))
+})
+
+
+function load_custom_engines(data) {
+    let engines = data[0]
+    document.querySelector(".custom-engines-div").innerHTML = ""
+    for (let key in engines) {
+        add_custom_engine(key, engines[key])
+    }
+}
 
 
 
