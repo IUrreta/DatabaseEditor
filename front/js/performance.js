@@ -753,10 +753,10 @@ document.querySelector(".engines-show").querySelectorAll('.bi-plus-lg').forEach(
     let bar = button.parentNode.parentNode.querySelector(".engine-performance-progress");
     button.addEventListener('mousedown', function () {
         const input = this.previousElementSibling;
-        updateValue(input, 0.1);
+        updateValue(input, 0.5);
         bar.style.width = input.value.split(' ')[0] + "%";
         intervalId = setInterval(() => {
-            updateValue(input, 0.1);
+            updateValue(input, 0.5);
             bar.style.width = input.value.split(' ')[0] + "%";
         }, 100);
     });
@@ -769,6 +769,8 @@ document.querySelector(".engines-show").querySelectorAll('.bi-plus-lg').forEach(
         clearInterval(intervalId);
     });
 });
+
+
 
 document.querySelector(".performance-show").querySelectorAll('.stat-number .bi-dash-lg').forEach(button => {
     let intervalId;
@@ -794,10 +796,10 @@ document.querySelector(".engines-show").querySelectorAll('.bi-dash-lg').forEach(
     let bar = button.parentNode.parentNode.querySelector(".engine-performance-progress");
     button.addEventListener('mousedown', function () {
         const input = this.nextElementSibling;
-        updateValue(input, -0.1);
+        updateValue(input, -0.5);
         bar.style.width = input.value.split(' ')[0] + "%";
         intervalId = setInterval(() => {
-            updateValue(input, -0.1);
+            updateValue(input, -0.5);
             bar.style.width = input.value.split(' ')[0] + "%";
         }, 100);
     });
@@ -810,6 +812,8 @@ document.querySelector(".engines-show").querySelectorAll('.bi-dash-lg').forEach(
         clearInterval(intervalId);
     });
 });
+
+
 
 document.querySelector(".performance-show").querySelectorAll(".new-or-existing-part div").forEach(function (elem) {
     elem.addEventListener("click", function () {
@@ -876,13 +880,35 @@ function add_custom_engine(name, stats) {
     let generalEngineDiv = document.createElement("div")
     let engineTitle = document.createElement("input")
     engineTitle.type = "text"
-    engineTitle.value = "PRUEBA"
+    if (name !== ""){
+        engineTitle.value = name
+    }
+    else{
+        engineTitle.value = "New Engine"
+    }
+    let engineCount = document.querySelectorAll(".custom-engines-div > div").length;
+    let engineStatsId = `engineStats${engineCount + 1}`;
     let engineStats = document.createElement("div")
+    let caret = document.createElement("i")
+    let trash = document.createElement("i")
+    trash.classList.add("bi", "bi-trash")
+    caret.classList.add("bi", "bi-caret-down-fill", "clicked")
     generalEngineDiv.classList.add("engine-performance")
     engineTitle.classList.add("engine-performance-title")
-    engineStats.classList.add("engine-performance-stats")
+    engineStats.classList.add("engine-performance-stats", "collapse", "show")
+    engineStats.id = engineStatsId
+
+    caret.addEventListener("click", function () {
+        caret.classList.toggle("clicked")
+    })
+
+    caret.setAttribute("data-bs-toggle", "collapse");
+    caret.setAttribute("data-bs-target", `#${engineStatsId}`);
+
     for (key in engine_stats_dict) {
-        if ((key !== "Performance threshold" || key !== "Performance Loss" && game_version === "2024") || (game_version === "2023")) {
+        console.log(game_version)
+        console.log(key)
+        if ((game_version === 2024 && key !== "11" && key !== "12") || game_version === 2023) {
                 let stat = document.createElement("div")
                 stat.classList.add("engine-performance-stat")
                 let statTitle = document.createElement("div")
@@ -891,19 +917,70 @@ function add_custom_engine(name, stats) {
                 let stat_number = document.createElement("div")
                 stat_number.classList.add("stat-number")
                 stat_number.innerHTML = '<i class="bi bi-dash-lg"></i> <input type="text" class="custom-input-number"> <i class="bi bi-plus-lg"></i>'
+                let input = stat_number.querySelector(".custom-input-number");
                 let bar = document.createElement("div")
                 bar.classList.add("engine-performance-bar")
                 let bar_progress = document.createElement("div")
                 bar_progress.classList.add("engine-performance-progress")
+                if (stats[key] !== undefined) {
+                    input.value = stats[key] + " %";
+                    bar_progress.style.width = stats[key] + "%";
+                }
+                else{
+                    input.value = "50.0 %";
+                }
                 stat.appendChild(statTitle)
                 stat.appendChild(stat_number)
                 bar.appendChild(bar_progress)
                 stat.appendChild(bar)
                 engineStats.appendChild(stat)
+
+                let less = stat_number.querySelector(".bi-dash-lg");
+                let intervalId;
+                less.addEventListener('mousedown', function () {
+                    const input = this.nextElementSibling;
+                    updateValue(input, -0.5);
+                    bar_progress.style.width = input.value.split(' ')[0] + "%";
+                    intervalId = setInterval(() => {
+                        updateValue(input, -0.5);
+                        bar_progress.style.width = input.value.split(' ')[0] + "%";
+                    }, 100);
+                });
+            
+                less.addEventListener('mouseup', function () {
+                    clearInterval(intervalId);
+                });
+            
+                less.addEventListener('mouseleave', function () {
+                    clearInterval(intervalId);
+                });
+
+                let plus = stat_number.querySelector(".bi-plus-lg");
+
+                plus.addEventListener('mousedown', function () {
+                    const input = this.previousElementSibling;
+                    updateValue(input, 0.5);
+                    bar_progress.style.width = input.value.split(' ')[0] + "%";
+                    intervalId = setInterval(() => {
+                        updateValue(input, 0.5);
+                        bar_progress.style.width = input.value.split(' ')[0] + "%";
+                    }, 100);
+                });
+
+                plus.addEventListener('mouseup', function () {
+                    clearInterval(intervalId);
+                });
+
+                plus.addEventListener('mouseleave', function () {
+                    clearInterval(intervalId);
+                });
+
         }
     }
     generalEngineDiv.appendChild(engineTitle)
     generalEngineDiv.appendChild(engineStats)
+    generalEngineDiv.appendChild(caret)
+    generalEngineDiv.appendChild(trash)
     document.querySelector(".custom-engines-div").appendChild(generalEngineDiv)
 }
 

@@ -823,12 +823,12 @@ input[type="checkbox"]:checked {
 }
 
 #numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #teamContractMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar, #raceProbMenu::-webkit-scrollbar, .prob-viewer-data::-webkit-scrollbar, #patchNotesBody::-webkit-scrollbar,
-.parts-list::-webkit-scrollbar{
+.parts-list::-webkit-scrollbar, .engine-modal-body::-webkit-scrollbar{
   width: 4px;
 }
 
 #numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #teamContractMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb, #patchNotesBody::-webkit-scrollbar-thumb,
-.parts-list::-webkit-scrollbar-thumb{
+.parts-list::-webkit-scrollbar-thumb, .engine-modal-body::-webkit-scrollbar-thumb{
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -3492,6 +3492,7 @@ DRIVERS TABLE
 .custom-engines-div{
   display: flex;
   flex-direction: column;
+  gap: 5px;
 }
 
 .add-engine{
@@ -3525,12 +3526,53 @@ DRIVERS TABLE
   transform: scale(1.05);
 }
 
+.custom-engines-div .engine-performance-stats{
+  margin-top: 2px;
+  border-top: 2px solid var(--separator);
+}
+
+.engine-performance .bi-trash{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+  color: var(--text-general);
+  position: absolute;
+  right: 40px;
+  top: 5px;
+  font-size: 20px;
+} 
+
+.engine-performance .bi-trash:hover{
+  color: var(--negative-general);
+  transform: scale(1.05);
+}
+
+
+.engine-performance .bi-caret-down-fill{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+  color: var(--text-general);
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  font-size: 22px;
+}
+
+.engine-performance .bi-caret-down-fill:hover{
+  color: var(--text-selected);
+  transform: scale(1.05);
+}
+
+.engine-performance .bi-caret-down-fill.clicked{
+  color: var(--new-primary);
+}
+
 .part-performance, .engine-performance{
   background-color: var(--elements);
   border-radius: 10px;
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
   padding: 5px 10px;
   overflow-y: hidden;
+  position: relative;
 }
 
 .engine-f2{
@@ -3591,14 +3633,13 @@ DRIVERS TABLE
 
 input.engine-performance-title{
   background-color: transparent;
-  border-bottom: 2px solid transparent;
+  border-bottom: 0px solid;
   border-right: 0px solid;
   border-left: 0px solid;
   border-top: 0px solid;
 }
 
 input.engine-performance-title:hover, input.engine-performance-title:focus{
-  border-bottom: 2px solid var(--new-primary);
   outline: none;
   color: var(--text-selected);
 }
@@ -3618,6 +3659,14 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 
 .engine-performance-title{
   max-width: max-content;
+}
+
+.engine-modal-body{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 700px;
+  overflow-y: scroll;
 }
 
 .part-performance-stat, .engine-performance-stat{
@@ -6439,6 +6488,12 @@ input.disabled{
 
 #carpill:hover, #carpill:hover .pill-line, #carpill.active .pill-line, #carpill.active{
   width: 171px;
+}
+
+#specialCarIcon{
+  width: 20px;
+  height: 20px;
+  bottom: 8px;
 }
 
 
