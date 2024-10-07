@@ -11,9 +11,12 @@ document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem
     elem.addEventListener("click", function () {
         document.querySelector("#teamButton").innerText = elem.querySelector(".team-menu-name").innerText;
         teamCod = elem.dataset.teamid;
+        let saveSelector = document.getElementById('saveSelector');
+        let saveSelected = saveSelector.innerHTML;
         let data = {
             command: "teamRequest",
             teamID: teamCod,
+            saveSelected: saveSelected
         }
 
         socket.send(JSON.stringify(data))

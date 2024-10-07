@@ -996,16 +996,21 @@ document.querySelector("#addCustomEngineButton").addEventListener("click", funct
 document.querySelector("#confirmCustomEnginesButton").addEventListener("click", function () {
     let engines = document.querySelectorAll(".custom-engines-div .engine-performance")
     let enginesData = {}
+    let unique_id = 1
     engines.forEach(function (engine) {
         //id is title in lowercase
-        let engineID = engine.querySelector(".engine-performance-title").value.toLowerCase()
+        let engineID = 10 + unique_id
+        let engineName = engine.querySelector(".engine-performance-title").value.toLowerCase()
         let engineStats = {}
         engine.querySelectorAll(".engine-performance-stat").forEach(function (stat) {
             let attribute = stat.dataset.attribute
             let value = stat.querySelector(".custom-input-number").value.split(" ")[0]
             engineStats[attribute] = value
         })
-        enginesData[engineID] = engineStats
+        enginesData[engineID] = {}
+        enginesData[engineID]["stats"] = engineStats
+        enginesData[engineID]["name"] = engineName
+        unique_id += 1
     })
     let saveSelector = document.getElementById('saveSelector');
     let saveSelected = saveSelector.innerHTML;
@@ -1022,10 +1027,28 @@ document.querySelector("#confirmCustomEnginesButton").addEventListener("click", 
 
 function load_custom_engines(data) {
     let engines = data[0]
+    let engineDropdown = document.querySelector("#engineMenu")
+    engineDropdown.querySelectorAll("a.custom-engine").forEach(function (elem) {
+        elem.remove()
+    })
     document.querySelector(".custom-engines-div").innerHTML = ""
     for (let key in engines) {
-        add_custom_engine(key, engines[key])
+        add_custom_engine(engines[key]["name"], engines[key]["stats"])
+        let engineOption = document.createElement("a")
+        engineOption.classList.add("dropdown-item", "custom-engine")
+        engineOption.innerText = engines[key]["name"].charAt(0).toUpperCase() + engines[key]["name"].slice(1)
+        engineOption.dataset.engine = key
+        engineOption.href = "#"
+        engineDropdown.appendChild(engineOption)
+        engineOption.addEventListener("click", function(){
+            let engineid = engineOption.dataset.engine;
+            let engine = engineOption.innerText;
+            document.querySelector("#engineLabel").innerText = engine;
+            document.querySelector("#engineButton").dataset.value = engineid;
+        })
+
     }
+    
 }
 
 

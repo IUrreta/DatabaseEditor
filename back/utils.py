@@ -419,6 +419,16 @@ class DatabaseUtils:
             team = (-1,)
         return team[0]
     
+    def fetch_engine_allocations(self):
+        day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+        teams = self.cursor.execute(f"SELECT  TeamID, EngineManufacturer FROM Parts_TeamHistory WHERE SeasonID = {day_season[1]}").fetchall()
+        allocations = {}
+        for team in teams:
+            engineDesign = self.cursor.execute(f"SELECT EngineDesignID FROM Parts_Enum_EngineManufacturers WHERE Value = {team[1]}").fetchone()
+            allocations[team[0]] = engineDesign[0]
+
+        return allocations
+    
     def fetch_raceFormula(self, driverID):
         category = self.cursor.execute(f"SELECT MAX(CASE WHEN (TeamID <= 10 OR TeamID = 32) THEN 1 WHEN TeamID BETWEEN 11 AND 21 THEN 2 WHEN TeamID BETWEEN 22 AND 31 THEN 3 ELSE 4 END) FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = {driverID}").fetchone()
         return category

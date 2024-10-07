@@ -7470,6 +7470,10 @@ input::-webkit-inner-spin-button {
   padding: 12px 2px;
 }
 
+.team-menu-logo .audilogo{
+  width: 50px;
+}
+
 .sauberlogo{
   width: 40px;
   height: 40px;
@@ -7486,6 +7490,10 @@ input::-webkit-inner-spin-button {
   height: 40px;
   width: 40px;
   padding: 5px 2px;
+}
+
+.team-menu-logo .visarblogo{
+  width: 46px;
 }
 
 .toyotalogo{

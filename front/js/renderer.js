@@ -349,6 +349,7 @@ function teamsModeHandler() {
     let facilitiesData = gather_team_data()
     let pitCrew = gather_pit_crew()
     let engine = document.querySelector("#engineButton").dataset.value
+    let saveSelected = document.getElementById('saveSelector').innerHTML
     let data = {
         command: "editTeam",
         teamID: teamCod,
@@ -361,7 +362,8 @@ function teamsModeHandler() {
         confidence: confidenceData,
         pitCrew: pitCrew,
         engine: engine,
-        teamName: default_dict[teamCod]
+        teamName: default_dict[teamCod],
+        saveSelected: saveSelected
     }
     socket.send(JSON.stringify(data))
 }

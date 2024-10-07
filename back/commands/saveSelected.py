@@ -73,6 +73,7 @@ class SaveSelectedCommand(Command):
         engines_list = ["Custom Engines fetched", engines]
         data_json_engines = json.dumps(engines_list)
         await self.send_message_to_client(data_json_engines)
+        await self.check_engine_allocations(save)
 
     def update_team_dict(self, name):
         if name is not None:
@@ -84,6 +85,8 @@ class SaveSelectedCommand(Command):
             os.makedirs(backup_path)
         new_file = f"{backup_path}/{saveFile}"
         shutil.copy(originalFIle, new_file)
+
+
 
     async def check_year_config(self, game_year):
         if game_year == "24":
@@ -128,4 +131,17 @@ class SaveSelectedCommand(Command):
         
         custom_engines = data.get("engines", {})
         return custom_engines
+        
+    async def check_engine_allocations(self, save):
+        config_file_path = f"./../configs/{save.split('.')[0]}_config.json"
+        with open(config_file_path, "r") as json_file:
+            data = json.load(json_file)
+
+        engine_allocations = data.get("engine_allocations", {})
+        if not engine_allocations:
+            allocations = Command.dbutils.fetch_engine_allocations()
+            #write allocations to config file
+            data["engine_allocations"] = allocations
+            with open(config_file_path, "w") as json_file:
+                json.dump(data, json_file, indent=4)
         
