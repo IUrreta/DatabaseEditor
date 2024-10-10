@@ -8138,18 +8138,18 @@ datalist .my-mark{
   width: 2px;
 }
 
-#difficultySlider::-webkit-difficultySlider-thumb{
+#difficultySlider::-webkit-slider-thumb{
   background-color: var(--new-primary-dark);
   z-index: 2;
   box-shadow: none;
 }
 
-#difficultySlider::-webkit-difficultySlider-thumb:hover{
+#difficultySlider::-webkit-slider-thumb:hover{
   outline: 1px solid var(--new-primary);
   transform: scale(1.05);
 }
 
-#difficultySlider::-webkit-difficultySlider-runnable-track{
+#difficultySlider::-webkit-slider-runnable-track{
   background-color: var(--text-selected);
 }
 
@@ -8165,7 +8165,7 @@ datalist .my-mark{
   color: var(--frozen)
 }
 
-.option-state.extra-hard{
+.option-state.extra-hard, .extra-hard{
   color: var(--extra-hard)
 }
 
@@ -8183,4 +8183,18 @@ datalist .my-mark{
 
 .option-state.impossible{
   color: var(--impossible)
+}
+
+.option-state.fixed{
+  color: var(--new-primary)
+}
+
+.option-state.reduced-weight, .reduced-weight{
+  color: var(--new-primary)
+}
+
+#refurbishTitle{
+  padding-top: 10px;
+  border-top: 2px solid var(--separator);
+  margin-right: 32px;
 }

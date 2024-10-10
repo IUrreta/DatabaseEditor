@@ -560,17 +560,30 @@
                 </div>
                 <label class="form-check-label" style="margin-left: -10px;">Frozen</label>
               </div>
-
+              <div class="modal-subtitle bold-font" id="refurbishTitle">Refurbish <span class="option-state default" id="refurbishSpan">Default</span></div>
+              <div class="modal-text">
+                Enabling it fixes the AI not refurbishing their facilities, even in low conditions.
+              </div>
+              <div class="mentality-selector">
+                <label class="form-check-label">Default</label>
+                <div class="form-check form-switch freeze-mentality">
+                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="refurbishingToggle">
+                </div>
+                <label class="form-check-label" style="margin-left: -10px;">Refurbishing</label>
+              </div>
             </div>
             <div class="difficulty-changes">
               <div class="modal-subtitle bold-font">Game difficulty <span class="option-state default" id="difficultySpan">Default</span></div>
               <div class="modal-text">
-                Changes the difficulty of the development race against the AI. They will make lighter parts with better stats.
+                Changes the difficulty of the development race against the AI. In <span class="bold-font reduced-weight">reduced weight</span> they will make lighter parts.
+                <br>
+                From <span class="bold-font extra-hard">extra hard</span> onwards they will also make parts with better stats. 
+                <br>
                 These are extra levels of difficulty apart from those that the game already has.
               </div>
               <div class="mentality-selector">
                 <label class="form-check-label">Default</label>
-                <input type="range" class="form-range" id="difficultySlider" min="0" max="5" step="1" value="0">
+                <input type="range" class="form-range" id="difficultySlider" min="0" max="6" step="1" value="0">
                 <label class="form-check-label">Impossible</label>
               </div>
             </div>

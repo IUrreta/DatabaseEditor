@@ -27,7 +27,6 @@ function removeStatsDrivers() {
 function place_drivers_editStats(driversArray) {
     let divPosition;
     driversArray.forEach((driver) => {
-        console.log(driver[0])
         divPosition = "fulldriverlist"
 
         let newDiv = document.createElement("div");
@@ -230,7 +229,6 @@ function place_staff_editStats(staffArray) {
         }
         let mentality = staff["global_mentality"]
         let ovr = calculateOverall(statsString, "staff", mentality)
-        console.log(staff[0], ovr)
         ovrSpan.textContent = ovr[0]
         mentality_ovrSpan.textContent = ""
         if (ovr[0] !== ovr[1]){

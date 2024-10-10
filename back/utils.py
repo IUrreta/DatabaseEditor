@@ -4,6 +4,34 @@ import re
 from scripts.countries import countries_dict
 import sqlite3
 
+difficulty_dict = {
+    2: {
+        "name": "extra_hard",
+        "mult": 3,
+        "reduction": 0
+    },
+    3: {
+        "name": "brutal",
+        "mult": 8,
+        "reduction": 0.15
+    },
+    4: {
+        "name": "unfair",
+        "mult": 15,
+        "reduction": 0.25
+    },
+    5: {
+        "name": "insane",
+        "mult": 20,
+        "reduction": 0.35
+    },
+    6: {
+        "name": "impossible",
+        "mult": 30,
+        "reduction": 0.50
+    }
+}
+
 class DatabaseUtils:
     def __init__(self, connection):
         self.cursor = connection.cursor()
@@ -603,19 +631,20 @@ class DatabaseUtils:
             cadena = cadena[:-1]
         return cadena
     
-    def add_hard_diff_trigger(self, type):
+    def manage_weight_trigger(self, type):
         conn = sqlite3.connect("../result/main.db")
         cursor = conn.cursor()
+        player_team = cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
         if type == "add":
-            trigger_sql = """
-                CREATE TRIGGER update_weight_extra_difficulty
+            trigger_sql = f"""
+                CREATE TRIGGER reduced_weight_trigger
                 AFTER INSERT ON Parts_Designs_StatValues
                 FOR EACH ROW
                 WHEN (
                     SELECT TeamID
                     FROM Parts_Designs
                     WHERE DesignID = NEW.DesignID
-                ) != 1
+                ) != {player_team}
                 AND NEW.PartStat = 15
                 BEGIN
                     UPDATE Parts_Designs_StatValues
@@ -641,9 +670,80 @@ class DatabaseUtils:
             cursor.execute(trigger_sql)
             print("Trigger added")
         else:
-            cursor.execute("DROP TRIGGER update_weight_extra_difficulty")
+            cursor.execute("DROP TRIGGER reduced_weight_trigger")
             print("Trigger removed")
 
         conn.commit()
         conn.close()
         
+    def manage_difficulty_triggers(self, type):
+        conn = sqlite3.connect("../result/main.db")
+        cursor = conn.cursor()
+        player_team = cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
+        #remove trigger named example_trigger
+        cursor.execute("DROP TRIGGER IF EXISTS extra_hard_difficulty")
+        cursor.execute("DROP TRIGGER IF EXISTS brutal_difficulty")
+        cursor.execute("DROP TRIGGER IF EXISTS unfair_difficulty")
+        cursor.execute("DROP TRIGGER IF EXISTS insane_difficulty")
+        cursor.execute("DROP TRIGGER IF EXISTS impossible_difficulty")
+        if type >= 1:
+            self.manage_weight_trigger("add")
+        else:
+            self.manage_weight_trigger("remove")
+        if type >= 2:
+            trigger_name = f"{difficulty_dict[type]["name"]}_difficulty"
+            increase = difficulty_dict[type]["mult"]
+            reduction = difficulty_dict[type]["reduction"]
+            trigger_sql = f"""
+                CREATE TRIGGER {trigger_name}
+                AFTER INSERT ON Parts_Designs_StatValues
+                FOR EACH ROW
+                WHEN (
+                    SELECT TeamID
+                    FROM Parts_Designs
+                    WHERE DesignID = NEW.DesignID
+                ) != {player_team}
+                AND NEW.PartStat != 15
+                BEGIN
+                    -- Actualizar Parts_Designs_StatValues
+                    UPDATE Parts_Designs_StatValues
+                    SET 
+                        unitValue = unitValue * (1 + {increase} / 100.0),
+                        Value = CASE
+                            WHEN NEW.PartStat IN (0, 1, 2, 3, 4, 5) THEN NEW.unitValue * 10
+                            WHEN NEW.PartStat = 6 THEN (NEW.unitValue - 90) * 1000 / 10
+                            WHEN NEW.PartStat = 7 THEN (NEW.unitValue - 3) / 0.002
+                            WHEN NEW.PartStat = 8 THEN (NEW.unitValue - 5) / 0.002
+                            WHEN NEW.PartStat = 9 THEN (NEW.unitValue - 7) / 0.001
+                            WHEN NEW.PartStat = 10 THEN (NEW.unitValue - 90) * 1000 / 10
+                            WHEN NEW.PartStat = 11 THEN (85 - NEW.unitValue) * 1000 / 20
+                            WHEN NEW.PartStat = 12 THEN (NEW.unitValue - 70) * 1000 / 15
+                            WHEN NEW.PartStat = 13 THEN NEW.unitValue * 10
+                            WHEN NEW.PartStat = 14 THEN (85 - NEW.unitValue) * 1000 / 15
+                            WHEN NEW.PartStat = 15 THEN (NEW.unitValue - 40) * 1000 / 30
+                            WHEN NEW.PartStat = 18 THEN (NEW.unitValue - 40) * 1000 / 30
+                            WHEN NEW.PartStat = 19 THEN (NEW.unitValue - 40) * 1000 / 30
+                            ELSE NULL
+                        END
+                    WHERE DesignID = NEW.DesignID
+                    AND PartStat != 15;
+
+                    -- Actualizar Parts_TeamExpertise usando el valor actualizado en Parts_Designs_StatValues
+                    UPDATE Parts_TeamExpertise
+                    SET Expertise = (SELECT Value FROM Parts_Designs_StatValues WHERE DesignID = NEW.DesignID AND PartStat = NEW.PartStat) * 0.8
+                    WHERE TeamID = (SELECT TeamID FROM Parts_Designs WHERE DesignID = NEW.DesignID)
+                    AND PartType = (SELECT PartType FROM Parts_Designs WHERE DesignID = NEW.DesignID)
+                    AND PartStat = NEW.PartStat;
+
+                    -- Actualizar Parts_Designs para ajustar DesignWork
+                    UPDATE Parts_Designs
+                    SET DesignWork = DesignWork + ({reduction} * (DesignWorkMax - DesignWork))
+                    WHERE DesignID = NEW.DesignID
+                    AND DayCompleted = -1 AND DesignWork IS NOT NULL;
+                END;
+            """
+
+            cursor.execute(trigger_sql)
+
+        conn.commit()
+        conn.close()

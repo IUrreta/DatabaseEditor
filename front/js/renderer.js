@@ -274,7 +274,6 @@ function editModeHandler() {
         document.querySelector(".clicked").dataset.superLicense = 0;
     }
     let marketability = document.getElementById("marketabilityInput").value;
-
     let dataStats = {
         command: "editStats",
         driverID: id,
@@ -291,7 +290,6 @@ function editModeHandler() {
         marketability: marketability,
         newName: newName,
         newCode: newCode,
-        saveName : saveSelected
     };
 
     socket.send(JSON.stringify(dataStats));
@@ -494,11 +492,12 @@ document.addEventListener('DOMContentLoaded',function () {
     const noNotifications = ["Cars fetched","Part values fetched", "Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
     let difficulty_dict = {
         0: "default",
-        1: "extra-hard",
-        2: "brutal",
-        3: "unfair",
-        4: "insane",
-        5: "impossible"
+        1: "reduced weight",
+        2: "extra-hard",
+        3: "brutal",
+        4: "unfair",
+        5: "insane",
+        6: "impossible"
     }
 
     const messageHandlers = {
@@ -1120,32 +1119,8 @@ document.addEventListener('DOMContentLoaded',function () {
     })
 
     function manage_config(info) {
-        if (info[0] === "ERROR") { //No file detected -> show modal
-            document.querySelector(".bi-gear").classList.add("hidden")
-            let configModal = new bootstrap.Modal(document.getElementById('configModal'),{
-                keyboard: false
-            })
-            configModal.show()
-        }
-        else { //File detected -> check if ask to show modal or not
-            if (info[0]["state"] === "ask") {
-                document.querySelector(".bi-gear").classList.add("hidden")
-                let configModal = new bootstrap.Modal(document.getElementById('configModal'),{
-                    keyboard: false
-                })
-                configModal.show()
-            }
-            else {
-                document.querySelector(".bi-gear").classList.remove("hidden")
-                manage_config_content(info[0])
-            }
-            if (info[0]["mentalityFrozen"] === 1){
-                document.getElementById("freezeMentalityToggle").checked = true
-            }
-            else{
-                document.getElementById("freezeMentalityToggle").checked = false
-            }
-        }
+        document.querySelector(".bi-gear").classList.remove("hidden")
+        manage_config_content(info[0])
     }
 
     function manage_config_content(info) {
@@ -1163,6 +1138,23 @@ document.addEventListener('DOMContentLoaded',function () {
         if (info["primaryColor"]) {
             replace_custom_team_color(info["primaryColor"],info["secondaryColor"])
         }
+        if (info["mentalityFrozen"] === 1){
+            document.getElementById("freezeMentalityToggle").checked = true
+        }
+        else{
+            document.getElementById("freezeMentalityToggle").checked = false
+        }
+        if (info["refurbish"] === 1){
+            document.getElementById("refurbishingToggle").checked = true
+        }
+        else{
+            document.getElementById("refurbishingToggle").checked = false
+        }
+        update_mentality_span(info["mentalityFrozen"])
+        let difficultySlider = document.getElementById("difficultySlider")
+        difficultySlider.value = info["difficulty"]
+        update_difficulty_span(info["difficulty"])
+        update_refurbish_span(info["refurbish"])
     }
 
     document.querySelectorAll(".color-picker").forEach(function (elem) {
@@ -1488,9 +1480,13 @@ document.addEventListener('DOMContentLoaded',function () {
         if (document.getElementById("freezeMentalityToggle").checked) {
             mentalityFrozen = 1;
         }
+        let refurbish = 0;
+        if (document.getElementById("refurbishingToggle").checked) {
+            refurbish = 1;
+        }
         let difficulty = 0;
         let difficultySlider = document.getElementById("difficultySlider")
-        let difficultyValue = difficultySlider.value
+        let difficultyValue = parseInt(difficultySlider.value)
         let data = {
             command: "configUpdate",
             save: save,
@@ -1499,6 +1495,7 @@ document.addEventListener('DOMContentLoaded',function () {
             alfa: alfa,
             mentalityFrozen: mentalityFrozen,
             difficulty: difficultyValue,
+            refurbish: refurbish,
             state: "changed"
         }
         if (customIconPath !== null) {
@@ -1640,24 +1637,53 @@ document.addEventListener('DOMContentLoaded',function () {
 
     document.getElementById("difficultySlider").addEventListener("input", function() {
         let value = this.value;
-        console.log(value)
-        let span = document.querySelector("#difficultySpan")
-        let difficulty = difficulty_dict[parseInt(value)]
-        span.className = "option-state " + difficulty
-        span.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1)
-        
+        update_difficulty_span(value)
     });
 
+    function update_difficulty_span(value){
+        let span = document.querySelector("#difficultySpan")
+        let difficulty = difficulty_dict[parseInt(value)]
+        if (difficulty === "reduced weight") {
+            span.className = "option-state reduced-weight"
+        }
+        else{
+            span.className = "option-state " + difficulty
+        }
+        span.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1)
+    }
+
     document.getElementById("freezeMentalityToggle").addEventListener("change", function() {
+        let value = this.checked;
+        update_mentality_span(value)
+    });
+    
+    function update_mentality_span(value){
         let span = document.querySelector("#mentalitySpan")
-        if (this.checked) {
+        if (value) {
             span.className = "option-state frozen"
             span.textContent = "Frozen"
         } else {
             span.className = "option-state default"
             span.textContent = "Unfrozen"
         }
+    }
+
+    document.getElementById("refurbishingToggle").addEventListener("change", function() {
+        let value = this.checked;
+        update_refurbish_span(value)
     });
+
+    function update_refurbish_span(value){
+        let span = document.querySelector("#refurbishSpan")
+        if (value) {
+            span.className = "option-state fixed"
+            span.textContent = "Fixed"
+        } else {
+            span.className = "option-state default"
+            span.textContent = "Default"
+        }
+    }
+
 
     /**
      * Manages the stats of the divs associated with the pills

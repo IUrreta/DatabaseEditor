@@ -11,10 +11,10 @@ class DevCommand(Command):
     async def execute(self):
         print(self.message)
         if (self.message["type"] == "hard"):
-            Command.dbutils.add_hard_diff_trigger("add")
+            Command.dbutils.manage_weight_trigger("add")
             message_to_send = "Succesfully added hard difficulty"
         elif (self.message["type"] == "nohard"):
-            Command.dbutils.add_hard_diff_trigger("remove")
+            Command.dbutils.manage_weight_trigger("remove")
             message_to_send = "Succesfully removed hard difficulty"
         process_repack("../result", Command.path)
         info = []
