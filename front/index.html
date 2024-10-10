@@ -366,165 +366,213 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
         <div class="modal-header custom-header">
-          <h3 class="modal-title bold-font">Custom configuration</h3>
+          <h3 class="modal-title bold-font">Save settings</h3>
         </div>
         <div class="modal-body custom-body">
-          <div class="main-team-changes mb-3" id="teamChanges">
-            <div class="d-flex" style="gap: 7px;">
-              <div>Select the team changes you want to have for this save file</div>
-            </div>
-            <div class="team-change mt-2">
-              <div class="bold-font logo-and-name" style="width: 33%;">
-                <img src="../assets/images/alphatauri.png" class="alphataurilogo non-changable" id="alphaModalLogo">
-                <div class="team-name" id="alphaModalName">ALPHA TAURI</div>
+          <div class="pb-4 pe-3">
+            <ul class="nav nav-pills">
+              <li class="nav-item">
+                <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"
+                  data-section=".teams-section" href="#" id="editorPill">
+                  <div class="basic-label bold-font">Editor</div>
+                  <div class="pill-line"></div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link bold-font categoryPills generalPills" data-bs-toggle="pill"
+                  data-section=".engines-section" href="#" id="gamePill">
+                  <div class="basic-label bold-font">Game</div>
+                  <div class="pill-line"></div>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div id="editorChanges">  
+            <div class="main-team-changes mb-3" id="teamChanges">
+              <div class="d-flex" style="gap: 7px;">
+                <div>Select the team changes you want to have for this save file</div>
               </div>
-              <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
-              <div class="team-change-button" id="alphaTauriReplaceButton">
-                <div class="pos-relative" style="width: max-content;">
-                  <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="alphatauri">
-                    ALPHA TAURI
-                  </button>
-                  <div class="dropdown-line"></div>
-                  <ul class="dropdown-menu team-select-menu" id="graphTypeDropdown" style="font-family: Formula1;">
-                    <a class="dropdown-item bold-font atborder-down-noC" href="#" data-value="alphatauri">
-                      <img src="../assets/images/alphatauri.png" class="alphataurilogo non-changable">
-                      <div>ALPHA TAURI</div>
-                    </a>
-                    <a class="dropdown-item bold-font visarbborder-down" href="#" data-value="visarb">
-                      <img src="../assets/images/visarb.png" class="visarblogo">
-                      <div>VISA CASHAPP RB</div>
-                    </a>
-                    <a class="dropdown-item bold-font hugoborder-down" href="#" data-value="hugo">
-                      <img src="../assets/images/hugoboss.png" class="hugologo">
-                      <div>HUGO BOSS</div>
-                    </a>
-                    <a class="dropdown-item bold-font toyotaborder-down" href="#" data-value="toyota">
-                      <img src="../assets/images/toyota.png" class="toyotalogo">
-                      <div class="ms-2">TOYOTA</div>
-                    </a>
-                    <a class="dropdown-item bold-font porscheborder-down" href="#" data-value="porsche">
-                      <img src="../assets/images/porsche.png" class="porschelogo">
-                      <div class="ms-2">PORSCHE</div>
-                    </a>
-                    <a class="dropdown-item bold-font brawnborder-down" href="#" data-value="brawn">
-                      <img src="../assets/images/brawn.png" class="brawnlogo">
-                      <div class="ms-2">BRAWN GP</div>
-                    </a>
-                  </ul>
-
+              <div class="team-change mt-2">
+                <div class="bold-font logo-and-name" style="width: 33%;">
+                  <img src="../assets/images/alphatauri.png" class="alphataurilogo non-changable" id="alphaModalLogo">
+                  <div class="team-name" id="alphaModalName">ALPHA TAURI</div>
                 </div>
-
+                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
+                <div class="team-change-button" id="alphaTauriReplaceButton">
+                  <div class="pos-relative" style="width: max-content;">
+                    <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                      data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="alphatauri">
+                      ALPHA TAURI
+                    </button>
+                    <div class="dropdown-line"></div>
+                    <ul class="dropdown-menu team-select-menu" id="graphTypeDropdown" style="font-family: Formula1;">
+                      <a class="dropdown-item bold-font atborder-down-noC" href="#" data-value="alphatauri">
+                        <img src="../assets/images/alphatauri.png" class="alphataurilogo non-changable">
+                        <div>ALPHA TAURI</div>
+                      </a>
+                      <a class="dropdown-item bold-font visarbborder-down" href="#" data-value="visarb">
+                        <img src="../assets/images/visarb.png" class="visarblogo">
+                        <div>VISA CASHAPP RB</div>
+                      </a>
+                      <a class="dropdown-item bold-font hugoborder-down" href="#" data-value="hugo">
+                        <img src="../assets/images/hugoboss.png" class="hugologo">
+                        <div>HUGO BOSS</div>
+                      </a>
+                      <a class="dropdown-item bold-font toyotaborder-down" href="#" data-value="toyota">
+                        <img src="../assets/images/toyota.png" class="toyotalogo">
+                        <div class="ms-2">TOYOTA</div>
+                      </a>
+                      <a class="dropdown-item bold-font porscheborder-down" href="#" data-value="porsche">
+                        <img src="../assets/images/porsche.png" class="porschelogo">
+                        <div class="ms-2">PORSCHE</div>
+                      </a>
+                      <a class="dropdown-item bold-font brawnborder-down" href="#" data-value="brawn">
+                        <img src="../assets/images/brawn.png" class="brawnlogo">
+                        <div class="ms-2">BRAWN GP</div>
+                      </a>
+                    </ul>
+  
+                  </div>
+  
+                </div>
+              </div>
+              <div class="team-change mt-2">
+                <div class="bold-font logo-and-name" style="width: 33%;">
+                  <img src="../assets/images/alpine.png" class="alpinelogo non-changable">
+                  <div class="team-name">ALPINE</div>
+                </div>
+                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
+                <div class="team-change-button" id="alpineReplaceButton">
+                  <div class="pos-relative" style="width: max-content;">
+                    <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                      data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="alpine">
+                      ALPINE
+                    </button>
+                    <div class="dropdown-line"></div>
+                    <ul class="dropdown-menu team-select-menu" id="graphTypeDropdown" style="font-family: Formula1;">
+                      <a class="dropdown-item bold-font alborder-down-noC" href="#" data-value="alpine">
+                        <img src="../assets/images/alpine.png" class="alpinelogo non-changable">
+                        <div class="ms-1">ALPINE</div>
+                      </a>
+                      <a class="dropdown-item bold-font andrettiborder-down" href="#" data-value="andretti">
+                        <img src="../assets/images/andretti.png" class="andrettilogo">
+                        <div class="ms-1">ANDRETTI</div>
+                      </a>
+                      <a class="dropdown-item bold-font renaultborder-down" href="#" data-value="renault">
+                        <img src="../assets/images/renault.png" class="ferrarilogo">
+                        <div class="ms-1">RENAULT</div>
+                      </a>
+                      <a class="dropdown-item bold-font lotusborder-down" href="#" data-value="lotus">
+                        <img src="../assets/images/lotus.png" class="lotuslogo">
+                        <div class="ms-1">LOTUS</div>
+                      </a>
+                    </ul>
+  
+                  </div>
+  
+                </div>
+              </div>
+              <div class="team-change mt-2">
+                <div class="bold-font logo-and-name" style="width: 33%;">
+                  <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable"  id="alfaModalLogo">
+                  <div class="team-name"  id="alfaModalName">ALFA ROMEO</div>
+                </div>
+                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
+                <div class="team-change-button" id="alfaReplaceButton">
+                  <div class="pos-relative" style="width: max-content;">
+                    <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                      data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="alfa">
+                      ALFA ROMEO
+                    </button>
+                    <div class="dropdown-line"></div>
+                    <ul class="dropdown-menu team-select-menu" id="graphTypeDropdown" style="font-family: Formula1;">
+                      <a class="dropdown-item bold-font afborder-down-noC" href="#" data-value="alfa">
+                        <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable">
+                        <div class="ms-1">ALFA ROMEO</div>
+                      </a>
+                      <a class="dropdown-item bold-font stakeborder-down" href="#" data-value="stake">
+                        <img src="../assets/images/kick.png" class="alfalogo">
+                        <div class="ms-1">STAKE SAUBER</div>
+                      </a>
+                      <a class="dropdown-item bold-font sauberborder-down" href="#" data-value="sauber">
+                        <img src="../assets/images/sauber.png" class="sauberlogo">
+                        <div class="ms-1">SAUBER</div>
+                      </a>
+                      <a class="dropdown-item bold-font audiborder-down" href="#" data-value="audi">
+                        <img src="../assets/images/audi.png" class="audilogo">
+                        <div class="ms-1">AUDI</div>
+                      </a>
+                    </ul>
+  
+                  </div>
+  
+                </div>
               </div>
             </div>
-            <div class="team-change mt-2">
-              <div class="bold-font logo-and-name" style="width: 33%;">
-                <img src="../assets/images/alpine.png" class="alpinelogo non-changable">
-                <div class="team-name">ALPINE</div>
-              </div>
-              <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
-              <div class="team-change-button" id="alpineReplaceButton">
-                <div class="pos-relative" style="width: max-content;">
-                  <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="alpine">
-                    ALPINE
-                  </button>
-                  <div class="dropdown-line"></div>
-                  <ul class="dropdown-menu team-select-menu" id="graphTypeDropdown" style="font-family: Formula1;">
-                    <a class="dropdown-item bold-font alborder-down-noC" href="#" data-value="alpine">
-                      <img src="../assets/images/alpine.png" class="alpinelogo non-changable">
-                      <div class="ms-1">ALPINE</div>
-                    </a>
-                    <a class="dropdown-item bold-font andrettiborder-down" href="#" data-value="andretti">
-                      <img src="../assets/images/andretti.png" class="andrettilogo">
-                      <div class="ms-1">ANDRETTI</div>
-                    </a>
-                    <a class="dropdown-item bold-font renaultborder-down" href="#" data-value="renault">
-                      <img src="../assets/images/renault.png" class="ferrarilogo">
-                      <div class="ms-1">RENAULT</div>
-                    </a>
-                    <a class="dropdown-item bold-font lotusborder-down" href="#" data-value="lotus">
-                      <img src="../assets/images/lotus.png" class="lotuslogo">
-                      <div class="ms-1">LOTUS</div>
-                    </a>
-                  </ul>
-
+            <div id="customizeTeam">
+              <h5 class="modal-subtitle bold-font">
+                Customize your team
+              </h5>
+              <div class="custom-logo-selection mt-3">
+                <div class="logo-selector">
+                  <div class="bold-font">Logo</div>
+                  <div>
+                    Place your custom logo on the <span class="important-text bold-font">assets/custom</span> folder and
+                    then select it from the Select icon button
+                  </div>
+                  <div class="logo-and-preview">
+                    <div style="width: max-content;">
+                      <button class="custom-dropdown custom-button" id="selectImage">
+                        <div class="front-gradient">Select icon</div>
+                      </button>
+                      <div class="dropdown-line"></div>
+                    </div>
+                    <input class="d-none" type="file" id="fileInput" accept="image/*">
+                    <img class="logo-preview"></img>
+                  </div>
                 </div>
-
-              </div>
-            </div>
-            <div class="team-change mt-2">
-              <div class="bold-font logo-and-name" style="width: 33%;">
-                <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable"  id="alfaModalLogo">
-                <div class="team-name"  id="alfaModalName">ALFA ROMEO</div>
-              </div>
-              <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
-              <div class="team-change-button" id="alfaReplaceButton">
-                <div class="pos-relative" style="width: max-content;">
-                  <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-value="alfa">
-                    ALFA ROMEO
-                  </button>
-                  <div class="dropdown-line"></div>
-                  <ul class="dropdown-menu team-select-menu" id="graphTypeDropdown" style="font-family: Formula1;">
-                    <a class="dropdown-item bold-font afborder-down-noC" href="#" data-value="alfa">
-                      <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable">
-                      <div class="ms-1">ALFA ROMEO</div>
-                    </a>
-                    <a class="dropdown-item bold-font stakeborder-down" href="#" data-value="stake">
-                      <img src="../assets/images/kick.png" class="alfalogo">
-                      <div class="ms-1">STAKE SAUBER</div>
-                    </a>
-                    <a class="dropdown-item bold-font sauberborder-down" href="#" data-value="sauber">
-                      <img src="../assets/images/sauber.png" class="sauberlogo">
-                      <div class="ms-1">SAUBER</div>
-                    </a>
-                    <a class="dropdown-item bold-font audiborder-down" href="#" data-value="audi">
-                      <img src="../assets/images/audi.png" class="audilogo">
-                      <div class="ms-1">AUDI</div>
-                    </a>
-                  </ul>
-
+                <div class="colors-selector">
+                  <div class="color-selector">
+                    <div class="bold-font">Primary color</div>
+                    <input class="color-picker" type="color" id="primarySelector">
+                    <input class="color-reader" type="text" id="primaryReader">
+                  </div>
+                  <div class="color-selector">
+                    <div class="bold-font">Secondary color</div>
+                    <input class="color-picker" type="color" id="secondarySelector">
+                    <input class="color-reader" type="text" id="secondaryReader">
+                  </div>
                 </div>
-
+  
               </div>
             </div>
           </div>
-          <div id="customizeTeam">
-            <h5 class="modal-subtitle bold-font">
-              Customize your team
-            </h5>
-            <div class="custom-logo-selection mt-3">
-              <div class="logo-selector">
-                <div class="bold-font">Logo</div>
-                <div>
-                  Place your custom logo on the <span class="important-text bold-font">assets/custom</span> folder and
-                  then select it from the Select icon button
-                </div>
-                <div class="logo-and-preview">
-                  <div style="width: max-content;">
-                    <button class="custom-dropdown custom-button" id="selectImage">
-                      <div class="front-gradient">Select icon</div>
-                    </button>
-                    <div class="dropdown-line"></div>
-                  </div>
-                  <input class="d-none" type="file" id="fileInput" accept="image/*">
-                  <img class="logo-preview"></img>
-                </div>
+          <div id="gameChanges" class="d-none">
+            <div class="mentality-changes">
+              <div class="modal-subtitle bold-font">Mentality <span class="option-state default" id="mentalitySpan">Unfrozen</span></div>
+              <div class="modal-text">
+                Freezing the mentality means that all staff and driver's mentality will stay at neutral at all times.
               </div>
-              <div class="colors-selector">
-                <div class="color-selector">
-                  <div class="bold-font">Primary color</div>
-                  <input class="color-picker" type="color" id="primarySelector">
-                  <input class="color-reader" type="text" id="primaryReader">
+              <div class="mentality-selector">
+                <label class="form-check-label" >Normal</label>
+                <div class="form-check form-switch freeze-mentality">
+                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="freezeMentalityToggle">
                 </div>
-                <div class="color-selector">
-                  <div class="bold-font">Secondary color</div>
-                  <input class="color-picker" type="color" id="secondarySelector">
-                  <input class="color-reader" type="text" id="secondaryReader">
-                </div>
+                <label class="form-check-label" style="margin-left: -10px;">Frozen</label>
               </div>
 
+            </div>
+            <div class="difficulty-changes">
+              <div class="modal-subtitle bold-font">Game difficulty <span class="option-state default" id="difficultySpan">Default</span></div>
+              <div class="modal-text">
+                Changes the difficulty of the development race against the AI. They will make lighter parts with better stats.
+                These are extra levels of difficulty apart from those that the game already has.
+              </div>
+              <div class="mentality-selector">
+                <label class="form-check-label">Default</label>
+                <input type="range" class="form-range" id="difficultySlider" min="0" max="5" step="1" value="0">
+                <label class="form-check-label">Impossible</label>
+              </div>
             </div>
           </div>
         </div>
@@ -1102,7 +1150,7 @@
     </div>
     <div class="gear-container my-2">
       <i class="bi bi-gear hidden"></i>
-      <label class="bold-font standard-label">CONFIGURATION</label>
+      <label class="bold-font standard-label">SAVE SETTINGS</label>
       <div class="standard-line"></div>
     </div>
     <div class="script-selector bold-font">
@@ -1958,12 +2006,6 @@
           </div>
           <div class="title bold-font">
             Attributes
-          </div>
-          <div class="title-buttons-right">
-            <div class="form-check form-switch freeze-mentality">
-              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="freezeMentalityToggle">
-              <label class="form-check-label" for="flexSwitchCheckDefault">Freeze mentality</label>
-            </div>
           </div>
         </div>
         <div class="d-flex">

@@ -85,6 +85,15 @@ standard_buildwork_per_part = {
     8: 1500
 }
 
+optimal_weight_per_part = { #peso ideal for unitvalue 100
+    3: 4070,
+    4: 1525,
+    5: 1945,
+    6: 3025,
+    7: 2390,
+    8: 1940
+}
+
 car_attributes = {
     0 : "top_speed", 1: "acceleration", 2: "drs", 3: "low_speed", 4: "medium_speed", 5: "high_speed", 6:"dirty_air", 7: "brake_cooling", 8:"engine_cooling"
 }

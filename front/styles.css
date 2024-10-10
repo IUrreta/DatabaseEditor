@@ -10,6 +10,7 @@
   --dropdown-hover: #363636;
   --dark-text: #b1b1b1;
   --disabled-text: #7a7a7a;
+  --modal-text: #777777;
   --negative-text: #292929;
   --new-primary: #c89efc;
   --new-primary-dark: #ba82ff;
@@ -31,6 +32,12 @@
   --toast-background : #5a5b5c;
   --console-transparent: #42424299;
   --separator: #4a4a4a;
+  --frozen: #77e2f0;
+  --extra-hard: #edf037;
+  --brutal: #f0c537;
+  --unfair: #f09a37;
+  --insane: #f06b37;
+  --impossible: #f03737;
 
   --mentality-enthusiastic: #c055e3;
   --mentality-positive: #10ffff;
@@ -1668,7 +1675,11 @@ input[type="checkbox"]:checked {
 }
 
 .gear-container:hover .standard-line, .gear-container:hover{
-  width: 177px;
+  width: 168px;
+}
+
+.gear-container .standard-label{
+  width: 160px;
 }
 
 .gear-container:hover .standard-label{
@@ -8070,4 +8081,106 @@ input::-webkit-inner-spin-button {
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 5px;
+}
+
+#gameChanges{
+  display: flex;
+  flex-direction: row;
+}
+
+.mentality-changes{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-right: 2px solid var(--separator);
+  width: 50%;
+}
+
+.difficulty-changes{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 10px;
+  width: 50%;
+}
+
+.mentality-selector{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.mentality-selector .form-switch{
+  padding-right: 0px;
+}
+
+.modal-text{
+  color: var(--modal-text);
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+datalist {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  margin-top: -27px;
+  pointer-events: none;
+}
+
+datalist .my-mark{
+  border-right: 2px solid var(--separator);
+  height: 10px;
+  width: 2px;
+}
+
+#difficultySlider::-webkit-difficultySlider-thumb{
+  background-color: var(--new-primary-dark);
+  z-index: 2;
+  box-shadow: none;
+}
+
+#difficultySlider::-webkit-difficultySlider-thumb:hover{
+  outline: 1px solid var(--new-primary);
+  transform: scale(1.05);
+}
+
+#difficultySlider::-webkit-difficultySlider-runnable-track{
+  background-color: var(--text-selected);
+}
+
+.option-state{
+  padding-left: 5px;
+}
+
+.option-state.default{
+  color: var(--new-secondary);
+}
+
+.option-state.frozen{
+  color: var(--frozen)
+}
+
+.option-state.extra-hard{
+  color: var(--extra-hard)
+}
+
+.option-state.brutal{
+  color: var(--brutal)
+}
+
+.option-state.unfair{
+  color: var(--unfair)
+}
+
+.option-state.insane{
+  color: var(--insane)
+}
+
+.option-state.impossible{
+  color: var(--impossible)
 }

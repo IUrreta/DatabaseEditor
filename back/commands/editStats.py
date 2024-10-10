@@ -24,11 +24,8 @@ class EditStatsCommand(Command):
             edit_name(self.message['driverID'], self.message['newName'])
         if self.message['newCode'] != '-1':
             edit_code(self.message['driverID'], self.message['newCode'])
-        if Command.year_iterarion == "24":
-            print(self.message)
-            edit_freeze_mentality(self.message['mentalityFrozen'])
-            print(self.message['mentalityFrozen'])
-            self.change_config_attribute("mentalityFrozen", self.message['mentalityFrozen'])
+
+
         process_repack("../result", Command.path)
         info = []
         info.insert(0, f"Succesfully edited {self.message['driver']}'s stats")

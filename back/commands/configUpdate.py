@@ -1,6 +1,7 @@
 import json
 import os
 from commands.command import Command
+from scripts.edit_stats import edit_freeze_mentality
 
 
 class ConfigUpdateCommand(Command):
@@ -16,6 +17,8 @@ class ConfigUpdateCommand(Command):
         folder = "./../configs"
         file = f"{self.message['save']}_config.json"
         file_path = os.path.join(folder, file)
+        frozenMentality = 0
+        difficulty = 0
         if not os.path.exists(folder):
             os.makedirs(folder)
         if not os.path.exists(file_path):
@@ -34,8 +37,7 @@ class ConfigUpdateCommand(Command):
                 data["primaryColor"] = self.message["primaryColor"]
             if self.message.get("secondaryColor"):
                 data["secondaryColor"] = self.message["secondaryColor"]
-            with open(file_path, "w") as json_file:
-                json.dump(data, json_file, indent=4)
+
         else:
             with open(file_path, "r") as json_file:
                 existing_data = json.load(json_file)
@@ -51,11 +53,20 @@ class ConfigUpdateCommand(Command):
                 existing_data["primaryColor"] = self.message["primaryColor"]
             if self.message.get("secondaryColor"):
                 existing_data["secondaryColor"] = self.message["secondaryColor"]
-            if self.message.get("mentalityFrozen"):
-                existing_data["mentalityFrozen"] = self.message["mentalityFrozen"]
+
+
+
+        frozenMentality = self.message.get("mentalityFrozen", 0)
+        difficulty = self.message.get("difficulty", 0)
+        data["mentalityFrozen"] = frozenMentality
+        data["difficulty"] = difficulty
             
-            with open(file_path, "w") as json_file:
-                json.dump(existing_data, json_file, indent=4)
+
+        if Command.year_iterarion == "24":
+            edit_freeze_mentality(frozenMentality)    
+        with open(file_path, "w") as json_file:
+            json.dump(existing_data, json_file, indent=4)
+
         self.replace_team("Alpha Tauri", self.message["alphatauri"])
         self.replace_team("Alpine", self.message["alpine"])
         self.replace_team("Alfa Romeo", self.message["alfa"])

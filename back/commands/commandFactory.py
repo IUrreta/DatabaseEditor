@@ -26,6 +26,7 @@ from commands.disconnect import DisconnectCommand
 from commands.fitParts import FitPartsCommand
 from commands.partRequest import PartRequestCommand
 from commands.customEngines import customEnginesCommand
+from commands.devCommand import DevCommand
 
 
 class CommandFactory:
@@ -37,12 +38,13 @@ class CommandFactory:
                     "yearSelectedPrediction": YearSelectedPredictionCommand, "yearSelectedPredictionModal": YearSelectedPredictionModalCommand, 
                     "predict": PredictCommand, "predictMontecarlo": PredictMontecarloCommand, "unretireDriver": UnretireCommand, 
                     "configUpdate": ConfigUpdateCommand, "performanceRequest": PerformanceRequestCommand, "disconnect": DisconnectCommand,
-                      "fitParts": FitPartsCommand, "partRequest": PartRequestCommand, "customEngines": customEnginesCommand}
+                      "fitParts": FitPartsCommand, "partRequest": PartRequestCommand, "customEngines": customEnginesCommand, "dev": DevCommand}
 
     def __init__(self):
         pass
         
     def create_command(self, message, client):
+        print(message)
         command_type = message["command"]
         if command_type in self.command_dict:
             return self.command_dict[command_type](message, client)

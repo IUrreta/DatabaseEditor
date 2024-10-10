@@ -14,18 +14,6 @@ let firstShow = false;
 const batFilePath = path.join(__dirname,'../back/startBack.bat');
 
 
-// function start_back(){
-//     exec(`"${batFilePath}"`, (error, stdout, stderr) => {
-//         if (error) {
-//             console.log("Error launching backend")
-//             console.log(`Error: ${error}`)
-//             return;
-//         }
-//         console.log(`Result: ${stdout}`);
-//     });
-// }
-
-// start_back()
 
 const socket = new WebSocket('ws://localhost:8765/');
 /**
@@ -40,13 +28,6 @@ socket.onopen = () => {
 
 };
 
-// window.addEventListener('beforeunload', () => {
-//     let data = {
-//         command: "disconnect"
-//     }
-//     socket.send(JSON.stringify(data));
-//     socket.close();
-// });
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
@@ -293,12 +274,7 @@ function editModeHandler() {
         document.querySelector(".clicked").dataset.superLicense = 0;
     }
     let marketability = document.getElementById("marketabilityInput").value;
-    let mentalityFrozen = 0;
-    if (document.getElementById("freezeMentalityToggle").checked) {
-        mentalityFrozen = 1;
-    }
-    let saveSelector = document.getElementById('saveSelector');
-    let saveSelected = saveSelector.innerHTML
+
     let dataStats = {
         command: "editStats",
         driverID: id,
@@ -315,7 +291,6 @@ function editModeHandler() {
         marketability: marketability,
         newName: newName,
         newCode: newCode,
-        mentalityFrozen: mentalityFrozen,
         saveName : saveSelected
     };
 
@@ -492,6 +467,9 @@ document.addEventListener('DOMContentLoaded',function () {
     const constructorsPill = document.getElementById("constructorspill")
     const predictPill = document.getElementById("predictpill")
 
+    const editorPill = document.getElementById("editorPill")
+    const gamePill = document.getElementById("gamePill")
+
     const driverTransferDiv = document.getElementById("driver_transfers");
     const editStatsDiv = document.getElementById("edit_stats");
     const customCalendarDiv = document.getElementById("custom_calendar");
@@ -514,6 +492,14 @@ document.addEventListener('DOMContentLoaded',function () {
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
     const noNotifications = ["Cars fetched","Part values fetched", "Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
+    let difficulty_dict = {
+        0: "default",
+        1: "extra-hard",
+        2: "brutal",
+        3: "unfair",
+        4: "insane",
+        5: "impossible"
+    }
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -758,11 +744,14 @@ document.addEventListener('DOMContentLoaded',function () {
         });
 
         if (devConsole) {
-            devConsole.addEventListener('keydown',(event) => {
+            devConsole.addEventListener('keyup',(event) => {
                 if (event.key === 'Enter') {
                     event.preventDefault();
-                    devConsole.value = '';
-                    socket.send(JSON.stringify(devConsole.value))
+                    data = {
+                        command: "dev",
+                        type: devConsole.value
+                    }
+                    socket.send(JSON.stringify(data));
                 }
             });
         }
@@ -1495,12 +1484,21 @@ document.addEventListener('DOMContentLoaded',function () {
         alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
         alpine = document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value
         alfa = document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value
+        let mentalityFrozen = 0;
+        if (document.getElementById("freezeMentalityToggle").checked) {
+            mentalityFrozen = 1;
+        }
+        let difficulty = 0;
+        let difficultySlider = document.getElementById("difficultySlider")
+        let difficultyValue = difficultySlider.value
         let data = {
             command: "configUpdate",
             save: save,
             alphatauri: alphatauri,
             alpine: alpine,
             alfa: alfa,
+            mentalityFrozen: mentalityFrozen,
+            difficulty: difficultyValue,
             state: "changed"
         }
         if (customIconPath !== null) {
@@ -1629,7 +1627,37 @@ document.addEventListener('DOMContentLoaded',function () {
         check_selected()
         manageSaveButton(!viewingGraph,"performance")
     })
+    
+    gamePill.addEventListener("click",function () {
+        document.querySelector("#editorChanges").classList.add("d-none")
+        document.querySelector("#gameChanges").classList.remove("d-none")
+    })
+    
+    editorPill.addEventListener("click",function () {
+        document.querySelector("#editorChanges").classList.remove("d-none")
+        document.querySelector("#gameChanges").classList.add("d-none")
+    })
 
+    document.getElementById("difficultySlider").addEventListener("input", function() {
+        let value = this.value;
+        console.log(value)
+        let span = document.querySelector("#difficultySpan")
+        let difficulty = difficulty_dict[parseInt(value)]
+        span.className = "option-state " + difficulty
+        span.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1)
+        
+    });
+
+    document.getElementById("freezeMentalityToggle").addEventListener("change", function() {
+        let span = document.querySelector("#mentalitySpan")
+        if (this.checked) {
+            span.className = "option-state frozen"
+            span.textContent = "Frozen"
+        } else {
+            span.className = "option-state default"
+            span.textContent = "Unfrozen"
+        }
+    });
 
     /**
      * Manages the stats of the divs associated with the pills

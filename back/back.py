@@ -31,6 +31,7 @@ async def handle_client(websocket, path, app_state):
     try:
         async for message in websocket:
             data = json.loads(message)
+            print(data)
             await app_state.new_handler(data, client)
     except Exception as e:
         traceback.print_exc()

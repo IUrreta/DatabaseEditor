@@ -554,3 +554,5 @@ class CarAnalysisUtils:
 
     def fetch_max_design(self):
         return self.cursor.execute("SELECT MAX(DesignID) FROM Parts_Designs").fetchone()[0]
+    
+    

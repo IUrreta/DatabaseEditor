@@ -126,22 +126,24 @@ class SaveSelectedCommand(Command):
 
     async def get_custom_engines_list(self, saveName):
         config_file_path = f"./../configs/{saveName.split('.')[0]}_config.json"
-        with open(config_file_path, "r") as json_file:
-            data = json.load(json_file)
-        
-        custom_engines = data.get("engines", {})
-        return custom_engines
+        if os.path.exists(config_file_path):
+            with open(config_file_path, "r") as json_file:
+                data = json.load(json_file)
+            
+            custom_engines = data.get("engines", {})
+            return custom_engines
         
     async def check_engine_allocations(self, save):
         config_file_path = f"./../configs/{save.split('.')[0]}_config.json"
-        with open(config_file_path, "r") as json_file:
-            data = json.load(json_file)
+        if os.path.exists(config_file_path):
+            with open(config_file_path, "r") as json_file:
+                data = json.load(json_file)
 
-        engine_allocations = data.get("engine_allocations", {})
-        if not engine_allocations:
-            allocations = Command.dbutils.fetch_engine_allocations()
-            #write allocations to config file
-            data["engine_allocations"] = allocations
-            with open(config_file_path, "w") as json_file:
-                json.dump(data, json_file, indent=4)
+            engine_allocations = data.get("engine_allocations", {})
+            if not engine_allocations:
+                allocations = Command.dbutils.fetch_engine_allocations()
+                #write allocations to config file
+                data["engine_allocations"] = allocations
+                with open(config_file_path, "w") as json_file:
+                    json.dump(data, json_file, indent=4)
         

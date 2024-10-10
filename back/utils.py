@@ -2,6 +2,7 @@ import random
 import math
 import re
 from scripts.countries import countries_dict
+import sqlite3
 
 class DatabaseUtils:
     def __init__(self, connection):
@@ -601,3 +602,48 @@ class DatabaseUtils:
         if cadena and cadena[-1].isdigit():
             cadena = cadena[:-1]
         return cadena
+    
+    def add_hard_diff_trigger(self, type):
+        conn = sqlite3.connect("../result/main.db")
+        cursor = conn.cursor()
+        if type == "add":
+            trigger_sql = """
+                CREATE TRIGGER update_weight_extra_difficulty
+                AFTER INSERT ON Parts_Designs_StatValues
+                FOR EACH ROW
+                WHEN (
+                    SELECT TeamID
+                    FROM Parts_Designs
+                    WHERE DesignID = NEW.DesignID
+                ) != 1
+                AND NEW.PartStat = 15
+                BEGIN
+                    UPDATE Parts_Designs_StatValues
+                    SET 
+                        Value = 100,
+                        unitValue = (
+                            SELECT CASE PD.PartType
+                                WHEN 3 THEN 4070
+                                WHEN 4 THEN 1525
+                                WHEN 5 THEN 1945
+                                WHEN 6 THEN 3025
+                                WHEN 7 THEN 2390
+                                WHEN 8 THEN 1940
+                                ELSE value
+                            END
+                            FROM Parts_Designs PD
+                            WHERE PD.DesignID = NEW.DesignID
+                        )
+                    WHERE DesignID = NEW.DesignID
+                    AND PartStat = 15;
+                END;
+                """
+            cursor.execute(trigger_sql)
+            print("Trigger added")
+        else:
+            cursor.execute("DROP TRIGGER update_weight_extra_difficulty")
+            print("Trigger removed")
+
+        conn.commit()
+        conn.close()
+        
