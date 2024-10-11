@@ -11,24 +11,24 @@ class ConfigUpdateCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        self.create_folder_file()
+        self.create_folder_file(self.message)
         process_repack("../result", Command.path)
         info = ["Save settings updated"]
         data_info = json.dumps(info)
         await self.send_message_to_client(data_info)
 
 
-    def create_folder_file(self):
+    def create_folder_file(self, message):
         folder = "./../configs"
-        file = f"{self.message['save']}_config.json"
+        file = f"{message['save']}_config.json"
         file_path = os.path.join(folder, file)
         frozenMentality = 0
         difficulty = 0
         data = {
             "teams": {
-                "alphatauri": self.message["alphatauri"],
-                "alpine": self.message["alpine"],
-                "alfa": self.message["alfa"]
+                "alphatauri": message["alphatauri"],
+                "alpine": message["alpine"],
+                "alfa": message["alfa"]
             },
             "mentalityFrozen" : 0,
             "difficulty": 0,
@@ -37,31 +37,33 @@ class ConfigUpdateCommand(Command):
         with open(file_path, "r") as json_file:
             existing_data = json.load(json_file)
         
-        existing_data["teams"]["alphatauri"] = self.message["alphatauri"]
-        existing_data["teams"]["alpine"] = self.message["alpine"]
-        existing_data["teams"]["alfa"] = self.message["alfa"]
+        existing_data["teams"]["alphatauri"] = message["alphatauri"]
+        existing_data["teams"]["alpine"] = message["alpine"]
+        existing_data["teams"]["alfa"] = message["alfa"]
 
-        if self.message.get("icon"):
-            existing_data["icon"] = self.message["icon"]
-        if self.message.get("primaryColor"):
-            existing_data["primaryColor"] = self.message["primaryColor"]
-        if self.message.get("secondaryColor"):
-            existing_data["secondaryColor"] = self.message["secondaryColor"]
+        if message.get("icon"):
+            existing_data["icon"] = message["icon"]
+        if message.get("primaryColor"):
+            existing_data["primaryColor"] = message["primaryColor"]
+        if message.get("secondaryColor"):
+            existing_data["secondaryColor"] = message["secondaryColor"]
         
         data = existing_data
 
-
-        frozenMentality = self.message.get("mentalityFrozen", 0)
-        difficulty = self.message.get("difficulty", 0)
-        refurbish = self.message.get("refurbish", 0)
+        frozenMentality = message.get("mentalityFrozen", 0)
+        difficulty = message.get("difficulty", 0)
+        refurbish = message.get("refurbish", 0)
         data["mentalityFrozen"] = int(frozenMentality)
         data["difficulty"] = int(difficulty)
         data["refurbish"] = int(refurbish)
+        data["disabled"] = message["disabled"]
             
 
         if Command.year_iterarion == "24":
-            edit_freeze_mentality(frozenMentality)    
-        Command.dbutils.manage_difficulty_triggers(difficulty)
+            edit_freeze_mentality(frozenMentality) 
+
+        Command.dbutils.manage_difficulty_triggers(difficulty, message["disabled"])
+        Command.dbutils.manage_refurbish_trigger(int(refurbish))
         
 
         with open(file_path, "w") as json_file:

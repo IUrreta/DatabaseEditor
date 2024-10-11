@@ -8205,3 +8205,13 @@ datalist .my-mark{
   height: 58px;
   align-content: flex-start;
 }
+
+.dif-warning:not(.default){
+  cursor: pointer;
+  transition: opacity 0.25s ease-in, text-decoration 0.25s ease-in;
+}
+
+.dif-warning.disabled{
+  text-decoration: line-through;
+  opacity: 0.63;
+}

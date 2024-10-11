@@ -1156,6 +1156,16 @@ document.addEventListener('DOMContentLoaded',function () {
         update_difficulty_span(info["difficulty"])
         manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
         update_refurbish_span(info["refurbish"])
+        manage_disabled_list(info["disabled"])
+    }
+
+    function manage_disabled_list(disabled_list){
+        for (key in disabled_list){
+            let elem = document.getElementById(key)
+            if (disabled_list[key] === 1){
+                elem.classList.add("disabled")
+            }
+        }
     }
 
     document.querySelectorAll(".color-picker").forEach(function (elem) {
@@ -1488,6 +1498,16 @@ document.addEventListener('DOMContentLoaded',function () {
         let difficulty = 0;
         let difficultySlider = document.getElementById("difficultySlider")
         let difficultyValue = parseInt(difficultySlider.value)
+        let disabledList = {}
+        document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
+            let id = elem.id
+            if (elem.classList.contains("disabled")) {
+                disabledList[id] = 1
+            }
+            else{
+                disabledList[id] = 0
+            }
+        })
         let data = {
             command: "configUpdate",
             save: save,
@@ -1497,6 +1517,7 @@ document.addEventListener('DOMContentLoaded',function () {
             mentalityFrozen: mentalityFrozen,
             difficulty: difficultyValue,
             refurbish: refurbish,
+            disabled: disabledList,
             state: "changed"
         }
         if (customIconPath !== null) {
@@ -1786,7 +1807,7 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("lightDif").textContent = "ULTRA-lightweight parts"
             document.getElementById("researchDif").classList.remove("d-none")
             document.getElementById("researchDif").className = "dif-warning impossible"
-            document.getElementById("researchDif").textContent = "Gigantic research boost"
+            document.getElementById("researchDif").textContent = "Massive research boost"
             document.getElementById("statDif").classList.remove("d-none")
             document.getElementById("statDif").className = "dif-warning impossible"
             document.getElementById("statDif").textContent = "Stats boost +2.1%"
@@ -1797,11 +1818,16 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("factoryDif").className = "dif-warning impossible"
             document.getElementById("factoryDif").textContent = "Factory level 5"
             document.getElementById("buildDif").classList.remove("d-none")
-            document.getElementById("buildDif").textContent = "+2 part when design completed"
+            document.getElementById("buildDif").textContent = "+2 parts when design completed"
             document.getElementById("buildDif").className = "dif-warning impossible"
         }
     }
 
+    document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
+        elem.addEventListener("click",function () {
+            elem.classList.toggle("disabled")
+        })
+    })
 
     /**
      * Manages the stats of the divs associated with the pills
