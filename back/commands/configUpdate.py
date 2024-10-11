@@ -13,6 +13,9 @@ class ConfigUpdateCommand(Command):
     async def execute(self):
         self.create_folder_file()
         process_repack("../result", Command.path)
+        info = ["Save settings updated"]
+        data_info = json.dumps(info)
+        await self.send_message_to_client(data_info)
 
 
     def create_folder_file(self):
@@ -67,3 +70,7 @@ class ConfigUpdateCommand(Command):
         self.replace_team("Alpha Tauri", self.message["alphatauri"])
         self.replace_team("Alpine", self.message["alpine"])
         self.replace_team("Alfa Romeo", self.message["alfa"])
+
+
+
+        

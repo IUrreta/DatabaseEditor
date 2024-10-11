@@ -489,7 +489,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Cars fetched","Part values fetched", "Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
+    const noNotifications = ["Custom Engines fetched","Cars fetched","Part values fetched", "Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
     let difficulty_dict = {
         0: "default",
         1: "reduced weight",
@@ -1154,6 +1154,7 @@ document.addEventListener('DOMContentLoaded',function () {
         let difficultySlider = document.getElementById("difficultySlider")
         difficultySlider.value = info["difficulty"]
         update_difficulty_span(info["difficulty"])
+        manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
         update_refurbish_span(info["refurbish"])
     }
 
@@ -1638,6 +1639,7 @@ document.addEventListener('DOMContentLoaded',function () {
     document.getElementById("difficultySlider").addEventListener("input", function() {
         let value = this.value;
         update_difficulty_span(value)
+        manage_difficulty_warnings(difficulty_dict[parseInt(value)])
     });
 
     function update_difficulty_span(value){
@@ -1681,6 +1683,122 @@ document.addEventListener('DOMContentLoaded',function () {
         } else {
             span.className = "option-state default"
             span.textContent = "Default"
+        }
+    }
+
+    function manage_difficulty_warnings(level){
+        if (level === "default") {
+            document.getElementById("defaultDif").classList.remove("d-none")
+            document.getElementById("lightDif").classList.add("d-none")
+            document.getElementById("researchDif").classList.add("d-none")
+            document.getElementById("statDif").classList.add("d-none")
+            document.getElementById("designTimeDif").classList.add("d-none")
+            document.getElementById("factoryDif").classList.add("d-none")
+            document.getElementById("buildDif").classList.add("d-none")
+        }
+        else if (level === "reduced weight") {
+            document.getElementById("defaultDif").classList.add("d-none")
+            document.getElementById("lightDif").classList.remove("d-none")
+            document.getElementById("lightDif").className = "dif-warning extra-hard"
+            document.getElementById("lightDif").textContent = "Lightweight parts"
+            document.getElementById("researchDif").classList.add("d-none")
+            document.getElementById("statDif").classList.add("d-none")
+            document.getElementById("designTimeDif").classList.add("d-none")
+            document.getElementById("factoryDif").classList.add("d-none")
+            document.getElementById("buildDif").classList.add("d-none")
+        }
+        else if (level === "extra-hard"){
+            document.getElementById("defaultDif").classList.add("d-none")
+            document.getElementById("lightDif").classList.remove("d-none")
+            document.getElementById("lightDif").className = "dif-warning extra-hard"
+            document.getElementById("lightDif").textContent = "Lightweight parts"
+            document.getElementById("researchDif").classList.remove("d-none")
+            document.getElementById("researchDif").className = "dif-warning extra-hard"
+            document.getElementById("researchDif").textContent = "Small research boost"
+            document.getElementById("statDif").classList.remove("d-none")
+            document.getElementById("statDif").className = "dif-warning extra-hard"
+            document.getElementById("statDif").textContent = "Stats boost +0.5%"
+            document.getElementById("designTimeDif").classList.add("d-none")
+            document.getElementById("factoryDif").classList.add("d-none")
+            document.getElementById("buildDif").classList.add("d-none")
+        }
+        else if (level === "brutal"){
+            document.getElementById("defaultDif").classList.add("d-none")
+            document.getElementById("lightDif").classList.remove("d-none")
+            document.getElementById("lightDif").className = "dif-warning extra-hard"
+            document.getElementById("lightDif").textContent = "Lightweight parts"
+            document.getElementById("researchDif").classList.remove("d-none")
+            document.getElementById("researchDif").className = "dif-warning brutal"
+            document.getElementById("researchDif").textContent = "Moderate research boost"
+            document.getElementById("statDif").classList.remove("d-none")
+            document.getElementById("statDif").className = "dif-warning brutal"
+            document.getElementById("statDif").textContent = "Stats boost +0.8%"
+            document.getElementById("designTimeDif").classList.remove("d-none")
+            document.getElementById("designTimeDif").className = "dif-warning brutal"
+            document.getElementById("designTimeDif").textContent = "Design times reduced 5%"
+            document.getElementById("factoryDif").classList.add("d-none")
+            document.getElementById("buildDif").classList.add("d-none")
+        }
+        else if (level === "unfair"){
+            document.getElementById("defaultDif").classList.add("d-none")
+            document.getElementById("lightDif").classList.remove("d-none")
+            document.getElementById("lightDif").className = "dif-warning extra-hard"
+            document.getElementById("lightDif").textContent = "Lightweight parts"
+            document.getElementById("researchDif").classList.remove("d-none")
+            document.getElementById("researchDif").className = "dif-warning unfair"
+            document.getElementById("researchDif").textContent = "Large research boost"
+            document.getElementById("statDif").classList.remove("d-none")
+            document.getElementById("statDif").className = "dif-warning unfair"
+            document.getElementById("statDif").textContent = "Stats boost +1.3%"
+            document.getElementById("designTimeDif").classList.remove("d-none")
+            document.getElementById("designTimeDif").className = "dif-warning unfair"
+            document.getElementById("designTimeDif").textContent = "Design times reduced 11%"
+            document.getElementById("factoryDif").classList.remove("d-none")
+            document.getElementById("factoryDif").className = "dif-warning unfair"
+            document.getElementById("factoryDif").textContent = "Factory level 4"
+            document.getElementById("buildDif").classList.add("d-none")
+        }
+        else if(level === "insane"){
+            document.getElementById("defaultDif").classList.add("d-none")
+            document.getElementById("lightDif").classList.remove("d-none")
+            document.getElementById("lightDif").className = "dif-warning extra-hard"
+            document.getElementById("lightDif").textContent = "Lightweight parts"
+            document.getElementById("researchDif").classList.remove("d-none")
+            document.getElementById("researchDif").className = "dif-warning insane"
+            document.getElementById("researchDif").textContent = "Huge research boost"
+            document.getElementById("statDif").classList.remove("d-none")
+            document.getElementById("statDif").className = "dif-warning insane"
+            document.getElementById("statDif").textContent = "Stats boost +1.7%"
+            document.getElementById("designTimeDif").classList.remove("d-none")
+            document.getElementById("designTimeDif").className = "dif-warning insane"
+            document.getElementById("designTimeDif").textContent = "Design times reduced 16%"
+            document.getElementById("factoryDif").classList.remove("d-none")
+            document.getElementById("factoryDif").className = "dif-warning unfair"
+            document.getElementById("factoryDif").textContent = "Factory level 4"
+            document.getElementById("buildDif").classList.remove("d-none")
+            document.getElementById("buildDif").textContent = "+1 part when design completed"
+            document.getElementById("buildDif").className = "dif-warning insane"
+        }
+        else if (level === "impossible"){
+            document.getElementById("defaultDif").classList.add("d-none")
+            document.getElementById("lightDif").classList.remove("d-none")
+            document.getElementById("lightDif").className = "dif-warning fixed"
+            document.getElementById("lightDif").textContent = "ULTRA-lightweight parts"
+            document.getElementById("researchDif").classList.remove("d-none")
+            document.getElementById("researchDif").className = "dif-warning impossible"
+            document.getElementById("researchDif").textContent = "Gigantic research boost"
+            document.getElementById("statDif").classList.remove("d-none")
+            document.getElementById("statDif").className = "dif-warning impossible"
+            document.getElementById("statDif").textContent = "Stats boost +2.1%"
+            document.getElementById("designTimeDif").classList.remove("d-none")
+            document.getElementById("designTimeDif").className = "dif-warning impossible"
+            document.getElementById("designTimeDif").textContent = "Design times reduced 20%"
+            document.getElementById("factoryDif").classList.remove("d-none")
+            document.getElementById("factoryDif").className = "dif-warning impossible"
+            document.getElementById("factoryDif").textContent = "Factory level 5"
+            document.getElementById("buildDif").classList.remove("d-none")
+            document.getElementById("buildDif").textContent = "+2 part when design completed"
+            document.getElementById("buildDif").className = "dif-warning impossible"
         }
     }
 

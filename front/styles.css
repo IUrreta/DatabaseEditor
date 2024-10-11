@@ -3735,9 +3735,6 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   padding-right: 6px;
 }
 
-.parts-list.noCustom{
-  height: 268px;
-}
 
 .one-part{
   display: flex;
@@ -8099,7 +8096,7 @@ input::-webkit-inner-spin-button {
 .difficulty-changes{
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 7px;
   padding-left: 10px;
   width: 50%;
 }
@@ -8157,39 +8154,39 @@ datalist .my-mark{
   padding-left: 5px;
 }
 
-.option-state.default{
+.option-state.default, .dif-warning.default{
   color: var(--new-secondary);
 }
 
-.option-state.frozen{
+.option-state.frozen, .dif-warning.frozen{
   color: var(--frozen)
 }
 
-.option-state.extra-hard, .extra-hard{
+.option-state.extra-hard, span.extra-hard, .dif-warning.extra-hard{
   color: var(--extra-hard)
 }
 
-.option-state.brutal{
+.option-state.brutal, span.brutal, .dif-warning.brutal{
   color: var(--brutal)
 }
 
-.option-state.unfair{
+.option-state.unfair, span.unfair, .dif-warning.unfair{
   color: var(--unfair)
 }
 
-.option-state.insane{
+.option-state.insane, span.insane, .dif-warning.insane{
   color: var(--insane)
 }
 
-.option-state.impossible{
+.option-state.impossible, span.impossible, .dif-warning.impossible{
   color: var(--impossible)
 }
 
-.option-state.fixed{
+.option-state.fixed, span.fixed, .dif-warning.fixed{
   color: var(--new-primary)
 }
 
-.option-state.reduced-weight, .reduced-weight{
+.option-state.reduced-weight, span.reduced-weight, .dif-warning.reduced-weight{
   color: var(--new-primary)
 }
 
@@ -8197,4 +8194,14 @@ datalist .my-mark{
   padding-top: 10px;
   border-top: 2px solid var(--separator);
   margin-right: 32px;
+}
+
+.difficulty-warnings{
+  font-size: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: -7px;
+  gap: 2px 7px;
+  height: 58px;
+  align-content: flex-start;
 }

@@ -94,6 +94,15 @@ optimal_weight_per_part = { #peso ideal for unitvalue 100
     8: 1940
 }
 
+minimal_weight_per_part = { #peso minimo for unitvalue 0
+    3: 3800,
+    4: 1250,
+    5: 1650,
+    6: 2750,
+    7: 2100,
+    8: 1700
+}
+
 car_attributes = {
     0 : "top_speed", 1: "acceleration", 2: "drs", 3: "low_speed", 4: "medium_speed", 5: "high_speed", 6:"dirty_air", 7: "brake_cooling", 8:"engine_cooling"
 }

@@ -569,16 +569,22 @@
                 <div class="form-check form-switch freeze-mentality">
                   <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="refurbishingToggle">
                 </div>
-                <label class="form-check-label" style="margin-left: -10px;">Refurbishing</label>
+                <label class="form-check-label" style="margin-left: -10px;">Active</label>
               </div>
             </div>
             <div class="difficulty-changes">
               <div class="modal-subtitle bold-font">Game difficulty <span class="option-state default" id="difficultySpan">Default</span></div>
+              <div class="difficulty-warnings">
+                <div class="dif-warning default" id="defaultDif">In-game difficulty</div>
+                <div class="dif-warning extra-hard" id="lightDif">lightweight parts</div>
+                <div class="dif-warning extra-hard" id="researchDif">ResearchBoost</div>
+                <div class="dif-warning extra-hard" id="statDif">Stat boost</div>
+                <div class="dif-warning brutal" id="designTimeDif">Design times reduced</div>
+                <div class="dif-warning unfair" id="factoryDif">Factory level 4</div>
+                <div class="dif-warning insane" id="buildDif">+1 part when design completed</div>
+              </div>
               <div class="modal-text">
-                Changes the difficulty of the development race against the AI. In <span class="bold-font reduced-weight">reduced weight</span> they will make lighter parts.
-                <br>
-                From <span class="bold-font extra-hard">extra hard</span> onwards they will also make parts with better stats. 
-                <br>
+                Changes the difficulty of the development race against the AI.
                 These are extra levels of difficulty apart from those that the game already has.
               </div>
               <div class="mentality-selector">

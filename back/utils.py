@@ -5,30 +5,53 @@ from scripts.countries import countries_dict
 import sqlite3
 
 difficulty_dict = {
+    1:{
+        "name": "reduced_weight",
+        "perc": 0,
+        "7and8": 0,
+        "9": 0,
+        "reduction": 0,
+        "research": 0
+    },
     2: {
         "name": "extra_hard",
-        "mult": 3,
-        "reduction": 0
+        "perc": 0.5,
+        "7and8": 0.016,
+        "9": 0.008,
+        "reduction": 0,
+        "research": 4
     },
     3: {
         "name": "brutal",
-        "mult": 8,
-        "reduction": 0.15
+        "perc": 0.8,
+        "7and8": 0.022,
+        "9": 0.011,
+        "reduction": 0.05,
+        "research": 11
     },
     4: {
         "name": "unfair",
-        "mult": 15,
-        "reduction": 0.25
+        "perc": 1.3,
+        "7and8": 0.029,
+        "9": 0.015,
+        "reduction": 0.11,
+        "research": 16
     },
     5: {
         "name": "insane",
-        "mult": 20,
-        "reduction": 0.35
+        "perc": 1.7,
+        "7and8": 0.04,
+        "9": 0.02,
+        "reduction": 0.16,
+        "research": 25
     },
     6: {
         "name": "impossible",
-        "mult": 30,
-        "reduction": 0.50
+        "perc": 2.1,
+        "7and8": 0.05,
+        "9": 0.025,
+        "reduction": 0.2,
+        "research": 35
     }
 }
 
@@ -631,13 +654,14 @@ class DatabaseUtils:
             cadena = cadena[:-1]
         return cadena
     
-    def manage_weight_trigger(self, type):
-        conn = sqlite3.connect("../result/main.db")
-        cursor = conn.cursor()
+    def manage_weight_trigger(self, type, cursor):
         player_team = cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
-        if type == "add":
+        cursor.execute("DROP TRIGGER IF EXISTS reduced_weight_normal")
+        cursor.execute("DROP TRIGGER IF EXISTS reduced_weight_extreme")
+        trigger_sql = ""
+        if type >= 1 and type < 6:
             trigger_sql = f"""
-                CREATE TRIGGER reduced_weight_trigger
+                CREATE TRIGGER reduced_weight_normal
                 AFTER INSERT ON Parts_Designs_StatValues
                 FOR EACH ROW
                 WHEN (
@@ -667,32 +691,61 @@ class DatabaseUtils:
                     AND PartStat = 15;
                 END;
                 """
+            
+        elif type == 6:
+            trigger_sql = f"""
+                CREATE TRIGGER reduced_weight_extreme
+                AFTER INSERT ON Parts_Designs_StatValues
+                FOR EACH ROW
+                WHEN (
+                    SELECT TeamID
+                    FROM Parts_Designs
+                    WHERE DesignID = NEW.DesignID
+                ) != {player_team}
+                AND NEW.PartStat = 15
+                BEGIN
+                    UPDATE Parts_Designs_StatValues
+                    SET 
+                        Value = 0,
+                        unitValue = (
+                            SELECT CASE PD.PartType
+                                WHEN 3 THEN 3800
+                                WHEN 4 THEN 1250
+                                WHEN 5 THEN 1650
+                                WHEN 6 THEN 2750
+                                WHEN 7 THEN 2100
+                                WHEN 8 THEN 1700
+                                ELSE value
+                            END
+                            FROM Parts_Designs PD
+                            WHERE PD.DesignID = NEW.DesignID
+                        )
+                    WHERE DesignID = NEW.DesignID
+                    AND PartStat = 15;
+                END;
+                """
+            
+        if trigger_sql:
             cursor.execute(trigger_sql)
-            print("Trigger added")
-        else:
-            cursor.execute("DROP TRIGGER reduced_weight_trigger")
-            print("Trigger removed")
 
-        conn.commit()
-        conn.close()
+
         
     def manage_difficulty_triggers(self, type):
         conn = sqlite3.connect("../result/main.db")
         cursor = conn.cursor()
         player_team = cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
-        #remove trigger named example_trigger
+        
         cursor.execute("DROP TRIGGER IF EXISTS extra_hard_difficulty")
         cursor.execute("DROP TRIGGER IF EXISTS brutal_difficulty")
         cursor.execute("DROP TRIGGER IF EXISTS unfair_difficulty")
         cursor.execute("DROP TRIGGER IF EXISTS insane_difficulty")
         cursor.execute("DROP TRIGGER IF EXISTS impossible_difficulty")
-        if type >= 1:
-            self.manage_weight_trigger("add")
-        else:
-            self.manage_weight_trigger("remove")
+
         if type >= 2:
             trigger_name = f"{difficulty_dict[type]["name"]}_difficulty"
-            increase = difficulty_dict[type]["mult"]
+            increase_perc = difficulty_dict[type]["perc"]
+            increase_7and8 = difficulty_dict[type]["7and8"]
+            increase_9 = difficulty_dict[type]["9"]
             reduction = difficulty_dict[type]["reduction"]
             trigger_sql = f"""
                 CREATE TRIGGER {trigger_name}
@@ -702,35 +755,40 @@ class DatabaseUtils:
                     SELECT TeamID
                     FROM Parts_Designs
                     WHERE DesignID = NEW.DesignID
+                    AND ValidFrom = (SELECT CurrentSeason FROM Player_State)
                 ) != {player_team}
                 AND NEW.PartStat != 15
                 BEGIN
                     -- Actualizar Parts_Designs_StatValues
                     UPDATE Parts_Designs_StatValues
                     SET 
-                        unitValue = unitValue * (1 + {increase} / 100.0),
+                        unitValue = CASE
+                            WHEN NEW.PartStat IN (7, 8) THEN unitValue + {increase_7and8}
+                            WHEN NEW.PartStat = 9 THEN unitValue + {increase_9}
+                            ELSE unitValue + {increase_perc}
+                        END,
                         Value = CASE
-                            WHEN NEW.PartStat IN (0, 1, 2, 3, 4, 5) THEN NEW.unitValue * 10
-                            WHEN NEW.PartStat = 6 THEN (NEW.unitValue - 90) * 1000 / 10
-                            WHEN NEW.PartStat = 7 THEN (NEW.unitValue - 3) / 0.002
-                            WHEN NEW.PartStat = 8 THEN (NEW.unitValue - 5) / 0.002
-                            WHEN NEW.PartStat = 9 THEN (NEW.unitValue - 7) / 0.001
-                            WHEN NEW.PartStat = 10 THEN (NEW.unitValue - 90) * 1000 / 10
-                            WHEN NEW.PartStat = 11 THEN (85 - NEW.unitValue) * 1000 / 20
-                            WHEN NEW.PartStat = 12 THEN (NEW.unitValue - 70) * 1000 / 15
-                            WHEN NEW.PartStat = 13 THEN NEW.unitValue * 10
-                            WHEN NEW.PartStat = 14 THEN (85 - NEW.unitValue) * 1000 / 15
-                            WHEN NEW.PartStat = 15 THEN (NEW.unitValue - 40) * 1000 / 30
-                            WHEN NEW.PartStat = 18 THEN (NEW.unitValue - 40) * 1000 / 30
-                            WHEN NEW.PartStat = 19 THEN (NEW.unitValue - 40) * 1000 / 30
+                            WHEN NEW.PartStat IN (0, 1, 2, 3, 4, 5) THEN (unitValue + {increase_perc}) * 10
+                            WHEN NEW.PartStat = 6 THEN ((unitValue + {increase_perc}) - 90) * 1000 / 10
+                            WHEN NEW.PartStat = 7 THEN (unitValue + {increase_7and8} - 3) / 0.002
+                            WHEN NEW.PartStat = 8 THEN (unitValue + {increase_7and8} - 5) / 0.002
+                            WHEN NEW.PartStat = 9 THEN (unitValue + {increase_9} - 7) / 0.001
+                            WHEN NEW.PartStat = 10 THEN ((unitValue + {increase_perc}) - 90) * 1000 / 10
+                            WHEN NEW.PartStat = 11 THEN (85 - (unitValue + {increase_perc})) * 1000 / 20
+                            WHEN NEW.PartStat = 12 THEN ((unitValue + {increase_perc}) - 70) * 1000 / 15
+                            WHEN NEW.PartStat = 13 THEN (unitValue + {increase_perc}) * 10
+                            WHEN NEW.PartStat = 14 THEN (85 - (unitValue + {increase_perc})) * 1000 / 15
+                            WHEN NEW.PartStat = 15 THEN ((unitValue + {increase_perc}) - 40) * 1000 / 30
+                            WHEN NEW.PartStat = 18 THEN ((unitValue + {increase_perc}) - 40) * 1000 / 30
+                            WHEN NEW.PartStat = 19 THEN ((unitValue + {increase_perc}) - 40) * 1000 / 30
                             ELSE NULL
                         END
                     WHERE DesignID = NEW.DesignID
-                    AND PartStat != 15;
+                    AND PartStat = NEW.PartStat AND PartStat != 15;
 
                     -- Actualizar Parts_TeamExpertise usando el valor actualizado en Parts_Designs_StatValues
                     UPDATE Parts_TeamExpertise
-                    SET Expertise = (SELECT Value FROM Parts_Designs_StatValues WHERE DesignID = NEW.DesignID AND PartStat = NEW.PartStat) * 0.8
+                    SET Expertise = (SELECT Value FROM Parts_Designs_StatValues WHERE DesignID = NEW.DesignID AND PartStat = NEW.PartStat) / 0.8
                     WHERE TeamID = (SELECT TeamID FROM Parts_Designs WHERE DesignID = NEW.DesignID)
                     AND PartType = (SELECT PartType FROM Parts_Designs WHERE DesignID = NEW.DesignID)
                     AND PartStat = NEW.PartStat;
@@ -745,5 +803,146 @@ class DatabaseUtils:
 
             cursor.execute(trigger_sql)
 
+        self.manage_weight_trigger(type,  cursor)
+        self.manage__instant_build_triggers(type,  cursor)
+        self.manage_research_triggers(type, cursor)
+        self.upgrade_factories(type, cursor)
         conn.commit()
         conn.close()
+
+    def manage__instant_build_triggers(self, type, cursor):
+        player_team = cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
+        trigger_name = f"instant_build_{difficulty_dict[type]['name']}"
+
+        cursor.execute("DROP TRIGGER IF EXISTS instant_build_insane")
+        cursor.execute("DROP TRIGGER IF EXISTS instant_build_impossible")
+        trigger_sql = ""
+        if type == 5:
+            trigger_sql = f"""
+                CREATE TRIGGER {trigger_name}
+                AFTER UPDATE ON Parts_Designs
+                FOR EACH ROW
+                WHEN NEW.DesignWork >= NEW.DesignWorkMax
+                AND NEW.TeamID != {player_team}
+                AND NEW.DayCompleted = -1
+                AND NEW.DayCreated != -1
+                BEGIN
+                    INSERT INTO Parts_Items (ItemID, DesignID, BuildWork, Condition, ManufactureNumber, ProjectID, AssociatedCar, InspectionState, LastEquippedCar)
+                    VALUES (
+                        (SELECT IFNULL(MAX(ItemID), 0) + 1 FROM Parts_Items), 
+                        NEW.DesignID,                                        
+                        CASE NEW.PartType                                    
+                            WHEN 3 THEN 2000
+                            WHEN 4 THEN 500
+                            WHEN 5 THEN 500
+                            WHEN 6 THEN 1500
+                            WHEN 7 THEN 1500
+                            WHEN 8 THEN 1500
+                            ELSE 1000 
+                        END,
+                        1,                                                   
+                        NEW.ManufactureCount + 1,                            
+                        NULL, NULL, 0, NULL                                  
+                    );
+
+                    
+                    UPDATE Parts_Designs
+                    SET ManufactureCount = NEW.ManufactureCount + 1
+                    WHERE DesignID = NEW.DesignID;
+                END;
+                """
+        elif type == 6:
+            trigger_sql = f"""
+                CREATE TRIGGER {trigger_name}
+                AFTER UPDATE ON Parts_Designs
+                FOR EACH ROW
+                WHEN NEW.DesignWork >= NEW.DesignWorkMax
+                AND NEW.TeamID != {player_team} 
+                AND NEW.DayCompleted = -1
+                AND NEW.DayCreated != -1
+                BEGIN
+                    -- Insertar una pieza en Parts_Items
+                    INSERT INTO Parts_Items (ItemID, DesignID, BuildWork, Condition, ManufactureNumber, ProjectID, AssociatedCar, InspectionState, LastEquippedCar)
+                    VALUES (
+                        (SELECT IFNULL(MAX(ItemID), 0) + 1 FROM Parts_Items),
+                        NEW.DesignID,                                        
+                        CASE NEW.PartType                                    
+                            WHEN 3 THEN 2000
+                            WHEN 4 THEN 500
+                            WHEN 5 THEN 500
+                            WHEN 6 THEN 1500
+                            WHEN 7 THEN 1500
+                            WHEN 8 THEN 1500
+                            ELSE 1000
+                        END,
+                        1,                                                   
+                        NEW.ManufactureCount + 1,                            
+                        NULL, NULL, 0, NULL                                  
+                    );
+
+                    INSERT INTO Parts_Items (ItemID, DesignID, BuildWork, Condition, ManufactureNumber, ProjectID, AssociatedCar, InspectionState, LastEquippedCar)
+                    VALUES (
+                        (SELECT IFNULL(MAX(ItemID), 0) + 1 FROM Parts_Items), 
+                        NEW.DesignID,                                        
+                        CASE NEW.PartType                                    
+                            WHEN 3 THEN 2000
+                            WHEN 4 THEN 500
+                            WHEN 5 THEN 500
+                            WHEN 6 THEN 1500
+                            WHEN 7 THEN 1500
+                            WHEN 8 THEN 1500
+                            ELSE 1000 
+                        END,
+                        1,                                                   
+                        NEW.ManufactureCount + 2,                            
+                        NULL, NULL, 0, NULL                                  
+                    );
+
+                    
+                    UPDATE Parts_Designs
+                    SET ManufactureCount = NEW.ManufactureCount + 2
+                    WHERE DesignID = NEW.DesignID;
+                END;
+                """
+            
+        if trigger_sql:
+            cursor.execute(trigger_sql)
+
+    
+    def manage_research_triggers(self, type, cursor):
+        player_team = cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
+        trigger_name = f"research_{difficulty_dict[type]['name']}"
+
+        cursor.execute("DROP TRIGGER IF EXISTS research_extra_hard")
+        cursor.execute("DROP TRIGGER IF EXISTS research_brutal")
+        cursor.execute("DROP TRIGGER IF EXISTS research_unfair")
+        cursor.execute("DROP TRIGGER IF EXISTS research_insane")
+        cursor.execute("DROP TRIGGER IF EXISTS research_impossible")
+
+        if type >= 2:
+            trigger_sql = ""
+            researchExp = difficulty_dict[type]["research"]
+            trigger_sql = f"""
+                CREATE TRIGGER {trigger_name}
+                AFTER INSERT ON Parts_Designs
+                FOR EACH ROW
+                WHEN NEW.TeamID != {player_team}
+                AND NEW.DayCompleted = -1
+                AND NEW.DayCreated != -1
+                AND NEW.ValidFrom != (SELECT CurrentSeason FROM Player_State)
+                BEGIN
+                    UPDATE Parts_Designs_StatValues
+                    SET ExpertiseGain = ExpertiseGain + {researchExp}
+                    WHERE DesignID = NEW.DesignID;
+                END;
+            """
+
+            cursor.execute(trigger_sql)
+
+    
+    def upgrade_factories(self, type, cursor):
+        player_team = cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
+        if type == 4:
+            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 34, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != {player_team} AND BuildingID < 34")
+        elif type == 6:
+            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 35, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != {player_team} AND BuildingID < 35")

@@ -1112,8 +1112,7 @@ function load_performance_graph(data) {
     teamPerformances[32] = [];
     let minValue = Number.POSITIVE_INFINITY;
     let maxValue = Number.NEGATIVE_INFINITY;
-    let first = data[0][0]
-    let performances = [first, ...data[0]]
+    let performances = [...data[0]]
     performances.forEach(race => {
         for (let team in race) {
             let value = race[team];

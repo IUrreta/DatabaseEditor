@@ -524,8 +524,12 @@ class CarAnalysisUtils:
 
     def get_performance_all_teams_season(self, custom_team=None):
         races = self.get_races_days()
+        first_day = self.get_first_day_season()
+        first_tuple = (0, first_day, 0)
+        races.insert(0, first_tuple)
         races_performances = []
         previous = None
+        print(races)
         for race_day in races:
             performances = self.get_performance_all_teams(race_day[1], previous, custom_team)
             races_performances.append(performances)
@@ -534,6 +538,20 @@ class CarAnalysisUtils:
         all_races = self.get_all_races()
         return races_performances, all_races
 
+    def get_first_day_season(self):
+        query = """
+        SELECT Number, COUNT(*) as Occurrences
+        FROM (
+            SELECT DayCreated as Number FROM Parts_Designs
+            UNION ALL
+            SELECT DayCompleted as Number FROM Parts_Designs
+        ) Combined
+        GROUP BY Number
+        ORDER BY Occurrences DESC
+        LIMIT 1;
+        """
+        first_day = self.cursor.execute(query).fetchone()[0]
+        return first_day
 
     def get_attributes_all_teams(self, custom_team=None):
         teams = {}
