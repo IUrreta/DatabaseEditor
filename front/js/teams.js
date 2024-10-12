@@ -320,12 +320,6 @@ function fillLevels(teamData) {
     }
     let engineManufacturer = teamData[23];
     document.querySelector(`#engineMenu a[data-engine='${engineManufacturer}']`).click();
-    if (teamCod === "1" || teamCod === "3" || teamCod === "4" || teamCod === "5"){
-        document.querySelector(".blocking-engine").classList.remove("d-none");
-    }
-    else{
-        document.querySelector(".blocking-engine").classList.add("d-none");
-    }
     let bars = document.querySelector(".pit-crew-details").querySelectorAll(".one-stat-progress");
     bars.forEach(function(elem){
         elem.classList = "one-stat-progress " + team_dict[teamCod] + "bar-primary";

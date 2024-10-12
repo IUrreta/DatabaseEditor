@@ -473,11 +473,18 @@ class DatabaseUtils:
     
     def fetch_engine_allocations(self):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+        cat = self.cursor.execute("SELECT TeamNameLocKey FROM Teams WHERE TeamID = 32").fetchone()
+
         teams = self.cursor.execute(f"SELECT  TeamID, EngineManufacturer FROM Parts_TeamHistory WHERE SeasonID = {day_season[1]}").fetchall()
         allocations = {}
         for team in teams:
             engineDesign = self.cursor.execute(f"SELECT EngineDesignID FROM Parts_Enum_EngineManufacturers WHERE Value = {team[1]}").fetchone()
             allocations[team[0]] = engineDesign[0]
+        if cat:
+            cat = cat[0]
+            if "STRING_LITERAL" not in cat:
+                allocations.pop(32, None)
+
 
         return allocations
     

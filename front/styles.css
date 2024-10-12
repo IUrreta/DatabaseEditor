@@ -38,6 +38,8 @@
   --unfair: #f09a37;
   --insane: #f06b37;
   --impossible: #f03737;
+  --modal-warning: #f03737a1;
+  --modal-warning-text: #f8bbbb;
 
   --mentality-enthusiastic: #c055e3;
   --mentality-positive: #10ffff;
@@ -343,6 +345,10 @@ body {
 
 .important-text{
   color: var(--new-primary-dark);
+}
+
+.danger-text{
+  color: var(--negative-general);
 }
 
 .save-button .save-label{
@@ -3481,6 +3487,7 @@ DRIVERS TABLE
   display: flex;
   flex-direction: row;
   gap: 10px;
+  margin-left: 20px;
 }
 
 .part-buttons{
@@ -3666,6 +3673,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 .part-performance-title{
   display: flex;
   justify-content: space-between;
+  position: relative;
 }
 
 .engine-performance-title{
@@ -6037,7 +6045,7 @@ input.disabled{
   margin-bottom: 30px;
 }
 
-.blocking-confidence, .blocking-engine{
+.blocking-confidence{
   background-color: var(--blur-color);
   z-index: 100;
   display: flex;
@@ -7018,7 +7026,7 @@ input::-webkit-inner-spin-button {
 
 .condition-container{
   position: absolute;
-  bottom: -9px;
+  bottom: 0px;
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -7030,6 +7038,7 @@ input::-webkit-inner-spin-button {
   background-color: var(--background);
   height: 2px;
   margin-right: 8px;
+  margin-top: 5px;
 }
 
 .condition-container-bar-progress{
@@ -7043,11 +7052,14 @@ input::-webkit-inner-spin-button {
   display: flex;
   flex-direction: row;
   font-size: 24px;
+  height: 30px;
 }
 
 .condition-container-buttons i{
   cursor: pointer;
   transition: transform 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
 }
 
 .condition-container-value{
@@ -8088,7 +8100,7 @@ input::-webkit-inner-spin-button {
 .mentality-changes{
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
   border-right: 2px solid var(--separator);
   width: 50%;
 }
@@ -8096,7 +8108,7 @@ input::-webkit-inner-spin-button {
 .difficulty-changes{
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 5px;
   padding-left: 10px;
   width: 50%;
 }
@@ -8214,4 +8226,38 @@ datalist .my-mark{
 .dif-warning.disabled{
   text-decoration: line-through;
   opacity: 0.63;
+}
+
+.modal-warning{
+  background-color: var(--modal-warning);
+  color: var(--modal-warning-text);
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.name-and-arrows{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.arrows{
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  font-size: 18px;
+  bottom: 8px;
+  gap: 4px;
+  left: -3px;
+}
+
+.arrows i{
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+  height: 12px;
+}
+
+.arrows i:hover{
+  transform: scale(1.05);
+  color: var(--new-primary);
 }

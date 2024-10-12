@@ -135,7 +135,7 @@ def manage_engine_change(cursor, teamID, info):
     with open(config_file_path, "r") as file:
         config = json.load(file)
 
-    if int(newEngineID) < 10:
+    if int(newEngineID) <= 10:
         new_engine_manufacturer = cursor.execute(f"SELECT Value FROM Parts_Enum_EngineManufacturers WHERE EngineDesignID = {newEngineID}").fetchone()
         cursor.execute(f"UPDATE Parts_TeamHistory SET EngineManufacturer = {new_engine_manufacturer[0]} WHERE TeamID = {teamID} AND SeasonID = {day_season[1]}")
         
@@ -168,6 +168,6 @@ def manage_engine_change(cursor, teamID, info):
             else:
                 cursor.execute(f"UPDATE Parts_Designs_StatValues SET Value = {value}, UnitValue = {engine_stats[stat]} WHERE PartStat = 15 AND DesignID = {oldGearboxID[0]}")
 
-    config["engine_allocations"][str(teamID)] = newEngineID
+    config["engine_allocations"][str(teamID)] = int(newEngineID)
     with open(config_file_path, "w") as file:
         json.dump(config, file, indent=4)

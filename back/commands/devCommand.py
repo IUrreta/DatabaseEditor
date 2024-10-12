@@ -9,7 +9,6 @@ class DevCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        print(self.message)
         if (self.message["type"] == "hard"):
             Command.dbutils.manage_weight_trigger("add")
             message_to_send = "Succesfully added hard difficulty"

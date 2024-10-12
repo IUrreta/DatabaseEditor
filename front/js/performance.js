@@ -851,6 +851,42 @@ document.querySelector("#performanceGraphButton").addEventListener("click", func
     viewingGraph = true;
 })
 
+document.querySelectorAll(".part-performance-title .bi-chevron-up").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        let title = elem.parentNode.parentNode
+        let list = title.parentNode.querySelector(".parts-list")
+        let partEditing = list.querySelector('.one-part-name.editing').parentNode.parentNode
+        let newPart = partEditing.previousElementSibling
+        if (!newPart) {
+            let lastValidPart = list.lastElementChild;
+            while (lastValidPart && lastValidPart.classList.contains('new-part')) {
+                lastValidPart = lastValidPart.previousElementSibling;
+            }
+            newPart = lastValidPart;
+        }
+        newPart.querySelector(".one-part-name").click()
+    })
+})
+
+document.querySelectorAll(".part-performance-title .bi-chevron-down").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        let title = elem.parentNode.parentNode;
+        let list = title.parentNode.querySelector(".parts-list");
+        let partEditing = list.querySelector('.one-part-name.editing').parentNode.parentNode;
+        let newPart = partEditing.nextElementSibling;
+
+        // Si el siguiente es 'new-part', nos movemos al primero
+        if (newPart && newPart.classList.contains('new-part')) {
+            newPart = list.firstElementChild;
+        }
+
+        // Simulamos el click en el nuevo elemento encontrado (si es válido)
+        if (newPart) {
+            newPart.querySelector(".one-part-name").click();
+        }
+    });
+});
+
 /**
  * Puts the bars of the engine to their appropiate values
  * @param {div} div element of the dom that contains the stats of the engine

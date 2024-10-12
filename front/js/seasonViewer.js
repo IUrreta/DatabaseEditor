@@ -937,6 +937,7 @@ function generateYearsMenu(actualYear) {
             manage_show_tables()
             socket.send(JSON.stringify(dataYear))
         })
+        
         let a2 = document.createElement("a");
         a2.textContent = year.toString();
         a2.classList = "dropdown-item"
@@ -982,6 +983,7 @@ function generateYearsMenu(actualYear) {
             socket.send(JSON.stringify(dataYear))
         })
     }
+    yearMenu.childNodes[0].click()
 }
 
 

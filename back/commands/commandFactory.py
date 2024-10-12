@@ -44,7 +44,6 @@ class CommandFactory:
         pass
         
     def create_command(self, message, client):
-        print(message)
         command_type = message["command"]
         if command_type in self.command_dict:
             return self.command_dict[command_type](message, client)

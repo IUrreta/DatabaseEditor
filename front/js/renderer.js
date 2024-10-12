@@ -1459,18 +1459,6 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
-    document.querySelector("#configButton").addEventListener("click",function () {
-        //wait 0.1 seconds to show the modal
-        setTimeout(function () {
-            let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'),{
-                keyboard: false
-            })
-            configDetailModal.show()
-        },320)
-
-
-    })
-
     //select all team-change-button
     document.querySelectorAll(".team-change-button").forEach(function (elem) {
         elem.querySelectorAll("a").forEach(function (a) {
@@ -1518,7 +1506,6 @@ document.addEventListener('DOMContentLoaded',function () {
             difficulty: difficultyValue,
             refurbish: refurbish,
             disabled: disabledList,
-            state: "changed"
         }
         if (customIconPath !== null) {
             data["icon"] = customIconPath
@@ -1536,48 +1523,13 @@ document.addEventListener('DOMContentLoaded',function () {
         document.querySelector(".bi-gear").classList.remove("hidden")
     })
 
-    document.querySelector("#cancelConfigButton").addEventListener("click",function () {
-        save = document.querySelector("#saveSelector").textContent
-        save = save.slice(0,-4)
-        let state;
-        let checked = document.querySelector("#ask").checked
-        if (checked) {
-            state = "neverask"
-        }
-        else {
-            state = "ask"
-        }
-        let alpha;
-        let alpine;
-        let alfa;
-        if (game_version === 2024) {
-            alpha = "visarb"
-            alpine = "alpine"
-            alfa = "stake"
-        }
-        else if (game_version === 2023) {
-            alpha = "alphatauri"
-            alpine = "alpine"
-            alfa = "alfa"
-        }
-        let data = {
-            command: "configUpdate",
-            save: save,
-            alphatauri: alpha,
-            alpine: alpine,
-            alfa: alfa,
-            state: state
-        }
-        socket.send(JSON.stringify(data))
-        document.querySelector(".bi-gear").classList.remove("hidden")
-    })
-
 
 
     /**
      * checks if a save and a script have been selected to unlock the tool
      */
     function check_selected() {
+        console.log(isSaveSelected,scriptSelected,divBlocking)
         if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
             document.getElementById("blockDiv").className = "d-none"
             divBlocking = 0;
@@ -1589,6 +1541,7 @@ document.addEventListener('DOMContentLoaded',function () {
      * Pills and their eventListeners
      */
     predictPill.addEventListener("click",function () {
+        console.log("AAAAAAAAAA")
         manageScripts("show","hide","hide","hide","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
@@ -1596,6 +1549,8 @@ document.addEventListener('DOMContentLoaded',function () {
     })
 
     h2hPill.addEventListener("click",function () {
+        console.log("AAAAAAAAAA")
+
         manageScripts("hide","show","hide","hide","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
@@ -1603,6 +1558,8 @@ document.addEventListener('DOMContentLoaded',function () {
     })
 
     viewPill.addEventListener("click",function () {
+        console.log("AAAAAAAAAA")
+
         manageScripts("hide","hide","show","hide","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
@@ -1610,6 +1567,8 @@ document.addEventListener('DOMContentLoaded',function () {
     })
 
     driverTransferPill.addEventListener("click",function () {
+        console.log("AAAAAAAAAA")
+
         manageScripts("hide","hide","hide","show","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
@@ -1619,6 +1578,8 @@ document.addEventListener('DOMContentLoaded',function () {
     })
 
     editStatsPill.addEventListener("click",function () {
+        console.log("AAAAAAAAAA")
+
         manageScripts("hide","hide","hide","hide","show","hide","hide","hide")
         scriptSelected = 1
         check_selected()
@@ -1626,6 +1587,8 @@ document.addEventListener('DOMContentLoaded',function () {
     })
 
     constructorsPill.addEventListener("click",function () {
+        console.log("AAAAAAAAAA")
+
         manageScripts("hide","hide","hide","hide","hide","hide","hide","show")
         scriptSelected = 1
         check_selected()
@@ -1634,6 +1597,8 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
     CalendarPill.addEventListener("click",function () {
+        console.log("AAAAAAAAAA")
+
         manageScripts("hide","hide","hide","hide","hide","show","hide","hide")
         scriptSelected = 1
         check_selected()

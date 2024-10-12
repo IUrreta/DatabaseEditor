@@ -173,6 +173,8 @@ class SaveSelectedCommand(Command):
                 "difficulty": 0,
                 "refurbish": 0
             }
+
+                    
          
             with open(file_path, "w") as json_file:
                 json.dump(data, json_file, indent=4)
