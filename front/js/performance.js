@@ -946,8 +946,6 @@ function add_custom_engine(name, stats) {
     caret.setAttribute("data-bs-target", `#${engineStatsId}`);
 
     for (key in engine_stats_dict) {
-        console.log(game_version)
-        console.log(key)
         if ((game_version === 2024 && key !== "11" && key !== "12") || game_version === 2023) {
                 let stat = document.createElement("div")
                 stat.classList.add("engine-performance-stat")
@@ -1056,7 +1054,6 @@ document.querySelector("#confirmCustomEnginesButton").addEventListener("click", 
         enginesData: enginesData
     }
 
-    console.log(data)
     socket.send(JSON.stringify(data))
 })
 

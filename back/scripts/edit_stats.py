@@ -198,6 +198,7 @@ def edit_freeze_mentality(state):
         cursor.execute("DROP TRIGGER IF EXISTS update_Opinion_After_Insert;")
         cursor.execute("DROP TRIGGER IF EXISTS update_Opinion_After_Update;")
         cursor.execute("DROP TRIGGER IF EXISTS clear_Staff_Mentality_Statuses;")
+        cursor.execute("DROP TRIGGER IF EXISTS clear_Staff_Mentality_AreaOpinions;")
         cursor.execute("DROP TRIGGER IF EXISTS clear_Staff_Mentality_Events;")
         cursor.execute("DROP TRIGGER IF EXISTS reset_Staff_State;")
 

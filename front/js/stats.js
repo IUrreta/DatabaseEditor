@@ -754,7 +754,6 @@ function manage_mentality_modifiers(element, mentality) {
         span = "<span class='mentality-modifier negative'>" + modifier + "</span>"
     }
     if (name_stat.textContent !== "GROWTH" && name_stat.textContent !== "AGRESSION"){
-        console.log("ENTRO")
         name_stat.innerHTML = name_stat.textContent + span
     }
 }

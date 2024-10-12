@@ -110,7 +110,7 @@ function place_drivers(driversArray) {
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
-    add_marquees()
+    add_marquees_transfers()
 
 }
 
@@ -156,27 +156,15 @@ function update_name(driverID, name) {
     normalDiv.dataset.name = name
 }
 
-function add_marquees() {
+function add_marquees_transfers() {
     setTimeout(function () {
-        document.querySelectorAll('.drivers-section .name-container').forEach(container => {
+        document.querySelectorAll('#driver_transfers .name-container').forEach(container => {
             let parentWidth = container.parentNode.clientWidth
             let containerWidth = container.scrollWidth
             if (containerWidth > parentWidth) {
                 let scrollAmount = (containerWidth - parentWidth);
                 container.style.setProperty('--scroll-amount', `${scrollAmount}px`);
                 container.classList.add('overflow');
-            }
-        });
-        document.querySelectorAll('.staff-section .name-container').forEach(container => {
-            let parentWidth = container.parentNode.clientWidth
-            let containerWidth = container.scrollWidth
-            if (containerWidth > parentWidth) {
-                let scrollAmount = (containerWidth - parentWidth)
-                container.style.setProperty('--scroll-amount', `${scrollAmount}px`);
-                container.classList.add('overflow');
-            }
-            else {
-                container.classList.remove("overflow")
             }
         });
     }, 100);
@@ -271,7 +259,7 @@ function place_staff(staffArray) {
 
 
     })
-    add_marquees()
+    add_marquees_transfers()
 }
 
 document.querySelectorAll("#stafftransfersMenu a").forEach(function (elem) {
@@ -280,7 +268,7 @@ document.querySelectorAll("#stafftransfersMenu a").forEach(function (elem) {
         let value = elem.dataset.value;
         document.querySelector("#staffTransfersDropdown").dataset.value = value;
         manage_staff_drivers(value)
-        add_marquees()
+        add_marquees_transfers()
     })
 })
 

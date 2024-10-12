@@ -40,6 +40,9 @@
   --impossible: #f03737;
   --modal-warning: #f03737a1;
   --modal-warning-text: #f8bbbb;
+  --engine-table-name: #878787;
+  --engine-table-name-hover: #575757;
+  --support-me: #fdee15;
 
   --mentality-enthusiastic: #c055e3;
   --mentality-positive: #10ffff;
@@ -547,12 +550,20 @@ a.bi-twitter-x:hover,
   color: #2ca4ee;
 }
 
-a.bi-heart:hover {
-  color: #ef51f5;
+a.bi-cup-hot-fill:hover {
+  color: var(--support-me);
 }
 
 a.bi-linkedin:hover {
   color: #0077b5 ;
+}
+
+a.bi-github:hover {
+  color: var(--text-selected);
+}
+
+i.bi-file-text:hover{
+  color: var(--white-general);
 }
 
 .status, .socials, .save-info{
@@ -2091,6 +2102,32 @@ DRIVERS TABLE
   color: var(--negative-text) !important;
 }
 
+.teams-table-row .teams-table-team{
+  width: 9.4%;
+  gap: 1px;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.teams-table-row .teams-table-team span{
+  line-height: 1.15;
+}
+
+.teams-table-engine-name{
+  color: var(--engine-table-name);
+  display: block;
+  text-transform: uppercase;
+  transition: color 0.3s;
+  font-size: 13px;
+}
+
+.teams-table-row:hover .teams-table-engine-name{
+  color: var(--engine-table-name-hover);
+}
+
 .drivers-table-row.odd:hover .first, .drivers-table-row:hover .first,
 .teams-table-row.odd:hover .first, .teams-table-row:hover .first{
   background-color: var(--table-first-light) !important;
@@ -2229,7 +2266,7 @@ DRIVERS TABLE
 }
 
 .teams-table-row.odd .teams-table-team, .teams-table-row.odd .teams-table-points, .teams-table-row.odd .teams-table-position{
-  background-color: var(--elements-hover)
+  background-color: var(--elements-hover);
 }
 
 .teams-table-row:hover .teams-table-team{
@@ -2430,11 +2467,6 @@ DRIVERS TABLE
   overflow: hidden;
 }
 
-.teams-table-row .teams-table-team{
-  width: 9.4%;
-  gap: 5px;
-  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
-}
 
 
 .drivers-table-points, .teams-table-points{

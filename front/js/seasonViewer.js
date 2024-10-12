@@ -35,6 +35,13 @@ let alpineReplace = "alpine"
 let alfaReplace = "alfa"
 let driverOrTeams = "drivers"
 let isYearSelected = false
+let engine_allocations;
+let engine_names = {
+    1: "Ferrari",
+    4: "Rbpt",
+    7: "Mercedes",
+    10: "Renault"
+}
 
 let driversTableLogosDict = {
     "stake": "logo-stake-table","audi": "logo-up-down-extra","alfa": "logo-merc-table","sauber": "logo-williams-table","visarb": "logo-up-down","hugo": "logo-stake-table",
@@ -326,50 +333,50 @@ function manage_teams_table_names() {
     names.forEach(function (name) {
         if (name.dataset.teamid === "5") {
             if (alpineReplace === "alpine") {
-                name.innerText = "ALPINE"
+                name.firstChild.innerText = "ALPINE"
             }
             else if (alpineReplace === "andretti") {
-                name.innerText = "ANDRETTI"
+                name.firstChild.innerText = "ANDRETTI"
             }
             else if (alpineReplace === "renault") {
-                name.innerText = "RENAULT"
+                name.firstChild.innerText = "RENAULT"
             }
             else if (alpineReplace === "lotus") {
-                name.innerText = "LOTUS"
+                name.firstChild.innerText = "LOTUS"
             }
         }
         else if (name.dataset.teamid === "8") {
             if (alphaReplace === "alphatauri") {
-                name.innerText = "ALPHA TAURI"
+                name.firstChild.innerText = "ALPHA TAURI"
             }
             else if (alphaReplace === "visarb") {
-                name.innerText = "VISA CASHAPP RB"
+                name.firstChild.innerText = "VISA CASHAPP RB"
             }
             else if (alphaReplace === "hugo") {
-                name.innerText = "HUGO"
+                name.firstChild.innerText = "HUGO"
             }
             else if (alphaReplace === "toyota") {
-                name.innerText = "TOYOTA"
+                name.firstChild.innerText = "TOYOTA"
             }
             else if (alphaReplace === "porsche") {
-                name.innerText = "PORSCHE"
+                name.firstChild.innerText = "PORSCHE"
             }
             else if (alphaReplace === "brawn") {
-                name.innerText = "BRAWN GP"
+                name.firstChild.innerText = "BRAWN GP"
             }
         }
         else if (name.dataset.teamid === "9") {
             if (alfaReplace === "alfa") {
-                name.innerText = "ALFA ROMEO"
+                name.firstChild.innerText = "ALFA ROMEO"
             }
             else if (alfaReplace === "audi") {
-                name.innerText = "AUDI"
+                name.firstChild.innerText = "AUDI"
             }
             else if (alfaReplace === "stake") {
-                name.innerText = "STAKE SAUBER"
+                name.firstChild.innerText = "STAKE SAUBER"
             }
             else if (alfaReplace === "sauber") {
-                name.innerText = "SAUBER"
+                name.firstChild.innerText = "SAUBER"
             }
         }
     })
@@ -518,9 +525,15 @@ function new_addTeam(teamData,name,pos,id) {
     let row = document.createElement("div")
     row.classList = "teams-table-row"
     let nameDiv = document.createElement("div");
+    let teamName = document.createElement("span")
+    let engineName = document.createElement("span")
+    engineName.classList = "teams-table-engine-name bold-font"
+    engineName.textContent = engine_names[engine_allocations[id]]
     nameDiv.dataset.teamid = id
     nameDiv.classList = "teams-table-team bold-font"
-    nameDiv.innerText = name.toUpperCase()
+    teamName.innerText = name.toUpperCase()
+    nameDiv.appendChild(teamName)
+    nameDiv.appendChild(engineName)
     row.appendChild(nameDiv)
     let posDiv = document.createElement("div")
     posDiv.classList = "teams-table-position bold-font"
@@ -636,6 +649,10 @@ function new_addDriver(driver,races_done,odd) {
     let nameDiv = document.createElement("div");
     nameDiv.classList = "drivers-table-driver"
     let name = driver[0].split(" ")
+    let nameContainer = document.createElement("div")
+    let marqueeContainer = document.createElement("div")
+    marqueeContainer.className = "marquee-wrapper"
+    nameContainer.className = "name-container"
     let spanName = document.createElement("span")
     let spanLastName = document.createElement("span")
     spanName.textContent = insert_space(name[0]) + " "
@@ -643,8 +660,10 @@ function new_addDriver(driver,races_done,odd) {
     spanLastName.classList.add("bold-font")
     spanLastName.dataset.teamid = driver[1]
     row.dataset.teamid = driver[1]
-    nameDiv.appendChild(spanName)
-    nameDiv.appendChild(spanLastName)
+    nameContainer.appendChild(spanName)
+    nameContainer.appendChild(spanLastName)
+    marqueeContainer.appendChild(nameContainer)
+    nameDiv.appendChild(marqueeContainer)
     manageColor(spanLastName,spanLastName)
     let posDiv = document.createElement("div")
     posDiv.classList = "drivers-table-position bold-font"
@@ -731,6 +750,20 @@ function new_addDriver(driver,races_done,odd) {
         }
     })
     data.appendChild(row)
+}
+
+function add_marquees_viewer() {
+    setTimeout(function () {
+        document.querySelectorAll('#season_viewer .name-container').forEach(container => {
+            let parentWidth = container.parentNode.clientWidth
+            let containerWidth = container.scrollWidth
+            if (containerWidth > parentWidth) {
+                let scrollAmount = (containerWidth - parentWidth);
+                container.style.setProperty('--scroll-amount', `${scrollAmount}px`);
+                container.classList.add('overflow');
+            }
+        });
+    }, 100);
 }
 
 function manageText(raceDiv) {
@@ -876,13 +909,7 @@ function hoverListeners() {
 
                 let logo = this.querySelector(".drivers-table-logo");
                 let new_src = logos_disc[this.dataset.teamid].slice(0,-4) + "2" + logo.src.slice(-4);
-                setTimeout(function () {
-                    logo.style.opacity = "0";
-                },100)
-                setTimeout(function () {
-                    logo.src = new_src
-                    logo.style.opacity = "1";
-                },100)
+                logo.src = new_src
             }
         });
         row.addEventListener("mouseleave",function () {
@@ -890,13 +917,7 @@ function hoverListeners() {
                 || (this.dataset.teamid === "9" && alfaReplace === "sauber") || (this.dataset.teamid === "8" && (alphaReplace === "brawn" || alphaReplace === "hugo" || alphaReplace === "toyota"))) {
                 let logo = this.querySelector(".drivers-table-logo");
                 let new_src = logos_disc[this.dataset.teamid].slice(0,-4) + logo.src.slice(-4);
-                setTimeout(function () {
-                    logo.style.opacity = "0";
-                },100)
-                setTimeout(function () {
-                    logo.src = new_src
-                    logo.style.opacity = "1";
-                },100)
+                logo.src = new_src
             }
         });
     });
@@ -936,6 +957,7 @@ function generateYearsMenu(actualYear) {
             isYearSelected = true
             manage_show_tables()
             socket.send(JSON.stringify(dataYear))
+            add_marquees_viewer()
         })
         
         let a2 = document.createElement("a");

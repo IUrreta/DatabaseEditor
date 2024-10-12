@@ -5,6 +5,14 @@ from scripts.countries import countries_dict
 import sqlite3
 
 difficulty_dict = {
+    0:{
+        "name": "default",
+        "perc": 0,
+        "7and8": 0,
+        "9": 0,
+        "reduction": 0,
+        "research": 0
+    },
     1:{
         "name": "reduced_weight",
         "perc": 0,

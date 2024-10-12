@@ -179,7 +179,7 @@ function editModeHandler() {
     if (document.querySelector(".clicked").dataset.driverid) {
         id = document.querySelector(".clicked").dataset.driverid;
     }
-    let driverName = getName(document.querySelector(".clicked"));
+    let driverName = getName(document.querySelector(".clicked .name-div-edit-stats"));
     document.querySelector(".clicked").dataset.stats = stats;
     let globalMentality = 2
     let mentality = -1
@@ -590,12 +590,16 @@ document.addEventListener('DOMContentLoaded',function () {
             manage_config(message.slice(1))
         },
         "24 Year": (message) => {
-            manage_config(message.slice(1))
+            manage_config(message.slice(1), true)
         },
         "Performance fetched": (message) => {
             load_performance(message[1])
             load_attributes(message[2])
-            order_by("overall")
+            //wait 100 ms
+            setTimeout(function () {
+                order_by("overall")
+            },100)
+
         },
         "Season performance fetched": (message) => {
             load_performance_graph(message.slice(1))
@@ -1118,12 +1122,12 @@ document.addEventListener('DOMContentLoaded',function () {
         configDetailModal.show()
     })
 
-    function manage_config(info) {
+    function manage_config(info, year_config=false) {
         document.querySelector(".bi-gear").classList.remove("hidden")
-        manage_config_content(info[0])
+        manage_config_content(info[0], year_config)
     }
 
-    function manage_config_content(info) {
+    function replace_all_teams(info) {
         let teams = info["teams"]
         alphaTauriReplace(teams["alphatauri"])
         alpineReplace(teams["alpine"])
@@ -1131,32 +1135,49 @@ document.addEventListener('DOMContentLoaded',function () {
         update_logo("alpine",logos_configs[teams["alpine"]],teams["alpine"])
         update_logo("alfa",logos_configs[teams["alfa"]],teams["alfa"])
         update_logo("alphatauri",logos_configs[teams["alphatauri"]],teams["alphatauri"])
-        if (info["icon"]) {
-            replace_custom_team_logo(info["icon"])
-            customIconPath = info["icon"]
-        }
-        if (info["primaryColor"]) {
-            replace_custom_team_color(info["primaryColor"],info["secondaryColor"])
-        }
-        if (info["mentalityFrozen"] === 1){
-            document.getElementById("freezeMentalityToggle").checked = true
-        }
-        else{
-            document.getElementById("freezeMentalityToggle").checked = false
-        }
-        if (info["refurbish"] === 1){
-            document.getElementById("refurbishingToggle").checked = true
-        }
-        else{
-            document.getElementById("refurbishingToggle").checked = false
-        }
-        update_mentality_span(info["mentalityFrozen"])
-        let difficultySlider = document.getElementById("difficultySlider")
-        difficultySlider.value = info["difficulty"]
-        update_difficulty_span(info["difficulty"])
-        manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
-        update_refurbish_span(info["refurbish"])
-        manage_disabled_list(info["disabled"])
+    }
+
+    function manage_config_content(info, year_config=false) {
+        replace_all_teams(info)
+        if (!year_config) {
+            if (info["icon"]) {
+                replace_custom_team_logo(info["icon"])
+                customIconPath = info["icon"]
+            }
+            if (info["primaryColor"]) {
+                replace_custom_team_color(info["primaryColor"],info["secondaryColor"])
+            }
+            if (info["mentalityFrozen"] === 1){
+                document.getElementById("freezeMentalityToggle").checked = true
+            }
+            else{
+                document.getElementById("freezeMentalityToggle").checked = false
+            }
+            if (info["refurbish"] === 1){
+                document.getElementById("refurbishingToggle").checked = true
+            }
+            else{
+                document.getElementById("refurbishingToggle").checked = false
+            }
+            engine_allocations = info["engine_allocations"]
+            //remove all engines from engines_names with key > 10
+            for (let key in engine_names) {
+                if (key > 10) {
+                    delete engine_names[key]
+                }
+            }
+            for (let key in info["engines"]) {
+                engine_names[key] = info["engines"][key]["name"]
+            }
+            update_mentality_span(info["mentalityFrozen"])
+            let difficultySlider = document.getElementById("difficultySlider")
+            difficultySlider.value = info["difficulty"]
+            console.log(info)
+            update_difficulty_span(info["difficulty"])
+            manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
+            update_refurbish_span(info["refurbish"])
+            manage_disabled_list(info["disabled"])
+    }
     }
 
     function manage_disabled_list(disabled_list){
@@ -1518,9 +1539,8 @@ document.addEventListener('DOMContentLoaded',function () {
         }
         socket.send(JSON.stringify(data))
         info = { teams: { alphatauri: alphatauri,alpine: alpine,alfa: alfa } }
-        manage_config_content(info)
+        replace_all_teams(info)
         reloadTables()
-        document.querySelector(".bi-gear").classList.remove("hidden")
     })
 
 
@@ -1558,12 +1578,11 @@ document.addEventListener('DOMContentLoaded',function () {
     })
 
     viewPill.addEventListener("click",function () {
-        console.log("AAAAAAAAAA")
-
         manageScripts("hide","hide","show","hide","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
+        add_marquees_viewer()
     })
 
     driverTransferPill.addEventListener("click",function () {
@@ -1574,12 +1593,10 @@ document.addEventListener('DOMContentLoaded',function () {
         check_selected()
         manageSaveButton(false)
         //wait 0.3s and then add the marquee
-        add_marquees()
+        add_marquees_transfers()
     })
 
     editStatsPill.addEventListener("click",function () {
-        console.log("AAAAAAAAAA")
-
         manageScripts("hide","hide","hide","hide","show","hide","hide","hide")
         scriptSelected = 1
         check_selected()
@@ -1587,8 +1604,6 @@ document.addEventListener('DOMContentLoaded',function () {
     })
 
     constructorsPill.addEventListener("click",function () {
-        console.log("AAAAAAAAAA")
-
         manageScripts("hide","hide","hide","hide","hide","hide","hide","show")
         scriptSelected = 1
         check_selected()
@@ -1597,8 +1612,6 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
     CalendarPill.addEventListener("click",function () {
-        console.log("AAAAAAAAAA")
-
         manageScripts("hide","hide","hide","hide","hide","show","hide","hide")
         scriptSelected = 1
         check_selected()
@@ -1630,6 +1643,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
     function update_difficulty_span(value){
         let span = document.querySelector("#difficultySpan")
+        console.log(value)
         let difficulty = difficulty_dict[parseInt(value)]
         if (difficulty === "reduced weight") {
             span.className = "option-state reduced-weight"
