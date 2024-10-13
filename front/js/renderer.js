@@ -192,10 +192,8 @@ function editModeHandler() {
         })
         globalMentality = Math.floor(globalMentality / 3)
     }
-    console.log(globalMentality)
     document.querySelector(".clicked").dataset.globalMentality = globalMentality
     let new_ovr = calculateOverall(stats,typeOverall, globalMentality);
-    console.log( document.querySelector(".clicked").childNodes[1], new_ovr)
     document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = ""
     if (new_ovr[1] !== new_ovr[0]) {
         document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr[1];
@@ -1172,7 +1170,6 @@ document.addEventListener('DOMContentLoaded',function () {
             update_mentality_span(info["mentalityFrozen"])
             let difficultySlider = document.getElementById("difficultySlider")
             difficultySlider.value = info["difficulty"]
-            console.log(info)
             update_difficulty_span(info["difficulty"])
             manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
             update_refurbish_span(info["refurbish"])
@@ -1549,7 +1546,6 @@ document.addEventListener('DOMContentLoaded',function () {
      * checks if a save and a script have been selected to unlock the tool
      */
     function check_selected() {
-        console.log(isSaveSelected,scriptSelected,divBlocking)
         if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
             document.getElementById("blockDiv").className = "d-none"
             divBlocking = 0;
@@ -1561,7 +1557,6 @@ document.addEventListener('DOMContentLoaded',function () {
      * Pills and their eventListeners
      */
     predictPill.addEventListener("click",function () {
-        console.log("AAAAAAAAAA")
         manageScripts("show","hide","hide","hide","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
@@ -1569,7 +1564,6 @@ document.addEventListener('DOMContentLoaded',function () {
     })
 
     h2hPill.addEventListener("click",function () {
-        console.log("AAAAAAAAAA")
 
         manageScripts("hide","show","hide","hide","hide","hide","hide","hide")
         scriptSelected = 1
@@ -1586,7 +1580,6 @@ document.addEventListener('DOMContentLoaded',function () {
     })
 
     driverTransferPill.addEventListener("click",function () {
-        console.log("AAAAAAAAAA")
 
         manageScripts("hide","hide","hide","show","hide","hide","hide","hide")
         scriptSelected = 1
@@ -1643,7 +1636,6 @@ document.addEventListener('DOMContentLoaded',function () {
 
     function update_difficulty_span(value){
         let span = document.querySelector("#difficultySpan")
-        console.log(value)
         let difficulty = difficulty_dict[parseInt(value)]
         if (difficulty === "reduced weight") {
             span.className = "option-state reduced-weight"

@@ -79,8 +79,6 @@ function place_drivers(driversArray) {
         newDiv.dataset.teamid = driver[2];
         let name = driver[0].split(" ")
         let nameContainer = document.createElement("div")
-        let marqueeContainer = document.createElement("div")
-        marqueeContainer.className = "marquee-wrapper"
         nameContainer.className = "name-container"
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
@@ -89,8 +87,7 @@ function place_drivers(driversArray) {
         spanLastName.classList.add("bold-font")
         nameContainer.appendChild(spanName)
         nameContainer.appendChild(spanLastName)
-        marqueeContainer.appendChild(nameContainer)
-        newDiv.appendChild(marqueeContainer)
+        newDiv.appendChild(nameContainer)
         newDiv.classList.add(team_dict[driver[2]] + "-transparent")
         if (driver["team_future"] !== -1) {
             add_future_team_noti(newDiv, driver["team_future"])
@@ -162,9 +159,27 @@ function add_marquees_transfers() {
             let parentWidth = container.parentNode.clientWidth
             let containerWidth = container.scrollWidth
             if (containerWidth > parentWidth) {
-                let scrollAmount = (containerWidth - parentWidth);
-                container.style.setProperty('--scroll-amount', `${scrollAmount}px`);
-                container.classList.add('overflow');
+                let name = container.firstChild
+
+                let text = name.textContent.trim();
+                let words = text.split(' ');
+
+                if (words.length >= 1) {
+                    let longestWordIndex = 0;
+                    let longestWordLength = 0;
+
+                    words.forEach((word, index) => {
+                        if (word.length > longestWordLength) {
+                            longestWordLength = word.length;
+                            longestWordIndex = index;
+                        }
+                    });
+
+                    words[longestWordIndex] = words[longestWordIndex].charAt(0) + ".";
+
+                    name.textContent = words.join(' ');
+                }
+
             }
         });
     }, 100);

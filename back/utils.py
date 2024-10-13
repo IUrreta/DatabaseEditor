@@ -351,7 +351,7 @@ class DatabaseUtils:
         pole_time = self.cursor.execute(f"SELECT MIN(FastestLap) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {raceID} AND QualifyingStage = 3 AND FastestLap IS NOT 0").fetchone()[0]
         driver_time = self.cursor.execute(f"SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1  AND RaceID = {raceID} AND QualifyingStage = {QStage} AND DriverID = {driverID}").fetchone()[0]
         if driver_time < pole_time:
-            time_difference = "NQ"
+            time_difference = "NR"
         else:
             time_difference = round(driver_time - pole_time, 2)
             time_difference = f"+{time_difference}s"

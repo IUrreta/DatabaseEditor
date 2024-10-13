@@ -916,10 +916,10 @@ function add_custom_engine(name, stats) {
     let generalEngineDiv = document.createElement("div")
     let engineTitle = document.createElement("input")
     engineTitle.type = "text"
-    if (name !== ""){
+    if (name !== "") {
         engineTitle.value = name
     }
-    else{
+    else {
         engineTitle.value = "New Engine"
     }
     let engineCount = document.querySelectorAll(".custom-engines-div > div").length;
@@ -947,72 +947,72 @@ function add_custom_engine(name, stats) {
 
     for (key in engine_stats_dict) {
         if ((game_version === 2024 && key !== "11" && key !== "12") || game_version === 2023) {
-                let stat = document.createElement("div")
-                stat.classList.add("engine-performance-stat")
-                stat.dataset.attribute = key
-                let statTitle = document.createElement("div")
-                statTitle.classList.add("part-performance-stat-title")
-                statTitle.innerText = engine_stats_dict[key]
-                let stat_number = document.createElement("div")
-                stat_number.classList.add("stat-number")
-                stat_number.innerHTML = '<i class="bi bi-dash-lg"></i> <input type="text" class="custom-input-number"> <i class="bi bi-plus-lg"></i>'
-                let input = stat_number.querySelector(".custom-input-number");
-                let bar = document.createElement("div")
-                bar.classList.add("engine-performance-bar")
-                let bar_progress = document.createElement("div")
-                bar_progress.classList.add("engine-performance-progress")
-                if (stats[key] !== undefined) {
-                    input.value = stats[key] + " %";
-                    bar_progress.style.width = stats[key] + "%";
-                }
-                else{
-                    input.value = "50.0 %";
-                }
-                stat.appendChild(statTitle)
-                stat.appendChild(stat_number)
-                bar.appendChild(bar_progress)
-                stat.appendChild(bar)
-                engineStats.appendChild(stat)
+            let stat = document.createElement("div")
+            stat.classList.add("engine-performance-stat")
+            stat.dataset.attribute = key
+            let statTitle = document.createElement("div")
+            statTitle.classList.add("part-performance-stat-title")
+            statTitle.innerText = engine_stats_dict[key]
+            let stat_number = document.createElement("div")
+            stat_number.classList.add("stat-number")
+            stat_number.innerHTML = '<i class="bi bi-dash-lg"></i> <input type="text" class="custom-input-number"> <i class="bi bi-plus-lg"></i>'
+            let input = stat_number.querySelector(".custom-input-number");
+            let bar = document.createElement("div")
+            bar.classList.add("engine-performance-bar")
+            let bar_progress = document.createElement("div")
+            bar_progress.classList.add("engine-performance-progress")
+            if (stats[key] !== undefined) {
+                input.value = stats[key] + " %";
+                bar_progress.style.width = stats[key] + "%";
+            }
+            else {
+                input.value = "50.0 %";
+            }
+            stat.appendChild(statTitle)
+            stat.appendChild(stat_number)
+            bar.appendChild(bar_progress)
+            stat.appendChild(bar)
+            engineStats.appendChild(stat)
 
-                let less = stat_number.querySelector(".bi-dash-lg");
-                let intervalId;
-                less.addEventListener('mousedown', function () {
-                    const input = this.nextElementSibling;
+            let less = stat_number.querySelector(".bi-dash-lg");
+            let intervalId;
+            less.addEventListener('mousedown', function () {
+                const input = this.nextElementSibling;
+                updateValue(input, -0.5);
+                bar_progress.style.width = input.value.split(' ')[0] + "%";
+                intervalId = setInterval(() => {
                     updateValue(input, -0.5);
                     bar_progress.style.width = input.value.split(' ')[0] + "%";
-                    intervalId = setInterval(() => {
-                        updateValue(input, -0.5);
-                        bar_progress.style.width = input.value.split(' ')[0] + "%";
-                    }, 100);
-                });
-            
-                less.addEventListener('mouseup', function () {
-                    clearInterval(intervalId);
-                });
-            
-                less.addEventListener('mouseleave', function () {
-                    clearInterval(intervalId);
-                });
+                }, 100);
+            });
 
-                let plus = stat_number.querySelector(".bi-plus-lg");
+            less.addEventListener('mouseup', function () {
+                clearInterval(intervalId);
+            });
 
-                plus.addEventListener('mousedown', function () {
-                    const input = this.previousElementSibling;
+            less.addEventListener('mouseleave', function () {
+                clearInterval(intervalId);
+            });
+
+            let plus = stat_number.querySelector(".bi-plus-lg");
+
+            plus.addEventListener('mousedown', function () {
+                const input = this.previousElementSibling;
+                updateValue(input, 0.5);
+                bar_progress.style.width = input.value.split(' ')[0] + "%";
+                intervalId = setInterval(() => {
                     updateValue(input, 0.5);
                     bar_progress.style.width = input.value.split(' ')[0] + "%";
-                    intervalId = setInterval(() => {
-                        updateValue(input, 0.5);
-                        bar_progress.style.width = input.value.split(' ')[0] + "%";
-                    }, 100);
-                });
+                }, 100);
+            });
 
-                plus.addEventListener('mouseup', function () {
-                    clearInterval(intervalId);
-                });
+            plus.addEventListener('mouseup', function () {
+                clearInterval(intervalId);
+            });
 
-                plus.addEventListener('mouseleave', function () {
-                    clearInterval(intervalId);
-                });
+            plus.addEventListener('mouseleave', function () {
+                clearInterval(intervalId);
+            });
 
         }
     }
@@ -1073,7 +1073,7 @@ function load_custom_engines(data) {
         engineOption.dataset.engine = key
         engineOption.href = "#"
         engineDropdown.appendChild(engineOption)
-        engineOption.addEventListener("click", function(){
+        engineOption.addEventListener("click", function () {
             let engineid = engineOption.dataset.engine;
             let engine = engineOption.innerText;
             document.querySelector("#engineLabel").innerText = engine;
@@ -1081,7 +1081,7 @@ function load_custom_engines(data) {
         })
 
     }
-    
+
 }
 
 
@@ -1198,6 +1198,14 @@ function createPerformanceChart(labelsArray) {
                 interaction: {
                     mode: 'index'
                 },
+                layout: {
+                    padding: {
+                        top: 25,
+                        right: 25,
+                        boottom: 20,
+                        left: 10
+                    }
+                },
                 scales: {
                     x: {
                         grid: {
@@ -1220,6 +1228,9 @@ function createPerformanceChart(labelsArray) {
                             color: "#dedde6",
                             font: {
                                 family: "Formula1Bold"
+                            },
+                            callback: function (value) {
+                                return value.toFixed(1); // Mostrar solo un decimal
                             }
                         }
 
