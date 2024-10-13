@@ -9,6 +9,7 @@ let game_version = 2023;
 let custom_team = false;
 let customIconPath = null;
 let firstShow = false;
+let configCopy;
 
 
 const batFilePath = path.join(__dirname,'../back/startBack.bat');
@@ -1122,6 +1123,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
     function manage_config(info, year_config=false) {
         document.querySelector(".bi-gear").classList.remove("hidden")
+        configCopy = info
         manage_config_content(info[0], year_config)
     }
 
@@ -1814,5 +1816,9 @@ document.addEventListener('DOMContentLoaded',function () {
             }
         })
     }
+
+    document.querySelector("#cancelDetailsButton").addEventListener("click",function () {
+        manage_config_content(configCopy[0], false)
+    })
 
 });

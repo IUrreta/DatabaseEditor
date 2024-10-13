@@ -22,15 +22,15 @@ let abreviations_dict = {
     32: "CUS"
 }
 
-let engine_stats_dict = {
-    10: "Power",
-    6: "Fuel efficiency",
-    11: "Performance threshold",
-    12: "Performance loss",
-    14: "Engine durability",
-    18: "ERS durability",
-    19: "Gearbox durability",
-}
+let engine_stats_dict = new Map([
+    [10, "Power"],
+    [6, "Fuel efficiency"],
+    [11, "Performance threshold"],
+    [12, "Performance loss"],
+    [14, "Engine durability"],
+    [18, "ERS durability"],
+    [19, "Gearbox durability"]
+]);
 
 let teamSelected;
 let engineSelected;
@@ -39,6 +39,7 @@ let performanceGraph;
 let teamsEngine = "teams"
 let viewingGraph = true;
 let actualMaxDesign = 0;
+let customEnginesCopy;
 
 function normalizeData(data) {
     let values = Object.values(data);
@@ -945,14 +946,14 @@ function add_custom_engine(name, stats) {
     caret.setAttribute("data-bs-toggle", "collapse");
     caret.setAttribute("data-bs-target", `#${engineStatsId}`);
 
-    for (key in engine_stats_dict) {
-        if ((game_version === 2024 && key !== "11" && key !== "12") || game_version === 2023) {
+    for (let [key, value] of engine_stats_dict) {
+        if ((game_version === 2024 && key !== 11 && key !== 12) || game_version === 2023) {
             let stat = document.createElement("div")
             stat.classList.add("engine-performance-stat")
             stat.dataset.attribute = key
             let statTitle = document.createElement("div")
             statTitle.classList.add("part-performance-stat-title")
-            statTitle.innerText = engine_stats_dict[key]
+            statTitle.innerText = value
             let stat_number = document.createElement("div")
             stat_number.classList.add("stat-number")
             stat_number.innerHTML = '<i class="bi bi-dash-lg"></i> <input type="text" class="custom-input-number"> <i class="bi bi-plus-lg"></i>'
@@ -1059,6 +1060,7 @@ document.querySelector("#confirmCustomEnginesButton").addEventListener("click", 
 
 
 function load_custom_engines(data) {
+    customEnginesCopy = data
     let engines = data[0]
     let engineDropdown = document.querySelector("#engineMenu")
     engineDropdown.querySelectorAll("a.custom-engine").forEach(function (elem) {
@@ -1083,6 +1085,10 @@ function load_custom_engines(data) {
     }
 
 }
+
+document.querySelector("#cancelCustomEnginesButton").addEventListener("click", function () {
+    load_custom_engines(customEnginesCopy)
+})
 
 
 

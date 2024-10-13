@@ -5807,7 +5807,7 @@ input.disabled{
   display: flex;
   position: absolute;
   right: 6px;
-  top: 5px;
+  top: 6px;
   justify-content: flex-end;
 }
 
