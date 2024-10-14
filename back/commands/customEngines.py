@@ -22,7 +22,6 @@ class customEnginesCommand(Command):
 
         new_engines = {}
 
-        print(engine_list)
         for engine in engine_list:
             new_engines[engine] = engine_list[engine]
 

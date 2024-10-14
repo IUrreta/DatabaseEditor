@@ -27,7 +27,7 @@ difficulty_dict = {
         "7and8": 0.016,
         "9": 0.008,
         "reduction": 0,
-        "research": 4
+        "research": 12
     },
     3: {
         "name": "brutal",
@@ -35,7 +35,7 @@ difficulty_dict = {
         "7and8": 0.022,
         "9": 0.011,
         "reduction": 0.05,
-        "research": 11
+        "research": 25
     },
     4: {
         "name": "unfair",
@@ -43,7 +43,7 @@ difficulty_dict = {
         "7and8": 0.029,
         "9": 0.015,
         "reduction": 0.11,
-        "research": 16
+        "research": 35
     },
     5: {
         "name": "insane",
@@ -51,7 +51,7 @@ difficulty_dict = {
         "7and8": 0.04,
         "9": 0.02,
         "reduction": 0.16,
-        "research": 25
+        "research": 45
     },
     6: {
         "name": "impossible",
@@ -59,7 +59,7 @@ difficulty_dict = {
         "7and8": 0.05,
         "9": 0.025,
         "reduction": 0.2,
-        "research": 35
+        "research": 56
     }
 }
 

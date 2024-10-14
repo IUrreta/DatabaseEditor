@@ -791,6 +791,18 @@ input[type="checkbox"]:checked {
   align-items: center;
 }
 
+.texts-and-clear{
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.texts-and-clear .fit-button{
+  padding: 0;
+}
+
 .H2H-text span.text-main{
   color: var( --new-primary);
 }

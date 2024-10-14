@@ -817,6 +817,10 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
 
 })
 
+document.querySelector("#clearAll").addEventListener("click", function () {
+    resetH2H()
+})
+
 function resetH2H() {
     h2hCount = 0;
     graphCount = 0;
