@@ -6594,8 +6594,7 @@ input::-webkit-inner-spin-button {
 }
 
 .normal-driver:hover {
-  background-color: var(--text-general-transparent);
-  color: var(--negative-text);
+  background-color: var(--table-hover);
 }
 
 .normal-driver.clicked .surname{
@@ -8011,7 +8010,7 @@ input::-webkit-inner-spin-button {
   border-radius: 5px;
 }
 
-#gameChanges{
+.game-changes{
   display: flex;
   flex-direction: row;
 }

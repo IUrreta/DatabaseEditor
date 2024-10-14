@@ -313,8 +313,7 @@
         </div>
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-              >Close</button>
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -329,7 +328,7 @@
           <h3 class="modal-title bold-font">Save settings</h3>
         </div>
         <div class="modal-body custom-body">
-          <div class="pb-4 pe-3">
+          <div class="pb-2 pe-3">
             <ul class="nav nav-pills">
               <li class="nav-item">
                 <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"
@@ -347,10 +346,13 @@
               </li>
             </ul>
           </div>
-          <div id="editorChanges">  
+          <div id="editorChanges">
             <div class="main-team-changes mb-3" id="teamChanges">
               <div class="d-flex" style="gap: 7px;">
-                <div>Select the team changes you want to have for this save file</div>
+                <div>Please note that this changes are <span class="important-text bold-font">VISUAL AND FOR THE EDITOR
+                    ONLy</span>, they will
+                  <span class="important-text bold-font">NOT APPLY TO YOUR SAVE IN-GAME</span>
+                </div>
               </div>
               <div class="team-change mt-2">
                 <div class="bold-font logo-and-name" style="width: 33%;">
@@ -391,9 +393,9 @@
                         <div class="ms-2">BRAWN GP</div>
                       </a>
                     </ul>
-  
+
                   </div>
-  
+
                 </div>
               </div>
               <div class="team-change mt-2">
@@ -427,15 +429,15 @@
                         <div class="ms-1">LOTUS</div>
                       </a>
                     </ul>
-  
+
                   </div>
-  
+
                 </div>
               </div>
               <div class="team-change mt-2">
                 <div class="bold-font logo-and-name" style="width: 33%;">
-                  <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable"  id="alfaModalLogo">
-                  <div class="team-name"  id="alfaModalName">ALFA ROMEO</div>
+                  <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable" id="alfaModalLogo">
+                  <div class="team-name" id="alfaModalName">ALFA ROMEO</div>
                 </div>
                 <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
                 <div class="team-change-button" id="alfaReplaceButton">
@@ -463,9 +465,9 @@
                         <div class="ms-1">AUDI</div>
                       </a>
                     </ul>
-  
+
                   </div>
-  
+
                 </div>
               </div>
             </div>
@@ -503,64 +505,75 @@
                     <input class="color-reader" type="text" id="secondaryReader">
                   </div>
                 </div>
-  
+
               </div>
             </div>
           </div>
-          <div id="gameChanges" class="d-none">
-            <div class="mentality-changes">
-              <div class="only-mentality">
-                <div class="modal-subtitle bold-font">Mentality <span class="option-state default" id="mentalitySpan">Unfrozen</span></div>
-                <div class="modal-text">
-                  Freezing the mentality means that all staff and driver's mentality will stay at neutral at all times.
-                </div>
-                <div class="mentality-selector">
-                  <label class="form-check-label" >Normal</label>
-                  <div class="form-check form-switch freeze-mentality">
-                    <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="freezeMentalityToggle">
+          <div class="d-flex" style="gap: 7px;">
+            <div class="d-none" id="gameChanges">
+              <div class="pb-3">Please be aware that if you <span class="important-text bold-font">switch teams after changing the
+                  difficulty</span> or the refurbish toggle,
+                you will need to <span class="important-text bold-font">save changes again</span> for the difficulty to
+                adjust correctly. If you don't, you may benefit from the advantages granted to the AI.
+                Additionally, if you change the name of the save file, you will need to reconfigure this part again for the editor to be synchronized again.
+              </div>
+              <div class="game-changes">
+                <div class="mentality-changes">
+                  <div class="only-mentality">
+                    <div class="modal-subtitle bold-font">Mentality <span class="option-state default" id="mentalitySpan">Unfrozen</span></div>
+                    <div class="modal-text">
+                      Freezing the mentality means that all staff and driver's mentality will stay at neutral at all times.
+                    </div>
+                    <div class="mentality-selector">
+                      <label class="form-check-label" >Normal</label>
+                      <div class="form-check form-switch freeze-mentality">
+                        <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="freezeMentalityToggle">
+                      </div>
+                      <label class="form-check-label" style="margin-left: -10px;">Frozen</label>
+                    </div>
                   </div>
-                  <label class="form-check-label" style="margin-left: -10px;">Frozen</label>
-                </div>
-              </div>
-              <div class="only-refurbish">
-                <div class="modal-subtitle bold-font" id="refurbishTitle">Refurbish <span class="option-state default" id="refurbishSpan">Default</span></div>
-                <div class="modal-text">
-                  Enabling it fixes the AI not refurbishing their facilities, even in low conditions.
-                </div>
-                <div class="mentality-selector">
-                  <label class="form-check-label">Default</label>
-                  <div class="form-check form-switch freeze-mentality">
-                    <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="refurbishingToggle">
+                  <div class="only-refurbish">
+                    <div class="modal-subtitle bold-font" id="refurbishTitle">Refurbish <span class="option-state default" id="refurbishSpan">Default</span></div>
+                    <div class="modal-text">
+                      Enabling it fixes the AI not refurbishing their facilities, even in low conditions.
+                    </div>
+                    <div class="mentality-selector">
+                      <label class="form-check-label">Default</label>
+                      <div class="form-check form-switch freeze-mentality">
+                        <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="refurbishingToggle">
+                      </div>
+                      <label class="form-check-label" style="margin-left: -10px;">Active</label>
+                    </div>
                   </div>
-                  <label class="form-check-label" style="margin-left: -10px;">Active</label>
                 </div>
-              </div>
-            </div>
-            <div class="difficulty-changes">
-              <div class="modal-subtitle bold-font">Game difficulty <span class="option-state default" id="difficultySpan">Default</span></div>
-              <div class="difficulty-warnings">
-                <div class="dif-warning default" id="defaultDif">In-game difficulty</div>
-                <div class="dif-warning extra-hard" id="lightDif">lightweight parts</div>
-                <div class="dif-warning extra-hard" id="researchDif">ResearchBoost</div>
-                <div class="dif-warning extra-hard" id="statDif">Stat boost</div>
-                <div class="dif-warning brutal" id="designTimeDif">Design times reduced</div>
-                <div class="dif-warning unfair" id="factoryDif">Factory level 4</div>
-                <div class="dif-warning insane" id="buildDif">+1 part when design completed</div>
-              </div>
-              <div class="modal-text">
-                Changes the difficulty of the development race against the AI.
-                <br>
-                Only recommended if you find Hard development difficulty not challenging.
-                <br>
-                Click on any item on the list to remove/add it.
-              </div>
-              <div class="mentality-selector">
-                <label class="form-check-label">Default</label>
-                <input type="range" class="form-range" id="difficultySlider" min="0" max="6" step="1" value="0">
-                <label class="form-check-label">Impossible</label>
+                <div class="difficulty-changes">
+                  <div class="modal-subtitle bold-font">Game difficulty <span class="option-state default" id="difficultySpan">Default</span></div>
+                  <div class="difficulty-warnings">
+                    <div class="dif-warning default" id="defaultDif">In-game difficulty</div>
+                    <div class="dif-warning extra-hard" id="lightDif">lightweight parts</div>
+                    <div class="dif-warning extra-hard" id="researchDif">ResearchBoost</div>
+                    <div class="dif-warning extra-hard" id="statDif">Stat boost</div>
+                    <div class="dif-warning brutal" id="designTimeDif">Design times reduced</div>
+                    <div class="dif-warning unfair" id="factoryDif">Factory level 4</div>
+                    <div class="dif-warning insane" id="buildDif">+1 part when design completed</div>
+                  </div>
+                  <div class="modal-text">
+                    Changes the difficulty of the development race against the AI.
+                    <br>
+                    Only recommended if you find Hard development difficulty not challenging.
+                    <br>
+                    Click on any item on the list to remove/add it.
+                  </div>
+                  <div class="mentality-selector">
+                    <label class="form-check-label">Default</label>
+                    <input type="range" class="form-range" id="difficultySlider" min="0" max="6" step="1" value="0">
+                    <label class="form-check-label">Impossible</label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
         </div>
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
@@ -627,8 +640,7 @@
         </div>
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-              >Close</button>
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -659,8 +671,7 @@
         </div>
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-              >Close</button>
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -678,13 +689,17 @@
             The performance shown in the graphs as well as in the bar chart is the <span
               class="important-text bold-font">LATEST DESIGNS's </span> car performance
             from that team, which does <span class="important-text bold-font">NOT </span>mean that the parts fitted in
-            the car are the last ones designed. Drops in performance will most likely be because of <span class="important-text bold-font"> WEIGHT</span>.
+            the car are the last ones designed. Drops in performance will most likely be because of <span
+              class="important-text bold-font"> WEIGHT</span>.
             <br>
-            If you want to see the performance of <span class="important-text bold-font">EVERY CAR</span> with exactly their 
-            <span class="important-text bold-font">FITTED PARTS</span>, click on the <i class="bi bi-people-fill"></i> icon.
+            If you want to see the performance of <span class="important-text bold-font">EVERY CAR</span> with exactly
+            their
+            <span class="important-text bold-font">FITTED PARTS</span>, click on the <i class="bi bi-people-fill"></i>
+            icon.
           </div>
           <div class="mt-2" style="gap: 7px;">
-            With the <span class="extra-hard bold-font">lightweight parts</span> difficulty modifier enabled, you will stop seeing drops in performance
+            With the <span class="extra-hard bold-font">lightweight parts</span> difficulty modifier enabled, you will
+            stop seeing drops in performance
             and there will be less variability in the development of the cars.
           </div>
           <div class="mt-2" style="gap: 7px;">
@@ -693,14 +708,14 @@
             calculated based on the other selectable car attributes.
           </div>
           <div class="mt-2 modal-warning" style="gap: 7px;">
-            Please take into consideration that if you make a specific default engine not be used by any team, when selecting it
-            again as an engine supplier, its stats will be the same as other default engine, not its original ones. 
+            Please take into consideration that if you make a specific default engine not be used by any team, when
+            selecting it
+            again as an engine supplier, its stats will be the same as other default engine, not its original ones.
           </div>
         </div>
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-              >Close</button>
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -744,8 +759,7 @@
         </div>
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-              >Close</button>
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -780,8 +794,7 @@
         </div>
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-             >Close</button>
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -799,14 +812,14 @@
             The <span class="important-text bold-font">Board confidence </span> is only editable for the player's team.
           </div>
           <div class="mt-2 modal-warning" style="gap: 7px;">
-            Please take into consideration that if you make a specific default engine not be used by any team, when selecting it
-            again as an engine supplier, its stats will be the same as other default engine, not its original ones. 
+            Please take into consideration that if you make a specific default engine not be used by any team, when
+            selecting it
+            again as an engine supplier, its stats will be the same as other default engine, not its original ones.
           </div>
         </div>
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-              >Close</button>
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
             <div class="dropdown-line"></div>
           </div>
         </div>
@@ -861,8 +874,7 @@
         </div>
         <div class="modal-footer custom-footer">
           <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-              >Close</button>
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
             <div class="dropdown-line">
             </div>
           </div>
@@ -1199,7 +1211,7 @@
           </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="carpill">
-              <img src="../assets/images/car.png" alt="Car Icon" id="specialCarIcon"class="pill-icon">
+              <img src="../assets/images/car.png" alt="Car Icon" id="specialCarIcon" class="pill-icon">
               <label class="bold-font pill-label">PERFORMANCE</label>
               <div class="pill-line"></div>
             </a>
@@ -2916,7 +2928,7 @@
               </div>
               <div class="second-component" id="engineSelector">
                 <div class="component-subtitle bold-font">Engine</div>
-                
+
                 <div style="max-width: max-content;">
                   <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
                     id="engineButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
@@ -3108,8 +3120,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3135,8 +3149,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3162,8 +3178,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3189,8 +3207,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3216,8 +3236,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3243,8 +3265,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3282,8 +3306,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3309,8 +3335,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3336,8 +3364,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3363,8 +3393,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3390,8 +3422,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3417,8 +3451,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3456,8 +3492,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3483,8 +3521,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3510,8 +3550,10 @@
                     <i class="bi bi-chevron-right"></i>
                     <div class="facility-refurbish">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" />
-                      </svg>                                          
+                        <path fill-rule="evenodd"
+                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </div>
                     <div class="condition-container">
                       <div class="condition-container-bar">
@@ -3603,7 +3645,8 @@
             <div class="fit-button" id="fitButton">Fit latest designs</div>
           </div>
           <div class="title-buttons-left d-none" style="top: 15px;" id="customEnginesButtonContainer">
-            <div class="fit-button" id="customEngines" data-bs-toggle="modal" data-bs-target="#enginesModal">Custom engines</div>
+            <div class="fit-button" id="customEngines" data-bs-toggle="modal" data-bs-target="#enginesModal">Custom
+              engines</div>
           </div>
           <div class="pb-3 pe-3" style="padding-top: 1.1rem; position: absolute; right: 0;">
             <ul class="nav nav-pills">
@@ -3648,7 +3691,8 @@
                     </div>
                   </div>
                 </div>
-                <div class="number-and-team team bold-font team-performance fe-transparent" data-teamid="1" data-teamname="Ferrari">
+                <div class="number-and-team team bold-font team-performance fe-transparent" data-teamid="1"
+                  data-teamname="Ferrari">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
@@ -3656,11 +3700,14 @@
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
-                      <div class="performance-bar-progress fe" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                      <div class="performance-bar-progress fe" data-overall="0" data-top_speed="0" data-acceleration="0"
+                        data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
+                        data-engine_cooling="0"></div>
                     </div>
                   </div>
                 </div>
-                <div class="number-and-team team bold-font team-performance me-transparent" data-teamid="4" data-teamname="Mercedes">
+                <div class="number-and-team team bold-font team-performance me-transparent" data-teamid="4"
+                  data-teamname="Mercedes">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
@@ -3668,11 +3715,14 @@
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
-                      <div class="performance-bar-progress me" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                      <div class="performance-bar-progress me" data-overall="0" data-top_speed="0" data-acceleration="0"
+                        data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
+                        data-engine_cooling="0"></div>
                     </div>
                   </div>
                 </div>
-                <div class="number-and-team team bold-font team-performance al-transparent" data-teamid="5" data-teamname="Alpine" id="alpineTeam">
+                <div class="number-and-team team bold-font team-performance al-transparent" data-teamid="5"
+                  data-teamname="Alpine" id="alpineTeam">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
@@ -3680,11 +3730,14 @@
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
-                      <div class="performance-bar-progress al" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                      <div class="performance-bar-progress al" data-overall="0" data-top_speed="0" data-acceleration="0"
+                        data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
+                        data-engine_cooling="0"></div>
                     </div>
                   </div>
                 </div>
-                <div class="number-and-team team bold-font team-performance mc-transparent" data-teamid="2" data-teamname="McLaren">
+                <div class="number-and-team team bold-font team-performance mc-transparent" data-teamid="2"
+                  data-teamname="McLaren">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
@@ -3692,11 +3745,14 @@
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
-                      <div class="performance-bar-progress mc" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                      <div class="performance-bar-progress mc" data-overall="0" data-top_speed="0" data-acceleration="0"
+                        data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
+                        data-engine_cooling="0"></div>
                     </div>
                   </div>
                 </div>
-                <div class="number-and-team team bold-font team-performance af-transparent" data-teamid="9" data-teamname="Alfa Romeo">
+                <div class="number-and-team team bold-font team-performance af-transparent" data-teamid="9"
+                  data-teamname="Alfa Romeo">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
@@ -3704,11 +3760,14 @@
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
-                      <div class="performance-bar-progress af" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                      <div class="performance-bar-progress af" data-overall="0" data-top_speed="0" data-acceleration="0"
+                        data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
+                        data-engine_cooling="0"></div>
                     </div>
                   </div>
                 </div>
-                <div class="number-and-team team bold-font team-performance as-transparent" data-teamid="10" data-teamname="Aston Martin">
+                <div class="number-and-team team bold-font team-performance as-transparent" data-teamid="10"
+                  data-teamname="Aston Martin">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
@@ -3716,11 +3775,14 @@
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
-                      <div class="performance-bar-progress as" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                      <div class="performance-bar-progress as" data-overall="0" data-top_speed="0" data-acceleration="0"
+                        data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
+                        data-engine_cooling="0"></div>
                     </div>
                   </div>
                 </div>
-                <div class="number-and-team team bold-font team-performance ha-transparent" data-teamid="7" data-teamname="Haas">
+                <div class="number-and-team team bold-font team-performance ha-transparent" data-teamid="7"
+                  data-teamname="Haas">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
@@ -3728,11 +3790,14 @@
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
-                      <div class="performance-bar-progress ha" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                      <div class="performance-bar-progress ha" data-overall="0" data-top_speed="0" data-acceleration="0"
+                        data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
+                        data-engine_cooling="0"></div>
                     </div>
                   </div>
                 </div>
-                <div class="number-and-team team bold-font team-performance at-transparent" data-teamid="8" data-teamname="Alpha Tauri" id="alphaTauriTeam">
+                <div class="number-and-team team bold-font team-performance at-transparent" data-teamid="8"
+                  data-teamname="Alpha Tauri" id="alphaTauriTeam">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
@@ -3740,11 +3805,14 @@
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
-                      <div class="performance-bar-progress at" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                      <div class="performance-bar-progress at" data-overall="0" data-top_speed="0" data-acceleration="0"
+                        data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
+                        data-engine_cooling="0"></div>
                     </div>
                   </div>
                 </div>
-                <div class="number-and-team team bold-font team-performance wi-transparent" data-teamid="6" data-teamname="Williams">
+                <div class="number-and-team team bold-font team-performance wi-transparent" data-teamid="6"
+                  data-teamname="Williams">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
@@ -3752,11 +3820,14 @@
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
-                      <div class="performance-bar-progress wi" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                      <div class="performance-bar-progress wi" data-overall="0" data-top_speed="0" data-acceleration="0"
+                        data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
+                        data-engine_cooling="0"></div>
                     </div>
                   </div>
                 </div>
-                <div class="number-and-team team bold-font team-performance ct-transparent" data-teamid="32" id="customTeamPerformance" data-teamname="Custom Team">
+                <div class="number-and-team team bold-font team-performance ct-transparent" data-teamid="32"
+                  id="customTeamPerformance" data-teamname="Custom Team">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
@@ -3764,10 +3835,12 @@
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
-                      <div class="performance-bar-progress ct" data-overall="0" data-top_speed="0" data-acceleration="0" data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0" data-engine_cooling="0"></div>
+                      <div class="performance-bar-progress ct" data-overall="0" data-top_speed="0" data-acceleration="0"
+                        data-low_speed="0" data-medium_speed="0" data-high_speed="0" data-brake_cooling="0"
+                        data-engine_cooling="0"></div>
                     </div>
                   </div>
-                </div>                
+                </div>
               </div>
               <div class="main-columns-drag-section main-resizable d-none" id="carsDiv">
                 <div class="nunmber-and-car car bold-font car-performance rb-transparent" data-teamid="3"
