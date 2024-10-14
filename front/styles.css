@@ -2170,7 +2170,7 @@ DRIVERS TABLE
 }
 
 
-.drivers-table-row.odd:hover .fastest, .drivers-table-row:hover .fastest{
+.drivers-table-row.odd:hover .fastest, .drivers-table-row:hover .fastest, .teams-table-row.odd:hover .fastest, .teams-table-row:hover .fastest{
   color: #d204e0 !important;
 }
 
@@ -2424,7 +2424,7 @@ DRIVERS TABLE
 }
 
 .logo-ferrari-table{
-  padding: 4px 1px;
+  padding: 4px 3px;
 }
 
 .logo-porsche-table{
@@ -6087,7 +6087,7 @@ input.disabled{
   padding-top: 4px;
 }
 
-.one-stat-panel:hover span{
+.one-stat-panel:hover span:not(.mentality-modifier){
   color: var(--white-general);
 }
 

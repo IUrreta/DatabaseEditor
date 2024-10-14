@@ -509,27 +509,31 @@
           </div>
           <div id="gameChanges" class="d-none">
             <div class="mentality-changes">
-              <div class="modal-subtitle bold-font">Mentality <span class="option-state default" id="mentalitySpan">Unfrozen</span></div>
-              <div class="modal-text">
-                Freezing the mentality means that all staff and driver's mentality will stay at neutral at all times.
-              </div>
-              <div class="mentality-selector">
-                <label class="form-check-label" >Normal</label>
-                <div class="form-check form-switch freeze-mentality">
-                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="freezeMentalityToggle">
+              <div class="only-mentality">
+                <div class="modal-subtitle bold-font">Mentality <span class="option-state default" id="mentalitySpan">Unfrozen</span></div>
+                <div class="modal-text">
+                  Freezing the mentality means that all staff and driver's mentality will stay at neutral at all times.
                 </div>
-                <label class="form-check-label" style="margin-left: -10px;">Frozen</label>
-              </div>
-              <div class="modal-subtitle bold-font" id="refurbishTitle">Refurbish <span class="option-state default" id="refurbishSpan">Default</span></div>
-              <div class="modal-text">
-                Enabling it fixes the AI not refurbishing their facilities, even in low conditions.
-              </div>
-              <div class="mentality-selector">
-                <label class="form-check-label">Default</label>
-                <div class="form-check form-switch freeze-mentality">
-                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="refurbishingToggle">
+                <div class="mentality-selector">
+                  <label class="form-check-label" >Normal</label>
+                  <div class="form-check form-switch freeze-mentality">
+                    <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="freezeMentalityToggle">
+                  </div>
+                  <label class="form-check-label" style="margin-left: -10px;">Frozen</label>
                 </div>
-                <label class="form-check-label" style="margin-left: -10px;">Active</label>
+              </div>
+              <div class="only-refurbish">
+                <div class="modal-subtitle bold-font" id="refurbishTitle">Refurbish <span class="option-state default" id="refurbishSpan">Default</span></div>
+                <div class="modal-text">
+                  Enabling it fixes the AI not refurbishing their facilities, even in low conditions.
+                </div>
+                <div class="mentality-selector">
+                  <label class="form-check-label">Default</label>
+                  <div class="form-check form-switch freeze-mentality">
+                    <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="refurbishingToggle">
+                  </div>
+                  <label class="form-check-label" style="margin-left: -10px;">Active</label>
+                </div>
               </div>
             </div>
             <div class="difficulty-changes">

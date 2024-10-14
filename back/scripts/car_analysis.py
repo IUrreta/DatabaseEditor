@@ -529,7 +529,6 @@ class CarAnalysisUtils:
         races.insert(0, first_tuple)
         races_performances = []
         previous = None
-        print(races)
         for race_day in races:
             performances = self.get_performance_all_teams(race_day[1], previous, custom_team)
             races_performances.append(performances)

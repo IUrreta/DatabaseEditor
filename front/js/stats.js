@@ -115,16 +115,15 @@ function place_drivers_editStats(driversArray) {
             let mentalitydiff = document.querySelector(".mentality-change-ovr")
             if (diff > 0) {
                 mentalitydiff.textContent = "+" + diff
-                mentalitydiff.classList.add("positive")
+                mentalitydiff.className = "mentality-change-ovr positive"
             }
             else if (diff < 0) {
                 mentalitydiff.textContent = diff
-                mentalitydiff.classList.add("negative")
+                mentalitydiff.className = "mentality-change-ovr negative"
             }
             else{
                 mentalitydiff.textContent = ""
-                mentalitydiff.classList.remove("positive")
-                mentalitydiff.classList.remove("negative")
+                mentalitydiff.className = "mentality-change-ovr"
             }
         });
         document.getElementById(divPosition).appendChild(newDiv)

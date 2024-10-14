@@ -214,16 +214,15 @@ function editModeHandler() {
     let mentalitydiff = document.querySelector(".mentality-change-ovr")
     if (diff > 0) {
         mentalitydiff.textContent = "+" + diff
-        mentalitydiff.classList.add("positive")
+        mentalitydiff.className = "mentality-change-ovr positive"
     }
     else if (diff < 0) {
         mentalitydiff.textContent = diff
-        mentalitydiff.classList.add("negative")
+        mentalitydiff.className = "mentality-change-ovr negative"
     }
     else{
         mentalitydiff.textContent = ""
-        mentalitydiff.classList.remove("positive")
-        mentalitydiff.classList.remove("negative")
+        mentalitydiff.className = "mentality-change-ovr"
     }
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     let age = document.querySelector(".actual-age").textContent.split(" ")[1];
@@ -774,6 +773,8 @@ document.addEventListener('DOMContentLoaded',function () {
             document.querySelectorAll(".engine24").forEach(function (elem) {
                 elem.classList.add("d-none")
             })
+            document.querySelector(".only-mentality").classList.remove("d-none")
+
         }
         else if (year[0] === "23") {
             resizeWindowToHeight("10teams")
@@ -795,6 +796,7 @@ document.addEventListener('DOMContentLoaded',function () {
             document.querySelectorAll(".engine24").forEach(function (elem) {
                 elem.classList.remove("d-none")
             })
+            document.querySelector(".only-mentality").classList.add("d-none")
         }
         replace_modal_teams(game_version)
     }
