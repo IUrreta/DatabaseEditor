@@ -27,7 +27,7 @@ difficulty_dict = {
         "7and8": 0.016,
         "9": 0.008,
         "reduction": 0,
-        "research": 12
+        "research": 28
     },
     3: {
         "name": "brutal",
@@ -35,7 +35,7 @@ difficulty_dict = {
         "7and8": 0.022,
         "9": 0.011,
         "reduction": 0.05,
-        "research": 25
+        "research": 45
     },
     4: {
         "name": "unfair",
@@ -43,7 +43,7 @@ difficulty_dict = {
         "7and8": 0.029,
         "9": 0.015,
         "reduction": 0.11,
-        "research": 35
+        "research": 65
     },
     5: {
         "name": "insane",
@@ -51,7 +51,7 @@ difficulty_dict = {
         "7and8": 0.04,
         "9": 0.02,
         "reduction": 0.16,
-        "research": 45
+        "research": 78
     },
     6: {
         "name": "impossible",
@@ -59,7 +59,7 @@ difficulty_dict = {
         "7and8": 0.05,
         "9": 0.025,
         "reduction": 0.2,
-        "research": 56
+        "research": 90
     }
 }
 
@@ -670,7 +670,6 @@ class DatabaseUtils:
         return cadena
     
     def manage_weight_trigger(self, type, cursor, disabled):
-        player_team = cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
         cursor.execute("DROP TRIGGER IF EXISTS reduced_weight_normal")
         cursor.execute("DROP TRIGGER IF EXISTS reduced_weight_extreme")
         trigger_sql = ""
@@ -684,20 +683,20 @@ class DatabaseUtils:
                         SELECT TeamID
                         FROM Parts_Designs
                         WHERE DesignID = NEW.DesignID
-                    ) != {player_team}
+                    ) != (SELECT TeamID FROM Player)
                     AND NEW.PartStat = 15
                     BEGIN
                         UPDATE Parts_Designs_StatValues
                         SET 
-                            Value = 100,
+                            Value = 200,
                             unitValue = (
                                 SELECT CASE PD.PartType
-                                    WHEN 3 THEN 4070
-                                    WHEN 4 THEN 1525
-                                    WHEN 5 THEN 1945
-                                    WHEN 6 THEN 3025
-                                    WHEN 7 THEN 2390
-                                    WHEN 8 THEN 1940
+                                    WHEN 3 THEN 4340
+                                    WHEN 4 THEN 1800
+                                    WHEN 5 THEN 2240
+                                    WHEN 6 THEN 3300
+                                    WHEN 7 THEN 2680
+                                    WHEN 8 THEN 2180
                                     ELSE value
                                 END
                                 FROM Parts_Designs PD
@@ -717,7 +716,7 @@ class DatabaseUtils:
                         SELECT TeamID
                         FROM Parts_Designs
                         WHERE DesignID = NEW.DesignID
-                    ) != {player_team}
+                    ) != (SELECT TeamID FROM Player)
                     AND NEW.PartStat = 15
                     BEGIN
                         UPDATE Parts_Designs_StatValues
@@ -749,7 +748,6 @@ class DatabaseUtils:
     def manage_difficulty_triggers(self, type, disabledList):
         conn = sqlite3.connect("../result/main.db")
         cursor = conn.cursor()
-        player_team = cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
         
         cursor.execute("DROP TRIGGER IF EXISTS difficulty_extra_hard")
         cursor.execute("DROP TRIGGER IF EXISTS difficulty_brutal")
@@ -772,7 +770,7 @@ class DatabaseUtils:
                     FROM Parts_Designs
                     WHERE DesignID = NEW.DesignID
                     AND ValidFrom = (SELECT CurrentSeason FROM Player_State)
-                ) != {player_team}
+                ) != (SELECT TeamID FROM Player)
                 AND NEW.PartStat != 15
                 BEGIN
                     -- Actualizar Parts_Designs_StatValues
@@ -830,7 +828,7 @@ class DatabaseUtils:
                         FROM Parts_Designs
                         WHERE DesignID = NEW.DesignID
                         AND ValidFrom = (SELECT CurrentSeason FROM Player_State)
-                    ) != {player_team}
+                    ) != (SELECT TeamID FROM Player)
                     AND NEW.PartStat != 15
                     BEGIN
                         -- Actualizar Parts_Designs para ajustar DesignWork
@@ -853,7 +851,6 @@ class DatabaseUtils:
         conn.close()
 
     def manage__instant_build_triggers(self, type, cursor, disabled):
-        player_team = cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
         trigger_name = f"instant_build_{difficulty_dict[type]['name']}"
 
         cursor.execute("DROP TRIGGER IF EXISTS instant_build_insane")
@@ -866,7 +863,7 @@ class DatabaseUtils:
                     AFTER UPDATE ON Parts_Designs
                     FOR EACH ROW
                     WHEN NEW.DesignWork >= NEW.DesignWorkMax
-                    AND NEW.TeamID != {player_team}
+                    AND NEW.TeamID != (SELECT TeamID FROM Player)
                     AND NEW.DayCompleted = -1
                     AND NEW.DayCreated != -1
                     BEGIN
@@ -900,7 +897,7 @@ class DatabaseUtils:
                     AFTER UPDATE ON Parts_Designs
                     FOR EACH ROW
                     WHEN NEW.DesignWork >= NEW.DesignWorkMax
-                    AND NEW.TeamID != {player_team} 
+                    AND NEW.TeamID != (SELECT TeamID FROM Player)
                     AND NEW.DayCompleted = -1
                     AND NEW.DayCreated != -1
                     BEGIN
@@ -953,7 +950,6 @@ class DatabaseUtils:
 
     
     def manage_research_triggers(self, type, cursor, disabled):
-        player_team = cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
         trigger_name = f"research_{difficulty_dict[type]['name']}"
 
         cursor.execute("DROP TRIGGER IF EXISTS research_extra_hard")
@@ -966,36 +962,38 @@ class DatabaseUtils:
             trigger_sql = ""
             researchExp = difficulty_dict[type]["research"]
             trigger_sql = f"""
-                CREATE TRIGGER {trigger_name}
-                AFTER INSERT ON Parts_Designs
-                FOR EACH ROW
-                WHEN NEW.TeamID != {player_team}
-                AND NEW.DayCompleted = -1
-                AND NEW.DayCreated != -1
-                AND NEW.ValidFrom != (SELECT CurrentSeason FROM Player_State)
-                BEGIN
-                    UPDATE Parts_Designs_StatValues
-                    SET ExpertiseGain = ExpertiseGain + {researchExp}
-                    WHERE DesignID = NEW.DesignID;
-                END;
-            """
+                    CREATE TRIGGER {trigger_name}
+                    AFTER UPDATE ON Parts_Designs
+                    FOR EACH ROW
+                    WHEN NEW.DesignWork >= NEW.DesignWorkMax
+                    AND NEW.TeamID != (SELECT TeamID FROM Player)
+                    AND NEW.ValidFrom = (SELECT CurrentSeason FROM Player_State) + 1
+                    BEGIN
+                        UPDATE Parts_Designs_StatValues
+                        SET ExpertiseGain = ExpertiseGain + {researchExp}
+                        WHERE DesignID = NEW.DesignID;
+
+                        UPDATE Parts_TeamExpertise
+                        SET NextSeasonExpertise = NextSeasonExpertise + {researchExp/2}
+                        WHERE TeamID = NEW.TeamID
+                        AND PartType = NEW.PartType;
+                    END;
+                """
 
             cursor.execute(trigger_sql)
 
     
     def upgrade_factories(self, type, cursor, disabled):
-        player_team = cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
         if type == 4 and disabled == 0:
-            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 34, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != {player_team} AND BuildingID < 34")
+            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 34, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 34")
         elif type == 6 and disabled == 0:
-            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 35, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != {player_team} AND BuildingID < 35")
+            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 35, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 35")
         elif type < 4:
-            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 33, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != {player_team} AND BuildingID < 35")
+            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 33, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 35")
 
     def manage_refurbish_trigger(self, type):
         conn = sqlite3.connect("../result/main.db")
         cursor = conn.cursor()
-        player_team = self.cursor.execute("SELECT TeamID FROM Player").fetchone()[0]
         self.cursor.execute("DROP TRIGGER IF EXISTS refurbish_fix")
         if type == 1:
             trigger_sql = f"""
@@ -1006,7 +1004,7 @@ class DatabaseUtils:
                     UPDATE Buildings_HQ
                     SET DegradationValue = 1
                     WHERE DegradationValue < 0.7
-                    AND TeamID != {player_team};
+                    AND TeamID != (SELECT TeamID FROM Player);
                 END;
             """
             cursor.execute(trigger_sql)
