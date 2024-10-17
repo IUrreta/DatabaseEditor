@@ -27,13 +27,14 @@ When I developed those scripts, more specifically the driver transfers script fo
 ![image](https://github.com/user-attachments/assets/52cb1e3c-3a6c-402b-9b20-96582a99b9d9)
 
 4. Edit driver numbers
-5. Editing all staff (including drivers') stats, plus mentality and marketability, and **RENAME** any of them
+5. Editing all staff (including drivers') stats, plus mentality and marketability, and **RENAME** any of them (including abreviations for drivers)
 
 ![image](https://github.com/user-attachments/assets/3adcd9d5-9dca-45f4-b811-1e93d726f5ab)
 
 6. Customize your calendar, including weather of races
    
 ![image](https://github.com/user-attachments/assets/256dae43-fdc6-4261-9913-1d93b61eb5bc)
+
 
 7. Make your save **HARDER** with the new difficulty presets (customizable)
 8. **FREEZE THE MENTALITY** if you don't want that system interfering with your gameplay
@@ -43,11 +44,9 @@ When I developed those scripts, more specifically the driver transfers script fo
 
 10. Edit every stat from all car parts from all teams on the grid
 
-![image](https://github.com/user-attachments/assets/9c8f934a-b4cc-46d2-a7ad-6feb85e3cb98)
-
 11. View every car performance  across the season and compare each car attribute
 
-![image](https://github.com/user-attachments/assets/27052ffa-5930-430b-b7e9-407813af4703)
+![image](https://github.com/user-attachments/assets/2495b9dc-671d-4da0-8648-c9dcf37c9914)
 
 12. Edit the performance and durability of any of the 4 engines suppliers
    
@@ -60,6 +59,7 @@ When I developed those scripts, more specifically the driver transfers script fo
 14. Edit all 10 teams' facilities, money, budget available from the budget cap, long and short term objectives, enigne supplier and pit crew attributes
    
 ![image](https://github.com/user-attachments/assets/896b10ed-3b24-4bbc-a88c-df619e685206)
+
 
 15. Keep track of past seasons with a wikipedia-style table for drivers and teams championships
     
