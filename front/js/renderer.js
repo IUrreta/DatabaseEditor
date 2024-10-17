@@ -351,7 +351,6 @@ function performanceModeHandler() {
             let loadout1 = elem.dataset.loadout1;
             let loadout2 = elem.dataset.loadout2;
             let stats = {};
-            console.log(part, loadout1, loadout2)
             elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
                 if (stat.dataset.attribute !== "-1") {
                     let statNum = stat.dataset.attribute;
@@ -1640,7 +1639,6 @@ document.addEventListener('DOMContentLoaded',function () {
     });
 
     function update_difficulty_span(value){
-        console.log(value)
         let span = document.querySelector("#difficultySpan")
         let difficulty = difficulty_dict[parseInt(value)]
         if (difficulty === "reduced weight") {

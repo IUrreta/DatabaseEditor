@@ -380,10 +380,8 @@ class CarAnalysisUtils:
 
     def fit_loadouts_dict(self, loadouts_dict, team_id):
         for part in loadouts_dict:
-            print(part)
             design_1 = loadouts_dict[part][0]
             design_2 = loadouts_dict[part][1]
-            print(design_1, design_2)
             fitted_design_1 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 1").fetchone()
             if design_1 is not None:
                 if fitted_design_1[0] is not None and fitted_design_1[1] is not None:
