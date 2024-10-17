@@ -51,7 +51,7 @@ def fetch_teamData(teamID, save):
         pit_dict[stat[0]] = round(stat[1], 2)
     
 
-    config_file_path = f"../configs/{save.split(".")[0]}_config.json"
+    config_file_path = f'../configs/{save.split(".")[0]}_config.json'
     with open(config_file_path, "r") as file:
         config = json.load(file)
 

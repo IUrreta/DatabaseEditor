@@ -11,6 +11,14 @@ class customEnginesCommand(Command):
     async def execute(self):
         engine_list = self.message["enginesData"]
         self.process_engine_list(engine_list)
+        engines = await self.dbutils.get_custom_engines_list(self.message["saveSelected"])
+        engines_list = ["Custom Engines fetched", engines]
+        data_json_engines = json.dumps(engines_list)
+        await self.send_message_to_client(data_json_engines)
+        info = ["Custom engines saved"]
+        data_json_info = json.dumps(info)
+        await self.send_message_to_client(data_json_info)
+    
 
 
     def process_engine_list(self, engine_list):
