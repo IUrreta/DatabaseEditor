@@ -11,9 +11,12 @@ document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem
     elem.addEventListener("click", function () {
         document.querySelector("#teamButton").innerText = elem.querySelector(".team-menu-name").innerText;
         teamCod = elem.dataset.teamid;
+        let saveSelector = document.getElementById('saveSelector');
+        let saveSelected = saveSelector.innerHTML;
         let data = {
             command: "teamRequest",
             teamID: teamCod,
+            saveSelected: saveSelected
         }
 
         socket.send(JSON.stringify(data))
@@ -317,12 +320,6 @@ function fillLevels(teamData) {
     }
     let engineManufacturer = teamData[23];
     document.querySelector(`#engineMenu a[data-engine='${engineManufacturer}']`).click();
-    if (teamCod === "1" || teamCod === "3" || teamCod === "4" || teamCod === "5"){
-        document.querySelector(".blocking-engine").classList.remove("d-none");
-    }
-    else{
-        document.querySelector(".blocking-engine").classList.add("d-none");
-    }
     let bars = document.querySelector(".pit-crew-details").querySelectorAll(".one-stat-progress");
     bars.forEach(function(elem){
         elem.classList = "one-stat-progress " + team_dict[teamCod] + "bar-primary";

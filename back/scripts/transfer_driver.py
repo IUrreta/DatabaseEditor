@@ -64,7 +64,7 @@ class TransferUtils:
         self.cursor = self.conn.cursor()
 
     def hire_driver(self, type, driverID, teamID, position, salary=None, starting_bonus=None, race_bonus=None, race_bonus_pos=None, year_end=None, year_iteration="24"):
-        if type == "auto":
+        if type == "auto" or salary == "" or starting_bonus == "":
             salary, year_end, position, starting_bonus, race_bonus, race_bonus_pos = self.get_params_auto_contract(driverID, teamID, position, year_iteration=year_iteration)
         
         day = self.cursor.execute("SELECT Day FROM Player_State").fetchone()[0]

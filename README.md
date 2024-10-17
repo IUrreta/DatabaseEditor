@@ -29,38 +29,47 @@ When I developed those scripts, more specifically the driver transfers script fo
 4. Edit driver numbers
 5. Editing all staff (including drivers') stats, plus mentality and marketability, and **RENAME** any of them (including abreviations for drivers)
 
-![image](https://github.com/user-attachments/assets/97845351-d882-4316-ab49-f3411424be57)
+![image](https://github.com/user-attachments/assets/3adcd9d5-9dca-45f4-b811-1e93d726f5ab)
 
 6. Customize your calendar, including weather of races
    
 ![image](https://github.com/user-attachments/assets/256dae43-fdc6-4261-9913-1d93b61eb5bc)
 
-7. Edit every stat from all designs from all teams on the grid, and manage the inventory from every part and every team for any car
 
-![image](https://github.com/user-attachments/assets/4161e37f-6374-4bd2-b0a6-0d29920a1b92)
+7. Make your save **HARDER** with the new difficulty presets (customizable)
+8. **FREEZE THE MENTALITY** if you don't want that system interfering with your gameplay
+9. Fix the AI **NOT REFURBISHING** their facilities
 
+![image](https://github.com/user-attachments/assets/cf5559b4-c002-4d0a-9f71-8c473dc12999)
 
-8. View every car performance  across the season and compare each car attribute
+10. Edit every stat from all car parts from all teams on the grid
+
+11. View every car performance  across the season and compare each car attribute
 
 ![image](https://github.com/user-attachments/assets/2495b9dc-671d-4da0-8648-c9dcf37c9914)
 
-9. Edit the performance and durability of any of the 4 engines suppliers
+12. Edit the performance and durability of any of the 4 engines suppliers
    
 ![image](https://github.com/user-attachments/assets/4514db0f-9ecc-4671-b0a6-f6b3f1a53076)
 
-10. Edit all 10 teams' facilities, money, budget available from the budget cap, long and short term objectives, enigne supplier and pit crew attributes
+13. Add NEW CUSTOM ENGINES
+
+![image](https://github.com/user-attachments/assets/5669f463-fbe1-4689-baf6-12b7540fcd2d)
+
+14. Edit all 10 teams' facilities, money, budget available from the budget cap, long and short term objectives, enigne supplier and pit crew attributes
    
-![image](https://github.com/user-attachments/assets/de295f52-bd40-4e29-8a88-0174a607dea8)
+![image](https://github.com/user-attachments/assets/896b10ed-3b24-4bbc-a88c-df619e685206)
 
-11. Keep track of past seasons with a wikipedia-style table for drivers and teams championships
+
+15. Keep track of past seasons with a wikipedia-style table for drivers and teams championships
     
-![image](https://github.com/user-attachments/assets/7b0fdadb-6d2c-4a72-8cee-2365bbff2c8b)
+![image](https://github.com/user-attachments/assets/8db67d99-ba5d-48db-b67f-e9629ff5fd69)
 
-12. Compare drivers and teamas and their stats from their past seasons using the Head To Head graphic
+16. Compare drivers and teamas and their stats from their past seasons using the Head To Head graphic
     
 ![image](https://github.com/user-attachments/assets/8fe39b19-a1f7-4695-9cd8-e54241f4b7fe)
 
-13. Evaluate driver's performance based on an **AI MODEL** that has been trained with the game's data to predict their positions in each race and championship.
+17. Evaluate driver's performance based on an **AI MODEL** that has been trained with the game's data to predict their positions in each race and championship.
     
 ![image](https://github.com/user-attachments/assets/40e70379-773e-43ba-b98a-2d2e020e4c70)
 

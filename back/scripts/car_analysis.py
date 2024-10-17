@@ -458,7 +458,7 @@ class CarAnalysisUtils:
         self.cursor.execute(f"UPDATE Parts_CarLoadout SET DesignID = {design_id}, ItemID = {item_id} WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = {loadout_id}")
         self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = {loadout_id}, LastEquippedCar = {loadout_id} WHERE ItemID = {item_id}")
 
-    def overwrite_performance_team(self, team_id, performance, custom_team=None, year_iteration=None):
+    def overwrite_performance_team(self, team_id, performance, custom_team=None, year_iteration=None, loadout_dict=None):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
         day = day_season[0]
         season = day_season[1]
@@ -473,7 +473,7 @@ class CarAnalysisUtils:
                 if int(new_design) == -1:
                     max_design = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs").fetchone()[0]
                     latest_design_part_from_team = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id}").fetchone()[0]
-                    new_design_id = max_design + 1
+                    new_design_id = loadout_dict[str(part)][0]
                     # print(f"New design: {new_design_id} for part {part_name} from team {team_id}")
                     self.add_new_design(part, int(team_id), day, season, latest_design_part_from_team, new_design_id)
                 else:
@@ -524,6 +524,9 @@ class CarAnalysisUtils:
 
     def get_performance_all_teams_season(self, custom_team=None):
         races = self.get_races_days()
+        first_day = self.get_first_day_season()
+        first_tuple = (0, first_day, 0)
+        races.insert(0, first_tuple)
         races_performances = []
         previous = None
         for race_day in races:
@@ -534,6 +537,20 @@ class CarAnalysisUtils:
         all_races = self.get_all_races()
         return races_performances, all_races
 
+    def get_first_day_season(self):
+        query = """
+        SELECT Number, COUNT(*) as Occurrences
+        FROM (
+            SELECT DayCreated as Number FROM Parts_Designs
+            UNION ALL
+            SELECT DayCompleted as Number FROM Parts_Designs
+        ) Combined
+        GROUP BY Number
+        ORDER BY Occurrences DESC
+        LIMIT 1;
+        """
+        first_day = self.cursor.execute(query).fetchone()[0]
+        return first_day
 
     def get_attributes_all_teams(self, custom_team=None):
         teams = {}
@@ -554,3 +571,5 @@ class CarAnalysisUtils:
 
     def fetch_max_design(self):
         return self.cursor.execute("SELECT MAX(DesignID) FROM Parts_Designs").fetchone()[0]
+    
+    

@@ -1,3 +1,5 @@
+import os
+import json
 class Command:
 
     team_replace_dict = {"Alpha Tauri": "Alpha Tauri", "Alpine": "Alpine", "Alfa Romeo": "Alfa Romeo", "Aston Martin": "Aston Martin",
@@ -31,3 +33,16 @@ class Command:
 
     def add_team(self, original_team, new_team):
         self.team_replace_dict[original_team] = new_team
+
+    def change_config_attribute(self, attribute, value):
+        config_folder = "./../configs"
+        config_path = Command.path[3:].split(".")[0] + "_config.json"
+        file_path = os.path.join(config_folder, config_path)
+        with open(file_path, "r") as file:
+            data = file.read()
+            data = json.loads(data)
+            data[attribute] = value
+
+        with open(file_path, "w") as file:
+            json.dump(data, file, indent=4)
+            

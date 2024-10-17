@@ -18,12 +18,7 @@ const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
 const selectImageButton = document.getElementById('selectImage');
 const fileInput = document.getElementById('fileInput');
 
-const f1_teams = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32]
-const f2_teams = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
-const f3_teams = [22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
 
-const staff_positions = { 1: "technical-chief", 2: "race-engineer", 3: "head-aero", 4: "sporting-director" }
-const staff_pics = { 1: "../assets/images/technicalChief.png", 2: "../assets/images/raceEngineer.png", 3: "../assets/images/headAero.png", 4: "../assets/images/sportingDirector.png" }
 
 
 let originalParent;
@@ -40,9 +35,9 @@ let driver2;
 let originalTeamId
 let currentSeason;
 
-let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 32: "ct", 33: "f2", 34: "f3" }
-let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10, 'custom': 32 }
+
 let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3", "custom": "Custom Team" }
+//custom team name changes so this dict stays here
 
 /**
  * Removes all the drivers from teams and categories
@@ -79,8 +74,6 @@ function place_drivers(driversArray) {
         newDiv.dataset.teamid = driver[2];
         let name = driver[0].split(" ")
         let nameContainer = document.createElement("div")
-        let marqueeContainer = document.createElement("div")
-        marqueeContainer.className = "marquee-wrapper"
         nameContainer.className = "name-container"
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
@@ -89,8 +82,7 @@ function place_drivers(driversArray) {
         spanLastName.classList.add("bold-font")
         nameContainer.appendChild(spanName)
         nameContainer.appendChild(spanLastName)
-        marqueeContainer.appendChild(nameContainer)
-        newDiv.appendChild(marqueeContainer)
+        newDiv.appendChild(nameContainer)
         newDiv.classList.add(team_dict[driver[2]] + "-transparent")
         if (driver["team_future"] !== -1) {
             add_future_team_noti(newDiv, driver["team_future"])
@@ -110,7 +102,7 @@ function place_drivers(driversArray) {
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
-    add_marquees()
+    add_marquees_transfers()
 
 }
 
@@ -132,6 +124,8 @@ function add_edit_container(div){
         let menuClick = document.querySelector(`#staffMenu a[data-list="${typeStaff}"]`)
         menuClick.click()
         edit_stats_div.click()
+
+        edit_stats_div.scrollIntoView({ behavior: "smooth", block: "center" })
     })
 }
  
@@ -154,27 +148,33 @@ function update_name(driverID, name) {
     normalDiv.dataset.name = name
 }
 
-function add_marquees() {
+function add_marquees_transfers() {
     setTimeout(function () {
-        document.querySelectorAll('.drivers-section .name-container').forEach(container => {
+        document.querySelectorAll('#driver_transfers .name-container').forEach(container => {
             let parentWidth = container.parentNode.clientWidth
             let containerWidth = container.scrollWidth
             if (containerWidth > parentWidth) {
-                let scrollAmount = (containerWidth - parentWidth);
-                container.style.setProperty('--scroll-amount', `${scrollAmount}px`);
-                container.classList.add('overflow');
-            }
-        });
-        document.querySelectorAll('.staff-section .name-container').forEach(container => {
-            let parentWidth = container.parentNode.clientWidth
-            let containerWidth = container.scrollWidth
-            if (containerWidth > parentWidth) {
-                let scrollAmount = (containerWidth - parentWidth)
-                container.style.setProperty('--scroll-amount', `${scrollAmount}px`);
-                container.classList.add('overflow');
-            }
-            else {
-                container.classList.remove("overflow")
+                let name = container.firstChild
+
+                let text = name.textContent.trim();
+                let words = text.split(' ');
+
+                if (words.length >= 1) {
+                    let longestWordIndex = 0;
+                    let longestWordLength = 0;
+
+                    words.forEach((word, index) => {
+                        if (word.length > longestWordLength) {
+                            longestWordLength = word.length;
+                            longestWordIndex = index;
+                        }
+                    });
+
+                    words[longestWordIndex] = words[longestWordIndex].charAt(0) + ".";
+
+                    name.textContent = words.join(' ');
+                }
+
             }
         });
     }, 100);
@@ -269,7 +269,7 @@ function place_staff(staffArray) {
 
 
     })
-    add_marquees()
+    add_marquees_transfers()
 }
 
 document.querySelectorAll("#stafftransfersMenu a").forEach(function (elem) {
@@ -278,7 +278,7 @@ document.querySelectorAll("#stafftransfersMenu a").forEach(function (elem) {
         let value = elem.dataset.value;
         document.querySelector("#staffTransfersDropdown").dataset.value = value;
         manage_staff_drivers(value)
-        add_marquees()
+        add_marquees_transfers()
     })
 })
 
