@@ -631,6 +631,10 @@ i.bi-file-text:hover{
   text-align: center;
 }
 
+.standings-list-engine{
+  color: var(--engine-table-name);
+}
+
 .transfer-top-panel, .general-top-panel {
   display: flex;
   justify-content: space-between;
