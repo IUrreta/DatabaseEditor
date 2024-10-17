@@ -3842,18 +3842,12 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 
 .fit-button{
   font-family: 'Formula1Bold';
-  color: var(--dark-text);
+  color: var(--text-general);
   transition: color 0.2s, transform 0.2s;
   padding-top: 10px;
   margin-left: 4px;
 }
 
-.reset-mentality-button{
-  font-family: 'Formula1Bold';
-  color: var(--dark-text);
-  transition: color 0.2s, transform 0.2s;
-  margin-right: 4px;
-}
 
 .fit-button:hover, .reset-mentality-button:hover{
   cursor: pointer;

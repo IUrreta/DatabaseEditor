@@ -819,10 +819,12 @@ function updateValue(input, increment) {
 
 
 document.querySelector("#performanceGraphButton").addEventListener("click", function () {
+    if (!viewingGraph) {
+        document.querySelector("#performanceGraphButton").classList.add("active")
+        document.querySelector(".teams-show").classList.add("d-none")
+        document.querySelector("#performanceGraph").classList.remove("d-none")
+    }
     removeSelected()
-    document.querySelector("#performanceGraphButton").classList.toggle("active")
-    document.querySelector(".teams-show").classList.add("d-none")
-    document.querySelector("#performanceGraph").classList.remove("d-none")
     document.querySelector(".save-button").classList.add("d-none")
     viewingGraph = true;
 })
