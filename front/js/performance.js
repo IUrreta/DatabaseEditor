@@ -5,22 +5,7 @@ const teamsDiv = document.getElementById("teamsDiv");
 const enginesDiv = document.getElementById("enginesDiv");
 
 const divsTeamsArray = [teamsDiv, enginesDiv]
-const pars_abreviations = { "chassis": "C", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "S" }
-const part_codes_abreviations = { 3: "C", 4: "FW", 5: "RW", 6: "UF", 7: "SP", 8: "S" }
 
-let abreviations_dict = {
-    1: "FE",
-    2: "MC",
-    3: "RB",
-    4: "MER",
-    5: "ALP",
-    6: "WIL",
-    7: "HA",
-    8: "AT",
-    9: "ALFA",
-    10: "AM",
-    32: "CUS"
-}
 
 let teamSelected;
 let engineSelected;
@@ -29,6 +14,7 @@ let performanceGraph;
 let teamsEngine = "teams"
 let viewingGraph = true;
 let actualMaxDesign = 0;
+let customEnginesCopy;
 
 function normalizeData(data) {
     let values = Object.values(data);
@@ -199,6 +185,7 @@ teamsPill.addEventListener("click", function () {
     document.querySelector("#enginesPerformance").classList.add("d-none")
     document.querySelector("#teamsPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.remove("d-none")
+    document.querySelector("#customEnginesButtonContainer").classList.add("d-none")
     removeSelected()
     if (viewingGraph) {
         document.querySelector(".save-button").classList.add("d-none")
@@ -214,6 +201,7 @@ enginesPill.addEventListener("click", function () {
     document.querySelector("#teamsPerformance").classList.add("d-none")
     document.querySelector("#enginesPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.add("d-none")
+    document.querySelector("#customEnginesButtonContainer").classList.remove("d-none")
     removeSelected()
     document.querySelector(".save-button").classList.remove("d-none")
     first_show_animation()
@@ -619,7 +607,7 @@ function loadout_listener(icon, loadout_n, partTitle) {
         }
     });
 }
-document.querySelector(".fit-button").addEventListener("click", function () {
+document.querySelector("#fitButton").addEventListener("click", function () {
     let data = {
         command: "fitParts",
         teamID: teamSelected
@@ -741,10 +729,10 @@ document.querySelector(".engines-show").querySelectorAll('.bi-plus-lg').forEach(
     let bar = button.parentNode.parentNode.querySelector(".engine-performance-progress");
     button.addEventListener('mousedown', function () {
         const input = this.previousElementSibling;
-        updateValue(input, 0.1);
+        updateValue(input, 0.5);
         bar.style.width = input.value.split(' ')[0] + "%";
         intervalId = setInterval(() => {
-            updateValue(input, 0.1);
+            updateValue(input, 0.5);
             bar.style.width = input.value.split(' ')[0] + "%";
         }, 100);
     });
@@ -757,6 +745,8 @@ document.querySelector(".engines-show").querySelectorAll('.bi-plus-lg').forEach(
         clearInterval(intervalId);
     });
 });
+
+
 
 document.querySelector(".performance-show").querySelectorAll('.stat-number .bi-dash-lg').forEach(button => {
     let intervalId;
@@ -782,10 +772,10 @@ document.querySelector(".engines-show").querySelectorAll('.bi-dash-lg').forEach(
     let bar = button.parentNode.parentNode.querySelector(".engine-performance-progress");
     button.addEventListener('mousedown', function () {
         const input = this.nextElementSibling;
-        updateValue(input, -0.1);
+        updateValue(input, -0.5);
         bar.style.width = input.value.split(' ')[0] + "%";
         intervalId = setInterval(() => {
-            updateValue(input, -0.1);
+            updateValue(input, -0.5);
             bar.style.width = input.value.split(' ')[0] + "%";
         }, 100);
     });
@@ -798,6 +788,8 @@ document.querySelector(".engines-show").querySelectorAll('.bi-dash-lg').forEach(
         clearInterval(intervalId);
     });
 });
+
+
 
 document.querySelector(".performance-show").querySelectorAll(".new-or-existing-part div").forEach(function (elem) {
     elem.addEventListener("click", function () {
@@ -827,13 +819,51 @@ function updateValue(input, increment) {
 
 
 document.querySelector("#performanceGraphButton").addEventListener("click", function () {
+    if (!viewingGraph) {
+        document.querySelector("#performanceGraphButton").classList.add("active")
+        document.querySelector(".teams-show").classList.add("d-none")
+        document.querySelector("#performanceGraph").classList.remove("d-none")
+    }
     removeSelected()
-    document.querySelector("#performanceGraphButton").classList.toggle("active")
-    document.querySelector(".teams-show").classList.add("d-none")
-    document.querySelector("#performanceGraph").classList.remove("d-none")
     document.querySelector(".save-button").classList.add("d-none")
     viewingGraph = true;
 })
+
+document.querySelectorAll(".part-performance-title .bi-chevron-up").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        let title = elem.parentNode.parentNode
+        let list = title.parentNode.querySelector(".parts-list")
+        let partEditing = list.querySelector('.one-part-name.editing').parentNode.parentNode
+        let newPart = partEditing.previousElementSibling
+        if (!newPart) {
+            let lastValidPart = list.lastElementChild;
+            while (lastValidPart && lastValidPart.classList.contains('new-part')) {
+                lastValidPart = lastValidPart.previousElementSibling;
+            }
+            newPart = lastValidPart;
+        }
+        newPart.querySelector(".one-part-name").click()
+    })
+})
+
+document.querySelectorAll(".part-performance-title .bi-chevron-down").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        let title = elem.parentNode.parentNode;
+        let list = title.parentNode.querySelector(".parts-list");
+        let partEditing = list.querySelector('.one-part-name.editing').parentNode.parentNode;
+        let newPart = partEditing.nextElementSibling;
+
+        // Si el siguiente es 'new-part', nos movemos al primero
+        if (newPart && newPart.classList.contains('new-part')) {
+            newPart = list.firstElementChild;
+        }
+
+        // Simulamos el click en el nuevo elemento encontrado (si es válido)
+        if (newPart) {
+            newPart.querySelector(".one-part-name").click();
+        }
+    });
+});
 
 /**
  * Puts the bars of the engine to their appropiate values
@@ -860,29 +890,182 @@ function resetBars() {
     })
 }
 
-// /**
-//  * eventListeners for the confirm button for engines and teams
-//  */
-// document.getElementById("confirmEnginebtn").addEventListener("click", function () {
-//     let performanes = "";
-//     let progresses = ""
-//     document.querySelector(".engines-show").querySelectorAll(".custom-progress").forEach(function (elem) {
-//         var dataProgress = elem.dataset.progress;
-//         performanes += dataProgress + ' ';
-//         progresses += dataProgress * 10 + " "
-//     });
-//     performanes = performanes.slice(0, -1);
-//     progresses = progresses.slice(0, -1);
-//     document.querySelector(".selected").dataset.stats = progresses
-//     let dataPerformance = {
-//         command: "editEngine",
-//         engineID: engineSelected,
-//         teamEngineID: teamEngineSelected,
-//         team: document.querySelector(".selected").dataset.teamname,
-//         performanceArray: performanes,
-//     }
-//     socket.send(JSON.stringify(dataPerformance))
-// })
+function add_custom_engine(name, stats) {
+    let generalEngineDiv = document.createElement("div")
+    let engineTitle = document.createElement("input")
+    engineTitle.type = "text"
+    if (name !== "") {
+        engineTitle.value = name
+    }
+    else {
+        engineTitle.value = "New Engine"
+    }
+    let engineCount = document.querySelectorAll(".custom-engines-div > div").length;
+    let engineStatsId = `engineStats${engineCount + 1}`;
+    let engineStats = document.createElement("div")
+    let caret = document.createElement("i")
+    let trash = document.createElement("i")
+    trash.classList.add("bi", "bi-trash")
+    caret.classList.add("bi", "bi-caret-down-fill", "clicked")
+    generalEngineDiv.classList.add("engine-performance")
+    engineTitle.classList.add("engine-performance-title")
+    engineStats.classList.add("engine-performance-stats", "collapse", "show")
+    engineStats.id = engineStatsId
+
+    caret.addEventListener("click", function () {
+        caret.classList.toggle("clicked")
+    })
+
+    trash.addEventListener("click", function () {
+        generalEngineDiv.remove()
+    })
+
+    caret.setAttribute("data-bs-toggle", "collapse");
+    caret.setAttribute("data-bs-target", `#${engineStatsId}`);
+
+    for (let [key, value] of engine_stats_dict) {
+        if ((game_version === 2024 && key !== 11 && key !== 12) || game_version === 2023) {
+            let stat = document.createElement("div")
+            stat.classList.add("engine-performance-stat")
+            stat.dataset.attribute = key
+            let statTitle = document.createElement("div")
+            statTitle.classList.add("part-performance-stat-title")
+            statTitle.innerText = value
+            let stat_number = document.createElement("div")
+            stat_number.classList.add("stat-number")
+            stat_number.innerHTML = '<i class="bi bi-dash-lg"></i> <input type="text" class="custom-input-number"> <i class="bi bi-plus-lg"></i>'
+            let input = stat_number.querySelector(".custom-input-number");
+            let bar = document.createElement("div")
+            bar.classList.add("engine-performance-bar")
+            let bar_progress = document.createElement("div")
+            bar_progress.classList.add("engine-performance-progress")
+            if (stats[key] !== undefined) {
+                input.value = stats[key] + " %";
+                bar_progress.style.width = stats[key] + "%";
+            }
+            else {
+                input.value = "50.0 %";
+            }
+            stat.appendChild(statTitle)
+            stat.appendChild(stat_number)
+            bar.appendChild(bar_progress)
+            stat.appendChild(bar)
+            engineStats.appendChild(stat)
+
+            let less = stat_number.querySelector(".bi-dash-lg");
+            let intervalId;
+            less.addEventListener('mousedown', function () {
+                const input = this.nextElementSibling;
+                updateValue(input, -0.5);
+                bar_progress.style.width = input.value.split(' ')[0] + "%";
+                intervalId = setInterval(() => {
+                    updateValue(input, -0.5);
+                    bar_progress.style.width = input.value.split(' ')[0] + "%";
+                }, 100);
+            });
+
+            less.addEventListener('mouseup', function () {
+                clearInterval(intervalId);
+            });
+
+            less.addEventListener('mouseleave', function () {
+                clearInterval(intervalId);
+            });
+
+            let plus = stat_number.querySelector(".bi-plus-lg");
+
+            plus.addEventListener('mousedown', function () {
+                const input = this.previousElementSibling;
+                updateValue(input, 0.5);
+                bar_progress.style.width = input.value.split(' ')[0] + "%";
+                intervalId = setInterval(() => {
+                    updateValue(input, 0.5);
+                    bar_progress.style.width = input.value.split(' ')[0] + "%";
+                }, 100);
+            });
+
+            plus.addEventListener('mouseup', function () {
+                clearInterval(intervalId);
+            });
+
+            plus.addEventListener('mouseleave', function () {
+                clearInterval(intervalId);
+            });
+
+        }
+    }
+    generalEngineDiv.appendChild(engineTitle)
+    generalEngineDiv.appendChild(engineStats)
+    generalEngineDiv.appendChild(caret)
+    generalEngineDiv.appendChild(trash)
+    document.querySelector(".custom-engines-div").appendChild(generalEngineDiv)
+}
+
+document.querySelector("#addCustomEngineButton").addEventListener("click", function () {
+    add_custom_engine("", "")
+})
+
+document.querySelector("#confirmCustomEnginesButton").addEventListener("click", function () {
+    let engines = document.querySelectorAll(".custom-engines-div .engine-performance")
+    let enginesData = {}
+    let unique_id = 1
+    engines.forEach(function (engine) {
+        //id is title in lowercase
+        let engineID = 10 + unique_id
+        let engineName = engine.querySelector(".engine-performance-title").value.toLowerCase()
+        let engineStats = {}
+        engine.querySelectorAll(".engine-performance-stat").forEach(function (stat) {
+            let attribute = stat.dataset.attribute
+            let value = stat.querySelector(".custom-input-number").value.split(" ")[0]
+            engineStats[attribute] = value
+        })
+        enginesData[engineID] = {}
+        enginesData[engineID]["stats"] = engineStats
+        enginesData[engineID]["name"] = engineName
+        unique_id += 1
+    })
+    let saveSelector = document.getElementById('saveSelector');
+    let saveSelected = saveSelector.innerHTML;
+    let data = {
+        command: "customEngines",
+        saveSelected: saveSelected,
+        enginesData: enginesData
+    }
+
+    socket.send(JSON.stringify(data))
+})
+
+
+function load_custom_engines(data) {
+    customEnginesCopy = data
+    let engines = data[0]
+    let engineDropdown = document.querySelector("#engineMenu")
+    engineDropdown.querySelectorAll("a.custom-engine").forEach(function (elem) {
+        elem.remove()
+    })
+    document.querySelector(".custom-engines-div").innerHTML = ""
+    for (let key in engines) {
+        add_custom_engine(engines[key]["name"], engines[key]["stats"])
+        let engineOption = document.createElement("a")
+        engineOption.classList.add("dropdown-item", "custom-engine")
+        engineOption.innerText = engines[key]["name"].charAt(0).toUpperCase() + engines[key]["name"].slice(1)
+        engineOption.dataset.engine = key
+        engineOption.href = "#"
+        engineDropdown.appendChild(engineOption)
+        engineOption.addEventListener("click", function () {
+            let engineid = engineOption.dataset.engine;
+            let engine = engineOption.innerText;
+            document.querySelector("#engineLabel").innerText = engine;
+            document.querySelector("#engineButton").dataset.value = engineid;
+        })
+
+    }
+
+}
+
+document.querySelector("#cancelCustomEnginesButton").addEventListener("click", function () {
+    load_custom_engines(customEnginesCopy)
+})
 
 
 
@@ -945,8 +1128,7 @@ function load_performance_graph(data) {
     teamPerformances[32] = [];
     let minValue = Number.POSITIVE_INFINITY;
     let maxValue = Number.NEGATIVE_INFINITY;
-    let first = data[0][0]
-    let performances = [first, ...data[0]]
+    let performances = [...data[0]]
     performances.forEach(race => {
         for (let team in race) {
             let value = race[team];
@@ -999,6 +1181,14 @@ function createPerformanceChart(labelsArray) {
                 interaction: {
                     mode: 'index'
                 },
+                layout: {
+                    padding: {
+                        top: 25,
+                        right: 25,
+                        boottom: 20,
+                        left: 10
+                    }
+                },
                 scales: {
                     x: {
                         grid: {
@@ -1021,6 +1211,9 @@ function createPerformanceChart(labelsArray) {
                             color: "#dedde6",
                             font: {
                                 family: "Formula1Bold"
+                            },
+                            callback: function (value) {
+                                return value.toFixed(1); // Mostrar solo un decimal
                             }
                         }
 

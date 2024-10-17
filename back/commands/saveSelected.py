@@ -8,6 +8,21 @@ from scripts.extractor import process_unpack
 from scripts.car_analysis import CarAnalysisUtils
 
 class SaveSelectedCommand(Command):
+    teams_years = {
+        "Alpha Tauri": {
+            "23": "alphatauri",
+            "24": "visarb"
+        },
+        "Alpine": {
+            "23": "alpine",
+            "24": "alpine"
+        },
+        "Alfa Romeo": {
+            "23": "alfa",
+            "24": "stake"
+        }
+    }
+
     def __init__(self, message, client):
         super().__init__(message, client)
 
@@ -33,6 +48,7 @@ class SaveSelectedCommand(Command):
         data_json_drivers = json.dumps(drivers)
         await self.send_message_to_client(data_json_drivers)
         staff = Command.dbutils.fetch_staff(game_year[0])
+        self.create_config_file(save, game_year[0])
         await self.check_for_configs(save)
         staff.insert(0, "Staff Fetched")
         data_json_staff = json.dumps(staff)
@@ -69,6 +85,11 @@ class SaveSelectedCommand(Command):
         cars = ["Cars fetched", cars, att]
         data_json_cars = json.dumps(cars)
         await self.send_message_to_client(data_json_cars)
+        engines = await self.get_custom_engines_list(save)
+        engines_list = ["Custom Engines fetched", engines]
+        data_json_engines = json.dumps(engines_list)
+        await self.send_message_to_client(data_json_engines)
+        await self.check_engine_allocations(save)
 
     def update_team_dict(self, name):
         if name is not None:
@@ -101,19 +122,80 @@ class SaveSelectedCommand(Command):
         config_name = f"{saveName.split('.')[0]}_config.json"
         config_folder = "./../configs"
         file_path = os.path.join(config_folder, config_name)
-        if not os.path.exists(config_folder) or not os.path.exists(file_path):
-            info = ["Config", "ERROR"]
-            info_json = json.dumps(info)
-            await self.send_message_to_client(info_json)
-        else:
-            with open(file_path, "r") as file:
-                data = file.read()
-                data = json.loads(data)
-                self.replace_team("Alpha Tauri", data["teams"]["alphatauri"])
-                self.replace_team("Alpine", data["teams"]["alpine"])
-                self.replace_team("Alfa Romeo", data["teams"]["alfa"])
-                msgData = data
-                info = ["Config", msgData]
-                info = json.dumps(info)
-                await self.send_message_to_client(info)
+        difficulty, disabledList, refurbish, fronzenMentality = self.dbutils.fetch_existing_trigers()
+        if os.path.exists(file_path):
+            await self.overwrite_config_file(difficulty, disabledList, refurbish, fronzenMentality, saveName)
+        with open(file_path, "r") as file:
+            data = file.read()
+            data = json.loads(data)
+            self.replace_team("Alpha Tauri", data["teams"]["alphatauri"])
+            self.replace_team("Alpine", data["teams"]["alpine"])
+            self.replace_team("Alfa Romeo", data["teams"]["alfa"])
+            msgData = data
+            info = ["Config", msgData]
+            info = json.dumps(info)
+            await self.send_message_to_client(info)
+
+    async def overwrite_config_file(self, difficulty, disabledList, refurbish, frozenMentality, saveName):
+        config_name = f"{saveName.split('.')[0]}_config.json"
+        config_folder = "./../configs"
+        file_path = os.path.join(config_folder, config_name)
+        with open(file_path, "r") as file:
+            data = file.read()
+            data = json.loads(data)
+            data["disabled"] = disabledList
+            data["refurbish"] = refurbish
+            data["mentalityFrozen"] = frozenMentality
+            data["difficulty"] = difficulty
+            with open(file_path, "w") as json_file:
+                json.dump(data, json_file, indent=4)
+
+
+    async def get_custom_engines_list(self, saveName):
+        config_file_path = f"./../configs/{saveName.split('.')[0]}_config.json"
+        if os.path.exists(config_file_path):
+            with open(config_file_path, "r") as json_file:
+                data = json.load(json_file)
+            
+            custom_engines = data.get("engines", {})
+            return custom_engines
         
+    async def check_engine_allocations(self, save):
+        config_file_path = f"./../configs/{save.split('.')[0]}_config.json"
+        if os.path.exists(config_file_path):
+            with open(config_file_path, "r") as json_file:
+                data = json.load(json_file)
+
+            engine_allocations = data.get("engine_allocations", {})
+            if not engine_allocations:
+                allocations = Command.dbutils.fetch_engine_allocations()
+                #write allocations to config file
+                data["engine_allocations"] = allocations
+                with open(config_file_path, "w") as json_file:
+                    json.dump(data, json_file, indent=4)
+        
+    def create_config_file(self, saveName, game_year):
+        folder = "./../configs"
+        file = f"{saveName.split(".")[0]}_config.json"
+        file_path = os.path.join(folder, file)
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        if not os.path.exists(file_path):
+            data = {
+                "teams": {
+                    "alphatauri": self.teams_years["Alpha Tauri"][game_year],
+                    "alpine": self.teams_years["Alpine"][game_year],
+                    "alfa": self.teams_years["Alfa Romeo"][game_year]
+                },
+                "mentalityFrozen" : 0,
+                "difficulty": 0,
+                "refurbish": 0
+            }
+
+                    
+         
+            with open(file_path, "w") as json_file:
+                json.dump(data, json_file, indent=4)
+
+
+

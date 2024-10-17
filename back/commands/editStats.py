@@ -1,6 +1,6 @@
 from commands.command import Command
 from scripts.extractor import process_repack
-from scripts.edit_stats import edit_stats as run_editStats, edit_mentality, edit_superlicense, edit_marketability, edit_retirement, edit_age, edit_name, edit_code
+from scripts.edit_stats import edit_stats as run_editStats, edit_mentality, edit_superlicense, edit_freeze_mentality,edit_marketability, edit_retirement, edit_age, edit_name, edit_code
 
 import json
 
@@ -24,6 +24,8 @@ class EditStatsCommand(Command):
             edit_name(self.message['driverID'], self.message['newName'])
         if self.message['newCode'] != '-1':
             edit_code(self.message['driverID'], self.message['newCode'])
+
+
         process_repack("../result", Command.path)
         info = []
         info.insert(0, f"Succesfully edited {self.message['driver']}'s stats")
@@ -33,3 +35,4 @@ class EditStatsCommand(Command):
         nums.insert(0, "Numbers fetched")
         data_json_numbers = json.dumps(nums)
         await self.send_message_to_client(data_json_numbers)
+

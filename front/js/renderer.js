@@ -9,23 +9,12 @@ let game_version = 2023;
 let custom_team = false;
 let customIconPath = null;
 let firstShow = false;
+let configCopy;
 
 
 const batFilePath = path.join(__dirname,'../back/startBack.bat');
 
 
-// function start_back(){
-//     exec(`"${batFilePath}"`, (error, stdout, stderr) => {
-//         if (error) {
-//             console.log("Error launching backend")
-//             console.log(`Error: ${error}`)
-//             return;
-//         }
-//         console.log(`Result: ${stdout}`);
-//     });
-// }
-
-// start_back()
 
 const socket = new WebSocket('ws://localhost:8765/');
 /**
@@ -40,13 +29,6 @@ socket.onopen = () => {
 
 };
 
-// window.addEventListener('beforeunload', () => {
-//     let data = {
-//         command: "disconnect"
-//     }
-//     socket.send(JSON.stringify(data));
-//     socket.close();
-// });
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
@@ -198,10 +180,50 @@ function editModeHandler() {
     if (document.querySelector(".clicked").dataset.driverid) {
         id = document.querySelector(".clicked").dataset.driverid;
     }
-    let driverName = getName(document.querySelector(".clicked"));
+    let driverName = getName(document.querySelector(".clicked .name-div-edit-stats"));
     document.querySelector(".clicked").dataset.stats = stats;
-    let new_ovr = calculateOverall(stats,typeOverall);
-    document.querySelector(".clicked").childNodes[1].innerHTML = new_ovr;
+    let globalMentality = 2
+    let mentality = -1
+    if (document.querySelector(".clicked").dataset.mentality0) {
+        mentality = ""
+        document.querySelectorAll(".mentality-level-indicator").forEach(function (elem,index) {
+            mentality += elem.dataset.value + " "
+            document.querySelector(".clicked").dataset["mentality" + index] = elem.dataset.value
+            globalMentality += parseInt(elem.dataset.value)
+        })
+        globalMentality = Math.floor(globalMentality / 3)
+    }
+    document.querySelector(".clicked").dataset.globalMentality = globalMentality
+    let new_ovr = calculateOverall(stats,typeOverall, globalMentality);
+    document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = ""
+    if (new_ovr[1] !== new_ovr[0]) {
+        document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr[1];
+    }
+    document.querySelector(".clicked").childNodes[1].childNodes[1].textContent = new_ovr[0];
+    if (globalMentality < 2){
+        document.querySelector(".clicked").childNodes[1].childNodes[0].className = "mentality-small-ovr-positive"
+    }
+    else if (globalMentality > 2){
+        document.querySelector(".clicked").childNodes[1].childNodes[0].className = "mentality-small-ovr-negative"
+    }
+    let inputArray = document.querySelectorAll(".elegible")
+    inputArray.forEach(function (input, index) {
+        manage_mentality_modifiers(input, globalMentality)
+    })
+    let diff = parseInt(new_ovr[1]) - parseInt(new_ovr[0])
+    let mentalitydiff = document.querySelector(".mentality-change-ovr")
+    if (diff > 0) {
+        mentalitydiff.textContent = "+" + diff
+        mentalitydiff.className = "mentality-change-ovr positive"
+    }
+    else if (diff < 0) {
+        mentalitydiff.textContent = diff
+        mentalitydiff.className = "mentality-change-ovr negative"
+    }
+    else{
+        mentalitydiff.textContent = ""
+        mentalitydiff.className = "mentality-change-ovr"
+    }
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     let age = document.querySelector(".actual-age").textContent.split(" ")[1];
     document.querySelector(".clicked").dataset.retirement = retirement;
@@ -249,14 +271,6 @@ function editModeHandler() {
         superLicense = 0;
         document.querySelector(".clicked").dataset.superLicense = 0;
     }
-    let mentality = -1
-    if (document.querySelector(".clicked").dataset.mentality0) {
-        mentality = ""
-        document.querySelectorAll(".mentality-level-indicator").forEach(function (elem,index) {
-            mentality += elem.dataset.value + " "
-            document.querySelector(".clicked").dataset["mentality" + index] = elem.dataset.value
-        })
-    }
     let marketability = document.getElementById("marketabilityInput").value;
     let dataStats = {
         command: "editStats",
@@ -273,7 +287,7 @@ function editModeHandler() {
         superLicense: superLicense,
         marketability: marketability,
         newName: newName,
-        newCode: newCode
+        newCode: newCode,
     };
 
     socket.send(JSON.stringify(dataStats));
@@ -306,6 +320,7 @@ function teamsModeHandler() {
     let facilitiesData = gather_team_data()
     let pitCrew = gather_pit_crew()
     let engine = document.querySelector("#engineButton").dataset.value
+    let saveSelected = document.getElementById('saveSelector').innerHTML
     let data = {
         command: "editTeam",
         teamID: teamCod,
@@ -318,7 +333,8 @@ function teamsModeHandler() {
         confidence: confidenceData,
         pitCrew: pitCrew,
         engine: engine,
-        teamName: default_dict[teamCod]
+        teamName: default_dict[teamCod],
+        saveSelected: saveSelected
     }
     socket.send(JSON.stringify(data))
 }
@@ -447,6 +463,9 @@ document.addEventListener('DOMContentLoaded',function () {
     const constructorsPill = document.getElementById("constructorspill")
     const predictPill = document.getElementById("predictpill")
 
+    const editorPill = document.getElementById("editorPill")
+    const gamePill = document.getElementById("gamePill")
+
     const driverTransferDiv = document.getElementById("driver_transfers");
     const editStatsDiv = document.getElementById("edit_stats");
     const customCalendarDiv = document.getElementById("custom_calendar");
@@ -468,7 +487,16 @@ document.addEventListener('DOMContentLoaded',function () {
 
     const status = document.querySelector(".status-info")
     const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Cars fetched","Part values fetched", "Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
+    const noNotifications = ["Custom Engines fetched","Cars fetched","Part values fetched", "Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
+    let difficulty_dict = {
+        0: "default",
+        1: "reduced weight",
+        2: "extra-hard",
+        3: "brutal",
+        4: "unfair",
+        5: "insane",
+        6: "impossible"
+    }
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -560,12 +588,16 @@ document.addEventListener('DOMContentLoaded',function () {
             manage_config(message.slice(1))
         },
         "24 Year": (message) => {
-            manage_config(message.slice(1))
+            manage_config(message.slice(1), true)
         },
         "Performance fetched": (message) => {
             load_performance(message[1])
             load_attributes(message[2])
-            order_by("overall")
+            //wait 100 ms
+            setTimeout(function () {
+                order_by("overall")
+            },100)
+
         },
         "Season performance fetched": (message) => {
             load_performance_graph(message.slice(1))
@@ -585,6 +617,9 @@ document.addEventListener('DOMContentLoaded',function () {
             load_cars(message.slice(1)[0])
             load_car_attributes(message.slice(1)[1])
             order_by("overall")
+        },
+        "Custom Engines fetched": (message) => {
+            load_custom_engines(message.slice(1))
         }
     };
 
@@ -710,11 +745,14 @@ document.addEventListener('DOMContentLoaded',function () {
         });
 
         if (devConsole) {
-            devConsole.addEventListener('keydown',(event) => {
+            devConsole.addEventListener('keyup',(event) => {
                 if (event.key === 'Enter') {
                     event.preventDefault();
-                    devConsole.value = '';
-                    socket.send(JSON.stringify(devConsole.value))
+                    data = {
+                        command: "dev",
+                        type: devConsole.value
+                    }
+                    socket.send(JSON.stringify(data));
                 }
             });
         }
@@ -735,6 +773,8 @@ document.addEventListener('DOMContentLoaded',function () {
             document.querySelectorAll(".engine24").forEach(function (elem) {
                 elem.classList.add("d-none")
             })
+            document.querySelector(".only-mentality").classList.remove("d-none")
+
         }
         else if (year[0] === "23") {
             resizeWindowToHeight("10teams")
@@ -756,6 +796,7 @@ document.addEventListener('DOMContentLoaded',function () {
             document.querySelectorAll(".engine24").forEach(function (elem) {
                 elem.classList.remove("d-none")
             })
+            document.querySelector(".only-mentality").classList.add("d-none")
         }
         replace_modal_teams(game_version)
     }
@@ -1082,31 +1123,13 @@ document.addEventListener('DOMContentLoaded',function () {
         configDetailModal.show()
     })
 
-    function manage_config(info) {
-        if (info[0] === "ERROR") { //No file detected -> show modal
-            document.querySelector(".bi-gear").classList.add("hidden")
-            let configModal = new bootstrap.Modal(document.getElementById('configModal'),{
-                keyboard: false
-            })
-            configModal.show()
-        }
-        else { //File detected -> check if ask to show modal or not
-            if (info[0]["state"] === "ask") {
-                document.querySelector(".bi-gear").classList.add("hidden")
-                let configModal = new bootstrap.Modal(document.getElementById('configModal'),{
-                    keyboard: false
-                })
-                configModal.show()
-            }
-            else {
-                document.querySelector(".bi-gear").classList.remove("hidden")
-                manage_config_content(info[0])
-            }
-
-        }
+    function manage_config(info, year_config=false) {
+        document.querySelector(".bi-gear").classList.remove("hidden")
+        configCopy = info
+        manage_config_content(info[0], year_config)
     }
 
-    function manage_config_content(info) {
+    function replace_all_teams(info) {
         let teams = info["teams"]
         alphaTauriReplace(teams["alphatauri"])
         alpineReplace(teams["alpine"])
@@ -1114,12 +1137,56 @@ document.addEventListener('DOMContentLoaded',function () {
         update_logo("alpine",logos_configs[teams["alpine"]],teams["alpine"])
         update_logo("alfa",logos_configs[teams["alfa"]],teams["alfa"])
         update_logo("alphatauri",logos_configs[teams["alphatauri"]],teams["alphatauri"])
-        if (info["icon"]) {
-            replace_custom_team_logo(info["icon"])
-            customIconPath = info["icon"]
-        }
-        if (info["primaryColor"]) {
-            replace_custom_team_color(info["primaryColor"],info["secondaryColor"])
+    }
+
+    function manage_config_content(info, year_config=false) {
+        replace_all_teams(info)
+        if (!year_config) {
+            if (info["icon"]) {
+                replace_custom_team_logo(info["icon"])
+                customIconPath = info["icon"]
+            }
+            if (info["primaryColor"]) {
+                replace_custom_team_color(info["primaryColor"],info["secondaryColor"])
+            }
+            if (info["mentalityFrozen"] === 1){
+                document.getElementById("freezeMentalityToggle").checked = true
+            }
+            else{
+                document.getElementById("freezeMentalityToggle").checked = false
+            }
+            if (info["refurbish"] === 1){
+                document.getElementById("refurbishingToggle").checked = true
+            }
+            else{
+                document.getElementById("refurbishingToggle").checked = false
+            }
+            engine_allocations = info["engine_allocations"]
+            //remove all engines from engines_names with key > 10
+            for (let key in engine_names) {
+                if (key > 10) {
+                    delete engine_names[key]
+                }
+            }
+            for (let key in info["engines"]) {
+                engine_names[key] = info["engines"][key]["name"]
+            }
+            update_mentality_span(info["mentalityFrozen"])
+            let difficultySlider = document.getElementById("difficultySlider")
+            difficultySlider.value = info["difficulty"]
+            update_difficulty_span(info["difficulty"])
+            manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
+            update_refurbish_span(info["refurbish"])
+            manage_disabled_list(info["disabled"])
+    }
+    }
+
+    function manage_disabled_list(disabled_list){
+        for (key in disabled_list){
+            let elem = document.getElementById(key)
+            if (disabled_list[key] === 1){
+                elem.classList.add("disabled")
+            }
         }
     }
 
@@ -1414,18 +1481,6 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     }
 
-    document.querySelector("#configButton").addEventListener("click",function () {
-        //wait 0.1 seconds to show the modal
-        setTimeout(function () {
-            let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'),{
-                keyboard: false
-            })
-            configDetailModal.show()
-        },320)
-
-
-    })
-
     //select all team-change-button
     document.querySelectorAll(".team-change-button").forEach(function (elem) {
         elem.querySelectorAll("a").forEach(function (a) {
@@ -1442,13 +1497,37 @@ document.addEventListener('DOMContentLoaded',function () {
         alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
         alpine = document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value
         alfa = document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value
+        let mentalityFrozen = 0;
+        if (document.getElementById("freezeMentalityToggle").checked) {
+            mentalityFrozen = 1;
+        }
+        let refurbish = 0;
+        if (document.getElementById("refurbishingToggle").checked) {
+            refurbish = 1;
+        }
+        let difficulty = 0;
+        let difficultySlider = document.getElementById("difficultySlider")
+        let difficultyValue = parseInt(difficultySlider.value)
+        let disabledList = {}
+        document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
+            let id = elem.id
+            if (elem.classList.contains("disabled")) {
+                disabledList[id] = 1
+            }
+            else{
+                disabledList[id] = 0
+            }
+        })
         let data = {
             command: "configUpdate",
             save: save,
             alphatauri: alphatauri,
             alpine: alpine,
             alfa: alfa,
-            state: "changed"
+            mentalityFrozen: mentalityFrozen,
+            difficulty: difficultyValue,
+            refurbish: refurbish,
+            disabled: disabledList,
         }
         if (customIconPath !== null) {
             data["icon"] = customIconPath
@@ -1461,45 +1540,8 @@ document.addEventListener('DOMContentLoaded',function () {
         }
         socket.send(JSON.stringify(data))
         info = { teams: { alphatauri: alphatauri,alpine: alpine,alfa: alfa } }
-        manage_config_content(info)
+        replace_all_teams(info)
         reloadTables()
-        document.querySelector(".bi-gear").classList.remove("hidden")
-    })
-
-    document.querySelector("#cancelConfigButton").addEventListener("click",function () {
-        save = document.querySelector("#saveSelector").textContent
-        save = save.slice(0,-4)
-        let state;
-        let checked = document.querySelector("#ask").checked
-        if (checked) {
-            state = "neverask"
-        }
-        else {
-            state = "ask"
-        }
-        let alpha;
-        let alpine;
-        let alfa;
-        if (game_version === 2024) {
-            alpha = "visarb"
-            alpine = "alpine"
-            alfa = "stake"
-        }
-        else if (game_version === 2023) {
-            alpha = "alphatauri"
-            alpine = "alpine"
-            alfa = "alfa"
-        }
-        let data = {
-            command: "configUpdate",
-            save: save,
-            alphatauri: alpha,
-            alpine: alpine,
-            alfa: alfa,
-            state: state
-        }
-        socket.send(JSON.stringify(data))
-        document.querySelector(".bi-gear").classList.remove("hidden")
     })
 
 
@@ -1526,6 +1568,7 @@ document.addEventListener('DOMContentLoaded',function () {
     })
 
     h2hPill.addEventListener("click",function () {
+
         manageScripts("hide","show","hide","hide","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
@@ -1537,15 +1580,17 @@ document.addEventListener('DOMContentLoaded',function () {
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
+        add_marquees_viewer()
     })
 
     driverTransferPill.addEventListener("click",function () {
+
         manageScripts("hide","hide","hide","show","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
         //wait 0.3s and then add the marquee
-        add_marquees()
+        add_marquees_transfers()
     })
 
     editStatsPill.addEventListener("click",function () {
@@ -1576,7 +1621,97 @@ document.addEventListener('DOMContentLoaded',function () {
         check_selected()
         manageSaveButton(!viewingGraph,"performance")
     })
+    
+    gamePill.addEventListener("click",function () {
+        document.querySelector("#editorChanges").classList.add("d-none")
+        document.querySelector("#gameChanges").classList.remove("d-none")
+    })
+    
+    editorPill.addEventListener("click",function () {
+        document.querySelector("#editorChanges").classList.remove("d-none")
+        document.querySelector("#gameChanges").classList.add("d-none")
+    })
 
+    document.getElementById("difficultySlider").addEventListener("input", function() {
+        let value = this.value;
+        update_difficulty_span(value)
+        manage_difficulty_warnings(difficulty_dict[parseInt(value)])
+    });
+
+    function update_difficulty_span(value){
+        let span = document.querySelector("#difficultySpan")
+        let difficulty = difficulty_dict[parseInt(value)]
+        if (difficulty === "reduced weight") {
+            span.className = "option-state reduced-weight"
+        }
+        else{
+            span.className = "option-state " + difficulty
+        }
+        span.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1)
+    }
+
+    document.getElementById("freezeMentalityToggle").addEventListener("change", function() {
+        let value = this.checked;
+        update_mentality_span(value)
+    });
+    
+    function update_mentality_span(value){
+        let span = document.querySelector("#mentalitySpan")
+        if (value) {
+            span.className = "option-state frozen"
+            span.textContent = "Frozen"
+        } else {
+            span.className = "option-state default"
+            span.textContent = "Unfrozen"
+        }
+    }
+
+    document.getElementById("refurbishingToggle").addEventListener("change", function() {
+        let value = this.checked;
+        update_refurbish_span(value)
+    });
+
+    function update_refurbish_span(value){
+        let span = document.querySelector("#refurbishSpan")
+        if (value) {
+            span.className = "option-state fixed"
+            span.textContent = "Fixed"
+        } else {
+            span.className = "option-state default"
+            span.textContent = "Default"
+        }
+    }
+
+    function manage_difficulty_warnings(level){
+        const elements = [
+            "defaultDif", "lightDif", "researchDif", "statDif", "designTimeDif", "factoryDif", "buildDif"
+        ];
+        const selectedConfig = difficultyConfig[level] || difficultyConfig["default"];
+
+    elements.forEach(id => {
+        document.getElementById(id).classList.add("d-none");
+    });
+
+    selectedConfig.visible.forEach(id => {
+        document.getElementById(id).classList.remove("d-none");
+    });
+
+    elements.forEach(id => {
+        if (selectedConfig[id]) {
+            const elementConfig = selectedConfig[id];
+            const element = document.getElementById(id);
+            element.className = elementConfig.className;
+            element.textContent = elementConfig.text;
+        }
+    });
+        
+    }
+
+    document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
+        elem.addEventListener("click",function () {
+            elem.classList.toggle("disabled")
+        })
+    })
 
     /**
      * Manages the stats of the divs associated with the pills
@@ -1592,5 +1727,9 @@ document.addEventListener('DOMContentLoaded',function () {
             }
         })
     }
+
+    document.querySelector("#cancelDetailsButton").addEventListener("click",function () {
+        manage_config_content(configCopy[0], false)
+    })
 
 });

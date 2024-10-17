@@ -1,6 +1,8 @@
 import json
 import os
 from commands.command import Command
+from scripts.edit_stats import edit_freeze_mentality
+from scripts.extractor import process_repack
 
 
 class ConfigUpdateCommand(Command):
@@ -9,50 +11,68 @@ class ConfigUpdateCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        self.create_folder_file()
+        self.create_folder_file(self.message)
+        process_repack("../result", Command.path)
+        info = ["Save settings updated"]
+        data_info = json.dumps(info)
+        await self.send_message_to_client(data_info)
 
 
-    def create_folder_file(self):
+    def create_folder_file(self, message):
         folder = "./../configs"
-        file = f"{self.message['save']}_config.json"
+        file = f"{message['save']}_config.json"
         file_path = os.path.join(folder, file)
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-        if not os.path.exists(file_path):
-            data = {
-                "teams": {
-                    "alphatauri": self.message["alphatauri"],
-                    "alpine": self.message["alpine"],
-                    "alfa": self.message["alfa"]
-                },
-                "state": self.message["state"]
-            }
-            if self.message.get("icon"):
-                data["icon"] = self.message["icon"]
-            if self.message.get("primaryColor"):
-                data["primaryColor"] = self.message["primaryColor"]
-            if self.message.get("secondaryColor"):
-                data["secondaryColor"] = self.message["secondaryColor"]
-            with open(file_path, "w") as json_file:
-                json.dump(data, json_file, indent=4)
-        else:
-            with open(file_path, "r") as json_file:
-                existing_data = json.load(json_file)
-            
-            existing_data["teams"]["alphatauri"] = self.message["alphatauri"]
-            existing_data["teams"]["alpine"] = self.message["alpine"]
-            existing_data["teams"]["alfa"] = self.message["alfa"]
+        frozenMentality = 0
+        difficulty = 0
+        data = {
+            "teams": {
+                "alphatauri": message["alphatauri"],
+                "alpine": message["alpine"],
+                "alfa": message["alfa"]
+            },
+            "mentalityFrozen" : 0,
+            "difficulty": 0,
+            "refurbish": 0
+        }
+        with open(file_path, "r") as json_file:
+            existing_data = json.load(json_file)
+        
+        existing_data["teams"]["alphatauri"] = message["alphatauri"]
+        existing_data["teams"]["alpine"] = message["alpine"]
+        existing_data["teams"]["alfa"] = message["alfa"]
 
-            existing_data["state"] = self.message["state"]
-            if self.message.get("icon"):
-                existing_data["icon"] = self.message["icon"]
-            if self.message.get("primaryColor"):
-                existing_data["primaryColor"] = self.message["primaryColor"]
-            if self.message.get("secondaryColor"):
-                existing_data["secondaryColor"] = self.message["secondaryColor"]
+        if message.get("icon"):
+            existing_data["icon"] = message["icon"]
+        if message.get("primaryColor"):
+            existing_data["primaryColor"] = message["primaryColor"]
+        if message.get("secondaryColor"):
+            existing_data["secondaryColor"] = message["secondaryColor"]
+        
+        data = existing_data
+
+        frozenMentality = message.get("mentalityFrozen", 0)
+        difficulty = message.get("difficulty", 0)
+        refurbish = message.get("refurbish", 0)
+        data["mentalityFrozen"] = int(frozenMentality)
+        data["difficulty"] = int(difficulty)
+        data["refurbish"] = int(refurbish)
+        data["disabled"] = message["disabled"]
             
-            with open(file_path, "w") as json_file:
-                json.dump(existing_data, json_file, indent=4)
+
+        if Command.year_iterarion == "24":
+            edit_freeze_mentality(frozenMentality) 
+
+        Command.dbutils.manage_difficulty_triggers(difficulty, message["disabled"])
+        Command.dbutils.manage_refurbish_trigger(int(refurbish))
+        
+
+        with open(file_path, "w") as json_file:
+            json.dump(existing_data, json_file, indent=4)
+
         self.replace_team("Alpha Tauri", self.message["alphatauri"])
         self.replace_team("Alpine", self.message["alpine"])
         self.replace_team("Alfa Romeo", self.message["alfa"])
+
+
+
+        

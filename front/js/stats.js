@@ -5,10 +5,7 @@ let driverStatTitle = document.getElementById("driverStatsTitle")
 let statPanelShown = 0;
 let typeOverall = "driver";
 let typeEdit;
-let typeStaff_dict = { 0: "fulldriverlist", 1: "fullTechnicalList", 2: "fullEngineerList", 3: "fullAeroList", 4: "fullDirectorList" }
-let mentality_dict = { 0: "enthusiastic", 1: "positive", 2: "neutral", 3: "negative", 4: "demoralized" }
 let oldNum;
-let teamOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
 
 
 /**
@@ -31,6 +28,8 @@ function place_drivers_editStats(driversArray) {
 
         let newDiv = document.createElement("div");
         let ovrDiv = document.createElement("div");
+        let ovrSpan = document.createElement("span");
+        let mentality_ovrSpan = document.createElement("span");
 
         newDiv.className = "col normal-driver";
         newDiv.dataset.driverid = driver[1];
@@ -57,20 +56,7 @@ function place_drivers_editStats(driversArray) {
             statsString += driver[i] + ' ';
         }
         newDiv.dataset.stats = statsString;
-        newDiv.addEventListener('click', () => {
-            let elementosClicked = document.querySelectorAll('.clicked');
-            elementosClicked.forEach(item => item.classList.remove('clicked'));
-            newDiv.classList.toggle('clicked');
-            driverStatTitle.value = newDiv.dataset.name
-            load_stats(newDiv)
-            if (statPanelShown == 0) {
-                document.getElementById("editStatsPanel").className = "left-panel-stats"
-                statPanelShown = 1
-            }
 
-            recalculateOverall()
-
-        });
         newDiv.dataset.superLicense = driver["superlicense"]
         newDiv.dataset.age = driver["age"]
         newDiv.dataset.retirement = driver["retirement_age"]
@@ -86,17 +72,57 @@ function place_drivers_editStats(driversArray) {
             flag.src = `https://flagsapi.com/${country_code}/flat/24.png`
             nameDiv.appendChild(flag)
         }
-        if (driver["mentality0"]) {
+        if (driver["mentality0"]  >= 0) {
             newDiv.dataset.mentality0 = driver["mentality0"]
             newDiv.dataset.mentality1 = driver["mentality1"]
             newDiv.dataset.mentality2 = driver["mentality2"]
+            newDiv.dataset.globalMentality = driver["global_mentality"]
+        }
+        let mentality = driver["global_mentality"]
+        if (mentality < 2){
+            mentality_ovrSpan.classList.add("mentality-small-ovr-positive")
+        }
+        else if (mentality > 2){
+            mentality_ovrSpan.classList.add("mentality-small-ovr-negative")
         }
         newDiv.dataset.marketability = driver["marketability"]
-        ovr = calculateOverall(statsString, "driver")
-        ovrDiv.innerHTML = ovr
+        let ovr = calculateOverall(statsString, "driver", mentality)
+        ovrSpan.textContent = ovr[0]
+        mentality_ovrSpan.textContent = ""
+        if (ovr[0] !== ovr[1]){
+            mentality_ovrSpan.textContent = ovr[1]
+        }
+        ovrDiv.appendChild(mentality_ovrSpan)
+        ovrDiv.appendChild(ovrSpan)
         ovrDiv.classList.add("bold-font")
         ovrDiv.classList.add("small-ovr")
         newDiv.appendChild(ovrDiv)
+        newDiv.addEventListener('click', () => {
+            let elementosClicked = document.querySelectorAll('.clicked');
+            elementosClicked.forEach(item => item.classList.remove('clicked'));
+            newDiv.classList.toggle('clicked');
+            driverStatTitle.value = newDiv.dataset.name
+            load_stats(newDiv)
+            if (statPanelShown == 0) {
+                document.getElementById("editStatsPanel").className = "left-panel-stats"
+                statPanelShown = 1
+            }
+            recalculateOverall()
+            let diff = parseInt(ovr[1]) - parseInt(ovr[0])
+            let mentalitydiff = document.querySelector(".mentality-change-ovr")
+            if (diff > 0) {
+                mentalitydiff.textContent = "+" + diff
+                mentalitydiff.className = "mentality-change-ovr positive"
+            }
+            else if (diff < 0) {
+                mentalitydiff.textContent = diff
+                mentalitydiff.className = "mentality-change-ovr negative"
+            }
+            else{
+                mentalitydiff.textContent = ""
+                mentalitydiff.className = "mentality-change-ovr"
+            }
+        });
         document.getElementById(divPosition).appendChild(newDiv)
 
 
@@ -155,6 +181,9 @@ function place_staff_editStats(staffArray) {
 
         let newDiv = document.createElement("div");
         let ovrDiv = document.createElement("div");
+        let ovrSpan = document.createElement("span")
+        let mentality_ovrSpan = document.createElement("span");
+
 
         newDiv.className = "col normal-driver";
         newDiv.dataset.driverid = staff[1];
@@ -176,20 +205,7 @@ function place_staff_editStats(staffArray) {
         newDiv.appendChild(nameDiv)
         newDiv.classList.add(team_dict[staff[2]] + "-transparent")
         newDiv.dataset.stats = statsString;
-        newDiv.addEventListener('click', () => {
-            let elementosClicked = document.querySelectorAll('.clicked');
-            elementosClicked.forEach(item => item.classList.remove('clicked'));
-            newDiv.classList.toggle('clicked');
-            driverStatTitle.value = newDiv.dataset.name
-            load_stats(newDiv)
-            if (statPanelShown == 0) {
-                document.getElementById("editStatsPanel").className = "left-panel-stats"
-                statPanelShown = 1
-            }
 
-            recalculateOverall()
-
-        });
         newDiv.dataset.age = staff["age"]
         newDiv.dataset.retirement = staff["retirement_age"]
         newDiv.dataset.raceFormula = staff["race_formula"]
@@ -201,16 +217,58 @@ function place_staff_editStats(staffArray) {
             flag.src = `https://flagsapi.com/${country_code}/flat/24.png`
             nameDiv.appendChild(flag)
         }
-        if (staff["mentality0"]) {
+        if (staff["mentality0"] >= 0) {
             newDiv.dataset.mentality0 = staff["mentality0"]
             newDiv.dataset.mentality1 = staff["mentality1"]
             newDiv.dataset.mentality2 = staff["mentality2"]
+            newDiv.dataset.globalMentality = staff["global_mentality"]
         }
-        ovr = calculateOverall(statsString, "staff")
-        ovrDiv.innerHTML = ovr
+        let mentality = staff["global_mentality"]
+        let ovr = calculateOverall(statsString, "staff", mentality)
+        ovrSpan.textContent = ovr[0]
+        mentality_ovrSpan.textContent = ""
+        if (ovr[0] !== ovr[1]){
+            mentality_ovrSpan.textContent = ovr[1]
+        }
+        ovrDiv.appendChild(mentality_ovrSpan)
+        if (mentality < 2){
+            mentality_ovrSpan.classList.add("mentality-small-ovr-positive")
+        }
+        else if (mentality > 2){
+            mentality_ovrSpan.classList.add("mentality-small-ovr-negative")
+        }
+        ovrDiv.appendChild(ovrSpan)
         ovrDiv.classList.add("bold-font")
         ovrDiv.classList.add("small-ovr")
         newDiv.appendChild(ovrDiv)
+        newDiv.addEventListener('click', () => {
+            let elementosClicked = document.querySelectorAll('.clicked');
+            elementosClicked.forEach(item => item.classList.remove('clicked'));
+            newDiv.classList.toggle('clicked');
+            driverStatTitle.value = newDiv.dataset.name
+            load_stats(newDiv)
+            if (statPanelShown == 0) {
+                document.getElementById("editStatsPanel").className = "left-panel-stats"
+                statPanelShown = 1
+            }
+            recalculateOverall()
+            let diff = parseInt(ovr[1]) - parseInt(ovr[0])
+            let mentalitydiff = document.querySelector(".mentality-change-ovr")
+            if (diff > 0) {
+                mentalitydiff.textContent = "+" + diff
+                mentalitydiff.classList.add("positive")
+            }
+            else if (diff < 0) {
+                mentalitydiff.textContent = diff
+                mentalitydiff.classList.add("negative")
+            }
+            else{
+                mentalitydiff.textContent = ""
+                mentalitydiff.classList.remove("positive")
+                mentalitydiff.classList.remove("negative")
+            }
+        });
+
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
@@ -227,7 +285,7 @@ function recalculateOverall() {
     })
     stats = stats.slice(0, -1);
     let oldovr = document.getElementById("ovrholder").innerHTML;
-    let ovr = calculateOverall(stats, typeOverall);
+    let ovr = calculateOverall(stats, typeOverall, 2, "big");
     if (oldovr > ovr) {
         document.getElementById("ovrholder").innerHTML = ovr;
         document.getElementById("ovrholder").className = "overall-holder bold-font alertNeg";
@@ -273,9 +331,13 @@ function getName(html) {
  * @param {string} type type of staff
  * @returns the number of his overall value
  */
-function calculateOverall(stats, type) {
+function calculateOverall(stats, type, mentality=2, ovr="small") {
     let statsArray = stats.split(" ").map(Number);
-    let rating;
+    let mentality_stats = [];
+    for (let i = 0; i < statsArray.length; i++) {
+        mentality_stats[i] = statsArray[i] + mentality_bonuses[mentality];
+    }
+    let rating, mentality_rating;
     if (type === "driver") {
         let cornering = statsArray[0];
         let braking = statsArray[1];
@@ -288,17 +350,24 @@ function calculateOverall(stats, type) {
         let accuracy = statsArray[8];
 
         rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.75 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 5;
-
+        mentality_rating = (mentality_stats[0] + mentality_stats[1] * 0.75 + mentality_stats[7] * 0.5 + mentality_stats[2] * 0.75 + mentality_stats[3] * 0.5 + mentality_stats[8] * 0.75 + mentality_stats[4] * 0.25 + mentality_stats[5] * 0.25 + mentality_stats[6] * 0.25) / 5;
     }
     else if (type === "staff") {
         let suma = 0;
+        mentality_rating = 0;
         for (let i = 0; i < statsArray.length; i++) {
             suma += statsArray[i];
+            mentality_rating += mentality_stats[i];
         }
         rating = suma / statsArray.length;
+        mentality_rating = mentality_rating / statsArray.length;
     }
-
-    return Math.round(rating)
+    if(ovr === "small"){
+        return [Math.round(rating), Math.round(mentality_rating)];
+    }
+    else {
+        return Math.round(rating)
+    }
 }
 
 function updateStat(input, increment) {
@@ -664,6 +733,27 @@ function manage_stat_bar(element, value) {
     bar.style.width = percentage
 }
 
+function manage_mentality_modifiers(element, mentality) {
+    let name_stat = element.parentNode.parentNode.querySelector("span.bold-font")
+    let modifier_span = name_stat.querySelector(".mentality-modifier")
+    if (modifier_span){
+        modifier_span.remove()
+    }
+    let modifier = mentality_bonuses[mentality];
+    let mentality_class, span = "";
+    if (parseInt(mentality) < 2){
+        mentality_class = "positive"
+        span = "<span class='mentality-modifier positive'> +" + modifier + "</span>"
+    }
+    else if (parseInt(mentality) > 2){
+        mentality_class = "negative"
+        span = "<span class='mentality-modifier negative'>" + modifier + "</span>"
+    }
+    if (name_stat.textContent !== "GROWTH" && name_stat.textContent !== "AGRESSION"){
+        name_stat.innerHTML = name_stat.textContent + span
+    }
+}
+
 /**
  * Loads the stats into the input numbers
  * @param {div} div div of the staff that is about to be edited
@@ -675,8 +765,8 @@ function load_stats(div) {
     inputArray.forEach(function (input, index) {
         let value = statsArray[index]
         input.value = value
-        //get sibling of input
         manage_stat_bar(input, value)
+        manage_mentality_modifiers(input, div.dataset.globalMentality)
     });
     let actualAge = document.querySelector(".actual-age")
     let retirementAge = document.querySelector(".actual-retirement")
