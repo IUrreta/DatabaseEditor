@@ -85,7 +85,7 @@ class SaveSelectedCommand(Command):
         cars = ["Cars fetched", cars, att]
         data_json_cars = json.dumps(cars)
         await self.send_message_to_client(data_json_cars)
-        engines = await self.get_custom_engines_list(save)
+        engines = await self.dbutils.get_custom_engines_list(save)
         engines_list = ["Custom Engines fetched", engines]
         data_json_engines = json.dumps(engines_list)
         await self.send_message_to_client(data_json_engines)
@@ -150,15 +150,6 @@ class SaveSelectedCommand(Command):
             with open(file_path, "w") as json_file:
                 json.dump(data, json_file, indent=4)
 
-
-    async def get_custom_engines_list(self, saveName):
-        config_file_path = f"./../configs/{saveName.split('.')[0]}_config.json"
-        if os.path.exists(config_file_path):
-            with open(config_file_path, "r") as json_file:
-                data = json.load(json_file)
-            
-            custom_engines = data.get("engines", {})
-            return custom_engines
         
     async def check_engine_allocations(self, save):
         config_file_path = f"./../configs/{save.split('.')[0]}_config.json"
