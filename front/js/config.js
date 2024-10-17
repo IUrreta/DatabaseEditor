@@ -179,12 +179,12 @@ let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpi
 const difficultyConfig = {
     "default": {
         visible: ["defaultDif"],
-        lightDif: { className: "", text: "" },
-        researchDif: { className: "", text: "" },
-        statDif: { className: "", text: "" },
-        designTimeDif: { className: "", text: "" },
-        factoryDif: { className: "", text: "" },
-        buildDif: { className: "", text: "" }
+        lightDif: { className: "dif-warning", text: "" },
+        researchDif: { className: "dif-warning", text: "" },
+        statDif: { className: "dif-warning", text: "" },
+        designTimeDif: { className: "dif-warning", text: "" },
+        factoryDif: { className: "dif-warning", text: "" },
+        buildDif: { className: "dif-warning", text: "" }
     },
     "reduced weight": {
         visible: ["lightDif"],

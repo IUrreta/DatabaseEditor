@@ -3,6 +3,8 @@ import math
 import re
 from scripts.countries import countries_dict
 import sqlite3
+import os
+import json
 
 difficulty_dict = {
     0:{
@@ -671,6 +673,15 @@ class DatabaseUtils:
             cadena = cadena[:-1]
         return cadena
     
+    async def get_custom_engines_list(self, saveName):
+        config_file_path = f"./../configs/{saveName.split('.')[0]}_config.json"
+        if os.path.exists(config_file_path):
+            with open(config_file_path, "r") as json_file:
+                data = json.load(json_file)
+            
+            custom_engines = data.get("engines", {})
+            return custom_engines
+    
     def manage_weight_trigger(self, type, cursor, disabled):
         cursor.execute("DROP TRIGGER IF EXISTS reduced_weight_normal")
         cursor.execute("DROP TRIGGER IF EXISTS reduced_weight_extreme")
@@ -764,7 +775,7 @@ class DatabaseUtils:
         cursor.execute("DROP TRIGGER IF EXISTS designTime_impossible")
 
         if type >= 2 and disabledList["statDif"] == 0:
-            trigger_name = f"difficulty_{difficulty_dict[type]["name"]}"
+            trigger_name = f'difficulty_{difficulty_dict[type]["name"]}'
             increase_perc = difficulty_dict[type]["perc"]
             increase_7and8 = difficulty_dict[type]["7and8"]
             increase_9 = difficulty_dict[type]["9"]
@@ -821,7 +832,7 @@ class DatabaseUtils:
 
 
             if type >= 2 and disabledList["designTimeDif"] == 0:
-                trigger_name = f"designTime_{difficulty_dict[type]["name"]}"
+                trigger_name = f'designTime_{difficulty_dict[type]["name"]}'
                 trigger_sql = f"""
                     CREATE TRIGGER {trigger_name}
                     AFTER INSERT ON Parts_Designs_StatValues
@@ -845,7 +856,6 @@ class DatabaseUtils:
                 cursor.execute(trigger_sql)
                 
                 
-
         self.manage_weight_trigger(type,  cursor, disabledList["lightDif"])
         self.manage__instant_build_triggers(type,  cursor, disabledList["buildDif"])
         self.manage_research_triggers(type, cursor, disabledList["researchDif"])
@@ -1022,7 +1032,7 @@ class DatabaseUtils:
             "lightDif": 1,
             "researchDif": 1,
             "buildDif": 1,
-            "factoryDif": 1,
+            "factoryDif": 0,
             "statDif": 1,
             "designTimeDif": 1
         }
@@ -1031,6 +1041,7 @@ class DatabaseUtils:
         conn = sqlite3.connect("../result/main.db")
         cursor = conn.cursor()
         triggers = cursor.execute("SELECT name FROM sqlite_master WHERE type='trigger';").fetchall()
+        factory_levels = cursor.execute("SELECT BuildingID FROM Buildings_HQ WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player)").fetchall()
         conn.close()
         if triggers:
             for trigger in triggers:
@@ -1055,6 +1066,11 @@ class DatabaseUtils:
                 if dif_level > highest_difficulty:
                     highest_difficulty = dif_level
 
+        #if all factorylevels are 34 or 35 factoryDif is 0
+        for level in factory_levels:
+            if level[0] < 34:
+                disabled["factoryDif"] = 1
+                break
 
         return highest_difficulty, disabled, refurbish, frozenMentality
             

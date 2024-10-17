@@ -1510,6 +1510,7 @@ document.addEventListener('DOMContentLoaded',function () {
         let difficultyValue = parseInt(difficultySlider.value)
         let disabledList = {}
         document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
+            console.log(elem)
             let id = elem.id
             if (elem.classList.contains("disabled")) {
                 disabledList[id] = 1
