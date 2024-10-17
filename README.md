@@ -29,7 +29,7 @@ When I developed those scripts, more specifically the driver transfers script fo
 4. Edit driver numbers
 5. Editing all staff (including drivers') stats, plus mentality and marketability, and **RENAME** any of them (including abreviations for drivers)
 
-![image](https://github.com/user-attachments/assets/3adcd9d5-9dca-45f4-b811-1e93d726f5ab)
+![image](https://github.com/user-attachments/assets/c1eac701-0fe5-4294-b2ac-09677d6d1307)
 
 6. Customize your calendar, including weather of races
    
