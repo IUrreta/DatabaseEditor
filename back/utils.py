@@ -764,7 +764,7 @@ class DatabaseUtils:
         cursor.execute("DROP TRIGGER IF EXISTS designTime_impossible")
 
         if type >= 2 and disabledList["statDif"] == 0:
-            trigger_name = f"difficulty_{difficulty_dict[type]["name"]}"
+            trigger_name = f'difficulty_{difficulty_dict[type]["name"]}'
             increase_perc = difficulty_dict[type]["perc"]
             increase_7and8 = difficulty_dict[type]["7and8"]
             increase_9 = difficulty_dict[type]["9"]
@@ -821,7 +821,7 @@ class DatabaseUtils:
 
 
             if type >= 2 and disabledList["designTimeDif"] == 0:
-                trigger_name = f"designTime_{difficulty_dict[type]["name"]}"
+                trigger_name = f'designTime_{difficulty_dict[type]["name"]}'
                 trigger_sql = f"""
                     CREATE TRIGGER {trigger_name}
                     AFTER INSERT ON Parts_Designs_StatValues

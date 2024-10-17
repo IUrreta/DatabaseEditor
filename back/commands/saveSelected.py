@@ -176,7 +176,7 @@ class SaveSelectedCommand(Command):
         
     def create_config_file(self, saveName, game_year):
         folder = "./../configs"
-        file = f"{saveName.split(".")[0]}_config.json"
+        file = f'{saveName.split(".")[0]}_config.json'
         file_path = os.path.join(folder, file)
         if not os.path.exists(folder):
             os.makedirs(folder)
