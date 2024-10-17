@@ -467,7 +467,7 @@ body {
   overflow: hidden;
   max-width: 27px;
   white-space: nowrap;
-  transition: max-width 0.5s ease-in-out, color 0.3s;
+  transition: max-width 0.35s ease-in-out, color 0.3s;
 }
 
 .socials a:hover {
@@ -555,7 +555,7 @@ a.bi-cup-hot-fill:hover {
 }
 
 a.bi-linkedin:hover {
-  color: #0077b5 ;
+  color: var(--text-selected-secondary);
 }
 
 a.bi-github:hover {
@@ -1693,7 +1693,7 @@ input[type="checkbox"]:checked {
 }
 
 .gear-container.shown{
-  width: 44px;
+  width: 40px;
 }
 
 .gear-container:hover .bi-gear{

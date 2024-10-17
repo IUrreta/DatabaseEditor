@@ -14,7 +14,7 @@ difficulty_dict = {
         "research": 0
     },
     1:{
-        "name": "reduced_weight",
+        "name": "reducedWeight",
         "perc": 0,
         "7and8": 0,
         "9": 0,
@@ -22,7 +22,7 @@ difficulty_dict = {
         "research": 0
     },
     2: {
-        "name": "extra_hard",
+        "name": "extraHard",
         "perc": 0.5,
         "7and8": 0.016,
         "9": 0.008,
@@ -62,6 +62,8 @@ difficulty_dict = {
         "research": 90
     }
 }
+
+inverted_difficulty_dict = {v["name"]: k for k, v in difficulty_dict.items()}
 
 class DatabaseUtils:
     def __init__(self, connection):
@@ -749,11 +751,17 @@ class DatabaseUtils:
         conn = sqlite3.connect("../result/main.db")
         cursor = conn.cursor()
         
-        cursor.execute("DROP TRIGGER IF EXISTS difficulty_extra_hard")
+        cursor.execute("DROP TRIGGER IF EXISTS difficulty_extraHard")
         cursor.execute("DROP TRIGGER IF EXISTS difficulty_brutal")
         cursor.execute("DROP TRIGGER IF EXISTS difficulty_unfair")
         cursor.execute("DROP TRIGGER IF EXISTS difficulty_insane")
         cursor.execute("DROP TRIGGER IF EXISTS difficulty_impossible")
+
+        cursor.execute("DROP TRIGGER IF EXISTS designTime_extraHard")
+        cursor.execute("DROP TRIGGER IF EXISTS designTime_brutal")
+        cursor.execute("DROP TRIGGER IF EXISTS designTime_unfair")
+        cursor.execute("DROP TRIGGER IF EXISTS designTime_insane")
+        cursor.execute("DROP TRIGGER IF EXISTS designTime_impossible")
 
         if type >= 2 and disabledList["statDif"] == 0:
             trigger_name = f"difficulty_{difficulty_dict[type]["name"]}"
@@ -811,13 +819,8 @@ class DatabaseUtils:
 
             cursor.execute(trigger_sql)
 
-            if type >= 2 and disabledList["designTimeDif"] == 0:
-                cursor.execute("DROP TRIGGER IF EXISTS designTime_extra_hard")
-                cursor.execute("DROP TRIGGER IF EXISTS designTime_brutal")
-                cursor.execute("DROP TRIGGER IF EXISTS designTime_unfair")
-                cursor.execute("DROP TRIGGER IF EXISTS designTime_insane")
-                cursor.execute("DROP TRIGGER IF EXISTS designTime_impossible")
 
+            if type >= 2 and disabledList["designTimeDif"] == 0:
                 trigger_name = f"designTime_{difficulty_dict[type]["name"]}"
                 trigger_sql = f"""
                     CREATE TRIGGER {trigger_name}
@@ -952,7 +955,7 @@ class DatabaseUtils:
     def manage_research_triggers(self, type, cursor, disabled):
         trigger_name = f"research_{difficulty_dict[type]['name']}"
 
-        cursor.execute("DROP TRIGGER IF EXISTS research_extra_hard")
+        cursor.execute("DROP TRIGGER IF EXISTS research_extraHard")
         cursor.execute("DROP TRIGGER IF EXISTS research_brutal")
         cursor.execute("DROP TRIGGER IF EXISTS research_unfair")
         cursor.execute("DROP TRIGGER IF EXISTS research_insane")
@@ -1011,4 +1014,47 @@ class DatabaseUtils:
 
         conn.commit()
         conn.close()
+
+    
+    def fetch_existing_trigers(self):
+        highest_difficulty = 0
+        disabled = {
+            "lightDif": 1,
+            "researchDif": 1,
+            "buildDif": 1,
+            "factoryDif": 1,
+            "statDif": 1,
+            "designTimeDif": 1
+        }
+        refurbish = 0
+        frozenMentality = 0
+        conn = sqlite3.connect("../result/main.db")
+        cursor = conn.cursor()
+        triggers = cursor.execute("SELECT name FROM sqlite_master WHERE type='trigger';").fetchall()
+        conn.close()
+        if triggers:
+            for trigger in triggers:
+                dif = trigger[0].split("_")[1]
+                type_trigger = trigger[0].split("_")[0]
+                if type_trigger == "difficulty":
+                    disabled["statDif"] = 0
+                elif type_trigger == "designTime":
+                    disabled["designTimeDif"] = 0
+                elif type_trigger == "instant":
+                    disabled["buildDif"] = 0
+                elif type_trigger == "research":
+                    disabled["researchDif"] = 0
+                elif type_trigger == "reduced":
+                    disabled["lightDif"] = 0
+                elif type_trigger == "refurbish":
+                    refurbish = 1
+                elif type_trigger == "clear":
+                    frozenMentality = 1
+
+                dif_level = inverted_difficulty_dict.get(dif, 0)
+                if dif_level > highest_difficulty:
+                    highest_difficulty = dif_level
+
+
+        return highest_difficulty, disabled, refurbish, frozenMentality
             

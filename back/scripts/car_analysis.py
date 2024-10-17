@@ -380,8 +380,10 @@ class CarAnalysisUtils:
 
     def fit_loadouts_dict(self, loadouts_dict, team_id):
         for part in loadouts_dict:
+            print(part)
             design_1 = loadouts_dict[part][0]
             design_2 = loadouts_dict[part][1]
+            print(design_1, design_2)
             fitted_design_1 = self.cursor.execute(f"SELECT DesignID, ItemID FROM Parts_CarLoadout WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = 1").fetchone()
             if design_1 is not None:
                 if fitted_design_1[0] is not None and fitted_design_1[1] is not None:
@@ -458,7 +460,7 @@ class CarAnalysisUtils:
         self.cursor.execute(f"UPDATE Parts_CarLoadout SET DesignID = {design_id}, ItemID = {item_id} WHERE TeamID = {team_id} AND PartType = {part} AND LoadoutID = {loadout_id}")
         self.cursor.execute(f"UPDATE Parts_Items SET AssociatedCar = {loadout_id}, LastEquippedCar = {loadout_id} WHERE ItemID = {item_id}")
 
-    def overwrite_performance_team(self, team_id, performance, custom_team=None, year_iteration=None):
+    def overwrite_performance_team(self, team_id, performance, custom_team=None, year_iteration=None, loadout_dict=None):
         day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
         day = day_season[0]
         season = day_season[1]
@@ -473,7 +475,7 @@ class CarAnalysisUtils:
                 if int(new_design) == -1:
                     max_design = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs").fetchone()[0]
                     latest_design_part_from_team = self.cursor.execute(f"SELECT MAX(DesignID) FROM Parts_Designs WHERE PartType = {part} AND TeamID = {team_id}").fetchone()[0]
-                    new_design_id = max_design + 1
+                    new_design_id = loadout_dict[str(part)][0]
                     # print(f"New design: {new_design_id} for part {part_name} from team {team_id}")
                     self.add_new_design(part, int(team_id), day, season, latest_design_part_from_team, new_design_id)
                 else:

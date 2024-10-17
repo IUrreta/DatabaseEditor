@@ -18,12 +18,7 @@ const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
 const selectImageButton = document.getElementById('selectImage');
 const fileInput = document.getElementById('fileInput');
 
-const f1_teams = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32]
-const f2_teams = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
-const f3_teams = [22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
 
-const staff_positions = { 1: "technical-chief", 2: "race-engineer", 3: "head-aero", 4: "sporting-director" }
-const staff_pics = { 1: "../assets/images/technicalChief.png", 2: "../assets/images/raceEngineer.png", 3: "../assets/images/headAero.png", 4: "../assets/images/sportingDirector.png" }
 
 
 let originalParent;
@@ -40,9 +35,9 @@ let driver2;
 let originalTeamId
 let currentSeason;
 
-let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 32: "ct", 33: "f2", 34: "f3" }
-let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10, 'custom': 32 }
+
 let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3", "custom": "Custom Team" }
+//custom team name changes so this dict stays here
 
 /**
  * Removes all the drivers from teams and categories

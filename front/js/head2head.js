@@ -11,7 +11,6 @@ let sprints = false;
 let race = 0;
 let quali = 0;
 let menuLength = 4;
-let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000"}
 let driverGraph;
 let pointsGraph;
 let qualiGraph;
@@ -26,57 +25,8 @@ let graphList = []
 let h2hTeamList = []
 let graphTeamList = []
 let mode = "driver"
-
-
-const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD", "#B6BABD", "#c3dc00", "#d0e610", "#fac51c", "#b09247", "#f7c82f"]
-const default_dict = {
-    1: "Ferrari",
-    2: "McLaren",
-    3: "Red Bull",
-    4: "Mercedes",
-    5: "Alpine",
-    6: "Williams",
-    7: "Haas",
-    8: "Alpha Tauri",
-    9: "Alfa Romeo",
-    10: "Aston Martin",
-    32: "Custom Team"
-}
-
-let combined_dict = {
-    1: "Ferrari",
-    2: "McLaren",
-    3: "Red Bull",
-    4: "Mercedes",
-    5: "Alpine",
-    6: "Williams",
-    7: "Haas",
-    8: "Alpha Tauri",
-    9: "Alfa Romeo",
-    10: "Aston Martin",
-    11: "Prema Racing (F2)",
-    12: "Virtuosi Racing (F2)",
-    13: "Carlin (F2)",
-    14: "Hitech GP (F2)",
-    15: "ART Grand Prix (F2)",
-    16: "MP Motorsport (F2)",
-    17: "PHM Racing (F2)",
-    18: "DAMS (F2)",
-    19: "Campo Racing (F2)",
-    20: "VAR Racing (F2)",
-    21: "Trident (F2)",
-    22: "Prema Racing (F3)",
-    23: "Trident (F3)",
-    24: "ART Grand Prix (F3)",
-    25: "Hitech GP (F3)",
-    26: "VAR Racing (F3)",
-    27: "MP Motorsport (F3)",
-    28: "Campos Racing (F3)",
-    29: "Carlin (F3)",
-    30: "Jenzzer Motorsport (F3)",
-    31: "PHM Racing (F3)",
-    32: "Custom Team"
-}
+let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000"}
+//changed as the ct colors changes, so it stays
 
 Chart.register(ChartDataLabels);
 
@@ -787,6 +737,8 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
     if (mode === "driver") {
         document.querySelector("#qualiForm").classList.remove("d-none")
         document.querySelector("#raceForm").classList.remove("d-none")
+        document.querySelector("#gapToWinner").classList.remove("d-none")
+        document.querySelector("#gapToPole").classList.remove("d-none")
         document.querySelector("#raceForm").click()
         race = 0
         quali = 0

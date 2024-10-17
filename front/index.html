@@ -511,11 +511,8 @@
           </div>
           <div class="d-flex" style="gap: 7px;">
             <div class="d-none" id="gameChanges">
-              <div class="pb-3">Please be aware that if you <span class="important-text bold-font">switch teams after changing the
-                  difficulty</span> or the refurbish toggle,
-                you will need to <span class="important-text bold-font">save changes again</span> for the difficulty to
-                adjust correctly. If you don't, you may benefit from the advantages granted to the AI.
-                Additionally, if you change the name of the save file, you will need to reconfigure this part again for the editor to be synchronized again.
+              <div class="pb-3">
+                If you change the name of the save file, the <span class="important-text bold-font">name </span>of the difficulty selected may be incorrect.
               </div>
               <div class="game-changes">
                 <div class="mentality-changes">
@@ -4434,36 +4431,28 @@
                     </div>
                   </div>
                 </div>
-                <div class="part-performance" data-new="0" data-part="suspension" data-partid="8">
+                <div class="part-performance" data-new="0" data-part="underfloor" data-partid="7">
                   <div class="part-performance-title">
                     <div class="arrows">
                       <i class="bi bi-chevron-up"></i>
                       <i class="bi bi-chevron-down"></i>
                     </div>
                     <div class="part-name-buttons">
-                      <span>Suspension</span>
+                      <span>Underfloor</span>
                       <span class="part-subtitle"></span>
                       <div class="part-buttons">
                         <i class="bi bi-dash-lg"></i>
                         <i class="bi bi-plus-lg"></i>
                       </div>
                     </div>
-                    <i class="bi bi-caret-down-fill" data-bs-toggle="collapse" data-bs-target="#suspensionList"></i>
+                    <i class="bi bi-caret-down-fill" data-bs-toggle="collapse" data-bs-target="#underList"></i>
                   </div>
-                  <div class="collapse parts-list" id="suspensionList">
+                  <div class="collapse parts-list" id="underList">
                   </div>
                   <div class="part-performance-stats">
                     <div class="part-stats">
-                      <div class="part-performance-stat" data-attribute="0">
-                        <div class="part-performance-stat-title">Airflow front</div>
-                        <div class="stat-number">
-                          <i class="bi bi-dash-lg"></i>
-                          <input type="text" class="custom-input-number" min="0" max="100">
-                          <i class="bi bi-plus-lg"></i>
-                        </div>
-                      </div>
-                      <div class="part-performance-stat" data-attribute="2">
-                        <div class="part-performance-stat-title brake-cooling-replace">Brake cooling</div>
+                      <div class="part-performance-stat" data-attribute="1">
+                        <div class="part-performance-stat-title">Airflow sensitivity</div>
                         <div class="stat-number">
                           <i class="bi bi-dash-lg"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4505,28 +4494,36 @@
                     </div>
                   </div>
                 </div>
-                <div class="part-performance" data-new="0" data-part="underfloor" data-partid="7">
+                <div class="part-performance" data-new="0" data-part="suspension" data-partid="8">
                   <div class="part-performance-title">
                     <div class="arrows">
                       <i class="bi bi-chevron-up"></i>
                       <i class="bi bi-chevron-down"></i>
                     </div>
                     <div class="part-name-buttons">
-                      <span>Underfloor</span>
+                      <span>Suspension</span>
                       <span class="part-subtitle"></span>
                       <div class="part-buttons">
                         <i class="bi bi-dash-lg"></i>
                         <i class="bi bi-plus-lg"></i>
                       </div>
                     </div>
-                    <i class="bi bi-caret-down-fill" data-bs-toggle="collapse" data-bs-target="#underList"></i>
+                    <i class="bi bi-caret-down-fill" data-bs-toggle="collapse" data-bs-target="#suspensionList"></i>
                   </div>
-                  <div class="collapse parts-list" id="underList">
+                  <div class="collapse parts-list" id="suspensionList">
                   </div>
                   <div class="part-performance-stats">
                     <div class="part-stats">
-                      <div class="part-performance-stat" data-attribute="1">
-                        <div class="part-performance-stat-title">Airflow sensitivity</div>
+                      <div class="part-performance-stat" data-attribute="0">
+                        <div class="part-performance-stat-title">Airflow front</div>
+                        <div class="stat-number">
+                          <i class="bi bi-dash-lg"></i>
+                          <input type="text" class="custom-input-number" min="0" max="100">
+                          <i class="bi bi-plus-lg"></i>
+                        </div>
+                      </div>
+                      <div class="part-performance-stat" data-attribute="2">
+                        <div class="part-performance-stat-title brake-cooling-replace">Brake cooling</div>
                         <div class="stat-number">
                           <i class="bi bi-dash-lg"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4937,7 +4934,7 @@
   </footer>
 
 
-
+  <script src ="./js/config.js"></script>
   <script src="./js/renderer.js"></script>
   <script src="./js/transfers.js"></script>
   <script src="./js/stats.js"></script>

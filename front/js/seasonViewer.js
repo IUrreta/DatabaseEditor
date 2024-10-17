@@ -1,31 +1,5 @@
-const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0", 3: "chi0" };
-const invertedRacesMap = { "bah0": 2, "aus0": 1, "sau0": 11, "imo0": 24, "mia0": 22, "spa0": 5, "mon0": 6, "aze0": 4, "can0": 7, "gbr0": 10, "aut0": 9, "fra0": 8, "hun0": 12, "bel0": 13, "ita0": 14, "sgp0": 15, "jap0": 17, "usa0": 19, "mex0": 18, "bra0": 20, "uae0": 21, "ned0": 23, "veg0": 25, "qat0": 26, "chi0": 3 };
-const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT", 3: "CHI" };
-const teams_full_name_dict = { 'FERRARI': 1, 'MCLAREN': 2, 'RED BULL': 3, 'MERCEDES': 4, 'ALPINE': 5, 'WILLIAMS': 6, 'HAAS': 7, 'ALPHA TAURI': 8, 'ALFA ROMEO': 9, 'ASTON MARTIN': 10 }
-let logos_disc = {
-    1: '../assets/images/ferrari.png',
-    2: '../assets/images/mclaren.png',
-    3: '../assets/images/redbull.png',
-    4: '../assets/images/mercedes.png',
-    5: '../assets/images/alpine.png',
-    6: '../assets/images/williams.png',
-    7: '../assets/images/haas.png',
-    8: '../assets/images/alphatauri.png',
-    9: '../assets/images/alfaromeo.png',
-    10: '../assets/images/astonmartin.png',
-    32: '../assets/images/placeholder.png'
-};
-const points_race = {
-    1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1,
-    11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, "DNF": 0
-}
-const points_sprint = {
-    1: 8, 2: 7, 3: 6, 4: 5, 5: 4, 6: 3, 7: 2, 8: 1,
-    9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, "-1": 0
-}
 let seasonTable;
 let teamsTable;
-let default_points = ["25", "18", "15", "12", "10", "8", "6", "4", "2", "1", "DNF", "0", "", "-"]
 let races_ids = []
 let seasonResults;
 let calendarData;
@@ -36,18 +10,13 @@ let alfaReplace = "alfa"
 let driverOrTeams = "drivers"
 let isYearSelected = false
 let engine_allocations;
-let engine_names = {
+let engine_names = { //this one is changed as the user adds engines, so it will stayhere
     1: "Ferrari",
     4: "Rbpt",
     7: "Mercedes",
     10: "Renault"
 }
 
-let driversTableLogosDict = {
-    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-merc-table", "sauber": "logo-williams-table", "visarb": "logo-up-down", "hugo": "logo-stake-table",
-    "brawn": "logo-brawn-table", "toyota": "logo-williams-table", "alphatauri": "logo-extra-small", "porsche": "logo-porsche-table",
-    "renault": "logo-ferrari-table", "andretti": "logo-ferrari-table", "lotus": "logo-up-down", "alpine": "logo-up-down"
-}
 
 function resetViewer() {
     if (seasonTable) {
@@ -76,6 +45,7 @@ function resetYearButtons() {
 document.getElementById("driverspill").addEventListener("click", function () {
     driverOrTeams = "drivers"
     manage_show_tables()
+    add_marquees_viewer()
 })
 
 document.getElementById("teamspill").addEventListener("click", function () {

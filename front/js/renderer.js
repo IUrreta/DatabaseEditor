@@ -351,6 +351,7 @@ function performanceModeHandler() {
             let loadout1 = elem.dataset.loadout1;
             let loadout2 = elem.dataset.loadout2;
             let stats = {};
+            console.log(part, loadout1, loadout2)
             elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
                 if (stat.dataset.attribute !== "-1") {
                     let statNum = stat.dataset.attribute;
@@ -1639,6 +1640,7 @@ document.addEventListener('DOMContentLoaded',function () {
     });
 
     function update_difficulty_span(value){
+        console.log(value)
         let span = document.querySelector("#difficultySpan")
         let difficulty = difficulty_dict[parseInt(value)]
         if (difficulty === "reduced weight") {
@@ -1683,119 +1685,28 @@ document.addEventListener('DOMContentLoaded',function () {
     }
 
     function manage_difficulty_warnings(level){
-        if (level === "default") {
-            document.getElementById("defaultDif").classList.remove("d-none")
-            document.getElementById("lightDif").classList.add("d-none")
-            document.getElementById("researchDif").classList.add("d-none")
-            document.getElementById("statDif").classList.add("d-none")
-            document.getElementById("designTimeDif").classList.add("d-none")
-            document.getElementById("factoryDif").classList.add("d-none")
-            document.getElementById("buildDif").classList.add("d-none")
+        const elements = [
+            "defaultDif", "lightDif", "researchDif", "statDif", "designTimeDif", "factoryDif", "buildDif"
+        ];
+        const selectedConfig = difficultyConfig[level] || difficultyConfig["default"];
+
+    elements.forEach(id => {
+        document.getElementById(id).classList.add("d-none");
+    });
+
+    selectedConfig.visible.forEach(id => {
+        document.getElementById(id).classList.remove("d-none");
+    });
+
+    elements.forEach(id => {
+        if (selectedConfig[id]) {
+            const elementConfig = selectedConfig[id];
+            const element = document.getElementById(id);
+            element.className = elementConfig.className;
+            element.textContent = elementConfig.text;
         }
-        else if (level === "reduced weight") {
-            document.getElementById("defaultDif").classList.add("d-none")
-            document.getElementById("lightDif").classList.remove("d-none")
-            document.getElementById("lightDif").className = "dif-warning extra-hard"
-            document.getElementById("lightDif").textContent = "Lightweight parts"
-            document.getElementById("researchDif").classList.add("d-none")
-            document.getElementById("statDif").classList.add("d-none")
-            document.getElementById("designTimeDif").classList.add("d-none")
-            document.getElementById("factoryDif").classList.add("d-none")
-            document.getElementById("buildDif").classList.add("d-none")
-        }
-        else if (level === "extra-hard"){
-            document.getElementById("defaultDif").classList.add("d-none")
-            document.getElementById("lightDif").classList.remove("d-none")
-            document.getElementById("lightDif").className = "dif-warning extra-hard"
-            document.getElementById("lightDif").textContent = "Lightweight parts"
-            document.getElementById("researchDif").classList.remove("d-none")
-            document.getElementById("researchDif").className = "dif-warning extra-hard"
-            document.getElementById("researchDif").textContent = "Small research boost"
-            document.getElementById("statDif").classList.remove("d-none")
-            document.getElementById("statDif").className = "dif-warning extra-hard"
-            document.getElementById("statDif").textContent = "Stats boost +0.5%"
-            document.getElementById("designTimeDif").classList.add("d-none")
-            document.getElementById("factoryDif").classList.add("d-none")
-            document.getElementById("buildDif").classList.add("d-none")
-        }
-        else if (level === "brutal"){
-            document.getElementById("defaultDif").classList.add("d-none")
-            document.getElementById("lightDif").classList.remove("d-none")
-            document.getElementById("lightDif").className = "dif-warning extra-hard"
-            document.getElementById("lightDif").textContent = "Lightweight parts"
-            document.getElementById("researchDif").classList.remove("d-none")
-            document.getElementById("researchDif").className = "dif-warning brutal"
-            document.getElementById("researchDif").textContent = "Moderate research boost"
-            document.getElementById("statDif").classList.remove("d-none")
-            document.getElementById("statDif").className = "dif-warning brutal"
-            document.getElementById("statDif").textContent = "Stats boost +0.8%"
-            document.getElementById("designTimeDif").classList.remove("d-none")
-            document.getElementById("designTimeDif").className = "dif-warning brutal"
-            document.getElementById("designTimeDif").textContent = "Design times reduced 5%"
-            document.getElementById("factoryDif").classList.add("d-none")
-            document.getElementById("buildDif").classList.add("d-none")
-        }
-        else if (level === "unfair"){
-            document.getElementById("defaultDif").classList.add("d-none")
-            document.getElementById("lightDif").classList.remove("d-none")
-            document.getElementById("lightDif").className = "dif-warning extra-hard"
-            document.getElementById("lightDif").textContent = "Lightweight parts"
-            document.getElementById("researchDif").classList.remove("d-none")
-            document.getElementById("researchDif").className = "dif-warning unfair"
-            document.getElementById("researchDif").textContent = "Large research boost"
-            document.getElementById("statDif").classList.remove("d-none")
-            document.getElementById("statDif").className = "dif-warning unfair"
-            document.getElementById("statDif").textContent = "Stats boost +1.3%"
-            document.getElementById("designTimeDif").classList.remove("d-none")
-            document.getElementById("designTimeDif").className = "dif-warning unfair"
-            document.getElementById("designTimeDif").textContent = "Design times reduced 11%"
-            document.getElementById("factoryDif").classList.remove("d-none")
-            document.getElementById("factoryDif").className = "dif-warning unfair"
-            document.getElementById("factoryDif").textContent = "Factory level 4"
-            document.getElementById("buildDif").classList.add("d-none")
-        }
-        else if(level === "insane"){
-            document.getElementById("defaultDif").classList.add("d-none")
-            document.getElementById("lightDif").classList.remove("d-none")
-            document.getElementById("lightDif").className = "dif-warning extra-hard"
-            document.getElementById("lightDif").textContent = "Lightweight parts"
-            document.getElementById("researchDif").classList.remove("d-none")
-            document.getElementById("researchDif").className = "dif-warning insane"
-            document.getElementById("researchDif").textContent = "Huge research boost"
-            document.getElementById("statDif").classList.remove("d-none")
-            document.getElementById("statDif").className = "dif-warning insane"
-            document.getElementById("statDif").textContent = "Stats boost +1.7%"
-            document.getElementById("designTimeDif").classList.remove("d-none")
-            document.getElementById("designTimeDif").className = "dif-warning insane"
-            document.getElementById("designTimeDif").textContent = "Design times reduced 16%"
-            document.getElementById("factoryDif").classList.remove("d-none")
-            document.getElementById("factoryDif").className = "dif-warning unfair"
-            document.getElementById("factoryDif").textContent = "Factory level 4"
-            document.getElementById("buildDif").classList.remove("d-none")
-            document.getElementById("buildDif").textContent = "+1 part when design completed"
-            document.getElementById("buildDif").className = "dif-warning insane"
-        }
-        else if (level === "impossible"){
-            document.getElementById("defaultDif").classList.add("d-none")
-            document.getElementById("lightDif").classList.remove("d-none")
-            document.getElementById("lightDif").className = "dif-warning fixed"
-            document.getElementById("lightDif").textContent = "ULTRA-lightweight parts"
-            document.getElementById("researchDif").classList.remove("d-none")
-            document.getElementById("researchDif").className = "dif-warning impossible"
-            document.getElementById("researchDif").textContent = "Massive research boost"
-            document.getElementById("statDif").classList.remove("d-none")
-            document.getElementById("statDif").className = "dif-warning impossible"
-            document.getElementById("statDif").textContent = "Stats boost +2.1%"
-            document.getElementById("designTimeDif").classList.remove("d-none")
-            document.getElementById("designTimeDif").className = "dif-warning impossible"
-            document.getElementById("designTimeDif").textContent = "Design times reduced 20%"
-            document.getElementById("factoryDif").classList.remove("d-none")
-            document.getElementById("factoryDif").className = "dif-warning impossible"
-            document.getElementById("factoryDif").textContent = "Factory level 5"
-            document.getElementById("buildDif").classList.remove("d-none")
-            document.getElementById("buildDif").textContent = "+2 parts when design completed"
-            document.getElementById("buildDif").className = "dif-warning impossible"
-        }
+    });
+        
     }
 
     document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {

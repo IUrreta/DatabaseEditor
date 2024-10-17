@@ -5,32 +5,7 @@ const teamsDiv = document.getElementById("teamsDiv");
 const enginesDiv = document.getElementById("enginesDiv");
 
 const divsTeamsArray = [teamsDiv, enginesDiv]
-const pars_abreviations = { "chassis": "C", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "S" }
-const part_codes_abreviations = { 3: "C", 4: "FW", 5: "RW", 6: "UF", 7: "SP", 8: "S" }
 
-let abreviations_dict = {
-    1: "FE",
-    2: "MC",
-    3: "RB",
-    4: "MER",
-    5: "ALP",
-    6: "WIL",
-    7: "HA",
-    8: "AT",
-    9: "ALFA",
-    10: "AM",
-    32: "CUS"
-}
-
-let engine_stats_dict = new Map([
-    [10, "Power"],
-    [6, "Fuel efficiency"],
-    [11, "Performance threshold"],
-    [12, "Performance loss"],
-    [14, "Engine durability"],
-    [18, "ERS durability"],
-    [19, "Gearbox durability"]
-]);
 
 let teamSelected;
 let engineSelected;

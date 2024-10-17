@@ -9,7 +9,7 @@ class EditPerformanceCommand(Command):
 
     async def execute(self):
         car_analysis = CarAnalysisUtils(self.client)
-        car_analysis.overwrite_performance_team(self.message['teamID'], self.message['parts'], Command.is_create_a_team, Command.year_iterarion)
+        car_analysis.overwrite_performance_team(self.message['teamID'], self.message['parts'], Command.is_create_a_team, Command.year_iterarion, self.message['loadouts'])
         car_analysis.update_items_for_design_dict(self.message['n_parts_designs'], self.message['teamID'])
         car_analysis.fit_loadouts_dict(self.message['loadouts'], self.message['teamID'])
         process_repack("../result", Command.path)
