@@ -16,6 +16,33 @@ function removeStatsDrivers() {
         elem.innerHTML = ""
     })
 }
+/**
+ * For a given Mentality number, return the actual in-game stat modifier
+ * @param {int} mentality number from 0-100
+ */
+function getModifierFromMentality(mentality) {
+    let modifier;
+    if      (mentality < 6)     modifier = -8;
+    else if (mentality < 10)    modifier = -7;
+    else if (mentality < 16)    modifier = -6;
+    else if (mentality < 21)    modifier = -5;
+    else if (mentality < 25)    modifier = -4;
+    else if (mentality < 30)    modifier = -3;
+    else if (mentality < 36)    modifier = -2;
+    else if (mentality < 40)    modifier = -1;
+    else if (mentality < 60)    modifier = 0;
+    else if (mentality < 64)    modifier = 1;
+    else if (mentality < 70)    modifier = 2;
+    else if (mentality < 78)    modifier = 3;
+    else if (mentality < 80)    modifier = 4;
+    else if (mentality < 84)    modifier = 5;
+    else if (mentality < 86)    modifier = 6;
+    else if (mentality < 97)    modifier = 7;
+    else if (mentality <= 100)  modifier = 8;
+    else modifier = 0;
+    
+    return modifier;
+}
 
 /**
  * Places the drivers that the backend fetched on the driver list
@@ -79,10 +106,11 @@ function place_drivers_editStats(driversArray) {
             newDiv.dataset.globalMentality = driver["global_mentality"]
         }
         let mentality = driver["global_mentality"]
-        if (mentality < 2){
+        let modifier = getModifierFromMentality(mentality)
+        if (modifier > 0){
             mentality_ovrSpan.classList.add("mentality-small-ovr-positive")
         }
-        else if (mentality > 2){
+        else if (modifier < 0){
             mentality_ovrSpan.classList.add("mentality-small-ovr-negative")
         }
         newDiv.dataset.marketability = driver["marketability"]
@@ -231,10 +259,11 @@ function place_staff_editStats(staffArray) {
             mentality_ovrSpan.textContent = ovr[1]
         }
         ovrDiv.appendChild(mentality_ovrSpan)
-        if (mentality < 2){
+        let modifier = getModifierFromMentality(mentality);
+        if (modifier >0){
             mentality_ovrSpan.classList.add("mentality-small-ovr-positive")
         }
-        else if (mentality > 2){
+        else if (modifier < 0){
             mentality_ovrSpan.classList.add("mentality-small-ovr-negative")
         }
         ovrDiv.appendChild(ovrSpan)
@@ -335,7 +364,7 @@ function calculateOverall(stats, type, mentality=2, ovr="small") {
     let statsArray = stats.split(" ").map(Number);
     let mentality_stats = [];
     for (let i = 0; i < statsArray.length; i++) {
-        mentality_stats[i] = statsArray[i] + mentality_bonuses[mentality];
+        mentality_stats[i] = statsArray[i] + getModifierFromMentality(mentality);
     }
     let rating, mentality_rating;
     if (type === "driver") {
@@ -739,13 +768,13 @@ function manage_mentality_modifiers(element, mentality) {
     if (modifier_span){
         modifier_span.remove()
     }
-    let modifier = mentality_bonuses[mentality];
+    let modifier = getModifierFromMentality(mentality);
     let mentality_class, span = "";
-    if (parseInt(mentality) < 2){
+    if (modifier > 0){
         mentality_class = "positive"
         span = "<span class='mentality-modifier positive'> +" + modifier + "</span>"
     }
-    else if (parseInt(mentality) > 2){
+    else if (modifier < 0){
         mentality_class = "negative"
         span = "<span class='mentality-modifier negative'>" + modifier + "</span>"
     }
@@ -909,8 +938,8 @@ function manage_stats_title(html) {
 }
 
 /**
- * Changes the input number that are taken into account to change stats 
- * @param {div} divID div that contains the correct input numbers  
+ * Changes the input number that are taken into account to change stats
+ * @param {div} divID div that contains the correct input numbers
  */
 function change_elegibles(divID) {
     document.querySelectorAll(".elegible").forEach(function (elem) {

@@ -131,7 +131,7 @@ class DatabaseUtils:
 
     def fetch_mentality(self, staffID):
         morale = self.cursor.execute(f"SELECT Opinion FROM Staff_Mentality_AreaOpinions WHERE StaffID = {staffID}").fetchall()
-        global_mentality = self.cursor.execute(f"SELECT MentalityOpinion FROM Staff_State WHERE StaffID = {staffID}").fetchone()
+        global_mentality = self.cursor.execute(f"SELECT Mentality FROM Staff_State WHERE StaffID = {staffID}").fetchone()
         return [morale, global_mentality]
 
     def fetchDriverNumberDetails(self, driverID):

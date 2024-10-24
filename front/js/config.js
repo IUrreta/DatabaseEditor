@@ -164,7 +164,6 @@ let default_points = ["25", "18", "15", "12", "10", "8", "6", "4", "2", "1", "DN
 let typeStaff_dict = { 0: "fulldriverlist", 1: "fullTechnicalList", 2: "fullEngineerList", 3: "fullAeroList", 4: "fullDirectorList" }
 let mentality_dict = { 0: "enthusiastic", 1: "positive", 2: "neutral", 3: "negative", 4: "demoralized" }
 let teamOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
-const mentality_bonuses = {0: 7, 1: 4, 2: 0, 3: -2, 4: -6}
 
 //transfers
 const f1_teams = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32]
