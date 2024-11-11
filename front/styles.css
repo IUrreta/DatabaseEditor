@@ -43,6 +43,7 @@
   --engine-table-name: #878787;
   --engine-table-name-hover: #575757;
   --support-me: #fdee15;
+  --custom-dif: #52ebbd;
 
   --mentality-enthusiastic: #c055e3;
   --mentality-positive: #10ffff;
@@ -2440,7 +2441,15 @@ DRIVERS TABLE
 }
 
 .logo-merc-table{
-  padding: 4px 2px;
+  padding: 4px;
+}
+
+.logo-visarb-table{
+  padding: 5px 3px;
+}
+
+.logo-alpine-table{
+  padding: 6px 2px;
 }
 
 .logo-reduce{
@@ -5634,7 +5643,7 @@ input.disabled{
 
 .free-driver {
   background-color: var(--elements);
-  border-radius: 10px;
+  border-radius: 9px;
   padding:  5px 6px;
   cursor: grab !important;
   margin: 6px 5px;
@@ -8021,6 +8030,22 @@ input::-webkit-inner-spin-button {
   width: 50%;
 }
 
+#customGearButton {
+  margin-left: 5px;
+  transition: transform 0.3s ease, color 0.2s;
+  cursor: pointer;
+  display: inline-block;
+}
+
+#customGearButton:hover {
+  transform: rotate(45deg);
+  color: var(--text-selected);
+}
+
+#customGearButton.custom {
+  color: var(--new-primary);
+}
+
 .difficulty-changes{
   display: flex;
   flex-direction: column;
@@ -8116,6 +8141,10 @@ datalist .my-mark{
 
 .option-state.reduced-weight, span.reduced-weight, .dif-warning.reduced-weight{
   color: var(--new-primary)
+}
+
+.option-state.custom{
+  color: var(--custom-dif);
 }
 
 #refurbishTitle{

@@ -497,6 +497,7 @@ document.addEventListener('DOMContentLoaded',function () {
         5: "insane",
         6: "impossible"
     }
+    let difcultyCustom = "default"
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -1637,6 +1638,8 @@ document.addEventListener('DOMContentLoaded',function () {
         let value = this.value;
         update_difficulty_span(value)
         manage_difficulty_warnings(difficulty_dict[parseInt(value)])
+        difcultyCustom = "default"
+        document.getElementById("customGearButton").classList.remove("custom")
     });
 
     function update_difficulty_span(value){
@@ -1689,24 +1692,39 @@ document.addEventListener('DOMContentLoaded',function () {
         ];
         const selectedConfig = difficultyConfig[level] || difficultyConfig["default"];
 
-    elements.forEach(id => {
-        document.getElementById(id).classList.add("d-none");
-    });
+        elements.forEach(id => {
+            document.getElementById(id).classList.add("d-none");
+        });
 
-    selectedConfig.visible.forEach(id => {
-        document.getElementById(id).classList.remove("d-none");
-    });
+        selectedConfig.visible.forEach(id => {
+            document.getElementById(id).classList.remove("d-none");
+        });
 
-    elements.forEach(id => {
-        if (selectedConfig[id]) {
-            const elementConfig = selectedConfig[id];
-            const element = document.getElementById(id);
-            element.className = elementConfig.className;
-            element.textContent = elementConfig.text;
-        }
-    });
+        elements.forEach(id => {
+            if (selectedConfig[id]) {
+                const elementConfig = selectedConfig[id];
+                const element = document.getElementById(id);
+                element.className = elementConfig.className;
+                element.textContent = elementConfig.text;
+            }
+        });
         
     }
+
+    document.getElementById("customGearButton").addEventListener("click",function () {
+        this.classList.toggle("custom")
+        if (this.classList.contains("custom")) {
+            difcultyCustom = "custom"
+            document.querySelector("#difficultySpan").textContent = "Custom"
+            document.querySelector("#difficultySpan").className = "option-state custom"
+        }
+        else{
+            difcultyCustom = "default"
+            actualDifficulty = document.getElementById("difficultySlider").value
+            manage_difficulty_warnings(difficulty_dict[parseInt(actualDifficulty)])
+            update_difficulty_span(actualDifficulty)
+        }
+    })
 
     document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
         elem.addEventListener("click",function () {

@@ -25,43 +25,43 @@ difficulty_dict = {
     },
     2: {
         "name": "extraHard",
-        "perc": 0.5,
-        "7and8": 0.016,
-        "9": 0.008,
+        "perc": 0.1,
+        "7and8": 0.002,
+        "9": 0.001,
         "reduction": 0,
-        "research": 28
+        "research": 8
     },
     3: {
         "name": "brutal",
-        "perc": 0.8,
-        "7and8": 0.022,
-        "9": 0.011,
+        "perc": 0.15,
+        "7and8": 0.003,
+        "9": 0.0015,
         "reduction": 0.05,
-        "research": 45
+        "research": 14
     },
     4: {
         "name": "unfair",
-        "perc": 1.3,
-        "7and8": 0.029,
-        "9": 0.015,
+        "perc": 0.3,
+        "7and8": 0.006,
+        "9": 0.003,
         "reduction": 0.11,
-        "research": 65
+        "research": 30
     },
     5: {
         "name": "insane",
-        "perc": 1.7,
-        "7and8": 0.04,
-        "9": 0.02,
+        "perc": 0.35,
+        "7and8": 0.007,
+        "9": 0.0035,
         "reduction": 0.16,
-        "research": 78
+        "research": 45
     },
     6: {
         "name": "impossible",
-        "perc": 2.1,
-        "7and8": 0.05,
-        "9": 0.025,
+        "perc": 0.48,
+        "7and8": 0.0096,
+        "9": 0.0048,
         "reduction": 0.2,
-        "research": 90
+        "research": 65
     }
 }
 
@@ -1043,6 +1043,7 @@ class DatabaseUtils:
         triggers = cursor.execute("SELECT name FROM sqlite_master WHERE type='trigger';").fetchall()
         factory_levels = cursor.execute("SELECT BuildingID FROM Buildings_HQ WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player)").fetchall()
         conn.close()
+        print(triggers)
         if triggers:
             for trigger in triggers:
                 dif = trigger[0].split("_")[1]

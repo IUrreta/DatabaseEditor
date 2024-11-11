@@ -128,9 +128,9 @@ const names_full = {
 
 //seasonViewer
 let driversTableLogosDict = {
-    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-merc-table", "sauber": "logo-williams-table", "visarb": "logo-up-down", "hugo": "logo-stake-table",
+    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-merc-table", "sauber": "logo-williams-table", "visarb": "logo-visarb-table", "hugo": "logo-stake-table",
     "brawn": "logo-brawn-table", "toyota": "logo-williams-table", "alphatauri": "logo-extra-small", "porsche": "logo-porsche-table",
-    "renault": "logo-ferrari-table", "andretti": "logo-ferrari-table", "lotus": "logo-up-down", "alpine": "logo-up-down"
+    "renault": "logo-ferrari-table", "andretti": "logo-ferrari-table", "lotus": "logo-up-down", "alpine": "logo-alpine-table"
 }
 
 const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0", 3: "chi0" };
@@ -194,20 +194,20 @@ const difficultyConfig = {
         visible: ["lightDif", "researchDif", "statDif"],
         lightDif: { className: "dif-warning extra-hard", text: "Lightweight parts" },
         researchDif: { className: "dif-warning extra-hard", text: "Small research boost" },
-        statDif: { className: "dif-warning extra-hard", text: "Stats boost +0.5%" },
+        statDif: { className: "dif-warning extra-hard", text: "Stats boost +0.1%" },
     },
     "brutal": {
         visible: ["lightDif", "researchDif", "statDif", "designTimeDif"],
         lightDif: { className: "dif-warning extra-hard", text: "Lightweight parts" },
         researchDif: { className: "dif-warning brutal", text: "Moderate research boost" },
-        statDif: { className: "dif-warning brutal", text: "Stats boost +0.8%" },
+        statDif: { className: "dif-warning brutal", text: "Stats boost +0.15%" },
         designTimeDif: { className: "dif-warning brutal", text: "Design times reduced 5%" },
     },
     "unfair": {
         visible: ["lightDif", "researchDif", "statDif", "designTimeDif", "factoryDif"],
         lightDif: { className: "dif-warning extra-hard", text: "Lightweight parts" },
         researchDif: { className: "dif-warning unfair", text: "Large research boost" },
-        statDif: { className: "dif-warning unfair", text: "Stats boost +1.3%" },
+        statDif: { className: "dif-warning unfair", text: "Stats boost +0.3%" },
         designTimeDif: { className: "dif-warning unfair", text: "Design times reduced 11%" },
         factoryDif: { className: "dif-warning unfair", text: "Factory level 4" },
     },
@@ -215,7 +215,7 @@ const difficultyConfig = {
         visible: ["lightDif", "researchDif", "statDif", "designTimeDif", "factoryDif", "buildDif"],
         lightDif: { className: "dif-warning extra-hard", text: "Lightweight parts" },
         researchDif: { className: "dif-warning insane", text: "Huge research boost" },
-        statDif: { className: "dif-warning insane", text: "Stats boost +1.7%" },
+        statDif: { className: "dif-warning insane", text: "Stats boost +0.35%" },
         designTimeDif: { className: "dif-warning insane", text: "Design times reduced 16%" },
         factoryDif: { className: "dif-warning unfair", text: "Factory level 4" },
         buildDif: { className: "dif-warning insane", text: "+1 part when design completed" },
@@ -224,7 +224,7 @@ const difficultyConfig = {
         visible: ["lightDif", "researchDif", "statDif", "designTimeDif", "factoryDif", "buildDif"],
         lightDif: { className: "dif-warning fixed", text: "ULTRA-lightweight parts" },
         researchDif: { className: "dif-warning impossible", text: "Massive research boost" },
-        statDif: { className: "dif-warning impossible", text: "Stats boost +2.1%" },
+        statDif: { className: "dif-warning impossible", text: "Stats boost +0.48%" },
         designTimeDif: { className: "dif-warning impossible", text: "Design times reduced 20%" },
         factoryDif: { className: "dif-warning impossible", text: "Factory level 5" },
         buildDif: { className: "dif-warning impossible", text: "+2 parts when design completed" },
