@@ -489,6 +489,7 @@ document.addEventListener('DOMContentLoaded',function () {
     const updateInfo = document.querySelector(".update-info")
     const noNotifications = ["Custom Engines fetched","Cars fetched","Part values fetched", "Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
     let difficulty_dict = {
+        "-2": "Custom",
         0: "default",
         1: "reduced weight",
         2: "extra-hard",
@@ -1174,7 +1175,6 @@ document.addEventListener('DOMContentLoaded',function () {
                 document.getElementById("refurbishingToggle").checked = false
             }
             engine_allocations = info["engine_allocations"]
-            //remove all engines from engines_names with key > 10
             for (let key in engine_names) {
                 if (key > 10) {
                     delete engine_names[key]
@@ -1187,7 +1187,12 @@ document.addEventListener('DOMContentLoaded',function () {
             let difficultySlider = document.getElementById("difficultySlider")
             difficultySlider.value = info["difficulty"]
             update_difficulty_span(info["difficulty"])
-            manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
+            if (info["difficulty"] === -2) { //custom difficulty
+                load_difficulty_warnings(info["triggerList"])
+            }
+            else{
+                manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
+            }
             update_refurbish_span(info["refurbish"])
             manage_disabled_list(info["disabled"])
     }
@@ -1519,7 +1524,7 @@ document.addEventListener('DOMContentLoaded',function () {
         }
         let difficulty = 0;
         let difficultySlider = document.getElementById("difficultySlider")
-        let difficultyValue = parseInt(difficultySlider.value)
+        let difficultyValue = document.getElementById("difficultySpan").textContent === "Custom" ? -2 : parseInt(difficultySlider.value)
         let disabledList = {}
         let triggerList = {}
         document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
@@ -1531,7 +1536,7 @@ document.addEventListener('DOMContentLoaded',function () {
             else{
                 disabledList[id] = 0
             }
-            triggerList[id] = elem.classList && elem.classList.contains("d-none") ? -1 : inverted_difficulty_dict[elem.className.split(" ")[1]];
+            triggerList[id] = elem.classList && (elem.classList.contains("d-none") || elem.classList.contains("disabled")) ? -1 : inverted_difficulty_dict[elem.className.split(" ")[1]];
         })
         let data = {
             command: "configUpdate",
@@ -1662,6 +1667,11 @@ document.addEventListener('DOMContentLoaded',function () {
         if (difficulty === "reduced weight") {
             span.className = "option-state reduced-weight"
         }
+        else if (difficulty === "Custom"){
+            span.className = "option-state custom"
+            document.getElementById("customGearButton").classList.remove("custom")
+            document.getElementById("customGearButton").click()
+        }
         else{
             span.className = "option-state " + difficulty
         }
@@ -1701,6 +1711,7 @@ document.addEventListener('DOMContentLoaded',function () {
     }
 
     function manage_difficulty_warnings(level){
+        console.log(level)
         const elements = [
             "defaultDif", "lightDif", "researchDif", "statDif", "designTimeDif", "factoryDif", "buildDif"
         ];
@@ -1723,6 +1734,20 @@ document.addEventListener('DOMContentLoaded',function () {
             }
         });
         
+    }
+
+    function load_difficulty_warnings(triggerList){
+        for (let id in triggerList){
+            let warn = document.getElementById(id)
+            let difName = difficulty_dict[triggerList[id]]
+            if (triggerList[id] !== -1) {
+            warn.className = difficultyConfig[difName][id].className
+            warn.textContent = difficultyConfig[difName][id].text
+            }
+            else{
+                warn.classList.add("disabled")
+            }
+        }
     }
 
     document.getElementById("customGearButton").addEventListener("click",function () {

@@ -6826,13 +6826,23 @@ input::-webkit-inner-spin-button {
 .performance-number{
   width: 8%;
   text-align: center;
-  padding-right: 4px;
+  padding-right: 7px;
   font-size: 16px;
   max-height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding-top: 4px;
+  transition: transform 0.2s;
+}
+
+/* move it 2 pixels to the right */
+.number-and-team:hover .team-number, .number-and-team.selected .team-number{
+  transform: translateX(2px);
+}
+
+.nunmber-and-car:hover .performance-number, .nunmber-and-car.selected .performance-number{
+  transform: translateX(2px);
 }
 
 .team-number{
@@ -6842,7 +6852,8 @@ input::-webkit-inner-spin-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-right: 7.5px;
+  padding-right: 9.5px;
+  transition: transform 0.2s;
 }
 
 .car-performance.selected .value{
