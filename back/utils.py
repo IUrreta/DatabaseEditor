@@ -131,7 +131,7 @@ class DatabaseUtils:
 
     def fetch_mentality(self, staffID):
         morale = self.cursor.execute(f"SELECT Opinion FROM Staff_Mentality_AreaOpinions WHERE StaffID = {staffID}").fetchall()
-        global_mentality = self.cursor.execute(f"SELECT MentalityOpinion FROM Staff_State WHERE StaffID = {staffID}").fetchone()
+        global_mentality = self.cursor.execute(f"SELECT Mentality FROM Staff_State WHERE StaffID = {staffID}").fetchone()
         return [morale, global_mentality]
 
     def fetchDriverNumberDetails(self, driverID):
@@ -758,15 +758,21 @@ class DatabaseUtils:
 
 
         
-    def manage_difficulty_triggers(self, type, disabledList):
+    def manage_difficulty_triggers(self, triggerList):
         conn = sqlite3.connect("../result/main.db")
         cursor = conn.cursor()
         
-        cursor.execute("DROP TRIGGER IF EXISTS difficulty_extraHard")
-        cursor.execute("DROP TRIGGER IF EXISTS difficulty_brutal")
-        cursor.execute("DROP TRIGGER IF EXISTS difficulty_unfair")
-        cursor.execute("DROP TRIGGER IF EXISTS difficulty_insane")
-        cursor.execute("DROP TRIGGER IF EXISTS difficulty_impossible")
+        self.manage_design_boost_triggers(cursor, triggerList["statDif"])
+        self.manage_design_time_triggers(cursor, triggerList["designTimeDif"])
+        self.manage_weight_trigger(cursor, triggerList["lightDif"])
+        self.manage__instant_build_triggers(cursor, triggerList["buildDif"])
+        self.manage_research_triggers(cursor, triggerList["researchDif"])
+        self.upgrade_factories(cursor, triggerList["factoryDif"])
+
+        conn.commit()
+        conn.close()
+
+    def manage_design_time_triggers(self,  cursor, triggerLevel):
 
         cursor.execute("DROP TRIGGER IF EXISTS designTime_extraHard")
         cursor.execute("DROP TRIGGER IF EXISTS designTime_brutal")
@@ -774,12 +780,49 @@ class DatabaseUtils:
         cursor.execute("DROP TRIGGER IF EXISTS designTime_insane")
         cursor.execute("DROP TRIGGER IF EXISTS designTime_impossible")
 
-        if type >= 2 and disabledList["statDif"] == 0:
-            trigger_name = f'difficulty_{difficulty_dict[type]["name"]}'
-            increase_perc = difficulty_dict[type]["perc"]
-            increase_7and8 = difficulty_dict[type]["7and8"]
-            increase_9 = difficulty_dict[type]["9"]
-            reduction = difficulty_dict[type]["reduction"]
+        trigger_sql = ""
+        if triggerLevel != -1:
+            trigger_name = f'designTime_{difficulty_dict[triggerLevel]["name"]}'
+            reduction = difficulty_dict[triggerLevel]["reduction"]
+            trigger_sql = f"""
+                CREATE TRIGGER {trigger_name}
+                AFTER INSERT ON Parts_Designs_StatValues
+                FOR EACH ROW
+                WHEN (
+                    SELECT TeamID
+                    FROM Parts_Designs
+                    WHERE DesignID = NEW.DesignID
+                    AND ValidFrom = (SELECT CurrentSeason FROM Player_State)
+                ) != (SELECT TeamID FROM Player)
+                AND NEW.PartStat != 15
+                BEGIN
+                    -- Actualizar Parts_Designs para ajustar DesignWork
+                    UPDATE Parts_Designs
+                    SET DesignWork = DesignWork + ({reduction} * (DesignWorkMax - DesignWork))
+                    WHERE DesignID = NEW.DesignID
+                    AND DayCompleted = -1 AND DesignWork IS NOT NULL;
+                END;
+            """
+
+        if trigger_sql:
+            cursor.execute(trigger_sql)
+
+
+    def manage_design_boost_triggers(self,  cursor, triggerLevel):
+
+        cursor.execute("DROP TRIGGER IF EXISTS difficulty_extraHard")
+        cursor.execute("DROP TRIGGER IF EXISTS difficulty_brutal")
+        cursor.execute("DROP TRIGGER IF EXISTS difficulty_unfair")
+        cursor.execute("DROP TRIGGER IF EXISTS difficulty_insane")
+        cursor.execute("DROP TRIGGER IF EXISTS difficulty_impossible")
+
+        trigger_sql = ""
+
+        if triggerLevel != -1:
+            trigger_name = f'difficulty_{difficulty_dict[triggerLevel]["name"]}'
+            increase_perc = difficulty_dict[triggerLevel]["perc"]
+            increase_7and8 = difficulty_dict[triggerLevel]["7and8"]
+            increase_9 = difficulty_dict[triggerLevel]["9"]
             trigger_sql = f"""
                 CREATE TRIGGER {trigger_name}
                 AFTER INSERT ON Parts_Designs_StatValues
@@ -828,49 +871,20 @@ class DatabaseUtils:
                 END;
             """
 
+        if trigger_sql:
             cursor.execute(trigger_sql)
 
 
-            if type >= 2 and disabledList["designTimeDif"] == 0:
-                trigger_name = f'designTime_{difficulty_dict[type]["name"]}'
-                trigger_sql = f"""
-                    CREATE TRIGGER {trigger_name}
-                    AFTER INSERT ON Parts_Designs_StatValues
-                    FOR EACH ROW
-                    WHEN (
-                        SELECT TeamID
-                        FROM Parts_Designs
-                        WHERE DesignID = NEW.DesignID
-                        AND ValidFrom = (SELECT CurrentSeason FROM Player_State)
-                    ) != (SELECT TeamID FROM Player)
-                    AND NEW.PartStat != 15
-                    BEGIN
-                        -- Actualizar Parts_Designs para ajustar DesignWork
-                        UPDATE Parts_Designs
-                        SET DesignWork = DesignWork + ({reduction} * (DesignWorkMax - DesignWork))
-                        WHERE DesignID = NEW.DesignID
-                        AND DayCompleted = -1 AND DesignWork IS NOT NULL;
-                    END;
-                """
-
-                cursor.execute(trigger_sql)
-                
-                
-        self.manage_weight_trigger(type,  cursor, disabledList["lightDif"])
-        self.manage__instant_build_triggers(type,  cursor, disabledList["buildDif"])
-        self.manage_research_triggers(type, cursor, disabledList["researchDif"])
-        self.upgrade_factories(type, cursor, disabledList["factoryDif"])
-        conn.commit()
-        conn.close()
-
-    def manage__instant_build_triggers(self, type, cursor, disabled):
-        trigger_name = f"instant_build_{difficulty_dict[type]['name']}"
+    def manage__instant_build_triggers(self,  cursor, triggerLevel):
+        
 
         cursor.execute("DROP TRIGGER IF EXISTS instant_build_insane")
         cursor.execute("DROP TRIGGER IF EXISTS instant_build_impossible")
+
         trigger_sql = ""
-        if disabled == 0:
-            if type == 5:
+        if triggerLevel != -1:
+            trigger_name = f"instant_build_{difficulty_dict[triggerLevel]['name']}"
+            if triggerLevel == 5:
                 trigger_sql = f"""
                     CREATE TRIGGER {trigger_name}
                     AFTER UPDATE ON Parts_Designs
@@ -904,7 +918,7 @@ class DatabaseUtils:
                         WHERE DesignID = NEW.DesignID;
                     END;
                     """
-            elif type == 6:
+            elif triggerLevel == 6:
                 trigger_sql = f"""
                     CREATE TRIGGER {trigger_name}
                     AFTER UPDATE ON Parts_Designs
@@ -962,8 +976,7 @@ class DatabaseUtils:
                 cursor.execute(trigger_sql)
 
     
-    def manage_research_triggers(self, type, cursor, disabled):
-        trigger_name = f"research_{difficulty_dict[type]['name']}"
+    def manage_research_triggers(self,  cursor, triggerLevel):
 
         cursor.execute("DROP TRIGGER IF EXISTS research_extraHard")
         cursor.execute("DROP TRIGGER IF EXISTS research_brutal")
@@ -971,9 +984,10 @@ class DatabaseUtils:
         cursor.execute("DROP TRIGGER IF EXISTS research_insane")
         cursor.execute("DROP TRIGGER IF EXISTS research_impossible")
 
-        if type >= 2 and disabled == 0:
-            trigger_sql = ""
-            researchExp = difficulty_dict[type]["research"]
+        trigger_sql = ""
+        if triggerLevel != -1:
+            trigger_name = f"research_{difficulty_dict[triggerLevel]['name']}"
+            researchExp = difficulty_dict[triggerLevel]["research"]
             trigger_sql = f"""
                     CREATE TRIGGER {trigger_name}
                     AFTER UPDATE ON Parts_Designs
@@ -996,12 +1010,12 @@ class DatabaseUtils:
             cursor.execute(trigger_sql)
 
     
-    def upgrade_factories(self, type, cursor, disabled):
-        if type == 4 and disabled == 0:
+    def upgrade_factories(self, cursor, triggerLevel):
+        if triggerLevel == 4:
             cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 34, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 34")
-        elif type == 6 and disabled == 0:
+        elif triggerLevel == 6:
             cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 35, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 35")
-        elif type < 4:
+        elif triggerLevel < -1:
             cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 33, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 35")
 
     def manage_refurbish_trigger(self, type):

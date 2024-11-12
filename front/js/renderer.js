@@ -497,6 +497,17 @@ document.addEventListener('DOMContentLoaded',function () {
         5: "insane",
         6: "impossible"
     }
+
+    let inverted_difficulty_dict = {
+        "disabled": -1,
+        "default": 0,
+        "reduced weight": 1,
+        "extra-hard": 2,
+        "brutal": 3,
+        "unfair": 4,
+        "insane": 5,
+        "impossible": 6
+    }
     let difcultyCustom = "default"
 
     const messageHandlers = {
@@ -1510,15 +1521,17 @@ document.addEventListener('DOMContentLoaded',function () {
         let difficultySlider = document.getElementById("difficultySlider")
         let difficultyValue = parseInt(difficultySlider.value)
         let disabledList = {}
+        let triggerList = {}
         document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
             console.log(elem)
             let id = elem.id
-            if (elem.classList.contains("disabled")) {
+            if (elem.classList.contains("disabled") || elem.classList.contains("d-none")) {
                 disabledList[id] = 1
             }
             else{
                 disabledList[id] = 0
             }
+            triggerList[id] = elem.classList && elem.classList.contains("d-none") ? -1 : inverted_difficulty_dict[elem.className.split(" ")[1]];
         })
         let data = {
             command: "configUpdate",
@@ -1530,6 +1543,7 @@ document.addEventListener('DOMContentLoaded',function () {
             difficulty: difficultyValue,
             refurbish: refurbish,
             disabled: disabledList,
+            triggerList: triggerList
         }
         if (customIconPath !== null) {
             data["icon"] = customIconPath
@@ -1717,6 +1731,21 @@ document.addEventListener('DOMContentLoaded',function () {
             difcultyCustom = "custom"
             document.querySelector("#difficultySpan").textContent = "Custom"
             document.querySelector("#difficultySpan").className = "option-state custom"
+            let warnigs = document.querySelectorAll(".dif-warning")
+            warnigs.forEach(function (elem) {
+                if (elem.id !== "defaultDif") {
+                    for (let level in difficultyConfig) {
+                        if (difficultyConfig[level].visible.includes(elem.id)) {
+                            elem.className = difficultyConfig[level][elem.id]?.className || "dif-warning";
+                            elem.textContent = difficultyConfig[level][elem.id]?.text || "";
+                            break;
+                        }
+                    }
+                }   
+                else{
+                    elem.classList.add("d-none")
+                }
+            })
         }
         else{
             difcultyCustom = "default"
@@ -1726,11 +1755,67 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     })
 
+    function rotateDifficultyLevel(elementId) {
+        console.log("COJONES")
+        const levels = ["extra-hard", "brutal", "unfair", "insane", "impossible"];
+        const element = document.getElementById(elementId);
+    
+        // Detectar si el elemento está en estado "disabled" actualmente
+        if (element.classList.contains("disabled")) {
+            let nextConfig;
+            for (let level in difficultyConfig) {
+                if (difficultyConfig[level].visible.includes(elementId)) {
+                    nextConfig = difficultyConfig[level][elementId]
+                    break
+                }
+            }
+            if (nextConfig) {
+                element.className = nextConfig.className; 
+                element.textContent = nextConfig.text; 
+            }
+            return;
+        }
+    
+        let currentLevelIndex = levels.findIndex(level => {
+            return difficultyConfig[level][elementId] &&
+                   element.classList.contains(difficultyConfig[level][elementId].className.split(" ")[1]);
+        });
+    
+        if (currentLevelIndex === levels.length - 1) { // "impossible" es el último nivel
+            element.className = "dif-warning disabled"; // Cambia a la clase "disabled"
+            return;
+        }
+    
+        let nextLevelIndex = (currentLevelIndex + 1) % levels.length;
+        let nextConfig = difficultyConfig[levels[nextLevelIndex]][elementId];
+
+        console.log(currentLevelIndex, nextLevelIndex, nextConfig)
+    
+        while (
+            (!nextConfig || 
+            (nextConfig.className === element.className && nextConfig.text === element.textContent) || 
+            !difficultyConfig[levels[nextLevelIndex]].visible.includes(elementId)) && 
+            nextLevelIndex !== currentLevelIndex 
+        ) {
+            nextLevelIndex = (nextLevelIndex + 1) % levels.length;
+            nextConfig = difficultyConfig[levels[nextLevelIndex]][elementId];
+        }
+    
+        if (nextConfig) {
+            element.className = nextConfig.className; // Cambia la clase al próximo nivel
+            element.textContent = nextConfig.text; // Cambia el texto
+        }
+    }
+
     document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
-        elem.addEventListener("click",function () {
-            elem.classList.toggle("disabled")
-        })
-    })
+        elem.addEventListener("click", function () {
+            if (difcultyCustom === "custom") {
+                rotateDifficultyLevel(elem.id); // Rota el nivel de dificultad en modo "custom"
+            } else {
+                elem.classList.toggle("disabled"); // Alterna "disabled" en otros modos
+            }
+        });
+    });
 
     /**
      * Manages the stats of the divs associated with the pills

@@ -165,6 +165,25 @@ let typeStaff_dict = { 0: "fulldriverlist", 1: "fullTechnicalList", 2: "fullEngi
 let mentality_dict = { 0: "enthusiastic", 1: "positive", 2: "neutral", 3: "negative", 4: "demoralized" }
 let teamOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
 const mentality_bonuses = {0: 7, 1: 4, 2: 0, 3: -2, 4: -6}
+const mentalityModifiers = {
+    5: -8,
+    9: -7,
+    15: -6,
+    20: -5,
+    24: -4,
+    29: -3,
+    35: -2,
+    39: -1,
+    59: 0,
+    63: 1,
+    69: 2,
+    77: 3,
+    79: 4,
+    83: 5,
+    85: 6,
+    96: 7,
+    100: 8
+};
 
 //transfers
 const f1_teams = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32]
@@ -222,7 +241,7 @@ const difficultyConfig = {
     },
     "impossible": {
         visible: ["lightDif", "researchDif", "statDif", "designTimeDif", "factoryDif", "buildDif"],
-        lightDif: { className: "dif-warning fixed", text: "ULTRA-lightweight parts" },
+        lightDif: { className: "dif-warning impossible", text: "ULTRA-lightweight parts" },
         researchDif: { className: "dif-warning impossible", text: "Massive research boost" },
         statDif: { className: "dif-warning impossible", text: "Stats boost +0.48%" },
         designTimeDif: { className: "dif-warning impossible", text: "Design times reduced 20%" },

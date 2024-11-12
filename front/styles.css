@@ -8038,12 +8038,13 @@ input::-webkit-inner-spin-button {
 }
 
 #customGearButton:hover {
-  transform: rotate(45deg);
   color: var(--text-selected);
 }
 
 #customGearButton.custom {
   color: var(--new-primary);
+  transform: rotate(45deg);
+
 }
 
 .difficulty-changes{
@@ -8105,6 +8106,11 @@ datalist .my-mark{
 
 .option-state{
   padding-left: 5px;
+  transition: color 0.2s;
+}
+
+.dif-warning::selection{
+  background-color: transparent;
 }
 
 .option-state.default, .dif-warning.default{
@@ -8135,7 +8141,7 @@ datalist .my-mark{
   color: var(--impossible)
 }
 
-.option-state.fixed, span.fixed, .dif-warning.fixed{
+.option-state.fixed, span.fixed, .dif-warning.fixed, #lightDif.impossible{
   color: var(--new-primary)
 }
 
@@ -8144,7 +8150,7 @@ datalist .my-mark{
 }
 
 .option-state.custom{
-  color: var(--custom-dif);
+  color: var(--text-general);
 }
 
 #refurbishTitle{
@@ -8163,13 +8169,16 @@ datalist .my-mark{
   align-content: flex-start;
 }
 
+
+
 .dif-warning:not(.default){
   cursor: pointer;
-  transition: opacity 0.25s ease-in, text-decoration 0.25s ease-in;
+  transition: color 0.2s, opacity 0.1s;
 }
 
 .dif-warning.disabled{
   text-decoration: line-through;
+  color: var(--text-general);
   opacity: 0.63;
 }
 
