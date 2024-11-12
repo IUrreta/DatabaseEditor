@@ -6234,8 +6234,8 @@ input.disabled{
   height: 40px;
   padding-bottom: 6px;
   padding-top: 8px;
-  padding-left: 7px;
-  padding-right: 7px;
+  padding-left: 9px;
+  padding-right: 9px;
 }
 
 .changable-team-menu-alpine{
@@ -8120,6 +8120,13 @@ datalist .my-mark{
   transition: color 0.2s;
 }
 
+
+
+.dif-warning:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.2);
+}
+
 .dif-warning::selection{
   background-color: transparent;
 }
@@ -8184,7 +8191,7 @@ datalist .my-mark{
 
 .dif-warning:not(.default){
   cursor: pointer;
-  transition: color 0.2s, opacity 0.1s;
+  transition: color 0.2s, opacity 0.1s, transform 0.2s, filter 0.2s;
 }
 
 .dif-warning.disabled{
