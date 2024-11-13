@@ -112,7 +112,7 @@ class DatabaseUtils:
 
 
     def fetch_driverNumebrs(self):
-        numbers = self.cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL").fetchall()
+        numbers = self.cursor.execute("SELECT DISTINCT Number FROM Staff_DriverNumbers dn JOIN Staff_Contracts con ON dn.CurrentHolder = con.StaffID WHERE dn.CurrentHolder IS NULL OR con.PosInTeam > 2").fetchall()
         numList = []
         for num in numbers:
             if num[0] != 1 and num[0] != 0:

@@ -8194,7 +8194,7 @@ datalist .my-mark{
   transition: color 0.2s, opacity 0.1s, transform 0.2s, filter 0.2s;
 }
 
-.dif-warning.disabled{
+.dif-warning.disabled, #lightDif.disabled{
   text-decoration: line-through;
   color: var(--text-general);
   opacity: 0.63;
