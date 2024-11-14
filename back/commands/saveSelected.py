@@ -122,9 +122,9 @@ class SaveSelectedCommand(Command):
         config_name = f"{saveName.split('.')[0]}_config.json"
         config_folder = "./../configs"
         file_path = os.path.join(config_folder, config_name)
-        difficulty, disabledList, refurbish, fronzenMentality = self.dbutils.fetch_existing_trigers()
+        difficulty, triggerList, refurbish, fronzenMentality = self.dbutils.fetch_existing_trigers()
         if os.path.exists(file_path):
-            await self.overwrite_config_file(difficulty, disabledList, refurbish, fronzenMentality, saveName)
+            await self.overwrite_config_file(difficulty, triggerList, refurbish, fronzenMentality, saveName)
         with open(file_path, "r") as file:
             data = file.read()
             data = json.loads(data)
@@ -136,17 +136,16 @@ class SaveSelectedCommand(Command):
             info = json.dumps(info)
             await self.send_message_to_client(info)
 
-    async def overwrite_config_file(self, difficulty, disabledList, refurbish, frozenMentality, saveName):
+    async def overwrite_config_file(self, difficulty, triggerList, refurbish, frozenMentality, saveName):
         config_name = f"{saveName.split('.')[0]}_config.json"
         config_folder = "./../configs"
         file_path = os.path.join(config_folder, config_name)
         with open(file_path, "r") as file:
             data = file.read()
             data = json.loads(data)
-            data["disabled"] = disabledList
+            data["triggerList"] = triggerList
             data["refurbish"] = refurbish
             data["mentalityFrozen"] = frozenMentality
-            data["difficulty"] = difficulty
             with open(file_path, "w") as json_file:
                 json.dump(data, json_file, indent=4)
 

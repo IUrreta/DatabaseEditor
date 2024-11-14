@@ -43,6 +43,7 @@
   --engine-table-name: #878787;
   --engine-table-name-hover: #575757;
   --support-me: #fdee15;
+  --custom-dif: #52ebbd;
 
   --mentality-enthusiastic: #c055e3;
   --mentality-positive: #10ffff;
@@ -2440,7 +2441,15 @@ DRIVERS TABLE
 }
 
 .logo-merc-table{
-  padding: 4px 2px;
+  padding: 4px;
+}
+
+.logo-visarb-table{
+  padding: 5px 3px;
+}
+
+.logo-alpine-table{
+  padding: 6px 2px;
 }
 
 .logo-reduce{
@@ -4390,9 +4399,10 @@ input.disabled{
   max-width: 75px;
 }
 
-.rounded-input.retirement::selection{
+.rounded-input.retirement::selection, .modal-subtitle::selection, #difficultySpan::selection{
   background-color: transparent;
 }
+
 
 .driver1-number::selection, .driver2-number::selection{
   background-color: transparent;
@@ -5634,7 +5644,7 @@ input.disabled{
 
 .free-driver {
   background-color: var(--elements);
-  border-radius: 10px;
+  border-radius: 9px;
   padding:  5px 6px;
   cursor: grab !important;
   margin: 6px 5px;
@@ -6225,8 +6235,8 @@ input.disabled{
   height: 40px;
   padding-bottom: 6px;
   padding-top: 8px;
-  padding-left: 7px;
-  padding-right: 7px;
+  padding-left: 9px;
+  padding-right: 9px;
 }
 
 .changable-team-menu-alpine{
@@ -6817,13 +6827,23 @@ input::-webkit-inner-spin-button {
 .performance-number{
   width: 8%;
   text-align: center;
-  padding-right: 4px;
+  padding-right: 7px;
   font-size: 16px;
   max-height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding-top: 4px;
+  transition: transform 0.2s;
+}
+
+/* move it 2 pixels to the right */
+.number-and-team:hover .team-number, .number-and-team.selected .team-number{
+  transform: translateX(2px);
+}
+
+.nunmber-and-car:hover .performance-number, .nunmber-and-car.selected .performance-number{
+  transform: translateX(2px);
 }
 
 .team-number{
@@ -6833,7 +6853,8 @@ input::-webkit-inner-spin-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-right: 7.5px;
+  padding-right: 9.5px;
+  transition: transform 0.2s;
 }
 
 .car-performance.selected .value{
@@ -8021,6 +8042,23 @@ input::-webkit-inner-spin-button {
   width: 50%;
 }
 
+#customGearButton {
+  margin-left: 5px;
+  transition: transform 0.3s ease, color 0.2s;
+  cursor: pointer;
+  display: inline-block;
+}
+
+#customGearButton:hover {
+  color: var(--text-selected);
+}
+
+#customGearButton.custom {
+  color: var(--new-primary);
+  transform: rotate(45deg);
+
+}
+
 .difficulty-changes{
   display: flex;
   flex-direction: column;
@@ -8080,6 +8118,18 @@ datalist .my-mark{
 
 .option-state{
   padding-left: 5px;
+  transition: color 0.2s;
+}
+
+
+
+.dif-warning:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.2);
+}
+
+.dif-warning::selection{
+  background-color: transparent;
 }
 
 .option-state.default, .dif-warning.default{
@@ -8110,12 +8160,16 @@ datalist .my-mark{
   color: var(--impossible)
 }
 
-.option-state.fixed, span.fixed, .dif-warning.fixed{
+.option-state.fixed, span.fixed, .dif-warning.fixed, #lightDif.impossible{
   color: var(--new-primary)
 }
 
 .option-state.reduced-weight, span.reduced-weight, .dif-warning.reduced-weight{
   color: var(--new-primary)
+}
+
+.option-state.custom{
+  color: var(--text-general);
 }
 
 #refurbishTitle{
@@ -8134,13 +8188,16 @@ datalist .my-mark{
   align-content: flex-start;
 }
 
+
+
 .dif-warning:not(.default){
   cursor: pointer;
-  transition: opacity 0.25s ease-in, text-decoration 0.25s ease-in;
+  transition: color 0.2s, opacity 0.1s, transform 0.2s, filter 0.2s;
 }
 
-.dif-warning.disabled{
+.dif-warning.disabled, #lightDif.disabled{
   text-decoration: line-through;
+  color: var(--text-general);
   opacity: 0.63;
 }
 

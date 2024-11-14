@@ -489,6 +489,7 @@ document.addEventListener('DOMContentLoaded',function () {
     const updateInfo = document.querySelector(".update-info")
     const noNotifications = ["Custom Engines fetched","Cars fetched","Part values fetched", "Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
     let difficulty_dict = {
+        "-2": "Custom",
         0: "default",
         1: "reduced weight",
         2: "extra-hard",
@@ -497,6 +498,18 @@ document.addEventListener('DOMContentLoaded',function () {
         5: "insane",
         6: "impossible"
     }
+
+    let inverted_difficulty_dict = {
+        "disabled": -1,
+        "default": 0,
+        "reduced weight": 1,
+        "extra-hard": 2,
+        "brutal": 3,
+        "unfair": 4,
+        "insane": 5,
+        "impossible": 6
+    }
+    let difcultyCustom = "default"
 
     const messageHandlers = {
         "ERROR": (message) => {
@@ -953,13 +966,14 @@ document.addEventListener('DOMContentLoaded',function () {
                             },4000);
                         }
                         else {
-                            updateInfo.textContent = '\xa0' + "New update available"
                             updateInfo.classList.remove("bi-cloud")
                             if (checkGit()) {
+                                updateInfo.textContent = '\xa0' + "Click to update!"
                                 updateInfo.classList.add("bi-cloud-download")
                                 updateButton()
                             }
                             else {
+                                updateInfo.textContent = '\xa0' + "New update available!"
                                 updateInfo.classList.add("bi-exclamation-lg")
                                 updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
                             }
@@ -1162,7 +1176,6 @@ document.addEventListener('DOMContentLoaded',function () {
                 document.getElementById("refurbishingToggle").checked = false
             }
             engine_allocations = info["engine_allocations"]
-            //remove all engines from engines_names with key > 10
             for (let key in engine_names) {
                 if (key > 10) {
                     delete engine_names[key]
@@ -1175,7 +1188,12 @@ document.addEventListener('DOMContentLoaded',function () {
             let difficultySlider = document.getElementById("difficultySlider")
             difficultySlider.value = info["difficulty"]
             update_difficulty_span(info["difficulty"])
-            manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
+            if (info["difficulty"] === -2) { //custom difficulty
+                load_difficulty_warnings(info["triggerList"])
+            }
+            else{
+                manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
+            }
             update_refurbish_span(info["refurbish"])
             manage_disabled_list(info["disabled"])
     }
@@ -1507,17 +1525,18 @@ document.addEventListener('DOMContentLoaded',function () {
         }
         let difficulty = 0;
         let difficultySlider = document.getElementById("difficultySlider")
-        let difficultyValue = parseInt(difficultySlider.value)
+        let difficultyValue = document.getElementById("difficultySpan").textContent === "Custom" ? -2 : parseInt(difficultySlider.value)
         let disabledList = {}
+        let triggerList = {}
         document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
-            console.log(elem)
             let id = elem.id
-            if (elem.classList.contains("disabled")) {
+            if (elem.classList.contains("disabled") || elem.classList.contains("d-none")) {
                 disabledList[id] = 1
             }
             else{
                 disabledList[id] = 0
             }
+            triggerList[id] = elem.classList && (elem.classList.contains("d-none") || elem.classList.contains("disabled")) ? -1 : inverted_difficulty_dict[elem.className.split(" ")[1]];
         })
         let data = {
             command: "configUpdate",
@@ -1529,6 +1548,7 @@ document.addEventListener('DOMContentLoaded',function () {
             difficulty: difficultyValue,
             refurbish: refurbish,
             disabled: disabledList,
+            triggerList: triggerList
         }
         if (customIconPath !== null) {
             data["icon"] = customIconPath
@@ -1637,6 +1657,8 @@ document.addEventListener('DOMContentLoaded',function () {
         let value = this.value;
         update_difficulty_span(value)
         manage_difficulty_warnings(difficulty_dict[parseInt(value)])
+        difcultyCustom = "default"
+        document.getElementById("customGearButton").classList.remove("custom")
     });
 
     function update_difficulty_span(value){
@@ -1644,6 +1666,11 @@ document.addEventListener('DOMContentLoaded',function () {
         let difficulty = difficulty_dict[parseInt(value)]
         if (difficulty === "reduced weight") {
             span.className = "option-state reduced-weight"
+        }
+        else if (difficulty === "Custom"){
+            span.className = "option-state custom"
+            document.getElementById("customGearButton").classList.remove("custom")
+            document.getElementById("customGearButton").click()
         }
         else{
             span.className = "option-state " + difficulty
@@ -1689,30 +1716,130 @@ document.addEventListener('DOMContentLoaded',function () {
         ];
         const selectedConfig = difficultyConfig[level] || difficultyConfig["default"];
 
-    elements.forEach(id => {
-        document.getElementById(id).classList.add("d-none");
-    });
+        elements.forEach(id => {
+            document.getElementById(id).classList.add("d-none");
+        });
 
-    selectedConfig.visible.forEach(id => {
-        document.getElementById(id).classList.remove("d-none");
-    });
+        selectedConfig.visible.forEach(id => {
+            document.getElementById(id).classList.remove("d-none");
+        });
 
-    elements.forEach(id => {
-        if (selectedConfig[id]) {
-            const elementConfig = selectedConfig[id];
-            const element = document.getElementById(id);
-            element.className = elementConfig.className;
-            element.textContent = elementConfig.text;
-        }
-    });
+        elements.forEach(id => {
+            if (selectedConfig[id]) {
+                const elementConfig = selectedConfig[id];
+                const element = document.getElementById(id);
+                element.className = elementConfig.className;
+                element.textContent = elementConfig.text;
+            }
+        });
         
     }
 
-    document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
-        elem.addEventListener("click",function () {
-            elem.classList.toggle("disabled")
-        })
+    function load_difficulty_warnings(triggerList){
+        for (let id in triggerList){
+            let warn = document.getElementById(id)
+            let difName = difficulty_dict[triggerList[id]]
+            if (triggerList[id] !== -1) {
+            warn.className = difficultyConfig[difName][id].className
+            warn.textContent = difficultyConfig[difName][id].text
+            }
+            else{
+                warn.classList.add("disabled")
+            }
+        }
+    }
+
+    document.getElementById("customGearButton").addEventListener("click",function () {
+        this.classList.toggle("custom")
+        if (this.classList.contains("custom")) {
+            difcultyCustom = "custom"
+            document.querySelector("#difficultySpan").textContent = "Custom"
+            document.querySelector("#difficultySpan").className = "option-state custom"
+            document.querySelector(".custom-description").textContent = "cycle through its states"
+            let warnigs = document.querySelectorAll(".dif-warning")
+            warnigs.forEach(function (elem) {
+                if (elem.id !== "defaultDif") {
+                    for (let level in difficultyConfig) {
+                        if (difficultyConfig[level].visible.includes(elem.id)) {
+                            elem.className = difficultyConfig[level][elem.id]?.className || "dif-warning";
+                            elem.textContent = difficultyConfig[level][elem.id]?.text || "";
+                            break;
+                        }
+                    }
+                }   
+                else{
+                    elem.classList.add("d-none")
+                }
+            })
+        }
+        else{
+            difcultyCustom = "default"
+            document.querySelector(".custom-description").textContent = "remove/add it"
+            actualDifficulty = document.getElementById("difficultySlider").value
+            manage_difficulty_warnings(difficulty_dict[parseInt(actualDifficulty)])
+            update_difficulty_span(actualDifficulty)
+        }
     })
+
+    function rotateDifficultyLevel(elementId) {
+        const levels = ["extra-hard", "brutal", "unfair", "insane", "impossible"];
+        const element = document.getElementById(elementId);
+    
+        // Detectar si el elemento está en estado "disabled" actualmente
+        if (element.classList.contains("disabled")) {
+            let nextConfig;
+            for (let level in difficultyConfig) {
+                if (difficultyConfig[level].visible.includes(elementId)) {
+                    nextConfig = difficultyConfig[level][elementId]
+                    break
+                }
+            }
+            if (nextConfig) {
+                element.className = nextConfig.className; 
+                element.textContent = nextConfig.text; 
+            }
+            return;
+        }
+    
+        let currentLevelIndex = levels.findIndex(level => {
+            return difficultyConfig[level][elementId] &&
+                   element.classList.contains(difficultyConfig[level][elementId].className.split(" ")[1]);
+        });
+    
+        if (currentLevelIndex === levels.length - 1) { 
+            element.className = "dif-warning disabled";
+            return;
+        }
+    
+        let nextLevelIndex = (currentLevelIndex + 1) % levels.length;
+        let nextConfig = difficultyConfig[levels[nextLevelIndex]][elementId];
+
+    
+        while (
+            (!nextConfig || 
+            (nextConfig.className === element.className && nextConfig.text === element.textContent) || 
+            !difficultyConfig[levels[nextLevelIndex]].visible.includes(elementId)) && 
+            nextLevelIndex !== currentLevelIndex 
+        ) {
+            nextLevelIndex = (nextLevelIndex + 1) % levels.length;
+            nextConfig = difficultyConfig[levels[nextLevelIndex]][elementId];
+        }
+    
+        if (nextConfig) {
+            element.className = nextConfig.className;
+            element.textContent = nextConfig.text; 
+        }
+    }
+
+    document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
+        elem.addEventListener("click", function () {
+            if (difcultyCustom === "custom") {
+                rotateDifficultyLevel(elem.id); 
+            } else {
+                elem.classList.toggle("disabled"); 
+            }
+        });
+    });
 
     /**
      * Manages the stats of the divs associated with the pills

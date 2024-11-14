@@ -1176,7 +1176,7 @@ function load_graphs_data(data) {
                         d1_res.push(d1_provisonal[index1])
                         if (d1_provisional_gapW[index1].slice(-1) === "L") {
                             d1_gapWinner.push(NaN); 
-                            d1_backgroundColors.push(d1_color + "75");
+                            d1_backgroundColors.push(d1_color + "76");
                         }
                         else{
                             d1_gapWinner.push(d1_provisional_gapW[index1])
@@ -1365,7 +1365,7 @@ function createRaceChart(labelsArray, max) {
                 },
                 layout: {
                     padding: {
-                        top: 25,
+                        top: 10,
                         right: 25,
                         boottom: 20,
                         left: 10
@@ -1490,7 +1490,7 @@ function createQualiChart(labelsArray, max, q2_line) {
                 },
                 layout: {
                     padding: {
-                        top: 25,
+                        top: 10,
                         right: 25,
                         boottom: 20,
                         left: 10
@@ -1621,7 +1621,7 @@ function createPointsChart(labelsArray) {
                 },
                 layout: {
                     padding: {
-                        top: 25,
+                        top: 10,
                         right: 25,
                         boottom: 20,
                         left: 10
@@ -1756,7 +1756,7 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
                         else if (color.endsWith("60")) {
                             result = "Not representative"
                         }
-                        else if (color.endsWith("75")) {
+                        else if (color.endsWith("76")) {
                             result = "Lapped"
                         }
                         else{
@@ -1773,7 +1773,7 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
         options: {
             layout: {
                 padding: {
-                    top: 25,
+                    top: 10,
                     right: 25,
                     boottom: 20,
                     left: 10
