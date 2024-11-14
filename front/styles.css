@@ -4399,9 +4399,10 @@ input.disabled{
   max-width: 75px;
 }
 
-.rounded-input.retirement::selection{
+.rounded-input.retirement::selection, .modal-subtitle::selection, #difficultySpan::selection{
   background-color: transparent;
 }
+
 
 .driver1-number::selection, .driver2-number::selection{
   background-color: transparent;

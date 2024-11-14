@@ -966,13 +966,14 @@ document.addEventListener('DOMContentLoaded',function () {
                             },4000);
                         }
                         else {
-                            updateInfo.textContent = '\xa0' + "New update available"
                             updateInfo.classList.remove("bi-cloud")
                             if (checkGit()) {
+                                updateInfo.textContent = '\xa0' + "Click to update!"
                                 updateInfo.classList.add("bi-cloud-download")
                                 updateButton()
                             }
                             else {
+                                updateInfo.textContent = '\xa0' + "New update available!"
                                 updateInfo.classList.add("bi-exclamation-lg")
                                 updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
                             }
@@ -1528,7 +1529,6 @@ document.addEventListener('DOMContentLoaded',function () {
         let disabledList = {}
         let triggerList = {}
         document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
-            console.log(elem)
             let id = elem.id
             if (elem.classList.contains("disabled") || elem.classList.contains("d-none")) {
                 disabledList[id] = 1
@@ -1711,7 +1711,6 @@ document.addEventListener('DOMContentLoaded',function () {
     }
 
     function manage_difficulty_warnings(level){
-        console.log(level)
         const elements = [
             "defaultDif", "lightDif", "researchDif", "statDif", "designTimeDif", "factoryDif", "buildDif"
         ];
@@ -1756,6 +1755,7 @@ document.addEventListener('DOMContentLoaded',function () {
             difcultyCustom = "custom"
             document.querySelector("#difficultySpan").textContent = "Custom"
             document.querySelector("#difficultySpan").className = "option-state custom"
+            document.querySelector(".custom-description").textContent = "cycle through its states"
             let warnigs = document.querySelectorAll(".dif-warning")
             warnigs.forEach(function (elem) {
                 if (elem.id !== "defaultDif") {
@@ -1774,6 +1774,7 @@ document.addEventListener('DOMContentLoaded',function () {
         }
         else{
             difcultyCustom = "default"
+            document.querySelector(".custom-description").textContent = "remove/add it"
             actualDifficulty = document.getElementById("difficultySlider").value
             manage_difficulty_warnings(difficulty_dict[parseInt(actualDifficulty)])
             update_difficulty_span(actualDifficulty)
@@ -1781,7 +1782,6 @@ document.addEventListener('DOMContentLoaded',function () {
     })
 
     function rotateDifficultyLevel(elementId) {
-        console.log("COJONES")
         const levels = ["extra-hard", "brutal", "unfair", "insane", "impossible"];
         const element = document.getElementById(elementId);
     
@@ -1806,15 +1806,14 @@ document.addEventListener('DOMContentLoaded',function () {
                    element.classList.contains(difficultyConfig[level][elementId].className.split(" ")[1]);
         });
     
-        if (currentLevelIndex === levels.length - 1) { // "impossible" es el último nivel
-            element.className = "dif-warning disabled"; // Cambia a la clase "disabled"
+        if (currentLevelIndex === levels.length - 1) { 
+            element.className = "dif-warning disabled";
             return;
         }
     
         let nextLevelIndex = (currentLevelIndex + 1) % levels.length;
         let nextConfig = difficultyConfig[levels[nextLevelIndex]][elementId];
 
-        console.log(currentLevelIndex, nextLevelIndex, nextConfig)
     
         while (
             (!nextConfig || 
@@ -1827,17 +1826,17 @@ document.addEventListener('DOMContentLoaded',function () {
         }
     
         if (nextConfig) {
-            element.className = nextConfig.className; // Cambia la clase al próximo nivel
-            element.textContent = nextConfig.text; // Cambia el texto
+            element.className = nextConfig.className;
+            element.textContent = nextConfig.text; 
         }
     }
 
     document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
         elem.addEventListener("click", function () {
             if (difcultyCustom === "custom") {
-                rotateDifficultyLevel(elem.id); // Rota el nivel de dificultad en modo "custom"
+                rotateDifficultyLevel(elem.id); 
             } else {
-                elem.classList.toggle("disabled"); // Alterna "disabled" en otros modos
+                elem.classList.toggle("disabled"); 
             }
         });
     });

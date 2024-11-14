@@ -1365,7 +1365,7 @@ function createRaceChart(labelsArray, max) {
                 },
                 layout: {
                     padding: {
-                        top: 25,
+                        top: 10,
                         right: 25,
                         boottom: 20,
                         left: 10
@@ -1490,7 +1490,7 @@ function createQualiChart(labelsArray, max, q2_line) {
                 },
                 layout: {
                     padding: {
-                        top: 25,
+                        top: 10,
                         right: 25,
                         boottom: 20,
                         left: 10
@@ -1621,7 +1621,7 @@ function createPointsChart(labelsArray) {
                 },
                 layout: {
                     padding: {
-                        top: 25,
+                        top: 10,
                         right: 25,
                         boottom: 20,
                         left: 10
@@ -1773,7 +1773,7 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
         options: {
             layout: {
                 padding: {
-                    top: 25,
+                    top: 10,
                     right: 25,
                     boottom: 20,
                     left: 10
