@@ -56,13 +56,13 @@ class ConfigUpdateCommand(Command):
         data["mentalityFrozen"] = int(frozenMentality)
         data["difficulty"] = int(difficulty)
         data["refurbish"] = int(refurbish)
-        data["disabled"] = message["disabled"]
+        data["triggerList"] = message["triggerList"]
             
 
         if Command.year_iterarion == "24":
             edit_freeze_mentality(frozenMentality) 
 
-        Command.dbutils.manage_difficulty_triggers(difficulty, message["disabled"])
+        Command.dbutils.manage_difficulty_triggers(message["triggerList"])
         Command.dbutils.manage_refurbish_trigger(int(refurbish))
         
 

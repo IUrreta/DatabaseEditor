@@ -79,10 +79,11 @@ function place_drivers_editStats(driversArray) {
             newDiv.dataset.globalMentality = driver["global_mentality"]
         }
         let mentality = driver["global_mentality"]
-        if (mentality < 2){
+        let modifier = getMentalityModifier(mentality);
+        if (modifier > 0){
             mentality_ovrSpan.classList.add("mentality-small-ovr-positive")
         }
-        else if (mentality > 2){
+        else if (modifier < 0){
             mentality_ovrSpan.classList.add("mentality-small-ovr-negative")
         }
         newDiv.dataset.marketability = driver["marketability"]
@@ -231,10 +232,11 @@ function place_staff_editStats(staffArray) {
             mentality_ovrSpan.textContent = ovr[1]
         }
         ovrDiv.appendChild(mentality_ovrSpan)
-        if (mentality < 2){
+        let modifier = getMentalityModifier(mentality);
+        if (modifier > 0){
             mentality_ovrSpan.classList.add("mentality-small-ovr-positive")
         }
-        else if (mentality > 2){
+        else if (modifier < 0){
             mentality_ovrSpan.classList.add("mentality-small-ovr-negative")
         }
         ovrDiv.appendChild(ovrSpan)
@@ -273,6 +275,14 @@ function place_staff_editStats(staffArray) {
 
     })
 
+}
+
+function getMentalityModifier(mentality) {
+    let keys = Object.keys(mentalityModifiers).map(Number).sort((a, b) => a - b);
+    
+    let nextKey = keys.find(key => key > mentality);
+    
+    return nextKey !== undefined ? mentalityModifiers[nextKey] : null;
 }
 
 /**
@@ -335,7 +345,7 @@ function calculateOverall(stats, type, mentality=2, ovr="small") {
     let statsArray = stats.split(" ").map(Number);
     let mentality_stats = [];
     for (let i = 0; i < statsArray.length; i++) {
-        mentality_stats[i] = statsArray[i] + mentality_bonuses[mentality];
+        mentality_stats[i] = statsArray[i] + getMentalityModifier(mentality);
     }
     let rating, mentality_rating;
     if (type === "driver") {
@@ -739,15 +749,15 @@ function manage_mentality_modifiers(element, mentality) {
     if (modifier_span){
         modifier_span.remove()
     }
-    let modifier = mentality_bonuses[mentality];
+    let modifier = getMentalityModifier(mentality);
     let mentality_class, span = "";
-    if (parseInt(mentality) < 2){
+    if (modifier > 0){
         mentality_class = "positive"
         span = "<span class='mentality-modifier positive'> +" + modifier + "</span>"
     }
-    else if (parseInt(mentality) > 2){
+    else if (modifier < 0){
         mentality_class = "negative"
-        span = "<span class='mentality-modifier negative'>" + modifier + "</span>"
+        span = "<span class='mentality-modifier negative'> " + modifier + "</span>"
     }
     if (name_stat.textContent !== "GROWTH" && name_stat.textContent !== "AGRESSION"){
         name_stat.innerHTML = name_stat.textContent + span
