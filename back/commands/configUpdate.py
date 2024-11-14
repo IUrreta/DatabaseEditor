@@ -62,7 +62,6 @@ class ConfigUpdateCommand(Command):
         if Command.year_iterarion == "24":
             edit_freeze_mentality(frozenMentality) 
 
-        print(message["triggerList"])
         Command.dbutils.manage_difficulty_triggers(message["triggerList"])
         Command.dbutils.manage_refurbish_trigger(int(refurbish))
         

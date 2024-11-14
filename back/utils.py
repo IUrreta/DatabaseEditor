@@ -686,7 +686,6 @@ class DatabaseUtils:
         conn = sqlite3.connect("../result/main.db")
         cursor = conn.cursor()
 
-        print(triggerList)
         
         self.manage_design_boost_triggers(cursor, triggerList["statDif"])
         self.manage_design_time_triggers(cursor, triggerList["designTimeDif"])
@@ -705,7 +704,6 @@ class DatabaseUtils:
         cursor.execute("DROP TRIGGER IF EXISTS reduced_weight_impossible")
         trigger_sql = ""
 
-        print(triggerLevel)
         if triggerLevel > 0:
             if triggerLevel == 1:
                 trigger_sql = f"""
@@ -1022,7 +1020,8 @@ class DatabaseUtils:
         elif triggerLevel == 6:
             cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 35, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 35")
         elif triggerLevel == -1:
-            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 33, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 35")
+            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 33, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID >= 34")
+
 
     def manage_refurbish_trigger(self, type):
         conn = sqlite3.connect("../result/main.db")
@@ -1066,7 +1065,6 @@ class DatabaseUtils:
         if triggers:
             for trigger in triggers:
                 dif = trigger[0].split("_")[-1]
-                print(trigger, dif)
                 dif_level = inverted_difficulty_dict.get(dif, 0)
                 type_trigger = trigger[0].split("_")[0]
                 if type_trigger == "difficulty":
