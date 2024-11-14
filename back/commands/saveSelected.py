@@ -146,6 +146,8 @@ class SaveSelectedCommand(Command):
             data["triggerList"] = triggerList
             data["refurbish"] = refurbish
             data["mentalityFrozen"] = frozenMentality
+            if "disabled" in data:
+                del data["disabled"]
             with open(file_path, "w") as json_file:
                 json.dump(data, json_file, indent=4)
 

@@ -1195,17 +1195,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
             }
             update_refurbish_span(info["refurbish"])
-            manage_disabled_list(info["disabled"])
     }
-    }
-
-    function manage_disabled_list(disabled_list){
-        for (key in disabled_list){
-            let elem = document.getElementById(key)
-            if (disabled_list[key] === 1){
-                elem.classList.add("disabled")
-            }
-        }
     }
 
     document.querySelectorAll(".color-picker").forEach(function (elem) {
@@ -1740,8 +1730,8 @@ document.addEventListener('DOMContentLoaded',function () {
             let warn = document.getElementById(id)
             let difName = difficulty_dict[triggerList[id]]
             if (triggerList[id] !== -1) {
-            warn.className = difficultyConfig[difName][id].className
-            warn.textContent = difficultyConfig[difName][id].text
+                warn.className = difficultyConfig[difName][id].className
+                warn.textContent = difficultyConfig[difName][id].text
             }
             else{
                 warn.classList.add("disabled")
