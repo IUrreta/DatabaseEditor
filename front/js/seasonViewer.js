@@ -920,15 +920,15 @@ function hoverListeners() {
 function generateYearsMenu(actualYear) {
     document.querySelector("#yearInput").min = actualYear
     currentSeason = actualYear
-    var yearMenu = document.querySelector("#yearMenu");
-    var yearH2H = document.querySelector("#yearMenuH2H");
-    var yearPrediction = document.querySelector("#yearPredictionMenu");
-    var yearPredictionModal = document.querySelector("#yearPredictionModalMenu");
+    let yearMenu = document.querySelector("#yearMenu");
+    let yearH2H = document.querySelector("#yearMenuH2H");
+    let yearPrediction = document.querySelector("#yearPredictionMenu");
+    let yearPredictionModal = document.querySelector("#yearPredictionModalMenu");
     yearMenu.innerHTML = ""
     yearH2H.innerHTML = ""
     yearPrediction.innerHTML = ""
     yearPredictionModal.innerHTML = ""
-    for (let year = actualYear; year >= game_version; year--) {
+    for (let year = actualYear; year >= actualYear; year--) {
         let a = document.createElement("a");
         a.textContent = year.toString();
         a.classList = "dropdown-item"
