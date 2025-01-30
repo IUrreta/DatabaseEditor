@@ -12,10 +12,6 @@ let firstShow = false;
 let configCopy;
 
 
-const batFilePath = path.join(__dirname,'../back/startBack.bat');
-
-
-
 const socket = new WebSocket('ws://localhost:8765/');
 /**
  * When the socket is opened sends a connect message to the backend
@@ -194,7 +190,7 @@ function editModeHandler() {
         globalMentality = Math.floor(globalMentality / 3)
     }
     document.querySelector(".clicked").dataset.globalMentality = globalMentality
-    let new_ovr = calculateOverall(stats,typeOverall, globalMentality);
+    let new_ovr = calculateOverall(stats,typeOverall, mentality_to_global_menatality[globalMentality]);
     document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = ""
     if (new_ovr[1] !== new_ovr[0]) {
         document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr[1];
@@ -208,7 +204,7 @@ function editModeHandler() {
     }
     let inputArray = document.querySelectorAll(".elegible")
     inputArray.forEach(function (input, index) {
-        manage_mentality_modifiers(input, globalMentality)
+        manage_mentality_modifiers(input, mentality_to_global_menatality[globalMentality])
     })
     let diff = parseInt(new_ovr[1]) - parseInt(new_ovr[0])
     let mentalitydiff = document.querySelector(".mentality-change-ovr")

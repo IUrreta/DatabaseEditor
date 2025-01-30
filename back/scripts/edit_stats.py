@@ -26,9 +26,9 @@ mentaility_opinions = {
 
 mentaility_overall = {
     0: 95,
-    1: 75,
-    2: 55,
-    3: 35,
+    1: 79,
+    2: 59,
+    3: 24,
     4: 5
 }
 
