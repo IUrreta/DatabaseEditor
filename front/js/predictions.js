@@ -1,39 +1,10 @@
-
-
-const names_full = {
-    "BAH": "Bahrain",
-    "AUS": "Australia",
-    "SAU": "Saudi Arabia",
-    "IMO": "Imola",
-    "MIA": "Miami",
-    "SPA": "Spain",
-    "MON": "Monaco",
-    "AZE": "Azerbaijan",
-    "CAN": "Canada",
-    "GBR": "Great Britain",
-    "AUT": "Austria",
-    "FRA": "France",
-    "HUN": "Hungary",
-    "BEL": "Belgium",
-    "ITA": "Italy",
-    "SGP": "Singapore",
-    "JAP": "Japan",
-    "USA": "United States",
-    "MEX": "Mexico",
-    "BRA": "Brazil",
-    "UAE": "Abu Dhabi",
-    "NED": "Netherlands",
-    "VEG": "Vegas",
-    "QAT": "Qatar"
-};
-
-
 let yearSel;
 let yearProbSel;
 let racePredicted;
 let raceName;
 let probRace;
 let mid_grid = 10;
+let max_races = 23;
 let relative_grid = 5;
 
 
@@ -218,8 +189,8 @@ function loadMontecarlo(data){
         spanLastName.dataset.teamid = elem[2];
         row.dataset.teamid = elem[2];
         row.classList.add(team_dict[elem[2]] + "-transparent")
-        spanName.textContent = name[0] + " "
-        spanLastName.textContent = " " + name[1].toUpperCase()
+        spanName.textContent = insert_space(name[0]) + " "
+        spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
         spanLastName.classList.add("bold-font")
         manageColor(spanLastName, spanLastName)
         nameDiv.appendChild(spanName)
@@ -292,8 +263,8 @@ function predictDrivers(drivers) {
         mainDiv.dataset.teamid = driver.Team;
         mainDiv.classList.add(team_dict[driver.Team] + "-transparent")
         spanLastName.dataset.teamid = driver.Team;
-        spanName.textContent = name[0] + " "
-        spanLastName.textContent = name[1].toUpperCase()
+        spanName.textContent = insert_space(name[0]) + " "
+        spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
         spanLastName.classList.add("bold-font")
         manageColor(spanLastName, spanLastName)
         nameDiv.appendChild(spanName)

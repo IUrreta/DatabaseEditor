@@ -1,5 +1,5 @@
 from commands.command import Command
-from scripts.transfer_driver_23 import run_script as run_trasnsfer
+from scripts.transfer_driver import TransferUtils
 from scripts.extractor import process_repack
 
 import json
@@ -9,8 +9,8 @@ class SwapCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        argument = f"swap {self.message['driver1ID']} {self.message['driver2ID']}"
-        run_trasnsfer(argument)
+        transfer_utils = TransferUtils()
+        transfer_utils.swap_drivers(self.message['driver1ID'], self.message['driver2ID'])
         process_repack("../result", Command.path)
         info = []
         info.insert(0, f"Succesfully swapped {self.message['driver1']} and  {self.message['driver2']}")

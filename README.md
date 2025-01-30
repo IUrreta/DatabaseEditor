@@ -1,4 +1,5 @@
-![DATABASE EDITOR F1 MANAGER 23](https://github.com/IUrreta/Database-Editor-Develop/assets/95303008/0f8493bb-9349-4f2a-b9f8-60a600ae3a54)
+![image](https://github.com/user-attachments/assets/cb37258e-86c5-4db2-8f86-5bab0850f45c)
+
 Friendly to use tool for editing your save files from F1 Manager 24 and 23. Supports driver transfers, calendar customization, staff stat editing and car performance editing, and much more!
 
 > [!WARNING]
@@ -7,53 +8,70 @@ Friendly to use tool for editing your save files from F1 Manager 24 and 23. Supp
 ## What's the Database Editor? ##
 Basically it's just a friendly user interface that helps you make the modifications you wish for the database from your save file from F1 Manager 24 and 23!
 
-It's developed by the same guy (me, u/ignaciourreta on Reddit) who developed multiple scripts for the F1 Manager 22 game as the driver trasnfer script, custom calendar, edit stats, or edit performance of cars
+It's developed by the same guy (me, u/ignaciourreta on Reddit) who developed multiple scripts for the F1 Manager 22 game as the driver transfer script, custom calendar, edit stats, or edit performance of cars
 
 When I developed those scripts, more specifically the driver transfers script for the Script Manager for F1M22 I always had in mind to devlop a tool like this to make it easier to the user to take advantage of my scripts
 
 ### What can I actually do with the Database Editor? ###
 
-1. Driver transfers
+1. Driver/staff transfers
+
+![image](https://github.com/user-attachments/assets/7c7657cd-2ca2-4c04-b4bb-badc1ad6f5a9)
+
+2. Editing driver/staff contracts, and adding contracts for the future
+
+![image](https://github.com/user-attachments/assets/61a9e810-36d2-43ae-9ddc-196b12198f9a)
+
+3. Check out what drivers/staff have pre-contracts signed (see Hamilton and Hulkenberg with then notification icon)
+
+![image](https://github.com/user-attachments/assets/52cb1e3c-3a6c-402b-9b20-96582a99b9d9)
+
+4. Edit driver numbers
+5. Editing all staff (including drivers') stats, plus mentality and marketability, and **RENAME** any of them (including abreviations for drivers)
+
+![image](https://github.com/user-attachments/assets/c1eac701-0fe5-4294-b2ac-09677d6d1307)
+
+6. Customize your calendar, including weather of races
    
-   ![image](https://github.com/user-attachments/assets/6c360742-5576-4e94-8f35-03829334a7d4)
+![image](https://github.com/user-attachments/assets/256dae43-fdc6-4261-9913-1d93b61eb5bc)
 
-2. Editing driver contracts
-3. Edit driver numbers
-4. Editing all staff (including drivers') stats, plus mentality and marketability
+
+7. Make your save **HARDER** with the new difficulty presets (customizable)
+8. **FREEZE THE MENTALITY** if you don't want that system interfering with your gameplay
+9. Fix the AI **NOT REFURBISHING** their facilities
+
+![image](https://github.com/user-attachments/assets/cf5559b4-c002-4d0a-9f71-8c473dc12999)
+
+10. Edit every stat from all car parts from all teams on the grid
+
+11. View every car performance  across the season and compare each car attribute
+
+![image](https://github.com/user-attachments/assets/2495b9dc-671d-4da0-8648-c9dcf37c9914)
+
+12. Edit the performance and durability of any of the 4 engines suppliers
    
-   ![image](https://github.com/user-attachments/assets/6104de3f-e052-4b21-9abc-87bf868a69fa)
+![image](https://github.com/user-attachments/assets/4514db0f-9ecc-4671-b0a6-f6b3f1a53076)
 
-5. Customize your calendar, including weather of races
+13. Add NEW CUSTOM ENGINES
+
+![image](https://github.com/user-attachments/assets/5669f463-fbe1-4689-baf6-12b7540fcd2d)
+
+14. Edit all 10 teams' facilities, money, budget available from the budget cap, long and short term objectives, enigne supplier and pit crew attributes
    
-   ![image](https://github.com/user-attachments/assets/2d3b338c-554e-4129-ae07-9421d7e805b3)
+![image](https://github.com/user-attachments/assets/896b10ed-3b24-4bbc-a88c-df619e685206)
 
-6. Edit every stat from all car parts from all teams on the grid
 
-![image](https://github.com/user-attachments/assets/7ece60de-677d-4f70-ad6a-9c5cd6cc7792)
-
-7. View every car performance  across the season and compare each car attribute
-
-![image](https://github.com/user-attachments/assets/5676bae3-ec3f-4426-bebc-683f306b9537)
-
-8. Edit the performance and durability of any of the 4 engines suppliers
-   
-![image](https://github.com/user-attachments/assets/cef182b4-72e3-4f6b-ac34-ef074e2c12a1)
-
-9. Edit all 10 teams' facilities, money, budget available from the budget cap, long and short term objectives, enigne supplier and pit crew attributes
-   
-![image](https://github.com/user-attachments/assets/e7b83dc0-95de-48d6-8ce1-5b3794c52a89)
-
-10. Keep track of past seasons with a wikipedia-style table for drivers and teams championships
+15. Keep track of past seasons with a wikipedia-style table for drivers and teams championships
     
-![image](https://github.com/user-attachments/assets/ddf1738a-4901-4468-a56e-faa3390552a5)
+![image](https://github.com/user-attachments/assets/8db67d99-ba5d-48db-b67f-e9629ff5fd69)
 
-11. Compare drivers and teamas and their stats from their past seasons using the Head To Head graphic
+16. Compare drivers and teamas and their stats from their past seasons using the Head To Head graphic
     
-![image](https://github.com/user-attachments/assets/b9c067de-85bf-44e6-bbdd-b00d8ca3c7bd)
+![image](https://github.com/user-attachments/assets/8fe39b19-a1f7-4695-9cd8-e54241f4b7fe)
 
-12. Evaluate driver's performance based on an **AI MODEL** that has been trained with the game's data to predict their positions in each race and championship.
+17. Evaluate driver's performance based on an **AI MODEL** that has been trained with the game's data to predict their positions in each race and championship.
     
-![image](https://github.com/user-attachments/assets/e9b1a937-25e6-4774-93a9-fcfa6de1f650)
+![image](https://github.com/user-attachments/assets/40e70379-773e-43ba-b98a-2d2e020e4c70)
 
 
 

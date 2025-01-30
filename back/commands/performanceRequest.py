@@ -1,6 +1,6 @@
 from commands.command import Command
 from scripts.extractor import process_repack
-from scripts.car_analysis import *
+from scripts.car_analysis import CarAnalysisUtils
 
 import json
 
@@ -9,7 +9,8 @@ class PerformanceRequestCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        design_dict = get_parts_from_team(self.message["teamID"])
-        parts_stats = ["Parts stats fetched",get_unitvalue_from_parts(design_dict)]
+        car_analysis = CarAnalysisUtils(self.client)
+        design_dict = car_analysis.get_parts_from_team(self.message["teamID"])
+        parts_stats = ["Parts stats fetched", car_analysis.get_unitvalue_from_parts(design_dict), car_analysis.get_all_parts_from_team(self.message["teamID"]), car_analysis.fetch_max_design()]
         data_json = json.dumps(parts_stats)
         await self.send_message_to_client(data_json)

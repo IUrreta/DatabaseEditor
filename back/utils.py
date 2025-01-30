@@ -1,6 +1,71 @@
 import random
 import math
 import re
+from scripts.countries import countries_dict
+import sqlite3
+import os
+import json
+
+difficulty_dict = {
+    0:{
+        "name": "default",
+        "perc": 0,
+        "7and8": 0,
+        "9": 0,
+        "reduction": 0,
+        "research": 0
+    },
+    1:{
+        "name": "reducedWeight",
+        "perc": 0,
+        "7and8": 0,
+        "9": 0,
+        "reduction": 0,
+        "research": 0
+    },
+    2: {
+        "name": "extraHard",
+        "perc": 0.1,
+        "7and8": 0.002,
+        "9": 0.001,
+        "reduction": 0,
+        "research": 8
+    },
+    3: {
+        "name": "brutal",
+        "perc": 0.15,
+        "7and8": 0.003,
+        "9": 0.0015,
+        "reduction": 0.05,
+        "research": 14
+    },
+    4: {
+        "name": "unfair",
+        "perc": 0.3,
+        "7and8": 0.006,
+        "9": 0.003,
+        "reduction": 0.11,
+        "research": 30
+    },
+    5: {
+        "name": "insane",
+        "perc": 0.35,
+        "7and8": 0.007,
+        "9": 0.0035,
+        "reduction": 0.16,
+        "research": 45
+    },
+    6: {
+        "name": "impossible",
+        "perc": 0.48,
+        "7and8": 0.0096,
+        "9": 0.0048,
+        "reduction": 0.2,
+        "research": 65
+    }
+}
+
+inverted_difficulty_dict = {v["name"]: k for k, v in difficulty_dict.items()}
 
 class DatabaseUtils:
     def __init__(self, connection):
@@ -47,7 +112,7 @@ class DatabaseUtils:
 
 
     def fetch_driverNumebrs(self):
-        numbers = self.cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL").fetchall()
+        numbers = self.cursor.execute("SELECT DISTINCT Number FROM Staff_DriverNumbers dn JOIN Staff_Contracts con ON dn.CurrentHolder = con.StaffID WHERE dn.CurrentHolder IS NULL OR con.PosInTeam > 2").fetchall()
         numList = []
         for num in numbers:
             if num[0] != 1 and num[0] != 0:
@@ -66,13 +131,17 @@ class DatabaseUtils:
 
     def fetch_mentality(self, staffID):
         morale = self.cursor.execute(f"SELECT Opinion FROM Staff_Mentality_AreaOpinions WHERE StaffID = {staffID}").fetchall()
-        return morale
+        global_mentality = self.cursor.execute(f"SELECT Mentality FROM Staff_State WHERE StaffID = {staffID}").fetchone()
+        return [morale, global_mentality]
 
     def fetchDriverNumberDetails(self, driverID):
         num = self.cursor.execute(f"SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = {driverID}").fetchone()
         if num == None:
             nums = self.cursor.execute("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL").fetchall()
-            num = random.choice(nums)
+            if len(nums) > 0:
+                num = random.choice(nums)
+            else:
+                num = (0,)
         wants1 = self.cursor.execute(f"SELECT WantsChampionDriverNumber FROM Staff_DriverData WHERE StaffID = {driverID}").fetchone()
 
         return[num[0], wants1[0]]
@@ -99,35 +168,44 @@ class DatabaseUtils:
 
 
     def fetch_driverContract(self, id):
-        details = self.cursor.execute(f"SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = {id}").fetchone()
-        return details
+        vurrent_contract = self.cursor.execute(f"SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = {id}").fetchone()
+        future_contract = self.cursor.execute(f"SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, PosInTeam, TeamID FROM Staff_Contracts WHERE ContractType = 3 AND StaffID = {id}").fetchone()
+        day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+        return [vurrent_contract, future_contract, day_season[1]]
     
     def fetch_year(self):
         season = self.cursor.execute("SELECT CurrentSeason FROM Player_State").fetchone()
         return season[0]
+    
+    def check_contract(self, id, teamID):
+        type  = self.cursor.execute(f"SELECT ContractType FROM Staff_Contracts WHERE StaffID = {id} AND TeamID = {teamID} WHERE ContractType = 0 OR ContractType = 3").fetchone()
 
     def fetch_staff(self, game_year):
-        staff = self.cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID  LEFT JOIN Staff_Contracts con ON bas.StaffiD = con.StaffID WHERE gam.StaffType != 0 AND (con.ContractType = 0 OR con.ContractType IS NULL OR con.ContractType = 3) GROUP BY bas.StaffID ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID").fetchall()
+        staff = self.cursor.execute("SELECT DISTINCT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, gam.StaffType FROM Staff_GameData gam JOIN Staff_BasicData bas ON gam.StaffID = bas.StaffID LEFT JOIN Staff_Contracts con ON bas.StaffID = con.StaffID AND (con.ContractType = 0 OR con.ContractType IS NULL) WHERE gam.StaffType != 0 ORDER BY CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END, con.TeamID;").fetchall()
         formatted_tuples = []
-
         for tupla in staff:
             id = tupla[2]
             if tupla[0] != "Placeholder":
                 result = self.format_names_get_stats(tupla, "staff"+str(tupla[4]))
                 retirement = self.fetch_driverRetirement(id)
                 race_formula = self.fetch_raceFormula(id)
+                team_future = self.fetch_for_future_contract(id)
+                country_code = self.fetch_nationality(id, game_year)
                 if race_formula[0] == None:
                     race_formula = (4,)
                 data_dict = {i: result[i] for i in range(len(result))}
                 data_dict["retirement_age"] = retirement[0]
                 data_dict["age"] = retirement[1]
                 data_dict["race_formula"] = race_formula[0]
+                data_dict["team_future"] = team_future
+                data_dict["nationality"] = country_code
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
-                    if mentality:
-                        data_dict["mentality0"] = mentality[0][0]
-                        data_dict["mentality1"] = mentality[1][0]
-                        data_dict["mentality2"] = mentality[2][0]
+                    data_dict["global_mentality"] = mentality[1][0]   
+                    if mentality[0]:
+                        data_dict["mentality0"] = mentality[0][0][0]
+                        data_dict["mentality1"] = mentality[0][1][0]
+                        data_dict["mentality2"] = mentality[0][2][0]   
                     else:
                         result += (-1,)
                 formatted_tuples.append(data_dict)
@@ -191,14 +269,37 @@ class DatabaseUtils:
         return events_ids
 
     def format_seasonResults(self, results, driverName, teamID, driverID, year, sprints):
-        nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
-        apellido_pattern = r'StaffName_Surname_(\w+)'
+        nombre = ""
+        apellido = ""
+        if "STRING_LITERAL" not in driverName[0]:
+            nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
+            nombre_match = re.search(nombre_pattern, driverName[0])
+            if nombre_match:
+                nombre = self.remove_number(nombre_match.group(2))
+            else:
+                nombre = ""
+        else:
+            pattern = r'\|([^|]+)\|'
+            match = re.search(pattern, driverName[0])
+            if match:
+                nombre = match.group(1)
+            else:
+                nombre = ""
 
-        nombre_match = re.search(nombre_pattern, driverName[0])
-        apellido_match = re.search(apellido_pattern, driverName[1])
-
-        nombre = self.remove_number(nombre_match.group(2))
-        apellido = self.remove_number(apellido_match.group(1))
+        if "STRING_LITERAL" not in driverName[1]:
+            apellido_pattern = r'StaffName_Surname_(\w+)'
+            apellido_match = re.search(apellido_pattern, driverName[1])
+            if apellido_match:
+                apellido = self.remove_number(apellido_match.group(1))
+            else:
+                apellido = ""
+        else:
+            pattern = r'\|([^|]+)\|'
+            match = re.search(pattern, driverName[1])
+            if match:
+                apellido = match.group(1)
+            else:
+                apellido = ""
         name_formatted = f"{nombre} {apellido}"
         
         races_participated = self.cursor.execute(f"SELECT RaceID FROM Races_Results WHERE DriverID = {driverID[0]} AND Season = {year[0]}").fetchall()
@@ -222,8 +323,12 @@ class DatabaseUtils:
                 formatred_results[i] = tuple(results_list)
             QStage = self.cursor.execute(f"SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {races_participated[i][0]} AND SeasonID = {year[0]} AND DriverID = {driverID[0]}").fetchone()
             QRes = self.cursor.execute(f"SELECT FinishingPos FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {races_participated[i][0]} AND SeasonID = {year[0]} AND DriverID = {driverID[0]} AND QualifyingStage = {QStage[0]}").fetchone()
+            time_difference = self.calculate_time_difference(driverID[0], races_participated[i][0])
+            pole_difference = self.calculate_time_to_pole(driverID[0], races_participated[i][0])
             results_list = list(formatred_results[i])
             results_list.append(QRes[0])
+            results_list.append(time_difference)
+            results_list.append(pole_difference)
             formatred_results[i] = tuple(results_list)
 
 
@@ -232,17 +337,45 @@ class DatabaseUtils:
                 if tupla1[0] == tupla2[0]:
                     formatred_results[i] = tupla2 + (tupla1[2], tupla1[1])
 
+        latest_team = None
         for i in range(len(formatred_results)):
             team_in_race = self.cursor.execute(f"SELECT TeamID FROM Races_Results WHERE RaceID = {formatred_results[i][0]} AND DriverID = {driverID[0]}").fetchone()
             formatred_results[i] += (team_in_race)
+            latest_team = team_in_race[0]
 
         
         position = self.cursor.execute(f"SELECT Position FROM Races_Driverstandings WHERE RaceFormula = 1 AND SeasonID = {year[0]} AND DriverID = {driverID[0]}").fetchone()
-
         formatred_results.insert(0, position[0])
-        formatred_results.insert(0, teamID)
+        formatred_results.insert(0, latest_team)
         formatred_results.insert(0, name_formatted)
         return formatred_results
+    
+    def calculate_time_to_pole(self, driverID, raceID):
+        QStage = self.cursor.execute(f"SELECT MAX(QualifyingStage) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {raceID} AND DriverID = {driverID}").fetchone()[0]
+        pole_time = self.cursor.execute(f"SELECT MIN(FastestLap) FROM Races_QualifyingResults WHERE RaceFormula = 1 AND RaceID = {raceID} AND QualifyingStage = 3 AND FastestLap IS NOT 0").fetchone()[0]
+        driver_time = self.cursor.execute(f"SELECT FastestLap FROM Races_QualifyingResults WHERE RaceFormula = 1  AND RaceID = {raceID} AND QualifyingStage = {QStage} AND DriverID = {driverID}").fetchone()[0]
+        if driver_time < pole_time:
+            time_difference = "NR"
+        else:
+            time_difference = round(driver_time - pole_time, 2)
+            time_difference = f"+{time_difference}s"
+
+        return time_difference
+
+
+    def calculate_time_difference(self, driverID, raceID):
+        total_laps = self.cursor.execute(f"SELECT MAX(Laps) FROM Races_Results WHERE RaceID = {raceID}").fetchone()[0]
+        driver_laps = self.cursor.execute(f"SELECT Laps FROM Races_Results WHERE RaceID = {raceID} AND DriverID = {driverID}").fetchone()[0]
+        if driver_laps < total_laps:
+            time_difference = f"+{total_laps - driver_laps} L"
+        else:
+            winner_id = self.cursor.execute(f"SELECT DriverID FROM Races_Results WHERE RaceID = {raceID} AND FinishingPos = 1").fetchone()[0]
+            winner_time = self.cursor.execute(f"SELECT Time FROM Races_Results WHERE RaceID = {raceID} AND DriverID = {winner_id}").fetchone()[0]
+            driver_time = self.cursor.execute(f"SELECT Time FROM Races_Results WHERE RaceID = {raceID} AND DriverID = {driverID}").fetchone()[0]
+            time_difference = round(driver_time - winner_time, 1)
+            time_difference = f"+{time_difference}s"
+
+        return time_difference
 
     def fetch_drivers_per_year(self, year):
         drivers = self.cursor.execute(f"SELECT bas.FirstName, bas.LastName, res.DriverID, res.TeamID FROM Staff_BasicData bas JOIN Races_Results res ON bas.StaffID = res.DriverID WHERE Season = {year} GROUP BY bas.FirstName, bas.LastName, bas.StaffID, res.TeamID ORDER BY res.TeamID").fetchall()
@@ -275,6 +408,9 @@ class DatabaseUtils:
                     race_formula = (4,)
                 driver_number = self.fetchDriverNumberDetails(id)
                 superlicense = self.fetch_superlicense(id)
+                team_future = self.fetch_for_future_contract(id)
+                driver_code = self.fetch_driverCode(id)
+                country_code = self.fetch_nationality(id, game_year)
                 data_dict = {i: result[i] for i in range(len(result))}
                 data_dict["driver_number"] = driver_number[0]
                 data_dict["wants1"] = driver_number[1]
@@ -282,18 +418,87 @@ class DatabaseUtils:
                 data_dict["age"] = retirement[1]
                 data_dict["superlicense"] = superlicense[0]
                 data_dict["race_formula"] = race_formula[0]
+                data_dict["team_future"] = team_future
+                data_dict["driver_code"] = driver_code
+                data_dict["nationality"] = country_code
                 if game_year == "24":
                     mentality = self.fetch_mentality(id)
-                    if mentality:
-                        data_dict["mentality0"] = mentality[0][0]
-                        data_dict["mentality1"] = mentality[1][0]
-                        data_dict["mentality2"] = mentality[2][0]                
+                    data_dict["global_mentality"] = mentality[1][0]    
+                    if mentality[0]:
+                        data_dict["mentality0"] = mentality[0][0][0]
+                        data_dict["mentality1"] = mentality[0][1][0]
+                        data_dict["mentality2"] = mentality[0][2][0]   
                 if game_year == "24":
                     marketability = self.fetch_marketability(id)
                     data_dict["marketability"] = marketability[0]
                 formatted_tuples.append(data_dict)
 
         return formatted_tuples
+    
+    def fetch_nationality(self, driverID, game_year):
+        if game_year == "24":
+            code = self.cursor.execute(f"SELECT CountryID FROM Staff_BasicData WHERE StaffID = {driverID}").fetchone()[0]
+            nationality = self.cursor.execute(f"SELECT Name FROM Countries WHERE CountryID = {code}").fetchone()[0]
+            expr = r'(?<=\[Nationality_)[^\]]+'
+            result = re.search(expr, nationality)
+            if result:
+                nat = result.group(0)
+                nat_name = re.sub(r'(?<!^)([A-Z])', r' \1', nat)
+                nat_code = countries_dict.get(nat_name, "")
+                return nat_code
+            else:
+                return ""
+        elif game_year == "23":
+            nationality = self.cursor.execute(f"SELECT Nationality FROM Staff_BasicData WHERE StaffID = {driverID}").fetchone()[0]
+            nat_name = re.sub(r'(?<!^)([A-Z])', r' \1', nationality)
+            nat_code = countries_dict.get(nat_name, "")
+            return nat_code
+    
+    def fetch_driverCode(self, driverID):
+        code = self.cursor.execute(f"SELECT DriverCode FROM Staff_DriverData WHERE StaffID = {driverID}").fetchone()
+        if code is not None:
+            code = code[0]
+            if "STRING_LITERAL" not in code:
+                regex = r'\[DriverCode_(...)\]'
+                match = re.search(regex, code)
+                if match:
+                    code = match.group(1)
+                else:
+                    code = ""
+            else:
+                regex2 = r'\[STRING_LITERAL:Value=\|(...)\|\]'
+                match2 = re.search(regex2, code)
+                if match2:
+                    code = match2.group(1)
+                else:
+                    code = ""
+        else:
+            code = ""
+            
+        return code.upper()
+    
+    def fetch_for_future_contract(self, driverID):
+        team = self.cursor.execute(f"SELECT TeamID FROM Staff_Contracts WHERE StaffID = {driverID} AND ContractType = 3").fetchone()
+        if team is None:
+            team = (-1,)
+        return team[0]
+    
+    def fetch_engine_allocations(self):
+        day_season = self.cursor.execute("SELECT Day, CurrentSeason FROM Player_State").fetchone()
+        cat = self.cursor.execute("SELECT TeamNameLocKey FROM Teams WHERE TeamID = 32").fetchone()
+
+        teams = self.cursor.execute(f"SELECT  TeamID, EngineManufacturer FROM Parts_TeamHistory WHERE SeasonID = {day_season[1]}").fetchall()
+        allocations = {}
+        for team in teams:
+            engineDesign = self.cursor.execute(f"SELECT EngineDesignID FROM Parts_Enum_EngineManufacturers WHERE Value = {team[1]}").fetchone()
+            allocations[team[0]] = engineDesign[0]
+        if cat:
+            cat = cat[0]
+            if "STRING_LITERAL" not in cat:
+                allocations.pop(32, None)
+
+
+        return allocations
     
     def fetch_raceFormula(self, driverID):
         category = self.cursor.execute(f"SELECT MAX(CASE WHEN (TeamID <= 10 OR TeamID = 32) THEN 1 WHEN TeamID BETWEEN 11 AND 21 THEN 2 WHEN TeamID BETWEEN 22 AND 31 THEN 3 ELSE 4 END) FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = {driverID}").fetchone()
@@ -344,33 +549,80 @@ class DatabaseUtils:
         return resultCalendar
 
     def format_names_simple(self, name):
-        nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
-        apellido_pattern = r'StaffName_Surname_(\w+)'
+        nombre = ""
+        apellido = ""
+        if "STRING_LITERAL" not in name[0]:
+            nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
+            nombre_match = re.search(nombre_pattern, name[0])
+            if nombre_match:
+                nombre = self.remove_number(nombre_match.group(2))
+            else:
+                nombre = ""
+        else:
+            pattern = r'\|([^|]+)\|'
+            match = re.search(pattern, name[0])
+            if match:
+                nombre = match.group(1)
+            else:
+                nombre = ""
 
+        if "STRING_LITERAL" not in name[1]:
+            apellido_pattern = r'StaffName_Surname_(\w+)'
+            apellido_match = re.search(apellido_pattern, name[1])
+            if apellido_match:
+                apellido = self.remove_number(apellido_match.group(1))
+            else:
+                apellido = ""
+        else:
+            pattern = r'\|([^|]+)\|'
+            match = re.search(pattern, name[1])
+            if match:
+                apellido = match.group(1)
+            else:
+                apellido = ""
 
-        nombre_match = re.search(nombre_pattern, name[0])
-        apellido_match = re.search(apellido_pattern, name[1])
-
-
-        nombre = self.remove_number(nombre_match.group(2))
-        apellido = self.remove_number(apellido_match.group(1))
         name_formatted = f"{nombre} {apellido}"
+
+
         team_id = name[3] if name[3] is not None else 0
 
         resultado = (name_formatted, name[2], team_id)
         return resultado
 
     def format_names_get_stats(self, name, type):
-        nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
-        apellido_pattern = r'StaffName_Surname_(\w+)'
+        nombre = ""
+        apellido = ""
+        if "STRING_LITERAL" not in name[0]:
+            nombre_pattern = r'StaffName_Forename_(Male|Female)_(\w+)'
+            nombre_match = re.search(nombre_pattern, name[0])
+            if nombre_match:
+                nombre = self.remove_number(nombre_match.group(2))
+            else:
+                nombre = ""
+        else:
+            pattern = r'\|([^|]+)\|'
+            match = re.search(pattern, name[0])
+            if match:
+                nombre = match.group(1)
+            else:
+                nombre = ""
 
-
-        nombre_match = re.search(nombre_pattern, name[0])
-        apellido_match = re.search(apellido_pattern, name[1])
+        if "STRING_LITERAL" not in name[1]:
+            apellido_pattern = r'StaffName_Surname_(\w+)'
+            apellido_match = re.search(apellido_pattern, name[1])
+            if apellido_match:
+                apellido = self.remove_number(apellido_match.group(1))
+            else:
+                apellido = ""
+        else:
+            pattern = r'\|([^|]+)\|'
+            match = re.search(pattern, name[1])
+            if match:
+                apellido = match.group(1)
+            else:
+                apellido = ""
 
         
-        nombre = self.remove_number(nombre_match.group(2))
-        apellido = self.remove_number(apellido_match.group(1))
         name_formatted = f"{nombre} {apellido}"
         team_id = name[3] if name[3] is not None else 0
         pos_in_team = name[4] if name[4] is not None else 0
@@ -385,6 +637,8 @@ class DatabaseUtils:
 
         if type == "driver":
             stats = self.cursor.execute(f"SELECT Val FROM Staff_PerformanceStats WHERE StaffID = {name[2]} AND StatID BETWEEN 2 AND 10").fetchall()
+            if len(stats) == 0:
+                stats = [(50,), (50,), (50,), (50,), (50,), (50,), (50,), (50,), (50,)]
             additionalStats = self.cursor.execute(f"SELECT Improvability, Aggression FROM Staff_DriverData WHERE StaffID = {name[2]}").fetchone()
             nums = resultado + tuple(stat[0] for stat in stats) + additionalStats
 
@@ -418,3 +672,435 @@ class DatabaseUtils:
         if cadena and cadena[-1].isdigit():
             cadena = cadena[:-1]
         return cadena
+    
+    async def get_custom_engines_list(self, saveName):
+        config_file_path = f"./../configs/{saveName.split('.')[0]}_config.json"
+        if os.path.exists(config_file_path):
+            with open(config_file_path, "r") as json_file:
+                data = json.load(json_file)
+            
+            custom_engines = data.get("engines", {})
+            return custom_engines
+        
+    def manage_difficulty_triggers(self, triggerList):
+        conn = sqlite3.connect("../result/main.db")
+        cursor = conn.cursor()
+        
+        if triggerList.get("statDif"):
+            self.manage_design_boost_triggers(cursor, triggerList["statDif"])
+        if triggerList.get("designTimeDif"):
+            self.manage_design_time_triggers(cursor, triggerList["designTimeDif"])
+        if triggerList.get("lightDif"):
+            self.manage_weight_trigger(cursor, triggerList["lightDif"])
+        if triggerList.get("buildDif"):
+            self.manage__instant_build_triggers(cursor, triggerList["buildDif"])
+        if triggerList.get("researchDif"):
+            self.manage_research_triggers(cursor, triggerList["researchDif"])
+        if triggerList.get("factoryDif"):
+            self.upgrade_factories(cursor, triggerList["factoryDif"])
+
+        conn.commit()
+        conn.close()
+
+    
+    def manage_weight_trigger(self, cursor, triggerLevel):
+        cursor.execute("DROP TRIGGER IF EXISTS reduced_weight_normal")
+        cursor.execute("DROP TRIGGER IF EXISTS reduced_weight_extreme")
+        cursor.execute("DROP TRIGGER IF EXISTS reduced_weight_impossible")
+        trigger_sql = ""
+
+        if triggerLevel > 0:
+            if triggerLevel == 1:
+                trigger_sql = f"""
+                    CREATE TRIGGER reduced_weight_normal
+                    AFTER INSERT ON Parts_Designs_StatValues
+                    FOR EACH ROW
+                    WHEN (
+                        SELECT TeamID
+                        FROM Parts_Designs
+                        WHERE DesignID = NEW.DesignID
+                    ) != (SELECT TeamID FROM Player)
+                    AND NEW.PartStat = 15
+                    BEGIN
+                        UPDATE Parts_Designs_StatValues
+                        SET 
+                            Value = 200,
+                            unitValue = (
+                                SELECT CASE PD.PartType
+                                    WHEN 3 THEN 4340
+                                    WHEN 4 THEN 1800
+                                    WHEN 5 THEN 2240
+                                    WHEN 6 THEN 3300
+                                    WHEN 7 THEN 2680
+                                    WHEN 8 THEN 2180
+                                    ELSE value
+                                END
+                                FROM Parts_Designs PD
+                                WHERE PD.DesignID = NEW.DesignID
+                            )
+                        WHERE DesignID = NEW.DesignID
+                        AND PartStat = 15;
+                    END;
+                    """
+                
+            elif triggerLevel == 6:
+                trigger_sql = f"""
+                    CREATE TRIGGER reduced_weight_impossible
+                    AFTER INSERT ON Parts_Designs_StatValues
+                    FOR EACH ROW
+                    WHEN (
+                        SELECT TeamID
+                        FROM Parts_Designs
+                        WHERE DesignID = NEW.DesignID
+                    ) != (SELECT TeamID FROM Player)
+                    AND NEW.PartStat = 15
+                    BEGIN
+                        UPDATE Parts_Designs_StatValues
+                        SET 
+                            Value = 0,
+                            unitValue = (
+                                SELECT CASE PD.PartType
+                                    WHEN 3 THEN 3800
+                                    WHEN 4 THEN 1250
+                                    WHEN 5 THEN 1650
+                                    WHEN 6 THEN 2750
+                                    WHEN 7 THEN 2100
+                                    WHEN 8 THEN 1700
+                                    ELSE value
+                                END
+                                FROM Parts_Designs PD
+                                WHERE PD.DesignID = NEW.DesignID
+                            )
+                        WHERE DesignID = NEW.DesignID
+                        AND PartStat = 15;
+                    END;
+                    """
+                
+            if trigger_sql:
+                cursor.execute(trigger_sql)
+
+        
+
+    def manage_design_time_triggers(self,  cursor, triggerLevel):
+
+        cursor.execute("DROP TRIGGER IF EXISTS designTime_extraHard")
+        cursor.execute("DROP TRIGGER IF EXISTS designTime_brutal")
+        cursor.execute("DROP TRIGGER IF EXISTS designTime_unfair")
+        cursor.execute("DROP TRIGGER IF EXISTS designTime_insane")
+        cursor.execute("DROP TRIGGER IF EXISTS designTime_impossible")
+
+        trigger_sql = ""
+        if triggerLevel > 0:
+            trigger_name = f'designTime_{difficulty_dict[triggerLevel]["name"]}'
+            reduction = difficulty_dict[triggerLevel]["reduction"]
+            trigger_sql = f"""
+                CREATE TRIGGER {trigger_name}
+                AFTER INSERT ON Parts_Designs_StatValues
+                FOR EACH ROW
+                WHEN (
+                    SELECT TeamID
+                    FROM Parts_Designs
+                    WHERE DesignID = NEW.DesignID
+                    AND ValidFrom = (SELECT CurrentSeason FROM Player_State)
+                ) != (SELECT TeamID FROM Player)
+                AND NEW.PartStat != 15
+                BEGIN
+                    -- Actualizar Parts_Designs para ajustar DesignWork
+                    UPDATE Parts_Designs
+                    SET DesignWork = DesignWork + ({reduction} * (DesignWorkMax - DesignWork))
+                    WHERE DesignID = NEW.DesignID
+                    AND DayCompleted = -1 AND DesignWork IS NOT NULL;
+                END;
+            """
+
+        if trigger_sql:
+            cursor.execute(trigger_sql)
+
+
+    def manage_design_boost_triggers(self,  cursor, triggerLevel):
+
+        cursor.execute("DROP TRIGGER IF EXISTS difficulty_extraHard")
+        cursor.execute("DROP TRIGGER IF EXISTS difficulty_brutal")
+        cursor.execute("DROP TRIGGER IF EXISTS difficulty_unfair")
+        cursor.execute("DROP TRIGGER IF EXISTS difficulty_insane")
+        cursor.execute("DROP TRIGGER IF EXISTS difficulty_impossible")
+
+        trigger_sql = ""
+
+        if triggerLevel > 0:
+            trigger_name = f'difficulty_{difficulty_dict[triggerLevel]["name"]}'
+            increase_perc = difficulty_dict[triggerLevel]["perc"]
+            increase_7and8 = difficulty_dict[triggerLevel]["7and8"]
+            increase_9 = difficulty_dict[triggerLevel]["9"]
+            trigger_sql = f"""
+                CREATE TRIGGER {trigger_name}
+                AFTER INSERT ON Parts_Designs_StatValues
+                FOR EACH ROW
+                WHEN (
+                    SELECT TeamID
+                    FROM Parts_Designs
+                    WHERE DesignID = NEW.DesignID
+                    AND ValidFrom = (SELECT CurrentSeason FROM Player_State)
+                ) != (SELECT TeamID FROM Player)
+                AND NEW.PartStat != 15
+                BEGIN
+                    -- Actualizar Parts_Designs_StatValues
+                    UPDATE Parts_Designs_StatValues
+                    SET 
+                        unitValue = CASE
+                            WHEN NEW.PartStat IN (7, 8) THEN unitValue + {increase_7and8}
+                            WHEN NEW.PartStat = 9 THEN unitValue + {increase_9}
+                            ELSE unitValue + {increase_perc}
+                        END,
+                        Value = CASE
+                            WHEN NEW.PartStat IN (0, 1, 2, 3, 4, 5) THEN (unitValue + {increase_perc}) * 10
+                            WHEN NEW.PartStat = 6 THEN ((unitValue + {increase_perc}) - 90) * 1000 / 10
+                            WHEN NEW.PartStat = 7 THEN (unitValue + {increase_7and8} - 3) / 0.002
+                            WHEN NEW.PartStat = 8 THEN (unitValue + {increase_7and8} - 5) / 0.002
+                            WHEN NEW.PartStat = 9 THEN (unitValue + {increase_9} - 7) / 0.001
+                            WHEN NEW.PartStat = 10 THEN ((unitValue + {increase_perc}) - 90) * 1000 / 10
+                            WHEN NEW.PartStat = 11 THEN (85 - (unitValue + {increase_perc})) * 1000 / 20
+                            WHEN NEW.PartStat = 12 THEN ((unitValue + {increase_perc}) - 70) * 1000 / 15
+                            WHEN NEW.PartStat = 13 THEN (unitValue + {increase_perc}) * 10
+                            WHEN NEW.PartStat = 14 THEN (85 - (unitValue + {increase_perc})) * 1000 / 15
+                            WHEN NEW.PartStat = 15 THEN ((unitValue + {increase_perc}) - 40) * 1000 / 30
+                            WHEN NEW.PartStat = 18 THEN ((unitValue + {increase_perc}) - 40) * 1000 / 30
+                            WHEN NEW.PartStat = 19 THEN ((unitValue + {increase_perc}) - 40) * 1000 / 30
+                            ELSE NULL
+                        END
+                    WHERE DesignID = NEW.DesignID
+                    AND PartStat = NEW.PartStat AND PartStat != 15;
+
+                    -- Actualizar Parts_TeamExpertise usando el valor actualizado en Parts_Designs_StatValues
+                    UPDATE Parts_TeamExpertise
+                    SET Expertise = (SELECT Value FROM Parts_Designs_StatValues WHERE DesignID = NEW.DesignID AND PartStat = NEW.PartStat) / 0.8
+                    WHERE TeamID = (SELECT TeamID FROM Parts_Designs WHERE DesignID = NEW.DesignID)
+                    AND PartType = (SELECT PartType FROM Parts_Designs WHERE DesignID = NEW.DesignID)
+                    AND PartStat = NEW.PartStat;
+                END;
+            """
+
+        if trigger_sql:
+            cursor.execute(trigger_sql)
+
+
+    def manage__instant_build_triggers(self,  cursor, triggerLevel):
+        
+
+        cursor.execute("DROP TRIGGER IF EXISTS instant_build_insane")
+        cursor.execute("DROP TRIGGER IF EXISTS instant_build_impossible")
+
+        trigger_sql = ""
+        if triggerLevel > 0:
+            trigger_name = f"instant_build_{difficulty_dict[triggerLevel]['name']}"
+            if triggerLevel == 5:
+                trigger_sql = f"""
+                    CREATE TRIGGER {trigger_name}
+                    AFTER UPDATE ON Parts_Designs
+                    FOR EACH ROW
+                    WHEN NEW.DesignWork >= NEW.DesignWorkMax
+                    AND NEW.TeamID != (SELECT TeamID FROM Player)
+                    AND NEW.DayCompleted = -1
+                    AND NEW.DayCreated != -1
+                    BEGIN
+                        INSERT INTO Parts_Items (ItemID, DesignID, BuildWork, Condition, ManufactureNumber, ProjectID, AssociatedCar, InspectionState, LastEquippedCar)
+                        VALUES (
+                            (SELECT IFNULL(MAX(ItemID), 0) + 1 FROM Parts_Items), 
+                            NEW.DesignID,                                        
+                            CASE NEW.PartType                                    
+                                WHEN 3 THEN 2000
+                                WHEN 4 THEN 500
+                                WHEN 5 THEN 500
+                                WHEN 6 THEN 1500
+                                WHEN 7 THEN 1500
+                                WHEN 8 THEN 1500
+                                ELSE 1000 
+                            END,
+                            1,                                                   
+                            NEW.ManufactureCount + 1,                            
+                            NULL, NULL, 0, NULL                                  
+                        );
+
+                        
+                        UPDATE Parts_Designs
+                        SET ManufactureCount = NEW.ManufactureCount + 1
+                        WHERE DesignID = NEW.DesignID;
+                    END;
+                    """
+            elif triggerLevel == 6:
+                trigger_sql = f"""
+                    CREATE TRIGGER {trigger_name}
+                    AFTER UPDATE ON Parts_Designs
+                    FOR EACH ROW
+                    WHEN NEW.DesignWork >= NEW.DesignWorkMax
+                    AND NEW.TeamID != (SELECT TeamID FROM Player)
+                    AND NEW.DayCompleted = -1
+                    AND NEW.DayCreated != -1
+                    BEGIN
+                        -- Insertar una pieza en Parts_Items
+                        INSERT INTO Parts_Items (ItemID, DesignID, BuildWork, Condition, ManufactureNumber, ProjectID, AssociatedCar, InspectionState, LastEquippedCar)
+                        VALUES (
+                            (SELECT IFNULL(MAX(ItemID), 0) + 1 FROM Parts_Items),
+                            NEW.DesignID,                                        
+                            CASE NEW.PartType                                    
+                                WHEN 3 THEN 2000
+                                WHEN 4 THEN 500
+                                WHEN 5 THEN 500
+                                WHEN 6 THEN 1500
+                                WHEN 7 THEN 1500
+                                WHEN 8 THEN 1500
+                                ELSE 1000
+                            END,
+                            1,                                                   
+                            NEW.ManufactureCount + 1,                            
+                            NULL, NULL, 0, NULL                                  
+                        );
+
+                        INSERT INTO Parts_Items (ItemID, DesignID, BuildWork, Condition, ManufactureNumber, ProjectID, AssociatedCar, InspectionState, LastEquippedCar)
+                        VALUES (
+                            (SELECT IFNULL(MAX(ItemID), 0) + 1 FROM Parts_Items), 
+                            NEW.DesignID,                                        
+                            CASE NEW.PartType                                    
+                                WHEN 3 THEN 2000
+                                WHEN 4 THEN 500
+                                WHEN 5 THEN 500
+                                WHEN 6 THEN 1500
+                                WHEN 7 THEN 1500
+                                WHEN 8 THEN 1500
+                                ELSE 1000 
+                            END,
+                            1,                                                   
+                            NEW.ManufactureCount + 2,                            
+                            NULL, NULL, 0, NULL                                  
+                        );
+
+                        
+                        UPDATE Parts_Designs
+                        SET ManufactureCount = NEW.ManufactureCount + 2
+                        WHERE DesignID = NEW.DesignID;
+                    END;
+                    """
+                
+            if trigger_sql:
+                cursor.execute(trigger_sql)
+
+    
+    def manage_research_triggers(self,  cursor, triggerLevel):
+
+        cursor.execute("DROP TRIGGER IF EXISTS research_extraHard")
+        cursor.execute("DROP TRIGGER IF EXISTS research_brutal")
+        cursor.execute("DROP TRIGGER IF EXISTS research_unfair")
+        cursor.execute("DROP TRIGGER IF EXISTS research_insane")
+        cursor.execute("DROP TRIGGER IF EXISTS research_impossible")
+
+        trigger_sql = ""
+        if triggerLevel > 0:
+            trigger_name = f"research_{difficulty_dict[triggerLevel]['name']}"
+            researchExp = difficulty_dict[triggerLevel]["research"]
+            trigger_sql = f"""
+                    CREATE TRIGGER {trigger_name}
+                    AFTER UPDATE ON Parts_Designs
+                    FOR EACH ROW
+                    WHEN NEW.DesignWork >= NEW.DesignWorkMax
+                    AND NEW.TeamID != (SELECT TeamID FROM Player)
+                    AND NEW.ValidFrom = (SELECT CurrentSeason FROM Player_State) + 1
+                    BEGIN
+                        UPDATE Parts_Designs_StatValues
+                        SET ExpertiseGain = ExpertiseGain + {researchExp}
+                        WHERE DesignID = NEW.DesignID;
+
+                        UPDATE Parts_TeamExpertise
+                        SET NextSeasonExpertise = NextSeasonExpertise + {researchExp/2}
+                        WHERE TeamID = NEW.TeamID
+                        AND PartType = NEW.PartType;
+                    END;
+                """
+
+            cursor.execute(trigger_sql)
+
+    
+    def upgrade_factories(self, cursor, triggerLevel):
+        if triggerLevel == 4:
+            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 34, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 34")
+        elif triggerLevel == 6:
+            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 35, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 35")
+        elif triggerLevel == -1:
+            cursor.execute(f"UPDATE Buildings_HQ SET BuildingID = 33, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID >= 34")
+
+
+    def manage_refurbish_trigger(self, type):
+        conn = sqlite3.connect("../result/main.db")
+        cursor = conn.cursor()
+        self.cursor.execute("DROP TRIGGER IF EXISTS refurbish_fix")
+        if type == 1:
+            trigger_sql = f"""
+                CREATE TRIGGER refurbish_fix
+                AFTER UPDATE ON Buildings_HQ
+                FOR EACH ROW
+                BEGIN
+                    UPDATE Buildings_HQ
+                    SET DegradationValue = 1
+                    WHERE DegradationValue < 0.7
+                    AND TeamID != (SELECT TeamID FROM Player);
+                END;
+            """
+            cursor.execute(trigger_sql)
+
+        conn.commit()
+        conn.close()
+
+    
+    def fetch_existing_trigers(self):
+        highest_difficulty = 0
+        trigerList = {
+            "lightDif": -1,
+            "researchDif": -1,
+            "buildDif": -1,
+            "factoryDif": -1,
+            "statDif": -1,
+            "designTimeDif": -1
+        }
+        refurbish = 0
+        frozenMentality = 0
+        conn = sqlite3.connect("../result/main.db")
+        cursor = conn.cursor()
+        triggers = cursor.execute("SELECT name FROM sqlite_master WHERE type='trigger';").fetchall()
+        factory_levels = cursor.execute("SELECT BuildingID FROM Buildings_HQ WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player)").fetchall()
+        conn.close()
+        if triggers:
+            for trigger in triggers:
+                dif = trigger[0].split("_")[-1]
+                dif_level = inverted_difficulty_dict.get(dif, 0)
+                type_trigger = trigger[0].split("_")[0]
+                if type_trigger == "difficulty":
+                    trigerList["statDif"] = dif_level
+                elif type_trigger == "designTime":
+                    trigerList["designTimeDif"] = dif_level
+                elif type_trigger == "instant":
+                    trigerList["buildDif"] = dif_level
+                elif type_trigger == "research":
+                    trigerList["researchDif"] = dif_level
+                elif type_trigger == "reduced":
+                    trigerList["lightDif"] = dif_level
+                elif type_trigger == "refurbish":
+                    refurbish = 1
+                elif type_trigger == "clear":
+                    frozenMentality = 1
+
+                if dif_level > highest_difficulty:
+                    highest_difficulty = dif_level
+
+        #if all factorylevels are 34 or 35 factoryDif is 0
+        for level in factory_levels:
+            if level[0] < 34:
+                trigerList["factoryDif"] = -1
+                break
+            elif level[0] == 34:
+                trigerList["factoryDif"] = 4
+                break
+            elif level[0] == 35:
+                trigerList["factoryDif"] = 6
+                break
+
+        return highest_difficulty, trigerList, refurbish, frozenMentality
+            

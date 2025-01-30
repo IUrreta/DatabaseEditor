@@ -1,6 +1,6 @@
 from commands.command import Command
 from scripts.extractor import process_repack
-from scripts.engine_performance_23 import run_script as run_editEngine
+from scripts.engine_performance import run_script as run_editEngine
 import json
 
 class EditEngineCommand(Command):

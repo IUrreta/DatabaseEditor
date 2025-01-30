@@ -11,10 +11,11 @@ let sprints = false;
 let race = 0;
 let quali = 0;
 let menuLength = 4;
-let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000"}
 let driverGraph;
 let pointsGraph;
 let qualiGraph;
+let gapWinnerGraph;
+let gapPoleGraph;
 let compData;
 let annotationsToggle = true;
 let h2hCount = 0;
@@ -24,21 +25,8 @@ let graphList = []
 let h2hTeamList = []
 let graphTeamList = []
 let mode = "driver"
-
-const lightColors = ["#f1f1f1", "#47c7fc", "#ffd300", "#6CD3BF", "#fcfcfc", "#37BEDD", "#B6BABD", "#c3dc00", "#d0e610", "#fac51c", "#b09247", "#f7c82f"]
-let combined_dict = {
-    1: "Ferrari",
-    2: "McLaren",
-    3: "Red Bull",
-    4: "Mercedes",
-    5: "Alpine",
-    6: "Williams",
-    7: "Haas",
-    8: "Alpha Tauri",
-    9: "Alfa Romeo",
-    10: "Aston Martin",
-    32: "Custom Team"
-}
+let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000"}
+//changed as the ct colors changes, so it stays
 
 Chart.register(ChartDataLabels);
 
@@ -560,8 +548,8 @@ function load_drivers_h2h(drivers) {
         spanLastName.dataset.teamid = driver[2];
         newDiv.dataset.teamid = driver[2];
         newDiv.classList.add(team_dict[driver[2]] + "-transparent")
-        spanName.textContent = name[0] + " "
-        spanLastName.textContent = " " + name[1].toUpperCase()
+        spanName.textContent = insert_space(name[0]) + " "
+        spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
         spanLastName.classList.add("bold-font")
         let h2hBut = document.createElement("div")
         h2hBut.dataset.driverid = driver[1]
@@ -749,6 +737,8 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
     if (mode === "driver") {
         document.querySelector("#qualiForm").classList.remove("d-none")
         document.querySelector("#raceForm").classList.remove("d-none")
+        document.querySelector("#gapToWinner").classList.remove("d-none")
+        document.querySelector("#gapToPole").classList.remove("d-none")
         document.querySelector("#raceForm").click()
         race = 0
         quali = 0
@@ -763,6 +753,8 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
     else if (mode === "team") {
         document.querySelector("#qualiForm").classList.add("d-none")
         document.querySelector("#raceForm").classList.add("d-none")
+        document.querySelector("#gapToWinner").classList.add("d-none")
+        document.querySelector("#gapToPole").classList.add("d-none")
         document.querySelector("#pointsProgression").click()
         menuLength = 2
         race = 0
@@ -775,6 +767,10 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
         document.getElementById("qualih2h").querySelector(".avg-comparison").classList.add("d-none")
     }
 
+})
+
+document.querySelector("#clearAll").addEventListener("click", function () {
+    resetH2H()
 })
 
 function resetH2H() {
@@ -820,6 +816,8 @@ document.querySelector("#pointsProgression").addEventListener("click", function 
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.remove("d-none")
+    document.querySelector("#gapToWinnerGraph").classList.add("d-none")
+    document.querySelector("#gapToPoleGraph").classList.add("d-none")
 })
 
 document.querySelector("#raceForm").addEventListener("click", function (elem) {
@@ -827,6 +825,8 @@ document.querySelector("#raceForm").addEventListener("click", function (elem) {
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.remove("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
+    document.querySelector("#gapToWinnerGraph").classList.add("d-none")
+    document.querySelector("#gapToPoleGraph").classList.add("d-none")
 })
 
 document.querySelector("#qualiForm").addEventListener("click", function (elem) {
@@ -834,6 +834,28 @@ document.querySelector("#qualiForm").addEventListener("click", function (elem) {
     document.querySelector("#qualiGraph").classList.remove("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
+    document.querySelector("#gapToWinnerGraph").classList.add("d-none")
+    document.querySelector("#gapToPoleGraph").classList.add("d-none")
+})
+
+document.querySelector("#gapToWinner").addEventListener("click", function (elem) {
+    document.querySelector("#graphTypeButton").innerText = "Gap to winner"
+    document.querySelector("#qualiGraph").classList.add("d-none")
+    document.querySelector("#driverGraph").classList.add("d-none")
+    document.querySelector("#progressionGraph").classList.add("d-none")
+    document.querySelector("#gapToWinnerGraph").classList.remove("d-none")
+    document.querySelector("#gapToPoleGraph").classList.add("d-none")
+
+})
+
+document.querySelector("#gapToPole").addEventListener("click", function (elem) {
+    document.querySelector("#graphTypeButton").innerText = "Gap to pole"
+    document.querySelector("#qualiGraph").classList.add("d-none")
+    document.querySelector("#driverGraph").classList.add("d-none")
+    document.querySelector("#progressionGraph").classList.add("d-none")
+    document.querySelector("#gapToWinnerGraph").classList.add("d-none")
+    document.querySelector("#gapToPoleGraph").classList.remove("d-none")
+
 })
 
 
@@ -961,24 +983,32 @@ function load_labels_initialize_graphs(data) {
     if (typeof qualiGraph !== 'undefined' && qualiGraph !== null) {
         qualiGraph.destroy();
     }
+    if (typeof gapWinnerGraph !== 'undefined' && gapWinnerGraph !== null) {
+        gapWinnerGraph.destroy();
+    }
+    if (typeof gapPoleGraph !== 'undefined' && gapPoleGraph !== null) {
+        gapPoleGraph.destroy();
+    }
     createPointsChart(labels)
     if (mode === "driver") {
         let max = 20
+        let q2_line = 15
         if (game_version === 2024 && custom_team){
             max = 22
+            q2_line = 16
         }
         else{
             max = 20
         }
         createRaceChart(labels, max)
-        createQualiChart(labels, max)
+        createQualiChart(labels, max, q2_line)
+        createGapCharts(labels)
         load_graphs_data(data)
 
     }
     else if (mode === "team") {
         load_teams_points_graph(data)
     }
-
 
 }
 
@@ -1005,6 +1035,7 @@ function load_teams_points_graph(data) {
                 borderWidth: 2,
                 pointRadius: 0,
                 fill: false,
+                pointHitRadius: 7,
                 datalabels: {
                     color: function () {
                         if (lightColors.indexOf(team_color) !== -1) {
@@ -1046,8 +1077,8 @@ function get_one_driver_points_format(driver, data) {
         if (ptsThatRace === -1) {
             ptsThatRace = 0;
         }
-        if (elem.length === 8) {
-            d1_points_provisional.push(ptsThatRace + elem[5])
+        if (elem.length === 10) {
+            d1_points_provisional.push(ptsThatRace + elem[7])
         }
         else {
             d1_points_provisional.push(ptsThatRace)
@@ -1076,7 +1107,8 @@ function get_one_driver_points_format(driver, data) {
 }
 
 function load_graphs_data(data) {
-
+    let max_gapPole = 0;
+    let max_gapWinner = 0;
     data.forEach(function (driv, index) {
         if (index !== 0 && index !== data.length - 1) {
             let d1_res = [];
@@ -1086,22 +1118,50 @@ function load_graphs_data(data) {
             let d1_points = [0]
             let d1_qualis = [];
             let d1_provisonal_q = [];
+            let d1_provisional_gapW = [];
+            let d1_provisional_gapP = [];
+            let d1_gapWinner = [];
+            let d1_gapPole = [];
+            let d1_backgroundColors = [];
+            let d1_backgroundColorsPole = [];
 
             data[index].slice(3).forEach(function (elem) {
                 d1_races.push(elem[0])
                 d1_provisonal.push(elem[1])
                 d1_provisonal_q.push(elem[4])
+                if(elem[5].slice(-1) !== "L"){
+                    d1_provisional_gapW.push(elem[5].slice(1, -1))
+                }
+                else{
+                    d1_provisional_gapW.push(elem[5])
+                }
+                if(elem[6] !== "NR"){
+                    d1_provisional_gapP.push(elem[6].slice(1, -1))
+                }
+                else{
+                    d1_provisional_gapP.push("NR")
+                }
                 let ptsThatRace = elem[2];
                 if (ptsThatRace === -1) {
                     ptsThatRace = 0;
                 }
-                if (elem.length === 8) {
-                    d1_points_provisional.push(ptsThatRace + elem[5])
+                if (elem.length === 10) {
+                    d1_points_provisional.push(ptsThatRace + elem[7])
                 }
                 else {
                     d1_points_provisional.push(ptsThatRace)
                 }
             })
+
+            let d1Id = graphList[index - 1]
+            let d1pos = graphList.indexOf(d1Id)
+            let d1_color;
+            if (d1pos === graphTeamList.indexOf(driv[1].toString())) {
+                d1_color = colors_dict[data[index][1] + "0"]
+            }
+            else {
+                d1_color = colors_dict[data[index][1] + "1"]
+            }
 
 
             data[0].forEach(function (elem) {
@@ -1109,13 +1169,37 @@ function load_graphs_data(data) {
                 if (index1 !== -1) {
                     if (d1_provisonal[index1] === -1) {
                         d1_res.push(NaN)
+                        d1_gapWinner.push(NaN); 
+                        d1_backgroundColors.push(d1_color + "50");
                     }
                     else {
                         d1_res.push(d1_provisonal[index1])
+                        if (d1_provisional_gapW[index1].slice(-1) === "L") {
+                            d1_gapWinner.push(NaN); 
+                            d1_backgroundColors.push(d1_color + "76");
+                        }
+                        else{
+                            d1_gapWinner.push(d1_provisional_gapW[index1])
+                            if (parseFloat(d1_provisional_gapW[index1]) > max_gapWinner) {
+                                max_gapWinner = parseFloat(d1_provisional_gapW[index1])
+                            }
+                            d1_backgroundColors.push(d1_color); 
+                        }
+
                     }
                     d1_points.push(d1_points_provisional[index1] + d1_points[d1_points.length - 1])
                     d1_qualis.push(d1_provisonal_q[index1])
-
+                    if (d1_provisional_gapP[index1] === "NR") {
+                        d1_gapPole.push(NaN)
+                        d1_backgroundColorsPole.push(d1_color + "60");
+                    }
+                    else{  
+                        d1_gapPole.push(d1_provisional_gapP[index1])
+                        if (parseFloat(d1_provisional_gapP[index1]) > max_gapPole) {
+                            max_gapPole = parseFloat(d1_provisional_gapP[index1])
+                        }
+                        d1_backgroundColorsPole.push(d1_color);
+                    }
                 }
                 else {
                     d1_res.push(NaN)
@@ -1128,18 +1212,27 @@ function load_graphs_data(data) {
                     }
 
                 }
-
             })
             d1_points.shift()
-            let d1Id = graphList[index - 1]
-            let d1pos = graphList.indexOf(d1Id)
-            let d1_color
-            if (d1pos === graphTeamList.indexOf(driv[1].toString())) {
-                d1_color = colors_dict[data[index][1] + "0"]
-            }
-            else {
-                d1_color = colors_dict[data[index][1] + "1"]
-            }
+
+            d1_gapWinner = d1_gapWinner.map(function (elem) {
+                if (isNaN(elem)) {
+                    return max_gapWinner / 2
+                }
+                else {
+                    return elem
+                }
+            })
+
+            d1_gapPole = d1_gapPole.map(function (elem) {
+                if (isNaN(elem)) {
+                    return max_gapPole / 2
+                }
+                else {
+                    return elem
+                }
+            })
+
             driverGraph.data.datasets.push({
                 label: driv[0],
                 data: d1_res,
@@ -1147,6 +1240,7 @@ function load_graphs_data(data) {
                 pointBackgroundColor: d1_color,
                 borderWidth: 2,
                 fill: false,
+                pointHitRadius: 7
             })
             qualiGraph.data.datasets.push({
                 label: driv[0],
@@ -1155,6 +1249,7 @@ function load_graphs_data(data) {
                 pointBackgroundColor: d1_color,
                 borderWidth: 2,
                 fill: false,
+                pointHitRadius: 7
             })
             pointsGraph.data.datasets.push({
                 label: driv[0],
@@ -1164,6 +1259,7 @@ function load_graphs_data(data) {
                 borderWidth: 2,
                 pointRadius: 0,
                 fill: false,
+                pointHitRadius: 7,
                 datalabels: {
                     color: function () {
                         if (lightColors.indexOf(d1_color) !== -1) {
@@ -1188,6 +1284,28 @@ function load_graphs_data(data) {
 
                 },
             })
+            gapWinnerGraph.options.scales.y.max = max_gapWinner;
+            gapPoleGraph.options.scales.y.max = max_gapPole;
+            gapWinnerGraph.data.datasets.push({
+                label: driv[0],
+                data: d1_gapWinner,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                backgroundColor: d1_backgroundColors,  
+                borderWidth: 1,
+                fill: true,
+                pointHitRadius: 7
+            })
+            gapPoleGraph.data.datasets.push({
+                label: driv[0],
+                data: d1_gapPole,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                backgroundColor: d1_backgroundColorsPole, 
+                borderWidth: 1,
+                fill: true,
+                pointHitRadius: 7
+            })
         }
 
     })
@@ -1201,6 +1319,8 @@ function load_graphs_data(data) {
     driverGraph.update()
     qualiGraph.update()
     pointsGraph.update()
+    gapWinnerGraph.update()
+    gapPoleGraph.update()
 }
 
 /**
@@ -1242,6 +1362,14 @@ function createRaceChart(labelsArray, max) {
                 maintainAspectRatio: false,
                 interaction: {
                     mode: 'index'
+                },
+                layout: {
+                    padding: {
+                        top: 10,
+                        right: 25,
+                        boottom: 20,
+                        left: 10
+                    }
                 },
                 scales: {
                     x: {
@@ -1345,7 +1473,7 @@ function createRaceChart(labelsArray, max) {
  * Creates the head to head qualifying chart
  * @param {Array} labelsArray array with all the labels for the races
  */
-function createQualiChart(labelsArray, max) {
+function createQualiChart(labelsArray, max, q2_line) {
     const dataD = {
         labels: labelsArray,
     };
@@ -1359,6 +1487,14 @@ function createQualiChart(labelsArray, max) {
                 maintainAspectRatio: false,
                 interaction: {
                     mode: 'index'
+                },
+                layout: {
+                    padding: {
+                        top: 10,
+                        right: 25,
+                        boottom: 20,
+                        left: 10
+                    }
                 },
                 scales: {
                     x: {
@@ -1397,8 +1533,8 @@ function createQualiChart(labelsArray, max) {
                             line1: {
                                 type: 'line',
                                 display: annotationsToggle,
-                                yMin: 15,
-                                yMax: 15,
+                                yMin: q2_line,
+                                yMax: q2_line,
                                 borderColor: 'red',
                                 borderWidth: 1,
                                 label: {
@@ -1483,6 +1619,14 @@ function createPointsChart(labelsArray) {
                 interaction: {
                     mode: 'index'
                 },
+                layout: {
+                    padding: {
+                        top: 10,
+                        right: 25,
+                        boottom: 20,
+                        left: 10
+                    }
+                },
                 scales: {
                     x: {
                         grid: {
@@ -1535,6 +1679,157 @@ function createPointsChart(labelsArray) {
 
 
             }
+        }
+    );
+}
+
+function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
+    const dataD1 = {
+        labels: labelsArray,
+    };
+    const dataD2 = {
+        labels: labelsArray,
+    };
+    let commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index'
+        },
+        scales: {
+            x: {
+                grid: {
+                    color: '#292929'
+                },
+                ticks: {
+                    color: "#dedde6",
+                    font: {
+                        family: "Formula1Bold"
+                    }
+                }
+            },
+            y: {
+                min: 0, 
+                grid: {
+                    color: '#292929'
+                },
+                ticks: {
+                    color: "#dedde6",
+                    font: {
+                        family: "Formula1Bold"
+                    }
+                }
+            }
+        },
+        plugins: {
+            datalabels: {
+                display: false
+            },
+            legend: {
+                labels: {
+                    boxHeight: 2,
+                    boxWidth: 25,
+                    color: "#dedde6",
+                    font: {
+                        family: "Formula1"
+                    }
+                },
+            },
+            tooltip: {
+                titleFont: {
+                    family: 'Formula1Bold',
+                    size: 16
+                },
+                bodyFont: {
+                    family: 'Formula1',
+                    size: 14
+                },
+                callbacks: {
+                    label: function(tooltipItem) {
+                        let dataset = tooltipItem.dataset; // Acceder al dataset actual
+                        let index = tooltipItem.dataIndex; // Obtener el índice del dato
+                        let color = dataset.backgroundColor[index]; // Obtener el color de fondo del dato actual
+                        let result;
+                        if (color.endsWith("50")) {
+                            result = 'DNF';
+                        }
+                        else if (color.endsWith("60")) {
+                            result = "Not representative"
+                        }
+                        else if (color.endsWith("76")) {
+                            result = "Lapped"
+                        }
+                        else{
+                            result = `${tooltipItem.raw}s`;
+                        }
+
+
+                        // Mostrar el nombre del piloto y el resultado (valor o DNF)
+                        return `${dataset.label}: ${result}`;
+                    }
+                }
+            }
+        },
+        options: {
+            layout: {
+                padding: {
+                    top: 10,
+                    right: 25,
+                    boottom: 20,
+                    left: 10
+                }
+            }
+        }
+
+    };
+
+
+    let gapWinnerOptions = {
+        ...commonOptions,
+        scales: {
+            ...commonOptions.scales,
+            y: {
+                ...commonOptions.scales.y,
+                max: maxGapWinner, 
+            }
+        },
+        plugins: {
+            ...commonOptions.plugins
+        
+        }
+    };
+
+    gapWinnerGraph = new Chart(
+        document.getElementById('gapToWinnerGraph'),
+        {
+            type: 'bar',
+            data: dataD1,
+            options: gapWinnerOptions
+        }
+    );
+
+
+
+    let gapPoleOptions = {
+        ...commonOptions,
+        scales: {
+            ...commonOptions.scales,
+            y: {
+                ...commonOptions.scales.y,
+                max: 20 
+            }
+        },
+        plugins: {
+            ...commonOptions.plugins,
+        }
+    };
+
+    gapPoleGraph = new Chart(
+        document.getElementById('gapToPoleGraph'),
+        {
+            type: 'bar',
+            data: dataD2,
+            options: gapPoleOptions
         }
     );
 }

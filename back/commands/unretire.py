@@ -1,5 +1,5 @@
 from commands.command import Command
-from scripts.transfer_driver_23 import unretire
+from scripts.transfer_driver import TransferUtils
 from scripts.extractor import process_repack
 import json
 
@@ -8,7 +8,8 @@ class UnretireCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        unretire(self.message["driverID"])
+        transfer_utils = TransferUtils()
+        transfer_utils.unretire(self.message["driverID"])
         process_repack("../result", Command.path)
         info = []
         info.insert(0, f"Succesfully unretired {self.message['driver']}")

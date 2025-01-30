@@ -1,22 +1,3 @@
-let codes_dict = {
-    "bah0": "../assets/images/bahrain.png","sau0": "../assets/images/saudi.jpg","aus0": "../assets/images/australia.png","aze0": "../assets/images/azerbaiyan.png",
-    "mia0": "../assets/images/usa.png","imo0": "../assets/images/italy.png","mon0": "../assets/images/monaco.png","spa0": "../assets/images/spain.png","can0": "../assets/images/canada.png",
-    "aut0": "../assets/images/austria.png","gbr0": "../assets/images/gbr.png","hun0": "../assets/images/hungry.png","bel0": "../assets/images/balgium.png","ned0": "../assets/images/ned.png",
-    "ita0": "../assets/images/italy.png","jap0": "../assets/images/japan.png","sgp0": "../assets/images/singapore.png","qat0": "../assets/images/qatar.png","usa0": "../assets/images/usa.png","mex0": "../assets/images/mexico.png",
-    "bra0": "../assets/images/brazil.png","veg0": "../assets/images/usa.png","uae0": "../assets/images/uae.png", "chi0": "../assets/images/china.png"
-}
-let countries_dict = {
-    "bah0": "Bahrain","sau0": "Saudi Arabia","aus0": "Australia","aze0": "Azerbaijan",
-    "mia0": "Miami","imo0": "Imola","mon0": "Monaco","spa0": "Spain","can0": "Canada",
-    "aut0": "Austria","gbr0": "United Kingdom","hun0": "Hungary","bel0": "Belgium","ned0": "Netherlands",
-    "ita0": "Italy","sgp0": "Singapore","jap0": "Japan","qat0": "Qatar","usa0": "USA","mex0": "Mexico",
-    "bra0": "Brazil","veg0": "Vegas","uae0": "Abu Dhbai", "chi0": "China"
-};
-
-let weather_dict = {
-    0: "bi bi-sun", 1:"bi bi-cloud-sun", 2: "bi bi-cloud", 3: "bi bi-cloud-drizzle", 4: "bi bi-cloud-rain", 5: "bi bi-cloud-rain-heavy"
-}
-
 let deleting = false;
 let deleted = false;
 
@@ -303,8 +284,8 @@ function load_addRaces() {
 function listenerRaces() {
     document.querySelectorAll('#addTrackMenu a').forEach(item => {
         item.addEventListener("click",function () {
-            if (document.querySelector(".main-calendar-section").childElementCount < 23) {
-                addRace(item.dataset.code, 0, 0, 0, item.dataset.trackid, 0)
+            if (document.querySelector(".main-calendar-section").childElementCount < max_races) {
+                addRace(item.dataset.code, 0, 0, 0, 0, item.dataset.trackid, 0)
                 updateVisualizers()
                 update_numbers()
             }

@@ -18,6 +18,15 @@ stats = {
     16 : "special_weight"
 }
 
+default_parts_stats = {
+    3: [3,4,5,13,15],
+    4: [0,1,2,7,8,9,15],
+    5: [1,3,4,7,8,9,15],
+    6: [0,4,5,13,15],
+    7: [1,4,7,8,9, 15],
+    8: [0,2,4,7,8,9,15]
+}
+
 unitValueToValue = {
     0: lambda x: x * 10,
     1: lambda x: x * 10,
@@ -42,6 +51,12 @@ unitValueToValue = {
     19: lambda x: (x - 40) * 1000 / 30
 }
 
+downforce_24_unitValueToValue = {
+    7: lambda x: 497.6 * x - 1489.8,
+    8: lambda x: 496.8 * x - 2479.5,
+    9: lambda x: 974.048 * x - 6803.2614
+}
+
 parts = {
     0 : "engine",
     3 : "chassis",
@@ -50,6 +65,42 @@ parts = {
     6 : "sidepods",
     7 : "underfloor",
     8 : "suspension"
+}
+
+standard_weight_per_part = {
+    3 : 5150,
+    4 : 2625,
+    5 : 3125,
+    6 : 4125,
+    7 : 3550,
+    8 : 2900
+}
+
+standard_buildwork_per_part = {
+    3: 2000,
+    4: 500,
+    5: 500,
+    6: 1500,
+    7: 1500,
+    8: 1500
+}
+
+optimal_weight_per_part = { #peso ideal for unitvalue 100
+    3: 4070,
+    4: 1525,
+    5: 1945,
+    6: 3025,
+    7: 2390,
+    8: 1940
+}
+
+minimal_weight_per_part = { #peso minimo for unitvalue 0
+    3: 3800,
+    4: 1250,
+    5: 1650,
+    6: 2750,
+    7: 2100,
+    8: 1700
 }
 
 car_attributes = {
@@ -152,6 +203,18 @@ attributes_contributions2 = {
     "dirty_air": 0.03,
     "brake_cooling": 0.01,
     "engine_cooling": 0.01
+}
+
+attributes_contributions3 = {
+    "top_speed": 0.144,
+    "acceleration": 0.018,
+    "drs": 0.115,
+    "low_speed": 0.195,
+    "medium_speed": 0.195,
+    "high_speed": 0.195,
+    "dirty_air": 0.029,
+    "brake_cooling": 0.078,
+    "engine_cooling": 0.031
 }
 
 ########

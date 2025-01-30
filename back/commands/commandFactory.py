@@ -23,6 +23,10 @@ from commands.unretire import UnretireCommand
 from commands.configUpdate import ConfigUpdateCommand
 from commands.performanceRequest import PerformanceRequestCommand
 from commands.disconnect import DisconnectCommand
+from commands.fitParts import FitPartsCommand
+from commands.partRequest import PartRequestCommand
+from commands.customEngines import customEnginesCommand
+from commands.devCommand import DevCommand
 
 
 class CommandFactory:
@@ -33,14 +37,14 @@ class CommandFactory:
                     "H2HConfigured": H2HConfiguredCommand, "teamRequest": TeamRequestCommand, "editTeam": EditTeamCommand, 
                     "yearSelectedPrediction": YearSelectedPredictionCommand, "yearSelectedPredictionModal": YearSelectedPredictionModalCommand, 
                     "predict": PredictCommand, "predictMontecarlo": PredictMontecarloCommand, "unretireDriver": UnretireCommand, 
-                    "configUpdate": ConfigUpdateCommand, "performanceRequest": PerformanceRequestCommand, "disconnect": DisconnectCommand}
+                    "configUpdate": ConfigUpdateCommand, "performanceRequest": PerformanceRequestCommand, "disconnect": DisconnectCommand,
+                      "fitParts": FitPartsCommand, "partRequest": PartRequestCommand, "customEngines": customEnginesCommand, "dev": DevCommand}
 
     def __init__(self):
         pass
         
     def create_command(self, message, client):
         command_type = message["command"]
-        # print(message) #for debugging
         if command_type in self.command_dict:
             return self.command_dict[command_type](message, client)
         else:

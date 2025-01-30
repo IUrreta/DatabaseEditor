@@ -11,9 +11,12 @@ document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem
     elem.addEventListener("click", function () {
         document.querySelector("#teamButton").innerText = elem.querySelector(".team-menu-name").innerText;
         teamCod = elem.dataset.teamid;
+        let saveSelector = document.getElementById('saveSelector');
+        let saveSelected = saveSelector.innerHTML;
         let data = {
             command: "teamRequest",
             teamID: teamCod,
+            saveSelected: saveSelected
         }
 
         socket.send(JSON.stringify(data))
@@ -159,28 +162,55 @@ addContinuousListener(document.querySelector("#teamBudget"), ".bi-plus-lg, .bi-d
     }
 );
 
-/**
- * Listeners for all the facility conditions inputs
- */
-document.querySelectorAll(".facility-condition").forEach(function(elem) {
-    addContinuousListener(elem, ".bi-chevron-up, .bi-chevron-down",
-        function(input) {
-            let value = (Number(input.value.split(" ")[0]) + 1)
-            if (value >= 100) {
-                value = 100;
-            }
-            input.value = value + " %";
-        },
-        function(input) {
-            let value = (Number(input.value.split(" ")[0]) - 1)
-            if (value <= 0) {
-                value = 0;
-            }
-            input.value = value + " %";
-        }
-    );
+
+function updateCondition(input, increment, bar) {
+    let actual = input.innerText.split("%")[0];
+    let val = parseInt(actual) + increment;
+    if (val > 100) val = 100;
+    if (val < 0) val = 0;
+    input.innerText = val + "%";
+    bar.style.width = val + "%";
+}
+
+document.querySelectorAll(".condition-container .bi-plus").forEach(button => {
+    let intervalId;
+    button.addEventListener('mousedown', function () {
+        let input = button.parentNode.parentNode.querySelector(".condition-container-value");
+        let bar = button.parentNode.parentNode.querySelector(".condition-container-bar-progress");
+        updateCondition(input, 1, bar);
+        intervalId = setInterval(() => {
+            updateCondition(input, 1, bar);
+        }, 100);
+    });
+
+    button.addEventListener('mouseup', function () {
+        clearInterval(intervalId);
+    });
+
+    button.addEventListener('mouseleave', function () {
+        clearInterval(intervalId);
+    });
 });
 
+document.querySelectorAll(".condition-container .bi-dash").forEach(button => {
+    let intervalId;
+    button.addEventListener('mousedown', function () {
+        let input = button.parentNode.parentNode.querySelector(".condition-container-value");
+        let bar = button.parentNode.parentNode.querySelector(".condition-container-bar-progress");
+        updateCondition(input, -1, bar);
+        intervalId = setInterval(() => {
+            updateCondition(input, -1, bar);
+        }, 100);
+    });
+
+    button.addEventListener('mouseup', function () {
+        clearInterval(intervalId);
+    });
+
+    button.addEventListener('mouseleave', function () {
+        clearInterval(intervalId);
+    });
+});
 
 /**
  * Listeners for the show and hide buttons facilities
@@ -252,6 +282,11 @@ function fillLevels(teamData) {
         let facilityID = Math.floor(num / 10);
         let facility = document.querySelector("#facility" + facilityID)
         let indicator = facility.querySelector('.facility-level-indicator')
+        let condition_container = facility.querySelector('.condition-container')
+        let bar = condition_container.querySelector('.condition-container-bar-progress')
+        let condition_value = condition_container.querySelector('.condition-container-value')
+        bar.style.width = elem[1] * 100 + "%"
+        condition_value.innerText = parseInt(elem[1] * 100) + "%"
         indicator.dataset.value = level
         let value = level
         let levels = indicator.querySelectorAll('.level');
@@ -262,7 +297,6 @@ function fillLevels(teamData) {
                 levels[i].classList.add(team_dict[teamCod] + 'activated');
             }
         }
-        facility.querySelector("input").value = elem[1]*100 + " %"
     })
     document.querySelector("#seasonObjectiveInput").value = teamData[16]
     document.querySelector("#longTermObj" + teamData[17][0]).click()
@@ -285,19 +319,22 @@ function fillLevels(teamData) {
         bar.style.width = value + "%";
     }
     let engineManufacturer = teamData[23];
-    console.log(`#engineMenu a[data-engine='${engineManufacturer}']`)
     document.querySelector(`#engineMenu a[data-engine='${engineManufacturer}']`).click();
-    if (teamCod === "1" || teamCod === "3" || teamCod === "4" || teamCod === "5"){
-        document.querySelector(".blocking-engine").classList.remove("d-none");
-    }
-    else{
-        document.querySelector(".blocking-engine").classList.add("d-none");
-    }
     let bars = document.querySelector(".pit-crew-details").querySelectorAll(".one-stat-progress");
     bars.forEach(function(elem){
         elem.classList = "one-stat-progress " + team_dict[teamCod] + "bar-primary";
     })
 }
+
+document.querySelectorAll(".facility-refurbish svg").forEach(function(elem){
+    elem.addEventListener("click", function(){
+        let facility = elem.parentNode.parentNode;
+        let condition_value = facility.querySelector('.condition-container-value');
+        let bar = facility.querySelector('.condition-container-bar-progress');
+        condition_value.innerText = "100%";
+        bar.style.width = "100%";
+    })
+})
 
 
 document.querySelectorAll("#engineMenu a").forEach(function(elem){
@@ -423,9 +460,8 @@ function gather_team_data() {
         let levelIndicator = facility.getElementsByClassName('facility-level-indicator')[0];
         let level = levelIndicator.getAttribute('data-value');
         let number = id + level; // Compone el número concatenando los strings
-        let input = facility.getElementsByTagName('input')[0];
-        let inputValue = input.value.split(" ")[0] / 100; 
-        result.push([number, inputValue]); // Añade la tupla a la lista
+        let condition = facility.querySelector('.condition-container-value').innerText.split("%")[0] / 100;
+        result.push([number, condition]); // Añade la tupla a la lista
     }
 
     return result

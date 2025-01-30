@@ -9,12 +9,14 @@
   --elements: #313131;
   --dropdown-hover: #363636;
   --dark-text: #b1b1b1;
+  --disabled-text: #7a7a7a;
+  --modal-text: #777777;
   --negative-text: #292929;
   --new-primary: #c89efc;
   --new-primary-dark: #ba82ff;
   --new-primary-transparent: #c89efc99;
   --text-selected: #e7d3ff;
-  --text-selected-secondary: #a8cec9;
+  --text-selected-secondary: #b1dbd6;
   --new-secondary: #9AD2CB;
   --table-hover: #4a4a4a;
   --elements-hover: #3a3a3a;
@@ -30,6 +32,18 @@
   --toast-background : #5a5b5c;
   --console-transparent: #42424299;
   --separator: #4a4a4a;
+  --frozen: #77e2f0;
+  --extra-hard: #edf037;
+  --brutal: #f0c537;
+  --unfair: #f09a37;
+  --insane: #f06b37;
+  --impossible: #f03737;
+  --modal-warning: #f03737a1;
+  --modal-warning-text: #f8bbbb;
+  --engine-table-name: #878787;
+  --engine-table-name-hover: #575757;
+  --support-me: #fdee15;
+  --custom-dif: #52ebbd;
 
   --mentality-enthusiastic: #c055e3;
   --mentality-positive: #10ffff;
@@ -37,13 +51,20 @@
   --mentality-negative: #e9de35;
   --mentality-demoralized: #dd3356;
 
+  --technical-chief: #ec4e98;
+  --race-engineer: #bce64a;
+  --head-aero: #5097e7;
+  --sporting-director: #925aeb;
+
   --background-general: #110f24;
   --slight-contrast: #797599;
   --white-general: #f3f3f3;
   --text-general: #dedde6;
   --text-general-transparent: #e9e8f0be;
   --negative-general: #e95656;
+  --negative-general-clicked: #cf2626;
   --positive-general: #5bd999;
+  --positive-general-clicked: #11ac5e;
   --positive-general-darker: #3f8a6b;
   --positive--general-darker2: #2f6a4b;
   --h2h-general: #34c297;
@@ -249,12 +270,12 @@ body {
   border-radius: 6px;
 }
 
-#free-drivers::-webkit-scrollbar {
+#free-drivers::-webkit-scrollbar, #free-staff::-webkit-scrollbar {
   width: 4px !important;
   margin-left: 4px;
 }
 
-#free-drivers::-webkit-scrollbar-thumb {
+#free-drivers::-webkit-scrollbar-thumb, #free-staff::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px !important;
 }
@@ -328,6 +349,10 @@ body {
 
 .important-text{
   color: var(--new-primary-dark);
+}
+
+.danger-text{
+  color: var(--negative-general);
 }
 
 .save-button .save-label{
@@ -443,7 +468,7 @@ body {
   overflow: hidden;
   max-width: 27px;
   white-space: nowrap;
-  transition: max-width 0.5s ease-in-out, color 0.3s;
+  transition: max-width 0.35s ease-in-out, color 0.3s;
 }
 
 .socials a:hover {
@@ -526,12 +551,20 @@ a.bi-twitter-x:hover,
   color: #2ca4ee;
 }
 
-a.bi-heart:hover {
-  color: #ef51f5;
+a.bi-cup-hot-fill:hover {
+  color: var(--support-me);
 }
 
 a.bi-linkedin:hover {
-  color: #0077b5 ;
+  color: var(--text-selected-secondary);
+}
+
+a.bi-github:hover {
+  color: var(--text-selected);
+}
+
+i.bi-file-text:hover{
+  color: var(--white-general);
 }
 
 .status, .socials, .save-info{
@@ -576,8 +609,16 @@ a.bi-linkedin:hover {
 
 .title-buttons-left{
   position: absolute;
-  gap: 20px;
+  gap: 10px;
   padding-left: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.title-buttons-right{
+  position: absolute;
+  right: 0;
+  gap: 10px;
   display: flex;
   align-items: center;
 }
@@ -591,6 +632,10 @@ a.bi-linkedin:hover {
   text-align: center;
 }
 
+.standings-list-engine{
+  color: var(--engine-table-name);
+}
+
 .transfer-top-panel, .general-top-panel {
   display: flex;
   justify-content: space-between;
@@ -602,6 +647,80 @@ a.bi-linkedin:hover {
   text-align: center;
 }
 
+
+.add-contract{
+  border: 2px dashed var(--disabled-text);
+  color: var(--disabled-text);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px;
+  transition: color 0.2s, border 0.2s, transform 0.2s;
+  padding: 8px;
+  font-size: 18px;
+}
+
+.add-contract.enabled{
+  border: 2px dashed var(--dark-text);
+  color: var(--dark-text);
+}
+
+.add-contract i{
+  font-style: normal;
+}
+
+.add-contract i::before{
+  margin: 0 9px;
+}
+
+.add-contract.enabled span, .add-contract.enabled i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.add-contract.enabled i:hover{
+  color: var(--new-primary);
+  transform: scale(1.1);
+}
+
+#teamContractButton{
+  margin-top: 0 !important;
+}
+
+#futureContractTitle{
+  border-top: 2px solid var(--separator);
+}
+
+.year-and-break{
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.contract-title{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24px;
+  font-family: 'Formula1Bold';
+  color: var(--white-general);
+  margin-bottom: 20px;
+}
+
+.break-contract{
+  color: var(--dark-text);
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+  font-size: 18px;
+}
+
+.break-contract:hover{
+  color: var(--negative-general);
+  transform: scale(1.1);
+}
+
 .auto-contract {
   color: var( --text-general);
   font-size: 20px;
@@ -610,8 +729,15 @@ a.bi-linkedin:hover {
   right: 0;
 }
 
+.freeze-mentality{
+  color: var( --text-general);
+  font-size: 20px;
+  padding-right: 2rem;
+}
+
 input[role="switch"] {
   border: none;
+  cursor: pointer;
 }
 
 input[role="switch"]:focus {
@@ -670,13 +796,22 @@ input[type="checkbox"]:checked {
   align-items: center;
 }
 
+.texts-and-clear{
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.texts-and-clear .fit-button{
+  padding: 0;
+}
+
 .H2H-text span.text-main{
   color: var( --new-primary);
 }
 
-.graphs{
-  padding: 10px;
-}
 
 .graph-text span.text-main{
   color: var( --new-secondary);
@@ -725,11 +860,13 @@ input[type="checkbox"]:checked {
   overflow-y: scroll;
 }
 
-#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar, #raceProbMenu::-webkit-scrollbar, .prob-viewer-data::-webkit-scrollbar, #patchNotesBody::-webkit-scrollbar{
+#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #teamContractMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar, #raceProbMenu::-webkit-scrollbar, .prob-viewer-data::-webkit-scrollbar, #patchNotesBody::-webkit-scrollbar,
+.parts-list::-webkit-scrollbar, .engine-modal-body::-webkit-scrollbar{
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb, #patchNotesBody::-webkit-scrollbar-thumb{
+#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #teamContractMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb, #patchNotesBody::-webkit-scrollbar-thumb,
+.parts-list::-webkit-scrollbar-thumb, .engine-modal-body::-webkit-scrollbar-thumb{
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -785,6 +922,22 @@ input[type="checkbox"]:checked {
   color: var( --text-general);
 }
 
+#driverStatsTitle{
+  max-width: none;
+  max-width: none;
+  text-align: left;
+  font-size: 24px;
+  width: 70%;
+}
+
+#driverCode {
+  font-size: 24px;
+  text-align: left;
+  max-width: none;
+  width: 30%;
+}
+
+
 .stats-title {
   text-align: left;
   color: var(--white-general);
@@ -792,7 +945,23 @@ input[type="checkbox"]:checked {
   padding-left: 20px;
   padding-top: 20px;
   display: flex;
-  gap: 50px;
+  gap: 10px;
+  padding-left: 14px;
+  padding-top: 16px;
+  position: relative;
+  align-items: center;
+  width: 33%;
+}
+
+.separator-3{
+  width: 3px;
+  background-color: var(--separator);
+  height: 100%;
+  margin: 20px 0;
+}
+
+.stats-title .bi-pencil{
+  color: var(--dark-text);
 }
 
 .age-holder{
@@ -847,11 +1016,6 @@ input[type="checkbox"]:checked {
 .filter-icon:hover{
   color: var(--new-primary);
   transform: scale(1.1);
-}
-
-.transfer-top-panel .filter-container{
-  position: absolute;
-  margin-left: 14px;
 }
 
 .filter-container{
@@ -1045,19 +1209,19 @@ input[type="checkbox"]:checked {
 }
 
 
-.retirement-age{
+.retirement-age, .age{
   display: flex;
   gap: 3px;
 }
 
-.retirement-buttons{
+.retirement-buttons, .age-buttons{
   font-size: 18px;
   display: flex;
   flex-direction: column;
   margin-top: 3px;
 }
 
-.retirement-buttons i{
+.retirement-buttons i, .age-buttons i{
   height: 20px;
   display: flex;
 }
@@ -1085,16 +1249,37 @@ input[type="checkbox"]:checked {
 }
 
 .ovr {
-  font-size: 24px;
+  font-size: 21px;
 }
 
 .ovrcombined {
   display: flex;
-  width: 125px;
+  width: 116px;
   align-items: baseline;
   padding-top: 6px;
   justify-content: space-between;
-  margin-right: 8px;
+  width: 120px;
+  position: relative;
+  gap: 5px;
+}
+
+.mentality-change-ovr{
+  position: absolute;
+  top: 13px;
+  right: 27px;
+  font-size: 16px;
+  font-family: "Formula1Bold";
+  width: 24px;
+}
+
+
+
+.mentality-change-ovr.positive, .mentality-modifier.positive{
+  color: var(--positive-general);
+}
+
+.mentality-change-ovr.negative, .mentality-modifier.negative{
+  color: var(--negative-general);
 }
 
 .overall-holder {
@@ -1513,7 +1698,7 @@ input[type="checkbox"]:checked {
 }
 
 .gear-container.shown{
-  width: 44px;
+  width: 40px;
 }
 
 .gear-container:hover .bi-gear{
@@ -1521,7 +1706,11 @@ input[type="checkbox"]:checked {
 }
 
 .gear-container:hover .standard-line, .gear-container:hover{
-  width: 177px;
+  width: 168px;
+}
+
+.gear-container .standard-label{
+  width: 160px;
 }
 
 .gear-container:hover .standard-label{
@@ -1754,6 +1943,21 @@ input[type="checkbox"]:checked {
   max-width: 200px;
 }
 
+.name-flag{
+  margin-left: 8px;
+  width: 30px;
+  height: 24px;
+  border-radius: 20px;
+  opacity: 0.9;
+}
+
+.name-div-edit-stats{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  /* max-height: 24px; */
+}
+
 .menuFlag {
   height: 10px;
   width: 20px;
@@ -1784,13 +1988,13 @@ input[type="checkbox"]:checked {
 
 .main-panel-stats {
   display: grid;
-  grid-template-columns: repeat(3, 0.33fr);
+  grid-template-columns: repeat(3, 0.34fr);
 }
 
 .extra-atributes {
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(3, 0.33fr);
+  grid-template-columns: repeat(3, 0.34fr);
 }
 
 .attribute-and-preferences{
@@ -1912,6 +2116,32 @@ DRIVERS TABLE
   color: var(--negative-text) !important;
 }
 
+.teams-table-row .teams-table-team{
+  width: 9.4%;
+  gap: 2px;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.teams-table-row .teams-table-team span{
+  line-height: 1.03;
+}
+
+.teams-table-engine-name{
+  color: var(--engine-table-name);
+  display: block;
+  text-transform: uppercase;
+  transition: color 0.3s;
+  font-size: 13px;
+}
+
+.teams-table-row:hover .teams-table-engine-name{
+  color: var(--engine-table-name-hover);
+}
+
 .drivers-table-row.odd:hover .first, .drivers-table-row:hover .first,
 .teams-table-row.odd:hover .first, .teams-table-row:hover .first{
   background-color: var(--table-first-light) !important;
@@ -1945,7 +2175,7 @@ DRIVERS TABLE
 }
 
 
-.drivers-table-row.odd:hover .fastest, .drivers-table-row:hover .fastest{
+.drivers-table-row.odd:hover .fastest, .drivers-table-row:hover .fastest, .teams-table-row.odd:hover .fastest, .teams-table-row:hover .fastest{
   color: #d204e0 !important;
 }
 
@@ -2046,11 +2276,11 @@ DRIVERS TABLE
 }
 
 .teams-table-row .teams-table-team{
-  padding-left: 7px;
+  padding: 0 7px;
 }
 
 .teams-table-row.odd .teams-table-team, .teams-table-row.odd .teams-table-points, .teams-table-row.odd .teams-table-position{
-  background-color: var(--elements-hover)
+  background-color: var(--elements-hover);
 }
 
 .teams-table-row:hover .teams-table-team{
@@ -2066,6 +2296,7 @@ DRIVERS TABLE
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 14px;
 }
 
 .drivers-table-position, .teams-table-position{
@@ -2198,7 +2429,7 @@ DRIVERS TABLE
 }
 
 .logo-ferrari-table{
-  padding: 4px 1px;
+  padding: 4px 3px;
 }
 
 .logo-porsche-table{
@@ -2206,11 +2437,19 @@ DRIVERS TABLE
 }
 
 .logo-williams-table{
-  padding: 6px 2px;;
+  padding: 6px 4px;
 }
 
 .logo-merc-table{
-  padding: 4px 2px;
+  padding: 4px;
+}
+
+.logo-visarb-table{
+  padding: 5px 3px;
+}
+
+.logo-alpine-table{
+  padding: 6px 2px;
 }
 
 .logo-reduce{
@@ -2236,7 +2475,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-driver, .teams-table-team{
-  width: 210px;
+  width: calc(9.4% + 60px);
   display: flex;
   align-items: center;
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
@@ -2244,16 +2483,12 @@ DRIVERS TABLE
 }
 
 .drivers-table-row .drivers-table-driver{
-  width: 180px;
+  width: calc(9.4% + 30px);
   border-right: 0px solid transparent;
   gap: 3px;
+  overflow: hidden;
 }
 
-.teams-table-row .teams-table-team{
-  width: 150px;
-  gap: 5px;
-  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
-}
 
 
 .drivers-table-points, .teams-table-points{
@@ -2406,6 +2641,7 @@ DRIVERS TABLE
   align-items: center;
   transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
   z-index: 3;
+  overflow: hidden;
 }
 
 .prob-viewer-row{
@@ -3029,6 +3265,23 @@ DRIVERS TABLE
   height: 610px;
 }
 
+.staff-logo{
+  width: 27px;
+  height: 26px;
+}
+
+.marquee-wrapper {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+}
+
+#free-staff .staff-logo{
+  width: 32px;
+  height: 23px;
+}
+
 #driverstats {
   margin-right: 14px;
 }
@@ -3107,12 +3360,12 @@ DRIVERS TABLE
   background-color: var(--elements-hover);
 }
 
-.one-statH2H i, .name-and-stat i, .retirement-buttons i{
+.one-statH2H i, .name-and-stat i, .retirement-buttons i, .age-buttons i{
   cursor: pointer;
   transition: color 0.2s, transform 0.2s ease-in-out;
 }
 
-.one-statH2H i:hover, .name-and-stat i:hover, .retirement-buttons i:hover{
+.one-statH2H i:hover, .name-and-stat i:hover, .retirement-buttons i:hover, .age-buttons i:hover{
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.1);
@@ -3141,6 +3394,43 @@ DRIVERS TABLE
   min-width:  200px;
   max-width:  200px;
   min-height: 40px;
+}
+
+.staff-space{
+  flex: 1 0 0;
+  max-width: 20%;
+  min-height: 40px;
+  padding: 0 3px;
+}
+
+#free-staff .technical-chief-border{
+  border-left: 2px solid var(--technical-chief);
+  padding-left: 6px;
+}
+
+#free-staff .race-engineer-border{
+  border-left: 2px solid var(--race-engineer);
+  padding-left: 6px;
+}
+
+#free-staff .head-aero-border{
+  border-left: 2px solid var(--head-aero);
+  padding-left: 6px;
+}
+
+#free-staff .sporting-director-border{
+  border-left: 2px solid var(--sporting-director);
+  padding-left: 6px;
+}
+
+
+.staff-space[data-type="technical-chief"]{
+  border-right: 1px solid var(--separator);
+  border-left: 1px solid var(--separator);
+}
+
+.staff-space[data-type="sporting-director"], .staff-space[data-type="race-engineer"][data-pos="2"], .staff-space[data-type="head-aero"]{
+  border-right: 1px solid var(--separator);
 }
 
 .affiliates-and-arrows{
@@ -3203,15 +3493,14 @@ DRIVERS TABLE
 
 .affiliates-space {
   display: flex;
-  overflow-x: hidden; 
+  overflow-x: hidden;
   flex-grow: 1;
-  margin: 0 15px;
-  min-width: 100%;
   max-width: max-content;
   flex-wrap: nowrap;
-  width: 100%;
+  min-width: 100%;
   min-height: 40px;
   align-items: center;
+  margin-left: 15px;
 }
 
 .affiliates-space .free-driver {
@@ -3223,6 +3512,7 @@ DRIVERS TABLE
 .team-template .free-driver{
   margin: 1px 3px;
 }
+
 
 .driver1-name, .driver2-name{
   display: flex;
@@ -3247,12 +3537,122 @@ DRIVERS TABLE
   margin-top: -6px;
 }
 
+.part-name-buttons{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-left: 20px;
+}
+
+.part-buttons{
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
+.part-buttons i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s ease-in-out;
+}
+
+.part-buttons i:hover{
+  cursor: pointer;
+  color: var(--text-selected);
+  transform: scale(1.1);
+}
+
+.custom-engines-div{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.add-engine{
+  border: 2px dashed var(--dark-text);
+  color: var(--dark-text);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px;
+  transition: color 0.2s, border 0.2s, transform 0.2s;
+  padding: 8px;
+  font-size: 18px;
+}
+
+.add-engine i{
+  font-style: normal;
+}
+
+.add-engine i::before{
+  margin: 0 9px;
+}
+
+.add-engine span, .add-engine i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.add-engine i:hover{
+  color: var(--new-primary);
+  transform: scale(1.05);
+}
+
+.custom-engines-div .engine-performance-stats{
+  margin-top: 2px;
+  border-top: 2px solid var(--separator);
+}
+
+.engine-performance .bi-trash{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+  color: var(--text-general);
+  position: absolute;
+  right: 40px;
+  top: 5px;
+  font-size: 20px;
+} 
+
+.engine-performance .bi-trash:hover{
+  color: var(--negative-general);
+  transform: scale(1.05);
+}
+
+
+.engine-performance .bi-caret-down-fill{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+  color: var(--text-general);
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  font-size: 22px;
+}
+
+.engine-performance .bi-caret-down-fill:hover{
+  color: var(--text-selected);
+  transform: scale(1.05);
+}
+
+.engine-performance .bi-caret-down-fill.clicked{
+  color: var(--new-primary);
+}
+
 .part-performance, .engine-performance{
   background-color: var(--elements);
   border-radius: 10px;
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
   padding: 5px 10px;
+  overflow-y: hidden;
+  position: relative;
+}
 
+.engine-f2{
+  border-bottom: 2px solid var(--f2-border);
+}
+
+.engine-f3{
+  border-bottom: 2px solid var(--f3-border);
 }
 
 .engine-fe{
@@ -3271,16 +3671,75 @@ DRIVERS TABLE
   border-bottom: 2px solid var(--mercedes-primary);
 }
 
+.engine-al{
+  border-bottom: 2px solid var(--alpine-primary);
+}
+
+.engine-wi{
+  border-bottom: 2px solid var(--williams-primary);
+}
+
+.engine-af{
+  border-bottom: 2px solid var(--alfa-primary);
+} 
+
+.engine-at{
+  border-bottom: 2px solid var(--alphatauri-primary);
+} 
+
+.engine-ha{
+  border-bottom: 2px solid var(--haas-primary);
+} 
+
+.engine-mc{
+  border-bottom: 2px solid var(--mclaren-primary);
+}   
+
+.engine-ct{
+  border-bottom: 2px solid var(--custom-team-primary);
+} 
+
+.engine-as{
+  border-bottom: 2px solid var(--aston-primary);
+}
+
+input.engine-performance-title{
+  background-color: transparent;
+  border-bottom: 0px solid;
+  border-right: 0px solid;
+  border-left: 0px solid;
+  border-top: 0px solid;
+}
+
+input.engine-performance-title:hover, input.engine-performance-title:focus{
+  outline: none;
+  color: var(--text-selected);
+}
 
 .part-performance-title, .engine-performance-title{
   text-transform: uppercase;
   font-family: 'Formula1Bold';
   font-size: 20px;
   color: var(--white-general);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.part-performance-title{
+  display: flex;
+  justify-content: space-between;
+  position: relative;
 }
 
 .engine-performance-title{
   max-width: max-content;
+}
+
+.engine-modal-body{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 700px;
+  overflow-y: scroll;
 }
 
 .part-performance-stat, .engine-performance-stat{
@@ -3310,8 +3769,285 @@ DRIVERS TABLE
   background-color: var(--new-primary);
 }
 
+.part-performance-title i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s ease-in-out;
+}
+
+.part-performance-title i:hover{
+  cursor: pointer;
+  color: var(--new-primary);
+  transform: scale(1.1);
+}
+
+.part-performance-title i.clicked{
+  color: var(--new-primary);
+}
+
+.parts-list{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  overflow-y: auto;
+  height: 311px;
+}
+
+.parts-list.list-overflow{
+  padding-right: 6px;
+}
+
+
+.one-part{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.one-part-default{
+  border-bottom: 2px solid var(--separator);
+  margin-bottom: 3px;
+  padding: 3px 0;
+}
+
+.one-part-title{
+  font-size: 18px;
+  font-family: 'Formula1Bold';
+  color: var(--dark-text);
+  display: flex;
+}
+
+.one-part-flag-and-text{
+  position: relative;
+  font-family: 'Formula1Bold';
+  font-size: 16px;
+  color: var(--text-general);
+}
+
+.one-part-flag{
+  width: 48px;
+  height: 27px;
+  border-radius: 5px;
+  border: none;
+  opacity: 0.45;
+}
+
+.one-part-flag-title{
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-shadow: 2px 2px 4px var(--negative-text);
+}
+
 .part-performance-stats, .engine-performance-stats{
   margin-top: 8px;
+  transition: opacity 0.2s;
+}
+
+.part-performance-stats{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 89% !important;
+}
+
+
+.fit-button{
+  font-family: 'Formula1Bold';
+  color: var(--text-general);
+  transition: color 0.2s, transform 0.2s;
+  padding-top: 10px;
+  margin-left: 4px;
+}
+
+
+.fit-button:hover, .reset-mentality-button:hover{
+  cursor: pointer;
+  color: var(--new-primary);
+  transform: scale(1.05);
+}
+
+.n-parts-error {
+  animation: errorAnim 0.5s;
+}
+
+.loadout-1-error {
+  animation: errorLoadout1 0.5s;
+}
+
+.loadout-2-error {
+  animation: errorLoadout2 0.5s;
+}
+
+@keyframes errorAnim {
+  0% { color: var(--negative-general); }
+  100% { color: var(--dark-text); }
+}
+
+@keyframes errorLoadout1 {
+  0% { color: var(--negative-general); }
+  100% { color: var(--new-primary); }
+}
+
+@keyframes errorLoadout2 {
+  0% { color: var(--negative-general); }
+  100% { color: var(--new-secondary); }
+}
+
+.fitted-icons{
+  margin-left: 10px;
+  display: flex;
+  flex-direction: row;
+  font-size: 25px;
+  max-height: 30px;
+  align-items: center;
+}
+
+.spare {
+  min-width: 25px;
+}
+
+.one-part-name{
+  transition: color 0.2s, transform 0.2s;
+}
+
+.one-part-name:hover{
+  cursor: pointer;
+  color: var(--text-selected);
+  transform: scale(1.05);
+}
+
+.one-part-name.editing{
+  color: var(--text-general);
+}
+
+.part-subtitle{
+  color: var(--dark-text);
+  font-size: 20px;
+  margin-left: -7px;
+}
+
+.n-parts-buttons{
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;  
+}
+
+.n-parts-buttons i{
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s !important;
+  max-height: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.new-part{
+  border: none;
+  border-radius: 10px;
+  padding-left: 4px;
+  cursor: pointer;
+  max-width: max-content;
+  transition: border-color 0.2s, color 0.2s, transform 0.2s;
+  color: var(--dark-text);
+}
+
+.new-part i{
+  font-style: normal;
+}
+
+.new-part:hover{
+  color: var(--new-primary);
+  transform: scale(1.05);
+}
+
+.new-part ::before{
+  margin-right: 5px;
+}
+
+
+
+.n-parts-buttons .bi-chevron-up:hover, .n-parts-buttons .bi-chevron-down:hover{
+  cursor: pointer;
+  color: var(--new-primary) !important;
+  transform: scale(1.1);
+}
+
+.fitted-icons .n-parts{
+  font-family: "Formula1";
+  font-size: 14px;
+  max-height: 30px;
+  margin-right: 5px;
+}
+
+.fitted-icons i:not(.fitted){
+  color: var(--disabled-text);
+  transition: color 0.2s, transform 0.2s;
+}
+
+.fitted-icons .loadout-1.fitted{
+  color: var(--new-primary);
+}
+
+.fitted-icons .loadout-1{
+  position: relative;
+  padding-bottom: 4px;
+  margin-left: 6px;
+}
+
+.loadout-1:not(.fitted):hover, .loadout-2:not(.fitted):hover{
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.loadout-1:not(.fitted):hover{
+  color: var(--text-selected);
+}
+
+.loadout-2:not(.fitted):hover{
+  color: var(--text-selected-secondary);
+}
+
+.loadout-1 .number, .loadout-2 .number{
+  font-size: 10px;
+  font-family: 'Formula1Bold';
+  position: absolute;
+  bottom: 7px;
+  right: 3px;
+  z-index: 2;
+  padding-bottom: 4px;
+}
+
+.fitted-icons .loadout-2{
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.fitted-icons .loadout-2.fitted{
+  color: var(--new-secondary);
+}
+
+.new-or-existing-part{
+  font-family: 'Formula1Bold';
+  display: flex;
+  gap: 15px;
+  padding: 6px 2px;
+  color: var(--dark-text);
+}
+
+.existing-part{
+  font-size: 16px;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.existing-part:hover{
+  cursor: pointer;
+  color: var(--text-selected);
+  transform: scale(1.05);
+}
+
+.existing-part.active-part{
+  color: var(--new-primary);
 }
 
 .part-performance-stat .custom-input-number, .engine-performance-stat .custom-input-number{
@@ -3478,8 +4214,15 @@ DRIVERS TABLE
   height: 6px;
 }
 
+i.disabled{
+  pointer-events: none;
+  color: var(--disabled-text);
+}
 
-
+input.disabled{
+  pointer-events: none;
+  color: var(--disabled-text);
+}
 
 .red-part {
   width: 300px;
@@ -3656,9 +4399,10 @@ DRIVERS TABLE
   max-width: 75px;
 }
 
-.rounded-input.retirement::selection{
+.rounded-input.retirement::selection, .modal-subtitle::selection, #difficultySpan::selection{
   background-color: transparent;
 }
+
 
 .driver1-number::selection, .driver2-number::selection{
   background-color: transparent;
@@ -3705,6 +4449,24 @@ DRIVERS TABLE
   position: relative;
   font-size: 18px;
 }
+
+.team{
+  margin: 10.8px 7px;
+}
+
+.car{
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 4px;
+  cursor: pointer !important;
+  margin: 4px 6px;
+  color: var(--text-general);
+  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  position: relative;
+  font-size: 18px;
+}
+
+
 
 .driver-info{
   border-radius: 10px;
@@ -4738,14 +5500,154 @@ DRIVERS TABLE
   color: var(--mercedes-primary);
 }
 
+.free-driver:hover .future-contract-noti{
+  opacity: 0;
+}
+
+.future-contract-noti{
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.noti-fe{
+  background-color: var(--ferrari-primary);
+}
+
+
+
+.noti-rb{
+  background-color: var(--redbull-primary);
+}
+
+
+
+.noti-mc{
+  background-color: var(--mclaren-primary);
+}
+
+
+.noti-as{
+  background-color: var(--aston-primary);
+}
+
+
+
+.noti-al{
+  background-color: var(--alpine-primary);
+}
+
+
+.noti-af{
+  background-color: var(--alfa-primary);
+}
+
+
+
+.noti-ha{
+  background-color: var(--haas-primary);
+}
+
+
+.noti-wi{
+  background-color: var(--williams-primary);
+}
+
+.noti-at{
+  background-color: var(--alphatauri-primary);
+}
+
+
+.noti-me{
+  background-color: var(--mercedes-primary);
+}
+
+.noti-ct{
+  background-color: var(--custom-team-primary);
+}
+
+
+
+.name-container {
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  min-width: max-content;
+  gap: 5px;
+}
+
+.name-container span {
+  white-space: nowrap;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(calc(-1 * var(--scroll-amount)));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.name-container.overflow {
+}
+
+.free-driver .edit-container{
+  display: flex;
+  gap: 5px;
+  position: absolute;
+  left: -5px;
+  top: -6px;
+  width: 39px;
+  opacity: 0;
+  background-color: var(--elements-hover);
+  color: var(--text-general);
+  transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom-right-radius: 3px;
+  z-index: 3;
+  padding-left: 8px;
+  padding-top: 1px;
+  height: 17px;
+  align-items: center;
+}
+
+.free-driver .bi-pencil-fill{
+  font-size: 8px;
+  height: 8PX;
+}
+
+.free-driver .bi-123{
+  height: 17px;
+}
+
+.free-driver:hover .edit-container{
+  opacity: 1;
+}
+
+.free-driver .edit-container:hover{
+  background-color: var(--text-general);
+  color: var(--negative-text);
+}
+
 
 .free-driver {
   background-color: var(--elements);
-  border: 2px solid transparent;
-  border-radius: 10px;
+  border-radius: 9px;
   padding:  5px 6px;
   cursor: grab !important;
-  margin: 5px;
+  margin: 6px 5px;
   color: var(--text-general);
   transition: border-color 0.3s, color 0.3s, background-color 0.3s;
   position: relative;
@@ -4756,6 +5658,22 @@ DRIVERS TABLE
   gap: 3px;
   box-shadow: 0 0 10px 1px var(--box-shadow);
   backdrop-filter: blur(6px);
+  align-items: center;
+}
+
+.free-driver span:not(.bold-font){
+  max-height: 22.5px;
+}
+
+.drivers-table-row .drivers-table-driver span:not(.bold-font), .viewer-header-driver span:not(.bold-font){
+  max-height: 22.5px;
+  white-space: nowrap;
+}
+
+.free-driver span.bold-font, .normal-driver span.bold-font, .drivers-table-driver span.bold-font, .driver-prediction span.bold-font, .modal-driver span.bold-font,
+.viewer-header-driver span.bold-font{
+  display: inline-block;
+  transform: skewX(-9deg)
 }
 
 .free-driver:hover .bi-ban{
@@ -4797,7 +5715,7 @@ DRIVERS TABLE
   transform: scale(1.1);
 }
 
-.performance-graph-button.active{
+.performance-graph-button i.active{
   color: var(--new-primary);
 }
 
@@ -4909,8 +5827,12 @@ DRIVERS TABLE
   display: flex;
   position: absolute;
   right: 6px;
-  top: 5px;
+  top: 6px;
   justify-content: flex-end;
+}
+
+.custom-icon i{
+  transition: transform 0.3s, color 0.3s;
 }
 
 
@@ -4922,7 +5844,7 @@ DRIVERS TABLE
 
 
 .custom-icon .bi-pencil-square {
-  transition: color 0.3s;
+  transition: color 0.3s, transform 0.2s;
 }
 
 .free-driver .bi-ban{
@@ -4957,19 +5879,26 @@ DRIVERS TABLE
 
 
 .free-driver:hover .custom-icon {
-  color: var(--dark-text);
+  color: var(--text-general);
   opacity: 1;
 }
 
-#free-drivers {
+#free-drivers .free-driver:hover .custom-icon i, #free-staff .free-driver:hover .custom-icon i{
+  color: var(--text-general);
+}
+
+#free-drivers .free-driver:hover .custom-icon i:hover, #free-staff .free-driver:hover .custom-icon i:hover{
+  transform: scale(1.05);
+}
+
+#free-drivers, #free-staff {
   overflow-y: scroll;
 }
 
 
 .free-driver:hover {
   cursor: grab !important;
-  background-color: var(--text-general-transparent);
-  color: var(--negative-text);
+  background-color: var(--table-hover);
 }
 
 .modal-driver:hover, .modal-team:hover{
@@ -5043,7 +5972,7 @@ DRIVERS TABLE
   margin-bottom: 30px;
 }
 
-.blocking-confidence, .blocking-engine{
+.blocking-confidence{
   background-color: var(--blur-color);
   z-index: 100;
   display: flex;
@@ -5111,9 +6040,10 @@ DRIVERS TABLE
 
 .super-license-holder{
   display: flex !important;
-  font-size: 20px;
-  padding-top: 24px;
-  gap: 14px;
+  font-size: 19px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
 }
 
 .name-and-stat{
@@ -5165,7 +6095,7 @@ DRIVERS TABLE
   padding-top: 4px;
 }
 
-.one-stat-panel:hover span{
+.one-stat-panel:hover span:not(.mentality-modifier){
   color: var(--white-general);
 }
 
@@ -5305,8 +6235,8 @@ DRIVERS TABLE
   height: 40px;
   padding-bottom: 6px;
   padding-top: 8px;
-  padding-left: 7px;
-  padding-right: 7px;
+  padding-left: 9px;
+  padding-right: 9px;
 }
 
 .changable-team-menu-alpine{
@@ -5503,6 +6433,12 @@ DRIVERS TABLE
   width: 171px;
 }
 
+#specialCarIcon{
+  width: 20px;
+  height: 20px;
+  bottom: 8px;
+}
+
 
 
 .pill-icon{
@@ -5666,8 +6602,7 @@ input::-webkit-inner-spin-button {
 }
 
 .normal-driver:hover {
-  background-color: var(--text-general-transparent);
-  color: var(--negative-text);
+  background-color: var(--table-hover);
 }
 
 .normal-driver.clicked .surname{
@@ -5676,6 +6611,32 @@ input::-webkit-inner-spin-button {
 
 .normal-driver.clicked .small-ovr{
   color: var(--negative-text) !important;
+}
+
+.small-ovr{
+  gap: 5px;
+  display: flex;
+  overflow: hidden;
+}
+
+.small-ovr span{
+  width: 25px;
+}
+
+.mentality-small-ovr-positive{
+  color: var(--positive-general);
+}
+
+.normal-driver.clicked .mentality-small-ovr-positive{
+  color: var(--positive-general-clicked);
+}
+
+.mentality-small-ovr-negative{
+  color: var(--negative-general);
+}
+
+.normal-driver.clicked .mentality-small-ovr-negative{
+  color: var(--negative-general-clicked);
 }
 
 .race.selected, .normal-driver.clicked, .fe-transparent.clicked:hover, .mc-transparent.clicked:hover, .me-transparent.clicked:hover, .al-transparent.clicked:hover, .wi-transparent.clicked:hover, .ha-transparent.clicked:hover, .at-transparent.clicked:hover, .as-transparent.clicked:hover, .af-transparent.clicked:hover, .rb-transparent.clicked:hover{
@@ -5710,10 +6671,14 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
-.team-performance {
+.team-performance, .car-performance {
   display: flex;
   flex-direction: column;
   gap: 1px;
+}
+
+.car-performance{
+  gap:0px
 }
 
 .performance-bar{
@@ -5722,6 +6687,16 @@ input::-webkit-inner-spin-button {
   background-color: var(--background);
   position: relative;
   margin: 4px 0;
+}
+
+.car .performance-bar{
+  height: 3px;
+  margin: 0px;
+  margin-top: 2px;
+}
+
+.car .performance-bar-progress{
+  height: 3px;
 }
 
 .performance-bar-progress{
@@ -5796,10 +6771,124 @@ input::-webkit-inner-spin-button {
 
 }
 
+.car-title{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  height: 13.5px;
+  padding-bottom: 4px;
+}
+
 .team-title {
   display: flex;
   align-items: center;
   font-size: 18px;
+  justify-content: space-between;
+}
+
+.team-performance:hover .team-title-value{
+  color: var(--white-general);
+}
+
+.team-performance.selected .team-title-value{
+  color: var(--white-general);
+}
+
+.team-title-value{
+  color: var(--dark-text);
+  transition: color 0.3s;
+}
+
+.car:hover .main-car, .team:hover .main-car{
+  border-left: 2px solid var(--white-general);
+}
+
+.car.selected .main-car, .team.selected .main-car{
+  border-left: 2px solid var(--white-general);
+}
+
+.main-car{
+  border-left: 2px solid var(--separator);
+  padding-left: 7px;
+  transition: border-color 0.3s;
+}
+
+.team .main-car{
+  padding-left: 12px;
+}
+
+.nunmber-and-car, .number-and-team{
+  display: flex;
+  flex-direction: row;
+}
+
+.performance-number{
+  width: 8%;
+  text-align: center;
+  padding-right: 7px;
+  font-size: 16px;
+  max-height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 4px;
+  transition: transform 0.2s;
+}
+
+/* move it 2 pixels to the right */
+.number-and-team:hover .team-number, .number-and-team.selected .team-number{
+  transform: translateX(2px);
+}
+
+.nunmber-and-car:hover .performance-number, .nunmber-and-car.selected .performance-number{
+  transform: translateX(2px);
+}
+
+.team-number{
+  width: 10%;
+  text-align: center;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 9.5px;
+  transition: transform 0.2s;
+}
+
+.car-performance.selected .value{
+  color: var(--white-general);
+}
+
+.car-performance:hover .value{
+  color: var(--white-general);
+}
+
+.car-missing-parts{
+  color: var(--negative-general);
+  font-size: 12px;
+  padding-top: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.car-missing-parts .bi-check-all{
+  color : var(--positive-general);
+  font-size: 20px;
+}
+
+.car-missing-parts .bi-exclamation-triangle-fill{
+  padding-bottom: 2px;
+  margin-left: 4px;
+}
+
+.car-missing-parts .value{
+  color: var(--dark-text);
+  transition: color 0.2s;
+  width: 56px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 
@@ -5807,6 +6896,9 @@ input::-webkit-inner-spin-button {
   padding-bottom: 10px;
   padding-left: 10px;
   padding-top: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-transform: uppercase;
 }
 
 
@@ -5865,6 +6957,77 @@ input::-webkit-inner-spin-button {
 .facility{
   margin-top: 5px;
   justify-content: space-between;
+  position: relative;
+  height: 65px;
+}
+
+.condition-container{
+  position: absolute;
+  bottom: 0px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+}
+
+.condition-container-bar{
+  width: 100%;
+  background-color: var(--background);
+  height: 2px;
+  margin-right: 8px;
+  margin-top: 5px;
+}
+
+.condition-container-bar-progress{
+  width: 33%;
+  background-color: var(--positive-general);
+  height: 2px;
+  transition: width 0.2s;
+}
+
+.condition-container-buttons{
+  display: flex;
+  flex-direction: row;
+  font-size: 24px;
+  height: 30px;
+}
+
+.condition-container-buttons i{
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.condition-container-value{
+  font-family: "Formula1Bold";
+  color: var(--positive-general);
+  width: 60px;
+  text-align: right;
+}
+
+.condition-container-buttons i:hover{
+  transform: scale(1.05);
+  color: var(--positive-general);
+}
+
+.facility-refurbish{
+  width: 5%;
+  font-size: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.facility-refurbish svg{
+  width: 28px;
+  padding-bottom: 11px;
+  transition: color 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+
+.facility-refurbish svg:hover{
+  color: var(--positive-general);
+  transform: scale(1.1);
 }
 
 .facility-level-indicator, .mentality-level-indicator{
@@ -5875,7 +7038,7 @@ input::-webkit-inner-spin-button {
 }
 
 .facility-name{
-  width: 25%;
+  width: 46%;
   color: var( --text-general);
 }
 
@@ -5953,6 +7116,18 @@ input::-webkit-inner-spin-button {
   padding: 0;
 }
 
+#teamContractMenu{
+  max-height: 250px;
+  overflow-y: scroll;
+}
+
+#teamContractMenu a{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+}
+
 .team-select-menu a{
   display: flex;
   align-items: center;
@@ -5984,6 +7159,8 @@ input::-webkit-inner-spin-button {
   background-color: var(--elements);
   height: 90%;
 }
+
+
 
 .main-second-viewer{
   min-height: 580px;
@@ -6076,6 +7253,10 @@ input::-webkit-inner-spin-button {
   height: 39.2px !important;
 }
 
+.facility .bi-chevron-right{
+  margin-right: 60px;
+}
+
 #confidenceInput{
   min-width: 70px !important;
 }
@@ -6121,7 +7302,7 @@ input::-webkit-inner-spin-button {
   width: 50%;
 }
 
-#edit_teams .team-viewer i{
+#edit_teams .team-viewer .bi-chevron-left, #edit_teams .team-viewer .bi-chevron-right{
   transition: color 0.3s;
   font-size: 20px;
   color: var( --text-general);
@@ -6135,7 +7316,7 @@ input::-webkit-inner-spin-button {
 
 }
 
-#edit_teams .team-viewer i:hover{
+#edit_teams .team-viewer .bi-chevron-left:hover, #edit_teams .team-viewer .bi-chevron-right:hover{
   cursor: pointer;
   color: var(--new-primary) !important;
   transform: scale(1.1);
@@ -6236,13 +7417,18 @@ input::-webkit-inner-spin-button {
 .brawnlogo{
   width: 40px;
   height: 40px;
-  padding: 15px 0;
+  padding: 16px 0px;
+  padding-left: 4px;
 }
 
 .audilogo{
   width: 40px;
   height: 40px;
-  padding: 12px 0;
+  padding: 12px 2px;
+}
+
+.team-menu-logo .audilogo{
+  width: 50px;
 }
 
 .sauberlogo{
@@ -6255,6 +7441,16 @@ input::-webkit-inner-spin-button {
   height: 40px;
   width: 40px;
   padding: 5px 0;
+}
+
+.visarblogo{
+  height: 40px;
+  width: 40px;
+  padding: 5px 2px;
+}
+
+.team-menu-logo .visarblogo{
+  width: 46px;
 }
 
 .toyotalogo{
@@ -6286,9 +7482,7 @@ input::-webkit-inner-spin-button {
 .alphataurilogo, #atlogo {
   width: 40px;
   height: 40px;
-  padding-bottom: 12px;
-  padding-left: 10px;
-  padding-top: 12px;
+  padding: 12px 4px;
 }
 
 .williamslogo, #wilogo {
@@ -6819,7 +8013,7 @@ input::-webkit-inner-spin-button {
 }
 
 
-.drivers-section {
+.drivers-section, .staff-section {
   display: flex;
   overflow: hidden;
   margin-bottom: 3px;
@@ -6833,4 +8027,210 @@ input::-webkit-inner-spin-button {
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 5px;
+}
+
+.game-changes{
+  display: flex;
+  flex-direction: row;
+}
+
+.mentality-changes{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-right: 2px solid var(--separator);
+  width: 50%;
+}
+
+#customGearButton {
+  margin-left: 5px;
+  transition: transform 0.3s ease, color 0.2s;
+  cursor: pointer;
+  display: inline-block;
+}
+
+#customGearButton:hover {
+  color: var(--text-selected);
+}
+
+#customGearButton.custom {
+  color: var(--new-primary);
+  transform: rotate(45deg);
+
+}
+
+.difficulty-changes{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-left: 10px;
+  width: 50%;
+}
+
+.mentality-selector{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.mentality-selector .form-switch{
+  padding-right: 0px;
+}
+
+.modal-text{
+  color: var(--modal-text);
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+datalist {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  margin-top: -27px;
+  pointer-events: none;
+}
+
+datalist .my-mark{
+  border-right: 2px solid var(--separator);
+  height: 10px;
+  width: 2px;
+}
+
+#difficultySlider::-webkit-slider-thumb{
+  background-color: var(--new-primary-dark);
+  z-index: 2;
+  box-shadow: none;
+}
+
+#difficultySlider::-webkit-slider-thumb:hover{
+  outline: 1px solid var(--new-primary);
+  transform: scale(1.05);
+}
+
+#difficultySlider::-webkit-slider-runnable-track{
+  background-color: var(--text-selected);
+}
+
+.option-state{
+  padding-left: 5px;
+  transition: color 0.2s;
+}
+
+
+
+.dif-warning:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.2);
+}
+
+.dif-warning::selection{
+  background-color: transparent;
+}
+
+.option-state.default, .dif-warning.default{
+  color: var(--new-secondary);
+}
+
+.option-state.frozen, .dif-warning.frozen{
+  color: var(--frozen)
+}
+
+.option-state.extra-hard, span.extra-hard, .dif-warning.extra-hard{
+  color: var(--extra-hard)
+}
+
+.option-state.brutal, span.brutal, .dif-warning.brutal{
+  color: var(--brutal)
+}
+
+.option-state.unfair, span.unfair, .dif-warning.unfair{
+  color: var(--unfair)
+}
+
+.option-state.insane, span.insane, .dif-warning.insane{
+  color: var(--insane)
+}
+
+.option-state.impossible, span.impossible, .dif-warning.impossible{
+  color: var(--impossible)
+}
+
+.option-state.fixed, span.fixed, .dif-warning.fixed, #lightDif.impossible{
+  color: var(--new-primary)
+}
+
+.option-state.reduced-weight, span.reduced-weight, .dif-warning.reduced-weight{
+  color: var(--new-primary)
+}
+
+.option-state.custom{
+  color: var(--text-general);
+}
+
+#refurbishTitle{
+  padding-top: 10px;
+  border-top: 2px solid var(--separator);
+  margin-right: 32px;
+}
+
+.difficulty-warnings{
+  font-size: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: -7px;
+  gap: 2px 7px;
+  height: 58px;
+  align-content: flex-start;
+}
+
+
+
+.dif-warning:not(.default){
+  cursor: pointer;
+  transition: color 0.2s, opacity 0.1s, transform 0.2s, filter 0.2s;
+}
+
+.dif-warning.disabled, #lightDif.disabled{
+  text-decoration: line-through;
+  color: var(--text-general);
+  opacity: 0.63;
+}
+
+.modal-warning{
+  background-color: var(--modal-warning);
+  color: var(--modal-warning-text);
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.name-and-arrows{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.arrows{
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  font-size: 18px;
+  bottom: 8px;
+  gap: 4px;
+  left: -3px;
+}
+
+.arrows i{
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+  height: 12px;
+}
+
+.arrows i:hover{
+  transform: scale(1.05);
+  color: var(--new-primary);
 }

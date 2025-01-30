@@ -1,6 +1,6 @@
 from commands.command import Command
 from scripts.extractor import process_repack
-from scripts.transfer_driver_23 import run_script as run_trasnsfer
+from scripts.transfer_driver import TransferUtils
 import json
 
 class EditContractCommand(Command):
@@ -8,8 +8,9 @@ class EditContractCommand(Command):
         super().__init__(message, client)
 
     async def execute(self):
-        argument = f"editContract {self.message['salary']} {self.message['year']} {self.message['signBonus']} {self.message['raceBonus']} {self.message['raceBonusPos']} {self.message['driverID']}"
-        run_trasnsfer(argument)
+        transfer_utils = TransferUtils()
+        transfer_utils.edit_contract(self.message['driverID'], self.message['salary'], self.message['year'], self.message['signBonus'], self.message['raceBonus'], self.message['raceBonusPos'])
+        transfer_utils.future_contract(self.message['futureTeam'], self.message['driverID'], self.message['futureSalary'], self.message['futureYear'], self.message['futureSignBonus'], self.message['futureRaceBonus'], self.message['futureRaceBonusPos'], self.message['futurePosition'], year_iteration=Command.year_iterarion)
         process_repack("../result", Command.path)
         info = []
         info.insert(0, f"Succesfully edited {self.message['driver']}'s contract")
