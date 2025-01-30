@@ -11,10 +11,28 @@ echo "Version: $version"
 cd ..
 
 cd back
-pip install websockets
-pip install numpy
-pip install pandas
-pip install scikit-learn
+
+# Crear entorno virtual si no existe
+if [ ! -d "DBEditor" ]; then
+    echo "No virtual environment found, creating one..."
+    python3 -m venv DBEditor
+    echo "Virtual environment created."
+else
+    echo "Virtual environment found."
+fi
+
+# Activar el entorno virtual
+source DBEditor/bin/activate
+
+# Instalar dependencias si existe requirements.txt
+if [ -f "requirements.txt" ]; then
+    echo "Installing requirements..."
+    pip install -r requirements.txt
+else
+    echo "requirements.txt not found."
+fi
+
+# Ejecutar el script back.py en segundo plano
 python3 back.py &
 cd ..
 
@@ -23,4 +41,4 @@ npm install --no-audit
 npm start
 
 # Matar el proceso python
-pkill -f python3
+pkill -f back.py

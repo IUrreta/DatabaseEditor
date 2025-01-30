@@ -12,10 +12,6 @@ let firstShow = false;
 let configCopy;
 
 
-const batFilePath = path.join(__dirname,'../back/startBack.bat');
-
-
-
 const socket = new WebSocket('ws://localhost:8765/');
 /**
  * When the socket is opened sends a connect message to the backend
@@ -194,7 +190,7 @@ function editModeHandler() {
         globalMentality = Math.floor(globalMentality / 3)
     }
     document.querySelector(".clicked").dataset.globalMentality = globalMentality
-    let new_ovr = calculateOverall(stats,typeOverall, globalMentality);
+    let new_ovr = calculateOverall(stats,typeOverall, mentality_to_global_menatality[globalMentality]);
     document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = ""
     if (new_ovr[1] !== new_ovr[0]) {
         document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr[1];
@@ -208,7 +204,7 @@ function editModeHandler() {
     }
     let inputArray = document.querySelectorAll(".elegible")
     inputArray.forEach(function (input, index) {
-        manage_mentality_modifiers(input, globalMentality)
+        manage_mentality_modifiers(input, mentality_to_global_menatality[globalMentality])
     })
     let diff = parseInt(new_ovr[1]) - parseInt(new_ovr[0])
     let mentalitydiff = document.querySelector(".mentality-change-ovr")
@@ -1195,17 +1191,7 @@ document.addEventListener('DOMContentLoaded',function () {
                 manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
             }
             update_refurbish_span(info["refurbish"])
-            manage_disabled_list(info["disabled"])
     }
-    }
-
-    function manage_disabled_list(disabled_list){
-        for (key in disabled_list){
-            let elem = document.getElementById(key)
-            if (disabled_list[key] === 1){
-                elem.classList.add("disabled")
-            }
-        }
     }
 
     document.querySelectorAll(".color-picker").forEach(function (elem) {
@@ -1740,8 +1726,8 @@ document.addEventListener('DOMContentLoaded',function () {
             let warn = document.getElementById(id)
             let difName = difficulty_dict[triggerList[id]]
             if (triggerList[id] !== -1) {
-            warn.className = difficultyConfig[difName][id].className
-            warn.textContent = difficultyConfig[difName][id].text
+                warn.className = difficultyConfig[difName][id].className
+                warn.textContent = difficultyConfig[difName][id].text
             }
             else{
                 warn.classList.add("disabled")

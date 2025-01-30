@@ -184,6 +184,13 @@ const mentalityModifiers = {
     96: 7,
     100: 8
 };
+const mentality_to_global_menatality = {
+    0: 95,
+    1: 79,
+    2: 59,
+    3: 24,
+    4: 5,
+}
 
 //transfers
 const f1_teams = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32]

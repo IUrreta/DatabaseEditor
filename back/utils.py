@@ -685,14 +685,19 @@ class DatabaseUtils:
     def manage_difficulty_triggers(self, triggerList):
         conn = sqlite3.connect("../result/main.db")
         cursor = conn.cursor()
-
         
-        self.manage_design_boost_triggers(cursor, triggerList["statDif"])
-        self.manage_design_time_triggers(cursor, triggerList["designTimeDif"])
-        self.manage_weight_trigger(cursor, triggerList["lightDif"])
-        self.manage__instant_build_triggers(cursor, triggerList["buildDif"])
-        self.manage_research_triggers(cursor, triggerList["researchDif"])
-        self.upgrade_factories(cursor, triggerList["factoryDif"])
+        if triggerList.get("statDif"):
+            self.manage_design_boost_triggers(cursor, triggerList["statDif"])
+        if triggerList.get("designTimeDif"):
+            self.manage_design_time_triggers(cursor, triggerList["designTimeDif"])
+        if triggerList.get("lightDif"):
+            self.manage_weight_trigger(cursor, triggerList["lightDif"])
+        if triggerList.get("buildDif"):
+            self.manage__instant_build_triggers(cursor, triggerList["buildDif"])
+        if triggerList.get("researchDif"):
+            self.manage_research_triggers(cursor, triggerList["researchDif"])
+        if triggerList.get("factoryDif"):
+            self.upgrade_factories(cursor, triggerList["factoryDif"])
 
         conn.commit()
         conn.close()
