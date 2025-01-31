@@ -1,3 +1,6 @@
+import { races_names, part_codes_abreviations, codes_dict, combined_dict  } from "./config";
+import { colors_dict } from "./head2head";
+
 const teamsPill = document.getElementById("teamsPill");
 const enginesPill = document.getElementById("enginesPill");
 
@@ -12,7 +15,7 @@ let engineSelected;
 let teamEngineSelected;
 let performanceGraph;
 let teamsEngine = "teams"
-let viewingGraph = true;
+export let viewingGraph = true;
 let actualMaxDesign = 0;
 let customEnginesCopy;
 
@@ -37,7 +40,7 @@ function normalizeData(data) {
 
 
 
-function load_performance(teams) {
+export function load_performance(teams) {
     // let teams = normalizeData(teams);
     for (let key in teams) {
         if (teams.hasOwnProperty(key)) {
@@ -55,7 +58,7 @@ function load_performance(teams) {
     }
 }
 
-function load_cars(data) {
+export function load_cars(data) {
     for (let key in data) {
         let cars = document.querySelectorAll(`#carsDiv .car[data-teamid='${key}']`);
         cars.forEach(function (car, index) {
@@ -95,7 +98,7 @@ function load_cars(data) {
     }
 }
 
-function load_attributes(teams) {
+export function load_attributes(teams) {
     for (let key in teams) {
         for (let attribute in teams[key]) {
             let team = document.querySelector(`#teamsDiv .team-performance[data-teamid='${key}']`);
@@ -106,7 +109,7 @@ function load_attributes(teams) {
     }
 }
 
-function load_car_attributes(teams) {
+export function load_car_attributes(teams) {
     for (let key in teams) {
         for (let car in teams[key]) {
             let carDiv = document.querySelector(`#carsDiv .car[data-teamid='${key}'][data-carnumber='${car}']`);
@@ -119,7 +122,7 @@ function load_car_attributes(teams) {
     }
 }
 
-function order_by(criterion) {
+export function order_by(criterion) {
     let teams = document.querySelectorAll(".team-performance");
     let teamsArray = Array.from(teams);
     teamsArray.sort(function (a, b) {
@@ -233,7 +236,7 @@ function update_max_design(data) {
  * Manages the engine stats for all manufacturers
  * @param {Object} engineData engine stats for all manufacturers
  */
-function manage_engineStats(engineData) {
+export function manage_engineStats(engineData) {
     engineData.forEach(function (elem) {
         let engineId = elem[0]
         let engineStats = elem[1];
@@ -1036,7 +1039,7 @@ document.querySelector("#confirmCustomEnginesButton").addEventListener("click", 
 })
 
 
-function load_custom_engines(data) {
+export function load_custom_engines(data) {
     customEnginesCopy = data
     let engines = data[0]
     let engineDropdown = document.querySelector("#engineMenu")
@@ -1108,7 +1111,7 @@ function manage_bar(bar, progress) {
     bar.parentNode.querySelector(".performance-data").innerHTML = progress * 10 + "%"
 }
 
-function load_performance_graph(data) {
+export function load_performance_graph(data) {
     let labelsArray = []
     data[1].forEach(function (elem) {
         labelsArray.push(races_names[elem[2]])

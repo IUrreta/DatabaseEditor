@@ -1,3 +1,7 @@
+import { staff_pics, team_dict, combined_dict, staff_positions } from "./config";
+import { game_version } from "./renderer";
+
+
 const myModal = new bootstrap.Modal(document.getElementById('contractModal'));
 const raceBonusAmt = document.getElementById("raceBonusAmt");
 const raceBonusPos = document.getElementById("raceBonusPos");
@@ -6,7 +10,7 @@ const freeDriversPill = document.getElementById("freepill");
 const f2DriversPill = document.getElementById("F2pill");
 const f3DriversPill = document.getElementById("F3pill");
 
-const freeDriversDiv = document.getElementById("free-drivers");
+export const freeDriversDiv = document.getElementById("free-drivers");
 const freeStaffDiv = document.getElementById("free-staff");
 const f2DriversDiv = document.getElementById("f2-drivers");
 const f3DriversDiv = document.getElementById("f3-drivers");
@@ -15,7 +19,7 @@ const autoContractToggle = document.getElementById("autoContractToggle")
 
 const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
 
-const selectImageButton = document.getElementById('selectImage');
+
 const fileInput = document.getElementById('fileInput');
 
 
@@ -33,7 +37,7 @@ let driverEditingName;
 let driver1;
 let driver2;
 let originalTeamId
-let currentSeason;
+export  let currentSeason;
 
 
 let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3", "custom": "Custom Team" }
@@ -42,7 +46,7 @@ let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bu
 /**
  * Removes all the drivers from teams and categories
  */
-function remove_drivers() {
+export function remove_drivers() {
     document.querySelectorAll('.driver-space').forEach(item => {
         item.innerHTML = ""
     });
@@ -56,16 +60,18 @@ function remove_drivers() {
     freeStaffDiv.innerHTML = ""
 }
 
-function insert_space(str) {
+export function insert_space(str) {
     return str.replace(/([A-Z])/g, ' $1').trim();
 }
+
+
 
 
 /**
  * Places all drivers in their respective team, category etc
  * @param {Object} driversArray List of drivers
  */
-function place_drivers(driversArray) {
+export function place_drivers(driversArray) {
     let divPosition;
     driversArray.forEach((driver) => {
         let newDiv = document.createElement("div");
@@ -102,7 +108,6 @@ function place_drivers(driversArray) {
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
-    add_marquees_transfers()
 
 }
 
@@ -148,41 +153,8 @@ function update_name(driverID, name) {
     normalDiv.dataset.name = name
 }
 
-function add_marquees_transfers() {
-    setTimeout(function () {
-        document.querySelectorAll('#driver_transfers .name-container').forEach(container => {
-            let parentWidth = container.parentNode.clientWidth
-            let containerWidth = container.scrollWidth
-            if (containerWidth > parentWidth) {
-                let name = container.firstChild
 
-                let text = name.textContent.trim();
-                let words = text.split(' ');
-
-                if (words.length >= 1) {
-                    let longestWordIndex = 0;
-                    let longestWordLength = 0;
-
-                    words.forEach((word, index) => {
-                        if (word.length > longestWordLength) {
-                            longestWordLength = word.length;
-                            longestWordIndex = index;
-                        }
-                    });
-
-                    words[longestWordIndex] = words[longestWordIndex].charAt(0) + ".";
-
-                    name.textContent = words.join(' ');
-                }
-
-            }
-        });
-    }, 100);
-}
-
-
-
-function sortList(divID) {
+export function sortList(divID) {
     let container = document.getElementById(divID);
 
     let divs = Array.from(container.querySelectorAll('.free-driver'));
@@ -207,7 +179,7 @@ function sortList(divID) {
     divs.forEach(div => container.appendChild(div));
 }
 
-function place_staff(staffArray) {
+export function place_staff(staffArray) {
     let divPosition;
     staffArray.forEach((staff) => {
         let newDiv = document.createElement("div");
@@ -269,7 +241,6 @@ function place_staff(staffArray) {
 
 
     })
-    add_marquees_transfers()
 }
 
 document.querySelectorAll("#stafftransfersMenu a").forEach(function (elem) {
@@ -278,7 +249,6 @@ document.querySelectorAll("#stafftransfersMenu a").forEach(function (elem) {
         let value = elem.dataset.value;
         document.querySelector("#staffTransfersDropdown").dataset.value = value;
         manage_staff_drivers(value)
-        add_marquees_transfers()
     })
 })
 
@@ -368,7 +338,7 @@ function manageColor(div, lastName) {
  * Loads all the numbers into the number menu
  * @param {Object} nums all numbers array
  */
-function loadNumbers(nums) {
+export function loadNumbers(nums) {
     let numsMenu = document.getElementById("numberMenu")
     numsMenu.innerHTML = ""
     nums.forEach(function (elem) {
@@ -384,7 +354,6 @@ function loadNumbers(nums) {
 
 
 }
-
 
 /**
  * Adds the edit icon

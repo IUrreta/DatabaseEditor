@@ -1,9 +1,10 @@
-const { parse } = require("marked");
-const { stat } = require("original-fs");
+import {  team_dict  } from "./config";
+import { insert_space } from "./transfers";
+
 
 let driverStatTitle = document.getElementById("driverStatsTitle")
-let statPanelShown = 0;
-let typeOverall = "driver";
+export let statPanelShown = 0;
+export let typeOverall = "driver";
 let typeEdit;
 let oldNum;
 
@@ -11,7 +12,7 @@ let oldNum;
 /**
  * Removes all the staff from their list
  */
-function removeStatsDrivers() {
+export function removeStatsDrivers() {
     document.querySelectorAll(".staff-list").forEach(function (elem) {
         elem.innerHTML = ""
     })
@@ -21,7 +22,7 @@ function removeStatsDrivers() {
  * Places the drivers that the backend fetched on the driver list
  * @param {Object} driversArray Object with all the drivers that the backend fetched
  */
-function place_drivers_editStats(driversArray) {
+export function place_drivers_editStats(driversArray) {
     let divPosition;
     driversArray.forEach((driver) => {
         divPosition = "fulldriverlist"
@@ -147,7 +148,7 @@ function place_drivers_editStats(driversArray) {
  * Places the staff that the backend fetched on their respective staff list
  * @param {Object} staffArray Object with all the staff that the backend fetched
  */
-function place_staff_editStats(staffArray) {
+export function place_staff_editStats(staffArray) {
     let divPosition;
 
     staffArray.forEach((staff) => {
@@ -389,7 +390,7 @@ function updateStat(input, increment) {
     manage_stat_bar(input, val);
 }
 
-function listeners_plusLess() {
+export function listeners_plusLess() {
     document.querySelectorAll(".attirbutes-panel .bi-plus-lg").forEach(button => {
         let intervalId;
         button.addEventListener('mousedown', function () {

@@ -1,11 +1,18 @@
-const fs = require('fs');
-const simpleGit = require('simple-git');
-const { exec } = require('child_process');
-const path = require('path');
-const { marked } = require('marked');
-const { ipcRenderer } = require('electron');
+import { marked } from 'marked';
+
+import { resetTeamEditing } from './teams';
+import { resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations } from './seasonViewer';
+import { combined_dict, abreviations_dict, codes_dict, logos_disc } from './config';
+import { freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList } from './transfers';
+import { load_calendar } from './calendar';
+import { load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
+     order_by, load_car_attributes, viewingGraph, engine_allocations  } from './performance';
+import { mid_grid, resetPredict } from './predictions';
+import { listeners_plusLess, removeStatsDrivers, place_drivers_editStats, place_staff_editStats, statPanelShown, typeOverall  } from './stats';
+import { resetH2H, hideComp, colors_dict } from './head2head';
+
 let conn = 0;
-let game_version = 2023;
+export let game_version = 2023;
 let custom_team = false;
 let customIconPath = null;
 let firstShow = false;
@@ -32,18 +39,6 @@ const parchModalTitle = document.getElementById("patchModalTitle")
 
 const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
-
-/**
- * Fetches the version from the version.conf file
- */
-fetch('./../launcher/version.conf')
-    .then(response => response.text())
-    .then(version => {
-        versionPanel.textContent = `${version}`;
-        versionNow = version
-        parchModalTitle.textContent = "Version " + version + " patch notes"
-        getPatchNotes()
-    });
 
 /**
  * get the patch notes from the actual version fro the github api
@@ -472,6 +467,7 @@ document.addEventListener('DOMContentLoaded',function () {
     const predictDiv = document.getElementById("predict_results")
 
     const patchNotesBody = document.getElementById("patchNotesBody")
+    const selectImageButton = document.getElementById('selectImage');
 
     const scriptsArray = [predictDiv,h2hDiv,viewDiv,driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv,teamsDiv]
 
@@ -638,18 +634,7 @@ document.addEventListener('DOMContentLoaded',function () {
     let scriptSelected = 0;
     let divBlocking = 1;
 
-    adjust_containter()
 
-    document.querySelectorAll(".modal").forEach(function (elem) {
-        elem.addEventListener('show.bs.modal',function () {
-            setTimeout(function () {
-                var modalBackdrop = document.querySelector('.modal-backdrop');
-                var cetContainer = document.querySelector('.cet-container');
-                cetContainer.appendChild(modalBackdrop);
-            },0);
-
-        });
-    })
 
     let connectionTimeout = setTimeout(() => {
         update_notifications("Could not connect with backend","error")
@@ -702,7 +687,6 @@ document.addEventListener('DOMContentLoaded',function () {
 
     function resizeWindowToHeight(mode) {
         if (mode === "11teams") {
-            ipcRenderer.send('resize-window',930);
             document.querySelectorAll(".main-resizable").forEach(function (elem) {
                 elem.style.height = "720.5px"
                 if (elem.id === "enginesPerformance") {
@@ -720,7 +704,6 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("raceMenu").style.height = "686px"
         }
         else if (mode === "10teams") {
-            ipcRenderer.send('resize-window',875);
             document.querySelectorAll(".main-resizable").forEach(function (elem) {
                 elem.style.height = "660px"
                 if (elem.id === "enginesPerformance") {
@@ -738,34 +721,6 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("raceMenu").style.height = "660px"
         }
     }
-
-    ipcRenderer.on('dev-mode',(event,message) => {
-        let devConsole = document.querySelector('.dev-console');
-        document.addEventListener('keydown',(event) => {
-            if (event.ctrlKey && event.key === 'd') {
-                event.preventDefault();
-                if (devConsole) {
-                    devConsole.classList.toggle('d-none');
-                    if (!devConsole.classList.contains('d-none')) {
-                        devConsole.focus(); // Enfocar el textarea cuando se hace visible
-                    }
-                }
-            }
-        });
-
-        if (devConsole) {
-            devConsole.addEventListener('keyup',(event) => {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                    data = {
-                        command: "dev",
-                        type: devConsole.value
-                    }
-                    socket.send(JSON.stringify(data));
-                }
-            });
-        }
-    });
 
     function manage_game_year(year) {
         if (year[0] === "24") {
@@ -893,15 +848,7 @@ document.addEventListener('DOMContentLoaded',function () {
     }
 
 
-    /**
-     * Manages the height of the main container
-     */
-    function adjust_containter() {
-        setTimeout(function () {
-            document.querySelector(".cet-container").style.position = "relative"
-            document.querySelector(".cet-container").style.overflowX = "hidden"
-        },0)
-    }
+
 
     function ajustScrollWrapper() {
         var windowHeight = window.innerHeight - 120;
@@ -963,16 +910,6 @@ document.addEventListener('DOMContentLoaded',function () {
                         }
                         else {
                             updateInfo.classList.remove("bi-cloud")
-                            if (checkGit()) {
-                                updateInfo.textContent = '\xa0' + "Click to update!"
-                                updateInfo.classList.add("bi-cloud-download")
-                                updateButton()
-                            }
-                            else {
-                                updateInfo.textContent = '\xa0' + "New update available!"
-                                updateInfo.classList.add("bi-exclamation-lg")
-                                updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
-                            }
 
                         }
 
@@ -986,21 +923,6 @@ document.addEventListener('DOMContentLoaded',function () {
             });
     }
 
-    /**
-     * Check if the tool was installed through git or not
-     * @returns {bool} If the tool was installed through git or zip
-     */
-    function checkGit() {
-        let dir = './'; // Cambia esto a la ruta de tu herramienta
-        let res = false;
-        try {
-            const files = fs.readdirSync(dir);
-            return files.includes('.git');
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
 
     /**
      * Adds the spinner informing of updating state
@@ -1019,40 +941,6 @@ document.addEventListener('DOMContentLoaded',function () {
         statusDiv.insertBefore(outsideDiv,statusDiv.children[2]);
     }
 
-    /**
-     * Manages the actions of the update button
-     */
-    function updateButton() {
-        let repoPath = './';
-        let git = simpleGit(repoPath);
-
-        document.querySelector(".bi-cloud-download").addEventListener("click",function () {
-
-            git.pull("origin","release",(error,update) => {
-                addSpinner()
-                if (error) {
-                    update_notifications("Update automatically failed, please update manually","error")
-                    updateInfo.classList.remove("bi-cloud-download")
-                    updateInfo.classList.add("bi-exclamation-lg")
-                    updateInfo.setAttribute('href','https://www.github.com/IUrreta/DatabaseEditor/releases/tag/' + latestTag);
-                    document.querySelector(".status").removeChild(document.querySelector(".outside-div"))
-                    updateInfo.removeEventListener("click",arguments.callee)
-                } else {
-                    //console.log('Git pull exitoso:',update);
-                    setTimeout(() => {
-                        exec('restart.bat',(error,stdout,stderr) => {
-                            if (error) {
-                                //console.error(`Error: ${error}`);
-                                return;
-                            }
-                            //console.log(`Resultado: ${stdout}`);
-                        });
-                    },500);
-                }
-            });
-        })
-    }
-
 
     /**
      * Manages the state of the calendar blocking div in case it cannot be modified
@@ -1066,6 +954,56 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("calendarBlockDiv").className = "blocking-div"
         }
     }
+
+    /**
+ * Adds eventListeners to all the elements of the staff dropdown
+ */
+function listenersStaffGroups() {
+    document.querySelectorAll('#staffMenu a').forEach(item => {
+        item.addEventListener("click", function () {
+            const staffButton = document.getElementById('staffDropdown');
+            let staffSelected = item.innerHTML
+            let staffCode = item.dataset.spacestats
+            if (staffCode === "driverStats") {
+                typeOverall = "driver"
+                typeEdit = "0"
+                document.getElementById("driverSpecialAttributes").classList.remove("d-none")
+                document.querySelector("#superLicenseSwitch").classList.remove("d-none")
+                document.querySelector("#driverCode").classList.remove("d-none")
+            }
+            else {
+                typeOverall = "staff"
+                document.getElementById("driverSpecialAttributes").classList.add("d-none")
+                document.querySelector("#superLicenseSwitch").classList.add("d-none")
+                document.querySelector("#driverCode").classList.add("d-none")
+                if (staffCode === "chiefStats") {
+                    typeEdit = "1"
+                }
+                if (staffCode === "engineerStats") {
+                    typeEdit = "2"
+                }
+                if (staffCode === "aeroStats") {
+                    typeEdit = "3"
+                }
+                if (staffCode === "directorStats") {
+                    typeEdit = "4"
+                }
+
+            }
+            staffButton.innerHTML = staffSelected;
+            change_elegibles(item.dataset.spacestats)
+            document.querySelectorAll(".staff-list").forEach(function (elem) {
+                elem.classList.add("d-none")
+                if (item.dataset.list == elem.id) {
+                    elem.classList.remove("d-none")
+                }
+            })
+            document.querySelector(".left-panel-stats").classList.add("d-none")
+            statPanelShown = 0;
+        });
+
+    });
+}
 
 
 
@@ -1171,7 +1109,7 @@ document.addEventListener('DOMContentLoaded',function () {
             else{
                 document.getElementById("refurbishingToggle").checked = false
             }
-            engine_allocations = info["engine_allocations"]
+            setEngineAllocations(info["engine_allocations"])
             for (let key in engine_names) {
                 if (key > 10) {
                     delete engine_names[key]
@@ -1587,17 +1525,13 @@ document.addEventListener('DOMContentLoaded',function () {
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
-        add_marquees_viewer()
     })
 
     driverTransferPill.addEventListener("click",function () {
-
         manageScripts("hide","hide","hide","show","hide","hide","hide","hide")
         scriptSelected = 1
         check_selected()
         manageSaveButton(false)
-        //wait 0.3s and then add the marquee
-        add_marquees_transfers()
     })
 
     editStatsPill.addEventListener("click",function () {

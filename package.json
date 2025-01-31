@@ -5,12 +5,14 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "start:dev": "electron . --dev"
+    "start:dev": "electron . --dev",
+    "build": "webpack"
   },
   "repository": "https://github.com/IUrreta/DatabaseEditor",
   "author": "IUrreta",
   "license": "LGPL-3.0-or-later",
   "dependencies": {
+    "babel-loader": "^9.2.1",
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.11.0",
     "chart.js": "^4.4.0",
@@ -22,6 +24,8 @@
     "simple-git": "^3.19.1"
   },
   "devDependencies": {
-    "electron": "^31.1.0"
+    "electron": "^31.1.0",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
   }
 }

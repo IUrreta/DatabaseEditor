@@ -1,3 +1,5 @@
+import {  team_dict  } from "./config";
+
 let teamCod;
 let currYear;
 let originalCostCap;
@@ -25,14 +27,6 @@ document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem
     
 })
 
-/**
- * Resets the view
- */
-function resetTeamEditing(){
-    document.querySelector(".team-viewer").classList.add("d-none");
-    teamCod = null;
-    document.querySelector("#teamButton").innerText = "Team";
-}
 
 /**
  * Listener for the objective menu dropdown
@@ -345,6 +339,16 @@ document.querySelectorAll("#engineMenu a").forEach(function(elem){
         document.querySelector("#engineButton").dataset.value = engineiD;
     })
 })
+
+/**
+ * Resets the view
+ */
+export function resetTeamEditing(){
+    document.querySelector(".team-viewer").classList.add("d-none");
+    teamCod = null;
+    document.querySelector("#teamButton").innerText = "Team";
+}
+
 
 function updatePitStat(input, increment) {
     let actual = input.value.split("%")[0];

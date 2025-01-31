@@ -1,3 +1,6 @@
+import { races_map, codes_dict, weather_dict } from "./config";
+import { game_version } from "./renderer";
+
 let deleting = false;
 let deleted = false;
 
@@ -191,7 +194,7 @@ function updateVisualizers(){
     })
 }
 
-function load_calendar(races){
+export function load_calendar(races){
     document.querySelector('.main-calendar-section').innerHTML = ""
     races.forEach(function(elem){
         let code = races_map[elem[0]]

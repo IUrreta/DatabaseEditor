@@ -1,9 +1,13 @@
+import { races_names, team_dict, codes_dict  } from "./config";
+import { insert_space } from "./transfers";
+
+
 let yearSel;
 let yearProbSel;
 let racePredicted;
 let raceName;
 let probRace;
-let mid_grid = 10;
+export let mid_grid = 10;
 let max_races = 23;
 let relative_grid = 5;
 
@@ -11,8 +15,7 @@ let relative_grid = 5;
 function placeRaces(races) {
     yearSel = races[0]
     raceMenu = document.querySelector("#raceMenu")
-    dropdownRaceMenu = document.querySelector("#raceProbMenu")
-    dropdownRaceMenu = document.querySelector("#raceProbMenu")
+    let dropdownRaceMenu = document.querySelector("#raceProbMenu")
     raceMenu.innerHTML = ""
     races[1].forEach(function (race) {
         let newDiv = document.createElement("div");
@@ -44,10 +47,10 @@ function placeRaces(races) {
     })
 }
 
-function resetPredict(){
-    raceMenu = document.querySelector("#raceMenu")
+export function resetPredict(){
+    let raceMenu = document.querySelector("#raceMenu")
     raceMenu.innerHTML = ""
-    dropdownRaceMenu = document.querySelector("#raceProbMenu")
+    let dropdownRaceMenu = document.querySelector("#raceProbMenu")
     dropdownRaceMenu.innerHTML = ""
     let header = document.querySelector(".prob-viewer-header")
     header.innerHTML = ""
@@ -69,9 +72,8 @@ function resetPredict(){
 
 function placeRacesInModal(races) {
     yearProbSel = races[0]
-    raceMenu = document.querySelector("#raceMenu")
-    dropdownRaceMenu = document.querySelector("#raceProbMenu")
-    dropdownRaceMenu = document.querySelector("#raceProbMenu")
+    let raceMenu = document.querySelector("#raceMenu")
+    let dropdownRaceMenu = document.querySelector("#raceProbMenu")
     dropdownRaceMenu.innerHTML = ""
     races[1].forEach(function (race) {
         let a = document.createElement('a');

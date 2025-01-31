@@ -1,3 +1,11 @@
+import { currentSeason } from "./transfers";
+import { races_names, team_dict, codes_dict, combined_dict, logos_disc  } from "./config";
+import { resetH2H } from './head2head';
+import { game_version } from "./renderer";
+import { insert_space } from "./transfers";
+
+
+
 let seasonTable;
 let teamsTable;
 let races_ids = []
@@ -9,7 +17,9 @@ let alpineReplace = "alpine"
 let alfaReplace = "alfa"
 let driverOrTeams = "drivers"
 let isYearSelected = false
-let engine_allocations;
+export let engine_allocations;
+
+
 let engine_names = { //this one is changed as the user adds engines, so it will stayhere
     1: "Ferrari",
     4: "Rbpt",
@@ -17,8 +27,12 @@ let engine_names = { //this one is changed as the user adds engines, so it will 
     10: "Renault"
 }
 
+export function setEngineAllocations(allocations) {
+    engine_allocations = allocations
+}
 
-function resetViewer() {
+
+export function resetViewer() {
     if (seasonTable) {
         seasonTable.destroy()
     }
@@ -28,7 +42,7 @@ function resetViewer() {
     }
 }
 
-function resetYearButtons() {
+export function resetYearButtons() {
     document.getElementById("yearButton").textContent = "Year"
     isYearSelected = false
     manage_show_tables()
@@ -45,7 +59,6 @@ function resetYearButtons() {
 document.getElementById("driverspill").addEventListener("click", function () {
     driverOrTeams = "drivers"
     manage_show_tables()
-    add_marquees_viewer()
 })
 
 document.getElementById("teamspill").addEventListener("click", function () {
@@ -409,14 +422,13 @@ function new_load_drivers_table(data) {
     hoverListeners()
     checkscroll()
     new_color_drivers_table()
-    add_marquees_viewer()
 }
 
 function new_order_drivers(array) {
     return array.sort((a, b) => a[2] - b[2]);
 }
 
-function update_logo(team, logo, newTeam) {
+export function update_logo(team, logo, newTeam) {
     if (team === "alpine") {
         alpineReplace = newTeam
         logos_disc[5] = logo
@@ -720,37 +732,6 @@ function new_addDriver(driver, races_done, odd) {
     data.appendChild(row)
 }
 
-function add_marquees_viewer() {
-    setTimeout(function () {
-        document.querySelectorAll('#season_viewer .name-container').forEach(container => {
-            let parentWidth = container.parentNode.clientWidth
-            let containerWidth = container.scrollWidth
-            if (containerWidth > parentWidth) {
-                let name = container.firstChild
-
-                let text = name.textContent.trim();
-                let words = text.split(' ');
-
-                if (words.length >= 1) {
-                    let longestWordIndex = 0;
-                    let longestWordLength = 0;
-
-                    words.forEach((word, index) => {
-                        if (word.length > longestWordLength) {
-                            longestWordLength = word.length;
-                            longestWordIndex = index;
-                        }
-                    });
-
-                    words[longestWordIndex] = words[longestWordIndex].charAt(0) + ".";
-
-                    name.textContent = words.join(' ');
-                }
-
-            }
-        });
-    }, 100);
-}
 
 function manageText(raceDiv) {
     if (raceDiv.innerText === "-") {
@@ -917,7 +898,7 @@ function hoverListeners() {
  * Creates the year selector menu
  * @param {String} actualYear current year of the save
  */
-function generateYearsMenu(actualYear) {
+export function generateYearsMenu(actualYear) {
     document.querySelector("#yearInput").min = actualYear
     currentSeason = actualYear
     let yearMenu = document.querySelector("#yearMenu");
@@ -943,7 +924,6 @@ function generateYearsMenu(actualYear) {
             isYearSelected = true
             manage_show_tables()
             socket.send(JSON.stringify(dataYear))
-            add_marquees_viewer()
         })
 
         let a2 = document.createElement("a");

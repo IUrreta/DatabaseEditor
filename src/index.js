@@ -1,0 +1,10 @@
+import './js/calendar.js';
+import './js/renderer.js';
+import './js/transfers.js';
+import './js/stats.js';
+import './js/calendar.js';
+import './js/performance.js';
+import './js/seasonViewer.js';
+import './js/head2head.js';
+import './js/teams.js';
+import './js/predictions.js';
