@@ -1,5 +1,5 @@
-import { races_names, team_dict, codes_dict  } from "./config";
-import { insert_space } from "./transfers";
+import { races_names, team_dict, codes_dict, races_map  } from "./config";
+import { insert_space, manageColor } from "./transfers";
 
 
 let yearSel;
@@ -8,13 +8,25 @@ let racePredicted;
 let raceName;
 let probRace;
 export let mid_grid = 10;
-let max_races = 23;
-let relative_grid = 5;
+export let max_races = 23;
+export let relative_grid = 5;
+
+export function setMidGrid(value){
+    mid_grid = value
+}
+
+export function setMaxRaces(value){
+    max_races = value
+}
+
+export function setRelativeGrid(value){
+    relative_grid = value
+}
 
 
-function placeRaces(races) {
+export function placeRaces(races) {
     yearSel = races[0]
-    raceMenu = document.querySelector("#raceMenu")
+    let raceMenu = document.querySelector("#raceMenu")
     let dropdownRaceMenu = document.querySelector("#raceProbMenu")
     raceMenu.innerHTML = ""
     races[1].forEach(function (race) {
@@ -70,7 +82,7 @@ export function resetPredict(){
     document.querySelector("#confirmPredict").disabled = true;
 }
 
-function placeRacesInModal(races) {
+export function placeRacesInModal(races) {
     yearProbSel = races[0]
     let raceMenu = document.querySelector("#raceMenu")
     let dropdownRaceMenu = document.querySelector("#raceProbMenu")

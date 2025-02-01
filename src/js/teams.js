@@ -1,4 +1,6 @@
 import {  team_dict  } from "./config";
+import { socket } from "./renderer";
+import { manage_stat_bar } from "./stats";
 
 let teamCod;
 let currYear;
@@ -269,7 +271,7 @@ document.querySelector("#staffButton").addEventListener("click", function () {
  * Fills the level for each facility
  * @param {object} teamData info of the team facilities
  */
-function fillLevels(teamData) {
+export function fillLevels(teamData) {
     teamData.slice(0, 15).forEach(function (elem) {
         let num = elem[0];
         let level = num % 10;
@@ -301,7 +303,7 @@ function fillLevels(teamData) {
     document.querySelector("#confidenceInput").value = teamData[20]
     currYear = teamData[21]
     originalCostCap = Math.abs(teamData[19][0])
-    for (key in teamData[22]){
+    for (let key in teamData[22]){
         let pitCrewStat = document.querySelector(`.pit-crew-details .one-stat-panel[data-crewStat='${key}']`);
         let input = pitCrewStat.querySelector("input");
         let value = Math.round(teamData[22][key]);

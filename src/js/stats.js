@@ -1,13 +1,24 @@
-import {  team_dict  } from "./config";
-import { insert_space } from "./transfers";
+import {  team_dict, mentalityModifiers, teamOrder, mentality_dict  } from "./config";
+import { insert_space, manageColor } from "./transfers";
 
 
 let driverStatTitle = document.getElementById("driverStatsTitle")
 export let statPanelShown = 0;
 export let typeOverall = "driver";
-let typeEdit;
+export let typeEdit;
 let oldNum;
 
+export function setStatPanelShown(value) {
+    statPanelShown = value;
+}
+
+export function setTypeOverall(value) {
+    typeOverall = value;
+}
+
+export function setTypeEdit(value) {
+    typeEdit = value;
+}
 
 /**
  * Removes all the staff from their list
@@ -737,7 +748,7 @@ function manage_order(state) {
 
 
 
-function manage_stat_bar(element, value) {
+export function manage_stat_bar(element, value) {
     let container = element.parentNode.parentNode.parentNode
     let bar = container.querySelector(".one-stat-progress")
     let percentage = value + "%"
@@ -808,7 +819,7 @@ function load_stats(div) {
         document.querySelector("#retiredInput").checked = false
     }
     if (div.dataset.mentality0) {
-        for (i = 0; i < 3; i++) {
+        for (let i = 0; i < 3; i++) {
             let mentality = div.dataset["mentality" + i]
             let indicator = document.getElementById("mentality" + i)
             indicator.parentNode.parentNode.classList.remove("d-none")
@@ -816,7 +827,7 @@ function load_stats(div) {
             let inverted_value = 5 - mentality
             let levels = indicator.querySelectorAll('.mentality-level');
             let mentality_class = mentality_dict[mentality]
-            for (j = 0; j < 5; j++) {
+            for (let j = 0; j < 5; j++) {
                 levels[j].className = "mentality-level"
                 if (j <= inverted_value - 1) {
                     levels[j].classList.add(mentality_class)
@@ -829,7 +840,7 @@ function load_stats(div) {
         }
     }
     else {
-        for (i = 0; i < 3; i++) {
+        for (let i = 0; i < 3; i++) {
             let indicator = document.getElementById("mentality" + i)
             indicator.parentNode.parentNode.classList.add("d-none")
         }
@@ -856,7 +867,7 @@ document.querySelectorAll(".bar-container .bi-chevron-right").forEach(function (
         indicator.setAttribute('data-value', value);
         let levels = indicator.querySelectorAll('.mentality-level');
         let mentality_class = mentality_dict[value]
-        for (j = 0; j < 5; j++) {
+        for (let j = 0; j < 5; j++) {
             levels[j].className = "mentality-level"
             if (j <= inverted_value - 1) {
                 levels[j].classList.add(mentality_class)
@@ -880,7 +891,7 @@ document.querySelectorAll(".bar-container .bi-chevron-left").forEach(function (e
         indicator.setAttribute('data-value', value);
         let levels = indicator.querySelectorAll('.mentality-level');
         let mentality_class = mentality_dict[value]
-        for (j = 0; j < 5; j++) {
+        for (let j = 0; j < 5; j++) {
             levels[j].className = "mentality-level"
             if (j <= inverted_value - 1) {
                 levels[j].classList.add(mentality_class)
@@ -923,7 +934,7 @@ function manage_stats_title(html) {
  * Changes the input number that are taken into account to change stats 
  * @param {div} divID div that contains the correct input numbers  
  */
-function change_elegibles(divID) {
+export function change_elegibles(divID) {
     document.querySelectorAll(".elegible").forEach(function (elem) {
         elem.classList.remove("elegible")
 

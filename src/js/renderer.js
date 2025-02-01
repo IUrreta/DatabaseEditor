@@ -1,25 +1,29 @@
 import { marked } from 'marked';
 
-import { resetTeamEditing } from './teams';
-import { resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations } from './seasonViewer';
-import { combined_dict, abreviations_dict, codes_dict, logos_disc } from './config';
+import { resetTeamEditing, fillLevels } from './teams';
+import { resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
+    new_load_drivers_table, new_load_teams_table
+ } from './seasonViewer';
+import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality } from './config';
 import { freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList } from './transfers';
 import { load_calendar } from './calendar';
 import { load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
-     order_by, load_car_attributes, viewingGraph, engine_allocations  } from './performance';
-import { mid_grid, resetPredict } from './predictions';
-import { listeners_plusLess, removeStatsDrivers, place_drivers_editStats, place_staff_editStats, statPanelShown, typeOverall  } from './stats';
-import { resetH2H, hideComp, colors_dict } from './head2head';
+     order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design  } from './performance';
+import {  resetPredict, setMidGrid, setMaxRaces, setRelativeGrid, placeRaces, placeRacesInModal } from './predictions';
+import { listeners_plusLess, removeStatsDrivers, place_drivers_editStats, place_staff_editStats,  typeOverall, setStatPanelShown, setTypeOverall,
+    typeEdit, setTypeEdit, change_elegibles
+  } from './stats';
+import { resetH2H, hideComp, colors_dict, load_drivers_h2h } from './head2head';
 
 let conn = 0;
 export let game_version = 2023;
-let custom_team = false;
+export let custom_team = false;
 let customIconPath = null;
 let firstShow = false;
 let configCopy;
 
 
-const socket = new WebSocket('ws://localhost:8765/');
+export const socket = new WebSocket('ws://localhost:8765/');
 /**
  * When the socket is opened sends a connect message to the backend
  */
@@ -378,7 +382,7 @@ function performanceModeHandler() {
 
 }
 
-function first_show_animation() {
+export function first_show_animation() {
     let button = document.querySelector(".save-button")
     if (!firstShow) {
         firstShow = true;
@@ -389,7 +393,7 @@ function first_show_animation() {
     }
 }
 
-function manageSaveButton(show,mode) {
+export function manageSaveButton(show,mode) {
     let button = document.querySelector(".save-button")
     button.removeEventListener("click",editModeHandler);
     button.removeEventListener("click",calendarModeHandler);
@@ -729,7 +733,7 @@ document.addEventListener('DOMContentLoaded',function () {
             document.getElementById("drs24").classList.remove("d-none")
             document.getElementById("drs24").dataset.attribute = "3"
             game_version = 2024
-            max_races = 24;
+            setMaxRaces(24)
             manage_custom_team(year)
             document.querySelectorAll(".brake-cooling-replace").forEach(function (elem) {
                 elem.textContent = "Tyre preservation"
@@ -750,9 +754,9 @@ document.addEventListener('DOMContentLoaded',function () {
                 delete combined_dict[32]
             }
             game_version = 2023
-            mid_grid = 10;
-            max_races = 23;
-            relative_grid = 5;
+            setMidGrid(10)
+            setMaxRaces(23)
+            setRelativeGrid(5)
             manage_custom_team([null,null])
             document.querySelectorAll(".brake-cooling-replace").forEach(function (elem) {
                 elem.textContent = "Brake cooling"
@@ -787,8 +791,8 @@ document.addEventListener('DOMContentLoaded',function () {
                 elem.classList.remove("d-none")
             })
             replace_custom_team_color(nameColor[2],nameColor[3])
-            mid_grid = 11;
-            relative_grid= 4.54;
+            setMidGrid(11)
+            setRelativeGrid(4.54)
         }
         else {
             resizeWindowToHeight("10teams")
@@ -802,8 +806,8 @@ document.addEventListener('DOMContentLoaded',function () {
             document.querySelectorAll(".custom-car-performance").forEach(function (elem) {
                 elem.classList.add("d-none")
             })
-            mid_grid = 10;
-            relative_grid= 5;
+            setMidGrid(10)
+            setRelativeGrid(5)
             if (32 in combined_dict) {
                 delete combined_dict[32]
             }
@@ -851,7 +855,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
     function ajustScrollWrapper() {
-        var windowHeight = window.innerHeight - 120;
+        var windowHeight = window.innerHeight - 80;
         document.querySelector('.scroll-wrapper').style.height = windowHeight + 'px';
     }
 
@@ -965,28 +969,28 @@ function listenersStaffGroups() {
             let staffSelected = item.innerHTML
             let staffCode = item.dataset.spacestats
             if (staffCode === "driverStats") {
-                typeOverall = "driver"
-                typeEdit = "0"
+                setTypeOverall("driver")
+                setTypeEdit("0")
                 document.getElementById("driverSpecialAttributes").classList.remove("d-none")
                 document.querySelector("#superLicenseSwitch").classList.remove("d-none")
                 document.querySelector("#driverCode").classList.remove("d-none")
             }
             else {
-                typeOverall = "staff"
+                setTypeOverall("staff")
                 document.getElementById("driverSpecialAttributes").classList.add("d-none")
                 document.querySelector("#superLicenseSwitch").classList.add("d-none")
                 document.querySelector("#driverCode").classList.add("d-none")
                 if (staffCode === "chiefStats") {
-                    typeEdit = "1"
+                    setTypeEdit("1")
                 }
                 if (staffCode === "engineerStats") {
-                    typeEdit = "2"
+                    setTypeEdit("2")
                 }
                 if (staffCode === "aeroStats") {
-                    typeEdit = "3"
+                    setTypeEdit("3")
                 }
                 if (staffCode === "directorStats") {
-                    typeEdit = "4"
+                    setTypeEdit("4")
                 }
 
             }
@@ -999,7 +1003,7 @@ function listenersStaffGroups() {
                 }
             })
             document.querySelector(".left-panel-stats").classList.add("d-none")
-            statPanelShown = 0;
+            setStatPanelShown(0)
         });
 
     });
@@ -1055,7 +1059,7 @@ function listenersStaffGroups() {
                 document.querySelectorAll(".config-content").forEach(function (elem) {
                     elem.textContent = ""
                 })
-                statPanelShown = 0;
+                setStatPanelShown(0)
                 document.querySelectorAll(".performance-show").forEach(function (elem) {
                     elem.classList.add("d-none")
                 })

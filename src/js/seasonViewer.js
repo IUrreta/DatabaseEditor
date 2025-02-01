@@ -1,8 +1,8 @@
-import { currentSeason } from "./transfers";
-import { races_names, team_dict, codes_dict, combined_dict, logos_disc  } from "./config";
+import { races_names, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams  } from "./config";
 import { resetH2H } from './head2head';
-import { game_version } from "./renderer";
-import { insert_space } from "./transfers";
+import { game_version, custom_team } from "./renderer";
+import { insert_space, manageColor, setCurrentSeason } from "./transfers";
+import { socket } from "./renderer";
 
 
 
@@ -20,7 +20,7 @@ let isYearSelected = false
 export let engine_allocations;
 
 
-let engine_names = { //this one is changed as the user adds engines, so it will stayhere
+export let engine_names = { //this one is changed as the user adds engines, so it will stayhere
     1: "Ferrari",
     4: "Rbpt",
     7: "Mercedes",
@@ -119,7 +119,7 @@ function change_points_pos_teams() {
 
 }
 
-function new_drivers_table(data) {
+export function new_drivers_table(data) {
     calendarData = data
     races_ids = []
     let header = document.querySelector(".drivers-table-header")
@@ -137,8 +137,8 @@ function new_drivers_table(data) {
         let headerPos = document.createElement("div")
         headerPos.className = "drivers-table-normal bold-font flag-header"
         let headerPosFlag = document.createElement("img")
-        race = races_map[elem[1]]
-        flag_src = codes_dict[race]
+        let race = races_map[elem[1]]
+        let flag_src = codes_dict[race]
         headerPosFlag.src = flag_src
         let headerPosDiv = document.createElement("div")
         headerPosDiv.classList.add("text-in-front")
@@ -155,7 +155,7 @@ function new_drivers_table(data) {
 
 }
 
-function new_teams_table(data) {
+export function new_teams_table(data) {
     calendarData = data
     races_ids = []
     let header = document.querySelector(".teams-table-header")
@@ -173,8 +173,8 @@ function new_teams_table(data) {
         let headerPos = document.createElement("div")
         headerPos.className = "teams-table-normal bold-font flag-header"
         let headerPosFlag = document.createElement("img")
-        race = races_map[elem[1]]
-        flag_src = codes_dict[race]
+        let race = races_map[elem[1]]
+        let flag_src = codes_dict[race]
         headerPosFlag.src = flag_src
         let headerPosDiv = document.createElement("div")
         headerPosDiv.classList.add("text-in-front")
@@ -408,7 +408,7 @@ function order_teams_table() {
 
 }
 
-function new_load_drivers_table(data) {
+export function new_load_drivers_table(data) {
     seasonResults = data
     let datazone = document.querySelector(".drivers-table-data")
     datazone.innerHTML = ""
@@ -460,7 +460,7 @@ function reloadTables() {
     }
 }
 
-function new_load_teams_table(data) {
+export function new_load_teams_table(data) {
     let pairTeamPos = data[data.length - 1]
     //create dict with dirst element of pair as key and second as value
     let pairTeamPosDict = {}
@@ -900,7 +900,7 @@ function hoverListeners() {
  */
 export function generateYearsMenu(actualYear) {
     document.querySelector("#yearInput").min = actualYear
-    currentSeason = actualYear
+    setCurrentSeason(actualYear)
     let yearMenu = document.querySelector("#yearMenu");
     let yearH2H = document.querySelector("#yearMenuH2H");
     let yearPrediction = document.querySelector("#yearPredictionMenu");

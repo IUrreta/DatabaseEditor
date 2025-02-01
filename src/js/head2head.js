@@ -1,6 +1,7 @@
 import { races_names, team_dict, combined_dict  } from "./config";
-import { game_version } from "./renderer";
-import { insert_space } from "./transfers";
+import { game_version, socket, custom_team } from "./renderer";
+import { insert_space, manageColor } from "./transfers";
+import { relative_grid } from "./predictions";
 
 
 let driver1_selected = false;
@@ -534,7 +535,7 @@ export function hideComp() {
  * Loads all the drivers into the menus of driver selection
  * @param {Object} drivers object with all the driver info
  */
-function load_drivers_h2h(drivers) {
+export function load_drivers_h2h(drivers) {
     let dest = document.querySelector(".drivers-modal-zone")
     h2hCount = 0;
     h2hList = []

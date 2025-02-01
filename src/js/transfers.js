@@ -1,4 +1,4 @@
-import { staff_pics, team_dict, combined_dict, staff_positions } from "./config";
+import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict  } from "./config";
 import { game_version } from "./renderer";
 
 
@@ -38,6 +38,10 @@ let driver1;
 let driver2;
 let originalTeamId
 export  let currentSeason;
+
+export function setCurrentSeason(season) {
+    currentSeason = season
+}
 
 
 let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3", "custom": "Custom Team" }
@@ -327,7 +331,7 @@ function updateColor(div) {
  * @param {div} div div from the driver
  * @param {span} lastName the lastname span from the driver
  */
-function manageColor(div, lastName) {
+export function manageColor(div, lastName) {
     if (div.dataset.teamid != 0) {
         let colorClass = team_dict[div.dataset.teamid] + "font"
         lastName.classList.add(colorClass)

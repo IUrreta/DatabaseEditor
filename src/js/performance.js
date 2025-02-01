@@ -1,5 +1,7 @@
-import { races_names, part_codes_abreviations, codes_dict, combined_dict  } from "./config";
+import { races_names, part_codes_abreviations, codes_dict, combined_dict, races_map, abreviations_dict, pars_abreviations  } from "./config";
 import { colors_dict } from "./head2head";
+import { manageSaveButton } from "./renderer";
+import { socket, first_show_animation } from "./renderer";
 
 const teamsPill = document.getElementById("teamsPill");
 const enginesPill = document.getElementById("enginesPill");
@@ -228,7 +230,7 @@ function gather_engines_data() {
 }
 
 
-function update_max_design(data) {
+export function update_max_design(data) {
     actualMaxDesign = parseInt(data) + 1;
 }
 
@@ -317,7 +319,7 @@ document.querySelectorAll(".engine").forEach(function (elem) {
     })
 })
 
-function load_parts_stats(data) {
+export function load_parts_stats(data) {
     for (let key in data) {
         if (key !== "engine") {
             let part = document.querySelector(`.part-performance[data-part='${key}']`)
@@ -336,7 +338,7 @@ function load_parts_stats(data) {
     }
 }
 
-function load_parts_list(data) {
+export function load_parts_list(data) {
     for (let key in data) {
         let list = document.querySelector(`.part-performance[data-part='${key}'] .parts-list`)
         let partLoadouts = document.querySelector(`.part-performance[data-part='${key}']`)
@@ -682,6 +684,7 @@ document.querySelector(".performance-show").querySelectorAll(".part-name-buttons
         let inputs = part.querySelectorAll(".custom-input-number");
 
         inputs.forEach(function (input) {
+            let increment;
             if (input.max === "100") {
                 increment = -0.5
             }

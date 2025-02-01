@@ -237,7 +237,7 @@ body {
 #byname {
   text-decoration: none;
   color: var(--separator);
-  transition: color 0.3s;
+  transition: color 0.15s;
 }
 
 .footer {
@@ -284,7 +284,7 @@ body {
 .footer i {
   cursor: pointer !important;
   padding: 0 7px;
-  transition: color 0.3s;
+  transition: color 0.15s;
   color: var(--dark-text);
   text-decoration: none;
 }
@@ -311,7 +311,7 @@ body {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: right 0.2s, background-color 0.2s, color 0.2s;
+  transition: right 0.15s, background-color 0.15s, color 0.15s;
   border-radius: 10px;
   font-size: 18px;
 }
@@ -356,12 +356,12 @@ body {
 }
 
 .save-button .save-label{
-  transition: opacity 0.2s;
+  transition: opacity 0.15s;
   cursor: pointer;
 }
 
 .save-button i{
-  transition: opacity 0.2s;
+  transition: opacity 0.15s;
   cursor: pointer;
 }
 
@@ -395,7 +395,7 @@ body {
 
 .twenty-three, .twenty-four{
   color: var(--dark-text);
-  transition: color 0.3s, border-color 0.3s;
+  transition: color 0.15s, border-color 0.15s;
   width: 50px;
   position: relative;
 }
@@ -410,7 +410,7 @@ body {
   left: 0;
   background: radial-gradient(circle at 100% 180%, var(--new-secondary), transparent 70%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: -1;
 }
 
@@ -424,7 +424,7 @@ body {
   left: 0;
   background: radial-gradient(circle at 0% 180%, var(--new-primary), transparent 70%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: -1;
 }
 
@@ -468,7 +468,7 @@ body {
   overflow: hidden;
   max-width: 27px;
   white-space: nowrap;
-  transition: max-width 0.35s ease-in-out, color 0.3s;
+  transition: max-width 0.35s ease-in-out, color 0.15s;
 }
 
 .socials a:hover {
@@ -476,7 +476,7 @@ body {
 }
 
 .update-info {
-  transition: color 0.3s, opacity 0.2s;
+  transition: color 0.15s, opacity 0.15s;
   text-decoration: none;
   color: var(--dark-text);
   cursor: default;
@@ -494,7 +494,7 @@ body {
 }
 
 .version-panel{
-  transition: opacity 0.2s, color 0.2s;
+  transition: opacity 0.15s, color 0.15s;
   opacity: 0;
   width: 0;
 }
@@ -656,7 +656,7 @@ i.bi-file-text:hover{
   align-items: center;
   justify-content: space-between;
   border-radius: 8px;
-  transition: color 0.2s, border 0.2s, transform 0.2s;
+  transition: color 0.15s, border 0.15s, transform 0.15s;
   padding: 8px;
   font-size: 18px;
 }
@@ -676,7 +676,7 @@ i.bi-file-text:hover{
 
 .add-contract.enabled span, .add-contract.enabled i{
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
 }
 
 .add-contract.enabled i:hover{
@@ -712,7 +712,7 @@ i.bi-file-text:hover{
 .break-contract{
   color: var(--dark-text);
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
   font-size: 18px;
 }
 
@@ -818,11 +818,11 @@ input[type="checkbox"]:checked {
 }
 
 .h2h-highlight {
-  animation: h2h-animation 0.3s forwards;
+  animation: h2h-animation 0.15s forwards;
 }
 
 .graph-highlight {
-  animation: graph-animation 0.3s forwards;
+  animation: graph-animation 0.15s forwards;
 }
 
 @keyframes h2h-animation {
@@ -886,7 +886,7 @@ input[type="checkbox"]:checked {
   background-color: var(--dropdown-back) !important;
   color: var(--white-general) !important;
   border-bottom: 2px solid transparent !important;
-  transition: background-color 0.2s, color 0.2s, border-bottom 0.2s;
+  transition: background-color 0.15s, color 0.15s, border-bottom 0.15s;
 }
 
 .dropdown-menu a:hover{
@@ -904,7 +904,7 @@ input[type="checkbox"]:checked {
   height: 100%;
   background: radial-gradient(ellipse 70% 150% at center bottom, var(--new-primary), transparent 70%);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.15s ease;
   pointer-events: none;
 }
 
@@ -979,7 +979,7 @@ input[type="checkbox"]:checked {
   border-right: 0px;
   border-left: 0px;
   border-top: 0px;
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.15s, border-color 0.15s;
   height: 36px;
   padding: 6px;
   width: 100%;
@@ -996,7 +996,7 @@ input[type="checkbox"]:checked {
 .text-filter-container .bi-x{
   color: var(--dark-text);
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s, opacity 0.2s;
+  transition: color 0.15s, transform 0.15s, opacity 0.15s;
   position: absolute;
   right: 0px;
 }
@@ -1010,7 +1010,7 @@ input[type="checkbox"]:checked {
   color: var(--dark-text);
   font-size: 20px;
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
 }
 
 .filter-icon:hover{
@@ -1022,7 +1022,7 @@ input[type="checkbox"]:checked {
   background-color: transparent;
   border-radius: 10px;
   box-shadow: 0 0 0 0 var(--box-shadow);
-  transition: background-color 0.2s, box-shadow 0.2s;
+  transition: background-color 0.15s, box-shadow 0.15s;
   display: flex;
   align-items: baseline;
   gap: 10px;
@@ -1053,7 +1053,7 @@ input[type="checkbox"]:checked {
 
 .category-filters, .order-filters{
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
 }
 
 .category-filters:not(.show) a{
@@ -1170,7 +1170,7 @@ input[type="checkbox"]:checked {
 
 .search-and-order i{
   font-size: 24px;
-  transition: opacity 0.15s, transform 0.2s, color 0.2s;
+  transition: opacity 0.15s, transform 0.15s, color 0.15s;
   color: var(--dark-text);
   position: absolute;
   z-index: 1;
@@ -1347,12 +1347,12 @@ input[type="checkbox"]:checked {
 
 
 .alertNeg {
-  animation: colorChangeNeg 0.3s infinite;
+  animation: colorChangeNeg 0.15s infinite;
   margin-bottom: 0px !important;
 }
 
 .alertPos {
-  animation: colorChangePos 0.3s infinite;
+  animation: colorChangePos 0.15s infinite;
   margin-bottom: 0px !important;
 }
 
@@ -1381,7 +1381,7 @@ input[type="checkbox"]:checked {
 }
 
 .patchNotesPanel i {
-  transition: color 0.3s;
+  transition: color 0.15s;
   font-style: normal;
   color: var(--separator);
   cursor: pointer;
@@ -1467,7 +1467,7 @@ input[type="checkbox"]:checked {
   font-size: 30px;
   color: var(--dark-text);
   cursor: pointer;
-  transition: transform 0.2s, color 0.2s;
+  transition: transform 0.15s, color 0.15s;
   display: flex;
   align-items: center;
 }
@@ -1488,7 +1488,7 @@ input[type="checkbox"]:checked {
 .driver1-number{
   font-size: 18px;
   margin-right: 10px;
-  transition: color 0.3s;
+  transition: color 0.15s;
   width: 12.5%;
   text-align: right;
 }
@@ -1497,7 +1497,7 @@ input[type="checkbox"]:checked {
   font-size: 18px;
   margin-left: 10px;
   width: 12.5%;
-  transition: color 0.3s;
+  transition: color 0.15s;
 }
 
 .driver1-number.little, .driver2-number.little{
@@ -1528,11 +1528,11 @@ input[type="checkbox"]:checked {
 }
 
 .hide {
-  animation: fadeOut 0.3s;
+  animation: fadeOut 0.15s;
 }
 
 .myShow{
-  animation: myFadeIn 0.3s;
+  animation: myFadeIn 0.15s;
 }
 
 @keyframes fadeOut {
@@ -1648,7 +1648,7 @@ input[type="checkbox"]:checked {
   flex-direction: column;
   align-items: center;
   margin-right: 20px;
-  transition: transform 0.3s ease;
+  transition: transform 0.15s ease;
 }
 
 .dropdown-menu {
@@ -1668,7 +1668,7 @@ input[type="checkbox"]:checked {
   justify-content: center;
   align-items: center;
   position: relative;
-  transition: width 0.2s;
+  transition: width 0.15s;
   cursor: pointer;
   border-top: 2px solid transparent;
   border-bottom: 2px solid transparent;
@@ -1731,7 +1731,7 @@ input[type="checkbox"]:checked {
  .bi-gear{
   color: var( --text-general);
   opacity: 1;
-  transition: color 0.3s, opacity 0.1s;
+  transition: color 0.15s, opacity 0.1s;
   left: 10px;
   font-size: 20px;
   position: absolute;
@@ -1751,7 +1751,7 @@ input[type="checkbox"]:checked {
 .save-selector {
   display: flex;
   flex-direction: column;
-  transition: width 0.3s;
+  transition: width 0.15s;
 }
 
 .custom-dropdown {
@@ -1760,7 +1760,7 @@ input[type="checkbox"]:checked {
   justify-content: space-between;
   margin-top: 0.6rem !important;
   color: var(--white-general) !important;
-  transition: color 0.2s !important;
+  transition: color 0.15s !important;
   background-color: transparent !important;
   border: 0px !important;
   position: relative;
@@ -1816,21 +1816,21 @@ input[type="checkbox"]:checked {
   border: 2px solid transparent !important;
   border-radius: 10px !important;
   color: var(--white-general) !important;
-  transition: border-color 0.3s !important;
+  transition: border-color 0.15s !important;
 }
 
 .dropdown-line{
   height: 2px;
   width: 0%;
   background-color: var(--text-general);
-  transition: width 0.3s, color 0.3s;
+  transition: width 0.15s, color 0.15s;
 }
 
 .standard-line{
   height: 2px;
   width: 0%;
   background-color: var(--text-general);
-  transition: width 0.2s, color 0.2s;
+  transition: width 0.15s, color 0.15s;
   position: absolute;
   bottom: 0;
   left: -2px;
@@ -2049,18 +2049,18 @@ input[type="checkbox"]:checked {
   position: absolute;
   z-index: 1;
   right: 350px;
-  transition: color 0.3s;
+  transition: color 0.15s;
 }
 
 #dataPills{
   z-index: 1 !important;
   padding-left: 144px;
-  transition: color 0.3s;
+  transition: color 0.15s;
 }
 #iaPills{
   z-index: 1 !important;
   padding-left: 36px;
-  transition: color 0.3s;
+  transition: color 0.15s;
   
 }
 
@@ -2119,7 +2119,7 @@ DRIVERS TABLE
 .teams-table-row .teams-table-team{
   width: 9.4%;
   gap: 2px;
-  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -2134,7 +2134,7 @@ DRIVERS TABLE
   color: var(--engine-table-name);
   display: block;
   text-transform: uppercase;
-  transition: color 0.3s;
+  transition: color 0.15s;
   font-size: 13px;
 }
 
@@ -2189,14 +2189,14 @@ DRIVERS TABLE
   display: flex;
   flex-direction: row;
   height: 30px;
-  transition: background-color 0.3s, color 0.3;
+  transition: background-color 0.15s, color 0.3;
 }
 
 .teams-table-row{
   display: flex;
   flex-direction: row;
   height: 60px;
-  transition: background-color 0.3s, color 0.3;
+  transition: background-color 0.15s, color 0.3;
 }
 
 .drivers-table-data, .teams-table-data{
@@ -2217,7 +2217,7 @@ DRIVERS TABLE
 .drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points,
 .drivers-table-row .drivers-table-normal, .teams-table-row .teams-table-normal, .teams-table-row .teams-table-driver,
 .teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
-  transition: color 0.3s, background-color 0.3s, text-shadow 0.3s;
+  transition: color 0.15s, background-color 0.15s, text-shadow 0.15s;
 }
 
 .drivers-table-row:hover .drivers-table-driver, 
@@ -2235,7 +2235,7 @@ DRIVERS TABLE
 
 .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points,
 .teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
-  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
 }
 
 .drivers-table-row:hover .drivers-table-position, .teams-table-row:hover .teams-table-position,
@@ -2254,7 +2254,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-row span.bold-font{
-  transition: color 0.3s;
+  transition: color 0.15s;
 }
 
 .drivers-table-row:hover span.bold-font{
@@ -2378,7 +2378,7 @@ DRIVERS TABLE
   align-items: center;
   justify-content: center;
   opacity: 1;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
 }
 
 .teams-table-logo{
@@ -2389,7 +2389,7 @@ DRIVERS TABLE
   justify-content: center;
   border-top: 1px solid var(--separator);
   border-bottom: 1px solid var(--separator);
-  transition: border-height 0.3s;
+  transition: border-height 0.15s;
 }
 
 .teams-table-row:hover .teams-table-logo{
@@ -2478,7 +2478,7 @@ DRIVERS TABLE
   width: calc(9.4% + 60px);
   display: flex;
   align-items: center;
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
   padding-left: 4px;
 }
 
@@ -2505,7 +2505,7 @@ DRIVERS TABLE
 
 
 .drivers-table-row .drivers-table-logo-div{
-  transition: border-color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, background-color 0.15s;
 }
 
 .drivers-table-row:hover .fehoverback{
@@ -2639,13 +2639,13 @@ DRIVERS TABLE
   height: 34px;
   display: flex;
   align-items: center;
-  transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
+  transition: background-color 0.15s, color 0.15s, text-shadow 0.15s;
   z-index: 3;
   overflow: hidden;
 }
 
 .prob-viewer-row{
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.15s, color 0.15s;
   position: relative;
 }
 
@@ -2655,22 +2655,22 @@ DRIVERS TABLE
 }
 
 .prob-viewer-row .viewer-header-driver span.bold-font{
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.15s, color 0.15s;
   margin-left: 4px;
 }
 
 .prob-viewer-row .viewer-header-driver span{
-  transition: background-color 0.3s, color 0.05s;
+  transition: background-color 0.15s, color 0.05s;
 }
 
 
 .prob-viewer-row .viewer-header-driver span.bold-font{
-  transition: color 0.3s;
+  transition: color 0.15s;
 }
 
 
 .prob-viewer-row .viewer-header-position {
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.15s, color 0.15s;
   padding-top: 4px;
   text-align: center;
 }
@@ -2681,7 +2681,7 @@ DRIVERS TABLE
   text-align: center;
   padding-top: 4px;
   z-index: 3 ;
-  transition: text-shadow 0.3s;
+  transition: text-shadow 0.15s;
 }
 
 .viewer-header-pos, .viewer-header-data{
@@ -2698,7 +2698,7 @@ DRIVERS TABLE
 .viewer-header-data{
   border-radius: 5px;
   color: var(--tools-general);
-  transition: border 0.3s;
+  transition: border 0.15s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2708,7 +2708,7 @@ DRIVERS TABLE
 
 .viewer-header-data.i75-100{
   background-color: var(--positive-general);
-  transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
+  transition: background-color 0.15s, color 0.15s, text-shadow 0.15s;
 }
 
 .prob-viewer-row:hover .viewer-header-data.i75-100{
@@ -2719,7 +2719,7 @@ DRIVERS TABLE
 
 .viewer-header-data.i50-75{
   background-color: #7adfac;
-  transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
+  transition: background-color 0.15s, color 0.15s, text-shadow 0.15s;
 }
 
 .prob-viewer-row:hover .viewer-header-data.i50-75{
@@ -2730,7 +2730,7 @@ DRIVERS TABLE
 
 .viewer-header-data.i25-50{
   background-color: #a2dfc0;
-  transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
+  transition: background-color 0.15s, color 0.15s, text-shadow 0.15s;
 }
 
 .prob-viewer-row:hover .viewer-header-data.i25-50{
@@ -2741,7 +2741,7 @@ DRIVERS TABLE
 
 .viewer-header-data.i0-25{
   background-color: #c5e7d6;
-  transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
+  transition: background-color 0.15s, color 0.15s, text-shadow 0.15s;
 }
 
 .prob-viewer-row:hover .viewer-header-data.i0-25{
@@ -2752,7 +2752,7 @@ DRIVERS TABLE
 
 .save-selector-title{
   color: var( --text-general);
-  transition: color 0.3s;
+  transition: color 0.15s;
 }
 
 .save-selector-title.activeSelected{
@@ -2781,7 +2781,7 @@ DRIVERS TABLE
   border-right: 0px !important;
   border-radius: 10px !important;
   color: var(--white-general) !important;
-  transition: border-color 0.3s, background-color 0.3s, color 0.3s !important;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s !important;
   background-color: transparent !important;
 }
 
@@ -2830,7 +2830,7 @@ DRIVERS TABLE
   border-right: 0px !important;
   border-radius: 10px !important;
   color: var(--white-general) !important;
-  transition: border-color 0.3s, background-color 0.3s, color 0.3s !important;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s !important;
   background-color: transparent !important;
   display: flex;
   justify-content: center;
@@ -2916,7 +2916,7 @@ DRIVERS TABLE
 }
 
 #deleteTracks{
-  transition: background-color 0.2s, border-color 0.3s, color 0.3s !important;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s !important;
   height: 36px;
 }
 
@@ -2970,7 +2970,7 @@ DRIVERS TABLE
   align-items: center;
   gap: 7px;
   border-right: 4px solid transparent;
-  transition: border 0.3s;
+  transition: border 0.15s;
   width: 100%;
   height: 100%;
 }
@@ -3058,7 +3058,7 @@ DRIVERS TABLE
   border-radius: 10px;
   padding: 8px;
   color: var( --text-general);
-  transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   display: flex;
   cursor: grab !important;
   max-height: 112px;
@@ -3141,7 +3141,7 @@ DRIVERS TABLE
 }
 
 .race-calendar .bi-chevron-left, .race-calendar .bi-chevron-right {
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
 }
 
 .race-calendar:hover .bi-chevron-left, .race-calendar:hover .bi-chevron-right {
@@ -3187,7 +3187,7 @@ DRIVERS TABLE
   align-items: center;
   border-radius: 10px;
   color: var(--positive-general);
-  transition: color 0.3s, border-color 0.3s;
+  transition: color 0.15s, border-color 0.15s;
   cursor: default;
   backdrop-filter: blur(5px);
 }
@@ -3209,7 +3209,7 @@ DRIVERS TABLE
   align-items: center;
   border-radius: 10px;
   color: var(--text-general);
-  transition: color 0.3s, border-color 0.3s;
+  transition: color 0.15s, border-color 0.15s;
   cursor: default;
   backdrop-filter: blur(5px);
   border: none;
@@ -3309,7 +3309,7 @@ DRIVERS TABLE
 
 #F2pill {
   border: 2px solid transparent;
-  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
 }
 
 #F2pill:hover {
@@ -3321,7 +3321,7 @@ DRIVERS TABLE
 
 #F3pill {
   border: 2px solid transparent;
-  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
 }
 
 #F3pill:hover {
@@ -3350,7 +3350,7 @@ DRIVERS TABLE
   margin-right: 10px;
   color: var( --text-general);
   border: 2px solid transparent;
-  transition: border-color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, background-color 0.15s;
   align-items: center;
   min-height: 66px;
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
@@ -3362,7 +3362,7 @@ DRIVERS TABLE
 
 .one-statH2H i, .name-and-stat i, .retirement-buttons i, .age-buttons i{
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s ease-in-out;
+  transition: color 0.15s, transform 0.15s ease-in-out;
 }
 
 .one-statH2H i:hover, .name-and-stat i:hover, .retirement-buttons i:hover, .age-buttons i:hover{
@@ -3441,7 +3441,7 @@ DRIVERS TABLE
 
 .affiliates-and-arrows .bi-chevron-right, .affiliates-and-arrows .bi-chevron-left{
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s ease-in-out;
+  transition: color 0.15s, transform 0.15s ease-in-out;
 }
 
 .affiliates-and-arrows .bi-chevron-left{
@@ -3478,7 +3478,7 @@ DRIVERS TABLE
 
 .affiliates-and-arrows .bi-chevron-left, .affiliates-and-arrows .bi-chevron-right{
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s ease-in-out;
+  transition: color 0.15s, transform 0.15s ease-in-out;
   position: absolute;
   z-index: 4;
 }
@@ -3525,7 +3525,7 @@ DRIVERS TABLE
   margin-right: 5px;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.15s, color 0.15s;
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
 }
 
@@ -3552,7 +3552,7 @@ DRIVERS TABLE
 
 .part-buttons i{
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s ease-in-out;
+  transition: color 0.15s, transform 0.15s ease-in-out;
 }
 
 .part-buttons i:hover{
@@ -3575,7 +3575,7 @@ DRIVERS TABLE
   align-items: center;
   justify-content: space-between;
   border-radius: 8px;
-  transition: color 0.2s, border 0.2s, transform 0.2s;
+  transition: color 0.15s, border 0.15s, transform 0.15s;
   padding: 8px;
   font-size: 18px;
 }
@@ -3590,7 +3590,7 @@ DRIVERS TABLE
 
 .add-engine span, .add-engine i{
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
 }
 
 .add-engine i:hover{
@@ -3605,7 +3605,7 @@ DRIVERS TABLE
 
 .engine-performance .bi-trash{
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
   color: var(--text-general);
   position: absolute;
   right: 40px;
@@ -3621,7 +3621,7 @@ DRIVERS TABLE
 
 .engine-performance .bi-caret-down-fill{
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
   color: var(--text-general);
   position: absolute;
   right: 10px;
@@ -3721,7 +3721,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   font-family: 'Formula1Bold';
   font-size: 20px;
   color: var(--white-general);
-  transition: color 0.2s, border-color 0.2s;
+  transition: color 0.15s, border-color 0.15s;
 }
 
 .part-performance-title{
@@ -3765,13 +3765,13 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 .engine-performance-progress{
   width: 50%;
   height: 2px;
-  transition: width 0.2s;
+  transition: width 0.15s;
   background-color: var(--new-primary);
 }
 
 .part-performance-title i{
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s ease-in-out;
+  transition: color 0.15s, transform 0.15s ease-in-out;
 }
 
 .part-performance-title i:hover{
@@ -3842,7 +3842,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 
 .part-performance-stats, .engine-performance-stats{
   margin-top: 8px;
-  transition: opacity 0.2s;
+  transition: opacity 0.15s;
 }
 
 .part-performance-stats{
@@ -3856,7 +3856,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 .fit-button{
   font-family: 'Formula1Bold';
   color: var(--text-general);
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
   padding-top: 10px;
   margin-left: 4px;
 }
@@ -3909,7 +3909,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 }
 
 .one-part-name{
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
 }
 
 .one-part-name:hover{
@@ -3936,7 +3936,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 
 .n-parts-buttons i{
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s !important;
+  transition: color 0.15s, transform 0.15s !important;
   max-height: 12px;
   display: flex;
   align-items: center;
@@ -3948,7 +3948,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   padding-left: 4px;
   cursor: pointer;
   max-width: max-content;
-  transition: border-color 0.2s, color 0.2s, transform 0.2s;
+  transition: border-color 0.15s, color 0.15s, transform 0.15s;
   color: var(--dark-text);
 }
 
@@ -3982,7 +3982,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 
 .fitted-icons i:not(.fitted){
   color: var(--disabled-text);
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
 }
 
 .fitted-icons .loadout-1.fitted{
@@ -4037,7 +4037,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 
 .existing-part{
   font-size: 16px;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
 }
 
 .existing-part:hover{
@@ -4057,7 +4057,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 
 .part-performance-stat i, .engine-performance-stat i{
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s ease-in-out;
+  transition: color 0.15s, transform 0.15s ease-in-out;
 }
 
 .part-performance-stat i:hover, .engine-performance-stat i:hover{
@@ -4095,7 +4095,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   margin-right: 10px;
   color: var( --text-general);
   border: 2px solid transparent;
-  transition: border-color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, background-color 0.15s;
 }
 
 .one-performance:hover {
@@ -4123,7 +4123,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   cursor: pointer;
   background-color: transparent;
   border-radius: 10px;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.15s, color 0.15s;
   background-color: transparent;
   width: 25px;
   height: 25px;
@@ -4145,13 +4145,13 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 
 .performance-name {
   width: 200px;
-  transition: color 0.3s;
+  transition: color 0.15s;
   cursor: default !important;
 }
 
 .performance-name-engine {
   width: 300px;
-  transition: color 0.3s;
+  transition: color 0.15s;
   cursor: default !important;
 }
 
@@ -4165,13 +4165,13 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 
 .name-H2H{
   width: 100%;
-  transition: color 0.3s;
+  transition: color 0.15s;
   cursor: default !important;
   text-align: center;
 }
 
 .only-name{
-  transition: color 0.3s;
+  transition: color 0.15s;
 }
 
 #bestrh2h .name-H2H, #raceh2h .name-H2H, #qualih2h .name-H2H{
@@ -4192,7 +4192,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   float: right;
   width: 0%;
   height: 7px;
-  transition: width 0.3s;
+  transition: width 0.15s;
 }
 
 .h2h-top{
@@ -4205,7 +4205,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   float: left;
   width: 0%;
   height: 7px;
-  transition: width 0.3s;
+  transition: width 0.15s;
 }
 
 .driver2-space, .driver1-space{
@@ -4253,7 +4253,7 @@ input.disabled{
   top: 0;
   left: 0;
   z-index: 1;
-  transition: width 0.2s;
+  transition: width 0.15s;
 }
 
 .white-part {
@@ -4264,7 +4264,7 @@ input.disabled{
   top: 0;
   left: 0;
   z-index: 1;
-  transition: width 0.2s;
+  transition: width 0.15s;
 }
 
 .separation-zone {
@@ -4281,7 +4281,7 @@ input.disabled{
   top: 0;
   left: 0;
   z-index: 1;
-  transition: width 0.2s;
+  transition: width 0.15s;
 }
 
 .car-info {
@@ -4390,7 +4390,7 @@ input.disabled{
   padding: 8px 12px;
   max-width: 210px;
   outline: none;
-  transition: border-color 0.3s;
+  transition: border-color 0.15s;
   background-color: var(--mid-gray-contrast);
   color: #ebeaf0;
 }
@@ -4445,7 +4445,7 @@ input.disabled{
   cursor: pointer !important;
   margin: 10px;
   color: var(--text-general);
-  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   position: relative;
   font-size: 18px;
 }
@@ -4461,7 +4461,7 @@ input.disabled{
   cursor: pointer !important;
   margin: 4px 6px;
   color: var(--text-general);
-  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   position: relative;
   font-size: 18px;
 }
@@ -4475,7 +4475,7 @@ input.disabled{
   margin: 9px 8px;
   color: var(--text-general);
   background-color: var(--dropdown-hover);
-  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   position: relative;
   font-size: 18px;
   display: flex;
@@ -4503,7 +4503,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--redbull-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4517,7 +4517,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 150%, var(--redbull-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4531,7 +4531,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--redbull-primary-transparent), transparent 30%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4557,7 +4557,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--mclaren-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4571,7 +4571,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 150%, var(--mclaren-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4585,7 +4585,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--mclaren-primary-transparent),transparent 30%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4611,7 +4611,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--aston-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4625,7 +4625,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 150%, var(--aston-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4639,7 +4639,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--aston-primary-transparent), transparent 30%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4665,7 +4665,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--alpine-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4679,7 +4679,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 150%, var(--alpine-primary-transparent), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4693,7 +4693,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--alpine-primary-transparent), transparent 30%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4719,7 +4719,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--alfa-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4733,7 +4733,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--alfa-primary-transparent), transparent 30%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4747,7 +4747,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 150%, var(--alfa-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4773,7 +4773,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--haas-primary),transparent  25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4787,7 +4787,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--haas-primary-transparent), transparent 30%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4801,7 +4801,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 150%, var(--haas-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4827,7 +4827,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--williams-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4841,7 +4841,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--williams-primary-transparent), transparent 30%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4855,7 +4855,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 150%, var(--williams-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4881,7 +4881,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--alphatauri-primary),transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4895,7 +4895,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--alphatauri-primary-transparent), transparent 30%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4909,7 +4909,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 150%, var(--alphatauri-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4936,7 +4936,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--ferrari-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4950,7 +4950,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--ferrari-primary-transparent), transparent 30%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4964,7 +4964,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 150%, var(--ferrari-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -4990,7 +4990,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--mercedes-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -5004,7 +5004,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 150%, var(--mercedes-primary), transparent 25%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -5018,7 +5018,7 @@ input.disabled{
   height: 100%;
   background: radial-gradient(circle at -5% 200%, var(--mercedes-primary-transparent), transparent 30%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   z-index: 0;
 }
 
@@ -5042,7 +5042,7 @@ input.disabled{
   margin: 10px;
   color: var(--text-general);
   background-color: var(--elements);
-  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   position: relative;
   font-size: 24px;
   text-transform: uppercase;
@@ -5513,7 +5513,7 @@ input.disabled{
   border-radius: 50%;
   animation: pulse 1.5s infinite;
   opacity: 1;
-  transition: opacity 0.2s;
+  transition: opacity 0.15s;
 }
 
 .noti-fe{
@@ -5612,7 +5612,7 @@ input.disabled{
   opacity: 0;
   background-color: var(--elements-hover);
   color: var(--text-general);
-  transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+  transition: opacity 0.15s, background-color 0.15s, color 0.15s;
   cursor: pointer;
   font-size: 14px;
   border-bottom-right-radius: 3px;
@@ -5649,7 +5649,7 @@ input.disabled{
   cursor: grab !important;
   margin: 6px 5px;
   color: var(--text-general);
-  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   position: relative;
   font-size: 15px;
   overflow: hidden;
@@ -5690,7 +5690,7 @@ input.disabled{
   border-bottom: 2px solid transparent;
   color: var( --text-general);
   background-color: transparent;
-  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   height: 28px;
   font-size: 16px;
   padding: 0 3px;
@@ -5707,7 +5707,7 @@ input.disabled{
   padding: 0 3px;
   cursor: pointer;
   position: relative;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
 }
 
 .performance-graph-button:hover{
@@ -5723,7 +5723,7 @@ input.disabled{
   border-bottom: 2px solid transparent;
   color: var( --text-general);
   background-color: transparent;
-  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   height: 28px;
   font-size: 16px;
   padding: 0 3px;
@@ -5794,7 +5794,7 @@ input.disabled{
   padding: 8px;
   margin: 8px;
   color: var( --text-general);
-  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   position: relative;
   font-size: 15px;
   display: flex;
@@ -5809,7 +5809,7 @@ input.disabled{
   padding: 2px 8px;
   margin: 8px;
   color: var( --text-general);
-  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   position: relative;
   font-size: 15px;
   display: flex;
@@ -5820,7 +5820,7 @@ input.disabled{
 
 .free-driver .custom-icon {
   color: transparent;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
   width: 80px;
   opacity: 0;
   z-index: 3;
@@ -5832,7 +5832,7 @@ input.disabled{
 }
 
 .custom-icon i{
-  transition: transform 0.3s, color 0.3s;
+  transition: transform 0.15s, color 0.15s;
 }
 
 
@@ -5844,12 +5844,12 @@ input.disabled{
 
 
 .custom-icon .bi-pencil-square {
-  transition: color 0.3s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
 }
 
 .free-driver .bi-ban{
   opacity: 1 !important;
-  transition: color 0.3s;
+  transition: color 0.15s;
   color: var(--white-general);
   z-index: 10;
   position: absolute;
@@ -5870,7 +5870,7 @@ input.disabled{
   color: var(--dark-text);
   font-size: 22px;
   cursor: pointer;
-  transition: color 0.3s;
+  transition: color 0.15s;
 }
 
 .info-titles:hover{
@@ -6015,7 +6015,7 @@ input.disabled{
   padding: 10px;
   margin: 10px;
   color: var( --text-general);
-  transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   display: flex;
   justify-content: space-between;
   position: relative;
@@ -6028,7 +6028,7 @@ input.disabled{
   padding-right: 10px;
   margin: 10px;
   color: var( --text-general);
-  transition: border-color 0.3s, background-color 0.3s;
+  transition: border-color 0.15s, background-color 0.15s;
   min-height: 70px;
   display: flex;
   justify-content: space-between;
@@ -6076,7 +6076,7 @@ input.disabled{
 .one-stat-progress{
   position: absolute;
   background-color: var(--new-primary);
-  transition: width 0.2s;
+  transition: width 0.15s;
   height: 100%;
 }
 
@@ -6091,7 +6091,7 @@ input.disabled{
 
 .one-stat-panel span{
   color: var( --text-general);
-  transition: color 0.3s;
+  transition: color 0.15s;
   padding-top: 4px;
 }
 
@@ -6126,7 +6126,7 @@ input.disabled{
   cursor: pointer;
   background-color: transparent;
   border-radius: 10px;
-  transition: background-color 0.2s, color 0.2s, transform 0.2;
+  transition: background-color 0.15s, color 0.15s, transform 0.2;
   background-color: transparent;
   width: 25px;
   height: 25px;
@@ -6328,7 +6328,7 @@ input.disabled{
 .generalPills{
   color: var(--text-general) !important;
   border: 0px 2px solid transparent !important;
-  transition: border-color 0.3s, background-color 0.3s , color 0.2s, width 0.2s !important;
+  transition: border-color 0.15s, background-color 0.15s , color 0.15s, width 0.15s !important;
   display: flex;
   position: relative;
   background: none;
@@ -6337,7 +6337,7 @@ input.disabled{
 
 .basic-label{
   cursor: pointer;
-  transition: color 0.3s, transform 0.3s;
+  transition: color 0.15s, transform 0.15s;
   pointer-events: none;
 }
 
@@ -6391,7 +6391,7 @@ input.disabled{
 .scriptPills {
   color: var(--text-general) !important;
   border: 2px solid transparent !important;
-  transition: border-color 0.3s, background-color 0.3s , color 0.3s, width 0.2s !important;
+  transition: border-color 0.15s, background-color 0.15s , color 0.15s, width 0.15s !important;
   width: 44px;
   height: 40px;
   display: flex;
@@ -6461,7 +6461,7 @@ input.disabled{
 .pill-line{
   width: 0px;
   height: 2px;
-  transition: width 0.3s, background-color 0.3s;
+  transition: width 0.15s, background-color 0.15s;
   background-color: var(--white-general);
   position: absolute;
   bottom: 0;
@@ -6550,7 +6550,7 @@ input.disabled{
   max-width: 52px;
   border: 0px solid;
   font-size: 20px;
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s !important;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s !important;
   text-align: center;
 }
 
@@ -6565,7 +6565,7 @@ input.disabled{
   border-left: 0px solid;
   border-top: 0px solid;
   font-size: 20px;
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s !important;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s !important;
   text-align: center;
 }
 
@@ -6576,7 +6576,7 @@ input.disabled{
 }
 
 .contract-details i{
-  transition: transform 0.2s, color 0.2s;
+  transition: transform 0.15s, color 0.15s;
 }
 
 .custom-input-number::selection{
@@ -6798,7 +6798,7 @@ input::-webkit-inner-spin-button {
 
 .team-title-value{
   color: var(--dark-text);
-  transition: color 0.3s;
+  transition: color 0.15s;
 }
 
 .car:hover .main-car, .team:hover .main-car{
@@ -6812,7 +6812,7 @@ input::-webkit-inner-spin-button {
 .main-car{
   border-left: 2px solid var(--separator);
   padding-left: 7px;
-  transition: border-color 0.3s;
+  transition: border-color 0.15s;
 }
 
 .team .main-car{
@@ -6834,7 +6834,7 @@ input::-webkit-inner-spin-button {
   align-items: center;
   justify-content: center;
   padding-top: 4px;
-  transition: transform 0.2s;
+  transition: transform 0.15s;
 }
 
 /* move it 2 pixels to the right */
@@ -6854,7 +6854,7 @@ input::-webkit-inner-spin-button {
   align-items: center;
   justify-content: center;
   padding-right: 9.5px;
-  transition: transform 0.2s;
+  transition: transform 0.15s;
 }
 
 .car-performance.selected .value{
@@ -6885,7 +6885,7 @@ input::-webkit-inner-spin-button {
 
 .car-missing-parts .value{
   color: var(--dark-text);
-  transition: color 0.2s;
+  transition: color 0.15s;
   width: 56px;
   display: flex;
   justify-content: flex-end;
@@ -6982,7 +6982,7 @@ input::-webkit-inner-spin-button {
   width: 33%;
   background-color: var(--positive-general);
   height: 2px;
-  transition: width 0.2s;
+  transition: width 0.15s;
 }
 
 .condition-container-buttons{
@@ -6994,7 +6994,7 @@ input::-webkit-inner-spin-button {
 
 .condition-container-buttons i{
   cursor: pointer;
-  transition: transform 0.2s, color 0.2s;
+  transition: transform 0.15s, color 0.15s;
   display: flex;
   align-items: center;
 }
@@ -7021,7 +7021,7 @@ input::-webkit-inner-spin-button {
 .facility-refurbish svg{
   width: 28px;
   padding-bottom: 11px;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.15s, transform 0.15s;
   cursor: pointer;
 }
 
@@ -7177,14 +7177,14 @@ input::-webkit-inner-spin-button {
   height: 8px;
   width: 20%;
   background-color: var(--mid-gray-contrast);
-  transition: background-color 0.2s;
+  transition: background-color 0.15s;
 }
 
 .mentality-level{
   height: 6px;
   width: 20%;
   background-color: var(--mid-gray-contrast);
-  transition: background-color 0.2s;
+  transition: background-color 0.15s;
 }
 
 .mentality-and-emoji.demoralized{
@@ -7229,7 +7229,7 @@ input::-webkit-inner-spin-button {
 }
 
 .bar-container i{
-  transition: transform 0.2s, color 0.2s;
+  transition: transform 0.15s, color 0.15s;
   cursor: pointer;
 }
 
@@ -7239,7 +7239,7 @@ input::-webkit-inner-spin-button {
 }
 
 .name-and-emoji{
-  transition: color 0.2s;
+  transition: color 0.15s;
 }
 
 .level.activated{
@@ -7303,10 +7303,10 @@ input::-webkit-inner-spin-button {
 }
 
 #edit_teams .team-viewer .bi-chevron-left, #edit_teams .team-viewer .bi-chevron-right{
-  transition: color 0.3s;
+  transition: color 0.15s;
   font-size: 20px;
   color: var( --text-general);
-  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+  transition: background-color 0.15s, color 0.15s, transform 0.15s;
   width: 25px;
   height: 25px;
   display: flex;
@@ -7391,7 +7391,7 @@ input::-webkit-inner-spin-button {
   padding-top: 8px;
   padding-left: 2px;
   padding-right: 2px;
-  transition: opacity 0.3s;
+  transition: opacity 0.15s;
 }
 
 .mclarenlogo, #mclogo {
@@ -7501,7 +7501,7 @@ input::-webkit-inner-spin-button {
 
 .driver1-name .team1, .driver2-name .team2{
   color: var( --text-general) !important;
-  transition: color 0.3s;
+  transition: color 0.15s;
 }
 
 
@@ -8044,7 +8044,7 @@ input::-webkit-inner-spin-button {
 
 #customGearButton {
   margin-left: 5px;
-  transition: transform 0.3s ease, color 0.2s;
+  transition: transform 0.15s ease, color 0.15s;
   cursor: pointer;
   display: inline-block;
 }
@@ -8118,7 +8118,7 @@ datalist .my-mark{
 
 .option-state{
   padding-left: 5px;
-  transition: color 0.2s;
+  transition: color 0.15s;
 }
 
 
@@ -8192,7 +8192,7 @@ datalist .my-mark{
 
 .dif-warning:not(.default){
   cursor: pointer;
-  transition: color 0.2s, opacity 0.1s, transform 0.2s, filter 0.2s;
+  transition: color 0.15s, opacity 0.1s, transform 0.15s, filter 0.15s;
 }
 
 .dif-warning.disabled, #lightDif.disabled{
@@ -8226,7 +8226,7 @@ datalist .my-mark{
 
 .arrows i{
   cursor: pointer;
-  transition: transform 0.2s, color 0.2s;
+  transition: transform 0.15s, color 0.15s;
   height: 12px;
 }
 

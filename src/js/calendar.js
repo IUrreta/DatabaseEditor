@@ -1,5 +1,6 @@
-import { races_map, codes_dict, weather_dict } from "./config";
+import { races_map, codes_dict, weather_dict, countries_dict, invertedRacesMap } from "./config";
 import { game_version } from "./renderer";
+import { max_races } from "./predictions";
 
 let deleting = false;
 let deleted = false;
@@ -137,7 +138,7 @@ function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
     div.querySelectorAll(".bi-chevron-left").forEach(function(elem){
         elem.addEventListener("click", function(){
             let val = elem.parentNode.querySelector(".weather-vis").dataset.value
-            newVal = Number(val) - 1
+            let newVal = Number(val) - 1
             if(newVal === -1){
                 newVal = 5
             }
@@ -160,7 +161,7 @@ function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
     div.querySelectorAll(".bi-chevron-right").forEach(function(elem){
         elem.addEventListener("click", function(){
             let val = elem.parentNode.querySelector(".weather-vis").dataset.value
-            newVal = Number(val) + 1
+            let newVal = Number(val) + 1
             if(newVal === 6){
                 newVal = 0
             }
