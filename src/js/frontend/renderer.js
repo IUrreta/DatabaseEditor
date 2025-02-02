@@ -539,7 +539,7 @@ const messageHandlers = {
     "ERROR": (message) => {
         update_notifications(message[1], "error");
     },
-    "Save Loaded Succesfully": (message) => {
+    "Save loaded succesfully": (message) => {
         isSaveSelected  = 1;
         remove_drivers();
         removeStatsDrivers();
@@ -547,13 +547,13 @@ const messageHandlers = {
         sortList("free-drivers");
         place_drivers_editStats(message);
     },
-    "Staff Fetched": (message) => {
+    "Staff fetched": (message) => {
         place_staff(message);
         sortList("free-staff")
         place_staff_editStats(message);
     },
     "Calendar fetched": (message) => {
-        load_calendar(message.slice(1))
+        load_calendar(message)
     },
     "Engines fetched": (message) => {
         manage_engineStats(message.slice(1));
@@ -562,7 +562,7 @@ const messageHandlers = {
         manage_modal(message.slice(1));
     },
     "Year fetched": (message) => {
-        generateYearsMenu(message.slice(1));
+        generateYearsMenu(message);
     },
     "Numbers fetched": (message) => {
         loadNumbers(message.slice(1));

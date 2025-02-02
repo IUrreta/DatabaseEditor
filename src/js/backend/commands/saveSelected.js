@@ -19,17 +19,25 @@ export default class SaveSelectedCommand extends Command {
         }
         this.addTeam("Custom Team", yearData[1]);
         setGlobals({year: yearData[0]});
-        const yearResponse = { responseMessage: "Game Year", content: yearData };
-        updateFront(yearResponse);
+        const gameYearResponse = { responseMessage: "Game Year", content: yearData };
+        updateFront(gameYearResponse);
 
         const drivers = dbUtils.fetchDrivers(yearData[0]);
         console.log("Drivers:", drivers);
-        const driversResponse = { responseMessage: "Save Loaded Succesfully", content: drivers };
+        const driversResponse = { responseMessage: "Save loaded succesfully", content: drivers };
         updateFront(driversResponse);
 
         const staff = dbUtils.fetchStaff(yearData[0]);
-        const staffResponse = { responseMessage: "Staff Fetched", content: staff };
+        const staffResponse = { responseMessage: "Staff fetched", content: staff };
         updateFront(staffResponse);
+
+        const calendar = dbUtils.fetchCalendar();
+        const calendarResponse = { responseMessage: "Calendar fetched", content: calendar };
+        updateFront(calendarResponse);
+
+        const year = dbUtils.fetchYear();
+        const yearResponse = { responseMessage: "Year fetched", content: year };
+        updateFront(yearResponse);
 
 
     }

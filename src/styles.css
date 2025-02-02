@@ -619,6 +619,7 @@ i.bi-file-text:hover{
   position: absolute;
   right: 0;
   gap: 10px;
+  padding-right: 14px;
   display: flex;
   align-items: center;
 }
@@ -640,6 +641,10 @@ i.bi-file-text:hover{
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.general-top-panel .custom-dropdown{
+  margin: 0 !important;
 }
 
 .transfer-title {
@@ -2079,7 +2084,7 @@ input[type="checkbox"]:checked {
   background-color: var(--mode-line-edit);
 }
 
-#predict_results, #edit_stats, #car_performance, #driver_transfers{
+#predict_results, #edit_stats, #car_performance, #driver_transfers, #season_viewer, #head2head_viewer, #car_performance{
   flex-direction: column;
 }
 
@@ -3857,7 +3862,6 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   font-family: 'Formula1Bold';
   color: var(--text-general);
   transition: color 0.15s, transform 0.15s;
-  padding-top: 10px;
   margin-left: 4px;
 }
 
@@ -5599,8 +5603,6 @@ input.disabled{
   }
 }
 
-.name-container.overflow {
-}
 
 .free-driver .edit-container{
   display: flex;
@@ -5702,7 +5704,6 @@ input.disabled{
 .performance-graph-button{
   color: var( --text-general);
   background-color: transparent;
-  height: 28px;
   font-size: 24px;
   padding: 0 3px;
   cursor: pointer;

@@ -512,39 +512,47 @@
           <div class="d-flex" style="gap: 7px;">
             <div class="d-none" id="gameChanges">
               <div class="pb-3">
-                If you change the name of the save file, the <span class="important-text bold-font">name </span>of the difficulty selected may be incorrect.
+                If you change the name of the save file, the <span class="important-text bold-font">name </span>of the
+                difficulty selected may be incorrect.
               </div>
               <div class="game-changes">
                 <div class="mentality-changes">
                   <div class="only-mentality">
-                    <div class="modal-subtitle bold-font">Mentality <span class="option-state default" id="mentalitySpan">Unfrozen</span></div>
+                    <div class="modal-subtitle bold-font">Mentality <span class="option-state default"
+                        id="mentalitySpan">Unfrozen</span></div>
                     <div class="modal-text">
-                      Freezing the mentality means that all staff and driver's mentality will stay at neutral at all times.
+                      Freezing the mentality means that all staff and driver's mentality will stay at neutral at all
+                      times.
                     </div>
                     <div class="mentality-selector">
-                      <label class="form-check-label" >Normal</label>
+                      <label class="form-check-label">Normal</label>
                       <div class="form-check form-switch freeze-mentality">
-                        <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="freezeMentalityToggle">
+                        <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                          id="freezeMentalityToggle">
                       </div>
                       <label class="form-check-label" style="margin-left: -10px;">Frozen</label>
                     </div>
                   </div>
                   <div class="only-refurbish">
-                    <div class="modal-subtitle bold-font" id="refurbishTitle">Refurbish <span class="option-state default" id="refurbishSpan">Default</span></div>
+                    <div class="modal-subtitle bold-font" id="refurbishTitle">Refurbish <span
+                        class="option-state default" id="refurbishSpan">Default</span></div>
                     <div class="modal-text">
                       Enabling it fixes the AI not refurbishing their facilities, even in low conditions.
                     </div>
                     <div class="mentality-selector">
                       <label class="form-check-label">Default</label>
                       <div class="form-check form-switch freeze-mentality">
-                        <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="refurbishingToggle">
+                        <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                          id="refurbishingToggle">
                       </div>
                       <label class="form-check-label" style="margin-left: -10px;">Active</label>
                     </div>
                   </div>
                 </div>
                 <div class="difficulty-changes">
-                  <div class="modal-subtitle bold-font">Game difficulty <i class="bi bi-gear-fill" id="customGearButton"></i> <span class="option-state default" id="difficultySpan">Default</span></div>
+                  <div class="modal-subtitle bold-font">Game difficulty <i class="bi bi-gear-fill"
+                      id="customGearButton"></i> <span class="option-state default" id="difficultySpan">Default</span>
+                  </div>
                   <div class="difficulty-warnings">
                     <div class="dif-warning default" id="defaultDif">In-game difficulty</div>
                     <div class="dif-warning extra-hard" id="lightDif">lightweight parts</div>
@@ -716,7 +724,8 @@
             again as an engine supplier, its stats will be the same as other default engine, not its original ones.
           </div>
           <div class="mt-2" style="gap: 7px;">
-            Creating a custom engine will <span class="important-text bold-font">NOT CREATE </span> a new one in-game, it will just apply
+            Creating a custom engine will <span class="important-text bold-font">NOT CREATE </span> a new one in-game,
+            it will just apply
             the stats that you assign the custom engine to the engines that the teams who run the custom engine use.
           </div>
         </div>
@@ -1330,213 +1339,232 @@
 
       </div>
       <div class="script-view d-none" id="head2head_viewer">
-        <div class="col">
-          <div class="col h2h-title">
-            <div class="ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items:
-              center;">
-              <div>
-                <button class="custom-dropdown bold-font" id="compDataButton" data-bs-toggle="modal"
-                  data-bs-target="#compDataModal">
-                  Data
-                </button>
-                <div class="dropdown-line"></div>
-              </div>
-              <div class="config-content bold-font ms-4" id="compConfigContent"></div>
+        <div class="general-top-panel">
+          <div class="title-buttons-left">
+            <div>
+              <button class="custom-dropdown bold-font" id="compDataButton" data-bs-toggle="modal"
+                data-bs-target="#compDataModal">
+                Data
+              </button>
+              <div class="dropdown-line"></div>
             </div>
-            <div class="ps-3"
-              style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; display: flex; align-items: center; right: 20px;">
-              <div class="form-check annotations form-switch ms-3 pt-2">
-                <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="annotationsToggle"
-                  checked>
-                <label class="form-check-label" for="flexSwitchCheckDefault">Annotations</label>
-              </div>
-              <div>
-                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
-                  id="graphTypeButton" data-bs-toggle="dropdown">
-                  Race form
-                </button>
-                <div class="dropdown-line"></div>
-                <ul class="dropdown-menu" id="graphTypeDropdown" style="font-family: Formula1;">
-                  <a class="dropdown-item" style="cursor: pointer;" id="raceForm">Race form</a>
-                  <a class="dropdown-item" style="cursor: pointer;" id="qualiForm">Qualifying form</a>
-                  <a class="dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
-                  <a class="dropdown-item" style="cursor: pointer;" id="gapToWinner">Gap to winner</a>
-                  <a class="dropdown-item" style="cursor: pointer;" id="gapToPole">Gap to pole</a>
-                </ul>
-              </div>
+            <div class="config-content bold-font ms-4" id="compConfigContent"></div>
+          </div>
+          <div class="title-buttons-right">
+            <div class="form-check annotations form-switch">
+              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="annotationsToggle"
+                checked>
+              <label class="form-check-label" for="flexSwitchCheckDefault">Annotations</label>
             </div>
-            <div class="title bold-font">
-              Comparison
-              <i class="info-titles bold-font" id="comparisoninfo" data-bs-toggle="modal"
-                data-bs-target="#comparisonmodal">?</i>
+            <div>
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
+                id="graphTypeButton" data-bs-toggle="dropdown">
+                Race form
+              </button>
+              <div class="dropdown-line"></div>
+              <ul class="dropdown-menu" id="graphTypeDropdown" style="font-family: Formula1;">
+                <a class="dropdown-item" style="cursor: pointer;" id="raceForm">Race form</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="qualiForm">Qualifying form</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="gapToWinner">Gap to winner</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="gapToPole">Gap to pole</a>
+              </ul>
             </div>
           </div>
-          <div class="d-flex d-none" id="mainH2h">
-            <div class="col-3 main-viewer-section">
-              <div class="blocking-h2h">Select at leat 2 drivers for H2H!</div>
-              <div class="driver-names">
-                <div class="driver1-name">
-                  <div class="driver1-first">&nbsp;</div>
-                  <div class="driver1-second bold-font">&nbsp;</div>
-                  <div class="team1 bold-font d-none">&nbsp;</div>
-                </div>
-                <div class="driver2-name">
-                  <div class="driver2-first">&nbsp;</div>
-                  <div class="driver2-second bold-font">&nbsp;</div>
-                  <div class="team2 bold-font d-none">&nbsp;</div>
-                </div>
+          <div class="title bold-font">
+            Comparison
+            <i class="info-titles bold-font" id="comparisoninfo" data-bs-toggle="modal"
+              data-bs-target="#comparisonmodal">?</i>
+          </div>
+        </div>
+        <div class="d-flex d-none" id="mainH2h">
+          <div class="col-3 main-viewer-section">
+            <div class="blocking-h2h">Select at leat 2 drivers for H2H!</div>
+            <div class="driver-names">
+              <div class="driver1-name">
+                <div class="driver1-first">&nbsp;</div>
+                <div class="driver1-second bold-font">&nbsp;</div>
+                <div class="team1 bold-font d-none">&nbsp;</div>
               </div>
-              <div class="one-statH2H" id="raceh2h">
-                <div class="name-H2H bold-font" style="justify-content: space-between;">
-                  <i class="bi bi-chevron-left"></i>
-                  <div class="only-name">RACE</div>
-                  <i class="bi bi-chevron-right"></i>
-                </div>
-                <div class="bar-space">
-                  <div class="driver1-number bold-font" style="justify-content: space-between;"></div>
-                  <div class="custom-H2H" data-driver1="0" data-driver2="0">
-                    <div class="driver1-space">
-                      <div class="driver1-bar"></div>
-                    </div>
-                    <div class="driver2-space">
-                      <div class="driver2-bar"></div>
-                    </div>
-                  </div>
-                  <div class="driver2-number bold-font"></div>
-                </div>
-                <div class="avg-comparison d-none">
-                  <div class="driver1-avg bold-font"></div>
-                  <div class="avg-separator"></div>
-                  <div class="driver2-avg bold-font"></div>
-                </div>
-              </div>
-              <div class="one-statH2H" id="qualih2h">
-                <div class="name-H2H bold-font">
-                  <i class="bi bi-chevron-left"></i>
-                  <div class="only-name">QUALIFYING</div>
-                  <i class="bi bi-chevron-right"></i>
-                </div>
-                <div class="bar-space">
-                  <div class="driver1-number bold-font"></div>
-                  <div class="custom-H2H" data-driver1="0" data-driver2="0">
-                    <div class="driver1-space">
-                      <div class="driver1-bar"></div>
-                    </div>
-                    <div class="driver2-space">
-                      <div class="driver2-bar"></div>
-                    </div>
-                  </div>
-                  <div class="driver2-number bold-font"></div>
-                </div>
-                <div class="avg-comparison d-none">
-                  <div class="driver1-avg bold-font"></div>
-                  <div class="avg-separator"></div>
-                  <div class="driver2-avg bold-font"></div>
-                </div>
-              </div>
-              <div class="one-statH2H" id="ptsh2h">
-                <div class="name-H2H bold-font">
-                  <div class="only-name">POINTS</div>
-                </div>
-                <div class="bar-space">
-                  <div class="driver1-number bold-font"></div>
-                  <div class="custom-H2H" data-driver1="0" data-driver2="0">
-                    <div class="driver1-space">
-                      <div class="driver1-bar"></div>
-                    </div>
-                    <div class="driver2-space">
-                      <div class="driver2-bar"></div>
-                    </div>
-                  </div>
-                  <div class="driver2-number bold-font"></div>
-                </div>
-              </div>
-              <div class="one-statH2H" id="podiumsh2h">
-                <div class="name-H2H bold-font">
-                  <div class="only-name">PODIUMS</div>
-                </div>
-                <div class="bar-space">
-                  <div class="driver1-number bold-font"></div>
-                  <div class="custom-H2H" data-driver1="0" data-driver2="0">
-                    <div class="driver1-space">
-                      <div class="driver1-bar"></div>
-                    </div>
-                    <div class="driver2-space">
-                      <div class="driver2-bar"></div>
-                    </div>
-                  </div>
-                  <div class="driver2-number bold-font"></div>
-                </div>
-              </div>
-              <div class="one-statH2H" id="bestrh2h">
-                <div class="name-H2H bold-font">
-                  <i class="bi bi-chevron-left d-none"></i>
-                  <div class="only-name">BEST RACE</div>
-                  <i class="bi bi-chevron-right d-none"></i>
-                </div>
-                <div class="bar-space">
-                  <div class="driver1-number bold-font"></div>
-                  <div class="custom-H2H" data-driver1="0" data-driver2="0">
-                    <div class="driver1-space">
-                      <div class="driver1-bar"></div>
-                    </div>
-                    <div class="driver2-space">
-                      <div class="driver2-bar"></div>
-                    </div>
-                  </div>
-                  <div class="driver2-number bold-font"></div>
-                </div>
-              </div>
-              <div class="one-statH2H" id="bestqh2h">
-                <div class="name-H2H bold-font">
-                  <div class="only-name">BEST QUALI</div>
-                </div>
-                <div class="bar-space">
-                  <div class="driver1-number bold-font"></div>
-                  <div class="custom-H2H" data-driver1="0" data-driver2="0">
-                    <div class="driver1-space">
-                      <div class="driver1-bar"></div>
-                    </div>
-                    <div class="driver2-space">
-                      <div class="driver2-bar"></div>
-                    </div>
-                  </div>
-                  <div class="driver2-number bold-font"></div>
-                </div>
-              </div>
-              <div class="one-statH2H" id="dnfh2h" style="margin-bottom: 10px;">
-                <div class="name-H2H bold-font">
-                  <div class="only-name">DNF</div>
-                </div>
-                <div class="bar-space">
-                  <div class="driver1-number bold-font"></div>
-                  <div class="custom-H2H" data-driver1="0" data-driver2="0">
-                    <div class="driver1-space">
-                      <div class="driver1-bar"></div>
-                    </div>
-                    <div class="driver2-space">
-                      <div class="driver2-bar"></div>
-                    </div>
-                  </div>
-                  <div class="driver2-number bold-font"></div>
-                </div>
+              <div class="driver2-name">
+                <div class="driver2-first">&nbsp;</div>
+                <div class="driver2-second bold-font">&nbsp;</div>
+                <div class="team2 bold-font d-none">&nbsp;</div>
               </div>
             </div>
-            <div class="col-9 main-viewer-section" style="max-width: 72.5vw; margin-left: 0px;">
-              <canvas class="graphs" id="driverGraph"></canvas>
-              <canvas class="graphs d-none" id="progressionGraph"></canvas>
-              <canvas class="graphs d-none" id="qualiGraph"></canvas>
-              <canvas class="graphs d-none" id="gapToWinnerGraph"></canvas>
-              <canvas class="graphs d-none" id="gapToPoleGraph"></canvas>
+            <div class="one-statH2H" id="raceh2h">
+              <div class="name-H2H bold-font" style="justify-content: space-between;">
+                <i class="bi bi-chevron-left"></i>
+                <div class="only-name">RACE</div>
+                <i class="bi bi-chevron-right"></i>
+              </div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font" style="justify-content: space-between;"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+              <div class="avg-comparison d-none">
+                <div class="driver1-avg bold-font"></div>
+                <div class="avg-separator"></div>
+                <div class="driver2-avg bold-font"></div>
+              </div>
             </div>
+            <div class="one-statH2H" id="qualih2h">
+              <div class="name-H2H bold-font">
+                <i class="bi bi-chevron-left"></i>
+                <div class="only-name">QUALIFYING</div>
+                <i class="bi bi-chevron-right"></i>
+              </div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+              <div class="avg-comparison d-none">
+                <div class="driver1-avg bold-font"></div>
+                <div class="avg-separator"></div>
+                <div class="driver2-avg bold-font"></div>
+              </div>
+            </div>
+            <div class="one-statH2H" id="ptsh2h">
+              <div class="name-H2H bold-font">
+                <div class="only-name">POINTS</div>
+              </div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+            </div>
+            <div class="one-statH2H" id="podiumsh2h">
+              <div class="name-H2H bold-font">
+                <div class="only-name">PODIUMS</div>
+              </div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+            </div>
+            <div class="one-statH2H" id="bestrh2h">
+              <div class="name-H2H bold-font">
+                <i class="bi bi-chevron-left d-none"></i>
+                <div class="only-name">BEST RACE</div>
+                <i class="bi bi-chevron-right d-none"></i>
+              </div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+            </div>
+            <div class="one-statH2H" id="bestqh2h">
+              <div class="name-H2H bold-font">
+                <div class="only-name">BEST QUALI</div>
+              </div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+            </div>
+            <div class="one-statH2H" id="dnfh2h" style="margin-bottom: 10px;">
+              <div class="name-H2H bold-font">
+                <div class="only-name">DNF</div>
+              </div>
+              <div class="bar-space">
+                <div class="driver1-number bold-font"></div>
+                <div class="custom-H2H" data-driver1="0" data-driver2="0">
+                  <div class="driver1-space">
+                    <div class="driver1-bar"></div>
+                  </div>
+                  <div class="driver2-space">
+                    <div class="driver2-bar"></div>
+                  </div>
+                </div>
+                <div class="driver2-number bold-font"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-9 main-viewer-section" style="max-width: 72.5vw; margin-left: 0px;">
+            <canvas class="graphs" id="driverGraph"></canvas>
+            <canvas class="graphs d-none" id="progressionGraph"></canvas>
+            <canvas class="graphs d-none" id="qualiGraph"></canvas>
+            <canvas class="graphs d-none" id="gapToWinnerGraph"></canvas>
+            <canvas class="graphs d-none" id="gapToPoleGraph"></canvas>
           </div>
         </div>
 
+
       </div>
       <div class="script-view d-none" id="season_viewer">
-        <div class="col">
-          <div class="year-drivers-teams ps-3">
+        <div class="general-top-panel">
+          <div class="title-buttons-right">
             <div>
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                id="tableTypeButton" data-bs-toggle="dropdown">
+                Points
+              </button>
+              <div class="dropdown-line"></div>
+              <ul class="dropdown-menu" id="tableTypeDropdown" style="font-family: Formula1;">
+                <a class="dropdown-item" style="cursor: pointer;" id="pointspill" data-value="points">Points</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="pospill" data-value="pos">Positions</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="qualipill" data-value="quali">Qualifying</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="gapWinner" data-value="gapWinner">Gap to
+                  winner</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="gapPole" data-value="gapPole">Gap to pole</a>
+              </ul>
+            </div>
+          </div>
+          <div class="title bold-font">
+            Season Results
+            <i class="info-titles bold-font" id="standingsinfo" data-bs-toggle="modal"
+              data-bs-target="#standingsmodal">?</i>
+          </div>
+          <div class="title-buttons-left">
+            <div style="padding-bottom: 2px;">
               <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButton"
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Year
@@ -1562,47 +1590,26 @@
               </ul>
             </div>
           </div>
-          <div class="ps-3" style="padding-top: 0.6rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
-            <div>
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
-                id="tableTypeButton" data-bs-toggle="dropdown">
-                Points
-              </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="tableTypeDropdown" style="font-family: Formula1;">
-                <a class="dropdown-item" style="cursor: pointer;" id="pointspill" data-value="points">Points</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="pospill" data-value="pos">Positions</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="qualipill" data-value="quali">Qualifying</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="gapWinner" data-value="gapWinner">Gap to
-                  winner</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="gapPole" data-value="gapPole">Gap to pole</a>
-              </ul>
+        </div>
+        <div class="main-viewer-section">
+          <div class="drivers-table d-none">
+            <div class="drivers-table-header">
+              <div class="drivers-table-position bold-font">#</div>
+              <div class="drivers-table-driver bold-font">DRIVER</div>
+              <div class="drivers-table-points bold-font">PTS</div>
             </div>
+            <div class="drivers-table-data"></div>
           </div>
-          <div class="title bold-font">
-            Season Results
-            <i class="info-titles bold-font" id="standingsinfo" data-bs-toggle="modal"
-              data-bs-target="#standingsmodal">?</i>
-          </div>
-          <div class="main-viewer-section">
-            <div class="drivers-table d-none">
-              <div class="drivers-table-header">
-                <div class="drivers-table-position bold-font">#</div>
-                <div class="drivers-table-driver bold-font">DRIVER</div>
-                <div class="drivers-table-points bold-font">PTS</div>
-              </div>
-              <div class="drivers-table-data"></div>
+          <div class="teams-table d-none">
+            <div class="teams-table-header">
+              <div class="teams-table-position bold-font">#</div>
+              <div class="teams-table-team bold-font">TEAM</div>
+              <div class="teams-table-points bold-font">PTS</div>
             </div>
-            <div class="teams-table d-none">
-              <div class="teams-table-header">
-                <div class="teams-table-position bold-font">#</div>
-                <div class="teams-table-team bold-font">TEAM</div>
-                <div class="teams-table-points bold-font">PTS</div>
-              </div>
-              <div class="teams-table-data"></div>
-            </div>
+            <div class="teams-table-data"></div>
           </div>
         </div>
+
 
       </div>
       <div class="script-view d-none" id="driver_transfers">
@@ -3622,9 +3629,8 @@
 
       </div>
       <div class="script-view d-none" id="car_performance">
-        <div class="pos-relative">
-          <div class="pb-3 ps-3 d-flex" style="padding-top: 0.5rem; position: absolute; align-items: center; gap: 10px;"
-            id="carAttributeSelector">
+        <div class="general-top-panel">
+          <div class="title-buttons-left" id="carAttributeSelector">
             <div>
               <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
                 id="attributeButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -3651,11 +3657,10 @@
             </div>
             <div class="fit-button" id="fitButton">Fit latest designs</div>
           </div>
-          <div class="title-buttons-left d-none" style="top: 15px;" id="customEnginesButtonContainer">
-            <div class="fit-button" id="customEngines" data-bs-toggle="modal" data-bs-target="#enginesModal">Custom
-              engines</div>
+          <div class="title-buttons-left d-none" id="customEnginesButtonContainer">
+            <div class="fit-button" id="customEngines" data-bs-toggle="modal" data-bs-target="#enginesModal">Custom engines</div>
           </div>
-          <div class="pb-3 pe-3" style="padding-top: 1.1rem; position: absolute; right: 0;">
+          <div class="title-buttons-right">
             <ul class="nav nav-pills">
               <li class="nav-item">
                 <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"

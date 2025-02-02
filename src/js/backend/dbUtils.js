@@ -241,7 +241,6 @@ export default class DBUtils {
         stats = statsResult.length > 0 ? statsResult[0].values : [];
 
 
-        console.log("Stats: ", stats);
 
         return result.concat(stats.map(s => s[0]));
     }
@@ -262,20 +261,27 @@ export default class DBUtils {
 
         if (result.length > 0 && result[0].values.length > 0) {
             [day, currentSeason] = result[0].values[0];
-            console.log("Day:", day, "Current Season:", currentSeason);
         } else {
             console.warn("No se encontraron datos en Player_State.");
             day = 0;
             currentSeason = 0;
         }
 
-        const retirementAge = this.db.exec(`
-          SELECT RetirementAge FROM Staff_GameData WHERE StaffID = ${driverID}
-        `).values?.[0];
 
-        const dob = this.db.exec(`
-          SELECT DOB FROM Staff_BasicData WHERE StaffID = ${driverID}
-        `).values?.[0];
+        const retirementResult = this.db.exec(`
+            SELECT RetirementAge FROM Staff_GameData WHERE StaffID = ${driverID}
+          `);
+          const retirementAge = retirementResult.length > 0 && retirementResult[0].values.length > 0
+            ? retirementResult[0].values[0][0]
+            : null;
+          
+          const dobResult = this.db.exec(`
+            SELECT DOB FROM Staff_BasicData WHERE StaffID = ${driverID}
+          `);
+          const dob = dobResult.length > 0 && dobResult[0].values.length > 0
+            ? dobResult[0].values[0][0]
+            : null;
+          
 
         return [retirementAge, Math.floor((day - dob) / 365.25)];
     }
@@ -298,6 +304,19 @@ export default class DBUtils {
         }
 
         return code.toUpperCase();
+    }
+
+    fetchYear() {
+        const result = this.db.exec(`
+          SELECT Day, CurrentSeason FROM Player_State
+        `);
+
+        if (result.length === 0 || result[0].values.length === 0) {
+            console.warn("No data found in Player_State.");
+            return 0;
+        }
+
+        return result[0].values[0][1];
     }
 
 
@@ -500,6 +519,29 @@ export default class DBUtils {
 
         return formattedData;
     }
+
+    fetchCalendar() {
+        const daySeasonResult = this.db.exec(`
+          SELECT Day, CurrentSeason FROM Player_State
+        `);
+      
+        if (daySeasonResult.length === 0 || daySeasonResult[0].values.length === 0) {
+          console.warn("No data found in Player_State.");
+          return [];
+        }
+      
+        const [day, currentSeason] = daySeasonResult[0].values[0];
+      
+        const calendarResult = this.db.exec(`
+          SELECT TrackID, WeatherStatePractice, WeatherStateQualifying, WeatherStateRace, WeekendType, State
+          FROM Races
+          WHERE SeasonID = ${currentSeason}
+        `);
+      
+        const calendar = calendarResult.length > 0 ? calendarResult[0].values : [];
+      
+        return calendar;
+      }
 
 
 

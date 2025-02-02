@@ -34,6 +34,7 @@ export function removeStatsDrivers() {
  * @param {Object} driversArray Object with all the drivers that the backend fetched
  */
 export function place_drivers_editStats(driversArray) {
+    console.log(driversArray)
     let divPosition;
     driversArray.forEach((driver) => {
         divPosition = "fulldriverlist"
