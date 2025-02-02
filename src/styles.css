@@ -603,7 +603,7 @@ i.bi-file-text:hover{
   text-align: center;
   color: var(--white-general);
   font-size: 28px;
-  padding: 16px 0;
+  padding: 10px 0; 
   flex: 1;
 }
 
@@ -5959,6 +5959,11 @@ input.disabled{
   flex-direction: column;
   justify-content: center;
   background-color: var(--background);
+}
+
+.blocking-div.drag-over {
+  border: 2px dashed #00cc66;
+  background-color: rgba(0, 255, 204, 0.1);
 }
 
 .splash-text{

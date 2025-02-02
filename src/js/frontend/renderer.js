@@ -1,19 +1,105 @@
 import { marked } from 'marked';
 
-import { resetTeamEditing, fillLevels } from './teams';
+import { resetTeamEditing, fillLevels, longTermObj, originalCostCap, gather_team_data, gather_pit_crew, teamCod } from './teams';
 import { resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
     new_load_drivers_table, new_load_teams_table
  } from './seasonViewer';
-import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality } from './config';
-import { freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList } from './transfers';
+import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict } from './config';
+import { freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name } from './transfers';
 import { load_calendar } from './calendar';
 import { load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
-     order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design  } from './performance';
+     order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design, teamsEngine  } from './performance';
 import {  resetPredict, setMidGrid, setMaxRaces, setRelativeGrid, placeRaces, placeRacesInModal } from './predictions';
-import { listeners_plusLess, removeStatsDrivers, place_drivers_editStats, place_staff_editStats,  typeOverall, setStatPanelShown, setTypeOverall,
-    typeEdit, setTypeEdit, change_elegibles
+import { removeStatsDrivers, place_drivers_editStats, place_staff_editStats,  typeOverall, setStatPanelShown, setTypeOverall,
+    typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, manage_mentality_modifiers
   } from './stats';
-import { resetH2H, hideComp, colors_dict, load_drivers_h2h } from './head2head';
+import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs  } from './head2head';
+import { CommandFactory } from '../backend/commandFactory';
+
+
+const names_configs = {
+    "visarb": "VISA CASHAPP RB","toyota": "TOYOTA","hugo": "HUGO BOSS","alphatauri": "ALPHA TAURI","brawn": "BRAWN GP","porsche": "PORSCHE",
+    "alpine": "ALPINE","renault": "RENAULT","andretti": "ANDRETTI","lotus": "LOTUS","alfa": "ALFA ROMEO",
+    "audi": "AUDI","sauber": "SAUBER","stake": "STAKE SAUBER"
+}
+const pretty_names = {
+    "visarb": "Visa Cashapp RB","toyota": "Toyota","hugo": "Hugo Boss","alphatauri": "Alpha Tauri","brawn": "Brawn GP","porsche": "Porsche",
+    "alpine": "Alpine","renault": "Renault","andretti": "Andretti","lotus": "Lotus","alfa": "Alfa Romeo",
+    "audi": "Audi","sauber": "Sauber","stake": "Stake Sauber"
+}
+const abreviations_for_replacements = {"visarb": "VCARB", "toyota": "TOY", "hugo": "HUGO", "alphatauri": "AT", "brawn": "BGP", "porsche": "POR",
+    "alpine": "ALP", "renault": "REN", "andretti": "AND", "lotus": "LOT", "alfa": "ALFA", "audi": "AUDI", "sauber": "SAU", "stake": "STK"
+}
+const logos_configs = {
+    "visarb": "../assets/images/visarb.png","toyota": "../assets/images/toyota.png","hugo": "../assets/images/hugoboss.png","alphatauri": "../assets/images/alphatauri.png",
+    "brawn": "../assets/images/brawn.png","porsche": "../assets/images/porsche.png",
+    "alpine": "../assets/images/alpine.png","renault": "../assets/images/renault.png","andretti": "../assets/images/andretti.png","lotus": "../assets/images/lotus.png",
+    "alfa": "../assets/images/alfaromeo.png","audi": "../assets/images/audi.png","sauber": "../assets/images/sauber.png","stake": "../assets/images/kick.png"
+}
+const logos_classes_configs = {
+    "visarb": "visarblogo","toyota": "toyotalogo","hugo": "hugologo","alphatauri": "alphataurilogo",
+    "porsche": "porschelogo","brawn": "brawnlogo",
+    "alpine": "alpinelogo","renault": "ferrarilogo","andretti": "andrettilogo","lotus": "lotuslogo",
+    "alfa": "alfalogo","audi": "audilogo","sauber": "sauberlogo","stake": "alfalogo"
+}
+
+const driverTransferPill = document.getElementById("transferpill");
+const editStatsPill = document.getElementById("statspill");
+const CalendarPill = document.getElementById("calendarpill");
+const carPill = document.getElementById("carpill");
+const viewPill = document.getElementById("viewerpill");
+const h2hPill = document.getElementById("h2hpill");
+const constructorsPill = document.getElementById("constructorspill")
+const predictPill = document.getElementById("predictpill")
+
+const editorPill = document.getElementById("editorPill")
+const gamePill = document.getElementById("gamePill")
+
+const driverTransferDiv = document.getElementById("driver_transfers");
+const editStatsDiv = document.getElementById("edit_stats");
+const customCalendarDiv = document.getElementById("custom_calendar");
+const carPerformanceDiv = document.getElementById("car_performance");
+const viewDiv = document.getElementById("season_viewer");
+const h2hDiv = document.getElementById("head2head_viewer");
+const teamsDiv = document.getElementById("edit_teams");
+const predictDiv = document.getElementById("predict_results")
+
+const patchNotesBody = document.getElementById("patchNotesBody")
+const selectImageButton = document.getElementById('selectImage');
+
+const scriptsArray = [predictDiv,h2hDiv,viewDiv,driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv,teamsDiv]
+
+const dropDownMenu = document.getElementById("dropdownMenu");
+
+const notificationPanel = document.getElementById("notificationPanel");
+
+const logButton = document.getElementById("logFileButton");
+
+const status = document.querySelector(".status-info")
+const updateInfo = document.querySelector(".update-info")
+const noNotifications = ["Custom Engines fetched","Cars fetched","Part values fetched", "Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
+let difficulty_dict = {
+    "-2": "Custom",
+    0: "default",
+    1: "reduced weight",
+    2: "extra-hard",
+    3: "brutal",
+    4: "unfair",
+    5: "insane",
+    6: "impossible"
+}
+
+let inverted_difficulty_dict = {
+    "disabled": -1,
+    "default": 0,
+    "reduced weight": 1,
+    "extra-hard": 2,
+    "brutal": 3,
+    "unfair": 4,
+    "insane": 5,
+    "impossible": 6
+}
+let difcultyCustom = "default"
 
 let conn = 0;
 export let game_version = 2023;
@@ -21,6 +107,15 @@ export let custom_team = false;
 let customIconPath = null;
 let firstShow = false;
 let configCopy;
+
+let versionNow;
+const versionPanel = document.querySelector('.version-panel');
+const parchModalTitle = document.getElementById("patchModalTitle")
+
+const repoOwner = 'IUrreta';
+const repoName = 'DatabaseEditor';
+
+export const factory = new CommandFactory();
 
 
 export const socket = new WebSocket('ws://localhost:8765/');
@@ -37,12 +132,7 @@ socket.onopen = () => {
 };
 
 
-let versionNow;
-const versionPanel = document.querySelector('.version-panel');
-const parchModalTitle = document.getElementById("patchModalTitle")
 
-const repoOwner = 'IUrreta';
-const repoName = 'DatabaseEditor';
 
 /**
  * get the patch notes from the actual version fro the github api
@@ -421,96 +511,12 @@ export function manageSaveButton(show,mode) {
     }
 }
 
-document.addEventListener('DOMContentLoaded',function () {
 
-    const names_configs = {
-        "visarb": "VISA CASHAPP RB","toyota": "TOYOTA","hugo": "HUGO BOSS","alphatauri": "ALPHA TAURI","brawn": "BRAWN GP","porsche": "PORSCHE",
-        "alpine": "ALPINE","renault": "RENAULT","andretti": "ANDRETTI","lotus": "LOTUS","alfa": "ALFA ROMEO",
-        "audi": "AUDI","sauber": "SAUBER","stake": "STAKE SAUBER"
-    }
-    const pretty_names = {
-        "visarb": "Visa Cashapp RB","toyota": "Toyota","hugo": "Hugo Boss","alphatauri": "Alpha Tauri","brawn": "Brawn GP","porsche": "Porsche",
-        "alpine": "Alpine","renault": "Renault","andretti": "Andretti","lotus": "Lotus","alfa": "Alfa Romeo",
-        "audi": "Audi","sauber": "Sauber","stake": "Stake Sauber"
-    }
-    const abreviations_for_replacements = {"visarb": "VCARB", "toyota": "TOY", "hugo": "HUGO", "alphatauri": "AT", "brawn": "BGP", "porsche": "POR",
-        "alpine": "ALP", "renault": "REN", "andretti": "AND", "lotus": "LOT", "alfa": "ALFA", "audi": "AUDI", "sauber": "SAU", "stake": "STK"
-    }
-    const logos_configs = {
-        "visarb": "../assets/images/visarb.png","toyota": "../assets/images/toyota.png","hugo": "../assets/images/hugoboss.png","alphatauri": "../assets/images/alphatauri.png",
-        "brawn": "../assets/images/brawn.png","porsche": "../assets/images/porsche.png",
-        "alpine": "../assets/images/alpine.png","renault": "../assets/images/renault.png","andretti": "../assets/images/andretti.png","lotus": "../assets/images/lotus.png",
-        "alfa": "../assets/images/alfaromeo.png","audi": "../assets/images/audi.png","sauber": "../assets/images/sauber.png","stake": "../assets/images/kick.png"
-    }
-    const logos_classes_configs = {
-        "visarb": "visarblogo","toyota": "toyotalogo","hugo": "hugologo","alphatauri": "alphataurilogo",
-        "porsche": "porschelogo","brawn": "brawnlogo",
-        "alpine": "alpinelogo","renault": "ferrarilogo","andretti": "andrettilogo","lotus": "lotuslogo",
-        "alfa": "alfalogo","audi": "audilogo","sauber": "sauberlogo","stake": "alfalogo"
-    }
 
-    const driverTransferPill = document.getElementById("transferpill");
-    const editStatsPill = document.getElementById("statspill");
-    const CalendarPill = document.getElementById("calendarpill");
-    const carPill = document.getElementById("carpill");
-    const viewPill = document.getElementById("viewerpill");
-    const h2hPill = document.getElementById("h2hpill");
-    const constructorsPill = document.getElementById("constructorspill")
-    const predictPill = document.getElementById("predictpill")
-
-    const editorPill = document.getElementById("editorPill")
-    const gamePill = document.getElementById("gamePill")
-
-    const driverTransferDiv = document.getElementById("driver_transfers");
-    const editStatsDiv = document.getElementById("edit_stats");
-    const customCalendarDiv = document.getElementById("custom_calendar");
-    const carPerformanceDiv = document.getElementById("car_performance");
-    const viewDiv = document.getElementById("season_viewer");
-    const h2hDiv = document.getElementById("head2head_viewer");
-    const teamsDiv = document.getElementById("edit_teams");
-    const predictDiv = document.getElementById("predict_results")
-
-    const patchNotesBody = document.getElementById("patchNotesBody")
-    const selectImageButton = document.getElementById('selectImage');
-
-    const scriptsArray = [predictDiv,h2hDiv,viewDiv,driverTransferDiv,editStatsDiv,customCalendarDiv,carPerformanceDiv,teamsDiv]
-
-    const dropDownMenu = document.getElementById("dropdownMenu");
-
-    const notificationPanel = document.getElementById("notificationPanel");
-
-    const logButton = document.getElementById("logFileButton");
-
-    const status = document.querySelector(".status-info")
-    const updateInfo = document.querySelector(".update-info")
-    const noNotifications = ["Custom Engines fetched","Cars fetched","Part values fetched", "Parts stats fetched","24 Year","Game Year","Performance fetched","Season performance fetched","Config","ERROR","Montecarlo fetched","TeamData Fetched","Progress","JIC","Calendar fetched","Contract fetched","Staff Fetched","Engines fetched","Results fetched","Year fetched","Numbers fetched","H2H fetched","DriversH2H fetched","H2HDriver fetched","Retirement fetched","Prediction Fetched","Events to Predict Fetched","Events to Predict Modal Fetched"]
-    let difficulty_dict = {
-        "-2": "Custom",
-        0: "default",
-        1: "reduced weight",
-        2: "extra-hard",
-        3: "brutal",
-        4: "unfair",
-        5: "insane",
-        6: "impossible"
-    }
-
-    let inverted_difficulty_dict = {
-        "disabled": -1,
-        "default": 0,
-        "reduced weight": 1,
-        "extra-hard": 2,
-        "brutal": 3,
-        "unfair": 4,
-        "insane": 5,
-        "impossible": 6
-    }
-    let difcultyCustom = "default"
 
     const messageHandlers = {
         "ERROR": (message) => {
             update_notifications(message[1],"error");
-            manage_status(0);
         },
         "JIC": (message) => {
             if (conn === 0) {
@@ -527,7 +533,6 @@ document.addEventListener('DOMContentLoaded',function () {
             clearTimeout(connectionTimeout);
             manage_status(1);
             check_version();
-            listeners_plusLess();
         },
         "Save Loaded Succesfully": (message) => {
             remove_drivers();
@@ -639,14 +644,6 @@ document.addEventListener('DOMContentLoaded',function () {
     let divBlocking = 1;
 
 
-
-    let connectionTimeout = setTimeout(() => {
-        update_notifications("Could not connect with backend","error")
-        manage_status(0)
-    },8000);
-
-
-
     /**
      * Handles the receiving end from the messages sent from backend
      * @param {string} event the message tha tcomes fro the backend
@@ -671,23 +668,6 @@ document.addEventListener('DOMContentLoaded',function () {
         window.location.href = '../log.txt';
     })
 
-    /** 
-     * Manages the look of the status icon in the footer
-     * @param {int} state state of the connection with backend
-     */
-    function manage_status(state) {
-        if (state == 1) {
-            status.classList.remove("awaiting")
-            status.classList.add("positive")
-            status.textContent = '\xa0' + "Connected"
-        }
-        else if (state == 0) {
-            status.classList.remove("awaiting")
-            status.classList.remove("positive")
-            status.classList.add("negative")
-            status.textContent = '\xa0' + "Disconnected"
-        }
-    }
 
     function resizeWindowToHeight(mode) {
         if (mode === "11teams") {
@@ -1783,5 +1763,3 @@ function listenersStaffGroups() {
     document.querySelector("#cancelDetailsButton").addEventListener("click",function () {
         manage_config_content(configCopy[0], false)
     })
-
-});

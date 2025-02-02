@@ -2,10 +2,10 @@ import {  team_dict  } from "./config";
 import { socket } from "./renderer";
 import { manage_stat_bar } from "./stats";
 
-let teamCod;
+export let teamCod;
 let currYear;
-let originalCostCap;
-let longTermObj;
+export let originalCostCap;
+export let longTermObj;
 
 
 /**
@@ -456,7 +456,7 @@ document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-left").forEa
  * Collects the data for each facility
  * @returns array with tuples for each facility
  */
-function gather_team_data() {
+export function gather_team_data() {
     let facilities = document.getElementsByClassName('facility');
     let result = [];
 
@@ -473,7 +473,7 @@ function gather_team_data() {
     return result
 }
 
-function gather_pit_crew(){
+export function gather_pit_crew(){
     let pitCrewStats = document.querySelectorAll(".pit-crew-details .one-stat-panel");
     let result = {};
     pitCrewStats.forEach(function(elem){

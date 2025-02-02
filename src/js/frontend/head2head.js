@@ -1,4 +1,4 @@
-import { races_names, team_dict, combined_dict  } from "./config";
+import { races_names, team_dict, combined_dict, lightColors  } from "./config";
 import { game_version, socket, custom_team } from "./renderer";
 import { insert_space, manageColor } from "./transfers";
 import { relative_grid } from "./predictions";
@@ -41,7 +41,7 @@ Chart.register(ChartDataLabels);
  * Puts the bars of the head to head with the correct width for the drivers selected
  * @param {object} data object with all the info of the comparision between both drivers
  */
-function manage_h2h_bars(data) {
+export function manage_h2h_bars(data) {
     let relValue
     let d1_width
     let d2_width
@@ -265,6 +265,9 @@ function fill_bars(elem, d1_width, d2_width) {
  */
 function toggle_sprints() {
     let elem = document.querySelector("#bestrh2h")
+    let d1_width;
+    let d2_width;
+    let relValue;
     if (sprints) {
         elem.querySelector(".only-name").textContent = "SPRINT WINS"
         relValue = (100 / (compData[9][0] + compData[9][1])).toFixed(2)
@@ -304,6 +307,9 @@ function toggle_sprints() {
 }
 
 function toggle_racePace() {
+    let d1_width;
+    let d2_width;
+    let relValue
     let elem = document.querySelector("#raceh2h")
     if (race === 1) {
         elem.querySelector(".only-name").textContent = "AVG PACE DIFF (s)"
@@ -360,6 +366,9 @@ function toggle_racePace() {
 
 function toggle_qualiPace() {
     let elem = document.querySelector("#qualih2h")
+    let d1_width;
+    let d2_width;
+    let relValue;
     if (quali === 1) {
         elem.querySelector(".only-name").textContent = "AVG QUALI DIFF (s)"
         elem.querySelector(".bar-space").classList.add("d-none")
@@ -417,7 +426,7 @@ function toggle_qualiPace() {
 /**
  * Adds listeners for the arrows to change between sprints and races
  */
-function sprintsListeners() {
+export function sprintsListeners() {
     document.querySelector("#bestrh2h").querySelectorAll("i").forEach(function (elem) {
         elem.removeEventListener('evento2', change_sprintView);
         elem.addEventListener("click", change_sprintView)
@@ -427,7 +436,7 @@ function sprintsListeners() {
 /**
  * listeners to the race head to head comparison
  */
-function racePaceListener() {
+export function racePaceListener() {
     document.querySelector("#raceh2h").querySelectorAll(".bi-chevron-right").forEach(function (elem) {
         elem.removeEventListener('evento5', increase_racePaceView);
         elem.addEventListener("click", increase_racePaceView)
@@ -441,7 +450,7 @@ function racePaceListener() {
 /**
  * listeners to the qualifying head to head comparison
  */
-function qualiPaceListener() {
+export function qualiPaceListener() {
     document.querySelector("#qualih2h").querySelectorAll(".bi-chevron-right").forEach(function (elem) {
         elem.removeEventListener('evento3', increase_qualiPaceView);
         elem.addEventListener("click", increase_qualiPaceView)
@@ -975,7 +984,7 @@ function manageH2hState() {
     }
 }
 
-function load_labels_initialize_graphs(data) {
+export function load_labels_initialize_graphs(data) {
     var labels = [];
     data[0].forEach(function (elem) {
         labels.push(races_names[elem[1]])

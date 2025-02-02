@@ -139,7 +139,7 @@ function add_edit_container(div){
 }
  
 
-function update_name(driverID, name) {
+export function update_name(driverID, name) {
     let freeDiv = document.querySelector(`.free-driver[data-driverid='${driverID}']`)
     let normalDiv = document.querySelector(`.normal-driver[data-driverid='${driverID}']`)
     let nameContainer = freeDiv.querySelector(".name-container")

@@ -1,4 +1,4 @@
-import {  team_dict, mentalityModifiers, teamOrder, mentality_dict  } from "./config";
+import { team_dict, mentalityModifiers, teamOrder, mentality_dict } from "./config";
 import { insert_space, manageColor } from "./transfers";
 
 
@@ -77,14 +77,14 @@ export function place_drivers_editStats(driversArray) {
         newDiv.dataset.raceFormula = driver["race_formula"]
         newDiv.dataset.driverCode = driver["driver_code"]
         newDiv.dataset.isRetired = driver[4]
-        if (driver["nationality"] !== ""){
+        if (driver["nationality"] !== "") {
             let country_code = driver["nationality"]
             let flag = document.createElement("img")
             flag.className = "name-flag"
             flag.src = `https://flagsapi.com/${country_code}/flat/24.png`
             nameDiv.appendChild(flag)
         }
-        if (driver["mentality0"]  >= 0) {
+        if (driver["mentality0"] >= 0) {
             newDiv.dataset.mentality0 = driver["mentality0"]
             newDiv.dataset.mentality1 = driver["mentality1"]
             newDiv.dataset.mentality2 = driver["mentality2"]
@@ -92,17 +92,17 @@ export function place_drivers_editStats(driversArray) {
         }
         let mentality = driver["global_mentality"]
         let modifier = getMentalityModifier(mentality);
-        if (modifier > 0){
+        if (modifier > 0) {
             mentality_ovrSpan.classList.add("mentality-small-ovr-positive")
         }
-        else if (modifier < 0){
+        else if (modifier < 0) {
             mentality_ovrSpan.classList.add("mentality-small-ovr-negative")
         }
         newDiv.dataset.marketability = driver["marketability"]
         let ovr = calculateOverall(statsString, "driver", mentality)
         ovrSpan.textContent = ovr[0]
         mentality_ovrSpan.textContent = ""
-        if (ovr[0] !== ovr[1]){
+        if (ovr[0] !== ovr[1]) {
             mentality_ovrSpan.textContent = ovr[1]
         }
         ovrDiv.appendChild(mentality_ovrSpan)
@@ -131,7 +131,7 @@ export function place_drivers_editStats(driversArray) {
                 mentalitydiff.textContent = diff
                 mentalitydiff.className = "mentality-change-ovr negative"
             }
-            else{
+            else {
                 mentalitydiff.textContent = ""
                 mentalitydiff.className = "mentality-change-ovr"
             }
@@ -223,7 +223,7 @@ export function place_staff_editStats(staffArray) {
         newDiv.dataset.retirement = staff["retirement_age"]
         newDiv.dataset.raceFormula = staff["race_formula"]
         newDiv.dataset.isRetired = staff[4]
-        if (staff["nationality"] !== ""){
+        if (staff["nationality"] !== "") {
             let country_code = staff["nationality"]
             let flag = document.createElement("img")
             flag.className = "name-flag"
@@ -240,15 +240,15 @@ export function place_staff_editStats(staffArray) {
         let ovr = calculateOverall(statsString, "staff", mentality)
         ovrSpan.textContent = ovr[0]
         mentality_ovrSpan.textContent = ""
-        if (ovr[0] !== ovr[1]){
+        if (ovr[0] !== ovr[1]) {
             mentality_ovrSpan.textContent = ovr[1]
         }
         ovrDiv.appendChild(mentality_ovrSpan)
         let modifier = getMentalityModifier(mentality);
-        if (modifier > 0){
+        if (modifier > 0) {
             mentality_ovrSpan.classList.add("mentality-small-ovr-positive")
         }
-        else if (modifier < 0){
+        else if (modifier < 0) {
             mentality_ovrSpan.classList.add("mentality-small-ovr-negative")
         }
         ovrDiv.appendChild(ovrSpan)
@@ -276,7 +276,7 @@ export function place_staff_editStats(staffArray) {
                 mentalitydiff.textContent = diff
                 mentalitydiff.classList.add("negative")
             }
-            else{
+            else {
                 mentalitydiff.textContent = ""
                 mentalitydiff.classList.remove("positive")
                 mentalitydiff.classList.remove("negative")
@@ -291,9 +291,9 @@ export function place_staff_editStats(staffArray) {
 
 function getMentalityModifier(mentality) {
     let keys = Object.keys(mentalityModifiers).map(Number).sort((a, b) => a - b);
-    
+
     let nextKey = keys.find(key => key > mentality);
-    
+
     return nextKey !== undefined ? mentalityModifiers[nextKey] : null;
 }
 
@@ -335,7 +335,7 @@ function recalculateOverall() {
  * @param {*} html element with the name bad formatted
  * @returns the name formatted
  */
-function getName(html) {
+export function getName(html) {
     let name = ""
     html.querySelectorAll('span').forEach(function (elem) {
         name += elem.innerText + " "
@@ -353,7 +353,7 @@ function getName(html) {
  * @param {string} type type of staff
  * @returns the number of his overall value
  */
-function calculateOverall(stats, type, mentality=2, ovr="small") {
+export function calculateOverall(stats, type, mentality = 2, ovr = "small") {
     let statsArray = stats.split(" ").map(Number);
     let mentality_stats = [];
     for (let i = 0; i < statsArray.length; i++) {
@@ -384,7 +384,7 @@ function calculateOverall(stats, type, mentality=2, ovr="small") {
         rating = suma / statsArray.length;
         mentality_rating = mentality_rating / statsArray.length;
     }
-    if(ovr === "small"){
+    if (ovr === "small") {
         return [Math.round(rating), Math.round(mentality_rating)];
     }
     else {
@@ -401,253 +401,253 @@ function updateStat(input, increment) {
     manage_stat_bar(input, val);
 }
 
-export function listeners_plusLess() {
-    document.querySelectorAll(".attirbutes-panel .bi-plus-lg").forEach(button => {
-        let intervalId;
-        button.addEventListener('mousedown', function () {
-            let input = this.parentNode.parentNode.querySelector("input");
+
+document.querySelectorAll(".attirbutes-panel .bi-plus-lg").forEach(button => {
+    let intervalId;
+    button.addEventListener('mousedown', function () {
+        let input = this.parentNode.parentNode.querySelector("input");
+        updateStat(input, 1);
+        intervalId = setInterval(() => {
             updateStat(input, 1);
-            intervalId = setInterval(() => {
-                updateStat(input, 1);
-            }, 100);
-        });
-
-        button.addEventListener('mouseup', function () {
-            clearInterval(intervalId);
-        });
-
-        button.addEventListener('mouseleave', function () {
-            clearInterval(intervalId);
-        });
+        }, 100);
     });
 
-    document.querySelectorAll(".attirbutes-panel .bi-dash-lg").forEach(button => {
-        let intervalId;
-        button.addEventListener('mousedown', function () {
-            let input = this.parentNode.parentNode.querySelector("input");
+    button.addEventListener('mouseup', function () {
+        clearInterval(intervalId);
+    });
+
+    button.addEventListener('mouseleave', function () {
+        clearInterval(intervalId);
+    });
+});
+
+document.querySelectorAll(".attirbutes-panel .bi-dash-lg").forEach(button => {
+    let intervalId;
+    button.addEventListener('mousedown', function () {
+        let input = this.parentNode.parentNode.querySelector("input");
+        updateStat(input, -1);
+        intervalId = setInterval(() => {
             updateStat(input, -1);
-            intervalId = setInterval(() => {
-                updateStat(input, -1);
-            }, 100);
-        });
-
-        button.addEventListener('mouseup', function () {
-            clearInterval(intervalId);
-        });
-
-        button.addEventListener('mouseleave', function () {
-            clearInterval(intervalId);
-        });
+        }, 100);
     });
 
-    document.querySelectorAll(".age-holder .bi-plus-lg").forEach(function (elem) {
-        elem.addEventListener('mousedown', function (event) {
-            let intervalId;
-            let input = event.target.parentNode.parentNode.querySelector(".age-ret");
-            function updateRetirement(increment) {
-                let age = parseInt(input.innerText.split(" ")[1]) + increment;
+    button.addEventListener('mouseup', function () {
+        clearInterval(intervalId);
+    });
 
-                input.innerText = input.dataset.text + " " + age;
-            }
+    button.addEventListener('mouseleave', function () {
+        clearInterval(intervalId);
+    });
+});
+
+document.querySelectorAll(".age-holder .bi-plus-lg").forEach(function (elem) {
+    elem.addEventListener('mousedown', function (event) {
+        let intervalId;
+        let input = event.target.parentNode.parentNode.querySelector(".age-ret");
+        function updateRetirement(increment) {
+            let age = parseInt(input.innerText.split(" ")[1]) + increment;
+
+            input.innerText = input.dataset.text + " " + age;
+        }
+        updateRetirement(1);
+        intervalId = setInterval(() => {
             updateRetirement(1);
-            intervalId = setInterval(() => {
-                updateRetirement(1);
-            }, 100);
-            this.addEventListener('mouseup', function () {
-                clearInterval(intervalId);
-            });
-            this.addEventListener('mouseleave', function () {
-                clearInterval(intervalId);
-            });
+        }, 100);
+        this.addEventListener('mouseup', function () {
+            clearInterval(intervalId);
+        });
+        this.addEventListener('mouseleave', function () {
+            clearInterval(intervalId);
         });
     });
+});
 
-    document.querySelectorAll(".age-holder .bi-dash-lg").forEach(function (elem) {
-        elem.addEventListener('mousedown', function (event) {
-            let intervalId;
-            let input = event.target.parentNode.parentNode.querySelector(".age-ret");
-            function updateRetirement(increment) {
-                let age = parseInt(input.innerText.split(" ")[1]) + increment;
-                input.innerText = input.dataset.text + " " + age;
-            }
+document.querySelectorAll(".age-holder .bi-dash-lg").forEach(function (elem) {
+    elem.addEventListener('mousedown', function (event) {
+        let intervalId;
+        let input = event.target.parentNode.parentNode.querySelector(".age-ret");
+        function updateRetirement(increment) {
+            let age = parseInt(input.innerText.split(" ")[1]) + increment;
+            input.innerText = input.dataset.text + " " + age;
+        }
+        updateRetirement(-1);
+        intervalId = setInterval(() => {
             updateRetirement(-1);
-            intervalId = setInterval(() => {
-                updateRetirement(-1);
-            }, 100);
-            this.addEventListener('mouseup', function () {
-                clearInterval(intervalId);
-            });
-            this.addEventListener('mouseleave', function () {
-                clearInterval(intervalId);
-            });
+        }, 100);
+        this.addEventListener('mouseup', function () {
+            clearInterval(intervalId);
+        });
+        this.addEventListener('mouseleave', function () {
+            clearInterval(intervalId);
         });
     });
+});
 
-    document.querySelector("#nameFilter").addEventListener("input", function (event) {
-        let text = event.target.value
-        if (text !== "") {
-            document.querySelector("#filterContainer").querySelector(".bi-x").classList.remove("d-none")
+document.querySelector("#nameFilter").addEventListener("input", function (event) {
+    let text = event.target.value
+    if (text !== "") {
+        document.querySelector("#filterContainer").querySelector(".bi-x").classList.remove("d-none")
+    }
+    else {
+        document.querySelector("#filterContainer").querySelector(".bi-x").classList.add("d-none")
+    }
+    let elements = document.querySelectorAll(".normal-driver")
+    elements.forEach(function (elem) {
+        let first_name = elem.children[0].children[0].innerText
+        let last_name = elem.children[0].children[1].innerText
+        let full_name = first_name + " " + last_name
+        let minus = full_name.toLowerCase()
+        let name = text.toLowerCase()
+        if (minus.includes(name)) {
+            elem.classList.remove("d-none")
         }
         else {
-            document.querySelector("#filterContainer").querySelector(".bi-x").classList.add("d-none")
+            elem.classList.add("d-none")
         }
+    })
+})
+
+document.querySelectorAll(".text-filter-container .bi-x").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        let input = elem.parentNode.querySelector("input")
+        input.value = ""
+        elem.classList.add("d-none")
+        let event = new Event('input', {
+            bubbles: true,
+            cancelable: true
+        });
+        input.dispatchEvent(event);
+    })
+})
+
+document.querySelector("#filterIcon").addEventListener("click", function () {
+    document.getElementById("edit_stats").querySelector(".category-filters").classList.toggle("show")
+    document.getElementById("edit_stats").querySelector(".filter-container").classList.toggle("focused")
+})
+
+document.getElementById("edit_stats").querySelectorAll(".filter-pills").forEach(function (elem) {
+    elem.addEventListener("click", function (event) {
+        let isActive = elem.classList.contains('active');
+
+        document.getElementById("edit_stats").querySelectorAll('.filter-pills').forEach(function (el) {
+            el.classList.remove('active');
+        });
+
+        if (!isActive) {
+            elem.classList.add('active');
+        }
+    })
+})
+
+document.querySelector("#F1filter").addEventListener("click", function (event) {
+    if (!event.target.classList.contains("active")) {
         let elements = document.querySelectorAll(".normal-driver")
         elements.forEach(function (elem) {
-            let first_name = elem.children[0].children[0].innerText
-            let last_name = elem.children[0].children[1].innerText
-            let full_name = first_name + " " + last_name
-            let minus = full_name.toLowerCase()
-            let name = text.toLowerCase()
-            if (minus.includes(name)) {
+            elem.classList.remove("d-none")
+        })
+    }
+    else {
+        let elements = document.querySelectorAll(".normal-driver")
+        elements.forEach(function (elem) {
+            if (parseInt(elem.dataset.raceFormula) === 1) {
                 elem.classList.remove("d-none")
             }
             else {
                 elem.classList.add("d-none")
             }
         })
-    })
+    }
+})
 
-    document.querySelectorAll(".text-filter-container .bi-x").forEach(function (elem) {
-        elem.addEventListener("click", function () {
-            let input = elem.parentNode.querySelector("input")
-            input.value = ""
-            elem.classList.add("d-none")
-            let event = new Event('input', {
-                bubbles: true,
-                cancelable: true
-            });
-            input.dispatchEvent(event);
+document.querySelector("#F2filter").addEventListener("click", function (event) {
+    if (!event.target.classList.contains("active")) {
+        let elements = document.querySelectorAll(".normal-driver")
+        elements.forEach(function (elem) {
+            elem.classList.remove("d-none")
         })
-    })
-
-    document.querySelector("#filterIcon").addEventListener("click", function () {
-        document.getElementById("edit_stats").querySelector(".category-filters").classList.toggle("show")
-        document.getElementById("edit_stats").querySelector(".filter-container").classList.toggle("focused")
-    })
-
-    document.getElementById("edit_stats").querySelectorAll(".filter-pills").forEach(function (elem) {
-        elem.addEventListener("click", function (event) {
-            let isActive = elem.classList.contains('active');
-
-            document.getElementById("edit_stats").querySelectorAll('.filter-pills').forEach(function (el) {
-                el.classList.remove('active');
-            });
-
-            if (!isActive) {
-                elem.classList.add('active');
+    }
+    else {
+        let elements = document.querySelectorAll(".normal-driver")
+        elements.forEach(function (elem) {
+            if (parseInt(elem.dataset.raceFormula) === 2) {
+                elem.classList.remove("d-none")
+            }
+            else {
+                elem.classList.add("d-none")
             }
         })
-    })
+    }
+})
 
-    document.querySelector("#F1filter").addEventListener("click", function (event) {
-        if (!event.target.classList.contains("active")) {
-            let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function (elem) {
-                elem.classList.remove("d-none")
-            })
-        }
-        else {
-            let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function (elem) {
-                if (parseInt(elem.dataset.raceFormula) === 1) {
-                    elem.classList.remove("d-none")
-                }
-                else {
-                    elem.classList.add("d-none")
-                }
-            })
-        }
-    })
-
-    document.querySelector("#F2filter").addEventListener("click", function (event) {
-        if (!event.target.classList.contains("active")) {
-            let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function (elem) {
-                elem.classList.remove("d-none")
-            })
-        }
-        else {
-            let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function (elem) {
-                if (parseInt(elem.dataset.raceFormula) === 2) {
-                    elem.classList.remove("d-none")
-                }
-                else {
-                    elem.classList.add("d-none")
-                }
-            })
-        }
-    })
-
-    document.querySelector("#F3filter").addEventListener("click", function (event) {
-        if (!event.target.classList.contains("active")) {
-            let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function (elem) {
-                elem.classList.remove("d-none")
-            })
-        }
-        else {
-            let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function (elem) {
-                if (parseInt(elem.dataset.raceFormula) === 3) {
-                    elem.classList.remove("d-none")
-                }
-                else {
-                    elem.classList.add("d-none")
-                }
-            })
-        }
-    })
-
-    document.querySelector("#freefilter").addEventListener("click", function (event) {
-        if (!event.target.classList.contains("active")) {
-            let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function (elem) {
-                elem.classList.remove("d-none")
-            })
-        }
-        else {
-            let elements = document.querySelectorAll(".normal-driver")
-            elements.forEach(function (elem) {
-                if (parseInt(elem.dataset.raceFormula) === 4) {
-                    elem.classList.remove("d-none")
-                }
-                else {
-                    elem.classList.add("d-none")
-                }
-            })
-        }
-    })
-
-    document.querySelector(".order-space").querySelectorAll("i").forEach(function (elem) {
-        elem.addEventListener("click", function (event) {
-            let parent = elem.parentNode
-            let state = parent.dataset.state
-            let orderNumUp = document.querySelector(".bi-sort-numeric-up-alt")
-            let orderNumDown = document.querySelector(".bi-sort-numeric-down")
-            parent.dataset.state = (parseInt(state) + 1) % 3
-            if (parent.dataset.state == 0) {
-                orderNumUp.classList.remove("active")
-                orderNumUp.classList.remove("hidden")
-                orderNumDown.classList.add("hidden")
-            }
-            else if (parent.dataset.state == 1) {
-                orderNumDown.classList.add("hidden")
-                orderNumDown.classList.add("active")
-                orderNumUp.classList.add("active")
-                orderNumUp.classList.remove("hidden")
-
-            }
-            else if (parent.dataset.state == 2) {
-                orderNumUp.classList.remove("active")
-                orderNumUp.classList.add("hidden")
-                orderNumDown.classList.add("active")
-                orderNumDown.classList.remove("hidden")
-            }
-            manage_order(parseInt(parent.dataset.state))
+document.querySelector("#F3filter").addEventListener("click", function (event) {
+    if (!event.target.classList.contains("active")) {
+        let elements = document.querySelectorAll(".normal-driver")
+        elements.forEach(function (elem) {
+            elem.classList.remove("d-none")
         })
+    }
+    else {
+        let elements = document.querySelectorAll(".normal-driver")
+        elements.forEach(function (elem) {
+            if (parseInt(elem.dataset.raceFormula) === 3) {
+                elem.classList.remove("d-none")
+            }
+            else {
+                elem.classList.add("d-none")
+            }
+        })
+    }
+})
+
+document.querySelector("#freefilter").addEventListener("click", function (event) {
+    if (!event.target.classList.contains("active")) {
+        let elements = document.querySelectorAll(".normal-driver")
+        elements.forEach(function (elem) {
+            elem.classList.remove("d-none")
+        })
+    }
+    else {
+        let elements = document.querySelectorAll(".normal-driver")
+        elements.forEach(function (elem) {
+            if (parseInt(elem.dataset.raceFormula) === 4) {
+                elem.classList.remove("d-none")
+            }
+            else {
+                elem.classList.add("d-none")
+            }
+        })
+    }
+})
+
+document.querySelector(".order-space").querySelectorAll("i").forEach(function (elem) {
+    elem.addEventListener("click", function (event) {
+        let parent = elem.parentNode
+        let state = parent.dataset.state
+        let orderNumUp = document.querySelector(".bi-sort-numeric-up-alt")
+        let orderNumDown = document.querySelector(".bi-sort-numeric-down")
+        parent.dataset.state = (parseInt(state) + 1) % 3
+        if (parent.dataset.state == 0) {
+            orderNumUp.classList.remove("active")
+            orderNumUp.classList.remove("hidden")
+            orderNumDown.classList.add("hidden")
+        }
+        else if (parent.dataset.state == 1) {
+            orderNumDown.classList.add("hidden")
+            orderNumDown.classList.add("active")
+            orderNumUp.classList.add("active")
+            orderNumUp.classList.remove("hidden")
+
+        }
+        else if (parent.dataset.state == 2) {
+            orderNumUp.classList.remove("active")
+            orderNumUp.classList.add("hidden")
+            orderNumDown.classList.add("active")
+            orderNumDown.classList.remove("hidden")
+        }
+        manage_order(parseInt(parent.dataset.state))
     })
-}
+})
+
 
 /**
  * Adds eventListeners to all the elements of the staff dropdown
@@ -755,23 +755,23 @@ export function manage_stat_bar(element, value) {
     bar.style.width = percentage
 }
 
-function manage_mentality_modifiers(element, mentality) {
+export function manage_mentality_modifiers(element, mentality) {
     let name_stat = element.parentNode.parentNode.querySelector("span.bold-font")
     let modifier_span = name_stat.querySelector(".mentality-modifier")
-    if (modifier_span){
+    if (modifier_span) {
         modifier_span.remove()
     }
     let modifier = getMentalityModifier(mentality);
     let mentality_class, span = "";
-    if (modifier > 0){
+    if (modifier > 0) {
         mentality_class = "positive"
         span = "<span class='mentality-modifier positive'> +" + modifier + "</span>"
     }
-    else if (modifier < 0){
+    else if (modifier < 0) {
         mentality_class = "negative"
         span = "<span class='mentality-modifier negative'> " + modifier + "</span>"
     }
-    if (name_stat.textContent !== "GROWTH" && name_stat.textContent !== "AGRESSION"){
+    if (name_stat.textContent !== "GROWTH" && name_stat.textContent !== "AGRESSION") {
         name_stat.innerHTML = name_stat.textContent + span
     }
 }

@@ -12,6 +12,15 @@ module.exports = {
 
   resolve: {
     extensions: ['.js'],
+        fallback: {
+      // Si tu código usa 'buffer' (p.ej. new Buffer o Buffer.from)
+      buffer: require.resolve('buffer/'),
+      "vm": false,
+      "stream": false,
+      "fs": false,
+      "path": false,
+      "crypto": false,
+    },
   },
 
   module: {

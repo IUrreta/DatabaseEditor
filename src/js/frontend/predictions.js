@@ -1,4 +1,4 @@
-import { races_names, team_dict, codes_dict, races_map  } from "./config";
+import { races_names, team_dict, codes_dict, races_map, names_full  } from "./config";
 import { insert_space, manageColor } from "./transfers";
 
 

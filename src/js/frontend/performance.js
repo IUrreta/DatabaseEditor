@@ -16,7 +16,7 @@ let teamSelected;
 let engineSelected;
 let teamEngineSelected;
 let performanceGraph;
-let teamsEngine = "teams"
+export let teamsEngine = "teams"
 export let viewingGraph = true;
 let actualMaxDesign = 0;
 let customEnginesCopy;
