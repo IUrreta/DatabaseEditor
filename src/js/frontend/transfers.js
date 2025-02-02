@@ -184,6 +184,7 @@ export function sortList(divID) {
 }
 
 export function place_staff(staffArray) {
+    console.log(staffArray)
     let divPosition;
     staffArray.forEach((staff) => {
         let newDiv = document.createElement("div");

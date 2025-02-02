@@ -30,29 +30,27 @@ blockDiv.addEventListener("drop", async (event) => {
     const file = event.dataTransfer.files[0];
     if (!file) return;
 
-    try {
-        console.log("Leyendo el archivo:", file.name);
-        const { db, metadata } = await analyzeFileToDatabase(file);
 
-        setDatabase(db, metadata);
-        dbUtils = new DBUtils(db, metadata);
-        console.log("DB y metadata guardados");
+    console.log("Leyendo el archivo:", file.name);
+    const { db, metadata } = await analyzeFileToDatabase(file);
 
-        console.log("¡File readed succesfuly!", metadata);
+    setDatabase(db, metadata);
+    dbUtils = new DBUtils(db, metadata);
+    console.log("DB y metadata guardados");
+
+    console.log("¡File readed succesfuly!", metadata);
 
 
-        const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table'");
-        console.log("All tables:", tables);
+    const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table'");
+    console.log("All tables:", tables);
 
-        const message = { command: 'saveSelected', data: { selectedData: "Hola", prueba2: "Hola mola" } };
-        const command = factory.createCommand(message);
+    const message = { command: 'saveSelected', data: { selectedData: "Hola", prueba2: "Hola mola" } };
+    const command = factory.createCommand(message);
 
-        console.log("Command created:", command);
-        command.execute();
+    console.log("Command created:", command);
+    command.execute();
 
-    } catch (error) {
-        console.error("Error al leer el archivo:", error);
-    }
+
 });
 
 export function getDBUtils() {
