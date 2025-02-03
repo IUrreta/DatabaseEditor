@@ -1,7 +1,7 @@
 import { races_names, part_codes_abreviations, codes_dict, combined_dict, races_map, abreviations_dict, pars_abreviations  } from "./config";
 import { colors_dict } from "./head2head";
 import { manageSaveButton } from "./renderer";
-import { socket, first_show_animation } from "./renderer";
+import { socket, first_show_animation, factory } from "./renderer";
 
 const teamsPill = document.getElementById("teamsPill");
 const enginesPill = document.getElementById("enginesPill");
@@ -43,6 +43,7 @@ function normalizeData(data) {
 
 
 export function load_performance(teams) {
+    console.log(teams)
     // let teams = normalizeData(teams);
     for (let key in teams) {
         if (teams.hasOwnProperty(key)) {
@@ -275,11 +276,9 @@ document.querySelectorAll(".team").forEach(function (elem) {
         document.querySelector("#performanceGraphButton").classList.remove("active")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
-        let teamRequest = {
-            command: "performanceRequest",
-            teamID: teamSelected,
-        }
-        socket.send(JSON.stringify(teamRequest))
+        const message = { command: 'performanceRequest', data: { teamID: teamSelected} };
+        const command = factory.createCommand(message);
+        command.execute();
         document.querySelector("#performanceGraph").classList.add("d-none")
         document.querySelector(".teams-show").classList.remove("d-none")
         document.querySelector(".save-button").classList.remove("d-none")
@@ -295,11 +294,9 @@ document.querySelectorAll(".car").forEach(function (elem) {
         document.querySelector("#performanceGraphButton").classList.remove("active")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
-        let teamRequest = {
-            command: "performanceRequest",
-            teamID: teamSelected,
-        }
-        socket.send(JSON.stringify(teamRequest))
+        const message = { command: 'performanceRequest', data: { teamID: teamSelected} };
+        const command = factory.createCommand(message);
+        command.execute();
         document.querySelector("#performanceGraph").classList.add("d-none")
         document.querySelector(".teams-show").classList.remove("d-none")
         document.querySelector(".save-button").classList.remove("d-none")
@@ -531,8 +528,8 @@ function add_n_parts_buttons(loadoutContainer) {
     loadoutContainer.appendChild(buttonsContainer)
 }
 
-function load_one_part(data) {
-    data = data[0]
+export function load_one_part(data) {
+    console.log(data)
     let key = Object.keys(data)[0]
     let part = document.querySelector(`.part-performance[data-part='${key}']`)
     for (let stat in data[key]) {
@@ -563,11 +560,9 @@ function add_partName_listener(div, subtitle, type = "old") {
         })
         div.classList.add("editing")
         if (type === "old") {
-            let data = {
-                command: "partRequest",
-                designID: div.dataset.designId
-            }
-            socket.send(JSON.stringify(data))
+            const message = { command: 'partRequest', data: { designID: div.dataset.designId} };
+            const command = factory.createCommand(message);
+            command.execute();
         }
     })
 }

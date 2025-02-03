@@ -602,7 +602,7 @@ i.bi-file-text:hover{
 .title {
   text-align: center;
   color: var(--white-general);
-  font-size: 28px;
+  font-size: 26px;
   padding: 10px 0; 
   flex: 1;
 }

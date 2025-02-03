@@ -653,7 +653,7 @@ document.querySelector(".order-space").querySelectorAll("i").forEach(function (e
 /**
  * Adds eventListeners to all the elements of the staff dropdown
  */
-function listenersStaffGroups() {
+export function listenersStaffGroups() {
     document.querySelectorAll('#staffMenu a').forEach(item => {
         item.addEventListener("click", function () {
             const staffButton = document.getElementById('staffDropdown');

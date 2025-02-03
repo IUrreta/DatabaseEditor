@@ -1,5 +1,5 @@
 import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict  } from "./config";
-import { game_version } from "./renderer";
+import { game_version, factory } from "./renderer";
 
 
 const myModal = new bootstrap.Modal(document.getElementById('contractModal'));
@@ -542,7 +542,7 @@ function unretireListener(icon) {
  * Places all the values for the modal that just openend
  * @param {Object} info values for the contract modal that just opened
  */
-function manage_modal(info) {
+export function manage_modal(info) {
     if (info[0] !== null) {
         let teamID;
         if (info[0][5] <= 10 || info[0][5] === 32) {
@@ -774,13 +774,10 @@ function updateContractValue(input, increment) {
 function queryContract(elem) {
     driverEditingID = elem.dataset.driverid
     driverEditingName = elem.innerText
-    let driverReq = {
-        command: "requestDriver",
-        driverID: driverEditingID,
-        driver: elem.innerText,
-    }
 
-    socket.send(JSON.stringify(driverReq))
+    const message = { command: 'driverRequest', data: { driverID: driverEditingID } };
+    const command = factory.createCommand(message);
+    command.execute();
 
 }
 

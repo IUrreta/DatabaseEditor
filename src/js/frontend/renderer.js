@@ -6,16 +6,18 @@ import {
     new_load_drivers_table, new_load_teams_table
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict } from './config';
-import { freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name } from './transfers';
+import { freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
+    manage_modal
+ } from './transfers';
 import { load_calendar } from './calendar';
 import {
     load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
-    order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design, teamsEngine
+    order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part
 } from './performance';
 import { resetPredict, setMidGrid, setMaxRaces, setRelativeGrid, placeRaces, placeRacesInModal } from './predictions';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
-    typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, manage_mentality_modifiers
+    typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, manage_mentality_modifiers, listenersStaffGroups
 } from './stats';
 import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs } from './head2head';
 import { CommandFactory } from '../backend/commandFactory';
@@ -464,13 +466,15 @@ function performanceModeHandler() {
             n_parts_designs[designID] = number
         })
         data = {
-            command: "editPerformance",
             teamID: teamSelected,
             parts: parts,
             n_parts_designs: n_parts_designs,
             loadouts: loadouts,
             teamName: document.querySelector(".selected").dataset.teamname
         }
+        const message = { command: 'editPerformance', data: data };
+        const command = factory.createCommand(message);
+        command.execute();
     }
     else if (teamsEngine === "engines") {
         let engineData = gather_engines_data()
@@ -543,6 +547,7 @@ const messageHandlers = {
         isSaveSelected  = 1;
         remove_drivers();
         removeStatsDrivers();
+        listenersStaffGroups();
         place_drivers(message);
         sortList("free-drivers");
         place_drivers_editStats(message);
@@ -559,13 +564,13 @@ const messageHandlers = {
         manage_engineStats(message.slice(1));
     },
     "Contract fetched": (message) => {
-        manage_modal(message.slice(1));
+        manage_modal(message);
     },
     "Year fetched": (message) => {
         generateYearsMenu(message);
     },
     "Numbers fetched": (message) => {
-        loadNumbers(message.slice(1));
+        loadNumbers(message);
     },
     "H2H fetched": (message) => {
         sprintsListeners();
@@ -611,8 +616,8 @@ const messageHandlers = {
         manage_config(message.slice(1), true)
     },
     "Performance fetched": (message) => {
-        load_performance(message[1])
-        load_attributes(message[2])
+        load_performance(message[0])
+        load_attributes(message[1])
         //wait 100 ms
         setTimeout(function () {
             order_by("overall")
@@ -620,22 +625,22 @@ const messageHandlers = {
 
     },
     "Season performance fetched": (message) => {
-        load_performance_graph(message.slice(1))
+        load_performance_graph(message)
     },
     "Parts stats fetched": (message) => {
-        load_parts_stats(message.slice(1)[0])
-        load_parts_list(message.slice(1)[1])
-        update_max_design(message.slice(1)[2])
+        load_parts_stats(message[0])
+        load_parts_list(message[1])
+        update_max_design(message[2])
     },
     "Game Year": (message) => {
         manage_game_year(message)
     },
     "Part values fetched": (message) => {
-        load_one_part(message.slice(1))
+        load_one_part(message)
     },
     "Cars fetched": (message) => {
-        load_cars(message.slice(1)[0])
-        load_car_attributes(message.slice(1)[1])
+        load_cars(message[0])
+        load_car_attributes(message[1])
         order_by("overall")
     },
     "Custom Engines fetched": (message) => {
@@ -850,55 +855,6 @@ window.addEventListener('load', ajustScrollWrapper);
 
 
 
-/**
-* Adds eventListeners to all the elements of the staff dropdown
-*/
-function listenersStaffGroups() {
-    document.querySelectorAll('#staffMenu a').forEach(item => {
-        item.addEventListener("click", function () {
-            const staffButton = document.getElementById('staffDropdown');
-            let staffSelected = item.innerHTML
-            let staffCode = item.dataset.spacestats
-            if (staffCode === "driverStats") {
-                setTypeOverall("driver")
-                setTypeEdit("0")
-                document.getElementById("driverSpecialAttributes").classList.remove("d-none")
-                document.querySelector("#superLicenseSwitch").classList.remove("d-none")
-                document.querySelector("#driverCode").classList.remove("d-none")
-            }
-            else {
-                setTypeOverall("staff")
-                document.getElementById("driverSpecialAttributes").classList.add("d-none")
-                document.querySelector("#superLicenseSwitch").classList.add("d-none")
-                document.querySelector("#driverCode").classList.add("d-none")
-                if (staffCode === "chiefStats") {
-                    setTypeEdit("1")
-                }
-                if (staffCode === "engineerStats") {
-                    setTypeEdit("2")
-                }
-                if (staffCode === "aeroStats") {
-                    setTypeEdit("3")
-                }
-                if (staffCode === "directorStats") {
-                    setTypeEdit("4")
-                }
-
-            }
-            staffButton.innerHTML = staffSelected;
-            change_elegibles(item.dataset.spacestats)
-            document.querySelectorAll(".staff-list").forEach(function (elem) {
-                elem.classList.add("d-none")
-                if (item.dataset.list == elem.id) {
-                    elem.classList.remove("d-none")
-                }
-            })
-            document.querySelector(".left-panel-stats").classList.add("d-none")
-            setStatPanelShown(0)
-        });
-
-    });
-}
 
 
 document.querySelector(".gear-container").addEventListener("click", function () {

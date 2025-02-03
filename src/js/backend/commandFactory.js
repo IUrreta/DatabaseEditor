@@ -1,10 +1,13 @@
 import SaveSelectedCommand from './commands/saveSelected.js';
+import PerformanceRequestCommand from './commands/performanceRequest.js';
+import PartRequestCommand from './commands/partRequest.js';
+import DriverRequestCommand from './commands/driverRequest.js';
 
 export class CommandFactory {
     constructor() {
       this.commandDict = {
         saveSelected: SaveSelectedCommand,
-        // requestDriver: RequestDriverCommand,
+        driverRequest: DriverRequestCommand,
         // hire: HireCommand,
         // fire: FireCommand,
         // autoContract: AutoContractCommand,
@@ -25,10 +28,10 @@ export class CommandFactory {
         // predictMontecarlo: PredictMontecarloCommand,
         // unretireDriver: UnretireCommand,
         // configUpdate: ConfigUpdateCommand,
-        // performanceRequest: PerformanceRequestCommand,
+        performanceRequest: PerformanceRequestCommand,
         // disconnect: DisconnectCommand,
         // fitParts: FitPartsCommand,
-        // partRequest: PartRequestCommand,
+        partRequest: PartRequestCommand,
         // customEngines: CustomEnginesCommand,
         // dev: DevCommand,
       };

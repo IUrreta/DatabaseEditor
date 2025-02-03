@@ -1,10 +1,12 @@
 // dragDrop.js
 import { analyzeFileToDatabase } from "../backend/UESaveHandler";
-import { setDatabase } from "../backend/dbManager.js";
+import { setDatabase, queryDB } from "../backend/dbManager.js";
 import { factory } from "./renderer.js";
 import DBUtils from "../backend/dbUtils.js";
+import CarAnalysisUtils from "../backend/carAnalysisUtils.js";
 
 let dbUtils = null;
+let carAnalysisUtils = null;
 
 const blockDiv = document.getElementById("blockDiv");
 
@@ -35,7 +37,8 @@ blockDiv.addEventListener("drop", async (event) => {
     const { db, metadata } = await analyzeFileToDatabase(file);
 
     setDatabase(db, metadata);
-    dbUtils = new DBUtils(db, metadata);
+    dbUtils = new DBUtils(queryDB, metadata);
+    carAnalysisUtils = new CarAnalysisUtils(queryDB);
     console.log("DB y metadata guardados");
 
     console.log("¡File readed succesfuly!", metadata);
@@ -58,4 +61,11 @@ export function getDBUtils() {
         throw new Error("La base de datos aún no se ha inicializado.");
     }
     return dbUtils;
+}
+
+export function getCarAnalysisUtils() {
+    if (!carAnalysisUtils) {
+        throw new Error("La base de datos aún no se ha inicializado.");
+    }
+    return carAnalysisUtils;
 }
