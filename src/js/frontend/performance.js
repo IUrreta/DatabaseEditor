@@ -12,7 +12,7 @@ const enginesDiv = document.getElementById("enginesDiv");
 const divsTeamsArray = [teamsDiv, enginesDiv]
 
 
-let teamSelected;
+export let teamSelected;
 let engineSelected;
 let teamEngineSelected;
 let performanceGraph;
@@ -240,6 +240,7 @@ export function update_max_design(data) {
  * @param {Object} engineData engine stats for all manufacturers
  */
 export function manage_engineStats(engineData) {
+    console.log(engineData)
     engineData.forEach(function (elem) {
         let engineId = elem[0]
         let engineStats = elem[1];

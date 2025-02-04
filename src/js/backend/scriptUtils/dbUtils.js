@@ -128,6 +128,56 @@ export default class DBUtils {
     return teamID ?? -1;
   }
 
+  fetchEngines() {
+    const enginesIds = [1, 10, 4, 7];
+    const statsIds = [6, 10, 11, 12, 14];
+    const ersIds = [2, 11, 5, 8];
+    const gearboxesIds = [3, 12, 6, 9];
+    const enginesList = [];
+
+    for (let i = 0; i < enginesIds.length; i++) {
+      let resultDict = {};
+
+      // Obtener valores de stats
+      for (const stat of statsIds) {
+        const statResult = this.queryDB(`
+                SELECT PartStat, UnitValue 
+                FROM Parts_Designs_StatValues 
+                WHERE DesignID = ${enginesIds[i]} AND PartStat = ${stat}
+            `, 'singleRow');
+        if (statResult) {
+          resultDict[statResult[0]] = statResult[1];
+        }
+      }
+
+      // Obtener valor de ERS
+      const ersResult = this.queryDB(`
+            SELECT UnitValue 
+            FROM Parts_Designs_StatValues 
+            WHERE DesignID = ${ersIds[i]} AND PartStat = 15
+        `, 'singleValue');
+      if (ersResult !== null) {
+        resultDict[18] = ersResult;
+      }
+
+      // Obtener valor de gearbox
+      const gearboxResult = this.queryDB(`
+            SELECT UnitValue 
+            FROM Parts_Designs_StatValues 
+            WHERE DesignID = ${gearboxesIds[i]} AND PartStat = 15
+        `, 'singleValue');
+      if (gearboxResult !== null) {
+        resultDict[19] = gearboxResult;
+      }
+
+      // Añadir la información del motor a la lista
+      enginesList.push([enginesIds[i], resultDict]);
+    }
+
+    return enginesList;
+  }
+
+
   fetchMentality(staffID) {
     // Obtengo todas las filas (morale es un array de arrays [[opinion],[opinion], ...])
     const morale = this.queryDB(`
@@ -552,6 +602,485 @@ export default class DBUtils {
     return formattedData;
   }
 
+  fetchDriversPerYear(year) {
+    // Construimos la consulta SQL
+    const sql = `
+      SELECT 
+        bas.FirstName, 
+        bas.LastName, 
+        res.DriverID, 
+        res.TeamID
+      FROM Staff_BasicData bas
+      JOIN Races_Results res 
+        ON bas.StaffID = res.DriverID
+      WHERE Season = ${year}
+      GROUP BY 
+        bas.FirstName, 
+        bas.LastName, 
+        bas.StaffID, 
+        res.TeamID
+      ORDER BY res.TeamID
+    `;
+
+    // Obtenemos todas las filas (array de objetos o tuplas)
+    const drivers = this.queryDB(sql, 'allRows') || [];
+
+    // Formateamos cada fila como quieras (equivalente a "format_names_simple")
+    const formattedTuples = drivers.map(row => this.formatNamesSimple(row));
+
+    return formattedTuples;
+  }
+
+  formatNamesSimple(name) {
+    let nombre = "";
+    let apellido = "";
+
+    // Si no contiene "STRING_LITERAL", buscamos "StaffName_Forename_(Male|Female)_(...)".
+    if (!name[0].includes("STRING_LITERAL")) {
+      const nombrePattern = /StaffName_Forename_(Male|Female)_(\w+)/;
+      const match = name[0].match(nombrePattern);
+      if (match) {
+        // Asumiendo que tienes un método removeNumber similar al de Python
+        nombre = this.removeNumber(match[2]);
+      } else {
+        nombre = "";
+      }
+    } else {
+      // De lo contrario, buscamos la parte entre "| ... |"
+      const pattern = /\|([^|]+)\|/;
+      const match = name[0].match(pattern);
+      if (match) {
+        nombre = match[1];
+      } else {
+        nombre = "";
+      }
+    }
+
+    // Repetimos la lógica para el apellido
+    if (!name[1].includes("STRING_LITERAL")) {
+      const apellidoPattern = /StaffName_Surname_(\w+)/;
+      const match = name[1].match(apellidoPattern);
+      if (match) {
+        apellido = this.removeNumber(match[1]);
+      } else {
+        apellido = "";
+      }
+    } else {
+      const pattern = /\|([^|]+)\|/;
+      const match = name[1].match(pattern);
+      if (match) {
+        apellido = match[1];
+      } else {
+        apellido = "";
+      }
+    }
+
+    // Construimos el nombre completo
+    const nameFormatted = `${nombre} ${apellido}`.trim();
+
+    // El TeamID (índice 3 en el array). Si es nulo/indefinido, lo ponemos a 0
+    const teamId = name[3] != null ? name[3] : 0;
+
+    // Devolvemos la misma estructura que en Python: (Nombre Formateado, DriverID, TeamID)
+    return [nameFormatted, name[2], teamId];
+  }
+
+  fetchOneTeamSeasonResults(team, year) {
+    const teamID = team;
+    const season = year;
+    const drivers = this.queryDB(` SELECT DISTINCT DriverID
+       FROM Races_Results
+       WHERE Season = ${season}
+       AND TeamID = ${teamID} `,
+       'allRows') || [];
+
+    const results = [];
+    for (let driver of drivers) {
+      const driverID = driver[0];
+      const driverResults = this.fetchOneDriverSeasonResults(driverID, season);
+      console.log(driverResults);
+      if (driverResults) {
+        results.push(driverResults);
+      }
+    }
+
+    return results;
+  }
+
+  fetchOneDriverSeasonResults(driver, year) {
+    const driverID = driver;
+    const season = year;
+
+    const results = this.queryDB(`
+      SELECT DriverID, TeamID, FinishingPos, Points
+      FROM Races_Results
+      WHERE Season = ${season}
+        AND DriverID = ${driverID}
+    `, 'allRows') || [];
+
+    if (results.length > 0) {
+      const sprintResults = this.queryDB(`
+        SELECT RaceID, FinishingPos, ChampionshipPoints
+        FROM Races_SprintResults
+        WHERE SeasonID = ${season}
+          AND DriverID = ${driverID}
+      `, 'allRows') || [];
+
+
+      const teamID = results[0][1];
+
+      const driverNameRow = this.queryDB(`
+        SELECT FirstName, LastName
+        FROM Staff_BasicData
+        WHERE StaffID = ${driverID}
+      `, 'singleRow');
+
+      return this.formatSeasonResults(
+        results,
+        driverNameRow,
+        teamID,
+        driver,  
+        year,    
+        sprintResults
+      );
+    }
+
+    return null;
+  }
+
+  fetchEventsDoneFrom(year) {
+    const daySeasonRow = this.queryDB(`
+      SELECT Day, CurrentSeason
+      FROM Player_State
+    `, 'singleRow');
+  
+    if (!daySeasonRow) {
+      return [];
+    }
+    const [currentDay, currentSeason] = daySeasonRow;
+  
+    const seasonIdsRows = this.queryDB(`
+      SELECT RaceID
+      FROM Races
+      WHERE SeasonID = ${year}
+        AND Day < ${currentDay}
+    `, 'allRows') || [];
+  
+
+    const eventsIds = seasonIdsRows.map(row => row[0]);
+  
+    return eventsIds;
+  }
+  
+  fetchEventsFrom(year) {
+    const seasonEventsRows = this.queryDB(`
+      SELECT TrackID
+      FROM Races
+      WHERE SeasonID = ${year}
+    `, 'allRows') || [];
+  
+    const seasonIdsRows = this.queryDB(`
+      SELECT RaceID
+      FROM Races
+      WHERE SeasonID = ${year}
+    `, 'allRows') || [];
+  
+
+    const eventsIds = [];
+    for (let i = 0; i < seasonIdsRows.length; i++) {
+      const raceID  = seasonIdsRows[i][0];
+      const trackID = seasonEventsRows[i][0];
+      eventsIds.push([raceID, trackID]);
+    }
+  
+    return eventsIds;
+  }
+  
+
+  formatSeasonResults(results, driverName, teamID, driver, year, sprints) {
+    // Asumiendo que driver y year son arrays (p.ej. driver=[123], year=[2023]):
+    const driverID = driver;
+    const season = year;
+  
+    // -------- 1) Formatear nombre --------
+    let nombre = "";
+    let apellido = "";
+  
+    // driverName podría ser un array [firstName, lastName] o un objeto {FirstName, LastName}.
+    // Aquí asumimos array. Si tu queryDB retorna objetos, ajusta a driverName.FirstName, driverName.LastName.
+    const firstName = driverName ? driverName[0] : "";
+    const lastName  = driverName ? driverName[1] : "";
+  
+    // Lógica análoga a Python para "STRING_LITERAL"
+    if (!firstName.includes("STRING_LITERAL")) {
+      const nombrePattern = /StaffName_Forename_(Male|Female)_(\w+)/;
+      const match = firstName.match(nombrePattern);
+      if (match) {
+        nombre = this.removeNumber(match[2]);  // asumiendo que tienes un removeNumber
+      } else {
+        nombre = "";
+      }
+    } else {
+      const pattern = /\|([^|]+)\|/;
+      const match = firstName.match(pattern);
+      nombre = match ? match[1] : "";
+    }
+  
+    if (!lastName.includes("STRING_LITERAL")) {
+      const apellidoPattern = /StaffName_Surname_(\w+)/;
+      const match = lastName.match(apellidoPattern);
+      if (match) {
+        apellido = this.removeNumber(match[1]);
+      } else {
+        apellido = "";
+      }
+    } else {
+      const pattern = /\|([^|]+)\|/;
+      const match = lastName.match(pattern);
+      apellido = match ? match[1] : "";
+    }
+  
+    const nameFormatted = `${nombre} ${apellido}`.trim();
+  
+    // -------- 2) Obtener todas las carreras que corrió este piloto en la temporada --------
+    const racesParticipated = this.queryDB(`
+      SELECT RaceID
+      FROM Races_Results
+      WHERE DriverID = ${driverID}
+        AND Season = ${season}
+    `, 'allRows') || [];
+  
+    // results = array con [DriverID, TeamID, FinishingPos, Points]
+    // Queremos convertirlo en algo más detallado. 
+    // De Python: formatred_results = [(FinishingPos, Points) for result in results]
+    // Pero necesitamos mapear 1:1 con la lista de RaceIDs, así que iremos uno a uno.
+    let formatredResults = results.map(r => [r[2], r[3]]); 
+    // r[2] => FinishingPos, r[3] => Points.
+  
+    // Suponiendo que hay la misma cantidad y el mismo orden de carreras 
+    // entre "results" y "racesParticipated". 
+    // Si no, necesitarías hacer matching por RaceID. 
+    // En tu Python original, tomabas RaceIDs en order y reasignabas. 
+    // Asegurémonos de usar el RaceID de 'racesParticipated[i]' igual que Python.
+  
+    for (let i = 0; i < racesParticipated.length; i++) {
+      const raceID = racesParticipated[i][0]; // Cada fila es [RaceID]
+  
+      // 2.1) Buscamos quién hizo la fastest lap
+      const driverWithFastestLap = this.queryDB(`
+        SELECT DriverID
+        FROM Races_Results
+        WHERE FastestLap > 0
+          AND RaceID = ${raceID}
+          AND Season = ${season}
+        ORDER BY FastestLap
+        LIMIT 1
+      `, 'singleValue');
+  
+      // 2.2) Checamos si fue DNF
+      const dnfd = this.queryDB(`
+        SELECT DNF
+        FROM Races_Results
+        WHERE DriverID = ${driverID}
+          AND Season = ${season}
+          AND RaceID = ${raceID}
+      `, 'singleValue') || 0;
+  
+      // Inyectamos RaceID al inicio de la tupla
+      // Python: formatred_results[i] = (raceID,) + formatred_results[i]
+      formatredResults[i] = [raceID, ...formatredResults[i]];
+  
+      // Si DNF = 1 => set FinishingPos y Points a -1
+      if (dnfd === 1) {
+        const arr = [...formatredResults[i]];
+        arr[1] = -1; // FinishingPos
+        arr[2] = -1; // Points
+        formatredResults[i] = arr;
+      }
+  
+      // Marcar fastest lap
+      if (driverWithFastestLap === driverID) {
+        // le append "1"
+        formatredResults[i].push(1);
+      } else {
+        // le append "0"
+        formatredResults[i].push(0);
+      }
+  
+      // 2.3) Quali Stage & FinishingPos
+      const QStage = this.queryDB(`
+        SELECT MAX(QualifyingStage)
+        FROM Races_QualifyingResults
+        WHERE RaceFormula = 1
+          AND RaceID = ${raceID}
+          AND SeasonID = ${season}
+          AND DriverID = ${driverID}
+      `, 'singleValue') || 0;
+  
+      const QRes = this.queryDB(`
+        SELECT FinishingPos
+        FROM Races_QualifyingResults
+        WHERE RaceFormula = 1
+          AND RaceID = ${raceID}
+          AND SeasonID = ${season}
+          AND DriverID = ${driverID}
+          AND QualifyingStage = ${QStage}
+      `, 'singleValue') || 99;
+  
+      // 2.4) Cálculo de diferencias de tiempo (carrera y pole)
+      const timeDifference = this.calculateTimeDifference(driverID, raceID);
+      const poleDifference = this.calculateTimeToPole(driverID, raceID);
+  
+      // Añadimos QRes, timeDifference y poleDifference
+      formatredResults[i].push(QRes);
+      formatredResults[i].push(timeDifference);
+      formatredResults[i].push(poleDifference);
+    }
+  
+    // -------- 3) Añadir datos de sprint al formatredResults --------
+    // En Python: 
+    // for tupla1 in sprints:
+    //   for i, tupla2 in enumerate(formatred_results):
+    //     if tupla1[0] == tupla2[0]:
+    //       formatred_results[i] = tupla2 + (tupla1[2], tupla1[1])
+    //
+    // tupla1[0] => RaceID
+    // tupla1[1] => FinishingPos
+    // tupla1[2] => ChampionshipPoints
+  
+    for (const sprintRow of sprints) {
+      // sprintRow: [RaceID, FinishingPos, ChampionshipPoints]
+      const [sprintRaceID, sprintPos, sprintPoints] = sprintRow;
+      // Buscamos coincidencia en formatredResults
+      for (let i = 0; i < formatredResults.length; i++) {
+        if (formatredResults[i][0] === sprintRaceID) {
+          // Agregamos ChampionshipPoints y FinishingPos al final
+          // (Ojo: en Python lo agregas en orden (tupla1[2], tupla1[1]) => (ChampPoints, FinishingPos)
+          formatredResults[i] = [...formatredResults[i], sprintPoints, sprintPos];
+          break;
+        }
+      }
+    }
+  
+    // -------- 4) Añadir TeamID a cada carrera --------
+    // En Python se hace un for i in range(len(...)):
+    //   team_in_race = ...
+    //   formatred_results[i] += (team_in_race)
+    //   latest_team = ...
+    let latestTeam = null;
+    for (let i = 0; i < formatredResults.length; i++) {
+      const raceID = formatredResults[i][0];
+      const teamInRace = this.queryDB(`
+        SELECT TeamID
+        FROM Races_Results
+        WHERE RaceID = ${raceID}
+          AND DriverID = ${driverID}
+      `, 'singleValue') || 0;
+  
+      formatredResults[i].push(teamInRace);
+      latestTeam = teamInRace;
+    }
+  
+    // -------- 5) Agregar la posición final en el campeonato al inicio --------
+    const position = this.queryDB(`
+      SELECT Position
+      FROM Races_Driverstandings
+      WHERE RaceFormula = 1
+        AND SeasonID = ${season}
+        AND DriverID = ${driverID}
+    `, 'singleValue') || 0;
+  
+
+    formatredResults.unshift(position);
+    formatredResults.unshift(latestTeam);
+    formatredResults.unshift(nameFormatted);
+  
+    // Devolvemos el array final
+    return formatredResults;
+  }
+  
+  calculateTimeToPole(driverID, raceID) {
+    const QStage = this.queryDB(`
+      SELECT MAX(QualifyingStage)
+      FROM Races_QualifyingResults
+      WHERE RaceFormula = 1
+        AND RaceID = ${raceID}
+        AND DriverID = ${driverID}
+    `, 'singleValue') || 0;
+  
+    const poleTime = this.queryDB(`
+      SELECT MIN(FastestLap)
+      FROM Races_QualifyingResults
+      WHERE RaceFormula = 1
+        AND RaceID = ${raceID}
+        AND QualifyingStage = 3
+        AND FastestLap IS NOT 0
+    `, 'singleValue') || 9999;
+  
+    const driverTime = this.queryDB(`
+      SELECT FastestLap
+      FROM Races_QualifyingResults
+      WHERE RaceFormula = 1
+        AND RaceID = ${raceID}
+        AND QualifyingStage = ${QStage}
+        AND DriverID = ${driverID}
+    `, 'singleValue') || 9999;
+  
+    if (driverTime < poleTime) {
+      return "NR"; 
+    } else {
+      const difference = Number((driverTime - poleTime).toFixed(2));
+      return `+${difference}s`;
+    }
+  }
+  
+  calculateTimeDifference(driverID, raceID) {
+    const totalLaps = this.queryDB(`
+      SELECT MAX(Laps)
+      FROM Races_Results
+      WHERE RaceID = ${raceID}
+    `, 'singleValue') || 0;
+  
+    const driverLaps = this.queryDB(`
+      SELECT Laps
+      FROM Races_Results
+      WHERE RaceID = ${raceID}
+        AND DriverID = ${driverID}
+    `, 'singleValue') || 0;
+  
+    if (driverLaps < totalLaps) {
+      return `+${totalLaps - driverLaps} L`;
+    } else {
+      const winnerID = this.queryDB(`
+        SELECT DriverID
+        FROM Races_Results
+        WHERE RaceID = ${raceID}
+          AND FinishingPos = 1
+      `, 'singleValue');
+  
+      const winnerTime = this.queryDB(`
+        SELECT Time
+        FROM Races_Results
+        WHERE RaceID = ${raceID}
+          AND DriverID = ${winnerID}
+      `, 'singleValue') || 0;
+  
+      const driverTime = this.queryDB(`
+        SELECT Time
+        FROM Races_Results
+        WHERE RaceID = ${raceID}
+          AND DriverID = ${driverID}
+      `, 'singleValue') || 0;
+  
+      const timeDiff = Number((driverTime - winnerTime).toFixed(1));
+      return `+${timeDiff}s`;
+    }
+  }
+  
+
+
+
+
   fetchCalendar() {
     // Saco [ Day, CurrentSeason ] de Player_State
     const daySeason = this.queryDB(`
@@ -609,5 +1138,5 @@ export default class DBUtils {
 
     // Retornar los resultados
     return [currentContract, futureContract, daySeason ? daySeason[1] : null];
-}
+  }
 }

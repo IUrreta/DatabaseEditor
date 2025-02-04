@@ -1,14 +1,12 @@
-import { getDBUtils, getCarAnalysisUtils } from "../../frontend/dragFile";
+import { getDBUtils } from "../../frontend/dragFile";
 import { updateFront } from "../../frontend/renderer";
 import { Command } from "./command";
 import { setGlobals, getGlobals } from "./commandGlobals";
+import { getUnitValueFromOnePart } from "../scriptUtils/carAnalysisUtils";
 
 export default class PartRequestCommand extends Command {
     execute() {
-        const carAnalysisUtils = getCarAnalysisUtils();
-        console.log(this.message);
-
-        const partValues = carAnalysisUtils.getUnitValueFromOnePart(this.message.data.designID);
+        const partValues = getUnitValueFromOnePart(this.message.data.designID);
         const partResponse = { responseMessage: "Part values fetched", content: partValues };
         updateFront(partResponse);
     }

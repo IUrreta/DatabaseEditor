@@ -1,5 +1,5 @@
 import { races_names, team_dict, combined_dict, lightColors  } from "./config";
-import { game_version, socket, custom_team } from "./renderer";
+import { game_version,  custom_team, factory } from "./renderer";
 import { insert_space, manageColor } from "./transfers";
 import { relative_grid } from "./predictions";
 
@@ -943,7 +943,6 @@ function H2HReady() {
         list2 = graphTeamList
     }
     let data = {
-        command: "H2HConfigured",
         h2h: h2hCount === 2 ? list1 : -1,
         graph: list2,
         year: document.querySelector("#yearButtonH2H").textContent,
@@ -951,7 +950,9 @@ function H2HReady() {
     }
 
     manageH2hState()
-    socket.send(JSON.stringify(data))
+    const message = { command: 'configuredH2H', data: data };
+    const command = factory.createCommand(message);
+    command.execute();
 }
 
 
@@ -1122,6 +1123,7 @@ function get_one_driver_points_format(driver, data) {
 }
 
 function load_graphs_data(data) {
+    console.log(data)
     let max_gapPole = 0;
     let max_gapWinner = 0;
     data.forEach(function (driv, index) {

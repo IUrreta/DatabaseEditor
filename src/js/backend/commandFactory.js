@@ -2,6 +2,9 @@ import SaveSelectedCommand from './commands/saveSelected.js';
 import PerformanceRequestCommand from './commands/performanceRequest.js';
 import PartRequestCommand from './commands/partRequest.js';
 import DriverRequestCommand from './commands/driverRequest.js';
+import EditPerformanceCommand from './commands/editPerformance.js';
+import YearSelectedH2HCommand from './commands/yearSelectedH2H.js';
+import configuredH2HCommand from './commands/configuredH2H.js';
 
 export class CommandFactory {
     constructor() {
@@ -15,11 +18,11 @@ export class CommandFactory {
         // editStats: EditStatsCommand,
         // calendar: CalendarCommand,
         // editContract: EditContractCommand,
-        // editPerformance: EditPerformanceCommand,
+        editPerformance: EditPerformanceCommand,
         // editEngine: EditEngineCommand,
         // yearSelected: YearSelectedCommand,
-        // yearSelectedH2H: YearSelectedH2HCommand,
-        // H2HConfigured: H2HConfiguredCommand,
+        yearSelectedH2H: YearSelectedH2HCommand,
+        configuredH2H: configuredH2HCommand,
         // teamRequest: TeamRequestCommand,
         // editTeam: EditTeamCommand,
         // yearSelectedPrediction: YearSelectedPredictionCommand,

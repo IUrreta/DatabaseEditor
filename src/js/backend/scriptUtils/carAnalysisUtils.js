@@ -1,22 +1,13 @@
 import * as carConstants from './carConstants.js';
+import { queryDB } from '../dbManager.js';
 
 
-export default class CarAnalysisUtils {
-    /**
-     * @param {Function} queryDBFn - Función para ejecutar consultas SQL con la firma:
-     *   queryDBFn(query, type = 'allRows') => resultado
-     *   - type puede ser "singleValue"|"singleRow"|"allRows"
-     */
-    constructor(queryDBFn) {
-        // Guardamos la referencia a la función de consultas
-        this.queryDB = queryDBFn;
-    }
 
     /**
      * Devuelve las mejores piezas para cada equipo.
      * @param {boolean} customTeam - si es true, incluye el equipo 32 además de 1..10
      */
-    getBestParts(customTeam = false) {
+    export function getBestParts(customTeam = false) {
         const teams = {};
         // Creamos la lista de equipos
         const teamList = customTeam
@@ -24,7 +15,7 @@ export default class CarAnalysisUtils {
             : [...Array(10).keys()].map(i => i + 1);          // 1..10
 
         for (const teamId of teamList) {
-            teams[teamId] = this.getPartsFromTeam(teamId);
+            teams[teamId] = getPartsFromTeam(teamId);
         }
         return teams;
     }
@@ -33,9 +24,9 @@ export default class CarAnalysisUtils {
      * Obtiene TODAS las piezas (varias designs) de un equipo
      * (Como en Python: get_all_parts_from_team)
      */
-    getAllPartsFromTeam(teamId) {
+    export function getAllPartsFromTeam(teamId) {
         // Obtenemos Day y Season
-        const [day, currentSeason] = this.queryDB(
+        const [day, currentSeason] = queryDB(
             "SELECT Day, CurrentSeason FROM Player_State",
             "singleRow"
         ) || [0, 0];
@@ -90,7 +81,7 @@ export default class CarAnalysisUtils {
             AND d.ValidFrom = ${currentSeason}
             AND d.DayCompleted > 0
         `;
-            let designs = this.queryDB(sql, "allRows");
+            let designs = queryDB(sql, "allRows");
 
             // Para cada design, agregamos info extra: equipped_1, equipped_2, n_parts
             designs = designs.map(designRow => {
@@ -98,7 +89,7 @@ export default class CarAnalysisUtils {
                 const [designID, dayCreated, dayCompleted, trackID] = designRow;
 
                 // Vemos si está equipado en loadout 1
-                const equipped1 = this.queryDB(`
+                const equipped1 = queryDB(`
             SELECT DesignID
             FROM Parts_CarLoadout
             WHERE TeamID = ${teamId} 
@@ -108,7 +99,7 @@ export default class CarAnalysisUtils {
                 let eq1 = (equipped1 === designID) ? 1 : 0;
 
                 // Equipado en loadout 2?
-                const equipped2 = this.queryDB(`
+                const equipped2 = queryDB(`
             SELECT DesignID
             FROM Parts_CarLoadout
             WHERE TeamID = ${teamId} 
@@ -118,7 +109,7 @@ export default class CarAnalysisUtils {
                 let eq2 = (equipped2 === designID) ? 1 : 0;
 
                 // Número de partes (items) construidas
-                const nParts = this.queryDB(`
+                const nParts = queryDB(`
             SELECT COUNT(*)
             FROM Parts_Items
             WHERE DesignID = ${designID}
@@ -149,9 +140,9 @@ export default class CarAnalysisUtils {
      * Obtiene las piezas "mejores" (MAX(DesignID)) para un equipo y su season actual
      * (Similar a get_parts_from_team en el Python original)
      */
-    getPartsFromTeam(teamId) {
+    export function getPartsFromTeam(teamId) {
         // Day, Season
-        const [day, season] = this.queryDB(
+        const [day, season] = queryDB(
             "SELECT Day, CurrentSeason FROM Player_State",
             "singleRow"
         ) || [0, 0];
@@ -159,7 +150,7 @@ export default class CarAnalysisUtils {
         const designs = {};
         // En Python, j va de 3..8 => motor = 0
         for (let j = 3; j < 9; j++) {
-            const row = this.queryDB(`
+            const row = queryDB(`
           SELECT MAX(DesignID)
           FROM Parts_Designs
           WHERE PartType = ${j}
@@ -171,7 +162,7 @@ export default class CarAnalysisUtils {
         }
 
         // engine:
-        const engine = this.queryDB(`
+        const engine = queryDB(`
         SELECT MAX(DesignID)
         FROM Parts_Designs
         WHERE PartType = 0
@@ -186,9 +177,9 @@ export default class CarAnalysisUtils {
      * Obtiene las mejores piezas hasta un día concreto (versión con day param)
      * (Similar a get_best_parts_until en el Python original)
      */
-    getBestPartsUntil(day, customTeam = false) {
+    export function getBestPartsUntil(day, customTeam = false) {
         // Day, season
-        const [dayCur, season] = this.queryDB(`
+        const [dayCur, season] = queryDB(`
         SELECT Day, CurrentSeason 
         FROM Player_State
       `, "singleRow") || [0, 0];
@@ -201,7 +192,7 @@ export default class CarAnalysisUtils {
         for (const t of teamList) {
             const designs = {};
             for (let j = 3; j < 9; j++) {
-                const row = this.queryDB(`
+                const row = queryDB(`
             SELECT MAX(DesignID)
             FROM Parts_Designs
             WHERE PartType = ${j}
@@ -212,7 +203,7 @@ export default class CarAnalysisUtils {
                 designs[j] = row;
             }
             // engine
-            const engine = this.queryDB(`
+            const engine = queryDB(`
           SELECT MAX(DesignID)
           FROM Parts_Designs
           WHERE PartType = 0
@@ -230,7 +221,7 @@ export default class CarAnalysisUtils {
      * de cada parte (partType).
      * (get_car_stats en el Python original)
      */
-    getCarStats(designDict) {
+    export function getCarStats(designDict) {
         const statsValues = {};
         for (const part in designDict) {
             // designDict[part] es algo como [[DesignID], ...] en el Python original
@@ -240,7 +231,7 @@ export default class CarAnalysisUtils {
             const designID = (designInfo && designInfo.length) ? designInfo[0] : null;
 
             if (designID !== null) {
-                const rows = this.queryDB(`
+                const rows = queryDB(`
             SELECT PartStat, Value
             FROM Parts_Designs_StatValues
             WHERE DesignID = ${designID}
@@ -269,11 +260,11 @@ export default class CarAnalysisUtils {
      * Devuelve el UnitValue de cada stat de un dict de diseños
      * (En Python: get_unitvalue_from_parts)
      */
-    getUnitValueFromParts(designDict) {
+    export function getUnitValueFromParts(designDict) {
         const statsValues = {};
         for (const part in designDict) {
             const designID = designDict[part][0][0];
-            const rows = this.queryDB(`
+            const rows = queryDB(`
           SELECT PartStat, UnitValue
           FROM Parts_Designs_StatValues
           WHERE DesignID = ${designID}
@@ -292,10 +283,10 @@ export default class CarAnalysisUtils {
      * UnitValue de un solo diseño
      * (get_unitvalue_from_one_part en Python)
      */
-    getUnitValueFromOnePart(designId) {
+    export function getUnitValueFromOnePart(designId) {
         console.log("DesignID:", designId);
 
-        const partType = this.queryDB(`
+        const partType = queryDB(`
             SELECT PartType
             FROM Parts_Designs
             WHERE DesignID = ${designId}
@@ -303,7 +294,7 @@ export default class CarAnalysisUtils {
 
         console.log("PART type:", partType);
 
-        const rows = this.queryDB(`
+        const rows = queryDB(`
             SELECT PartStat, UnitValue
             FROM Parts_Designs_StatValues
             WHERE DesignID = ${designId}
@@ -324,7 +315,7 @@ export default class CarAnalysisUtils {
      * Simple helper: convierte un porcentaje a valor físico según min/max
      * (convert_percentage_to_value en Python)
      */
-    convertPercentageToValue(attribute, percentage, minMax) {
+    export function convertPercentageToValue(attribute, percentage, minMax) {
         // minMax[attribute] = [min_value, max_value]
         const [minValue, maxValue] = minMax[attribute];
         return minValue + (maxValue - minValue) * (percentage / 100.0);
@@ -334,9 +325,9 @@ export default class CarAnalysisUtils {
      * Pasa todos los atributos a rango human-readable
      * (make_attributes_readable en Python)
      */
-    makeAttributesReadable(attributes) {
+    export function makeAttributesReadable(attributes) {
         for (const attribute in attributes) {
-            attributes[attribute] = this.convertPercentageToValue(
+            attributes[attribute] = convertPercentageToValue(
                 attribute,
                 attributes[attribute],
                 carConstants.attributesMinMax
@@ -352,7 +343,7 @@ export default class CarAnalysisUtils {
      * Calcula la performance global sumando (valorStat * contribución)
      * (calculate_overall_performance en Python)
      */
-    calculateOverallPerformance(attributes) {
+    export function calculateOverallPerformance(attributes) {
         let ovr = 0;
         for (const attr in attributes) {
             ovr += attributes[attr] * carConstants.attributesContributions[attr];
@@ -364,7 +355,7 @@ export default class CarAnalysisUtils {
      * Devuelve un diccionario con las contribuciones
      * (get_contributors_dict en Python)
      */
-    getContributorsDict() {
+    export function getContributorsDict() {
         // Lógica similar a Python
         const contributorsValues = {};
         const totalValues = {};
@@ -394,7 +385,7 @@ export default class CarAnalysisUtils {
      * Suma los factores de cada stat de cada parte
      * (get_part_stats_dict en Python)
      */
-    getPartStatsDict(carDict) {
+    export function getPartStatsDict(carDict) {
         const partStats = {};
         for (const part in carDict) {
             for (const stat in carDict[part]) {
@@ -412,7 +403,7 @@ export default class CarAnalysisUtils {
      * Calcula los atributos finales sumando (contribución * partStats[stat]) / 10
      * (calculate_car_attributes en Python)
      */
-    calculateCarAttributes(contributors, partsStats) {
+    export function calculateCarAttributes(contributors, partsStats) {
         const attributesDict = {};
         // Ajuste: partsStats[16] = (20000 - partsStats[15]) / 20  (como en el .py)
         partsStats[16] = (20000 - partsStats[15]) / 20;
@@ -431,14 +422,14 @@ export default class CarAnalysisUtils {
      * Obtiene días de carreras
      * (get_races_days en Python)
      */
-    getRacesDays() {
-        const [day, season] = this.queryDB(`
+    export function getRacesDays() {
+        const [day, season] = queryDB(`
         SELECT Day, CurrentSeason 
         FROM Player_State
       `, 'singleRow') || [0, 0];
 
         // state=2 => completadas, state=0 => no comenzadas
-        const races = this.queryDB(`
+        const races = queryDB(`
         SELECT RaceID, Day, TrackID
         FROM Races
         WHERE SeasonID = ${season}
@@ -446,7 +437,7 @@ export default class CarAnalysisUtils {
       `, 'allRows');
 
         // first_race_state_0 => la primera no iniciada
-        const firstRaceState0 = this.queryDB(`
+        const firstRaceState0 = queryDB(`
         SELECT RaceID, Day, TrackID
         FROM Races
         WHERE SeasonID = ${season}
@@ -461,13 +452,13 @@ export default class CarAnalysisUtils {
         return races;
     }
 
-    getAllRaces() {
-        const [day, season] = this.queryDB(`
+    export function getAllRaces() {
+        const [day, season] = queryDB(`
         SELECT Day, CurrentSeason
         FROM Player_State
       `, 'singleRow') || [0, 0];
 
-        const rows = this.queryDB(`
+        const rows = queryDB(`
         SELECT RaceID, Day, TrackID
         FROM Races
         WHERE SeasonID = ${season}
@@ -479,9 +470,9 @@ export default class CarAnalysisUtils {
      * Devuelve la performance de todos los equipos en un día dado (o actual)
      * (get_performance_all_teams en Python)
      */
-    getPerformanceAllTeams(day = null, previous = null, customTeam = false) {
+    export function getPerformanceAllTeams(day = null, previous = null, customTeam = false) {
         const teams = {};
-        const contributors = this.getContributorsDict();
+        const contributors = getContributorsDict();
 
         const teamList = customTeam
             ? [...Array(10).keys()].map(i => i + 1).concat(32)
@@ -490,16 +481,16 @@ export default class CarAnalysisUtils {
         let parts;
         if (day == null) {
             // Usamos getBestParts
-            parts = this.getBestParts(customTeam);
+            parts = getBestParts(customTeam);
         } else {
-            parts = this.getBestPartsUntil(day, customTeam);
+            parts = getBestPartsUntil(day, customTeam);
         }
 
         for (const teamId of teamList) {
-            const dict = this.getCarStats(parts[teamId]);
-            const partStats = this.getPartStatsDict(dict);
-            const attributes = this.calculateCarAttributes(contributors, partStats);
-            const ovr = this.calculateOverallPerformance(attributes);
+            const dict = getCarStats(parts[teamId]);
+            const partStats = getPartStatsDict(dict);
+            const attributes = calculateCarAttributes(contributors, partStats);
+            const ovr = calculateOverallPerformance(attributes);
             teams[teamId] = ovr;
         }
         return teams;
@@ -509,21 +500,21 @@ export default class CarAnalysisUtils {
      * Devuelve la performance de todos los coches (car1 y car2) de cada equipo
      * (get_performance_all_cars en Python)
      */
-    getPerformanceAllCars(customTeam = false) {
+    export function getPerformanceAllCars(customTeam = false) {
         const cars = {};
-        const contributors = this.getContributorsDict();
+        const contributors = getContributorsDict();
 
         const teamList = customTeam
             ? [...Array(10).keys()].map(i => i + 1).concat(32)
             : [...Array(10).keys()].map(i => i + 1);
 
         // Este método en Python usaba "get_fitted_designs(custom_team=custom_team)"
-        const carsParts = this.getFittedDesigns(customTeam);
+        const carsParts = getFittedDesigns(customTeam);
 
         for (const teamId of Object.keys(carsParts)) {
             cars[teamId] = {};
             for (const carId of Object.keys(carsParts[teamId])) {
-                const dict = this.getCarStats(carsParts[teamId][carId]);
+                const dict = getCarStats(carsParts[teamId][carId]);
                 // Falta ver si hay partes sin design
                 const missingParts = [];
                 for (const part in carsParts[teamId][carId]) {
@@ -532,11 +523,11 @@ export default class CarAnalysisUtils {
                     }
                 }
 
-                const partStats = this.getPartStatsDict(dict);
-                const attributes = this.calculateCarAttributes(contributors, partStats);
-                const ovr = this.calculateOverallPerformance(attributes);
+                const partStats = getPartStatsDict(dict);
+                const attributes = calculateCarAttributes(contributors, partStats);
+                const ovr = calculateOverallPerformance(attributes);
 
-                const driverNumber = this.getDriverNumberWithCar(teamId, carId);
+                const driverNumber = getDriverNumberWithCar(teamId, carId);
                 cars[teamId][carId] = [ovr, driverNumber, missingParts];
             }
         }
@@ -548,24 +539,24 @@ export default class CarAnalysisUtils {
      * Devuelve los atributos de todos los coches
      * (get_attributes_all_cars en Python)
      */
-    getAttributesAllCars(customTeam = false) {
+    export function getAttributesAllCars(customTeam = false) {
         const cars = {};
-        const contributors = this.getContributorsDict();
+        const contributors = getContributorsDict();
 
         const teamList = customTeam
             ? [...Array(10).keys()].map(i => i + 1).concat(32)
             : [...Array(10).keys()].map(i => i + 1);
 
-        const carsParts = this.getFittedDesigns(customTeam);
+        const carsParts = getFittedDesigns(customTeam);
 
         for (const teamId of Object.keys(carsParts)) {
             cars[teamId] = {};
             for (const carId of Object.keys(carsParts[teamId])) {
-                const dict = this.getCarStats(carsParts[teamId][carId]);
-                const partStats = this.getPartStatsDict(dict);
-                const attributes = this.calculateCarAttributes(contributors, partStats);
+                const dict = getCarStats(carsParts[teamId][carId]);
+                const partStats = getPartStatsDict(dict);
+                const attributes = calculateCarAttributes(contributors, partStats);
                 // (En Python, se dejaba la opción de "make_attributes_readable")
-                // attributes = this.makeAttributesReadable(attributes);
+                // attributes = makeAttributesReadable(attributes);
                 cars[teamId][carId] = attributes;
             }
         }
@@ -576,8 +567,8 @@ export default class CarAnalysisUtils {
      * Devuelve el número del driver que conduce un coche concreto
      * (get_driver_number_with_car en Python)
      */
-    getDriverNumberWithCar(teamId, carId) {
-        const row = this.queryDB(`
+    export function getDriverNumberWithCar(teamId, carId) {
+        const row = queryDB(`
         SELECT con.StaffID
         FROM Staff_Contracts con
         JOIN Staff_GameData gam ON con.StaffID = gam.StaffID
@@ -591,7 +582,7 @@ export default class CarAnalysisUtils {
         }
         const driverId = row[0];
 
-        const number = this.queryDB(`
+        const number = queryDB(`
         SELECT Number
         FROM Staff_DriverNumbers
         WHERE CurrentHolder = ${driverId}
@@ -603,7 +594,7 @@ export default class CarAnalysisUtils {
      * Obtiene los diseños equipados en cada coche (loadout 1 y 2) de cada equipo
      * (get_fitted_designs en Python)
      */
-    getFittedDesigns(customTeam = false) {
+    export function getFittedDesigns(customTeam = false) {
         const teams = {};
         const teamList = customTeam
             ? [...Array(10).keys()].map(i => i + 1).concat(32)
@@ -615,7 +606,7 @@ export default class CarAnalysisUtils {
             for (let loadout = 1; loadout <= 2; loadout++) {
                 const designs = {};
                 for (let part = 3; part < 9; part++) {
-                    const row = this.queryDB(`
+                    const row = queryDB(`
                     SELECT DesignID
                     FROM Parts_CarLoadout
                     WHERE TeamID = ${t}
@@ -625,7 +616,7 @@ export default class CarAnalysisUtils {
                     designs[part] = row;
                 }
                 // engine
-                const engine = this.queryDB(`
+                const engine = queryDB(`
                     SELECT MAX(DesignID)
                     FROM Parts_Designs
                     WHERE PartType = 0
@@ -642,9 +633,9 @@ export default class CarAnalysisUtils {
     // Asumiendo que tu clase CarAnalysisUtils ya tiene otros métodos traducidos
     // Añadimos/completamos con estos métodos:
 
-    fitLatestDesignsAllGrid(customTeam = false) {
+    export function fitLatestDesignsAllGrid(customTeam = false) {
         // SELECT Day, CurrentSeason FROM Player_State
-        const row = this.queryDB(`
+        const row = queryDB(`
         SELECT Day, CurrentSeason 
         FROM Player_State
         `, "singleRow");
@@ -656,17 +647,17 @@ export default class CarAnalysisUtils {
 
         const [day, season] = row;
         // Obtenemos las mejores piezas hasta 'day'
-        const bestParts = this.getBestPartsUntil(day, customTeam);
+        const bestParts = getBestPartsUntil(day, customTeam);
 
         // Para cada equipo en bestParts
         for (const team of Object.keys(bestParts)) {
-            this.fitLatestDesignsOneTeam(team, bestParts[team]);
+            fitLatestDesignsOneTeam(team, bestParts[team]);
         }
 
-        // this.conn.commit() (en SQL.js no es necesario típicamente)
+        // conn.commit() (en SQL.js no es necesario típicamente)
     }
 
-    fitLatestDesignsOneTeam(teamId, parts) {
+    export function fitLatestDesignsOneTeam(teamId, parts) {
         // Recorremos loadout = 1 y 2
         for (let loadout = 1; loadout <= 2; loadout++) {
             // Para cada 'part' en el objeto parts
@@ -676,7 +667,7 @@ export default class CarAnalysisUtils {
                     // En Python, parts[part] = [[designId], ...], asumiendo la estructura
                     const design = parts[part][0][0]; // -> designID
                     // fitted_design actual
-                    const fittedRow = this.queryDB(`
+                    const fittedRow = queryDB(`
                         SELECT DesignID 
                         FROM Parts_CarLoadout
                         WHERE TeamID = ${teamId}
@@ -692,7 +683,7 @@ export default class CarAnalysisUtils {
 
                     if (design !== fittedDesign) {
                         // Buscamos items disponibles
-                        const partsAvailable = this.queryDB(`
+                        const partsAvailable = queryDB(`
                         SELECT ItemID
                         FROM Parts_Items
                         WHERE DesignID = ${design}
@@ -701,18 +692,18 @@ export default class CarAnalysisUtils {
 
                         if (!partsAvailable.length) {
                             // no hay items disponibles => creamos uno nuevo
-                            const item = this.createNewItem(design, part);
-                            this.addPartToLoadout(design, part, teamId, loadout, item);
+                            const item = createNewItem(design, part);
+                            addPartToLoadout(design, part, teamId, loadout, item);
                         } else {
                             const item = partsAvailable[0][0]; // primer item
-                            this.addPartToLoadout(design, part, teamId, loadout, item);
+                            addPartToLoadout(design, part, teamId, loadout, item);
                         }
                     } else {
                         // design ya está equipado en este loadout
                         // Miramos si loadout 1 y 2 comparten item
                         const otherLoadout = (loadout === 2) ? 1 : 2;
 
-                        const fittedItemOther = this.queryDB(`
+                        const fittedItemOther = queryDB(`
                         SELECT ItemID 
                         FROM Parts_CarLoadout
                         WHERE TeamID = ${teamId}
@@ -720,7 +711,7 @@ export default class CarAnalysisUtils {
                             AND LoadoutID = ${otherLoadout}
                         `, "singleRow");
 
-                        const fittedItem = this.queryDB(`
+                        const fittedItem = queryDB(`
                         SELECT ItemID 
                         FROM Parts_CarLoadout
                         WHERE TeamID = ${teamId}
@@ -731,8 +722,8 @@ export default class CarAnalysisUtils {
                         if (fittedItemOther && fittedItem
                             && fittedItemOther[0] === fittedItem[0]) {
                             // Ambos loadouts tienen el mismo item => creamos uno nuevo
-                            const item = this.createNewItem(design, part);
-                            this.addPartToLoadout(design, part, teamId, loadout, item);
+                            const item = createNewItem(design, part);
+                            addPartToLoadout(design, part, teamId, loadout, item);
                         }
                     }
                 }
@@ -743,20 +734,20 @@ export default class CarAnalysisUtils {
         // (en SQL.js no es necesario, pero podrías hacer db.run("BEGIN/COMMIT") si fuera el caso)
     }
 
-    updateItemsForDesignDict(designDict, teamId) {
+    export function updateItemsForDesignDict(designDict, teamId) {
         for (const designKey of Object.keys(designDict)) {
             const design = Number(designKey);
             const nParts = parseInt(designDict[designKey], 10);
 
             // SELECT PartType FROM Parts_Designs WHERE DesignID = {design}
-            const partType = this.queryDB(`
+            const partType = queryDB(`
         SELECT PartType
         FROM Parts_Designs
         WHERE DesignID = ${design}
       `, "singleValue");
 
             // SELECT COUNT(*) FROM Parts_Items WHERE DesignID = {design} AND BuildWork = X
-            let actualParts = this.queryDB(`
+            let actualParts = queryDB(`
         SELECT COUNT(*)
         FROM Parts_Items
         WHERE DesignID = ${design}
@@ -767,12 +758,12 @@ export default class CarAnalysisUtils {
             let diff = nParts - actualParts;
             if (diff > 0) {
                 while (diff > 0) {
-                    this.createNewItem(design, partType);
+                    createNewItem(design, partType);
                     diff--;
                 }
             } else if (diff < 0) {
                 while (diff < 0) {
-                    this.deleteItem(design);
+                    deleteItem(design);
                     diff++;
                 }
             }
@@ -781,14 +772,14 @@ export default class CarAnalysisUtils {
         // commit
     }
 
-    fitLoadoutsDict(loadoutsDict, teamId) {
+    export function fitLoadoutsDict(loadoutsDict, teamId) {
         for (const partKey of Object.keys(loadoutsDict)) {
             const part = Number(partKey);
             const design1 = loadoutsDict[part][0];
             const design2 = loadoutsDict[part][1];
 
             // SELECT DesignID, ItemID FROM Parts_CarLoadout ...
-            let fittedDesign1 = this.queryDB(`
+            let fittedDesign1 = queryDB(`
                 SELECT DesignID, ItemID
                 FROM Parts_CarLoadout
                 WHERE TeamID = ${teamId}
@@ -800,7 +791,7 @@ export default class CarAnalysisUtils {
                 if (fittedDesign1 && fittedDesign1[0] != null && fittedDesign1[1] != null) {
                     // "UPDATE Parts_Items SET AssociatedCar = NULL WHERE ItemID = ?"
                     const itemId = fittedDesign1[1];
-                    this.queryDB(`
+                    queryDB(`
                         UPDATE Parts_Items
                         SET AssociatedCar = NULL
                         WHERE ItemID = ${itemId}
@@ -812,7 +803,7 @@ export default class CarAnalysisUtils {
                 // Si la design1 actual es distinta...
                 if (!fittedDesign1 || fittedDesign1[0] !== design1) {
                     // SELECT ItemID FROM Parts_Items WHERE ...
-                    const items1 = this.queryDB(`
+                    const items1 = queryDB(`
                         SELECT ItemID
                         FROM Parts_Items
                         WHERE DesignID = ${design1}
@@ -822,17 +813,17 @@ export default class CarAnalysisUtils {
 
                     let item1;
                     if (!items1.length) {
-                        item1 = this.createNewItem(design1, part);
+                        item1 = createNewItem(design1, part);
                     } else {
                         item1 = items1[0][0];
                     }
 
-                    this.addPartToLoadout(design1, part, teamId, 1, item1);
+                    addPartToLoadout(design1, part, teamId, 1, item1);
                 }
             }
 
             // Ahora loadout 2
-            let fittedDesign2 = this.queryDB(`
+            let fittedDesign2 = queryDB(`
                 SELECT DesignID, ItemID
                 FROM Parts_CarLoadout
                 WHERE TeamID = ${teamId}
@@ -843,7 +834,7 @@ export default class CarAnalysisUtils {
             if (design2 != null) {
                 if (fittedDesign2 && fittedDesign2[0] != null && fittedDesign2[1] != null) {
                     const itemId2 = fittedDesign2[1];
-                    this.queryDB(`
+                    queryDB(`
                         UPDATE Parts_Items
                         SET AssociatedCar = NULL
                         WHERE ItemID = ${itemId2}
@@ -852,7 +843,7 @@ export default class CarAnalysisUtils {
                 }
 
                 if (!fittedDesign2 || fittedDesign2[0] !== design2) {
-                    const items2 = this.queryDB(`
+                    const items2 = queryDB(`
                         SELECT ItemID
                         FROM Parts_Items
                         WHERE DesignID = ${design2}
@@ -862,12 +853,12 @@ export default class CarAnalysisUtils {
 
                     let item2;
                     if (!items2.length) {
-                        item2 = this.createNewItem(design2, part);
+                        item2 = createNewItem(design2, part);
                     } else {
                         item2 = items2[0][0];
                     }
 
-                    this.addPartToLoadout(design2, part, teamId, 2, item2);
+                    addPartToLoadout(design2, part, teamId, 2, item2);
                 }
             }
         }
@@ -876,16 +867,16 @@ export default class CarAnalysisUtils {
     }
 
     // En Python: create_new_item(design_id, part)
-    createNewItem(designId, part) {
+    export function createNewItem(designId, part) {
         // SELECT MAX(ItemID) FROM Parts_Items
-        let maxItem = this.queryDB(`
+        let maxItem = queryDB(`
         SELECT MAX(ItemID)
         FROM Parts_Items
         `, "singleValue");
 
         const newItem = maxItem + 1;
 
-        const numberOfManufactures = this.queryDB(`
+        const numberOfManufactures = queryDB(`
         SELECT ManufactureCount
         FROM Parts_Designs
         WHERE DesignID = ${designId}
@@ -893,7 +884,7 @@ export default class CarAnalysisUtils {
 
         const newNManufactures = numberOfManufactures + 1;
 
-        this.queryDB(`
+        queryDB(`
         INSERT INTO Parts_Items
         VALUES (
             ${newItem}, 
@@ -908,7 +899,7 @@ export default class CarAnalysisUtils {
         )
         `);
 
-        this.queryDB(`
+        queryDB(`
             UPDATE Parts_Designs
             SET ManufactureCount = ${newNManufactures}
             WHERE DesignID = ${designId}
@@ -917,30 +908,30 @@ export default class CarAnalysisUtils {
         return newItem;
     }
 
-    deleteItem(designId) {
+    export function deleteItem(designId) {
         // SELECT PartType FROM Parts_Designs WHERE DesignID = {designId}
-        const partType = this.queryDB(`
+        const partType = queryDB(`
       SELECT PartType
       FROM Parts_Designs
       WHERE DesignID = ${designId}
     `, "singleValue");
 
         // SELECT ItemID FROM Parts_Items WHERE DesignID = {designId} AND BuildWork = ...
-        const item = this.queryDB(`
+        const item = queryDB(`
       SELECT ItemID
       FROM Parts_Items
       WHERE DesignID = ${designId}
         AND BuildWork = ${carConstants.standardBuildworkPerPart[partType]}
     `, "singleValue");
 
-        this.queryDB(`
+        queryDB(`
       DELETE FROM Parts_Items
       WHERE ItemID = ${item}
     `);
     }
 
-    addNewDesign(part, teamId, day, season, latestDesignPartFromTeam, newDesignId) {
-        const maxDesignFromPart = this.queryDB(`
+    export function addNewDesign(part, teamId, day, season, latestDesignPartFromTeam, newDesignId) {
+        const maxDesignFromPart = queryDB(`
       SELECT MAX(DesignNumber)
       FROM Parts_Designs
       WHERE PartType = ${part}
@@ -949,14 +940,14 @@ export default class CarAnalysisUtils {
 
         const newMaxDesign = maxDesignFromPart + 1;
 
-        this.queryDB(`
+        queryDB(`
         UPDATE Parts_Designs_TeamData
         SET NewDesignsThisSeason = ${newMaxDesign}
         WHERE TeamID = ${teamId}
             AND PartType = ${part}
         `);
 
-        this.queryDB(`
+        queryDB(`
         INSERT INTO Parts_Designs
         VALUES (
             ${newDesignId}, 
@@ -982,7 +973,7 @@ export default class CarAnalysisUtils {
         )
         `);
 
-        this.queryDB(`
+        queryDB(`
         INSERT INTO Parts_DesignHistoryData
         VALUES (
             ${newDesignId}, 
@@ -993,12 +984,12 @@ export default class CarAnalysisUtils {
         )
         `);
 
-        this.copyFromTable("building", latestDesignPartFromTeam, newDesignId);
-        this.copyFromTable("staff", latestDesignPartFromTeam, newDesignId);
-        this.add4Items(newDesignId, part, teamId);
+        copyFromTable("building", latestDesignPartFromTeam, newDesignId);
+        copyFromTable("staff", latestDesignPartFromTeam, newDesignId);
+        add4Items(newDesignId, part, teamId);
     }
 
-    copyFromTable(table, latestDesignId, newDesignId) {
+    export function copyFromTable(table, latestDesignId, newDesignId) {
         let tableName = "";
         if (table === "building") {
             tableName = "Parts_Designs_BuildingEffects";
@@ -1006,7 +997,7 @@ export default class CarAnalysisUtils {
             tableName = "Parts_Designs_StaffEffects";
         }
 
-        const rows = this.queryDB(`
+        const rows = queryDB(`
         SELECT *
         FROM ${tableName}
         WHERE DesignID = ${latestDesignId}
@@ -1014,22 +1005,22 @@ export default class CarAnalysisUtils {
 
         for (const row of rows) {
             // row => [DesignID, col1, col2, ...]
-            this.queryDB(`
+            queryDB(`
                 INSERT INTO ${tableName}
                 VALUES (${newDesignId}, ${row[1]}, ${row[2]}, 0)
             `);
         }
     }
 
-    add4Items(newDesignId, part, teamId) {
-        let maxItem = this.queryDB(`
+    export function add4Items(newDesignId, part, teamId) {
+        let maxItem = queryDB(`
         SELECT MAX(ItemID)
         FROM Parts_Items
         `, "singleValue");
 
         for (let i = 1; i <= 4; i++) {
             maxItem += 1;
-            this.queryDB(`
+            queryDB(`
         INSERT INTO Parts_Items
         VALUES (
           ${maxItem},
@@ -1047,13 +1038,13 @@ export default class CarAnalysisUtils {
             // Para loadout 1 y 2
             if (i <= 2) {
                 const loadoutId = i;
-                this.addPartToLoadout(newDesignId, part, teamId, loadoutId, maxItem);
+                addPartToLoadout(newDesignId, part, teamId, loadoutId, maxItem);
             }
         }
     }
 
-    addPartToLoadout(designId, part, teamId, loadoutId, itemId) {
-        this.queryDB(`
+    export function addPartToLoadout(designId, part, teamId, loadoutId, itemId) {
+        queryDB(`
             UPDATE Parts_CarLoadout
             SET DesignID = ${designId}, ItemID = ${itemId}
             WHERE TeamID = ${teamId}
@@ -1061,7 +1052,7 @@ export default class CarAnalysisUtils {
                 AND LoadoutID = ${loadoutId}
         `);
 
-        this.queryDB(`
+        queryDB(`
             UPDATE Parts_Items
             SET AssociatedCar = ${loadoutId}, LastEquippedCar = ${loadoutId}
             WHERE ItemID = ${itemId}
@@ -1069,8 +1060,8 @@ export default class CarAnalysisUtils {
     }
 
     // overwrite_performance_team(...)
-    overwritePerformanceTeam(teamId, performance, customTeam = null, yearIteration = null, loadoutDict = null) {
-        const row = this.queryDB(`
+    export function overwritePerformanceTeam(teamId, performance, customTeam = null, yearIteration = null, loadoutDict = null) {
+        const row = queryDB(`
       SELECT Day, CurrentSeason
       FROM Player_State
     `, 'singleRow');
@@ -1081,7 +1072,7 @@ export default class CarAnalysisUtils {
         }
         const [day, season] = row;
 
-        const bestParts = this.getBestPartsUntil(day, customTeam);
+        const bestParts = getBestPartsUntil(day, customTeam);
         const teamParts = bestParts[Number(teamId)];
 
         for (const partKey of Object.keys(teamParts)) {
@@ -1095,12 +1086,12 @@ export default class CarAnalysisUtils {
                 let finalDesign = design;
                 if (Number(newDesign) === -1) {
                     // new part
-                    const maxDesign = this.queryDB(`
+                    const maxDesign = queryDB(`
                         SELECT MAX(DesignID)
                         FROM Parts_Designs
                     `, 'singleValue');
 
-                    const latestDesignPartFromTeam = this.queryDB(`
+                    const latestDesignPartFromTeam = queryDB(`
                         SELECT MAX(DesignID)
                         FROM Parts_Designs
                         WHERE PartType = ${part}
@@ -1108,7 +1099,7 @@ export default class CarAnalysisUtils {
                     `, 'singleValue');
 
                     const newDesignId = loadoutDict[String(part)][0];
-                    this.addNewDesign(part, Number(teamId), day, season, latestDesignPartFromTeam, newDesignId);
+                    addNewDesign(part, Number(teamId), day, season, latestDesignPartFromTeam, newDesignId);
                     finalDesign = newDesignId;
                 } else {
                     finalDesign = Number(newDesign);
@@ -1126,15 +1117,15 @@ export default class CarAnalysisUtils {
 
                     if (Number(newDesign) !== -1) {
                         // update
-                        this.changeExpertiseBased(part, statKey, value, Number(teamId));
-                        this.queryDB(`
+                        changeExpertiseBased(part, statKey, value, Number(teamId));
+                        queryDB(`
               UPDATE Parts_Designs_StatValues
               SET UnitValue = ${statsObj[statKey]}
               WHERE DesignID = ${finalDesign}
                 AND PartStat = ${statKey}
             `);
 
-                        this.queryDB(`
+                        queryDB(`
               UPDATE Parts_Designs_StatValues
               SET Value = ${value}
               WHERE DesignID = ${finalDesign}
@@ -1142,7 +1133,7 @@ export default class CarAnalysisUtils {
             `);
                     } else {
                         // insert
-                        this.queryDB(`
+                        queryDB(`
               INSERT INTO Parts_Designs_StatValues
               VALUES (
                 ${finalDesign}, 
@@ -1159,7 +1150,7 @@ export default class CarAnalysisUtils {
 
                 // si newDesign == -1 => insertamos el peso standard
                 if (Number(newDesign) === -1) {
-                    this.queryDB(`
+                    queryDB(`
             INSERT INTO Parts_Designs_StatValues
             VALUES (
               ${finalDesign},
@@ -1181,7 +1172,7 @@ export default class CarAnalysisUtils {
                         } else {
                             value = carConstants.unitValueToValue[statKey](statNum);
                         }
-                        this.changeExpertiseBased(part, statKey, value, Number(teamId), "new", latestDesignPartFromTeam);
+                        changeExpertiseBased(part, statKey, value, Number(teamId), "new", latestDesignPartFromTeam);
                     }
                 }
             }
@@ -1190,9 +1181,9 @@ export default class CarAnalysisUtils {
         // commit
     }
 
-    changeExpertiseBased(part, stat, newValue, teamId, type = "existing", oldDesign = null) {
+    export function changeExpertiseBased(part, stat, newValue, teamId, type = "existing", oldDesign = null) {
         // SELECT Day, CurrentSeason FROM Player_State
-        const row = this.queryDB(`
+        const row = queryDB(`
       SELECT Day, CurrentSeason
       FROM Player_State
     `, 'singleRow');
@@ -1205,7 +1196,7 @@ export default class CarAnalysisUtils {
         let currentValue = null;
         if (type === "existing") {
             // SELECT MAX(Value) FROM Parts_Designs_StatValues ...
-            currentValue = this.queryDB(`
+            currentValue = queryDB(`
         SELECT MAX(Value)
         FROM Parts_Designs_StatValues
         WHERE PartStat = ${stat}
@@ -1219,7 +1210,7 @@ export default class CarAnalysisUtils {
       `, 'singleValue');
         } else if (type === "new") {
             // SELECT Value FROM Parts_Designs_StatValues ...
-            currentValue = this.queryDB(`
+            currentValue = queryDB(`
         SELECT Value
         FROM Parts_Designs_StatValues
         WHERE PartStat = ${stat}
@@ -1240,7 +1231,7 @@ export default class CarAnalysisUtils {
         // => Hardcodeado. Ajusta si corresponde a tu lógica real.
         const newExpertise = currentValue / 0.8;
 
-        this.queryDB(`
+        queryDB(`
         UPDATE Parts_TeamExpertise
         SET Expertise = ${newExpertise}
         WHERE TeamID = ${teamId}
@@ -1251,9 +1242,9 @@ export default class CarAnalysisUtils {
 
     // get_performance_all_teams_season(...) => ya lo tienes, o lo traduces igual
 
-    getPerformanceAllTeamsSeason(customTeam = false) {
-        const races = this.getRacesDays();
-        const firstDay = this.getFirstDaySeason();
+    export function getPerformanceAllTeamsSeason(customTeam = false) {
+        const races = getRacesDays();
+        const firstDay = getFirstDaySeason();
         // Insertamos al principio (0, firstDay, 0)
         races.unshift([0, firstDay, 0]); // similar a insert(0, first_tuple)
 
@@ -1262,16 +1253,16 @@ export default class CarAnalysisUtils {
         for (const raceDay of races) {
             // raceDay => [RaceID, Day, TrackID], en python pilla el day en [1]
             const day = raceDay[1];
-            const performances = this.getPerformanceAllTeams(day, previous, customTeam);
+            const performances = getPerformanceAllTeams(day, previous, customTeam);
             racesPerformances.push(performances);
             previous = performances;
         }
 
-        const allRaces = this.getAllRaces();
+        const allRaces = getAllRaces();
         return [racesPerformances, allRaces];
     }
 
-    getFirstDaySeason() {
+    export function getFirstDaySeason() {
         const query = `
         SELECT Number, COUNT(*) as Occurrences
         FROM (
@@ -1283,7 +1274,7 @@ export default class CarAnalysisUtils {
         ORDER BY Occurrences DESC
         LIMIT 1;
         `;
-        const row = this.queryDB(query, 'singleRow');
+        const row = queryDB(query, 'singleRow');
         if (!row) {
             console.warn("No firstDay found");
             return 0;
@@ -1292,32 +1283,29 @@ export default class CarAnalysisUtils {
         return firstDay;
     }
 
-    getAttributesAllTeams(customTeam = false) {
+    export function getAttributesAllTeams(customTeam = false) {
         const teams = {};
-        const contributors = this.getContributorsDict();
-        const bestParts = this.getBestParts(customTeam);
+        const contributors = getContributorsDict();
+        const bestParts = getBestParts(customTeam);
 
         const teamList = customTeam
             ? [...Array(10).keys()].map(i => i + 1).concat(32)
             : [...Array(10).keys()].map(i => i + 1);
 
         for (const i of teamList) {
-            const dict = this.getCarStats(bestParts[i]);
-            const partStats = this.getPartStatsDict(dict);
-            const attributes = this.calculateCarAttributes(contributors, partStats);
+            const dict = getCarStats(bestParts[i]);
+            const partStats = getPartStatsDict(dict);
+            const attributes = calculateCarAttributes(contributors, partStats);
             teams[i] = attributes;
         }
         return teams;
     }
 
-    getMaxDesign() {
-        const val = this.queryDB(`
+    export function getMaxDesign() {
+        const val = queryDB(`
         SELECT MAX(DesignID)
         FROM Parts_Designs
         `, 'singleValue');
             return val;
         }
 
-
-
-}

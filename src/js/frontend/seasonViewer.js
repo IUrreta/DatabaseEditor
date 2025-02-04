@@ -2,7 +2,7 @@ import { races_names, team_dict, codes_dict, combined_dict, logos_disc, races_ma
 import { resetH2H } from './head2head';
 import { game_version, custom_team } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason } from "./transfers";
-import { socket } from "./renderer";
+import { socket, factory } from "./renderer";
 
 
 
@@ -937,11 +937,9 @@ export function generateYearsMenu(actualYear) {
                 elem.classList.remove("d-none")
             })
             document.getElementById("yearButtonH2H").textContent = a2.textContent
-            let dataYear = {
-                command: "yearSelectedH2H",
-                year: a2.textContent
-            }
-            socket.send(JSON.stringify(dataYear))
+            const message = { command: 'yearSelectedH2H', data: { year: a2.textContent } };
+            const command = factory.createCommand(message);
+            command.execute();
         })
         let a3 = document.createElement("a");
         a3.textContent = year.toString();

@@ -1,7 +1,8 @@
-import { getDBUtils, getCarAnalysisUtils } from "../../frontend/dragFile";
+import { getDBUtils } from "../../frontend/dragFile";
 import { updateFront } from "../../frontend/renderer";
 import { Command } from "./command";
 import { setGlobals, getGlobals } from "./commandGlobals";
+import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "../scriptUtils/carAnalysisUtils"
 
 export default class SaveSelectedCommand extends Command {
     /**
@@ -9,7 +10,6 @@ export default class SaveSelectedCommand extends Command {
      */
     execute() {
         const dbUtils = getDBUtils();
-        const carAnalysisUtils = getCarAnalysisUtils();
 
         const yearData = dbUtils.checkYearSave();
         if (yearData[1] !== null){
@@ -23,6 +23,8 @@ export default class SaveSelectedCommand extends Command {
         const gameYearResponse = { responseMessage: "Game Year", content: yearData };
         updateFront(gameYearResponse);
 
+        this.updateTeamsFor24(yearData[0]);
+
         const drivers = dbUtils.fetchDrivers(yearData[0]);
         const driversResponse = { responseMessage: "Save loaded succesfully", content: drivers };
         updateFront(driversResponse);
@@ -30,6 +32,10 @@ export default class SaveSelectedCommand extends Command {
         const staff = dbUtils.fetchStaff(yearData[0]);
         const staffResponse = { responseMessage: "Staff fetched", content: staff };
         updateFront(staffResponse);
+
+        const engines = dbUtils.fetchEngines();
+        const enginesResponse = { responseMessage: "Engines fetched", content: engines };
+        updateFront(enginesResponse);
 
         const calendar = dbUtils.fetchCalendar();
         const calendarResponse = { responseMessage: "Calendar fetched", content: calendar };
@@ -43,18 +49,35 @@ export default class SaveSelectedCommand extends Command {
         const numbersResponse = { responseMessage: "Numbers fetched", content: numbers };
         updateFront(numbersResponse);
 
-        const [performance, races] = carAnalysisUtils.getPerformanceAllTeamsSeason(yearData[2]);
+        const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
         const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races] };
         updateFront(performanceResponse);
 
-        const attibutes = carAnalysisUtils.getAttributesAllTeams(yearData[2]);
+        const attibutes = getAttributesAllTeams(yearData[2]);
         const attributesResponse = { responseMessage: "Performance fetched", content: [performance[performance.length - 1], attibutes] };
         updateFront(attributesResponse);
 
-        const carPerformance = carAnalysisUtils.getPerformanceAllCars(yearData[2]);
-        const carAttributes = carAnalysisUtils.getAttributesAllCars(yearData[2]);
+        const carPerformance = getPerformanceAllCars(yearData[2]);
+        const carAttributes = getAttributesAllCars(yearData[2]);
         const carPerformanceResponse = { responseMessage: "Cars fetched", content: [carPerformance, carAttributes] };
         updateFront(carPerformanceResponse);
 
+    }
+
+    updateTeamsFor24(year){
+        if (year === "24"){
+            const data = {
+                teams : {
+                    alphatauri: "visarb",
+                    alpine: "alpine",
+                    alfa: "stake"
+                }
+            }
+            this.replaceTeam("Alpha Tauri", data.teams.alphatauri);
+            this.replaceTeam("Alpine", data.teams.alpine);
+            this.replaceTeam("Alfa Romeo", data.teams.alfa);
+            const yearResponse = { responseMessage: "24 Year", content: data };
+            updateFront(yearResponse);
+        }
     }
 }

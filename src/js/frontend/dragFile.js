@@ -2,8 +2,7 @@
 import { analyzeFileToDatabase } from "../backend/UESaveHandler";
 import { setDatabase, queryDB } from "../backend/dbManager.js";
 import { factory } from "./renderer.js";
-import DBUtils from "../backend/dbUtils.js";
-import CarAnalysisUtils from "../backend/carAnalysisUtils.js";
+import DBUtils from "../backend/scriptUtils/dbUtils.js";
 
 let dbUtils = null;
 let carAnalysisUtils = null;
@@ -38,7 +37,6 @@ blockDiv.addEventListener("drop", async (event) => {
 
     setDatabase(db, metadata);
     dbUtils = new DBUtils(queryDB, metadata);
-    carAnalysisUtils = new CarAnalysisUtils(queryDB);
     console.log("DB y metadata guardados");
 
     console.log("¡File readed succesfuly!", metadata);
@@ -61,11 +59,4 @@ export function getDBUtils() {
         throw new Error("La base de datos aún no se ha inicializado.");
     }
     return dbUtils;
-}
-
-export function getCarAnalysisUtils() {
-    if (!carAnalysisUtils) {
-        throw new Error("La base de datos aún no se ha inicializado.");
-    }
-    return carAnalysisUtils;
 }

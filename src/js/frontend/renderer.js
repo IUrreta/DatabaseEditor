@@ -12,7 +12,8 @@ import { freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers,
 import { load_calendar } from './calendar';
 import {
     load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
-    order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part
+    order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
+    teamSelected
 } from './performance';
 import { resetPredict, setMidGrid, setMaxRaces, setRelativeGrid, placeRaces, placeRacesInModal } from './predictions';
 import {
@@ -483,7 +484,6 @@ function performanceModeHandler() {
             engines: engineData,
         }
     }
-    socket.send(JSON.stringify(data))
 
 }
 
@@ -531,8 +531,8 @@ export function updateFront(data){
     console.log(data)
     let responseTyppe = data.responseMessage
     let message = data.content
+    console.log(message)
     let handler = messageHandlers[responseTyppe];
-    console.log(handler)
     if (handler) {
         handler(message);
     }
@@ -561,7 +561,7 @@ const messageHandlers = {
         load_calendar(message)
     },
     "Engines fetched": (message) => {
-        manage_engineStats(message.slice(1));
+        manage_engineStats(message);
     },
     "Contract fetched": (message) => {
         manage_modal(message);
@@ -576,13 +576,13 @@ const messageHandlers = {
         sprintsListeners();
         racePaceListener();
         qualiPaceListener()
-        manage_h2h_bars(message.slice(1)[0]);
+        manage_h2h_bars(message);
     },
     "DriversH2H fetched": (message) => {
-        load_drivers_h2h(message.slice(1));
+        load_drivers_h2h(message);
     },
     "H2HDriver fetched": (message) => {
-        load_labels_initialize_graphs(message.slice(1));
+        load_labels_initialize_graphs(message);
     },
     "Results fetched": (message) => {
         new_drivers_table(message[1]);
@@ -613,7 +613,8 @@ const messageHandlers = {
         manage_config(message.slice(1))
     },
     "24 Year": (message) => {
-        manage_config(message.slice(1), true)
+        console.log(message)
+        manage_config(message, true)
     },
     "Performance fetched": (message) => {
         load_performance(message[0])
@@ -867,7 +868,7 @@ document.querySelector(".gear-container").addEventListener("click", function () 
 function manage_config(info, year_config = false) {
     document.querySelector(".bi-gear").classList.remove("hidden")
     configCopy = info
-    manage_config_content(info[0], year_config)
+    manage_config_content(info, year_config)
 }
 
 function replace_all_teams(info) {
