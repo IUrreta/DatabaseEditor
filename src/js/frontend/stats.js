@@ -1,5 +1,5 @@
 import { team_dict, mentalityModifiers, teamOrder, mentality_dict } from "./config";
-import { insert_space, manageColor } from "./transfers";
+import { insert_space, manageColor, format_name } from "./transfers";
 
 
 let driverStatTitle = document.getElementById("driverStatsTitle")
@@ -53,8 +53,7 @@ export function place_drivers_editStats(driversArray) {
         let name = driver[0].split(" ")
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
-        spanName.textContent = insert_space(name[0]) + " "
-        spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
+        format_name(driver[0], name, spanName, spanLastName)
         newDiv.dataset.name = insert_space(name[0]) + " " + name.slice(1).join(" ")
         spanLastName.classList.add("bold-font")
         spanLastName.classList.add("surname")
@@ -208,8 +207,7 @@ export function place_staff_editStats(staffArray) {
         let name = staff[0].split(" ")
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
-        spanName.textContent = insert_space(name[0]) + " "
-        spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
+        format_name(staff[0], name, spanName, spanLastName)
         newDiv.dataset.name = insert_space(name[0]) + " " + name.slice(1).join(" ")
         spanLastName.classList.add("bold-font")
         spanLastName.classList.add("surname")

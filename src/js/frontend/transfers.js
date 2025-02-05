@@ -23,8 +23,6 @@ const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
 const fileInput = document.getElementById('fileInput');
 
 
-
-
 let originalParent;
 let destinationParent;
 let draggable;
@@ -68,7 +66,24 @@ export function insert_space(str) {
     return str.replace(/([A-Z])/g, ' $1').trim();
 }
 
+export function format_name(fullName, nameSplitted, spanName, spanLastName){
+    if (fullName.length > 17) {
+        let nameArray = fullName.split(" ");
+        let firstName = nameArray[0];
+        if (insert_space(firstName).includes(" ")) {
+            let splitName = insert_space(firstName).split(" ");
+            spanName.textContent = splitName[0][0] + ". " + splitName[1] + " ";
+        } else {
+            spanName.textContent = firstName[0] + ". ";
+        }
+    
+        spanLastName.textContent = nameArray.slice(1).join(" ").toUpperCase();
+    } else {
+        spanName.textContent = insert_space(nameSplitted[0]) + " "
+        spanLastName.textContent = nameSplitted.slice(1).join(" ").toUpperCase()
+    }
 
+}
 
 
 /**
@@ -87,8 +102,7 @@ export function place_drivers(driversArray) {
         nameContainer.className = "name-container"
         let spanName = document.createElement("span")
         let spanLastName = document.createElement("span")
-        spanName.textContent = insert_space(name[0]) + " "
-        spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
+        format_name(driver[0], name, spanName, spanLastName)
         spanLastName.classList.add("bold-font")
         nameContainer.appendChild(spanName)
         nameContainer.appendChild(spanLastName)

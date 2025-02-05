@@ -1,5 +1,5 @@
 import {  team_dict  } from "./config";
-import { socket } from "./renderer";
+import { socket, factory } from "./renderer";
 import { manage_stat_bar } from "./stats";
 
 export let teamCod;
@@ -15,15 +15,14 @@ document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem
     elem.addEventListener("click", function () {
         document.querySelector("#teamButton").innerText = elem.querySelector(".team-menu-name").innerText;
         teamCod = elem.dataset.teamid;
-        let saveSelector = document.getElementById('saveSelector');
-        let saveSelected = saveSelector.innerHTML;
         let data = {
-            command: "teamRequest",
             teamID: teamCod,
-            saveSelected: saveSelected
         }
 
-        socket.send(JSON.stringify(data))
+        const message = { command: 'teamRequest', data: data };
+        const command = factory.createCommand(message);
+        command.execute();
+
         document.querySelector(".team-viewer").classList.remove("d-none")
     })
     
@@ -272,6 +271,7 @@ document.querySelector("#staffButton").addEventListener("click", function () {
  * @param {object} teamData info of the team facilities
  */
 export function fillLevels(teamData) {
+    console.log(teamData)
     teamData.slice(0, 15).forEach(function (elem) {
         let num = elem[0];
         let level = num % 10;

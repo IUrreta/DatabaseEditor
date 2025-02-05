@@ -3,7 +3,7 @@ import { marked } from 'marked';
 import { resetTeamEditing, fillLevels, longTermObj, originalCostCap, gather_team_data, gather_pit_crew, teamCod } from './teams';
 import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
-    new_load_drivers_table, new_load_teams_table
+    new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict } from './config';
 import { freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
@@ -563,7 +563,8 @@ const messageHandlers = {
         load_calendar(message)
     },
     "Engines fetched": (message) => {
-        manage_engineStats(message);
+        manage_engineStats(message[0]);
+        update_engine_allocations(message);
     },
     "Contract fetched": (message) => {
         manage_modal(message);
@@ -587,13 +588,13 @@ const messageHandlers = {
         load_labels_initialize_graphs(message);
     },
     "Results fetched": (message) => {
-        new_drivers_table(message[1]);
-        new_load_drivers_table(message.slice(2));
-        new_teams_table(message[1]);
-        new_load_teams_table(message.slice(2));
+        new_drivers_table(message[0]);
+        new_load_drivers_table(message.slice(1));
+        new_teams_table(message[0]);
+        new_load_teams_table(message.slice(1));
     },
-    "TeamData Fetched": (message) => {
-        fillLevels(message.slice(1))
+    "TeamData fetched": (message) => {
+        fillLevels(message)
 
     },
     "Events to Predict Fetched": (message) => {
@@ -651,6 +652,27 @@ const messageHandlers = {
     }
 };
 
+
+function update_engine_allocations(message) {
+    let engine_map = {}
+    message[1].forEach(function (team) {
+        engine_map[team[0]] = team[1]
+    })
+    setEngineAllocations(engine_map)
+
+    for (let key in engine_names) {
+        if (key > 10) {
+            deleteEngineName(key)
+        }
+    }
+
+    message[0].forEach(function (engine) {
+        if (engine[0] > 10) {
+            addEngineName(engine[0], engine[2])
+        }
+    })
+
+}
 
 
 
@@ -905,15 +927,7 @@ function manage_config_content(info, year_config = false) {
         else {
             document.getElementById("refurbishingToggle").checked = false
         }
-        setEngineAllocations(info["engine_allocations"])
-        for (let key in engine_names) {
-            if (key > 10) {
-                delete engine_names[key]
-            }
-        }
-        for (let key in info["engines"]) {
-            engine_names[key] = info["engines"][key]["name"]
-        }
+
         update_mentality_span(info["mentalityFrozen"])
         let difficultySlider = document.getElementById("difficultySlider")
         difficultySlider.value = info["difficulty"]

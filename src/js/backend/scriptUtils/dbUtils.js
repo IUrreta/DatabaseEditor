@@ -130,7 +130,7 @@ export default class DBUtils {
   }
 
   fetchEngines() {
-    const statsIds = [6, 10, 11, 12, 14];
+    const statsIds = [6, 10, 11, 12, 14, 15];
     const enginesList = [];
 
     console.log("Fetching engines...");
@@ -189,7 +189,11 @@ export default class DBUtils {
       enginesList.push([newEngineIds[i], resultDict, engineName]);
     }
 
-    return enginesList;
+    const engineAllocations = this.queryDB(`
+      SELECT * FROM Custom_Engine_Allocations
+    `, 'allRows');
+
+    return [enginesList, engineAllocations];
   }
 
 
@@ -700,6 +704,34 @@ export default class DBUtils {
     return [nameFormatted, name[2], teamId];
   }
 
+  fetchSeasonResults(yearSelected) {
+    const drivers = this.queryDB(`
+      SELECT DriverID
+      FROM Races_DriverStandings
+      WHERE RaceFormula = 1
+        AND SeasonID = ${yearSelected}
+    `, 'allRows') || [];
+  
+    const seasonResults = [];
+    drivers.forEach((row) => {
+      const driverID = row[0];
+      const driverRes = this.fetchOneDriverSeasonResults([driverID], [yearSelected]);
+      if (driverRes) {
+        seasonResults.push(driverRes);
+      }
+    });
+    return seasonResults;
+  }
+  
+  fetchTeamsStandings(year) {
+    return this.queryDB(`
+      SELECT TeamID, Position
+      FROM Races_TeamStandings
+      WHERE SeasonID = ${year}
+        AND RaceFormula = 1
+    `, 'allRows') || [];
+  }
+
   fetchOneTeamSeasonResults(team, year) {
     const teamID = team;
     const season = year;
@@ -1189,6 +1221,16 @@ export default class DBUtils {
             value TEXT
           )
         `
+      },
+      {
+        name: 'Custom_Engine_Allocations',
+        createSQL: `
+          CREATE TABLE Custom_Engine_Allocations (
+            teamId INTEGER,
+            engineId INTEGER
+            
+          )
+        `
       }
     ];
 
@@ -1282,8 +1324,6 @@ export default class DBUtils {
         VALUES (${engine.id}, '${engine.name}')
       `);
 
-
-
       engine.stats.forEach(stat => {
         this.queryDB(`
           INSERT OR REPLACE INTO Custom_Engines_Stats (engineId, designId, partStat, Value, unitValue)
@@ -1292,7 +1332,22 @@ export default class DBUtils {
       });
     });
 
-    console.log("DATA INSERTED");
+    const maxYear = this.queryDB(`SELECT MAX(SeasonID) FROM Parts_TeamHistory`, 'singleValue');
+    const actualEngineAllocations = this.queryDB(`
+      SELECT th.TeamID, em.EngineDesignID
+      FROM Parts_TeamHistory th
+      JOIN Parts_Enum_EngineManufacturers em
+        ON th.EngineManufacturer = em.Value
+      WHERE SeasonID = ${maxYear}`,
+      'allRows');
+      
+    actualEngineAllocations.forEach(engine => {
+      this.queryDB(`
+        INSERT OR REPLACE INTO Custom_Engine_Allocations (teamId, engineId)
+        VALUES (${engine[0]}, ${engine[1]})
+      `);
+    });
+      
   }
 
   updateCustomEngines(engineData) {
@@ -1303,17 +1358,21 @@ export default class DBUtils {
       for (let stat in engineData[engineId].stats) {
         const untiValue = engineData[engineId].stats[stat];
         const value = engine_unitValueToValue[stat](untiValue);
-        if (stat !== "18" && stat !== "19") {
+        if (parseInt(stat) !== 18 && parseInt(stat) !== 19) {
           this.queryDB(`INSERT OR REPLACE INTO Custom_Engines_Stats (engineId, designId, partStat, Value, unitValue)
             VALUES (${engineId}, ${engineId}, ${stat}, ${value}, ${untiValue})`);
         }
-        else if (stat === "18") {
+        else if (parseInt(stat) === 18) {
+          console.log(engineId);
+          let designId = parseInt(engineId) + 1;
           this.queryDB(`INSERT OR REPLACE INTO Custom_Engines_Stats (engineId, designId, partStat, Value, unitValue)
-            VALUES (${engineId}, ${parseInt(engineId + 1)}, ${15}, ${value}, ${untiValue})`);
+            VALUES (${engineId}, ${designId}, ${15}, ${value}, ${untiValue})`);
         }
-        else if (stat === "19") {
+        else if (parseInt(stat) === 19) {
+          console.log(engineId);
+          let designId = parseInt(engineId) + 2;
           this.queryDB(`INSERT OR REPLACE INTO Custom_Engines_Stats (engineId, designId, partStat, Value, unitValue)
-            VALUES (${engineId}, ${parseInt(engineId + 2)}, ${15}, ${value}, ${untiValue})`);
+            VALUES (${engineId}, ${designId}, ${15}, ${value}, ${untiValue})`);
         }
       }
     }

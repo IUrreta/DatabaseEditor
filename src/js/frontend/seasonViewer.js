@@ -1,7 +1,7 @@
 import { races_names, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams  } from "./config";
 import { resetH2H } from './head2head';
 import { game_version, custom_team } from "./renderer";
-import { insert_space, manageColor, setCurrentSeason } from "./transfers";
+import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
 import { socket, factory } from "./renderer";
 
 
@@ -25,6 +25,14 @@ export let engine_names = { //this one is changed as the user adds engines, so i
     4: "Rbpt",
     7: "Mercedes",
     10: "Renault"
+}
+
+export function addEngineName(id, name) {
+    engine_names[id] = name
+}
+
+export function deleteEngineName(id) {
+    delete engine_names[id]
 }
 
 export function setEngineAllocations(allocations) {
@@ -412,7 +420,7 @@ export function new_load_drivers_table(data) {
     seasonResults = data
     let datazone = document.querySelector(".drivers-table-data")
     datazone.innerHTML = ""
-    data = data.slice(0, -1)
+    data = data[0]
     data = new_order_drivers(data)
     data.forEach(function (driver, index) {
         let odd = index % 2 === 0
@@ -461,13 +469,14 @@ function reloadTables() {
 }
 
 export function new_load_teams_table(data) {
+    console.log(data)
     let pairTeamPos = data[data.length - 1]
     //create dict with dirst element of pair as key and second as value
     let pairTeamPosDict = {}
     pairTeamPos.forEach(function (pair) {
         pairTeamPosDict[pair[0]] = pair[1]
     })
-    data = data.slice(0, -1)
+    data = data[0]
     let datazone = document.querySelector(".teams-table-data")
     datazone.innerHTML = ""
     let teamData = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [], 10: [] }
@@ -491,6 +500,8 @@ export function new_load_teams_table(data) {
             teamData[team].push([])
         }
     }
+    console.log(engine_names)
+    console.log(engine_allocations)
     for (let team in combined_dict) {
         if (f1_teams.includes(parseInt(team))) {
             let pos = pairTeamPosDict[team]
@@ -504,6 +515,7 @@ export function new_load_teams_table(data) {
 }
 
 function new_addTeam(teamData, name, pos, id) {
+    console.log(id)
     let data = document.querySelector(".teams-table-data")
     let row = document.createElement("div")
     row.classList = "teams-table-row"
@@ -636,8 +648,7 @@ function new_addDriver(driver, races_done, odd) {
     nameContainer.className = "name-container"
     let spanName = document.createElement("span")
     let spanLastName = document.createElement("span")
-    spanName.textContent = insert_space(name[0]) + " "
-    spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
+    format_name(driver[0], name, spanName, spanLastName)
     spanLastName.classList.add("bold-font")
     spanLastName.dataset.teamid = driver[1]
     row.dataset.teamid = driver[1]
@@ -917,13 +928,11 @@ export function generateYearsMenu(actualYear) {
         yearMenu.appendChild(a);
         a.addEventListener("click", function () {
             document.getElementById("yearButton").textContent = a.textContent
-            let dataYear = {
-                command: "yearSelected",
-                year: a.textContent
-            }
             isYearSelected = true
             manage_show_tables()
-            socket.send(JSON.stringify(dataYear))
+            const message = { command: 'yearSelected', data: { year: a.textContent } };
+            const command = factory.createCommand(message);
+            command.execute();
         })
 
         let a2 = document.createElement("a");

@@ -1022,7 +1022,7 @@ document.querySelector("#confirmCustomEnginesButton").addEventListener("click", 
     let unique_id = 1
     engines.forEach(function (engine) {
         //id is title in lowercase
-        let engineID = 10 + unique_id
+        let engineID = 13 + unique_id
         let engineName = engine.querySelector(".engine-performance-title").value.toLowerCase()
         let engineStats = {}
         engine.querySelectorAll(".engine-performance-stat").forEach(function (stat) {

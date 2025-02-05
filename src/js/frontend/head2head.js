@@ -1,6 +1,6 @@
 import { races_names, team_dict, combined_dict, lightColors  } from "./config";
 import { game_version,  custom_team, factory } from "./renderer";
-import { insert_space, manageColor } from "./transfers";
+import { insert_space, manageColor, format_name } from "./transfers";
 import { relative_grid } from "./predictions";
 
 
@@ -563,8 +563,7 @@ export function load_drivers_h2h(drivers) {
         spanLastName.dataset.teamid = driver[2];
         newDiv.dataset.teamid = driver[2];
         newDiv.classList.add(team_dict[driver[2]] + "-transparent")
-        spanName.textContent = insert_space(name[0]) + " "
-        spanLastName.textContent = name.slice(1).join(" ").toUpperCase()
+        format_name(driver[0], name, spanName, spanLastName)
         spanLastName.classList.add("bold-font")
         let h2hBut = document.createElement("div")
         h2hBut.dataset.driverid = driver[1]

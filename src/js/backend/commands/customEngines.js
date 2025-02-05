@@ -7,11 +7,8 @@ export default class CustomEnginesCommand extends Command {
     execute() {
         const dbUtils = getDBUtils();
 
-        console.log(this.message.data.enginesData)
-
         dbUtils.updateCustomEngines(this.message.data.enginesData)
 
-        console.log("Custom Engines Updated")
     }
 
 }
