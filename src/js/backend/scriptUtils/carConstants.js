@@ -48,6 +48,16 @@ export const unitValueToValue = {
     19: (x) => (x - 40) * 1000 / 30
 };
 
+export const engine_unitValueToValue = {
+    6: (x) => 20 * (x - 50),
+    10: (x) => 50 * (x - 80),
+    11: (x) => -50 * (x - 85),
+    12: (x) => (200 / 3) * (x - 70),
+    14: (x) => 50 * (x - 60),
+    18: (x) => 50 * (x - 50),
+    19: (x) => 50 * (x - 50),
+}
+
 export const downforce24UnitValueToValue = {
     7: (x) => 497.6 * x - 1489.8,
     8: (x) => 496.8 * x - 2479.5,

@@ -1168,21 +1168,21 @@
         </div>
       </div>
     </div> -->
-    <div class="gear-container my-2">
+    <div class="gear-container my-2 d-none">
       <i class="bi bi-gear hidden"></i>
       <label class="bold-font standard-label">SAVE SETTINGS</label>
       <div class="standard-line"></div>
     </div>
+    <div class="toolbar-logo-and-title">
+      <img src="../assets/images/logoAlter.png" class="toolbar-logo">
+      <div class="toolbar-title bold-font">
+        <span>DB</span>
+        <span>EDITOR</span>
+      </div>
+    </div>
     <div class="script-selector bold-font">
       <div class="py-2">
         <ul class="nav nav-pills">
-          <li class="nav-item">
-            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="predictpill">
-              <i class="bi bi-bezier2 pill-icon"></i>
-              <label class="bold-font pill-label">FORECAST</label>
-              <div class="pill-line"></div>
-            </a>
-          </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" href="#" id="h2hpill">
               <i class="bi bi-bar-chart-fill pill-icon"></i>
@@ -1232,8 +1232,15 @@
               <div class="pill-line"></div>
             </a>
           </li>
+          <li>
+            <div class="download-save-button">
+              <i class="bi bi-file-earmark-arrow-down"></i>
+            </div>
+          </li>
         </ul>
+
       </div>
+
     </div>
 
   </div>
@@ -3609,7 +3616,8 @@
             <div class="fit-button" id="fitButton">Fit latest designs</div>
           </div>
           <div class="title-buttons-left d-none" id="customEnginesButtonContainer">
-            <div class="fit-button" id="customEngines" data-bs-toggle="modal" data-bs-target="#enginesModal">Custom engines</div>
+            <div class="fit-button" id="customEngines" data-bs-toggle="modal" data-bs-target="#enginesModal">Custom
+              engines</div>
           </div>
           <div class="title-buttons-right">
             <ul class="nav nav-pills">

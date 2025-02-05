@@ -1,6 +1,6 @@
-import { races_names, part_codes_abreviations, codes_dict, combined_dict, races_map, abreviations_dict, pars_abreviations  } from "./config";
+import { races_names, part_codes_abreviations, codes_dict, combined_dict, races_map, abreviations_dict, pars_abreviations, engine_stats_dict  } from "./config";
 import { colors_dict } from "./head2head";
-import { manageSaveButton } from "./renderer";
+import { manageSaveButton, game_version } from "./renderer";
 import { socket, first_show_animation, factory } from "./renderer";
 
 const teamsPill = document.getElementById("teamsPill");
@@ -240,8 +240,15 @@ export function update_max_design(data) {
  * @param {Object} engineData engine stats for all manufacturers
  */
 export function manage_engineStats(engineData) {
-    console.log(engineData)
-    engineData.forEach(function (elem) {
+    let officialEngines = engineData.filter(function (elem) {
+        return elem[0] <= 10
+    })
+    let customEngines = engineData.filter(function (elem) {
+        return elem[0] > 10
+    })
+    console.log("official engines", officialEngines)
+    console.log("custom engines", customEngines)
+    officialEngines.forEach(function (elem) {
         let engineId = elem[0]
         let engineStats = elem[1];
         let engine = document.querySelector(`[data-engineId="${engineId}"]`);
@@ -254,6 +261,7 @@ export function manage_engineStats(engineData) {
             bar.style.width = value + "%";
         }
     })
+    load_custom_engines(customEngines)
 }
 
 
@@ -893,6 +901,7 @@ function resetBars() {
 }
 
 function add_custom_engine(name, stats) {
+    console.log(name, stats)
     let generalEngineDiv = document.createElement("div")
     let engineTitle = document.createElement("input")
     engineTitle.type = "text"
@@ -941,7 +950,7 @@ function add_custom_engine(name, stats) {
             bar.classList.add("engine-performance-bar")
             let bar_progress = document.createElement("div")
             bar_progress.classList.add("engine-performance-progress")
-            if (stats[key] !== undefined) {
+            if (stats[key.toString()] !== undefined) {
                 input.value = stats[key] + " %";
                 bar_progress.style.width = stats[key] + "%";
             }
@@ -1024,34 +1033,32 @@ document.querySelector("#confirmCustomEnginesButton").addEventListener("click", 
         enginesData[engineID] = {}
         enginesData[engineID]["stats"] = engineStats
         enginesData[engineID]["name"] = engineName
-        unique_id += 1
+        unique_id += 3
     })
-    let saveSelector = document.getElementById('saveSelector');
-    let saveSelected = saveSelector.innerHTML;
     let data = {
-        command: "customEngines",
-        saveSelected: saveSelected,
         enginesData: enginesData
     }
-
-    socket.send(JSON.stringify(data))
+    const message = { command: 'customEngines', data: data };
+    const command = factory.createCommand(message);
+    command.execute();
+    
 })
 
 
 export function load_custom_engines(data) {
-    customEnginesCopy = data
-    let engines = data[0]
+    let engines = data
     let engineDropdown = document.querySelector("#engineMenu")
     engineDropdown.querySelectorAll("a.custom-engine").forEach(function (elem) {
         elem.remove()
     })
     document.querySelector(".custom-engines-div").innerHTML = ""
-    for (let key in engines) {
-        add_custom_engine(engines[key]["name"], engines[key]["stats"])
+
+    engines.forEach(function (engine) {
+        add_custom_engine(engine[2], engine[1])
         let engineOption = document.createElement("a")
         engineOption.classList.add("dropdown-item", "custom-engine")
-        engineOption.innerText = engines[key]["name"].charAt(0).toUpperCase() + engines[key]["name"].slice(1)
-        engineOption.dataset.engine = key
+        engineOption.innerText = engine[2].charAt(0).toUpperCase() + engine[2].slice(1)
+        engineOption.dataset.engine = engine[0]
         engineOption.href = "#"
         engineDropdown.appendChild(engineOption)
         engineOption.addEventListener("click", function () {
@@ -1061,7 +1068,7 @@ export function load_custom_engines(data) {
             document.querySelector("#engineButton").dataset.value = engineid;
         })
 
-    }
+    })
 
 }
 

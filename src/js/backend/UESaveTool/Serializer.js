@@ -1,4 +1,5 @@
 
+import { Buffer } from "buffer";
 export class Serializer {
     constructor(buf) {
         this._data = buf;

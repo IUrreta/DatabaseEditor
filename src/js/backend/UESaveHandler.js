@@ -148,22 +148,14 @@ export const repack = (db, metadata, overwrite = false) => {
     finalData.writeInt32LE(s2, meta_length + 12);
     finalData.set(compressed, meta_length + 16);
 
-    if (window.mode === "app" && overwrite) {
-      window.parent.document.dispatchEvent( new CustomEvent('export-file', {
-        detail: {
-          data: finalData,
-          filename: metadata.filename,
-          filepath: window.file_path,
-        }
-      }))
-    } else {
-      saveAs(new Blob([finalData], {type: "application/binary"}), metadata.filename);
-    }
+    saveAs(new Blob([finalData], {type: "application/binary"}), metadata.filename);
+    
   } else {
     alert("Savefile Serialization Check failed.")
   }
 
 }
+
 export const dump = (db, metadata) => {
   saveAs(new Blob([db.export()], {type: "application/vnd.sqlite3"}), metadata.filename + ".db");
 }

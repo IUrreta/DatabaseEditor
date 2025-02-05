@@ -1,6 +1,7 @@
 import {SerializationError} from '.';
 import {PropertyFactory} from './factories';
 import {Serializer} from './Serializer';
+import { Buffer } from "buffer";
 
 export class GvasHeader {
     constructor() {

@@ -29,7 +29,7 @@
   --table-third-light: #f2cda6;
   --text-outline: #000000;
   --blur-color: #616161d3;
-  --toast-background : #5a5b5c;
+  --toast-background: #5a5b5c;
   --console-transparent: #42424299;
   --separator: #4a4a4a;
   --frozen: #77e2f0;
@@ -128,7 +128,7 @@
   --alphatauri-primary: #5E8FAA;
   --porsche-primary: #c50c28;
   --porsche-secondary: #f1f1f1;
-  --brawn-primary : #d0e610;
+  --brawn-primary: #d0e610;
   --brawn-secondary: #f1f1f1;
   --ferrari-primary: #f53311;
   --general-secondary: #f1f1f1;
@@ -257,25 +257,27 @@ body {
   max-height: 35px;
 }
 
-.scroll-wrapper{
+.scroll-wrapper {
   overflow-y: auto;
 }
 
-.scroll-wrapper::-webkit-scrollbar{
+.scroll-wrapper::-webkit-scrollbar {
   width: 6px;
 }
 
-.scroll-wrapper::-webkit-scrollbar-thumb{
+.scroll-wrapper::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 6px;
 }
 
-#free-drivers::-webkit-scrollbar, #free-staff::-webkit-scrollbar {
+#free-drivers::-webkit-scrollbar,
+#free-staff::-webkit-scrollbar {
   width: 4px !important;
   margin-left: 4px;
 }
 
-#free-drivers::-webkit-scrollbar-thumb, #free-staff::-webkit-scrollbar-thumb {
+#free-drivers::-webkit-scrollbar-thumb,
+#free-staff::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px !important;
 }
@@ -289,13 +291,13 @@ body {
   text-decoration: none;
 }
 
-.save-info{
+.save-info {
   display: flex;
   justify-content: center;
   cursor: default;
 }
 
-.socials{
+.socials {
   display: flex;
   justify-content: start;
 }
@@ -321,86 +323,94 @@ body {
     right: -137px;
     background-color: var(--text-general);
   }
+
   10% {
     right: -7px;
     background-color: var(--new-primary);
   }
+
   45% {
     right: -7px;
     background-color: var(--new-primary);
   }
+
   55% {
     right: -7px;
     background-color: var(--new-secondary);
   }
+
   90% {
     right: -7px;
     background-color: var(--new-secondary);
   }
+
   100% {
     right: -137px;
     background-color: var(--text-general);
   }
 }
 
-.save-button.first-show{
+.save-button.first-show {
   animation: slideAndColorChange 3s forwards;
 }
 
-.important-text{
+.important-text {
   color: var(--new-primary-dark);
 }
 
-.danger-text{
+.danger-text {
   color: var(--negative-general);
 }
 
-.save-button .save-label{
+.save-button .save-label {
   transition: opacity 0.15s;
   cursor: pointer;
 }
 
-.save-button i{
+.save-button i {
   transition: opacity 0.15s;
   cursor: pointer;
 }
 
-.save-button .save-label{
+.save-button .save-label {
   opacity: 0;
 }
 
-.save.button i{
+.save.button i {
   opacity: 1;
 }
 
-.save-button:hover i, .save-button.first-show i{
+.save-button:hover i,
+.save-button.first-show i {
   opacity: 0;
 }
 
-.save-button:hover .save-label, .save-button.first-show .save-label{
+.save-button:hover .save-label,
+.save-button.first-show .save-label {
   opacity: 1;
 }
 
 .save-button:hover {
-  right: -7px; 
+  right: -7px;
   background-color: var(--new-primary);
 }
 
-.save-button i{
+.save-button i {
   position: absolute;
   left: 10px;
   top: 50%;
   transform: translateY(-50%);
 }
 
-.twenty-three, .twenty-four{
+.twenty-three,
+.twenty-four {
   color: var(--dark-text);
   transition: color 0.15s, border-color 0.15s;
   width: 50px;
   position: relative;
 }
 
-.twenty-three::before{
+.twenty-three::before {
   content: "";
   display: block;
   width: 100%;
@@ -414,7 +424,7 @@ body {
   z-index: -1;
 }
 
-.twenty-four::before{
+.twenty-four::before {
   content: "";
   display: block;
   width: 100%;
@@ -428,33 +438,34 @@ body {
   z-index: -1;
 }
 
-.twenty-three{
+.twenty-three {
   border-right: 1px solid var(--dark-text);
 }
 
-.twenty-four{
+.twenty-four {
   border-left: 1px solid var(--dark-text);
 }
 
-.twenty-three.activated{
+.twenty-three.activated {
   color: var(--text-general);
   border-color: var(--new-secondary);
 }
 
-.twenty-four.activated{
+.twenty-four.activated {
   color: var(--text-general);
   border-color: var(--new-primary);
 }
 
-.twenty-three.activated::before{
+.twenty-three.activated::before {
   opacity: 1;
 }
 
-.twenty-four.activated .front-gradient, .twenty-three.activated .front-gradient{
+.twenty-four.activated .front-gradient,
+.twenty-three.activated .front-gradient {
   text-shadow: 0 0 5px black;
 }
 
-.twenty-four.activated::before{
+.twenty-four.activated::before {
   opacity: 1;
 }
 
@@ -472,7 +483,8 @@ body {
 }
 
 .socials a:hover {
-  max-width: 180px;  /* Ajusta este valor según el tamaño máximo que desees para el texto */
+  max-width: 180px;
+  /* Ajusta este valor según el tamaño máximo que desees para el texto */
 }
 
 .update-info {
@@ -483,23 +495,23 @@ body {
   padding-right: 10px;
 }
 
-.update-info.hide{
+.update-info.hide {
   opacity: 0;
   width: 0;
   padding-right: 0;
 }
 
-.update-info.hide::before{
+.update-info.hide::before {
   width: 0;
 }
 
-.version-panel{
+.version-panel {
   transition: opacity 0.15s, color 0.15s;
   opacity: 0;
   width: 0;
 }
 
-.version-panel.show{
+.version-panel.show {
   opacity: 1;
   width: 100%;
   padding-right: 10px;
@@ -507,11 +519,11 @@ body {
   z-index: 2;
 }
 
-.version-panel:hover{
+.version-panel:hover {
   color: var(--text-selected);
 }
 
-.dev-console{
+.dev-console {
   position: absolute;
   top: 0;
   left: 0;
@@ -523,7 +535,7 @@ body {
   z-index: 1000;
 }
 
-.dev-console:focus-visible{
+.dev-console:focus-visible {
   outline: none;
 }
 
@@ -563,11 +575,13 @@ a.bi-github:hover {
   color: var(--text-selected);
 }
 
-i.bi-file-text:hover{
+i.bi-file-text:hover {
   color: var(--white-general);
 }
 
-.status, .socials, .save-info{
+.status,
+.socials,
+.save-info {
   width: 33%;
 }
 
@@ -603,11 +617,11 @@ i.bi-file-text:hover{
   text-align: center;
   color: var(--white-general);
   font-size: 26px;
-  padding: 10px 0; 
+  padding: 10px 0;
   flex: 1;
 }
 
-.title-buttons-left{
+.title-buttons-left {
   position: absolute;
   gap: 10px;
   padding-left: 14px;
@@ -615,7 +629,7 @@ i.bi-file-text:hover{
   align-items: center;
 }
 
-.title-buttons-right{
+.title-buttons-right {
   position: absolute;
   right: 0;
   gap: 10px;
@@ -624,26 +638,27 @@ i.bi-file-text:hover{
   align-items: center;
 }
 
-.title-buttons-left .custom-dropdown{
+.title-buttons-left .custom-dropdown {
   margin: 0 !important;
 }
 
-.standings-list{
+.standings-list {
   width: 65px;
   text-align: center;
 }
 
-.standings-list-engine{
+.standings-list-engine {
   color: var(--engine-table-name);
 }
 
-.transfer-top-panel, .general-top-panel {
+.transfer-top-panel,
+.general-top-panel {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.general-top-panel .custom-dropdown{
+.general-top-panel .custom-dropdown {
   margin: 0 !important;
 }
 
@@ -653,7 +668,7 @@ i.bi-file-text:hover{
 }
 
 
-.add-contract{
+.add-contract {
   border: 2px dashed var(--disabled-text);
   color: var(--disabled-text);
   display: flex;
@@ -666,44 +681,45 @@ i.bi-file-text:hover{
   font-size: 18px;
 }
 
-.add-contract.enabled{
+.add-contract.enabled {
   border: 2px dashed var(--dark-text);
   color: var(--dark-text);
 }
 
-.add-contract i{
+.add-contract i {
   font-style: normal;
 }
 
-.add-contract i::before{
+.add-contract i::before {
   margin: 0 9px;
 }
 
-.add-contract.enabled span, .add-contract.enabled i{
+.add-contract.enabled span,
+.add-contract.enabled i {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s;
 }
 
-.add-contract.enabled i:hover{
+.add-contract.enabled i:hover {
   color: var(--new-primary);
   transform: scale(1.1);
 }
 
-#teamContractButton{
+#teamContractButton {
   margin-top: 0 !important;
 }
 
-#futureContractTitle{
+#futureContractTitle {
   border-top: 2px solid var(--separator);
 }
 
-.year-and-break{
+.year-and-break {
   display: flex;
   flex-direction: row;
   align-items: baseline;
 }
 
-.contract-title{
+.contract-title {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -714,28 +730,28 @@ i.bi-file-text:hover{
   margin-bottom: 20px;
 }
 
-.break-contract{
+.break-contract {
   color: var(--dark-text);
   cursor: pointer;
   transition: color 0.15s, transform 0.15s;
   font-size: 18px;
 }
 
-.break-contract:hover{
+.break-contract:hover {
   color: var(--negative-general);
   transform: scale(1.1);
 }
 
 .auto-contract {
-  color: var( --text-general);
+  color: var(--text-general);
   font-size: 20px;
   padding-right: 2rem;
   position: absolute;
   right: 0;
 }
 
-.freeze-mentality{
-  color: var( --text-general);
+.freeze-mentality {
+  color: var(--text-general);
   font-size: 20px;
   padding-right: 2rem;
 }
@@ -757,11 +773,11 @@ input[role="switch"]:checked {
   background-color: var(--new-primary-dark);
 }
 
-input[type="checkbox"]{
+input[type="checkbox"] {
   border: none;
 }
 
-input[type="checkbox"]:focus{
+input[type="checkbox"]:focus {
   box-shadow: none;
 }
 
@@ -769,24 +785,24 @@ input[type="checkbox"]:checked {
   background-color: var(--new-primary-dark);
 }
 
-.custom-footer button{
+.custom-footer button {
   font-family: "Formula1Bold";
 }
 
 
 
-.main-team-changes{
+.main-team-changes {
   display: flex;
   flex-direction: column;
 }
 
-.team-change{
+.team-change {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.team-change-button{
+.team-change-button {
   width: 33%;
   text-align: end;
   align-items: end;
@@ -794,14 +810,14 @@ input[type="checkbox"]:checked {
   justify-content: flex-end;
 }
 
-.info-modal-section{
+.info-modal-section {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
 
-.texts-and-clear{
+.texts-and-clear {
   display: flex;
   flex-direction: row;
   gap: 15px;
@@ -809,17 +825,17 @@ input[type="checkbox"]:checked {
   justify-content: flex-start;
 }
 
-.texts-and-clear .fit-button{
+.texts-and-clear .fit-button {
   padding: 0;
 }
 
-.H2H-text span.text-main{
-  color: var( --new-primary);
+.H2H-text span.text-main {
+  color: var(--new-primary);
 }
 
 
-.graph-text span.text-main{
-  color: var( --new-secondary);
+.graph-text span.text-main {
+  color: var(--new-secondary);
 }
 
 .h2h-highlight {
@@ -831,17 +847,31 @@ input[type="checkbox"]:checked {
 }
 
 @keyframes h2h-animation {
-  0%, 100% { color: var( --text-general); }
-  50% { color: var( --text-selected); }
+
+  0%,
+  100% {
+    color: var(--text-general);
+  }
+
+  50% {
+    color: var(--text-selected);
+  }
 }
 
 @keyframes graph-animation {
-  0%, 100% { color: var( --text-general); }
-  50% { color: var( --text-selected-secondary); }
+
+  0%,
+  100% {
+    color: var(--text-general);
+  }
+
+  50% {
+    color: var(--text-selected-secondary);
+  }
 }
 
 .annotations {
-  color: var( --text-general);
+  color: var(--text-general);
   font-size: 20px;
   padding-right: 1rem;
 }
@@ -855,52 +885,73 @@ input[type="checkbox"]:checked {
   gap: 15px;
 }
 
-#d1Menu, #d2Menu, #teamMenu, #raceProbMenu{
+#d1Menu,
+#d2Menu,
+#teamMenu,
+#raceProbMenu {
   max-height: 200px;
   overflow-y: scroll;
 }
 
-#numberMenu{
+#numberMenu {
   max-height: 200px;
   overflow-y: scroll;
 }
 
-#numberMenu::-webkit-scrollbar, #d1Menu::-webkit-scrollbar, #d2Menu::-webkit-scrollbar, #teamMenu::-webkit-scrollbar, #teamContractMenu::-webkit-scrollbar, #raceMenu::-webkit-scrollbar, #raceProbMenu::-webkit-scrollbar, .prob-viewer-data::-webkit-scrollbar, #patchNotesBody::-webkit-scrollbar,
-.parts-list::-webkit-scrollbar, .engine-modal-body::-webkit-scrollbar{
+#numberMenu::-webkit-scrollbar,
+#d1Menu::-webkit-scrollbar,
+#d2Menu::-webkit-scrollbar,
+#teamMenu::-webkit-scrollbar,
+#teamContractMenu::-webkit-scrollbar,
+#raceMenu::-webkit-scrollbar,
+#raceProbMenu::-webkit-scrollbar,
+.prob-viewer-data::-webkit-scrollbar,
+#patchNotesBody::-webkit-scrollbar,
+.parts-list::-webkit-scrollbar,
+.engine-modal-body::-webkit-scrollbar {
   width: 4px;
 }
 
-#numberMenu::-webkit-scrollbar-thumb, #d1Menu::-webkit-scrollbar-thumb, #d2Menu::-webkit-scrollbar-thumb, #teamMenu::-webkit-scrollbar-thumb, #teamContractMenu::-webkit-scrollbar-thumb, #raceMenu::-webkit-scrollbar-thumb, #raceProbMenu::-webkit-scrollbar-thumb,  .prob-viewer-data::-webkit-scrollbar-thumb, #patchNotesBody::-webkit-scrollbar-thumb,
-.parts-list::-webkit-scrollbar-thumb, .engine-modal-body::-webkit-scrollbar-thumb{
+#numberMenu::-webkit-scrollbar-thumb,
+#d1Menu::-webkit-scrollbar-thumb,
+#d2Menu::-webkit-scrollbar-thumb,
+#teamMenu::-webkit-scrollbar-thumb,
+#teamContractMenu::-webkit-scrollbar-thumb,
+#raceMenu::-webkit-scrollbar-thumb,
+#raceProbMenu::-webkit-scrollbar-thumb,
+.prob-viewer-data::-webkit-scrollbar-thumb,
+#patchNotesBody::-webkit-scrollbar-thumb,
+.parts-list::-webkit-scrollbar-thumb,
+.engine-modal-body::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
 
-#allDrivers{
+#allDrivers {
   overflow-y: hidden;
 }
 
-.dropdown-menu{
+.dropdown-menu {
   background-color: var(--dropdown-back) !important;
   border: none !important;
   box-shadow: 0 2px 6px 1px black;
   margin-top: 1px !important;
 }
 
-.dropdown-menu a{
+.dropdown-menu a {
   background-color: var(--dropdown-back) !important;
   color: var(--white-general) !important;
   border-bottom: 2px solid transparent !important;
   transition: background-color 0.15s, color 0.15s, border-bottom 0.15s;
 }
 
-.dropdown-menu a:hover{
+.dropdown-menu a:hover {
   background-color: var(--dropdown-hover) !important;
   color: var(--text-selected) !important;
   border-bottom: 2px solid var(--new-primary) !important;
 }
 
-.dropdown-manu a::before{
+.dropdown-manu a::before {
   content: '';
   position: absolute;
   top: 0;
@@ -913,7 +964,7 @@ input[type="checkbox"]:checked {
   pointer-events: none;
 }
 
-.dropdown-menu a:hover::before{
+.dropdown-menu a:hover::before {
   opacity: 1;
 }
 
@@ -923,11 +974,12 @@ input[type="checkbox"]:checked {
 
 
 
-.modal-subtitle, .component-subtitle{
-  color: var( --text-general);
+.modal-subtitle,
+.component-subtitle {
+  color: var(--text-general);
 }
 
-#driverStatsTitle{
+#driverStatsTitle {
   max-width: none;
   max-width: none;
   text-align: left;
@@ -958,18 +1010,18 @@ input[type="checkbox"]:checked {
   width: 33%;
 }
 
-.separator-3{
+.separator-3 {
   width: 3px;
   background-color: var(--separator);
   height: 100%;
   margin: 20px 0;
 }
 
-.stats-title .bi-pencil{
+.stats-title .bi-pencil {
   color: var(--dark-text);
 }
 
-.age-holder{
+.age-holder {
   color: var(--dark-text);
   display: flex;
   gap: 25px;
@@ -977,7 +1029,7 @@ input[type="checkbox"]:checked {
   padding-top: 20px;
 }
 
-.text-filter{
+.text-filter {
   background-color: transparent;
   color: var(--white-general);
   border-bottom: 2px solid transparent;
@@ -991,14 +1043,14 @@ input[type="checkbox"]:checked {
 
 }
 
-.text-filter-container{
+.text-filter-container {
   margin-top: 5px;
   width: 100%;
   margin-right: 10px;
   position: relative;
 }
 
-.text-filter-container .bi-x{
+.text-filter-container .bi-x {
   color: var(--dark-text);
   cursor: pointer;
   transition: color 0.15s, transform 0.15s, opacity 0.15s;
@@ -1006,24 +1058,24 @@ input[type="checkbox"]:checked {
   right: 0px;
 }
 
-.text-filter-container .bi-x:hover{
+.text-filter-container .bi-x:hover {
   color: var(--new-primary);
   transform: scale(1.1);
 }
 
-.filter-icon{
+.filter-icon {
   color: var(--dark-text);
   font-size: 20px;
   cursor: pointer;
   transition: color 0.15s, transform 0.15s;
 }
 
-.filter-icon:hover{
+.filter-icon:hover {
   color: var(--new-primary);
   transform: scale(1.1);
 }
 
-.filter-container{
+.filter-container {
   background-color: transparent;
   border-radius: 10px;
   box-shadow: 0 0 0 0 var(--box-shadow);
@@ -1034,7 +1086,7 @@ input[type="checkbox"]:checked {
   padding: 4px 12px;
 }
 
-.filter-pills::before{
+.filter-pills::before {
   content: '';
   position: absolute;
   top: 0;
@@ -1046,118 +1098,139 @@ input[type="checkbox"]:checked {
   pointer-events: none;
 }
 
-.filter-pills:hover .basic-label{
+.filter-pills:hover .basic-label {
   transform: scale(1.1);
 }
 
-.filter-container.focused{
+.filter-container.focused {
   background-color: var(--generals);
   box-shadow: 0 0 10px 1px var(--box-shadow);
 
 }
 
-.category-filters, .order-filters{
+.category-filters,
+.order-filters {
   opacity: 0;
   transition: opacity 0.15s;
 }
 
-.category-filters:not(.show) a{
+.category-filters:not(.show) a {
   pointer-events: none;
 }
 
-.category-filters.show, .order-filters.show{
+.category-filters.show,
+.order-filters.show {
   opacity: 1;
 }
 
-.category-filters .basic-label{
+.category-filters .basic-label {
   color: var(--dark-text);
 }
 
-#freefilter:hover .pill-line, #freefilterTransfers:hover .pill-line{
+#freefilter:hover .pill-line,
+#freefilterTransfers:hover .pill-line {
   width: 100%;
 }
 
-#freefilter.active .basic-label, #freefilterTransfers.active .basic-label{
+#freefilter.active .basic-label,
+#freefilterTransfers.active .basic-label {
   color: var(--new-primary);
 }
 
-#freefilter:hover .pill-line, #freefilterTransfers:hover .pill-line{
+#freefilter:hover .pill-line,
+#freefilterTransfers:hover .pill-line {
   background-color: var(--new-primary);
 }
 
-#freefilter:hover .basic-label, #freefilterTransfers:hover .basic-label{
+#freefilter:hover .basic-label,
+#freefilterTransfers:hover .basic-label {
   color: var(--new-primary);
 }
 
 
-#F1filter:hover .pill-line, #F1filterTransfers:hover .pill-line{
+#F1filter:hover .pill-line,
+#F1filterTransfers:hover .pill-line {
   width: 100%;
 }
 
-#F1filter .pill-line, #F1filterTransfers .pill-line{
+#F1filter .pill-line,
+#F1filterTransfers .pill-line {
   background-color: var(--white-general);
 }
 
-#F1filter.active .basic-label, #F1filterTransfers.active .basic-label{
+#F1filter.active .basic-label,
+#F1filterTransfers.active .basic-label {
   color: var(--text-general);
 }
 
-#F1filter:hover .pill-line, #F1filterTransfers:hover .pill-line{
+#F1filter:hover .pill-line,
+#F1filterTransfers:hover .pill-line {
   background-color: var(--text-general);
 }
 
-#F1filter:hover .basic-label, #F1filterTransfers:hover .basic-label{
+#F1filter:hover .basic-label,
+#F1filterTransfers:hover .basic-label {
   color: var(--text-general);
 }
 
 
-#F2filter:hover .pill-line, #F2filterTransfers:hover .pill-line{
+#F2filter:hover .pill-line,
+#F2filterTransfers:hover .pill-line {
   width: 100%;
 }
 
-#F2filter .pill-line, #F2filterTransfers .pill-line{
+#F2filter .pill-line,
+#F2filterTransfers .pill-line {
   background-color: var(--f2-border);
 }
 
-#F2filter.active .basic-label, #F2filterTransfers.active .basic-label{
+#F2filter.active .basic-label,
+#F2filterTransfers.active .basic-label {
   color: var(--f2-border);
 }
 
-#F2filter:hover .pill-line, #F2filterTransfers:hover .pill-line{
+#F2filter:hover .pill-line,
+#F2filterTransfers:hover .pill-line {
   background-color: var(--f2-border);
 }
 
-#F2filter:hover .basic-label, #F2filterTransfers:hover .basic-label{
+#F2filter:hover .basic-label,
+#F2filterTransfers:hover .basic-label {
   color: var(--f2-border);
 }
 
 
-#F3filter .pill-line, #F3filterTransfers .pill-line{
+#F3filter .pill-line,
+#F3filterTransfers .pill-line {
   background-color: var(--f3-back);
 }
 
-#F3filter:hover .pill-line, #F3filterTransfers:hover .pill-line{
+#F3filter:hover .pill-line,
+#F3filterTransfers:hover .pill-line {
   width: 100%;
 }
 
-#F3filter.active .basic-label, #F3filterTransfers.active .basic-label{
+#F3filter.active .basic-label,
+#F3filterTransfers.active .basic-label {
   color: var(--f3-border);
 }
 
-#F3filter:hover .pill-line, #F3filterTransfers:hover .pill-line{
+#F3filter:hover .pill-line,
+#F3filterTransfers:hover .pill-line {
   background-color: var(--f3-border);
 }
 
-#F3filter:hover .basic-label, #F3filterTransfers:hover .basic-label{
+#F3filter:hover .basic-label,
+#F3filterTransfers:hover .basic-label {
   color: var(--f3-border);
 }
 
-#StaffLists{
+#StaffLists {
   margin-left: 14px;
 }
 
 
-.search-and-order{
+.search-and-order {
   margin-left: 10px;
   margin-bottom: 7px;
   display: flex;
@@ -1165,7 +1238,7 @@ input[type="checkbox"]:checked {
   justify-content: space-between;
 }
 
-.order-space{
+.order-space {
   margin-right: 20px;
   width: 23px;
   height: 35px;
@@ -1173,7 +1246,7 @@ input[type="checkbox"]:checked {
   cursor: pointer;
 }
 
-.search-and-order i{
+.search-and-order i {
   font-size: 24px;
   transition: opacity 0.15s, transform 0.15s, color 0.15s;
   color: var(--dark-text);
@@ -1181,52 +1254,55 @@ input[type="checkbox"]:checked {
   z-index: 1;
 }
 
-.order-space i:hover{
+.order-space i:hover {
   transform: scale(1.1);
   color: var(--text-selected);
 }
 
-.search-and-order i.active{
+.search-and-order i.active {
   color: var(--new-primary);
 }
 
-.search-and-order i.hidden{
+.search-and-order i.hidden {
   opacity: 0;
   z-index: 0;
 }
 
 
-.text-filter:hover{
+.text-filter:hover {
   border-bottom: 2px solid var(--text-selected);
 }
 
-.text-filter:focus{
+.text-filter:focus {
   color: var(--text-selected);
   border-bottom: 2px solid var(--new-primary);
 }
 
-.text-filter:focus-visible{
+.text-filter:focus-visible {
   outline: none;
 }
 
-.color-reader:focus-visible{
+.color-reader:focus-visible {
   outline: none;
 }
 
 
-.retirement-age, .age{
+.retirement-age,
+.age {
   display: flex;
   gap: 3px;
 }
 
-.retirement-buttons, .age-buttons{
+.retirement-buttons,
+.age-buttons {
   font-size: 18px;
   display: flex;
   flex-direction: column;
   margin-top: 3px;
 }
 
-.retirement-buttons i, .age-buttons i{
+.retirement-buttons i,
+.age-buttons i {
   height: 20px;
   display: flex;
 }
@@ -1238,16 +1314,16 @@ input[type="checkbox"]:checked {
   min-height: 71px;
 }
 
-#numberName{
+#numberName {
   position: relative;
 }
 
-#numberName .name-and-stat{
+#numberName .name-and-stat {
   position: absolute;
   margin-left: 20px;
 }
 
-#numberName .number-details{
+#numberName .number-details {
   position: absolute;
   margin-right: 50px;
   margin-top: 15px;
@@ -1268,7 +1344,7 @@ input[type="checkbox"]:checked {
   gap: 5px;
 }
 
-.mentality-change-ovr{
+.mentality-change-ovr {
   position: absolute;
   top: 13px;
   right: 27px;
@@ -1279,11 +1355,13 @@ input[type="checkbox"]:checked {
 
 
 
-.mentality-change-ovr.positive, .mentality-modifier.positive{
+.mentality-change-ovr.positive,
+.mentality-modifier.positive {
   color: var(--positive-general);
 }
 
-.mentality-change-ovr.negative, .mentality-modifier.negative{
+.mentality-change-ovr.negative,
+.mentality-modifier.negative {
   color: var(--negative-general);
 }
 
@@ -1295,7 +1373,7 @@ input[type="checkbox"]:checked {
   display: flex;
 }
 
-.number-and-retirement{
+.number-and-retirement {
   display: flex;
   flex-direction: row;
   width: 66%;
@@ -1309,12 +1387,12 @@ input[type="checkbox"]:checked {
   box-shadow: 0 0 10px 1px var(--box-shadow);
 }
 
-.number-options{
+.number-options {
   width: 66%;
 }
 
-.retirement-options i{
-  color: var( --text-general);
+.retirement-options i {
+  color: var(--text-general);
   border-radius: 7.5px !important;
   width: 20px !important;
   height: 20px !important;
@@ -1371,11 +1449,11 @@ input[type="checkbox"]:checked {
   justify-content: center;
 }
 
-.cet-menubar{
+.cet-menubar {
   opacity: 0 !important;
 }
 
-.cet-title{
+.cet-title {
   font-family: 'Formula1Bold' !important;
 }
 
@@ -1411,7 +1489,7 @@ input[type="checkbox"]:checked {
   pointer-events: none;
 }
 
-.notification-line{
+.notification-line {
   width: 0%;
   height: 2px;
   background-color: var(--white-general);
@@ -1420,11 +1498,11 @@ input[type="checkbox"]:checked {
   transition: width 3s linear;
 }
 
-.notification-line.start{
+.notification-line.start {
   width: 100%;
 }
 
-.line-error{
+.line-error {
   width: 100%;
   height: 2px;
   position: relative;
@@ -1432,7 +1510,7 @@ input[type="checkbox"]:checked {
   background-color: var(--negative-general) !important;
 }
 
-.custom-toast{
+.custom-toast {
   background-color: var(--toast-background) !important;
   color: var(--white-general);
   border-radius: 10px !important;
@@ -1443,7 +1521,7 @@ input[type="checkbox"]:checked {
   justify-content: space-between !important;
 }
 
-.toast-icon{
+.toast-icon {
   font-size: 26px;
   height: 65%;
   border-right: 2px solid transparent;
@@ -1452,22 +1530,22 @@ input[type="checkbox"]:checked {
   align-items: center;
 }
 
-.custom-toast-body{
+.custom-toast-body {
   font-size: 16px;
   text-align: left;
 }
 
-.toast-icon.success{
+.toast-icon.success {
   border-color: var(--positive-general);
   color: var(--positive-general)
 }
 
-.toast-icon.error{
+.toast-icon.error {
   border-color: var(--negative-general);
   color: var(--negative-general);
 }
 
-.custom-toast-cross{
+.custom-toast-cross {
   padding: 10px;
   font-size: 30px;
   color: var(--dark-text);
@@ -1477,12 +1555,12 @@ input[type="checkbox"]:checked {
   align-items: center;
 }
 
-.custom-toast-cross:hover{
+.custom-toast-cross:hover {
   color: var(--text-selected);
   transform: scale(1.1);
 }
 
-.bar-space{
+.bar-space {
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -1490,7 +1568,7 @@ input[type="checkbox"]:checked {
   padding: 0 5px;
 }
 
-.driver1-number{
+.driver1-number {
   font-size: 18px;
   margin-right: 10px;
   transition: color 0.15s;
@@ -1498,37 +1576,39 @@ input[type="checkbox"]:checked {
   text-align: right;
 }
 
-.driver2-number{
+.driver2-number {
   font-size: 18px;
   margin-left: 10px;
   width: 12.5%;
   transition: color 0.15s;
 }
 
-.driver1-number.little, .driver2-number.little{
+.driver1-number.little,
+.driver2-number.little {
   font-size: 13px;
   height: 27px;
   padding-top: 5px;
 }
 
-.avg-comparison{
+.avg-comparison {
   display: flex;
   height: 27px;
   gap: 70px;
 }
 
-.driver1-avg, .driver2-avg{
+.driver1-avg,
+.driver2-avg {
   font-size: 18px;
 }
 
-.avg-separator{
+.avg-separator {
   width: 2px;
   height: 20px;
   margin-top: 3px;
-  background-color: var( --text-general);
+  background-color: var(--text-general);
 }
 
-.toast-error{
+.toast-error {
   color: var(--negative-general) !important;
 }
 
@@ -1536,7 +1616,7 @@ input[type="checkbox"]:checked {
   animation: fadeOut 0.15s;
 }
 
-.myShow{
+.myShow {
   animation: myFadeIn 0.15s;
 }
 
@@ -1569,8 +1649,13 @@ input[type="checkbox"]:checked {
 }
 
 @keyframes move {
-  0%   {left: -300px;}
-  100% {left: 100%;}
+  0% {
+    left: -300px;
+  }
+
+  100% {
+    left: 100%;
+  }
 }
 
 .mode-line {
@@ -1580,22 +1665,22 @@ input[type="checkbox"]:checked {
   background-color: var(--separator);
 }
 
-.mode-line.ai{
+.mode-line.ai {
   background-color: var(--mode-line-ai);
   /* box-shadow: 0 0 6px 1px var(--mode-line-ai); */
 }
 
-.mode-line.edit{
+.mode-line.edit {
   background-color: var(--mode-line-edit);
   /* box-shadow: 0 0 6px 1px #fff7b0; */
 }
 
-.mode-line.view{
+.mode-line.view {
   background-color: var(--mode-line-view);
   /* box-shadow: 0 0 6px 1px var(--mode-line-view); */
 }
 
-.moving-line{
+.moving-line {
   position: absolute;
   width: 300px;
   height: 1px;
@@ -1603,25 +1688,19 @@ input[type="checkbox"]:checked {
   animation: move 10s linear infinite;
 }
 
-.moving-line.ai{
-  background: linear-gradient(to right, transparent, #00ffb3, transparent);
-}
 
-.moving-line.edit{
-  background: linear-gradient(to right, transparent, #f3e13f, transparent);
-}
-
-.moving-line.view{
-  background: linear-gradient(to right, transparent, #c13aff, transparent);
-}
-
-.background{
-  background-color: var(--new-primary); /* Azul claro */
+.background {
+  background-color: var(--new-primary);
+  /* Azul claro */
   background-image: url('../assets/images/background2.svg');
-  background-size: cover; /* Ajusta el tamaño de la imagen al tamaño del contenedor */
-  background-position: center; /* Centra la imagen */
-  background-repeat: no-repeat; /* Evita que la imagen se repita */
-  height: 100%; /* Asegura que el fondo cubra toda la altura de la ventana */
+  background-size: cover;
+  /* Ajusta el tamaño de la imagen al tamaño del contenedor */
+  background-position: center;
+  /* Centra la imagen */
+  background-repeat: no-repeat;
+  /* Evita que la imagen se repita */
+  height: 100%;
+  /* Asegura que el fondo cubra toda la altura de la ventana */
   margin: 0;
   position: absolute;
   width: 100.2%;
@@ -1666,7 +1745,7 @@ input[type="checkbox"]:checked {
   gap: 10px;
 }
 
-.gear-container{
+.gear-container {
   font-size: 16px;
   width: 0px;
   height: 40px;
@@ -1702,28 +1781,29 @@ input[type="checkbox"]:checked {
   transition-delay: 0s;
 }
 
-.gear-container.shown{
+.gear-container.shown {
   width: 40px;
 }
 
-.gear-container:hover .bi-gear{
+.gear-container:hover .bi-gear {
   opacity: 0;
 }
 
-.gear-container:hover .standard-line, .gear-container:hover{
+.gear-container:hover .standard-line,
+.gear-container:hover {
   width: 168px;
 }
 
-.gear-container .standard-label{
+.gear-container .standard-label {
   width: 160px;
 }
 
-.gear-container:hover .standard-label{
+.gear-container:hover .standard-label {
   opacity: 1;
 }
 
 
-.standard-label{
+.standard-label {
   opacity: 0;
   transition: opacity 0.10s;
   position: absolute;
@@ -1733,8 +1813,8 @@ input[type="checkbox"]:checked {
   bottom: 7px;
 }
 
- .bi-gear{
-  color: var( --text-general);
+.bi-gear {
+  color: var(--text-general);
   opacity: 1;
   transition: color 0.15s, opacity 0.1s;
   left: 10px;
@@ -1743,12 +1823,12 @@ input[type="checkbox"]:checked {
   bottom: 5px;
 }
 
-.bi-gear.hidden{
+.bi-gear.hidden {
   opacity: 0;
   pointer-events: none;
 }
 
-.bi-gear:hover .standard-line{
+.bi-gear:hover .standard-line {
   width: 100%;
   background-color: var(--text-general);
 }
@@ -1791,7 +1871,7 @@ input[type="checkbox"]:checked {
   z-index: -1;
 }
 
-#numberButton::before{
+#numberButton::before {
   z-index: 0 !important;
 }
 
@@ -1800,16 +1880,16 @@ input[type="checkbox"]:checked {
 }
 
 .custom-dropdown:not(:hover)::before {
-  transition-delay: 0s; 
+  transition-delay: 0s;
 }
 
-.custom-dropdown + .dropdown-line{
+.custom-dropdown+.dropdown-line {
   width: 0%;
   background-color: var(--new-primary);
 }
 
 
-.custom-dropdown:hover + .dropdown-line{
+.custom-dropdown:hover+.dropdown-line {
   width: 100%;
   background-color: var(--new-primary);
 }
@@ -1824,14 +1904,14 @@ input[type="checkbox"]:checked {
   transition: border-color 0.15s !important;
 }
 
-.dropdown-line{
+.dropdown-line {
   height: 2px;
   width: 0%;
   background-color: var(--text-general);
   transition: width 0.15s, color 0.15s;
 }
 
-.standard-line{
+.standard-line {
   height: 2px;
   width: 0%;
   background-color: var(--text-general);
@@ -1860,18 +1940,19 @@ input[type="checkbox"]:checked {
 }
 
 .new-custom-dropdown:not(:hover)::before {
-  transition-delay: 0s; /* No delay when not hovering */
+  transition-delay: 0s;
+  /* No delay when not hovering */
 }
 
-#saveSelector{
+#saveSelector {
   min-width: 140px;
 }
 
-#saveSelector:focus::before{
+#saveSelector:focus::before {
   opacity: 1;
 }
 
-#saveSelector:focus + .dropdown-line{
+#saveSelector:focus+.dropdown-line {
   width: 100%;
 }
 
@@ -1887,19 +1968,19 @@ input[type="checkbox"]:checked {
   justify-content: space-around;
 }
 
-.new-custom-dropdown:hover + .dropdown-line{
+.new-custom-dropdown:hover+.dropdown-line {
   width: 100%;
   background-color: var(--text-general);
 }
 
-#numberButton{
+#numberButton {
   flex-direction: row;
   align-items: center;
   margin-top: 0 !important;
   font-size: 20px;
 }
 
-.number-details .form-check{
+.number-details .form-check {
   font-size: 18px;
 }
 
@@ -1948,7 +2029,7 @@ input[type="checkbox"]:checked {
   max-width: 200px;
 }
 
-.name-flag{
+.name-flag {
   margin-left: 8px;
   width: 30px;
   height: 24px;
@@ -1956,7 +2037,7 @@ input[type="checkbox"]:checked {
   opacity: 0.9;
 }
 
-.name-div-edit-stats{
+.name-div-edit-stats {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -1969,12 +2050,12 @@ input[type="checkbox"]:checked {
   margin-left: 10px;
 }
 
-#edit_teams{
+#edit_teams {
   display: flex;
   flex-direction: column;
 }
 
-#objAndYear{
+#objAndYear {
   display: flex;
   flex-direction: row;
   gap: 15px;
@@ -2002,9 +2083,9 @@ input[type="checkbox"]:checked {
   grid-template-columns: repeat(3, 0.34fr);
 }
 
-.attribute-and-preferences{
+.attribute-and-preferences {
   display: flex;
-  flex-direction: column ;
+  flex-direction: column;
 }
 
 .bottom-panel {
@@ -2027,88 +2108,97 @@ input[type="checkbox"]:checked {
   background-color: var(--separator);
 }
 
-#specialStatsPanel{
+#specialStatsPanel {
   width: 100%;
 }
 
 .categoryPills,
-.scriptPills, .generalPills {
+.scriptPills,
+.generalPills {
   padding: 6px 12px !important;
   border-radius: 10px !important;
 }
 
-.pill-types{
+.pill-types {
   display: flex;
   flex-direction: row;
-  color: var( --text-general);
+  color: var(--text-general);
   font-size: 18px;
   width: 100%;
 }
 
-.pill-types .activeType{
+.pill-types .activeType {
   color: var(--white-general);
 }
 
 
-#editPills{
+#editPills {
   position: absolute;
   z-index: 1;
   right: 350px;
   transition: color 0.15s;
 }
 
-#dataPills{
+#dataPills {
   z-index: 1 !important;
   padding-left: 144px;
   transition: color 0.15s;
 }
-#iaPills{
+
+#iaPills {
   z-index: 1 !important;
   padding-left: 36px;
   transition: color 0.15s;
-  
+
 }
 
 
-#iaPills .pill-line{
+#iaPills .pill-line {
   background-color: var(--mode-line-ai);
 }
 
 
-#dataPills .pill-line{
+#dataPills .pill-line {
   background-color: var(--mode-line-view);
 }
 
 
-#editPills .pill-line{
+#editPills .pill-line {
   background-color: var(--mode-line-edit);
 }
 
-#predict_results, #edit_stats, #car_performance, #driver_transfers, #season_viewer, #head2head_viewer, #car_performance{
+#predict_results,
+#edit_stats,
+#car_performance,
+#driver_transfers,
+#season_viewer,
+#head2head_viewer,
+#car_performance {
   flex-direction: column;
 }
 
-#probText{
+#probText {
   padding-top: 2px;
-  color: var( --text-general);
+  color: var(--text-general);
 }
 
-#probSelector{
+#probSelector {
   display: flex;
   align-items: center;
 }
 
-#raceProbButton, #yearPredictionModalButton{
+#raceProbButton,
+#yearPredictionModalButton {
   margin-top: 0.45rem !important;
 }
 
-#probViewer{
+#probViewer {
   width: 100%;
   height: 660px;
   max-height: 660px;
 }
 
-#mainProb{
+#mainProb {
   width: 100%;
 }
 
@@ -2116,12 +2206,12 @@ input[type="checkbox"]:checked {
 DRIVERS TABLE
 */
 
-.first{
+.first {
   background-color: var(--table-first) !important;
   color: var(--negative-text) !important;
 }
 
-.teams-table-row .teams-table-team{
+.teams-table-row .teams-table-team {
   width: 9.4%;
   gap: 2px;
   transition: border-color 0.15s, background-color 0.15s, color 0.15s;
@@ -2131,11 +2221,11 @@ DRIVERS TABLE
   justify-content: center;
 }
 
-.teams-table-row .teams-table-team span{
+.teams-table-row .teams-table-team span {
   line-height: 1.03;
 }
 
-.teams-table-engine-name{
+.teams-table-engine-name {
   color: var(--engine-table-name);
   display: block;
   text-transform: uppercase;
@@ -2143,68 +2233,79 @@ DRIVERS TABLE
   font-size: 13px;
 }
 
-.teams-table-row:hover .teams-table-engine-name{
+.teams-table-row:hover .teams-table-engine-name {
   color: var(--engine-table-name-hover);
 }
 
-.drivers-table-row.odd:hover .first, .drivers-table-row:hover .first,
-.teams-table-row.odd:hover .first, .teams-table-row:hover .first{
+.drivers-table-row.odd:hover .first,
+.drivers-table-row:hover .first,
+.teams-table-row.odd:hover .first,
+.teams-table-row:hover .first {
   background-color: var(--table-first-light) !important;
   color: var(--negative-text) !important;
 }
 
-.second{
+.second {
   background-color: var(--table-second) !important;
   color: var(--negative-text) !important;
 }
 
-.drivers-table-row.odd:hover .second, .drivers-table-row:hover .second,
-.teams-table-row.odd:hover .second, .teams-table-row:hover .second{
+.drivers-table-row.odd:hover .second,
+.drivers-table-row:hover .second,
+.teams-table-row.odd:hover .second,
+.teams-table-row:hover .second {
   background-color: var(--table-second-light) !important;
   color: var(--negative-text) !important;
 }
 
-.third{
+.third {
   background-color: var(--table-third) !important;
   color: var(--negative-text) !important;
 }
 
-.drivers-table-row.odd:hover .third, .drivers-table-row:hover .third, 
-.teams-table-row.odd:hover .third, .teams-table-row:hover .third{
+.drivers-table-row.odd:hover .third,
+.drivers-table-row:hover .third,
+.teams-table-row.odd:hover .third,
+.teams-table-row:hover .third {
   background-color: var(--table-third-light) !important;
   color: var(--negative-text) !important;
 }
 
-.fastest{
+.fastest {
   color: #c90fd7 !important;
 }
 
 
-.drivers-table-row.odd:hover .fastest, .drivers-table-row:hover .fastest, .teams-table-row.odd:hover .fastest, .teams-table-row:hover .fastest{
+.drivers-table-row.odd:hover .fastest,
+.drivers-table-row:hover .fastest,
+.teams-table-row.odd:hover .fastest,
+.teams-table-row:hover .fastest {
   color: #d204e0 !important;
 }
 
-.drivers-table-header, .teams-table-header{
+.drivers-table-header,
+.teams-table-header {
   display: flex;
   flex-direction: row;
-  color: var( --text-general);
+  color: var(--text-general);
 }
 
-.drivers-table-row{
+.drivers-table-row {
   display: flex;
   flex-direction: row;
   height: 30px;
   transition: background-color 0.15s, color 0.3;
 }
 
-.teams-table-row{
+.teams-table-row {
   display: flex;
   flex-direction: row;
   height: 60px;
   transition: background-color 0.15s, color 0.3;
 }
 
-.drivers-table-data, .teams-table-data{
+.drivers-table-data,
+.teams-table-data {
   overflow-y: auto;
   font-size: 15px;
 }
@@ -2219,83 +2320,108 @@ DRIVERS TABLE
   border-radius: 3px !important;
 }
 
-.drivers-table-row .drivers-table-driver, .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points,
-.drivers-table-row .drivers-table-normal, .teams-table-row .teams-table-normal, .teams-table-row .teams-table-driver,
-.teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
+.drivers-table-row .drivers-table-driver,
+.drivers-table-row .drivers-table-position,
+.drivers-table-row .drivers-table-points,
+.drivers-table-row .drivers-table-normal,
+.teams-table-row .teams-table-normal,
+.teams-table-row .teams-table-driver,
+.teams-table-row .teams-table-position,
+.teams-table-row .teams-table-points {
   transition: color 0.15s, background-color 0.15s, text-shadow 0.15s;
 }
 
-.drivers-table-row:hover .drivers-table-driver, 
-.drivers-table-row:hover .drivers-table-normal, .teams-table-row:hover .teams-table-normal{
+.drivers-table-row:hover .drivers-table-driver,
+.drivers-table-row:hover .drivers-table-normal,
+.teams-table-row:hover .teams-table-normal {
   background-color: var(--text-general);
   color: var(--tools-general);
 }
 
-.drivers-table-row.odd:hover .drivers-table-driver, 
+.drivers-table-row.odd:hover .drivers-table-driver,
 .drivers-table-row.odd:hover .drivers-table-normal,
-.teams-table-row.odd:hover .teams-table-normal{
+.teams-table-row.odd:hover .teams-table-normal {
   background-color: var(--text-general);
   color: var(--tools-general);
 }
 
-.drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-points,
-.teams-table-row .teams-table-position, .teams-table-row .teams-table-points{
+.drivers-table-row .drivers-table-position,
+.drivers-table-row .drivers-table-points,
+.teams-table-row .teams-table-position,
+.teams-table-row .teams-table-points {
   transition: border-color 0.15s, background-color 0.15s, color 0.15s;
 }
 
-.drivers-table-row:hover .drivers-table-position, .teams-table-row:hover .teams-table-position,
-.drivers-table-row-odd:hover .drivers-table-position, .teams-table-row-odd:hover .teams-table-position{
-  background-color: var( --text-general) !important;
+.drivers-table-row:hover .drivers-table-position,
+.teams-table-row:hover .teams-table-position,
+.drivers-table-row-odd:hover .drivers-table-position,
+.teams-table-row-odd:hover .teams-table-position {
+  background-color: var(--text-general) !important;
   color: var(--tools-general);
 }
 
-.drivers-table-row:hover .drivers-table-points, .teams-table-row:hover .teams-table-points{
-  background-color: var( --text-general) !important;
+.drivers-table-row:hover .drivers-table-points,
+.teams-table-row:hover .teams-table-points {
+  background-color: var(--text-general) !important;
   color: var(--tools-general);
 }
 
-.drivers-table-row:hover, .teams-table-row:hover{
+.drivers-table-row:hover,
+.teams-table-row:hover {
   cursor: pointer;
 }
 
-.drivers-table-row span.bold-font{
+.drivers-table-row span.bold-font {
   transition: color 0.15s;
 }
 
-.drivers-table-row:hover span.bold-font{
+.drivers-table-row:hover span.bold-font {
   color: var(--tools-general) !important;
 }
 
-.drivers-table-row .drivers-table-normal, .teams-table-row .teams-table-normal, .drivers-table-row .drivers-table-driver,
- .drivers-table-row .drivers-table-points, .drivers-table-row .drivers-table-position, .drivers-table-row .drivers-table-logo-div{
+.drivers-table-row .drivers-table-normal,
+.teams-table-row .teams-table-normal,
+.drivers-table-row .drivers-table-driver,
+.drivers-table-row .drivers-table-points,
+.drivers-table-row .drivers-table-position,
+.drivers-table-row .drivers-table-logo-div {
   background-color: var(--elements);
 }
 
-.drivers-table-row.odd .drivers-table-normal, .teams-table-row.odd .teams-table-normal, .drivers-table-row.odd .drivers-table-driver,
- .drivers-table-row.odd .drivers-table-points, .drivers-table-row.odd .drivers-table-position, .drivers-table-row.odd .drivers-table-logo-div{
+.drivers-table-row.odd .drivers-table-normal,
+.teams-table-row.odd .teams-table-normal,
+.drivers-table-row.odd .drivers-table-driver,
+.drivers-table-row.odd .drivers-table-points,
+.drivers-table-row.odd .drivers-table-position,
+.drivers-table-row.odd .drivers-table-logo-div {
   background-color: var(--elements-hover);
 }
 
-.teams-table-row .teams-table-team, .teams-table-row .teams-table-points, .teams-table-row .teams-table-position{
+.teams-table-row .teams-table-team,
+.teams-table-row .teams-table-points,
+.teams-table-row .teams-table-position {
   background-color: var(--elements)
 }
 
-.teams-table-row .teams-table-team{
+.teams-table-row .teams-table-team {
   padding: 0 7px;
 }
 
-.teams-table-row.odd .teams-table-team, .teams-table-row.odd .teams-table-points, .teams-table-row.odd .teams-table-position{
+.teams-table-row.odd .teams-table-team,
+.teams-table-row.odd .teams-table-points,
+.teams-table-row.odd .teams-table-position {
   background-color: var(--elements-hover);
 }
 
-.teams-table-row:hover .teams-table-team{
-  background-color: var( --text-general);
+.teams-table-row:hover .teams-table-team {
+  background-color: var(--text-general);
   color: var(--tools-general);
-  border-color: var( --text-general);
+  border-color: var(--text-general);
 }
 
 
-.drivers-table-normal, .teams-table-normal{
+.drivers-table-normal,
+.teams-table-normal {
   flex: 1 0 0;
   text-align: center;
   display: flex;
@@ -2304,7 +2430,8 @@ DRIVERS TABLE
   font-size: 14px;
 }
 
-.drivers-table-position, .teams-table-position{
+.drivers-table-position,
+.teams-table-position {
   width: 40px;
   display: flex;
   align-items: center;
@@ -2312,71 +2439,71 @@ DRIVERS TABLE
 
 }
 
-.aston-team-table-logo{
+.aston-team-table-logo {
   padding: 6px 0 !important;
 }
 
-.ferrari-team-table-logo{
+.ferrari-team-table-logo {
   padding: 8px !important;
 }
 
-.mclaren-team-table-logo{
+.mclaren-team-table-logo {
   margin-right: 3px !important;
 }
 
-.redbull-team-table-logo{
+.redbull-team-table-logo {
   padding: 13px 0px !important;
 }
 
-.merc-team-table-logo{
+.merc-team-table-logo {
   padding: 9px !important;
 }
 
-.alpine-team-table-logo{
+.alpine-team-table-logo {
   padding: 9px 2px !important
 }
 
-.williams-team-table-logo{
+.williams-team-table-logo {
   padding: 10px 6px !important;
 }
 
-.haas-team-table-logo{
+.haas-team-table-logo {
   padding: 7px !important;
 }
 
-.stake-team-table-logo{
+.stake-team-table-logo {
   padding: 3px !important;
 }
 
-.alphatauri-team-table-logo{
+.alphatauri-team-table-logo {
   padding: 15px 9px !important;
 }
 
-.hugo-team-table-logo{
+.hugo-team-table-logo {
   padding: 5px 1px !important;
 }
 
-.toyota-team-table-logo{
+.toyota-team-table-logo {
   padding: 13px 8px !important;
 }
 
-.porsche-team-table-logo{
+.porsche-team-table-logo {
   padding: 11px !important;
 }
 
-.brawn-team-table-logo{
+.brawn-team-table-logo {
   padding: 24px 6px !important;
 }
 
-.audi-team-table-logo{
+.audi-team-table-logo {
   padding: 20px 5px !important;
 }
 
-.custom-team-table-logo{
+.custom-team-table-logo {
   padding: 1px !important;
 }
 
-.drivers-table-logo{
+.drivers-table-logo {
   width: 30px;
   height: 30px;
   display: flex;
@@ -2386,7 +2513,7 @@ DRIVERS TABLE
   transition: opacity 0.15s;
 }
 
-.teams-table-logo{
+.teams-table-logo {
   width: 60px;
   height: 60px;
   display: flex;
@@ -2397,12 +2524,12 @@ DRIVERS TABLE
   transition: border-height 0.15s;
 }
 
-.teams-table-row:hover .teams-table-logo{
-  border-bottom: 0px solid var( --text-general);
-  border-top: 0px solid var( --text-general);
+.teams-table-row:hover .teams-table-logo {
+  border-bottom: 0px solid var(--text-general);
+  border-top: 0px solid var(--text-general);
 }
 
-.teams-table-logo-inner{
+.teams-table-logo-inner {
   width: 60px;
   height: 60px;
   display: flex;
@@ -2412,74 +2539,76 @@ DRIVERS TABLE
 }
 
 
-.drivers-table-logo{
+.drivers-table-logo {
   padding: 0px 2px;
 }
 
-.logo-up-down{
+.logo-up-down {
   padding: 5px 0;
 }
 
-.logo-up-down-little{
+.logo-up-down-little {
   padding: 2px 1px;
 }
 
-.logo-up-down-mid{
+.logo-up-down-mid {
   padding: 6px 0px;
 }
 
-.logo-up-down-extra{
+.logo-up-down-extra {
   padding-top: 10px;
   padding-bottom: 10px;
 }
 
-.logo-ferrari-table{
+.logo-ferrari-table {
   padding: 4px 3px;
 }
 
-.logo-porsche-table{
+.logo-porsche-table {
   padding: 5px 2px;
 }
 
-.logo-williams-table{
+.logo-williams-table {
   padding: 6px 4px;
 }
 
-.logo-merc-table{
+.logo-merc-table {
   padding: 4px;
 }
 
-.logo-visarb-table{
+.logo-visarb-table {
   padding: 5px 3px;
 }
 
-.logo-alpine-table{
+.logo-alpine-table {
   padding: 6px 2px;
 }
 
-.logo-reduce{
+.logo-reduce {
   padding: 4px;
 }
 
-.logo-brawn-table{
+.logo-brawn-table {
   padding-top: 12px;
   padding-bottom: 12px;
 }
 
-.logo-extra-small{
+.logo-extra-small {
   padding: 8px 4px;
 }
 
-.logo-stake-table{
+.logo-stake-table {
   padding: 2px 0px;
 }
 
 
-.drivers-table-header .drivers-table-position, .teams-table-header .teams-table-position{
-  border-top-left-radius: 5px; 
+.drivers-table-header .drivers-table-position,
+.teams-table-header .teams-table-position {
+  border-top-left-radius: 5px;
 }
 
-.drivers-table-driver, .teams-table-team{
+.drivers-table-driver,
+.teams-table-team {
   width: calc(9.4% + 60px);
   display: flex;
   align-items: center;
@@ -2487,7 +2616,7 @@ DRIVERS TABLE
   padding-left: 4px;
 }
 
-.drivers-table-row .drivers-table-driver{
+.drivers-table-row .drivers-table-driver {
   width: calc(9.4% + 30px);
   border-right: 0px solid transparent;
   gap: 3px;
@@ -2496,149 +2625,153 @@ DRIVERS TABLE
 
 
 
-.drivers-table-points, .teams-table-points{
+.drivers-table-points,
+.teams-table-points {
   width: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
 }
 
-.drivers-table-header .drivers-table-points, .teams-table-header .teams-table-points{
-  border-top-right-radius: 5px; 
+.drivers-table-header .drivers-table-points,
+.teams-table-header .teams-table-points {
+  border-top-right-radius: 5px;
 }
 
 
-.drivers-table-row .drivers-table-logo-div{
+.drivers-table-row .drivers-table-logo-div {
   transition: border-color 0.15s, background-color 0.15s;
 }
 
-.drivers-table-row:hover .fehoverback{
+.drivers-table-row:hover .fehoverback {
   background-color: var(--ferrari-primary)
 }
 
-.teams-table-row .feiconback{
+.teams-table-row .feiconback {
   background-color: var(--ferrari-primary)
 }
 
-.drivers-table-row:hover .ashoverback{
+.drivers-table-row:hover .ashoverback {
   background-color: var(--aston-primary)
 }
 
-.teams-table-row .asiconback{
+.teams-table-row .asiconback {
   background-color: var(--aston-primary)
 }
 
-.drivers-table-row:hover .mehoverback{
+.drivers-table-row:hover .mehoverback {
   background-color: var(--mercedes-primary)
 }
 
-.teams-table-row .meiconback{
+.teams-table-row .meiconback {
   background-color: var(--mercedes-primary)
 }
 
-.drivers-table-row:hover .rbhoverback{
+.drivers-table-row:hover .rbhoverback {
   background-color: var(--redbull-primary)
 }
 
-.teams-table-row .rbiconback{
+.teams-table-row .rbiconback {
   background-color: var(--redbull-primary)
 }
 
-.drivers-table-row:hover .mchoverback{
+.drivers-table-row:hover .mchoverback {
   background-color: var(--mclaren-primary)
 }
 
-.teams-table-row .mciconback{
+.teams-table-row .mciconback {
   background-color: var(--mclaren-primary)
 }
 
-.drivers-table-row:hover .alhoverback{
+.drivers-table-row:hover .alhoverback {
   background-color: var(--alpine-primary)
 }
 
-.teams-table-row .aliconback{
+.teams-table-row .aliconback {
   background-color: var(--alpine-primary)
 }
 
-.drivers-table-row:hover .hahoverback{
+.drivers-table-row:hover .hahoverback {
   background-color: var(--haas-primary)
 }
 
-.teams-table-row .haiconback{
+.teams-table-row .haiconback {
   background-color: var(--haas-primary)
 }
 
-.drivers-table-row:hover .wihoverback{
+.drivers-table-row:hover .wihoverback {
   background-color: var(--williams-primary)
 }
 
-.teams-table-row .wiiconback{
+.teams-table-row .wiiconback {
   background-color: var(--williams-primary)
 }
 
-.drivers-table-row:hover .athoverback{
+.drivers-table-row:hover .athoverback {
   background-color: var(--alphatauri-primary)
 }
 
-.teams-table-row .aticonback{
+.teams-table-row .aticonback {
   background-color: var(--alphatauri-primary)
 }
 
-.drivers-table-row:hover .afhoverback{
+.drivers-table-row:hover .afhoverback {
   background-color: var(--alfa-primary)
 }
 
-.teams-table-row .aficonback{
+.teams-table-row .aficonback {
   background-color: var(--alfa-primary)
 }
 
-.teams-table-row .cticonback{
+.teams-table-row .cticonback {
   background-color: var(--custom-team-primary)
 }
 
-.drivers-table-row:hover .cthoverback{
+.drivers-table-row:hover .cthoverback {
   background-color: var(--custom-team-primary)
 }
 
 
-.prob-viewer-data{
+.prob-viewer-data {
   overflow-y: scroll;
   max-height: 621px;
 }
 
-.prob-viewer-header, .prob-viewer-row{
+.prob-viewer-header,
+.prob-viewer-row {
   display: flex;
   flex-direction: row;
-  color: var( --text-general);
+  color: var(--text-general);
 }
 
-.prob-row-odd{
+.prob-row-odd {
   background-color: var(--elements);
 }
 
-.prob-row-even{
+.prob-row-even {
   background-color: var(--superficials);
 }
 
-.negative-text:hover{
+.negative-text:hover {
   color: var(--negative-text) !important;
 }
 
-.dark-text:hover{
+.dark-text:hover {
   color: var(--dark-text) !important;
 }
 
-.prob-viewer-header .viewer-header-data, .prob-viewer-row .viewer-header-data {
+.prob-viewer-header .viewer-header-data,
+.prob-viewer-row .viewer-header-data {
   margin-left: 4px;
   z-index: 3;
 }
 
-.prob-viewer-header{
+.prob-viewer-header {
   border-bottom: 1px solid var(--white-general);
 }
 
-.viewer-header-driver{
+.viewer-header-driver {
   width: 210px;
   padding: 0px 7px;
   height: 34px;
@@ -2649,27 +2782,27 @@ DRIVERS TABLE
   overflow: hidden;
 }
 
-.prob-viewer-row{
+.prob-viewer-row {
   transition: background-color 0.15s, color 0.15s;
   position: relative;
 }
 
-.prob-viewer-row:hover{
+.prob-viewer-row:hover {
   background-color: var(--dropdown-hover);
   cursor: pointer;
 }
 
-.prob-viewer-row .viewer-header-driver span.bold-font{
+.prob-viewer-row .viewer-header-driver span.bold-font {
   transition: background-color 0.15s, color 0.15s;
   margin-left: 4px;
 }
 
-.prob-viewer-row .viewer-header-driver span{
+.prob-viewer-row .viewer-header-driver span {
   transition: background-color 0.15s, color 0.05s;
 }
 
 
-.prob-viewer-row .viewer-header-driver span.bold-font{
+.prob-viewer-row .viewer-header-driver span.bold-font {
   transition: color 0.15s;
 }
 
@@ -2681,26 +2814,27 @@ DRIVERS TABLE
 }
 
 
-.viewer-header-position{
+.viewer-header-position {
   width: 50px;
   text-align: center;
   padding-top: 4px;
-  z-index: 3 ;
+  z-index: 3;
   transition: text-shadow 0.15s;
 }
 
-.viewer-header-pos, .viewer-header-data{
+.viewer-header-pos,
+.viewer-header-data {
   flex: 1 0 0;
   text-align: center;
   /* background-color: wheat; */
 }
 
-.viewer-header-pos{
+.viewer-header-pos {
   padding-top: 4px;
   padding-left: 4px;
 }
 
-.viewer-header-data{
+.viewer-header-data {
   border-radius: 5px;
   color: var(--tools-general);
   transition: border 0.15s;
@@ -2711,56 +2845,56 @@ DRIVERS TABLE
   margin-top: 3px;
 }
 
-.viewer-header-data.i75-100{
+.viewer-header-data.i75-100 {
   background-color: var(--positive-general);
   transition: background-color 0.15s, color 0.15s, text-shadow 0.15s;
 }
 
-.prob-viewer-row:hover .viewer-header-data.i75-100{
+.prob-viewer-row:hover .viewer-header-data.i75-100 {
   background-color: transparent;
   color: var(--positive-general);
   text-shadow: 1px 1px 0 black;
 }
 
-.viewer-header-data.i50-75{
+.viewer-header-data.i50-75 {
   background-color: #7adfac;
   transition: background-color 0.15s, color 0.15s, text-shadow 0.15s;
 }
 
-.prob-viewer-row:hover .viewer-header-data.i50-75{
+.prob-viewer-row:hover .viewer-header-data.i50-75 {
   background-color: transparent;
   color: #7adfac;
   text-shadow: 1px 1px 0 black;
 }
 
-.viewer-header-data.i25-50{
+.viewer-header-data.i25-50 {
   background-color: #a2dfc0;
   transition: background-color 0.15s, color 0.15s, text-shadow 0.15s;
 }
 
-.prob-viewer-row:hover .viewer-header-data.i25-50{
+.prob-viewer-row:hover .viewer-header-data.i25-50 {
   background-color: transparent;
   color: #a2dfc0;
   text-shadow: 1px 1px 0 black;
 }
 
-.viewer-header-data.i0-25{
+.viewer-header-data.i0-25 {
   background-color: #c5e7d6;
   transition: background-color 0.15s, color 0.15s, text-shadow 0.15s;
 }
 
-.prob-viewer-row:hover .viewer-header-data.i0-25{
+.prob-viewer-row:hover .viewer-header-data.i0-25 {
   background-color: transparent;
   color: #c5e7d6;
   text-shadow: 1px 1px 0 black;
 }
 
-.save-selector-title{
-  color: var( --text-general);
+.save-selector-title {
+  color: var(--text-general);
   transition: color 0.15s;
 }
 
-.save-selector-title.activeSelected{
+.save-selector-title.activeSelected {
   color: var(--white-general) !important;
 }
 
@@ -2790,7 +2924,7 @@ DRIVERS TABLE
   background-color: transparent !important;
 }
 
-.custom-confirm::before{
+.custom-confirm::before {
   content: '';
   position: absolute;
   top: 0;
@@ -2810,15 +2944,16 @@ DRIVERS TABLE
 }
 
 .custom-confirm:not(:hover)::before {
-  transition-delay: 0s; /* No delay when not hovering */
+  transition-delay: 0s;
+  /* No delay when not hovering */
 }
 
-.custom-confirm + .dropdown-line{
+.custom-confirm+.dropdown-line {
   width: 0%;
   background-color: var(--new-primary);
 }
 
-.custom-confirm:hover + .dropdown-line{
+.custom-confirm:hover+.dropdown-line {
   width: 100%;
 }
 
@@ -2841,7 +2976,7 @@ DRIVERS TABLE
   justify-content: center;
 }
 
-.custom-delete::before{
+.custom-delete::before {
   content: '';
   position: absolute;
   top: 0;
@@ -2861,15 +2996,16 @@ DRIVERS TABLE
 }
 
 .custom-delete:not(:hover)::before {
-  transition-delay: 0s; /* No delay when not hovering */
+  transition-delay: 0s;
+  /* No delay when not hovering */
 }
 
-.custom-delete + .dropdown-line{
+.custom-delete+.dropdown-line {
   width: 0%;
   background-color: var(--negative-general);
 }
 
-.custom-delete:hover + .dropdown-line{
+.custom-delete:hover+.dropdown-line {
   width: 100%;
 }
 
@@ -2878,11 +3014,11 @@ DRIVERS TABLE
   color: var(--negative-general) !important;
 }
 
-.delete-mode:not(:hover) .dropdown-line{
+.delete-mode:not(:hover) .dropdown-line {
   width: 0%;
 }
 
-.trash-and-text{
+.trash-and-text {
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -2890,7 +3026,7 @@ DRIVERS TABLE
   font-size: 18px;
 }
 
-.trash-and-text:hover{
+.trash-and-text:hover {
   cursor: pointer;
 }
 
@@ -2905,7 +3041,7 @@ DRIVERS TABLE
 }
 
 
-.year-drivers-teams{
+.year-drivers-teams {
   padding-top: 0.6rem;
   padding-bottom: 0.7rem;
   position: absolute;
@@ -2913,23 +3049,23 @@ DRIVERS TABLE
   gap: 10px;
 }
 
-.prediction-buttons{
+.prediction-buttons {
   padding-top: 0.6rem;
   padding-bottom: 0.7rem;
   position: absolute;
   display: flex;
 }
 
-#deleteTracks{
+#deleteTracks {
   transition: background-color 0.15s, border-color 0.15s, color 0.15s !important;
   height: 36px;
 }
 
-#deleteTracks+.dropdown-line{
+#deleteTracks+.dropdown-line {
   background-color: var(--negative-general);
 }
 
-#deleteTracks::before{
+#deleteTracks::before {
   content: '';
   position: absolute;
   top: 0;
@@ -2949,28 +3085,29 @@ DRIVERS TABLE
 }
 
 #deleteTracks:not(:hover)::before {
-  transition-delay: 0s; /* No delay when not hovering */
+  transition-delay: 0s;
+  /* No delay when not hovering */
 }
 
 
 
-.year-and-race{
+.year-and-race {
   display: flex;
   flex-direction: row;
   gap: 10px;
 }
 
-.drivers-teams-pills{
+.drivers-teams-pills {
   display: flex;
   align-items: flex-end;
 }
 
-.modal-buttons{
+.modal-buttons {
   gap: 10px;
   display: flex;
 }
 
-.team-table-logo-name{
+.team-table-logo-name {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -3001,7 +3138,7 @@ DRIVERS TABLE
   font-size: 15px;
 }
 
-.main-calendar{
+.main-calendar {
   width: 100%;
   margin-right: 14px;
 }
@@ -3046,12 +3183,13 @@ DRIVERS TABLE
   justify-content: flex-end;
 }
 
-.buttons-h2h{
+.buttons-h2h {
   display: flex;
   gap: 10px;
 }
 
-#driver1Button, #driver2Button{
+#driver1Button,
+#driver2Button {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -3062,7 +3200,7 @@ DRIVERS TABLE
   background-color: var(--elements);
   border-radius: 10px;
   padding: 8px;
-  color: var( --text-general);
+  color: var(--text-general);
   transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   display: flex;
   cursor: grab !important;
@@ -3073,7 +3211,7 @@ DRIVERS TABLE
   border: none;
 }
 
-.race-calendar-number{
+.race-calendar-number {
   border-right: 2px solid var(--separator);
   font-size: 30px;
   display: flex;
@@ -3083,7 +3221,7 @@ DRIVERS TABLE
   padding-right: 12px;
 }
 
-.upper-text-and-flag{
+.upper-text-and-flag {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -3092,32 +3230,32 @@ DRIVERS TABLE
   width: 95px;
 }
 
-.left-race{
+.left-race {
   gap: 4px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.right-race{
+.right-race {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 2px;
 }
 
-.full-quali-weather{
+.full-quali-weather {
   display: flex;
   flex-direction: row;
   gap: 4px;
   justify-content: space-between;
 }
 
-.session-name{
+.session-name {
   font-size: 20px;
 }
 
-.weather-vis{
+.weather-vis {
   width: 30px;
   height: 30px;
   border-radius: 10px;
@@ -3127,7 +3265,7 @@ DRIVERS TABLE
   text-align: center;
 }
 
-.weather-selector{
+.weather-selector {
   display: flex;
   flex-direction: row;
   margin-left: 5px;
@@ -3135,7 +3273,7 @@ DRIVERS TABLE
   padding-top: 2px;
 }
 
-.weather-selector i{
+.weather-selector i {
   cursor: pointer;
 }
 
@@ -3145,37 +3283,40 @@ DRIVERS TABLE
   background-color: var(--elements-hover);
 }
 
-.race-calendar .bi-chevron-left, .race-calendar .bi-chevron-right {
+.race-calendar .bi-chevron-left,
+.race-calendar .bi-chevron-right {
   transition: color 0.15s, transform 0.15s;
 }
 
-.race-calendar:hover .bi-chevron-left, .race-calendar:hover .bi-chevron-right {
-  color: var( --text-general);
+.race-calendar:hover .bi-chevron-left,
+.race-calendar:hover .bi-chevron-right {
+  color: var(--text-general);
 }
 
-.race-calendar .bi-chevron-left:hover, .race-calendar .bi-chevron-right:hover {
+.race-calendar .bi-chevron-left:hover,
+.race-calendar .bi-chevron-right:hover {
   color: var(--new-primary);
   transform: scale(1.1);
 }
 
-.pit-crew-button{
+.pit-crew-button {
   width: 100px;
 }
 
-.pit-crew-group{
+.pit-crew-group {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   gap: 10px;
 }
 
-.pit-crew-details{
+.pit-crew-details {
   display: flex;
   flex-direction: column;
   color: var(--text-general);
 }
 
-.pit-crew-stat{
+.pit-crew-stat {
   width: 23%;
 }
 
@@ -3197,7 +3338,7 @@ DRIVERS TABLE
   backdrop-filter: blur(5px);
 }
 
-.completed:hover{
+.completed:hover {
   border-color: transparent;
 }
 
@@ -3270,7 +3411,7 @@ DRIVERS TABLE
   height: 610px;
 }
 
-.staff-logo{
+.staff-logo {
   width: 27px;
   height: 26px;
 }
@@ -3282,7 +3423,7 @@ DRIVERS TABLE
   display: flex;
 }
 
-#free-staff .staff-logo{
+#free-staff .staff-logo {
   width: 32px;
   height: 23px;
 }
@@ -3353,7 +3494,7 @@ DRIVERS TABLE
   margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
-  color: var( --text-general);
+  color: var(--text-general);
   border: 2px solid transparent;
   transition: border-color 0.15s, background-color 0.15s;
   align-items: center;
@@ -3365,27 +3506,34 @@ DRIVERS TABLE
   background-color: var(--elements-hover);
 }
 
-.one-statH2H i, .name-and-stat i, .retirement-buttons i, .age-buttons i{
+.one-statH2H i,
+.name-and-stat i,
+.retirement-buttons i,
+.age-buttons i {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s ease-in-out;
 }
 
-.one-statH2H i:hover, .name-and-stat i:hover, .retirement-buttons i:hover, .age-buttons i:hover{
+.one-statH2H i:hover,
+.name-and-stat i:hover,
+.retirement-buttons i:hover,
+.age-buttons i:hover {
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.1);
 }
 
 
-.one-statH2H:hover .name-H2H .only-name{
+.one-statH2H:hover .name-H2H .only-name {
   color: var(--white-general);
 }
 
-.one-statH2H:hover .driver1-number, .one-statH2H:hover .driver2-number{
+.one-statH2H:hover .driver1-number,
+.one-statH2H:hover .driver2-number {
   color: var(--white-general);
 }
 
-.driver-names{
+.driver-names {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -3395,65 +3543,68 @@ DRIVERS TABLE
   margin-top: 6px;
 }
 
-.driver-space{
-  min-width:  200px;
-  max-width:  200px;
+.driver-space {
+  min-width: 200px;
+  max-width: 200px;
   min-height: 40px;
 }
 
-.staff-space{
+.staff-space {
   flex: 1 0 0;
   max-width: 20%;
   min-height: 40px;
   padding: 0 3px;
 }
 
-#free-staff .technical-chief-border{
+#free-staff .technical-chief-border {
   border-left: 2px solid var(--technical-chief);
   padding-left: 6px;
 }
 
-#free-staff .race-engineer-border{
+#free-staff .race-engineer-border {
   border-left: 2px solid var(--race-engineer);
   padding-left: 6px;
 }
 
-#free-staff .head-aero-border{
+#free-staff .head-aero-border {
   border-left: 2px solid var(--head-aero);
   padding-left: 6px;
 }
 
-#free-staff .sporting-director-border{
+#free-staff .sporting-director-border {
   border-left: 2px solid var(--sporting-director);
   padding-left: 6px;
 }
 
 
-.staff-space[data-type="technical-chief"]{
+.staff-space[data-type="technical-chief"] {
   border-right: 1px solid var(--separator);
   border-left: 1px solid var(--separator);
 }
 
-.staff-space[data-type="sporting-director"], .staff-space[data-type="race-engineer"][data-pos="2"], .staff-space[data-type="head-aero"]{
+.staff-space[data-type="sporting-director"],
+.staff-space[data-type="race-engineer"][data-pos="2"],
+.staff-space[data-type="head-aero"] {
   border-right: 1px solid var(--separator);
 }
 
-.affiliates-and-arrows{
+.affiliates-and-arrows {
   display: flex;
   flex-direction: row;
   width: 63%;
 }
 
-.affiliates-and-arrows .bi-chevron-right, .affiliates-and-arrows .bi-chevron-left{
+.affiliates-and-arrows .bi-chevron-right,
+.affiliates-and-arrows .bi-chevron-left {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s ease-in-out;
 }
 
-.affiliates-and-arrows .bi-chevron-left{
+.affiliates-and-arrows .bi-chevron-left {
   left: 0;
 }
 
-.arrow-back{
+.arrow-back {
   background-color: var(--superficials);
   height: 100%;
   position: absolute;
@@ -3467,7 +3618,8 @@ DRIVERS TABLE
   z-index: 4;
 }
 
-.affiliates-and-arrows .bi-chevron-right:hover, .affiliates-and-arrows .bi-chevron-left:hover{
+.affiliates-and-arrows .bi-chevron-right:hover,
+.affiliates-and-arrows .bi-chevron-left:hover {
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.1);
@@ -3476,12 +3628,13 @@ DRIVERS TABLE
 .affiliates-and-arrows {
   display: flex;
   align-items: center;
-  overflow: hidden; 
-  position: relative; 
+  overflow: hidden;
+  position: relative;
   flex-grow: 1;
 }
 
-.affiliates-and-arrows .bi-chevron-left, .affiliates-and-arrows .bi-chevron-right{
+.affiliates-and-arrows .bi-chevron-left,
+.affiliates-and-arrows .bi-chevron-right {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s ease-in-out;
   position: absolute;
@@ -3511,15 +3664,17 @@ DRIVERS TABLE
 .affiliates-space .free-driver {
   min-width: 200px;
   max-width: 200px;
-  flex: 0 0 auto; /* Asegura que los elementos mantengan su tamaño */
+  flex: 0 0 auto;
+  /* Asegura que los elementos mantengan su tamaño */
 }
 
-.team-template .free-driver{
+.team-template .free-driver {
   margin: 1px 3px;
 }
 
 
-.driver1-name, .driver2-name{
+.driver1-name,
+.driver2-name {
   display: flex;
   flex-direction: column;
   color: var(--text-general);
@@ -3534,45 +3689,47 @@ DRIVERS TABLE
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
 }
 
-.driver1-name:hover, .driver2-name:hover {
+.driver1-name:hover,
+.driver2-name:hover {
   color: var(--white-general);
 }
 
-.driver1-second, .driver2-second{
+.driver1-second,
+.driver2-second {
   margin-top: -6px;
 }
 
-.part-name-buttons{
+.part-name-buttons {
   display: flex;
   flex-direction: row;
   gap: 10px;
   margin-left: 20px;
 }
 
-.part-buttons{
+.part-buttons {
   display: flex;
   flex-direction: row;
   gap: 5px;
 }
 
-.part-buttons i{
+.part-buttons i {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s ease-in-out;
 }
 
-.part-buttons i:hover{
+.part-buttons i:hover {
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.1);
 }
 
-.custom-engines-div{
+.custom-engines-div {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.add-engine{
+.add-engine {
   border: 2px dashed var(--dark-text);
   color: var(--dark-text);
   display: flex;
@@ -3585,30 +3742,31 @@ DRIVERS TABLE
   font-size: 18px;
 }
 
-.add-engine i{
+.add-engine i {
   font-style: normal;
 }
 
-.add-engine i::before{
+.add-engine i::before {
   margin: 0 9px;
 }
 
-.add-engine span, .add-engine i{
+.add-engine span,
+.add-engine i {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s;
 }
 
-.add-engine i:hover{
+.add-engine i:hover {
   color: var(--new-primary);
   transform: scale(1.05);
 }
 
-.custom-engines-div .engine-performance-stats{
+.custom-engines-div .engine-performance-stats {
   margin-top: 2px;
   border-top: 2px solid var(--separator);
 }
 
-.engine-performance .bi-trash{
+.engine-performance .bi-trash {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s;
   color: var(--text-general);
@@ -3616,15 +3774,15 @@ DRIVERS TABLE
   right: 40px;
   top: 5px;
   font-size: 20px;
-} 
+}
 
-.engine-performance .bi-trash:hover{
+.engine-performance .bi-trash:hover {
   color: var(--negative-general);
   transform: scale(1.05);
 }
 
 
-.engine-performance .bi-caret-down-fill{
+.engine-performance .bi-caret-down-fill {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s;
   color: var(--text-general);
@@ -3634,16 +3792,17 @@ DRIVERS TABLE
   font-size: 22px;
 }
 
-.engine-performance .bi-caret-down-fill:hover{
+.engine-performance .bi-caret-down-fill:hover {
   color: var(--text-selected);
   transform: scale(1.05);
 }
 
-.engine-performance .bi-caret-down-fill.clicked{
+.engine-performance .bi-caret-down-fill.clicked {
   color: var(--new-primary);
 }
 
-.part-performance, .engine-performance{
+.part-performance,
+.engine-performance {
   background-color: var(--elements);
   border-radius: 10px;
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
@@ -3652,63 +3811,63 @@ DRIVERS TABLE
   position: relative;
 }
 
-.engine-f2{
+.engine-f2 {
   border-bottom: 2px solid var(--f2-border);
 }
 
-.engine-f3{
+.engine-f3 {
   border-bottom: 2px solid var(--f3-border);
 }
 
-.engine-fe{
+.engine-fe {
   border-bottom: 2px solid var(--ferrari-primary);
 }
 
-.engine-rb{
+.engine-rb {
   border-bottom: 2px solid var(--redbull-primary);
 }
 
-.engine-re{
+.engine-re {
   border-bottom: 2px solid var(--renault-primary);
 }
 
-.engine-me{
+.engine-me {
   border-bottom: 2px solid var(--mercedes-primary);
 }
 
-.engine-al{
+.engine-al {
   border-bottom: 2px solid var(--alpine-primary);
 }
 
-.engine-wi{
+.engine-wi {
   border-bottom: 2px solid var(--williams-primary);
 }
 
-.engine-af{
+.engine-af {
   border-bottom: 2px solid var(--alfa-primary);
-} 
+}
 
-.engine-at{
+.engine-at {
   border-bottom: 2px solid var(--alphatauri-primary);
-} 
+}
 
-.engine-ha{
+.engine-ha {
   border-bottom: 2px solid var(--haas-primary);
-} 
+}
 
-.engine-mc{
+.engine-mc {
   border-bottom: 2px solid var(--mclaren-primary);
-}   
+}
 
-.engine-ct{
+.engine-ct {
   border-bottom: 2px solid var(--custom-team-primary);
-} 
+}
 
-.engine-as{
+.engine-as {
   border-bottom: 2px solid var(--aston-primary);
 }
 
-input.engine-performance-title{
+input.engine-performance-title {
   background-color: transparent;
   border-bottom: 0px solid;
   border-right: 0px solid;
@@ -3716,12 +3875,14 @@ input.engine-performance-title{
   border-top: 0px solid;
 }
 
-input.engine-performance-title:hover, input.engine-performance-title:focus{
+input.engine-performance-title:hover,
+input.engine-performance-title:focus {
   outline: none;
   color: var(--text-selected);
 }
 
-.part-performance-title, .engine-performance-title{
+.part-performance-title,
+.engine-performance-title {
   text-transform: uppercase;
   font-family: 'Formula1Bold';
   font-size: 20px;
@@ -3729,17 +3890,17 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   transition: color 0.15s, border-color 0.15s;
 }
 
-.part-performance-title{
+.part-performance-title {
   display: flex;
   justify-content: space-between;
   position: relative;
 }
 
-.engine-performance-title{
+.engine-performance-title {
   max-width: max-content;
 }
 
-.engine-modal-body{
+.engine-modal-body {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -3747,19 +3908,20 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   overflow-y: scroll;
 }
 
-.part-performance-stat, .engine-performance-stat{
+.part-performance-stat,
+.engine-performance-stat {
   display: flex;
   justify-content: space-between;
   color: var(--text-general);
 }
 
-.engine-performance-stat{
+.engine-performance-stat {
   position: relative;
   align-items: baseline;
   margin: 4px 0;
 }
 
-.engine-performance-bar{
+.engine-performance-bar {
   position: absolute;
   bottom: 1px;
   left: 0;
@@ -3767,29 +3929,29 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   width: 83%;
 }
 
-.engine-performance-progress{
+.engine-performance-progress {
   width: 50%;
   height: 2px;
   transition: width 0.15s;
   background-color: var(--new-primary);
 }
 
-.part-performance-title i{
+.part-performance-title i {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s ease-in-out;
 }
 
-.part-performance-title i:hover{
+.part-performance-title i:hover {
   cursor: pointer;
   color: var(--new-primary);
   transform: scale(1.1);
 }
 
-.part-performance-title i.clicked{
+.part-performance-title i.clicked {
   color: var(--new-primary);
 }
 
-.parts-list{
+.parts-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -3798,38 +3960,38 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   height: 311px;
 }
 
-.parts-list.list-overflow{
+.parts-list.list-overflow {
   padding-right: 6px;
 }
 
 
-.one-part{
+.one-part {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
 
-.one-part-default{
+.one-part-default {
   border-bottom: 2px solid var(--separator);
   margin-bottom: 3px;
   padding: 3px 0;
 }
 
-.one-part-title{
+.one-part-title {
   font-size: 18px;
   font-family: 'Formula1Bold';
   color: var(--dark-text);
   display: flex;
 }
 
-.one-part-flag-and-text{
+.one-part-flag-and-text {
   position: relative;
   font-family: 'Formula1Bold';
   font-size: 16px;
   color: var(--text-general);
 }
 
-.one-part-flag{
+.one-part-flag {
   width: 48px;
   height: 27px;
   border-radius: 5px;
@@ -3837,7 +3999,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   opacity: 0.45;
 }
 
-.one-part-flag-title{
+.one-part-flag-title {
   position: absolute;
   top: 45%;
   left: 50%;
@@ -3845,12 +4007,13 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   text-shadow: 2px 2px 4px var(--negative-text);
 }
 
-.part-performance-stats, .engine-performance-stats{
+.part-performance-stats,
+.engine-performance-stats {
   margin-top: 8px;
   transition: opacity 0.15s;
 }
 
-.part-performance-stats{
+.part-performance-stats {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -3858,7 +4021,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 }
 
 
-.fit-button{
+.fit-button {
   font-family: 'Formula1Bold';
   color: var(--text-general);
   transition: color 0.15s, transform 0.15s;
@@ -3866,7 +4029,8 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 }
 
 
-.fit-button:hover, .reset-mentality-button:hover{
+.fit-button:hover,
+.reset-mentality-button:hover {
   cursor: pointer;
   color: var(--new-primary);
   transform: scale(1.05);
@@ -3885,21 +4049,36 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
 }
 
 @keyframes errorAnim {
-  0% { color: var(--negative-general); }
-  100% { color: var(--dark-text); }
+  0% {
+    color: var(--negative-general);
+  }
+
+  100% {
+    color: var(--dark-text);
+  }
 }
 
 @keyframes errorLoadout1 {
-  0% { color: var(--negative-general); }
-  100% { color: var(--new-primary); }
+  0% {
+    color: var(--negative-general);
+  }
+
+  100% {
+    color: var(--new-primary);
+  }
 }
 
 @keyframes errorLoadout2 {
-  0% { color: var(--negative-general); }
-  100% { color: var(--new-secondary); }
+  0% {
+    color: var(--negative-general);
+  }
+
+  100% {
+    color: var(--new-secondary);
+  }
 }
 
-.fitted-icons{
+.fitted-icons {
   margin-left: 10px;
   display: flex;
   flex-direction: row;
@@ -3912,33 +4091,33 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   min-width: 25px;
 }
 
-.one-part-name{
+.one-part-name {
   transition: color 0.15s, transform 0.15s;
 }
 
-.one-part-name:hover{
+.one-part-name:hover {
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.05);
 }
 
-.one-part-name.editing{
+.one-part-name.editing {
   color: var(--text-general);
 }
 
-.part-subtitle{
+.part-subtitle {
   color: var(--dark-text);
   font-size: 20px;
   margin-left: -7px;
 }
 
-.n-parts-buttons{
+.n-parts-buttons {
   display: flex;
   flex-direction: column;
-  font-size: 16px;  
+  font-size: 16px;
 }
 
-.n-parts-buttons i{
+.n-parts-buttons i {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s !important;
   max-height: 12px;
@@ -3946,7 +4125,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   align-items: center;
 }
 
-.new-part{
+.new-part {
   border: none;
   border-radius: 10px;
   padding-left: 4px;
@@ -3956,63 +4135,66 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   color: var(--dark-text);
 }
 
-.new-part i{
+.new-part i {
   font-style: normal;
 }
 
-.new-part:hover{
+.new-part:hover {
   color: var(--new-primary);
   transform: scale(1.05);
 }
 
-.new-part ::before{
+.new-part ::before {
   margin-right: 5px;
 }
 
 
 
-.n-parts-buttons .bi-chevron-up:hover, .n-parts-buttons .bi-chevron-down:hover{
+.n-parts-buttons .bi-chevron-up:hover,
+.n-parts-buttons .bi-chevron-down:hover {
   cursor: pointer;
   color: var(--new-primary) !important;
   transform: scale(1.1);
 }
 
-.fitted-icons .n-parts{
+.fitted-icons .n-parts {
   font-family: "Formula1";
   font-size: 14px;
   max-height: 30px;
   margin-right: 5px;
 }
 
-.fitted-icons i:not(.fitted){
+.fitted-icons i:not(.fitted) {
   color: var(--disabled-text);
   transition: color 0.15s, transform 0.15s;
 }
 
-.fitted-icons .loadout-1.fitted{
+.fitted-icons .loadout-1.fitted {
   color: var(--new-primary);
 }
 
-.fitted-icons .loadout-1{
+.fitted-icons .loadout-1 {
   position: relative;
   padding-bottom: 4px;
   margin-left: 6px;
 }
 
-.loadout-1:not(.fitted):hover, .loadout-2:not(.fitted):hover{
+.loadout-1:not(.fitted):hover,
+.loadout-2:not(.fitted):hover {
   cursor: pointer;
   transform: scale(1.05);
 }
 
-.loadout-1:not(.fitted):hover{
+.loadout-1:not(.fitted):hover {
   color: var(--text-selected);
 }
 
-.loadout-2:not(.fitted):hover{
+.loadout-2:not(.fitted):hover {
   color: var(--text-selected-secondary);
 }
 
-.loadout-1 .number, .loadout-2 .number{
+.loadout-1 .number,
+.loadout-2 .number {
   font-size: 10px;
   font-family: 'Formula1Bold';
   position: absolute;
@@ -4022,16 +4204,16 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   padding-bottom: 4px;
 }
 
-.fitted-icons .loadout-2{
+.fitted-icons .loadout-2 {
   position: relative;
   padding-bottom: 4px;
 }
 
-.fitted-icons .loadout-2.fitted{
+.fitted-icons .loadout-2.fitted {
   color: var(--new-secondary);
 }
 
-.new-or-existing-part{
+.new-or-existing-part {
   font-family: 'Formula1Bold';
   display: flex;
   gap: 15px;
@@ -4039,38 +4221,42 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   color: var(--dark-text);
 }
 
-.existing-part{
+.existing-part {
   font-size: 16px;
   transition: color 0.15s, transform 0.15s;
 }
 
-.existing-part:hover{
+.existing-part:hover {
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.05);
 }
 
-.existing-part.active-part{
+.existing-part.active-part {
   color: var(--new-primary);
 }
 
-.part-performance-stat .custom-input-number, .engine-performance-stat .custom-input-number{
+.part-performance-stat .custom-input-number,
+.engine-performance-stat .custom-input-number {
   font-size: 16px;
   max-width: 85px;
 }
 
-.part-performance-stat i, .engine-performance-stat i{
+.part-performance-stat i,
+.engine-performance-stat i {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s ease-in-out;
 }
 
-.part-performance-stat i:hover, .engine-performance-stat i:hover{
+.part-performance-stat i:hover,
+.engine-performance-stat i:hover {
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.1);
 }
 
-.teams-show, .engines-show{
+.teams-show,
+.engines-show {
   display: grid;
   grid-template-columns: repeat(3, 0.333fr);
   grid-template-rows: repeat(2, 1fr);
@@ -4079,7 +4265,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   flex: 1;
 }
 
-.engines-show{
+.engines-show {
   grid-template-columns: repeat(2, 0.5fr);
   grid-template-rows: repeat(2, 1fr);
 }
@@ -4097,7 +4283,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
-  color: var( --text-general);
+  color: var(--text-general);
   border: 2px solid transparent;
   transition: border-color 0.15s, background-color 0.15s;
 }
@@ -4123,7 +4309,7 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   font-size: 20px;
 }
 
-.performance-buttons i{
+.performance-buttons i {
   cursor: pointer;
   background-color: transparent;
   border-radius: 10px;
@@ -4136,12 +4322,12 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   align-items: center;
 }
 
-.performance-buttons i:hover{
+.performance-buttons i:hover {
   background-color: var(--background--buttons-hover) !important;
   color: var(--white-general) !important;
 }
 
-.performance-buttons i:active{
+.performance-buttons i:active {
   background-color: var(--active-buttons-back) !important;
   color: #e2e2e2 !important;
   transition-duration: 0s;
@@ -4167,18 +4353,20 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   margin-left: 50px;
 }
 
-.name-H2H{
+.name-H2H {
   width: 100%;
   transition: color 0.15s;
   cursor: default !important;
   text-align: center;
 }
 
-.only-name{
+.only-name {
   transition: color 0.15s;
 }
 
-#bestrh2h .name-H2H, #raceh2h .name-H2H, #qualih2h .name-H2H{
+#bestrh2h .name-H2H,
+#raceh2h .name-H2H,
+#qualih2h .name-H2H {
   display: flex;
   justify-content: space-between;
 }
@@ -4192,38 +4380,39 @@ input.engine-performance-title:hover, input.engine-performance-title:focus{
   margin-top: 5px;
 }
 
-.driver1-bar{
+.driver1-bar {
   float: right;
   width: 0%;
   height: 7px;
   transition: width 0.15s;
 }
 
-.h2h-top{
+.h2h-top {
   display: flex;
   flex-direction: row;
   justify-content: space-between
 }
 
-.driver2-bar{
+.driver2-bar {
   float: left;
   width: 0%;
   height: 7px;
   transition: width 0.15s;
 }
 
-.driver2-space, .driver1-space{
+.driver2-space,
+.driver1-space {
   width: 50%;
   background-color: var(--background);
   height: 6px;
 }
 
-i.disabled{
+i.disabled {
   pointer-events: none;
   color: var(--disabled-text);
 }
 
-input.disabled{
+input.disabled {
   pointer-events: none;
   color: var(--disabled-text);
 }
@@ -4231,7 +4420,7 @@ input.disabled{
 .red-part {
   width: 300px;
   height: 3px;
-  background-color: var( --negative-general);
+  background-color: var(--negative-general);
   position: relative;
 }
 
@@ -4338,12 +4527,12 @@ input.disabled{
 }
 
 .custom-body {
-  color: var( --text-general);
+  color: var(--text-general);
   background-color: var(--generals);
   z-index: -2;
 }
 
-.pos-relative{
+.pos-relative {
   position: relative;
 }
 
@@ -4353,7 +4542,8 @@ input.disabled{
   border-radius: 10px !important;
 }
 
-.drivers-modal-zone, .teams-modal-zone{
+.drivers-modal-zone,
+.teams-modal-zone {
   border-radius: 10px;
   width: 100%;
   display: grid;
@@ -4363,8 +4553,8 @@ input.disabled{
 }
 
 
-.contract-details div{
-  color: var( --text-general);
+.contract-details div {
+  color: var(--text-general);
 }
 
 .custom-header {
@@ -4379,7 +4569,7 @@ input.disabled{
 .custom-footer {
   color: var(--white-general) !important;
   background-color: var(--generals) !important;
-  z-index: -3;  
+  z-index: -3;
   border-top: 1px solid var(--separator) !important;
 }
 
@@ -4399,16 +4589,19 @@ input.disabled{
   color: #ebeaf0;
 }
 
-.rounded-input.retirement{
+.rounded-input.retirement {
   max-width: 75px;
 }
 
-.rounded-input.retirement::selection, .modal-subtitle::selection, #difficultySpan::selection{
+.rounded-input.retirement::selection,
+.modal-subtitle::selection,
+#difficultySpan::selection {
   background-color: transparent;
 }
 
 
-.driver1-number::selection, .driver2-number::selection{
+.driver1-number::selection,
+.driver2-number::selection {
   background-color: transparent;
 }
 
@@ -4442,7 +4635,7 @@ input.disabled{
 }
 
 .team,
-.engine{
+.engine {
   border: 2px solid transparent;
   border-radius: 10px;
   padding: 4.8px;
@@ -4454,11 +4647,11 @@ input.disabled{
   font-size: 18px;
 }
 
-.team{
+.team {
   margin: 10.8px 7px;
 }
 
-.car{
+.car {
   border: 1px solid transparent;
   border-radius: 7px;
   padding: 4px;
@@ -4472,7 +4665,7 @@ input.disabled{
 
 
 
-.driver-info{
+.driver-info {
   border-radius: 10px;
   cursor: default !important;
   padding: 10px;
@@ -4487,17 +4680,17 @@ input.disabled{
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
 }
 
-.driver-info:hover{
+.driver-info:hover {
   background-color: var(--elements-hover);
 }
 
-.race:hover{
+.race:hover {
   background-color: var(--text-general-transparent);
   color: var(--negative-text);
 }
 
 
-.rb-gradient::before{
+.rb-gradient::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4511,7 +4704,7 @@ input.disabled{
   z-index: 0;
 }
 
-.rb-gradient-mid::before{
+.rb-gradient-mid::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4525,7 +4718,7 @@ input.disabled{
   z-index: 0;
 }
 
-.rb-gradient-small::before{
+.rb-gradient-small::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4539,19 +4732,21 @@ input.disabled{
   z-index: 0;
 }
 
-.rb-gradient:hover::before, .rb-gradient-small:hover::before, .rb-gradient-mid:hover::before{
+.rb-gradient:hover::before,
+.rb-gradient-small:hover::before,
+.rb-gradient-mid:hover::before {
   opacity: 1;
 }
 
-.rb-back-gradient-primary{
+.rb-back-gradient-primary {
   background: radial-gradient(circle at 5% 100%, var(--redbull-primary), var(--elements) 35%);
 }
 
-.rb-back-gradient-secondary{
+.rb-back-gradient-secondary {
   background: radial-gradient(circle at 5% 100%, var(--redbull-secondary), var(--elements) 35%);
 }
 
-.mc-gradient::before{
+.mc-gradient::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4565,7 +4760,7 @@ input.disabled{
   z-index: 0;
 }
 
-.mc-gradient-mid::before{
+.mc-gradient-mid::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4579,7 +4774,7 @@ input.disabled{
   z-index: 0;
 }
 
-.mc-gradient-small::before{
+.mc-gradient-small::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4587,25 +4782,27 @@ input.disabled{
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--mclaren-primary-transparent),transparent 30%);
+  background: radial-gradient(circle at -5% 200%, var(--mclaren-primary-transparent), transparent 30%);
   opacity: 0;
   transition: opacity 0.15s;
   z-index: 0;
 }
 
-.mc-back-gradient-primary{
+.mc-back-gradient-primary {
   background: radial-gradient(circle at 5% 100%, var(--mclaren-primary), var(--elements) 35%);
 }
 
-.mc-back-gradient-secondary{
+.mc-back-gradient-secondary {
   background: radial-gradient(circle at 5% 100%, var(--mclaren-secondary), var(--elements) 35%);
 }
 
-.mc-gradient:hover::before, .mc-gradient-small:hover::before, .mc-gradient-mid:hover::before{
+.mc-gradient:hover::before,
+.mc-gradient-small:hover::before,
+.mc-gradient-mid:hover::before {
   opacity: 1;
 }
 
-.as-gradient::before{
+.as-gradient::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4619,7 +4816,7 @@ input.disabled{
   z-index: 0;
 }
 
-.as-gradient-mid::before{
+.as-gradient-mid::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4633,7 +4830,7 @@ input.disabled{
   z-index: 0;
 }
 
-.as-gradient-small::before{
+.as-gradient-small::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4647,19 +4844,21 @@ input.disabled{
   z-index: 0;
 }
 
-.as-back-gradient-primary{
+.as-back-gradient-primary {
   background: radial-gradient(circle at 5% 100%, var(--aston-primary), var(--elements) 35%);
 }
 
-.as-back-gradient-secondary{
+.as-back-gradient-secondary {
   background: radial-gradient(circle at 5% 100%, var(--aston-secondary), var(--elements) 35%);
 }
 
-.as-gradient:hover::before, .as-gradient-small:hover::before, .as-gradient-mid:hover::before{
+.as-gradient:hover::before,
+.as-gradient-small:hover::before,
+.as-gradient-mid:hover::before {
   opacity: 1;
 }
 
-.al-gradient::before{
+.al-gradient::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4673,7 +4872,7 @@ input.disabled{
   z-index: 0;
 }
 
-.al-gradient-mid::before{
+.al-gradient-mid::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4687,7 +4886,7 @@ input.disabled{
   z-index: 0;
 }
 
-.al-gradient-small::before{
+.al-gradient-small::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4701,19 +4900,21 @@ input.disabled{
   z-index: 0;
 }
 
-.al-back-gradient-primary{
+.al-back-gradient-primary {
   background: radial-gradient(circle at 5% 100%, var(--alpine-primary), var(--elements) 35%);
 }
 
-.al-back-gradient-secondary{
+.al-back-gradient-secondary {
   background: radial-gradient(circle at 5% 100%, var(--alpine-secondary), var(--elements) 35%);
 }
 
-.al-gradient:hover::before, .al-gradient-small:hover::before, .al-gradient-mid:hover::before{
+.al-gradient:hover::before,
+.al-gradient-small:hover::before,
+.al-gradient-mid:hover::before {
   opacity: 1;
 }
 
-.af-gradient::before{
+.af-gradient::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4727,7 +4928,7 @@ input.disabled{
   z-index: 0;
 }
 
-.af-gradient-small::before{
+.af-gradient-small::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4741,7 +4942,7 @@ input.disabled{
   z-index: 0;
 }
 
-.af-gradient-mid::before{
+.af-gradient-mid::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4755,19 +4956,21 @@ input.disabled{
   z-index: 0;
 }
 
-.af-back-gradient-primary{
+.af-back-gradient-primary {
   background: radial-gradient(circle at 5% 100%, var(--alfa-primary), var(--elements) 35%);
 }
 
-.af-back-gradient-secondary{
+.af-back-gradient-secondary {
   background: radial-gradient(circle at 5% 100%, var(--alfa-secondary), var(--elements) 35%);
 }
 
-.af-gradient:hover::before, .af-gradient-small:hover::before, .af-gradient-mid:hover::before{
+.af-gradient:hover::before,
+.af-gradient-small:hover::before,
+.af-gradient-mid:hover::before {
   opacity: 1;
 }
 
-.ha-gradient::before{
+.ha-gradient::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4775,13 +4978,13 @@ input.disabled{
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--haas-primary),transparent  25%);
+  background: radial-gradient(circle at -5% 200%, var(--haas-primary), transparent 25%);
   opacity: 0;
   transition: opacity 0.15s;
   z-index: 0;
 }
 
-.ha-gradient-small::before{
+.ha-gradient-small::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4795,7 +4998,7 @@ input.disabled{
   z-index: 0;
 }
 
-.ha-gradient-mid::before{
+.ha-gradient-mid::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4809,19 +5012,21 @@ input.disabled{
   z-index: 0;
 }
 
-.ha-back-gradient-primary{
+.ha-back-gradient-primary {
   background: radial-gradient(circle at 5% 100%, var(--haas-primary), var(--elements) 35%);
 }
 
-.ha-back-gradient-secondary{
+.ha-back-gradient-secondary {
   background: radial-gradient(circle at 5% 100%, var(--haas-secondary), var(--elements) 35%);
 }
 
-.ha-gradient:hover::before, .ha-gradient-small:hover::before, .ha-gradient-mid:hover::before{
+.ha-gradient:hover::before,
+.ha-gradient-small:hover::before,
+.ha-gradient-mid:hover::before {
   opacity: 1;
 }
 
-.wi-gradient::before{
+.wi-gradient::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4835,7 +5040,7 @@ input.disabled{
   z-index: 0;
 }
 
-.wi-gradient-small::before{
+.wi-gradient-small::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4849,7 +5054,7 @@ input.disabled{
   z-index: 0;
 }
 
-.wi-gradient-mid::before{
+.wi-gradient-mid::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4863,19 +5068,21 @@ input.disabled{
   z-index: 0;
 }
 
-.wi-back-gradient-primary{
+.wi-back-gradient-primary {
   background: radial-gradient(circle at 5% 100%, var(--williams-primary), var(--elements) 35%);
 }
 
-.wi-back-gradient-secondary{
+.wi-back-gradient-secondary {
   background: radial-gradient(circle at 5% 100%, var(--general-secondary), var(--elements) 35%);
 }
 
-.wi-gradient:hover::before, .wi-gradient-small:hover::before, .wi-gradient-mid:hover::before{
+.wi-gradient:hover::before,
+.wi-gradient-small:hover::before,
+.wi-gradient-mid:hover::before {
   opacity: 1;
 }
 
-.at-gradient::before{
+.at-gradient::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4883,13 +5090,13 @@ input.disabled{
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at -5% 200%, var(--alphatauri-primary),transparent 25%);
+  background: radial-gradient(circle at -5% 200%, var(--alphatauri-primary), transparent 25%);
   opacity: 0;
   transition: opacity 0.15s;
   z-index: 0;
 }
 
-.at-gradient-small::before{
+.at-gradient-small::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4903,7 +5110,7 @@ input.disabled{
   z-index: 0;
 }
 
-.at-gradient-mid::before{
+.at-gradient-mid::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4917,20 +5124,22 @@ input.disabled{
   z-index: 0;
 }
 
-.at-back-gradient-primary{
+.at-back-gradient-primary {
   background: radial-gradient(circle at 5% 100%, var(--alphatauri-primary), var(--elements) 35%);
 }
 
-.at-back-gradient-secondary{
+.at-back-gradient-secondary {
   background: radial-gradient(circle at 5% 100%, var(--alphatauri-secondary), var(--elements) 35%);
 }
 
-.at-gradient:hover::before, .at-gradient-small:hover::before, .at-gradient-mid:hover::before{
+.at-gradient:hover::before,
+.at-gradient-small:hover::before,
+.at-gradient-mid:hover::before {
   opacity: 1;
 }
 
 
-.fe-gradient::before{
+.fe-gradient::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4944,7 +5153,7 @@ input.disabled{
   z-index: 0;
 }
 
-.fe-gradient-small::before{
+.fe-gradient-small::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4958,7 +5167,7 @@ input.disabled{
   z-index: 0;
 }
 
-.fe-gradient-mid::before{
+.fe-gradient-mid::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4972,19 +5181,21 @@ input.disabled{
   z-index: 0;
 }
 
-.fe-back-gradient-primary{
+.fe-back-gradient-primary {
   background: radial-gradient(circle at 5% 100%, var(--ferrari-primary), var(--elements) 35%);
 }
 
-.fe-back-gradient-secondary{
+.fe-back-gradient-secondary {
   background: radial-gradient(circle at 5% 100%, var(--general-secondary), var(--elements) 35%);
 }
 
-.fe-gradient:hover::before, .fe-gradient-small:hover::before, .fe-gradient-mid:hover::before{
+.fe-gradient:hover::before,
+.fe-gradient-small:hover::before,
+.fe-gradient-mid:hover::before {
   opacity: 1;
 }
 
-.me-gradient::before{
+.me-gradient::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -4998,7 +5209,7 @@ input.disabled{
   z-index: 0;
 }
 
-.me-gradient-mid::before{
+.me-gradient-mid::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -5012,7 +5223,7 @@ input.disabled{
   z-index: 0;
 }
 
-.me-gradient-small::before{
+.me-gradient-small::before {
   border-radius: 10px;
   content: '';
   position: absolute;
@@ -5026,21 +5237,23 @@ input.disabled{
   z-index: 0;
 }
 
-.me-back-gradient-primary{
+.me-back-gradient-primary {
   background: radial-gradient(circle at 5% 100%, var(--mercedes-primary), var(--elements) 35%);
 }
 
-.me-back-gradient-secondary{
+.me-back-gradient-secondary {
   background: radial-gradient(circle at 5% 100%, var(--general-secondary), var(--elements) 35%);
 }
 
-.me-gradient:hover::before, .me-gradient-small:hover::before, .me-gradient-mid:hover::before{
+.me-gradient:hover::before,
+.me-gradient-small:hover::before,
+.me-gradient-mid:hover::before {
   opacity: 1;
 }
 
 
 
-.race{
+.race {
   border-radius: 10px;
   cursor: pointer !important;
   margin: 10px;
@@ -5059,7 +5272,7 @@ input.disabled{
 }
 
 
-.race-flag{
+.race-flag {
   min-width: 80px;
   max-width: 80px;
   min-height: 45px;
@@ -5069,29 +5282,76 @@ input.disabled{
   margin-right: 4px;
 }
 
-#patchNotesBody{
+#patchNotesBody {
   max-height: 700px;
   overflow-y: scroll;
 }
 
 
-#raceMenu{
+#raceMenu {
   overflow-y: scroll;
   height: 660px;
 }
 
-.config-content{
+.config-content {
   color: var(--text-selected);
   font-size: 20px;
 }
 
+.toolbar-logo-and-title {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  padding: 10px;
+}
 
-#predictConfigContent{
+.toolbar-logo {
+  width: 36px;
+  height: 36px;
+}
+
+.toolbar-title {
+  font-size: 16px;
+  gap: 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  color: transparent;
+  /* Necesario para aplicar el gradiente */
+
+}
+
+
+
+.toolbar-title span {
+  display: inline-block;
+  line-height: 1;
+  background: linear-gradient(to right, var(--new-primary), var(--text-general), var(--new-primary));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-size: 200% 200%;
+  animation: gradient-move-title 6s infinite linear;
+}
+
+@keyframes gradient-move-title {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: -200% 50%;
+    /* Doble del tamaño inicial para un bucle suave */
+  }
+}
+
+
+#predictConfigContent {
   margin-top: 12px;
 }
 
 
-#predictionMenu{
+#predictionMenu {
   margin-left: 0px;
   margin-right: 14px;
   width: 100%;
@@ -5099,29 +5359,32 @@ input.disabled{
   flex-direction: row;
 }
 
-.prediction-table{
+.prediction-table {
   width: 50%;
 }
 
-.prediction-table-header, .prediction-table-driver{
+.prediction-table-header,
+.prediction-table-driver {
   display: flex;
   flex-direction: row;
-  color: var( --text-general);
+  color: var(--text-general);
   font-size: 20px;
   margin: 20px 20px;
 }
 
-.driver-prediction{
+.driver-prediction {
   width: 50%;
   z-index: 100;
 }
 
-.prediction-table-header .driver-prediction, .prediction-table-header .position-prediction, .prediction-table-header .prediction-prediction{
+.prediction-table-header .driver-prediction,
+.prediction-table-header .position-prediction,
+.prediction-table-header .prediction-prediction {
   text-transform: uppercase;
 }
 
 
-.position-prediction{
+.position-prediction {
   width: 25%;
   display: flex;
   justify-content: center;
@@ -5130,16 +5393,16 @@ input.disabled{
   z-index: 100;
 }
 
-.position-prediction > :first-child{
+.position-prediction> :first-child {
   min-width: 50px;
   margin-left: 20px;
 }
 
-.position-prediction > :nth-child(2){
+.position-prediction> :nth-child(2) {
   min-width: 50px;
 }
 
-.prediction-prediction{
+.prediction-prediction {
   width: 25%;
   display: flex;
   justify-content: center;
@@ -5147,365 +5410,365 @@ input.disabled{
   z-index: 100;
 }
 
-.front-gradient{
+.front-gradient {
   z-index: 10;
 }
 
 
 
 
-.rb-transparent:hover{
+.rb-transparent:hover {
   background-color: var(--redbull-primary-transparent) !important;
   color: var(--white-general) !important;
   border-color: transparent !important;
 }
 
-.rb-transparent .custom-icon i{
+.rb-transparent .custom-icon i {
   filter: drop-shadow(0px 0px 4px var(--redbull-primary));
 }
 
-.rb-transparent:hover .surname{
+.rb-transparent:hover .surname {
   color: var(--redbull-primary) !important
 }
 
-.rb-back-transparent{
+.rb-back-transparent {
   background-color: var(--redbull-primary-transparent);
 }
 
-.rb-back-transparent-secondary{
+.rb-back-transparent-secondary {
   background-color: var(--redbull-secondary-transparent);
 }
 
-.mc-transparent:hover{
+.mc-transparent:hover {
   background-color: var(--mclaren-primary-transparent) !important;
   color: var(--white-general) !important;
   border-color: transparent !important;
 }
 
-.mc-transparent:hover .surname{
+.mc-transparent:hover .surname {
   color: var(--mclaren-primary) !important
 }
 
-.mc-transparent .custom-icon i{
+.mc-transparent .custom-icon i {
   filter: drop-shadow(0px 0px 4px var(--mclaren-primary));
 }
 
-.mc-back-transparent{
+.mc-back-transparent {
   background-color: var(--mclaren-primary-transparent);
 }
 
-.mc-back-transparent-secondary{
+.mc-back-transparent-secondary {
   background-color: var(--mclaren-secondary-transparent);
 }
 
-.as-transparent:hover{
+.as-transparent:hover {
   background-color: var(--aston-primary-transparent) !important;
   color: var(--white-general) !important;
   border-color: transparent !important;
 }
 
-.as-transparent:hover .surname{
+.as-transparent:hover .surname {
   color: var(--aston-primary) !important
 }
 
-.as-back-transparent{
+.as-back-transparent {
   background-color: var(--aston-primary-transparent);
 }
 
-.as-transparent .custom-icon i{
+.as-transparent .custom-icon i {
   filter: drop-shadow(0px 0px 4px var(--aston-primary));
 }
 
-.as-back-transparent-secondary{
+.as-back-transparent-secondary {
   background-color: var(--aston-secondary-transparent);
 }
 
-.al-transparent:hover{
+.al-transparent:hover {
   background-color: var(--alpine-primary-transparent) !important;
   color: var(--white-general) !important;
   border-color: transparent !important;
 }
 
-.al-transparent:hover .surname{
+.al-transparent:hover .surname {
   color: var(--alpine-primary) !important
 }
 
-.al-transparent .custom-icon i{
+.al-transparent .custom-icon i {
   filter: drop-shadow(0px 0px 4px var(--alpine-primary));
 }
 
-.al-back-transparent{
+.al-back-transparent {
   background-color: var(--alpine-primary-transparent);
 }
 
-.al-back-transparent-secondary{
+.al-back-transparent-secondary {
   background-color: var(--alpine-secondary-transparent);
 }
 
-.af-transparent:hover{
-  background-color: var(--alfa-primary-transparent)  !important;
-  color: var(--white-general)  !important;
+.af-transparent:hover {
+  background-color: var(--alfa-primary-transparent) !important;
+  color: var(--white-general) !important;
   border-color: transparent !important;
 }
 
-.af-transparent:hover .surname{
+.af-transparent:hover .surname {
   color: var(--alfa-primary) !important
 }
 
-.af-transparent .custom-icon i{
+.af-transparent .custom-icon i {
   filter: drop-shadow(0px 0px 4px var(--alfa-primary));
 }
 
-.af-back-transparent{
+.af-back-transparent {
   background-color: var(--alfa-primary-transparent);
 }
 
-.af-back-transparent-secondary{
+.af-back-transparent-secondary {
   background-color: var(--alfa-secondary-transparent);
 }
 
-.ha-transparent:hover{
+.ha-transparent:hover {
   background-color: var(--haas-primary-transparent) !important;
-  color: var(--white-general)   !important;
+  color: var(--white-general) !important;
   border-color: transparent !important;
 }
 
-.ha-transparent:hover .surname{
+.ha-transparent:hover .surname {
   color: var(--haas-primary) !important
 }
 
-.ha-back-transparent{
+.ha-back-transparent {
   background-color: var(--haas-primary-transparent);
 }
 
-.ha-transparent .custom-icon i{
+.ha-transparent .custom-icon i {
   filter: drop-shadow(0px 0px 4px var(--haas-primary));
 }
 
-.ha-back-transparent-secondary{
+.ha-back-transparent-secondary {
   background-color: var(--haas-secondary-transparent);
 }
 
-.wi-transparent:hover{
+.wi-transparent:hover {
   background-color: var(--williams-primary-transparent) !important;
   color: var(--white-general) !important;
   border-color: transparent !important;
 }
 
-.wi-transparent:hover .surname{
+.wi-transparent:hover .surname {
   color: var(--williams-primary) !important
 }
 
-.wi-back-transparent{
+.wi-back-transparent {
   background-color: var(--williams-primary-transparent);
 }
 
-.wi-transparent .custom-icon i{
+.wi-transparent .custom-icon i {
   filter: drop-shadow(0px 0px 4px var(--williams-primary));
 }
 
-.wi-back-transparent-secondary{
+.wi-back-transparent-secondary {
   background-color: var(--general-secondary-transparent);
 }
 
-.at-transparent:hover{
+.at-transparent:hover {
   background-color: var(--alphatauri-primary-transparent) !important;
   color: var(--white-general) !important;
   border-color: transparent !important;
 }
 
-.at-transparent:hover .surname{
+.at-transparent:hover .surname {
   color: var(--alphatauri-primary) !important
 }
 
-.at-back-transparent{
+.at-back-transparent {
   background-color: var(--alphatauri-primary-transparent);
 }
 
-.at-transparent .custom-icon i{
+.at-transparent .custom-icon i {
   filter: drop-shadow(0px 0px 4px var(--alphatauri-primary));
 }
 
-.at-back-transparent-secondary{
+.at-back-transparent-secondary {
   background-color: var(--alphatauri-secondary-transparent);
 }
 
-.fe-transparent:hover{
+.fe-transparent:hover {
   background-color: var(--ferrari-primary-transparent) !important;
   color: var(--white-general) !important;
   border-color: transparent !important;
 }
 
-.fe-transparent:hover .surname{
+.fe-transparent:hover .surname {
   color: var(--ferrari-primary) !important;
 }
 
-.fe-transparent .custom-icon i{
+.fe-transparent .custom-icon i {
   filter: drop-shadow(0px 0px 4px var(--ferrari-primary));
 }
 
-.fe-back-transparent{
+.fe-back-transparent {
   background-color: var(--ferrari-primary-transparent);
 }
 
-.fe-back-transparent-secondary{
+.fe-back-transparent-secondary {
   background-color: var(--general-secondary-transparent);
 }
 
-.me-transparent:hover{
+.me-transparent:hover {
   background-color: var(--mercedes-primary-transparent) !important;
   color: var(--white-general) !important;
   border-color: transparent !important;
 }
 
-.me-transparent:hover .surname{
+.me-transparent:hover .surname {
   color: var(--mercedes-primary) !important;
 }
 
-.me-transparent .custom-icon i{
+.me-transparent .custom-icon i {
   filter: drop-shadow(0px 0px 4px var(--mercedes-primary));
 }
 
-.me-back-transparent{
+.me-back-transparent {
   background-color: var(--mercedes-primary-transparent);
 }
 
-.me-back-transparent-secondary{
+.me-back-transparent-secondary {
   background-color: var(--general-secondary-transparent);
 }
 
-.ct-transparent .custom-icon i{
+.ct-transparent .custom-icon i {
   filter: drop-shadow(0px 0px 4px var(--custom-team-primary));
 }
 
-.ct-transparent:hover{
+.ct-transparent:hover {
   background-color: var(--custom-team-primary-transparent) !important;
   color: var(--white-general) !important;
   border-color: transparent !important;
 }
 
-.ct-back-transparent{
+.ct-back-transparent {
   background-color: var(--custom-team-primary-transparent);
 }
 
-.ct-back-transparent-secondary{
+.ct-back-transparent-secondary {
   background-color: var(--custom-team-secondary-transparent);
 }
 
-.ct-transparent:hover .surname{
+.ct-transparent:hover .surname {
   color: var(--custom-team-primary) !important;
 }
 
-.rb-transparent.selected{
+.rb-transparent.selected {
   background-color: var(--redbull-primary-transparent) !important;
   color: var(--white-general) !important;
 }
 
-.mc-transparent.selected{
+.mc-transparent.selected {
   background-color: var(--mclaren-primary-transparent) !important;
   color: var(--white-general) !important;
 }
 
-.as-transparent.selected{
+.as-transparent.selected {
   background-color: var(--aston-primary-transparent) !important;
   color: var(--white-general) !important;
 }
 
-.al-transparent.selected{
+.al-transparent.selected {
   background-color: var(--alpine-primary-transparent) !important;
   color: var(--white-general) !important;
 }
 
-.af-transparent.selected{
+.af-transparent.selected {
   background-color: var(--alfa-primary-transparent) !important;
   color: var(--white-general) !important;
 }
 
-.ha-transparent.selected{
+.ha-transparent.selected {
   background-color: var(--haas-primary-transparent) !important;
   color: var(--white-general) !important;
 }
 
-.wi-transparent.selected{
+.wi-transparent.selected {
   background-color: var(--williams-primary-transparent) !important;
   color: var(--white-general) !important;
 }
 
-.at-transparent.selected{
+.at-transparent.selected {
   background-color: var(--alphatauri-primary-transparent) !important;
   color: var(--white-general) !important;
 }
 
-.fe-transparent.selected{
+.fe-transparent.selected {
   background-color: var(--ferrari-primary-transparent) !important;
   color: var(--white-general) !important;
 }
 
-.me-transparent.selected{
+.me-transparent.selected {
   background-color: var(--mercedes-primary-transparent) !important;
   color: var(--white-general) !important;
 }
 
-.ct-transparent.selected{
+.ct-transparent.selected {
   background-color: var(--custom-team-primary-transparent) !important;
   color: var(--white-general) !important;
 }
 
-.modal-team.rb-transparent:hover{
+.modal-team.rb-transparent:hover {
   background-color: var(--redbull-primary-transparent);
   color: var(--redbull-primary);
 }
 
-.modal-team.mc-transparent:hover{
+.modal-team.mc-transparent:hover {
   background-color: var(--mclaren-primary-transparent);
   color: var(--mclaren-primary);
 }
 
-.modal-team.as-transparent:hover{
+.modal-team.as-transparent:hover {
   background-color: var(--aston-primary-transparent);
   color: var(--aston-primary);
 }
 
-.modal-team.al-transparent:hover{
+.modal-team.al-transparent:hover {
   background-color: var(--alpine-primary-transparent);
   color: var(--alpine-primary);
 }
 
-.modal-team.af-transparent:hover{
+.modal-team.af-transparent:hover {
   background-color: var(--alfa-primary-transparent);
   color: var(--alfa-primary);
 }
 
-.modal-team.ha-transparent:hover{
+.modal-team.ha-transparent:hover {
   background-color: var(--haas-primary-transparent);
   color: var(--haas-primary);
 }
 
-.modal-team.wi-transparent:hover{
+.modal-team.wi-transparent:hover {
   background-color: var(--williams-primary-transparent);
   color: var(--williams-primary);
 }
 
-.modal-team.at-transparent:hover{
+.modal-team.at-transparent:hover {
   background-color: var(--alphatauri-primary-transparent);
   color: var(--alphatauri-primary);
 }
 
-.modal-team.fe-transparent:hover{
+.modal-team.fe-transparent:hover {
   background-color: var(--ferrari-primary-transparent);
   color: var(--ferrari-primary);
 }
 
-.modal-team.me-transparent:hover{
+.modal-team.me-transparent:hover {
   background-color: var(--mercedes-primary-transparent);
   color: var(--mercedes-primary);
 }
 
-.free-driver:hover .future-contract-noti{
+.free-driver:hover .future-contract-noti {
   opacity: 0;
 }
 
-.future-contract-noti{
+.future-contract-noti {
   position: absolute;
   top: 5px;
   right: 5px;
@@ -5517,59 +5780,59 @@ input.disabled{
   transition: opacity 0.15s;
 }
 
-.noti-fe{
+.noti-fe {
   background-color: var(--ferrari-primary);
 }
 
 
 
-.noti-rb{
+.noti-rb {
   background-color: var(--redbull-primary);
 }
 
 
 
-.noti-mc{
+.noti-mc {
   background-color: var(--mclaren-primary);
 }
 
 
-.noti-as{
+.noti-as {
   background-color: var(--aston-primary);
 }
 
 
 
-.noti-al{
+.noti-al {
   background-color: var(--alpine-primary);
 }
 
 
-.noti-af{
+.noti-af {
   background-color: var(--alfa-primary);
 }
 
 
 
-.noti-ha{
+.noti-ha {
   background-color: var(--haas-primary);
 }
 
 
-.noti-wi{
+.noti-wi {
   background-color: var(--williams-primary);
 }
 
-.noti-at{
+.noti-at {
   background-color: var(--alphatauri-primary);
 }
 
 
-.noti-me{
+.noti-me {
   background-color: var(--mercedes-primary);
 }
 
-.noti-ct{
+.noti-ct {
   background-color: var(--custom-team-primary);
 }
 
@@ -5592,16 +5855,18 @@ input.disabled{
   0% {
     transform: translateX(0);
   }
+
   50% {
     transform: translateX(calc(-1 * var(--scroll-amount)));
   }
+
   100% {
     transform: translateX(0);
   }
 }
 
 
-.free-driver .edit-container{
+.free-driver .edit-container {
   display: flex;
   gap: 5px;
   position: absolute;
@@ -5622,20 +5887,20 @@ input.disabled{
   align-items: center;
 }
 
-.free-driver .bi-pencil-fill{
+.free-driver .bi-pencil-fill {
   font-size: 8px;
   height: 8PX;
 }
 
-.free-driver .bi-123{
+.free-driver .bi-123 {
   height: 17px;
 }
 
-.free-driver:hover .edit-container{
+.free-driver:hover .edit-container {
   opacity: 1;
 }
 
-.free-driver .edit-container:hover{
+.free-driver .edit-container:hover {
   background-color: var(--text-general);
   color: var(--negative-text);
 }
@@ -5644,7 +5909,7 @@ input.disabled{
 .free-driver {
   background-color: var(--elements);
   border-radius: 9px;
-  padding:  5px 6px;
+  padding: 5px 6px;
   cursor: grab !important;
   margin: 6px 5px;
   color: var(--text-general);
@@ -5660,34 +5925,39 @@ input.disabled{
   align-items: center;
 }
 
-.free-driver span:not(.bold-font){
+.free-driver span:not(.bold-font) {
   max-height: 22.5px;
 }
 
-.drivers-table-row .drivers-table-driver span:not(.bold-font), .viewer-header-driver span:not(.bold-font){
+.drivers-table-row .drivers-table-driver span:not(.bold-font),
+.viewer-header-driver span:not(.bold-font) {
   max-height: 22.5px;
   white-space: nowrap;
 }
 
-.free-driver span.bold-font, .normal-driver span.bold-font, .drivers-table-driver span.bold-font, .driver-prediction span.bold-font, .modal-driver span.bold-font,
-.viewer-header-driver span.bold-font{
+.free-driver span.bold-font,
+.normal-driver span.bold-font,
+.drivers-table-driver span.bold-font,
+.driver-prediction span.bold-font,
+.modal-driver span.bold-font,
+.viewer-header-driver span.bold-font {
   display: inline-block;
   transform: skewX(-9deg)
 }
 
-.free-driver:hover .bi-ban{
+.free-driver:hover .bi-ban {
   color: var(--negative-text);
 }
 
-.bi-ban:hover{
+.bi-ban:hover {
   color: var(--negative-general);
   cursor: pointer;
 }
 
 
-.H2Hradio{
+.H2Hradio {
   border-bottom: 2px solid transparent;
-  color: var( --text-general);
+  color: var(--text-general);
   background-color: transparent;
   transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   height: 28px;
@@ -5698,8 +5968,8 @@ input.disabled{
   position: relative;
 }
 
-.performance-graph-button{
-  color: var( --text-general);
+.performance-graph-button {
+  color: var(--text-general);
   background-color: transparent;
   font-size: 24px;
   padding: 0 3px;
@@ -5708,18 +5978,18 @@ input.disabled{
   transition: color 0.15s, transform 0.15s;
 }
 
-.performance-graph-button:hover{
+.performance-graph-button:hover {
   color: var(--text-selected);
   transform: scale(1.1);
 }
 
-.performance-graph-button i.active{
+.performance-graph-button i.active {
   color: var(--new-primary);
 }
 
-.GraphButton{
+.GraphButton {
   border-bottom: 2px solid transparent;
-  color: var( --text-general);
+  color: var(--text-general);
   background-color: transparent;
   transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   height: 28px;
@@ -5730,68 +6000,68 @@ input.disabled{
   position: relative;
 }
 
-.buttons-drivers-modal{
+.buttons-drivers-modal {
   display: flex;
   gap: 4px;
 }
 
-.H2Hradio:hover{
+.H2Hradio:hover {
   border-bottom: 2px solid var(--new-primary)
 }
 
-.GraphButton:hover{
+.GraphButton:hover {
   border-bottom: 2px solid var(--new-secondary)
 }
 
-.H2Hradio.activated{
+.H2Hradio.activated {
   border-bottom: 2px solid var(--new-primary);
   color: var(--text-selected);
 }
 
-.GraphButton.activated{
+.GraphButton.activated {
   border-bottom: 2px solid var(--new-secondary);
   color: var(--text-selected-secondary);
 }
 
-.no-pointer{
+.no-pointer {
   pointer-events: none;
 }
 
-.modal-dialog-lg{
+.modal-dialog-lg {
   min-width: 1300px !important;
 }
 
-.modal-dialog-med{
+.modal-dialog-med {
   min-width: 900px !important;
 }
 
-.predict-footer{
+.predict-footer {
   display: flex !important;
   justify-content: space-between !important;
 }
 
-.custom-bar{
+.custom-bar {
   width: 350px;
   --bs-progress-bar-bg: var(--new-primary) !important;
 }
 
-.bar-and-indicator{
+.bar-and-indicator {
   opacity: 0;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.indicator{
+.indicator {
   color: var(--new-primary);
 }
 
-.modal-driver{
+.modal-driver {
   background-color: var(--elements);
   border-radius: 10px;
   padding: 8px;
   margin: 8px;
-  color: var( --text-general);
+  color: var(--text-general);
   transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   position: relative;
   font-size: 15px;
@@ -5801,12 +6071,12 @@ input.disabled{
   box-shadow: 0 0 10px 1px var(--box-shadow);
 }
 
-.modal-team{
+.modal-team {
   background-color: var(--elements);
   border-radius: 10px;
   padding: 2px 8px;
   margin: 8px;
-  color: var( --text-general);
+  color: var(--text-general);
   transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   position: relative;
   font-size: 15px;
@@ -5829,13 +6099,13 @@ input.disabled{
   justify-content: flex-end;
 }
 
-.custom-icon i{
+.custom-icon i {
   transition: transform 0.15s, color 0.15s;
 }
 
 
 
-.standardlogo{
+.standardlogo {
   width: 30px;
   height: 30px;
 }
@@ -5845,7 +6115,7 @@ input.disabled{
   transition: color 0.15s, transform 0.15s;
 }
 
-.free-driver .bi-ban{
+.free-driver .bi-ban {
   opacity: 1 !important;
   transition: color 0.15s;
   color: var(--white-general);
@@ -5855,8 +6125,8 @@ input.disabled{
   cursor: pointer;
 }
 
-.free-driver .bi-ban:hover{
-  color: var( --negative-general);
+.free-driver .bi-ban:hover {
+  color: var(--negative-general);
 }
 
 .custom-icon i:hover {
@@ -5864,14 +6134,14 @@ input.disabled{
   cursor: pointer;
 }
 
-.info-titles{
+.info-titles {
   color: var(--dark-text);
   font-size: 22px;
   cursor: pointer;
   transition: color 0.15s;
 }
 
-.info-titles:hover{
+.info-titles:hover {
   color: var(--new-primary);
 }
 
@@ -5881,15 +6151,18 @@ input.disabled{
   opacity: 1;
 }
 
-#free-drivers .free-driver:hover .custom-icon i, #free-staff .free-driver:hover .custom-icon i{
+#free-drivers .free-driver:hover .custom-icon i,
+#free-staff .free-driver:hover .custom-icon i {
   color: var(--text-general);
 }
 
-#free-drivers .free-driver:hover .custom-icon i:hover, #free-staff .free-driver:hover .custom-icon i:hover{
+#free-drivers .free-driver:hover .custom-icon i:hover,
+#free-staff .free-driver:hover .custom-icon i:hover {
   transform: scale(1.05);
 }
 
-#free-drivers, #free-staff {
+#free-drivers,
+#free-staff {
   overflow-y: scroll;
 }
 
@@ -5899,49 +6172,50 @@ input.disabled{
   background-color: var(--table-hover);
 }
 
-.modal-driver:hover, .modal-team:hover{
+.modal-driver:hover,
+.modal-team:hover {
   cursor: default;
 }
 
-.modal-team.ferrari:hover{
+.modal-team.ferrari:hover {
   color: var(--ferrari-primary);
 }
 
-.modal-team.redbull:hover{
+.modal-team.redbull:hover {
   color: var(--redbull-primary);
 }
 
-.modal-team.mclaren:hover{
+.modal-team.mclaren:hover {
   color: var(--mclaren-primary);
 }
 
-.modal-team.merc:hover{
+.modal-team.merc:hover {
   color: var(--mercedes-primary);
 }
 
-.modal-team.alpine:hover{
+.modal-team.alpine:hover {
   color: var(--alpine-primary);
 }
 
-.modal-team.williams:hover{
+.modal-team.williams:hover {
   color: var(--williams-primary);
 }
 
-.modal-team.haas:hover{
+.modal-team.haas:hover {
   color: var(--haas-primary);
 }
 
-.modal-team.alpha:hover{
+.modal-team.alpha:hover {
   color: var(--alphatauri-primary);
 }
 
-.modal-team.alfa:hover{
+.modal-team.alfa:hover {
   color: var(--alfa-primary);
 }
 
-.modal-team.aston:hover{
+.modal-team.aston:hover {
   color: var(--aston-primary);
-} 
+}
 
 .blocking-div {
   position: absolute;
@@ -5964,18 +6238,18 @@ input.disabled{
   background-color: rgba(0, 255, 204, 0.1);
 }
 
-.splash-text{
+.splash-text {
   color: var(--dark-text);
   display: flex;
   justify-content: center;
 }
 
-.splash-logo{
+.splash-logo {
   height: 370px;
   margin-bottom: 30px;
 }
 
-.blocking-confidence{
+.blocking-confidence {
   background-color: var(--blur-color);
   z-index: 100;
   display: flex;
@@ -5991,7 +6265,7 @@ input.disabled{
   justify-content: center;
 }
 
-.blocking-h2h{
+.blocking-h2h {
   background-color: var(--blur-color);
   z-index: 100;
   display: flex;
@@ -6017,7 +6291,7 @@ input.disabled{
   border-radius: 10px;
   padding: 10px;
   margin: 10px;
-  color: var( --text-general);
+  color: var(--text-general);
   transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   display: flex;
   justify-content: space-between;
@@ -6030,7 +6304,7 @@ input.disabled{
   padding-left: 10px;
   padding-right: 10px;
   margin: 10px;
-  color: var( --text-general);
+  color: var(--text-general);
   transition: border-color 0.15s, background-color 0.15s;
   min-height: 70px;
   display: flex;
@@ -6041,7 +6315,7 @@ input.disabled{
   box-shadow: 0 0 10px 1px var(--box-shadow);
 }
 
-.super-license-holder{
+.super-license-holder {
   display: flex !important;
   font-size: 19px;
   flex-direction: column;
@@ -6049,7 +6323,7 @@ input.disabled{
   justify-content: flex-end;
 }
 
-.name-and-stat{
+.name-and-stat {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -6058,47 +6332,47 @@ input.disabled{
   height: 36px !important;
 }
 
-.name-and-stat.mentality{
+.name-and-stat.mentality {
   padding: 4px 0;
 }
 
-.bar-container{
+.bar-container {
   height: 100%;
   width: 100%;
   align-items: center;
   display: flex;
 }
 
-.one-stat-bar{
+.one-stat-bar {
   width: 100%;
   height: 4px;
   background-color: var(--generals);
   position: relative;
 }
 
-.one-stat-progress{
+.one-stat-progress {
   position: absolute;
   background-color: var(--new-primary);
   transition: width 0.15s;
   height: 100%;
 }
 
-.stat-number{
+.stat-number {
   display: flex;
   align-items: center;
 }
 
-.one-stat-panel:hover{
+.one-stat-panel:hover {
   background-color: var(--elements-hover);
 }
 
-.one-stat-panel span{
-  color: var( --text-general);
+.one-stat-panel span {
+  color: var(--text-general);
   transition: color 0.15s;
   padding-top: 4px;
 }
 
-.one-stat-panel:hover span:not(.mentality-modifier){
+.one-stat-panel:hover span:not(.mentality-modifier) {
   color: var(--white-general);
 }
 
@@ -6107,17 +6381,17 @@ input.disabled{
 }
 
 .negative {
-  color: var( --negative-general);
+  color: var(--negative-general);
 }
 
-.input-and-buttons{
+.input-and-buttons {
   display: flex;
-  flex-direction: row;  
+  flex-direction: row;
   align-items: center;
   margin-right: 5px;
 }
 
-.input-buttons{
+.input-buttons {
   display: flex;
   flex-direction: column;
   font-size: 20px;
@@ -6125,7 +6399,7 @@ input.disabled{
   gap: 5px;
 }
 
-.input-buttons i{
+.input-buttons i {
   cursor: pointer;
   background-color: transparent;
   border-radius: 10px;
@@ -6138,11 +6412,11 @@ input.disabled{
   align-items: center;
 }
 
-.team-menu-logo{
+.team-menu-logo {
   width: 50px;
 }
 
-.team-menu-aston{
+.team-menu-aston {
   width: 50px;
   height: 45px;
   padding-bottom: 5px;
@@ -6151,7 +6425,7 @@ input.disabled{
   padding-right: 3px;
 }
 
-.team-menu-audi{
+.team-menu-audi {
   width: 45px;
   height: 45px;
   padding-bottom: 16px;
@@ -6159,14 +6433,14 @@ input.disabled{
   padding-top: 17px;
 }
 
-.changable-team-menu-visarb{
+.changable-team-menu-visarb {
   height: 45px !important;
   padding-bottom: 7px !important;
   padding-left: 6px !important;
   padding-top: 7px !important;
 }
 
-.team-menu-haas{
+.team-menu-haas {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -6174,7 +6448,7 @@ input.disabled{
   padding-left: 6px;
 }
 
-.team-menu-custom{
+.team-menu-custom {
   width: 40px;
   height: 40px;
   padding-bottom: 1px;
@@ -6182,7 +6456,7 @@ input.disabled{
   padding-left: 3px;
 }
 
-.team-menu-williams{
+.team-menu-williams {
   width: 45px;
   height: 45px;
   padding-bottom: 11px;
@@ -6191,7 +6465,7 @@ input.disabled{
   padding-right: 4px;
 }
 
-.changable-team-menu-brawn{
+.changable-team-menu-brawn {
   width: 50px !important;
   height: 45px !important;
   padding-bottom: 18px !important;
@@ -6201,7 +6475,7 @@ input.disabled{
   margin-left: 0px !important;
 }
 
-.changable-team-menu-andretti{
+.changable-team-menu-andretti {
   width: 40px !important;
   height: 40px !important;
   padding-bottom: 3px !important;
@@ -6209,7 +6483,7 @@ input.disabled{
   padding-left: 7px !important;
 }
 
-.team-menu-merc{
+.team-menu-merc {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -6217,7 +6491,7 @@ input.disabled{
   padding-left: 8px;
 }
 
-.team-menu-redbull{
+.team-menu-redbull {
   width: 45px;
   height: 40px;
   padding-bottom: 8px;
@@ -6225,7 +6499,7 @@ input.disabled{
   padding-top: 7px;
 }
 
-.team-menu-mclaren{
+.team-menu-mclaren {
   width: 40px;
   height: 40px;
   padding-bottom: 4px;
@@ -6233,7 +6507,7 @@ input.disabled{
   padding-left: 6px;
 }
 
-.team-menu-ferrari{
+.team-menu-ferrari {
   width: 50px;
   height: 40px;
   padding-bottom: 6px;
@@ -6242,7 +6516,7 @@ input.disabled{
   padding-right: 9px;
 }
 
-.changable-team-menu-alpine{
+.changable-team-menu-alpine {
   width: 43px !important;
   height: 40px !important;
   padding-bottom: 6px !important;
@@ -6250,7 +6524,7 @@ input.disabled{
   padding-left: 6px !important;
 }
 
-.changable-team-menu-alphatauri{
+.changable-team-menu-alphatauri {
   width: 45px !important;
   height: 45px !important;
   padding-bottom: 12px !important;
@@ -6259,7 +6533,7 @@ input.disabled{
   padding-right: 4px !important;
 }
 
-.changable-team-menu-alfa{
+.changable-team-menu-alfa {
   width: 40px !important;
   height: 40px !important;
   padding-bottom: 3px !important;
@@ -6267,7 +6541,7 @@ input.disabled{
   padding-left: 7px !important;
 }
 
-.team-menu-renault{
+.team-menu-renault {
   width: 45px;
   height: 40px;
   padding-bottom: 6px;
@@ -6276,14 +6550,15 @@ input.disabled{
   padding-right: 5px;
 }
 
-.changable-team-menu-hugo{
+.changable-team-menu-hugo {
   height: 45px !important;
   width: 50px !important;
   padding-bottom: 7px !important;
   padding-top: 7px !important;
 }
 
-.changable-team-menu-stake, .changable-team-menu-sauber{
+.changable-team-menu-stake,
+.changable-team-menu-sauber {
   width: 40px !important;
   height: 40px !important;
   padding-bottom: 3px !important;
@@ -6291,7 +6566,7 @@ input.disabled{
   padding-left: 7px !important;
 }
 
-.changable-team-menu-lotus{
+.changable-team-menu-lotus {
   width: 40px !important;
   height: 40px !important;
   padding-bottom: 4px !important;
@@ -6299,7 +6574,7 @@ input.disabled{
   padding-left: 6px !important;
 }
 
-.changable-team-menu-toyota{
+.changable-team-menu-toyota {
   width: 50px !important;
   height: 45px !important;
   padding-bottom: 9px !important;
@@ -6308,7 +6583,7 @@ input.disabled{
   padding-right: 6px !important;
 }
 
-.changable-team-menu-porsche{
+.changable-team-menu-porsche {
   width: 45px !important;
   height: 40px !important;
   padding-bottom: 6px !important;
@@ -6317,28 +6592,28 @@ input.disabled{
   padding-right: 5px !important;
 }
 
-#teamButton{
+#teamButton {
   z-index: 2;
-} 
+}
 
 
-.input-buttons i:hover{
+.input-buttons i:hover {
   transform: scale(1.1);
   color: var(--text-selected) !important;
 }
 
 
-.generalPills{
+.generalPills {
   color: var(--text-general) !important;
   border: 0px 2px solid transparent !important;
-  transition: border-color 0.15s, background-color 0.15s , color 0.15s, width 0.15s !important;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s, width 0.15s !important;
   display: flex;
   position: relative;
   background: none;
-  cursor:  pointer !important;
+  cursor: pointer !important;
 }
 
-.basic-label{
+.basic-label {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s;
   pointer-events: none;
@@ -6363,7 +6638,8 @@ input.disabled{
   opacity: 1;
 }
 
-.generalPills:hover, .scriptPills:hover {
+.generalPills:hover,
+.scriptPills:hover {
   color: var(--white-general) !important;
 }
 
@@ -6376,17 +6652,18 @@ input.disabled{
   transition-delay: 0s;
 }
 
-.generalPills.active{
+.generalPills.active {
   background-color: transparent !important;
   color: var(--white-general) !important;
 }
 
-.generalPills .pill-line{
+.generalPills .pill-line {
   background-color: var(--new-primary);
   width: 0%;
 }
 
-.generalPills:hover .pill-line, .generalPills.active .pill-line{
+.generalPills:hover .pill-line,
+.generalPills.active .pill-line {
   width: 100%;
 }
 
@@ -6394,7 +6671,7 @@ input.disabled{
 .scriptPills {
   color: var(--text-general) !important;
   border: 2px solid transparent !important;
-  transition: border-color 0.15s, background-color 0.15s , color 0.15s, width 0.15s !important;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s, width 0.15s !important;
   width: 44px;
   height: 40px;
   display: flex;
@@ -6403,48 +6680,97 @@ input.disabled{
 }
 
 
-#predictpill:hover, #predictpill:hover .pill-line, #predictpill.active .pill-line, #predictpill.active{
+#predictpill:hover,
+#predictpill:hover .pill-line,
+#predictpill.active .pill-line,
+#predictpill.active {
   width: 120px;
 }
 
 
-#h2hpill:hover, #h2hpill:hover .pill-line, #h2hpill.active .pill-line, #h2hpill.active{
+#h2hpill:hover,
+#h2hpill:hover .pill-line,
+#h2hpill.active .pill-line,
+#h2hpill.active {
   width: 150px;
 }
 
-#viewerpill:hover, #viewerpill:hover .pill-line, #viewerpill.active .pill-line, #viewerpill.active{
+#viewerpill:hover,
+#viewerpill:hover .pill-line,
+#viewerpill.active .pill-line,
+#viewerpill.active {
   width: 134px;
 }
 
-#transferpill:hover, #transferpill:hover .pill-line, #transferpill.active .pill-line, #transferpill.active{
+#transferpill:hover,
+#transferpill:hover .pill-line,
+#transferpill.active .pill-line,
+#transferpill.active {
   width: 133px;
 }
 
-#statspill:hover, #statspill:hover .pill-line, #statspill.active .pill-line, #statspill.active{
+#statspill:hover,
+#statspill:hover .pill-line,
+#statspill.active .pill-line,
+#statspill.active {
   width: 138px;
 }
 
-#constructorspill:hover, #constructorspill:hover .pill-line, #constructorspill.active .pill-line, #constructorspill.active{
+#constructorspill:hover,
+#constructorspill:hover .pill-line,
+#constructorspill.active .pill-line,
+#constructorspill.active {
   width: 95px;
 }
 
-#calendarpill:hover, #calendarpill:hover .pill-line, #calendarpill.active .pill-line, #calendarpill.active{
+#calendarpill:hover,
+#calendarpill:hover .pill-line,
+#calendarpill.active .pill-line,
+#calendarpill.active {
   width: 130px;
 }
 
-#carpill:hover, #carpill:hover .pill-line, #carpill.active .pill-line, #carpill.active{
+#carpill:hover,
+#carpill:hover .pill-line,
+#carpill.active .pill-line,
+#carpill.active {
   width: 171px;
 }
 
-#specialCarIcon{
+#specialCarIcon {
   width: 20px;
   height: 20px;
   bottom: 8px;
 }
 
+.download-save-button {
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  height: 91%;
+}
 
+.download-save-button i{
+  font-size: 20px;
+  cursor: pointer;
+  background-size: 200% 200%;
+  transition: all 0.15s;
+  display: inline-block;
+}
 
-.pill-icon{
+.download-save-button i:hover{
+  background: linear-gradient(to right, var(--new-primary), var(--text-general), var(--new-primary));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  animation: gradient-move-title 4s infinite linear;
+  background-size: 200% 200%;
+  transform: scale(1.6);
+}
+
+.pill-icon {
   opacity: 1;
   transition: opacity 0.10s;
   font-size: 20px;
@@ -6452,7 +6778,7 @@ input.disabled{
   bottom: 5px;
 }
 
-.pill-label{
+.pill-label {
   opacity: 0;
   transition: opacity 0.10s;
   position: absolute;
@@ -6461,7 +6787,7 @@ input.disabled{
   pointer-events: none;
 }
 
-.pill-line{
+.pill-line {
   width: 0px;
   height: 2px;
   transition: width 0.15s, background-color 0.15s;
@@ -6472,11 +6798,13 @@ input.disabled{
   pointer-events: none;
 }
 
-.scriptPills:hover .pill-icon, .scriptPills.active .pill-icon{
+.scriptPills:hover .pill-icon,
+.scriptPills.active .pill-icon {
   opacity: 0;
 }
 
-.scriptPills:hover .pill-label, .scriptPills.active .pill-label{
+.scriptPills:hover .pill-label,
+.scriptPills.active .pill-label {
   opacity: 1;
 }
 
@@ -6499,42 +6827,43 @@ input.disabled{
   pointer-events: none;
 }
 
-.scriptPills.active{
+.scriptPills.active {
   background-color: transparent !important;
   color: var(--white-general) !important;
 }
 
 .scriptPills.active::before {
   opacity: 1;
-  transition-delay: 0s; /* Asegurarse de que no haya retraso en el estado activo */
+  transition-delay: 0s;
+  /* Asegurarse de que no haya retraso en el estado activo */
 }
 
-.scriptPills .pill-line{
+.scriptPills .pill-line {
   background-color: var(--new-primary);
 }
 
-.ai-pills::before{
+.ai-pills::before {
   background: radial-gradient(ellipse 75% 160% at center 110%, var(--mode-line-ai), transparent 70%);
 }
 
-.ai-pills .pill-line{
+.ai-pills .pill-line {
   background-color: var(--ai-transparent);
 }
 
-.edit-pills::before{
+.edit-pills::before {
   background: radial-gradient(ellipse 70% 160% at center 110%, var(--mode-line-edit), transparent 70%);
 }
 
-.edit-pills .pill-line{
+.edit-pills .pill-line {
   background-color: var(--edit-transparent);
 }
 
 
-.view-pills::before{
+.view-pills::before {
   background: radial-gradient(ellipse 70% 160% at center 110%, var(--mode-line-view), transparent 70%);
 }
 
-.view-pills .pill-line{
+.view-pills .pill-line {
   background-color: var(--view-transparent);
 }
 
@@ -6543,7 +6872,8 @@ input.disabled{
 }
 
 .scriptPills:not(:hover)::before {
-  transition-delay: 0s; /* No delay when not hovering */
+  transition-delay: 0s;
+  /* No delay when not hovering */
 }
 
 .custom-input-number {
@@ -6557,7 +6887,7 @@ input.disabled{
   text-align: center;
 }
 
-.old-custom-input-number{
+.old-custom-input-number {
   background-color: transparent;
   padding: 6px;
   margin-right: 7px;
@@ -6572,26 +6902,28 @@ input.disabled{
   text-align: center;
 }
 
-.contract-details .old-custom-input-number{
+.contract-details .old-custom-input-number {
   width: 70%;
   max-width: none;
   text-align: left;
 }
 
-.contract-details i{
+.contract-details i {
   transition: transform 0.15s, color 0.15s;
 }
 
-.custom-input-number::selection{
+.custom-input-number::selection {
   background-color: transparent;
 }
 
 
-.custom-input-number:hover , .old-custom-input-number:hover{
+.custom-input-number:hover,
+.old-custom-input-number:hover {
   border-color: var(--text-selected);
 }
 
-.custom-input-number:focus , .old-custom-input-number:focus{
+.custom-input-number:focus,
+.old-custom-input-number:focus {
   color: var(--text-selected);
   outline: 0px solid transparent;
   border-color: var(--new-primary);
@@ -6608,46 +6940,58 @@ input::-webkit-inner-spin-button {
   background-color: var(--table-hover);
 }
 
-.normal-driver.clicked .surname{
+.normal-driver.clicked .surname {
   color: var(--negative-text) !important;
 }
 
-.normal-driver.clicked .small-ovr{
+.normal-driver.clicked .small-ovr {
   color: var(--negative-text) !important;
 }
 
-.small-ovr{
+.small-ovr {
   gap: 5px;
   display: flex;
   overflow: hidden;
 }
 
-.small-ovr span{
+.small-ovr span {
   width: 25px;
 }
 
-.mentality-small-ovr-positive{
+.mentality-small-ovr-positive {
   color: var(--positive-general);
 }
 
-.normal-driver.clicked .mentality-small-ovr-positive{
+.normal-driver.clicked .mentality-small-ovr-positive {
   color: var(--positive-general-clicked);
 }
 
-.mentality-small-ovr-negative{
+.mentality-small-ovr-negative {
   color: var(--negative-general);
 }
 
-.normal-driver.clicked .mentality-small-ovr-negative{
+.normal-driver.clicked .mentality-small-ovr-negative {
   color: var(--negative-general-clicked);
 }
 
-.race.selected, .normal-driver.clicked, .fe-transparent.clicked:hover, .mc-transparent.clicked:hover, .me-transparent.clicked:hover, .al-transparent.clicked:hover, .wi-transparent.clicked:hover, .ha-transparent.clicked:hover, .at-transparent.clicked:hover, .as-transparent.clicked:hover, .af-transparent.clicked:hover, .rb-transparent.clicked:hover{
+.race.selected,
+.normal-driver.clicked,
+.fe-transparent.clicked:hover,
+.mc-transparent.clicked:hover,
+.me-transparent.clicked:hover,
+.al-transparent.clicked:hover,
+.wi-transparent.clicked:hover,
+.ha-transparent.clicked:hover,
+.at-transparent.clicked:hover,
+.as-transparent.clicked:hover,
+.af-transparent.clicked:hover,
+.rb-transparent.clicked:hover {
   background: var(--text-general) !important;
   color: var(--negative-text) !important;
 }
 
-.normal-driver span, .normal-driver .bold-font{
+.normal-driver span,
+.normal-driver .bold-font {
   z-index: 3;
   position: relative;
 }
@@ -6674,17 +7018,18 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
-.team-performance, .car-performance {
+.team-performance,
+.car-performance {
   display: flex;
   flex-direction: column;
   gap: 1px;
 }
 
-.car-performance{
-  gap:0px
+.car-performance {
+  gap: 0px
 }
 
-.performance-bar{
+.performance-bar {
   height: 5px;
   width: 100%;
   background-color: var(--background);
@@ -6692,64 +7037,64 @@ input::-webkit-inner-spin-button {
   margin: 4px 0;
 }
 
-.car .performance-bar{
+.car .performance-bar {
   height: 3px;
   margin: 0px;
   margin-top: 2px;
 }
 
-.car .performance-bar-progress{
+.car .performance-bar-progress {
   height: 3px;
 }
 
-.performance-bar-progress{
+.performance-bar-progress {
   width: 0%;
   height: 5px;
   position: absolute;
   border-right: 1px solid var(--text-general);
 }
 
-.performance-bar-progress.rb{
+.performance-bar-progress.rb {
   background-color: var(--redbull-primary);
 }
 
-.performance-bar-progress.fe{
+.performance-bar-progress.fe {
   background-color: var(--ferrari-primary);
 }
 
-.performance-bar-progress.mc{
+.performance-bar-progress.mc {
   background-color: var(--mclaren-primary);
 }
 
-.performance-bar-progress.me{
+.performance-bar-progress.me {
   background-color: var(--mercedes-primary);
 }
 
-.performance-bar-progress.al{
+.performance-bar-progress.al {
   background-color: var(--alpine-primary);
 }
 
-.performance-bar-progress.wi{
+.performance-bar-progress.wi {
   background-color: var(--williams-primary);
 }
 
-.performance-bar-progress.ha{
+.performance-bar-progress.ha {
   background-color: var(--haas-primary);
 }
 
-.performance-bar-progress.at{
+.performance-bar-progress.at {
   background-color: var(--alphatauri-primary);
 }
 
-.performance-bar-progress.as{
+.performance-bar-progress.as {
   background-color: var(--aston-primary);
 }
 
-.performance-bar-progress.af{
+.performance-bar-progress.af {
   background-color: var(--alfa-primary);
 }
 
-.performance-bar-progress.ct{
+.performance-bar-progress.ct {
   background-color: var(--custom-team-primary);
 }
 
@@ -6760,7 +7105,7 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
-.new-logo-and-name{
+.new-logo-and-name {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -6774,7 +7119,7 @@ input::-webkit-inner-spin-button {
 
 }
 
-.car-title{
+.car-title {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -6791,43 +7136,46 @@ input::-webkit-inner-spin-button {
   justify-content: space-between;
 }
 
-.team-performance:hover .team-title-value{
+.team-performance:hover .team-title-value {
   color: var(--white-general);
 }
 
-.team-performance.selected .team-title-value{
+.team-performance.selected .team-title-value {
   color: var(--white-general);
 }
 
-.team-title-value{
+.team-title-value {
   color: var(--dark-text);
   transition: color 0.15s;
 }
 
-.car:hover .main-car, .team:hover .main-car{
+.car:hover .main-car,
+.team:hover .main-car {
   border-left: 2px solid var(--white-general);
 }
 
-.car.selected .main-car, .team.selected .main-car{
+.car.selected .main-car,
+.team.selected .main-car {
   border-left: 2px solid var(--white-general);
 }
 
-.main-car{
+.main-car {
   border-left: 2px solid var(--separator);
   padding-left: 7px;
   transition: border-color 0.15s;
 }
 
-.team .main-car{
+.team .main-car {
   padding-left: 12px;
 }
 
-.nunmber-and-car, .number-and-team{
+.nunmber-and-car,
+.number-and-team {
   display: flex;
   flex-direction: row;
 }
 
-.performance-number{
+.performance-number {
   width: 8%;
   text-align: center;
   padding-right: 7px;
@@ -6841,15 +7189,17 @@ input::-webkit-inner-spin-button {
 }
 
 /* move it 2 pixels to the right */
-.number-and-team:hover .team-number, .number-and-team.selected .team-number{
+.number-and-team:hover .team-number,
+.number-and-team.selected .team-number {
   transform: translateX(2px);
 }
 
-.nunmber-and-car:hover .performance-number, .nunmber-and-car.selected .performance-number{
+.nunmber-and-car:hover .performance-number,
+.nunmber-and-car.selected .performance-number {
   transform: translateX(2px);
 }
 
-.team-number{
+.team-number {
   width: 10%;
   text-align: center;
   font-size: 22px;
@@ -6860,15 +7210,15 @@ input::-webkit-inner-spin-button {
   transition: transform 0.15s;
 }
 
-.car-performance.selected .value{
+.car-performance.selected .value {
   color: var(--white-general);
 }
 
-.car-performance:hover .value{
+.car-performance:hover .value {
   color: var(--white-general);
 }
 
-.car-missing-parts{
+.car-missing-parts {
   color: var(--negative-general);
   font-size: 12px;
   padding-top: 2px;
@@ -6876,17 +7226,17 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
-.car-missing-parts .bi-check-all{
-  color : var(--positive-general);
+.car-missing-parts .bi-check-all {
+  color: var(--positive-general);
   font-size: 20px;
 }
 
-.car-missing-parts .bi-exclamation-triangle-fill{
+.car-missing-parts .bi-exclamation-triangle-fill {
   padding-bottom: 2px;
   margin-left: 4px;
 }
 
-.car-missing-parts .value{
+.car-missing-parts .value {
   color: var(--dark-text);
   transition: color 0.15s;
   width: 56px;
@@ -6910,61 +7260,63 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
-.team-viewer{
+.team-viewer {
   display: flex;
   flex-direction: row;
   padding: 12px 12px;
 }
 
-.team-viewer .input-buttons{
+.team-viewer .input-buttons {
   font-size: 18px;
 }
 
-#teamBudgetInput{
+#teamBudgetInput {
   min-width: 160px;
 }
 
 
-#costCapInput{
+#costCapInput {
   min-width: 170px;
 }
 
-.team-header{
+.team-header {
   font-size: 44px;
   height: 55px;
   width: 100%;
 }
 
-.viewer-component{
+.viewer-component {
   margin-top: 20px;
   display: flex;
   flex-direction: row;
 }
 
-.facility-component{
+.facility-component {
   margin-top: 20px;
   display: flex;
   flex-direction: column;
 }
 
-.facility-component-lg{
+.facility-component-lg {
   margin-top: 5px;
 }
 
-.facility, .facility-level-indicator, .mentality-level-indicator{
+.facility,
+.facility-level-indicator,
+.mentality-level-indicator {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.facility{
+.facility {
   margin-top: 5px;
   justify-content: space-between;
   position: relative;
   height: 65px;
 }
 
-.condition-container{
+.condition-container {
   position: absolute;
   bottom: 0px;
   display: flex;
@@ -6973,7 +7325,7 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
-.condition-container-bar{
+.condition-container-bar {
   width: 100%;
   background-color: var(--background);
   height: 2px;
@@ -6981,77 +7333,78 @@ input::-webkit-inner-spin-button {
   margin-top: 5px;
 }
 
-.condition-container-bar-progress{
+.condition-container-bar-progress {
   width: 33%;
   background-color: var(--positive-general);
   height: 2px;
   transition: width 0.15s;
 }
 
-.condition-container-buttons{
+.condition-container-buttons {
   display: flex;
   flex-direction: row;
   font-size: 24px;
   height: 30px;
 }
 
-.condition-container-buttons i{
+.condition-container-buttons i {
   cursor: pointer;
   transition: transform 0.15s, color 0.15s;
   display: flex;
   align-items: center;
 }
 
-.condition-container-value{
+.condition-container-value {
   font-family: "Formula1Bold";
   color: var(--positive-general);
   width: 60px;
   text-align: right;
 }
 
-.condition-container-buttons i:hover{
+.condition-container-buttons i:hover {
   transform: scale(1.05);
   color: var(--positive-general);
 }
 
-.facility-refurbish{
+.facility-refurbish {
   width: 5%;
   font-size: 20px;
   display: flex;
   justify-content: center;
 }
 
-.facility-refurbish svg{
+.facility-refurbish svg {
   width: 28px;
   padding-bottom: 11px;
   transition: color 0.15s, transform 0.15s;
   cursor: pointer;
 }
 
-.facility-refurbish svg:hover{
+.facility-refurbish svg:hover {
   color: var(--positive-general);
   transform: scale(1.1);
 }
 
-.facility-level-indicator, .mentality-level-indicator{
+.facility-level-indicator,
+.mentality-level-indicator {
   gap: 6px;
   margin: 0 10px;
   padding-top: 1px;
   flex-grow: 1;
 }
 
-.facility-name{
+.facility-name {
   width: 46%;
-  color: var( --text-general);
+  color: var(--text-general);
 }
 
-.custom-button{
+.custom-button {
   height: 40px;
   font-size: 16px;
   padding: 0 10px;
 }
 
-#selectImage{
+#selectImage {
   margin-top: 0px !important;
 }
 
@@ -7061,38 +7414,38 @@ input::-webkit-inner-spin-button {
   gap: 10px;
 }
 
-.logo-selector{
+.logo-selector {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.logo-and-preview{
+.logo-and-preview {
   display: flex;
   flex-direction: row;
   gap: 10px;
   align-items: center;
 }
 
-.colors-selector .bold-font{
+.colors-selector .bold-font {
   width: 22%;
 }
 
-.logo-preview{
+.logo-preview {
   width: 50px;
   height: 50px;
   background-color: transparent;
   border: solid 1px var(--toast-background);
 }
 
-.color-reader{
+.color-reader {
   background-color: transparent;
   border: none;
   color: var(--text-general);
   width: 100px;
 }
 
-.color-picker{
+.color-picker {
   width: 30px;
   height: 30px;
   background-color: transparent;
@@ -7100,38 +7453,39 @@ input::-webkit-inner-spin-button {
   cursor: pointer;
 }
 
-.custom-logo-selection{
+.custom-logo-selection {
   display: flex;
   gap: 20px;
   flex-direction: column;
 }
 
-.colors-selector{
+.colors-selector {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-#teamMenu a, .team-select-menu a{
+#teamMenu a,
+.team-select-menu a {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   padding: 0;
 }
 
-#teamContractMenu{
+#teamContractMenu {
   max-height: 250px;
   overflow-y: scroll;
 }
 
-#teamContractMenu a{
+#teamContractMenu a {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   padding: 0;
 }
 
-.team-select-menu a{
+.team-select-menu a {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -7140,23 +7494,23 @@ input::-webkit-inner-spin-button {
 }
 
 
-#viewer-first{
+#viewer-first {
   width: 49%;
   padding-right: 20px;
 }
 
-#viewer-second{
+#viewer-second {
   width: 50%;
   padding-left: 20px;
 }
 
-.separator{
+.separator {
   width: 2px;
   background-color: var(--separator);
   height: 100%;
 }
 
-.separator-2{
+.separator-2 {
   margin-top: 30px;
   width: 2px;
   background-color: var(--elements);
@@ -7165,110 +7519,112 @@ input::-webkit-inner-spin-button {
 
 
 
-.main-second-viewer{
+.main-second-viewer {
   min-height: 580px;
 }
 
-.save-button-zone{
+.save-button-zone {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
   width: 100%
 }
 
-.level{
+.level {
   height: 8px;
   width: 20%;
   background-color: var(--mid-gray-contrast);
   transition: background-color 0.15s;
 }
 
-.mentality-level{
+.mentality-level {
   height: 6px;
   width: 20%;
   background-color: var(--mid-gray-contrast);
   transition: background-color 0.15s;
 }
 
-.mentality-and-emoji.demoralized{
-  color : var(--mentality-demoralized);
+.mentality-and-emoji.demoralized {
+  color: var(--mentality-demoralized);
 }
 
-.mentality-level.demoralized{
+.mentality-level.demoralized {
   background-color: var(--mentality-demoralized);
 }
 
-.mentality-and-emoji.negative{
-  color : var(--mentality-negative);
+.mentality-and-emoji.negative {
+  color: var(--mentality-negative);
 }
 
-.mentality-level.negative{
+.mentality-level.negative {
   background-color: var(--mentality-negative);
 }
 
-.mentality-and-emoji.positive{
-  color : var(--mentality-positive);
+.mentality-and-emoji.positive {
+  color: var(--mentality-positive);
 
 }
 
-.mentality-level.positive{
+.mentality-level.positive {
   background-color: var(--mentality-positive);
 }
 
-.mentality-and-emoji.enthusiastic{
-  color : var(--mentality-enthusiastic);
+.mentality-and-emoji.enthusiastic {
+  color: var(--mentality-enthusiastic);
 }
 
-.mentality-and-emoji.neutral{
-  color : var(--mentality-neutral);
+.mentality-and-emoji.neutral {
+  color: var(--mentality-neutral);
 }
 
-.mentality-level.neutral{
+.mentality-level.neutral {
   background-color: var(--mentality-neutral);
 }
 
-.mentality-level.enthusiastic{
+.mentality-level.enthusiastic {
   background-color: var(--mentality-enthusiastic);
 }
 
-.bar-container i{
+.bar-container i {
   transition: transform 0.15s, color 0.15s;
   cursor: pointer;
 }
 
-.bar-container i:hover{
+.bar-container i:hover {
   transform: scale(1.1);
   color: var(--new-primary);
 }
 
-.name-and-emoji{
+.name-and-emoji {
   transition: color 0.15s;
 }
 
-.level.activated{
+.level.activated {
   background-color: var(--white-general) !important;
 }
 
-.viewer-component .custom-input-number, .facility-component .custom-input-number, .facility-component-lg .custom-input-number{
+.viewer-component .custom-input-number,
+.facility-component .custom-input-number,
+.facility-component-lg .custom-input-number {
   background-color: transparent !important;
   text-align: center;
   padding: 8px;
   height: 39.2px !important;
 }
 
-.facility .bi-chevron-right{
+.facility .bi-chevron-right {
   margin-right: 60px;
 }
 
-#confidenceInput{
+#confidenceInput {
   min-width: 70px !important;
 }
 
-.condition-input{
+.condition-input {
   max-width: 80px;
 }
 
-.facility-condition{
+.facility-condition {
   margin-left: 45px;
   gap: 10px;
   display: flex;
@@ -7276,39 +7632,45 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
-#longTermInput{
+#longTermInput {
   min-width: 90px;
 }
 
-#objectiveButton{
+#objectiveButton {
   margin-top: 5px !important;
   max-width: 260px !important;
 }
 
-#objectiveButton::before, #carDevButton::before, #operationButton::before, #staffButton::before, #engineButton::before{
+#objectiveButton::before,
+#carDevButton::before,
+#operationButton::before,
+#staffButton::before,
+#engineButton::before {
   z-index: 0 !important;
 }
 
-.pit-crew-details .one-stat-panel{
+.pit-crew-details .one-stat-panel {
   width: 33%;
   margin: 5px 0;
   /* background-color: transparent;
   box-shadow: none; */
 }
 
-.pit-crew-details .one-stat-panel input{
+.pit-crew-details .one-stat-panel input {
   font-size: 14px;
   max-width: 50px;
 }
 
-.first-component, .second-component{
+.first-component,
+.second-component {
   width: 50%;
 }
 
-#edit_teams .team-viewer .bi-chevron-left, #edit_teams .team-viewer .bi-chevron-right{
+#edit_teams .team-viewer .bi-chevron-left,
+#edit_teams .team-viewer .bi-chevron-right {
   transition: color 0.15s;
   font-size: 20px;
-  color: var( --text-general);
+  color: var(--text-general);
   transition: background-color 0.15s, color 0.15s, transform 0.15s;
   width: 25px;
   height: 25px;
@@ -7319,20 +7681,21 @@ input::-webkit-inner-spin-button {
 
 }
 
-#edit_teams .team-viewer .bi-chevron-left:hover, #edit_teams .team-viewer .bi-chevron-right:hover{
+#edit_teams .team-viewer .bi-chevron-left:hover,
+#edit_teams .team-viewer .bi-chevron-right:hover {
   cursor: pointer;
   color: var(--new-primary) !important;
   transform: scale(1.1);
 }
 
-.q-label{
+.q-label {
   background-color: red;
   color: var(--white-general);
   border-radius: 5px;
   padding: 3px;
 }
 
-.component-subtitle{
+.component-subtitle {
   font-size: 20px;
   display: flex;
   flex-direction: row;
@@ -7340,18 +7703,20 @@ input::-webkit-inner-spin-button {
   align-items: center;
 }
 
-.logo-margin-top{
+.logo-margin-top {
   margin-top: 2px;
 
 }
 
-.redbulllogo, #rblogo {
+.redbulllogo,
+#rblogo {
   width: 40px;
   height: 40px;
   padding: 8px 0;
 }
 
-.ferrarilogo, #felogo {
+.ferrarilogo,
+#felogo {
   width: 40px;
   height: 40px;
   padding-bottom: 7px;
@@ -7360,7 +7725,7 @@ input::-webkit-inner-spin-button {
   padding-right: 2px;
 }
 
-.porschelogo{
+.porschelogo {
   width: 40px;
   height: 40px;
   padding: 5px;
@@ -7372,7 +7737,8 @@ input::-webkit-inner-spin-button {
   padding: 6px 4px;
 }
 
-.merclogo, #melogo {
+.merclogo,
+#melogo {
   width: 40px;
   height: 40px;
   padding-bottom: 7px;
@@ -7387,7 +7753,8 @@ input::-webkit-inner-spin-button {
   padding: 5px;
 }
 
-.alpinelogo, #allogo {
+.alpinelogo,
+#allogo {
   width: 40px;
   height: 40px;
   padding-bottom: 9px;
@@ -7397,19 +7764,22 @@ input::-webkit-inner-spin-button {
   transition: opacity 0.15s;
 }
 
-.mclarenlogo, #mclogo {
+.mclarenlogo,
+#mclogo {
   width: 40px;
   height: 40px;
   padding: 2px;
 }
 
-.alfalogo, #aflogo {
+.alfalogo,
+#aflogo {
   width: 40px;
   height: 40px;
   padding: 3px;
 }
 
-.astonlogo, #aslogo {
+.astonlogo,
+#aslogo {
   width: 40px;
   height: 40px;
   padding-bottom: 5px;
@@ -7417,52 +7787,53 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
 }
 
-.brawnlogo{
+.brawnlogo {
   width: 40px;
   height: 40px;
   padding: 16px 0px;
   padding-left: 4px;
 }
 
-.audilogo{
+.audilogo {
   width: 40px;
   height: 40px;
   padding: 12px 2px;
 }
 
-.team-menu-logo .audilogo{
+.team-menu-logo .audilogo {
   width: 50px;
 }
 
-.sauberlogo{
+.sauberlogo {
   width: 40px;
   height: 40px;
   padding: 6px 5px;
 }
 
-.hugologo{
+.hugologo {
   height: 40px;
   width: 40px;
   padding: 5px 0;
 }
 
-.visarblogo{
+.visarblogo {
   height: 40px;
   width: 40px;
   padding: 5px 2px;
 }
 
-.team-menu-logo .visarblogo{
+.team-menu-logo .visarblogo {
   width: 46px;
 }
 
-.toyotalogo{
+.toyotalogo {
   width: 40px;
   height: 40px;
   padding: 7px 2px;
 }
 
-.haaslogo, #halogo {
+.haaslogo,
+#halogo {
   width: 40px;
   height: 40px;
   padding-bottom: 6px;
@@ -7471,24 +7842,26 @@ input::-webkit-inner-spin-button {
   padding-right: 2px;
 }
 
-.customlogo{
+.customlogo {
   width: 40px;
   height: 40px;
 }
 
-.lotuslogo{
+.lotuslogo {
   width: 40px;
   height: 40px;
   padding: 1px 0px;
 }
 
-.alphataurilogo, #atlogo {
+.alphataurilogo,
+#atlogo {
   width: 40px;
   height: 40px;
   padding: 12px 4px;
 }
 
-.williamslogo, #wilogo {
+.williamslogo,
+#wilogo {
   width: 40px;
   height: 40px;
   padding-bottom: 9px;
@@ -7497,18 +7870,21 @@ input::-webkit-inner-spin-button {
   padding-right: 6px;
 }
 
-.team1, .team2{
+.team1,
+.team2 {
   max-width: 150px;
   text-align: center;
 }
 
-.driver1-name .team1, .driver2-name .team2{
-  color: var( --text-general) !important;
+.driver1-name .team1,
+.driver2-name .team2 {
+  color: var(--text-general) !important;
   transition: color 0.15s;
 }
 
 
-#redbull, .rbborder-down:hover {
+#redbull,
+.rbborder-down:hover {
   border-bottom: 2px solid var(--redbull-primary) !important;
 }
 
@@ -7525,11 +7901,12 @@ input::-webkit-inner-spin-button {
 }
 
 
-.rbactivated{
+.rbactivated {
   background-color: var(--redbull-primary);
 }
 
-#ferrari, .feborder-down:hover {
+#ferrari,
+.feborder-down:hover {
   border-bottom: 2px solid var(--ferrari-primary) !important;
 }
 
@@ -7545,11 +7922,12 @@ input::-webkit-inner-spin-button {
   border-bottom-right-radius: 10px;
 }
 
-.feactivated{
+.feactivated {
   background-color: var(--ferrari-primary);
 }
 
-#merc, .meborder-down:hover {
+#merc,
+.meborder-down:hover {
   border-bottom: 2px solid var(--mercedes-primary) !important;
 }
 
@@ -7565,11 +7943,12 @@ input::-webkit-inner-spin-button {
   border-bottom-right-radius: 10px;
 }
 
-.meactivated{
+.meactivated {
   background-color: var(--mercedes-primary);
 }
 
-#mclaren, .mcborder-down:hover {
+#mclaren,
+.mcborder-down:hover {
   border-bottom: 2px solid var(--mclaren-primary) !important;
 }
 
@@ -7585,20 +7964,21 @@ input::-webkit-inner-spin-button {
   border-bottom-right-radius: 10px;
 }
 
-.mcactivated{
+.mcactivated {
   background-color: var(--mclaren-primary);
 }
 
 
-#alpine, .alborder-down:hover {
+#alpine,
+.alborder-down:hover {
   border-bottom: 2px solid var(--alpine-primary) !important
 }
 
-.alborder-down-noC:hover{
+.alborder-down-noC:hover {
   border-bottom: 2px solid #2293D1 !important
 }
 
-.alborder::after{
+.alborder::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -7610,32 +7990,33 @@ input::-webkit-inner-spin-button {
   border-bottom-right-radius: 10px;
 }
 
-.andrettiborder-down:hover{
+.andrettiborder-down:hover {
   border-bottom: 2px solid var(--andretti-primary) !important
 }
 
-.renaultborder-down:hover{
+.renaultborder-down:hover {
   border-bottom: 2px solid var(--renault-primary) !important
 }
 
-.lotusborder-down:hover{
+.lotusborder-down:hover {
   border-bottom: 2px solid var(--lotus-primary) !important
 }
 
 
-.alactivated{
+.alactivated {
   background-color: var(--alpine-primary);
 }
 
-#alfaromeo, .afborder-down:hover {
+#alfaromeo,
+.afborder-down:hover {
   border-bottom: 2px solid var(--alfa-primary) !important
 }
 
-.afborder-down-noC:hover{
+.afborder-down-noC:hover {
   border-bottom: 2px solid #C92D4B !important
 }
 
-.afborder::after{
+.afborder::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -7648,19 +8029,20 @@ input::-webkit-inner-spin-button {
 }
 
 
-.afactivated{
+.afactivated {
   background-color: var(--alfa-primary);
 }
 
-#astonmartin, .asborder-down:hover {
+#astonmartin,
+.asborder-down:hover {
   border-bottom: 2px solid var(--aston-primary) !important
 }
 
-.asactivated{
+.asactivated {
   background-color: var(--aston-primary);
 }
 
-.asborder::after{
+.asborder::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -7672,53 +8054,54 @@ input::-webkit-inner-spin-button {
   border-bottom-right-radius: 10px;
 }
 
-#alphatauri, .atborder-down:hover, .hugoborder-down:hover{
-  border-bottom: 2px solid var(--alphatauri-primary) !important 
+#alphatauri,
+.atborder-down:hover,
+.hugoborder-down:hover {
+  border-bottom: 2px solid var(--alphatauri-primary) !important
 }
 
-.atborder-down-noC:hover{
+.atborder-down-noC:hover {
   border-bottom: 2px solid #5E8FAA !important
 }
 
-.hugoborder-down:hover{
+.hugoborder-down:hover {
   border-bottom: 2px solid var(--hugo-primary) !important
-
 }
 
-.visarbborder-down:hover{
+.visarbborder-down:hover {
   border-bottom: 2px solid var(--visarb-primary) !important
 }
 
 
-.toyotaborder-down:hover{
+.toyotaborder-down:hover {
   border-bottom: 2px solid var(--toyota-primary) !important
 }
 
-.porscheborder-down:hover{
+.porscheborder-down:hover {
   border-bottom: 2px solid var(--porsche-primary) !important
 }
 
-.brawnborder-down:hover{
+.brawnborder-down:hover {
   border-bottom: 2px solid var(--brawn-primary) !important
 }
 
-.stakeborder-down:hover{
+.stakeborder-down:hover {
   border-bottom: 2px solid var(--stake-primary) !important
 }
 
-.audiborder-down:hover{
+.audiborder-down:hover {
   border-bottom: 2px solid var(--audi-primary) !important
 }
 
-.sauberborder-down:hover{
+.sauberborder-down:hover {
   border-bottom: 2px solid var(--sauber-primary) !important
 }
 
-.atactivated{
+.atactivated {
   background-color: var(--alphatauri-primary);
 }
 
-.atborder::after{
+.atborder::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -7730,11 +8113,12 @@ input::-webkit-inner-spin-button {
   border-bottom-right-radius: 10px;
 }
 
-#williams, .wiborder-down:hover {
+#williams,
+.wiborder-down:hover {
   border-bottom: 2px solid var(--williams-primary) !important
 }
 
-.wiborder::after{
+.wiborder::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -7747,15 +8131,16 @@ input::-webkit-inner-spin-button {
 }
 
 
-.wiactivated{
+.wiactivated {
   background-color: var(--williams-primary);
 }
 
-#haas, .haborder-down:hover {
+#haas,
+.haborder-down:hover {
   border-bottom: 2px solid var(--haas-primary) !important
 }
 
-.haborder::after{
+.haborder::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -7767,15 +8152,16 @@ input::-webkit-inner-spin-button {
   border-bottom-right-radius: 10px;
 }
 
-.haactivated{
+.haactivated {
   background-color: var(--haas-primary);
 }
 
-#ctstom, .ctborder-down:hover {
+#ctstom,
+.ctborder-down:hover {
   border-bottom: 2px solid var(--custom-team-primary) !important
 }
 
-.ctborder::after{
+.ctborder::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -7787,7 +8173,7 @@ input::-webkit-inner-spin-button {
   border-bottom-right-radius: 10px;
 }
 
-.ctactivated{
+.ctactivated {
   background-color: var(--custom-team-primary);
 }
 
@@ -8011,16 +8397,17 @@ input::-webkit-inner-spin-button {
   border: 2px solid var(--custom-team-secondary);
 }
 
-.predict-warning{
+.predict-warning {
   font-size: 14px;
 }
 
 
-.drivers-section, .staff-section {
+.drivers-section,
+.staff-section {
   display: flex;
   overflow: hidden;
   margin-bottom: 3px;
-  width: 100%; 
+  width: 100%;
   align-items: center;
 }
 
@@ -8032,12 +8419,12 @@ input::-webkit-inner-spin-button {
   border-radius: 5px;
 }
 
-.game-changes{
+.game-changes {
   display: flex;
   flex-direction: row;
 }
 
-.mentality-changes{
+.mentality-changes {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -8062,7 +8449,7 @@ input::-webkit-inner-spin-button {
 
 }
 
-.difficulty-changes{
+.difficulty-changes {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -8070,18 +8457,18 @@ input::-webkit-inner-spin-button {
   width: 50%;
 }
 
-.mentality-selector{
+.mentality-selector {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 10px;
 }
 
-.mentality-selector .form-switch{
+.mentality-selector .form-switch {
   padding-right: 0px;
 }
 
-.modal-text{
+.modal-text {
   color: var(--modal-text);
 }
 
@@ -8098,90 +8485,107 @@ datalist {
   pointer-events: none;
 }
 
-datalist .my-mark{
+datalist .my-mark {
   border-right: 2px solid var(--separator);
   height: 10px;
   width: 2px;
 }
 
-#difficultySlider::-webkit-slider-thumb{
+#difficultySlider::-webkit-slider-thumb {
   background-color: var(--new-primary-dark);
   z-index: 2;
   box-shadow: none;
 }
 
-#difficultySlider::-webkit-slider-thumb:hover{
+#difficultySlider::-webkit-slider-thumb:hover {
   outline: 1px solid var(--new-primary);
   transform: scale(1.05);
 }
 
-#difficultySlider::-webkit-slider-runnable-track{
+#difficultySlider::-webkit-slider-runnable-track {
   background-color: var(--text-selected);
 }
 
-.option-state{
+.option-state {
   padding-left: 5px;
   transition: color 0.15s;
 }
 
 
 
-.dif-warning:hover{
+.dif-warning:hover {
   transform: translateY(-1px);
   filter: brightness(1.2);
 }
 
-.dif-warning::selection{
+.dif-warning::selection {
   background-color: transparent;
 }
 
-.option-state.default, .dif-warning.default{
+.option-state.default,
+.dif-warning.default {
   color: var(--new-secondary);
 }
 
-.option-state.frozen, .dif-warning.frozen{
+.option-state.frozen,
+.dif-warning.frozen {
   color: var(--frozen)
 }
 
-.option-state.extra-hard, span.extra-hard, .dif-warning.extra-hard{
+.option-state.extra-hard,
+span.extra-hard,
+.dif-warning.extra-hard {
   color: var(--extra-hard)
 }
 
-.option-state.brutal, span.brutal, .dif-warning.brutal{
+.option-state.brutal,
+span.brutal,
+.dif-warning.brutal {
   color: var(--brutal)
 }
 
-.option-state.unfair, span.unfair, .dif-warning.unfair{
+.option-state.unfair,
+span.unfair,
+.dif-warning.unfair {
   color: var(--unfair)
 }
 
-.option-state.insane, span.insane, .dif-warning.insane{
+.option-state.insane,
+span.insane,
+.dif-warning.insane {
   color: var(--insane)
 }
 
-.option-state.impossible, span.impossible, .dif-warning.impossible{
+.option-state.impossible,
+span.impossible,
+.dif-warning.impossible {
   color: var(--impossible)
 }
 
-.option-state.fixed, span.fixed, .dif-warning.fixed, #lightDif.impossible{
+.option-state.fixed,
+span.fixed,
+.dif-warning.fixed,
+#lightDif.impossible {
   color: var(--new-primary)
 }
 
-.option-state.reduced-weight, span.reduced-weight, .dif-warning.reduced-weight{
+.option-state.reduced-weight,
+span.reduced-weight,
+.dif-warning.reduced-weight {
   color: var(--new-primary)
 }
 
-.option-state.custom{
+.option-state.custom {
   color: var(--text-general);
 }
 
-#refurbishTitle{
+#refurbishTitle {
   padding-top: 10px;
   border-top: 2px solid var(--separator);
   margin-right: 32px;
 }
 
-.difficulty-warnings{
+.difficulty-warnings {
   font-size: 12px;
   display: flex;
   flex-wrap: wrap;
@@ -8193,31 +8597,32 @@ datalist .my-mark{
 
 
 
-.dif-warning:not(.default){
+.dif-warning:not(.default) {
   cursor: pointer;
   transition: color 0.15s, opacity 0.1s, transform 0.15s, filter 0.15s;
 }
 
-.dif-warning.disabled, #lightDif.disabled{
+.dif-warning.disabled,
+#lightDif.disabled {
   text-decoration: line-through;
   color: var(--text-general);
   opacity: 0.63;
 }
 
-.modal-warning{
+.modal-warning {
   background-color: var(--modal-warning);
   color: var(--modal-warning-text);
   border-radius: 10px;
   padding: 5px;
 }
 
-.name-and-arrows{
+.name-and-arrows {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.arrows{
+.arrows {
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -8227,13 +8632,13 @@ datalist .my-mark{
   left: -3px;
 }
 
-.arrows i{
+.arrows i {
   cursor: pointer;
   transition: transform 0.15s, color 0.15s;
   height: 12px;
 }
 
-.arrows i:hover{
+.arrows i:hover {
   transform: scale(1.05);
   color: var(--new-primary);
 }

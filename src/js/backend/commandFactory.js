@@ -5,6 +5,7 @@ import DriverRequestCommand from './commands/driverRequest.js';
 import EditPerformanceCommand from './commands/editPerformance.js';
 import YearSelectedH2HCommand from './commands/yearSelectedH2H.js';
 import configuredH2HCommand from './commands/configuredH2H.js';
+import CustomEnginesCommand from './commands/customEngines.js';
 
 export class CommandFactory {
     constructor() {
@@ -25,18 +26,12 @@ export class CommandFactory {
         configuredH2H: configuredH2HCommand,
         // teamRequest: TeamRequestCommand,
         // editTeam: EditTeamCommand,
-        // yearSelectedPrediction: YearSelectedPredictionCommand,
-        // yearSelectedPredictionModal: YearSelectedPredictionModalCommand,
-        // predict: PredictCommand,
-        // predictMontecarlo: PredictMontecarloCommand,
         // unretireDriver: UnretireCommand,
         // configUpdate: ConfigUpdateCommand,
         performanceRequest: PerformanceRequestCommand,
-        // disconnect: DisconnectCommand,
         // fitParts: FitPartsCommand,
         partRequest: PartRequestCommand,
-        // customEngines: CustomEnginesCommand,
-        // dev: DevCommand,
+        customEngines: CustomEnginesCommand,
       };
     }
   

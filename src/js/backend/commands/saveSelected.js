@@ -11,6 +11,8 @@ export default class SaveSelectedCommand extends Command {
     execute() {
         const dbUtils = getDBUtils();
 
+        this.checkCustomTables(dbUtils);
+
         const yearData = dbUtils.checkYearSave();
         if (yearData[1] !== null){
             setGlobals({createTeam : true});
@@ -79,5 +81,9 @@ export default class SaveSelectedCommand extends Command {
             const yearResponse = { responseMessage: "24 Year", content: data };
             updateFront(yearResponse);
         }
+    }
+
+    checkCustomTables(dbUtils){
+        dbUtils.checkCustomTables();
     }
 }

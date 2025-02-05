@@ -22,6 +22,8 @@ import {
 } from './stats';
 import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs } from './head2head';
 import { CommandFactory } from '../backend/commandFactory';
+import { repack } from '../backend/UESaveHandler';
+import { getDatabase, getMetadata } from '../backend/dbManager';
 
 
 const names_configs = {
@@ -1283,6 +1285,12 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     reloadTables()
 })
 
+document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", function () {
+    const db = getDatabase();
+    const metadata = getMetadata();
+    repack(db, metadata);
+})
+
 
 
 /**
@@ -1295,16 +1303,6 @@ function check_selected() {
 
     }
 }
-
-/**
- * Pills and their eventListeners
- */
-predictPill.addEventListener("click", function () {
-    manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
-    scriptSelected = 1
-    check_selected()
-    manageSaveButton(false)
-})
 
 h2hPill.addEventListener("click", function () {
 

@@ -1,4 +1,5 @@
 import countries_abreviations from "./countries.js";
+import { engine_unitValueToValue } from "./carConstants.js";
 
 export default class DBUtils {
   /**
@@ -129,32 +130,40 @@ export default class DBUtils {
   }
 
   fetchEngines() {
-    const enginesIds = [1, 10, 4, 7];
     const statsIds = [6, 10, 11, 12, 14];
-    const ersIds = [2, 11, 5, 8];
-    const gearboxesIds = [3, 12, 6, 9];
     const enginesList = [];
 
-    for (let i = 0; i < enginesIds.length; i++) {
+    console.log("Fetching engines...");
+
+    let newEngineIds = this.queryDB(`
+      SELECT engineID FROM Custom_Engines_List`, 'allRows');
+
+    newEngineIds = newEngineIds.map(row => row[0]);
+    let newErsIds = newEngineIds.map(id => id + 1);
+    let newGearboxesIds = newEngineIds.map(id => id + 2);
+
+    for (let i = 0; i < newEngineIds.length; i++) {
       let resultDict = {};
 
       // Obtener valores de stats
       for (const stat of statsIds) {
         const statResult = this.queryDB(`
-                SELECT PartStat, UnitValue 
-                FROM Parts_Designs_StatValues 
-                WHERE DesignID = ${enginesIds[i]} AND PartStat = ${stat}
+                SELECT partStat, unitValue 
+                FROM Custom_Engines_Stats 
+                WHERE designId = ${newEngineIds[i]} AND partStat = ${stat}
             `, 'singleRow');
         if (statResult) {
           resultDict[statResult[0]] = statResult[1];
         }
       }
 
+      console.log("ResultDict:", resultDict);
+
       // Obtener valor de ERS
       const ersResult = this.queryDB(`
             SELECT UnitValue 
-            FROM Parts_Designs_StatValues 
-            WHERE DesignID = ${ersIds[i]} AND PartStat = 15
+            FROM Custom_Engines_Stats 
+            WHERE designId = ${newErsIds[i]} AND partStat = 15
         `, 'singleValue');
       if (ersResult !== null) {
         resultDict[18] = ersResult;
@@ -163,15 +172,21 @@ export default class DBUtils {
       // Obtener valor de gearbox
       const gearboxResult = this.queryDB(`
             SELECT UnitValue 
-            FROM Parts_Designs_StatValues 
-            WHERE DesignID = ${gearboxesIds[i]} AND PartStat = 15
+            FROM Custom_Engines_Stats 
+            WHERE designId = ${newGearboxesIds[i]} AND partStat = 15
         `, 'singleValue');
       if (gearboxResult !== null) {
         resultDict[19] = gearboxResult;
       }
 
+      const engineName = this.queryDB(`
+          SELECT name 
+          FROM Custom_Engines_List
+          WHERE engineID = ${newEngineIds[i]}
+      `, 'singleValue');
+
       // Añadir la información del motor a la lista
-      enginesList.push([enginesIds[i], resultDict]);
+      enginesList.push([newEngineIds[i], resultDict, engineName]);
     }
 
     return enginesList;
@@ -692,7 +707,7 @@ export default class DBUtils {
        FROM Races_Results
        WHERE Season = ${season}
        AND TeamID = ${teamID} `,
-       'allRows') || [];
+      'allRows') || [];
 
     const results = [];
     for (let driver of drivers) {
@@ -739,8 +754,8 @@ export default class DBUtils {
         results,
         driverNameRow,
         teamID,
-        driver,  
-        year,    
+        driver,
+        year,
         sprintResults
       );
     }
@@ -753,64 +768,64 @@ export default class DBUtils {
       SELECT Day, CurrentSeason
       FROM Player_State
     `, 'singleRow');
-  
+
     if (!daySeasonRow) {
       return [];
     }
     const [currentDay, currentSeason] = daySeasonRow;
-  
+
     const seasonIdsRows = this.queryDB(`
       SELECT RaceID
       FROM Races
       WHERE SeasonID = ${year}
         AND Day < ${currentDay}
     `, 'allRows') || [];
-  
+
 
     const eventsIds = seasonIdsRows.map(row => row[0]);
-  
+
     return eventsIds;
   }
-  
+
   fetchEventsFrom(year) {
     const seasonEventsRows = this.queryDB(`
       SELECT TrackID
       FROM Races
       WHERE SeasonID = ${year}
     `, 'allRows') || [];
-  
+
     const seasonIdsRows = this.queryDB(`
       SELECT RaceID
       FROM Races
       WHERE SeasonID = ${year}
     `, 'allRows') || [];
-  
+
 
     const eventsIds = [];
     for (let i = 0; i < seasonIdsRows.length; i++) {
-      const raceID  = seasonIdsRows[i][0];
+      const raceID = seasonIdsRows[i][0];
       const trackID = seasonEventsRows[i][0];
       eventsIds.push([raceID, trackID]);
     }
-  
+
     return eventsIds;
   }
-  
+
 
   formatSeasonResults(results, driverName, teamID, driver, year, sprints) {
     // Asumiendo que driver y year son arrays (p.ej. driver=[123], year=[2023]):
     const driverID = driver;
     const season = year;
-  
+
     // -------- 1) Formatear nombre --------
     let nombre = "";
     let apellido = "";
-  
+
     // driverName podría ser un array [firstName, lastName] o un objeto {FirstName, LastName}.
     // Aquí asumimos array. Si tu queryDB retorna objetos, ajusta a driverName.FirstName, driverName.LastName.
     const firstName = driverName ? driverName[0] : "";
-    const lastName  = driverName ? driverName[1] : "";
-  
+    const lastName = driverName ? driverName[1] : "";
+
     // Lógica análoga a Python para "STRING_LITERAL"
     if (!firstName.includes("STRING_LITERAL")) {
       const nombrePattern = /StaffName_Forename_(Male|Female)_(\w+)/;
@@ -825,7 +840,7 @@ export default class DBUtils {
       const match = firstName.match(pattern);
       nombre = match ? match[1] : "";
     }
-  
+
     if (!lastName.includes("STRING_LITERAL")) {
       const apellidoPattern = /StaffName_Surname_(\w+)/;
       const match = lastName.match(apellidoPattern);
@@ -839,9 +854,9 @@ export default class DBUtils {
       const match = lastName.match(pattern);
       apellido = match ? match[1] : "";
     }
-  
+
     const nameFormatted = `${nombre} ${apellido}`.trim();
-  
+
     // -------- 2) Obtener todas las carreras que corrió este piloto en la temporada --------
     const racesParticipated = this.queryDB(`
       SELECT RaceID
@@ -849,23 +864,23 @@ export default class DBUtils {
       WHERE DriverID = ${driverID}
         AND Season = ${season}
     `, 'allRows') || [];
-  
+
     // results = array con [DriverID, TeamID, FinishingPos, Points]
     // Queremos convertirlo en algo más detallado. 
     // De Python: formatred_results = [(FinishingPos, Points) for result in results]
     // Pero necesitamos mapear 1:1 con la lista de RaceIDs, así que iremos uno a uno.
-    let formatredResults = results.map(r => [r[2], r[3]]); 
+    let formatredResults = results.map(r => [r[2], r[3]]);
     // r[2] => FinishingPos, r[3] => Points.
-  
+
     // Suponiendo que hay la misma cantidad y el mismo orden de carreras 
     // entre "results" y "racesParticipated". 
     // Si no, necesitarías hacer matching por RaceID. 
     // En tu Python original, tomabas RaceIDs en order y reasignabas. 
     // Asegurémonos de usar el RaceID de 'racesParticipated[i]' igual que Python.
-  
+
     for (let i = 0; i < racesParticipated.length; i++) {
       const raceID = racesParticipated[i][0]; // Cada fila es [RaceID]
-  
+
       // 2.1) Buscamos quién hizo la fastest lap
       const driverWithFastestLap = this.queryDB(`
         SELECT DriverID
@@ -876,7 +891,7 @@ export default class DBUtils {
         ORDER BY FastestLap
         LIMIT 1
       `, 'singleValue');
-  
+
       // 2.2) Checamos si fue DNF
       const dnfd = this.queryDB(`
         SELECT DNF
@@ -885,11 +900,11 @@ export default class DBUtils {
           AND Season = ${season}
           AND RaceID = ${raceID}
       `, 'singleValue') || 0;
-  
+
       // Inyectamos RaceID al inicio de la tupla
       // Python: formatred_results[i] = (raceID,) + formatred_results[i]
       formatredResults[i] = [raceID, ...formatredResults[i]];
-  
+
       // Si DNF = 1 => set FinishingPos y Points a -1
       if (dnfd === 1) {
         const arr = [...formatredResults[i]];
@@ -897,7 +912,7 @@ export default class DBUtils {
         arr[2] = -1; // Points
         formatredResults[i] = arr;
       }
-  
+
       // Marcar fastest lap
       if (driverWithFastestLap === driverID) {
         // le append "1"
@@ -906,7 +921,7 @@ export default class DBUtils {
         // le append "0"
         formatredResults[i].push(0);
       }
-  
+
       // 2.3) Quali Stage & FinishingPos
       const QStage = this.queryDB(`
         SELECT MAX(QualifyingStage)
@@ -916,7 +931,7 @@ export default class DBUtils {
           AND SeasonID = ${season}
           AND DriverID = ${driverID}
       `, 'singleValue') || 0;
-  
+
       const QRes = this.queryDB(`
         SELECT FinishingPos
         FROM Races_QualifyingResults
@@ -926,17 +941,17 @@ export default class DBUtils {
           AND DriverID = ${driverID}
           AND QualifyingStage = ${QStage}
       `, 'singleValue') || 99;
-  
+
       // 2.4) Cálculo de diferencias de tiempo (carrera y pole)
       const timeDifference = this.calculateTimeDifference(driverID, raceID);
       const poleDifference = this.calculateTimeToPole(driverID, raceID);
-  
+
       // Añadimos QRes, timeDifference y poleDifference
       formatredResults[i].push(QRes);
       formatredResults[i].push(timeDifference);
       formatredResults[i].push(poleDifference);
     }
-  
+
     // -------- 3) Añadir datos de sprint al formatredResults --------
     // En Python: 
     // for tupla1 in sprints:
@@ -947,7 +962,7 @@ export default class DBUtils {
     // tupla1[0] => RaceID
     // tupla1[1] => FinishingPos
     // tupla1[2] => ChampionshipPoints
-  
+
     for (const sprintRow of sprints) {
       // sprintRow: [RaceID, FinishingPos, ChampionshipPoints]
       const [sprintRaceID, sprintPos, sprintPoints] = sprintRow;
@@ -961,7 +976,7 @@ export default class DBUtils {
         }
       }
     }
-  
+
     // -------- 4) Añadir TeamID a cada carrera --------
     // En Python se hace un for i in range(len(...)):
     //   team_in_race = ...
@@ -976,11 +991,11 @@ export default class DBUtils {
         WHERE RaceID = ${raceID}
           AND DriverID = ${driverID}
       `, 'singleValue') || 0;
-  
+
       formatredResults[i].push(teamInRace);
       latestTeam = teamInRace;
     }
-  
+
     // -------- 5) Agregar la posición final en el campeonato al inicio --------
     const position = this.queryDB(`
       SELECT Position
@@ -989,16 +1004,16 @@ export default class DBUtils {
         AND SeasonID = ${season}
         AND DriverID = ${driverID}
     `, 'singleValue') || 0;
-  
+
 
     formatredResults.unshift(position);
     formatredResults.unshift(latestTeam);
     formatredResults.unshift(nameFormatted);
-  
+
     // Devolvemos el array final
     return formatredResults;
   }
-  
+
   calculateTimeToPole(driverID, raceID) {
     const QStage = this.queryDB(`
       SELECT MAX(QualifyingStage)
@@ -1007,7 +1022,7 @@ export default class DBUtils {
         AND RaceID = ${raceID}
         AND DriverID = ${driverID}
     `, 'singleValue') || 0;
-  
+
     const poleTime = this.queryDB(`
       SELECT MIN(FastestLap)
       FROM Races_QualifyingResults
@@ -1016,7 +1031,7 @@ export default class DBUtils {
         AND QualifyingStage = 3
         AND FastestLap IS NOT 0
     `, 'singleValue') || 9999;
-  
+
     const driverTime = this.queryDB(`
       SELECT FastestLap
       FROM Races_QualifyingResults
@@ -1025,29 +1040,29 @@ export default class DBUtils {
         AND QualifyingStage = ${QStage}
         AND DriverID = ${driverID}
     `, 'singleValue') || 9999;
-  
+
     if (driverTime < poleTime) {
-      return "NR"; 
+      return "NR";
     } else {
       const difference = Number((driverTime - poleTime).toFixed(2));
       return `+${difference}s`;
     }
   }
-  
+
   calculateTimeDifference(driverID, raceID) {
     const totalLaps = this.queryDB(`
       SELECT MAX(Laps)
       FROM Races_Results
       WHERE RaceID = ${raceID}
     `, 'singleValue') || 0;
-  
+
     const driverLaps = this.queryDB(`
       SELECT Laps
       FROM Races_Results
       WHERE RaceID = ${raceID}
         AND DriverID = ${driverID}
     `, 'singleValue') || 0;
-  
+
     if (driverLaps < totalLaps) {
       return `+${totalLaps - driverLaps} L`;
     } else {
@@ -1057,26 +1072,26 @@ export default class DBUtils {
         WHERE RaceID = ${raceID}
           AND FinishingPos = 1
       `, 'singleValue');
-  
+
       const winnerTime = this.queryDB(`
         SELECT Time
         FROM Races_Results
         WHERE RaceID = ${raceID}
           AND DriverID = ${winnerID}
       `, 'singleValue') || 0;
-  
+
       const driverTime = this.queryDB(`
         SELECT Time
         FROM Races_Results
         WHERE RaceID = ${raceID}
           AND DriverID = ${driverID}
       `, 'singleValue') || 0;
-  
+
       const timeDiff = Number((driverTime - winnerTime).toFixed(1));
       return `+${timeDiff}s`;
     }
   }
-  
+
 
 
 
@@ -1139,4 +1154,170 @@ export default class DBUtils {
     // Retornar los resultados
     return [currentContract, futureContract, daySeason ? daySeason[1] : null];
   }
+
+  checkCustomTables() {
+    let createdEnginesList = false;
+    let createdEnginesStats = false;
+
+    const tablesToCheck = [
+      {
+        name: 'Custom_Engines_List',
+        createSQL: `
+          CREATE TABLE Custom_Engines_List (
+            engineId INTEGER PRIMARY KEY,
+            name TEXT
+          )
+        `
+      },
+      {
+        name: 'Custom_Engines_Stats',
+        createSQL: `
+          CREATE TABLE Custom_Engines_Stats (
+            engineId INTEGER,
+            designId INTEGER,
+            partStat INTEGER,
+            unitValue REAL,
+            Value REAL
+          )
+        `
+      },
+      {
+        name: 'Custom_Save_Config',
+        createSQL: `
+          CREATE TABLE Custom_Save_Config (
+            key TEXT PRIMARY KEY,
+            value TEXT
+          )
+        `
+      }
+    ];
+
+    tablesToCheck.forEach((table) => {
+      const tableExists = this.queryDB(`
+        SELECT name
+        FROM sqlite_master
+        WHERE type='table'
+          AND name='${table.name}'
+      `, 'singleValue');
+
+
+      if (!tableExists) {
+        this.queryDB(table.createSQL);
+
+        console.log("TABLE CREATED: ", table.name);
+
+        if (table.name === 'Custom_Engines_List') {
+          createdEnginesList = true;
+        }
+        else if (table.name === 'Custom_Engines_Stats') {
+          createdEnginesStats = true;
+        }
+      }
+    });
+
+    if (createdEnginesList || createdEnginesStats) {
+      this.insertDefualtEnginesData();
+    }
+  }
+
+  insertDefualtEnginesData() {
+    const engines = [
+      {
+        id: 1,
+        name: 'Ferrari',
+        stats: [
+          { partStat: 6, value: 500, unitValue: 75, designId: 1 },
+          { partStat: 10, value: 750, unitValue: 95, designId: 1 },
+          { partStat: 11, value: 250, unitValue: 80, designId: 1 },
+          { partStat: 12, value: 500, unitValue: 77.5, designId: 1 },
+          { partStat: 14, value: 400, unitValue: 68, designId: 1 },
+          { partStat: 15, value: 350, unitValue: 57, designId: 2 },
+          { partStat: 15, value: 0, unitValue: 50, designId: 3 }
+        ]
+      },
+      {
+        id: 4,
+        name: 'Red Bull',
+        stats: [
+          { partStat: 6, value: 300, unitValue: 65, designId: 4 },
+          { partStat: 10, value: 1000, unitValue: 100, designId: 4 },
+          { partStat: 11, value: 0, unitValue: 85, designId: 4 },
+          { partStat: 12, value: 0, unitValue: 70, designId: 4 },
+          { partStat: 14, value: 0, unitValue: 60, designId: 4 },
+          { partStat: 15, value: 0, unitValue: 50, designId: 5 },
+          { partStat: 15, value: 600, unitValue: 62, designId: 6 }
+        ]
+      },
+      {
+        id: 7,
+        name: 'Mercedes',
+        stats: [
+          { partStat: 6, value: 0, unitValue: 50, designId: 7 },
+          { partStat: 10, value: 500, unitValue: 90, designId: 7 },
+          { partStat: 11, value: 1000, unitValue: 65, designId: 7 },
+          { partStat: 12, value: 850, unitValue: 82.75, designId: 7 },
+          { partStat: 14, value: 1000, unitValue: 80, designId: 7 },
+          { partStat: 15, value: 1000, unitValue: 70, designId: 8 },
+          { partStat: 15, value: 1000, unitValue: 70, designId: 9 }
+        ]
+      },
+      {
+        id: 10,
+        name: 'Renault',
+        stats: [
+          { partStat: 6, value: 1000, unitValue: 100, designId: 10 },
+          { partStat: 10, value: 0, unitValue: 80, designId: 10 },
+          { partStat: 11, value: 500, unitValue: 75, designId: 10 },
+          { partStat: 12, value: 1000, unitValue: 85, designId: 10 },
+          { partStat: 14, value: 650, unitValue: 73, designId: 10 },
+          { partStat: 15, value: 500, unitValue: 75, designId: 11 },
+          { partStat: 15, value: 1000, unitValue: 100, designId: 12 }
+        ]
+      }
+    ];
+
+    engines.forEach(engine => {
+      this.queryDB(`
+        INSERT OR REPLACE INTO Custom_Engines_List (engineId, Name)
+        VALUES (${engine.id}, '${engine.name}')
+      `);
+
+
+
+      engine.stats.forEach(stat => {
+        this.queryDB(`
+          INSERT OR REPLACE INTO Custom_Engines_Stats (engineId, designId, partStat, Value, unitValue)
+          VALUES (${engine.id}, ${stat.designId}, ${stat.partStat}, ${stat.value}, ${stat.unitValue})
+        `);
+      });
+    });
+
+    console.log("DATA INSERTED");
+  }
+
+  updateCustomEngines(engineData) {
+    console.log("ENGINES DATA: ", engineData);
+    for (let engineId in engineData) {
+      const nameCapitalized = engineData[engineId].name.charAt(0).toUpperCase() + engineData[engineId].name.slice(1);
+      this.queryDB(`INSERT OR REPLACE INTO Custom_Engines_List (engineId, Name) VALUES (${engineId}, '${nameCapitalized}')`);
+      for (let stat in engineData[engineId].stats) {
+        const untiValue = engineData[engineId].stats[stat];
+        const value = engine_unitValueToValue[stat](untiValue);
+        if (stat !== "18" && stat !== "19") {
+          this.queryDB(`INSERT OR REPLACE INTO Custom_Engines_Stats (engineId, designId, partStat, Value, unitValue)
+            VALUES (${engineId}, ${engineId}, ${stat}, ${value}, ${untiValue})`);
+        }
+        else if (stat === "18") {
+          this.queryDB(`INSERT OR REPLACE INTO Custom_Engines_Stats (engineId, designId, partStat, Value, unitValue)
+            VALUES (${engineId}, ${parseInt(engineId + 1)}, ${15}, ${value}, ${untiValue})`);
+        }
+        else if (stat === "19") {
+          this.queryDB(`INSERT OR REPLACE INTO Custom_Engines_Stats (engineId, designId, partStat, Value, unitValue)
+            VALUES (${engineId}, ${parseInt(engineId + 2)}, ${15}, ${value}, ${untiValue})`);
+        }
+      }
+    }
+  }
+
+
 }

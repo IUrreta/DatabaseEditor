@@ -1,6 +1,7 @@
 import {SerializationError} from "../PropertyErrors";
 import {Serializer} from '../Serializer';
 import {Property} from './'
+import { Buffer } from "buffer";
 
 const is8Bit = string => /^[\x00-\xFF]*$/.test(string);
 
