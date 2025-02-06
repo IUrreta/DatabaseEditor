@@ -7,30 +7,29 @@ import DBUtils from "../backend/scriptUtils/dbUtils.js";
 let dbUtils = null;
 let carAnalysisUtils = null;
 
-const blockDiv = document.getElementById("blockDiv");
+const dropDiv = document.getElementById("dropDiv");
 
-blockDiv.addEventListener("dragenter", (event) => {
+dropDiv.addEventListener("dragenter", (event) => {
     event.preventDefault();
-    blockDiv.classList.add("drag-over");
+    dropDiv.classList.add("drag-over");
 });
 
-blockDiv.addEventListener("dragover", (event) => {
+dropDiv.addEventListener("dragover", (event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "copy";
 });
 
-blockDiv.addEventListener("dragleave", (event) => {
+dropDiv.addEventListener("dragleave", (event) => {
     event.preventDefault();
-    blockDiv.classList.remove("drag-over");
+    dropDiv.classList.remove("drag-over");
 });
 
-blockDiv.addEventListener("drop", async (event) => {
+dropDiv.addEventListener("drop", async (event) => {
     event.preventDefault();
-    blockDiv.classList.remove("drag-over");
+    dropDiv.classList.remove("drag-over");
 
     const file = event.dataTransfer.files[0];
     if (!file) return;
-
 
     console.log("Leyendo el archivo:", file.name);
     const { db, metadata } = await analyzeFileToDatabase(file);
@@ -40,6 +39,8 @@ blockDiv.addEventListener("drop", async (event) => {
     console.log("DB y metadata guardados");
 
     console.log("¡File readed succesfuly!", metadata);
+
+    document.getElementById("saveFileDropped").classList.add("completed");
 
 
     const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table'");

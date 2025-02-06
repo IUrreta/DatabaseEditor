@@ -1,7 +1,7 @@
 import { updateFront } from "../../frontend/renderer";
 import { Command } from "./command";
 import { setGlobals, getGlobals } from "./commandGlobals";
-import { fetchTeamData } from "../scriptUtils/editTeam";
+import { fetchTeamData } from "../scriptUtils/editTeamUtils";
 
 export default class TeamRequestCommand extends Command {
     execute() {

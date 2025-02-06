@@ -4,10 +4,12 @@ import PartRequestCommand from './commands/partRequest.js';
 import DriverRequestCommand from './commands/driverRequest.js';
 import EditPerformanceCommand from './commands/editPerformance.js';
 import YearSelectedH2HCommand from './commands/yearSelectedH2H.js';
-import configuredH2HCommand from './commands/configuredH2H.js';
+import ConfiguredH2HCommand from './commands/configuredH2H.js';
 import CustomEnginesCommand from './commands/customEngines.js';
 import TeamRequestCommand from './commands/teamRequest.js';
 import YearSelectedCommand from './commands/yearSelected.js';
+import EditTeamCommand from './commands/editTeam.js';
+import EditStatsCommand from './commands/editStats.js';
 
 export class CommandFactory {
     constructor() {
@@ -18,16 +20,16 @@ export class CommandFactory {
         // fire: FireCommand,
         // autoContract: AutoContractCommand,
         // swap: SwapCommand,
-        // editStats: EditStatsCommand,
+        editStats: EditStatsCommand,
         // calendar: CalendarCommand,
         // editContract: EditContractCommand,
         editPerformance: EditPerformanceCommand,
         // editEngine: EditEngineCommand,
         yearSelected: YearSelectedCommand,
         yearSelectedH2H: YearSelectedH2HCommand,
-        configuredH2H: configuredH2HCommand,
+        configuredH2H: ConfiguredH2HCommand,
         teamRequest: TeamRequestCommand,
-        // editTeam: EditTeamCommand,
+        editTeam: EditTeamCommand,
         // unretireDriver: UnretireCommand,
         // configUpdate: ConfigUpdateCommand,
         performanceRequest: PerformanceRequestCommand,

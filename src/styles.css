@@ -18,6 +18,7 @@
   --text-selected: #e7d3ff;
   --text-selected-secondary: #b1dbd6;
   --new-secondary: #9AD2CB;
+  --new-secondary-dark: #74aaa4;
   --table-hover: #4a4a4a;
   --elements-hover: #3a3a3a;
   --box-shadow: #00000033;
@@ -1689,18 +1690,14 @@ input[type="checkbox"]:checked {
 }
 
 
+
 .background {
   background-color: var(--new-primary);
-  /* Azul claro */
   background-image: url('../assets/images/background2.svg');
   background-size: cover;
-  /* Ajusta el tamaño de la imagen al tamaño del contenedor */
   background-position: center;
-  /* Centra la imagen */
   background-repeat: no-repeat;
-  /* Evita que la imagen se repita */
   height: 100%;
-  /* Asegura que el fondo cubra toda la altura de la ventana */
   margin: 0;
   position: absolute;
   width: 100.2%;
@@ -1720,8 +1717,11 @@ input[type="checkbox"]:checked {
 .script-view {
   display: flex;
   width: 100%;
+  transition: opacity 0.15s;
   /* overflow-x: hidden; */
 }
+
+
 
 .scirpt-info {
   font-size: 15px;
@@ -6232,9 +6232,9 @@ input.disabled {
   background-color: var(--background);
 }
 
-.blocking-div.drag-over {
-  border: 2px dashed #00cc66;
-  background-color: rgba(0, 255, 204, 0.1);
+.drop-area.drag-over {
+  border: 2px dashed var(--new-primary);
+  background-color: color-mix(in srgb, var(--new-primary) 5%, var(--elements));
 }
 
 .splash-text {
@@ -6747,7 +6747,7 @@ input.disabled {
   height: 91%;
 }
 
-.download-save-button i{
+.download-save-button i {
   font-size: 20px;
   cursor: pointer;
   background-size: 200% 200%;
@@ -6755,7 +6755,7 @@ input.disabled {
   display: inline-block;
 }
 
-.download-save-button i:hover{
+.download-save-button i:hover {
   background: linear-gradient(to right, var(--new-primary), var(--text-general), var(--new-primary));
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -8636,4 +8636,392 @@ span.reduced-weight,
 .arrows i:hover {
   transform: scale(1.05);
   color: var(--new-primary);
+}
+
+/* 
+.rectangle {
+  position: absolute;
+  width: 150px;
+  height: 50px;
+  background: var(--new-primary); 
+}
+
+
+.rect1 {
+  bottom: 2%;              
+  left: 23.1%;                
+  transform: skewX(44deg);
+  animation: moveLeftRects 1.5s 0.5s linear forwards;
+  rotate: 314deg;
+}
+
+.rect2 {
+  bottom: -3%;
+  left: 16%;
+  transform: skewX(44deg);
+  rotate: 314deg;
+  animation: moveLeftRects 1.5s 0.55s linear forwards;
+}
+
+
+.rect3 {
+  top: 2%;
+  right: 23.1%;
+  transform: skewX(44deg); 
+  rotate: 314deg;
+  animation: moveRightRects 1.5s 0.5s linear forwards;
+}
+
+.rect4 {
+  top: -3%;
+  right: 16%;
+  transform: skewX(44deg);
+  rotate: 314deg;
+  animation: moveRightRects 1.5s 0.55s linear forwards;
+}
+
+@keyframes moveLeftRects {
+  0% {
+    transform: translateX(0) skewX(44deg);
+  }
+  40% {
+    transform: translateX(50%) skewX(44deg);
+  }
+  100% {
+    transform: translateX(52%) skewX(44deg);
+  }
+}
+
+@keyframes moveRightRects {
+  0% {
+    transform: translateX(0) skewX(44deg);
+  }
+  40% {
+    transform: translateX(-50%) skewX(44deg);
+  }
+  100% {
+    transform: translateX(-52%) skewX(44deg);
+  }
+} */
+
+#blockDiv {
+  overflow: hidden;
+  height: 100%;
+  background-color: var(--new-primary);
+  background-image: url('../assets/images/background3.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100%;
+  margin: 0;
+  width: 100.2%;
+}
+
+#blockDiv.disappear{
+  animation: fadeOut 0.15s forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.splash-box {
+  background-color: var(--superficials);
+  border-radius: 20px;
+  padding: 20px 30px;
+  min-width: 80%;
+  min-height: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  margin-bottom: 10%;
+  opacity: 0;
+  animation: fadeIn 0.5s 0.2s forwards;
+  transform: translateY(50px);
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.drop-area{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  border: 2px dashed var(--disabled-text);
+  border-radius: 20px;  
+  display: flex;
+  flex-direction: column;
+  padding-left: 35%;
+}
+
+.list-item{
+  display: flex;
+  flex-direction: row;
+  font-size: 20px;
+}
+
+.list-item:has(.completed) .number-icon span, .list-item:not(:has(.completed)) .number-icon i{
+  opacity: 0;
+  rotate: 90deg;
+}
+
+.list-item:has(.completed) .number-icon i, .list-item:not(:has(.completed)) .number-icon span{
+  opacity: 1;
+  rotate: 0;
+}
+
+.list-item:has(.completed) .number-icon i{
+  color: var(--positive-general);
+}
+
+.number-icon{
+  position: relative;
+  margin-right: 25px;
+}
+
+.number-icon span, .number-icon i{
+  position: absolute;
+  transition: all 0.15s;
+}
+
+.list-text{
+  transition: all 0.15s;
+}
+
+.list-text.completed{
+  color: var(--positive-general);
+}
+
+
+/* 
+.icon-hidden{
+  opacity: 0;
+} */
+
+
+.glitch {
+  color: var(--text);
+  font-size: 52px;
+  font-weight: 700;
+  position: relative;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 1;
+}
+
+
+
+
+.glitch::before,
+.glitch::after {
+  content: 'DB EDITOR F1 MANAGER';
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  color: var(--text);
+  background-color: var(--background-color);
+
+
+}
+
+
+.glitch::before {
+  left: 2px;
+  text-shadow: 2px 0 var(--new-primary-dark);
+  animation: animate 3s infinite linear;
+  width: 100%;
+}
+
+
+.glitch::after {
+  left: -3px;
+  text-shadow: -3px 0 var(--new-secondary-dark);
+  animation: animate 2s infinite linear;
+  width: 100%;
+}
+
+
+@keyframes animate {
+  0% {
+    clip: rect(32px, 9999px, 29px, 0);
+  }
+
+  4% {
+    clip: rect(32px, 9999px, 29px, 0);
+  }
+
+  5% {
+    clip: rect(28px, 9999px, 20px, 0);
+  }
+
+  6% {
+    clip: rect(28px, 9999px, 20px, 0);
+  }
+
+  10% {
+    clip: rect(21px, 9999px, 23px, 0);
+  }
+
+  
+  14% {
+    clip: rect(21px, 9999px, 23px, 0);
+  }
+
+  15% {
+    clip: rect(23px, 9999px, 7px, 0);
+  }
+
+  16% {
+    clip: rect(23px, 9999px, 7px, 0);
+  }
+
+  20% {
+    clip: rect(37px, 9999px, 34px, 0);
+  }
+
+  24% {
+    clip: rect(37px, 9999px, 34px, 0);
+  }
+
+  25% {
+    clip: rect(53px, 9999px, 58px, 0);
+  }
+
+  26% {
+    clip: rect(53px, 9999px, 58px, 0);
+  }
+
+  30% {
+    clip: rect(30px, 9999px, 44px, 0);
+  }
+
+  34% {
+    clip: rect(30px, 9999px, 44px, 0);
+  }
+
+  35% {
+    clip: rect(30px, 9999px, 19px, 0);
+  }
+
+  36% {
+    clip: rect(30px, 9999px, 19px, 0);
+  }
+
+  40% {
+    clip: rect(36px, 9999px, 39px, 0);
+  }
+
+  44% {
+    clip: rect(36px, 9999px, 39px, 0);
+  }
+
+  45% {
+    clip: rect(6px, 9999px, 47px, 0);
+  }
+
+  46% {
+    clip: rect(6px, 9999px, 47px, 0);
+  }
+
+  50% {
+    clip: rect(0px, 9999px, 33px, 0);
+  }
+
+  54% {
+    clip: rect(0px, 9999px, 33px, 0);
+  }
+
+  55% {
+    clip: rect(15px, 9999px, 33px, 0);
+  }
+
+  56% {
+    clip: rect(15px, 9999px, 33px, 0);
+  }
+
+  60% {
+    clip: rect(28px, 9999px, 19px, 0);
+  }
+
+  64% {
+    clip: rect(28px, 9999px, 19px, 0);
+  }
+
+  65% {
+    clip: rect(53px, 9999px, 58px, 0);
+  }
+
+  66% {
+    clip: rect(53px, 9999px, 58px, 0);
+  }
+
+  70% {
+    clip: rect(30px, 9999px, 44px, 0);
+  }
+
+  74% {
+    clip: rect(30px, 9999px, 44px, 0);
+  }
+
+  75% {
+    clip: rect(30px, 9999px, 19px, 0);
+  }
+
+  76% {
+    clip: rect(30px, 9999px, 19px, 0);
+  }
+
+  80% {
+    clip: rect(36px, 9999px, 39px, 0);
+  }
+
+  84% {
+    clip: rect(36px, 9999px, 39px, 0);
+  }
+
+  85% {
+    clip: rect(6px, 9999px, 47px, 0);
+  }
+
+  86% {
+    clip: rect(6px, 9999px, 47px, 0);
+  }
+
+  90% {
+    clip: rect(0px, 9999px, 33px, 0);
+  }
+
+  94% {
+    clip: rect(0px, 9999px, 33px, 0);
+  }
+
+  95% {
+    clip: rect(15px, 9999px, 33px, 0);
+  }
+
+  96% {
+    clip: rect(15px, 9999px, 33px, 0);
+  }
+
+  100% {
+    clip: rect(32px, 9999px, 29px, 0);
+  }
 }

@@ -1175,9 +1175,9 @@
     </div>
     <div class="toolbar-logo-and-title">
       <img src="../assets/images/logoAlter.png" class="toolbar-logo">
-      <div class="toolbar-title bold-font">
-        <span>DB</span>
-        <span>EDITOR</span>
+      <div class="toolbar-title">
+        <span class="bold-font">DB</span>
+        <span class="bold-font">EDITOR</span>
       </div>
     </div>
     <div class="script-selector bold-font">
@@ -1255,11 +1255,24 @@
     <div class="main-panel">
       <div class="background"></div>
       <div class="blocking-div" id="blockDiv">
-        <img src="../assets/images/splash-logo.png" class="splash-logo">
-        <div>
-          <div class="splash-text">Welcome to the Database Editor for F1 Manager</div>
-          <div class="splash-text">Please select a save file</div>
-          <div class="splash-text">and a window to start editing</div>
+        <div class="splash-box">
+          <div class="glitch bold-font">DB EDITOR F1 MANAGER</div>
+          <div class="drop-area" id="dropDiv">
+            <div class="list-item">
+              <div class="number-icon">
+                <span>1. </span>
+                <i class="bi bi-check-lg icon-hidden"></i>
+              </div>
+              <span class="list-text" id="saveFileDropped">Drag and drop your save file here</span>
+            </div>
+            <div class="list-item">
+              <div class="number-icon">
+                <span>2. </span>
+                <i class="bi bi-check-lg icon-hidden"></i>
+              </div>
+              <span class="list-text" id="scriptSelected">Select any of the tabs at the top</span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="script-view d-none" id="predict_results">

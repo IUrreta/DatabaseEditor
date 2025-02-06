@@ -6,9 +6,10 @@ import {
     new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict } from './config';
-import { freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
+import {
+    freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal
- } from './transfers';
+} from './transfers';
 import { load_calendar } from './calendar';
 import {
     load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
@@ -374,7 +375,6 @@ function editModeHandler() {
     }
     let marketability = document.getElementById("marketabilityInput").value;
     let dataStats = {
-        command: "editStats",
         driverID: id,
         driver: driverName,
         statsArray: stats,
@@ -391,7 +391,9 @@ function editModeHandler() {
         newCode: newCode,
     };
 
-    socket.send(JSON.stringify(dataStats));
+    const message = { command: 'editStats', data: dataStats };
+    const command = factory.createCommand(message);
+    command.execute();
 }
 
 function calendarModeHandler() {
@@ -421,9 +423,7 @@ function teamsModeHandler() {
     let facilitiesData = gather_team_data()
     let pitCrew = gather_pit_crew()
     let engine = document.querySelector("#engineButton").dataset.value
-    let saveSelected = document.getElementById('saveSelector').innerHTML
     let data = {
-        command: "editTeam",
         teamID: teamCod,
         facilities: facilitiesData,
         seasonObj: seasonObjData,
@@ -435,9 +435,10 @@ function teamsModeHandler() {
         pitCrew: pitCrew,
         engine: engine,
         teamName: default_dict[teamCod],
-        saveSelected: saveSelected
     }
-    socket.send(JSON.stringify(data))
+    const message = { command: 'editTeam', data: data };
+    const command = factory.createCommand(message);
+    command.execute();
 }
 
 function performanceModeHandler() {
@@ -528,7 +529,7 @@ export function manageSaveButton(show, mode) {
     }
 }
 
-export function updateFront(data){
+export function updateFront(data) {
     console.log("UPDATING FRONT")
     console.log(data)
     let responseTyppe = data.responseMessage
@@ -546,7 +547,7 @@ const messageHandlers = {
         update_notifications(message[1], "error");
     },
     "Save loaded succesfully": (message) => {
-        isSaveSelected  = 1;
+        isSaveSelected = 1;
         remove_drivers();
         removeStatsDrivers();
         listenersStaffGroups();
@@ -783,7 +784,7 @@ function manage_game_year(info) {
 }
 
 function manage_custom_team(nameColor) {
-    console.log("NAME COLOR: " , nameColor)
+    console.log("NAME COLOR: ", nameColor)
     if (nameColor[1] !== null) {
         resizeWindowToHeight("11teams")
         custom_team = true
@@ -1311,11 +1312,16 @@ document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", 
  * checks if a save and a script have been selected to unlock the tool
  */
 function check_selected() {
-    if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
-        document.getElementById("blockDiv").className = "d-none"
-        divBlocking = 0;
-
+    if (scriptSelected === 1) {
+        document.getElementById("scriptSelected").classList.add("completed")
     }
+    setTimeout(function () {
+        if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
+            document.getElementById("blockDiv").classList.add("disappear")
+            divBlocking = 0;
+        }
+    }, 500)
+
 }
 
 h2hPill.addEventListener("click", function () {
