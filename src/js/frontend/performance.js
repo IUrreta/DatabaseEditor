@@ -212,7 +212,7 @@ enginesPill.addEventListener("click", function () {
     first_show_animation()
 })
 
-function gather_engines_data() {
+export function gather_engines_data() {
     let engines = document.querySelectorAll(".engine-performance")
     let enginesData = {}
     engines.forEach(function (engine) {

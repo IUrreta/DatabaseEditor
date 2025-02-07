@@ -1763,7 +1763,7 @@ input[type="checkbox"]:checked {
   transition-delay: 0s;
 }
 
-.gear-container.shown {
+.gear-container:not(:has(.hidden)) {
   width: 40px;
 }
 
@@ -6718,6 +6718,8 @@ input.disabled {
   bottom: 8px;
 }
 
+
+
 .download-save-button {
   width: 44px;
   display: flex;
@@ -6744,6 +6746,30 @@ input.disabled {
   background-size: 200% 200%;
   transform: scale(1.6);
 }
+
+
+#mod25logo{
+  height: 40px;
+  width: 200px;
+  transition: transform 0.15s ease; /* Solo transiciona transform */
+  cursor: pointer;
+
+  background: linear-gradient(to right, var(--new-primary), var(--text-general), var(--new-primary));
+  background-size: 200% 200%;
+  animation: gradient-move-title 5s linear infinite;
+
+  -webkit-mask: url('../assets/images/logoMod.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask: url('../assets/images/logoMod.svg') no-repeat center;
+  mask-size: contain;
+
+  will-change: transform;
+}
+
+#mod25logo:hover{
+  transform: scale(1.1);
+}
+
 
 .pill-icon {
   opacity: 1;

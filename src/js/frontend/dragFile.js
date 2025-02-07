@@ -2,10 +2,9 @@
 import { analyzeFileToDatabase } from "../backend/UESaveHandler";
 import { setDatabase, queryDB } from "../backend/dbManager.js";
 import { factory } from "./renderer.js";
-import DBUtils from "../backend/scriptUtils/dbUtils.js";
 
-let dbUtils = null;
 let carAnalysisUtils = null;
+export const dbWorker = new Worker(new URL('../backend/commands/worker.js', import.meta.url));
 
 const dropDiv = document.getElementById("dropDiv");
 
@@ -33,9 +32,15 @@ dropDiv.addEventListener("drop", async (event) => {
 
     const { db, metadata } = await analyzeFileToDatabase(file);
 
-    setDatabase(db, metadata);
-    dbUtils = new DBUtils(queryDB, metadata);
+    const dbBinary = db.export();
 
+    setDatabase(db, metadata);
+
+
+    dbWorker.postMessage(
+        { action: 'loadDB', buffer: dbBinary },
+        [dbBinary.buffer] // Marcamos el ArrayBuffer interno como transferible
+    );
 
     document.getElementById("saveFileDropped").classList.add("completed");
 
@@ -51,9 +56,4 @@ dropDiv.addEventListener("drop", async (event) => {
 
 });
 
-export function getDBUtils() {
-    if (!dbUtils) {
-        throw new Error("La base de datos aún no se ha inicializado.");
-    }
-    return dbUtils;
-}
+

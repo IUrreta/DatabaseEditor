@@ -14,7 +14,7 @@ import { load_calendar } from './calendar';
 import {
     load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
     order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
-    teamSelected
+    teamSelected, gather_engines_data
 } from './performance';
 import { resetPredict, setMidGrid, setMaxRaces, setRelativeGrid, placeRaces, placeRacesInModal } from './predictions';
 import {
@@ -461,9 +461,11 @@ function performanceModeHandler() {
     else if (teamsEngine === "engines") {
         let engineData = gather_engines_data()
         data = {
-            command: "editEngine",
             engines: engineData,
         }
+        const message = { command: 'editEngine', data: data };
+        const command = factory.createCommand(message);
+        command.execute();
     }
 
 }
@@ -850,11 +852,6 @@ function ajustScrollWrapper() {
 
 window.addEventListener('resize', ajustScrollWrapper);
 window.addEventListener('load', ajustScrollWrapper);
-
-
-
-
-
 
 
 document.querySelector(".gear-container").addEventListener("click", function () {

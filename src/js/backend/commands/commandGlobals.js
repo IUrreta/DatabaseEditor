@@ -11,18 +11,16 @@ export const prettyNames = {
     "audi": "Audi", "sauber": "Sauber", "stake": "Stake Sauber"
 };
 
-let dbUtils = null;
 let path = null;
 let yearIteration = null;
 let isCreateATeam = false;
 
-export function setGlobals({ db, dbPath, year, createTeam }) {
-    dbUtils = db || dbUtils;
+export function setGlobals({dbPath, year, createTeam }) {
     path = dbPath || path;
     yearIteration = year || yearIteration;
     isCreateATeam = createTeam || isCreateATeam;
 }
 
 export function getGlobals() {
-    return { dbUtils, path, yearIteration, isCreateATeam };
+    return { path, yearIteration, isCreateATeam };
 }

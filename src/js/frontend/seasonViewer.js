@@ -1,4 +1,4 @@
-import { races_names, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams  } from "./config";
+import { races_names, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams } from "./config";
 import { resetH2H } from './head2head';
 import { game_version, custom_team } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
@@ -916,7 +916,7 @@ export function generateYearsMenu(actualYear) {
     yearH2H.innerHTML = ""
     yearPrediction.innerHTML = ""
     yearPredictionModal.innerHTML = ""
-    for (let year = actualYear; year >= actualYear; year--) {
+    for (let year = actualYear; year >= game_version; year--) {
         let a = document.createElement("a");
         a.textContent = year.toString();
         a.classList = "dropdown-item"
@@ -929,6 +929,7 @@ export function generateYearsMenu(actualYear) {
             const message = { command: 'yearSelected', data: { year: a.textContent } };
             const command = factory.createCommand(message);
             command.execute();
+
         })
 
         let a2 = document.createElement("a");

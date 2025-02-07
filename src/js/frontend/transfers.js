@@ -388,14 +388,6 @@ function addIcon(div) {
     div.appendChild(iconDiv)
 }
 
-function addUnRetireIcon(div) {
-    let iconDiv = document.createElement("div");
-    let iconElement = document.createElement("i");
-    iconElement.className = "bi bi-ban";
-    unretireListener(iconElement)
-    div.appendChild(iconElement)
-    div.appendChild(iconDiv)
-}
 
 /**
  * Adds the eventlistener for one icon
@@ -540,17 +532,7 @@ function manage_modal_driver_staff(type) {
 
 }
 
-function unretireListener(icon) {
-    icon.addEventListener("click", function () {
-        let driverReq = {
-            command: "unretireDriver",
-            driverID: icon.parentNode.dataset.driverid,
-            driver: icon.parentNode.innerText,
-        }
-        icon.classList.add("d-none")
-        socket.send(JSON.stringify(driverReq))
-    })
-}
+
 
 /**
  * Places all the values for the modal that just openend
@@ -865,7 +847,6 @@ function editContract() {
     let future_team = document.querySelector("#teamContractButton").dataset.teamid
 
     let data = {
-        command: "editContract",
         driverID: driverEditingID,
         salary: values[0],
         year: values[1],
@@ -881,7 +862,10 @@ function editContract() {
         futureRaceBonusPos: futureValues[4],
         futurePosition: futureValues[5]
     }
-    socket.send(JSON.stringify(data))
+    const message = { command: 'editContract', data: data };
+    const command = factory.createCommand(message);
+    command.execute();
+
     if (future_team !== "-1") {
         let driverDiv = document.querySelector('.free-driver[data-driverid="' + driverEditingID + '"]')
         add_future_team_noti(driverDiv, future_team)

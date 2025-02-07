@@ -10,8 +10,9 @@ import TeamRequestCommand from './commands/teamRequest.js';
 import YearSelectedCommand from './commands/yearSelected.js';
 import EditTeamCommand from './commands/editTeam.js';
 import EditStatsCommand from './commands/editStats.js';
-import { editCalendar } from './scriptUtils/calendarUtils.js';
 import EditCalendarCommand from './commands/editCalendar.js';
+import EditContractCommand from './commands/editContract.js';
+import EditEngineCommand from './commands/editEngine.js';
 
 export class CommandFactory {
     constructor() {
@@ -24,15 +25,14 @@ export class CommandFactory {
         // swap: SwapCommand,
         editStats: EditStatsCommand,
         editCalendar: EditCalendarCommand,
-        // editContract: EditContractCommand,
+        editContract: EditContractCommand,
         editPerformance: EditPerformanceCommand,
-        // editEngine: EditEngineCommand,
+        editEngine: EditEngineCommand,
         yearSelected: YearSelectedCommand,
         yearSelectedH2H: YearSelectedH2HCommand,
         configuredH2H: ConfiguredH2HCommand,
         teamRequest: TeamRequestCommand,
         editTeam: EditTeamCommand,
-        // unretireDriver: UnretireCommand,
         // configUpdate: ConfigUpdateCommand,
         performanceRequest: PerformanceRequestCommand,
         // fitParts: FitPartsCommand,

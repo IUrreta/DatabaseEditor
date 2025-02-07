@@ -13,6 +13,7 @@
   <script src="../node_modules/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js"></script>
   <script src="../node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.min.js"></script>
   <title>Database Editor for F1 Manager</title>
+  <link rel="icon" href="../assets/images/logoAlter.png" type="image/png">
 </head>
 
 <body class="font">
@@ -1155,30 +1156,17 @@
   </div>
   <input type="text" class="dev-console d-none"></input>
   <div class="tools-panel">
-    <!-- <div class="ms-3 bold-font save-selector py-2">
-      <div class="d-flex">
-        <div>
-          <button type="button" class="btn btn-primary dropdown-toggle new-custom-dropdown" id="saveSelector"
-            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-family: Formula1;">
-            Select save
-          </button>
-          <div class="dropdown-line"></div>
-          <ul class="dropdown-menu" id="dropdownMenu" style="font-family: Formula1;">
-          </ul>
-        </div>
-      </div>
-    </div> -->
-    <div class="gear-container my-2 d-none">
-      <i class="bi bi-gear hidden"></i>
-      <label class="bold-font standard-label">SAVE SETTINGS</label>
-      <div class="standard-line"></div>
-    </div>
     <div class="toolbar-logo-and-title">
       <img src="../assets/images/logoAlter.png" class="toolbar-logo">
       <div class="toolbar-title">
         <span class="bold-font">DB</span>
         <span class="bold-font">EDITOR</span>
       </div>
+    </div>
+    <div class="gear-container my-2">
+      <i class="bi bi-gear hidden"></i>
+      <label class="bold-font standard-label">SAVE SETTINGS</label>
+      <div class="standard-line"></div>
     </div>
     <div class="script-selector bold-font">
       <div class="py-2">
@@ -1233,10 +1221,14 @@
             </a>
           </li>
           <li>
+            <div id="mod25logo"></div>
+          </li>
+          <li>
             <div class="download-save-button">
               <i class="bi bi-file-earmark-arrow-down"></i>
             </div>
           </li>
+
         </ul>
 
       </div>

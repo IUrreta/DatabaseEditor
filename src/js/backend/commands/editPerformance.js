@@ -1,15 +1,14 @@
-import { getDBUtils } from "../../frontend/dragFile";
 import { updateFront } from "../../frontend/renderer";
 import { Command } from "./command";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "../scriptUtils/carAnalysisUtils";
+import { checkYearSave } from "../scriptUtils/dbUtils";
 
 export default class EditPerformanceCommand extends Command {
     execute() {
         let globals = getGlobals();
-        const dbUtils = getDBUtils();
 
-        const yearData = dbUtils.checkYearSave();
+        const yearData = checkYearSave();
         
         overwritePerformanceTeam(this.message.data.teamID, this.message.data.parts, globals.isCreateATeam, globals.yearIteration, this.message.data.loadouts);
         updateItemsForDesignDict(this.message.data.n_parts_designs, this.message.data.teamID)

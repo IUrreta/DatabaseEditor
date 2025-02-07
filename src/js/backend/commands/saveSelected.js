@@ -1,19 +1,18 @@
-import { getDBUtils } from "../../frontend/dragFile";
 import { updateFront } from "../../frontend/renderer";
 import { Command } from "./command";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "../scriptUtils/carAnalysisUtils"
+import { fetchDrivers, fetchStaff, fetchEngines, fetchCalendar, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave } from "../scriptUtils/dbUtils";
 
 export default class SaveSelectedCommand extends Command {
     /**
      * Ejecuta el comando de guardar la selección.
      */
     execute() {
-        const dbUtils = getDBUtils();
 
-        this.checkCustomTables(dbUtils);
+        checkCustomTables();
 
-        const yearData = dbUtils.checkYearSave();
+        const yearData = checkYearSave();
         if (yearData[1] !== null){
             setGlobals({createTeam : true});
         }
@@ -27,27 +26,27 @@ export default class SaveSelectedCommand extends Command {
 
         this.updateTeamsFor24(yearData[0]);
 
-        const drivers = dbUtils.fetchDrivers(yearData[0]);
+        const drivers = fetchDrivers(yearData[0]);
         const driversResponse = { responseMessage: "Save loaded succesfully", content: drivers };
         updateFront(driversResponse);
 
-        const staff = dbUtils.fetchStaff(yearData[0]);
+        const staff = fetchStaff(yearData[0]);
         const staffResponse = { responseMessage: "Staff fetched", content: staff };
         updateFront(staffResponse);
 
-        const engines = dbUtils.fetchEngines();
+        const engines = fetchEngines();
         const enginesResponse = { responseMessage: "Engines fetched", content: engines };
         updateFront(enginesResponse);
 
-        const calendar = dbUtils.fetchCalendar();
+        const calendar = fetchCalendar();
         const calendarResponse = { responseMessage: "Calendar fetched", content: calendar };
         updateFront(calendarResponse);
 
-        const year = dbUtils.fetchYear();
+        const year = fetchYear();
         const yearResponse = { responseMessage: "Year fetched", content: year };
         updateFront(yearResponse);
 
-        const numbers = dbUtils.fetchDriverNumbers();
+        const numbers = fetchDriverNumbers();
         const numbersResponse = { responseMessage: "Numbers fetched", content: numbers };
         updateFront(numbersResponse);
 
@@ -83,7 +82,4 @@ export default class SaveSelectedCommand extends Command {
         }
     }
 
-    checkCustomTables(dbUtils){
-        dbUtils.checkCustomTables();
-    }
 }
