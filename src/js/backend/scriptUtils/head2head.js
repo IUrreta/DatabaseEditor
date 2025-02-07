@@ -1,7 +1,6 @@
 import { queryDB } from "../dbManager";
 
 export function fetchHead2Head(driver1ID, driver2ID, year) {
-  console.log(driver1ID, driver2ID, year);
 
   // Helpers para estadísticos:
   const mean = (arr) => {
@@ -29,7 +28,6 @@ export function fetchHead2Head(driver1ID, driver2ID, year) {
       HAVING COUNT(DISTINCT DriverID) = 2
     `, 'allRows') || [];
 
-  console.log(racesBoth);
 
   const raceIDs = racesBoth.map(row => row[0]);
 
@@ -72,7 +70,6 @@ export function fetchHead2Head(driver1ID, driver2ID, year) {
 
   // 3) Iteramos en cada carrera en la que compitieron ambos
   for (const raceID of raceIDs) {
-    console.log(raceID, year, driver1ID, driver2ID);
     const d1_QStage = queryDB(`
         SELECT MAX(QualifyingStage)
         FROM Races_QualifyingResults
@@ -364,7 +361,6 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year) {
   const t2 = teamID2[0];
   const season = year;
 
-  console.log(t1, t2, season);
 
   // 1) Obtenemos todas las carreras de la temporada (Distinct RaceID)
   const races = queryDB(`

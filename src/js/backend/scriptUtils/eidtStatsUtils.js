@@ -32,7 +32,9 @@ export const mentalityOverall = {
 };
 
 // Editar estadísticas de un Staff (driver o staff general)
-export function editStats(driverID, type, stats) {
+export function editStats(driverID, type, stats, retirement, driverNum, wants1) {
+  //creat sttasParasm from stats string to an array
+  const statsParams = stats.split(" ");
   
 
   if (type === "0") {
@@ -46,15 +48,15 @@ export function editStats(driverID, type, stats) {
       queryDB(`
         UPDATE Staff_performanceStats
         SET Val = CASE StatID
-          WHEN 2  THEN ${params[2]}
-          WHEN 3  THEN ${params[3]}
-          WHEN 4  THEN ${params[4]}
-          WHEN 5  THEN ${params[5]}
-          WHEN 6  THEN ${params[6]}
-          WHEN 7  THEN ${params[7]}
-          WHEN 8  THEN ${params[8]}
-          WHEN 9  THEN ${params[9]}
-          WHEN 10 THEN ${params[10]}
+          WHEN 2  THEN ${statsParams[0]}
+          WHEN 3  THEN ${statsParams[1]}
+          WHEN 4  THEN ${statsParams[2]}
+          WHEN 5  THEN ${statsParams[3]}
+          WHEN 6  THEN ${statsParams[4]}
+          WHEN 7  THEN ${statsParams[5]}
+          WHEN 8  THEN ${statsParams[6]}
+          WHEN 9  THEN ${statsParams[7]}
+          WHEN 10 THEN ${statsParams[8]}
           ELSE Val
         END
         WHERE StaffID = ${driverID}
@@ -71,12 +73,12 @@ export function editStats(driverID, type, stats) {
     }
     queryDB(`
       UPDATE Staff_DriverData
-      SET Improvability = ${params[11]}, Aggression = ${params[12]}
+      SET Improvability = ${statsParams[9]}, Aggression = ${statsParams[10]}
       WHERE StaffID = ${driverID}
     `);
     queryDB(`
       UPDATE Staff_GameData
-      SET RetirementAge = ${params[13]}
+      SET RetirementAge = ${retirement}
       WHERE StaffID = ${driverID}
     `);
     const oldNum = queryDB(`
@@ -94,11 +96,11 @@ export function editStats(driverID, type, stats) {
     queryDB(`
       UPDATE Staff_DriverNumbers
       SET CurrentHolder = ${driverID}
-      WHERE Number = ${params[14]}
+      WHERE Number = ${driverNum}
     `);
     queryDB(`
       UPDATE Staff_DriverData
-      SET WantsChampionDriverNumber = ${params[15]}
+      SET WantsChampionDriverNumber = ${wants1}
       WHERE StaffID = ${driverID}
     `);
   }
@@ -106,19 +108,19 @@ export function editStats(driverID, type, stats) {
     queryDB(`
       UPDATE Staff_performanceStats
       SET Val = CASE StatID
-        WHEN 0  THEN ${params[2]}
-        WHEN 1  THEN ${params[3]}
-        WHEN 14 THEN ${params[4]}
-        WHEN 15 THEN ${params[5]}
-        WHEN 16 THEN ${params[6]}
-        WHEN 17 THEN ${params[7]}
+        WHEN 0  THEN ${statsParams[0]}
+        WHEN 1  THEN ${statsParams[1]}
+        WHEN 14 THEN ${statsParams[2]}
+        WHEN 15 THEN ${statsParams[3]}
+        WHEN 16 THEN ${statsParams[4]}
+        WHEN 17 THEN ${statsParams[5]}
         ELSE Val
       END
       WHERE StaffID = ${driverID}
     `);
     queryDB(`
       UPDATE Staff_GameData
-      SET RetirementAge = ${params[params.length - 1]}
+      SET RetirementAge = ${retirement}
       WHERE StaffID = ${driverID}
     `);
   }
@@ -126,16 +128,16 @@ export function editStats(driverID, type, stats) {
     queryDB(`
       UPDATE Staff_performanceStats
       SET Val = CASE StatID
-        WHEN 13 THEN ${params[2]}
-        WHEN 25 THEN ${params[3]}
-        WHEN 43 THEN ${params[4]}
+        WHEN 13 THEN ${statsParams[0]}
+        WHEN 25 THEN ${statsParams[1]}
+        WHEN 43 THEN ${statsParams[2]}
         ELSE Val
       END
       WHERE StaffID = ${driverID}
     `);
     queryDB(`
       UPDATE Staff_GameData
-      SET RetirementAge = ${params[params.length - 1]}
+      SET RetirementAge = ${retirement}
       WHERE StaffID = ${driverID}
     `);
   }
@@ -143,21 +145,21 @@ export function editStats(driverID, type, stats) {
     queryDB(`
       UPDATE Staff_performanceStats
       SET Val = CASE StatID
-        WHEN 19 THEN ${params[2]}
-        WHEN 20 THEN ${params[3]}
-        WHEN 26 THEN ${params[4]}
-        WHEN 27 THEN ${params[5]}
-        WHEN 28 THEN ${params[6]}
-        WHEN 29 THEN ${params[7]}
-        WHEN 30 THEN ${params[8]}
-        WHEN 31 THEN ${params[9]}
+        WHEN 19 THEN ${statsParams[0]}
+        WHEN 20 THEN ${statsParams[1]}
+        WHEN 26 THEN ${statsParams[2]}
+        WHEN 27 THEN ${statsParams[3]}
+        WHEN 28 THEN ${statsParams[4]}
+        WHEN 29 THEN ${statsParams[5]}
+        WHEN 30 THEN ${statsParams[6]}
+        WHEN 31 THEN ${statsParams[7]}
         ELSE Val
       END
       WHERE StaffID = ${driverID}
     `);
     queryDB(`
       UPDATE Staff_GameData
-      SET RetirementAge = ${params[params.length - 1]}
+      SET RetirementAge = ${retirement}
       WHERE StaffID = ${driverID}
     `);
   }
@@ -165,17 +167,17 @@ export function editStats(driverID, type, stats) {
     queryDB(`
       UPDATE Staff_performanceStats
       SET Val = CASE StatID
-        WHEN 11 THEN ${params[2]}
-        WHEN 22 THEN ${params[3]}
-        WHEN 23 THEN ${params[4]}
-        WHEN 24 THEN ${params[5]}
+        WHEN 11 THEN ${statsParams[0]}
+        WHEN 22 THEN ${statsParams[1]}
+        WHEN 23 THEN ${statsParams[2]}
+        WHEN 24 THEN ${statsParams[3]}
         ELSE Val
       END
       WHERE StaffID = ${driverID}
     `);
     queryDB(`
       UPDATE Staff_GameData
-      SET RetirementAge = ${params[params.length - 1]}
+      SET RetirementAge = ${retirement}
       WHERE StaffID = ${driverID}
     `);
   }

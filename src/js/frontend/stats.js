@@ -34,7 +34,6 @@ export function removeStatsDrivers() {
  * @param {Object} driversArray Object with all the drivers that the backend fetched
  */
 export function place_drivers_editStats(driversArray) {
-    console.log(driversArray)
     let divPosition;
     driversArray.forEach((driver) => {
         divPosition = "fulldriverlist"
@@ -42,7 +41,6 @@ export function place_drivers_editStats(driversArray) {
         let newDiv = document.createElement("div");
         let ovrDiv = document.createElement("div");
         let ovrSpan = document.createElement("span");
-        let mentality_ovrSpan = document.createElement("span");
 
         newDiv.className = "col normal-driver";
         newDiv.dataset.driverid = driver[1];
@@ -91,21 +89,10 @@ export function place_drivers_editStats(driversArray) {
             newDiv.dataset.globalMentality = driver["global_mentality"]
         }
         let mentality = driver["global_mentality"]
-        let modifier = getMentalityModifier(mentality);
-        if (modifier > 0) {
-            mentality_ovrSpan.classList.add("mentality-small-ovr-positive")
-        }
-        else if (modifier < 0) {
-            mentality_ovrSpan.classList.add("mentality-small-ovr-negative")
-        }
+
         newDiv.dataset.marketability = driver["marketability"]
         let ovr = calculateOverall(statsString, "driver", mentality)
         ovrSpan.textContent = ovr[0]
-        mentality_ovrSpan.textContent = ""
-        if (ovr[0] !== ovr[1]) {
-            mentality_ovrSpan.textContent = ovr[1]
-        }
-        ovrDiv.appendChild(mentality_ovrSpan)
         ovrDiv.appendChild(ovrSpan)
         ovrDiv.classList.add("bold-font")
         ovrDiv.classList.add("small-ovr")
@@ -121,20 +108,7 @@ export function place_drivers_editStats(driversArray) {
                 statPanelShown = 1
             }
             recalculateOverall()
-            let diff = parseInt(ovr[1]) - parseInt(ovr[0])
-            let mentalitydiff = document.querySelector(".mentality-change-ovr")
-            if (diff > 0) {
-                mentalitydiff.textContent = "+" + diff
-                mentalitydiff.className = "mentality-change-ovr positive"
-            }
-            else if (diff < 0) {
-                mentalitydiff.textContent = diff
-                mentalitydiff.className = "mentality-change-ovr negative"
-            }
-            else {
-                mentalitydiff.textContent = ""
-                mentalitydiff.className = "mentality-change-ovr"
-            }
+
         });
         document.getElementById(divPosition).appendChild(newDiv)
 
@@ -195,7 +169,6 @@ export function place_staff_editStats(staffArray) {
         let newDiv = document.createElement("div");
         let ovrDiv = document.createElement("div");
         let ovrSpan = document.createElement("span")
-        let mentality_ovrSpan = document.createElement("span");
 
 
         newDiv.className = "col normal-driver";
@@ -238,18 +211,7 @@ export function place_staff_editStats(staffArray) {
         let mentality = staff["global_mentality"]
         let ovr = calculateOverall(statsString, "staff", mentality)
         ovrSpan.textContent = ovr[0]
-        mentality_ovrSpan.textContent = ""
-        if (ovr[0] !== ovr[1]) {
-            mentality_ovrSpan.textContent = ovr[1]
-        }
-        ovrDiv.appendChild(mentality_ovrSpan)
-        let modifier = getMentalityModifier(mentality);
-        if (modifier > 0) {
-            mentality_ovrSpan.classList.add("mentality-small-ovr-positive")
-        }
-        else if (modifier < 0) {
-            mentality_ovrSpan.classList.add("mentality-small-ovr-negative")
-        }
+
         ovrDiv.appendChild(ovrSpan)
         ovrDiv.classList.add("bold-font")
         ovrDiv.classList.add("small-ovr")
@@ -265,21 +227,6 @@ export function place_staff_editStats(staffArray) {
                 statPanelShown = 1
             }
             recalculateOverall()
-            let diff = parseInt(ovr[1]) - parseInt(ovr[0])
-            let mentalitydiff = document.querySelector(".mentality-change-ovr")
-            if (diff > 0) {
-                mentalitydiff.textContent = "+" + diff
-                mentalitydiff.classList.add("positive")
-            }
-            else if (diff < 0) {
-                mentalitydiff.textContent = diff
-                mentalitydiff.classList.add("negative")
-            }
-            else {
-                mentalitydiff.textContent = ""
-                mentalitydiff.classList.remove("positive")
-                mentalitydiff.classList.remove("negative")
-            }
         });
 
         document.getElementById(divPosition).appendChild(newDiv)
@@ -312,14 +259,14 @@ function recalculateOverall() {
         document.getElementById("ovrholder").className = "overall-holder bold-font alertNeg";
         setTimeout(() => {
             document.getElementById("ovrholder").className = "overall-holder bold-font"
-        }, 300);
+        }, 150);
     }
     else if (oldovr < ovr) {
         document.getElementById("ovrholder").innerHTML = ovr;
         document.getElementById("ovrholder").className = "overall-holder bold-font alertPos";
         setTimeout(() => {
             document.getElementById("ovrholder").className = "overall-holder bold-font"
-        }, 300);
+        }, 150);
     }
 
 }
@@ -754,26 +701,6 @@ export function manage_stat_bar(element, value) {
     bar.style.width = percentage
 }
 
-export function manage_mentality_modifiers(element, mentality) {
-    let name_stat = element.parentNode.parentNode.querySelector("span.bold-font")
-    let modifier_span = name_stat.querySelector(".mentality-modifier")
-    if (modifier_span) {
-        modifier_span.remove()
-    }
-    let modifier = getMentalityModifier(mentality);
-    let mentality_class, span = "";
-    if (modifier > 0) {
-        mentality_class = "positive"
-        span = "<span class='mentality-modifier positive'> +" + modifier + "</span>"
-    }
-    else if (modifier < 0) {
-        mentality_class = "negative"
-        span = "<span class='mentality-modifier negative'> " + modifier + "</span>"
-    }
-    if (name_stat.textContent !== "GROWTH" && name_stat.textContent !== "AGRESSION") {
-        name_stat.innerHTML = name_stat.textContent + span
-    }
-}
 
 /**
  * Loads the stats into the input numbers
@@ -787,7 +714,6 @@ function load_stats(div) {
         let value = statsArray[index]
         input.value = value
         manage_stat_bar(input, value)
-        manage_mentality_modifiers(input, div.dataset.globalMentality)
     });
     let actualAge = document.querySelector(".actual-age")
     let retirementAge = document.querySelector(".actual-retirement")

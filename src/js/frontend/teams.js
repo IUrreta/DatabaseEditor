@@ -271,7 +271,6 @@ document.querySelector("#staffButton").addEventListener("click", function () {
  * @param {object} teamData info of the team facilities
  */
 export function fillLevels(teamData) {
-    console.log(teamData)
     teamData.slice(0, 15).forEach(function (elem) {
         let num = elem[0];
         let level = num % 10;

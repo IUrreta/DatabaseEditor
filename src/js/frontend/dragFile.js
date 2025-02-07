@@ -31,14 +31,11 @@ dropDiv.addEventListener("drop", async (event) => {
     const file = event.dataTransfer.files[0];
     if (!file) return;
 
-    console.log("Leyendo el archivo:", file.name);
     const { db, metadata } = await analyzeFileToDatabase(file);
 
     setDatabase(db, metadata);
     dbUtils = new DBUtils(queryDB, metadata);
-    console.log("DB y metadata guardados");
 
-    console.log("¡File readed succesfuly!", metadata);
 
     document.getElementById("saveFileDropped").classList.add("completed");
 
@@ -49,7 +46,6 @@ dropDiv.addEventListener("drop", async (event) => {
     const message = { command: 'saveSelected', data: { selectedData: "Hola", prueba2: "Hola mola" } };
     const command = factory.createCommand(message);
 
-    console.log("Command created:", command);
     command.execute();
 
 

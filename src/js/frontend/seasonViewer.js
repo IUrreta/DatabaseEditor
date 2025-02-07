@@ -469,7 +469,6 @@ function reloadTables() {
 }
 
 export function new_load_teams_table(data) {
-    console.log(data)
     let pairTeamPos = data[data.length - 1]
     //create dict with dirst element of pair as key and second as value
     let pairTeamPosDict = {}
@@ -500,8 +499,6 @@ export function new_load_teams_table(data) {
             teamData[team].push([])
         }
     }
-    console.log(engine_names)
-    console.log(engine_allocations)
     for (let team in combined_dict) {
         if (f1_teams.includes(parseInt(team))) {
             let pos = pairTeamPosDict[team]
@@ -515,7 +512,6 @@ export function new_load_teams_table(data) {
 }
 
 function new_addTeam(teamData, name, pos, id) {
-    console.log(id)
     let data = document.querySelector(".teams-table-data")
     let row = document.createElement("div")
     row.classList = "teams-table-row"

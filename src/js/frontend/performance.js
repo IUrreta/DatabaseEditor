@@ -43,7 +43,6 @@ function normalizeData(data) {
 
 
 export function load_performance(teams) {
-    console.log(teams)
     // let teams = normalizeData(teams);
     for (let key in teams) {
         if (teams.hasOwnProperty(key)) {
@@ -246,8 +245,6 @@ export function manage_engineStats(engineData) {
     let customEngines = engineData.filter(function (elem) {
         return elem[0] > 10
     })
-    console.log("official engines", officialEngines)
-    console.log("custom engines", customEngines)
     officialEngines.forEach(function (elem) {
         let engineId = elem[0]
         let engineStats = elem[1];
@@ -538,7 +535,6 @@ function add_n_parts_buttons(loadoutContainer) {
 }
 
 export function load_one_part(data) {
-    console.log(data)
     let key = Object.keys(data)[0]
     let part = document.querySelector(`.part-performance[data-part='${key}']`)
     for (let stat in data[key]) {
@@ -901,7 +897,6 @@ function resetBars() {
 }
 
 function add_custom_engine(name, stats) {
-    console.log(name, stats)
     let generalEngineDiv = document.createElement("div")
     let engineTitle = document.createElement("input")
     engineTitle.type = "text"

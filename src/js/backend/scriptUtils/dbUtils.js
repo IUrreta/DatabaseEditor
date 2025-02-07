@@ -133,7 +133,6 @@ export default class DBUtils {
     const statsIds = [6, 10, 11, 12, 14, 15];
     const enginesList = [];
 
-    console.log("Fetching engines...");
 
     let newEngineIds = this.queryDB(`
       SELECT engineID FROM Custom_Engines_List`, 'allRows');
@@ -157,7 +156,6 @@ export default class DBUtils {
         }
       }
 
-      console.log("ResultDict:", resultDict);
 
       // Obtener valor de ERS
       const ersResult = this.queryDB(`
@@ -711,7 +709,7 @@ export default class DBUtils {
       WHERE RaceFormula = 1
         AND SeasonID = ${yearSelected}
     `, 'allRows') || [];
-  
+
     const seasonResults = [];
     drivers.forEach((row) => {
       const driverID = row[0];
@@ -722,7 +720,7 @@ export default class DBUtils {
     });
     return seasonResults;
   }
-  
+
   fetchTeamsStandings(year) {
     return this.queryDB(`
       SELECT TeamID, Position
@@ -745,7 +743,6 @@ export default class DBUtils {
     for (let driver of drivers) {
       const driverID = driver[0];
       const driverResults = this.fetchOneDriverSeasonResults(driverID, season);
-      console.log(driverResults);
       if (driverResults) {
         results.push(driverResults);
       }
@@ -1190,6 +1187,7 @@ export default class DBUtils {
   checkCustomTables() {
     let createdEnginesList = false;
     let createdEnginesStats = false;
+    let createdEnginesAllocations = false;
 
     const tablesToCheck = [
       {
@@ -1254,15 +1252,17 @@ export default class DBUtils {
         else if (table.name === 'Custom_Engines_Stats') {
           createdEnginesStats = true;
         }
+        else if (table.name === 'Custom_Engine_Allocations') {
+          createdEnginesAllocations = true;
+        }
       }
     });
 
-    if (createdEnginesList || createdEnginesStats) {
-      this.insertDefualtEnginesData();
-    }
+    this.insertDefualtEnginesData(createdEnginesList, createdEnginesStats, createdEnginesAllocations);
+
   }
 
-  insertDefualtEnginesData() {
+  insertDefualtEnginesData(list, stats, allocations) {
     const engines = [
       {
         id: 1,
@@ -1318,40 +1318,46 @@ export default class DBUtils {
       }
     ];
 
-    engines.forEach(engine => {
-      this.queryDB(`
+
+    if (list && stats) {
+      engines.forEach(engine => {
+        this.queryDB(`
         INSERT OR REPLACE INTO Custom_Engines_List (engineId, Name)
         VALUES (${engine.id}, '${engine.name}')
       `);
 
-      engine.stats.forEach(stat => {
-        this.queryDB(`
+        engine.stats.forEach(stat => {
+          this.queryDB(`
           INSERT OR REPLACE INTO Custom_Engines_Stats (engineId, designId, partStat, Value, unitValue)
           VALUES (${engine.id}, ${stat.designId}, ${stat.partStat}, ${stat.value}, ${stat.unitValue})
         `);
+        });
       });
-    });
+    }
 
-    const maxYear = this.queryDB(`SELECT MAX(SeasonID) FROM Parts_TeamHistory`, 'singleValue');
-    const actualEngineAllocations = this.queryDB(`
+    if (allocations) {
+      const maxYear = this.queryDB(`SELECT MAX(SeasonID) FROM Parts_TeamHistory`, 'singleValue');
+      const actualEngineAllocations = this.queryDB(`
       SELECT th.TeamID, em.EngineDesignID
       FROM Parts_TeamHistory th
       JOIN Parts_Enum_EngineManufacturers em
         ON th.EngineManufacturer = em.Value
       WHERE SeasonID = ${maxYear}`,
-      'allRows');
-      
-    actualEngineAllocations.forEach(engine => {
-      this.queryDB(`
+        'allRows');
+
+
+      actualEngineAllocations.forEach(engine => {
+        this.queryDB(`
         INSERT OR REPLACE INTO Custom_Engine_Allocations (teamId, engineId)
         VALUES (${engine[0]}, ${engine[1]})
       `);
-    });
-      
+      });
+    }
+
+
   }
 
   updateCustomEngines(engineData) {
-    console.log("ENGINES DATA: ", engineData);
     for (let engineId in engineData) {
       const nameCapitalized = engineData[engineId].name.charAt(0).toUpperCase() + engineData[engineId].name.slice(1);
       this.queryDB(`INSERT OR REPLACE INTO Custom_Engines_List (engineId, Name) VALUES (${engineId}, '${nameCapitalized}')`);
@@ -1363,13 +1369,11 @@ export default class DBUtils {
             VALUES (${engineId}, ${engineId}, ${stat}, ${value}, ${untiValue})`);
         }
         else if (parseInt(stat) === 18) {
-          console.log(engineId);
           let designId = parseInt(engineId) + 1;
           this.queryDB(`INSERT OR REPLACE INTO Custom_Engines_Stats (engineId, designId, partStat, Value, unitValue)
             VALUES (${engineId}, ${designId}, ${15}, ${value}, ${untiValue})`);
         }
         else if (parseInt(stat) === 19) {
-          console.log(engineId);
           let designId = parseInt(engineId) + 2;
           this.queryDB(`INSERT OR REPLACE INTO Custom_Engines_Stats (engineId, designId, partStat, Value, unitValue)
             VALUES (${engineId}, ${designId}, ${15}, ${value}, ${untiValue})`);

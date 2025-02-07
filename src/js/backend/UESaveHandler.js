@@ -17,12 +17,9 @@ export const parseGvasProps = (Properties) => {
 }
 
 export const analyzeFileToDatabase = async (file) => {
-  console.log("Analyzing file", file);
   if (!window.SQL) return;
-  console.log("SQL is available");
   return new Promise((resolve) => {
     if (file !== undefined) {
-      console.log("FILE IS NOT UNDEFINED");
       let reader = new FileReader();
       reader.onload = async (e) => {
         const serial = new Serializer(Buffer.from(reader.result));
@@ -62,15 +59,10 @@ export const analyzeFileToDatabase = async (file) => {
 
         const compressedData = serial.read(total_size);
         const output = pako.inflate(compressedData);
-        console.log("Tamaño comprimido:", compressedData.length);
-        console.log("Tamaño descomprimido:", output.length);
         const databaseFile = output.slice(0, size_1);
 
-        console.log("Size_1:", size_1, "Size_2:", size_2, "Size_3:", size_3);
-        console.log("Sum of sizes:", size_1 + size_2 + size_3, "Output length:", output.length);
 
         const text = new TextDecoder().decode(databaseFile.slice(0, 16));
-        console.log("Encabezado de la DB:", text); 
 
         // @ts-ignore
 
@@ -103,7 +95,6 @@ export const analyzeFileToDatabase = async (file) => {
         }
 
         if (process.env.NODE_ENV === 'development') {
-          console.log(db, version, gvasMeta, Header, metadata.careerSaveMetadata)
           // saveAs(new Blob([metadata.chunk0], {type: "application/binary"}), "chunk0");
         }
 

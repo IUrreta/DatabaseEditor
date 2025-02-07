@@ -284,7 +284,6 @@ import { queryDB } from '../dbManager.js';
      * (get_unitvalue_from_one_part en Python)
      */
     export function getUnitValueFromOnePart(designId) {
-        console.log("DesignID:", designId);
 
         const partType = queryDB(`
             SELECT PartType
@@ -292,7 +291,6 @@ import { queryDB } from '../dbManager.js';
             WHERE DesignID = ${designId}
         `, 'singleValue');
 
-        console.log("PART type:", partType);
 
         const rows = queryDB(`
             SELECT PartStat, UnitValue
@@ -300,7 +298,6 @@ import { queryDB } from '../dbManager.js';
             WHERE DesignID = ${designId}
         `, 'allRows');
 
-        console.log("ROWS:", rows);
 
         const statsValues = {};
         for (const [stat, uv] of rows) {

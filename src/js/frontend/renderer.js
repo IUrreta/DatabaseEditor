@@ -19,7 +19,7 @@ import {
 import { resetPredict, setMidGrid, setMaxRaces, setRelativeGrid, placeRaces, placeRacesInModal } from './predictions';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
-    typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, manage_mentality_modifiers, listenersStaffGroups
+    typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups
 } from './stats';
 import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs } from './head2head';
 import { CommandFactory } from '../backend/commandFactory';
@@ -302,30 +302,7 @@ function editModeHandler() {
         document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr[1];
     }
     document.querySelector(".clicked").childNodes[1].childNodes[1].textContent = new_ovr[0];
-    if (globalMentality < 2) {
-        document.querySelector(".clicked").childNodes[1].childNodes[0].className = "mentality-small-ovr-positive"
-    }
-    else if (globalMentality > 2) {
-        document.querySelector(".clicked").childNodes[1].childNodes[0].className = "mentality-small-ovr-negative"
-    }
-    let inputArray = document.querySelectorAll(".elegible")
-    inputArray.forEach(function (input, index) {
-        manage_mentality_modifiers(input, mentality_to_global_menatality[globalMentality])
-    })
-    let diff = parseInt(new_ovr[1]) - parseInt(new_ovr[0])
-    let mentalitydiff = document.querySelector(".mentality-change-ovr")
-    if (diff > 0) {
-        mentalitydiff.textContent = "+" + diff
-        mentalitydiff.className = "mentality-change-ovr positive"
-    }
-    else if (diff < 0) {
-        mentalitydiff.textContent = diff
-        mentalitydiff.className = "mentality-change-ovr negative"
-    }
-    else {
-        mentalitydiff.textContent = ""
-        mentalitydiff.className = "mentality-change-ovr"
-    }
+
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     let age = document.querySelector(".actual-age").textContent.split(" ")[1];
     document.querySelector(".clicked").dataset.retirement = retirement;
@@ -405,11 +382,12 @@ function calendarModeHandler() {
 
     dataCodesString = dataCodesString.trim();
     let dataCalendar = {
-        command: "calendar",
         calendarCodes: dataCodesString
     };
 
-    socket.send(JSON.stringify(dataCalendar));
+    const message = { command: 'editCalendar', data: dataCalendar };
+    const command = factory.createCommand(message);
+    command.execute();
 }
 
 function teamsModeHandler() {
@@ -534,7 +512,6 @@ export function updateFront(data) {
     console.log(data)
     let responseTyppe = data.responseMessage
     let message = data.content
-    console.log(message)
     let handler = messageHandlers[responseTyppe];
     if (handler) {
         handler(message);
@@ -617,7 +594,6 @@ const messageHandlers = {
         manage_config(message.slice(1))
     },
     "24 Year": (message) => {
-        console.log(message)
         manage_config(message, true)
     },
     "Performance fetched": (message) => {
@@ -683,7 +659,6 @@ function update_engine_allocations(message) {
  */
 socket.onmessage = (event) => {
     let message = JSON.parse(event.data);
-    console.log(message) //DEBUG
     let handler = messageHandlers[message[0]];
 
     if (handler) {
@@ -784,7 +759,6 @@ function manage_game_year(info) {
 }
 
 function manage_custom_team(nameColor) {
-    console.log("NAME COLOR: ", nameColor)
     if (nameColor[1] !== null) {
         resizeWindowToHeight("11teams")
         custom_team = true
@@ -1320,7 +1294,7 @@ function check_selected() {
             document.getElementById("blockDiv").classList.add("disappear")
             divBlocking = 0;
         }
-    }, 500)
+    }, 300)
 
 }
 

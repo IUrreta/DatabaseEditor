@@ -1,14 +1,12 @@
 import { queryDB } from "../dbManager";
 
 export function fetchTeamData(teamID){
-    console.log(teamID);
     const levCon = queryDB(`
         SELECT BuildingID, DegradationValue
         FROM Buildings_HQ
         WHERE TeamID = ${teamID}
       `, 'allRows') || [];
 
-      console.log(levCon);
       const data = levCon.map(row => [row[0], parseFloat(Number(row[1]).toFixed(2))]);
       if (teamID == "32") data.push(["160", 1]);
     
@@ -86,6 +84,8 @@ export function fetchTeamData(teamID){
       });
 
       const engineId = queryDB(`SELECT engineId FROM Custom_Engine_Allocations WHERE teamId = ${teamID}`, 'singleValue');
+      const allEngines = queryDB(`SELECT * FROM Custom_Engine_Allocations`, 'allRows');
+      console.log(allEngines);
     
       data.push(seasonObj, longTermObj, teamBalance, costCap, confidence, daySeason[1], pitDict, engineId);
       return data;
@@ -147,8 +147,6 @@ export function manageCostCap(teamID, amount) {
 }
 
 export function editTeam(info) {
-  console.log("EDITING TEAM");
-  console.log(info);
   const daySeason = queryDB(`
     SELECT Day, CurrentSeason
     FROM Player_State
@@ -244,7 +242,6 @@ export function manage_engine_change(teamID, engineId) {
   engineStats.forEach(stat => {
     const newStat = newEngineStats.find(newStat => newStat[0] === stat[0]);
     if (newStat) {
-      console.log("updating stat " + stat[0] + " to " + newStat[2]);
       queryDB(`UPDATE Parts_Designs_StatValues SET Value = ${newStat[2]}, UnitValue =  ${newStat[1]} WHERE DesignID = ${oldEngineId} AND PartStat = ${stat[0]}`);
     }
   });
@@ -255,7 +252,7 @@ export function manage_engine_change(teamID, engineId) {
   if (parseInt(engineId) <= 10){
     const year = queryDB(`SELECT CurrentSeason FROM Player_State`, 'singleValue');
     const newEngineManufacturer = queryDB(`SELECT Value FROM Parts_Enum_EngineManufacturers WHERE EngineDesignID = ${engineId}`, 'singleValue');
-    queryDB(`UPDATE Parts_TeamHistory SET EngineManufacturer = ${newEngineManufacturer} WHERE TeamID = ${teamID} AND Season = ${year}`);
+    queryDB(`UPDATE Parts_TeamHistory SET EngineManufacturer = ${newEngineManufacturer} WHERE TeamID = ${teamID} AND SeasonID = ${year}`);
   }
 
   queryDB(`UPDATE Custom_Engine_Allocations SET engineId = ${engineId} WHERE teamId = ${teamID}`);

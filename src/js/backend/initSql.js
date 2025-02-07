@@ -11,5 +11,4 @@ import initSqlJs from 'sql.js';
   // Asigna al objeto global 'window'
   window.SQL = SQL;
 
-  console.log("Se ha asignado SQL a window.SQL");
 })();

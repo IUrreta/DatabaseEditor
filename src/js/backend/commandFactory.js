@@ -10,6 +10,8 @@ import TeamRequestCommand from './commands/teamRequest.js';
 import YearSelectedCommand from './commands/yearSelected.js';
 import EditTeamCommand from './commands/editTeam.js';
 import EditStatsCommand from './commands/editStats.js';
+import { editCalendar } from './scriptUtils/calendarUtils.js';
+import EditCalendarCommand from './commands/editCalendar.js';
 
 export class CommandFactory {
     constructor() {
@@ -21,7 +23,7 @@ export class CommandFactory {
         // autoContract: AutoContractCommand,
         // swap: SwapCommand,
         editStats: EditStatsCommand,
-        // calendar: CalendarCommand,
+        editCalendar: EditCalendarCommand,
         // editContract: EditContractCommand,
         editPerformance: EditPerformanceCommand,
         // editEngine: EditEngineCommand,

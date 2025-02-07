@@ -1000,12 +1000,9 @@ input[type="checkbox"]:checked {
   text-align: left;
   color: var(--white-general);
   font-size: 26px;
-  padding-left: 20px;
-  padding-top: 20px;
   display: flex;
   gap: 10px;
   padding-left: 14px;
-  padding-top: 16px;
   position: relative;
   align-items: center;
   width: 33%;
@@ -1014,8 +1011,7 @@ input[type="checkbox"]:checked {
 .separator-3 {
   width: 3px;
   background-color: var(--separator);
-  height: 100%;
-  margin: 20px 0;
+  height: calc(100% - 22px);
 }
 
 .stats-title .bi-pencil {
@@ -1027,7 +1023,7 @@ input[type="checkbox"]:checked {
   display: flex;
   gap: 25px;
   font-size: 26px;
-  padding-top: 20px;
+  align-items: center;
 }
 
 .text-filter {
@@ -1315,6 +1311,12 @@ input[type="checkbox"]:checked {
   min-height: 71px;
 }
 
+.name-age-and-retired{
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
 #numberName {
   position: relative;
 }
@@ -1332,39 +1334,19 @@ input[type="checkbox"]:checked {
 
 .ovr {
   font-size: 21px;
+  color: var(--disabled-text)
 }
 
 .ovrcombined {
   display: flex;
   width: 116px;
   align-items: baseline;
-  padding-top: 6px;
   justify-content: space-between;
   width: 120px;
   position: relative;
   gap: 5px;
 }
 
-.mentality-change-ovr {
-  position: absolute;
-  top: 13px;
-  right: 27px;
-  font-size: 16px;
-  font-family: "Formula1Bold";
-  width: 24px;
-}
-
-
-
-.mentality-change-ovr.positive,
-.mentality-modifier.positive {
-  color: var(--positive-general);
-}
-
-.mentality-change-ovr.negative,
-.mentality-modifier.negative {
-  color: var(--negative-general);
-}
 
 .overall-holder {
   font-size: 40px;
@@ -5874,7 +5856,6 @@ input.disabled {
   top: -6px;
   width: 39px;
   opacity: 0;
-  background-color: var(--elements-hover);
   color: var(--text-general);
   transition: opacity 0.15s, background-color 0.15s, color 0.15s;
   cursor: pointer;
@@ -6312,10 +6293,11 @@ input.disabled {
 
 .super-license-holder {
   display: flex !important;
-  font-size: 19px;
+  font-size: 16px;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: flex-end;
+  justify-content: center;
+  padding-left: 15px !important;
 }
 
 .name-and-stat {
@@ -6367,9 +6349,7 @@ input.disabled {
   padding-top: 4px;
 }
 
-.one-stat-panel:hover span:not(.mentality-modifier) {
-  color: var(--white-general);
-}
+
 
 .positive {
   color: var(--positive-general);
@@ -8419,13 +8399,7 @@ input::-webkit-inner-spin-button {
   flex-direction: row;
 }
 
-.mentality-changes {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  border-right: 2px solid var(--separator);
-  width: 50%;
-}
+
 
 #customGearButton {
   margin-left: 5px;
@@ -8719,6 +8693,7 @@ span.reduced-weight,
 
 #blockDiv.disappear{
   animation: fadeOut 0.15s forwards;
+  pointer-events: none;
 }
 
 @keyframes fadeOut {

@@ -1122,7 +1122,6 @@ function get_one_driver_points_format(driver, data) {
 }
 
 function load_graphs_data(data) {
-    console.log(data)
     let max_gapPole = 0;
     let max_gapWinner = 0;
     data.forEach(function (driv, index) {
