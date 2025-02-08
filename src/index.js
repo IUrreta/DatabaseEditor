@@ -13,6 +13,7 @@ import './js/frontend/dragFile.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import './styles.css';
 import interact from 'interactjs';
 import Chart from 'chart.js/auto';
 import 'chartjs-plugin-annotation';
