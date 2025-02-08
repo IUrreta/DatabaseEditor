@@ -212,12 +212,12 @@
 
 @font-face {
   font-family: 'Formula1';
-  src: url("../assets/fonts/Formula1-Regular.ttf") format('truetype');
+  src: url("assets/fonts/Formula1-Regular.ttf") format('truetype');
 }
 
 @font-face {
   font-family: 'Formula1Bold';
-  src: url("../assets/fonts/Formula1-Bold.ttf") format('truetype');
+  src: url("assets/fonts/Formula1-Bold.ttf") format('truetype');
 }
 
 .bold-font {
@@ -769,7 +769,7 @@ input[role="switch"]:focus {
 }
 
 input[role="switch"]:not(:checked):focus {
-  --bs-form-switch-bg: url('../assets/images/thumb.svg');
+  --bs-form-switch-bg: url('assets/images/thumb.svg');
 }
 
 input[role="switch"]:checked {
@@ -1681,7 +1681,7 @@ input[type="checkbox"]:checked {
 
 .background {
   background-color: var(--new-primary);
-  background-image: url('../assets/images/background2.svg');
+  background-image: url('assets/images/background2.svg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -6782,9 +6782,9 @@ input.disabled {
 
   background: var(--text-general);
 
-  -webkit-mask: url('../assets/images/logoMod.svg') no-repeat center;
+  -webkit-mask: url('assets/images/logoMod.svg') no-repeat center;
   -webkit-mask-size: contain;
-  mask: url('../assets/images/logoMod.svg') no-repeat center;
+  mask: url('assets/images/logoMod.svg') no-repeat center;
   mask-size: contain;
 
   will-change: transform;
@@ -8732,7 +8732,7 @@ span.reduced-weight,
   overflow: hidden;
   height: 100%;
   background-color: var(--new-primary);
-  background-image: url('../assets/images/background3.svg');
+  background-image: url('assets/images/background3.svg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -9083,7 +9083,7 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
 }
 
 body:has(.active #mod25logo) .background{
-  background-image: url('../assets/images/modback.png');
+  background-image: url('assets/images/modback.png');
 }
 
 .mod-banner{

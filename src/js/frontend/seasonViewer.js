@@ -242,7 +242,7 @@ function manage_teams_table_logos() {
         }
         else if (logo.dataset.teamid === "2") {
             // logo.className = "teams-table-logo-inner mclaren-team-table-logo"
-            logo.src = "../assets/images/mclaren2.png"
+            logo.src = "assets/images/mclaren2.png"
         }
         else if (logo.dataset.teamid === "3") {
             logo.className = "teams-table-logo-inner redbull-team-table-logo"
@@ -256,19 +256,19 @@ function manage_teams_table_logos() {
             }
             else if (alpineReplace === "andretti") {
                 logo.className = "teams-table-logo-inner ferrari-team-table-logo"
-                logo.src = "../assets/images/andretti2.png"
+                logo.src = "assets/images/andretti2.png"
             }
             else if (alpineReplace === "renault") {
                 logo.className = "teams-table-logo-inner ferrari-team-table-logo"
-                logo.src = "../assets/images/renault2.png"
+                logo.src = "assets/images/renault2.png"
             }
             else if (alpineReplace === "lotus") {
-                logo.src = "../assets/images/lotus2.png"
+                logo.src = "assets/images/lotus2.png"
             }
         }
         else if (logo.dataset.teamid === "6") {
             logo.className = "teams-table-logo-inner williams-team-table-logo"
-            logo.src = "../assets/images/williams2.png"
+            logo.src = "assets/images/williams2.png"
         }
         else if (logo.dataset.teamid === "7") {
             logo.className = "teams-table-logo-inner haas-team-table-logo"
@@ -285,14 +285,14 @@ function manage_teams_table_logos() {
             }
             else if (alphaReplace === "toyota") {
                 logo.className = "teams-table-logo-inner toyota-team-table-logo"
-                logo.src = "../assets/images/toyota2.png"
+                logo.src = "assets/images/toyota2.png"
             }
             else if (alphaReplace === "porsche") {
                 logo.className = "teams-table-logo-inner porsche-team-table-logo"
             }
             else if (alphaReplace === "brawn") {
                 logo.className = "teams-table-logo-inner brawn-team-table-logo"
-                logo.src = "../assets/images/brawn2.png"
+                logo.src = "assets/images/brawn2.png"
             }
         }
         else if (logo.dataset.teamid === "9") {
@@ -307,7 +307,7 @@ function manage_teams_table_logos() {
             }
             else if (alfaReplace === "sauber") {
                 logo.className = "teams-table-logo-inner ferrari-team-table-logo"
-                logo.src = "../assets/images/sauber2.png"
+                logo.src = "assets/images/sauber2.png"
             }
         }
         else if (logo.dataset.teamid === "10") {

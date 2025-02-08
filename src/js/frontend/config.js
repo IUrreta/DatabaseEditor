@@ -1,10 +1,10 @@
 // calendar
 export let codes_dict = {
-    "bah0": "../assets/images/bahrain.png","sau0": "../assets/images/saudi.jpg","aus0": "../assets/images/australia.png","aze0": "../assets/images/azerbaiyan.png",
-    "mia0": "../assets/images/usa.png","imo0": "../assets/images/italy.png","mon0": "../assets/images/monaco.png","spa0": "../assets/images/spain.png","can0": "../assets/images/canada.png",
-    "aut0": "../assets/images/austria.png","gbr0": "../assets/images/gbr.png","hun0": "../assets/images/hungry.png","bel0": "../assets/images/balgium.png","ned0": "../assets/images/ned.png",
-    "ita0": "../assets/images/italy.png","jap0": "../assets/images/japan.png","sgp0": "../assets/images/singapore.png","qat0": "../assets/images/qatar.png","usa0": "../assets/images/usa.png","mex0": "../assets/images/mexico.png",
-    "bra0": "../assets/images/brazil.png","veg0": "../assets/images/usa.png","uae0": "../assets/images/uae.png", "chi0": "../assets/images/china.png"
+    "bah0": "assets/images/bahrain.png","sau0": "assets/images/saudi.jpg","aus0": "assets/images/australia.png","aze0": "assets/images/azerbaiyan.png",
+    "mia0": "assets/images/usa.png","imo0": "assets/images/italy.png","mon0": "assets/images/monaco.png","spa0": "assets/images/spain.png","can0": "assets/images/canada.png",
+    "aut0": "assets/images/austria.png","gbr0": "assets/images/gbr.png","hun0": "assets/images/hungry.png","bel0": "assets/images/balgium.png","ned0": "assets/images/ned.png",
+    "ita0": "assets/images/italy.png","jap0": "assets/images/japan.png","sgp0": "assets/images/singapore.png","qat0": "assets/images/qatar.png","usa0": "assets/images/usa.png","mex0": "assets/images/mexico.png",
+    "bra0": "assets/images/brazil.png","veg0": "assets/images/usa.png","uae0": "assets/images/uae.png", "chi0": "assets/images/china.png"
 }
 export let countries_dict = {
     "bah0": "Bahrain","sau0": "Saudi Arabia","aus0": "Australia","aze0": "Azerbaijan",
@@ -138,17 +138,17 @@ export const invertedRacesMap = { "bah0": 2, "aus0": 1, "sau0": 11, "imo0": 24, 
 export const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT", 3: "CHI" };
 export const teams_full_name_dict = { 'FERRARI': 1, 'MCLAREN': 2, 'RED BULL': 3, 'MERCEDES': 4, 'ALPINE': 5, 'WILLIAMS': 6, 'HAAS': 7, 'ALPHA TAURI': 8, 'ALFA ROMEO': 9, 'ASTON MARTIN': 10 }
 export let logos_disc = {
-    1: '../assets/images/ferrari.png',
-    2: '../assets/images/mclaren.png',
-    3: '../assets/images/redbull.png',
-    4: '../assets/images/mercedes.png',
-    5: '../assets/images/alpine.png',
-    6: '../assets/images/williams.png',
-    7: '../assets/images/haas.png',
-    8: '../assets/images/alphatauri.png',
-    9: '../assets/images/alfaromeo.png',
-    10: '../assets/images/astonmartin.png',
-    32: '../assets/images/placeholder.png'
+    1: 'assets/images/ferrari.png',
+    2: 'assets/images/mclaren.png',
+    3: 'assets/images/redbull.png',
+    4: 'assets/images/mercedes.png',
+    5: 'assets/images/alpine.png',
+    6: 'assets/images/williams.png',
+    7: 'assets/images/haas.png',
+    8: 'assets/images/alphatauri.png',
+    9: 'assets/images/alfaromeo.png',
+    10: 'assets/images/astonmartin.png',
+    32: 'assets/images/placeholder.png'
 };
 export const points_race = {
     1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1,
@@ -197,7 +197,7 @@ export const f1_teams = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32]
 export const f2_teams = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 export const f3_teams = [22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
 export const staff_positions = { 1: "technical-chief", 2: "race-engineer", 3: "head-aero", 4: "sporting-director" }
-export const staff_pics = { 1: "../assets/images/technicalChief.png", 2: "../assets/images/raceEngineer.png", 3: "../assets/images/headAero.png", 4: "../assets/images/sportingDirector.png" }
+export const staff_pics = { 1: "assets/images/technicalChief.png", 2: "assets/images/raceEngineer.png", 3: "assets/images/headAero.png", 4: "assets/images/sportingDirector.png" }
 export let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 32: "ct", 33: "f2", 34: "f3" }
 export let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10, 'custom': 32 }
 
