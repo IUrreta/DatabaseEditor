@@ -1,7 +1,7 @@
 // dragDrop.js
 import { analyzeFileToDatabase } from "../backend/UESaveHandler";
 import { setDatabase, queryDB } from "../backend/dbManager.js";
-import { factory } from "./renderer.js";
+import { factory, setSaveName } from "./renderer.js";
 
 let carAnalysisUtils = null;
 export const dbWorker = new Worker(new URL('../backend/commands/worker.js', import.meta.url));
@@ -28,6 +28,8 @@ dropDiv.addEventListener("drop", async (event) => {
     dropDiv.classList.remove("drag-over");
 
     const file = event.dataTransfer.files[0];
+    console.log(file)
+    setSaveName(file.name);
     if (!file) return;
 
 

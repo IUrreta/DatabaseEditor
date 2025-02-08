@@ -8824,6 +8824,7 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
   display: flex;
   flex-direction: column;
   padding-left: 35%;
+  transition: all 0.15s;
 }
 
 .list-item{
@@ -9138,7 +9139,7 @@ body:has(.active #mod25logo) .mod-name img{
   position: relative;
   opacity: 0;
   will-change: opacity;
-  transform: translateY(30px);
+  transform: translateY(20px);
 }
 
 .small-rectangle img, .high-rectangle img{
@@ -9148,7 +9149,7 @@ body:has(.active #mod25logo) .mod-name img{
   left: 0;
   opacity: 0;
   z-index: 20;
-  transform: translateY(30px);
+  transform: translateY(20px);
 }
 
 .high-rectangle{
@@ -9164,14 +9165,14 @@ body:has(.active #mod25logo) .small-rectangle, body:has(.active #mod25logo) .hig
 body:has(.active #mod25logo) .small-rectangle img, body:has(.active #mod25logo) .high-rectangle img,
 body:has(.active #mod25logo) .mod-drivers .mv-gradient, body:has(.active #mod25logo) .mod-drivers .lh-gradient, 
 body:has(.active #mod25logo) .mod-drivers .ka-gradient{
-  animation: rectangle-appear 0.6s forwards;
-  animation-delay: calc(var(--order) * 0.1s);
+  animation: rectangle-appear 0.5s forwards;
+  animation-delay: calc(var(--order) * 0.08s);
 }
 
 @keyframes rectangle-appear{
   0%{
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   100%{
     opacity: 1;
@@ -9243,18 +9244,19 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient{
   justify-content: center;
 }
 
-.mod-creators span{
+.mod-creators a{
   text-transform: uppercase;
   font-size: 14px;
   color: var(--text-general);
   text-shadow: none;
+  text-decoration: none;
   cursor: pointer;
   opacity: 0;
   transition: color 0.15s, text-shadow 0.15s;
   position: relative;
 }
 
-.mod-creators span::before{
+.mod-creators a::before{
   color: white;
   text-shadow: 0 0 5px white;
   opacity: 0;
@@ -9264,45 +9266,45 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient{
   width: 100%;
 }
 
-.mod-creators span.littleonion::before{
+.mod-creators a.littleonion::before{
   content: 'LITTLEONION';
 }
 
-.mod-creators span.bonnex::before{
+.mod-creators a.bonnex::before{
   content: 'BONNEX';
 }
 
-.mod-creators span.grzelu::before{
+.mod-creators a.grzelu::before{
   content: 'GRZELU';
 }
 
-.mod-creators span.thatgingerdude::before{
+.mod-creators a.thatgingerdude::before{
   content: 'THATGINGERDUDE';
 }
 
-.mod-creators span.n4x::before{
-  content: 'N5X';
+.mod-creators a.n4x::before{
+  content: 'N4X';
 }
 
-.mod-creators span.w1echuz::before{
+.mod-creators a.w1echuz::before{
   content: 'W1ECHUZ';
 }
 
 
 
 
-.mod-creators span:hover{
+.mod-creators a:hover{
   color: white;
   text-shadow: 0 0 5px white;
 }
 
-body:has(.active #mod25logo) .mod-creators span{
+body:has(.active #mod25logo) .mod-creators a{
   animation: creator-appear 0.6s forwards;
-  animation-delay: calc(var(--order) * 0.1s);
+  animation-delay: calc(var(--order) * 0.05s);
   
 }
 
-body:has(.active #mod25logo) .mod-creators span::before{
+body:has(.active #mod25logo) .mod-creators a::before{
   animation: before-appear 0.6s;
   animation-delay: calc(var(--order) * 0.10s);
 }
@@ -9355,5 +9357,5 @@ body:has(.active #mod25logo) .mod-creators span::before{
 
 body:has(.active #mod25logo) .creator-separator{
   animation: separator-appear 0.6s forwards;
-  animation-delay: calc(var(--order) * 0.1s);
+  animation-delay: calc(var(--order) * 0.05s);
 }

@@ -314,7 +314,7 @@ function manage_teams_table_logos() {
             logo.className = "teams-table-logo-inner aston-team-table-logo"
         }
         else if (logo.dataset.teamid === "32") {
-            logo.className = "teams-table-logo-inner custom-team-table-logo"
+            logo.className = "teams-table-logo-inner custom-team-table-logo custom-replace"
         }
     })
 }
@@ -457,7 +457,7 @@ export function update_logo(team, logo, newTeam) {
     }
 }
 
-function reloadTables() {
+export function reloadTables() {
     let datazone = document.querySelector(".drivers-table-data")
     //if not empty
     if (datazone.innerHTML !== "") {
@@ -688,10 +688,13 @@ function new_addDriver(driver, races_done, odd) {
     if (driver[1] === 10 || driver[1] === 32) {
         logo.classList.add("logo-up-down-little")
     }
+    if (driver[1] === 32) {
+        logo.classList.add("custom-replace")
+    }
     logoDiv.classList.add(team_dict[driver[1]] + "hoverback")
     logo.setAttribute("src", logos_disc[driver[1]])
     logoDiv.appendChild(logo)
-    row.appendChild(logoDiv)
+    row.appendChil>d(logoDiv)
     row.appendChild(nameDiv)
     let driverpoints = 0
     races_ids.forEach(function (raceid) {

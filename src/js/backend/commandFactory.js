@@ -13,6 +13,7 @@ import EditStatsCommand from './commands/editStats.js';
 import EditCalendarCommand from './commands/editCalendar.js';
 import EditContractCommand from './commands/editContract.js';
 import EditEngineCommand from './commands/editEngine.js';
+import ConfigUpdateCommand from './commands/configUpdate.js';
 
 export class CommandFactory {
     constructor() {
@@ -33,7 +34,7 @@ export class CommandFactory {
         configuredH2H: ConfiguredH2HCommand,
         teamRequest: TeamRequestCommand,
         editTeam: EditTeamCommand,
-        // configUpdate: ConfigUpdateCommand,
+        configUpdate: ConfigUpdateCommand,
         performanceRequest: PerformanceRequestCommand,
         // fitParts: FitPartsCommand,
         partRequest: PartRequestCommand,

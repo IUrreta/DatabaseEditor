@@ -2,10 +2,10 @@ import {
   fetchSeasonResults, fetchEventsFrom, fetchTeamsStandings,
   fetchDrivers, fetchStaff, fetchEngines, fetchCalendar, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContract,
-  editEngines
+  editEngines, updateCustomConfig, fetchCustomConfig
 } from "../scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "../scriptUtils/carAnalysisUtils"
-import { setDatabase } from "../dbManager";
+import { setDatabase, getMetadata, getDatabase } from "../dbManager";
 import { fetchHead2Head, fetchHead2HeadTeam } from "../scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "../scriptUtils/editTeamUtils";
 import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart } from "../scriptUtils/carAnalysisUtils";
@@ -13,7 +13,7 @@ import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "../scriptUtils/eidtStatsUtils";
 import { editContract, futureContract } from "../scriptUtils/transferUtils"
 import { editCalendar } from "../scriptUtils/calendarUtils";
-import { analyzeFileToDatabase } from "../UESaveHandler";
+import { analyzeFileToDatabase, repack } from "../UESaveHandler";
 
 import initSqlJs from 'sql.js';
 
@@ -28,9 +28,17 @@ const workerCommands = {
 
     const { db, metadata } = await analyzeFileToDatabase(data.file, SQL);
 
-    setDatabase(db);
+    setDatabase(db, metadata);
 
     postMessage({ responseMessage: "Database loaded" });
+  },
+  exportDB: async (data, postMessage) => {
+    const db = getDatabase();
+    const metadata = getMetadata();
+
+    const result = repack(db, metadata);
+    
+    postMessage({ responseMessage: "Database exported", content: result });
   },
 
   yearSelected: (year, postMessage) => {
@@ -45,10 +53,12 @@ const workerCommands = {
   },
 
   saveSelected: (data, postMessage) => {
-    checkCustomTables();
+    
 
     const yearData = checkYearSave();
     postMessage({ responseMessage: "Game Year", content: yearData });
+
+    checkCustomTables(yearData[0]);
 
     if (yearData[1] !== null) {
       setGlobals({ createTeam: true });
@@ -64,6 +74,9 @@ const workerCommands = {
 
     const staff = fetchStaff(yearData[0]);
     postMessage({ responseMessage: "Staff fetched", content: staff });
+
+    const customConfig = fetchCustomConfig();
+    postMessage({ responseMessage: "Config", content: customConfig });
 
     const engines = fetchEngines();
     postMessage({ responseMessage: "Engines fetched", content: engines });
@@ -225,6 +238,10 @@ const workerCommands = {
     editCalendar(data.calendarCodes, year);
     postMessage({ responseMessage: "Calendar updated" });
   },
+  configUpdate(data, postMessage) {
+    updateCustomConfig(data);
+    postMessage({ responseMessage: "Config updated" });
+  }
 };
 
 

@@ -3,7 +3,7 @@ import { marked } from 'marked';
 import { resetTeamEditing, fillLevels, longTermObj, originalCostCap, gather_team_data, gather_pit_crew, teamCod } from './teams';
 import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
-    new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName
+    new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict } from './config';
 import {
@@ -23,8 +23,7 @@ import {
 } from './stats';
 import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs } from './head2head';
 import { CommandFactory } from '../backend/commandFactory';
-import { repack } from '../backend/UESaveHandler';
-import { getDatabase, getMetadata } from '../backend/dbManager';
+import { dbWorker } from './dragFile';
 
 
 const names_configs = {
@@ -90,6 +89,7 @@ const logButton = document.getElementById("logFileButton");
 
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
+const fileInput = document.getElementById('fileInput');
 const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 let difficulty_dict = {
     "-2": "Custom",
@@ -126,6 +126,8 @@ let latestTag;
 let isSaveSelected = 0;
 let scriptSelected = 0;
 let divBlocking = 1;
+let saveName;
+let tempImageData = null;
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
@@ -150,7 +152,9 @@ socket.onopen = () => {
 
 };
 
-
+export function setSaveName(name) {
+    saveName = name;
+}
 
 
 /**
@@ -594,7 +598,7 @@ const messageHandlers = {
         manageProgress(message.slice(1))
     },
     "Config": (message) => {
-        manage_config(message.slice(1))
+        manage_config(message)
     },
     "24 Year": (message) => {
         manage_config(message, true)
@@ -828,10 +832,13 @@ selectImageButton.addEventListener('click', () => {
 // Función para manejar la selección de archivo
 fileInput.addEventListener('change', (event) => {
     let file = event.target.files[0];
-    if (file) {
-        customIconPath = `../assets/custom/${file.name}`;
-    }
-    document.querySelector(".logo-preview").src = customIconPath
+    const reader = new FileReader();
+    reader.onload = function () {
+        tempImageData = reader.result;
+
+        document.querySelector(".logo-preview").src = reader.result;
+    };
+    reader.readAsDataURL(file);
 });
 
 function replace_custom_team_logo(path) {
@@ -840,7 +847,6 @@ function replace_custom_team_logo(path) {
         elem.src = path
     })
     document.querySelector(".logo-preview").src = path
-    document.getElementById("selectImage").innerText = path.split("/").pop()
 }
 
 
@@ -863,6 +869,7 @@ document.querySelector(".gear-container").addEventListener("click", function () 
 })
 
 function manage_config(info, year_config = false) {
+    console.log(info)
     document.querySelector(".bi-gear").classList.remove("hidden")
     configCopy = info
     manage_config_content(info, year_config)
@@ -881,9 +888,10 @@ function replace_all_teams(info) {
 function manage_config_content(info, year_config = false) {
     replace_all_teams(info)
     if (!year_config) {
-        if (info["icon"]) {
-            replace_custom_team_logo(info["icon"])
-            customIconPath = info["icon"]
+        // get `${saveName}_image` from localStorage and if it exists, set the src of the image to it
+        let image = localStorage.getItem(`${saveName}_image`);
+        if (image) {
+            replace_custom_team_logo(image);
         }
         if (info["primaryColor"]) {
             replace_custom_team_color(info["primaryColor"], info["secondaryColor"])
@@ -904,7 +912,7 @@ function manage_config_content(info, year_config = false) {
         update_mentality_span(info["mentalityFrozen"])
         let difficultySlider = document.getElementById("difficultySlider")
         difficultySlider.value = info["difficulty"]
-        update_difficulty_span(info["difficulty"])
+        // update_difficulty_span(info["difficulty"])
         if (info["difficulty"] === -2) { //custom difficulty
             load_difficulty_warnings(info["triggerList"])
         }
@@ -1217,11 +1225,9 @@ document.querySelectorAll(".team-change-button").forEach(function (elem) {
 })
 
 document.querySelector("#configDetailsButton").addEventListener("click", function () {
-    save = document.querySelector("#saveSelector").textContent
-    save = save.slice(0, -4)
-    alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
-    alpine = document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value
-    alfa = document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value
+    let alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
+    let alpine = document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value
+    let alfa = document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value
     let mentalityFrozen = 0;
     if (document.getElementById("freezeMentalityToggle").checked) {
         mentalityFrozen = 1;
@@ -1246,8 +1252,6 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         triggerList[id] = elem.classList && (elem.classList.contains("d-none") || elem.classList.contains("disabled")) ? -1 : inverted_difficulty_dict[elem.className.split(" ")[1]];
     })
     let data = {
-        command: "configUpdate",
-        save: save,
         alphatauri: alphatauri,
         alpine: alpine,
         alfa: alfa,
@@ -1257,25 +1261,39 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         disabled: disabledList,
         triggerList: triggerList
     }
-    if (customIconPath !== null) {
-        data["icon"] = customIconPath
-        replace_custom_team_logo(customIconPath);
-    }
     if (custom_team) {
         data["primaryColor"] = document.getElementById("primarySelector").value
         data["secondaryColor"] = document.getElementById("secondarySelector").value
         replace_custom_team_color(data["primaryColor"], data["secondaryColor"])
     }
-    socket.send(JSON.stringify(data))
-    info = { teams: { alphatauri: alphatauri, alpine: alpine, alfa: alfa } }
+    const message = { command: 'configUpdate', data: data };
+    const command = factory.createCommand(message);
+    command.execute();
+    let info = { teams: { alphatauri: alphatauri, alpine: alpine, alfa: alfa } }
     replace_all_teams(info)
     reloadTables()
+    if (tempImageData) {
+        localStorage.setItem(`${saveName}_image`, tempImageData);
+    }
+    replace_custom_team_logo(document.querySelector(".logo-preview").src)
 })
 
 document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", function () {
-    const db = getDatabase();
-    const metadata = getMetadata();
-    repack(db, metadata);
+    dbWorker.postMessage({
+        command: 'exportDB',
+        data: {}
+    });
+
+    dbWorker.onmessage = (msg) => {
+        const finalData = msg.data.content.finalData;
+        const metadata = msg.data.content.metadata;
+
+        console.log(msg.data)
+        console.log(finalData)
+        console.log(metadata)
+
+        saveAs(new Blob([finalData], { type: "application/binary" }), metadata.filename);
+    };
 })
 
 
@@ -1287,7 +1305,7 @@ function check_selected() {
     if (scriptSelected === 1) {
         document.getElementById("scriptSelected").classList.add("completed")
     }
-    else{
+    else {
         document.getElementById("scriptSelected").classList.remove("completed")
     }
     setTimeout(function () {

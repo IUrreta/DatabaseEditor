@@ -20,7 +20,7 @@ const autoContractToggle = document.getElementById("autoContractToggle")
 const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
 
 
-const fileInput = document.getElementById('fileInput');
+
 
 
 let originalParent;

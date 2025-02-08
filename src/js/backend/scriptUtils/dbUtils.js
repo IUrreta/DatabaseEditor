@@ -1177,10 +1177,11 @@ export function fetchDriverContract(id) {
   return [currentContract, futureContract, daySeason ? daySeason[1] : null];
 }
 
-export function checkCustomTables() {
+export function checkCustomTables(year) {
   let createdEnginesList = false;
   let createdEnginesStats = false;
   let createdEnginesAllocations = false;
+  let createdCustomSaveConfig = false;
 
   const tablesToCheck = [
     {
@@ -1248,14 +1249,17 @@ export function checkCustomTables() {
       else if (table.name === 'Custom_Engine_Allocations') {
         createdEnginesAllocations = true;
       }
+      else if (table.name === 'Custom_Save_Config') {
+        createdCustomSaveConfig = true;
+      }
     }
   });
 
-  insertDefualtEnginesData(createdEnginesList, createdEnginesStats, createdEnginesAllocations);
+  insertDefualtEnginesData(createdEnginesList, createdEnginesStats, createdEnginesAllocations, createdCustomSaveConfig, year);
 
 }
 
-export function insertDefualtEnginesData(list, stats, allocations) {
+export function insertDefualtEnginesData(list, stats, allocations, customSave, year) {
   const engines = [
     {
       id: 1,
@@ -1310,6 +1314,28 @@ export function insertDefualtEnginesData(list, stats, allocations) {
       ]
     }
   ];
+
+  const teams = {
+    alphatauri : {
+      23: "alphatauri",
+      24: "visarb"
+    },
+    alfa : {
+      23: "alfa",
+      24: "stake"
+    },
+    alpine: {
+      23: "alpine",
+      24: "alpine"
+    }
+  }
+
+  if (customSave) {
+    for (let key in teams){
+      const newTeam = teams[key][year];
+      queryDB(`INSERT OR REPLACE INTO Custom_Save_Config (key, value) VALUES ('${key}', '${newTeam}')`);
+    }
+  }
 
 
   if (list && stats) {
@@ -1423,5 +1449,64 @@ export function updateTeamsSuppliedByEngine(engineId, stats) {
     queryDB(`UPDATE Parts_Designs_StatValues SET Value = ${valueERS}, UnitValue = ${unitValueERS} WHERE DesignID = ${teamERSId} AND PartStat = ${15}`);
     queryDB(`UPDATE Parts_Designs_StatValues SET Value = ${valueGearbox}, UnitValue = ${unitValueGearbox} WHERE DesignID = ${teamGearboxId} AND PartStat = ${15}`);
   }
+
+
 }
 
+export function updateCustomConfig(data){
+  console.log(data)
+  const alfaRomeo = data.alfa;
+  const alphaTauri = data.alphatauri;
+  const alpine = data.alpine;
+  const primaryColor = data.primaryColor;
+  const secondaryColor = data.secondaryColor;
+
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('alfa', '${alfaRomeo}')
+  `);
+  
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('alphatauri', '${alphaTauri}')
+  `);
+  
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('alpine', '${alpine}')
+  `);
+  
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('primaryColor', '${primaryColor}')
+  `);
+  
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('secondaryColor', '${secondaryColor}')
+  `);
+    
+}
+
+export function fetchCustomConfig() {
+  const rows = queryDB(`SELECT key, value FROM Custom_Save_Config`, 'allRows') || [];
+  const config = {
+    teams: {},
+    primaryColor: null,
+    secondaryColor: null
+  };
+
+  rows.forEach(row => {
+    const key = row[0];
+    const value = row[1];
+    if (key === 'alphatauri' || key === 'alpine' || key === 'alfa') {
+      config.teams[key] = value;
+    } else if (key === 'primaryColor') {
+      config.primaryColor = value;
+    } else if (key === 'secondaryColor') {
+      config.secondaryColor = value;
+    }
+  });
+
+  return config;
+}

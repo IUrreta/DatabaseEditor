@@ -136,6 +136,10 @@ export const repack = (db, metadata, overwrite = false) => {
     finalData.writeInt32LE(s2, meta_length + 12);
     finalData.set(compressed, meta_length + 16);
 
+    console.log("Repacked", finalData);
+
+    return { finalData, metadata };
+
     saveAs(new Blob([finalData], {type: "application/binary"}), metadata.filename);
     
   } else {
