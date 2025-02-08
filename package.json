@@ -29,7 +29,6 @@
     "sql.js": "^1.12.0"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
     "electron": "^31.1.0",
     "style-loader": "^4.0.0",

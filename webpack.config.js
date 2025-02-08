@@ -1,5 +1,4 @@
 const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',  // o 'production' para el build final
@@ -23,15 +22,6 @@ module.exports = {
       "crypto": false,
     },
   },
-
-  plugins: [
-    // Otras configuraciones, como HtmlWebpackPlugin, etc.
-    new CopyWebpackPlugin({
-      patterns: [
-        { from: 'assets', to: 'assets' } // Esto copia toda la carpeta 'assets' a 'dist/assets'
-      ]
-    })
-  ],
 
   module: {
     rules: [

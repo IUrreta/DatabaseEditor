@@ -769,7 +769,7 @@ input[role="switch"]:focus {
 }
 
 input[role="switch"]:not(:checked):focus {
-  --bs-form-switch-bg: url('../assets/images/thumb.svg');
+  --bs-form-switch-bg: url('../../../../assets/images/thumb.svg');
 }
 
 input[role="switch"]:checked {
