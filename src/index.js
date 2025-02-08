@@ -9,11 +9,3 @@ import './js/frontend/head2head.js';
 import './js/frontend/teams.js';
 import './js/frontend/predictions.js';
 import './js/frontend/dragFile.js';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap-icons/font/bootstrap-icons.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import interact from 'interactjs';
-import Chart from 'chart.js/auto';
-import 'chartjs-plugin-annotation';
-import 'chartjs-plugin-datalabels';

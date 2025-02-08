@@ -32,14 +32,6 @@ module.exports = {
           loader: 'babel-loader',
         },
       },
-      {
-        test: /\.css$/i,        // Para archivos CSS
-        use: ['style-loader', 'css-loader'],
-      },
-      {
-        test: /\.(woff(2)?|eot|ttf|otf|svg)$/,  // Para fuentes y otros archivos de fuente
-        type: 'asset/resource',
-      },
     ],
   },
 };
