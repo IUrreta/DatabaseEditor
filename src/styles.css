@@ -43,7 +43,9 @@
   --modal-warning-text: #f8bbbb;
   --engine-table-name: #878787;
   --engine-table-name-hover: #575757;
-  --support-me: #fdee15;
+  --support-me: #f5e946;
+  --twitter: #51afe9;
+  --reddit: #f87444;
   --custom-dif: #52ebbd;
 
   --mentality-enthusiastic: #c055e3;
@@ -556,12 +558,12 @@ body {
 }
 
 a.bi-reddit:hover {
-  color: #fc6e28;
+  color: var(--reddit);
 }
 
 a.bi-twitter-x:hover,
 #byname:hover {
-  color: #2ca4ee;
+  color: var(--twitter);
 }
 
 a.bi-cup-hot-fill:hover {
@@ -569,11 +571,11 @@ a.bi-cup-hot-fill:hover {
 }
 
 a.bi-linkedin:hover {
-  color: var(--text-selected-secondary);
+  color: var(--new-secondary);
 }
 
 a.bi-github:hover {
-  color: var(--text-selected);
+  color: var(--new-primary);
 }
 
 i.bi-file-text:hover {
@@ -937,6 +939,10 @@ input[type="checkbox"]:checked {
   border: none !important;
   box-shadow: 0 2px 6px 1px black;
   margin-top: 1px !important;
+}
+
+.dropdown-menu .dropdown-item{
+  cursor: pointer;
 }
 
 .dropdown-menu a {
@@ -1700,7 +1706,16 @@ input[type="checkbox"]:checked {
   display: flex;
   width: 100%;
   transition: opacity 0.15s;
+  position: absolute;
+  top: 0;
+  left: 0;
   /* overflow-x: hidden; */
+}
+
+.script-view.hide {
+  opacity: 0;
+  pointer-events: none;
+  visibility: none;
 }
 
 
@@ -2005,6 +2020,10 @@ input[type="checkbox"]:checked {
 #addTrackMenu::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
+}
+
+.nav-item{
+  cursor: pointer;
 }
 
 .menu-race {
@@ -5285,6 +5304,7 @@ input.disabled {
   flex-direction: row;
   gap: 8px;
   padding: 10px;
+  cursor: pointer;
 }
 
 .toolbar-logo {
@@ -6747,6 +6767,12 @@ input.disabled {
   transform: scale(1.6);
 }
 
+.active #mod25logo, #mod25logo:hover{
+  background: linear-gradient(to right, var(--new-primary), var(--text-general), var(--new-primary));
+  background-size: 200% 200%;
+  animation: gradient-move-title 5s linear infinite;
+}
+
 
 #mod25logo{
   height: 40px;
@@ -6754,9 +6780,7 @@ input.disabled {
   transition: transform 0.15s ease; /* Solo transiciona transform */
   cursor: pointer;
 
-  background: linear-gradient(to right, var(--new-primary), var(--text-general), var(--new-primary));
-  background-size: 200% 200%;
-  animation: gradient-move-title 5s linear infinite;
+  background: var(--text-general);
 
   -webkit-mask: url('../assets/images/logoMod.svg') no-repeat center;
   -webkit-mask-size: contain;
@@ -8715,6 +8739,10 @@ span.reduced-weight,
   height: 100%;
   margin: 0;
   width: 100.2%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
 }
 
 #blockDiv.disappear{
@@ -8742,10 +8770,36 @@ span.reduced-weight,
   align-items: center;
   gap: 20px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  margin-bottom: 10%;
   opacity: 0;
   animation: fadeIn 0.5s 0.2s forwards;
   transform: translateY(50px);
+}
+
+body:has(#blockDiv:not(.disappear)) .footer .socials {
+  opacity: 0;
+}
+
+.socials-box{
+  background-color: var(--superficials);
+  border-radius: 20px;
+  padding: 15px 10px;
+  min-width: 80%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  opacity: 0;
+  animation: fadeIn 0.5s 0.2s forwards;
+  transform: translateY(50px);
+  justify-content: space-around;
+}
+
+.socials-box a{
+  color: var(--text);
+  font-size: 22px;
+  text-decoration: none;
+  transition: color 0.15s;
 }
 
 @keyframes fadeIn {
@@ -9025,4 +9079,281 @@ span.reduced-weight,
   100% {
     clip: rect(32px, 9999px, 29px, 0);
   }
+}
+
+body:has(.active #mod25logo) .background{
+  background-image: url('../assets/images/modback.png');
+}
+
+.mod-banner{
+  display: flex;
+  flex-direction: row;
+  gap: 60px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 60px 0;
+  scale: 1.1;
+}
+
+.mod-name img{
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transform: translateY(-40px);
+  opacity: 0;
+}
+
+body:has(.active #mod25logo) .mod-name img{
+  animation: logo-appear 0.6s forwards;
+}
+
+@keyframes logo-appear{
+  0%{
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  100%{
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mod-drivers{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  position: relative;
+  overflow-x: clip;
+}
+
+.small-rectangle{
+  width: 130px;
+  height: 100px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  position: relative;
+  opacity: 0;
+  will-change: opacity;
+  transform: translateY(30px);
+}
+
+.small-rectangle img, .high-rectangle img{
+  width: 130px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  z-index: 20;
+  transform: translateY(30px);
+}
+
+.high-rectangle{
+  width: 130px;
+  height: 150px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  position: relative;
+  opacity: 0;
+}
+
+body:has(.active #mod25logo) .small-rectangle, body:has(.active #mod25logo) .high-rectangle,
+body:has(.active #mod25logo) .small-rectangle img, body:has(.active #mod25logo) .high-rectangle img,
+body:has(.active #mod25logo) .mod-drivers .mv-gradient, body:has(.active #mod25logo) .mod-drivers .lh-gradient, 
+body:has(.active #mod25logo) .mod-drivers .ka-gradient{
+  animation: rectangle-appear 0.6s forwards;
+  animation-delay: calc(var(--order) * 0.1s);
+}
+
+@keyframes rectangle-appear{
+  0%{
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100%{
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ka-rectangle{
+  background: linear-gradient(to top, #41ffdb, #008e7f);
+}
+
+.ka-rectangle img{
+  left: -2px;
+}
+
+.lh-rectangle img{
+  left: 1px;
+}
+
+.ka-gradient{
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 82px;
+  width: 107%;
+  height: 126px;
+  background: radial-gradient(circle at center bottom, #41ffdb 6%, transparent 51%);
+  z-index: -1;
+  opacity: 0;
+}
+
+.lh-gradient{
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: 82px;
+  width: 107%;
+  height: 126px;
+  background: radial-gradient(circle at center bottom, #ff1500 6%, transparent 51%);
+  z-index: -1;
+  opacity: 0;
+}
+
+.mv-gradient{
+  content: '';
+  position: absolute;
+  top: -43px;
+  right: 0%;
+  width: 100%;
+  height: 112px;
+  background: radial-gradient(circle at center bottom, #0014aa 14%, transparent 51%);
+  z-index: -1;
+  opacity: 0;
+}
+
+.mv-rectangle{
+  background: linear-gradient(to top, #0014aa, #06093a);
+}
+
+.lh-rectangle{
+  background: linear-gradient(to top, #ff1500, #530000);
+}
+
+.mod-creators{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.mod-creators span{
+  text-transform: uppercase;
+  font-size: 14px;
+  color: var(--text-general);
+  text-shadow: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: color 0.15s, text-shadow 0.15s;
+  position: relative;
+}
+
+.mod-creators span::before{
+  color: white;
+  text-shadow: 0 0 5px white;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.mod-creators span.littleonion::before{
+  content: 'LITTLEONION';
+}
+
+.mod-creators span.bonnex::before{
+  content: 'BONNEX';
+}
+
+.mod-creators span.grzelu::before{
+  content: 'GRZELU';
+}
+
+.mod-creators span.thatgingerdude::before{
+  content: 'THATGINGERDUDE';
+}
+
+.mod-creators span.n4x::before{
+  content: 'N5X';
+}
+
+.mod-creators span.w1echuz::before{
+  content: 'W1ECHUZ';
+}
+
+
+
+
+.mod-creators span:hover{
+  color: white;
+  text-shadow: 0 0 5px white;
+}
+
+body:has(.active #mod25logo) .mod-creators span{
+  animation: creator-appear 0.6s forwards;
+  animation-delay: calc(var(--order) * 0.1s);
+  
+}
+
+body:has(.active #mod25logo) .mod-creators span::before{
+  animation: before-appear 0.6s;
+  animation-delay: calc(var(--order) * 0.10s);
+}
+
+@keyframes creator-appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes before-appear {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes separator-appear {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+    background-color: white;
+    box-shadow: 0 0 5px white;
+  }
+  100% {
+    opacity: 1;
+    background-color: var(--text-general);
+    box-shadow: none;
+  }
+}
+
+
+
+.creator-separator{
+  width: 2px;
+  background-color: var(--text-general);
+  height: 14px;
+  opacity: 0;
+}
+
+body:has(.active #mod25logo) .creator-separator{
+  animation: separator-appear 0.6s forwards;
+  animation-delay: calc(var(--order) * 0.1s);
 }

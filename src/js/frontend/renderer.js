@@ -62,6 +62,7 @@ const viewPill = document.getElementById("viewerpill");
 const h2hPill = document.getElementById("h2hpill");
 const constructorsPill = document.getElementById("constructorspill")
 const predictPill = document.getElementById("predictpill")
+const modPill = document.getElementById("modpill")
 
 const editorPill = document.getElementById("editorPill")
 const gamePill = document.getElementById("gamePill")
@@ -74,11 +75,12 @@ const viewDiv = document.getElementById("season_viewer");
 const h2hDiv = document.getElementById("head2head_viewer");
 const teamsDiv = document.getElementById("edit_teams");
 const predictDiv = document.getElementById("predict_results")
+const mod25Div = document.getElementById("mod_25")
 
 const patchNotesBody = document.getElementById("patchNotesBody")
 const selectImageButton = document.getElementById('selectImage');
 
-const scriptsArray = [predictDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv, teamsDiv]
+const scriptsArray = [predictDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv, teamsDiv, mod25Div]
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -1285,6 +1287,9 @@ function check_selected() {
     if (scriptSelected === 1) {
         document.getElementById("scriptSelected").classList.add("completed")
     }
+    else{
+        document.getElementById("scriptSelected").classList.remove("completed")
+    }
     setTimeout(function () {
         if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
             document.getElementById("blockDiv").classList.add("disappear")
@@ -1296,35 +1301,35 @@ function check_selected() {
 
 h2hPill.addEventListener("click", function () {
 
-    manageScripts("hide", "show", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 viewPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 driverTransferPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "show", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "show", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 editStatsPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "show", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "show", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "stats")
 })
 
 constructorsPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "show", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "teams")
@@ -1332,17 +1337,29 @@ constructorsPill.addEventListener("click", function () {
 
 
 CalendarPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "calendar")
 })
 
 carPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(!viewingGraph, "performance")
+})
+
+modPill.addEventListener("click", function () {
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
+    scriptSelected = 1
+    check_selected()
+})
+
+document.querySelector(".toolbar-logo-and-title").addEventListener("click", function () {
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+    scriptSelected = 0
+    check_selected()
 })
 
 gamePill.addEventListener("click", function () {
@@ -1354,6 +1371,8 @@ editorPill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.remove("d-none")
     document.querySelector("#gameChanges").classList.add("d-none")
 })
+
+
 
 document.getElementById("difficultySlider").addEventListener("input", function () {
     let value = this.value;
@@ -1553,7 +1572,7 @@ function manageScripts(...divs) {
             div.className = "script-view"
         }
         else {
-            div.className = "script-view d-none"
+            div.className = "script-view hide"
         }
     })
 }

@@ -8,7 +8,5 @@ import initSqlJs from 'sql.js';
     // O la ruta local de tu sql-wasm.wasm
   });
 
-  // Asigna al objeto global 'window'
-  window.SQL = SQL;
 
 })();
