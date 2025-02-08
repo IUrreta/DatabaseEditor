@@ -41,10 +41,10 @@ const abreviations_for_replacements = {
     "alpine": "ALP", "renault": "REN", "andretti": "AND", "lotus": "LOT", "alfa": "ALFA", "audi": "AUDI", "sauber": "SAU", "stake": "STK"
 }
 const logos_configs = {
-    "visarb": "assets/images/visarb.png", "toyota": "assets/images/toyota.png", "hugo": "assets/images/hugoboss.png", "alphatauri": "assets/images/alphatauri.png",
-    "brawn": "assets/images/brawn.png", "porsche": "assets/images/porsche.png",
-    "alpine": "assets/images/alpine.png", "renault": "assets/images/renault.png", "andretti": "assets/images/andretti.png", "lotus": "assets/images/lotus.png",
-    "alfa": "assets/images/alfaromeo.png", "audi": "assets/images/audi.png", "sauber": "assets/images/sauber.png", "stake": "assets/images/kick.png"
+    "visarb": "../assets/images/visarb.png", "toyota": "../assets/images/toyota.png", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png",
+    "brawn": "../assets/images/brawn.png", "porsche": "../assets/images/porsche.png",
+    "alpine": "../assets/images/alpine.png", "renault": "../assets/images/renault.png", "andretti": "../assets/images/andretti.png", "lotus": "../assets/images/lotus.png",
+    "alfa": "../assets/images/alfaromeo.png", "audi": "../assets/images/audi.png", "sauber": "../assets/images/sauber.png", "stake": "../assets/images/kick.png"
 }
 const logos_classes_configs = {
     "visarb": "visarblogo", "toyota": "toyotalogo", "hugo": "hugologo", "alphatauri": "alphataurilogo",
