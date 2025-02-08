@@ -30,30 +30,29 @@ dropDiv.addEventListener("drop", async (event) => {
     const file = event.dataTransfer.files[0];
     if (!file) return;
 
-    const { db, metadata } = await analyzeFileToDatabase(file);
 
-    const dbBinary = db.export();
+    await new Promise((resolve, reject) => {
+        dbWorker.postMessage(
+            { command: 'loadDB', data: { file: file } },
+        );
 
-    setDatabase(db, metadata);
-
-
-    dbWorker.postMessage(
-        { action: 'loadDB', buffer: dbBinary },
-        [dbBinary.buffer] // Marcamos el ArrayBuffer interno como transferible
-    );
+        dbWorker.onmessage = (msg) => {
+            if (msg.data.responseMessage === "Database loaded") {
+                console.log("[Main Thread] Database loaded in Worker");
+                resolve();  // Continuamos cuando la base de datos esté cargada
+            } else if (msg.data.error) {
+                console.error("[Main Thread] Error loading DB:", msg.data.error);
+                reject(new Error(msg.data.error));
+            }
+        };
+    });
 
     document.getElementById("saveFileDropped").classList.add("completed");
 
-
-    const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table'");
-    console.log("All tables:", tables);
-
     const message = { command: 'saveSelected', data: { selectedData: "Hola", prueba2: "Hola mola" } };
     const command = factory.createCommand(message);
-
     command.execute();
-
-
 });
+
 
 

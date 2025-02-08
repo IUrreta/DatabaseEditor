@@ -1,14 +1,26 @@
 import { updateFront } from "../../frontend/renderer";
 import { Command } from "./command";
-import { setGlobals, getGlobals } from "./commandGlobals";
-import { fetchDriverContract } from "../scriptUtils/dbUtils";
+import { dbWorker } from "../../frontend/dragFile";
 
 export default class DriverRequestCommand extends Command {
     execute() {
 
-        const contract = fetchDriverContract(this.message.data.driverID);
-        const contractResponse = { responseMessage: "Contract fetched", content: contract };
-        updateFront(contractResponse);
+        dbWorker.postMessage({
+            command: 'driverRequest',
+            data: this.message.data
+        });
+
+        dbWorker.onmessage = (msg) => {
+            const response = msg.data;
+
+            if (response.error) {
+                console.error("[DriverRequestCommand] Error:", response.error);
+            } else {
+                console.log("[DriverRequestCommand] Response:", response.responseMessage);
+                updateFront(response);
+            }
+        };
+
     }
 
 }

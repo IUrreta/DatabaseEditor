@@ -6,16 +6,18 @@ import { dbWorker } from "../../frontend/dragFile";
 
 export default class YearSelectedCommand extends Command {
     execute() {
-        console.log("[YearSelectedCommand] Executing command");
-
-
-        dbWorker.postMessage({ action: 'start', year: this.message.data.year });
+        dbWorker.postMessage({ command: 'yearSelected', data: this.message.data.year });
 
         dbWorker.onmessage = (msg) => {
-            console.log("[Worker] Received message", msg);
             const response = msg.data;
-            updateFront(response);
-        }
+
+            if (response.error) {
+                console.error("[YearSelectedCommand] Error:", response.error);
+            } else {
+                console.log("[YearSelectedCommand] Response:", response.responseMessage);
+                updateFront(response);
+            }
+        };
         
     }
 

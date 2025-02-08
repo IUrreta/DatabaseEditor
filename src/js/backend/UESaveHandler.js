@@ -16,8 +16,7 @@ export const parseGvasProps = (Properties) => {
   return { careerSaveMetadata };
 }
 
-export const analyzeFileToDatabase = async (file) => {
-  if (!window.SQL) return;
+export const analyzeFileToDatabase = async (file, SQL) => {
   return new Promise((resolve) => {
     if (file !== undefined) {
       let reader = new FileReader();
@@ -66,9 +65,7 @@ export const analyzeFileToDatabase = async (file) => {
 
         // @ts-ignore
 
-        if (window.db) window.db.close();
-        const db = new window.SQL.Database(databaseFile);
-        window.db = db;
+        const db = new SQL.Database(databaseFile);
 
         const metadata = {
           filename: file.name, // for in-app

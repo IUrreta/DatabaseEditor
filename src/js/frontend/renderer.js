@@ -301,7 +301,6 @@ function editModeHandler() {
     if (new_ovr[1] !== new_ovr[0]) {
         document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr[1];
     }
-    document.querySelector(".clicked").childNodes[1].childNodes[1].textContent = new_ovr[0];
 
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     let age = document.querySelector(".actual-age").textContent.split(" ")[1];
@@ -1291,7 +1290,7 @@ function check_selected() {
             document.getElementById("blockDiv").classList.add("disappear")
             divBlocking = 0;
         }
-    }, 300)
+    }, 150)
 
 }
 

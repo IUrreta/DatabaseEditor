@@ -1,13 +1,25 @@
 import { updateFront } from "../../frontend/renderer";
 import { Command } from "./command";
-import { setGlobals, getGlobals } from "./commandGlobals";
-import { getUnitValueFromOnePart } from "../scriptUtils/carAnalysisUtils";
+import { dbWorker } from "../../frontend/dragFile";
 
 export default class PartRequestCommand extends Command {
     execute() {
-        const partValues = getUnitValueFromOnePart(this.message.data.designID);
-        const partResponse = { responseMessage: "Part values fetched", content: partValues };
-        updateFront(partResponse);
+
+        dbWorker.postMessage({
+            command: 'partRequest',
+            data: this.message.data
+        });
+
+        dbWorker.onmessage = (msg) => {
+            const response = msg.data;
+
+            if (response.error) {
+                console.error("[PartRequestCommand] Error:", response.error);
+            } else {
+                console.log("[PartRequestCommand] Response:", response.responseMessage);
+                updateFront(response);
+            }
+        };
     }
 
 }

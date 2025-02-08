@@ -1,67 +1,25 @@
-import { updateFront } from "../../frontend/renderer";
+// saveSelectedCommand.js
 import { Command } from "./command";
-import { setGlobals, getGlobals } from "./commandGlobals";
-import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "../scriptUtils/carAnalysisUtils"
-import { fetchDrivers, fetchStaff, fetchEngines, fetchCalendar, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave } from "../scriptUtils/dbUtils";
+import { dbWorker } from "../../frontend/dragFile";
+import { updateFront } from "../../frontend/renderer";
 
 export default class SaveSelectedCommand extends Command {
-    /**
-     * Ejecuta el comando de guardar la selección.
-     */
     execute() {
+        dbWorker.postMessage({ command: 'saveSelected', data: {} });
 
-        checkCustomTables();
+        dbWorker.onmessage = (msg) => {
+            const response = msg.data;
 
-        const yearData = checkYearSave();
-        if (yearData[1] !== null){
-            setGlobals({createTeam : true});
-        }
-        else{
-            setGlobals({createTeam : false});
-        }
-        this.addTeam("Custom Team", yearData[1]);
-        setGlobals({year: yearData[0]});
-        const gameYearResponse = { responseMessage: "Game Year", content: yearData };
-        updateFront(gameYearResponse);
-
-        this.updateTeamsFor24(yearData[0]);
-
-        const drivers = fetchDrivers(yearData[0]);
-        const driversResponse = { responseMessage: "Save loaded succesfully", content: drivers };
-        updateFront(driversResponse);
-
-        const staff = fetchStaff(yearData[0]);
-        const staffResponse = { responseMessage: "Staff fetched", content: staff };
-        updateFront(staffResponse);
-
-        const engines = fetchEngines();
-        const enginesResponse = { responseMessage: "Engines fetched", content: engines };
-        updateFront(enginesResponse);
-
-        const calendar = fetchCalendar();
-        const calendarResponse = { responseMessage: "Calendar fetched", content: calendar };
-        updateFront(calendarResponse);
-
-        const year = fetchYear();
-        const yearResponse = { responseMessage: "Year fetched", content: year };
-        updateFront(yearResponse);
-
-        const numbers = fetchDriverNumbers();
-        const numbersResponse = { responseMessage: "Numbers fetched", content: numbers };
-        updateFront(numbersResponse);
-
-        const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
-        const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races] };
-        updateFront(performanceResponse);
-
-        const attibutes = getAttributesAllTeams(yearData[2]);
-        const attributesResponse = { responseMessage: "Performance fetched", content: [performance[performance.length - 1], attibutes] };
-        updateFront(attributesResponse);
-
-        const carPerformance = getPerformanceAllCars(yearData[2]);
-        const carAttributes = getAttributesAllCars(yearData[2]);
-        const carPerformanceResponse = { responseMessage: "Cars fetched", content: [carPerformance, carAttributes] };
-        updateFront(carPerformanceResponse);
+            if (response.error) {
+                console.error("[SaveSelectedCommand] Error:", response.error);
+            } else {
+                updateFront(response);
+                if (response.responseMessage === "Game Year") {
+                    this.updateTeamsFor24(response.content[0]);
+                    this.addTeam("Custom Team", response.content[1]);
+                }
+            }
+        };
 
     }
 
@@ -81,5 +39,4 @@ export default class SaveSelectedCommand extends Command {
             updateFront(yearResponse);
         }
     }
-
 }

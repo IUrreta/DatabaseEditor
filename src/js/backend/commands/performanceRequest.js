@@ -1,16 +1,24 @@
 import { updateFront } from "../../frontend/renderer";
 import { Command } from "./command";
-import { setGlobals, getGlobals } from "./commandGlobals";
-import { getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign } from "../scriptUtils/carAnalysisUtils";
+import { dbWorker } from "../../frontend/dragFile";
 
 export default class PerformanceRequestCommand extends Command {
     execute() {
-        const designDict = getPartsFromTeam(this.message.data.teamID);
-        const unitValues = getUnitValueFromParts(designDict);
-        const allParts = getAllPartsFromTeam(this.message.data.teamID);
-        const maxDesign = getMaxDesign();
-        const designResponse = { responseMessage: "Parts stats fetched", content: [unitValues, allParts, maxDesign] };
-        updateFront(designResponse);
+        dbWorker.postMessage({
+            command: 'performanceRequest',
+            data: this.message.data
+        });
+
+        dbWorker.onmessage = (msg) => {
+            const response = msg.data;
+
+            if (response.error) {
+                console.error("[PerformanceRequestCommand] Error:", response.error);
+            } else {
+                console.log("[PerformanceRequestCommand] Response:", response.responseMessage);
+                updateFront(response);
+            }
+        };
     }
 
 }

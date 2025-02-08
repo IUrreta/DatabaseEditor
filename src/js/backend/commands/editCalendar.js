@@ -1,14 +1,27 @@
 import { updateFront } from "../../frontend/renderer";
 import { Command } from "./command";
-import { setGlobals, getGlobals } from "./commandGlobals";
-import { editCalendar } from "../scriptUtils/calendarUtils";
+import { dbWorker } from "../../frontend/dragFile";
 
 export default class EditCalendarCommand extends Command {
     execute() {
-        const year = getGlobals().yearIteration;
 
-        editCalendar(this.message.data.calendarCodes, year);
-        
+        dbWorker.postMessage({
+            command: 'editCalendar',
+            data: this.message.data,
+        });
+
+        dbWorker.onmessage = (msg) => {
+            const response = msg.data;
+
+            if (response.error) {
+                console.error("[EditCalendarCommand] Error:", response.error);
+            } else {
+                console.log("[EditCalendarCommand] Response:", response.responseMessage);
+                updateFront(response);
+            }
+        };
+
+
     }
 
 }
