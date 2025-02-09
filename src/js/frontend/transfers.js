@@ -1,6 +1,8 @@
 import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict  } from "./config";
 import { game_version, factory } from "./renderer";
+import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import interact from 'interactjs';
+
 
 
 const myModal = new bootstrap.Modal(document.getElementById('contractModal'));
@@ -37,6 +39,14 @@ export  let currentSeason;
 export function setCurrentSeason(season) {
     currentSeason = season
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const dropdownButton = document.getElementById('yearButtonH2H');
+    const dropdown = new bootstrap.Dropdown(dropdownButton);
+
+    // Opcional: muestra el dropdown al cargar la página
+    dropdown.show();
+});
 
 
 let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3", "custom": "Custom Team" }

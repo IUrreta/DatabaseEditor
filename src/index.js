@@ -1,14 +1,5 @@
-// Primero jQuery
-import $ from 'jquery';
-window.$ = window.jQuery = $;
-
-// Luego Popper
-import * as Popper from '@popperjs/core';
-window.Popper = Popper;
-
 // Bootstrap
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import 'bootstrap-icons/font/bootstrap-icons.min.css';
 
 // Resto de imports

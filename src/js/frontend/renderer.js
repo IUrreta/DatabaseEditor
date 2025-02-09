@@ -1598,3 +1598,4 @@ function manageScripts(...divs) {
 document.querySelector("#cancelDetailsButton").addEventListener("click", function () {
     manage_config_content(configCopy[0], false)
 })
+

@@ -30,13 +30,6 @@ module.exports = {
         }
       ]
     }),
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      'window.jQuery': 'jquery',
-      Popper: ['@popperjs/core', 'default'],
-      bootstrap: ['bootstrap'] 
-    })
   ],
 
   resolve: {
