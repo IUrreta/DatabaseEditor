@@ -2,6 +2,7 @@ import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict  
 import { game_version, factory } from "./renderer";
 
 
+const myModal = new bootstrap.Modal(document.getElementById('contractModal'));
 const raceBonusAmt = document.getElementById("raceBonusAmt");
 const raceBonusPos = document.getElementById("raceBonusPos");
 
