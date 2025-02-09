@@ -25,6 +25,8 @@ import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, ra
 import { CommandFactory } from '../backend/commandFactory';
 import { dbWorker } from './dragFile';
 
+import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
+
 
 const names_configs = {
     "visarb": "VISA CASHAPP RB", "toyota": "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI", "brawn": "BRAWN GP", "porsche": "PORSCHE",
