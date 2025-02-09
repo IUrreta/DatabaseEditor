@@ -1,6 +1,7 @@
 import { races_map, codes_dict, weather_dict, countries_dict, invertedRacesMap } from "./config";
 import { game_version } from "./renderer";
 import { max_races } from "./predictions";
+import interact from 'interactjs';
 
 let deleting = false;
 let deleted = false;

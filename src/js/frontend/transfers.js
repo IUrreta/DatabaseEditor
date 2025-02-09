@@ -1,5 +1,6 @@
 import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict  } from "./config";
 import { game_version, factory } from "./renderer";
+import interact from 'interactjs';
 
 
 const myModal = new bootstrap.Modal(document.getElementById('contractModal'));

@@ -2,6 +2,8 @@ import { races_names, team_dict, combined_dict, lightColors  } from "./config";
 import { game_version,  custom_team, factory } from "./renderer";
 import { insert_space, manageColor, format_name } from "./transfers";
 import { relative_grid } from "./predictions";
+import Chart from 'chart.js/auto';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 
 let driver1_selected = false;

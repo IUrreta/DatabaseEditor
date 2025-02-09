@@ -4,8 +4,6 @@
   "description": "A tool that will let you edit your save file from F1 Manager games",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "start:dev": "electron . --dev",
     "build": "webpack"
   },
   "repository": "https://github.com/IUrreta/DatabaseEditor",
@@ -21,9 +19,9 @@
     "chartjs-plugin-annotation": "^3.0.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "crypto-browserify": "^3.12.1",
-    "custom-electron-titlebar": "^4.2.7",
     "file-saver": "^2.0.5",
     "interactjs": "^1.10.17",
+    "jquery": "^3.7.1",
     "marked": "^7.0.3",
     "pako": "^2.1.0",
     "simple-git": "^3.19.1",
@@ -32,7 +30,6 @@
   "devDependencies": {
     "autoprefixer": "^10.4.20",
     "css-loader": "^7.1.2",
-    "electron": "^31.1.0",
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.2",
     "postcss-loader": "^8.1.1",

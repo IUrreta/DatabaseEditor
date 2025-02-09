@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const webpack = require('webpack');
 
 module.exports = {
   mode: 'development',  // o 'production' para el build final
@@ -19,7 +20,14 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: 'styles.css',
-  }),
+    }),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      'window.jQuery': 'jquery',
+      Popper: ['@popperjs/core', 'default'],
+      bootstrap: ['bootstrap'] 
+    })
   ],
 
   resolve: {
