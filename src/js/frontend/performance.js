@@ -2,6 +2,8 @@ import { races_names, part_codes_abreviations, codes_dict, combined_dict, races_
 import { colors_dict } from "./head2head";
 import { manageSaveButton, game_version } from "./renderer";
 import { socket, first_show_animation, factory } from "./renderer";
+import Chart from 'chart.js/auto';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const teamsPill = document.getElementById("teamsPill");
 const enginesPill = document.getElementById("enginesPill");

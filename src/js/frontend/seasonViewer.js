@@ -694,7 +694,7 @@ function new_addDriver(driver, races_done, odd) {
     logoDiv.classList.add(team_dict[driver[1]] + "hoverback")
     logo.setAttribute("src", logos_disc[driver[1]])
     logoDiv.appendChild(logo)
-    row.appendChil>d(logoDiv)
+    row.appendChild(logoDiv)
     row.appendChild(nameDiv)
     let driverpoints = 0
     races_ids.forEach(function (raceid) {
