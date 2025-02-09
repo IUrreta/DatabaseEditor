@@ -343,7 +343,7 @@ export function makeAttributesReadable(attributes) {
 export function calculateOverallPerformance(attributes) {
     let ovr = 0;
     for (const attr in attributes) {
-        ovr += attributes[attr] * carConstants.attributesContributions[attr];
+        ovr += attributes[attr] * carConstants.attributesContributions2[attr];
     }
     return Math.round(ovr * 100) / 100;
 }

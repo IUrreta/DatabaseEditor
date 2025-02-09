@@ -20,6 +20,4 @@ import './js/frontend/teams.js';
 import './js/frontend/predictions.js';
 import './js/frontend/dragFile.js';
 
-
-
 import './styles.css';

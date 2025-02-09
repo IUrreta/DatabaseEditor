@@ -2295,14 +2295,14 @@ DRIVERS TABLE
   display: flex;
   flex-direction: row;
   height: 30px;
-  transition: background-color 0.15s, color 0.3;
+  transition: background-color 0.15s, color 0.15s;
 }
 
 .teams-table-row {
   display: flex;
   flex-direction: row;
   height: 60px;
-  transition: background-color 0.15s, color 0.3;
+  transition: background-color 0.15s, color 0.15s;
 }
 
 .drivers-table-data,
@@ -4563,7 +4563,7 @@ input.disabled {
   border-bottom: 1px solid var(--separator) !important;
   background-color: var(--generals) !important;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 
 }
 
@@ -9083,6 +9083,7 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
 }
 
 body:has(.active #mod25logo) .background{
+  background-color: transparent;
   background-image: url('../assets/images/modback.png');
 }
 
@@ -9301,13 +9302,13 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient{
 
 body:has(.active #mod25logo) .mod-creators a{
   animation: creator-appear 0.6s forwards;
-  animation-delay: calc(var(--order) * 0.05s);
+  animation-delay: calc((var(--order) * 0.07s));
   
 }
 
 body:has(.active #mod25logo) .mod-creators a::before{
   animation: before-appear 0.9s;
-  animation-delay: calc(var(--order) * 0.05s);
+  animation-delay: calc((var(--order) * 0.07s));
 }
 
 @keyframes creator-appear {
@@ -9358,5 +9359,5 @@ body:has(.active #mod25logo) .mod-creators a::before{
 
 body:has(.active #mod25logo) .creator-separator{
   animation: separator-appear 0.6s forwards;
-  animation-delay: calc(var(--order) * 0.05s);
+  animation-delay: calc((var(--order) * 0.07s));
 }
