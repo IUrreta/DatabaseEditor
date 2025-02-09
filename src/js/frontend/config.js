@@ -147,7 +147,7 @@ export let logos_disc = {
     7: '../assets/images/haas.png',
     8: '../assets/images/alphatauri.png',
     9: '../assets/images/alfaromeo.png',
-    10: '../assets/images/astonmartin.png',
+    10: '../assets/images/astonMartin.png',
     32: '../assets/images/placeholder.png'
 };
 export const points_race = {
