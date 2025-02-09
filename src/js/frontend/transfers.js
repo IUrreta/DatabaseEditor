@@ -2,7 +2,6 @@ import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict  
 import { game_version, factory } from "./renderer";
 
 
-const myModal = new bootstrap.Modal(document.getElementById('contractModal'));
 const raceBonusAmt = document.getElementById("raceBonusAmt");
 const raceBonusPos = document.getElementById("raceBonusPos");
 
@@ -18,10 +17,6 @@ const f3DriversDiv = document.getElementById("f3-drivers");
 const autoContractToggle = document.getElementById("autoContractToggle")
 
 const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
-
-
-
-
 
 let originalParent;
 let destinationParent;

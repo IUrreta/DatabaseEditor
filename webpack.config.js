@@ -1,4 +1,6 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   mode: 'development',  // o 'production' para el build final
@@ -10,9 +12,19 @@ module.exports = {
     filename: 'bundle.js',
   },
 
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './src/index.html', // Path a tu HTML original
+      filename: 'index.html'       // El HTML generado irá a 'dist/index.html'
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'styles.css',
+  }),
+  ],
+
   resolve: {
     extensions: ['.js'],
-        fallback: {
+    fallback: {
       // Si tu código usa 'buffer' (p.ej. new Buffer o Buffer.from)
       buffer: require.resolve('buffer/'),
       "vm": false,
@@ -30,6 +42,17 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
+        },
+      },
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'], // Usa el plugin en lugar de 'style-loader'
+      },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/images/[name][ext]',  // Copia las imágenes en dist/assets/images
         },
       },
     ],

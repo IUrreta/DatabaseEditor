@@ -769,7 +769,7 @@ input[role="switch"]:focus {
 }
 
 input[role="switch"]:not(:checked):focus {
-  --bs-form-switch-bg: url('../../../../assets/images/thumb.svg');
+  --bs-form-switch-bg: url('../assets/images/thumb.svg');
 }
 
 input[role="switch"]:checked {
@@ -9264,6 +9264,7 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient{
   top: 0;
   left: 0;
   width: 100%;
+  z-index: 2;
 }
 
 .mod-creators a.littleonion::before{
@@ -9305,8 +9306,8 @@ body:has(.active #mod25logo) .mod-creators a{
 }
 
 body:has(.active #mod25logo) .mod-creators a::before{
-  animation: before-appear 0.6s;
-  animation-delay: calc(var(--order) * 0.10s);
+  animation: before-appear 0.9s;
+  animation-delay: calc(var(--order) * 0.05s);
 }
 
 @keyframes creator-appear {
