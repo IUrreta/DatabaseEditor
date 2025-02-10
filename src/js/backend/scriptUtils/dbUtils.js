@@ -1491,12 +1491,9 @@ export function updateCustomConfig(data){
   manageRefurbishTrigger(data.refurbish)
   const globals = getGlobals()
   if (globals.yearIteration === "24"){
-    editFreezeMentality(data.mentalityFrozen)
+    editFreezeMentality(data.frozenMentality)
   }
 
-  if (data.logoBase64){
-    queryDB(`UPDATE Player SET CustomTeamLogoBase64 = '${data.logoBase64}'`)
-  }
 
     
 }
@@ -1527,13 +1524,6 @@ export function fetchCustomConfig() {
   config.difficulty = triggers.highest_difficulty
   config.refurbish = triggers.refurbish
   config.frozenMentality = triggers.frozenMentality
-
-  const globals = getGlobals()
-
-  if (globals.isCreateATeam){
-    const logoBase64 = queryDB(`SELECT CustomTeamLogoBase64 FROM Player`, 'singleValue')
-    config.logoBase64 = logoBase64
-  }
 
   return config;
 }

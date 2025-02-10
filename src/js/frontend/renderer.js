@@ -925,13 +925,14 @@ function replace_all_teams(info) {
 function manage_config_content(info, year_config = false) {
     replace_all_teams(info)
     if (!year_config) {
-        if (info["logoBase64"]){
-            replace_custom_team_logo(info["logoBase64"])
+        let image = localStorage.getItem(`${saveName}_image`);
+        if (image) {
+            replace_custom_team_logo(image);
         }
         if (info["primaryColor"]) {
             replace_custom_team_color(info["primaryColor"], info["secondaryColor"])
         }
-        if (info["mentalityFrozen"] === 1) {
+        if (info["frozenMentality"] === 1) {
             document.getElementById("freezeMentalityToggle").checked = true
         }
         else {
@@ -1290,14 +1291,11 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         alphatauri: alphatauri,
         alpine: alpine,
         alfa: alfa,
-        mentalityFrozen: mentalityFrozen,
+        frozenMentality : mentalityFrozen,
         difficulty: difficultyValue,
         refurbish: refurbish,
         disabled: disabledList,
         triggerList: triggerList
-    }
-    if (tempImageData) {
-        data.logoBase64 = tempImageData
     }
     if (custom_team) {
         data["primaryColor"] = document.getElementById("primarySelector").value
@@ -1310,6 +1308,9 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     let info = { teams: { alphatauri: alphatauri, alpine: alpine, alfa: alfa } }
     replace_all_teams(info)
     reloadTables()
+    if (tempImageData) {
+        localStorage.setItem(`${saveName}_image`, tempImageData);
+    }
 
     replace_custom_team_logo(document.querySelector(".logo-preview").src)
 })

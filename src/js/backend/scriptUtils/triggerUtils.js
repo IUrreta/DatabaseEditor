@@ -428,6 +428,7 @@ export function fetchExistingTriggers() {
 }
 
 export function editFreezeMentality(state) {
+  console.log(state)
   if (state === 0) {
     queryDB("DROP TRIGGER IF EXISTS update_Opinion_After_Insert;");
     queryDB("DROP TRIGGER IF EXISTS update_Opinion_After_Update;");
