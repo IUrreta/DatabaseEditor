@@ -1,9 +1,10 @@
 import { races_names, team_dict, combined_dict, lightColors  } from "./config";
-import { game_version,  custom_team, factory } from "./renderer";
+import { game_version,  custom_team } from "./renderer";
 import { insert_space, manageColor, format_name } from "./transfers";
 import { relative_grid } from "./predictions";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { Command } from "../backend/commands/command";
 
 
 let driver1_selected = false;
@@ -951,8 +952,7 @@ function H2HReady() {
     }
 
     manageH2hState()
-    const message = { command: 'configuredH2H', data: data };
-    const command = factory.createCommand(message);
+    const command = new Command("configuredH2H",  data);
     command.execute();
 }
 

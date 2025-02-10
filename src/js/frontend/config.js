@@ -209,7 +209,6 @@ export const difficultyConfig = {
         researchDif: { className: "dif-warning", text: "" },
         statDif: { className: "dif-warning", text: "" },
         designTimeDif: { className: "dif-warning", text: "" },
-        factoryDif: { className: "dif-warning", text: "" },
         buildDif: { className: "dif-warning", text: "" }
     },
     "reduced weight": {
@@ -230,29 +229,26 @@ export const difficultyConfig = {
         designTimeDif: { className: "dif-warning brutal", text: "Design times reduced 5%" },
     },
     "unfair": {
-        visible: ["lightDif", "researchDif", "statDif", "designTimeDif", "factoryDif"],
+        visible: ["lightDif", "researchDif", "statDif", "designTimeDif"],
         lightDif: { className: "dif-warning extra-hard", text: "Lightweight parts" },
         researchDif: { className: "dif-warning unfair", text: "Large research boost" },
         statDif: { className: "dif-warning unfair", text: "Stats boost +0.3%" },
         designTimeDif: { className: "dif-warning unfair", text: "Design times reduced 11%" },
-        factoryDif: { className: "dif-warning unfair", text: "Factory level 4" },
     },
     "insane": {
-        visible: ["lightDif", "researchDif", "statDif", "designTimeDif", "factoryDif", "buildDif"],
+        visible: ["lightDif", "researchDif", "statDif", "designTimeDif",  "buildDif"],
         lightDif: { className: "dif-warning extra-hard", text: "Lightweight parts" },
         researchDif: { className: "dif-warning insane", text: "Huge research boost" },
         statDif: { className: "dif-warning insane", text: "Stats boost +0.35%" },
         designTimeDif: { className: "dif-warning insane", text: "Design times reduced 16%" },
-        factoryDif: { className: "dif-warning unfair", text: "Factory level 4" },
         buildDif: { className: "dif-warning insane", text: "+1 part when design completed" },
     },
     "impossible": {
-        visible: ["lightDif", "researchDif", "statDif", "designTimeDif", "factoryDif", "buildDif"],
+        visible: ["lightDif", "researchDif", "statDif", "designTimeDif",  "buildDif"],
         lightDif: { className: "dif-warning impossible", text: "ULTRA-lightweight parts" },
         researchDif: { className: "dif-warning impossible", text: "Massive research boost" },
         statDif: { className: "dif-warning impossible", text: "Stats boost +0.48%" },
         designTimeDif: { className: "dif-warning impossible", text: "Design times reduced 20%" },
-        factoryDif: { className: "dif-warning impossible", text: "Factory level 5" },
         buildDif: { className: "dif-warning impossible", text: "+2 parts when design completed" },
     }
 };

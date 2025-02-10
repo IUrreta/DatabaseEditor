@@ -48,6 +48,9 @@
   --reddit: #f87444;
   --custom-dif: #52ebbd;
 
+  --amo-1: #bd6962;
+  --amo-2: #eec987;
+
   --mentality-enthusiastic: #c055e3;
   --mentality-positive: #10ffff;
   --mentality-neutral: #f3f3f3;
@@ -1465,7 +1468,7 @@ input[type="checkbox"]:checked {
 
 .notification-panel {
   position: absolute;
-  top: 0px;
+  top: 56px;
   right: 0px;
   color: var(--white-general);
   width: 530px;
@@ -1635,6 +1638,7 @@ input[type="checkbox"]:checked {
   background-color: var(--generals);
   display: flex;
   flex-direction: row;
+  position: relative;
 }
 
 @keyframes move {
@@ -6773,6 +6777,13 @@ input.disabled {
   animation: gradient-move-title 5s linear infinite;
 }
 
+#amoLogo:hover{
+  background: linear-gradient(to right, var(--amo-1), var(--amo-2), var(--amo-1));
+  background-size: 200% 200%;
+  animation: gradient-move-title 5s linear infinite;
+  transform: scale(1.1);
+}
+
 
 #mod25logo{
   height: 40px;
@@ -6785,6 +6796,32 @@ input.disabled {
   -webkit-mask: url('../assets/images/logoMod.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask: url('../assets/images/logoMod.svg') no-repeat center;
+  mask-size: contain;
+
+  will-change: transform;
+}
+
+#amoPill{
+  height: 40px;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#amoLogo{
+  height: 30px;
+  width: 50px;
+  transition: transform 0.15s ease; /* Solo transiciona transform */
+  cursor: pointer;
+
+  background: var(--text-general);
+
+  -webkit-mask: url('../assets/images/AMO.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask: url('../assets/images/AMO.svg') no-repeat center;
   mask-size: contain;
 
   will-change: transform;
@@ -8447,6 +8484,14 @@ input::-webkit-inner-spin-button {
 .game-changes {
   display: flex;
   flex-direction: row;
+}
+
+.mentality-changes{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border-right: 2px solid var(--separator);
+  width: 50%;
 }
 
 

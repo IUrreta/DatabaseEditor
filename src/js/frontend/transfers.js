@@ -1,7 +1,8 @@
 import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict  } from "./config";
-import { game_version, factory } from "./renderer";
+import { game_version } from "./renderer";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import interact from 'interactjs';
+import { Command } from "../backend/commands/command";
 
 
 
@@ -778,8 +779,7 @@ function queryContract(elem) {
     driverEditingID = elem.dataset.driverid
     driverEditingName = elem.innerText
 
-    const message = { command: 'driverRequest', data: { driverID: driverEditingID } };
-    const command = factory.createCommand(message);
+    const command = new Command("driverRequest",  { driverID: driverEditingID });
     command.execute();
 
 }
@@ -869,8 +869,8 @@ function editContract() {
         futureRaceBonusPos: futureValues[4],
         futurePosition: futureValues[5]
     }
-    const message = { command: 'editContract', data: data };
-    const command = factory.createCommand(message);
+
+    const command = new Command("editContract",  data);
     command.execute();
 
     if (future_team !== "-1") {

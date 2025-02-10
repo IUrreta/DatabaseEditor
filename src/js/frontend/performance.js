@@ -1,7 +1,8 @@
 import { races_names, part_codes_abreviations, codes_dict, combined_dict, races_map, abreviations_dict, pars_abreviations, engine_stats_dict  } from "./config";
 import { colors_dict } from "./head2head";
 import { manageSaveButton, game_version } from "./renderer";
-import { socket, first_show_animation, factory } from "./renderer";
+import { socket, first_show_animation } from "./renderer";
+import { Command } from "../backend/commands/command";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -284,8 +285,7 @@ document.querySelectorAll(".team").forEach(function (elem) {
         document.querySelector("#performanceGraphButton").classList.remove("active")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
-        const message = { command: 'performanceRequest', data: { teamID: teamSelected} };
-        const command = factory.createCommand(message);
+        const command = new Command("performanceRequest",  { teamID: teamSelected});
         command.execute();
         document.querySelector("#performanceGraph").classList.add("d-none")
         document.querySelector(".teams-show").classList.remove("d-none")
@@ -302,8 +302,7 @@ document.querySelectorAll(".car").forEach(function (elem) {
         document.querySelector("#performanceGraphButton").classList.remove("active")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
-        const message = { command: 'performanceRequest', data: { teamID: teamSelected} };
-        const command = factory.createCommand(message);
+        const command = new Command("performanceRequest",  { teamID: teamSelected});
         command.execute();
         document.querySelector("#performanceGraph").classList.add("d-none")
         document.querySelector(".teams-show").classList.remove("d-none")
@@ -567,8 +566,7 @@ function add_partName_listener(div, subtitle, type = "old") {
         })
         div.classList.add("editing")
         if (type === "old") {
-            const message = { command: 'partRequest', data: { designID: div.dataset.designId} };
-            const command = factory.createCommand(message);
+            const command = new Command("partRequest", { designID: div.dataset.designId});
             command.execute();
         }
     })
@@ -1035,8 +1033,7 @@ document.querySelector("#confirmCustomEnginesButton").addEventListener("click", 
     let data = {
         enginesData: enginesData
     }
-    const message = { command: 'customEngines', data: data };
-    const command = factory.createCommand(message);
+    const command = new Command("customEngines",  data);
     command.execute();
     
 })

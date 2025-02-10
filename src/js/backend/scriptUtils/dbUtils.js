@@ -1,6 +1,8 @@
 import countries_abreviations from "./countries.js";
 import { engine_unitValueToValue } from "./carConstants.js";
+import { manageDifficultyTriggers, manageRefurbishTrigger, editFreezeMentality, fetchExistingTriggers } from "./triggerUtils.js";
 import { queryDB } from "../dbManager.js";
+import { getGlobals } from "../commands/commandGlobals.js";
 
 
 
@@ -1485,8 +1487,21 @@ export function updateCustomConfig(data){
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
     VALUES ('secondaryColor', '${secondaryColor}')
   `);
+
+  manageDifficultyTriggers(data.triggerList)
+  manageRefurbishTrigger(data.refurbish)
+  const globals = getGlobals()
+  if (globals.yearIteration === "24"){
+    editFreezeMentality(data.mentalityFrozen)
+  }
+
+  if (data.logoBase64){
+    queryDB(`UPDATE Player SET CustomTeamLogoBase64 = '${data.logoBase64}'`)
+  }
+
     
 }
+
 
 export function fetchCustomConfig() {
   const rows = queryDB(`SELECT key, value FROM Custom_Save_Config`, 'allRows') || [];
@@ -1507,6 +1522,19 @@ export function fetchCustomConfig() {
       config.secondaryColor = value;
     }
   });
+
+  const triggers = fetchExistingTriggers()
+  config.triggerList = triggers.triggerList
+  config.difficulty = triggers.highest_difficulty
+  config.refurbish = triggers.refurbish
+  config.frozenMentality = triggers.frozenMentality
+
+  const globals = getGlobals()
+
+  if (globals.isCreateATeam){
+    const logoBase64 = queryDB(`SELECT CustomTeamLogoBase64 FROM Player`, 'singleValue')
+    config.logoBase64 = logoBase64
+  }
 
   return config;
 }

@@ -2,7 +2,8 @@ import { races_names, team_dict, codes_dict, combined_dict, logos_disc, races_ma
 import { resetH2H } from './head2head';
 import { game_version, custom_team } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
-import { socket, factory } from "./renderer";
+import { socket } from "./renderer";
+import { Command } from "../backend/commands/command";
 
 
 
@@ -929,8 +930,7 @@ export function generateYearsMenu(actualYear) {
             document.getElementById("yearButton").textContent = a.textContent
             isYearSelected = true
             manage_show_tables()
-            const message = { command: 'yearSelected', data: { year: a.textContent } };
-            const command = factory.createCommand(message);
+            const command = new Command("yearSelected",  a.textContent);
             command.execute();
 
         })
@@ -946,8 +946,7 @@ export function generateYearsMenu(actualYear) {
                 elem.classList.remove("d-none")
             })
             document.getElementById("yearButtonH2H").textContent = a2.textContent
-            const message = { command: 'yearSelectedH2H', data: { year: a2.textContent } };
-            const command = factory.createCommand(message);
+            const command = new Command("yearSelectedH2H",  { year: a2.textContent });
             command.execute();
         })
         let a3 = document.createElement("a");

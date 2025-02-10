@@ -1,5 +1,4 @@
 import {Gvas, Serializer} from "./UESaveTool";
-import './initSql.js'; 
 import pako from "pako";
 import { saveAs } from "file-saver";
 import { Buffer } from "buffer";

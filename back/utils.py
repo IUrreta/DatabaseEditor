@@ -696,8 +696,7 @@ class DatabaseUtils:
             self.manage__instant_build_triggers(cursor, triggerList["buildDif"])
         if triggerList.get("researchDif"):
             self.manage_research_triggers(cursor, triggerList["researchDif"])
-        if triggerList.get("factoryDif"):
-            self.upgrade_factories(cursor, triggerList["factoryDif"])
+
 
         conn.commit()
         conn.close()
@@ -1056,7 +1055,6 @@ class DatabaseUtils:
             "lightDif": -1,
             "researchDif": -1,
             "buildDif": -1,
-            "factoryDif": -1,
             "statDif": -1,
             "designTimeDif": -1
         }
@@ -1090,17 +1088,6 @@ class DatabaseUtils:
                 if dif_level > highest_difficulty:
                     highest_difficulty = dif_level
 
-        #if all factorylevels are 34 or 35 factoryDif is 0
-        for level in factory_levels:
-            if level[0] < 34:
-                trigerList["factoryDif"] = -1
-                break
-            elif level[0] == 34:
-                trigerList["factoryDif"] = 4
-                break
-            elif level[0] == 35:
-                trigerList["factoryDif"] = 6
-                break
 
         return highest_difficulty, trigerList, refurbish, frozenMentality
             

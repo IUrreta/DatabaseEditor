@@ -1,7 +1,8 @@
 // dragDrop.js
 import { analyzeFileToDatabase } from "../backend/UESaveHandler";
 import { setDatabase, queryDB } from "../backend/dbManager.js";
-import { factory, setSaveName } from "./renderer.js";
+import {setSaveName } from "./renderer.js";
+import { Command } from "../backend/commands/command.js";
 
 let carAnalysisUtils = null;
 export const dbWorker = new Worker(new URL('../backend/commands/worker.js', import.meta.url));
@@ -51,8 +52,8 @@ dropDiv.addEventListener("drop", async (event) => {
 
     document.getElementById("saveFileDropped").classList.add("completed");
 
-    const message = { command: 'saveSelected', data: { selectedData: "Hola", prueba2: "Hola mola" } };
-    const command = factory.createCommand(message);
+
+    const command = new Command("saveSelected", {});
     command.execute();
 });
 

@@ -22,8 +22,8 @@ import {
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups
 } from './stats';
 import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs } from './head2head';
-import { CommandFactory } from '../backend/commandFactory';
 import { dbWorker } from './dragFile';
+import { Command } from '../backend/commands/command';
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
@@ -138,7 +138,6 @@ const parchModalTitle = document.getElementById("patchModalTitle")
 const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
 
-export const factory = new CommandFactory();
 
 
 export const socket = new WebSocket('ws://localhost:8765/');
@@ -375,8 +374,8 @@ function editModeHandler() {
         newCode: newCode,
     };
 
-    const message = { command: 'editStats', data: dataStats };
-    const command = factory.createCommand(message);
+
+    const command = new Command("editStats",  dataStats);
     command.execute();
 }
 
@@ -392,8 +391,7 @@ function calendarModeHandler() {
         calendarCodes: dataCodesString
     };
 
-    const message = { command: 'editCalendar', data: dataCalendar };
-    const command = factory.createCommand(message);
+    const command = new Command("editCalendar",  dataCalendar);
     command.execute();
 }
 
@@ -421,8 +419,8 @@ function teamsModeHandler() {
         engine: engine,
         teamName: default_dict[teamCod],
     }
-    const message = { command: 'editTeam', data: data };
-    const command = factory.createCommand(message);
+
+    const command = new Command("editTeam",  data);
     command.execute();
 }
 
@@ -461,8 +459,8 @@ function performanceModeHandler() {
             loadouts: loadouts,
             teamName: document.querySelector(".selected").dataset.teamname
         }
-        const message = { command: 'editPerformance', data: data };
-        const command = factory.createCommand(message);
+
+        const command = new Command("editPerformance",  data);
         command.execute();
     }
     else if (teamsEngine === "engines") {
@@ -470,8 +468,8 @@ function performanceModeHandler() {
         data = {
             engines: engineData,
         }
-        const message = { command: 'editEngine', data: data };
-        const command = factory.createCommand(message);
+        
+        const command = new Command("editEngine",  data);
         command.execute();
     }
 
@@ -844,12 +842,18 @@ fileInput.addEventListener('change', (event) => {
 });
 
 function replace_custom_team_logo(path) {
+    // Si el string base64 no tiene el prefijo, se lo agregamos.
+    if (!path.startsWith("data:image/")) {
+      // Ajusta el tipo de imagen ("png", "jpeg", etc.) según corresponda.
+      path = "data:image/png;base64," + path;
+    }
+    
     logos_disc[32] = path;
     document.querySelectorAll(".custom-replace").forEach(function (elem) {
-        elem.src = path
-    })
-    document.querySelector(".logo-preview").src = path
-}
+      elem.src = path;
+    });
+    document.querySelector(".logo-preview").src = path;
+  }
 
 
 
@@ -890,10 +894,8 @@ function replace_all_teams(info) {
 function manage_config_content(info, year_config = false) {
     replace_all_teams(info)
     if (!year_config) {
-        // get `${saveName}_image` from localStorage and if it exists, set the src of the image to it
-        let image = localStorage.getItem(`${saveName}_image`);
-        if (image) {
-            replace_custom_team_logo(image);
+        if (info["logoBase64"]){
+            replace_custom_team_logo(info["logoBase64"])
         }
         if (info["primaryColor"]) {
             replace_custom_team_color(info["primaryColor"], info["secondaryColor"])
@@ -914,8 +916,8 @@ function manage_config_content(info, year_config = false) {
         update_mentality_span(info["mentalityFrozen"])
         let difficultySlider = document.getElementById("difficultySlider")
         difficultySlider.value = info["difficulty"]
-        // update_difficulty_span(info["difficulty"])
-        if (info["difficulty"] === -2) { //custom difficulty
+        update_difficulty_span(info["difficulty"])
+        if (info["difficulty"] === -2) { 
             load_difficulty_warnings(info["triggerList"])
         }
         else {
@@ -1263,20 +1265,21 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         disabled: disabledList,
         triggerList: triggerList
     }
+    if (tempImageData) {
+        data.logoBase64 = tempImageData
+    }
     if (custom_team) {
         data["primaryColor"] = document.getElementById("primarySelector").value
         data["secondaryColor"] = document.getElementById("secondarySelector").value
         replace_custom_team_color(data["primaryColor"], data["secondaryColor"])
     }
-    const message = { command: 'configUpdate', data: data };
-    const command = factory.createCommand(message);
+
+    const command = new Command("configUpdate",  data);
     command.execute();
     let info = { teams: { alphatauri: alphatauri, alpine: alpine, alfa: alfa } }
     replace_all_teams(info)
     reloadTables()
-    if (tempImageData) {
-        localStorage.setItem(`${saveName}_image`, tempImageData);
-    }
+
     replace_custom_team_logo(document.querySelector(".logo-preview").src)
 })
 
@@ -1453,7 +1456,7 @@ function update_refurbish_span(value) {
 
 function manage_difficulty_warnings(level) {
     const elements = [
-        "defaultDif", "lightDif", "researchDif", "statDif", "designTimeDif", "factoryDif", "buildDif"
+        "defaultDif", "lightDif", "researchDif", "statDif", "designTimeDif", "buildDif"
     ];
     const selectedConfig = difficultyConfig[level] || difficultyConfig["default"];
 

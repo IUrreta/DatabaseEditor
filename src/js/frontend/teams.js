@@ -1,5 +1,5 @@
 import {  team_dict  } from "./config";
-import { socket, factory } from "./renderer";
+import { Command } from "../backend/commands/command";
 import { manage_stat_bar } from "./stats";
 
 export let teamCod;
@@ -19,8 +19,7 @@ document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem
             teamID: teamCod,
         }
 
-        const message = { command: 'teamRequest', data: data };
-        const command = factory.createCommand(message);
+        const command = new Command("teamRequest",  data);
         command.execute();
 
         document.querySelector(".team-viewer").classList.remove("d-none")
