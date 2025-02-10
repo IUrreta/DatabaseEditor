@@ -135,6 +135,9 @@ let versionNow;
 const versionPanel = document.querySelector('.version-panel');
 const parchModalTitle = document.getElementById("patchModalTitle")
 
+let notificationsQueue = [];
+let isShowingNotification = false;
+
 const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
 
@@ -142,6 +145,13 @@ const repoName = 'DatabaseEditor';
 export function setSaveName(name) {
     saveName = name;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    versionNow = APP_VERSION;
+    versionPanel.textContent = `${versionNow}`;
+    parchModalTitle.textContent = "Version " + versionNow + " patch notes"
+    getPatchNotes()
+  });
 
 
 /**
@@ -511,8 +521,64 @@ export function updateFront(data) {
         handler(message);
     }
     if (data.noti_msg !== undefined) {
-        update_notifications(data.noti_msg, "ok")
+        new_update_notifications(data.noti_msg)
     }
+}
+
+function new_update_notifications(message) {
+    notificationsQueue.push(message);
+    showNextNotification();
+}
+
+function showNextNotification() {
+    if (isShowingNotification || notificationsQueue.length === 0) {
+        return;
+    }
+
+    isShowingNotification = true;
+
+    const nextMessage = notificationsQueue.shift();
+
+    let parsed_message = manage_notification_text(nextMessage);
+
+    const footerNotification = document.querySelector('.footer-notification');
+    
+    footerNotification.textContent = parsed_message;
+    footerNotification.classList.add('show');
+
+    setTimeout(() => {
+        footerNotification.classList.remove('show');
+
+        isShowingNotification = false;
+        //wait another 250ms
+        setTimeout(() => {
+            showNextNotification();
+        }, 550);
+    }, 4000);
+}
+
+function manage_notification_text(message) {
+    let words = message.split(/[\s\n]+/); 
+
+    let newWords = [];
+  
+    for (let i = 0; i < words.length; i++) {
+      let currentWord = words[i];
+  
+      if (currentWord && currentWord === currentWord.toUpperCase()) {
+        if (newWords.length > 0) {
+          newWords.pop();
+        }
+        let transformedWord =
+          currentWord.charAt(0).toUpperCase() + currentWord.slice(1).toLowerCase();
+  
+        newWords.push(transformedWord);
+      } else {
+        newWords.push(currentWord);
+      }
+    }
+  
+    return newWords.join(" ");
 }
 
 
@@ -647,17 +713,6 @@ function update_engine_allocations(message) {
     })
 
 }
-
-
-
-
-
-/**
- * Opens the log file
- */
-logButton.addEventListener("click", function () {
-    window.location.href = '../log.txt';
-})
 
 
 function resizeWindowToHeight(mode) {

@@ -3,6 +3,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
+const packageJson = require('./package.json');
+
 
 module.exports = {
   mode: 'development',  // o 'production' para el build final
@@ -29,6 +31,9 @@ module.exports = {
           to: 'assets/images'
         }
       ]
+    }),
+    new webpack.DefinePlugin({
+      APP_VERSION: JSON.stringify(packageJson.version),
     }),
   ],
 

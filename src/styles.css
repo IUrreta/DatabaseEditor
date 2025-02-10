@@ -301,6 +301,9 @@ body {
   display: flex;
   justify-content: center;
   cursor: default;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .socials {
@@ -512,21 +515,37 @@ body {
 }
 
 .version-panel {
-  transition: opacity 0.15s, color 0.15s;
-  opacity: 0;
-  width: 0;
+  transition: opacity 0.15s, color 0.15s, border-color 0.15s, text-shadow 0.15s;
+  cursor: pointer;
+  padding: 0 5px;
+  border-left: 2px solid transparent;
+  background-color: var(--generals);
+  z-index: 3;
+  
 }
 
-.version-panel.show {
-  opacity: 1;
-  width: 100%;
-  padding-right: 10px;
-  cursor: pointer;
-  z-index: 2;
+.status:has(.footer-notification.show) .version-panel {
+  border-left: 2px solid var(--separator);
 }
+
+.footer-notification{
+  transition: transform 0.22s ease-out, color 0.22s ease-out;
+  padding-right: 5px;
+  z-index: 1;
+}
+
+.footer-notification:not(.show){
+  transform: translateX(100%);
+}
+
+.footer-notification.show{
+  transform: translateX(0);
+}
+
 
 .version-panel:hover {
   color: var(--text-selected);
+  text-shadow: 0 0 3px var(--text-selected);
 }
 
 .dev-console {
@@ -585,11 +604,6 @@ i.bi-file-text:hover {
   color: var(--white-general);
 }
 
-.status,
-.socials,
-.save-info {
-  width: 33%;
-}
 
 
 .status {
