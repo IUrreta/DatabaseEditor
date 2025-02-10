@@ -54,7 +54,7 @@ export function placeRaces(races) {
                 race: newDiv.dataset.raceid,
                 year: yearSel
             }
-            socket.send(JSON.stringify(data))
+            // socket.send(JSON.stringify(data))
         })     
     })
 }
@@ -130,7 +130,7 @@ document.querySelector("#confirmPredict").addEventListener("click", function(){
         race: probRace,
         year: yearProbSel
     }
-    socket.send(JSON.stringify(data))
+    // socket.send(JSON.stringify(data))
     document.querySelector(".bar-and-indicator").style.opacity = 1;
     document.querySelector("#cancelPredict").disabled = true;
     document.querySelector("#confirmPredict").disabled = true;

@@ -23,7 +23,7 @@ import {
 } from './stats';
 import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs } from './head2head';
 import { dbWorker } from './dragFile';
-import { Command } from '../backend/commands/command';
+import { Command } from "../backend/command.js";
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
@@ -139,20 +139,6 @@ const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
 
 
-
-export const socket = new WebSocket('ws://localhost:8765/');
-/**
- * When the socket is opened sends a connect message to the backend
- */
-socket.onopen = () => {
-    //console.log('Conexión establecida.');
-    let data = {
-        command: "connect"
-    }
-    socket.send(JSON.stringify(data))
-
-};
-
 export function setSaveName(name) {
     saveName = name;
 }
@@ -206,14 +192,14 @@ function update_notifications(noti, code) {
     let toast = createToast(noti, code)
     setTimeout(function () {
         toast.classList.remove("myShow")
-    }, 300)
+    }, 150)
     notificationPanel.appendChild(toast);
     if (code !== "error") {
         setTimeout(function () {
             toast.classList.add("hide")
             setTimeout(function () {
                 notificationPanel.removeChild(toast);
-            }, 280);
+            }, 130);
         }, 4000);
     }
 }
@@ -225,6 +211,7 @@ function update_notifications(noti, code) {
  * @returns 
  */
 function createToast(msg, cod) {
+    console.log("CREATING TOAST")
     let toastFull = document.createElement('div');
     let toastIcon = document.createElement('div');
     let toastBodyDiv = document.createElement('div');
@@ -523,6 +510,9 @@ export function updateFront(data) {
     if (handler) {
         handler(message);
     }
+    if (data.noti_msg !== undefined) {
+        update_notifications(data.noti_msg, "ok")
+    }
 }
 
 
@@ -660,21 +650,7 @@ function update_engine_allocations(message) {
 
 
 
-/**
- * Handles the receiving end from the messages sent from backend
- * @param {string} event the message tha tcomes fro the backend
- */
-socket.onmessage = (event) => {
-    let message = JSON.parse(event.data);
-    let handler = messageHandlers[message[0]];
 
-    if (handler) {
-        handler(message);
-    }
-    if (!noNotifications.includes(message[0])) {
-        update_notifications(message[0], "ok");
-    }
-};
 
 /**
  * Opens the log file

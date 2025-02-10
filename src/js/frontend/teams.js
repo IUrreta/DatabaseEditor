@@ -1,5 +1,5 @@
 import {  team_dict  } from "./config";
-import { Command } from "../backend/commands/command";
+import { Command } from "../backend/command.js";
 import { manage_stat_bar } from "./stats";
 
 export let teamCod;

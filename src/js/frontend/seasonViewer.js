@@ -2,8 +2,7 @@ import { races_names, team_dict, codes_dict, combined_dict, logos_disc, races_ma
 import { resetH2H } from './head2head';
 import { game_version, custom_team } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
-import { socket } from "./renderer";
-import { Command } from "../backend/commands/command";
+import { Command } from "../backend/command.js";
 
 
 
@@ -96,8 +95,15 @@ function manage_show_tables() {
 document.querySelectorAll("#tableTypeDropdown a").forEach(function (elem) {
     elem.addEventListener("click", function () {
         pointsOrPos = elem.dataset.value
+        //count time to execute the function
+        let start = performance.now()
         change_points_pos_drivers()
+        let end = performance.now()
+        console.log("Time to execute change_points_pos_drivers: " + (end - start) + "ms")
+        start = performance.now()
         change_points_pos_teams()
+        end = performance.now()
+        console.log("Time to execute change_points_pos_teams: " + (end - start) + "ms")
         document.querySelector("#tableTypeButton").textContent = elem.textContent
     })
 })
@@ -961,7 +967,7 @@ export function generateYearsMenu(actualYear) {
                 command: "yearSelectedPrediction",
                 year: a3.textContent
             }
-            socket.send(JSON.stringify(dataYear))
+            // socket.send(JSON.stringify(dataYear))
         })
         let a4 = document.createElement("a");
         a4.textContent = year.toString();
@@ -974,7 +980,7 @@ export function generateYearsMenu(actualYear) {
                 command: "yearSelectedPredictionModal",
                 year: a4.textContent
             }
-            socket.send(JSON.stringify(dataYear))
+            // socket.send(JSON.stringify(dataYear))
         })
     }
     yearMenu.childNodes[0].click()

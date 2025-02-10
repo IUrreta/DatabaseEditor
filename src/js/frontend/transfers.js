@@ -1,8 +1,8 @@
-import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict  } from "./config";
+import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict, f1_teams, f2_teams, f3_teams, inverted_dict  } from "./config";
 import { game_version } from "./renderer";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import interact from 'interactjs';
-import { Command } from "../backend/commands/command";
+import { Command } from "../backend/command.js";
 
 
 
@@ -906,7 +906,6 @@ function signDriver(type) {
     let driverName = draggable.innerText
     if (type === "fireandhire") {
         let data = {
-            command: "fire",
             driverID: draggable.dataset.driverid,
             driver: driverName,
             team: name_dict[teamOrigin.dataset.team],
@@ -920,7 +919,8 @@ function signDriver(type) {
                 data["team"] = "F3"
             }
         }
-        socket.send(JSON.stringify(data))
+        const command = new Command("fireDriver",  data);
+        command.execute();
 
     }
     if (type === "regular") {
@@ -944,7 +944,6 @@ function signDriver(type) {
             raceBonusPosData = raceBonusPos.value;
 
         let data = {
-            command: "hire",
             driverID: draggable.dataset.driverid,
             teamID: inverted_dict[teamDestiniy],
             position: posInTeam,
@@ -957,12 +956,12 @@ function signDriver(type) {
             team: name_dict[teamDestiniy]
         }
         destinationParent.appendChild(draggable);
-        socket.send(JSON.stringify(data))
+        const command = new Command("hireDriver",  data);
+        command.execute();
 
     }
     else if (type === "autocontract") {
         let dataAuto = {
-            command: "autoContract",
             driverID: draggable.dataset.driverid,
             teamID: inverted_dict[teamDestiniy],
             position: posInTeam,
@@ -970,7 +969,8 @@ function signDriver(type) {
             team: name_dict[teamDestiniy]
         }
         destinationParent.appendChild(draggable);
-        socket.send(JSON.stringify(dataAuto))
+        const command = new Command("autoContract",  dataAuto);
+        command.execute();
 
     }
 }
@@ -1246,6 +1246,7 @@ interact('.free-driver').draggable({
                                 destinationParent = element;
                                 element.appendChild(target);
                                 originalTeamId = parseInt(target.dataset.teamid)
+                                console.log("ORIGINAL TEAM: " + originalTeamId)
                                 target.dataset.teamid = inverted_dict[teamDestiniy]
                                 updateColor(target)
                                 document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];
@@ -1279,14 +1280,14 @@ interact('.free-driver').draggable({
                                     updateColor(driver2)
                                     if (driver1 !== driver2) {
                                         let data = {
-                                            command: "swap",
                                             driver1ID: target.dataset.driverid,
                                             driver2ID: element.firstChild.dataset.driverid,
                                             driver1: target.innerText,
                                             driver2: element.firstChild.innerText,
                                         }
 
-                                        socket.send(JSON.stringify(data))
+                                        const command = new Command("swapDrivers",  data);
+                                        command.execute();
                                         manage_swap()
                                     }
 
@@ -1309,7 +1310,6 @@ interact('.free-driver').draggable({
                         updateColor(draggable)
                         freeDrivers.appendChild(target);
                         let data = {
-                            command: "fire",
                             driverID: draggable.dataset.driverid,
                             driver: draggable.innerText,
                             team: name_dict[teamOrigin.dataset.team],
@@ -1323,7 +1323,8 @@ interact('.free-driver').draggable({
                                 data["team"] = "F3"
                             }
                         }
-                        socket.send(JSON.stringify(data))
+                        const command = new Command("fireDriver",  data);
+                        command.execute();
                     }
                 }
             }
@@ -1380,14 +1381,14 @@ interact('.free-driver').draggable({
                                     updateColor(driver2)
                                     if (driver1 !== driver2) {
                                         let data = {
-                                            command: "swap",
                                             driver1ID: target.dataset.driverid,
                                             driver2ID: element.firstChild.dataset.driverid,
                                             driver1: target.innerText,
                                             driver2: element.firstChild.innerText,
                                         }
 
-                                        socket.send(JSON.stringify(data))
+                                        const command = new Command("swapDrivers",  data);
+                                        command.execute();
                                         manage_swap()
                                     }
 
@@ -1414,7 +1415,6 @@ interact('.free-driver').draggable({
                         updateColor(draggable)
                         tfreeStaff.appendChild(target);
                         let data = {
-                            command: "fire",
                             driverID: draggable.dataset.driverid,
                             driver: draggable.innerText,
                             team: name_dict[teamOrigin.dataset.team],
@@ -1428,7 +1428,8 @@ interact('.free-driver').draggable({
                                 data["team"] = "F3"
                             }
                         }
-                        socket.send(JSON.stringify(data))
+                        const command = new Command("fireDriver",  data);
+                        command.execute();
                     }
                 }
             }

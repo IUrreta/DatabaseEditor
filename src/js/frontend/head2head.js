@@ -4,7 +4,7 @@ import { insert_space, manageColor, format_name } from "./transfers";
 import { relative_grid } from "./predictions";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { Command } from "../backend/commands/command";
+import { Command } from "../backend/command.js";;
 
 
 let driver1_selected = false;

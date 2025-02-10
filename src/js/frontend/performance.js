@@ -1,8 +1,8 @@
 import { races_names, part_codes_abreviations, codes_dict, combined_dict, races_map, abreviations_dict, pars_abreviations, engine_stats_dict  } from "./config";
 import { colors_dict } from "./head2head";
 import { manageSaveButton, game_version } from "./renderer";
-import { socket, first_show_animation } from "./renderer";
-import { Command } from "../backend/commands/command";
+import { first_show_animation } from "./renderer";
+import { Command } from "../backend/command.js";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -618,7 +618,8 @@ document.querySelector("#fitButton").addEventListener("click", function () {
         teamID: teamSelected
 
     }
-    socket.send(JSON.stringify(data))
+    //pending
+    console.log(data)
 })
 
 document.querySelectorAll(".part-performance-title .bi-caret-down-fill").forEach(function (elem) {

@@ -3,17 +3,19 @@ import {
   fetchDrivers, fetchStaff, fetchEngines, fetchCalendar, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContract,
   editEngines, updateCustomConfig, fetchCustomConfig
-} from "../scriptUtils/dbUtils";
-import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "../scriptUtils/carAnalysisUtils"
-import { setDatabase, getMetadata, getDatabase } from "../dbManager";
-import { fetchHead2Head, fetchHead2HeadTeam } from "../scriptUtils/head2head";
-import { editTeam, fetchTeamData } from "../scriptUtils/editTeamUtils";
-import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart } from "../scriptUtils/carAnalysisUtils";
+} from "./scriptUtils/dbUtils";
+import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
+import { setDatabase, getMetadata, getDatabase } from "./dbManager";
+import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
+import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
+import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
-import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "../scriptUtils/eidtStatsUtils";
-import { editContract, futureContract } from "../scriptUtils/transferUtils"
-import { editCalendar } from "../scriptUtils/calendarUtils";
-import { analyzeFileToDatabase, repack } from "../UESaveHandler";
+import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
+import { editContract, futureContract } from "./scriptUtils/transferUtils"
+import { editCalendar } from "./scriptUtils/calendarUtils";
+import { fireDriver, hireDriver, swapDrivers } from "./scriptUtils/trasnferUtils";
+import { teamReplaceDict } from "./commandGlobals";
+import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 
 import initSqlJs from 'sql.js';
 
@@ -70,7 +72,7 @@ const workerCommands = {
     setGlobals({year: yearData[0]});
 
     const drivers = fetchDrivers(yearData[0]);
-    postMessage({ responseMessage: "Save loaded succesfully", content: drivers });
+    postMessage({ responseMessage: "Save loaded succesfully", content: drivers, noti_msg: "Save loaded succesfully" });
 
     const staff = fetchStaff(yearData[0]);
     postMessage({ responseMessage: "Staff fetched", content: staff });
@@ -135,7 +137,7 @@ const workerCommands = {
   },
   customEngines: (data, postMessage) => {
     updateCustomEngines(data.enginesData);
-    postMessage({ responseMessage: "Custom engines updated" });
+    postMessage({ responseMessage: "Custom engines updated", noti_msg: "Succesfully updated the custom engines" });
   },
   yearSelectedH2H: (data, postMessage) => {
     const drivers = fetchDriversPerYear(data.year);
@@ -166,7 +168,7 @@ const workerCommands = {
   },
   editTeam: (data, postMessage) => {
     editTeam(data);
-    postMessage({ responseMessage: "Team updated" });
+    postMessage({ responseMessage: "Team updated", noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s details` });
   },
   editStats: (data, postMessage) => {
     const globals = getGlobals();
@@ -190,7 +192,7 @@ const workerCommands = {
       editCode(data.driverID, data.newCode);
     }
 
-    postMessage({ responseMessage: "Stats updated" });
+    postMessage({ responseMessage: "Stats updated", noti_msg: `Succesfully edited ${data.driver}'s stats` });
   },
   editPerformance: (data, postMessage) => {
     let globals = getGlobals();
@@ -202,7 +204,7 @@ const workerCommands = {
     fitLoadoutsDict(data.loadouts, data.teamID)
 
     const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
-    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races] };
+    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races], noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s car performance` };
     postMessage(performanceResponse);
 
     const attibutes = getAttributesAllTeams(yearData[2]);
@@ -216,7 +218,7 @@ const workerCommands = {
   },
   editEngine: (data, postMessage) => {
     editEngines(data.engines)
-    postMessage({ responseMessage: "Engines updated" });
+    postMessage({ responseMessage: "Engines updated", noti_msg: "Succesfully edited all engines performance" });
   },
   editContract: (data, postMessage) => {
     const year = getGlobals().yearIteration;
@@ -227,30 +229,40 @@ const workerCommands = {
     futureContract(data.futureTeam, data.driverID, data.futureSalary, data.futureYear,
       data.futureSignBonus, data.futureRaceBonus, data.futureRaceBonusPos, data.futurePosition, year);
 
-    postMessage({ responseMessage: "Contract updated" });
+    postMessage({ responseMessage: "Contract updated", noti_msg: `Succesfully edited ${data.driver}'s contract` });
   },
   editCalendar: (data, postMessage) => {
     const year = getGlobals().yearIteration;
-
-    console.log(year)
-    console.log(getGlobals())
-
     editCalendar(data.calendarCodes, year);
-    postMessage({ responseMessage: "Calendar updated" });
+    postMessage({ responseMessage: "Calendar updated", noti_msg: "Succesfully updated the calendar" });
   },
-  configUpdate(data, postMessage) {
+  configUpdate: (data, postMessage) => {
     updateCustomConfig(data);
-    postMessage({ responseMessage: "Config updated" });
+    postMessage({ responseMessage: "Config updated", noti_msg: "Succesfully updated the configuration" });
+  },
+  fireDriver: (data, postMessage) => {
+    fireDriver(data.driverID, data.teamID);
+    postMessage({ responseMessage: "Driver fired", noti_msg: `Succesfully fired ${data.driver} from ${data.team}` });
+  },
+  hireDriver: (data, postMessage) => {
+    hireDriver("hire", data.driverID, data.teamID, data.position, data.salary, data.signBonus, data.raceBonus, data.raceBonusPos, data.year, getGlobals().yearIteration);
+    postMessage({ responseMessage: "Driver hired", noti_msg: `Succesfully hired ${data.driver} to ${data.team}` });
+  },
+  autoContract: (data, postMessage) => {
+    hireDriver("auto", data.driverID, data.teamID, data.position, getGlobals().yearIteration);
+    postMessage({ responseMessage: "Driver hired", noti_msg: `Succesfully hired ${data.driver} to ${data.team}` });
+  },
+  swapDrivers: (data, postMessage) => {
+    swapDrivers(data.driver1ID, data.driver2ID);
+    postMessage({ responseMessage: "Drivers swapped", noti_msg: `Succesfully swapped ${data.driver1} and ${data.driver2}` });
   }
+
 };
 
 
 self.addEventListener('message', async (e) => {
-  const { command, data } = e.data;
   console.log(e.data);
-  console.log("Command:", command);
-  console.log("Data:", data);
-
+  const { command, data } = e.data;
   if (workerCommands[command]) {
     try {
       await workerCommands[command](data, (response) => postMessage(response));

@@ -1,6 +1,6 @@
 // Command.js
-import { updateFront } from "../../frontend/renderer";
-import { dbWorker } from "../../frontend/dragFile";
+import { updateFront } from "../frontend/renderer";
+import { dbWorker } from "../frontend/dragFile";
 import { teamReplaceDict, prettyNames, getGlobals, setGlobals } from "./commandGlobals";
 
 
@@ -14,7 +14,7 @@ export class Command {
         this.data = data;
     }
 
-    execute() {
+    async execute() {
         console.log(`[Command] Ejecutando comando: ${this.commandName}`);
         console.log(`[Command] Datos:`, this.data);
         dbWorker.postMessage({ command: this.commandName, data: this.data });

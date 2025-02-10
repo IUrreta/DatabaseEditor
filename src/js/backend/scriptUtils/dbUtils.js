@@ -2,8 +2,7 @@ import countries_abreviations from "./countries.js";
 import { engine_unitValueToValue } from "./carConstants.js";
 import { manageDifficultyTriggers, manageRefurbishTrigger, editFreezeMentality, fetchExistingTriggers } from "./triggerUtils.js";
 import { queryDB } from "../dbManager.js";
-import { getGlobals } from "../commands/commandGlobals.js";
-
+import { getGlobals } from "../commandGlobals.js";
 
 
 /**
