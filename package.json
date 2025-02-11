@@ -10,6 +10,7 @@
   "author": "IUrreta",
   "license": "LGPL-3.0-or-later",
   "dependencies": {
+    "@vercel/speed-insights": "^1.2.0",
     "babel-loader": "^9.2.1",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.0",

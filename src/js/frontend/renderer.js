@@ -26,7 +26,7 @@ import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
-
+import { injectSpeedInsights } from '@vercel/speed-insights';
 
 
 const names_configs = {
@@ -141,6 +141,8 @@ let isShowingNotification = false;
 
 const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
+
+injectSpeedInsights();
 
 
 export function setSaveName(name) {
