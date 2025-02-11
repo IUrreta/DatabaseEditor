@@ -1178,63 +1178,69 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
     // commit
 }
 
-export async function changeExpertiseBased(part, stat, newValue, teamId, type = "existing", oldDesign = null) {
-    // Obtener el día y la temporada actual
-    const daySeasonResult = await db.query("SELECT Day, CurrentSeason FROM Player_State");
-    const { CurrentSeason } = daySeasonResult[0];
+export function changeExpertiseBased(part, stat, newValue, teamId, type = "existing", oldDesign = null) {
+    // SELECT Day, CurrentSeason FROM Player_State
+    const row = queryDB(`
+      SELECT Day, CurrentSeason
+      FROM Player_State
+    `, 'singleRow');
+    if (!row) {
+        console.warn("No Player_State found to do expertise changes");
+        return;
+    }
+    const [day, curSeason] = row;
 
-    let currentValue;
+    let currentValue = null;
     if (type === "existing") {
-        const result = await db.query(
-            `SELECT MAX(Value) as Value 
-         FROM Parts_Designs_StatValues 
-         WHERE PartStat = ? 
-           AND DesignID IN (
-               SELECT MAX(DesignID) 
-               FROM Parts_Designs 
-               WHERE PartType = ? 
-                 AND TeamID = ? 
-                 AND ValidFrom = ?
-           )`,
-            [stat, part, teamId, CurrentSeason]
-        );
-        currentValue = result[0].Value;
+        // SELECT MAX(Value) FROM Parts_Designs_StatValues ...
+        currentValue = queryDB(`
+        SELECT MAX(Value)
+        FROM Parts_Designs_StatValues
+        WHERE PartStat = ${stat}
+          AND DesignID IN (
+            SELECT MAX(DesignID)
+            FROM Parts_Designs
+            WHERE PartType = ${part}
+              AND TeamID = ${teamId}
+              AND ValidFrom = ${curSeason}
+          )
+      `, 'singleValue');
     } else if (type === "new") {
-        const result = await db.query(
-            `SELECT Value as Value 
-         FROM Parts_Designs_StatValues 
-         WHERE PartStat = ? AND DesignID = ?`,
-            [stat, oldDesign]
-        );
-        currentValue = result[0].Value;
+        // SELECT Value FROM Parts_Designs_StatValues ...
+        currentValue = queryDB(`
+        SELECT Value
+        FROM Parts_Designs_StatValues
+        WHERE PartStat = ${stat}
+          AND DesignID = ${oldDesign}
+      `, 'singleValue');
     }
 
-    // Evitar división por cero
+    if (!currentValue) {
+        currentValue = 1; // si no hay valor
+    }
     if (currentValue === 0) {
         currentValue = 1;
     }
 
-    // Obtener el expertise actual del equipo
-    const expertiseResult = await db.query(
-        `SELECT Expertise as Expertise 
-       FROM Parts_TeamExpertise 
-       WHERE TeamID = ? AND PartType = ? AND PartStat = ?`,
-        [teamId, part, stat]
-    );
-    const currentExpertise = expertiseResult[0].Expertise;
+    const currentExpertise = queryDB(`
+        SELECT Expertise
+        FROM Parts_TeamExpertise
+        WHERE TeamID = ${teamId}
+          AND PartType = ${part}
+          AND PartStat = ${stat}
+      `, 'singleValue') || 0;
 
-    // Calcular el nuevo expertise usando la regla de tres
-    const newExpertise = (newValue * currentExpertise) / currentValue;
+    const newExpertise = (Number(newValue) * Number(currentExpertise)) / Number(currentValue);
 
-    // Actualizar el nuevo expertise en la base de datos
-    await db.query(
-        `UPDATE Parts_TeamExpertise 
-       SET Expertise = ? 
-       WHERE TeamID = ? AND PartType = ? AND PartStat = ?`,
-        [newExpertise, teamId, part, stat]
-    );
+
+    queryDB(`
+        UPDATE Parts_TeamExpertise
+        SET Expertise = ${newExpertise}
+        WHERE TeamID = ${teamId}
+            AND PartType = ${part}
+            AND PartStat = ${stat}
+        `);
 }
-
 
 // get_performance_all_teams_season(...) => ya lo tienes, o lo traduces igual
 
