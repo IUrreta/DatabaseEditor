@@ -19,41 +19,41 @@ const difficultyDict = {
   },
   2: {
     name: "extraHard",
-    perc: 0.1,
-    "7and8": 0.002,
-    "9": 0.001,
+    perc: 0.5,
+    "7and8": 0.01,
+    "9": 0.005,
     reduction: 0,
     research: 8
   },
   3: {
     name: "brutal",
-    perc: 0.15,
-    "7and8": 0.003,
-    "9": 0.0015,
+    perc: 0.8,
+    "7and8": 0.016,
+    "9": 0.008,
     reduction: 0.05,
     research: 14
   },
   4: {
     name: "unfair",
-    perc: 0.3,
-    "7and8": 0.006,
-    "9": 0.003,
+    perc: 1.5,
+    "7and8": 0.03,
+    "9": 0.015,
     reduction: 0.11,
     research: 30
   },
   5: {
     name: "insane",
-    perc: 0.35,
-    "7and8": 0.007,
-    "9": 0.0035,
+    perc: 2,
+    "7and8": 0.04,
+    "9": 0.02,
     reduction: 0.16,
     research: 45
   },
   6: {
     name: "impossible",
-    perc: 0.48,
-    "7and8": 0.0096,
-    "9": 0.0048,
+    perc: 3,
+    "7and8": 0.06,
+    "9": 0.03,
     reduction: 0.2,
     research: 65
   }
@@ -65,11 +65,12 @@ const invertedDifficultyDict = Object.fromEntries(
 );
 
 export function manageDifficultyTriggers(triggerList) {
-  if (triggerList.statDif) manageDesignBoostTriggers(triggerList.statDif);
-  if (triggerList.designTimeDif) manageDesignTimeTriggers(triggerList.designTimeDif);
-  if (triggerList.lightDif) manageWeightTrigger(triggerList.lightDif);
-  if (triggerList.buildDif) manageInstantBuildTriggers(triggerList.buildDif);
-  if (triggerList.researchDif) manageResearchTriggers(triggerList.researchDif);
+  console.log("TRIGGERLIST", triggerList);
+  if (triggerList.statDif !== undefined) manageDesignBoostTriggers(triggerList.statDif);
+  if (triggerList.designTimeDif !== undefined) manageDesignTimeTriggers(triggerList.designTimeDif);
+  if (triggerList.lightDif !== undefined) manageWeightTrigger(triggerList.lightDif);
+  if (triggerList.buildDif !== undefined) manageInstantBuildTriggers(triggerList.buildDif);
+  if (triggerList.researchDif !== undefined) manageResearchTriggers(triggerList.researchDif);
 }
 
 export function manageWeightTrigger(triggerLevel) {
@@ -174,6 +175,7 @@ export function manageDesignTimeTriggers(triggerLevel) {
 }
 
 export function manageDesignBoostTriggers(triggerLevel) {
+  console.log("manageDesignBoostTriggers", triggerLevel);
   queryDB("DROP TRIGGER IF EXISTS difficulty_extraHard");
   queryDB("DROP TRIGGER IF EXISTS difficulty_brutal");
   queryDB("DROP TRIGGER IF EXISTS difficulty_unfair");
@@ -222,10 +224,39 @@ export function manageDesignBoostTriggers(triggerLevel) {
           AND PartStat = NEW.PartStat AND PartStat != 15;
           
           UPDATE Parts_TeamExpertise
-          SET Expertise = (SELECT Value FROM Parts_Designs_StatValues WHERE DesignID = NEW.DesignID AND PartStat = NEW.PartStat) / 0.8
+          SET Expertise = Expertise * (
+              (SELECT Value
+              FROM Parts_Designs_StatValues
+              WHERE DesignID = NEW.DesignID
+                AND PartStat = NEW.PartStat)
+              /
+              COALESCE(
+                (SELECT Value
+                FROM Parts_Designs_StatValues
+                WHERE PartStat = NEW.PartStat
+                  AND DesignID = (
+                      SELECT MAX(DesignID)
+                      FROM Parts_Designs
+                      WHERE DesignID < NEW.DesignID
+                        AND PartType = (SELECT PartType 
+                                        FROM Parts_Designs 
+                                        WHERE DesignID = NEW.DesignID)
+                        AND TeamID = (SELECT TeamID 
+                                      FROM Parts_Designs 
+                                      WHERE DesignID = NEW.DesignID)
+                  )
+                ),
+                (SELECT Value 
+                FROM Parts_Designs_StatValues 
+                WHERE DesignID = NEW.DesignID 
+                  AND PartStat = NEW.PartStat
+                )
+              )
+          )
           WHERE TeamID = (SELECT TeamID FROM Parts_Designs WHERE DesignID = NEW.DesignID)
-          AND PartType = (SELECT PartType FROM Parts_Designs WHERE DesignID = NEW.DesignID)
-          AND PartStat = NEW.PartStat;
+            AND PartType = (SELECT PartType FROM Parts_Designs WHERE DesignID = NEW.DesignID)
+            AND PartStat = NEW.PartStat;
+
         END;
       `;
     queryDB(triggerSQL);

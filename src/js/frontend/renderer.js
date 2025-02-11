@@ -28,6 +28,7 @@ import { Command } from "../backend/command.js";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 
+
 const names_configs = {
     "visarb": "VISA CASHAPP RB", "toyota": "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI", "brawn": "BRAWN GP", "porsche": "PORSCHE",
     "alpine": "ALPINE", "renault": "RENAULT", "andretti": "ANDRETTI", "lotus": "LOTUS", "alfa": "ALFA ROMEO",
@@ -1285,7 +1286,12 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         else {
             disabledList[id] = 0
         }
-        triggerList[id] = elem.classList && (elem.classList.contains("d-none") || elem.classList.contains("disabled")) ? -1 : inverted_difficulty_dict[elem.className.split(" ")[1]];
+        if (elem.className === "dif-warning"){
+            triggerList[id] = 0;
+        }
+        else{
+            triggerList[id] = elem.classList && (elem.classList.contains("d-none") || elem.classList.contains("disabled")) ? -1 : inverted_difficulty_dict[elem.className.split(" ")[1]];
+        }
     })
     let data = {
         alphatauri: alphatauri,
@@ -1414,6 +1420,9 @@ modPill.addEventListener("click", function () {
 document.querySelector(".toolbar-logo-and-title").addEventListener("click", function () {
     manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 0
+    document.getElementById("blockDiv").classList.remove("disappear")
+    document.querySelector(".scriptPills.active").classList.remove("active")
+    divBlocking = 1;
     check_selected()
 })
 

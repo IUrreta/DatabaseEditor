@@ -521,24 +521,24 @@ body {
   border-left: 2px solid transparent;
   background-color: var(--generals);
   z-index: 3;
-  
+
 }
 
 .status:has(.footer-notification.show) .version-panel {
   border-left: 2px solid var(--separator);
 }
 
-.footer-notification{
+.footer-notification {
   transition: transform 0.22s ease-out, color 0.22s ease-out;
   padding-right: 5px;
   z-index: 1;
 }
 
-.footer-notification:not(.show){
+.footer-notification:not(.show) {
   transform: translateX(100%);
 }
 
-.footer-notification.show{
+.footer-notification.show {
   transform: translateX(0);
 }
 
@@ -958,7 +958,7 @@ input[type="checkbox"]:checked {
   margin-top: 1px !important;
 }
 
-.dropdown-menu .dropdown-item{
+.dropdown-menu .dropdown-item {
   cursor: pointer;
 }
 
@@ -1334,7 +1334,7 @@ input[type="checkbox"]:checked {
   min-height: 71px;
 }
 
-.name-age-and-retired{
+.name-age-and-retired {
   display: flex;
   flex-direction: row;
   gap: 15px;
@@ -2040,7 +2040,7 @@ input[type="checkbox"]:checked {
   border-radius: 3px;
 }
 
-.nav-item{
+.nav-item {
   cursor: pointer;
 }
 
@@ -5800,25 +5800,94 @@ input.disabled {
   transition: opacity 0.15s;
 }
 
+@keyframes notification-light{
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .noti-fe {
   background-color: var(--ferrari-primary);
 }
 
-
+.noti-fe::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color-mix(in srgb, var(--ferrari-primary) 50%, white);
+  box-shadow: 0 0 10px 1px var(--ferrari-primary);
+  opacity: 1;
+  z-index: 2;
+  border-radius: 10px;
+  animation: notification-light 2.5s infinite;
+}
 
 .noti-rb {
   background-color: var(--redbull-primary);
 }
 
+.noti-rb::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color-mix(in srgb, var(--redbull-primary) 50%, white);
+  box-shadow: 0 0 10px 1px var(--redbull-primary);
+  opacity: 1;
+  z-index: 2;
+  border-radius: 10px;
+  animation: notification-light 2.5s infinite;
+}
 
 
 .noti-mc {
   background-color: var(--mclaren-primary);
 }
 
+.noti-mc::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color-mix(in srgb, var(--mclaren-primary) 50%, white);
+  box-shadow: 0 0 10px 1px var(--mclaren-primary);
+  opacity: 1;
+  z-index: 2;
+  border-radius: 10px;
+  animation: notification-light 2.5s infinite;
+}
+
 
 .noti-as {
   background-color: var(--aston-primary);
+}
+
+.noti-as::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color-mix(in srgb, var(--aston-primary) 50%, white);
+  box-shadow: 0 0 10px 1px var(--aston-primary);
+  opacity: 1;
+  z-index: 2;
+  border-radius: 10px;
+  animation: notification-light 2.5s infinite;
 }
 
 
@@ -5827,9 +5896,39 @@ input.disabled {
   background-color: var(--alpine-primary);
 }
 
+.noti-al::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color-mix(in srgb, var(--alpine-primary) 50%, white);
+  box-shadow: 0 0 10px 1px var(--alpine-primary);
+  opacity: 1;
+  z-index: 2;
+  border-radius: 10px;
+  animation: notification-light 2.5s infinite;
+}
+
 
 .noti-af {
   background-color: var(--alfa-primary);
+}
+
+.noti-af::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color-mix(in srgb, var(--alfa-primary) 50%, white);
+  box-shadow: 0 0 10px 1px var(--alfa-primary);
+  opacity: 1;
+  z-index: 2;
+  border-radius: 10px;
+  animation: notification-light 2.5s infinite;
 }
 
 
@@ -5838,13 +5937,58 @@ input.disabled {
   background-color: var(--haas-primary);
 }
 
+.noti-ha::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color-mix(in srgb, var(--haas-primary) 50%, white);
+  box-shadow: 0 0 10px 1px var(--haas-primary);
+  opacity: 1;
+  z-index: 2;
+  border-radius: 10px;
+  animation: notification-light 2.5s infinite;
+}
+
 
 .noti-wi {
   background-color: var(--williams-primary);
 }
 
+.noti-wi::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color-mix(in srgb, var(--williams-primary) 50%, white);
+  box-shadow: 0 0 10px 1px var(--williams-primary);
+  opacity: 1;
+  z-index: 2;
+  border-radius: 10px;
+  animation: notification-light 2.5s infinite;
+}
+
 .noti-at {
   background-color: var(--alphatauri-primary);
+}
+
+.noti-at::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color-mix(in srgb, var(--alphatauri-primary) 50%, white);
+  box-shadow: 0 0 10px 1px var(--alphatauri-primary);
+  opacity: 1;
+  z-index: 2;
+  border-radius: 10px;
+  animation: notification-light 2.5s infinite;
 }
 
 
@@ -5852,8 +5996,38 @@ input.disabled {
   background-color: var(--mercedes-primary);
 }
 
+.noti-me::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color-mix(in srgb, var(--mercedes-primary) 50%, white);
+  box-shadow: 0 0 10px 1px var(--mercedes-primary);
+  opacity: 1;
+  z-index: 2;
+  border-radius: 10px;
+  animation: notification-light 2.5s infinite;
+}
+
 .noti-ct {
   background-color: var(--custom-team-primary);
+}
+
+.noti-ct::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: color-mix(in srgb, var(--custom-team-primary) 50%, white);
+  box-shadow: 0 0 10px 1px var(--custom-team-primary);
+  opacity: 1;
+  z-index: 2;
+  border-radius: 10px;
+  animation: notification-light 2.5s infinite;
 }
 
 
@@ -6785,13 +6959,14 @@ input.disabled {
   transform: scale(1.6);
 }
 
-.active #mod25logo, #mod25logo:hover{
+.active #mod25logo,
+#mod25logo:hover {
   background: linear-gradient(to right, var(--new-primary), var(--text-general), var(--new-primary));
   background-size: 200% 200%;
   animation: gradient-move-title 5s linear infinite;
 }
 
-#amoLogo:hover{
+#amoLogo:hover {
   background: linear-gradient(to right, var(--amo-1), var(--amo-2), var(--amo-1));
   background-size: 200% 200%;
   animation: gradient-move-title 5s linear infinite;
@@ -6799,10 +6974,11 @@ input.disabled {
 }
 
 
-#mod25logo{
+#mod25logo {
   height: 40px;
   width: 200px;
-  transition: transform 0.15s ease; /* Solo transiciona transform */
+  transition: transform 0.15s ease;
+  /* Solo transiciona transform */
   cursor: pointer;
 
   background: var(--text-general);
@@ -6815,7 +6991,7 @@ input.disabled {
   will-change: transform;
 }
 
-#amoPill{
+#amoPill {
   height: 40px;
   display: flex;
   align-items: center;
@@ -6825,10 +7001,11 @@ input.disabled {
   transform: translateY(-50%);
 }
 
-#amoLogo{
+#amoLogo {
   height: 30px;
   width: 50px;
-  transition: transform 0.15s ease; /* Solo transiciona transform */
+  transition: transform 0.15s ease;
+  /* Solo transiciona transform */
   cursor: pointer;
 
   background: var(--text-general);
@@ -6841,7 +7018,7 @@ input.disabled {
   will-change: transform;
 }
 
-#mod25logo:hover{
+#mod25logo:hover {
   transform: scale(1.1);
 }
 
@@ -8500,7 +8677,7 @@ input::-webkit-inner-spin-button {
   flex-direction: row;
 }
 
-.mentality-changes{
+.mentality-changes {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -8804,7 +8981,7 @@ span.reduced-weight,
   justify-content: space-around;
 }
 
-#blockDiv.disappear{
+#blockDiv.disappear {
   animation: fadeOut 0.15s forwards;
   pointer-events: none;
 }
@@ -8813,6 +8990,7 @@ span.reduced-weight,
   0% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
   }
@@ -8838,7 +9016,7 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
   opacity: 0;
 }
 
-.socials-box{
+.socials-box {
   background-color: var(--superficials);
   border-radius: 20px;
   padding: 15px 10px;
@@ -8854,7 +9032,7 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
   justify-content: space-around;
 }
 
-.socials-box a{
+.socials-box a {
   color: var(--text);
   font-size: 22px;
   text-decoration: none;
@@ -8866,61 +9044,65 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
     opacity: 0;
     transform: translateY(50px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.drop-area{
+.drop-area {
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   border: 2px dashed var(--disabled-text);
-  border-radius: 20px;  
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   padding-left: 35%;
   transition: all 0.15s;
 }
 
-.list-item{
+.list-item {
   display: flex;
   flex-direction: row;
   font-size: 20px;
 }
 
-.list-item:has(.completed) .number-icon span, .list-item:not(:has(.completed)) .number-icon i{
+.list-item:has(.completed) .number-icon span,
+.list-item:not(:has(.completed)) .number-icon i {
   opacity: 0;
   rotate: 90deg;
 }
 
-.list-item:has(.completed) .number-icon i, .list-item:not(:has(.completed)) .number-icon span{
+.list-item:has(.completed) .number-icon i,
+.list-item:not(:has(.completed)) .number-icon span {
   opacity: 1;
   rotate: 0;
 }
 
-.list-item:has(.completed) .number-icon i{
+.list-item:has(.completed) .number-icon i {
   color: var(--positive-general);
 }
 
-.number-icon{
+.number-icon {
   position: relative;
   margin-right: 25px;
 }
 
-.number-icon span, .number-icon i{
+.number-icon span,
+.number-icon i {
   position: absolute;
   transition: all 0.15s;
 }
 
-.list-text{
+.list-text {
   transition: all 0.15s;
 }
 
-.list-text.completed{
+.list-text.completed {
   color: var(--positive-general);
 }
 
@@ -8995,7 +9177,7 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
     clip: rect(21px, 9999px, 23px, 0);
   }
 
-  
+
   14% {
     clip: rect(21px, 9999px, 23px, 0);
   }
@@ -9141,12 +9323,12 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
   }
 }
 
-body:has(.active #mod25logo) .background{
+body:has(.active #mod25logo) .background {
   background-color: transparent;
   background-image: url('../assets/images/modback.png');
 }
 
-.mod-banner{
+.mod-banner {
   display: flex;
   flex-direction: row;
   gap: 60px;
@@ -9157,7 +9339,7 @@ body:has(.active #mod25logo) .background{
   scale: 1.1;
 }
 
-.mod-name img{
+.mod-name img {
   width: 600px;
   display: flex;
   flex-direction: column;
@@ -9168,22 +9350,23 @@ body:has(.active #mod25logo) .background{
   opacity: 0;
 }
 
-body:has(.active #mod25logo) .mod-name img{
+body:has(.active #mod25logo) .mod-name img {
   animation: logo-appear 0.6s forwards;
 }
 
-@keyframes logo-appear{
-  0%{
+@keyframes logo-appear {
+  0% {
     opacity: 0;
     transform: translateY(-40px);
   }
-  100%{
+
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.mod-drivers{
+.mod-drivers {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
@@ -9191,7 +9374,7 @@ body:has(.active #mod25logo) .mod-name img{
   overflow-x: clip;
 }
 
-.small-rectangle{
+.small-rectangle {
   width: 130px;
   height: 100px;
   border-top-left-radius: 10px;
@@ -9202,7 +9385,8 @@ body:has(.active #mod25logo) .mod-name img{
   transform: translateY(20px);
 }
 
-.small-rectangle img, .high-rectangle img{
+.small-rectangle img,
+.high-rectangle img {
   width: 130px;
   position: absolute;
   bottom: 0;
@@ -9212,7 +9396,7 @@ body:has(.active #mod25logo) .mod-name img{
   transform: translateY(20px);
 }
 
-.high-rectangle{
+.high-rectangle {
   width: 130px;
   height: 150px;
   border-top-left-radius: 10px;
@@ -9221,38 +9405,42 @@ body:has(.active #mod25logo) .mod-name img{
   opacity: 0;
 }
 
-body:has(.active #mod25logo) .small-rectangle, body:has(.active #mod25logo) .high-rectangle,
-body:has(.active #mod25logo) .small-rectangle img, body:has(.active #mod25logo) .high-rectangle img,
-body:has(.active #mod25logo) .mod-drivers .mv-gradient, body:has(.active #mod25logo) .mod-drivers .lh-gradient, 
-body:has(.active #mod25logo) .mod-drivers .ka-gradient{
+body:has(.active #mod25logo) .small-rectangle,
+body:has(.active #mod25logo) .high-rectangle,
+body:has(.active #mod25logo) .small-rectangle img,
+body:has(.active #mod25logo) .high-rectangle img,
+body:has(.active #mod25logo) .mod-drivers .mv-gradient,
+body:has(.active #mod25logo) .mod-drivers .lh-gradient,
+body:has(.active #mod25logo) .mod-drivers .ka-gradient {
   animation: rectangle-appear 0.5s forwards;
   animation-delay: calc(var(--order) * 0.08s);
 }
 
-@keyframes rectangle-appear{
-  0%{
+@keyframes rectangle-appear {
+  0% {
     opacity: 0;
     transform: translateY(20px);
   }
-  100%{
+
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.ka-rectangle{
+.ka-rectangle {
   background: linear-gradient(to top, #41ffdb, #008e7f);
 }
 
-.ka-rectangle img{
+.ka-rectangle img {
   left: -2px;
 }
 
-.lh-rectangle img{
+.lh-rectangle img {
   left: 1px;
 }
 
-.ka-gradient{
+.ka-gradient {
   content: '';
   position: absolute;
   top: -1px;
@@ -9264,7 +9452,7 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient{
   opacity: 0;
 }
 
-.lh-gradient{
+.lh-gradient {
   content: '';
   position: absolute;
   top: -1px;
@@ -9276,7 +9464,7 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient{
   opacity: 0;
 }
 
-.mv-gradient{
+.mv-gradient {
   content: '';
   position: absolute;
   top: -43px;
@@ -9288,15 +9476,15 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient{
   opacity: 0;
 }
 
-.mv-rectangle{
+.mv-rectangle {
   background: linear-gradient(to top, #0014aa, #06093a);
 }
 
-.lh-rectangle{
+.lh-rectangle {
   background: linear-gradient(to top, #ff1500, #530000);
 }
 
-.mod-creators{
+.mod-creators {
   display: flex;
   flex-direction: row;
   gap: 10px;
@@ -9304,7 +9492,7 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient{
   justify-content: center;
 }
 
-.mod-creators a{
+.mod-creators a {
   text-transform: uppercase;
   font-size: 14px;
   color: var(--text-general);
@@ -9316,7 +9504,7 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient{
   position: relative;
 }
 
-.mod-creators a::before{
+.mod-creators a::before {
   color: white;
   text-shadow: 0 0 5px white;
   opacity: 0;
@@ -9327,45 +9515,45 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient{
   z-index: 2;
 }
 
-.mod-creators a.littleonion::before{
+.mod-creators a.littleonion::before {
   content: 'LITTLEONION';
 }
 
-.mod-creators a.bonnex::before{
+.mod-creators a.bonnex::before {
   content: 'BONNEX';
 }
 
-.mod-creators a.grzelu::before{
+.mod-creators a.grzelu::before {
   content: 'GRZELU';
 }
 
-.mod-creators a.thatgingerdude::before{
+.mod-creators a.thatgingerdude::before {
   content: 'THATGINGERDUDE';
 }
 
-.mod-creators a.n4x::before{
+.mod-creators a.n4x::before {
   content: 'N4X';
 }
 
-.mod-creators a.w1echuz::before{
+.mod-creators a.w1echuz::before {
   content: 'W1ECHUZ';
 }
 
 
 
 
-.mod-creators a:hover{
+.mod-creators a:hover {
   color: white;
   text-shadow: 0 0 5px white;
 }
 
-body:has(.active #mod25logo) .mod-creators a{
+body:has(.active #mod25logo) .mod-creators a {
   animation: creator-appear 0.6s forwards;
   animation-delay: calc((var(--order) * 0.07s));
-  
+
 }
 
-body:has(.active #mod25logo) .mod-creators a::before{
+body:has(.active #mod25logo) .mod-creators a::before {
   animation: before-appear 0.9s;
   animation-delay: calc((var(--order) * 0.07s));
 }
@@ -9374,6 +9562,7 @@ body:has(.active #mod25logo) .mod-creators a::before{
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -9383,9 +9572,11 @@ body:has(.active #mod25logo) .mod-creators a::before{
   0% {
     opacity: 0;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     opacity: 0;
   }
@@ -9395,11 +9586,13 @@ body:has(.active #mod25logo) .mod-creators a::before{
   0% {
     opacity: 0;
   }
+
   50% {
     opacity: 1;
     background-color: white;
     box-shadow: 0 0 5px white;
   }
+
   100% {
     opacity: 1;
     background-color: var(--text-general);
@@ -9409,14 +9602,14 @@ body:has(.active #mod25logo) .mod-creators a::before{
 
 
 
-.creator-separator{
+.creator-separator {
   width: 2px;
   background-color: var(--text-general);
   height: 14px;
   opacity: 0;
 }
 
-body:has(.active #mod25logo) .creator-separator{
+body:has(.active #mod25logo) .creator-separator {
   animation: separator-appear 0.6s forwards;
   animation-delay: calc((var(--order) * 0.07s));
 }
