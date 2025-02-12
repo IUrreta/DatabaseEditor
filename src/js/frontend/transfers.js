@@ -1,5 +1,5 @@
 import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict, f1_teams, f2_teams, f3_teams, inverted_dict  } from "./config";
-import { game_version } from "./renderer";
+import { game_version, make_name_prettier } from "./renderer";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import interact from 'interactjs';
 import { Command } from "../backend/command.js";
@@ -777,7 +777,7 @@ function updateContractValue(input, increment) {
  */
 function queryContract(elem) {
     driverEditingID = elem.dataset.driverid
-    driverEditingName = elem.innerText
+    driverEditingName = make_name_prettier(elem.innerText)
 
     const command = new Command("driverRequest",  { driverID: driverEditingID });
     command.execute();
@@ -903,7 +903,7 @@ function manage_swap() {
  * @param {string} type type of the hiring of the driver, depending if he needs to be fired before or not
  */
 function signDriver(type) {
-    let driverName = draggable.innerText
+    let driverName = make_name_prettier(draggable.innerText)
     if (type === "fireandhire") {
         let data = {
             driverID: draggable.dataset.driverid,
@@ -1282,8 +1282,8 @@ interact('.free-driver').draggable({
                                         let data = {
                                             driver1ID: target.dataset.driverid,
                                             driver2ID: element.firstChild.dataset.driverid,
-                                            driver1: target.innerText,
-                                            driver2: element.firstChild.innerText,
+                                            driver1: make_name_prettier(target.innerText),
+                                            driver2: make_name_prettier(element.firstChild.innerText),
                                         }
 
                                         const command = new Command("swapDrivers",  data);
@@ -1311,7 +1311,7 @@ interact('.free-driver').draggable({
                         freeDrivers.appendChild(target);
                         let data = {
                             driverID: draggable.dataset.driverid,
-                            driver: draggable.innerText,
+                            driver: make_name_prettier(draggable.innerText),
                             team: name_dict[teamOrigin.dataset.team],
                             teamID: originalTeamId
                         }
@@ -1416,7 +1416,7 @@ interact('.free-driver').draggable({
                         tfreeStaff.appendChild(target);
                         let data = {
                             driverID: draggable.dataset.driverid,
-                            driver: draggable.innerText,
+                            driver: make_name_prettier(draggable.innerText),
                             team: name_dict[teamOrigin.dataset.team],
                             teamID: originalTeamId
                         }

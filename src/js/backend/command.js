@@ -14,15 +14,19 @@ export class Command {
         this.data = data;
     }
 
-    async execute() {
+    async execute(loader=false) {
         console.log(`[Command] Ejecutando comando: ${this.commandName}`);
         console.log(`[Command] Datos:`, this.data);
+        if(loader){
+            document.querySelector(".loader").classList.remove("hidden");
+        }
         dbWorker.postMessage({ command: this.commandName, data: this.data });
 
         dbWorker.onmessage = (msg) => {
             const response = msg.data;
             if (response.error) {
                 console.error(`[${this.commandName}] Error:`, response.error);
+                document.querySelector(".error").classList.remove("d-none");
             } else {
                 console.log(`[${this.commandName}] Respuesta:`, response.responseMessage);
                 updateFront(response);
@@ -32,6 +36,9 @@ export class Command {
                         this.addTeam("Custom Team", response.content[1]);
                     }
                 }
+            }
+            if(loader){
+                document.querySelector(".loader").classList.add("hidden");
             }
         };
     }

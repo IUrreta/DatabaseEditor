@@ -144,6 +144,33 @@ const repoName = 'DatabaseEditor';
 
 injectSpeedInsights();
 
+(function () {
+    const originalLog = console.log;
+    const originalError = console.error;
+
+    const logArray = [];
+
+    console.log = function (...args) {
+        logArray.push({
+            type: 'log',
+            message: args,
+            timestamp: new Date()
+        });
+        originalLog.apply(console, args);
+    };
+
+    console.error = function (...args) {
+        logArray.push({
+            type: 'error',
+            message: args,
+            timestamp: new Date()
+        });
+        originalError.apply(console, args);
+    };
+
+    window.getLogEntries = () => logArray;
+})();
+
 
 export function setSaveName(name) {
     saveName = name;
@@ -154,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
     versionPanel.textContent = `${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
     getPatchNotes()
-  });
+});
 
 
 /**
@@ -290,6 +317,7 @@ function editModeHandler() {
         id = document.querySelector(".clicked").dataset.driverid;
     }
     let driverName = getName(document.querySelector(".clicked .name-div-edit-stats"));
+    driverName = make_name_prettier(driverName);
     document.querySelector(".clicked").dataset.stats = stats;
     let globalMentality = 2
     let mentality = -1
@@ -375,7 +403,7 @@ function editModeHandler() {
     };
 
 
-    const command = new Command("editStats",  dataStats);
+    const command = new Command("editStats", dataStats);
     command.execute();
 }
 
@@ -391,7 +419,7 @@ function calendarModeHandler() {
         calendarCodes: dataCodesString
     };
 
-    const command = new Command("editCalendar",  dataCalendar);
+    const command = new Command("editCalendar", dataCalendar);
     command.execute();
 }
 
@@ -420,7 +448,7 @@ function teamsModeHandler() {
         teamName: default_dict[teamCod],
     }
 
-    const command = new Command("editTeam",  data);
+    const command = new Command("editTeam", data);
     command.execute();
 }
 
@@ -460,7 +488,7 @@ function performanceModeHandler() {
             teamName: document.querySelector(".selected").dataset.teamname
         }
 
-        const command = new Command("editPerformance",  data);
+        const command = new Command("editPerformance", data);
         command.execute();
     }
     else if (teamsEngine === "engines") {
@@ -468,8 +496,8 @@ function performanceModeHandler() {
         data = {
             engines: engineData,
         }
-        
-        const command = new Command("editEngine",  data);
+
+        const command = new Command("editEngine", data);
         command.execute();
     }
 
@@ -542,11 +570,9 @@ function showNextNotification() {
 
     const nextMessage = notificationsQueue.shift();
 
-    let parsed_message = manage_notification_text(nextMessage);
-
     const footerNotification = document.querySelector('.footer-notification');
-    
-    footerNotification.textContent = parsed_message;
+
+    footerNotification.textContent = nextMessage;
     footerNotification.classList.add('show');
 
     setTimeout(() => {
@@ -560,28 +586,16 @@ function showNextNotification() {
     }, 4000);
 }
 
-function manage_notification_text(message) {
-    let words = message.split(/[\s\n]+/); 
+export function make_name_prettier(text) {
+    const words = text.trim().split(/\s+/);
 
-    let newWords = [];
-  
-    for (let i = 0; i < words.length; i++) {
-      let currentWord = words[i];
-  
-      if (currentWord && currentWord === currentWord.toUpperCase()) {
-        if (newWords.length > 0) {
-          newWords.pop();
-        }
-        let transformedWord =
-          currentWord.charAt(0).toUpperCase() + currentWord.slice(1).toLowerCase();
-  
-        newWords.push(transformedWord);
-      } else {
-        newWords.push(currentWord);
-      }
+    if (words.length < 2) {
+        return "";
     }
-  
-    return newWords.join(" ");
+
+    const lastWord = words.pop();
+
+    return lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();
 }
 
 
@@ -878,16 +892,16 @@ fileInput.addEventListener('change', (event) => {
 function replace_custom_team_logo(path) {
     // Si el string base64 no tiene el prefijo, se lo agregamos.
     if (!path.startsWith("data:image/")) {
-      // Ajusta el tipo de imagen ("png", "jpeg", etc.) según corresponda.
-      path = "data:image/png;base64," + path;
+        // Ajusta el tipo de imagen ("png", "jpeg", etc.) según corresponda.
+        path = "data:image/png;base64," + path;
     }
-    
+
     logos_disc[32] = path;
     document.querySelectorAll(".custom-replace").forEach(function (elem) {
-      elem.src = path;
+        elem.src = path;
     });
     document.querySelector(".logo-preview").src = path;
-  }
+}
 
 
 
@@ -952,7 +966,7 @@ function manage_config_content(info, year_config = false) {
         let difficultySlider = document.getElementById("difficultySlider")
         difficultySlider.value = info["difficulty"]
         update_difficulty_span(info["difficulty"])
-        if (info["difficulty"] === -2) { 
+        if (info["difficulty"] === -2) {
             load_difficulty_warnings(info["triggerList"])
         }
         else {
@@ -1288,10 +1302,10 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         else {
             disabledList[id] = 0
         }
-        if (elem.className === "dif-warning"){
+        if (elem.className === "dif-warning") {
             triggerList[id] = 0;
         }
-        else{
+        else {
             triggerList[id] = elem.classList && (elem.classList.contains("d-none") || elem.classList.contains("disabled")) ? -1 : inverted_difficulty_dict[elem.className.split(" ")[1]];
         }
     })
@@ -1299,7 +1313,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         alphatauri: alphatauri,
         alpine: alpine,
         alfa: alfa,
-        frozenMentality : mentalityFrozen,
+        frozenMentality: mentalityFrozen,
         difficulty: difficultyValue,
         refurbish: refurbish,
         disabled: disabledList,
@@ -1311,7 +1325,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         replace_custom_team_color(data["primaryColor"], data["secondaryColor"])
     }
 
-    const command = new Command("configUpdate",  data);
+    const command = new Command("configUpdate", data);
     command.execute();
     let info = { teams: { alphatauri: alphatauri, alpine: alpine, alfa: alfa } }
     replace_all_teams(info)

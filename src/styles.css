@@ -535,17 +535,20 @@ body {
 }
 
 .footer-notification:not(.show) {
-  transform: translateX(100%);
+  transform: translateX(123%);
 }
 
-.footer-notification.show {
+.footer:has(.loader:not(.hidden)) .footer-notification.show {
   transform: translateX(0);
+}
+
+.footer:has(.loader.hidden) .footer-notification.show {
+  transform: translateX(17px);
 }
 
 
 .version-panel:hover {
   color: var(--text-selected);
-  text-shadow: 0 0 3px var(--text-selected);
 }
 
 .dev-console {
@@ -612,10 +615,7 @@ i.bi-file-text:hover {
   justify-content: flex-end;
 }
 
-.status-info {
-  margin-right: 7px;
-  cursor: default;
-}
+
 
 .awaiting {
   color: var(--awaiting-color);
@@ -5800,13 +5800,15 @@ input.disabled {
   transition: opacity 0.15s;
 }
 
-@keyframes notification-light{
+@keyframes notification-light {
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -5835,7 +5837,7 @@ input.disabled {
   background-color: var(--redbull-primary);
 }
 
-.noti-rb::before{
+.noti-rb::before {
   content: '';
   position: absolute;
   top: 0;
@@ -9612,4 +9614,47 @@ body:has(.active #mod25logo) .mod-creators a::before {
 body:has(.active #mod25logo) .creator-separator {
   animation: separator-appear 0.6s forwards;
   animation-delay: calc((var(--order) * 0.07s));
+}
+
+.status-info{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--generals);
+}
+
+.loader {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--modal-text);
+  border-bottom-color: var(--new-primary);
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+  transition: opacity 0.1s;
+  opacity: 1;
+}
+
+.loader.hidden{
+  opacity: 0;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.footer .bi-exclamation-triangle-fill{
+  color: color-mix(in srgb, var(--negative-general) 60%, var(--generals));
+  transition: all 0.15s;
+}
+
+.footer .bi-exclamation-triangle-fill:hover{
+  color: color-mix(in srgb, var(--negative-general) 95%, var(--generals));
 }

@@ -937,7 +937,7 @@ export function generateYearsMenu(actualYear) {
             isYearSelected = true
             manage_show_tables()
             const command = new Command("yearSelected",  a.textContent);
-            command.execute();
+            command.execute(true);
 
         })
 
