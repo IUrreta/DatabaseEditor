@@ -18,6 +18,8 @@ let alfaReplace = "alfa"
 let driverOrTeams = "drivers"
 let isYearSelected = false
 export let engine_allocations;
+let driverCells;
+let teamCells;
 
 
 export let engine_names = { //this one is changed as the user adds engines, so it will stayhere
@@ -109,27 +111,27 @@ document.querySelectorAll("#tableTypeDropdown a").forEach(function (elem) {
 })
 
 
+
+
 function change_points_pos_drivers() {
-    let datazone = document.querySelector(".drivers-table-data")
-    let rows = datazone.querySelectorAll(".drivers-table-row")
-    rows.forEach(function (row, index) {
-        let cells = row.querySelectorAll(".drivers-table-normal")
-        cells.forEach(function (cell) {
-            let newCell = manageText(cell)
-            cell.innerText = newCell.innerText
-        })
+    driverCells.forEach(function (cell) {
+        if (cell.dataset[pointsOrPos] !== undefined){
+            cell.innerText = cell.dataset[pointsOrPos]
+        }
+        else{
+            cell.innerText = "-"
+        }
     })
 }
 
 function change_points_pos_teams() {
-    let datazone = document.querySelector(".teams-table-data")
-    let rows = datazone.querySelectorAll(".teams-table-row")
-    rows.forEach(function (row, index) {
-        let cells = row.querySelectorAll(".teams-table-normal")
-        cells.forEach(function (cell) {
-            let newCell = manageTeamsText(cell)
-            cell.innerHTML = newCell.innerHTML
-        })
+    teamCells.forEach(function (cell) {
+        if (cell.dataset[pointsOrPos] !== undefined){
+            cell.innerText = cell.dataset[pointsOrPos]
+        }
+        else{
+            cell.innerText = "-"
+        }
     })
 
 }
@@ -234,7 +236,7 @@ function new_color_drivers_table() {
             if (cell.dataset.fastlap === "1") {
                 cell.classList.add("fastest")
             }
-            if (cell.dataset.qualy === "1") {
+            if (cell.dataset.quali === "1") {
                 cell.style.fontFamily = "Formula1Bold"
             }
         })
@@ -437,6 +439,7 @@ export function new_load_drivers_table(data) {
     hoverListeners()
     checkscroll()
     new_color_drivers_table()
+    driverCells = document.querySelectorAll(".drivers-table-data .drivers-table-normal")
 }
 
 function new_order_drivers(array) {
@@ -516,6 +519,7 @@ export function new_load_teams_table(data) {
     order_teams_table()
     manage_teams_table_logos()
     manage_teams_table_names()
+    teamCells = document.querySelectorAll(".teams-table-data .teams-table-normal")
 }
 
 function new_addTeam(teamData, name, pos, id) {
@@ -579,18 +583,15 @@ function new_addTeam(teamData, name, pos, id) {
                         driver2Points = driver2[2]
                         driver2Pos = driver2[1]
                     }
-                    raceDiv.dataset.points = parseInt(driver1Points) + parseInt(driver2Points)
-                    raceDiv.dataset.pos1 = driver1Pos
-                    raceDiv.dataset.pos2 = driver2Pos
+                    raceDiv.dataset.pointsCount = parseInt(driver1Points) + parseInt(driver2Points)
+                    raceDiv.dataset.points = manage_dataset_info_team([driver1[2], driver2[2]], (race.length > 8 ? [driver1[7], driver2[7]] : undefined), "points")
+                    raceDiv.dataset.pos = manage_dataset_info_team([driver1[1], driver2[1]], (race.length > 8 ? [driver1[8], driver2[8]] : undefined), "pos")
+                    raceDiv.dataset.quali = manage_dataset_info_team([driver1[4], driver2[4]], undefined, "quali")
                     raceDiv.dataset.quali1 = driver1[4]
                     raceDiv.dataset.quali2 = driver2[4]
                     raceDiv.dataset.fastlap1 = driver1[3]
                     raceDiv.dataset.fastlap2 = driver2[3]
-                    raceDiv.dataset.gapToWinner1 = driver1[5]
-                    raceDiv.dataset.gapToWinner2 = driver2[5]
-                    raceDiv.dataset.gapToPole1 = driver1[6]
-                    raceDiv.dataset.gapToPole2 = driver2[6]
-                    teampoints += parseInt(raceDiv.dataset.points)
+                    teampoints += parseInt(raceDiv.dataset.pointsCount)
                     if (race.length > 8) {
                         let d1SprintPoints = 0
                         let d2SprintPoints = 0
@@ -622,8 +623,7 @@ function new_addTeam(teamData, name, pos, id) {
                 else {
                     raceDiv.innerText = "-"
                 }
-                let newText = manageTeamsText(raceDiv)
-                raceDiv.innerHTML = newText.innerHTML
+                raceDiv.textContent = raceDiv.dataset[pointsOrPos]
                 row.appendChild(raceDiv)
             }
 
@@ -710,10 +710,10 @@ function new_addDriver(driver, races_done, odd) {
         if (races_done.includes(raceid)) {
             let index = races_done.indexOf(raceid)
             let race = driver[index + 3]
-            raceDiv.dataset.pos = race[1]
-            raceDiv.dataset.points = race[2]
+            raceDiv.dataset.pos = manage_dataset_info_driver(race[1], (race.length > 8 ? race[8] : undefined), "pos")
+            raceDiv.dataset.points = manage_dataset_info_driver(race[2], (race.length > 8 ? race[7] : undefined), "points")
             raceDiv.dataset.fastlap = race[3]
-            raceDiv.dataset.qualy = race[4]
+            raceDiv.dataset.quali = manage_dataset_info_driver(race[4], undefined, "quali")
             raceDiv.dataset.gapToWinner = race[5]
             raceDiv.dataset.gapToPole = race[6]
             if (race.length > 8) { //sprint 
@@ -724,9 +724,9 @@ function new_addDriver(driver, races_done, odd) {
                 }
             }
             if (raceDiv.dataset.points !== "-1") {
-                driverpoints += parseInt(raceDiv.dataset.points)
+                driverpoints += parseInt(race[2])
             }
-            raceDiv = manageText(raceDiv)
+            raceDiv.textContent = raceDiv.dataset[pointsOrPos]
             row.appendChild(raceDiv)
         }
         else {
@@ -747,6 +747,109 @@ function new_addDriver(driver, races_done, odd) {
         }
     })
     data.appendChild(row)
+}
+
+function manage_dataset_info_driver(info, sprintInfo, type){
+    let race, sprint;
+    if (type === "points"){
+        if (parseInt(info) === 0){
+            race = ""
+        }
+        else if (parseInt(info) === -1){
+            race = "DNF"
+        }
+        else{
+            race = info
+        }
+
+        if (sprintInfo === undefined){
+            sprint = ""
+        }
+        else if (parseInt(sprintInfo) === 0 || parseInt(sprintInfo) === -1){
+            sprint = ""
+        }
+        else {
+            sprint = sprintInfo
+        }
+        let res = `${race}${(sprint !== "") ? "(" + sprint + ")" : ""}`
+        return res
+
+    }
+    else if (type === "pos"){
+        if (parseInt(info) === -1){
+            race = "DNF"
+        }
+        else{
+            race = info;
+        }
+
+        if (sprintInfo === undefined || parseInt(sprintInfo) > 8 || parseInt(sprintInfo) === -1){
+            sprint = ""
+        }
+        else {
+            sprint = sprintInfo
+        }
+
+        let res = `${race}${(sprint !== "") ? "(" + sprint + ")" : ""}`
+        return res
+
+    }
+    else if (type === "quali"){
+        race = info;
+        return race;
+    }
+}
+
+function manage_dataset_info_team(info, sprintInfo, type){
+    let race, sprint;
+    if (type === "points"){
+        let d1Points = (info[0] !== -1 ? info[0] : 0)
+        let d2Points = (info[1] !== -1 ? info[1] : 0)
+        let combinedRace = parseInt(d1Points) + parseInt(d2Points)
+        let combinedSprint;
+        if (sprintInfo !== undefined){
+            combinedSprint = parseInt(sprintInfo[0]) + parseInt(sprintInfo[1])
+        }
+        if (combinedRace === 0){
+            race = ""
+        }
+        else{
+            race = combinedRace
+        }
+        if (sprintInfo === undefined || combinedSprint === 0){
+            sprint = ""
+        }
+        else if (combinedSprint !== 0){
+            sprint = combinedSprint
+        }
+
+        let res = `${race}${(sprint !== "") ? "(" + sprint + ")" : ""}`
+        return res;
+    }
+    else if (type === "pos"){
+        if (parseInt(info[0]) === -1){
+            info[0] = "DNF"
+        }
+        if (parseInt(info[1]) === -1){
+            info[1] = "DNF"
+        }
+
+        if (sprintInfo !== undefined){
+            if (parseInt(sprintInfo[0]) === -1 || parseInt(sprintInfo[0]) > 8){
+                sprintInfo[0] = ""
+            }
+            if (parseInt(sprintInfo[1]) === -1 || parseInt(sprintInfo[1]) > 8){
+                sprintInfo[1] = ""
+            }
+        }
+
+        let res = `${info[0]}${(sprintInfo !== undefined && sprintInfo[0] !== "") ? "(" + sprintInfo[0] + ")" : ""}\n${info[1]}${(sprintInfo !== undefined && sprintInfo[1] !== "") ? "(" + sprintInfo[1] + ")" : ""}`
+        return res;
+    }
+    else if (type === "quali"){
+        let res = `${info[0]}\n${info[1]}`
+        return res;
+    }
 }
 
 
@@ -792,7 +895,7 @@ function manageText(raceDiv) {
         }
     }
     else if (pointsOrPos === "quali") {
-        raceDiv.innerText = raceDiv.dataset.qualy
+        raceDiv.innerText = raceDiv.dataset.quali
     }
     else if (pointsOrPos === "gapWinner") {
         if (raceDiv.dataset.pos === "-1") {
@@ -936,7 +1039,7 @@ export function generateYearsMenu(actualYear) {
             document.getElementById("yearButton").textContent = a.textContent
             isYearSelected = true
             manage_show_tables()
-            const command = new Command("yearSelected",  a.textContent);
+            const command = new Command("yearSelected", a.textContent);
             command.execute(true);
 
         })
@@ -952,7 +1055,7 @@ export function generateYearsMenu(actualYear) {
                 elem.classList.remove("d-none")
             })
             document.getElementById("yearButtonH2H").textContent = a2.textContent
-            const command = new Command("yearSelectedH2H",  { year: a2.textContent });
+            const command = new Command("yearSelectedH2H", { year: a2.textContent });
             command.execute();
         })
         let a3 = document.createElement("a");
