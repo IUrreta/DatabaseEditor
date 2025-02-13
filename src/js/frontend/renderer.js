@@ -1732,13 +1732,9 @@ async function isPatronSignatureValid() {
 async function checkPatreonStatus() {
     const validSignature = await isPatronSignatureValid();
 
-    // if (validSignature) {
-    //     lockedContent.innerHTML = '<h3>Contenido desbloqueado. ¡Gracias Patron!</h3>';
-    //     return;
-    // }
 
     const lastShownStr = localStorage.getItem('patreonModalLastShown');
-    if (!canShowPatreonModal(lastShownStr)) {
+    if (!canShowPatreonModal(lastShownStr) || validSignature) {
         return;
     }
 
