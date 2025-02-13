@@ -9,6 +9,65 @@
 </head>
 
 <body class="font">
+  <div class="modal fade" id="patreonModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Please consider supporting this project</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="patreon-paragraph">
+            <span class="">
+              The Database Editor will <span class="important-text bold-font ">remain free</span>, and no core features
+              will
+              ever be locked behind a paywall.
+              However, running and maintaining this project <span class="important-text bold-font">takes time and
+                resources</span>.
+            </span>
+            <span class="">
+              If you found the tool useful and want to support its development,
+              <br>
+              <span class="patreon-text bold-font">consider becoming a Patron!</span>
+            </span>
+            <div class="patreon-perks d-none">
+              <div class="perks-list">
+                <span>5.5€/month tier:</span>
+                <ul class="patreon-perks-list">
+                  <li>Support the project</li>
+                  <li>Extra themes for the editor</li>
+                  <li>Ad-free experience (no pop-ups)</li>
+                  <li>Access to progress posts</li>
+                  <li>Recognition as a supporter</li>
+                  <li>Ability to request new features</li>
+                </ul>
+              </div>
+              <div class="perks-list">
+                <span>10.5€/month tier:</span>
+                <ul class="patreon-perks-list">
+                  <li>All the previous tiers rewards, plus:</li>
+                  <li>Even more support to the project!</li>
+                  <li>Saving your data from +5 seasons</li>
+                  <li>Sneak peeks of future development</li>
+                </ul>
+              </div>
+            </div>
+            <a href="https://www.buymeacoffee.com/iUrreta" target="_blank">
+              <div class="patreon-button">
+                <div class="patreon-button-logo"></div>
+                <span class="patreon-button-text bold-font">PATREON PAGE</span>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <div class="pos-relative">
+            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
+            <div class="dropdown-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="enginesModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
@@ -318,7 +377,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
         <div class="modal-header custom-header">
-          <h3 class="modal-title bold-font">Save settings</h3>
+          <h3 class="modal-title bold-font">Settings</h3>
         </div>
         <div class="modal-body custom-body">
           <div class="pb-2 pe-3">
@@ -326,7 +385,7 @@
               <li class="nav-item">
                 <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"
                   data-section=".teams-section" id="editorPill">
-                  <div class="basic-label bold-font">Editor</div>
+                  <div class="basic-label bold-font">Save</div>
                   <div class="pill-line"></div>
                 </a>
               </li>
@@ -334,6 +393,13 @@
                 <a class="nav-link bold-font categoryPills generalPills" data-bs-toggle="pill"
                   data-section=".engines-section" id="gamePill">
                   <div class="basic-label bold-font">Game</div>
+                  <div class="pill-line"></div>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link bold-font categoryPills generalPills" data-bs-toggle="pill"
+                  data-section=".engines-section" id="patreonPill">
+                  <div class="basic-label bold-font">Patreon</div>
                   <div class="pill-line"></div>
                 </a>
               </li>
@@ -572,6 +638,36 @@
               </div>
             </div>
           </div>
+          <div id="patreonChanges">
+            <div class="patreon-changes-text">
+              <span>
+                Becoming a patreon supporter will not only support massively the development of the game, but also give
+                you access to
+                exclusive content and features. Please consider supporting the tool if oyu find it useful!
+              </span>
+              <span>
+                If you are already a patreon supporter, please download your patreon key from the patreon website and
+                upload it here to unlock the
+                exclusive features and remove the pop-ups!
+              </span>
+            </div>
+            <div class="upload-key-and-patreon-button">
+
+              <a href="https://www.buymeacoffee.com/iUrreta" target="_blank">
+                <div class="patreon-button">
+                  <div class="patreon-button-logo"></div>
+                  <span class="patreon-button-text bold-font">PATREON PAGE</span>
+                </div>
+              </a>
+              <div>
+                <button class="custom-dropdown custom-button" id="patreonKeyButton">
+                  <div class="front-gradient">Upload patreon key</div>
+                </button>
+                <div class="dropdown-line"></div>
+              </div>
+            </div>
+          </div>
+          <input class="d-none" type="file" id="patreonInput" accept=".json">
 
         </div>
         <div class="modal-footer custom-footer">
@@ -1155,7 +1251,7 @@
     </div>
     <div class="gear-container my-2">
       <i class="bi bi-gear hidden"></i>
-      <label class="bold-font standard-label">SAVE SETTINGS</label>
+      <label class="bold-font standard-label">SETTINGS</label>
       <div class="standard-line"></div>
     </div>
     <div class="script-selector bold-font">
@@ -1262,12 +1358,12 @@
           </div>
         </div>
         <div class="socials-box">
-          <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor">&nbsp;DDBB Editor</a>
+          <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor">&nbsp;DB Editor</a>
           <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259">&nbsp;My
             profile</a>
           <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_">&nbsp;@ignaciourreta_</a>
           <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta">&nbsp;ignaciourreta</a>
-          <a class="bi bi-cup-hot-fill" href="https://www.buymeacoffee.com/iUrreta">&nbsp;Support me</a>
+          <a class="bi-custom-patreon" href="https://www.buymeacoffee.com/iUrreta">&nbsp;Support the project</a>
         </div>
       </div>
       <div class="script-view hide" id="predict_results">
@@ -4891,13 +4987,16 @@
             <div class="mod-creators">
               <a class="creator w1echuz" style="--order: 1" href="https://linktr.ee/w1echuz" target="_blank">w1echuz</a>
               <div class="creator-separator" style="--order: 2"></div>
-              <a class="creator littleonion" style="--order: 3" href="https://linktr.ee/Little0nion" target="_blank">littleonion</a>
+              <a class="creator littleonion" style="--order: 3" href="https://linktr.ee/Little0nion"
+                target="_blank">littleonion</a>
               <div class="creator-separator " style="--order: 4"></div>
               <a class="creator bonnex" style="--order: 5" href="https://x.com/bonnexf1?s=21" target="_blank">bonnex</a>
               <div class="creator-separator " style="--order: 6"></div>
-              <a class="creator grzelu" style="--order: 7" href="https://youtube.com/c/GrzeluF1" target="_blank">grzelu</a>
+              <a class="creator grzelu" style="--order: 7" href="https://youtube.com/c/GrzeluF1"
+                target="_blank">grzelu</a>
               <div class="creator-separator " style="--order: 8"></div>
-              <a class="creator thatgingerdude" style="--order: 9" href="https://www.overtake.gg/members/thatgingerdude15.3294857/" target="_blank">thatgingerdude</a>
+              <a class="creator thatgingerdude" style="--order: 9"
+                href="https://www.overtake.gg/members/thatgingerdude15.3294857/" target="_blank">thatgingerdude</a>
               <div class="creator-separator " style="--order: 10"></div>
               <a class="creator n4x" style="--order: 11" target="_blank">n4x</a>
             </div>
@@ -4922,12 +5021,12 @@
   </div>
   <footer class="footer">
     <div class="socials">
-      <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor">&nbsp;DDBB Editor</a>
+      <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor">&nbsp;DB Editor</a>
       <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259">&nbsp;My
         profile</a>
       <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_">&nbsp;@ignaciourreta_</a>
       <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta">&nbsp;ignaciourreta</a>
-      <a class="bi bi-cup-hot-fill" href="https://www.buymeacoffee.com/iUrreta">&nbsp;Support me</a>
+      <a class="bi-custom-patreon" href="https://www.buymeacoffee.com/iUrreta">&nbsp;Support the project</a>
     </div>
     <div class="save-info">
       <div class="twenty-three bold-font" id="year23">

@@ -24,9 +24,12 @@ import {
 import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs } from './head2head';
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
+import { PUBLIC_KEY } from './public_key.js';
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { injectSpeedInsights } from '@vercel/speed-insights';
+
+console.log(crypto.subtle)
 
 
 const names_configs = {
@@ -68,6 +71,7 @@ const modPill = document.getElementById("modpill")
 
 const editorPill = document.getElementById("editorPill")
 const gamePill = document.getElementById("gamePill")
+const patreonPill = document.getElementById("patreonPill")
 
 const driverTransferDiv = document.getElementById("driver_transfers");
 const editStatsDiv = document.getElementById("edit_stats");
@@ -81,6 +85,7 @@ const mod25Div = document.getElementById("mod_25")
 
 const patchNotesBody = document.getElementById("patchNotesBody")
 const selectImageButton = document.getElementById('selectImage');
+const patreonKeyButton = document.getElementById('patreonKeyButton');
 
 const scriptsArray = [predictDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv, teamsDiv, mod25Div]
 
@@ -89,10 +94,15 @@ const dropDownMenu = document.getElementById("dropdownMenu");
 const notificationPanel = document.getElementById("notificationPanel");
 
 const logButton = document.getElementById("logFileButton");
+const patreonModal = new bootstrap.Modal(document.getElementById('patreonModal'), {
+    keyboard: false
+})
+console.log(patreonModal)
 
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
 const fileInput = document.getElementById('fileInput');
+const patreonInput = document.getElementById('patreonInput');
 const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 let difficulty_dict = {
     "-2": "Custom",
@@ -176,12 +186,6 @@ export function setSaveName(name) {
     saveName = name;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    versionNow = APP_VERSION;
-    versionPanel.textContent = `${versionNow}`;
-    parchModalTitle.textContent = "Version " + versionNow + " patch notes"
-    getPatchNotes()
-});
 
 
 /**
@@ -877,6 +881,8 @@ selectImageButton.addEventListener('click', () => {
     fileInput.click();
 });
 
+
+
 // Función para manejar la selección de archivo
 fileInput.addEventListener('change', (event) => {
     let file = event.target.files[0];
@@ -1445,10 +1451,18 @@ document.querySelector(".toolbar-logo-and-title").addEventListener("click", func
 gamePill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.add("d-none")
     document.querySelector("#gameChanges").classList.remove("d-none")
+    document.querySelector("#patreonChanges").classList.add("d-none")
 })
 
 editorPill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.remove("d-none")
+    document.querySelector("#gameChanges").classList.add("d-none")
+    document.querySelector("#patreonChanges").classList.add("d-none")
+})
+
+patreonPill.addEventListener("click", function () {
+    document.querySelector("#patreonChanges").classList.remove("d-none")
+    document.querySelector("#editorChanges").classList.add("d-none")
     document.querySelector("#gameChanges").classList.add("d-none")
 })
 
@@ -1660,4 +1674,148 @@ function manageScripts(...divs) {
 document.querySelector("#cancelDetailsButton").addEventListener("click", function () {
     manage_config_content(configCopy[0], false)
 })
+
+patreonKeyButton.addEventListener('click', () => {
+    patreonInput.click();
+});
+
+patreonInput.addEventListener('change', async (e) => {
+    if (!e.target.files?.length) return;
+
+    const file = e.target.files[0];
+    const text = await file.text();
+    let parsed;
+
+    try {
+        parsed = JSON.parse(text); 
+    } catch (err) {
+        alert('Archivo inválido');
+        return;
+    }
+
+    const { patronData, signature } = parsed;
+    if (!patronData || !signature) {
+        alert('Archivo JSON no contiene patronData y/o signature');
+        return;
+    }
+
+    const isValid = await verifySignature(patronData, signature, PUBLIC_KEY);
+    if (isValid) {
+        const dataObj = JSON.parse(patronData);
+
+        localStorage.setItem('patreonKey', JSON.stringify({ patronData, signature }));
+        alert('Firma válida. Has desbloqueado el contenido.');
+        checkPatreonStatus();
+    } else {
+        alert('Firma inválida o archivo manipulado.');
+    }
+});
+
+
+async function isPatronSignatureValid() {
+    const stored = localStorage.getItem('patreonKey');
+    if (!stored) return false;
+
+    try {
+        const { patronData, signature } = JSON.parse(stored);
+
+        const dataObj = JSON.parse(patronData);
+
+        const valid = await verifySignature(patronData, signature, PUBLIC_KEY);
+        return valid;
+    } catch (err) {
+        return false;
+    }
+}
+
+
+async function checkPatreonStatus() {
+    const validSignature = await isPatronSignatureValid();
+
+    // if (validSignature) {
+    //     lockedContent.innerHTML = '<h3>Contenido desbloqueado. ¡Gracias Patron!</h3>';
+    //     return;
+    // }
+
+    const lastShownStr = localStorage.getItem('patreonModalLastShown');
+    if (!canShowPatreonModal(lastShownStr)) {
+        return;
+    }
+
+
+    const delaySec = 10 + Math.floor(Math.random() * 11); // 10..20
+    setTimeout(() => {
+        showPatreonModal();
+        localStorage.setItem('patreonModalLastShown', new Date().toISOString());
+    }, delaySec * 1000);
+}
+
+
+function showPatreonModal() {
+    patreonModal.show()
+}
+
+
+
+function canShowPatreonModal(lastShown) {
+    if (!lastShown) return true; // Nunca se mostró, podemos mostrarlo
+    const last = new Date(lastShown).getTime();
+    const now = Date.now();
+    const diffDays = (now - last) / (1000 * 60 * 60 * 24);
+    return diffDays >= 2;
+}
+
+/**
+ * @param {string} dataString - Cadena JSON que se firmó en Node
+ * @param {string} signatureHex - Firma en hex
+ * @param {string} spkiPublicKey - Clave pública en formato PEM (SPKI)
+ * @returns {Promise<boolean>}
+ */
+async function verifySignature(dataString, signatureHex, spkiPublicKey) {
+    const keyBuffer = pemToArrayBuffer(spkiPublicKey);
+    const publicKey = await crypto.subtle.importKey(
+        "spki",
+        keyBuffer,
+        { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+        false,
+        ["verify"]
+    );
+
+    const sigBuffer = hexToArrayBuffer(signatureHex);
+    const dataBuffer = new TextEncoder().encode(dataString);
+
+    return crypto.subtle.verify("RSASSA-PKCS1-v1_5", publicKey, sigBuffer, dataBuffer);
+}
+
+
+function pemToArrayBuffer(pem) {
+    const b64 = pem
+        .replace("-----BEGIN PUBLIC KEY-----", "")
+        .replace("-----END PUBLIC KEY-----", "")
+        .replace(/\s+/g, "");
+    const raw = atob(b64);
+    const buffer = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) {
+        buffer[i] = raw.charCodeAt(i);
+    }
+    return buffer.buffer;
+}
+
+
+function hexToArrayBuffer(hex) {
+    const length = hex.length / 2;
+    const array = new Uint8Array(length);
+    for (let i = 0; i < length; i++) {
+        array[i] = parseInt(hex.substr(i * 2, 2), 16);
+    }
+    return array.buffer;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    versionNow = APP_VERSION;
+    versionPanel.textContent = `${versionNow}`;
+    parchModalTitle.textContent = "Version " + versionNow + " patch notes"
+    getPatchNotes()
+    checkPatreonStatus();
+});
 

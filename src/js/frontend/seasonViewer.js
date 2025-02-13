@@ -723,9 +723,7 @@ function new_addDriver(driver, races_done, odd) {
                     driverpoints += parseInt(raceDiv.dataset.sprintpoints)
                 }
             }
-            if (raceDiv.dataset.points !== "-1") {
-                driverpoints += parseInt(race[2])
-            }
+            driverpoints += (parseInt(race[2]) >= 0 ? parseInt(race[2]): 0)
             raceDiv.textContent = raceDiv.dataset[pointsOrPos]
             row.appendChild(raceDiv)
         }

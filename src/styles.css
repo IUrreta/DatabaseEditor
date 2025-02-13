@@ -43,7 +43,7 @@
   --modal-warning-text: #f8bbbb;
   --engine-table-name: #878787;
   --engine-table-name-hover: #575757;
-  --support-me: #f5e946;
+  --support-me: #f96854;
   --twitter: #51afe9;
   --reddit: #f87444;
   --custom-dif: #52ebbd;
@@ -367,6 +367,98 @@ body {
   color: var(--new-primary-dark);
 }
 
+.patreon-changes-text{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.patreon-text {
+  color: var(--support-me);
+}
+
+.patreon-paragraph{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.patreon-plain-text{
+  color: var(--modal-text)
+}
+
+.patreon-perks{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+#patreonChanges button:hover + .dropdown-line{
+  width: 199px;
+}
+
+.upload-key-and-patreon-button{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.patreon-button{
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+  background-color: var(--support-me);
+  transition: all 0.15s;
+  padding: 8px 15px;
+  border-radius: 7px;
+  cursor: pointer;
+  width: max-content;
+}
+
+a:has(.patreon-button){
+  text-decoration: none;
+}
+
+.patreon-button:hover{
+  background-color: var(--text-general);
+}
+
+.patreon-button:hover .patreon-button-text{
+  color: var(--negative-text);
+}
+
+.patreon-button:hover .patreon-button-logo{
+  background-color: var(--negative-text);
+}
+
+.patreon-button-logo{
+  width: 1em;
+  height: 1em;
+  -webkit-mask: url('/assets/images/patreonLogo.svg') no-repeat center;
+  mask: url('/assets/images/patreonLogo.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+  transition: all 0.15s;
+}
+
+.patreon-button-text{
+  color: var(--text-general);
+  font-size: 18px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+
+.perks-list{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
 .danger-text {
   color: var(--negative-general);
 }
@@ -492,8 +584,7 @@ body {
 }
 
 .socials a:hover {
-  max-width: 180px;
-  /* Ajusta este valor según el tamaño máximo que desees para el texto */
+  max-width: 240px;
 }
 
 .update-info {
@@ -532,6 +623,7 @@ body {
   transition: transform 0.22s ease-out, color 0.22s ease-out;
   padding-right: 5px;
   z-index: 1;
+  color: var(--positive-general);
 }
 
 .footer-notification:not(.show) {
@@ -1806,7 +1898,7 @@ input[type="checkbox"]:checked {
 
 .gear-container:hover .standard-line,
 .gear-container:hover {
-  width: 168px;
+  width: 117px;
 }
 
 .gear-container .standard-label {
@@ -4555,11 +4647,17 @@ input.disabled {
   position: relative;
 }
 
+
 .custom-modal {
   min-width: 600px !important;
   z-index: 2000 !important;
   border-radius: 10px !important;
 }
+
+#patreonModal .custom-modal, #patreonModal .modal-dialog {
+  min-width: 800px !important;
+}
+
 
 .drivers-modal-zone,
 .teams-modal-zone {
@@ -9658,3 +9756,25 @@ body:has(.active #mod25logo) .creator-separator {
 .footer .bi-exclamation-triangle-fill:hover{
   color: color-mix(in srgb, var(--negative-general) 95%, var(--generals));
 }
+
+a.bi-custom-patreon::before {
+  content: "";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  -webkit-mask: url('/assets/images/patreonLogo.svg') no-repeat center;
+  mask: url('/assets/images/patreonLogo.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--dark-text);
+  transition: background-color 0.15s;
+}
+
+a.bi-custom-patreon:hover::before{
+  background-color: var(--support-me) !important;
+}
+
+a.bi-custom-patreon:hover{
+  color: var(--support-me) !important;
+}
+

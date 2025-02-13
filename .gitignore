@@ -13,3 +13,4 @@ assets/custom/*.jpg
 assets/custom/*.jpeg
 !base24_config.json
 dist/
+patreon/
