@@ -1024,14 +1024,17 @@ function alphaTauriReplace(info) {
     if (info !== "alphatauri") {
         document.querySelectorAll(".atlogo-replace").forEach(function (elem) {
             if (!elem.classList.contains("non-changable")) {
-                elem.src = logos_configs[info]
-                elem.classList.remove("alphataurilogo")
-                elem.classList.remove("toyotalogo")
-                elem.classList.remove("hugologo")
-                elem.classList.remove("visarblogo")
-                elem.classList.remove("ferrarilogo")
-                elem.classList.remove("brawnlogo")
-                elem.classList.add(logos_classes_configs[info])
+                let newElem;
+                if (info === "porsche" || info === "toyota") {
+                    newElem = document.createElement("img");
+                    newElem.src = logos_configs[info];
+                } else {
+                    newElem = document.createElement("div");
+                }
+                newElem.className = elem.className;
+                newElem.classList.remove("alphataurilogo", "toyotalogo", "hugologo", "porschelogo", "visarblogo", "ferrarilogo", "brawnlogo");
+                newElem.classList.add(logos_classes_configs[info])
+                elem.replaceWith(newElem);
             }
             if (elem.classList.contains("secondary")) {
                 if (info !== "toyota") {
@@ -1064,6 +1067,7 @@ function alphaTauriReplace(info) {
                 elem.classList.remove("alphataurilogo")
                 elem.classList.remove("toyotalogo")
                 elem.classList.remove("hugologo")
+                elem.classList.remove("porschelogo")
                 elem.classList.remove("visarblogo")
                 elem.classList.remove("ferrarilogo")
                 elem.classList.remove("brawnlogo")

@@ -1,3 +1,95 @@
+/* Tema Light */
+body.light-theme {
+  --background: #fafafa;
+  --generals: #e7e7e7;
+  --superficials: #dddddd;
+  --dropdown-back: #d6d6d6;
+  --elements: #cccccc;
+  --dropdown-hover: #bbbbbb;
+  --text-general: #252525;
+  --white-general: #131313;
+  --dark-text: #444444;
+  --disabled-text: #888888;
+  --modal-text: #666666;
+  --negative-text: #eeeeee;
+  --new-primary: #7a5fd8;
+  --new-primary-dark: #5a42b5;
+  --new-primary-transparent: #7a5fd899;
+  --text-selected: #aa88ff;
+  --text-selected-secondary: #55aaa9;
+  --new-secondary: #66aabb;
+  --new-secondary-dark: #447788;
+  --table-hover: #cccccc;
+  --elements-hover: #bbbbbb;
+  --box-shadow: #00000022;
+
+  --positive-general: #2a9b63;
+
+  --general-secondary: #f1f1f1;
+  --mercedes-primary: #13c2a2;
+  --haas-primary: #57575a;
+  --williams-primary: #4495c0;
+
+  --mentality-enthusiastic: #c055e3;
+  --mentality-positive: #10ffff;
+  --mentality-neutral: #222222;
+  --mentality-negative: #8a8100;
+  --mentality-demoralized: #dd3356;
+
+
+
+  --redbull-primary-transparent: color-mix(in srgb, var(--redbull-primary) 30%, var(--elements));
+  --redbull-secondary-transparent: color-mix(in srgb, var(--redbull-secondary) 30%, var(--elements));
+  --ferrari-primary-transparent: color-mix(in srgb, var(--ferrari-primary) 18%, var(--elements));
+  --general-secondary-transparent: color-mix(in srgb, var(--general-secondary) 18%, var(--elements));
+  --mercedes-primary-transparent: color-mix(in srgb, var(--mercedes-primary) 18%, var(--elements));
+  --mclaren-primary-transparent: color-mix(in srgb, var(--mclaren-primary) 18%, var(--elements));
+  --mclaren-secondary-transparent: color-mix(in srgb, var(--mclaren-secondary) 18%, var(--elements));
+  --williams-primary-transparent: color-mix(in srgb, var(--williams-primary) 18%, var(--elements));
+  --haas-primary-transparent: color-mix(in srgb, var(--haas-primary) 18%, var(--elements));
+  --haas-secondary-transparent: color-mix(in srgb, var(--haas-secondary) 18%, var(--elements));
+  --alphatauri-primary-transparent: color-mix(in srgb, var(--alphatauri-primary) 18%, var(--elements));
+  --alphatauri-primary-transparent-original: color-mix(in srgb, var(--alphatauri-original) 18%, var(--elements));
+  --alphatauri-secondary-transparent: color-mix(in srgb, var(--alphatauri-secondary) 18%, var(--elements));
+  --alphatauri-secondary-transparent-original: color-mix(in srgb, var(--alphatauri-secondary-original) 18%, var(--elements));
+  --sauber-primary-transparent: color-mix(in srgb, var(--sauber-primary) 18%, var(--elements));
+  --alpine-primary-transparent: color-mix(in srgb, var(--alpine-primary) 18%, var(--elements));
+  --alpine-primary-transparent-original: color-mix(in srgb, var(--alpine-original) 18%, var(--elements));
+  --alpine-secondary-transparent: color-mix(in srgb, var(--alpine-secondary) 18%, var(--elements));
+  --alpine-secondary-transparent-original: color-mix(in srgb, var(--alpine-secondary-original) 18%, var(--elements));
+  --renault-primary-transparent: color-mix(in srgb, var(--renault-primary) 18%, var(--elements));
+  --aston-primary-transparent: color-mix(in srgb, var(--aston-primary) 18%, var(--elements));
+  --aston-secondary-transparent: color-mix(in srgb, var(--aston-secondary) 18%, var(--elements));
+  --alfa-primary-transparent: color-mix(in srgb, var(--alfa-primary) 18%, var(--elements));
+  --alfa-primary-transparent-original: color-mix(in srgb, var(--alfa-original) 18%, var(--elements));
+  --alfa-secondary-transparent: color-mix(in srgb, var(--alfa-secondary) 18%, var(--elements));
+  --alfa-secondary-transparent-original: color-mix(in srgb, var(--alfa-secondary-original) 18%, var(--elements));
+  --audi-primary-transparent: color-mix(in srgb, var(--audi-primary) 18%, var(--elements));
+  --audi-secondary-transparent: color-mix(in srgb, var(--audi-secondary) 18%, var(--elements));
+  --toyota-primary-transparent: color-mix(in srgb, var(--toyota-primary) 18%, var(--elements));
+  --toyota-secondary-transparent: color-mix(in srgb, var(--toyota-secondary) 18%, var(--elements));
+  --porsche-primary-transparent: color-mix(in srgb, var(--porsche-primary) 18%, var(--elements));
+  --porsche-secondary-transparent: color-mix(in srgb, var(--porsche-secondary) 18%, var(--elements));
+  --brawn-primary-transparent: color-mix(in srgb, var(--brawn-primary) 18%, var(--elements));
+  --brawn-secondary-transparent: color-mix(in srgb, var(--brawn-secondary) 18%, var(--elements));
+  --stake-primary-transparent: color-mix(in srgb, var(--stake-primary) 18%, var(--elements));
+  --stake-secondary-transparent: color-mix(in srgb, var(--stake-secondary) 18%, var(--elements));
+  --visarb-primary-transparent: color-mix(in srgb, var(--visarb-primary) 18%, var(--elements));
+  --visarb-secondary-transparent: color-mix(in srgb, var(--visarb-secondary) 18%, var(--elements));
+  --hugo-primary-transparent: color-mix(in srgb, var(--hugo-primary) 18%, var(--elements));
+  --hugo-secondary-transparent: color-mix(in srgb, var(--hugo-secondary) 18%, var(--elements));
+  --lotus-primary-transparent: color-mix(in srgb, var(--lotus-primary) 18%, var(--elements));
+  --lotus-secondary-transparent: color-mix(in srgb, var(--lotus-secondary) 18%, var(--elements));
+  --andretti-primary-transparent: color-mix(in srgb, var(--andretti-primary) 18%, var(--elements));
+  --andretti-secondary-transparent: color-mix(in srgb, var(--andretti-secondary) 18%, var(--elements));
+  --custom-team-primary-transparent: color-mix(in srgb, var(--custom-team-primary) 18%, var(--elements));
+  --custom-team-secondary-transparent: color-mix(in srgb, var(--custom-team-secondary) 18%, var(--elements));
+}
+
+/* Tema Alternative */
+
+
+
 :root {
   /*
   GENERAL COLORS
@@ -212,34 +304,6 @@
   --custom-team-secondary-transparent: color-mix(in srgb, var(--custom-team-secondary) 18%, var(--elements));
 }
 
-
-/* Tema Light */
-body.light-theme {
-  --background: #fafafa;
-  --generals: #e7e7e7;
-  --superficials: #dddddd;
-  --dropdown-back: #d6d6d6;
-  --elements: #cccccc;
-  --dropdown-hover: #bbbbbb;
-  --text-general: #252525;
-  --white-general: #131313;
-  --dark-text: #444444;
-  --disabled-text: #888888;
-  --modal-text: #666666;
-  --negative-text: #eeeeee;
-  --new-primary: #7a5fd8;
-  --new-primary-dark: #5a42b5;
-  --new-primary-transparent: #7a5fd899;
-  --text-selected: #aa88ff;
-  --text-selected-secondary: #55aaa9;
-  --new-secondary: #66aabb;
-  --new-secondary-dark: #447788;
-  --table-hover: #cccccc;
-  --elements-hover: #bbbbbb;
-  --box-shadow: #00000022;
-}
-
-/* Tema Alternative */
 body.alternative-theme {
   --background: #1e1e2e;
   --generals: #28293d;
@@ -262,6 +326,8 @@ body.alternative-theme {
   --elements-hover: #606894;
   --box-shadow: #00000044;
 }
+
+
 
 
 
@@ -1248,7 +1314,7 @@ input[type="checkbox"]:checked {
   display: flex;
   align-items: baseline;
   gap: 10px;
-  padding: 4px 12px;
+  padding: 2px 12px;
 }
 
 .filter-pills::before {
@@ -1269,7 +1335,7 @@ input[type="checkbox"]:checked {
 
 .filter-container.focused {
   background-color: var(--generals);
-  box-shadow: 0 0 10px 1px var(--box-shadow);
+  box-shadow: 0 0 3px 1px var(--box-shadow);
 
 }
 
@@ -1855,7 +1921,10 @@ input[type="checkbox"]:checked {
   z-index: -5;
   left: -2px;
   opacity: 1;
+}
 
+body.light-theme .background{
+  background-image: url('../assets/images/background2light.svg');
 }
 
 .main-panel {
@@ -2233,7 +2302,7 @@ input[type="checkbox"]:checked {
   color: var(--white-general);
   overflow-y: auto;
   border-radius: 10px;
-  box-shadow: 0px 0px 10px 6px var(--box-shadow);
+  box-shadow: 0px 0px 3px 2px var(--box-shadow);
 }
 
 .main-panel-stats {
@@ -2372,7 +2441,7 @@ DRIVERS TABLE
 
 .first {
   background-color: var(--table-first) !important;
-  color: var(--negative-text) !important;
+  color: #292929 !important;
 }
 
 .teams-table-row .teams-table-team {
@@ -2406,12 +2475,12 @@ DRIVERS TABLE
 .teams-table-row.odd:hover .first,
 .teams-table-row:hover .first {
   background-color: var(--table-first-light) !important;
-  color: var(--negative-text) !important;
+  color: #292929 !important;
 }
 
 .second {
   background-color: var(--table-second) !important;
-  color: var(--negative-text) !important;
+  color: #292929 !important;
 }
 
 .drivers-table-row.odd:hover .second,
@@ -2419,12 +2488,12 @@ DRIVERS TABLE
 .teams-table-row.odd:hover .second,
 .teams-table-row:hover .second {
   background-color: var(--table-second-light) !important;
-  color: var(--negative-text) !important;
+  color: #292929 !important;
 }
 
 .third {
   background-color: var(--table-third) !important;
-  color: var(--negative-text) !important;
+  color: #292929 !important;
 }
 
 .drivers-table-row.odd:hover .third,
@@ -2432,7 +2501,7 @@ DRIVERS TABLE
 .teams-table-row.odd:hover .third,
 .teams-table-row:hover .third {
   background-color: var(--table-third-light) !important;
-  color: var(--negative-text) !important;
+  color: #292929 !important;
 }
 
 .fastest {
@@ -2499,14 +2568,14 @@ DRIVERS TABLE
 .drivers-table-row:hover .drivers-table-normal,
 .teams-table-row:hover .teams-table-normal {
   background-color: var(--text-general);
-  color: var(--tools-general);
+  color: var(--negative-text);
 }
 
 .drivers-table-row.odd:hover .drivers-table-driver,
 .drivers-table-row.odd:hover .drivers-table-normal,
 .teams-table-row.odd:hover .teams-table-normal {
   background-color: var(--text-general);
-  color: var(--tools-general);
+  color: var(--negative-text);
 }
 
 .drivers-table-row .drivers-table-position,
@@ -2521,13 +2590,13 @@ DRIVERS TABLE
 .drivers-table-row-odd:hover .drivers-table-position,
 .teams-table-row-odd:hover .teams-table-position {
   background-color: var(--text-general) !important;
-  color: var(--tools-general);
+  color: var(--negative-text);
 }
 
 .drivers-table-row:hover .drivers-table-points,
 .teams-table-row:hover .teams-table-points {
   background-color: var(--text-general) !important;
-  color: var(--tools-general);
+  color: var(--negative-text);
 }
 
 .drivers-table-row:hover,
@@ -2540,7 +2609,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-row:hover span.bold-font {
-  color: var(--tools-general) !important;
+  color: var(--negative-text) !important;
 }
 
 .drivers-table-row .drivers-table-normal,
@@ -2579,7 +2648,7 @@ DRIVERS TABLE
 
 .teams-table-row:hover .teams-table-team {
   background-color: var(--text-general);
-  color: var(--tools-general);
+  color: var(--negative-text);
   border-color: var(--text-general);
 }
 
@@ -2740,8 +2809,71 @@ DRIVERS TABLE
   padding: 4px;
 }
 
-.logo-visarb-table {
+.athoverback{
+  width: 30px;
+  height: 30px;
+}
+
+.athoverback:has(.logo-visarb-table){
   padding: 5px 3px;
+}
+
+.athoverback:has(.logo-hugo-table){
+  padding: 2px 0px;
+}
+
+.athoverback:has(.logo-alphatauri-table){
+  padding: 8px 4px;
+}
+
+.athoverback:has(.logo-brawn-table){
+  padding: 12px 0px;
+}
+
+
+.logo-visarb-table {
+  width: 100%;
+  height: 100%;
+  -webkit-mask: url('/assets/images/visarb.svg') no-repeat center;
+  mask: url('/assets/images/visarb.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+  transition: background-color 0.15s;
+}
+
+.logo-hugo-table{
+  width: 100%;
+  height: 100%;
+  -webkit-mask: url('/assets/images/hugoboss.svg') no-repeat center;
+  mask: url('/assets/images/hugoboss.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+  transition: background-color 0.15s;
+}
+
+
+.logo-alphatauri-table {
+  width: 100%;
+  height: 100%;
+  -webkit-mask: url('/assets/images/alphatauri.svg') no-repeat center;
+  mask: url('/assets/images/alphatauri.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+  transition: background-color 0.15s;
+}
+
+.logo-brawn-table{
+  width: 100%;
+  height: 100%;
+  -webkit-mask: url('/assets/images/brawn.svg') no-repeat center;
+  mask: url('/assets/images/brawn.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+  transition: background-color 0.15s;
 }
 
 .logo-alpine-table {
@@ -2806,7 +2938,7 @@ DRIVERS TABLE
   transition: background-color 0.15s;
 }
 
-.drivers-table-row:hover .logo-alpine-table{
+.drivers-table-row:hover .logo-alpine-table, .drivers-table-row:hover .logo-visarb-table, .drivers-table-row:hover .logo-alphatauri-table{
   background-color: #ffffff;
 }
 
@@ -2814,14 +2946,8 @@ DRIVERS TABLE
   padding: 4px;
 }
 
-.logo-brawn-table {
-  padding-top: 12px;
-  padding-bottom: 12px;
-}
 
-.logo-extra-small {
-  padding: 8px 4px;
-}
+
 
 .logo-stake-table {
   padding: 2px 0px;
@@ -3063,7 +3189,7 @@ DRIVERS TABLE
 
 .viewer-header-data {
   border-radius: 5px;
-  color: var(--tools-general);
+  color: var(--negative-text);
   transition: border 0.15s;
   display: flex;
   align-items: center;
@@ -3264,7 +3390,7 @@ DRIVERS TABLE
   color: var(--white-general);
   overflow: hidden;
   border-radius: 10px;
-  box-shadow: 0px 0px 10px 6px var(--box-shadow);
+  box-shadow: 0px 0px 3px 2px var(--box-shadow);
 }
 
 
@@ -3380,7 +3506,7 @@ DRIVERS TABLE
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   background-color: var(--generals);
-  box-shadow: 0px 0px 10px 6px var(--box-shadow);
+  box-shadow: 0px 0px 3px 2px var(--box-shadow);
   gap: 8px;
   padding: 8px;
   grid-auto-rows: min-content;
@@ -3601,7 +3727,8 @@ DRIVERS TABLE
   gap: 10px;
   position: absolute;
   z-index: 2;
-  text-shadow: 2px 2px 4px var(--negative-text);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.76);
+  color: var(--text-in-front);
 }
 
 .flag {
@@ -3609,6 +3736,11 @@ DRIVERS TABLE
   height: 45px;
   border-radius: 10px;
   opacity: 0.45;
+}
+
+body.light-theme .flag, body.light-theme .flag-header img{
+  opacity: 0.9;
+  position: relative;
 }
 
 
@@ -3620,7 +3752,7 @@ DRIVERS TABLE
   border-radius: 10px;
   scrollbar-width: thin;
   scrollbar-color: var(--white-general);
-  box-shadow: 0px 0px 10px 6px var(--box-shadow);
+  box-shadow: 0px 0px 3px 2px var(--box-shadow);
   margin-right: 14px;
 }
 
@@ -6879,8 +7011,8 @@ input.disabled {
 }
 
 .changable-team-menu-andretti {
-  width: 40px !important;
-  height: 40px !important;
+  width: 100% !important;
+  height: 100% !important;
   padding-bottom: 3px !important;
   padding-top: 8px !important;
   padding-left: 7px !important;
@@ -6920,8 +7052,8 @@ input.disabled {
 }
 
 .changable-team-menu-alpine {
-  width: 43px !important;
-  height: 40px !important;
+  width: 100% !important;
+  height: 100% !important;
   padding-bottom: 6px !important;
   padding-top: 9px !important;
   padding-left: 6px !important;
@@ -6969,12 +7101,21 @@ input.disabled {
   padding-left: 7px !important;
 }
 
-.changable-team-menu-lotus {
-  width: 40px !important;
-  height: 40px !important;
+.changable-team-menu-lotus{
+  width: 100%  !important;
+  height: 100%  !important;
   padding-bottom: 4px !important;
   padding-top: 4px !important;
   padding-left: 6px !important;
+}
+
+.changable-team-menu-renault{
+  width: 100%  !important;
+  height: 100%  !important;
+  padding-bottom: 6px;
+  padding-top: 8px;
+  padding-left: 9px;
+  padding-right: 9px;
 }
 
 .changable-team-menu-toyota {
@@ -8206,8 +8347,8 @@ input::-webkit-inner-spin-button {
 }
 
 .andrettilogo {
-  width: 40px;
-  height: 40px;
+  width: 100%;
+  height: 100%;
   padding: 6px 4px;
 }
 
@@ -8229,20 +8370,102 @@ input::-webkit-inner-spin-button {
 
 .renaultlogo,
 #relogo {
-  width: 40px;
-  height: 40px;
+  width: 100%;
+  height: 100%;
   padding-bottom: 7px;
   padding-top: 5px;
   padding-left: 3px;
   padding-right: 2px;
 }
 
+#teamMenu .alphatauri-logo-container:has(.alphataurilogo){
+  width: 40px;
+  height: 40px;
+  padding: 0px 0px 0px 6px;
+}
 
+.alphatauri-logo-container:has(.alphataurilogo){
+  width: 40px;
+  height: 40px;
+  padding: 8px 4px;
+}
+
+#teamMenu .alphatauri-logo-container:has(.visarblogo){
+  width: 40px;
+  height: 40px;
+  padding: 0px 4px 0px 6px;
+}
+
+.alphatauri-logo-container:has(.visarblogo){
+  width: 40px;
+  height: 40px;
+  padding: 0px 2px;
+}
+
+.alphatauri-logo-container:has(.brawnlogo){
+  width: 40px;
+  height: 40px;
+  padding-left: 4px;
+}
+
+#teamMenu .alphatauri-logo-container:has(.hugologo){
+  width: 40px;
+  height: 40px;
+  padding: 5px 0px 5px 2px;
+}
+
+.alphatauri-logo-container:has(.hugologo){
+  width: 40px;
+  height: 40px;
+  padding: 5px 0px;
+}
+
+.alpine-logo-container:has(.alpinelogo){
+  width: 40px;
+  height: 40px;
+  padding: 8px 2px 9px 2px;
+}
+
+#teamMenu .alpine-logo-container:has(.andrettilogo){
+  width: 40px;
+  height: 40px;
+  padding: 6px 2px 6px 7px;
+}
+
+.alpine-logo-container:has(.andrettilogo){
+  width: 40px;
+  height: 40px;
+  padding: 6px 4px;
+}
+
+#teamMenu .alpine-logo-container:has(.renaultlogo){
+  width: 40px;
+  height: 40px;
+  padding: 5px 0px 7px 5px;
+}
+
+.alpine-logo-container:has(.renaultlogo){
+  width: 40px;
+  height: 40px;
+  padding: 5px 2px 7px 3px;
+}
+
+#teamMenu .alpine-logo-container:has(.lotuslogo){
+  width: 40px;
+  height: 40px;
+  padding: 1px 0px 1px 5px;
+}
+
+.alpine-logo-container:has(.lotuslogo){
+  width: 40px;
+  height: 40px;
+  padding: 1px 0px;
+}
 
 .alpinelogo,
 #allogo {
-  width: 40px;
-  height: 40px;
+  width: 100%;
+  height: 100%;
   padding-bottom: 9px;
   padding-top: 8px;
   padding-left: 2px;
@@ -8306,10 +8529,18 @@ input::-webkit-inner-spin-button {
 }
 
 .brawnlogo {
-  width: 40px;
-  height: 40px;
+  width: 100% !important;
+  height: 100% !important;
   padding: 16px 0px;
   padding-left: 4px;
+}
+
+.brawnlogo{
+  -webkit-mask: url('/assets/images/brawn.svg') no-repeat center;
+  mask: url('/assets/images/brawn.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
 }
 
 .audilogo {
@@ -8329,15 +8560,31 @@ input::-webkit-inner-spin-button {
 }
 
 .hugologo {
-  height: 40px;
-  width: 40px;
+  width: 100% !important;
+  height: 100% !important;
   padding: 5px 0;
 }
 
+.hugologo{
+  -webkit-mask: url('/assets/images/hugoboss.svg') no-repeat center;
+  mask: url('/assets/images/hugoboss.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+}
+
 .visarblogo {
-  height: 40px;
-  width: 40px;
+  width: 100% !important;
+  height: 100% !important;
   padding: 5px 2px;
+}
+
+.visarblogo{
+  -webkit-mask: url('/assets/images/visarb.svg') no-repeat center;
+  mask: url('/assets/images/visarb.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
 }
 
 .team-menu-logo .visarblogo {
@@ -8366,16 +8613,24 @@ input::-webkit-inner-spin-button {
 }
 
 .lotuslogo {
-  width: 40px;
-  height: 40px;
+  width: 100%;
+  height: 100%;
   padding: 1px 0px;
 }
 
 .alphataurilogo,
 #atlogo {
-  width: 40px;
-  height: 40px;
+  width: 100% !important;
+  height: 100% !important;
   padding: 12px 4px;
+}
+
+.alphataurilogo{
+  -webkit-mask: url('/assets/images/alphatauri.svg') no-repeat center;
+  mask: url('/assets/images/alphatauri.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
 }
 
 .williamslogo,
@@ -9246,6 +9501,10 @@ span.reduced-weight,
   justify-content: space-around;
 }
 
+body.light-theme #blockDiv{
+  background-image: url('../assets/images/background2light.svg');
+}
+
 #blockDiv.disappear {
   animation: fadeOut 0.15s forwards;
   pointer-events: none;
@@ -9760,7 +10019,7 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
 .mod-creators a {
   text-transform: uppercase;
   font-size: 14px;
-  color: var(--text-general);
+  color: #dedde6;
   text-shadow: none;
   text-decoration: none;
   cursor: pointer;

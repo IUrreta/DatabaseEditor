@@ -688,6 +688,9 @@ function new_addDriver(driver, races_done, odd) {
         logo.classList.add(driversTableLogosDict[alpineReplace])
     }
     if (driver[1] === 8) { //alphatauri
+        if (alphaReplace === "alphatauri" || alphaReplace === "visarb" || alphaReplace === "brawn" || alphaReplace === "hugo") {
+            logo = document.createElement("div")
+        }
         logo.classList.add(driversTableLogosDict[alphaReplace])
     }
     if (driver[1] === 9) { //alfa
