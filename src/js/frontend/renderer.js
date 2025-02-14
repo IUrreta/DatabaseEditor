@@ -14,14 +14,14 @@ import { load_calendar } from './calendar';
 import {
     load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
     order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
-    teamSelected, gather_engines_data
+    teamSelected, gather_engines_data, reload_performance_graph
 } from './performance';
 import { resetPredict, setMidGrid, setMaxRaces, setRelativeGrid, placeRaces, placeRacesInModal } from './predictions';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups
 } from './stats';
-import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs } from './head2head';
+import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs, reload_h2h_graphs } from './head2head';
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
 import { PUBLIC_KEY } from './public_key.js';
@@ -143,7 +143,7 @@ let divBlocking = 1;
 let saveName;
 let tempImageData = null;
 
-let selectedTheme = "default-theme";
+export let selectedTheme = "default-theme";
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
@@ -1797,6 +1797,8 @@ document.querySelectorAll(".one-theme").forEach(function (elem) {
 function changeTheme() {
     document.querySelector("body").className = `font ${selectedTheme}`
     localStorage.setItem("theme", selectedTheme)
+    reload_performance_graph()
+    reload_h2h_graphs()
 }
 
 function loadTheme() {
@@ -1807,6 +1809,8 @@ function loadTheme() {
         document.querySelector(".one-theme.active").classList.remove("active")
         document.querySelector(`.one-theme[data-theme="${selectedTheme}"]`).classList.add("active")
     }
+    reload_performance_graph()
+    reload_h2h_graphs()
 }
 
 document.getElementById('logButton').addEventListener('click', function () {

@@ -1,7 +1,9 @@
-import { races_names, part_codes_abreviations, codes_dict, combined_dict, races_map, abreviations_dict, pars_abreviations, engine_stats_dict  } from "./config";
+import { races_names, part_codes_abreviations, codes_dict, combined_dict, races_map, abreviations_dict, pars_abreviations, engine_stats_dict,
+    theme_colors
+  } from "./config";
 import { colors_dict } from "./head2head";
 import { manageSaveButton, game_version } from "./renderer";
-import { first_show_animation } from "./renderer";
+import { first_show_animation, selectedTheme } from "./renderer";
 import { Command } from "../backend/command.js";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -23,6 +25,7 @@ export let teamsEngine = "teams"
 export let viewingGraph = true;
 let actualMaxDesign = 0;
 let customEnginesCopy;
+let currentData;
 
 function normalizeData(data) {
     let values = Object.values(data);
@@ -1112,7 +1115,18 @@ function manage_bar(bar, progress) {
     bar.parentNode.querySelector(".performance-data").innerHTML = progress * 10 + "%"
 }
 
+export function reload_performance_graph() {
+    console.log("reload")
+    console.log(selectedTheme)
+    if (typeof performanceGraph !== 'undefined' && performanceGraph !== null) {
+        performanceGraph.destroy(); 
+        load_performance_graph(currentData);
+    }
+    
+}
+
 export function load_performance_graph(data) {
+    currentData = data
     let labelsArray = []
     data[1].forEach(function (elem) {
         labelsArray.push(races_names[elem[2]])
@@ -1196,10 +1210,10 @@ function createPerformanceChart(labelsArray) {
                 scales: {
                     x: {
                         grid: {
-                            color: '#292929'
+                            color: theme_colors[selectedTheme].grid
                         },
                         ticks: {
-                            color: "#dedde6",
+                            color: theme_colors[selectedTheme].labels,
                             font: {
                                 family: "Formula1Bold"
                             }
@@ -1209,10 +1223,10 @@ function createPerformanceChart(labelsArray) {
                         min: 0,
                         max: 100,
                         grid: {
-                            color: '#292929'
+                            color: theme_colors[selectedTheme].grid
                         },
                         ticks: {
-                            color: "#dedde6",
+                            color: theme_colors[selectedTheme].labels,
                             font: {
                                 family: "Formula1Bold"
                             },
@@ -1231,7 +1245,7 @@ function createPerformanceChart(labelsArray) {
                         labels: {
                             boxHeight: 2,
                             boxWidth: 25,
-                            color: "#dedde6",
+                            color: theme_colors[selectedTheme].labels,
                             font: {
                                 family: "Formula1"
                             }

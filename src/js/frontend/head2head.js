@@ -1,9 +1,10 @@
-import { races_names, team_dict, combined_dict, lightColors  } from "./config";
-import { game_version,  custom_team } from "./renderer";
+import { races_names, team_dict, combined_dict, lightColors, theme_colors  } from "./config";
+import { game_version,  custom_team, selectedTheme } from "./renderer";
 import { insert_space, manageColor, format_name } from "./transfers";
 import { relative_grid } from "./predictions";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import annotationPlugin from 'chartjs-plugin-annotation';
 import { Command } from "../backend/command.js";;
 
 
@@ -34,10 +35,12 @@ let graphList = []
 let h2hTeamList = []
 let graphTeamList = []
 let mode = "driver"
+let h2hData;
 export let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000"}
 //changed as the ct colors changes, so it stays
 
 Chart.register(ChartDataLabels);
+Chart.register(annotationPlugin);
 
 
 /**
@@ -987,6 +990,7 @@ function manageH2hState() {
 }
 
 export function load_labels_initialize_graphs(data) {
+    h2hData = data
     var labels = [];
     data[0].forEach(function (elem) {
         labels.push(races_names[elem[1]])
@@ -1027,6 +1031,28 @@ export function load_labels_initialize_graphs(data) {
         load_teams_points_graph(data)
     }
 
+}
+
+export function reload_h2h_graphs(){
+    if (typeof qualiGraph !== 'undefined' && qualiGraph !== null){
+        qualiGraph.destroy()
+    }
+    if (typeof driverGraph !== 'undefined' && driverGraph !== null){
+        driverGraph.destroy()
+    }
+    if (typeof pointsGraph !== 'undefined' && pointsGraph !== null){
+        pointsGraph.destroy()
+    }
+    if (typeof gapWinnerGraph !== 'undefined' && gapWinnerGraph !== null){
+        gapWinnerGraph.destroy()
+    }
+    if (typeof gapPoleGraph !== 'undefined' && gapPoleGraph !== null){
+        gapPoleGraph.destroy()
+    }
+    if (h2hData){
+        load_labels_initialize_graphs(h2hData)
+
+    }
 }
 
 function load_teams_points_graph(data) {
@@ -1391,10 +1417,10 @@ function createRaceChart(labelsArray, max) {
                 scales: {
                     x: {
                         grid: {
-                            color: '#292929'
+                            color: theme_colors[selectedTheme].grid
                         },
                         ticks: {
-                            color: "#dedde6",
+                            color: theme_colors[selectedTheme].labels,
                             font: {
                                 family: "Formula1Bold"
                             }
@@ -1405,10 +1431,10 @@ function createRaceChart(labelsArray, max) {
                         min: 1,
                         max: max,
                         grid: {
-                            color: '#292929'
+                            color: theme_colors[selectedTheme].grid
                         },
                         ticks: {
-                            color: "#dedde6",
+                            color: theme_colors[selectedTheme].labels,
                             font: {
                                 family: "Formula1Bold"
                             }
@@ -1451,7 +1477,7 @@ function createRaceChart(labelsArray, max) {
                                 display: annotationsToggle,
                                 yMin: 10,
                                 yMax: 10,
-                                borderColor: '#dedde6',
+                                borderColor: theme_colors[selectedTheme].labels,
                                 borderWidth: 1,
                             }
                         }
@@ -1460,7 +1486,7 @@ function createRaceChart(labelsArray, max) {
                         labels: {
                             boxHeight: 2,
                             boxWidth: 25,
-                            color: "#dedde6",
+                            color: theme_colors[selectedTheme].labels,
                             font: {
                                 family: "Formula1"
                             }
@@ -1516,10 +1542,10 @@ function createQualiChart(labelsArray, max, q2_line) {
                 scales: {
                     x: {
                         grid: {
-                            color: '#292929'
+                            color: theme_colors[selectedTheme].grid
                         },
                         ticks: {
-                            color: "#dedde6",
+                            color: theme_colors[selectedTheme].labels,
                             font: {
                                 family: "Formula1Bold"
                             }
@@ -1530,10 +1556,10 @@ function createQualiChart(labelsArray, max, q2_line) {
                         min: 1,
                         max: max,
                         grid: {
-                            color: '#292929'
+                            color: theme_colors[selectedTheme].grid
                         },
                         ticks: {
-                            color: "#dedde6",
+                            color: theme_colors[selectedTheme].labels,
                             font: {
                                 family: "Formula1Bold"
                             }
@@ -1591,7 +1617,7 @@ function createQualiChart(labelsArray, max, q2_line) {
                         labels: {
                             boxHeight: 2,
                             boxWidth: 25,
-                            color: "#dedde6",
+                            color: theme_colors[selectedTheme].labels,
                             font: {
                                 family: "Formula1"
                             }
@@ -1647,10 +1673,10 @@ function createPointsChart(labelsArray) {
                 scales: {
                     x: {
                         grid: {
-                            color: '#292929'
+                            color: theme_colors[selectedTheme].grid
                         },
                         ticks: {
-                            color: "#dedde6",
+                            color: theme_colors[selectedTheme].labels,
                             font: {
                                 family: "Formula1Bold"
                             }
@@ -1658,10 +1684,10 @@ function createPointsChart(labelsArray) {
                     },
                     y: {
                         grid: {
-                            color: '#292929'
+                            color: theme_colors[selectedTheme].grid
                         },
                         ticks: {
-                            color: "#dedde6",
+                            color: theme_colors[selectedTheme].labels,
                             font: {
                                 family: "Formula1Bold"
                             }
@@ -1674,7 +1700,7 @@ function createPointsChart(labelsArray) {
                         labels: {
                             boxHeight: 2,
                             boxWidth: 25,
-                            color: "#dedde6",
+                            color: theme_colors[selectedTheme].labels,
                             font: {
                                 family: "Formula1"
                             }
@@ -1716,10 +1742,10 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
         scales: {
             x: {
                 grid: {
-                    color: '#292929'
+                    color: theme_colors[selectedTheme].grid
                 },
                 ticks: {
-                    color: "#dedde6",
+                    color: theme_colors[selectedTheme].labels,
                     font: {
                         family: "Formula1Bold"
                     }
@@ -1728,10 +1754,10 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
             y: {
                 min: 0, 
                 grid: {
-                    color: '#292929'
+                    color: theme_colors[selectedTheme].grid
                 },
                 ticks: {
-                    color: "#dedde6",
+                    color: theme_colors[selectedTheme].labels,
                     font: {
                         family: "Formula1Bold"
                     }
@@ -1746,7 +1772,7 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
                 labels: {
                     boxHeight: 2,
                     boxWidth: 25,
-                    color: "#dedde6",
+                    color: theme_colors[selectedTheme].labels,
                     font: {
                         family: "Formula1"
                     }

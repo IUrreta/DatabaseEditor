@@ -97,6 +97,17 @@ export let engine_stats_dict = new Map([
     [19, "Gearbox durability"]
 ]);
 
+export const theme_colors = {
+    "default-theme" : {
+        "labels": "#dedde6",
+        "grid": "#292929",
+    },
+    "light-theme" : {
+        "labels": "#252525",
+        "grid": "#d6d6d6",
+    }
+}
+
 //predictions
 export const names_full = {
     "BAH": "Bahrain",

@@ -6,6 +6,7 @@ import 'bootstrap-icons/font/bootstrap-icons.min.css';
 import interact from 'interactjs';
 
 import Chart from 'chart.js/auto';
+import Annotation from "chartjs-plugin-annotation";
 import 'chartjs-plugin-annotation';
 import 'chartjs-plugin-datalabels';
 
