@@ -213,6 +213,58 @@
 }
 
 
+/* Tema Light */
+body.light-theme {
+  --background: #fafafa;
+  --generals: #e7e7e7;
+  --superficials: #dddddd;
+  --dropdown-back: #d6d6d6;
+  --elements: #cccccc;
+  --dropdown-hover: #bbbbbb;
+  --text-general: #252525;
+  --white-general: #131313;
+  --dark-text: #444444;
+  --disabled-text: #888888;
+  --modal-text: #666666;
+  --negative-text: #eeeeee;
+  --new-primary: #7a5fd8;
+  --new-primary-dark: #5a42b5;
+  --new-primary-transparent: #7a5fd899;
+  --text-selected: #aa88ff;
+  --text-selected-secondary: #55aaa9;
+  --new-secondary: #66aabb;
+  --new-secondary-dark: #447788;
+  --table-hover: #cccccc;
+  --elements-hover: #bbbbbb;
+  --box-shadow: #00000022;
+}
+
+/* Tema Alternative */
+body.alternative-theme {
+  --background: #1e1e2e;
+  --generals: #28293d;
+  --superficials: #303450;
+  --dropdown-back: #383e5a;
+  --elements: #44486e;
+  --dropdown-hover: #4e5385;
+  --dark-text: #d3d3e7;
+  --disabled-text: #a8a8c3;
+  --modal-text: #9797b8;
+  --negative-text: #3c3c5b;
+  --new-primary: #ffb86c;
+  --new-primary-dark: #ff9e5a;
+  --new-primary-transparent: #ffb86c99;
+  --text-selected: #ffddaa;
+  --text-selected-secondary: #89d7c0;
+  --new-secondary: #8ac7b5;
+  --new-secondary-dark: #6aa19f;
+  --table-hover: #50577c;
+  --elements-hover: #606894;
+  --box-shadow: #00000044;
+}
+
+
+
 @font-face {
   font-family: 'Formula1';
   src: url("../assets/fonts/Formula1-Regular.ttf") format('truetype');
@@ -261,6 +313,7 @@ body {
   flex-direction: row;
   justify-content: space-between;
   max-height: 35px;
+  overflow-y: clip;
 }
 
 .scroll-wrapper {
@@ -1801,7 +1854,7 @@ input[type="checkbox"]:checked {
   width: 100.2%;
   z-index: -5;
   left: -2px;
-  opacity: 0.8;
+  opacity: 1;
 
 }
 
@@ -2654,7 +2707,7 @@ DRIVERS TABLE
   padding: 0px 2px;
 }
 
-.logo-up-down {
+.logo-up-down, .logo-lotus-table {
   padding: 5px 0;
 }
 
@@ -2671,7 +2724,7 @@ DRIVERS TABLE
   padding-bottom: 10px;
 }
 
-.logo-ferrari-table {
+.logo-ferrari-table, .logo-andretti-table, .logo-renault-table {
   padding: 4px 3px;
 }
 
@@ -2692,7 +2745,69 @@ DRIVERS TABLE
 }
 
 .logo-alpine-table {
+  width: 100%;
+  height: 100%;
+  -webkit-mask: url('/assets/images/alpine.svg') no-repeat center;
+  mask: url('/assets/images/alpine.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+  transition: background-color 0.15s;
+}
+
+.alhoverback{
+  width: 30px;
+  height: 30px;
+}
+
+.alhoverback:has(.logo-alpine-table){
   padding: 6px 2px;
+}
+
+.alhoverback:has(.logo-andretti-table), .alhoverback:has(.logo-renault-table){
+  padding: 4px 3px
+}
+
+.alhoverback:has(.logo-lotus-table){
+  padding: 5px 0px;
+}
+
+
+.logo-andretti-table{
+  width: 100%;
+  height: 100%;
+  -webkit-mask: url('/assets/images/andretti.svg') no-repeat center;
+  mask: url('/assets/images/andretti.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+  transition: background-color 0.15s;
+}
+
+.logo-renault-table{
+  width: 100%;
+  height: 100%;
+  -webkit-mask: url('/assets/images/renault.svg') no-repeat center;
+  mask: url('/assets/images/renault.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+  transition: background-color 0.15s;
+}
+
+.logo-lotus-table{
+  width: 100%;
+  height: 100%;
+  -webkit-mask: url('/assets/images/lotus.svg') no-repeat center;
+  mask: url('/assets/images/lotus.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+  transition: background-color 0.15s;
+}
+
+.drivers-table-row:hover .logo-alpine-table{
+  background-color: #ffffff;
 }
 
 .logo-reduce {
@@ -2794,6 +2909,7 @@ DRIVERS TABLE
 .teams-table-row .mciconback {
   background-color: var(--mclaren-primary)
 }
+
 
 .drivers-table-row:hover .alhoverback {
   background-color: var(--alpine-primary)
@@ -7028,6 +7144,11 @@ input.disabled {
   width: 20px;
   height: 20px;
   bottom: 8px;
+  -webkit-mask: url('/assets/images/car.svg') no-repeat center;
+  mask: url('/assets/images/car.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
 }
 
 
@@ -8106,6 +8227,18 @@ input::-webkit-inner-spin-button {
   padding: 5px;
 }
 
+.renaultlogo,
+#relogo {
+  width: 40px;
+  height: 40px;
+  padding-bottom: 7px;
+  padding-top: 5px;
+  padding-left: 3px;
+  padding-right: 2px;
+}
+
+
+
 .alpinelogo,
 #allogo {
   width: 40px;
@@ -8115,6 +8248,38 @@ input::-webkit-inner-spin-button {
   padding-left: 2px;
   padding-right: 2px;
   transition: opacity 0.15s;
+}
+
+.alpinelogo{
+  -webkit-mask: url('/assets/images/alpine.svg') no-repeat center;
+  mask: url('/assets/images/alpine.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+}
+
+.renaultlogo{
+  -webkit-mask: url('/assets/images/renault.svg') no-repeat center;
+  mask: url('/assets/images/renault.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+}
+
+.andrettilogo{
+  -webkit-mask: url('/assets/images/andretti.svg') no-repeat center;
+  mask: url('/assets/images/andretti.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
+}
+
+.lotuslogo{
+  -webkit-mask: url('/assets/images/lotus.svg') no-repeat center;
+  mask: url('/assets/images/lotus.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
 }
 
 .mclarenlogo,
@@ -9778,3 +9943,169 @@ a.bi-custom-patreon:hover{
   color: var(--support-me) !important;
 }
 
+a.bi-custom-patreon.open-slide-up{
+  animation: goUp 0.4s forwards;
+}
+
+a.bi-custom-patreon.close-slide-up{
+  animation: goDown 0.4s forwards;
+}
+
+@keyframes goUp{
+  0%{
+    transform: translateY(0);
+  }
+  60%{
+    transform: translateY(5px);
+  }
+  100% {
+    transform: translateY(-30px);
+  }
+}
+
+@keyframes goDown {
+  0%{
+    transform: translateY(-30px);
+  }
+  60%{
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.patreon-slide-up{
+  padding: 10px;
+  background-color: var(--elements-hover);
+  box-shadow: 0 0 10px var(--generals);
+  border-radius: 10px;
+  transform: translateY(125%);
+  transition: transform 0.15s;
+  position: fixed;
+  bottom: 42px;
+  left: 10px;
+  color: var(--text-general);
+  z-index: 190;
+  max-width: 600px;
+}
+
+.patreon-slide-up.open{
+  transform: translateY(0);
+}
+
+.slide-up-title-and-x{
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-size: 20px;
+  height: 30px;
+}
+
+#patreonSlideUpClose{
+  font-size: 26px;
+  cursor: pointer;
+  color: var(--modal-text);
+  transition: all 0.15s;
+}
+
+#patreonSlideUpClose:hover{
+  color: var(--negative-general);
+}
+
+.patreon-themes{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.themes-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 120px));
+  gap: 5px;
+}
+
+.one-theme{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 5px 8px 8px 8px;
+  border-radius: 5px;
+  transition: background-color 0.15s;
+  cursor: pointer;
+  background-color: var(--elements);
+  border-radius: 8px;
+}
+
+.one-theme:hover{
+  background-color: var(--elements-hover);
+}
+
+.theme-title{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.theme-title .bi-check-lg{
+  color: var(--positive-general);
+  transition: all 0.15s;
+}
+
+.one-theme.active .theme-title .bi-check-lg{
+  rotate: 0deg;
+  opacity: 1;
+}
+
+.one-theme:not(.active) .theme-title .bi-check-lg{
+  rotate: 90deg;
+  opacity: 0;
+}
+
+.theme-colors{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.theme-colors div{
+  height: 30px;
+  flex: 1;
+}
+
+#defaultTheme .background-color{
+  background-color: #202020;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#defaultTheme .primary-color{
+  background-color: #c89efc;
+}
+
+#defaultTheme .secondary-color{
+  background-color: #9AD2CB;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#lightTheme .background-color{
+  background-color: #e7e7e7;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#lightTheme .primary-color{
+  background-color: #7a5fd8;
+}
+
+#lightTheme .secondary-color{
+  background-color: #66aabb;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}

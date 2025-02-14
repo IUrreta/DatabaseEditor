@@ -55,7 +55,7 @@ const logos_configs = {
 const logos_classes_configs = {
     "visarb": "visarblogo", "toyota": "toyotalogo", "hugo": "hugologo", "alphatauri": "alphataurilogo",
     "porsche": "porschelogo", "brawn": "brawnlogo",
-    "alpine": "alpinelogo", "renault": "ferrarilogo", "andretti": "andrettilogo", "lotus": "lotuslogo",
+    "alpine": "alpinelogo", "renault": "renaultlogo", "andretti": "andrettilogo", "lotus": "lotuslogo",
     "alfa": "alfalogo", "audi": "audilogo", "sauber": "sauberlogo", "stake": "alfalogo"
 }
 
@@ -94,10 +94,11 @@ const dropDownMenu = document.getElementById("dropdownMenu");
 const notificationPanel = document.getElementById("notificationPanel");
 
 const logButton = document.getElementById("logFileButton");
-const patreonModal = new bootstrap.Modal(document.getElementById('patreonModal'), {
-    keyboard: false
-})
-console.log(patreonModal)
+const patreonLogo = document.querySelector(".footer .bi-custom-patreon");
+const patreonSlideUp = document.querySelector(".patreon-slide-up");
+const slideUpClose = document.getElementById("patreonSlideUpClose")
+const patreonThemes = document.querySelector(".patreon-themes")
+
 
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
@@ -141,6 +142,8 @@ let scriptSelected = 0;
 let divBlocking = 1;
 let saveName;
 let tempImageData = null;
+
+let selectedTheme = "default-theme";
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
@@ -557,6 +560,9 @@ export function updateFront(data) {
     }
     if (data.noti_msg !== undefined) {
         new_update_notifications(data.noti_msg)
+    }
+    if (data.isEditCommand !== undefined) {
+        checkOpenSlideUp()
     }
 }
 
@@ -1109,9 +1115,9 @@ function alpineReplace(info) {
     if (info !== "alpine") {
         document.querySelectorAll(".alpinelogo-replace").forEach(function (elem) {
             if (!elem.classList.contains("non-changable")) {
-                elem.src = logos_configs[info]
                 elem.classList.remove("alpinelogo")
-                elem.classList.remove("ferrarilogo")
+                elem.classList.remove("andrettilogo")
+                elem.classList.remove("renaultlogo")
                 elem.classList.remove("lotuslogo")
                 elem.classList.add(logos_classes_configs[info])
             }
@@ -1141,7 +1147,8 @@ function alpineReplace(info) {
             if (!elem.classList.contains("non-changable")) {
                 elem.src = logos_configs[info]
                 elem.classList.remove("alpinelogo")
-                elem.classList.remove("ferrarilogo")
+                elem.classList.remove("andrettilogo")
+                elem.classList.remove("renaultlogo")
                 elem.classList.remove("lotuslogo")
                 elem.classList.add("alpinelogo")
             }
@@ -1341,6 +1348,8 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     }
 
     replace_custom_team_logo(document.querySelector(".logo-preview").src)
+    changeTheme()   
+
 })
 
 document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", function () {
@@ -1728,8 +1737,17 @@ async function isPatronSignatureValid() {
     }
 }
 
-
 async function checkPatreonStatus() {
+    const validSignature = await isPatronSignatureValid();
+
+    if (validSignature) {
+        patreonThemes.classList.remove("d-none");
+        loadTheme();
+    }
+}
+
+
+async function checkOpenSlideUp() {
     const validSignature = await isPatronSignatureValid();
 
 
@@ -1738,8 +1756,7 @@ async function checkPatreonStatus() {
         return;
     }
 
-
-    const delaySec = 10 + Math.floor(Math.random() * 11); // 10..20
+    const delaySec = 5;
     setTimeout(() => {
         showPatreonModal();
         localStorage.setItem('patreonModalLastShown', new Date().toISOString());
@@ -1748,9 +1765,16 @@ async function checkPatreonStatus() {
 
 
 function showPatreonModal() {
-    patreonModal.show()
+    patreonLogo.classList.add("open-slide-up")
+    setTimeout(() => {
+        patreonSlideUp.classList.add("open")
+    }, 350);
 }
 
+slideUpClose.addEventListener('click', () => {
+    patreonSlideUp.classList.remove("open");
+    patreonLogo.className = "bi-custom-patreon close-slide-up"
+});
 
 
 function canShowPatreonModal(lastShown) {
@@ -1758,7 +1782,7 @@ function canShowPatreonModal(lastShown) {
     const last = new Date(lastShown).getTime();
     const now = Date.now();
     const diffDays = (now - last) / (1000 * 60 * 60 * 24);
-    return diffDays >= 2;
+    return diffDays >= 1;
 }
 
 /**
@@ -1815,3 +1839,24 @@ document.addEventListener('DOMContentLoaded', () => {
     checkPatreonStatus();
 });
 
+document.querySelectorAll(".one-theme").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        selectedTheme = elem.dataset.theme
+        document.querySelector(".one-theme.active").classList.remove("active")
+        elem.classList.add("active")
+    })
+});
+
+function changeTheme(){
+    document.querySelector("body").className = `font ${selectedTheme}`
+    localStorage.setItem("theme", selectedTheme)
+}
+
+function loadTheme(){
+    let theme = localStorage.getItem("theme")
+    selectedTheme = theme || "default-theme"
+    if (theme) {
+        document.querySelector("body").className = `font ${selectedTheme}`
+        document.querySelector(`.one-theme[data-theme="${selectedTheme}"]`).classList.add("active")
+    }
+}

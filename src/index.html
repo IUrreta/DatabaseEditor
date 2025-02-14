@@ -9,65 +9,6 @@
 </head>
 
 <body class="font">
-  <div class="modal fade" id="patreonModal" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content custom-modal">
-        <div class="modal-header custom-header">
-          <h3 class="modal-title bold-font">Please consider supporting this project</h3>
-        </div>
-        <div class="modal-body custom-body">
-          <div class="patreon-paragraph">
-            <span class="">
-              The Database Editor will <span class="important-text bold-font ">remain free</span>, and no core features
-              will
-              ever be locked behind a paywall.
-              However, running and maintaining this project <span class="important-text bold-font">takes time and
-                resources</span>.
-            </span>
-            <span class="">
-              If you found the tool useful and want to support its development,
-              <br>
-              <span class="patreon-text bold-font">consider becoming a Patron!</span>
-            </span>
-            <div class="patreon-perks d-none">
-              <div class="perks-list">
-                <span>5.5€/month tier:</span>
-                <ul class="patreon-perks-list">
-                  <li>Support the project</li>
-                  <li>Extra themes for the editor</li>
-                  <li>Ad-free experience (no pop-ups)</li>
-                  <li>Access to progress posts</li>
-                  <li>Recognition as a supporter</li>
-                  <li>Ability to request new features</li>
-                </ul>
-              </div>
-              <div class="perks-list">
-                <span>10.5€/month tier:</span>
-                <ul class="patreon-perks-list">
-                  <li>All the previous tiers rewards, plus:</li>
-                  <li>Even more support to the project!</li>
-                  <li>Saving your data from +5 seasons</li>
-                  <li>Sneak peeks of future development</li>
-                </ul>
-              </div>
-            </div>
-            <a href="https://www.buymeacoffee.com/iUrreta" target="_blank">
-              <div class="patreon-button">
-                <div class="patreon-button-logo"></div>
-                <span class="patreon-button-text bold-font">PATREON PAGE</span>
-              </div>
-            </a>
-          </div>
-        </div>
-        <div class="modal-footer custom-footer">
-          <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal">Close</button>
-            <div class="dropdown-line"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   <div class="modal custom-modal fade" id="enginesModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
@@ -277,8 +218,8 @@
                   </a>
                   <a class="dropdown-item alborder-down bold-font" style="cursor: pointer;" data-teamid="5">
                     <div class="team-menu-logo">
-                      <img src="../assets/images/alpine.png"
-                        class="alpinelogo-replace alpinelogo team-menu-alpine-replace changable-team-menu-alpine">
+                      <div
+                        class="alpinelogo-replace team-menu-alpine-replace changable-team-menu-alpine"></div>
                     </div>
                     <div class="team-menu-name alpine-name">
                       ALPINE
@@ -459,7 +400,7 @@
               </div>
               <div class="team-change mt-2">
                 <div class="bold-font logo-and-name" style="width: 33%;">
-                  <img src="../assets/images/alpine.png" class="alpinelogo non-changable">
+                  <div class="alpinelogo non-changable"></div>
                   <div class="team-name">ALPINE</div>
                 </div>
                 <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
@@ -472,19 +413,19 @@
                     <div class="dropdown-line"></div>
                     <ul class="dropdown-menu team-select-menu" id="graphTypeDropdown" style="font-family: Formula1;">
                       <a class="dropdown-item bold-font alborder-down-noC" data-value="alpine">
-                        <img src="../assets/images/alpine.png" class="alpinelogo non-changable">
+                        <div class="alpinelogo non-changable"></div>
                         <div class="ms-1">ALPINE</div>
                       </a>
                       <a class="dropdown-item bold-font andrettiborder-down" data-value="andretti">
-                        <img src="../assets/images/andretti.png" class="andrettilogo">
+                        <div class="andrettilogo"></div>
                         <div class="ms-1">ANDRETTI</div>
                       </a>
                       <a class="dropdown-item bold-font renaultborder-down" data-value="renault">
-                        <img src="../assets/images/renault.png" class="ferrarilogo">
+                        <div class="renaultlogo"></div>
                         <div class="ms-1">RENAULT</div>
                       </a>
                       <a class="dropdown-item bold-font lotusborder-down" data-value="lotus">
-                        <img src="../assets/images/lotus.png" class="lotuslogo">
+                        <div class="lotuslogo"></div>
                         <div class="ms-1">LOTUS</div>
                       </a>
                     </ul>
@@ -652,7 +593,6 @@
               </span>
             </div>
             <div class="upload-key-and-patreon-button">
-
               <a href="https://www.buymeacoffee.com/iUrreta" target="_blank">
                 <div class="patreon-button">
                   <div class="patreon-button-logo"></div>
@@ -666,6 +606,34 @@
                 <div class="dropdown-line"></div>
               </div>
             </div>
+            <div class="patreon-themes d-none">
+              <span class="modal-subtitle bold-font">Choose a theme</span>
+              <div class="themes-grid">
+                <div class="one-theme active" id="defaultTheme" data-theme="default-theme">
+                  <div class="theme-title">
+                    <span>Default</span>
+                    <i class="bi bi-check-lg"></i>
+                  </div>
+                  <div class="theme-colors">
+                    <div class="background-color"></div>
+                    <div class="primary-color"></div>
+                    <div class="secondary-color"></div>
+                  </div>
+                </div>
+                <div class="one-theme"  id="lightTheme" data-theme="light-theme">
+                  <div class="theme-title">
+                    <span>Light</span>
+                    <i class="bi bi-check-lg"></i>
+                  </div>
+                  <div class="theme-colors">
+                    <div class="background-color"></div>
+                    <div class="primary-color"></div>
+                    <div class="secondary-color"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
           <input class="d-none" type="file" id="patreonInput" accept=".json">
 
@@ -1148,7 +1116,7 @@
               </div>
               <div class="col modal-team al-transparent d-none" data-teamid="5">
                 <div class="logo-and-name">
-                  <img src="../assets/images/alpine.png" class="alpinelogo-replace alpinelogo front-gradient">
+                  <div class="alpinelogo-replace alpinelogo front-gradient"></div>
                   <div class="team-name bold-font front-gradient alpine-name">ALPINE</div>
                 </div>
                 <div class="buttons-drivers-modal">
@@ -1301,7 +1269,7 @@
           </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" id="carpill">
-              <img src="../assets/images/car.png" alt="Car Icon" id="specialCarIcon" class="pill-icon">
+              <div id="specialCarIcon" class="pill-icon"></div>
               <label class="bold-font pill-label">PERFORMANCE</label>
               <div class="pill-line"></div>
             </a>
@@ -1919,7 +1887,7 @@
               </div>
               <div class="team-template  alborder">
                 <div class="new-logo-and-name">
-                  <img src="../assets/images/alpine.png" class="alpinelogo alpinelogo-replace">
+                  <div class="alpinelogo alpinelogo-replace"></div>
                   <div class="team-name bold-font alpine-name">ALPINE</div>
                 </div>
                 <div class="drivers-section" data-team="alpine">
@@ -2860,8 +2828,8 @@
                 </a>
                 <a class="dropdown-item alborder-down bold-font" style="cursor: pointer;" data-teamid="5">
                   <div class="team-menu-logo">
-                    <img src="../assets/images/alpine.png"
-                      class="alpinelogo-replace alpinelogo team-menu-alpine-replace changable-team-menu-alpine">
+                    <div
+                      class="alpinelogo-replace alpinelogo team-menu-alpine-replace changable-team-menu-alpine"></div>
                   </div>
                   <div class="team-menu-name alpine-name">
                     ALPINE
@@ -5017,6 +4985,56 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="patreon-slide-up">
+    <div class="slide-up-title-and-x bold-font">
+      <span class="slide-up-title">
+        Support the project
+      </span>
+      <i class="bi bi-x" id="patreonSlideUpClose"></i>
+    </div>
+    <div class="patreon-paragraph">
+      <span class="">
+        The Database Editor will <span class="important-text bold-font ">remain free</span>, and no core features
+        will
+        ever be locked behind a paywall.
+        However, running and maintaining this project <span class="important-text bold-font">takes time and
+          resources</span>.
+      </span>
+      <span class="">
+        If you found the tool useful and want to support its development,
+        <br>
+        <span class="patreon-text bold-font">consider becoming a Patron!</span>
+      </span>
+      <div class="patreon-perks d-none">
+        <div class="perks-list">
+          <span>5.5€/month tier:</span>
+          <ul class="patreon-perks-list">
+            <li>Support the project</li>
+            <li>Extra themes for the editor</li>
+            <li>Ad-free experience (no pop-ups)</li>
+            <li>Access to progress posts</li>
+            <li>Recognition as a supporter</li>
+            <li>Ability to request new features</li>
+          </ul>
+        </div>
+        <div class="perks-list">
+          <span>10.5€/month tier:</span>
+          <ul class="patreon-perks-list">
+            <li>All the previous tiers rewards, plus:</li>
+            <li>Even more support to the project!</li>
+            <li>Saving your data from +5 seasons</li>
+            <li>Sneak peeks of future development</li>
+          </ul>
+        </div>
+      </div>
+      <a href="https://www.buymeacoffee.com/iUrreta" target="_blank">
+        <div class="patreon-button">
+          <div class="patreon-button-logo"></div>
+          <span class="patreon-button-text bold-font">PATREON PAGE</span>
+        </div>
+      </a>
     </div>
   </div>
   <footer class="footer">

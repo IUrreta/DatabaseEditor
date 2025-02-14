@@ -683,7 +683,8 @@ function new_addDriver(driver, races_done, odd) {
     if (driver[1] === 4 || driver[1] === 7) { //mercedes  haas
         logo.classList.add("logo-merc-table")
     }
-    if (driver[1] === 5) { //different to aston
+    if (driver[1] === 5) { //alpine
+        logo = document.createElement("div")
         logo.classList.add(driversTableLogosDict[alpineReplace])
     }
     if (driver[1] === 8) { //alphatauri
@@ -699,7 +700,10 @@ function new_addDriver(driver, races_done, odd) {
         logo.classList.add("custom-replace")
     }
     logoDiv.classList.add(team_dict[driver[1]] + "hoverback")
-    logo.setAttribute("src", logos_disc[driver[1]])
+    //check if logo is a div or an img
+    if (logo.tagName === "IMG") {
+        logo.src = logos_disc[driver[1]]
+    }
     logoDiv.appendChild(logo)
     row.appendChild(logoDiv)
     row.appendChild(nameDiv)

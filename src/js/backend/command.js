@@ -14,6 +14,7 @@ export class Command {
         this.data = data;
     }
 
+
     async execute(loader=false) {
         console.log(`[Command] Ejecutando comando: ${this.commandName}`);
         console.log(`[Command] Datos:`, this.data);
@@ -28,7 +29,7 @@ export class Command {
                 console.error(`[${this.commandName}] Error:`, response.error);
                 document.querySelector(".error").classList.remove("d-none");
             } else {
-                console.log(`[${this.commandName}] Respuesta:`, response.responseMessage);
+                console.log(`[${this.commandName}] Response:`, response.responseMessage);
                 updateFront(response);
                 if (this.commandName === "saveSelected") {
                     if (response.responseMessage === "Game Year") {

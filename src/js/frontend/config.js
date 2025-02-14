@@ -130,7 +130,7 @@ export const names_full = {
 export let driversTableLogosDict = {
     "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-merc-table", "sauber": "logo-williams-table", "visarb": "logo-visarb-table", "hugo": "logo-stake-table",
     "brawn": "logo-brawn-table", "toyota": "logo-williams-table", "alphatauri": "logo-extra-small", "porsche": "logo-porsche-table",
-    "renault": "logo-ferrari-table", "andretti": "logo-ferrari-table", "lotus": "logo-up-down", "alpine": "logo-alpine-table"
+    "renault": "logo-renault-table", "andretti": "logo-andretti-table", "lotus": "logo-lotus-table", "alpine": "logo-alpine-table"
 }
 
 export const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0", 3: "chi0" };
