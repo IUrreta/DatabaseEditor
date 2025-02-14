@@ -1861,6 +1861,7 @@ function loadTheme(){
     selectedTheme = theme || "default-theme"
     if (theme) {
         document.querySelector("body").className = `font ${selectedTheme}`
+        document.querySelector(".one-theme.active").classList.remove("active")
         document.querySelector(`.one-theme[data-theme="${selectedTheme}"]`).classList.add("active")
     }
 }
