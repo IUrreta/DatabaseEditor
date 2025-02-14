@@ -324,21 +324,21 @@
           <div class="pb-2 pe-3">
             <ul class="nav nav-pills">
               <li class="nav-item">
-                <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"
+                <a class="nav-link bold-font categoryPills generalPills d-none" data-bs-toggle="pill"
                   data-section=".teams-section" id="editorPill">
                   <div class="basic-label bold-font">Save</div>
                   <div class="pill-line"></div>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link bold-font categoryPills generalPills" data-bs-toggle="pill"
+                <a class="nav-link bold-font categoryPills generalPills d-none" data-bs-toggle="pill"
                   data-section=".engines-section" id="gamePill">
                   <div class="basic-label bold-font">Game</div>
                   <div class="pill-line"></div>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link bold-font categoryPills generalPills" data-bs-toggle="pill"
+                <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"
                   data-section=".engines-section" id="patreonPill">
                   <div class="basic-label bold-font">Patreon</div>
                   <div class="pill-line"></div>
@@ -346,7 +346,7 @@
               </li>
             </ul>
           </div>
-          <div id="editorChanges">
+          <div id="editorChanges" class="d-none">
             <div class="main-team-changes mb-3" id="teamChanges">
               <div class="d-flex" style="gap: 7px;">
                 <div>Please note that this changes are <span class="important-text bold-font">VISUAL AND FOR THE EDITOR
@@ -603,7 +603,7 @@
               </div>
             </div>
           </div>
-          <div id="patreonChanges" class="d-none">
+          <div id="patreonChanges">
             <div class="patreon-changes-text">
               <span>
                 Becoming a patreon supporter will not only support massively the development of the game, but also give
@@ -617,7 +617,7 @@
               </span>
             </div>
             <div class="upload-key-and-patreon-button">
-              <a href="https://www.buymeacoffee.com/iUrreta" target="_blank">
+              <a href="https://www.patreon.com/dbeditor" target="_blank">
                 <div class="patreon-button">
                   <div class="patreon-button-logo"></div>
                   <span class="patreon-button-text bold-font">PATREON PAGE</span>
@@ -1246,7 +1246,7 @@
       </div>
     </div>
     <div class="gear-container my-2">
-      <i class="bi bi-gear hidden"></i>
+      <i class="bi bi-gear"></i>
       <label class="bold-font standard-label">SETTINGS</label>
       <div class="standard-line"></div>
     </div>
@@ -1373,12 +1373,12 @@
           </div>
         </div>
         <div class="socials-box">
-          <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor">&nbsp;DB Editor</a>
-          <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259">&nbsp;My
+          <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor" target="_blank">&nbsp;DB Editor</a>
+          <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259" target="_blank">&nbsp;My
             profile</a>
-          <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_">&nbsp;@ignaciourreta_</a>
-          <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta">&nbsp;ignaciourreta</a>
-          <a class="bi-custom-patreon" href="https://www.buymeacoffee.com/iUrreta">&nbsp;Support the project</a>
+          <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_" target="_blank">&nbsp;@ignaciourreta_</a>
+          <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta" target="_blank">&nbsp;ignaciourreta</a>
+          <a class="bi-custom-patreon" href="https://www.patreon.com/dbeditor" target="_blank">&nbsp;Support the project</a>
         </div>
       </div>
       <div class="script-view hide" id="predict_results">
@@ -3742,7 +3742,7 @@
             </div>
             <div class="performance-graph-button"><i class="bi bi-graph-up active" id="performanceGraphButton"></i>
             </div>
-            <div class="fit-button" id="fitButton">Fit latest designs</div>
+            <div class="fit-button d-none" id="fitButton">Fit latest designs</div>
           </div>
           <div class="title-buttons-left d-none" id="customEnginesButtonContainer">
             <div class="fit-button" id="customEngines" data-bs-toggle="modal" data-bs-target="#enginesModal">Custom
@@ -5087,7 +5087,7 @@
           </ul>
         </div>
       </div>
-      <a href="https://www.buymeacoffee.com/iUrreta" target="_blank">
+      <a href="https://www.patreon.com/dbeditor" target="_blank">
         <div class="patreon-button">
           <div class="patreon-button-logo"></div>
           <span class="patreon-button-text bold-font">PATREON PAGE</span>
@@ -5097,12 +5097,12 @@
   </div>
   <footer class="footer">
     <div class="socials">
-      <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor">&nbsp;DB Editor</a>
-      <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259">&nbsp;My
+      <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor" target="_blank">&nbsp;DB Editor</a>
+      <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259" target="_blank">&nbsp;My
         profile</a>
-      <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_">&nbsp;@ignaciourreta_</a>
-      <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta">&nbsp;ignaciourreta</a>
-      <a class="bi-custom-patreon" href="https://www.buymeacoffee.com/iUrreta">&nbsp;Support the project</a>
+      <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_" target="_blank">&nbsp;@ignaciourreta_</a>
+      <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta" target="_blank">&nbsp;ignaciourreta</a>
+      <a class="bi-custom-patreon" href="https://www.patreon.com/dbeditor" target="_blank">&nbsp;Support the project</a>
     </div>
     <div class="save-info">
       <div class="twenty-three bold-font" id="year23">
@@ -5117,7 +5117,7 @@
       <div class="footer-notification"></div>
       <div class="status-info">
         <div class="loader hidden"></div>
-        <i class="bi bi-exclamation-triangle-fill error d-none"></i>
+        <i class="bi bi-exclamation-triangle-fill error d-none" id="logButton"></i>
       </div>
       <div class="version-panel" data-bs-toggle="modal" data-bs-target="#patchModal"></div>
     </div>

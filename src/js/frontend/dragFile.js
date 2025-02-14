@@ -1,7 +1,7 @@
 // dragDrop.js
 import { analyzeFileToDatabase } from "../backend/UESaveHandler";
 import { setDatabase, queryDB } from "../backend/dbManager.js";
-import {setSaveName } from "./renderer.js";
+import {gamePill, editorPill, setSaveName } from "./renderer.js";
 import { Command } from "../backend/command.js";
 
 let carAnalysisUtils = null;
@@ -51,6 +51,8 @@ dropDiv.addEventListener("drop", async (event) => {
     });
 
     document.getElementById("saveFileDropped").classList.add("completed");
+    editorPill.classList.remove("d-none");
+    gamePill.classList.remove("d-none");
 
 
     const command = new Command("saveSelected", {});

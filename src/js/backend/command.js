@@ -6,8 +6,8 @@ import { teamReplaceDict, prettyNames, getGlobals, setGlobals } from "./commandG
 
 export class Command {
     /**
-     * @param {string} commandName - El nombre del comando que se enviará al worker.
-     * @param {Object} data - Los datos que acompañarán al comando.
+     * @param {string} commandName - Name of the command to execute.
+     * @param {Object} data - Data to send to the worker.
      */
     constructor(commandName, data) {
         this.commandName = commandName;
@@ -16,8 +16,8 @@ export class Command {
 
 
     async execute(loader=false) {
-        console.log(`[Command] Ejecutando comando: ${this.commandName}`);
-        console.log(`[Command] Datos:`, this.data);
+        console.log(`[Command] Executing command: ${this.commandName}`);
+        console.log(`[Command] Data:`, this.data);
         if(loader){
             document.querySelector(".loader").classList.remove("hidden");
         }

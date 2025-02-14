@@ -69,8 +69,8 @@ const constructorsPill = document.getElementById("constructorspill")
 const predictPill = document.getElementById("predictpill")
 const modPill = document.getElementById("modpill")
 
-const editorPill = document.getElementById("editorPill")
-const gamePill = document.getElementById("gamePill")
+export const editorPill = document.getElementById("editorPill")
+export const gamePill = document.getElementById("gamePill")
 const patreonPill = document.getElementById("patreonPill")
 
 const driverTransferDiv = document.getElementById("driver_transfers");
@@ -251,65 +251,7 @@ function update_notifications(noti, code) {
     }
 }
 
-/**
- * Creates the toast with the message and the error status
- * @param {string} msg string with the notification message
- * @param {boolean} err if it's an error or not
- * @returns 
- */
-function createToast(msg, cod) {
-    console.log("CREATING TOAST")
-    let toastFull = document.createElement('div');
-    let toastIcon = document.createElement('div');
-    let toastBodyDiv = document.createElement('div');
-    let generalDiv = document.createElement('div');
-    let icon = document.createElement('i');
-    let cross = document.createElement('i');
 
-
-    generalDiv.classList.add('d-flex', "align-items-center")
-    // Asignar clases y atributos
-    toastFull.classList.add('toast', "d-flex", "myShow", "d-block", "custom-toast")
-    toastFull.style.flexDirection = "column"
-    toastFull.setAttribute('role', 'alert');
-    toastFull.setAttribute('aria-live', 'assertive');
-    toastFull.setAttribute('aria-atomic', 'true');
-
-    toastIcon.classList.add("toast-icon")
-    if (cod === "ok") {
-        icon.className = "bi bi-check-circle"
-        toastIcon.classList.add("success")
-    }
-    else if (cod === "error" || cod === "lighterror") {
-        icon.className = "bi bi-x-circle"
-        toastIcon.classList.add("error")
-    }
-    else if (cod === "monaco") {
-        icon.className = "bi bi-heartbreak"
-        toastIcon.classList.add("error")
-    }
-    toastIcon.appendChild(icon)
-
-    toastBodyDiv.classList.add('d-flex', 'toast-body', "custom-toast-body");
-    toastBodyDiv.textContent = msg;
-    toastBodyDiv.style.opacity = "1"
-    toastBodyDiv.style.color = "white"
-    toastBodyDiv.style.zIndex = "6"
-
-    generalDiv.appendChild(toastIcon)
-    generalDiv.appendChild(toastBodyDiv)
-    toastFull.appendChild(generalDiv)
-    toastFull.appendChild(cross)
-    cross.className = "bi bi-x custom-toast-cross"
-    cross.addEventListener("click", function () {
-        toastFull.classList.add("hide")
-        setTimeout(function () {
-            notificationPanel.removeChild(toastFull);
-        }, 280);
-    })
-
-    return toastFull;
-}
 
 
 function editModeHandler() {
@@ -1342,17 +1284,19 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         replace_custom_team_color(data["primaryColor"], data["secondaryColor"])
     }
 
-    const command = new Command("configUpdate", data);
-    command.execute();
-    let info = { teams: { alphatauri: alphatauri, alpine: alpine, alfa: alfa } }
-    replace_all_teams(info)
-    reloadTables()
-    if (tempImageData) {
-        localStorage.setItem(`${saveName}_image`, tempImageData);
-    }
+    if (isSaveSelected === 1) {
+        const command = new Command("configUpdate", data);
+        command.execute();
+        let info = { teams: { alphatauri: alphatauri, alpine: alpine, alfa: alfa } }
+        replace_all_teams(info)
+        reloadTables()
+        if (tempImageData) {
+            localStorage.setItem(`${saveName}_image`, tempImageData);
+        }
 
-    replace_custom_team_logo(document.querySelector(".logo-preview").src)
-    changeTheme()   
+        replace_custom_team_logo(document.querySelector(".logo-preview").src)
+    }
+    changeTheme()
 
 })
 
@@ -1700,24 +1644,23 @@ patreonInput.addEventListener('change', async (e) => {
     let parsed;
 
     try {
-        parsed = JSON.parse(text); 
+        parsed = JSON.parse(text);
     } catch (err) {
         alert('Archivo inválido');
         return;
     }
 
-    const { patronData, signature } = parsed;
-    if (!patronData || !signature) {
-        alert('Archivo JSON no contiene patronData y/o signature');
+    const { dateData, signature } = parsed;
+    if (!dateData || !signature) {
+        alert('Error');
         return;
     }
 
-    const isValid = await verifySignature(patronData, signature, PUBLIC_KEY);
+    const isValid = await verifySignature(dateData, signature, PUBLIC_KEY);
     if (isValid) {
-        const dataObj = JSON.parse(patronData);
+        const dataObj = JSON.parse(dateData);
 
-        localStorage.setItem('patreonKey', JSON.stringify({ patronData, signature }));
-        alert('Firma válida. Has desbloqueado el contenido.');
+        localStorage.setItem('patreonKey', JSON.stringify({ dateData, signature }));
         checkPatreonStatus();
     } else {
         alert('Firma inválida o archivo manipulado.');
@@ -1730,11 +1673,11 @@ async function isPatronSignatureValid() {
     if (!stored) return false;
 
     try {
-        const { patronData, signature } = JSON.parse(stored);
+        const { dateData, signature } = JSON.parse(stored);
 
-        const dataObj = JSON.parse(patronData);
+        const dataObj = JSON.parse(dateData);
 
-        const valid = await verifySignature(patronData, signature, PUBLIC_KEY);
+        const valid = await verifySignature(dateData, signature, PUBLIC_KEY);
         return valid;
     } catch (err) {
         return false;
@@ -1851,12 +1794,12 @@ document.querySelectorAll(".one-theme").forEach(function (elem) {
     })
 });
 
-function changeTheme(){
+function changeTheme() {
     document.querySelector("body").className = `font ${selectedTheme}`
     localStorage.setItem("theme", selectedTheme)
 }
 
-function loadTheme(){
+function loadTheme() {
     let theme = localStorage.getItem("theme")
     selectedTheme = theme || "default-theme"
     if (theme) {
@@ -1865,3 +1808,80 @@ function loadTheme(){
         document.querySelector(`.one-theme[data-theme="${selectedTheme}"]`).classList.add("active")
     }
 }
+
+document.getElementById('logButton').addEventListener('click', function () {
+    const logs = window.getLogEntries();
+
+    const logWindow = window.open('', '_blank');
+    const doc = logWindow.document;
+
+    const style = `
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .log { color: green; }
+        .error { color: red; }
+        pre { white-space: pre-wrap; word-break: break-word; max-width: 600px; }
+    `;
+
+    const head = doc.createElement('head');
+    const title = doc.createElement('title');
+    title.textContent = 'Log Console';
+
+    const styleTag = doc.createElement('style');
+    styleTag.textContent = style;
+
+    head.appendChild(title);
+    head.appendChild(styleTag);
+    doc.head.appendChild(head);
+
+    const body = doc.createElement('body');
+    const heading = document.createElement('h2');
+    heading.textContent = 'Logs';
+
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    ['Type', 'Message', 'Timestamp'].forEach(text => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+
+    const tbody = document.createElement('tbody');
+
+    logs.forEach(log => {
+        const row = document.createElement('tr');
+
+        const typeCell = document.createElement('td');
+        typeCell.textContent = log.type.toUpperCase();
+        typeCell.classList.add(log.type);
+
+        const messageCell = document.createElement('td');
+        const pre = document.createElement('pre');
+
+        // Si el mensaje es un objeto, lo formateamos como JSON
+        pre.textContent = log.message.map(msg =>
+            typeof msg === 'object' ? JSON.stringify(msg, null, 2) : msg
+        ).join(' ');
+
+        messageCell.appendChild(pre);
+
+        const timestampCell = document.createElement('td');
+        timestampCell.textContent = new Date(log.timestamp).toLocaleString();
+
+        row.appendChild(typeCell);
+        row.appendChild(messageCell);
+        row.appendChild(timestampCell);
+        tbody.appendChild(row);
+    });
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+
+    body.appendChild(heading);
+    body.appendChild(table);
+    doc.body.appendChild(body);
+});
