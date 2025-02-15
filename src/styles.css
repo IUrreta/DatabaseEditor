@@ -10233,7 +10233,7 @@ body:has(.active #mod25logo) .creator-separator {
 .footer .bi-exclamation-triangle-fill{
   color: color-mix(in srgb, var(--negative-general) 60%, var(--generals));
   transition: all 0.15s;
-  padding: 0;
+  padding: 0px;
 }
 
 .footer .bi-exclamation-triangle-fill:hover{
