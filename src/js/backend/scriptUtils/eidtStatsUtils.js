@@ -62,7 +62,7 @@ export function editStats(driverID, type, stats, retirement, driverNum, wants1) 
         WHERE StaffID = ${driverID}
       `);
     } else {
-      const statsArray = params.slice(2, 11);
+      const statsArray = statsParams.slice(2, 11);
       statsArray.forEach((newStat, i) => {
         const statID = driverStats[i];
         queryDB(`
