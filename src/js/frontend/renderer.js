@@ -21,7 +21,7 @@ import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups
 } from './stats';
-import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs, reload_h2h_graphs, init_colors_dict } from './head2head';
+import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs, reload_h2h_graphs, init_colors_dict, edit_colors_dict } from './head2head';
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
 import { PUBLIC_KEY } from './public_key.js';
@@ -820,8 +820,8 @@ function replace_custom_team_color(primary, secondary) {
     root.style.setProperty('--custom-team-secondary', secondary);
     root.style.setProperty('--custom-team-primary-transparent', primary + "30");
     root.style.setProperty('--custom-team-secondary-transparent', secondary + "30");
-    colors_dict["320"] = primary
-    colors_dict["321"] = secondary
+    edit_colors_dict("320", primary)
+    edit_colors_dict("321", secondary)
     document.getElementById("primarySelector").value = primary
     document.getElementById("secondarySelector").value = secondary
     document.getElementById("primaryReader").value = primary.toUpperCase()
@@ -993,12 +993,12 @@ function alphaTauriReplace(info) {
         let newVarName = "--" + info + "-primary"
         change_css_variables(alphaVarName, newVarName)
         let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        colors_dict["80"] = value
+        edit_colors_dict("80", value)
         alphaVarName = "--alphatauri-secondary"
         newVarName = "--" + info + "-secondary"
         change_css_variables(alphaVarName, newVarName)
         value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        colors_dict["81"] = value
+        edit_colors_dict("81", value)
         alphaVarName = "--alphatauri-primary-transparent"
         newVarName = "--" + info + "-primary-transparent"
         change_css_variables(alphaVarName, newVarName)
@@ -1027,12 +1027,12 @@ function alphaTauriReplace(info) {
         let newVarName = "--alphatauri-original"
         change_css_variables(alphaVarName, newVarName)
         let value = getComputedStyle(document.documentElement).getPropertyValue("--alphatauri-original").trim();
-        colors_dict["80"] = value
+        edit_colors_dict("80", value)
         alphaVarName = "--alphatauri-secondary"
         newVarName = "--alphatauri-secondary-original"
         change_css_variables(alphaVarName, newVarName)
         value = getComputedStyle(document.documentElement).getPropertyValue("--alphatauri-secondary-original").trim();
-        colors_dict["81"] = value
+        edit_colors_dict("81", value)
         alphaVarName = "--alphatauri-primary-transparent"
         newVarName = "--alphatauri-primary-transparent-original"
         change_css_variables(alphaVarName, newVarName)
@@ -1079,12 +1079,12 @@ function alpineReplace(info) {
         let newVarName = "--" + info + "-primary"
         change_css_variables(alpineVarName, newVarName)
         let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        colors_dict["50"] = value
+        edit_colors_dict("50", value)
         alpineVarName = "--alpine-secondary"
         newVarName = "--" + info + "-secondary"
         change_css_variables(alpineVarName, newVarName)
         value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        colors_dict["51"] = value
+        edit_colors_dict("51", value)
         alpineVarName = "--alpine-primary-transparent"
         newVarName = "--" + info + "-primary-transparent"
         change_css_variables(alpineVarName, newVarName)
@@ -1110,12 +1110,12 @@ function alpineReplace(info) {
         let newVarName = "--alpine-original"
         change_css_variables(alpineVarName, newVarName)
         let value = getComputedStyle(document.documentElement).getPropertyValue("--alpine-original").trim();
-        colors_dict["50"] = value
+        edit_colors_dict("50", value)
         alpineVarName = "--alpine-secondary"
         newVarName = "--alpine-secondary-original"
         change_css_variables(alpineVarName, newVarName)
         value = getComputedStyle(document.documentElement).getPropertyValue("--alpine-secondary-original").trim();
-        colors_dict["51"] = value
+        edit_colors_dict("51", value)
         alpineVarName = "--alpine-primary-transparent"
         newVarName = "--alpine-primary-transparent-original"
         change_css_variables(alpineVarName, newVarName)
@@ -1159,12 +1159,12 @@ function alfaReplace(info) {
         let newVarName = "--" + info + "-primary"
         change_css_variables(alfaVarName, newVarName)
         let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        colors_dict["90"] = value
+        edit_colors_dict("90", value)
         alfaVarName = "--alfa-secondary"
         newVarName = "--" + info + "-secondary"
         change_css_variables(alfaVarName, newVarName)
         value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        colors_dict["91"] = value
+        edit_colors_dict("91", value)
         alfaVarName = "--alfa-primary-transparent"
         newVarName = "--" + info + "-primary-transparent"
         change_css_variables(alfaVarName, newVarName)
@@ -1183,12 +1183,12 @@ function alfaReplace(info) {
         let newVarName = "--alfa-original"
         change_css_variables(alfaVarName, newVarName)
         let value = getComputedStyle(document.documentElement).getPropertyValue("--alfa-original").trim();
-        colors_dict["90"] = value
+        edit_colors_dict("90", value)
         alfaVarName = "--alfa-secondary"
         newVarName = "--alfa-secondary-original"
         change_css_variables(alfaVarName, newVarName)
         value = getComputedStyle(document.documentElement).getPropertyValue("--alfa-secondary-original").trim();
-        colors_dict["91"] = value
+        edit_colors_dict("91", value)
         alfaVarName = "--alfa-primary-transparent"
         newVarName = "--alfa-primary-transparent-original"
         change_css_variables(alfaVarName, newVarName)

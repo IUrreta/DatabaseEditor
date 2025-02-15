@@ -52,6 +52,10 @@ export function get_colors_dict(){
     return colors_dict;
 }
 
+export function edit_colors_dict(key, value){
+    colors_dict[key] = value;
+}
+
 
 /**
  * Puts the bars of the head to head with the correct width for the drivers selected
