@@ -41,13 +41,6 @@ export function setCurrentSeason(season) {
     currentSeason = season
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const dropdownButton = document.getElementById('yearButtonH2H');
-    const dropdown = new bootstrap.Dropdown(dropdownButton);
-
-    // Opcional: muestra el dropdown al cargar la página
-    dropdown.show();
-});
 
 
 let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bull", 'merc': "Mercedes", 'alpine': "Alpine", 'williams': "Williams", 'haas': "Haas", 'alphatauri': "Alpha Tauri", 'alfaromeo': "Alfa Romeo", 'astonmartin': "Aston Martin", "F2": "F2", "F3": "F3", "custom": "Custom Team" }
@@ -206,7 +199,6 @@ export function sortList(divID) {
 }
 
 export function place_staff(staffArray) {
-    console.log(staffArray)
     let divPosition;
     staffArray.forEach((staff) => {
         let newDiv = document.createElement("div");
@@ -1246,7 +1238,6 @@ interact('.free-driver').draggable({
                                 destinationParent = element;
                                 element.appendChild(target);
                                 originalTeamId = parseInt(target.dataset.teamid)
-                                console.log("ORIGINAL TEAM: " + originalTeamId)
                                 target.dataset.teamid = inverted_dict[teamDestiniy]
                                 updateColor(target)
                                 document.getElementById("contractModalTitle").innerText = target.innerText + "'s contract with " + name_dict[teamDestiniy];

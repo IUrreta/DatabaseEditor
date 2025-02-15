@@ -101,11 +101,9 @@ document.querySelectorAll("#tableTypeDropdown a").forEach(function (elem) {
         let start = performance.now()
         change_points_pos_drivers()
         let end = performance.now()
-        console.log("Time to execute change_points_pos_drivers: " + (end - start) + "ms")
         start = performance.now()
         change_points_pos_teams()
         end = performance.now()
-        console.log("Time to execute change_points_pos_teams: " + (end - start) + "ms")
         document.querySelector("#tableTypeButton").textContent = elem.textContent
     })
 })

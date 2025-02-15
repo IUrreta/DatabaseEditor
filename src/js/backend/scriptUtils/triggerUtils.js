@@ -65,7 +65,6 @@ const invertedDifficultyDict = Object.fromEntries(
 );
 
 export function manageDifficultyTriggers(triggerList) {
-  console.log("TRIGGERLIST", triggerList);
   if (triggerList.statDif !== undefined) manageDesignBoostTriggers(triggerList.statDif);
   if (triggerList.designTimeDif !== undefined) manageDesignTimeTriggers(triggerList.designTimeDif);
   if (triggerList.lightDif !== undefined) manageWeightTrigger(triggerList.lightDif);
@@ -175,7 +174,6 @@ export function manageDesignTimeTriggers(triggerLevel) {
 }
 
 export function manageDesignBoostTriggers(triggerLevel) {
-  console.log("manageDesignBoostTriggers", triggerLevel);
   queryDB("DROP TRIGGER IF EXISTS difficulty_extraHard");
   queryDB("DROP TRIGGER IF EXISTS difficulty_brutal");
   queryDB("DROP TRIGGER IF EXISTS difficulty_unfair");
@@ -459,7 +457,6 @@ export function fetchExistingTriggers() {
 }
 
 export function editFreezeMentality(state) {
-  console.log(state)
   if (state === 0) {
     queryDB("DROP TRIGGER IF EXISTS update_Opinion_After_Insert;");
     queryDB("DROP TRIGGER IF EXISTS update_Opinion_After_Update;");

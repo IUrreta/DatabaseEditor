@@ -1,7 +1,7 @@
 import { races_names, part_codes_abreviations, codes_dict, combined_dict, races_map, abreviations_dict, pars_abreviations, engine_stats_dict,
     theme_colors
   } from "./config";
-import { colors_dict } from "./head2head";
+import { colors_dict, get_colors_dict } from "./head2head";
 import { manageSaveButton, game_version } from "./renderer";
 import { first_show_animation, selectedTheme } from "./renderer";
 import { Command } from "../backend/command.js";
@@ -1116,8 +1116,6 @@ function manage_bar(bar, progress) {
 }
 
 export function reload_performance_graph() {
-    console.log("reload")
-    console.log(selectedTheme)
     if (typeof performanceGraph !== 'undefined' && performanceGraph !== null) {
         performanceGraph.destroy(); 
         load_performance_graph(currentData);
@@ -1162,7 +1160,7 @@ export function load_performance_graph(data) {
     let yAxisMin = minValue - 5;
     let yAxisMax = maxValue + 5;
     for (let team in teamPerformances) {
-        let color = colors_dict[team + "0"];
+        let color = get_colors_dict()[team + "0"];
         let data = teamPerformances[team];
         performanceGraph.data.datasets.push({
             label: combined_dict[team],

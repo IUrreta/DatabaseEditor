@@ -29,7 +29,6 @@ dropDiv.addEventListener("drop", async (event) => {
     dropDiv.classList.remove("drag-over");
 
     const file = event.dataTransfer.files[0];
-    console.log(file)
     setSaveName(file.name);
     if (!file) return;
 

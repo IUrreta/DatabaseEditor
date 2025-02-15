@@ -36,11 +36,21 @@ let h2hTeamList = []
 let graphTeamList = []
 let mode = "driver"
 let h2hData;
-export let colors_dict = { "10": "#F91536", "11": "#f1f1f1", "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": "#fcfcfc", "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": "#f1f1f1", "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": "#f1f1f1", "90": "#C92D4B", "91": "#f1f1f1", "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000"}
+export let colors_dict;
 //changed as the ct colors changes, so it stays
 
 Chart.register(ChartDataLabels);
 Chart.register(annotationPlugin);
+
+export function init_colors_dict(theme){
+    console.log(theme)
+    colors_dict = { "10": "#F91536", "11": theme_colors[theme].general_secondary, "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": theme_colors[theme].general_secondary, "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": theme_colors[theme].general_secondary, "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": theme_colors[theme].general_secondary, "90": "#C92D4B", "91": theme_colors[theme].general_secondary, "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000"}
+}
+
+
+export function get_colors_dict(){
+    return colors_dict;
+}
 
 
 /**

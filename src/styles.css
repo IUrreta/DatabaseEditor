@@ -5680,13 +5680,12 @@ input.disabled {
 }
 
 .toolbar-logo {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
 }
 
 .toolbar-title {
   font-size: 16px;
-  gap: 2px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -9516,6 +9515,8 @@ span.reduced-weight,
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
+  opacity: 1;
+  transition: all 0.15s;
 }
 
 body.light-theme #blockDiv{
@@ -9523,7 +9524,7 @@ body.light-theme #blockDiv{
 }
 
 #blockDiv.disappear {
-  animation: fadeOut 0.15s forwards;
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -9548,8 +9549,15 @@ body.light-theme #blockDiv{
   gap: 20px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   opacity: 0;
-  animation: fadeIn 0.5s 0.2s forwards;
   transform: translateY(50px);
+}
+
+.splash-box.appear {
+  animation: fadeIn 0.5s 0.1s forwards;
+}
+
+.socials-box.appear {
+  animation: fadeIn 0.5s 0.2s forwards;
 }
 
 body:has(#blockDiv:not(.disappear)) .footer .socials {
@@ -9567,7 +9575,6 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
   gap: 20px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   opacity: 0;
-  animation: fadeIn 0.5s 0.2s forwards;
   transform: translateY(50px);
   justify-content: space-around;
 }
@@ -10242,8 +10249,12 @@ a.bi-custom-patreon::before {
   mask: url('/assets/images/patreonLogo.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--dark-text);
+  background-color: var(--text-general);
   transition: background-color 0.15s;
+}
+
+.footer a.bi-custom-patreon::before{
+  background-color: var(--dark-text)
 }
 
 a.bi-custom-patreon:hover::before{

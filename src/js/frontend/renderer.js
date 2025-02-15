@@ -21,7 +21,7 @@ import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups
 } from './stats';
-import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs, reload_h2h_graphs } from './head2head';
+import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs, reload_h2h_graphs, init_colors_dict } from './head2head';
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
 import { PUBLIC_KEY } from './public_key.js';
@@ -1689,6 +1689,8 @@ async function isPatronSignatureValid() {
 }
 
 async function checkPatreonStatus() {
+
+    init_colors_dict(selectedTheme)
     const validSignature = await isPatronSignatureValid();
 
     if (validSignature) {
@@ -1787,6 +1789,8 @@ document.addEventListener('DOMContentLoaded', () => {
     versionNow = APP_VERSION;
     versionPanel.textContent = `${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
+    document.querySelector(".splash-box").classList.add("appear")
+    document.querySelector(".socials-box").classList.add("appear")
     getPatchNotes()
     checkPatreonStatus();
 });
@@ -1802,6 +1806,7 @@ document.querySelectorAll(".one-theme").forEach(function (elem) {
 function changeTheme() {
     document.querySelector("body").className = `font ${selectedTheme}`
     localStorage.setItem("theme", selectedTheme)
+    init_colors_dict(selectedTheme)
     reload_performance_graph()
     reload_h2h_graphs()
 }
@@ -1814,6 +1819,7 @@ function loadTheme() {
         document.querySelector(".one-theme.active").classList.remove("active")
         document.querySelector(`.one-theme[data-theme="${selectedTheme}"]`).classList.add("active")
     }
+    init_colors_dict(selectedTheme)
     reload_performance_graph()
     reload_h2h_graphs()
 }

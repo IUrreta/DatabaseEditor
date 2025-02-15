@@ -3,7 +3,7 @@ let metadata = null;
 
 export function setDatabase(database, meta) {
   db = database;
-  console.log("db: ", db);
+
   metadata = meta;
 }
 

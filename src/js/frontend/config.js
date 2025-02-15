@@ -101,10 +101,12 @@ export const theme_colors = {
     "default-theme" : {
         "labels": "#dedde6",
         "grid": "#292929",
+        "general_secondary": "#f1f1f1",
     },
     "light-theme" : {
         "labels": "#252525",
         "grid": "#d6d6d6",
+        "general_secondary": "#1f1f1f",
     }
 }
 

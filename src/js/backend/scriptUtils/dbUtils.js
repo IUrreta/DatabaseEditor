@@ -91,11 +91,9 @@ export function fetchNationality(driverID, gameYear) {
     
 
     const match = countryName.match(/(?<=\[Nationality_)[^\]]+/);
-    console.log("Match: ", match)
     if (match) {
       const nat = match[0];
       const natName = nat.replace(/(?<!^)([A-Z])/g, " $1");
-      console.log("NatName: ", natName)
       return countries_abreviations[natName] || "";
     }
 
@@ -511,9 +509,7 @@ export function fetchDrivers(gameYear) {
     const superlicense = fetchSuperlicense(driverID);
     const futureTeam = fetchForFutureContract(driverID);
     const driverCode = fetchDriverCode(driverID);
-    console.log(driverID, gameYear)
     const nationality = fetchNationality(driverID, gameYear);
-    console.log("Nationality: ", nationality)
 
     // result es array, lo convertimos a objeto para mayor claridad
     const data = { ...result };
@@ -1244,7 +1240,6 @@ export function checkCustomTables(year) {
     if (!tableExists) {
       queryDB(table.createSQL);
 
-      console.log("TABLE CREATED: ", table.name);
 
       if (table.name === 'Custom_Engines_List') {
         createdEnginesList = true;
@@ -1460,7 +1455,6 @@ export function updateTeamsSuppliedByEngine(engineId, stats) {
 }
 
 export function updateCustomConfig(data){
-  console.log(data)
   const alfaRomeo = data.alfa;
   const alphaTauri = data.alphatauri;
   const alpine = data.alpine;
