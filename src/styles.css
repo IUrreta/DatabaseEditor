@@ -1004,6 +1004,14 @@ input[role="switch"]:checked {
   background-color: var(--new-primary-dark);
 }
 
+body.light-theme input[role="switch"]:not(:checked) {
+  background-color: #bebdc5;
+}
+
+body:not(.light-theme) input[role="switch"]:not(:checked) {
+  background-color: #eeedf1;
+}
+
 input[type="checkbox"] {
   border: none;
 }
@@ -2406,7 +2414,7 @@ body.light-theme .background{
 #driver_transfers,
 #season_viewer,
 #head2head_viewer,
-#car_performance {
+#car_performance, #mod_25 {
   flex-direction: column;
 }
 
@@ -4263,7 +4271,7 @@ input.engine-performance-title:focus {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 700px;
+  max-height: 600px;
   overflow-y: scroll;
 }
 
@@ -5648,7 +5656,7 @@ input.disabled {
 }
 
 #patchNotesBody {
-  max-height: 700px;
+  max-height: 600px;
   overflow-y: scroll;
 }
 
@@ -7301,6 +7309,13 @@ input.disabled {
   justify-content: center;
   align-content: center;
   height: 91%;
+  transition: all 0.15s;
+  opacity: 1;
+}
+
+.download-save-button.hidden{
+  opacity: 0;
+  pointer-events: none;
 }
 
 .download-save-button i {
@@ -10018,6 +10033,12 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
   background: linear-gradient(to top, #ff1500, #530000);
 }
 
+.mod-name{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .mod-creators {
   display: flex;
   flex-direction: row;
@@ -10090,6 +10111,26 @@ body:has(.active #mod25logo) .mod-creators a {
 body:has(.active #mod25logo) .mod-creators a::before {
   animation: before-appear 0.9s;
   animation-delay: calc((var(--order) * 0.07s));
+}
+
+#mod_25{
+  align-items: center;
+}
+
+.coming-soon{
+  margin-top: 100px;
+  opacity: 0;
+}
+
+.coming-soon span{
+  margin-top: 200px;
+  color: #dedde6;
+  font-size: 44px;
+}
+
+body:has(.active #mod25logo) .coming-soon {
+  animation: creator-appear 0.7s forwards;
+  animation-delay: 1.1s;
 }
 
 @keyframes creator-appear {
@@ -10477,3 +10518,4 @@ a.bi-custom-patreon.close-slide-up{
   }
   
 }
+

@@ -137,7 +137,10 @@ const workerCommands = {
   },
   customEngines: (data, postMessage) => {
     updateCustomEngines(data.enginesData);
-    postMessage({ responseMessage: "Custom engines updated", noti_msg: "Succesfully updated the custom engines", isEditCommand: true });
+    postMessage({ responseMessage: "Custom engines updated",
+                  noti_msg: "Succesfully updated the custom engines", 
+                  isEditCommand: true, 
+                  unlocksDownload: true });
   },
   yearSelectedH2H: (data, postMessage) => {
     const drivers = fetchDriversPerYear(data.year);
@@ -168,7 +171,10 @@ const workerCommands = {
   },
   editTeam: (data, postMessage) => {
     editTeam(data);
-    postMessage({ responseMessage: "Team updated", noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s details`, isEditCommand: true });
+    postMessage({ responseMessage: "Team updated", 
+                  noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s details`, 
+                  isEditCommand: true,
+                  unlocksDownload: true  });
   },
   editStats: (data, postMessage) => {
     const globals = getGlobals();
@@ -192,7 +198,10 @@ const workerCommands = {
       editCode(data.driverID, data.newCode);
     }
 
-    postMessage({ responseMessage: "Stats updated", noti_msg: `Succesfully edited ${data.driver}'s stats`, isEditCommand: true });
+    postMessage({ responseMessage: "Stats updated", 
+                  noti_msg: `Succesfully edited ${data.driver}'s stats`, 
+                  isEditCommand: true,
+                  unlocksDownload: true  });
   },
   editPerformance: (data, postMessage) => {
     let globals = getGlobals();
@@ -213,12 +222,18 @@ const workerCommands = {
 
     const carPerformance = getPerformanceAllCars(yearData[2]);
     const carAttributes = getAttributesAllCars(yearData[2]);
-    const carPerformanceResponse = { responseMessage: "Cars fetched", content: [carPerformance, carAttributes], isEditCommand: true };
+    const carPerformanceResponse = {  responseMessage: "Cars fetched", 
+                                      content: [carPerformance, carAttributes], 
+                                      isEditCommand: true,
+                                      unlocksDownload: true  };
     postMessage(carPerformanceResponse);
   },
   editEngine: (data, postMessage) => {
     editEngines(data.engines)
-    postMessage({ responseMessage: "Engines updated", noti_msg: "Succesfully edited all engines performance", isEditCommand: true });
+    postMessage({ responseMessage: "Engines updated", 
+                  noti_msg: "Succesfully edited all engines performance", 
+                  isEditCommand: true,
+                  unlocksDownload: true  });
   },
   editContract: (data, postMessage) => {
     const year = getGlobals().yearIteration;
@@ -229,32 +244,52 @@ const workerCommands = {
     futureContract(data.futureTeam, data.driverID, data.futureSalary, data.futureYear,
       data.futureSignBonus, data.futureRaceBonus, data.futureRaceBonusPos, data.futurePosition, year);
 
-    postMessage({ responseMessage: "Contract updated", noti_msg: `Succesfully edited ${data.driver}'s contract`, isEditCommand: true });
+    postMessage({ responseMessage: "Contract updated", 
+                  noti_msg: `Succesfully edited ${data.driver}'s contract`, 
+                  isEditCommand: true,
+                  unlocksDownload: true  });
   },
   editCalendar: (data, postMessage) => {
     const year = getGlobals().yearIteration;
     editCalendar(data.calendarCodes, year);
-    postMessage({ responseMessage: "Calendar updated", noti_msg: "Succesfully updated the calendar", isEditCommand: true });
+    postMessage({ responseMessage: "Calendar updated", 
+                  noti_msg: "Succesfully updated the calendar", 
+                  isEditCommand: true,
+                  unlocksDownload: true  });
   },
   configUpdate: (data, postMessage) => {
     updateCustomConfig(data);
-    postMessage({ responseMessage: "Config updated", noti_msg: "Succesfully updated the configuration" });
+    postMessage({ responseMessage: "Config updated", 
+                  noti_msg: "Succesfully updated the configuration",
+                  unlocksDownload: true  });
   },
   fireDriver: (data, postMessage) => {
     fireDriver(data.driverID, data.teamID);
-    postMessage({ responseMessage: "Driver fired", noti_msg: `Succesfully fired ${data.driver} from ${data.team}`, isEditCommand: true });
+    postMessage({ responseMessage: "Driver fired", 
+                  noti_msg: `Succesfully fired ${data.driver} from ${data.team}`, 
+                  isEditCommand: true,
+                  unlocksDownload: true  });
   },
   hireDriver: (data, postMessage) => {
     hireDriver("hire", data.driverID, data.teamID, data.position, data.salary, data.signBonus, data.raceBonus, data.raceBonusPos, data.year, getGlobals().yearIteration);
-    postMessage({ responseMessage: "Driver hired", noti_msg: `Succesfully hired ${data.driver} to ${data.team}`, isEditCommand: true });
+    postMessage({ responseMessage: "Driver hired", 
+                  noti_msg: `Succesfully hired ${data.driver} to ${data.team}`, 
+                  isEditCommand: true,
+                  unlocksDownload: true  });
   },
   autoContract: (data, postMessage) => {
     hireDriver("auto", data.driverID, data.teamID, data.position, getGlobals().yearIteration);
-    postMessage({ responseMessage: "Driver hired", noti_msg: `Succesfully hired ${data.driver} to ${data.team}`, isEditCommand: true });
+    postMessage({ responseMessage: "Driver hired", 
+                  noti_msg: `Succesfully hired ${data.driver} to ${data.team}`, 
+                  isEditCommand: true,
+                  unlocksDownload: true  });
   },
   swapDrivers: (data, postMessage) => {
     swapDrivers(data.driver1ID, data.driver2ID);
-    postMessage({ responseMessage: "Drivers swapped", noti_msg: `Succesfully swapped ${data.driver1} and ${data.driver2}`, isEditCommand: true });
+    postMessage({ responseMessage: "Drivers swapped", 
+                  noti_msg: `Succesfully swapped ${data.driver1} and ${data.driver2}`, 
+                  isEditCommand: true,
+                  unlocksDownload: true  });
   }
 
 };

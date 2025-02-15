@@ -1,4 +1,4 @@
-import countries_abreviations from "./countries.js";
+import { countries_abreviations } from "./countries.js";
 import { engine_unitValueToValue } from "./carConstants.js";
 import { manageDifficultyTriggers, manageRefurbishTrigger, editFreezeMentality, fetchExistingTriggers } from "./triggerUtils.js";
 import { queryDB } from "../dbManager.js";
@@ -88,11 +88,14 @@ export function fetchNationality(driverID, gameYear) {
         WHERE CountryID = ${countryID}
       `, 'singleValue');
     if (!countryName) return "";
+    
 
     const match = countryName.match(/(?<=\[Nationality_)[^\]]+/);
+    console.log("Match: ", match)
     if (match) {
       const nat = match[0];
       const natName = nat.replace(/(?<!^)([A-Z])/g, " $1");
+      console.log("NatName: ", natName)
       return countries_abreviations[natName] || "";
     }
 
@@ -508,7 +511,9 @@ export function fetchDrivers(gameYear) {
     const superlicense = fetchSuperlicense(driverID);
     const futureTeam = fetchForFutureContract(driverID);
     const driverCode = fetchDriverCode(driverID);
+    console.log(driverID, gameYear)
     const nationality = fetchNationality(driverID, gameYear);
+    console.log("Nationality: ", nationality)
 
     // result es array, lo convertimos a objeto para mayor claridad
     const data = { ...result };

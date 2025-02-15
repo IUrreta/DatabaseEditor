@@ -98,6 +98,7 @@ const patreonLogo = document.querySelector(".footer .bi-custom-patreon");
 const patreonSlideUp = document.querySelector(".patreon-slide-up");
 const slideUpClose = document.getElementById("patreonSlideUpClose")
 const patreonThemes = document.querySelector(".patreon-themes")
+const downloadSaveButton = document.querySelector(".download-save-button")
 
 
 const status = document.querySelector(".status-info")
@@ -505,6 +506,9 @@ export function updateFront(data) {
     }
     if (data.isEditCommand !== undefined) {
         checkOpenSlideUp()
+    }
+    if (data.unlocksDownload !== undefined) {
+        downloadSaveButton.classList.remove("hidden")
     }
 }
 
@@ -1646,7 +1650,7 @@ patreonInput.addEventListener('change', async (e) => {
     try {
         parsed = JSON.parse(text);
     } catch (err) {
-        alert('Archivo inválido');
+        alert('Invalid file');
         return;
     }
 
@@ -1663,7 +1667,7 @@ patreonInput.addEventListener('change', async (e) => {
         localStorage.setItem('patreonKey', JSON.stringify({ dateData, signature }));
         checkPatreonStatus();
     } else {
-        alert('Firma inválida o archivo manipulado.');
+        alert('Invalid file');
     }
 });
 
@@ -1689,6 +1693,7 @@ async function checkPatreonStatus() {
 
     if (validSignature) {
         patreonThemes.classList.remove("d-none");
+        document.getElementById("patreonKeyText").textContent = "Patreon key loaded";
         loadTheme();
     }
 }

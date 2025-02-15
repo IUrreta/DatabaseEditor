@@ -1,4 +1,4 @@
-countries_abreviations = {
+export const countries_abreviations = {
     "Andorra": "AD",
     "United Arab Emirates": "AE",
     "Afghanistan": "AF",

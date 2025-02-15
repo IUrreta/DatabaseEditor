@@ -643,6 +643,7 @@ export function listenersStaffGroups() {
         });
 
     });
+    document.getElementById("driverStatsDrop").click()
 }
 
 function manage_order(state) {
