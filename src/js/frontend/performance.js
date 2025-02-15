@@ -1045,6 +1045,7 @@ document.querySelector("#confirmCustomEnginesButton").addEventListener("click", 
 
 export function load_custom_engines(data) {
     let engines = data
+    customEnginesCopy = data
     let engineDropdown = document.querySelector("#engineMenu")
     engineDropdown.querySelectorAll("a.custom-engine").forEach(function (elem) {
         elem.remove()

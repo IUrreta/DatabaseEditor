@@ -141,6 +141,8 @@ const workerCommands = {
                   noti_msg: "Succesfully updated the custom engines", 
                   isEditCommand: true, 
                   unlocksDownload: true });
+    const engines = fetchEngines();
+    postMessage({ responseMessage: "Engines fetched", content: engines });
   },
   yearSelectedH2H: (data, postMessage) => {
     const drivers = fetchDriversPerYear(data.year);

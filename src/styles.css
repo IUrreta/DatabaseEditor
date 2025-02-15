@@ -4178,6 +4178,10 @@ body.light-theme .flag, body.light-theme .flag-header img{
   position: relative;
 }
 
+.engine-performance{
+  min-height: 320px;
+}
+
 .engine-f2 {
   border-bottom: 2px solid var(--f2-border);
 }
