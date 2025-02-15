@@ -924,11 +924,11 @@ function manage_config_content(info, year_config = false) {
         let difficultySlider = document.getElementById("difficultySlider")
         difficultySlider.value = info["difficulty"]
         update_difficulty_span(info["difficulty"])
-        if (info["difficulty"] === -2) {
+        if (info["difficulty"] === "-2") {
             load_difficulty_warnings(info["triggerList"])
         }
         else {
-            manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])])
+            manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])], info["triggerList"])
         }
         update_refurbish_span(info["refurbish"])
     }
@@ -1486,7 +1486,7 @@ function update_refurbish_span(value) {
     }
 }
 
-function manage_difficulty_warnings(level) {
+function manage_difficulty_warnings(level, triggerList) {
     const elements = [
         "defaultDif", "lightDif", "researchDif", "statDif", "designTimeDif", "buildDif"
     ];
@@ -1501,11 +1501,14 @@ function manage_difficulty_warnings(level) {
     });
 
     elements.forEach(id => {
-        if (selectedConfig[id]) {
+        if (selectedConfig[id] && triggerList[id] !== -1) {
             const elementConfig = selectedConfig[id];
             const element = document.getElementById(id);
             element.className = elementConfig.className;
             element.textContent = elementConfig.text;
+        }
+        else if(triggerList[id] === -1){
+            document.getElementById(id).classList.add("disabled")
         }
     });
 

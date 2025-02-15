@@ -1460,6 +1460,7 @@ export function updateCustomConfig(data){
   const alpine = data.alpine;
   const primaryColor = data.primaryColor;
   const secondaryColor = data.secondaryColor;
+  const difficulty = data.difficulty
 
   queryDB(`
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
@@ -1484,6 +1485,11 @@ export function updateCustomConfig(data){
   queryDB(`
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
     VALUES ('secondaryColor', '${secondaryColor}')
+  `);
+
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('difficulty', '${difficulty}')
   `);
 
   manageDifficultyTriggers(data.triggerList)
@@ -1516,11 +1522,13 @@ export function fetchCustomConfig() {
     } else if (key === 'secondaryColor') {
       config.secondaryColor = value;
     }
+    else if (key === 'difficulty') {
+      config.difficulty = value;
+    }
   });
 
   const triggers = fetchExistingTriggers()
   config.triggerList = triggers.triggerList
-  config.difficulty = triggers.highest_difficulty
   config.refurbish = triggers.refurbish
   config.frozenMentality = triggers.frozenMentality
 
