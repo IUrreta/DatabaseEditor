@@ -1,4 +1,4 @@
-![Image](https://github.com/user-attachments/assets/c65ed530-cdb6-42c4-abdf-ff28749ea053)
+![Image](https://github.com/user-attachments/assets/b9163ea4-b304-40b7-ab11-98404306719e)
 
 Friendly to use tool for editing your save files from F1 Manager 24 and 23. Supports driver transfers, calendar customization, staff stat editing and car performance editing, and much more!
 
