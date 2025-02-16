@@ -28,8 +28,7 @@ import { PUBLIC_KEY } from './public_key.js';
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { injectSpeedInsights } from '@vercel/speed-insights';
-
-console.log(crypto.subtle)
+import { inject } from '@vercel/analytics';
 
 
 const names_configs = {
@@ -157,6 +156,8 @@ const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
 
 injectSpeedInsights();
+inject();
+
 
 (function () {
     const originalLog = console.log;
