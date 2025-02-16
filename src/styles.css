@@ -6960,6 +6960,7 @@ input.disabled {
 
 .team-menu-logo {
   width: 50px;
+  height: 42px;
 }
 
 .team-menu-aston {
@@ -8396,6 +8397,15 @@ input::-webkit-inner-spin-button {
   padding-top: 5px;
   padding-left: 3px;
   padding-right: 2px;
+}
+
+#teamContractMenu .alpine-logo-container {
+  width: auto;
+}
+
+#teamContractMenu .alphatauri-logo-container{
+  width: auto;
+  padding: 4px;
 }
 
 #teamMenu .alphatauri-logo-container:has(.alphataurilogo){

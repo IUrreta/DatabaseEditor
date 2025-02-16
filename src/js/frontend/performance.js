@@ -219,7 +219,7 @@ enginesPill.addEventListener("click", function () {
 })
 
 export function gather_engines_data() {
-    let engines = document.querySelectorAll(".engine-performance")
+    let engines = document.querySelectorAll("#enginesPerformance .engine-performance")
     let enginesData = {}
     engines.forEach(function (engine) {
         let engineID = engine.dataset.engineid
