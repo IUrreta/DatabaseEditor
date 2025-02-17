@@ -1198,13 +1198,14 @@ export function checkCustomTables(year) {
     {
       name: 'Custom_Engines_Stats',
       createSQL: `
-          CREATE TABLE Custom_Engines_Stats (
+        CREATE TABLE Custom_Engines_Stats (
             engineId INTEGER,
             designId INTEGER,
             partStat INTEGER,
             unitValue REAL,
-            Value REAL
-          )
+            Value REAL,
+            PRIMARY KEY (engineId, designId, partStat)
+        )
         `
     },
     {
@@ -1256,8 +1257,54 @@ export function checkCustomTables(year) {
     }
   });
 
+  fixCustomEnginesStatsTable();
+
   insertDefualtEnginesData(createdEnginesList, createdEnginesStats, createdEnginesAllocations, createdCustomSaveConfig, year);
 
+}
+
+export function fixCustomEnginesStatsTable() {
+  // Verificar si la tabla tiene la PRIMARY KEY
+  const hasPrimaryKey = queryDB(`
+    PRAGMA table_info(Custom_Engines_Stats);
+  `);
+
+  let primaryKeyExists = hasPrimaryKey.some(
+    (column) => column.pk > 0 // Comprueba si alguna columna está marcada como parte de la clave primaria
+  );
+
+  if (!primaryKeyExists) {
+    console.log("La tabla Custom_Engines_Stats no tiene PRIMARY KEY. Se corregirá...");
+
+    queryDB(`
+      CREATE TABLE Custom_Engines_Stats_TEMP (
+        engineId INTEGER,
+        designId INTEGER,
+        partStat INTEGER,
+        unitValue REAL,
+        Value REAL,
+        PRIMARY KEY (engineId, designId, partStat)
+      );
+    `);
+
+    queryDB(`
+      INSERT INTO Custom_Engines_Stats_TEMP (engineId, designId, partStat, unitValue, Value)
+      SELECT engineId, designId, partStat, unitValue, Value
+      FROM Custom_Engines_Stats
+      WHERE rowid IN (
+        SELECT MAX(rowid) 
+        FROM Custom_Engines_Stats
+        GROUP BY engineId, designId, partStat
+      );
+    `);
+
+    queryDB(`DROP TABLE Custom_Engines_Stats;`);
+
+    queryDB(`ALTER TABLE Custom_Engines_Stats_TEMP RENAME TO Custom_Engines_Stats;`);
+
+    console.log("Fixed Custom_Engines_Stats table.");
+
+  }
 }
 
 export function insertDefualtEnginesData(list, stats, allocations, customSave, year) {

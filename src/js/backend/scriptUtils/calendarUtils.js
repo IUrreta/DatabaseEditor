@@ -90,7 +90,8 @@ export function editCalendar(calendarStr, year_iteration) {
     }
 
     weeks = weeks.filter(x => x !== 0);
-    weeks.sort();
+    weeks.sort((a, b) => a - b);
+
 
     let leapYearCount = 2;
     const yearDiff = daySeason[1] - 2023;
