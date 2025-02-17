@@ -1,7 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ImageMinimizerPlugin = require('image-minimizer-webpack-plugin');
 const webpack = require('webpack');
 const packageJson = require('./package.json');
 
@@ -24,13 +24,31 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: 'styles.css',
     }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: 'assets/images', // ajusta esta ruta a donde tengas tus imágenes
-          to: 'assets/images'
-        }
-      ]
+    new ImageMinimizerPlugin({
+      // (1) Indica que vas a utilizar sharpMinify en lugar de imagemin
+      minimizer: {
+        implementation: ImageMinimizerPlugin.sharpMinify,
+        options: {
+          // (2) encodeOptions define cómo quieres comprimir
+          encodeOptions: {
+            // Convierte/optimiza PNG
+            png: {
+              quality: 80, // 0-100
+              compressionLevel: 8,
+              adaptiveFiltering: true,
+            },
+            // Convierte/optimiza JPG
+            jpeg: {
+              quality: 80, // 0-100
+            },
+            // Convierte/optimiza WebP (si quieres forzar conversión a WebP, ver más abajo)
+            webp: {
+              quality: 80,
+            },
+            // etc.
+          },
+        },
+      },
     }),
     new webpack.DefinePlugin({
       APP_VERSION: JSON.stringify(packageJson.version),
