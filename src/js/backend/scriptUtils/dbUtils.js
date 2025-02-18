@@ -837,20 +837,16 @@ export function fetchEventsFrom(year) {
 
 
 export function formatSeasonResults(results, driverName, teamID, driver, year, sprints) {
-  // Asumiendo que driver y year son arrays (p.ej. driver=[123], year=[2023]):
   const driverID = driver;
   const season = year;
 
-  // -------- 1) Formatear nombre --------
   let nombre = "";
   let apellido = "";
 
-  // driverName podría ser un array [firstName, lastName] o un objeto {FirstName, LastName}.
-  // Aquí asumimos array. Si tu queryDB retorna objetos, ajusta a driverName.FirstName, driverName.LastName.
+
   const firstName = driverName ? driverName[0] : "";
   const lastName = driverName ? driverName[1] : "";
 
-  // Lógica análoga a Python para "STRING_LITERAL"
   if (!firstName.includes("STRING_LITERAL")) {
     const nombrePattern = /StaffName_Forename_(Male|Female)_(\w+)/;
     const match = firstName.match(nombrePattern);
@@ -881,7 +877,6 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
 
   const nameFormatted = `${nombre} ${apellido}`.trim();
 
-  // -------- 2) Obtener todas las carreras que corrió este piloto en la temporada --------
   const racesParticipated = queryDB(`
       SELECT RaceID
       FROM Races_Results
@@ -889,23 +884,13 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
         AND Season = ${season}
     `, 'allRows') || [];
 
-  // results = array con [DriverID, TeamID, FinishingPos, Points]
-  // Queremos convertirlo en algo más detallado. 
-  // De Python: formatred_results = [(FinishingPos, Points) for result in results]
-  // Pero necesitamos mapear 1:1 con la lista de RaceIDs, así que iremos uno a uno.
-  let formatredResults = results.map(r => [r[2], r[3]]);
-  // r[2] => FinishingPos, r[3] => Points.
 
-  // Suponiendo que hay la misma cantidad y el mismo orden de carreras 
-  // entre "results" y "racesParticipated". 
-  // Si no, necesitarías hacer matching por RaceID. 
-  // En tu Python original, tomabas RaceIDs en order y reasignabas. 
-  // Asegurémonos de usar el RaceID de 'racesParticipated[i]' igual que Python.
+  let formatredResults = results.map(r => [r[2], r[3]]);
+
 
   for (let i = 0; i < racesParticipated.length; i++) {
-    const raceID = racesParticipated[i][0]; // Cada fila es [RaceID]
+    const raceID = racesParticipated[i][0]; 
 
-    // 2.1) Buscamos quién hizo la fastest lap
     const driverWithFastestLap = queryDB(`
         SELECT DriverID
         FROM Races_Results
@@ -937,12 +922,10 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
       formatredResults[i] = arr;
     }
 
-    // Marcar fastest lap
-    if (driverWithFastestLap === driverID) {
-      // le append "1"
+    if (parseInt(driverWithFastestLap) === parseInt(driverID)) {
+      console.log("METO FASTEST LAP");
       formatredResults[i].push(1);
     } else {
-      // le append "0"
       formatredResults[i].push(0);
     }
 

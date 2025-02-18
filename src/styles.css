@@ -9448,72 +9448,6 @@ span.reduced-weight,
   color: var(--new-primary);
 }
 
-/* 
-.rectangle {
-  position: absolute;
-  width: 150px;
-  height: 50px;
-  background: var(--new-primary); 
-}
-
-
-.rect1 {
-  bottom: 2%;              
-  left: 23.1%;                
-  transform: skewX(44deg);
-  animation: moveLeftRects 1.5s 0.5s linear forwards;
-  rotate: 314deg;
-}
-
-.rect2 {
-  bottom: -3%;
-  left: 16%;
-  transform: skewX(44deg);
-  rotate: 314deg;
-  animation: moveLeftRects 1.5s 0.55s linear forwards;
-}
-
-
-.rect3 {
-  top: 2%;
-  right: 23.1%;
-  transform: skewX(44deg); 
-  rotate: 314deg;
-  animation: moveRightRects 1.5s 0.5s linear forwards;
-}
-
-.rect4 {
-  top: -3%;
-  right: 16%;
-  transform: skewX(44deg);
-  rotate: 314deg;
-  animation: moveRightRects 1.5s 0.55s linear forwards;
-}
-
-@keyframes moveLeftRects {
-  0% {
-    transform: translateX(0) skewX(44deg);
-  }
-  40% {
-    transform: translateX(50%) skewX(44deg);
-  }
-  100% {
-    transform: translateX(52%) skewX(44deg);
-  }
-}
-
-@keyframes moveRightRects {
-  0% {
-    transform: translateX(0) skewX(44deg);
-  }
-  40% {
-    transform: translateX(-50%) skewX(44deg);
-  }
-  100% {
-    transform: translateX(-52%) skewX(44deg);
-  }
-} */
-
 #blockDiv {
   overflow: hidden;
   height: 100%;
@@ -9564,6 +9498,7 @@ body.light-theme #blockDiv{
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   opacity: 0;
   transform: translateY(50px);
+  z-index: 2;
 }
 
 .splash-box.appear {
@@ -10004,6 +9939,7 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
 
 .ka-rectangle img {
   left: -2px;
+  bottom: -1px;
 }
 
 .lh-rectangle img {
@@ -10544,3 +10480,63 @@ a.bi-custom-patreon.close-slide-up{
   
 }
 
+
+.patreon-members {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 50px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.marquee {
+  white-space: nowrap;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.marquee__inner {
+  display: flex;
+  animation: scroll 30s linear infinite;
+  gap: 1em;
+}
+
+.marquee__group {
+  display: flex;
+  gap: 1em;
+}
+
+
+.marquee__group span {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Estilos por tier */
+.backer{
+  color: color-mix(in srgb, var(--background) 40%, var(--dark-text))
+}
+
+.supporter {
+  color: color-mix(in srgb, var(--background) 40%, var(--disabled-text))
+}
+
+.founder {
+  color: color-mix(in srgb, var(--background) 40%, var(--table-first))
+}
+
+body.light-theme .founder {
+  color: color-mix(in srgb, var(--dark-text) 40%, var(--table-first))
+}
+
+/* Animación de desplazamiento */
+@keyframes scroll {
+  0% { transform: translateX(-50%); } /* Empieza con la segunda mitad visible */
+  100% { transform: translateX(9px); } /* Vuelve a la posición inicial */
+}

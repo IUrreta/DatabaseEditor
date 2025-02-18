@@ -25,6 +25,7 @@ import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, ra
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
 import { PUBLIC_KEY } from './public_key.js';
+import members from "../../data/members.json"
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { injectSpeedInsights } from '@vercel/speed-insights';
@@ -1283,11 +1284,14 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         disabled: disabledList,
         triggerList: triggerList
     }
+    changeTheme()
     if (custom_team) {
         data["primaryColor"] = document.getElementById("primarySelector").value
         data["secondaryColor"] = document.getElementById("secondarySelector").value
         replace_custom_team_color(data["primaryColor"], data["secondaryColor"])
     }
+    reload_performance_graph()
+    reload_h2h_graphs()
 
     if (isSaveSelected === 1) {
         const command = new Command("configUpdate", data);
@@ -1301,7 +1305,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
 
         replace_custom_team_logo(document.querySelector(".logo-preview").src)
     }
-    changeTheme()
+    
 
 })
 
@@ -1797,7 +1801,35 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector(".socials-box").classList.add("appear")
     getPatchNotes()
     checkPatreonStatus();
+    populateMarquee();
 });
+
+function createMarqueeItem(name, tier) {
+    const span = document.createElement("span");
+    span.textContent = name;
+    span.classList.add(tier);
+    return span;
+}
+
+function populateMarquee() {
+    const marqueeInner = document.querySelector(".marquee__inner");
+
+    // Crear dos grupos de nombres para el scroll infinito
+    const group1 = document.createElement("div");
+    group1.classList.add("marquee__group");
+
+    const group2 = document.createElement("div");
+    group2.classList.add("marquee__group", "second-group");
+
+    members.forEach(member => {
+        const item = createMarqueeItem(member.name, member.tier);
+        group1.appendChild(item.cloneNode(true));
+        group2.appendChild(item.cloneNode(true));
+    });
+
+    marqueeInner.appendChild(group1);
+    marqueeInner.appendChild(group2);
+}
 
 document.querySelectorAll(".one-theme").forEach(function (elem) {
     elem.addEventListener("click", function () {
@@ -1811,8 +1843,7 @@ function changeTheme() {
     document.querySelector("body").className = `font ${selectedTheme}`
     localStorage.setItem("theme", selectedTheme)
     init_colors_dict(selectedTheme)
-    reload_performance_graph()
-    reload_h2h_graphs()
+
 }
 
 function loadTheme() {
