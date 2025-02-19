@@ -10540,3 +10540,75 @@ body.light-theme .founder {
   0% { transform: translateX(-50%); } /* Empieza con la segunda mitad visible */
   100% { transform: translateX(9px); } /* Vuelve a la posición inicial */
 }
+
+.changes-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.one-change{
+  background-color: color-mix(in srgb, var(--elements) 60%, transparent);
+  padding: 15px 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 10px var(--box-shadow);
+  opacity: 0;
+
+}
+
+.one-change-title{
+  text-transform: uppercase;
+  font-size: 20px;
+  color: var(--text-general);
+}
+
+
+.one-change-description{
+  font-size: 16px;
+  color: var(--modal-text);
+}
+
+button.one-change-button{
+  background-color: var(--text-general);
+  color: var(--negative-text);
+  border: none;
+  padding: 7px 13px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-top: 5px;
+  width: 100%;
+}
+
+button.one-change-button:hover{
+  background-color: var(--new-primary);
+  box-shadow: 0 0 5px var(--new-primary);
+}
+
+button.one-change-button:active {
+  transform: scale(0.95);
+  /* Ajusta esto a tu gusto */
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+}
+
+@keyframes change-appear{
+  0%{
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100%{
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body:has(.active #mod25logo) .one-change {
+  animation: change-appear 0.6s ease-out forwards;
+  animation-delay: calc(0.8s + var(--order) * 0.1s);
+}

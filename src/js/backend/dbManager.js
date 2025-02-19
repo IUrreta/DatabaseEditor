@@ -15,6 +15,10 @@ export function getMetadata() {
   return metadata;
 }
 
+export function setMetaData(meta) {
+  metadata = meta;
+}
+
 /**
  * Ejecuta una consulta SQL y devuelve el resultado según 'type'.
  * @param {string} query - La consulta a ejecutar.

@@ -22,6 +22,7 @@ import {
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups
 } from './stats';
 import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs, reload_h2h_graphs, init_colors_dict, edit_colors_dict } from './head2head';
+import { timeTravelWithData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
 import { PUBLIC_KEY } from './public_key.js';
@@ -1311,7 +1312,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
 
 document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", function () {
     dbWorker.postMessage({
-        command: 'exportDB',
+        command: 'exportSave',
         data: {}
     });
 
@@ -1935,3 +1936,8 @@ document.getElementById('logButton').addEventListener('click', function () {
     body.appendChild(table);
     doc.body.appendChild(body);
 });
+
+document.querySelector(".time-travel").addEventListener("click", function () {
+    const command = new Command("timeTravel", {dayNumber: 45658});
+    command.execute();
+})

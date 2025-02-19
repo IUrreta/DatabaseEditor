@@ -14,6 +14,7 @@ import { editAge, editMarketability, editName, editRetirement, editSuperlicense,
 import { editContract, futureContract } from "./scriptUtils/transferUtils"
 import { editCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers } from "./scriptUtils/trasnferUtils";
+import { timeTravelWithData } from "./scriptUtils/modUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 
@@ -34,7 +35,7 @@ const workerCommands = {
 
     postMessage({ responseMessage: "Database loaded" });
   },
-  exportDB: async (data, postMessage) => {
+  exportSave: async (data, postMessage) => {
     const db = getDatabase();
     const metadata = getMetadata();
 
@@ -290,6 +291,13 @@ const workerCommands = {
     swapDrivers(data.driver1ID, data.driver2ID);
     postMessage({ responseMessage: "Drivers swapped", 
                   noti_msg: `Succesfully swapped ${data.driver1} and ${data.driver2}`, 
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+  },
+  timeTravel: (data, postMessage) => {
+    timeTravelWithData(data.dayNumber, false);
+    postMessage({ responseMessage: "Time travel",
+                  noti_msg: `Succesfully time travelled to day ${data.dayNumber}`,
                   isEditCommand: true,
                   unlocksDownload: true  });
   }
