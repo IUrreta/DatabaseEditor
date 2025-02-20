@@ -1,6 +1,9 @@
 import { getGlobals } from "../commandGlobals.js";
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
 import { excelToDate, dateToExcel } from "./eidtStatsUtils.js";
+import { editContract, fireDriver, hireDriver, removeFutureContract } from "./transferUtils.js";
+import { editSuperlicense } from "./eidtStatsUtils.js";
+import contracts from "../../../data/contracts.json"
 
 export function timeTravelWithData(dayNumber, extend = false) {
     let metadata, version;
@@ -26,10 +29,10 @@ export function timeTravelWithData(dayNumber, extend = false) {
     console.log("Season Start Day Number: ", seasonStartDayNumber);
     const vanillaDayNumber = dateToExcel(new Date(`${vanillaSeason}-01-01`));
     console.log("Vanilla Day Number: ", vanillaDayNumber);
-    const dd = vanillaDayNumber - seasonStartDayNumber; 
-    const yd = vanillaSeason - wayBackSeason;          
+    const dd = vanillaDayNumber - seasonStartDayNumber;
+    const yd = vanillaSeason - wayBackSeason;
     console.log("Day Difference: ", dd);
-    console.log("Year Difference: ", yd); 
+    console.log("Year Difference: ", yd);
 
 
 
@@ -80,13 +83,39 @@ export function timeTravelWithData(dayNumber, extend = false) {
           WHERE SeasonID = ${vanillaSeason}
         `);
     } else {
-        queryDB(`
-          UPDATE Races
-          SET
-            SeasonID = ${wayBackSeason},
-            Day = Day - ${dd}
-          WHERE SeasonID = ${vanillaSeason}
-        `);
+        // 1) Leemos todas las carreras de la temporada “vieja”
+        const raceRows = queryDB(`
+            SELECT RaceID, Day
+            FROM Races
+            WHERE SeasonID = ${vanillaSeason}
+        `, "allRows");
+
+        for (const row of raceRows) {
+            const oldDay = row[1];
+
+            const oldDate = excelToDate(oldDay);
+
+
+            const newDate = new Date(wayBackSeason, oldDate.getMonth(), oldDate.getDate());
+
+            // Aseguramos que sea domingo (getDay() devuelve 0 = domingo, 1 = lunes, etc.)
+            const dayOfWeek = newDate.getDay();
+            if (dayOfWeek !== 0) {
+                const offset = 8 - dayOfWeek;
+                newDate.setDate(newDate.getDate() + offset);
+            }
+
+            const newExcelDay = dateToExcel(newDate);
+
+            queryDB(`
+                UPDATE Races
+                SET
+                    SeasonID = ${wayBackSeason},
+                    Day = ${newExcelDay}
+                WHERE RaceID = ${row[0]}
+            `);
+        }
+
     }
 
     queryDB(`
@@ -221,4 +250,81 @@ export function timeTravelWithData(dayNumber, extend = false) {
 
     setMetaData(metadata)
 
+}
+
+export function changeDriverLineUps() {
+    if (contracts.Updates && Array.isArray(contracts.Updates)) {
+        contracts.Updates.forEach((update) => {
+            const {
+                DriverID,
+                salary,
+                EndSeason,
+                StartingBonus,
+                RaceBonus,
+                RaceBonusTargetPos
+            } = update;
+
+            editContract(
+                DriverID,
+                salary,
+                EndSeason,
+                StartingBonus,
+                RaceBonus,
+                RaceBonusTargetPos
+            );
+        });
+    }
+
+    if (contracts.Fires && Array.isArray(contracts.Fires)) {
+        contracts.Fires.forEach((fire) => {
+            const { DriverID, TeamID, ExtraTeamID } = fire;
+
+            if (TeamID !== null && TeamID !== undefined) {
+                fireDriver(DriverID, TeamID);
+            }
+
+            if (ExtraTeamID !== null && ExtraTeamID !== undefined) {
+                removeFutureContract(DriverID, ExtraTeamID);
+            }
+        });
+    }
+
+    if (contracts.Hires && Array.isArray(contracts.Hires)) {
+        contracts.Hires.forEach((hire) => {
+            const {
+                DriverID,
+                TeamID,
+                PosInTeam,
+                Salary,
+                StartingBonus,
+                RaceBonus,
+                RaceBonusTargetPos,
+                EndSeason,
+                BreakoutClause,
+                GrantsSuperLicense
+            } = hire;
+
+            if (GrantsSuperLicense) {
+                editSuperlicense(DriverID, GrantsSuperLicense);
+            }
+
+
+            hireDriver(
+                "manual",
+                DriverID,
+                TeamID,
+                PosInTeam,
+                Salary,
+                StartingBonus,
+                RaceBonus,
+                RaceBonusTargetPos,
+                EndSeason,
+                "24"
+            );
+        });
+    }
+}
+
+export function removeFastestLap(){
+    queryDB(`UPDATE Resulations_Enum_Changes SET CurrentValue = 0, PreviousValue = 1 WHERE Name = FastestLapBonusPoint`);
 }

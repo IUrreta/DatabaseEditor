@@ -1941,3 +1941,8 @@ document.querySelector(".time-travel").addEventListener("click", function () {
     const command = new Command("timeTravel", {dayNumber: 45658});
     command.execute();
 })
+
+document.querySelector(".change-line-ups").addEventListener("click", function () {
+    const command = new Command("changeLineUps", {});
+    command.execute();
+})

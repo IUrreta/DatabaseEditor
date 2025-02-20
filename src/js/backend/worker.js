@@ -11,10 +11,9 @@ import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
 import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
-import { editContract, futureContract } from "./scriptUtils/transferUtils"
 import { editCalendar } from "./scriptUtils/calendarUtils";
-import { fireDriver, hireDriver, swapDrivers } from "./scriptUtils/trasnferUtils";
-import { timeTravelWithData } from "./scriptUtils/modUtils";
+import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
+import { changeDriverLineUps, timeTravelWithData } from "./scriptUtils/modUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 
@@ -297,7 +296,14 @@ const workerCommands = {
   timeTravel: (data, postMessage) => {
     timeTravelWithData(data.dayNumber, false);
     postMessage({ responseMessage: "Time travel",
-                  noti_msg: `Succesfully time travelled to day ${data.dayNumber}`,
+                  noti_msg: `Succesfully time travelled to 2025`,
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+  },
+  changeLineUps: (data, postMessage) => {
+    changeDriverLineUps();
+    postMessage({ responseMessage: "Line ups changed",
+                  noti_msg: `Succesfully changed the driver line ups to match 2025`,
                   isEditCommand: true,
                   unlocksDownload: true  });
   }
