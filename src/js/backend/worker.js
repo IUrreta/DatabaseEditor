@@ -13,7 +13,7 @@ import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
-import { changeDriverLineUps, timeTravelWithData } from "./scriptUtils/modUtils";
+import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData } from "./scriptUtils/modUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 
@@ -306,7 +306,28 @@ const workerCommands = {
                   noti_msg: `Succesfully changed the driver line ups to match 2025`,
                   isEditCommand: true,
                   unlocksDownload: true  });
-  }
+  },
+  changeStats: (data, postMessage) => {
+    changeStats();
+    postMessage({ responseMessage: "Stats changed",
+                  noti_msg: `Succesfully changed the stats to match 2025`,
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+  },
+  changeCfd: (data, postMessage) => {
+    change2024Standings();
+    postMessage({ responseMessage: "CFD times changed",
+                  noti_msg: `Succesfully changed CFD times for 2025`,
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+  },
+  changeRegulations: (data, postMessage) => {
+    removeFastestLap();
+    postMessage({ responseMessage: "Regulations changed",
+                  noti_msg: `Succesfully removed fastest lap bonus for 2025`,
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+  },
 
 };
 

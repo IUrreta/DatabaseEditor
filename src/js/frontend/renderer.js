@@ -1946,3 +1946,18 @@ document.querySelector(".change-line-ups").addEventListener("click", function ()
     const command = new Command("changeLineUps", {});
     command.execute();
 })
+
+document.querySelector(".change-stats").addEventListener("click", function () {
+    const command = new Command("changeStats", {});
+    command.execute();
+})
+
+document.querySelector(".change-cfd").addEventListener("click", function () {
+    const command = new Command("changeCfd", {});
+    command.execute();
+})
+
+document.querySelector(".change-regulations").addEventListener("click", function () {
+    const command = new Command("changeRegulations", {});
+    command.execute();
+})

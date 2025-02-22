@@ -9840,7 +9840,7 @@ body:has(.active #mod25logo) .background {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 60px 0;
+  padding: 90px 0 60px 0;
   scale: 1.1;
 }
 
@@ -9880,8 +9880,8 @@ body:has(.active #mod25logo) .mod-name img {
 }
 
 .small-rectangle {
-  width: 130px;
-  height: 100px;
+  width: 127px;
+  height: 116px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   position: relative;
@@ -9913,10 +9913,8 @@ body:has(.active #mod25logo) .mod-name img {
 body:has(.active #mod25logo) .small-rectangle,
 body:has(.active #mod25logo) .high-rectangle,
 body:has(.active #mod25logo) .small-rectangle img,
-body:has(.active #mod25logo) .high-rectangle img,
-body:has(.active #mod25logo) .mod-drivers .mv-gradient,
-body:has(.active #mod25logo) .mod-drivers .lh-gradient,
-body:has(.active #mod25logo) .mod-drivers .ka-gradient {
+body:has(.active #mod25logo) .high-rectangle img
+{
   animation: rectangle-appear 0.5s forwards;
   animation-delay: calc(var(--order) * 0.08s);
 }
@@ -9930,6 +9928,23 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+body:has(.active #mod25logo) .mod-drivers .mv-gradient,
+body:has(.active #mod25logo) .mod-drivers .lh-gradient,
+body:has(.active #mod25logo) .mod-drivers .ka-gradient {
+  animation: gradient-appear 0.6s forwards;
+  animation-delay: calc(var(--order) * 0.08s);
+}
+
+@keyframes gradient-appear {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0.7;
   }
 }
 
@@ -9994,6 +10009,7 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
   display: flex;
   flex-direction: column;
   align-items: center;
+  transform: translateY(-20px);
 }
 
 .mod-creators {
@@ -10543,7 +10559,7 @@ body.light-theme .founder {
 
 .changes-grid{
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 25px;
 }
 

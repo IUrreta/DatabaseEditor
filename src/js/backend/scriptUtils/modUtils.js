@@ -4,6 +4,7 @@ import { excelToDate, dateToExcel } from "./eidtStatsUtils.js";
 import { editContract, fireDriver, hireDriver, removeFutureContract } from "./transferUtils.js";
 import { editSuperlicense } from "./eidtStatsUtils.js";
 import contracts from "../../../data/contracts.json"
+import changes from "../../../data/2025_changes.json"
 
 export function timeTravelWithData(dayNumber, extend = false) {
     let metadata, version;
@@ -325,6 +326,55 @@ export function changeDriverLineUps() {
     }
 }
 
-export function removeFastestLap(){
-    queryDB(`UPDATE Resulations_Enum_Changes SET CurrentValue = 0, PreviousValue = 1 WHERE Name = FastestLapBonusPoint`);
+export function changeStats() {
+    if (!changes.Stats || !Array.isArray(changes.Stats)) {
+        console.log("No stats found");
+    }
+    else{
+        for (const entry of changes.Stats) {
+            const { StaffID, StatID, Val, Max } = entry;
+    
+            queryDB(`
+            UPDATE Staff_PerformanceStats
+            SET Val = ${Val}, Max = ${Max}
+            WHERE StaffID = ${StaffID} AND StatID = ${StatID}
+          `);
+    
+        }
+    }
+
+}
+
+export function change2024Standings() {
+    if (!changes.DriverStandings || !Array.isArray(changes.DriverStandings)) {
+        console.error("No driver standings found");
+    } else {
+        for (const entry of changes.DriverStandings) {
+            const { DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID } = entry;
+
+
+            queryDB(`
+            INSERT INTO Races_DriverStandings (DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID)
+            VALUES (${DriverID}, ${LastPointsChange}, ${LastPositionChange}, ${Points}, ${Position}, ${RaceFormula}, ${SeasonID})
+            `);
+        }
+    }
+
+    if (!changes.TeamStandings || !Array.isArray(changes.TeamStandings)) {
+        console.error("No team standings found");
+    } else {
+        for (const entry of changes.TeamStandings) {
+            const { LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID, TeamID } = entry;
+
+            queryDB(`
+            INSERT INTO Races_TeamStandings (TeamID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID)
+            VALUES (${TeamID}, ${LastPointsChange}, ${LastPositionChange}, ${Points}, ${Position}, ${RaceFormula}, ${SeasonID})
+            `);
+        }
+    }
+}
+
+
+export function removeFastestLap() {
+    queryDB(`UPDATE Regulations_Enum_Changes SET CurrentValue = 0, PreviousValue = 1 WHERE ChangeID = 9`);
 }

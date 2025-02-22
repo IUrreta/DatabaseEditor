@@ -1,0 +1,4536 @@
+{
+    "Stats": [
+        {
+            "Max": 100,
+            "StaffID": 1,
+            "StatID": 2,
+            "Val": 93
+        },
+        {
+            "Max": 100,
+            "StaffID": 1,
+            "StatID": 3,
+            "Val": 95
+        },
+        {
+            "Max": 100,
+            "StaffID": 1,
+            "StatID": 4,
+            "Val": 92
+        },
+        {
+            "Max": 100,
+            "StaffID": 1,
+            "StatID": 5,
+            "Val": 90
+        },
+        {
+            "Max": 100,
+            "StaffID": 1,
+            "StatID": 6,
+            "Val": 90
+        },
+        {
+            "Max": 100,
+            "StaffID": 1,
+            "StatID": 7,
+            "Val": 90
+        },
+        {
+            "Max": 100,
+            "StaffID": 1,
+            "StatID": 8,
+            "Val": 94
+        },
+        {
+            "Max": 100,
+            "StaffID": 1,
+            "StatID": 9,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 1,
+            "StatID": 10,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 2,
+            "StatID": 2,
+            "Val": 96
+        },
+        {
+            "Max": 100,
+            "StaffID": 2,
+            "StatID": 3,
+            "Val": 96
+        },
+        {
+            "Max": 100,
+            "StaffID": 2,
+            "StatID": 4,
+            "Val": 89
+        },
+        {
+            "Max": 100,
+            "StaffID": 2,
+            "StatID": 5,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 2,
+            "StatID": 6,
+            "Val": 89
+        },
+        {
+            "Max": 100,
+            "StaffID": 2,
+            "StatID": 7,
+            "Val": 87
+        },
+        {
+            "Max": 100,
+            "StaffID": 2,
+            "StatID": 8,
+            "Val": 91
+        },
+        {
+            "Max": 100,
+            "StaffID": 2,
+            "StatID": 9,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 2,
+            "StatID": 10,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 3,
+            "StatID": 2,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 3,
+            "StatID": 3,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 3,
+            "StatID": 4,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 3,
+            "StatID": 5,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 3,
+            "StatID": 6,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 3,
+            "StatID": 7,
+            "Val": 84
+        },
+        {
+            "Max": 100,
+            "StaffID": 3,
+            "StatID": 8,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 3,
+            "StatID": 9,
+            "Val": 87
+        },
+        {
+            "Max": 100,
+            "StaffID": 3,
+            "StatID": 10,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 8,
+            "StatID": 2,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 8,
+            "StatID": 3,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 8,
+            "StatID": 4,
+            "Val": 90
+        },
+        {
+            "Max": 100,
+            "StaffID": 8,
+            "StatID": 5,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 8,
+            "StatID": 6,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 8,
+            "StatID": 7,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 8,
+            "StatID": 8,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 8,
+            "StatID": 9,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 8,
+            "StatID": 10,
+            "Val": 89
+        },
+        {
+            "Max": 100,
+            "StaffID": 10,
+            "StatID": 2,
+            "Val": 96
+        },
+        {
+            "Max": 100,
+            "StaffID": 10,
+            "StatID": 3,
+            "Val": 97
+        },
+        {
+            "Max": 100,
+            "StaffID": 10,
+            "StatID": 4,
+            "Val": 92
+        },
+        {
+            "Max": 100,
+            "StaffID": 10,
+            "StatID": 5,
+            "Val": 89
+        },
+        {
+            "Max": 100,
+            "StaffID": 10,
+            "StatID": 6,
+            "Val": 91
+        },
+        {
+            "Max": 100,
+            "StaffID": 10,
+            "StatID": 7,
+            "Val": 92
+        },
+        {
+            "Max": 100,
+            "StaffID": 10,
+            "StatID": 8,
+            "Val": 98
+        },
+        {
+            "Max": 100,
+            "StaffID": 10,
+            "StatID": 9,
+            "Val": 92
+        },
+        {
+            "Max": 100,
+            "StaffID": 10,
+            "StatID": 10,
+            "Val": 87
+        },
+        {
+            "Max": 100,
+            "StaffID": 11,
+            "StatID": 2,
+            "Val": 90
+        },
+        {
+            "Max": 100,
+            "StaffID": 11,
+            "StatID": 3,
+            "Val": 92
+        },
+        {
+            "Max": 100,
+            "StaffID": 11,
+            "StatID": 4,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 11,
+            "StatID": 5,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 11,
+            "StatID": 6,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 11,
+            "StatID": 7,
+            "Val": 90
+        },
+        {
+            "Max": 100,
+            "StaffID": 11,
+            "StatID": 8,
+            "Val": 94
+        },
+        {
+            "Max": 100,
+            "StaffID": 11,
+            "StatID": 9,
+            "Val": 87
+        },
+        {
+            "Max": 100,
+            "StaffID": 11,
+            "StatID": 10,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 12,
+            "StatID": 2,
+            "Val": 88
+        },
+        {
+            "Max": 100,
+            "StaffID": 12,
+            "StatID": 3,
+            "Val": 89
+        },
+        {
+            "Max": 100,
+            "StaffID": 12,
+            "StatID": 4,
+            "Val": 96
+        },
+        {
+            "Max": 100,
+            "StaffID": 12,
+            "StatID": 5,
+            "Val": 95
+        },
+        {
+            "Max": 100,
+            "StaffID": 12,
+            "StatID": 6,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 12,
+            "StatID": 7,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 12,
+            "StatID": 8,
+            "Val": 87
+        },
+        {
+            "Max": 100,
+            "StaffID": 12,
+            "StatID": 9,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 12,
+            "StatID": 10,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 13,
+            "StatID": 2,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 13,
+            "StatID": 3,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 13,
+            "StatID": 4,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 13,
+            "StatID": 5,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 13,
+            "StatID": 6,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 13,
+            "StatID": 7,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 13,
+            "StatID": 8,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 13,
+            "StatID": 9,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 13,
+            "StatID": 10,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 14,
+            "StatID": 2,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 14,
+            "StatID": 3,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 14,
+            "StatID": 4,
+            "Val": 84
+        },
+        {
+            "Max": 100,
+            "StaffID": 14,
+            "StatID": 5,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 14,
+            "StatID": 6,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 14,
+            "StatID": 7,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 14,
+            "StatID": 8,
+            "Val": 84
+        },
+        {
+            "Max": 100,
+            "StaffID": 14,
+            "StatID": 9,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 14,
+            "StatID": 10,
+            "Val": 93
+        },
+        {
+            "Max": 100,
+            "StaffID": 15,
+            "StatID": 2,
+            "Val": 84
+        },
+        {
+            "Max": 100,
+            "StaffID": 15,
+            "StatID": 3,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 15,
+            "StatID": 4,
+            "Val": 91
+        },
+        {
+            "Max": 100,
+            "StaffID": 15,
+            "StatID": 5,
+            "Val": 88
+        },
+        {
+            "Max": 100,
+            "StaffID": 15,
+            "StatID": 6,
+            "Val": 93
+        },
+        {
+            "Max": 100,
+            "StaffID": 15,
+            "StatID": 7,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 15,
+            "StatID": 8,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 15,
+            "StatID": 9,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 15,
+            "StatID": 10,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 17,
+            "StatID": 2,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 17,
+            "StatID": 3,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 17,
+            "StatID": 4,
+            "Val": 87
+        },
+        {
+            "Max": 100,
+            "StaffID": 17,
+            "StatID": 5,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 17,
+            "StatID": 6,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 17,
+            "StatID": 7,
+            "Val": 91
+        },
+        {
+            "Max": 100,
+            "StaffID": 17,
+            "StatID": 8,
+            "Val": 84
+        },
+        {
+            "Max": 100,
+            "StaffID": 17,
+            "StatID": 9,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 17,
+            "StatID": 10,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 18,
+            "StatID": 2,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 18,
+            "StatID": 3,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 18,
+            "StatID": 4,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 18,
+            "StatID": 5,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 18,
+            "StatID": 6,
+            "Val": 92
+        },
+        {
+            "Max": 100,
+            "StaffID": 18,
+            "StatID": 7,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 18,
+            "StatID": 8,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 18,
+            "StatID": 9,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 18,
+            "StatID": 10,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 20,
+            "StatID": 2,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 20,
+            "StatID": 3,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 20,
+            "StatID": 4,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 20,
+            "StatID": 5,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 20,
+            "StatID": 6,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 20,
+            "StatID": 7,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 20,
+            "StatID": 8,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 20,
+            "StatID": 9,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 20,
+            "StatID": 10,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 22,
+            "StatID": 2,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 22,
+            "StatID": 3,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 22,
+            "StatID": 4,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 22,
+            "StatID": 5,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 22,
+            "StatID": 6,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 22,
+            "StatID": 7,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 22,
+            "StatID": 8,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 22,
+            "StatID": 9,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 22,
+            "StatID": 10,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 23,
+            "StatID": 2,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 23,
+            "StatID": 3,
+            "Val": 87
+        },
+        {
+            "Max": 100,
+            "StaffID": 23,
+            "StatID": 4,
+            "Val": 88
+        },
+        {
+            "Max": 100,
+            "StaffID": 23,
+            "StatID": 5,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 23,
+            "StatID": 6,
+            "Val": 96
+        },
+        {
+            "Max": 100,
+            "StaffID": 23,
+            "StatID": 7,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 23,
+            "StatID": 8,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 23,
+            "StatID": 9,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 23,
+            "StatID": 10,
+            "Val": 92
+        },
+        {
+            "Max": 100,
+            "StaffID": 76,
+            "StatID": 2,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 76,
+            "StatID": 3,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 76,
+            "StatID": 4,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 76,
+            "StatID": 5,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 76,
+            "StatID": 6,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 76,
+            "StatID": 7,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 76,
+            "StatID": 8,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 76,
+            "StatID": 9,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 76,
+            "StatID": 10,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 77,
+            "StatID": 2,
+            "Val": 90
+        },
+        {
+            "Max": 100,
+            "StaffID": 77,
+            "StatID": 3,
+            "Val": 90
+        },
+        {
+            "Max": 100,
+            "StaffID": 77,
+            "StatID": 4,
+            "Val": 94
+        },
+        {
+            "Max": 100,
+            "StaffID": 77,
+            "StatID": 5,
+            "Val": 87
+        },
+        {
+            "Max": 100,
+            "StaffID": 77,
+            "StatID": 6,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 77,
+            "StatID": 7,
+            "Val": 91
+        },
+        {
+            "Max": 100,
+            "StaffID": 77,
+            "StatID": 8,
+            "Val": 91
+        },
+        {
+            "Max": 100,
+            "StaffID": 77,
+            "StatID": 9,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 77,
+            "StatID": 10,
+            "Val": 88
+        },
+        {
+            "Max": 100,
+            "StaffID": 80,
+            "StatID": 2,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 80,
+            "StatID": 3,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 80,
+            "StatID": 4,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 80,
+            "StatID": 5,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 80,
+            "StatID": 6,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 80,
+            "StatID": 7,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 80,
+            "StatID": 8,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 80,
+            "StatID": 9,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 80,
+            "StatID": 10,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 81,
+            "StatID": 2,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 81,
+            "StatID": 3,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 81,
+            "StatID": 4,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 81,
+            "StatID": 5,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 81,
+            "StatID": 6,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 81,
+            "StatID": 7,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 81,
+            "StatID": 8,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 81,
+            "StatID": 9,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 81,
+            "StatID": 10,
+            "Val": 89
+        },
+        {
+            "Max": 100,
+            "StaffID": 83,
+            "StatID": 2,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 83,
+            "StatID": 3,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 83,
+            "StatID": 4,
+            "Val": 88
+        },
+        {
+            "Max": 100,
+            "StaffID": 83,
+            "StatID": 5,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 83,
+            "StatID": 6,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 83,
+            "StatID": 7,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 83,
+            "StatID": 8,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 83,
+            "StatID": 9,
+            "Val": 88
+        },
+        {
+            "Max": 100,
+            "StaffID": 83,
+            "StatID": 10,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 95,
+            "StatID": 2,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 95,
+            "StatID": 3,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 95,
+            "StatID": 4,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 95,
+            "StatID": 5,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 95,
+            "StatID": 6,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 95,
+            "StatID": 7,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 95,
+            "StatID": 8,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 95,
+            "StatID": 9,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 95,
+            "StatID": 10,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 99,
+            "StatID": 2,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 99,
+            "StatID": 3,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 99,
+            "StatID": 4,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 99,
+            "StatID": 5,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 99,
+            "StatID": 6,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 99,
+            "StatID": 7,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 99,
+            "StatID": 8,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 99,
+            "StatID": 9,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 99,
+            "StatID": 10,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 102,
+            "StatID": 2,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 102,
+            "StatID": 3,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 102,
+            "StatID": 4,
+            "Val": 90
+        },
+        {
+            "Max": 100,
+            "StaffID": 102,
+            "StatID": 5,
+            "Val": 87
+        },
+        {
+            "Max": 100,
+            "StaffID": 102,
+            "StatID": 6,
+            "Val": 88
+        },
+        {
+            "Max": 100,
+            "StaffID": 102,
+            "StatID": 7,
+            "Val": 84
+        },
+        {
+            "Max": 100,
+            "StaffID": 102,
+            "StatID": 8,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 102,
+            "StatID": 9,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 102,
+            "StatID": 10,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 105,
+            "StatID": 2,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 105,
+            "StatID": 3,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 105,
+            "StatID": 4,
+            "Val": 84
+        },
+        {
+            "Max": 100,
+            "StaffID": 105,
+            "StatID": 5,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 105,
+            "StatID": 6,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 105,
+            "StatID": 7,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 105,
+            "StatID": 8,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 105,
+            "StatID": 9,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 105,
+            "StatID": 10,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 106,
+            "StatID": 2,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 106,
+            "StatID": 3,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 106,
+            "StatID": 4,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 106,
+            "StatID": 5,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 106,
+            "StatID": 6,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 106,
+            "StatID": 7,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 106,
+            "StatID": 8,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 106,
+            "StatID": 9,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 106,
+            "StatID": 10,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 107,
+            "StatID": 2,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 107,
+            "StatID": 3,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 107,
+            "StatID": 4,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 107,
+            "StatID": 5,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 107,
+            "StatID": 6,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 107,
+            "StatID": 7,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 107,
+            "StatID": 8,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 107,
+            "StatID": 9,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 107,
+            "StatID": 10,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 109,
+            "StatID": 2,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 109,
+            "StatID": 3,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 109,
+            "StatID": 4,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 109,
+            "StatID": 5,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 109,
+            "StatID": 6,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 109,
+            "StatID": 7,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 109,
+            "StatID": 8,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 109,
+            "StatID": 9,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 109,
+            "StatID": 10,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 116,
+            "StatID": 2,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 116,
+            "StatID": 3,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 116,
+            "StatID": 4,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 116,
+            "StatID": 5,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 116,
+            "StatID": 6,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 116,
+            "StatID": 7,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 116,
+            "StatID": 8,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 116,
+            "StatID": 9,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 116,
+            "StatID": 10,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 119,
+            "StatID": 2,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 119,
+            "StatID": 3,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 119,
+            "StatID": 4,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 119,
+            "StatID": 5,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 119,
+            "StatID": 6,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 119,
+            "StatID": 7,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 119,
+            "StatID": 8,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 119,
+            "StatID": 9,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 119,
+            "StatID": 10,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 120,
+            "StatID": 2,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 120,
+            "StatID": 3,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 120,
+            "StatID": 4,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 120,
+            "StatID": 5,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 120,
+            "StatID": 6,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 120,
+            "StatID": 7,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 120,
+            "StatID": 8,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 120,
+            "StatID": 9,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 120,
+            "StatID": 10,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 121,
+            "StatID": 2,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 121,
+            "StatID": 3,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 121,
+            "StatID": 4,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 121,
+            "StatID": 5,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 121,
+            "StatID": 6,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 121,
+            "StatID": 7,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 121,
+            "StatID": 8,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 121,
+            "StatID": 9,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 121,
+            "StatID": 10,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 123,
+            "StatID": 2,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 123,
+            "StatID": 3,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 123,
+            "StatID": 4,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 123,
+            "StatID": 5,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 123,
+            "StatID": 6,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 123,
+            "StatID": 7,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 123,
+            "StatID": 8,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 123,
+            "StatID": 9,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 123,
+            "StatID": 10,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 127,
+            "StatID": 2,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 127,
+            "StatID": 3,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 127,
+            "StatID": 4,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 127,
+            "StatID": 5,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 127,
+            "StatID": 6,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 127,
+            "StatID": 7,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 127,
+            "StatID": 8,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 127,
+            "StatID": 9,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 127,
+            "StatID": 10,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 130,
+            "StatID": 2,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 130,
+            "StatID": 3,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 130,
+            "StatID": 4,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 130,
+            "StatID": 5,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 130,
+            "StatID": 6,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 130,
+            "StatID": 7,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 130,
+            "StatID": 8,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 130,
+            "StatID": 9,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 130,
+            "StatID": 10,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 135,
+            "StatID": 2,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 135,
+            "StatID": 3,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 135,
+            "StatID": 4,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 135,
+            "StatID": 5,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 135,
+            "StatID": 6,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 135,
+            "StatID": 7,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 135,
+            "StatID": 8,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 135,
+            "StatID": 9,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 135,
+            "StatID": 10,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 142,
+            "StatID": 2,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 142,
+            "StatID": 3,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 142,
+            "StatID": 4,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 142,
+            "StatID": 5,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 142,
+            "StatID": 6,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 142,
+            "StatID": 7,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 142,
+            "StatID": 8,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 142,
+            "StatID": 9,
+            "Val": 87
+        },
+        {
+            "Max": 100,
+            "StaffID": 142,
+            "StatID": 10,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 144,
+            "StatID": 2,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 144,
+            "StatID": 3,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 144,
+            "StatID": 4,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 144,
+            "StatID": 5,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 144,
+            "StatID": 6,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 144,
+            "StatID": 7,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 144,
+            "StatID": 8,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 144,
+            "StatID": 9,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 144,
+            "StatID": 10,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 242,
+            "StatID": 2,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 242,
+            "StatID": 3,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 242,
+            "StatID": 4,
+            "Val": 86
+        },
+        {
+            "Max": 100,
+            "StaffID": 242,
+            "StatID": 5,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 242,
+            "StatID": 6,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 242,
+            "StatID": 7,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 242,
+            "StatID": 8,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 242,
+            "StatID": 9,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 242,
+            "StatID": 10,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 245,
+            "StatID": 2,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 245,
+            "StatID": 3,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 245,
+            "StatID": 4,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 245,
+            "StatID": 5,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 245,
+            "StatID": 6,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 245,
+            "StatID": 7,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 245,
+            "StatID": 8,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 245,
+            "StatID": 9,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 245,
+            "StatID": 10,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 248,
+            "StatID": 2,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 248,
+            "StatID": 3,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 248,
+            "StatID": 4,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 248,
+            "StatID": 5,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 248,
+            "StatID": 6,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 248,
+            "StatID": 7,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 248,
+            "StatID": 8,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 248,
+            "StatID": 9,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 248,
+            "StatID": 10,
+            "Val": 82
+        },
+        {
+            "Max": 100,
+            "StaffID": 252,
+            "StatID": 2,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 252,
+            "StatID": 3,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 252,
+            "StatID": 4,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 252,
+            "StatID": 5,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 252,
+            "StatID": 6,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 252,
+            "StatID": 7,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 252,
+            "StatID": 8,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 252,
+            "StatID": 9,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 252,
+            "StatID": 10,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 255,
+            "StatID": 2,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 255,
+            "StatID": 3,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 255,
+            "StatID": 4,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 255,
+            "StatID": 5,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 255,
+            "StatID": 6,
+            "Val": 91
+        },
+        {
+            "Max": 100,
+            "StaffID": 255,
+            "StatID": 7,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 255,
+            "StatID": 8,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 255,
+            "StatID": 9,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 255,
+            "StatID": 10,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 279,
+            "StatID": 2,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 279,
+            "StatID": 3,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 279,
+            "StatID": 4,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 279,
+            "StatID": 5,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 279,
+            "StatID": 6,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 279,
+            "StatID": 7,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 279,
+            "StatID": 8,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 279,
+            "StatID": 9,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 279,
+            "StatID": 10,
+            "Val": 83
+        },
+        {
+            "Max": 100,
+            "StaffID": 280,
+            "StatID": 2,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 280,
+            "StatID": 3,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 280,
+            "StatID": 4,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 280,
+            "StatID": 5,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 280,
+            "StatID": 6,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 280,
+            "StatID": 7,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 280,
+            "StatID": 8,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 280,
+            "StatID": 9,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 280,
+            "StatID": 10,
+            "Val": 55
+        },
+        {
+            "Max": 100,
+            "StaffID": 281,
+            "StatID": 2,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 281,
+            "StatID": 3,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 281,
+            "StatID": 4,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 281,
+            "StatID": 5,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 281,
+            "StatID": 6,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 281,
+            "StatID": 7,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 281,
+            "StatID": 8,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 281,
+            "StatID": 9,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 281,
+            "StatID": 10,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 282,
+            "StatID": 2,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 282,
+            "StatID": 3,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 282,
+            "StatID": 4,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 282,
+            "StatID": 5,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 282,
+            "StatID": 6,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 282,
+            "StatID": 7,
+            "Val": 59
+        },
+        {
+            "Max": 100,
+            "StaffID": 282,
+            "StatID": 8,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 282,
+            "StatID": 9,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 282,
+            "StatID": 10,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 283,
+            "StatID": 2,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 283,
+            "StatID": 3,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 283,
+            "StatID": 4,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 283,
+            "StatID": 5,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 283,
+            "StatID": 6,
+            "Val": 56
+        },
+        {
+            "Max": 100,
+            "StaffID": 283,
+            "StatID": 7,
+            "Val": 51
+        },
+        {
+            "Max": 100,
+            "StaffID": 283,
+            "StatID": 8,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 283,
+            "StatID": 9,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 283,
+            "StatID": 10,
+            "Val": 55
+        },
+        {
+            "Max": 100,
+            "StaffID": 284,
+            "StatID": 2,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 284,
+            "StatID": 3,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 284,
+            "StatID": 4,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 284,
+            "StatID": 5,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 284,
+            "StatID": 6,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 284,
+            "StatID": 7,
+            "Val": 55
+        },
+        {
+            "Max": 100,
+            "StaffID": 284,
+            "StatID": 8,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 284,
+            "StatID": 9,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 284,
+            "StatID": 10,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 285,
+            "StatID": 2,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 285,
+            "StatID": 3,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 285,
+            "StatID": 4,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 285,
+            "StatID": 5,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 285,
+            "StatID": 6,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 285,
+            "StatID": 7,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 285,
+            "StatID": 8,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 285,
+            "StatID": 9,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 285,
+            "StatID": 10,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 286,
+            "StatID": 2,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 286,
+            "StatID": 3,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 286,
+            "StatID": 4,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 286,
+            "StatID": 5,
+            "Val": 56
+        },
+        {
+            "Max": 100,
+            "StaffID": 286,
+            "StatID": 6,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 286,
+            "StatID": 7,
+            "Val": 57
+        },
+        {
+            "Max": 100,
+            "StaffID": 286,
+            "StatID": 8,
+            "Val": 59
+        },
+        {
+            "Max": 100,
+            "StaffID": 286,
+            "StatID": 9,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 286,
+            "StatID": 10,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 288,
+            "StatID": 2,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 288,
+            "StatID": 3,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 288,
+            "StatID": 4,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 288,
+            "StatID": 5,
+            "Val": 56
+        },
+        {
+            "Max": 100,
+            "StaffID": 288,
+            "StatID": 6,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 288,
+            "StatID": 7,
+            "Val": 53
+        },
+        {
+            "Max": 100,
+            "StaffID": 288,
+            "StatID": 8,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 288,
+            "StatID": 9,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 288,
+            "StatID": 10,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 289,
+            "StatID": 2,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 289,
+            "StatID": 3,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 289,
+            "StatID": 4,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 289,
+            "StatID": 5,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 289,
+            "StatID": 6,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 289,
+            "StatID": 7,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 289,
+            "StatID": 8,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 289,
+            "StatID": 9,
+            "Val": 55
+        },
+        {
+            "Max": 100,
+            "StaffID": 289,
+            "StatID": 10,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 301,
+            "StatID": 2,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 301,
+            "StatID": 3,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 301,
+            "StatID": 4,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 301,
+            "StatID": 5,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 301,
+            "StatID": 6,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 301,
+            "StatID": 7,
+            "Val": 51
+        },
+        {
+            "Max": 100,
+            "StaffID": 301,
+            "StatID": 8,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 301,
+            "StatID": 9,
+            "Val": 47
+        },
+        {
+            "Max": 100,
+            "StaffID": 301,
+            "StatID": 10,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 305,
+            "StatID": 2,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 305,
+            "StatID": 3,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 305,
+            "StatID": 4,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 305,
+            "StatID": 5,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 305,
+            "StatID": 6,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 305,
+            "StatID": 7,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 305,
+            "StatID": 8,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 305,
+            "StatID": 9,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 305,
+            "StatID": 10,
+            "Val": 56
+        },
+        {
+            "Max": 100,
+            "StaffID": 306,
+            "StatID": 2,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 306,
+            "StatID": 3,
+            "Val": 57
+        },
+        {
+            "Max": 100,
+            "StaffID": 306,
+            "StatID": 4,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 306,
+            "StatID": 5,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 306,
+            "StatID": 6,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 306,
+            "StatID": 7,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 306,
+            "StatID": 8,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 306,
+            "StatID": 9,
+            "Val": 58
+        },
+        {
+            "Max": 100,
+            "StaffID": 306,
+            "StatID": 10,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 308,
+            "StatID": 2,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 308,
+            "StatID": 3,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 308,
+            "StatID": 4,
+            "Val": 59
+        },
+        {
+            "Max": 100,
+            "StaffID": 308,
+            "StatID": 5,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 308,
+            "StatID": 6,
+            "Val": 57
+        },
+        {
+            "Max": 100,
+            "StaffID": 308,
+            "StatID": 7,
+            "Val": 58
+        },
+        {
+            "Max": 100,
+            "StaffID": 308,
+            "StatID": 8,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 308,
+            "StatID": 9,
+            "Val": 56
+        },
+        {
+            "Max": 100,
+            "StaffID": 308,
+            "StatID": 10,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 322,
+            "StatID": 2,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 322,
+            "StatID": 3,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 322,
+            "StatID": 4,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 322,
+            "StatID": 5,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 322,
+            "StatID": 6,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 322,
+            "StatID": 7,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 322,
+            "StatID": 8,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 322,
+            "StatID": 9,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 322,
+            "StatID": 10,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 373,
+            "StatID": 2,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 373,
+            "StatID": 3,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 373,
+            "StatID": 4,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 373,
+            "StatID": 5,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 373,
+            "StatID": 6,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 373,
+            "StatID": 7,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 373,
+            "StatID": 8,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 373,
+            "StatID": 9,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 373,
+            "StatID": 10,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 374,
+            "StatID": 2,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 374,
+            "StatID": 3,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 374,
+            "StatID": 4,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 374,
+            "StatID": 5,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 374,
+            "StatID": 6,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 374,
+            "StatID": 7,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 374,
+            "StatID": 8,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 374,
+            "StatID": 9,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 374,
+            "StatID": 10,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 375,
+            "StatID": 2,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 375,
+            "StatID": 3,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 375,
+            "StatID": 4,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 375,
+            "StatID": 5,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 375,
+            "StatID": 6,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 375,
+            "StatID": 7,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 375,
+            "StatID": 8,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 375,
+            "StatID": 9,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 375,
+            "StatID": 10,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 376,
+            "StatID": 2,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 376,
+            "StatID": 3,
+            "Val": 85
+        },
+        {
+            "Max": 100,
+            "StaffID": 376,
+            "StatID": 4,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 376,
+            "StatID": 5,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 376,
+            "StatID": 6,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 376,
+            "StatID": 7,
+            "Val": 81
+        },
+        {
+            "Max": 100,
+            "StaffID": 376,
+            "StatID": 8,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 376,
+            "StatID": 9,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 376,
+            "StatID": 10,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 377,
+            "StatID": 2,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 377,
+            "StatID": 3,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 377,
+            "StatID": 4,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 377,
+            "StatID": 5,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 377,
+            "StatID": 6,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 377,
+            "StatID": 7,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 377,
+            "StatID": 8,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 377,
+            "StatID": 9,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 377,
+            "StatID": 10,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 378,
+            "StatID": 2,
+            "Val": 73
+        },
+        {
+            "Max": 100,
+            "StaffID": 378,
+            "StatID": 3,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 378,
+            "StatID": 4,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 378,
+            "StatID": 5,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 378,
+            "StatID": 6,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 378,
+            "StatID": 7,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 378,
+            "StatID": 8,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 378,
+            "StatID": 9,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 378,
+            "StatID": 10,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 379,
+            "StatID": 2,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 379,
+            "StatID": 3,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 379,
+            "StatID": 4,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 379,
+            "StatID": 5,
+            "Val": 58
+        },
+        {
+            "Max": 100,
+            "StaffID": 379,
+            "StatID": 6,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 379,
+            "StatID": 7,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 379,
+            "StatID": 8,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 379,
+            "StatID": 9,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 379,
+            "StatID": 10,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 380,
+            "StatID": 2,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 380,
+            "StatID": 3,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 380,
+            "StatID": 4,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 380,
+            "StatID": 5,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 380,
+            "StatID": 6,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 380,
+            "StatID": 7,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 380,
+            "StatID": 8,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 380,
+            "StatID": 9,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 380,
+            "StatID": 10,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 381,
+            "StatID": 2,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 381,
+            "StatID": 3,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 381,
+            "StatID": 4,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 381,
+            "StatID": 5,
+            "Val": 57
+        },
+        {
+            "Max": 100,
+            "StaffID": 381,
+            "StatID": 6,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 381,
+            "StatID": 7,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 381,
+            "StatID": 8,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 381,
+            "StatID": 9,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 381,
+            "StatID": 10,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 382,
+            "StatID": 2,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 382,
+            "StatID": 3,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 382,
+            "StatID": 4,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 382,
+            "StatID": 5,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 382,
+            "StatID": 6,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 382,
+            "StatID": 7,
+            "Val": 57
+        },
+        {
+            "Max": 100,
+            "StaffID": 382,
+            "StatID": 8,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 382,
+            "StatID": 9,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 382,
+            "StatID": 10,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 383,
+            "StatID": 2,
+            "Val": 57
+        },
+        {
+            "Max": 100,
+            "StaffID": 383,
+            "StatID": 3,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 383,
+            "StatID": 4,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 383,
+            "StatID": 5,
+            "Val": 59
+        },
+        {
+            "Max": 100,
+            "StaffID": 383,
+            "StatID": 6,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 383,
+            "StatID": 7,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 383,
+            "StatID": 8,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 383,
+            "StatID": 9,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 383,
+            "StatID": 10,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 384,
+            "StatID": 2,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 384,
+            "StatID": 3,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 384,
+            "StatID": 4,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 384,
+            "StatID": 5,
+            "Val": 58
+        },
+        {
+            "Max": 100,
+            "StaffID": 384,
+            "StatID": 6,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 384,
+            "StatID": 7,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 384,
+            "StatID": 8,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 384,
+            "StatID": 9,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 384,
+            "StatID": 10,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 385,
+            "StatID": 2,
+            "Val": 55
+        },
+        {
+            "Max": 100,
+            "StaffID": 385,
+            "StatID": 3,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 385,
+            "StatID": 4,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 385,
+            "StatID": 5,
+            "Val": 48
+        },
+        {
+            "Max": 100,
+            "StaffID": 385,
+            "StatID": 6,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 385,
+            "StatID": 7,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 385,
+            "StatID": 8,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 385,
+            "StatID": 9,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 385,
+            "StatID": 10,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 386,
+            "StatID": 2,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 386,
+            "StatID": 3,
+            "Val": 58
+        },
+        {
+            "Max": 100,
+            "StaffID": 386,
+            "StatID": 4,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 386,
+            "StatID": 5,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 386,
+            "StatID": 6,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 386,
+            "StatID": 7,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 386,
+            "StatID": 8,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 386,
+            "StatID": 9,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 386,
+            "StatID": 10,
+            "Val": 59
+        },
+        {
+            "Max": 100,
+            "StaffID": 387,
+            "StatID": 2,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 387,
+            "StatID": 3,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 387,
+            "StatID": 4,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 387,
+            "StatID": 5,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 387,
+            "StatID": 6,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 387,
+            "StatID": 7,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 387,
+            "StatID": 8,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 387,
+            "StatID": 9,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 387,
+            "StatID": 10,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 388,
+            "StatID": 2,
+            "Val": 57
+        },
+        {
+            "Max": 100,
+            "StaffID": 388,
+            "StatID": 3,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 388,
+            "StatID": 4,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 388,
+            "StatID": 5,
+            "Val": 59
+        },
+        {
+            "Max": 100,
+            "StaffID": 388,
+            "StatID": 6,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 388,
+            "StatID": 7,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 388,
+            "StatID": 8,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 388,
+            "StatID": 9,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 388,
+            "StatID": 10,
+            "Val": 57
+        },
+        {
+            "Max": 100,
+            "StaffID": 390,
+            "StatID": 2,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 390,
+            "StatID": 3,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 390,
+            "StatID": 4,
+            "Val": 57
+        },
+        {
+            "Max": 100,
+            "StaffID": 390,
+            "StatID": 5,
+            "Val": 56
+        },
+        {
+            "Max": 100,
+            "StaffID": 390,
+            "StatID": 6,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 390,
+            "StatID": 7,
+            "Val": 65
+        },
+        {
+            "Max": 100,
+            "StaffID": 390,
+            "StatID": 8,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 390,
+            "StatID": 9,
+            "Val": 59
+        },
+        {
+            "Max": 100,
+            "StaffID": 390,
+            "StatID": 10,
+            "Val": 63
+        },
+        {
+            "Max": 100,
+            "StaffID": 394,
+            "StatID": 2,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 394,
+            "StatID": 3,
+            "Val": 58
+        },
+        {
+            "Max": 100,
+            "StaffID": 394,
+            "StatID": 4,
+            "Val": 59
+        },
+        {
+            "Max": 100,
+            "StaffID": 394,
+            "StatID": 5,
+            "Val": 54
+        },
+        {
+            "Max": 100,
+            "StaffID": 394,
+            "StatID": 6,
+            "Val": 61
+        },
+        {
+            "Max": 100,
+            "StaffID": 394,
+            "StatID": 7,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 394,
+            "StatID": 8,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 394,
+            "StatID": 9,
+            "Val": 58
+        },
+        {
+            "Max": 100,
+            "StaffID": 394,
+            "StatID": 10,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 398,
+            "StatID": 2,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 398,
+            "StatID": 3,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 398,
+            "StatID": 4,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 398,
+            "StatID": 5,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 398,
+            "StatID": 6,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 398,
+            "StatID": 7,
+            "Val": 80
+        },
+        {
+            "Max": 100,
+            "StaffID": 398,
+            "StatID": 8,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 398,
+            "StatID": 9,
+            "Val": 77
+        },
+        {
+            "Max": 100,
+            "StaffID": 398,
+            "StatID": 10,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 399,
+            "StatID": 2,
+            "Val": 70
+        },
+        {
+            "Max": 100,
+            "StaffID": 399,
+            "StatID": 3,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 399,
+            "StatID": 4,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 399,
+            "StatID": 5,
+            "Val": 55
+        },
+        {
+            "Max": 100,
+            "StaffID": 399,
+            "StatID": 6,
+            "Val": 62
+        },
+        {
+            "Max": 100,
+            "StaffID": 399,
+            "StatID": 7,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 399,
+            "StatID": 8,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 399,
+            "StatID": 9,
+            "Val": 60
+        },
+        {
+            "Max": 100,
+            "StaffID": 399,
+            "StatID": 10,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 411,
+            "StatID": 2,
+            "Val": 67
+        },
+        {
+            "Max": 100,
+            "StaffID": 411,
+            "StatID": 3,
+            "Val": 68
+        },
+        {
+            "Max": 100,
+            "StaffID": 411,
+            "StatID": 4,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 411,
+            "StatID": 5,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 411,
+            "StatID": 6,
+            "Val": 64
+        },
+        {
+            "Max": 100,
+            "StaffID": 411,
+            "StatID": 7,
+            "Val": 74
+        },
+        {
+            "Max": 100,
+            "StaffID": 411,
+            "StatID": 8,
+            "Val": 66
+        },
+        {
+            "Max": 100,
+            "StaffID": 411,
+            "StatID": 9,
+            "Val": 69
+        },
+        {
+            "Max": 100,
+            "StaffID": 411,
+            "StatID": 10,
+            "Val": 58
+        },
+        {
+            "Max": 100,
+            "StaffID": 413,
+            "StatID": 2,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 413,
+            "StatID": 3,
+            "Val": 78
+        },
+        {
+            "Max": 100,
+            "StaffID": 413,
+            "StatID": 4,
+            "Val": 71
+        },
+        {
+            "Max": 100,
+            "StaffID": 413,
+            "StatID": 5,
+            "Val": 72
+        },
+        {
+            "Max": 100,
+            "StaffID": 413,
+            "StatID": 6,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 413,
+            "StatID": 7,
+            "Val": 76
+        },
+        {
+            "Max": 100,
+            "StaffID": 413,
+            "StatID": 8,
+            "Val": 75
+        },
+        {
+            "Max": 100,
+            "StaffID": 413,
+            "StatID": 9,
+            "Val": 79
+        },
+        {
+            "Max": 100,
+            "StaffID": 413,
+            "StatID": 10,
+            "Val": 78
+        }
+    ],
+    "DriverStandings": [
+        {
+            "DriverID": 1,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 223,
+            "Position": 7,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 2,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 356,
+            "Position": 3,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 3,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 12,
+            "Position": 16,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 8,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 0,
+            "Position": 19,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 10,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 437,
+            "Position": 1,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 11,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 290,
+            "Position": 5,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 12,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 374,
+            "Position": 2,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 13,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 12,
+            "Position": 17,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 14,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 23,
+            "Position": 14,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 15,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 42,
+            "Position": 10,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 17,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 152,
+            "Position": 8,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 18,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 24,
+            "Position": 13,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 23,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 245,
+            "Position": 6,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 77,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 70,
+            "Position": 9,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 81,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 30,
+            "Position": 12,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 83,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 41,
+            "Position": 11,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 102,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 292,
+            "Position": 4,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 105,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 4,
+            "Position": 18,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 116,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 0,
+            "Position": 20,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        },
+        {
+            "DriverID": 255,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 16,
+            "Position": 15,
+            "RaceFormula": 1,
+            "SeasonID": 2024
+        }
+        
+    ],
+    "TeamStandings": [
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 652,
+            "Position": 2,
+            "RaceFormula": 1,
+            "SeasonID": 2024,
+            "TeamID": 1
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 666,
+            "Position": 1,
+            "RaceFormula": 1,
+            "SeasonID": 2024,
+            "TeamID": 2
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 589,
+            "Position": 3,
+            "RaceFormula": 1,
+            "SeasonID": 2024,
+            "TeamID": 3
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 468,
+            "Position": 4,
+            "RaceFormula": 1,
+            "SeasonID": 2024,
+            "TeamID": 4
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 65,
+            "Position": 6,
+            "RaceFormula": 1,
+            "SeasonID": 2024,
+            "TeamID": 5
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 17,
+            "Position": 9,
+            "RaceFormula": 1,
+            "SeasonID": 2024,
+            "TeamID": 6
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 58,
+            "Position": 7,
+            "RaceFormula": 1,
+            "SeasonID": 2024,
+            "TeamID": 7
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 46,
+            "Position": 8,
+            "RaceFormula": 1,
+            "SeasonID": 2024,
+            "TeamID": 8
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 4,
+            "Position": 10,
+            "RaceFormula": 1,
+            "SeasonID": 2024,
+            "TeamID": 9
+        }
+    ]
+}
