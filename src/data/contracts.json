@@ -272,6 +272,417 @@
             "GrantsSuperLicense": 1
         }
 
+    ],
+    "Affiliates" : [
+        {
+            "DriverID": 285,
+            "TeamID": 2,
+            "PosInTeam": 3,
+            "Salary": 500000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2027,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 411,
+            "TeamID": 2,
+            "PosInTeam": 4,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 375,
+            "TeamID": 2,
+            "PosInTeam": 5,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2025,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 399,
+            "TeamID": 2,
+            "PosInTeam": 6,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 105,
+            "TeamID": 1,
+            "PosInTeam": 3,
+            "Salary": 300000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2025,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 20,
+            "TeamID": 1,
+            "PosInTeam": 4,
+            "Salary": 300000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 282,
+            "TeamID": 1,
+            "PosInTeam": 5,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 419,
+            "TeamID": 1,
+            "PosInTeam": 6,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2025,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 439,
+            "TeamID": 1,
+            "PosInTeam": 7,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2027,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 418,
+            "TeamID": 1,
+            "PosInTeam": 8,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2025,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 132,
+            "TeamID": 1,
+            "PosInTeam": 9,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 264,
+            "TeamID": 3,
+            "PosInTeam": 3,
+            "Salary": 320000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2027,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 120,
+            "TeamID": 3,
+            "PosInTeam": 4,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2025,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 245,
+            "TeamID": 3,
+            "PosInTeam": 5,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 402,
+            "TeamID": 3,
+            "PosInTeam": 6,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 288,
+            "TeamID": 8,
+            "PosInTeam": 3,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 373,
+            "TeamID": 8,
+            "PosInTeam": 4,
+            "Salary": 150000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2028,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 379,
+            "TeamID": 8,
+            "PosInTeam": 5,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 286,
+            "TeamID": 8,
+            "PosInTeam": 6,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 8,
+            "TeamID": 4,
+            "PosInTeam": 3,
+            "Salary": 1300000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 107,
+            "TeamID": 4,
+            "PosInTeam": 4,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 106,
+            "TeamID": 10,
+            "PosInTeam": 3,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 22,
+            "TeamID": 10,
+            "PosInTeam": 4,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 408,
+            "TeamID": 10,
+            "PosInTeam": 5,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2025,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 409,
+            "TeamID": 10,
+            "PosInTeam": 6,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2025,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 121,
+            "TeamID": 10,
+            "PosInTeam": 7,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 248,
+            "TeamID": 5,
+            "PosInTeam": 3,
+            "Salary": 300000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 398,
+            "TeamID": 5,
+            "PosInTeam": 4,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 281,
+            "TeamID": 5,
+            "PosInTeam": 5,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 405,
+            "TeamID": 5,
+            "PosInTeam": 6,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 280,
+            "TeamID": 5,
+            "PosInTeam": 7,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 252,
+            "TeamID": 5,
+            "PosInTeam": 8,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2025,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 406,
+            "TeamID": 5,
+            "PosInTeam": 9,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2025,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 80,
+            "TeamID": 7,
+            "PosInTeam": 3,
+            "Salary": 220000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2025,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 247,
+            "TeamID": 6,
+            "PosInTeam": 3,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2025,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 322,
+            "TeamID": 6,
+            "PosInTeam": 4,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "DriverID": 401,
+            "TeamID": 9,
+            "PosInTeam": 3,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2025,
+            "BreakoutClause": 0.5
+        }
+
+
     ]
 }
 

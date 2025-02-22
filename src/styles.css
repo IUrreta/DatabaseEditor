@@ -9840,7 +9840,7 @@ body:has(.active #mod25logo) .background {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 90px 0 60px 0;
+  padding: 60px 0 60px 0;
   scale: 1.1;
 }
 
@@ -9903,7 +9903,7 @@ body:has(.active #mod25logo) .mod-name img {
 
 .high-rectangle {
   width: 130px;
-  height: 150px;
+  height: 173px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   position: relative;

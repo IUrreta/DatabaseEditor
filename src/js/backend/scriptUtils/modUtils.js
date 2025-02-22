@@ -374,6 +374,45 @@ export function change2024Standings() {
     }
 }
 
+export function manageAffiliates() {
+
+    queryDB(`
+        DELETE FROM Staff_Contracts
+        WHERE PosInTeam > 2
+        AND StaffID IN (SELECT StaffID FROM Staff_DriverData)
+    `);
+
+    if (contracts.Affiliates && Array.isArray(contracts.Affiliates)) {
+        contracts.Affiliates.forEach((affiliate) => {
+            const {
+                DriverID,
+                TeamID,
+                PosInTeam,
+                Salary,
+                StartingBonus,
+                RaceBonus,
+                RaceBonusTargetPos,
+                EndSeason,
+                BreakoutClause
+            } = affiliate;
+
+            hireDriver(
+                "manual",
+                DriverID,
+                TeamID,
+                PosInTeam,
+                Salary,
+                StartingBonus,
+                RaceBonus,
+                RaceBonusTargetPos,
+                EndSeason,
+                "24"
+            );
+            
+        });
+    }
+}
+
 
 export function removeFastestLap() {
     queryDB(`UPDATE Regulations_Enum_Changes SET CurrentValue = 0, PreviousValue = 1 WHERE ChangeID = 9`);
