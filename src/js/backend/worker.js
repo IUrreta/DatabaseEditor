@@ -15,6 +15,7 @@ import { editCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates } from "./scriptUtils/modUtils";
 import { teamReplaceDict } from "./commandGlobals";
+import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 
 import initSqlJs from 'sql.js';
@@ -30,9 +31,12 @@ const workerCommands = {
 
     const { db, metadata } = await analyzeFileToDatabase(data.file, SQL);
 
+    let day = metadata.careerSaveMetadata.Day;
+    let date = excelToDate(day);
+
     setDatabase(db, metadata);
 
-    postMessage({ responseMessage: "Database loaded" });
+    postMessage({ responseMessage: "Database loaded", content: date });
   },
   exportSave: async (data, postMessage) => {
     const db = getDatabase();

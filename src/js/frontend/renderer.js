@@ -1940,11 +1940,20 @@ document.getElementById('logButton').addEventListener('click', function () {
 document.querySelector(".time-travel").addEventListener("click", function () {
     const command = new Command("timeTravel", {dayNumber: 45658});
     command.execute();
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
 })
 
 document.querySelector(".change-line-ups").addEventListener("click", function () {
     const command = new Command("changeLineUps", {});
     command.execute();
+    document.querySelector(".ham-transfer").classList.remove("mefont")
+    document.querySelector(".sai-transfer").classList.remove("fefont")
+    document.querySelector(".ham-transfer").classList.add("fefont")
+    document.querySelector(".sai-transfer").classList.add("wifont")
+    document.querySelector(".ant-transfer").classList.add("mefont")
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
 })
 
 document.querySelector(".change-stats").addEventListener("click", function () {

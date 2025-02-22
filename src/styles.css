@@ -10613,6 +10613,40 @@ button.one-change-button:active {
   box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
 }
 
+button.one-change-button.completed {
+  background-color: transparent;
+  color: var(--positive-general);
+  cursor: default;
+}
+
+button.one-change-button.completed:hover{
+  background-color: transparent;
+  box-shadow: none;
+}
+
+button.one-change-button .bi-check-lg{
+  transition: all 0.15s;
+}
+
+button.one-change-button:not(.completed) .bi-check-lg{
+  rotate: 90deg;
+  opacity: 0;
+}
+
+button.one-change-button.completed .bi-check-lg{
+  rotate: 0deg;
+  opacity: 1;
+}
+
+button.one-change-button span{
+  padding-right: 16px;
+  transition: all 0.15s;
+}
+
+button.one-change-button.completed span{
+  padding-right: 0;
+}
+
 @keyframes change-appear{
   0%{
     opacity: 0;
@@ -10627,4 +10661,103 @@ button.one-change-button:active {
 body:has(.active #mod25logo) .one-change {
   animation: change-appear 0.6s ease-out forwards;
   animation-delay: calc(0.8s + var(--order) * 0.1s);
+}
+
+.ham-transfer, .sai-transfer, .ant-transfer{
+  transition: color 0.15s;
+  transform: skewX(-9deg);
+  display: inline-block;
+}
+
+.date-holder {
+  display: inline-flex;
+  gap: 5px;
+}
+
+
+.date-part {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+  overflow: hidden; 
+}
+
+
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+#dateDay::before{
+  content: '1';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--modal-text);
+}
+
+#dateMonth::before{
+  content: 'January';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.2s;
+  color: var(--modal-text);
+}
+
+#dateYear::before{
+  content: '2025';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.3s;
+  color: var(--modal-text);
+}
+
+.one-change:has(.completed) #dateDay::before{
+  animation-delay: 0.1s;
+  animation: slide-down 0.3s forwards;
+  color: var(--modal-text);
+}
+
+.one-change:has(.completed) #dateMonth::before{
+  animation-delay: 0.2s;
+  animation: slide-down 0.3s forwards;
+  color: var(--modal-text);
+}
+
+.one-change:has(.completed) #dateYear::before{
+  animation-delay: 0.3s;
+  animation: slide-down 0.3s forwards;
+  color: var(--modal-text);
+}
+
+.one-change:has(.completed) #dateDay,
+.one-change:has(.completed) #dateMonth,
+.one-change:has(.completed) #dateYear{
+  transition: color 0.15s;
+  color: transparent;
 }
