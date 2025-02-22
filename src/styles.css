@@ -10503,7 +10503,7 @@ a.bi-custom-patreon.close-slide-up{
 
 .marquee__inner {
   display: flex;
-  animation: scroll 33s linear infinite;
+  animation: scroll 35s linear infinite;
   gap: 1em;
 }
 
