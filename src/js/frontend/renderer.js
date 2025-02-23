@@ -1938,7 +1938,7 @@ document.getElementById('logButton').addEventListener('click', function () {
 });
 
 document.querySelector(".time-travel").addEventListener("click", function () {
-    const command = new Command("timeTravel", {dayNumber: 45658});
+    const command = new Command("timeTravel", {dayNumber: 45657});
     command.execute();
     this.classList.add("completed")
     this.querySelector("span").textContent = "Applied"
@@ -1952,6 +1952,9 @@ document.querySelector(".change-line-ups").addEventListener("click", function ()
     document.querySelector(".ham-transfer").classList.add("fefont")
     document.querySelector(".sai-transfer").classList.add("wifont")
     document.querySelector(".ant-transfer").classList.add("mefont")
+    document.querySelector(".ant-ovr").classList.add("mefont")
+    document.querySelector(".bor-ovr").classList.remove("mcfont")
+    document.querySelector(".bor-ovr").classList.add("affont")
     this.classList.add("completed")
     this.querySelector("span").textContent = "Applied"
 })
@@ -1959,6 +1962,8 @@ document.querySelector(".change-line-ups").addEventListener("click", function ()
 document.querySelector(".change-stats").addEventListener("click", function () {
     const command = new Command("changeStats", {});
     command.execute();
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
 })
 
 document.querySelector(".change-cfd").addEventListener("click", function () {
@@ -1968,5 +1973,10 @@ document.querySelector(".change-cfd").addEventListener("click", function () {
 
 document.querySelector(".change-regulations").addEventListener("click", function () {
     const command = new Command("changeRegulations", {});
+    command.execute();
+})
+
+document.querySelector(".change-calendar").addEventListener("click", function () {
+    const command = new Command("changeCalendar", {});
     command.execute();
 })

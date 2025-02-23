@@ -10664,9 +10664,101 @@ body:has(.active #mod25logo) .one-change {
 }
 
 .ham-transfer, .sai-transfer, .ant-transfer{
-  transition: color 0.15s;
+  color: transparent;
+  position: relative;
+}
+
+.bor-ovr, .ant-ovr, .pia-ovr{
   transform: skewX(-9deg);
   display: inline-block;
+  min-width: 122px;
+}
+
+.ovr-change{
+  color: var(--dark-text);
+}
+
+.ham-transfer::before, .sai-transfer::before, .ant-transfer::before{
+  font-family: 'Formula1Bold';
+  transition: all 0.15s;
+  transform: skewX(-9deg);
+  display: inline-block;
+}
+
+.ham-transfer::before{
+  content: 'HAMILTON';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  color: var(--mercedes-primary);
+}
+
+.sai-transfer::before{
+  content: 'SAINZ';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  color: var(--ferrari-primary);
+}
+
+.ant-transfer::before{
+  content: 'ANTONELLI';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  color: var(--modal-text);
+}
+
+.one-change:has(.completed) .ham-transfer, .one-change:has(.completed) .sai-transfer, .one-change:has(.completed) .ant-transfer{
+  color: var(--modal-text);
+}
+
+.one-change:has(.completed) .ham-transfer::before{
+  transform: translateX(59px);
+  color: var(--ferrari-primary);
+}
+
+.one-change:has(.completed) .sai-transfer::before{
+  transform: translateX(62px);
+  color: var(--williams-primary);
+}
+
+.ant-team{
+  transform: translateX(22px);
+  padding-left: 50px;
+}
+
+.ham-team{
+  padding-left: 51px;
+  transition: all 0.15s;
+}
+
+.sai-team{
+  transition: all 0.15s;
+}
+
+
+
+.one-change:has(.completed) .ham-team, .one-change:has(.completed) .sai-team, .one-change:has(.completed) .ant-team{
+  color: transparent;
+  padding: 0;
+}
+
+.one-change:has(.completed) .ant-transfer::before{
+  transform: translateX(65px);
+  color: var(--mercedes-primary);
 }
 
 .date-holder {
@@ -10696,7 +10788,7 @@ body:has(.active #mod25logo) .one-change {
 }
 
 #dateDay::before{
-  content: '1';
+  content: '29th';
   position: absolute;
   top: 0;
   left: 0;
@@ -10706,11 +10798,15 @@ body:has(.active #mod25logo) .one-change {
   z-index: -1;
   transform: translateY(-20px);
   animation-delay: 0.1s;
-  color: var(--modal-text);
+  color: var(--dark-text);
+}
+
+#dateMonth{
+  min-width: 100px;
 }
 
 #dateMonth::before{
-  content: 'January';
+  content: 'December';
   position: absolute;
   top: 0;
   left: 0;
@@ -10720,11 +10816,11 @@ body:has(.active #mod25logo) .one-change {
   z-index: -1;
   transform: translateY(-20px);
   animation-delay: 0.2s;
-  color: var(--modal-text);
+  color: var(--dark-text);
 }
 
 #dateYear::before{
-  content: '2025';
+  content: '2024';
   position: absolute;
   top: 0;
   left: 0;
@@ -10734,25 +10830,19 @@ body:has(.active #mod25logo) .one-change {
   z-index: -1;
   transform: translateY(-20px);
   animation-delay: 0.3s;
-  color: var(--modal-text);
+  color: var(--dark-text);
 }
 
 .one-change:has(.completed) #dateDay::before{
-  animation-delay: 0.1s;
-  animation: slide-down 0.3s forwards;
-  color: var(--modal-text);
+  animation: slide-down 0.3s forwards 0s;
 }
 
 .one-change:has(.completed) #dateMonth::before{
-  animation-delay: 0.2s;
-  animation: slide-down 0.3s forwards;
-  color: var(--modal-text);
+  animation: slide-down 0.3s forwards 0.05s;
 }
 
 .one-change:has(.completed) #dateYear::before{
-  animation-delay: 0.3s;
-  animation: slide-down 0.3s forwards;
-  color: var(--modal-text);
+  animation: slide-down 0.3s forwards 0.1s;
 }
 
 .one-change:has(.completed) #dateDay,
@@ -10761,3 +10851,74 @@ body:has(.active #mod25logo) .one-change {
   transition: color 0.15s;
   color: transparent;
 }
+
+.bor-change, .ant-change, .pia-change{
+  position: relative;
+}
+
+.bor-change::before{
+  content: '78';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.one-change:has(.completed) .bor-change::before{
+  animation: slide-down 0.3s forwards 0s;
+}
+
+.one-change:has(.completed) .bor-change{
+  color: transparent;
+}
+
+.ant-change::before{
+  content: '77';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.one-change:has(.completed) .ant-change::before{
+  animation: slide-down 0.3s forwards 0.05s;
+}
+
+.one-change:has(.completed) .ant-change{
+  color: transparent;
+}
+
+.pia-change::before{
+  content: '86';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.one-change:has(.completed) .pia-change::before{
+  animation: slide-down 0.3s forwards 0.1s;
+}
+
+.one-change:has(.completed) .pia-change{
+  color: transparent;
+}
+

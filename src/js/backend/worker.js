@@ -13,7 +13,7 @@ import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
-import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates } from "./scriptUtils/modUtils";
+import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings } from "./scriptUtils/modUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
@@ -33,6 +33,8 @@ const workerCommands = {
 
     let day = metadata.careerSaveMetadata.Day;
     let date = excelToDate(day);
+
+    console.log(metadata)
 
     setDatabase(db, metadata);
 
@@ -298,7 +300,8 @@ const workerCommands = {
                   unlocksDownload: true  });
   },
   timeTravel: (data, postMessage) => {
-    timeTravelWithData(data.dayNumber, false);
+    timeTravelWithData(data.dayNumber, true);
+    // manageStandings();
     postMessage({ responseMessage: "Time travel",
                   noti_msg: `Succesfully time travelled to 2025`,
                   isEditCommand: true,
@@ -333,6 +336,13 @@ const workerCommands = {
                   isEditCommand: true,
                   unlocksDownload: true  });
   },
+  changeCalendar: (data, postMessage) => {
+    changeRaces();
+    postMessage({ responseMessage: "Calendar changed",
+                  noti_msg: `Succesfully changed the calendar to match 2025`,
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+  }
 
 };
 

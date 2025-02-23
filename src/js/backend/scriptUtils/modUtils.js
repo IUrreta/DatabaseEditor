@@ -21,20 +21,19 @@ export function timeTravelWithData(dayNumber, extend = false) {
     FROM Player_State
   `, 'singleRow');
 
+    const vanillaSeason = daySeasonRow[1];
+    const VanillaDay = daySeasonRow[0];
+
 
     const wayBackSeason = excelToDate(dayNumber).getFullYear();
-    console.log("Way Back Season: ", wayBackSeason);
-    const vanillaSeason = daySeasonRow[1];
+    const moddedDayNumber = dateToExcel(new Date(`${wayBackSeason}-12-29`));
 
-    const seasonStartDayNumber = dateToExcel(new Date(`${wayBackSeason}-01-02`));
-    console.log("Season Start Day Number: ", seasonStartDayNumber);
+    const seasonStartDayNumber = dateToExcel(new Date(`${wayBackSeason}-01-01`));
     const vanillaDayNumber = dateToExcel(new Date(`${vanillaSeason}-01-01`));
-    console.log("Vanilla Day Number: ", vanillaDayNumber);
+
+
     const dd = vanillaDayNumber - seasonStartDayNumber;
     const yd = vanillaSeason - wayBackSeason;
-    console.log("Day Difference: ", dd);
-    console.log("Year Difference: ", yd);
-
 
 
     const metaProperty = metadata.gvasMeta.Properties.Properties
@@ -42,12 +41,12 @@ export function timeTravelWithData(dayNumber, extend = false) {
 
     metaProperty.Properties[0].Properties.forEach(x => {
         if (x.Name === "Day") {
-            x.Property = dayNumber;
+            x.Property = moddedDayNumber;
         }
     });
 
     // Ahora sustituyo los 'database.exec()' por 'queryDB(...)'
-    queryDB(`UPDATE Player_State SET Day = ${dayNumber}`);
+    queryDB(`UPDATE Player_State SET Day = ${moddedDayNumber}`);
     queryDB(`UPDATE Player_State SET CurrentSeason = ${wayBackSeason}`);
 
     queryDB(`
@@ -79,44 +78,11 @@ export function timeTravelWithData(dayNumber, extend = false) {
           UPDATE Races
           SET
             SeasonID = ${wayBackSeason},
-            Day = Day - ${dd},
             State = 2
           WHERE SeasonID = ${vanillaSeason}
         `);
     } else {
-        // 1) Leemos todas las carreras de la temporada “vieja”
-        const raceRows = queryDB(`
-            SELECT RaceID, Day
-            FROM Races
-            WHERE SeasonID = ${vanillaSeason}
-        `, "allRows");
-
-        for (const row of raceRows) {
-            const oldDay = row[1];
-
-            const oldDate = excelToDate(oldDay);
-
-
-            const newDate = new Date(wayBackSeason, oldDate.getMonth(), oldDate.getDate());
-
-            // Aseguramos que sea domingo (getDay() devuelve 0 = domingo, 1 = lunes, etc.)
-            const dayOfWeek = newDate.getDay();
-            if (dayOfWeek !== 0) {
-                const offset = 8 - dayOfWeek;
-                newDate.setDate(newDate.getDate() + offset);
-            }
-
-            const newExcelDay = dateToExcel(newDate);
-
-            queryDB(`
-                UPDATE Races
-                SET
-                    SeasonID = ${wayBackSeason},
-                    Day = ${newExcelDay}
-                WHERE RaceID = ${row[0]}
-            `);
-        }
-
+        queryDB(`UPDATE Races SET SeasonID = ${wayBackSeason}, Day = Day - ${dd} WHERE SeasonID = ${vanillaSeason}`)
     }
 
     queryDB(`
@@ -127,9 +93,8 @@ export function timeTravelWithData(dayNumber, extend = false) {
       `);
 
     // Ajustes para versiones >= 3
-    console.log(`UPDATE Staff_PitCrew_DevelopmentPlan SET Day = Day - ${dd} WHERE Day > 40000`)
     if (version >= 3) {
-        queryDB(`UPDATE Player SET FirstGameDay = ${dayNumber}`);
+        queryDB(`UPDATE Player SET FirstGameDay = ${moddedDayNumber}`);
         queryDB(`UPDATE Player_Record SET StartSeason = ${wayBackSeason}`);
         queryDB(`UPDATE Player_History SET StartDay = ${seasonStartDayNumber}`);
         queryDB(`UPDATE Staff_PitCrew_DevelopmentPlan SET Day = Day - ${dd} WHERE Day > 40000`);
@@ -324,22 +289,24 @@ export function changeDriverLineUps() {
             );
         });
     }
+
+
 }
 
 export function changeStats() {
     if (!changes.Stats || !Array.isArray(changes.Stats)) {
         console.log("No stats found");
     }
-    else{
+    else {
         for (const entry of changes.Stats) {
             const { StaffID, StatID, Val, Max } = entry;
-    
+
             queryDB(`
             UPDATE Staff_PerformanceStats
             SET Val = ${Val}, Max = ${Max}
             WHERE StaffID = ${StaffID} AND StatID = ${StatID}
           `);
-    
+
         }
     }
 
@@ -408,11 +375,192 @@ export function manageAffiliates() {
                 EndSeason,
                 "24"
             );
-            
+
         });
+
+
     }
 }
 
+export function manageStandings() {
+    queryDB(`DELETE FROM Races_DriverStandings WHERE RaceFormula = 2 AND SeasonID = 2025`);
+    queryDB(`DELETE FROM Races_DriverStandings WHERE RaceFormula = 3 AND SeasonID = 2025`);
+    queryDB(`
+            DELETE FROM Races_DriverStandings
+            WHERE SeasonID = 2025
+              AND RaceFormula = 1
+              AND NOT EXISTS (
+                SELECT 1
+                FROM Staff_Contracts sc
+                WHERE sc.StaffID = Races_DriverStandings.DriverID
+                  AND sc.PosInTeam <= 2
+              );
+          `);
+
+    let position = 1;
+    let f1_grid = queryDB(`SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = 2025`, "allRows");
+    f1_grid.forEach((driver) => {
+        queryDB(`UPDATE Races_DriverStandings SET Position = ${position} WHERE DriverID = ${driver[0]} AND RaceFormula = 1 AND SeasonID = 2025`);
+        position++;
+    });
+
+
+
+    queryDB(`
+            INSERT INTO Races_DriverStandings (
+                SeasonID,
+                DriverID,
+                Points,
+                Position,
+                LastPointsChange,
+                LastPositionChange,
+                RaceFormula
+            )
+            SELECT 
+                2025 AS SeasonID,
+                sc.StaffID AS DriverID,
+                0 AS Points,
+                0 AS Position,
+                0 AS LastPointsChange,
+                0 AS LastPositionChange,
+                2 AS RaceFormula
+            FROM Staff_Contracts sc
+            INNER JOIN Staff_GameData sgd ON sc.StaffID = sgd.StaffID
+            WHERE sgd.StaffType = 0
+              AND sc.TeamID BETWEEN 11 AND 21
+        `);
+
+    position = 1;
+    let f2_grid = queryDB(`SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 2 AND SeasonID = 2025`, "allRows");
+    f2_grid.forEach((driver) => {
+        queryDB(`UPDATE Races_DriverStandings SET Position = ${position} WHERE DriverID = ${driver[0]} AND RaceFormula = 2 AND SeasonID = 2025`);
+        queryDB(`INSERT INTO Races_DriverStandings (SeasonID, DriverID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (2024, ${driver[0]}, 0, ${position}, 0, 0, 2)`);
+        position++;
+    });
+
+    // 2) TeamID entre 22 y 31 => RaceFormula = 3
+    queryDB(`
+            INSERT INTO Races_DriverStandings (
+                SeasonID,
+                DriverID,
+                Points,
+                Position,
+                LastPointsChange,
+                LastPositionChange,
+                RaceFormula
+            )
+            SELECT 
+                2025 AS SeasonID,
+                sc.StaffID AS DriverID,
+                0 AS Points,
+                0 AS Position,
+                0 AS LastPointsChange,
+                0 AS LastPositionChange,
+                3 AS RaceFormula
+            FROM Staff_Contracts sc
+            INNER JOIN Staff_GameData sgd ON sc.StaffID = sgd.StaffID
+            WHERE sgd.StaffType = 0
+              AND sc.TeamID BETWEEN 22 AND 31
+        `);
+
+    position = 1;
+    let f3_grid = queryDB(`SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 3 AND SeasonID = 2025`, "allRows");
+    f3_grid.forEach((driver) => {
+        queryDB(`UPDATE Races_DriverStandings SET Position = ${position} WHERE DriverID = ${driver[0]} AND RaceFormula = 3 AND SeasonID = 2025`);
+        queryDB(`INSERT INTO Races_DriverStandings (SeasonID, DriverID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (2024, ${driver[0]}, 0, ${position}, 0, 0, 3)`);
+        position++;
+    });
+
+    position = 1;
+    let f2_teams = queryDB(`SELECT TeamID FROM Races_TeamStandings WHERE RaceFormula = 2 AND SeasonID = 2025`, "allRows");
+    f2_teams.forEach((team) => {
+        queryDB(`UPDATE Races_TeamStandings SET Position = ${position} WHERE TeamID = ${team[0]} AND RaceFormula = 2 AND SeasonID = 2025`);
+        queryDB(`INSERT INTO Races_TeamStandings (SeasonID, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (2024, ${team[0]}, 0, ${position}, 0, 0, 2)`);
+        position++;
+    });
+
+    position = 1;
+    let f3_teams = queryDB(`SELECT TeamID FROM Races_TeamStandings WHERE RaceFormula = 3 AND SeasonID = 2025`, "allRows");
+    f3_teams.forEach((team) => {
+        queryDB(`UPDATE Races_TeamStandings SET Position = ${position} WHERE TeamID = ${team[0]} AND RaceFormula = 3 AND SeasonID = 2025`);
+        queryDB(`INSERT INTO Races_TeamStandings (SeasonID, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (2024, ${team[0]}, 0, ${position}, 0, 0, 3)`);
+        position++;
+    });
+
+    //copy all races_pitcrewstandings form 2025 to 2024
+    queryDB(`INSERT INTO Races_PitCrewStandings (SeasonID, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula)
+             SELECT 2024, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula FROM Races_PitCrewStandings WHERE SeasonID = 2025`);
+}
+
+export function changeRaces() {
+    if (!changes.Calendar || !Array.isArray(changes.Calendar)) {
+        console.log("No calendar data found");
+    }
+    else {
+        let newRaceId = 151;
+        for (const entry of changes.Calendar) {
+            const { TrackID, Day } = entry;
+
+            queryDB(`
+            INSERT INTO Races (
+              RaceID,
+              SeasonID,
+              TrackID,
+              Day,
+              State,
+              RainPractice,
+              TemperaturePractice,
+              WeatherStatePractice,
+              RainQualifying,
+              TemperatureQualifying,
+              WeatherStateQualifying,
+              RainRace,
+              TemperatureRace,
+              WeatherStateRace,
+              WeekendType
+            )
+            SELECT
+              ${newRaceId} AS RaceID,
+              2025 AS SeasonID,
+              r.TrackID,
+              ${Day} AS Day,
+              0 AS State,                          
+              r.RainPractice,
+              r.TemperaturePractice,
+              r.WeatherStatePractice,
+              r.RainQualifying,
+              r.TemperatureQualifying,
+              r.WeatherStateQualifying,
+              r.RainRace,
+              r.TemperatureRace,
+              r.WeatherStateRace,
+              r.WeekendType
+            FROM Races r
+            WHERE r.SeasonID = 2024
+              AND r.TrackID = ${TrackID}
+            LIMIT 1
+          `);
+
+            newRaceId++;
+        }
+
+        queryDB(`CREATE TRIGGER IF NOT EXISTS delete_duplicate_2025
+        AFTER INSERT ON Races
+        WHEN NEW.SeasonID = 2025
+        AND EXISTS (
+            SELECT 1
+            FROM Races
+            WHERE SeasonID = 2025
+            AND TrackID = NEW.TrackID
+            AND RaceID <> NEW.RaceID
+        )
+        BEGIN
+        DELETE FROM Races
+        WHERE RaceID = NEW.RaceID;
+        END;`);
+    }
+
+}
 
 export function removeFastestLap() {
     queryDB(`UPDATE Regulations_Enum_Changes SET CurrentValue = 0, PreviousValue = 1 WHERE ChangeID = 9`);
