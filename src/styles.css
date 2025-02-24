@@ -10862,6 +10862,10 @@ body:has(.active #mod25logo) .one-change {
   min-width: 100px;
 }
 
+#dateDay{
+  min-width: 50px;
+}
+
 #dateMonth::before{
   content: 'December';
   position: absolute;

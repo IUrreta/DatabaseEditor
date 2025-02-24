@@ -343,12 +343,20 @@ export function change2024Standings() {
     }
 }
 
-export function manageFeederSeries(){
-    if (!changes.FeederSeries || !Array.isArray(changes.FeederSeries)) {
+export function manageFeederSeries() {
+    if (!contracts.FeederSeries || !Array.isArray(contracts.FeederSeries)) {
         console.error("No feeder series found");
     } else {
-        queryDB(`DELETE FROM Staff_Contracts WHERE PosInTeam <= 2 AND StaffID IN (SELECT StaffID FROM Staff_DriverData) AND TeamID BETWEEN 11 AND 21`);
+        queryDB(`DELETE FROM Staff_Contracts WHERE PosInTeam <= 3 AND StaffID IN (SELECT StaffID FROM Staff_DriverData) AND TeamID BETWEEN 11 AND 31`);
         queryDB(`UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = NULL`)
+        const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, "singleRow");
+        const day = daySeason[0];
+        for (const entry of contracts.FeederSeries) {
+            const { DriverID, TeamID, PosInTeam, Salary, EndSeason } = entry;
+            queryDB(`INSERT INTO Staff_Contracts (StaffID, ContractType, TeamID, PosInTeam, StartDay, EndSeason, Salary, StartingBonus, RaceBonus, RaceBonusTargetPos, BreakoutClause, AffiliateDualRoleClause)
+                 VALUES (${DriverID}, 0, ${TeamID}, ${PosInTeam}, ${day}, ${EndSeason}, ${Salary}, 0, 0, 1, 0.5, 0)`);
+            queryDB(`UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = ${PosInTeam} WHERE StaffID = ${DriverID}`);
+        }
     }
 }
 
@@ -510,7 +518,7 @@ export function changeRaces() {
     else {
         let newRaceId = 151;
         for (const entry of changes.Calendar) {
-            const { TrackID, Day } = entry;
+            const { TrackID, Day, WeekendType } = entry;
 
             queryDB(`
             INSERT INTO Races (
@@ -545,7 +553,7 @@ export function changeRaces() {
               r.RainRace,
               r.TemperatureRace,
               r.WeatherStateRace,
-              r.WeekendType
+              ${WeekendType} AS WeekendType
             FROM Races r
             WHERE r.SeasonID = 2024
               AND r.TrackID = ${TrackID}
@@ -573,18 +581,35 @@ export function changeRaces() {
 
 }
 
+export function insertStaff() {
+    let tables = ["Staff_BasicData", "Staff_PerofmanceStats", "Staff_State", "Staff_DriverData", "Staff_GameData"];
+    tables.forEach((table) => {
+        if (changes[table] && Array.isArray(changes[table])) {
+            changes[table].forEach((entry) => {
+                let columns = Object.keys(entry).join(", ");
+                let values = Object.values(entry)
+                    .map(value => value === null ? "NULL" : typeof value === "string" ? `'${value}'` : value)
+                    .join(", ");
+                console.log(`INSERT INTO ${table} (${columns}) VALUES (${values})`);
+                queryDB(`INSERT INTO ${table} (${columns}) VALUES (${values})`);
+            });
+        }
+    });
+}
+
+
 export function removeFastestLap() {
     queryDB(`UPDATE Regulations_Enum_Changes SET CurrentValue = 0, PreviousValue = 1 WHERE ChangeID = 9`);
     update2025SeasonModTable("change-regulations", 1);
 }
 
-function update2025SeasonModTable(edit, value){
+function update2025SeasonModTable(edit, value) {
     queryDB(`INSERT OR REPLACE INTO Custom_2025_SeasonMod (key, value) VALUES ('${edit}', '${value}')`);
 }
 
-export function updateEditsWithModData(data){
+export function updateEditsWithModData(data) {
     for (let key in data) {
-        if (data[key] === "1"){
+        if (data[key] === "1") {
             document.querySelector(`.${key}`).classList.add("completed")
             document.querySelector(`.${key} span`).textContent = "Applied"
         }

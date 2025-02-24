@@ -14,7 +14,7 @@ import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
-import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings } from "./scriptUtils/modUtils";
+import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries } from "./scriptUtils/modUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
@@ -313,7 +313,8 @@ const workerCommands = {
   },
   changeLineUps: (data, postMessage) => {
     changeDriverLineUps();
-    manageAffiliates()
+    manageAffiliates();
+    manageFeederSeries();
     postMessage({ responseMessage: "Line ups changed",
                   noti_msg: `Succesfully changed the driver line ups to match 2025`,
                   isEditCommand: true,
@@ -346,7 +347,14 @@ const workerCommands = {
                   noti_msg: `Succesfully changed the calendar to match 2025`,
                   isEditCommand: true,
                   unlocksDownload: true  });
-  }
+  },
+  extraDrivers: (data, postMessage) => {
+    insertStaff();
+    postMessage({ responseMessage: "Extra drivers added",
+                  noti_msg: `Succesfully added extra drivers to the database`,
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+  },
 
 };
 

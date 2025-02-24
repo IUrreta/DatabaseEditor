@@ -46,7 +46,9 @@ dropDiv.addEventListener("drop", async (event) => {
                 //get month in text
                 const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(dateObj);
                 const year = dateObj.getFullYear();
-                document.querySelector("#dateDay").textContent = day;
+                //get the day with the st. nd. rd. th. suffix
+                const completeDay = day + (day % 10 == 1 && day != 11 ? "st" : day % 10 == 2 && day != 12 ? "nd" : day % 10 == 3 && day != 13 ? "rd" : "th");
+                document.querySelector("#dateDay").textContent = completeDay;
                 document.querySelector("#dateMonth").textContent = month;
                 document.querySelector("#dateYear").textContent = year;
                 resolve();  // Continuamos cuando la base de datos esté cargada

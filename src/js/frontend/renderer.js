@@ -1984,6 +1984,8 @@ document.querySelector(".change-regulations").addEventListener("click", function
 })
 
 document.querySelector(".extra-drivers").addEventListener("click", function () {
+    const command = new Command("extraDrivers", {});
+    command.execute();
     this.classList.add("completed")
     this.querySelector("span").textContent = "Applied"
 })
