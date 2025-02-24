@@ -316,6 +316,7 @@ export function change2024Standings() {
     if (!changes.DriverStandings || !Array.isArray(changes.DriverStandings)) {
         console.error("No driver standings found");
     } else {
+        queryDB(`DELETE FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = 2024`);
         for (const entry of changes.DriverStandings) {
             const { DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID } = entry;
 
@@ -330,6 +331,7 @@ export function change2024Standings() {
     if (!changes.TeamStandings || !Array.isArray(changes.TeamStandings)) {
         console.error("No team standings found");
     } else {
+        queryDB(`DELETE FROM Races_TeamStandings WHERE RaceFormula = 1 AND SeasonID = 2024`);
         for (const entry of changes.TeamStandings) {
             const { LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID, TeamID } = entry;
 
@@ -338,6 +340,15 @@ export function change2024Standings() {
             VALUES (${TeamID}, ${LastPointsChange}, ${LastPositionChange}, ${Points}, ${Position}, ${RaceFormula}, ${SeasonID})
             `);
         }
+    }
+}
+
+export function manageFeederSeries(){
+    if (!changes.FeederSeries || !Array.isArray(changes.FeederSeries)) {
+        console.error("No feeder series found");
+    } else {
+        queryDB(`DELETE FROM Staff_Contracts WHERE PosInTeam <= 2 AND StaffID IN (SELECT StaffID FROM Staff_DriverData) AND TeamID BETWEEN 11 AND 21`);
+        queryDB(`UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = NULL`)
     }
 }
 
@@ -564,4 +575,18 @@ export function changeRaces() {
 
 export function removeFastestLap() {
     queryDB(`UPDATE Regulations_Enum_Changes SET CurrentValue = 0, PreviousValue = 1 WHERE ChangeID = 9`);
+    update2025SeasonModTable("change-regulations", 1);
+}
+
+function update2025SeasonModTable(edit, value){
+    queryDB(`INSERT OR REPLACE INTO Custom_2025_SeasonMod (key, value) VALUES ('${edit}', '${value}')`);
+}
+
+export function updateEditsWithModData(data){
+    for (let key in data) {
+        if (data[key] === "1"){
+            document.querySelector(`.${key}`).classList.add("completed")
+            document.querySelector(`.${key} span`).textContent = "Applied"
+        }
+    }
 }

@@ -9888,6 +9888,7 @@ body:has(.active #mod25logo) .mod-name img {
   opacity: 0;
   will-change: opacity;
   transform: translateY(20px);
+  overflow-x: clip;
 }
 
 .small-rectangle img,
@@ -9908,6 +9909,58 @@ body:has(.active #mod25logo) .mod-name img {
   border-top-right-radius: 10px;
   position: relative;
   opacity: 0;
+  overflow-x: clip;
+}
+
+.ver-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 101.5%;
+  height: 100%;
+  background-color: #020988;
+  mask-image: url('../assets/images/ver-lines.svg');
+  mask-size: cover;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  z-index: -1;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+
+.ant-lines{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 101.5%;
+  height: 100%;
+  mask-image: url('../assets/images/ant-lines.svg');
+  mask-size: cover;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  z-index: -1;
+  opacity: 1;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background-color: #29e1c6;
+}
+
+.ham-lines{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 101.5%;
+  height: 100%;
+  mask-image: url('../assets/images/ham-lines.svg');
+  mask-size: cover;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  z-index: -1;
+  opacity: 1;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background-color: #bb0e0f;
 }
 
 body:has(.active #mod25logo) .small-rectangle,
@@ -10061,6 +10114,10 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
 
 .mod-creators a.n4x::before {
   content: 'N4X';
+}
+
+.mod-creators a.nexus::before{
+  content: 'THEFIR3RNEXUS';
 }
 
 .mod-creators a.w1echuz::before {
@@ -10573,7 +10630,6 @@ body.light-theme .founder {
   align-items: center;
   justify-content: space-between;
   backdrop-filter: blur(8px);
-  box-shadow: 0 0 10px var(--box-shadow);
   opacity: 0;
 
 }
@@ -10617,6 +10673,7 @@ button.one-change-button.completed {
   background-color: transparent;
   color: var(--positive-general);
   cursor: default;
+  pointer-events: none;
 }
 
 button.one-change-button.completed:hover{
@@ -10726,12 +10783,12 @@ body:has(.active #mod25logo) .one-change {
 }
 
 .one-change:has(.completed) .ham-transfer::before{
-  transform: translateX(59px);
+  transform: translateX(59px) skewX(-9deg);
   color: var(--ferrari-primary);
 }
 
 .one-change:has(.completed) .sai-transfer::before{
-  transform: translateX(62px);
+  transform: translateX(62px) skewX(-9deg);
   color: var(--williams-primary);
 }
 
@@ -10757,7 +10814,7 @@ body:has(.active #mod25logo) .one-change {
 }
 
 .one-change:has(.completed) .ant-transfer::before{
-  transform: translateX(65px);
+  transform: translateX(65px)  skewX(-9deg);
   color: var(--mercedes-primary);
 }
 
@@ -10922,3 +10979,213 @@ body:has(.active #mod25logo) .one-change {
   color: transparent;
 }
 
+.fast-lap-change::before{
+  content: '0';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.one-change:has(.completed) .fast-lap-change::before{
+  animation: slide-down 0.3s forwards 0.05s;
+}
+
+.fast-lap-change{
+  position: relative;
+  margin-right: 2px;
+}
+
+.one-change:has(.completed) .fast-lap-change{
+  color: transparent;
+}
+
+.fast-lap-general {
+  color: #c90fd7;
+  transition: all 0.15s;
+}
+
+.one-change:has(.completed) .fast-lap-general{
+  color: var(--dark-text);
+}
+
+.mclaren-cfd, .redbull-cfd, .ferrari-cfd{
+  position: relative;
+}
+
+.mclaren-cfd::before{
+  content: '4.2h';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.one-change:has(.completed) .mclaren-cfd::before{
+  animation: slide-down 0.3s forwards 0.05s;
+}
+
+.one-change:has(.completed) .mclaren-cfd{
+  color: transparent;
+}
+
+.redbull-cfd::before{
+  content: '4.8h';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.one-change:has(.completed) .redbull-cfd::before{
+  animation: slide-down 0.3s forwards 0s;
+}
+
+.one-change:has(.completed) .redbull-cfd{
+  color: transparent;
+}
+
+.ferrari-cfd::before{
+  content: '4.5h';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.one-change:has(.completed) .ferrari-cfd::before{
+  animation: slide-down 0.3s forwards 0.1s;
+}
+
+.one-change:has(.completed) .ferrari-cfd{
+  color: transparent;
+}
+
+.cfd-name{
+  min-width: 125px;
+  display: inline-block;
+  color: var(--dark-text);
+}
+
+.missing-staff, .missing-f2, .missing-academy{
+  position: relative;
+  width: 225px;
+  transition: width 0.15s;
+}
+
+.missing-staff::before, .missing-f2::before, .missing-academy::before{
+  content: 'Added!';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 0px;
+  left: 0;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateX(0);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.one-change:has(.completed) .missing-staff::before{
+  transform: translateX(120px);
+  opacity: 1;
+  color: var(--positive-general);
+}
+
+.one-change:has(.completed) .missing-f2::before{
+  transform: translateX(170px);
+  opacity: 1;
+  color: var(--positive-general);
+}
+
+.one-change:has(.completed) .missing-academy::before{
+  transform: translateX(227px);
+  opacity: 1;
+  color: var(--positive-general);
+}
+
+.one-change:has(.completed) .missing-f2, .one-change:has(.completed) .missing-staff, .one-change:has(.completed) .missing-academy{
+    width: 280px;
+}
+
+.season-change::before{
+  content: 'Australia';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.sprint-change::before{
+  content: 'Belgium';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.one-change:has(.completed) .season-change::before{
+  animation: slide-down 0.3s forwards 0s;
+}
+
+.one-change:has(.completed) .season-change{
+  color: transparent;
+}
+
+.season-change{
+  position: relative;
+}
+
+.one-change:has(.completed) .sprint-change::before{
+  animation: slide-down 0.3s forwards 0.05s;
+}
+
+.one-change:has(.completed) .sprint-change{
+  color: transparent;
+}
+
+.sprint-change{
+  position: relative;
+}

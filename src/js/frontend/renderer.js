@@ -22,7 +22,7 @@ import {
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups
 } from './stats';
 import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs, reload_h2h_graphs, init_colors_dict, edit_colors_dict } from './head2head';
-import { timeTravelWithData } from '../backend/scriptUtils/modUtils.js';
+import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
 import { PUBLIC_KEY } from './public_key.js';
@@ -665,7 +665,10 @@ const messageHandlers = {
     },
     "Custom Engines fetched": (message) => {
         load_custom_engines(message.slice(1))
-    }
+    },
+    "Mod data fetched": (message) => {
+        updateEditsWithModData(message)
+    },
 };
 
 
@@ -1969,14 +1972,25 @@ document.querySelector(".change-stats").addEventListener("click", function () {
 document.querySelector(".change-cfd").addEventListener("click", function () {
     const command = new Command("changeCfd", {});
     command.execute();
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
 })
 
 document.querySelector(".change-regulations").addEventListener("click", function () {
     const command = new Command("changeRegulations", {});
     command.execute();
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
+})
+
+document.querySelector(".extra-drivers").addEventListener("click", function () {
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
 })
 
 document.querySelector(".change-calendar").addEventListener("click", function () {
     const command = new Command("changeCalendar", {});
     command.execute();
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
 })
