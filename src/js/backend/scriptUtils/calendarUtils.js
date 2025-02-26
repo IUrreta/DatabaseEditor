@@ -92,6 +92,8 @@ export function editCalendar(calendarStr, year_iteration) {
     weeks = weeks.filter(x => x !== 0);
     weeks.sort((a, b) => a - b);
 
+    console.log(weeks)
+
 
     let leapYearCount = 2;
     const yearDiff = daySeason[1] - 2023;
@@ -150,6 +152,7 @@ export function editCalendar(calendarStr, year_iteration) {
       const tempR = randomInt(temps[0], temps[1]);
 
       const day = ((weeks[i] + 1) * 7) + dayStart;
+      console.log(`Day for race ${i + 1}: ${day}`);
       raceid += 1;
 
       if (state !== "2") {

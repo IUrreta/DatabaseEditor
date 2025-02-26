@@ -4659,630 +4659,630 @@
             "StaffID": 600,
             "FirstName": "[STRING_LITERAL:Value=|Ella|]",
             "LastName": "[STRING_LITERAL:Value=|Lloyd|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 38553,
             "DOB_ISO": "2005-07-20",
             "Gender": 1,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "2",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 601,
             "FirstName": "[STRING_LITERAL:Value=|John|]",
             "LastName": "[STRING_LITERAL:Value=|Bennett|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 37879,
             "DOB_ISO": "2003-09-15",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "7",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 602,
             "FirstName": "[STRING_LITERAL:Value=|Brando|]",
             "LastName": "[STRING_LITERAL:Value=|Badoer|]",
-            "CountryID": 79,
+            "Country ID": 79,
             "DOB": 38975,
             "DOB_ISO": "2006-09-15",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "2",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 603,
             "FirstName": "[STRING_LITERAL:Value=|Antonio|]",
             "LastName": "[STRING_LITERAL:Value=|Fuoco|]",
-            "CountryID": 79,
+            "Country ID": 79,
             "DOB": 35205,
             "DOB_ISO": "1996-05-20",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "1",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 604,
             "FirstName": "[STRING_LITERAL:Value=|Rafael|]",
             "LastName": "[STRING_LITERAL:Value=|Câmara|]",
-            "CountryID": 23,
+            "Country ID": 23,
             "DOB": 38477,
             "DOB_ISO": "2005-05-05",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "11",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 605,
             "FirstName": "[STRING_LITERAL:Value=|Doriane|]",
             "LastName": "[STRING_LITERAL:Value=|Pin|]",
-            "CountryID": 57,
+            "Country ID": 57,
             "DOB": 37992,
             "DOB_ISO": "2004-01-06",
             "Gender": 1,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "1",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 606,
             "FirstName": "[STRING_LITERAL:Value=|Nina|]",
             "LastName": "[STRING_LITERAL:Value=|Gademan|]",
-            "CountryID": 120,
+            "Country ID": 120,
             "DOB": 37894,
             "DOB_ISO": "2003-09-30",
             "Gender": 1,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "5",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 607,
             "FirstName": "[STRING_LITERAL:Value=|Courtney|]",
             "LastName": "[STRING_LITERAL:Value=|Crone|]",
-            "CountryID": 187,
+            "Country ID": 187,
             "DOB": 36957,
             "DOB_ISO": "2001-03-07",
             "Gender": 1,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "0",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 608,
             "FirstName": "[STRING_LITERAL:Value=|Jamie|]",
             "LastName": "[STRING_LITERAL:Value=|Chadwick|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 35935,
             "DOB_ISO": "1998-05-20",
             "Gender": 1,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "3",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 609,
             "FirstName": "[STRING_LITERAL:Value=|Lia|]",
             "LastName": "[STRING_LITERAL:Value=|Block|]",
-            "CountryID": 187,
+            "Country ID": 187,
             "DOB": 38991,
             "DOB_ISO": "2006-10-01",
             "Gender": 1,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "4",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 610,
             "FirstName": "[STRING_LITERAL:Value=|Noah|]",
             "LastName": "[STRING_LITERAL:Value=|Strømsted|]",
-            "CountryID": 43,
+            "Country ID": 43,
             "DOB": 39292,
             "DOB_ISO": "2007-07-29",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "10",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 611,
             "FirstName": "[STRING_LITERAL:Value=|James|]",
             "LastName": "[STRING_LITERAL:Value=|Wharton|]",
-            "CountryID": 9,
+            "Country ID": 9,
             "DOB": 38906,
             "DOB_ISO": "2006-07-08",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "5",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 612,
             "FirstName": "[STRING_LITERAL:Value=|Gerrard|]",
             "LastName": "[STRING_LITERAL:Value=|Xie|]",
-            "CountryID": 35,
+            "Country ID": 35,
             "DOB": 38984,
             "DOB_ISO": "2006-09-24",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "3",
+            "FaceIndex": "1",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 613,
             "FirstName": "[STRING_LITERAL:Value=|Bruno|]",
             "LastName": "[STRING_LITERAL:Value=|del Pino|]",
-            "CountryID": 160,
+            "Country ID": 160,
             "DOB": 38888,
             "DOB_ISO": "2006-06-20",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "3",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 614,
             "FirstName": "[STRING_LITERAL:Value=|Alessandro|]",
             "LastName": "[STRING_LITERAL:Value=|Giusti|]",
-            "CountryID": 57,
+            "Country ID": 57,
             "DOB": 38970,
             "DOB_ISO": "2006-09-10",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "0",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 615,
             "FirstName": "[STRING_LITERAL:Value=|Théophile|]",
             "LastName": "[STRING_LITERAL:Value=|Naël|]",
-            "CountryID": 57,
+            "Country ID": 57,
             "DOB": 39255,
             "DOB_ISO": "2007-06-22",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "13",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 616,
             "FirstName": "[STRING_LITERAL:Value=|Ivan|]",
             "LastName": "[STRING_LITERAL:Value=|Domingues|]",
-            "CountryID": 136,
+            "Country ID": 136,
             "DOB": 38842,
             "DOB_ISO": "2006-05-05",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "4",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 617,
             "FirstName": "[STRING_LITERAL:Value=|Louis|]",
             "LastName": "[STRING_LITERAL:Value=|Sharp|]",
-            "CountryID": 121,
+            "Country ID": 121,
             "DOB": 39213,
             "DOB_ISO": "2007-05-11",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "8",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 618,
             "FirstName": "[STRING_LITERAL:Value=|Roman|]",
             "LastName": "[STRING_LITERAL:Value=|Bilinski|]",
-            "CountryID": 135,
+            "Country ID": 135,
             "DOB": 38050,
             "DOB_ISO": "2004-03-04",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "12",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 619,
             "FirstName": "[STRING_LITERAL:Value=|Javier|]",
             "LastName": "[STRING_LITERAL:Value=|Sagrera|]",
-            "CountryID": 160,
+            "Country ID": 160,
             "DOB": 37998,
             "DOB_ISO": "2004-01-12",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "6",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 620,
             "FirstName": "[STRING_LITERAL:Value=|Nicola|]",
             "LastName": "[STRING_LITERAL:Value=|Marinangeli|]",
-            "CountryID": 79,
+            "Country ID": 79,
             "DOB": 37755,
             "DOB_ISO": "2003-05-14",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "0",
+            "FaceIndex": "9",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 621,
             "FirstName": "[STRING_LITERAL:Value=|Christian|]",
             "LastName": "[STRING_LITERAL:Value=|Ho|]",
-            "CountryID": 152,
+            "Country ID": 152,
             "DOB": 39021,
             "DOB_ISO": "2006-10-31",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": null,
+            "PhotoDay": 45340,
+            "FaceType": "3",
+            "FaceIndex": "0",
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 622,
-            "FirstName": "[STRING_LITERAL:Value=|Bryn|]",
+            "FirstName": "[STRING_LITERAL:Value=|Bryan|]",
             "LastName": "[STRING_LITERAL:Value=|Bozzi|]",
-            "CountryID": 79,
+            "Country ID": 79,
             "DOB": 29221,
             "DOB_ISO": "1980-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 623,
             "FirstName": "[STRING_LITERAL:Value=|Richard|]",
             "LastName": "[STRING_LITERAL:Value=|Wood|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 29221,
             "DOB_ISO": "1980-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 624,
             "FirstName": "[STRING_LITERAL:Value=|Laura|]",
             "LastName": "[STRING_LITERAL:Value=|Mueller|]",
-            "CountryID": 60,
+            "Country ID": 60,
             "DOB": 33604,
             "DOB_ISO": "1992-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 625,
             "FirstName": "[STRING_LITERAL:Value=|Ronan|]",
             "LastName": "[STRING_LITERAL:Value=|O''Hare|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 29221,
             "DOB_ISO": "1980-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 626,
             "FirstName": "[STRING_LITERAL:Value=|Ernesto|]",
             "LastName": "[STRING_LITERAL:Value=|Desiderio|]",
-            "CountryID": 79,
+            "Country ID": 79,
             "DOB": 29221,
             "DOB_ISO": "1980-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 627,
             "FirstName": "[STRING_LITERAL:Value=|James|]",
             "LastName": "[STRING_LITERAL:Value=|Irwin|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 27395,
             "DOB_ISO": "1975-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 628,
             "FirstName": "[STRING_LITERAL:Value=|Rob|]",
             "LastName": "[STRING_LITERAL:Value=|Marshall|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 24942,
             "DOB_ISO": "1968-04-14",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 629,
             "FirstName": "[STRING_LITERAL:Value=|Loïc|]",
             "LastName": "[STRING_LITERAL:Value=|Serra|]",
-            "CountryID": 57,
+            "Country ID": 57,
             "DOB": 26388,
             "DOB_ISO": "1972-03-30",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 630,
             "FirstName": "[STRING_LITERAL:Value=|David|]",
             "LastName": "[STRING_LITERAL:Value=|Sanchez|]",
-            "CountryID": 57,
+            "Country ID": 57,
             "DOB": 29221,
             "DOB_ISO": "1980-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 631,
             "FirstName": "[STRING_LITERAL:Value=|Andrea|]",
             "LastName": "[STRING_LITERAL:Value=|De Zordo|]",
-            "CountryID": 79,
+            "Country ID": 79,
             "DOB": 27030,
             "DOB_ISO": "1974-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 632,
             "FirstName": "[STRING_LITERAL:Value=|Jody|]",
             "LastName": "[STRING_LITERAL:Value=|Egginton|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 27057,
             "DOB_ISO": "1974-01-28",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 633,
             "FirstName": "[STRING_LITERAL:Value=|Selin|]",
             "LastName": "[STRING_LITERAL:Value=|Tur|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 28518,
             "DOB_ISO": "1978-01-28",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 634,
             "FirstName": "[STRING_LITERAL:Value=|Peter|]",
             "LastName": "[STRING_LITERAL:Value=|Prodromou|]",
-            "CountryID": 41,
+            "Country ID": 41,
             "DOB": 25217,
             "DOB_ISO": "1969-01-14",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 635,
             "FirstName": "[STRING_LITERAL:Value=|Sean|]",
             "LastName": "[STRING_LITERAL:Value=|Whitehead|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 23025,
             "DOB_ISO": "1963-01-14",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 636,
             "FirstName": "[STRING_LITERAL:Value=|Mark|]",
             "LastName": "[STRING_LITERAL:Value=|Robinson|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 29221,
             "DOB_ISO": "1980-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 637,
             "FirstName": "[STRING_LITERAL:Value=|Peter|]",
             "LastName": "[STRING_LITERAL:Value=|Machin|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 24838,
             "DOB_ISO": "1968-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 638,
             "FirstName": "[STRING_LITERAL:Value=|Will|]",
             "LastName": "[STRING_LITERAL:Value=|Courtenay|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 29221,
             "DOB_ISO": "1980-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 639,
             "FirstName": "[STRING_LITERAL:Value=|Richard|]",
             "LastName": "[STRING_LITERAL:Value=|Wolverson|]",
-            "CountryID": 186,
+            "Country ID": 186,
             "DOB": 29221,
             "DOB_ISO": "1980-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 640,
             "FirstName": "[STRING_LITERAL:Value=|Mark|]",
             "LastName": "[STRING_LITERAL:Value=|Lowe|]",
-            "CountryID": 187,
+            "Country ID": 187,
             "DOB": 29221,
             "DOB_ISO": "1980-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         },
         {
             "StaffID": 641,
             "FirstName": "[STRING_LITERAL:Value=|Ignacio|]",
             "LastName": "[STRING_LITERAL:Value=|Rueda|]",
-            "CountryID": 160,
+            "Country ID": 160,
             "DOB": 28708,
             "DOB_ISO": "1978-08-06",
             "Gender": 0,
             "IsGeneratedStaff": 1,
-            "PhotoDay": null,
+            "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": null,
+            "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
         }
     ],
@@ -6474,6 +6474,618 @@
             "StatID": 10,
             "Val": 50,
             "Max": 100
+        },
+        {
+            "StaffID": 622,
+            "StatID": 13,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 622,
+            "StatID": 25,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 622,
+            "StatID": 43,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 623,
+            "StatID": 13,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 623,
+            "StatID": 25,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 623,
+            "StatID": 43,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 624,
+            "StatID": 13,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 624,
+            "StatID": 25,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 624,
+            "StatID": 43,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 625,
+            "StatID": 13,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 625,
+            "StatID": 25,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 625,
+            "StatID": 43,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 626,
+            "StatID": 13,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 626,
+            "StatID": 25,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 626,
+            "StatID": 43,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 627,
+            "StatID": 13,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 627,
+            "StatID": 25,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 627,
+            "StatID": 43,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 628,
+            "StatID": 0,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 628,
+            "StatID": 1,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 628,
+            "StatID": 14,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 628,
+            "StatID": 15,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 628,
+            "StatID": 16,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 628,
+            "StatID": 17,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 629,
+            "StatID": 0,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 629,
+            "StatID": 1,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 629,
+            "StatID": 14,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 629,
+            "StatID": 15,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 629,
+            "StatID": 16,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 629,
+            "StatID": 17,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 630,
+            "StatID": 0,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 630,
+            "StatID": 1,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 630,
+            "StatID": 14,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 630,
+            "StatID": 15,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 630,
+            "StatID": 16,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 630,
+            "StatID": 17,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 631,
+            "StatID": 0,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 631,
+            "StatID": 1,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 631,
+            "StatID": 14,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 631,
+            "StatID": 15,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 631,
+            "StatID": 16,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 631,
+            "StatID": 17,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 632,
+            "StatID": 0,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 632,
+            "StatID": 1,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 632,
+            "StatID": 14,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 632,
+            "StatID": 15,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 632,
+            "StatID": 16,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 632,
+            "StatID": 17,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 633,
+            "StatID": 0,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 633,
+            "StatID": 1,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 633,
+            "StatID": 14,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 633,
+            "StatID": 15,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 633,
+            "StatID": 16,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 633,
+            "StatID": 17,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 634,
+            "StatID": 19,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 634,
+            "StatID": 20,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 634,
+            "StatID": 26,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 634,
+            "StatID": 27,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 634,
+            "StatID": 28,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 634,
+            "StatID": 29,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 634,
+            "StatID": 30,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 634,
+            "StatID": 31,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 635,
+            "StatID": 19,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 635,
+            "StatID": 20,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 635,
+            "StatID": 26,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 635,
+            "StatID": 27,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 635,
+            "StatID": 28,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 635,
+            "StatID": 29,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 635,
+            "StatID": 30,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 635,
+            "StatID": 31,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 636,
+            "StatID": 19,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 636,
+            "StatID": 20,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 636,
+            "StatID": 26,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 636,
+            "StatID": 27,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 636,
+            "StatID": 28,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 636,
+            "StatID": 29,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 636,
+            "StatID": 30,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 636,
+            "StatID": 31,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 637,
+            "StatID": 19,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 637,
+            "StatID": 20,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 637,
+            "StatID": 26,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 637,
+            "StatID": 27,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 637,
+            "StatID": 28,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 637,
+            "StatID": 29,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 637,
+            "StatID": 30,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 637,
+            "StatID": 31,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 638,
+            "StatID": 11,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 638,
+            "StatID": 22,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 638,
+            "StatID": 23,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 638,
+            "StatID": 24,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 639,
+            "StatID": 11,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 639,
+            "StatID": 22,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 639,
+            "StatID": 23,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 639,
+            "StatID": 24,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 640,
+            "StatID": 11,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 640,
+            "StatID": 22,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 640,
+            "StatID": 23,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 640,
+            "StatID": 24,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 641,
+            "StatID": 11,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 641,
+            "StatID": 22,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 641,
+            "StatID": 23,
+            "Val": 50,
+            "Max": 100
+        },
+        {
+            "StaffID": 641,
+            "StatID": 24,
+            "Val": 50,
+            "Max": 100
         }
     ],
     "Staff_State": [
@@ -6647,6 +7259,166 @@
         },
         {
             "StaffID": 621,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 622,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 623,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 624,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 625,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 626,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 627,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 628,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 629,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 630,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 631,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 632,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 633,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 634,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 635,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 636,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 637,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 638,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 639,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 640,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 641,
             "UnspentXP": 0,
             "XPGainedLastRace": 0,
             "XPGainedLastWeek": 0,
@@ -7351,6 +8123,286 @@
             "StaffID": 621,
             "StaffType": 0,
             "RetirementAge": 35,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 622,
+            "StaffType": 2,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 623,
+            "StaffType": 2,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 624,
+            "StaffType": 2,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 625,
+            "StaffType": 2,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 626,
+            "StaffType": 2,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 627,
+            "StaffType": 2,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 628,
+            "StaffType": 1,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 629,
+            "StaffType": 1,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 630,
+            "StaffType": 1,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 631,
+            "StaffType": 1,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 632,
+            "StaffType": 1,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 633,
+            "StaffType": 1,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 634,
+            "StaffType": 3,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 635,
+            "StaffType": 3,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 636,
+            "StaffType": 3,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 637,
+            "StaffType": 3,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 638,
+            "StaffType": 4,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 639,
+            "StaffType": 4,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 640,
+            "StaffType": 4,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 641,
+            "StaffType": 4,
+            "RetirementAge": 70,
             "Retired": 0,
             "PermaTraitSpawnBoost": 0,
             "BestTeamFormula": null,

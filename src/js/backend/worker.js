@@ -319,6 +319,11 @@ const workerCommands = {
                   noti_msg: `Succesfully changed the driver line ups to match 2025`,
                   isEditCommand: true,
                   unlocksDownload: true  });
+
+    const yearData = checkYearSave();
+
+    const staff = fetchStaff(yearData[0]);
+    postMessage({ responseMessage: "Staff fetched", content: staff });
   },
   changeStats: (data, postMessage) => {
     changeStats();
@@ -326,6 +331,11 @@ const workerCommands = {
                   noti_msg: `Succesfully changed the stats to match 2025`,
                   isEditCommand: true,
                   unlocksDownload: true  });
+
+                  const yearData = checkYearSave();
+
+    const staff = fetchStaff(yearData[0]);
+    postMessage({ responseMessage: "Staff fetched", content: staff });
   },
   changeCfd: (data, postMessage) => {
     change2024Standings();
@@ -347,6 +357,9 @@ const workerCommands = {
                   noti_msg: `Succesfully changed the calendar to match 2025`,
                   isEditCommand: true,
                   unlocksDownload: true  });
+
+    const calendar = fetchCalendar();
+    postMessage({ responseMessage: "Calendar fetched", content: calendar });
   },
   extraDrivers: (data, postMessage) => {
     insertStaff();
