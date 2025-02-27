@@ -1460,14 +1460,14 @@ export function editEngines(engineData) {
 }
 
 export function check2025ModCompatibility(year_version) {
-  // get state of the race from this year with least day
   const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
   const currentDay = daySeason[0];
   const currentSeason = daySeason[1];
   const minDay = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = ${currentSeason}`, 'singleValue');
   const raceState = queryDB(`SELECT State FROM Races WHERE Day = ${minDay} AND SeasonID = ${currentSeason}`, 'singleValue');
-  //if state is not 0 or year_version is not 24, return false
-  if (raceState !== 0 || year_version !== "24") {
+  console.log("MOD COMPATIBNILLITY")
+  console.log(raceState, year_version, currentSeason);
+  if (raceState !== 0 || year_version !== "24" || currentSeason !== 2024) {
     return false;
   }
   return true;

@@ -679,6 +679,9 @@ const messageHandlers = {
     "Mod data fetched": (message) => {
         updateEditsWithModData(message)
     },
+    "Mod compatibility": (message) => {
+        updateModBlocking(message)
+    }
 };
 
 
@@ -1949,6 +1952,17 @@ document.getElementById('logButton').addEventListener('click', function () {
     body.appendChild(table);
     doc.body.appendChild(body);
 });
+
+function updateModBlocking(data){
+    if (data){
+        document.querySelector(".mod-blocking").classList.add("d-none")
+        document.querySelector(".changes-grid").classList.remove("d-none")
+    }
+    else{
+        document.querySelector(".mod-blocking").classList.remove("d-none")
+        document.querySelector(".changes-grid").classList.add("d-none")
+    }
+}
 
 document.querySelector(".time-travel").addEventListener("click", function () {
     const command = new Command("timeTravel", {dayNumber: 45657});

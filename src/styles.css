@@ -10117,7 +10117,7 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
 }
 
 .mod-creators a.nexus::before{
-  content: 'THEFIR3RNEXUS';
+  content: 'THEFIR3NEXUS';
 }
 
 .mod-creators a.w1echuz::before {
@@ -10847,6 +10847,7 @@ body:has(.active #mod25logo) .one-change {
 #dateDay::before{
   content: '29th';
   position: absolute;
+  font-family: 'Formula1Bold';
   top: 0;
   left: 0;
   width: 100%;
@@ -10868,6 +10869,7 @@ body:has(.active #mod25logo) .one-change {
 
 #dateMonth::before{
   content: 'December';
+  font-family: 'Formula1Bold';
   position: absolute;
   top: 0;
   left: 0;
@@ -10883,6 +10885,7 @@ body:has(.active #mod25logo) .one-change {
 #dateYear::before{
   content: '2024';
   position: absolute;
+  font-family: 'Formula1Bold';
   top: 0;
   left: 0;
   width: 100%;
@@ -11192,4 +11195,23 @@ body:has(.active #mod25logo) .one-change {
 
 .sprint-change{
   position: relative;
+}
+
+.mod-blocking{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 50px;
+}
+
+.mod-blocking-title{
+  font-size: 24px;
+  color: #dedde6;
+  font-family: 'Formula1Bold';
+}
+
+.mod-blocking-subtitle{
+  font-size: 18px;
+  color: var(--modal-text);
 }

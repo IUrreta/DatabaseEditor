@@ -3,7 +3,7 @@ import {
   fetchDrivers, fetchStaff, fetchEngines, fetchCalendar, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContract,
   editEngines, updateCustomConfig, fetchCustomConfig,
-  fetch2025ModData
+  fetch2025ModData, check2025ModCompatibility
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
@@ -62,7 +62,6 @@ const workerCommands = {
   },
 
   saveSelected: (data, postMessage) => {
-    
 
     const yearData = checkYearSave();
     postMessage({ responseMessage: "Game Year", content: yearData });
@@ -111,6 +110,9 @@ const workerCommands = {
 
     const mod2025Data = fetch2025ModData();
     postMessage({ responseMessage: "Mod data fetched", content: mod2025Data });
+
+    const modCompatibility = check2025ModCompatibility(yearData[0]);
+    postMessage({ responseMessage: "Mod compatibility", content: modCompatibility });
   },
   configuredH2H: (data, postMessage) => {
     if (data.h2h !== "-1") {
