@@ -290,6 +290,36 @@ export function changeDriverLineUps() {
         });
     }
 
+    if (contracts.StaffHires && Array.isArray(contracts.StaffHires)) {
+        contracts.StaffHires.forEach((hire) => {
+            const {
+                StaffID,
+                TeamID,
+                PosInTeam,
+                Salary,
+                StartingBonus,
+                RaceBonus,
+                RaceBonusTargetPos,
+                EndSeason,
+                BreakoutClause
+            } = hire;
+    
+            hireDriver(
+                "manual",
+                StaffID,
+                TeamID,
+                PosInTeam,
+                Salary,
+                StartingBonus,
+                RaceBonus,
+                RaceBonusTargetPos,
+                EndSeason,
+                "24"
+            );
+        });
+        
+    }
+
 
 }
 
@@ -582,7 +612,7 @@ export function changeRaces() {
 }
 
 export function insertStaff() {
-    let tables = ["Staff_BasicData", "Staff_PerofmanceStats", "Staff_State", "Staff_DriverData", "Staff_GameData"];
+    let tables = ["Staff_BasicData", "Staff_PerformanceStats", "Staff_State", "Staff_DriverData", "Staff_GameData"];
     tables.forEach((table) => {
         if (changes[table] && Array.isArray(changes[table])) {
             changes[table].forEach((entry) => {

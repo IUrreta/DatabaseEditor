@@ -23,9 +23,14 @@ export function setTypeEdit(value) {
 /**
  * Removes all the staff from their list
  */
-export function removeStatsDrivers() {
+export function removeStatsDrivers(staffOnly = false) {
     document.querySelectorAll(".staff-list").forEach(function (elem) {
-        elem.innerHTML = ""
+        if (elem.id === "fulldriverlist" && staffOnly === false) {
+            elem.innerHTML = ""
+        }
+        else if(elem.id !== "fulldriverlist") {
+            elem.innerHTML = ""
+        }
     })
 }
 

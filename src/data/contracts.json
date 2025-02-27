@@ -156,6 +156,87 @@
         {
             "DriverID": 279,
             "TeamID": 2
+        },
+        {
+            "DriverID": 366,
+            "TeamID": 2
+        },
+        {
+            "DriverID": 365,
+            "TeamID": 2
+        },
+        {
+            "DriverID": 6,
+            "TeamID": 1
+        },
+        {
+            "DriverID": 4,
+            "TeamID": 1
+        },
+        {
+            "DriverID": 49,
+            "TeamID": 3
+        },
+        {
+            "DriverID": 37,
+            "TeamID": 3
+        },
+        {
+            "DriverID": 291,
+            "TeamID": 3,
+            "Retire": 1
+        },
+        {
+            "DriverID": 335,
+            "TeamID": 10
+        },
+        {
+            "DriverID": 64,
+            "TeamID": 10
+        },
+        {
+            "DriverID": 44,
+            "TeamID": 10
+        },
+        {
+            "DriverID": 39,
+            "TeamID": 5
+        },
+        {
+            "DriverID": 30,
+            "TeamID": 5
+        },
+        {
+            "DriverID": 391,
+            "TeamID": 6
+        },
+        {
+            "DriverID": 60,
+            "TeamID": 8
+        },
+        {
+            "DriverID": 414,
+            "TeamID": 8
+        },
+        {
+            "DriverID": 293,
+            "TeamID": 8
+        },
+        {
+            "DriverID": 299,
+            "TeamID": 9
+        },
+        {
+            "DriverID": 368,
+            "TeamID": 7
+        },
+        {
+            "DriverID": 321,
+            "TeamID": 7
+        },
+        {
+            "DriverID": 58,
+            "TeamID": 7
         }
     ],
     "Hires": [
@@ -270,6 +351,218 @@
             "EndSeason": 2026,
             "BreakoutClause": 0.5,
             "GrantsSuperLicense": 1
+        }
+
+    ],
+    "StaffHires" : [
+        {
+            "StaffID": 628,
+            "TeamID": 2,
+            "PosInTeam": 1,
+            "Salary": 1500000,
+            "StartingBonus": 70000,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 638,
+            "TeamID": 2,
+            "PosInTeam": 1,
+            "Salary": 2500000,
+            "StartingBonus": 70000,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 622,
+            "TeamID": 1,
+            "PosInTeam": 1,
+            "Salary": 500000,
+            "StartingBonus": 70000,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 623,
+            "TeamID": 3,
+            "PosInTeam": 1,
+            "Salary": 500000,
+            "StartingBonus": 70000,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2027,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 635,
+            "TeamID": 3,
+            "PosInTeam": 1,
+            "Salary": 700000,
+            "StartingBonus": 70000,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2028,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 639,
+            "TeamID": 3,
+            "PosInTeam": 1,
+            "Salary": 920000,
+            "StartingBonus": 70000,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2027,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 4,
+            "TeamID": 10,
+            "PosInTeam": 1,
+            "Salary": 1120000,
+            "StartingBonus": 70000,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2027,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 58,
+            "TeamID": 10,
+            "PosInTeam": 2,
+            "Salary": 1010000,
+            "StartingBonus": 70000,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 636,
+            "TeamID": 10,
+            "PosInTeam": 1,
+            "Salary": 940000,
+            "StartingBonus": 70000,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 630,
+            "TeamID": 5,
+            "PosInTeam": 1,
+            "Salary": 640000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 40,
+            "TeamID": 5,
+            "PosInTeam": 1,
+            "Salary": 940000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2027,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 624,
+            "TeamID": 7,
+            "PosInTeam": 1,
+            "Salary": 840000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 625,
+            "TeamID": 7,
+            "PosInTeam": 2,
+            "Salary": 839000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2027,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 640,
+            "TeamID": 7,
+            "PosInTeam": 1,
+            "Salary": 630000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2027,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 623,
+            "TeamID": 8,
+            "PosInTeam": 2,
+            "Salary": 688000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 637,
+            "TeamID": 8,
+            "PosInTeam": 1,
+            "Salary": 488000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 295,
+            "TeamID": 8,
+            "PosInTeam": 1,
+            "Salary": 988000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 633,
+            "TeamID": 6,
+            "PosInTeam": 1,
+            "Salary": 580000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 641,
+            "TeamID": 9,
+            "PosInTeam": 1,
+            "Salary": 550000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
         }
 
     ],

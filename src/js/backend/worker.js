@@ -322,6 +322,9 @@ const workerCommands = {
 
     const yearData = checkYearSave();
 
+    const drivers = fetchDrivers(yearData[0]);
+    postMessage({ responseMessage: "Drivers fetched", content: drivers});
+
     const staff = fetchStaff(yearData[0]);
     postMessage({ responseMessage: "Staff fetched", content: staff });
   },

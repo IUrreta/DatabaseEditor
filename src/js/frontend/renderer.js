@@ -571,7 +571,17 @@ const messageHandlers = {
         sortList("free-drivers");
         place_drivers_editStats(message);
     },
+    "Drivers fetched": (message) => {
+        remove_drivers();
+        removeStatsDrivers();
+        listenersStaffGroups();
+        place_drivers(message);
+        sortList("free-drivers");
+        place_drivers_editStats(message);
+    },
     "Staff fetched": (message) => {
+        remove_drivers(true);
+        removeStatsDrivers(true);
         place_staff(message);
         sortList("free-staff")
         place_staff_editStats(message);
