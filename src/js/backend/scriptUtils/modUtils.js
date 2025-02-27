@@ -342,6 +342,35 @@ export function changeStats() {
 
 }
 
+export function changeDriverEngineerPairs() {
+    if (!changes.DriverEngineerPairs || !Array.isArray(changes.DriverEngineerPairs)) {
+        console.error("No driver-engineer pairs");
+    } else {
+        for (const entry of changes.DriverEngineerPairs) {
+            const { Driver1, Engineer1, Driver2, Engineer2 } = entry;
+
+            queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE DriverID = ${Driver1} OR DriverID = ${Driver2}`);
+            queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${Engineer1} OR RaceEngineerID = ${Engineer2}`);
+
+            let driver1Engineer1 = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ${Driver1} AND RaceEngineerID = ${Engineer1}`, "singleRow");
+            let driver2Engineer2 = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ${Driver2} AND RaceEngineerID = ${Engineer2}`, "singleRow");
+
+            if (driver1Engineer1 && driver1Engineer1.length > 0) {
+                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ${Driver1} AND RaceEngineerID = ${Engineer1}`);
+            } else {
+                queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (${Engineer1}, ${Driver1}, 0, 0, 1)`);
+            }
+
+            if (driver2Engineer2 && driver2Engineer2.length > 0) {
+                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ${Driver2} AND RaceEngineerID = ${Engineer2}`);
+            } else {
+                queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (${Engineer2}, ${Driver2}, 0, 0, 1)`);
+            }
+
+        }
+    }
+}
+
 export function change2024Standings() {
     if (!changes.DriverStandings || !Array.isArray(changes.DriverStandings)) {
         console.error("No driver standings found");

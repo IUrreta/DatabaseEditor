@@ -8413,5 +8413,77 @@
             "ExpectedQualityScore": 0,
             "ExpectedTimeScore": 0
         }
+    ],
+    "DriverEngineerPairs": [
+        {
+            "TeamID": 1,
+            "Driver1": 2,
+            "Driver2": 1,
+            "Engineer1": 622,
+            "Engineer2": 7
+        },
+        {
+            "TeamID": 2,
+            "Driver1": 12,
+            "Driver2": 102,
+            "Engineer1": 48,
+            "Engineer2": 47
+        },
+        {
+            "TeamID": 3,
+            "Driver1": 10,
+            "Driver2": 95,
+            "Engineer1": 50,
+            "Engineer2": 623
+        },
+        {
+            "TeamID": 4,
+            "Driver1": 23,
+            "Driver2": 376,
+            "Engineer1": 320,
+            "Engineer2": 51
+        },
+        {
+            "TeamID": 5,
+            "Driver1": 15,
+            "Driver2": 135,
+            "Engineer1": 415,
+            "Engineer2": 54
+        },
+        {
+            "TeamID": 6,
+            "Driver1": 11,
+            "Driver2": 3,
+            "Engineer1": 56,
+            "Engineer2": 55
+        },
+        {
+            "TeamID": 7,
+            "Driver1": 14,
+            "Driver2": 142,
+            "Engineer1": 624,
+            "Engineer2": 625
+        },
+        {
+            "TeamID": 8,
+            "Driver1": 144,
+            "Driver2": 81,
+            "Engineer1": 59,
+            "Engineer2": 626
+        },
+        {
+            "TeamID": 9,
+            "Driver1": 279,
+            "Driver2": 83,
+            "Engineer1": 61,
+            "Engineer2": 393
+        },
+        {
+            "TeamID": 10,
+            "Driver1": 77,
+            "Driver2": 18,
+            "Engineer1": 63,
+            "Engineer2": 58
+        }
     ]
 }
