@@ -162,7 +162,6 @@ export const minMaxTypeStaff = {
   }
   
   export function fetchTypeStaff(driverID) {
-    console.log(`SELECT StaffType FROM Staff_GameData WHERE StaffID = ${driverID}`);
     return queryDB(`SELECT StaffType FROM Staff_GameData WHERE StaffID = ${driverID}`, "singleValue");
   }
   

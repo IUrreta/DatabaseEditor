@@ -4375,7 +4375,7 @@
         },
         {
             "TrackID": 25,
-            "Day": 45982,
+            "Day": 45983,
             "WeekendType": 0
         },
         {
@@ -4652,6 +4652,15 @@
             "RaceFormula": 1,
             "SeasonID": 2024,
             "TeamID": 9
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 94,
+            "Position": 5,
+            "RaceFormula": 1,
+            "SeasonID": 2024,
+            "TeamID": 10
         }
     ],
     "Staff_BasicData": [
@@ -5061,42 +5070,12 @@
             "IsGeneratedForCustomTeam": 0
         },
         {
-            "StaffID": 627,
-            "FirstName": "[STRING_LITERAL:Value=|James|]",
-            "LastName": "[STRING_LITERAL:Value=|Irwin|]",
-            "CountryID": 186,
-            "DOB": 27395,
-            "DOB_ISO": "1975-01-01",
-            "Gender": 0,
-            "IsGeneratedStaff": 1,
-            "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
-            "IsGeneratedForCustomTeam": 0
-        },
-        {
             "StaffID": 628,
             "FirstName": "[STRING_LITERAL:Value=|Rob|]",
             "LastName": "[STRING_LITERAL:Value=|Marshall|]",
             "CountryID": 186,
             "DOB": 24942,
             "DOB_ISO": "1968-04-14",
-            "Gender": 0,
-            "IsGeneratedStaff": 1,
-            "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
-            "IsGeneratedForCustomTeam": 0
-        },
-        {
-            "StaffID": 629,
-            "FirstName": "[STRING_LITERAL:Value=|Loïc|]",
-            "LastName": "[STRING_LITERAL:Value=|Serra|]",
-            "CountryID": 57,
-            "DOB": 26388,
-            "DOB_ISO": "1972-03-30",
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
@@ -5127,21 +5106,6 @@
             "CountryID": 79,
             "DOB": 27030,
             "DOB_ISO": "1974-01-01",
-            "Gender": 0,
-            "IsGeneratedStaff": 1,
-            "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
-            "IsGeneratedForCustomTeam": 0
-        },
-        {
-            "StaffID": 632,
-            "FirstName": "[STRING_LITERAL:Value=|Jody|]",
-            "LastName": "[STRING_LITERAL:Value=|Egginton|]",
-            "CountryID": 186,
-            "DOB": 27057,
-            "DOB_ISO": "1974-01-28",
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
@@ -5284,1807 +5248,1786 @@
             "FaceIndex": null,
             "AgeType": 0,
             "IsGeneratedForCustomTeam": 0
+        },
+        {
+            "StaffID": 642,
+            "FirstName": "[STRING_LITERAL:Value=|Loïc|]",
+            "LastName": "[STRING_LITERAL:Value=|Serra|]",
+            "CountryID": 57,
+            "DOB": 26388,
+            "DOB_ISO": "1972-03-30",
+            "Gender": 0,
+            "IsGeneratedStaff": 1,
+            "PhotoDay": 45340,
+            "FaceType": null,
+            "FaceIndex": null,
+            "AgeType": 0,
+            "IsGeneratedForCustomTeam": 0
         }
     ],
     "Staff_PerformanceStats": [
         {
             "StaffID": 600,
             "StatID": 2,
-            "Val": 50,
+            "Val": 57,
             "Max": 100
         },
         {
             "StaffID": 600,
             "StatID": 3,
-            "Val": 50,
+            "Val": 57,
             "Max": 100
         },
         {
             "StaffID": 600,
             "StatID": 4,
-            "Val": 50,
+            "Val": 57,
             "Max": 100
         },
         {
             "StaffID": 600,
             "StatID": 5,
-            "Val": 50,
+            "Val": 57,
             "Max": 100
         },
         {
             "StaffID": 600,
             "StatID": 6,
-            "Val": 50,
+            "Val": 57,
             "Max": 100
         },
         {
             "StaffID": 600,
             "StatID": 7,
-            "Val": 50,
+            "Val": 57,
             "Max": 100
         },
         {
             "StaffID": 600,
             "StatID": 8,
-            "Val": 50,
+            "Val": 57,
             "Max": 100
         },
         {
             "StaffID": 600,
             "StatID": 9,
-            "Val": 50,
+            "Val": 57,
             "Max": 100
         },
         {
             "StaffID": 600,
             "StatID": 10,
-            "Val": 50,
+            "Val": 57,
             "Max": 100
         },
         {
             "StaffID": 601,
             "StatID": 2,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 601,
             "StatID": 3,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 601,
             "StatID": 4,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 601,
             "StatID": 5,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 601,
             "StatID": 6,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 601,
             "StatID": 7,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 601,
             "StatID": 8,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 601,
             "StatID": 9,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 601,
             "StatID": 10,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 602,
             "StatID": 2,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 602,
             "StatID": 3,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 602,
             "StatID": 4,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 602,
             "StatID": 5,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 602,
             "StatID": 6,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 602,
             "StatID": 7,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 602,
             "StatID": 8,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 602,
             "StatID": 9,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 602,
             "StatID": 10,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 603,
             "StatID": 2,
-            "Val": 50,
+            "Val": 75,
             "Max": 100
         },
         {
             "StaffID": 603,
             "StatID": 3,
-            "Val": 50,
+            "Val": 75,
             "Max": 100
         },
         {
             "StaffID": 603,
             "StatID": 4,
-            "Val": 50,
+            "Val": 75,
             "Max": 100
         },
         {
             "StaffID": 603,
             "StatID": 5,
-            "Val": 50,
+            "Val": 75,
             "Max": 100
         },
         {
             "StaffID": 603,
             "StatID": 6,
-            "Val": 50,
+            "Val": 75,
             "Max": 100
         },
         {
             "StaffID": 603,
             "StatID": 7,
-            "Val": 50,
+            "Val": 75,
             "Max": 100
         },
         {
             "StaffID": 603,
             "StatID": 8,
-            "Val": 50,
+            "Val": 75,
             "Max": 100
         },
         {
             "StaffID": 603,
             "StatID": 9,
-            "Val": 50,
+            "Val": 75,
             "Max": 100
         },
         {
             "StaffID": 603,
             "StatID": 10,
-            "Val": 50,
+            "Val": 75,
             "Max": 100
         },
         {
             "StaffID": 604,
             "StatID": 2,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 604,
             "StatID": 3,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 604,
             "StatID": 4,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 604,
             "StatID": 5,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 604,
             "StatID": 6,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 604,
             "StatID": 7,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 604,
             "StatID": 8,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 604,
             "StatID": 9,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 604,
             "StatID": 10,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 605,
             "StatID": 2,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 605,
             "StatID": 3,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 605,
             "StatID": 4,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 605,
             "StatID": 5,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 605,
             "StatID": 6,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 605,
             "StatID": 7,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 605,
             "StatID": 8,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 605,
             "StatID": 9,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 605,
             "StatID": 10,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 606,
             "StatID": 2,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 606,
             "StatID": 3,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 606,
             "StatID": 4,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 606,
             "StatID": 5,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 606,
             "StatID": 6,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 606,
             "StatID": 7,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 606,
             "StatID": 8,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 606,
             "StatID": 9,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 606,
             "StatID": 10,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 607,
             "StatID": 2,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 607,
             "StatID": 3,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 607,
             "StatID": 4,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 607,
             "StatID": 5,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 607,
             "StatID": 6,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 607,
             "StatID": 7,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 607,
             "StatID": 8,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 607,
             "StatID": 9,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 607,
             "StatID": 10,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 608,
             "StatID": 2,
-            "Val": 50,
+            "Val": 72,
             "Max": 100
         },
         {
             "StaffID": 608,
             "StatID": 3,
-            "Val": 50,
+            "Val": 72,
             "Max": 100
         },
         {
             "StaffID": 608,
             "StatID": 4,
-            "Val": 50,
+            "Val": 72,
             "Max": 100
         },
         {
             "StaffID": 608,
             "StatID": 5,
-            "Val": 50,
+            "Val": 72,
             "Max": 100
         },
         {
             "StaffID": 608,
             "StatID": 6,
-            "Val": 50,
+            "Val": 72,
             "Max": 100
         },
         {
             "StaffID": 608,
             "StatID": 7,
-            "Val": 50,
+            "Val": 72,
             "Max": 100
         },
         {
             "StaffID": 608,
             "StatID": 8,
-            "Val": 50,
+            "Val": 72,
             "Max": 100
         },
         {
             "StaffID": 608,
             "StatID": 9,
-            "Val": 50,
+            "Val": 72,
             "Max": 100
         },
         {
             "StaffID": 608,
             "StatID": 10,
-            "Val": 50,
+            "Val": 72,
             "Max": 100
         },
         {
             "StaffID": 609,
             "StatID": 2,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 609,
             "StatID": 3,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 609,
             "StatID": 4,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 609,
             "StatID": 5,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 609,
             "StatID": 6,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 609,
             "StatID": 7,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 609,
             "StatID": 8,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 609,
             "StatID": 9,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 609,
             "StatID": 10,
-            "Val": 50,
+            "Val": 56,
             "Max": 100
         },
         {
             "StaffID": 610,
             "StatID": 2,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 610,
             "StatID": 3,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 610,
             "StatID": 4,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 610,
             "StatID": 5,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 610,
             "StatID": 6,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 610,
             "StatID": 7,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 610,
             "StatID": 8,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 610,
             "StatID": 9,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 610,
             "StatID": 10,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 611,
             "StatID": 2,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 611,
             "StatID": 3,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 611,
             "StatID": 4,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 611,
             "StatID": 5,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 611,
             "StatID": 6,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 611,
             "StatID": 7,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 611,
             "StatID": 8,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 611,
             "StatID": 9,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 611,
             "StatID": 10,
-            "Val": 50,
+            "Val": 64,
             "Max": 100
         },
         {
             "StaffID": 612,
             "StatID": 2,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 612,
             "StatID": 3,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 612,
             "StatID": 4,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 612,
             "StatID": 5,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 612,
             "StatID": 6,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 612,
             "StatID": 7,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 612,
             "StatID": 8,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 612,
             "StatID": 9,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 612,
             "StatID": 10,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 613,
             "StatID": 2,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 613,
             "StatID": 3,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 613,
             "StatID": 4,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 613,
             "StatID": 5,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 613,
             "StatID": 6,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 613,
             "StatID": 7,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 613,
             "StatID": 8,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 613,
             "StatID": 9,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 613,
             "StatID": 10,
-            "Val": 50,
+            "Val": 61,
             "Max": 100
         },
         {
             "StaffID": 614,
             "StatID": 2,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 614,
             "StatID": 3,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 614,
             "StatID": 4,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 614,
             "StatID": 5,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 614,
             "StatID": 6,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 614,
             "StatID": 7,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 614,
             "StatID": 8,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 614,
             "StatID": 9,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 614,
             "StatID": 10,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 615,
             "StatID": 2,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 615,
             "StatID": 3,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 615,
             "StatID": 4,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 615,
             "StatID": 5,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 615,
             "StatID": 6,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 615,
             "StatID": 7,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 615,
             "StatID": 8,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 615,
             "StatID": 9,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 615,
             "StatID": 10,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 616,
             "StatID": 2,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 616,
             "StatID": 3,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 616,
             "StatID": 4,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 616,
             "StatID": 5,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 616,
             "StatID": 6,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 616,
             "StatID": 7,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 616,
             "StatID": 8,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 616,
             "StatID": 9,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 616,
             "StatID": 10,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 617,
             "StatID": 2,
-            "Val": 50,
+            "Val": 59,
             "Max": 100
         },
         {
             "StaffID": 617,
             "StatID": 3,
-            "Val": 50,
+            "Val": 59,
             "Max": 100
         },
         {
             "StaffID": 617,
             "StatID": 4,
-            "Val": 50,
+            "Val": 59,
             "Max": 100
         },
         {
             "StaffID": 617,
             "StatID": 5,
-            "Val": 50,
+            "Val": 59,
             "Max": 100
         },
         {
             "StaffID": 617,
             "StatID": 6,
-            "Val": 50,
+            "Val": 59,
             "Max": 100
         },
         {
             "StaffID": 617,
             "StatID": 7,
-            "Val": 50,
+            "Val": 59,
             "Max": 100
         },
         {
             "StaffID": 617,
             "StatID": 8,
-            "Val": 50,
+            "Val": 59,
             "Max": 100
         },
         {
             "StaffID": 617,
             "StatID": 9,
-            "Val": 50,
+            "Val": 59,
             "Max": 100
         },
         {
             "StaffID": 617,
             "StatID": 10,
-            "Val": 50,
+            "Val": 59,
             "Max": 100
         },
         {
             "StaffID": 618,
             "StatID": 2,
-            "Val": 50,
+            "Val": 63,
             "Max": 100
         },
         {
             "StaffID": 618,
             "StatID": 3,
-            "Val": 50,
+            "Val": 63,
             "Max": 100
         },
         {
             "StaffID": 618,
             "StatID": 4,
-            "Val": 50,
+            "Val": 63,
             "Max": 100
         },
         {
             "StaffID": 618,
             "StatID": 5,
-            "Val": 50,
+            "Val": 63,
             "Max": 100
         },
         {
             "StaffID": 618,
             "StatID": 6,
-            "Val": 50,
+            "Val": 63,
             "Max": 100
         },
         {
             "StaffID": 618,
             "StatID": 7,
-            "Val": 50,
+            "Val": 63,
             "Max": 100
         },
         {
             "StaffID": 618,
             "StatID": 8,
-            "Val": 50,
+            "Val": 63,
             "Max": 100
         },
         {
             "StaffID": 618,
             "StatID": 9,
-            "Val": 50,
+            "Val": 63,
             "Max": 100
         },
         {
             "StaffID": 618,
             "StatID": 10,
-            "Val": 50,
+            "Val": 63,
             "Max": 100
         },
         {
             "StaffID": 619,
             "StatID": 2,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 619,
             "StatID": 3,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 619,
             "StatID": 4,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 619,
             "StatID": 5,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 619,
             "StatID": 6,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 619,
             "StatID": 7,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 619,
             "StatID": 8,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 619,
             "StatID": 9,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 619,
             "StatID": 10,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 620,
             "StatID": 2,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 620,
             "StatID": 3,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 620,
             "StatID": 4,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 620,
             "StatID": 5,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 620,
             "StatID": 6,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 620,
             "StatID": 7,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 620,
             "StatID": 8,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 620,
             "StatID": 9,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 620,
             "StatID": 10,
-            "Val": 50,
+            "Val": 60,
             "Max": 100
         },
         {
             "StaffID": 621,
             "StatID": 2,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 621,
             "StatID": 3,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 621,
             "StatID": 4,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 621,
             "StatID": 5,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 621,
             "StatID": 6,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 621,
             "StatID": 7,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 621,
             "StatID": 8,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 621,
             "StatID": 9,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 621,
             "StatID": 10,
-            "Val": 50,
+            "Val": 58,
             "Max": 100
         },
         {
             "StaffID": 622,
             "StatID": 13,
-            "Val": 50,
+            "Val": 86,
             "Max": 100
         },
         {
             "StaffID": 622,
             "StatID": 25,
-            "Val": 50,
+            "Val": 86,
             "Max": 100
         },
         {
             "StaffID": 622,
             "StatID": 43,
-            "Val": 50,
+            "Val": 84,
             "Max": 100
         },
         {
             "StaffID": 623,
             "StatID": 13,
-            "Val": 50,
+            "Val": 87,
             "Max": 100
         },
         {
             "StaffID": 623,
             "StatID": 25,
-            "Val": 50,
+            "Val": 86,
             "Max": 100
         },
         {
             "StaffID": 623,
             "StatID": 43,
-            "Val": 50,
+            "Val": 88,
             "Max": 100
         },
         {
             "StaffID": 624,
             "StatID": 13,
-            "Val": 50,
+            "Val": 78,
             "Max": 100
         },
         {
             "StaffID": 624,
             "StatID": 25,
-            "Val": 50,
+            "Val": 80,
             "Max": 100
         },
         {
             "StaffID": 624,
             "StatID": 43,
-            "Val": 50,
+            "Val": 76,
             "Max": 100
         },
         {
             "StaffID": 625,
             "StatID": 13,
-            "Val": 50,
+            "Val": 84,
             "Max": 100
         },
         {
             "StaffID": 625,
             "StatID": 25,
-            "Val": 50,
+            "Val": 81,
             "Max": 100
         },
         {
             "StaffID": 625,
             "StatID": 43,
-            "Val": 50,
+            "Val": 82,
             "Max": 100
         },
         {
             "StaffID": 626,
             "StatID": 13,
-            "Val": 50,
+            "Val": 81,
             "Max": 100
         },
         {
             "StaffID": 626,
             "StatID": 25,
-            "Val": 50,
+            "Val": 78,
             "Max": 100
         },
         {
             "StaffID": 626,
             "StatID": 43,
-            "Val": 50,
+            "Val": 80,
             "Max": 100
         },
         {
             "StaffID": 627,
             "StatID": 13,
-            "Val": 50,
+            "Val": 81,
             "Max": 100
         },
         {
             "StaffID": 627,
             "StatID": 25,
-            "Val": 50,
+            "Val": 83,
             "Max": 100
         },
         {
             "StaffID": 627,
             "StatID": 43,
-            "Val": 50,
+            "Val": 82,
             "Max": 100
         },
         {
             "StaffID": 628,
             "StatID": 0,
-            "Val": 50,
+            "Val": 94,
             "Max": 100
         },
         {
             "StaffID": 628,
             "StatID": 1,
-            "Val": 50,
+            "Val": 94,
             "Max": 100
         },
         {
             "StaffID": 628,
             "StatID": 14,
-            "Val": 50,
+            "Val": 91,
             "Max": 100
         },
         {
             "StaffID": 628,
             "StatID": 15,
-            "Val": 50,
+            "Val": 90,
             "Max": 100
         },
         {
             "StaffID": 628,
             "StatID": 16,
-            "Val": 50,
+            "Val": 90,
             "Max": 100
         },
         {
             "StaffID": 628,
             "StatID": 17,
-            "Val": 50,
-            "Max": 100
-        },
-        {
-            "StaffID": 629,
-            "StatID": 0,
-            "Val": 50,
-            "Max": 100
-        },
-        {
-            "StaffID": 629,
-            "StatID": 1,
-            "Val": 50,
-            "Max": 100
-        },
-        {
-            "StaffID": 629,
-            "StatID": 14,
-            "Val": 50,
-            "Max": 100
-        },
-        {
-            "StaffID": 629,
-            "StatID": 15,
-            "Val": 50,
-            "Max": 100
-        },
-        {
-            "StaffID": 629,
-            "StatID": 16,
-            "Val": 50,
-            "Max": 100
-        },
-        {
-            "StaffID": 629,
-            "StatID": 17,
-            "Val": 50,
+            "Val": 91,
             "Max": 100
         },
         {
             "StaffID": 630,
             "StatID": 0,
-            "Val": 50,
+            "Val": 89,
             "Max": 100
         },
         {
             "StaffID": 630,
             "StatID": 1,
-            "Val": 50,
+            "Val": 87,
             "Max": 100
         },
         {
             "StaffID": 630,
             "StatID": 14,
-            "Val": 50,
+            "Val": 87,
             "Max": 100
         },
         {
             "StaffID": 630,
             "StatID": 15,
-            "Val": 50,
+            "Val": 85,
             "Max": 100
         },
         {
             "StaffID": 630,
             "StatID": 16,
-            "Val": 50,
+            "Val": 86,
             "Max": 100
         },
         {
             "StaffID": 630,
             "StatID": 17,
-            "Val": 50,
+            "Val": 88,
             "Max": 100
         },
         {
             "StaffID": 631,
             "StatID": 0,
-            "Val": 50,
+            "Val": 84,
             "Max": 100
         },
         {
             "StaffID": 631,
             "StatID": 1,
-            "Val": 50,
+            "Val": 84,
             "Max": 100
         },
         {
             "StaffID": 631,
             "StatID": 14,
-            "Val": 50,
+            "Val": 86,
             "Max": 100
         },
         {
             "StaffID": 631,
             "StatID": 15,
-            "Val": 50,
+            "Val": 83,
             "Max": 100
         },
         {
             "StaffID": 631,
             "StatID": 16,
-            "Val": 50,
+            "Val": 85,
             "Max": 100
         },
         {
             "StaffID": 631,
             "StatID": 17,
-            "Val": 50,
-            "Max": 100
-        },
-        {
-            "StaffID": 632,
-            "StatID": 0,
-            "Val": 50,
-            "Max": 100
-        },
-        {
-            "StaffID": 632,
-            "StatID": 1,
-            "Val": 50,
-            "Max": 100
-        },
-        {
-            "StaffID": 632,
-            "StatID": 14,
-            "Val": 50,
-            "Max": 100
-        },
-        {
-            "StaffID": 632,
-            "StatID": 15,
-            "Val": 50,
-            "Max": 100
-        },
-        {
-            "StaffID": 632,
-            "StatID": 16,
-            "Val": 50,
-            "Max": 100
-        },
-        {
-            "StaffID": 632,
-            "StatID": 17,
-            "Val": 50,
+            "Val": 85,
             "Max": 100
         },
         {
             "StaffID": 633,
             "StatID": 0,
-            "Val": 50,
+            "Val": 82,
             "Max": 100
         },
         {
             "StaffID": 633,
             "StatID": 1,
-            "Val": 50,
+            "Val": 82,
             "Max": 100
         },
         {
             "StaffID": 633,
             "StatID": 14,
-            "Val": 50,
+            "Val": 85,
             "Max": 100
         },
         {
             "StaffID": 633,
             "StatID": 15,
-            "Val": 50,
+            "Val": 81,
             "Max": 100
         },
         {
             "StaffID": 633,
             "StatID": 16,
-            "Val": 50,
+            "Val": 81,
             "Max": 100
         },
         {
             "StaffID": 633,
             "StatID": 17,
-            "Val": 50,
+            "Val": 83,
             "Max": 100
         },
         {
             "StaffID": 634,
             "StatID": 19,
-            "Val": 50,
+            "Val": 77,
             "Max": 100
         },
         {
             "StaffID": 634,
             "StatID": 20,
-            "Val": 50,
+            "Val": 76,
             "Max": 100
         },
         {
             "StaffID": 634,
             "StatID": 26,
-            "Val": 50,
+            "Val": 79,
             "Max": 100
         },
         {
             "StaffID": 634,
             "StatID": 27,
-            "Val": 50,
+            "Val": 80,
             "Max": 100
         },
         {
             "StaffID": 634,
             "StatID": 28,
-            "Val": 50,
+            "Val": 79,
             "Max": 100
         },
         {
             "StaffID": 634,
             "StatID": 29,
-            "Val": 50,
+            "Val": 80,
             "Max": 100
         },
         {
             "StaffID": 634,
             "StatID": 30,
-            "Val": 50,
+            "Val": 79,
             "Max": 100
         },
         {
             "StaffID": 634,
             "StatID": 31,
-            "Val": 50,
+            "Val": 80,
             "Max": 100
         },
         {
             "StaffID": 635,
             "StatID": 19,
-            "Val": 50,
+            "Val": 89,
             "Max": 100
         },
         {
             "StaffID": 635,
             "StatID": 20,
-            "Val": 50,
+            "Val": 89,
             "Max": 100
         },
         {
             "StaffID": 635,
             "StatID": 26,
-            "Val": 50,
+            "Val": 89,
             "Max": 100
         },
         {
             "StaffID": 635,
             "StatID": 27,
-            "Val": 50,
+            "Val": 92,
             "Max": 100
         },
         {
             "StaffID": 635,
             "StatID": 28,
-            "Val": 50,
+            "Val": 90,
             "Max": 100
         },
         {
             "StaffID": 635,
             "StatID": 29,
-            "Val": 50,
+            "Val": 90,
             "Max": 100
         },
         {
             "StaffID": 635,
             "StatID": 30,
-            "Val": 50,
+            "Val": 90,
             "Max": 100
         },
         {
             "StaffID": 635,
             "StatID": 31,
-            "Val": 50,
+            "Val": 91,
             "Max": 100
         },
         {
             "StaffID": 636,
             "StatID": 19,
-            "Val": 50,
+            "Val": 89,
             "Max": 100
         },
         {
             "StaffID": 636,
             "StatID": 20,
-            "Val": 50,
+            "Val": 88,
             "Max": 100
         },
         {
             "StaffID": 636,
             "StatID": 26,
-            "Val": 50,
+            "Val": 86,
             "Max": 100
         },
         {
             "StaffID": 636,
             "StatID": 27,
-            "Val": 50,
+            "Val": 86,
             "Max": 100
         },
         {
             "StaffID": 636,
             "StatID": 28,
-            "Val": 50,
+            "Val": 85,
             "Max": 100
         },
         {
             "StaffID": 636,
             "StatID": 29,
-            "Val": 50,
+            "Val": 87,
             "Max": 100
         },
         {
             "StaffID": 636,
             "StatID": 30,
-            "Val": 50,
+            "Val": 86,
             "Max": 100
         },
         {
             "StaffID": 636,
             "StatID": 31,
-            "Val": 50,
+            "Val": 86,
             "Max": 100
         },
         {
             "StaffID": 637,
             "StatID": 19,
-            "Val": 50,
+            "Val": 87,
             "Max": 100
         },
         {
             "StaffID": 637,
             "StatID": 20,
-            "Val": 50,
+            "Val": 83,
             "Max": 100
         },
         {
             "StaffID": 637,
             "StatID": 26,
-            "Val": 50,
+            "Val": 84,
             "Max": 100
         },
         {
             "StaffID": 637,
             "StatID": 27,
-            "Val": 50,
+            "Val": 85,
             "Max": 100
         },
         {
             "StaffID": 637,
             "StatID": 28,
-            "Val": 50,
+            "Val": 83,
             "Max": 100
         },
         {
             "StaffID": 637,
             "StatID": 29,
-            "Val": 50,
+            "Val": 83,
             "Max": 100
         },
         {
             "StaffID": 637,
             "StatID": 30,
-            "Val": 50,
+            "Val": 84,
             "Max": 100
         },
         {
             "StaffID": 637,
             "StatID": 31,
-            "Val": 50,
+            "Val": 86,
             "Max": 100
         },
         {
             "StaffID": 638,
             "StatID": 11,
-            "Val": 50,
+            "Val": 88,
             "Max": 100
         },
         {
             "StaffID": 638,
             "StatID": 22,
-            "Val": 50,
+            "Val": 88,
             "Max": 100
         },
         {
             "StaffID": 638,
             "StatID": 23,
-            "Val": 50,
+            "Val": 86,
             "Max": 100
         },
         {
             "StaffID": 638,
             "StatID": 24,
-            "Val": 50,
+            "Val": 88,
             "Max": 100
         },
         {
             "StaffID": 639,
             "StatID": 11,
-            "Val": 50,
+            "Val": 91,
             "Max": 100
         },
         {
             "StaffID": 639,
             "StatID": 22,
-            "Val": 50,
+            "Val": 87,
             "Max": 100
         },
         {
             "StaffID": 639,
             "StatID": 23,
-            "Val": 50,
+            "Val": 87,
             "Max": 100
         },
         {
             "StaffID": 639,
             "StatID": 24,
-            "Val": 50,
+            "Val": 89,
             "Max": 100
         },
         {
             "StaffID": 640,
             "StatID": 11,
-            "Val": 50,
+            "Val": 81,
             "Max": 100
         },
         {
             "StaffID": 640,
             "StatID": 22,
-            "Val": 50,
+            "Val": 80,
             "Max": 100
         },
         {
             "StaffID": 640,
             "StatID": 23,
-            "Val": 50,
+            "Val": 80,
             "Max": 100
         },
         {
             "StaffID": 640,
             "StatID": 24,
-            "Val": 50,
+            "Val": 79,
             "Max": 100
         },
         {
             "StaffID": 641,
             "StatID": 11,
-            "Val": 50,
+            "Val": 88,
             "Max": 100
         },
         {
             "StaffID": 641,
             "StatID": 22,
-            "Val": 50,
+            "Val": 87,
             "Max": 100
         },
         {
             "StaffID": 641,
             "StatID": 23,
-            "Val": 50,
+            "Val": 86,
             "Max": 100
         },
         {
             "StaffID": 641,
             "StatID": 24,
-            "Val": 50,
+            "Val": 87,
+            "Max": 100
+        },
+        {
+            "StaffID": 642,
+            "StatID": 0,
+            "Val": 81,
+            "Max": 100
+        },
+        {
+            "StaffID": 642,
+            "StatID": 1,
+            "Val": 83,
+            "Max": 100
+        },
+        {
+            "StaffID": 642,
+            "StatID": 14,
+            "Val": 81,
+            "Max": 100
+        },
+        {
+            "StaffID": 642,
+            "StatID": 15,
+            "Val": 84,
+            "Max": 100
+        },
+        {
+            "StaffID": 642,
+            "StatID": 16,
+            "Val": 82,
+            "Max": 100
+        },
+        {
+            "StaffID": 642,
+            "StatID": 17,
+            "Val": 84,
             "Max": 100
         }
     ],
@@ -7306,23 +7249,7 @@
             "MentalityOpinion": 2
         },
         {
-            "StaffID": 627,
-            "UnspentXP": 0,
-            "XPGainedLastRace": 0,
-            "XPGainedLastWeek": 0,
-            "Mentality": 80,
-            "MentalityOpinion": 2
-        },
-        {
             "StaffID": 628,
-            "UnspentXP": 0,
-            "XPGainedLastRace": 0,
-            "XPGainedLastWeek": 0,
-            "Mentality": 80,
-            "MentalityOpinion": 2
-        },
-        {
-            "StaffID": 629,
             "UnspentXP": 0,
             "XPGainedLastRace": 0,
             "XPGainedLastWeek": 0,
@@ -7339,14 +7266,6 @@
         },
         {
             "StaffID": 631,
-            "UnspentXP": 0,
-            "XPGainedLastRace": 0,
-            "XPGainedLastWeek": 0,
-            "Mentality": 80,
-            "MentalityOpinion": 2
-        },
-        {
-            "StaffID": 632,
             "UnspentXP": 0,
             "XPGainedLastRace": 0,
             "XPGainedLastWeek": 0,
@@ -7424,6 +7343,14 @@
             "XPGainedLastWeek": 0,
             "Mentality": 80,
             "MentalityOpinion": 2
+        },
+        {
+            "StaffID": 642,
+            "UnspentXP": 0,
+            "XPGainedLastRace": 0,
+            "XPGainedLastWeek": 0,
+            "Mentality": 80,
+            "MentalityOpinion": 2
         }
     ],
     "Staff_DriverData": [
@@ -7433,13 +7360,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|LLO|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7451,13 +7378,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|BEN|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7469,13 +7396,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|BAD|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7487,13 +7414,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|FUO|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 1,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7505,13 +7432,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|CAM|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7523,13 +7450,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|PIN|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7541,13 +7468,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|GAD|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7559,13 +7486,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|CRO|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7577,13 +7504,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|CHA|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7595,13 +7522,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|BLO|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7613,13 +7540,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|STR|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7631,13 +7558,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|WHA|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7649,13 +7576,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|XIE|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7667,13 +7594,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|DEL|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7685,13 +7612,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|GIU|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7703,13 +7630,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|NAE|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7721,13 +7648,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|DOM|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7739,13 +7666,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|SHA|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7757,13 +7684,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|BIL|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7775,13 +7702,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|SAG|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7793,13 +7720,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|MAR|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -7811,13 +7738,13 @@
             "Aggression": 50,
             "DriverCode": "[STRING_LITERAL:Value=|HO|]",
             "WantsChampionDriverNumber": 1,
-            "LastKnownDriverNumber": "",
-            "AssignedCarNumber": 1,
+            "LastKnownDriverNumber": null,
+            "AssignedCarNumber": null,
             "HasSuperLicense": 0,
             "HasWonF2": null,
             "HasWonF3": null,
             "HasRacedEnoughToJoinF1": 0,
-            "PerformanceEvaluationDay": "",
+            "PerformanceEvaluationDay": null,
             "Marketability": 50,
             "TargetMarketability": 50,
             "MarketabilityProgress": 0,
@@ -8204,35 +8131,7 @@
             "ExpectedTimeScore": 0
         },
         {
-            "StaffID": 627,
-            "StaffType": 2,
-            "RetirementAge": 70,
-            "Retired": 0,
-            "PermaTraitSpawnBoost": 0,
-            "BestTeamFormula": null,
-            "BestF1PosInTeamSinceGameStart": null,
-            "DevelopmentPlan": null,
-            "ExpectedRankForTeam": 5,
-            "AchievementScore": 0,
-            "ExpectedQualityScore": 0,
-            "ExpectedTimeScore": 0
-        },
-        {
             "StaffID": 628,
-            "StaffType": 1,
-            "RetirementAge": 70,
-            "Retired": 0,
-            "PermaTraitSpawnBoost": 0,
-            "BestTeamFormula": null,
-            "BestF1PosInTeamSinceGameStart": null,
-            "DevelopmentPlan": null,
-            "ExpectedRankForTeam": 5,
-            "AchievementScore": 0,
-            "ExpectedQualityScore": 0,
-            "ExpectedTimeScore": 0
-        },
-        {
-            "StaffID": 629,
             "StaffType": 1,
             "RetirementAge": 70,
             "Retired": 0,
@@ -8261,20 +8160,6 @@
         },
         {
             "StaffID": 631,
-            "StaffType": 1,
-            "RetirementAge": 70,
-            "Retired": 0,
-            "PermaTraitSpawnBoost": 0,
-            "BestTeamFormula": null,
-            "BestF1PosInTeamSinceGameStart": null,
-            "DevelopmentPlan": null,
-            "ExpectedRankForTeam": 5,
-            "AchievementScore": 0,
-            "ExpectedQualityScore": 0,
-            "ExpectedTimeScore": 0
-        },
-        {
-            "StaffID": 632,
             "StaffType": 1,
             "RetirementAge": 70,
             "Retired": 0,
@@ -8412,6 +8297,20 @@
             "AchievementScore": 0,
             "ExpectedQualityScore": 0,
             "ExpectedTimeScore": 0
+        },
+        {
+            "StaffID": 642,
+            "StaffType": 1,
+            "RetirementAge": 70,
+            "Retired": 0,
+            "PermaTraitSpawnBoost": 0,
+            "BestTeamFormula": null,
+            "BestF1PosInTeamSinceGameStart": null,
+            "DevelopmentPlan": null,
+            "ExpectedRankForTeam": 5,
+            "AchievementScore": 0,
+            "ExpectedQualityScore": 0,
+            "ExpectedTimeScore": 0
         }
     ],
     "DriverEngineerPairs": [
@@ -8484,6 +8383,48 @@
             "Driver2": 18,
             "Engineer1": 63,
             "Engineer2": 58
+        }
+    ],
+    "Performance": [
+        {
+            "TeamID": 1,
+            "Boost": 1.100
+        },
+        {
+            "TeamID": 2,
+            "Boost": 1.139
+        },
+        {
+            "TeamID": 3,
+            "Boost": 1.017
+        },
+        {
+            "TeamID": 4,
+            "Boost": 1.207
+        },
+        {
+            "TeamID": 5,
+            "Boost": 1.316
+        },
+        {
+            "TeamID": 6,
+            "Boost": 1.257
+        },
+        {
+            "TeamID": 7,
+            "Boost": 1.161
+        },
+        {
+            "TeamID": 8,
+            "Boost": 1.137
+        },
+        {
+            "TeamID": 9,
+            "Boost": 1.277
+        },
+        {
+            "TeamID": 10,
+            "Boost": 1.069
         }
     ]
 }

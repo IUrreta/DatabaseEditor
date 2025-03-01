@@ -3,6 +3,7 @@ import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
 import { excelToDate, dateToExcel } from "./eidtStatsUtils.js";
 import { editContract, fireDriver, hireDriver, removeFutureContract } from "./transferUtils.js";
 import { editSuperlicense } from "./eidtStatsUtils.js";
+import { getBestParts, applyBoostToCarStats } from "./carAnalysisUtils.js";
 import contracts from "../../../data/contracts.json"
 import changes from "../../../data/2025_changes.json"
 
@@ -200,11 +201,9 @@ export function timeTravelWithData(dayNumber, extend = false) {
         }
 
         if (table === "Races_Results") {
-            console.log(table);
             queryDB(`DELETE FROM ${table} WHERE Season != ${vanillaSeason}`);
             queryDB(`UPDATE ${table} SET Season = Season - ${yd} WHERE Season = ${vanillaSeason}`);
         } else if (table.startsWith("Races") && table.endsWith("Results")) {
-            console.log(table);
             queryDB(`DELETE FROM ${table} WHERE SeasonID != ${vanillaSeason}`);
             queryDB(`UPDATE ${table} SET SeasonID = SeasonID - ${yd} WHERE SeasonID = ${vanillaSeason}`);
         }
@@ -215,10 +214,12 @@ export function timeTravelWithData(dayNumber, extend = false) {
     }
 
     setMetaData(metadata)
+    update2025SeasonModTable("time-travel", 1);
 
 }
 
 export function changeDriverLineUps() {
+    console.log("LINEUPS");
     if (contracts.Updates && Array.isArray(contracts.Updates)) {
         contracts.Updates.forEach((update) => {
             const {
@@ -319,7 +320,7 @@ export function changeDriverLineUps() {
         });
         
     }
-
+    update2025SeasonModTable("change-line-ups", 1);
 
 }
 
@@ -339,10 +340,12 @@ export function changeStats() {
 
         }
     }
+    update2025SeasonModTable("change-stats", 1);
 
 }
 
 export function changeDriverEngineerPairs() {
+    console.log("DRIVER-ENGINEER PAIRS");
     if (!changes.DriverEngineerPairs || !Array.isArray(changes.DriverEngineerPairs)) {
         console.error("No driver-engineer pairs");
     } else {
@@ -375,14 +378,13 @@ export function change2024Standings() {
     if (!changes.DriverStandings || !Array.isArray(changes.DriverStandings)) {
         console.error("No driver standings found");
     } else {
-        queryDB(`DELETE FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = 2024`);
         for (const entry of changes.DriverStandings) {
             const { DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID } = entry;
 
 
             queryDB(`
-            INSERT INTO Races_DriverStandings (DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID)
-            VALUES (${DriverID}, ${LastPointsChange}, ${LastPositionChange}, ${Points}, ${Position}, ${RaceFormula}, ${SeasonID})
+            UPDATE Races_DriverStandings SET LastPointsChange = ${LastPointsChange}, LastPositionChange = ${LastPositionChange}, Points = ${Points}, Position = ${Position}
+            WHERE DriverID = ${DriverID} AND RaceFormula = ${RaceFormula} AND SeasonID = ${SeasonID}
             `);
         }
     }
@@ -400,9 +402,11 @@ export function change2024Standings() {
             `);
         }
     }
+    update2025SeasonModTable("change-cfd", 1);
 }
 
 export function manageFeederSeries() {
+    console.log("FEEDER SERIES");
     if (!contracts.FeederSeries || !Array.isArray(contracts.FeederSeries)) {
         console.error("No feeder series found");
     } else {
@@ -414,12 +418,13 @@ export function manageFeederSeries() {
             const { DriverID, TeamID, PosInTeam, Salary, EndSeason } = entry;
             queryDB(`INSERT INTO Staff_Contracts (StaffID, ContractType, TeamID, PosInTeam, StartDay, EndSeason, Salary, StartingBonus, RaceBonus, RaceBonusTargetPos, BreakoutClause, AffiliateDualRoleClause)
                  VALUES (${DriverID}, 0, ${TeamID}, ${PosInTeam}, ${day}, ${EndSeason}, ${Salary}, 0, 0, 1, 0.5, 0)`);
-            queryDB(`UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = ${PosInTeam} WHERE StaffID = ${DriverID}`);
+            queryDB(`UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = ${PosInTeam}, AssignedCarNumber = NULL, LastKnownDriverNumber = NULL WHERE StaffID = ${DriverID}`);
         }
     }
 }
 
 export function manageAffiliates() {
+    console.log("AFFILIATES");
 
     queryDB(`
         DELETE FROM Staff_Contracts
@@ -636,6 +641,7 @@ export function changeRaces() {
         DELETE FROM Races
         WHERE RaceID = NEW.RaceID;
         END;`);
+        update2025SeasonModTable("change-calendar", 1);
     }
 
 }
@@ -649,11 +655,11 @@ export function insertStaff() {
                 let values = Object.values(entry)
                     .map(value => value === null ? "NULL" : typeof value === "string" ? `'${value}'` : value)
                     .join(", ");
-                console.log(`INSERT INTO ${table} (${columns}) VALUES (${values})`);
                 queryDB(`INSERT INTO ${table} (${columns}) VALUES (${values})`);
             });
         }
     });
+    update2025SeasonModTable("extra-drivers", 1);
 }
 
 
@@ -664,6 +670,18 @@ export function removeFastestLap() {
 
 function update2025SeasonModTable(edit, value) {
     queryDB(`INSERT OR REPLACE INTO Custom_2025_SeasonMod (key, value) VALUES ('${edit}', '${value}')`);
+}
+
+export function updatePerofmrnace2025(){
+    const teamDict = getBestParts(false);
+    
+    for (let team of Object.keys(teamDict).filter(key => key !== "0")) {
+        //remove the part 0 from teamDict[team]
+        delete teamDict[team]["0"];
+        let teamboost = changes.Performance.find(x => x.TeamID === Number(team));
+        applyBoostToCarStats(teamDict[team], teamboost.Boost, teamboost.TeamID);
+    }
+    
 }
 
 export function updateEditsWithModData(data) {

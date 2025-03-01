@@ -1350,6 +1350,7 @@ document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", 
  * checks if a save and a script have been selected to unlock the tool
  */
 function check_selected() {
+    console.log(scriptSelected, isSaveSelected, divBlocking)
     if (scriptSelected === 1) {
         document.getElementById("scriptSelected").classList.add("completed")
     }
@@ -1426,7 +1427,9 @@ document.querySelector(".toolbar-logo-and-title").addEventListener("click", func
     manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 0
     document.getElementById("blockDiv").classList.remove("disappear")
-    document.querySelector(".scriptPills.active").classList.remove("active")
+    if (document.querySelector(".scriptPills.active")){
+        document.querySelector(".scriptPills.active").classList.remove("active")
+    }
     divBlocking = 1;
     check_selected()
 })
@@ -1954,7 +1957,11 @@ document.getElementById('logButton').addEventListener('click', function () {
 });
 
 function updateModBlocking(data){
-    if (data){
+    if (data === "Start2024"){
+        document.querySelector(".mod-blocking").classList.add("d-none")
+        document.querySelector(".changes-grid").classList.remove("d-none")
+    }
+    else if (data === "Direct2025"){
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
     }
@@ -2019,4 +2026,12 @@ document.querySelector(".change-calendar").addEventListener("click", function ()
     command.execute();
     this.classList.add("completed")
     this.querySelector("span").textContent = "Applied"
+})
+
+
+document.querySelector(".change-performance").addEventListener("click", function () {
+    const command = new Command("changePerformance", {});
+    command.execute();
+    // this.classList.add("completed")
+    // this.querySelector("span").textContent = "Applied"
 })

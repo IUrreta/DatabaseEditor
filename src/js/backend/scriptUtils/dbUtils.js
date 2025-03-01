@@ -1463,15 +1463,34 @@ export function check2025ModCompatibility(year_version) {
   const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
   const currentDay = daySeason[0];
   const currentSeason = daySeason[1];
-  const minDay = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = ${currentSeason}`, 'singleValue');
-  const raceState = queryDB(`SELECT State FROM Races WHERE Day = ${minDay} AND SeasonID = ${currentSeason}`, 'singleValue');
-  console.log("MOD COMPATIBNILLITY")
-  console.log(raceState, year_version, currentSeason);
-  if (raceState !== 0 || year_version !== "24" || currentSeason !== 2024) {
-    return false;
+
+  const minDay2024 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2024`, 'singleValue');
+  const firstRaceState2024 = queryDB(`SELECT State FROM Races WHERE Day = ${minDay2024} AND SeasonID = 2024`, 'singleValue');
+  
+  const maxDay2024 = queryDB(`SELECT MAX(Day) FROM Races WHERE SeasonID = 2024`, 'singleValue');
+  const lastRaceState2024 = queryDB(`SELECT State FROM Races WHERE Day = ${maxDay2024} AND SeasonID = 2024`, 'singleValue');
+
+  const minDay2025 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2025`, 'singleValue');
+  const firstRaceState2025 = queryDB(`SELECT State FROM Races WHERE Day = ${minDay2025} AND SeasonID = 2025`, 'singleValue');
+
+  console.log("MOD COMPATIBILITY CHECK")
+  console.log({ firstRaceState2024, year_version, currentSeason, lastRaceState2024, firstRaceState2025 });
+
+  if (year_version !== "24") {
+    return "NotCompatible";
   }
-  return true;
+
+  if (firstRaceState2024 === 0 && currentSeason === 2024) {
+    return "Start2024";
+  }
+
+  if (lastRaceState2024 === 2 && (currentSeason === 2024 || (currentSeason === 2025 && firstRaceState2025 === 0))) {
+    return "Direct2025";
+  }
+
+  return "NotCompatible";
 }
+
 
 export function updateTeamsSuppliedByEngine(engineId, stats) {
   const teamsSupplied = queryDB(`SELECT teamID FROM Custom_Engine_Allocations WHERE engineId = ${engineId}`, 'allRows');
