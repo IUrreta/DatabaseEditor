@@ -100,6 +100,8 @@ body.light-theme {
   --dropdown-back: #292929;
   --elements: #313131;
   --dropdown-hover: #363636;
+  --table-default: #1b1b1b;
+  --table-default-odd: #1e1e1e;
   --dark-text: #b1b1b1;
   --disabled-text: #7a7a7a;
   --modal-text: #777777;
@@ -339,6 +341,16 @@ body.alternative-theme {
 @font-face {
   font-family: 'Formula1Bold';
   src: url("../assets/fonts/Formula1-Bold.ttf") format('truetype');
+}
+
+@font-face {
+  font-family: 'NumbersFont';
+  src: url("../assets/fonts/Numbers.otf") format('truetype');
+}
+
+@font-face {
+  font-family: 'NumbersBold';
+  src: url("../assets/fonts/NumebrsBold.otf") format('truetype');
 }
 
 .bold-font {
@@ -2448,8 +2460,8 @@ DRIVERS TABLE
 */
 
 .first {
-  background-color: var(--table-first) !important;
-  color: #292929 !important;
+  transition: all 0.15s;
+  color: var(--table-first) !important;
 }
 
 .teams-table-row .teams-table-team {
@@ -2482,39 +2494,43 @@ DRIVERS TABLE
 .drivers-table-row:hover .first,
 .teams-table-row.odd:hover .first,
 .teams-table-row:hover .first {
-  background-color: var(--table-first-light) !important;
+  background-color: var(--table-first) !important;
   color: #292929 !important;
 }
 
 .second {
-  background-color: var(--table-second) !important;
-  color: #292929 !important;
+  transition: all 0.15s;
+  color: var(--table-second) !important;
 }
 
 .drivers-table-row.odd:hover .second,
 .drivers-table-row:hover .second,
 .teams-table-row.odd:hover .second,
 .teams-table-row:hover .second {
-  background-color: var(--table-second-light) !important;
+  background-color: var(--table-second) !important;
   color: #292929 !important;
 }
 
 .third {
-  background-color: var(--table-third) !important;
-  color: #292929 !important;
+  transition: all 0.15s;
+  color: var(--table-third) !important;
 }
 
 .drivers-table-row.odd:hover .third,
 .drivers-table-row:hover .third,
 .teams-table-row.odd:hover .third,
 .teams-table-row:hover .third {
-  background-color: var(--table-third-light) !important;
+  background-color: var(--table-third) !important;
   color: #292929 !important;
 }
 
 .fastest {
-  color: #c90fd7 !important;
+  text-decoration: underline;
+  text-decoration-color: #c90fd7;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
+
 
 
 .drivers-table-row.odd:hover .fastest,
@@ -2549,6 +2565,11 @@ DRIVERS TABLE
 .teams-table-data {
   overflow-y: auto;
   font-size: 15px;
+  padding-top: 3px;
+}
+
+.drivers-table-row:first-child .drivers-table-position, .teams-table-row:first-child .teams-table-position {
+  background-color: #ff0000 !important;
 }
 
 .drivers-table-data::-webkit-scrollbar {
@@ -2613,6 +2634,11 @@ DRIVERS TABLE
 }
 
 .drivers-table-row span.bold-font {
+  color: var(--white-general);
+}
+
+
+.drivers-table-row span.bold-font {
   transition: color 0.15s;
 }
 
@@ -2626,7 +2652,7 @@ DRIVERS TABLE
 .drivers-table-row .drivers-table-points,
 .drivers-table-row .drivers-table-position,
 .drivers-table-row .drivers-table-logo-div {
-  background-color: var(--elements);
+  background-color: var(--table-default);
 }
 
 .drivers-table-row.odd .drivers-table-normal,
@@ -2635,13 +2661,13 @@ DRIVERS TABLE
 .drivers-table-row.odd .drivers-table-points,
 .drivers-table-row.odd .drivers-table-position,
 .drivers-table-row.odd .drivers-table-logo-div {
-  background-color: var(--elements-hover);
+  background-color: var(--table-default-odd);
 }
 
 .teams-table-row .teams-table-team,
 .teams-table-row .teams-table-points,
 .teams-table-row .teams-table-position {
-  background-color: var(--elements)
+  background-color: var(--table-default)
 }
 
 .teams-table-row .teams-table-team {
@@ -2651,7 +2677,7 @@ DRIVERS TABLE
 .teams-table-row.odd .teams-table-team,
 .teams-table-row.odd .teams-table-points,
 .teams-table-row.odd .teams-table-position {
-  background-color: var(--elements-hover);
+  background-color: var(--table-default-odd);
 }
 
 .teams-table-row:hover .teams-table-team {
@@ -2678,6 +2704,17 @@ DRIVERS TABLE
   align-items: center;
   justify-content: center;
 
+
+}
+
+.drivers-table-position, .teams-table-position {
+  font-family: 'NumbersFont' !important;
+  font-size: 16px;
+}
+
+.drivers-table-points, .teams-table-points {
+  font-family: 'NumbersBold' !important;
+  font-size: 16px;
 }
 
 .aston-team-table-logo {
@@ -2760,15 +2797,9 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   justify-content: center;
-  border-top: 1px solid var(--separator);
-  border-bottom: 1px solid var(--separator);
   transition: border-height 0.15s;
 }
 
-.teams-table-row:hover .teams-table-logo {
-  border-bottom: 0px solid var(--text-general);
-  border-top: 0px solid var(--text-general);
-}
 
 .teams-table-logo-inner {
   width: 60px;
@@ -2959,6 +2990,10 @@ DRIVERS TABLE
 
 .logo-stake-table {
   padding: 2px 0px;
+}
+
+.drivers-table-header, .teams-table-header {
+  border-bottom: 2px solid #ff0000;
 }
 
 
@@ -6486,7 +6521,7 @@ input.disabled {
   white-space: nowrap;
 }
 
-.free-driver span.bold-font,
+/* .free-driver span.bold-font,
 .normal-driver span.bold-font,
 .drivers-table-driver span.bold-font,
 .driver-prediction span.bold-font,
@@ -6494,7 +6529,7 @@ input.disabled {
 .viewer-header-driver span.bold-font {
   display: inline-block;
   transform: skewX(-9deg)
-}
+} */
 
 .free-driver:hover .bi-ban {
   color: var(--negative-text);

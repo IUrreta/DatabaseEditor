@@ -666,7 +666,7 @@ function new_addDriver(driver, races_done, odd) {
     nameContainer.appendChild(spanName)
     nameContainer.appendChild(spanLastName)
     nameDiv.appendChild(nameContainer)
-    manageColor(spanLastName, spanLastName)
+    // manageColor(spanLastName, spanLastName)
     let posDiv = document.createElement("div")
     posDiv.classList = "drivers-table-position bold-font"
     posDiv.innerText = driver[2]

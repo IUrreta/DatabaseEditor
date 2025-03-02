@@ -3,7 +3,7 @@ import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
 import { excelToDate, dateToExcel } from "./eidtStatsUtils.js";
 import { editContract, fireDriver, hireDriver, removeFutureContract } from "./transferUtils.js";
 import { editSuperlicense } from "./eidtStatsUtils.js";
-import { getBestParts, applyBoostToCarStats } from "./carAnalysisUtils.js";
+import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats } from "./carAnalysisUtils.js";
 import contracts from "../../../data/contracts.json"
 import changes from "../../../data/2025_changes.json"
 
@@ -685,13 +685,25 @@ function update2025SeasonModTable(edit, value) {
 }
 
 export function updatePerofmrnace2025(){
-    const teamDict = getBestParts(false);
+    const globals = getGlobals();
+    const teamDict = getBestParts(globals.isCreateATeam);
+    let tyreDegDict = {};
+    
     
     for (let team of Object.keys(teamDict).filter(key => key !== "0")) {
         //remove the part 0 from teamDict[team]
         delete teamDict[team]["0"];
         let teamboost = changes.Performance.find(x => x.TeamID === Number(team));
         applyBoostToCarStats(teamDict[team], teamboost.Boost, teamboost.TeamID);
+        const tyreDegStatsTemas = getTyreDegStats(teamDict[team]);
+        console.log(tyreDegStatsTemas); 
+        tyreDegDict[team] = tyreDegStatsTemas;
+    }
+
+    for (let team of Object.keys(teamDict).filter(key => key !== "0")) {
+        let teamGivingTyreDeg = changes.Performance.find(x => x.TeamID === Number(team)).TyreDeg;
+        let tyreDegStats = tyreDegDict[teamGivingTyreDeg];
+        updateTyreDegStats(teamDict[team], tyreDegStats, team, teamGivingTyreDeg);
     }
 
     update2025SeasonModTable("change-performance", 1);
