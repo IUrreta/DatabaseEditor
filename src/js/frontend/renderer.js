@@ -1957,7 +1957,7 @@ document.getElementById('logButton').addEventListener('click', function () {
 });
 
 function updateModBlocking(data){
-    if (data === "Start2024"){
+    if (data === "Start2024" || "AlreadyEdited"){
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
     }
@@ -2032,6 +2032,9 @@ document.querySelector(".change-calendar").addEventListener("click", function ()
 document.querySelector(".change-performance").addEventListener("click", function () {
     const command = new Command("changePerformance", {});
     command.execute();
-    // this.classList.add("completed")
-    // this.querySelector("span").textContent = "Applied"
+    document.querySelector(".mclaren-performance").innerText = "63.7%"
+    document.querySelector(".redbull-performance").innerText = "59.4%"
+    document.querySelector(".williams-performance").innerText = "56.8%"
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
 })

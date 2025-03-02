@@ -1480,6 +1480,12 @@ export function check2025ModCompatibility(year_version) {
     return "NotCompatible";
   }
 
+  const edited = queryDB(`SELECT * FROM Custom_2025_SeasonMod WHERE value = 1`, 'allRows');
+  console.log({ edited });
+  if (edited.length > 0) {
+    return "AlreadyEdited";
+  }
+
   if (firstRaceState2024 === 0 && currentSeason === 2024) {
     return "Start2024";
   }

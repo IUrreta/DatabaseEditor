@@ -237,6 +237,14 @@
         {
             "DriverID": 58,
             "TeamID": 7
+        },
+        {
+            "DriverID": 61,
+            "TeamID": 9
+        },
+        {
+            "DriverID": 393,
+            "TeamID": 9
         }
     ],
     "Hires": [
@@ -573,6 +581,28 @@
             "RaceBonus": 0,
             "RaceBonusTargetPos": 1,
             "EndSeason": 2027,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 643,
+            "TeamID": 9,
+            "PosInTeam": 1,
+            "Salary": 430000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
+            "StaffID": 644,
+            "TeamID": 9,
+            "PosInTeam": 2,
+            "Salary": 490000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
             "BreakoutClause": 0.5
         }
         

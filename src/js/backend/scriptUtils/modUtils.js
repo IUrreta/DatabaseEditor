@@ -419,6 +419,18 @@ export function manageFeederSeries() {
             queryDB(`INSERT INTO Staff_Contracts (StaffID, ContractType, TeamID, PosInTeam, StartDay, EndSeason, Salary, StartingBonus, RaceBonus, RaceBonusTargetPos, BreakoutClause, AffiliateDualRoleClause)
                  VALUES (${DriverID}, 0, ${TeamID}, ${PosInTeam}, ${day}, ${EndSeason}, ${Salary}, 0, 0, 1, 0.5, 0)`);
             queryDB(`UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = ${PosInTeam}, AssignedCarNumber = NULL, LastKnownDriverNumber = NULL WHERE StaffID = ${DriverID}`);
+            const driverTeamRaceEngineers = queryDB(`SELECT gd.StaffID FROM Staff_GameData gd
+                JOIN Staff_Contracts sc ON gd.StaffID = sc.StaffID
+                WHERE gd.StaffType = 2
+                AND gd.StaffID IN (SELECT StaffID FROM Staff_Contracts WHERE TeamID = ${TeamID})`, "allRows");
+            let newRaceEngineer = driverTeamRaceEngineers[0][0];
+            let pairExists = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE RaceEngineerID = ${newRaceEngineer} AND DriverID = ${DriverID}`, "singleRow");
+            if (pairExists && pairExists.length > 0) {
+                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE RaceEngineerID = ${newRaceEngineer} AND DriverID = ${DriverID}`);
+            } else {
+                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${newRaceEngineer}`);
+                queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (${newRaceEngineer}, ${DriverID}, 0, 0, 1)`);
+            }
         }
     }
 }
@@ -681,6 +693,8 @@ export function updatePerofmrnace2025(){
         let teamboost = changes.Performance.find(x => x.TeamID === Number(team));
         applyBoostToCarStats(teamDict[team], teamboost.Boost, teamboost.TeamID);
     }
+
+    update2025SeasonModTable("change-performance", 1);
     
 }
 

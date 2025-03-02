@@ -217,29 +217,39 @@ function checkscroll() {
 }
 
 function new_color_drivers_table() {
-    let datazone = document.querySelector(".drivers-table-data")
-    let rows = datazone.querySelectorAll(".drivers-table-row")
-    rows.forEach(function (row, index) {
-        let cells = row.querySelectorAll(".drivers-table-normal")
+    let datazone = document.querySelector(".drivers-table-data");
+    let rows = datazone.querySelectorAll(".drivers-table-row");
+
+    rows.forEach(function (row) {
+        let cells = row.querySelectorAll(".drivers-table-normal");
+
         cells.forEach(function (cell) {
-            if (cell.dataset.pos === "1") {
-                cell.classList.add("first")
+            let pos = cell.dataset.pos;
+
+            if (pos) {
+                let match = pos.match(/^(\d)(?:\s*\(.*\))?$/);
+                if (match) {
+                    let number = match[1];
+                    if (number === "1") {
+                        cell.classList.add("first");
+                    } else if (number === "2") {
+                        cell.classList.add("second");
+                    } else if (number === "3") {
+                        cell.classList.add("third");
+                    }
+                }
             }
-            else if (cell.dataset.pos === "2") {
-                cell.classList.add("second")
-            }
-            else if (cell.dataset.pos === "3") {
-                cell.classList.add("third")
-            }
+
             if (cell.dataset.fastlap === "1") {
-                cell.classList.add("fastest")
+                cell.classList.add("fastest");
             }
             if (cell.dataset.quali === "1") {
-                cell.style.fontFamily = "Formula1Bold"
+                cell.style.fontFamily = "Formula1Bold";
             }
-        })
-    })
+        });
+    });
 }
+
 
 function manage_teams_table_logos() {
     let logos = document.querySelectorAll(".teams-table-logo-inner")

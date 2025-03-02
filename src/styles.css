@@ -11101,6 +11101,12 @@ body:has(.active #mod25logo) .one-change {
   color: var(--dark-text);
 }
 
+.one-change-performance-name{
+  min-width: 100px;
+  display: inline-block;
+  color: var(--dark-text);
+}
+
 .missing-staff, .missing-f2, .missing-academy{
   position: relative;
   width: 225px;
@@ -11214,4 +11220,70 @@ body:has(.active #mod25logo) .one-change {
 .mod-blocking-subtitle{
   font-size: 18px;
   color: var(--modal-text);
+}
+
+.one-change-description.performance-description{
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: flex-end;
+}
+
+.one-change-bar-container{
+  background-color: var(--background);
+  width: 100px;
+  height: 4px;
+  margin-bottom: 7px;
+}
+
+.one-change-bar-fill.performance-bar-progress{
+  height: 4px;
+  position: relative;
+}
+
+.one-change-bar-fill.performance-bar-progress.rb {
+  width: 58.5%;
+  transition: width 0.15s;
+}
+
+.one-change-bar-fill.performance-bar-progress.mc {
+  width: 56.5%;
+  transition: width 0.15s;
+}
+
+.one-change-bar-fill.performance-bar-progress.wi {
+  width: 46.1%;
+  transition: width 0.15s;
+}
+
+.mclaren-performance, .williams-performance, .redbull-performance{
+  transition: all 0.15s;
+}
+
+.one-change:has(.completed) .one-change-bar-fill.performance-bar-progress.rb{
+  width: 60.42%;
+}
+
+.one-change:has(.completed) .mclaren-performance, .one-change:has(.completed) .williams-performance, .one-change:has(.completed) .redbull-performance{
+  color: var(--dark-text)
+}
+
+.one-change:has(.completed) .one-change-bar-fill.performance-bar-progress.mc{
+  width: 65.77%;
+}
+
+.one-change:has(.completed) .one-change-bar-fill.performance-bar-progress.wi{
+  width: 56.85%;
+}
+
+.mclaren-performance-description, .redbull-performance-description, .williams-performance-description{
+  transition: all 0.15s;
+}
+
+.one-change:has(.completed) .mclaren-performance-description{
+  transform: translateY(-24px);
+}
+
+.one-change:has(.completed) .redbull-performance-description{
+  transform: translateY(24px);
 }
