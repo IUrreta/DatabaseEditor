@@ -168,6 +168,7 @@ body.light-theme {
   --background-general: #110f24;
   --slight-contrast: #797599;
   --white-general: #f3f3f3;
+  --gold-gradient-text: #f3f3f3;
   --text-general: #dedde6;
   --text-general-transparent: #e9e8f0be;
   --negative-general: #e95656;
@@ -2499,36 +2500,13 @@ DRIVERS TABLE
   color: var(--engine-table-name-hover);
 }
 
-.first, .second, .third{
-  position: relative;
-  z-index: 0;
-}
-
-.first::before{
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
-  radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%) !important;
-  transition: opacity 0.15s;
-  z-index: -1;
-  opacity: 0;
-}
-
 .drivers-table-row.odd:hover .first,
 .drivers-table-row:hover .first,
 .teams-table-row.odd:hover .first,
 .teams-table-row:hover .first {
+  background-color: var(--table-first) !important;
   color: #292929 !important;
 }
-
-.drivers-table-row.odd:hover .first::before,
-.drivers-table-row:hover .first::before,
-.teams-table-row.odd:hover .first::before,
-.teams-table-row:hover .first::before {
-  opacity: 1;
-}
-
 
 .second {
   transition: all 0.15s;
@@ -2539,39 +2517,8 @@ DRIVERS TABLE
 .drivers-table-row:hover .second,
 .teams-table-row.odd:hover .second,
 .teams-table-row:hover .second {
+  background-color: var(--table-second) !important;
   color: #292929 !important;
-}
-
-.drivers-table-row.odd:hover .second::before,
-.drivers-table-row:hover .second::before,
-.teams-table-row.odd:hover .second::before,
-.teams-table-row:hover .second::before {
-  opacity: 1;
-}
-
-.second::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-      ellipse farthest-corner at right bottom,
-      #d1d1d1 0%,
-      #b3b3b3 8%,
-      #8c8c8c 30%,
-      #737373 40%,
-      transparent 80%
-    ),
-    radial-gradient(
-      ellipse farthest-corner at left top,
-      #e6e6e6 0%,
-      #bfbfbf 8%,
-      #999999 25%,
-      #666666 62.5%,
-      #4d4d4d 100%
-    );
-  transition: opacity 0.15s;
-  z-index: -1;
-  opacity: 0; /* Ajusta si quieres que sea visible siempre */
 }
 
 .third {
@@ -2583,39 +2530,8 @@ DRIVERS TABLE
 .drivers-table-row:hover .third,
 .teams-table-row.odd:hover .third,
 .teams-table-row:hover .third {
+  background-color: var(--table-third) !important;
   color: #292929 !important;
-}
-.drivers-table-row.odd:hover .third::before,
-.drivers-table-row:hover .third::before,
-.teams-table-row.odd:hover .third::before,
-.teams-table-row:hover .third::before {
-  opacity: 1;
-}
-
-
-.third::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-      ellipse farthest-corner at right bottom,
-      #f4a460 0%,
-      #c87f59 8%,
-      #9f644b 30%,
-      #a35942 40%,
-      transparent 80%
-    ),
-    radial-gradient(
-      ellipse farthest-corner at left top,
-      #ffdead 0%,
-      #f4a460 8%,
-      #c08552 25%,
-      #8b5a2b 62.5%,
-      #a15017 100%
-    );
-  transition: opacity 0.15s;
-  z-index: -1;
-  opacity: 0;
 }
 
 .fastest {
@@ -2624,6 +2540,7 @@ DRIVERS TABLE
   text-decoration-thickness: 2px;
   text-underline-offset: 2px;
 }
+
 
 .drivers-table-header,
 .teams-table-header {
@@ -2663,6 +2580,7 @@ DRIVERS TABLE
   background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
   radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%) !important;
   position: relative;
+  color: var(--gold-gradient-text);
   z-index: 0;
 }
 

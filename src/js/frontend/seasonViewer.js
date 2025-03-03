@@ -17,7 +17,7 @@ let alpineReplace = "alpine"
 let alfaReplace = "alfa"
 let driverOrTeams = "drivers"
 let isYearSelected = false
-let racesLeftCount = 0;
+let racesLeftCount = 0, sprintsLeft = 0;
 export let engine_allocations;
 let driverCells;
 let teamCells;
@@ -464,7 +464,7 @@ function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsIn
     const lastRaceDone = driver1[driver1.length - 1][0]
     const lastRaceIndex = calendarData.findIndex(x => x[0] === lastRaceDone);
     racesLeftCount = calendarData.length - (lastRaceIndex + 1);
-    const sprintsLeft = calendarData.filter(x => x[2] === 1).length
+    sprintsLeft = calendarData.filter(x => x[2] === 1 && x[0] >= lastRaceDone).length
 
     const pointsDif = driver1Points - driver2Points
     let pointsRemaining = racesLeftCount * pointsInfo.twoBiggestPoints[0] + sprintsLeft * 8 +
@@ -578,10 +578,6 @@ export function new_load_teams_table(data) {
 }
 
 function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo) {
-    const sprintsLeft = calendarData.filter(x => x[2] === 1).length
-
-    console.log(racesLeftCount)
-
     const pointsDif = team1Points - team2Points
     let pointsRemaining = racesLeftCount * (parseInt(pointsInfo.twoBiggestPoints[0]) + parseInt(pointsInfo.twoBiggestPoints[1])) + sprintsLeft * 15 +
     (pointsInfo.isLastRaceDouble ? pointsInfo.twoBiggestPoints[0] : 0) +

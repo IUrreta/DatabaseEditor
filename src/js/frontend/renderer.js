@@ -1957,7 +1957,7 @@ document.getElementById('logButton').addEventListener('click', function () {
 });
 
 function updateModBlocking(data){
-    if (data === "Start2024" || "AlreadyEdited"){
+    if (data === "Start2024" || data === "AlreadyEdited"){
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
     }
