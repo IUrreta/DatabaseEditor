@@ -725,6 +725,23 @@ export function fetchTeamsStandings(year) {
     `, 'allRows') || [];
 }
 
+export function fetchPointsRegulations() {
+  const pointScheme = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 7`, 'singleValue');
+  const twoBiggestPoints = queryDB(`SELECT Points FROM Regulations_NonTechnical_PointSchemes WHERE (PointScheme = ${pointScheme}) AND (RacePos = 1 OR RacePos = 2); `, 'allRows');
+  const isLastraceDouble = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 8`, 'singleValue');
+  const fastestLapBonusPoint = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 9`, 'singleValue');
+  const poleBonusPoint = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 10`, 'singleValue');
+  const res = {
+    pointScheme: pointScheme,
+    twoBiggestPoints: twoBiggestPoints,
+    isLastraceDouble: isLastraceDouble,
+    fastestLapBonusPoint: fastestLapBonusPoint,
+    poleBonusPoint: poleBonusPoint
+  }
+
+  return res;
+}
+
 export function fetchOneTeamSeasonResults(team, year) {
   const teamID = team;
   const season = year;
@@ -813,27 +830,14 @@ export function fetchEventsDoneFrom(year) {
 
 export function fetchEventsFrom(year) {
   const seasonEventsRows = queryDB(`
-      SELECT TrackID
+      SELECT RaceID, TrackID, WeekendType
       FROM Races
       WHERE SeasonID = ${year}
     `, 'allRows') || [];
 
-  const seasonIdsRows = queryDB(`
-      SELECT RaceID
-      FROM Races
-      WHERE SeasonID = ${year}
-    `, 'allRows') || [];
-
-
-  const eventsIds = [];
-  for (let i = 0; i < seasonIdsRows.length; i++) {
-    const raceID = seasonIdsRows[i][0];
-    const trackID = seasonEventsRows[i][0];
-    eventsIds.push([raceID, trackID]);
-  }
-
-  return eventsIds;
+  return seasonEventsRows; // Ya es un array de arrays con [RaceID, TrackID]
 }
+
 
 
 export function formatSeasonResults(results, driverName, teamID, driver, year, sprints) {

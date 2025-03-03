@@ -3,7 +3,8 @@ import {
   fetchDrivers, fetchStaff, fetchEngines, fetchCalendar, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContract,
   editEngines, updateCustomConfig, fetchCustomConfig,
-  fetch2025ModData, check2025ModCompatibility
+  fetch2025ModData, check2025ModCompatibility,
+  fetchPointsRegulations
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
@@ -54,10 +55,11 @@ const workerCommands = {
     const results = fetchSeasonResults(year);
     const events = fetchEventsFrom(year);
     const teams = fetchTeamsStandings(year);
+    const pointsInfo = fetchPointsRegulations()
 
     postMessage({
       responseMessage: "Results fetched",
-      content: [events, results, teams]
+      content: [events, results, teams, pointsInfo]
     });
   },
 
