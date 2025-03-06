@@ -145,6 +145,8 @@ let divBlocking = 1;
 let saveName;
 let tempImageData = null;
 
+let calendarEditMode = "Start2024"
+
 export let selectedTheme = "default-theme";
 
 let versionNow;
@@ -1957,13 +1959,25 @@ document.getElementById('logButton').addEventListener('click', function () {
 });
 
 function updateModBlocking(data){
-    if (data === "Start2024" || data === "AlreadyEdited"){
+    console.log(data)
+    if (data === "AlreadyEdited"){
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
     }
-    else if (data === "Direct2025"){
+    else if (data === "Start2024"){
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
+
+        document.querySelector(".time-travel").classList.add("disabled")
+        document.querySelector(".time-travel span").textContent = "Disabled"
+    }
+    else if (data === "Direct2025" || data === "End2024"){
+        document.querySelector(".mod-blocking").classList.add("d-none")
+        document.querySelector(".changes-grid").classList.remove("d-none")
+
+        document.querySelector(".time-travel").classList.add("disabled")
+        document.querySelector(".time-travel span").textContent = "Disabled"
+        calendarEditMode = data;
     }
     else{
         document.querySelector(".mod-blocking").classList.remove("d-none")
@@ -2019,10 +2033,13 @@ document.querySelector(".extra-drivers").addEventListener("click", function () {
     command.execute();
     this.classList.add("completed")
     this.querySelector("span").textContent = "Applied"
+
+    document.querySelector(".change-line-ups").classList.remove("disabled")
+    document.querySelector(".change-line-ups span").textContent = "Apply"
 })
 
 document.querySelector(".change-calendar").addEventListener("click", function () {
-    const command = new Command("changeCalendar", {});
+    const command = new Command("changeCalendar", {type: calendarEditMode});
     command.execute();
     this.classList.add("completed")
     this.querySelector("span").textContent = "Applied"

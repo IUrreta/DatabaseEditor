@@ -311,7 +311,6 @@ const workerCommands = {
     timeTravelWithData(data.dayNumber, true);
     // manageStandings();
     postMessage({ responseMessage: "Time travel",
-                  noti_msg: `Succesfully time travelled to 2025`,
                   isEditCommand: true,
                   unlocksDownload: true  });
   },
@@ -321,7 +320,6 @@ const workerCommands = {
     manageFeederSeries();
     changeDriverEngineerPairs();
     postMessage({ responseMessage: "Line ups changed",
-                  noti_msg: `Succesfully changed the driver line ups to match 2025`,
                   isEditCommand: true,
                   unlocksDownload: true  });
 
@@ -336,7 +334,6 @@ const workerCommands = {
   changeStats: (data, postMessage) => {
     changeStats();
     postMessage({ responseMessage: "Stats changed",
-                  noti_msg: `Succesfully changed the stats to match 2025`,
                   isEditCommand: true,
                   unlocksDownload: true  });
 
@@ -348,21 +345,18 @@ const workerCommands = {
   changeCfd: (data, postMessage) => {
     change2024Standings();
     postMessage({ responseMessage: "CFD times changed",
-                  noti_msg: `Succesfully changed CFD times for 2025`,
                   isEditCommand: true,
                   unlocksDownload: true  });
   },
   changeRegulations: (data, postMessage) => {
     removeFastestLap();
     postMessage({ responseMessage: "Regulations changed",
-                  noti_msg: `Succesfully removed fastest lap bonus for 2025`,
                   isEditCommand: true,
                   unlocksDownload: true  });
   },
   changeCalendar: (data, postMessage) => {
-    changeRaces();
+    changeRaces(data.type);
     postMessage({ responseMessage: "Calendar changed",
-                  noti_msg: `Succesfully changed the calendar to match 2025`,
                   isEditCommand: true,
                   unlocksDownload: true  });
 
@@ -372,13 +366,34 @@ const workerCommands = {
   extraDrivers: (data, postMessage) => {
     insertStaff();
     postMessage({ responseMessage: "Extra drivers added",
-                  noti_msg: `Succesfully added extra drivers to the database`,
                   isEditCommand: true,
                   unlocksDownload: true  });
   },
   changePerformance: (data, postMessage) => {
     updatePerofmrnace2025();
-  }
+    postMessage({ responseMessage: "Performance changed",
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+
+    const yearData = checkYearSave();
+
+    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
+    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races]};
+    postMessage(performanceResponse);
+
+    const attibutes = getAttributesAllTeams(yearData[2]);
+    const attributesResponse = { responseMessage: "Performance fetched", content: [performance[performance.length - 1], attibutes] };
+    postMessage(attributesResponse);
+
+    const carPerformance = getPerformanceAllCars(yearData[2]);
+    const carAttributes = getAttributesAllCars(yearData[2]);
+    const carPerformanceResponse = {  responseMessage: "Cars fetched", 
+                                      content: [carPerformance, carAttributes], 
+                                      isEditCommand: true,
+                                      unlocksDownload: true  };
+
+    postMessage(carPerformanceResponse);
+}
 
 };
 

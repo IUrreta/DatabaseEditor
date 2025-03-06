@@ -8511,6 +8511,11 @@
             "TeamID": 10,
             "Boost": 1.052,
             "TyreDeg": 5
+        },
+        {
+            "TeamID": 32,
+            "Boost": 1.166,
+            "TyreDeg": 6
         }
     ]
 }

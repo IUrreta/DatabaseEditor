@@ -249,10 +249,6 @@ export function changeDriverLineUps() {
             if (TeamID !== null && TeamID !== undefined) {
                 fireDriver(DriverID, TeamID);
             }
-
-            if (ExtraTeamID !== null && ExtraTeamID !== undefined) {
-                removeFutureContract(DriverID, ExtraTeamID);
-            }
         });
     }
 
@@ -304,7 +300,7 @@ export function changeDriverLineUps() {
                 EndSeason,
                 BreakoutClause
             } = hire;
-    
+
             hireDriver(
                 "manual",
                 StaffID,
@@ -318,8 +314,15 @@ export function changeDriverLineUps() {
                 "24"
             );
         });
-        
+
     }
+
+
+    const f1Workers = queryDB(`SELECT StaffID FROM Staff_Contracts WHERE TeamID <= 10 AND PosInTeam <= 2`, "allRows");
+    f1Workers.forEach((worker) => {
+        removeFutureContract(worker[0]);
+    });
+
     update2025SeasonModTable("change-line-ups", 1);
 
 }
@@ -406,7 +409,6 @@ export function change2024Standings() {
 }
 
 export function manageFeederSeries() {
-    console.log("FEEDER SERIES");
     if (!contracts.FeederSeries || !Array.isArray(contracts.FeederSeries)) {
         console.error("No feeder series found");
     } else {
@@ -587,73 +589,83 @@ export function manageStandings() {
              SELECT 2024, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula FROM Races_PitCrewStandings WHERE SeasonID = 2025`);
 }
 
-export function changeRaces() {
+export function changeRaces(type) {
     if (!changes.Calendar || !Array.isArray(changes.Calendar)) {
         console.log("No calendar data found");
     }
     else {
-        let newRaceId = 151;
-        for (const entry of changes.Calendar) {
-            const { TrackID, Day, WeekendType } = entry;
+        if (type === "Start2024" || type === "End2024") {
+            let newRaceId = 151;
+            for (const entry of changes.Calendar) {
+                const { TrackID, Day, WeekendType } = entry;
 
-            queryDB(`
-            INSERT INTO Races (
-              RaceID,
-              SeasonID,
-              TrackID,
-              Day,
-              State,
-              RainPractice,
-              TemperaturePractice,
-              WeatherStatePractice,
-              RainQualifying,
-              TemperatureQualifying,
-              WeatherStateQualifying,
-              RainRace,
-              TemperatureRace,
-              WeatherStateRace,
-              WeekendType
+                queryDB(`
+                INSERT INTO Races (
+                RaceID,
+                SeasonID,
+                TrackID,
+                Day,
+                State,
+                RainPractice,
+                TemperaturePractice,
+                WeatherStatePractice,
+                RainQualifying,
+                TemperatureQualifying,
+                WeatherStateQualifying,
+                RainRace,
+                TemperatureRace,
+                WeatherStateRace,
+                WeekendType
+                )
+                SELECT
+                ${newRaceId} AS RaceID,
+                2025 AS SeasonID,
+                r.TrackID,
+                ${Day} AS Day,
+                0 AS State,                          
+                r.RainPractice,
+                r.TemperaturePractice,
+                r.WeatherStatePractice,
+                r.RainQualifying,
+                r.TemperatureQualifying,
+                r.WeatherStateQualifying,
+                r.RainRace,
+                r.TemperatureRace,
+                r.WeatherStateRace,
+                ${WeekendType} AS WeekendType
+                FROM Races r
+                WHERE r.SeasonID = 2024
+                AND r.TrackID = ${TrackID}
+                LIMIT 1
+            `);
+
+                newRaceId++;
+            }
+
+            queryDB(`CREATE TRIGGER IF NOT EXISTS delete_duplicate_2025
+            AFTER INSERT ON Races
+            WHEN NEW.SeasonID = 2025
+            AND EXISTS (
+                SELECT 1
+                FROM Races
+                WHERE SeasonID = 2025
+                AND TrackID = NEW.TrackID
+                AND RaceID <> NEW.RaceID
             )
-            SELECT
-              ${newRaceId} AS RaceID,
-              2025 AS SeasonID,
-              r.TrackID,
-              ${Day} AS Day,
-              0 AS State,                          
-              r.RainPractice,
-              r.TemperaturePractice,
-              r.WeatherStatePractice,
-              r.RainQualifying,
-              r.TemperatureQualifying,
-              r.WeatherStateQualifying,
-              r.RainRace,
-              r.TemperatureRace,
-              r.WeatherStateRace,
-              ${WeekendType} AS WeekendType
-            FROM Races r
-            WHERE r.SeasonID = 2024
-              AND r.TrackID = ${TrackID}
-            LIMIT 1
-          `);
-
-            newRaceId++;
+            BEGIN
+            DELETE FROM Races
+            WHERE RaceID = NEW.RaceID;
+            END;`);
+            update2025SeasonModTable("change-calendar", 1);
         }
+        else if (type === "Start2025") {
+            queryDB(`DELETE FROM Races WHERE SeasonID = 2025`);
+            let maxRaceId = queryDB(`SELECT MAX(RaceID) FROM Races`, "singleRow")[0];
+            let newRaceId = maxRaceId + 1;
+            for (const entry of changes.Calendar) {
 
-        queryDB(`CREATE TRIGGER IF NOT EXISTS delete_duplicate_2025
-        AFTER INSERT ON Races
-        WHEN NEW.SeasonID = 2025
-        AND EXISTS (
-            SELECT 1
-            FROM Races
-            WHERE SeasonID = 2025
-            AND TrackID = NEW.TrackID
-            AND RaceID <> NEW.RaceID
-        )
-        BEGIN
-        DELETE FROM Races
-        WHERE RaceID = NEW.RaceID;
-        END;`);
-        update2025SeasonModTable("change-calendar", 1);
+            }
+        }
     }
 
 }
@@ -684,19 +696,19 @@ function update2025SeasonModTable(edit, value) {
     queryDB(`INSERT OR REPLACE INTO Custom_2025_SeasonMod (key, value) VALUES ('${edit}', '${value}')`);
 }
 
-export function updatePerofmrnace2025(){
+export function updatePerofmrnace2025() {
     const globals = getGlobals();
     const teamDict = getBestParts(globals.isCreateATeam);
     let tyreDegDict = {};
-    
-    
+
+
     for (let team of Object.keys(teamDict).filter(key => key !== "0")) {
         //remove the part 0 from teamDict[team]
         delete teamDict[team]["0"];
         let teamboost = changes.Performance.find(x => x.TeamID === Number(team));
         applyBoostToCarStats(teamDict[team], teamboost.Boost, teamboost.TeamID);
         const tyreDegStatsTemas = getTyreDegStats(teamDict[team]);
-        console.log(tyreDegStatsTemas); 
+        console.log(tyreDegStatsTemas);
         tyreDegDict[team] = tyreDegStatsTemas;
     }
 
@@ -707,13 +719,14 @@ export function updatePerofmrnace2025(){
     }
 
     update2025SeasonModTable("change-performance", 1);
-    
+
 }
 
 export function updateEditsWithModData(data) {
     for (let key in data) {
         if (data[key] === "1") {
             document.querySelector(`.${key}`).classList.add("completed")
+            document.querySelector(`.${key}`).classList.remove("disabled")
             document.querySelector(`.${key} span`).textContent = "Applied"
         }
     }

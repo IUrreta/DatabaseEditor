@@ -1494,7 +1494,11 @@ export function check2025ModCompatibility(year_version) {
     return "Start2024";
   }
 
-  if (lastRaceState2024 === 2 && (currentSeason === 2024 || (currentSeason === 2025 && firstRaceState2025 === 0))) {
+  if (lastRaceState2024 === 2 && currentSeason === 2024) {
+    return "End2024";
+  }
+
+  if (currentSeason === 2025 && firstRaceState2025 === 0) {
     return "Direct2025";
   }
 

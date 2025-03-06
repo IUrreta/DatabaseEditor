@@ -275,8 +275,8 @@ export const minMaxTypeStaff = {
     }
   }
 
-  export function removeFutureContract(driverID, teamID){
-    queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 3 AND TeamID = ${teamID}`);
+  export function removeFutureContract(driverID){
+    queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 3`);
   }
   
   export function rearrangeDriverEngineerPairings(teamID) {

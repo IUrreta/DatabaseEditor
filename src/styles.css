@@ -105,9 +105,9 @@ body.light-theme {
   */
   --background: #161616;
   --generals: #202020;
-  --superficials: #262626;
-  --dropdown-back: #292929;
-  --elements: #313131;
+  --superficials: #242424;
+  --dropdown-back: #272727;
+  --elements: #303030;
   --dropdown-hover: #363636;
   --table-default: #1b1b1b;
   --table-default-odd: #1e1e1e;
@@ -216,6 +216,7 @@ body.light-theme {
   --f2-active: #1374fc;
   --f3-back: #cf2e2e;
   --f3-border: #ff7968;
+  --f1-first: #ff0000;
 
 
   /*
@@ -2571,7 +2572,8 @@ DRIVERS TABLE
 }
 
 .drivers-table-row:first-child .drivers-table-position, .teams-table-row:first-child .teams-table-position {
-  background: #ff0000 !important;
+  background: var(--f1-first) !important;
+  color: var(--gold-gradient-text);
 }
 
 .drivers-table-row:first-child .drivers-table-position.champion, .drivers-table-row:first-child .drivers-table-points.champion,
@@ -3029,7 +3031,7 @@ DRIVERS TABLE
 }
 
 .drivers-table-header, .teams-table-header {
-  border-bottom: 2px solid #ff0000;
+  border-bottom: 2px solid var(--f1-first);
 }
 
 
@@ -10738,6 +10740,12 @@ button.one-change-button{
   transition: all 0.15s;
   margin-top: 5px;
   width: 100%;
+}
+
+button.one-change-button.disabled{
+  filter: brightness(0.6);
+  cursor: default;
+  pointer-events: none;
 }
 
 button.one-change-button:hover{
