@@ -356,7 +356,7 @@ body.alternative-theme {
 
 @font-face {
   font-family: 'NumbersFont';
-  src: url("../assets/fonts/Numbers.otf") format('truetype');
+  src: url("../assets/fonts/NewNumbers.otf") format('truetype');
 }
 
 @font-face {
@@ -2741,18 +2741,29 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   justify-content: center;
-
-
+  padding-top: 4px;
 }
 
-.drivers-table-position, .teams-table-position {
+.drivers-table-data .drivers-table-points,
+.teams-table-data .teams-table-points {
+  padding-top: 4px;
+}
+
+.drivers-table-data .drivers-table-position, .teams-table-data .teams-table-position {
   font-family: 'NumbersFont' !important;
-  font-size: 16px;
+  font-size: 14px;
+  letter-spacing: -1.2px;
 }
 
-.drivers-table-points, .teams-table-points {
-  font-family: 'NumbersBold' !important;
-  font-size: 16px;
+.drivers-table-data .drivers-table-points, .teams-table-data .teams-table-points {
+  font-family: 'NumbersFont' !important;
+  font-size: 14px;
+  letter-spacing: -1.2px;
+}
+
+
+.drivers-table-header .drivers-table-position{
+  padding-top: 0;
 }
 
 .aston-team-table-logo {
