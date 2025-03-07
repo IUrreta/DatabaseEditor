@@ -9840,7 +9840,7 @@ body:has(.active #mod25logo) .background {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 60px 0;
+  padding: 60px 0 60px 0;
   scale: 1.1;
 }
 
@@ -9880,14 +9880,15 @@ body:has(.active #mod25logo) .mod-name img {
 }
 
 .small-rectangle {
-  width: 130px;
-  height: 100px;
+  width: 127px;
+  height: 116px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   position: relative;
   opacity: 0;
   will-change: opacity;
   transform: translateY(20px);
+  overflow-x: clip;
 }
 
 .small-rectangle img,
@@ -9903,20 +9904,70 @@ body:has(.active #mod25logo) .mod-name img {
 
 .high-rectangle {
   width: 130px;
-  height: 150px;
+  height: 173px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   position: relative;
   opacity: 0;
+  overflow-x: clip;
+}
+
+.ver-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 101.5%;
+  height: 100%;
+  background-color: #020988;
+  mask-image: url('../assets/images/ver-lines.svg');
+  mask-size: cover;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  z-index: -1;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+
+.ant-lines{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 101.5%;
+  height: 100%;
+  mask-image: url('../assets/images/ant-lines.svg');
+  mask-size: cover;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  z-index: -1;
+  opacity: 1;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background-color: #29e1c6;
+}
+
+.ham-lines{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 101.5%;
+  height: 100%;
+  mask-image: url('../assets/images/ham-lines.svg');
+  mask-size: cover;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  z-index: -1;
+  opacity: 1;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background-color: #bb0e0f;
 }
 
 body:has(.active #mod25logo) .small-rectangle,
 body:has(.active #mod25logo) .high-rectangle,
 body:has(.active #mod25logo) .small-rectangle img,
-body:has(.active #mod25logo) .high-rectangle img,
-body:has(.active #mod25logo) .mod-drivers .mv-gradient,
-body:has(.active #mod25logo) .mod-drivers .lh-gradient,
-body:has(.active #mod25logo) .mod-drivers .ka-gradient {
+body:has(.active #mod25logo) .high-rectangle img
+{
   animation: rectangle-appear 0.5s forwards;
   animation-delay: calc(var(--order) * 0.08s);
 }
@@ -9930,6 +9981,23 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+body:has(.active #mod25logo) .mod-drivers .mv-gradient,
+body:has(.active #mod25logo) .mod-drivers .lh-gradient,
+body:has(.active #mod25logo) .mod-drivers .ka-gradient {
+  animation: gradient-appear 0.6s forwards;
+  animation-delay: calc(var(--order) * 0.08s);
+}
+
+@keyframes gradient-appear {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0.7;
   }
 }
 
@@ -9994,6 +10062,7 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
   display: flex;
   flex-direction: column;
   align-items: center;
+  transform: translateY(-20px);
 }
 
 .mod-creators {
@@ -10045,6 +10114,10 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
 
 .mod-creators a.n4x::before {
   content: 'N4X';
+}
+
+.mod-creators a.nexus::before{
+  content: 'THEFIR3NEXUS';
 }
 
 .mod-creators a.w1echuz::before {
@@ -10131,7 +10204,6 @@ body:has(.active #mod25logo) .coming-soon {
     box-shadow: none;
   }
 }
-
 
 
 .creator-separator {
