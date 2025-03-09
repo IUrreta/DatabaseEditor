@@ -331,14 +331,49 @@ export function load_parts_stats(data) {
         if (key !== "engine") {
             let part = document.querySelector(`.part-performance[data-part='${key}']`)
             for (let stat in data[key]) {
-                if (stat !== "15") {
-                    let stat_input = part.querySelector(`.part-performance-stat[data-attribute='${stat}']`).querySelector(".custom-input-number")
-                    if (stat === "7" || stat === "8" || stat === "9") {
-                        stat_input.value = data[key][stat].toFixed(2) + " kN"
+                let stat_input = part.querySelector(`.part-performance-stat[data-attribute='${stat}']`).querySelector(".custom-input-number");
+                if (stat === "7" || stat === "8" || stat === "9") {
+                    stat_input.value = data[key][stat].toFixed(2) + " kN";
+                }
+                else if(stat === "15"){
+                    let loaded_durability = data[key][stat].toFixed(0);
+                    if(loaded_durability < 500){
+                        stat_input.value = loaded_durability;
                     }
-                    else {
-                        stat_input.value = data[key][stat].toFixed(2) + " %"
+                    else{
+                        let base_durability, durability_step;
+                        switch(key){
+                            case "chassis":
+                                base_durability = 5150;
+                                durability_step = 270;
+                                break;
+                            case "front_wing":
+                                base_durability = 2625;
+                                durability_step = 275;
+                                break;
+                            case "rear_wing":
+                                base_durability = 3125;
+                                durability_step = 295;
+                                break;
+                            case "sidepods":
+                                base_durability = 4125;
+                                durability_step = 275;
+                                break;
+                            case "underfloor":
+                                base_durability = 3550;
+                                durability_step = 290;
+                                break;
+                            case "suspension":
+                                base_durability = 2900;
+                                durability_step = 240;
+                                break;
+                        }
+                        stat_input.value = 55 - ((base_durability - loaded_durability) / durability_step) * 3;
+                        //stat_input.value = loaded_durability;
                     }
+                }
+                else {
+                    stat_input.value = data[key][stat].toFixed(2) + " %";
                 }
             }
         }
