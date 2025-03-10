@@ -341,6 +341,11 @@ body.alternative-theme {
   src: url("../assets/fonts/Formula1-Bold.ttf") format('truetype');
 }
 
+@font-face {
+  font-family: 'NumbersFont';
+  src: url("../assets/fonts/NewNumbers.otf") format('truetype');
+}
+
 .bold-font {
   font-family: 'Formula1Bold' !important;
 }
@@ -10156,6 +10161,7 @@ body:has(.active #mod25logo) .mod-creators a::before {
   margin-top: 200px;
   color: #dedde6;
   font-size: 44px;
+  font-family: 'NumbersFont';
 }
 
 body:has(.active #mod25logo) .coming-soon {
