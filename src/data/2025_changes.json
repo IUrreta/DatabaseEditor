@@ -5004,9 +5004,9 @@
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "0",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5021,7 +5021,7 @@
             "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": 0,
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5029,14 +5029,14 @@
             "FirstName": "[STRING_LITERAL:Value=|Laura|]",
             "LastName": "[STRING_LITERAL:Value=|Mueller|]",
             "CountryID": 60,
-            "DOB": 33604,
-            "DOB_ISO": "1992-01-01",
+            "DOB": 32874,
+            "DOB_ISO": "1990-01-01",
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "0",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5049,9 +5049,9 @@
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "2",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5066,7 +5066,7 @@
             "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": 0,
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5079,9 +5079,9 @@
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "8",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5094,9 +5094,9 @@
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "1",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5111,7 +5111,7 @@
             "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": 0,
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5124,9 +5124,9 @@
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "6",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5141,7 +5141,7 @@
             "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": 0,
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5156,7 +5156,7 @@
             "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": 0,
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5171,7 +5171,7 @@
             "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": 0,
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5184,9 +5184,9 @@
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "10",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5201,7 +5201,7 @@
             "PhotoDay": 45340,
             "FaceType": null,
             "FaceIndex": null,
-            "AgeType": 0,
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5214,9 +5214,9 @@
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "7",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5229,9 +5229,9 @@
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "6",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5244,9 +5244,9 @@
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "3",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5259,9 +5259,9 @@
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "5",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5274,9 +5274,9 @@
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "9",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5289,9 +5289,9 @@
             "Gender": 0,
             "IsGeneratedStaff": 1,
             "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 0,
+            "FaceType": "4",
+            "FaceIndex": "0",
+            "AgeType": 1,
             "IsGeneratedForCustomTeam": 0
         }
     ],

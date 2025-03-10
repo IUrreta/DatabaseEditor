@@ -1968,8 +1968,8 @@ function updateModBlocking(data){
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
 
-        document.querySelector(".time-travel").classList.add("disabled")
-        document.querySelector(".time-travel span").textContent = "Disabled"
+        document.querySelector(".time-travel").classList.remove("disabled")
+        document.querySelector(".time-travel span").textContent = "Apply"
     }
     else if (data === "Direct2025" || data === "End2024"){
         document.querySelector(".mod-blocking").classList.add("d-none")

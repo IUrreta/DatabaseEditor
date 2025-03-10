@@ -359,10 +359,6 @@ body.alternative-theme {
   src: url("../assets/fonts/NewNumbers.otf") format('truetype');
 }
 
-@font-face {
-  font-family: 'NumbersBold';
-  src: url("../assets/fonts/NumebrsBold.otf") format('truetype');
-}
 
 .bold-font {
   font-family: 'Formula1Bold' !important;
@@ -7973,6 +7969,10 @@ input::-webkit-inner-spin-button {
   width: 56px;
   display: flex;
   justify-content: flex-end;
+}
+
+.team-template .team-name{
+  max-width: 200px;
 }
 
 

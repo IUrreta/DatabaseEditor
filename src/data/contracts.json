@@ -841,6 +841,17 @@
             "BreakoutClause": 0.5
         },
         {
+            "DriverID": 610,
+            "TeamID": 4,
+            "PosInTeam": 5,
+            "Salary": 120000,
+            "StartingBonus": 0,
+            "RaceBonus": 0,
+            "RaceBonusTargetPos": 1,
+            "EndSeason": 2026,
+            "BreakoutClause": 0.5
+        },
+        {
             "DriverID": 106,
             "TeamID": 10,
             "PosInTeam": 3,
@@ -1353,6 +1364,13 @@
             "DriverID": 620,
             "TeamID": 30,
             "PosInTeam": 2,
+            "Salary": 100000,
+            "EndSeason": 2025
+        },
+        {
+            "DriverID": 304,
+            "TeamID": 30,
+            "PosInTeam": 3,
             "Salary": 100000,
             "EndSeason": 2025
         },

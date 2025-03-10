@@ -219,26 +219,28 @@ export function timeTravelWithData(dayNumber, extend = false) {
 }
 
 export function changeDriverLineUps() {
-    console.log("LINEUPS");
     if (contracts.Updates && Array.isArray(contracts.Updates)) {
         contracts.Updates.forEach((update) => {
-            const {
-                DriverID,
-                salary,
-                EndSeason,
-                StartingBonus,
-                RaceBonus,
-                RaceBonusTargetPos
-            } = update;
+            const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${update.DriverID} AND TeamID = 32`, "singleRow");
+            if (!hasContractWithTeam32) {
+                const {
+                    DriverID,
+                    salary,
+                    EndSeason,
+                    StartingBonus,
+                    RaceBonus,
+                    RaceBonusTargetPos
+                } = update;
 
-            editContract(
-                DriverID,
-                salary,
-                EndSeason,
-                StartingBonus,
-                RaceBonus,
-                RaceBonusTargetPos
-            );
+                editContract(
+                    DriverID,
+                    salary,
+                    EndSeason,
+                    StartingBonus,
+                    RaceBonus,
+                    RaceBonusTargetPos
+                );
+            }
         });
     }
 
@@ -254,65 +256,72 @@ export function changeDriverLineUps() {
 
     if (contracts.Hires && Array.isArray(contracts.Hires)) {
         contracts.Hires.forEach((hire) => {
-            const {
-                DriverID,
-                TeamID,
-                PosInTeam,
-                Salary,
-                StartingBonus,
-                RaceBonus,
-                RaceBonusTargetPos,
-                EndSeason,
-                BreakoutClause,
-                GrantsSuperLicense
-            } = hire;
+            const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${hire.DriverID} AND TeamID = 32`, "singleRow");
+            if (!hasContractWithTeam32) {
+                const {
+                    DriverID,
+                    TeamID,
+                    PosInTeam,
+                    Salary,
+                    StartingBonus,
+                    RaceBonus,
+                    RaceBonusTargetPos,
+                    EndSeason,
+                    BreakoutClause,
+                    GrantsSuperLicense
+                } = hire;
 
-            if (GrantsSuperLicense) {
-                editSuperlicense(DriverID, GrantsSuperLicense);
+                if (GrantsSuperLicense) {
+                    editSuperlicense(DriverID, GrantsSuperLicense);
+                }
+
+
+                hireDriver(
+                    "manual",
+                    DriverID,
+                    TeamID,
+                    PosInTeam,
+                    Salary,
+                    StartingBonus,
+                    RaceBonus,
+                    RaceBonusTargetPos,
+                    EndSeason,
+                    "24"
+                );
             }
-
-
-            hireDriver(
-                "manual",
-                DriverID,
-                TeamID,
-                PosInTeam,
-                Salary,
-                StartingBonus,
-                RaceBonus,
-                RaceBonusTargetPos,
-                EndSeason,
-                "24"
-            );
         });
+
     }
 
     if (contracts.StaffHires && Array.isArray(contracts.StaffHires)) {
         contracts.StaffHires.forEach((hire) => {
-            const {
-                StaffID,
-                TeamID,
-                PosInTeam,
-                Salary,
-                StartingBonus,
-                RaceBonus,
-                RaceBonusTargetPos,
-                EndSeason,
-                BreakoutClause
-            } = hire;
+            const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${hire.StaffID} AND TeamID = 32`, "singleRow");
+            if (!hasContractWithTeam32) {
+                const {
+                    StaffID,
+                    TeamID,
+                    PosInTeam,
+                    Salary,
+                    StartingBonus,
+                    RaceBonus,
+                    RaceBonusTargetPos,
+                    EndSeason,
+                    BreakoutClause
+                } = hire;
 
-            hireDriver(
-                "manual",
-                StaffID,
-                TeamID,
-                PosInTeam,
-                Salary,
-                StartingBonus,
-                RaceBonus,
-                RaceBonusTargetPos,
-                EndSeason,
-                "24"
-            );
+                hireDriver(
+                    "manual",
+                    StaffID,
+                    TeamID,
+                    PosInTeam,
+                    Salary,
+                    StartingBonus,
+                    RaceBonus,
+                    RaceBonusTargetPos,
+                    EndSeason,
+                    "24"
+                );
+            }
         });
 
     }
@@ -448,31 +457,33 @@ export function manageAffiliates() {
 
     if (contracts.Affiliates && Array.isArray(contracts.Affiliates)) {
         contracts.Affiliates.forEach((affiliate) => {
-            const {
-                DriverID,
-                TeamID,
-                PosInTeam,
-                Salary,
-                StartingBonus,
-                RaceBonus,
-                RaceBonusTargetPos,
-                EndSeason,
-                BreakoutClause
-            } = affiliate;
+            const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${affiliate.DriverID} AND TeamID = 32`, "singleRow");
+            if (!hasContractWithTeam32) {
+                const {
+                    DriverID,
+                    TeamID,
+                    PosInTeam,
+                    Salary,
+                    StartingBonus,
+                    RaceBonus,
+                    RaceBonusTargetPos,
+                    EndSeason,
+                    BreakoutClause
+                } = affiliate;
 
-            hireDriver(
-                "manual",
-                DriverID,
-                TeamID,
-                PosInTeam,
-                Salary,
-                StartingBonus,
-                RaceBonus,
-                RaceBonusTargetPos,
-                EndSeason,
-                "24"
-            );
-
+                hireDriver(
+                    "manual",
+                    DriverID,
+                    TeamID,
+                    PosInTeam,
+                    Salary,
+                    StartingBonus,
+                    RaceBonus,
+                    RaceBonusTargetPos,
+                    EndSeason,
+                    "24"
+                );
+            }
         });
 
 
