@@ -10153,12 +10153,14 @@ body:has(.active #mod25logo) .mod-creators a::before {
 }
 
 .coming-soon{
-  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   opacity: 0;
+  align-items: center;
 }
 
 .coming-soon span{
-  margin-top: 200px;
   color: #dedde6;
   font-size: 44px;
   font-family: 'NumbersFont';
