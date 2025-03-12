@@ -1843,7 +1843,9 @@ function populateMarquee() {
     const group2 = document.createElement("div");
     group2.classList.add("marquee__group", "second-group");
 
-    members.forEach(member => {
+    let randomizedMembers = members.sort(() => Math.random() - 0.5);
+
+    randomizedMembers.forEach(member => {
         const item = createMarqueeItem(member.name, member.tier);
         group1.appendChild(item.cloneNode(true));
         group2.appendChild(item.cloneNode(true));

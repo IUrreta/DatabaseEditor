@@ -38,11 +38,11 @@
         },
         {
             "DriverID": 102,
-            "salary": 4700000,
+            "salary": 15000000,
             "StartingBonus": 3000000,
             "RaceBonus": 100000,
             "RaceBonusTargetPos": 1,
-            "EndSeason": 2026,
+            "EndSeason": 2028,
             "BreakoutClause": 0.5
         },
         {

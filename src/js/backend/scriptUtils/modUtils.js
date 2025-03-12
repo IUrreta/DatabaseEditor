@@ -246,10 +246,13 @@ export function changeDriverLineUps() {
 
     if (contracts.Fires && Array.isArray(contracts.Fires)) {
         contracts.Fires.forEach((fire) => {
-            const { DriverID, TeamID, ExtraTeamID } = fire;
+            const { DriverID, TeamID, ExtraTeamID, Retire } = fire;
 
             if (TeamID !== null && TeamID !== undefined) {
                 fireDriver(DriverID, TeamID);
+            }
+            if (Retire !== null && Retire !== undefined) {
+                queryDB(`UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = ${DriverID}`);
             }
         });
     }
@@ -275,19 +278,21 @@ export function changeDriverLineUps() {
                     editSuperlicense(DriverID, GrantsSuperLicense);
                 }
 
-
-                hireDriver(
-                    "manual",
-                    DriverID,
-                    TeamID,
-                    PosInTeam,
-                    Salary,
-                    StartingBonus,
-                    RaceBonus,
-                    RaceBonusTargetPos,
-                    EndSeason,
-                    "24"
-                );
+                const contractExists = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${DriverID} AND TeamID = ${TeamID}`, "singleRow");
+                if (!contractExists) {
+                    hireDriver(
+                        "manual",
+                        DriverID,
+                        TeamID,
+                        PosInTeam,
+                        Salary,
+                        StartingBonus,
+                        RaceBonus,
+                        RaceBonusTargetPos,
+                        EndSeason,
+                        "24"
+                    );
+                }
             }
         });
 
@@ -601,12 +606,14 @@ export function manageStandings() {
 }
 
 export function changeRaces(type) {
+    console.log(type)
     if (!changes.Calendar || !Array.isArray(changes.Calendar)) {
         console.log("No calendar data found");
     }
     else {
         if (type === "Start2024" || type === "End2024") {
-            let newRaceId = 151;
+            let maxRaceId = queryDB(`SELECT MAX(RaceID) FROM Races`, "singleRow")[0];
+            let newRaceId = maxRaceId + 1;
             for (const entry of changes.Calendar) {
                 const { TrackID, Day, WeekendType } = entry;
 
@@ -669,13 +676,64 @@ export function changeRaces(type) {
             END;`);
             update2025SeasonModTable("change-calendar", 1);
         }
-        else if (type === "Start2025") {
-            queryDB(`DELETE FROM Races WHERE SeasonID = 2025`);
+        else if (type === "Direct2025") {
             let maxRaceId = queryDB(`SELECT MAX(RaceID) FROM Races`, "singleRow")[0];
             let newRaceId = maxRaceId + 1;
-            for (const entry of changes.Calendar) {
+            let firstNewRaceID = newRaceId;
 
+            for (const entry of changes.Calendar) {
+                const { TrackID, Day, WeekendType } = entry;
+
+                queryDB(`
+                INSERT INTO Races (
+                    RaceID,
+                    SeasonID,
+                    TrackID,
+                    Day,
+                    State,
+                    RainPractice,
+                    TemperaturePractice,
+                    WeatherStatePractice,
+                    RainQualifying,
+                    TemperatureQualifying,
+                    WeatherStateQualifying,
+                    RainRace,
+                    TemperatureRace,
+                    WeatherStateRace,
+                    WeekendType
+                )
+                SELECT
+                    ${newRaceId} AS RaceID,
+                    2025 AS SeasonID,
+                    r.TrackID,
+                    ${Day} AS Day,
+                    0 AS State,                          
+                    r.RainPractice,
+                    r.TemperaturePractice,
+                    r.WeatherStatePractice,
+                    r.RainQualifying,
+                    r.TemperatureQualifying,
+                    r.WeatherStateQualifying,
+                    r.RainRace,
+                    r.TemperatureRace,
+                    r.WeatherStateRace,
+                    ${WeekendType} AS WeekendType
+                FROM Races r
+                WHERE r.SeasonID = 2025
+                AND r.TrackID = ${TrackID}
+                LIMIT 1
+            `);
+
+                newRaceId++;
             }
+
+            // Borra las filas antiguas de la temporada 2025
+            queryDB(`
+            DELETE FROM Races 
+            WHERE SeasonID = 2025 
+            AND RaceID < ${firstNewRaceID}
+        `);
+
         }
     }
 
@@ -694,7 +752,12 @@ export function insertStaff() {
             });
         }
     });
+    changeBudgets();
     update2025SeasonModTable("extra-drivers", 1);
+}
+
+function changeBudgets() {
+    queryDB(`UPDATE Finance_TeamBalance SET Balance = Balance + 15000000`);
 }
 
 
