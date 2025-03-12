@@ -278,7 +278,7 @@ export function changeDriverLineUps() {
                     editSuperlicense(DriverID, GrantsSuperLicense);
                 }
 
-                const contractExists = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${DriverID} AND TeamID = ${TeamID}`, "singleRow");
+                const contractExists = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${DriverID} AND TeamID = ${TeamID} AND ContractType = 0`, "singleRow");
                 if (!contractExists) {
                     hireDriver(
                         "manual",
