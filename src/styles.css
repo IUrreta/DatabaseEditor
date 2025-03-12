@@ -359,7 +359,6 @@ body.alternative-theme {
   src: url("../assets/fonts/NewNumbers.otf") format('truetype');
 }
 
-
 .bold-font {
   font-family: 'Formula1Bold' !important;
 }
@@ -10243,14 +10242,17 @@ body:has(.active #mod25logo) .mod-creators a::before {
 }
 
 .coming-soon{
-  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   opacity: 0;
+  align-items: center;
 }
 
 .coming-soon span{
-  margin-top: 200px;
   color: #dedde6;
   font-size: 44px;
+  font-family: 'NumbersFont';
 }
 
 body:has(.active #mod25logo) .coming-soon {
@@ -10299,7 +10301,6 @@ body:has(.active #mod25logo) .coming-soon {
     box-shadow: none;
   }
 }
-
 
 
 .creator-separator {
@@ -10671,7 +10672,7 @@ a.bi-custom-patreon.close-slide-up{
 
 .marquee__inner {
   display: flex;
-  animation: scroll 30s linear infinite;
+  animation: scroll 65s linear infinite;
   gap: 1em;
 }
 
