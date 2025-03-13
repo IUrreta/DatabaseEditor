@@ -1813,6 +1813,7 @@ function hexToArrayBuffer(hex) {
 
 document.addEventListener('DOMContentLoaded', () => {
     versionNow = APP_VERSION;
+    const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
     document.querySelector(".splash-box").classList.add("appear")
@@ -1820,6 +1821,12 @@ document.addEventListener('DOMContentLoaded', () => {
     getPatchNotes()
     checkPatreonStatus();
     populateMarquee();
+
+    if (shouldShowPatchModal(storedVersion, versionNow)) {
+        localStorage.setItem('lastVersion', versionNow); // Guardar nueva versión
+        const patchModal = new bootstrap.Modal(document.getElementById('patchModal'));
+        patchModal.show();
+    }
 });
 
 function createMarqueeItem(name, tier) {
@@ -1955,6 +1962,21 @@ document.getElementById('logButton').addEventListener('click', function () {
     body.appendChild(table);
     doc.body.appendChild(body);
 });
+
+/**
+ * Verifies if the patch modal should be shown
+ * @param {string|null} storedVersion - Version stored in localStorage
+ * @param {string} versionNow - Current version of the app
+ * @returns {boolean} - True if the modal should be shown, false otherwise
+ */
+function shouldShowPatchModal(storedVersion, versionNow) {
+    if (!storedVersion) return true; // Si no hay una versión guardada, mostrar el modal
+
+    const storedParts = storedVersion.split('.').map(Number);
+    const currentParts = versionNow.split('.').map(Number);
+
+    return storedParts[0] < currentParts[0] || storedParts[1] < currentParts[1];
+}
 
 function updateModBlocking(data){
     console.log(data)
