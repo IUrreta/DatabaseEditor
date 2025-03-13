@@ -1,4 +1,4 @@
-import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict, f1_teams, f2_teams, f3_teams, inverted_dict  } from "./config";
+import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict, f1_teams, f2_teams, f3_teams, inverted_dict } from "./config";
 import { game_version, make_name_prettier } from "./renderer";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import interact from 'interactjs';
@@ -35,7 +35,7 @@ let driverEditingName;
 let driver1;
 let driver2;
 let originalTeamId
-export  let currentSeason;
+export let currentSeason;
 
 export function setCurrentSeason(season) {
     currentSeason = season
@@ -49,17 +49,19 @@ let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bu
 /**
  * Removes all the drivers from teams and categories
  */
-export function remove_drivers() {
-    document.querySelectorAll('.driver-space').forEach(item => {
-        item.innerHTML = ""
-    });
+export function remove_drivers(staffOnly = false) {
+    if (!staffOnly) {
+        document.querySelectorAll('.driver-space').forEach(item => {
+            item.innerHTML = ""
+        });
+        document.querySelectorAll('.affiliates-space').forEach(item => {
+            item.innerHTML = ""
+        });
+        freeDriversDiv.innerHTML = ""
+    }
     document.querySelectorAll('.staff-space').forEach(item => {
         item.innerHTML = ""
     });
-    document.querySelectorAll('.affiliates-space').forEach(item => {
-        item.innerHTML = ""
-    });
-    freeDriversDiv.innerHTML = ""
     freeStaffDiv.innerHTML = ""
 }
 
@@ -67,7 +69,7 @@ export function insert_space(str) {
     return str.replace(/([A-Z])/g, ' $1').trim();
 }
 
-export function format_name(fullName, nameSplitted, spanName, spanLastName){
+export function format_name(fullName, nameSplitted, spanName, spanLastName) {
     if (fullName.length > 17) {
         let nameArray = fullName.split(" ");
         let firstName = nameArray[0];
@@ -77,7 +79,7 @@ export function format_name(fullName, nameSplitted, spanName, spanLastName){
         } else {
             spanName.textContent = firstName[0] + ". ";
         }
-    
+
         spanLastName.textContent = nameArray.slice(1).join(" ").toUpperCase();
     } else {
         spanName.textContent = insert_space(nameSplitted[0]) + " "
@@ -130,7 +132,7 @@ export function place_drivers(driversArray) {
 
 }
 
-function add_edit_container(div){
+function add_edit_container(div) {
     let edit_container = document.createElement("div")
     edit_container.className = "edit-container"
     let numbersicon = document.createElement("i")
@@ -152,7 +154,7 @@ function add_edit_container(div){
         edit_stats_div.scrollIntoView({ behavior: "smooth", block: "center" })
     })
 }
- 
+
 
 export function update_name(driverID, name) {
     let freeDiv = document.querySelector(`.free-driver[data-driverid='${driverID}']`)
@@ -771,7 +773,7 @@ function queryContract(elem) {
     driverEditingID = elem.dataset.driverid
     driverEditingName = make_name_prettier(elem.innerText)
 
-    const command = new Command("driverRequest",  { driverID: driverEditingID });
+    const command = new Command("driverRequest", { driverID: driverEditingID });
     command.execute();
 
 }
@@ -797,7 +799,7 @@ function manageDrivers(...divs) {
  */
 document.getElementById("confirmButton").addEventListener('click', function () {
     if (modalType === "hire") {
-        if (((f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId)) && !destinationParent.classList.contains("affiliates-space")  ) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space") | originalParent.className === "staff-space") {
+        if (((f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId)) && !destinationParent.classList.contains("affiliates-space")) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space") | originalParent.className === "staff-space") {
             signDriver("fireandhire")
         }
         signDriver("regular")
@@ -862,7 +864,7 @@ function editContract() {
         futurePosition: futureValues[5]
     }
 
-    const command = new Command("editContract",  data);
+    const command = new Command("editContract", data);
     command.execute();
 
     if (future_team !== "-1") {
@@ -911,7 +913,7 @@ function signDriver(type) {
                 data["team"] = "F3"
             }
         }
-        const command = new Command("fireDriver",  data);
+        const command = new Command("fireDriver", data);
         command.execute();
 
     }
@@ -948,7 +950,7 @@ function signDriver(type) {
             team: name_dict[teamDestiniy]
         }
         destinationParent.appendChild(draggable);
-        const command = new Command("hireDriver",  data);
+        const command = new Command("hireDriver", data);
         command.execute();
 
     }
@@ -961,7 +963,7 @@ function signDriver(type) {
             team: name_dict[teamDestiniy]
         }
         destinationParent.appendChild(draggable);
-        const command = new Command("autoContract",  dataAuto);
+        const command = new Command("autoContract", dataAuto);
         command.execute();
 
     }
@@ -1277,7 +1279,7 @@ interact('.free-driver').draggable({
                                             driver2: make_name_prettier(element.firstChild.innerText),
                                         }
 
-                                        const command = new Command("swapDrivers",  data);
+                                        const command = new Command("swapDrivers", data);
                                         command.execute();
                                         manage_swap()
                                     }
@@ -1314,7 +1316,7 @@ interact('.free-driver').draggable({
                                 data["team"] = "F3"
                             }
                         }
-                        const command = new Command("fireDriver",  data);
+                        const command = new Command("fireDriver", data);
                         command.execute();
                     }
                 }
@@ -1378,7 +1380,7 @@ interact('.free-driver').draggable({
                                             driver2: element.firstChild.innerText,
                                         }
 
-                                        const command = new Command("swapDrivers",  data);
+                                        const command = new Command("swapDrivers", data);
                                         command.execute();
                                         manage_swap()
                                     }
@@ -1419,7 +1421,7 @@ interact('.free-driver').draggable({
                                 data["team"] = "F3"
                             }
                         }
-                        const command = new Command("fireDriver",  data);
+                        const command = new Command("fireDriver", data);
                         command.execute();
                     }
                 }

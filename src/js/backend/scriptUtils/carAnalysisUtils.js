@@ -224,9 +224,7 @@ export function getBestPartsUntil(day, customTeam = false) {
 export function getCarStats(designDict) {
     const statsValues = {};
     for (const part in designDict) {
-        // designDict[part] es algo como [[DesignID], ...] en el Python original
-        // asumiendo designDict[part][0][0] sea el designID
-        // Ojo: si no hay array, chequear que exista
+
         const designInfo = designDict[part][0];
         const designID = (designInfo && designInfo.length) ? designInfo[0] : null;
 
@@ -243,9 +241,6 @@ export function getCarStats(designDict) {
             }
             statsValues[part] = tmp;
         } else {
-            // Si no hay design -> pon stats 0
-            // En Python: stats_values[part] = { stat: 0 for stat in default_parts_stats[part] }
-            // Asumimos default_parts_stats[part] es un array de stats
             const zeroStats = {};
             for (const stat of carConstants.defaultPartsStats[part]) {
                 zeroStats[stat] = 0;
@@ -255,6 +250,139 @@ export function getCarStats(designDict) {
     }
     return statsValues;
 }
+
+export function getTyreDegStats(designDict) {
+    const statsValues = {};
+    //only part 4 and 8
+    const tyreDegDict = {4: designDict[4], 8: designDict[8]};
+    for (const part in tyreDegDict) {
+        const designInfo = tyreDegDict[part][0];
+        const designID = (designInfo && designInfo.length) ? designInfo[0] : null;
+
+        if (designID !== null) {
+            const rows = queryDB(`
+            SELECT PartStat, Value
+            FROM Parts_Designs_StatValues
+            WHERE DesignID = ${designID}
+          `, "allRows");
+            // rows => [ [PartStat, Value], [PartStat, Value], ... ]
+            const tmp = {};
+            for (const [stat, val] of rows) {
+                tmp[stat] = Math.round(val * 1000) / 1000; // round to 3 decimals
+            }
+            statsValues[part] = tmp;
+        } else {
+            const zeroStats = {};
+            for (const stat of carConstants.defaultPartsStats[part]) {
+                zeroStats[stat] = 0;
+            }
+            statsValues[part] = zeroStats;
+        }
+    }
+    return statsValues;
+}
+
+export function updateTyreDegStats(designDictTeamReceiver, designDictTeamGiver, teamReceiver, teamGiver) {
+    console.log(designDictTeamReceiver);
+    console.log(designDictTeamGiver);
+    console.log(`Team Receiver: ${teamReceiver}, Team Giver: ${teamGiver}`);
+    //only part 4 and 8
+    const reducedDesignDictTeamReceiver = {4: designDictTeamReceiver[4][0][0], 8: designDictTeamReceiver[8][0][0]};
+    for (const part in reducedDesignDictTeamReceiver){
+        let designID = reducedDesignDictTeamReceiver[part];
+        let newTyreDegStat = designDictTeamGiver[part][2];
+        queryDB(`
+            UPDATE Parts_Designs_StatValues
+            SET Value = ${newTyreDegStat}
+            WHERE DesignID = ${designID} AND PartStat = 2
+        `);
+
+        queryDB(`UPDATE Parts_TeamExpertise
+            SET Expertise = ${newTyreDegStat}
+            WHERE TeamID = ${teamReceiver}
+                AND PartType = ${part}
+                AND PartStat = 2
+        `);
+    }
+}
+
+export function applyBoostToCarStats(designDict, boost, team) {
+    const statsValues = {};
+    for (const part in designDict) {
+
+        const designInfo = designDict[part][0];
+        const designID = (designInfo && designInfo.length) ? designInfo[0] : null;
+
+        if (designID !== null) {
+            const rows = queryDB(`
+            SELECT PartStat, Value, UnitValue
+            FROM Parts_Designs_StatValues
+            WHERE DesignID = ${designID}
+          `, "allRows");
+            const tmp = {};
+            for (const [stat, val, unitVal] of rows) {
+                if (stat !== 15) {
+                  let newUnitVal = applyScaledBoostToStatValue(unitVal, stat, boost);
+                  let newVal = carConstants.unitValueToValue[stat](newUnitVal);
+        
+                //   console.log(
+                //     `Old UnitValue: ${unitVal}, New UnitValue: ${newUnitVal} | ` +
+                //     `Old Value: ${val}, New Value: ${newVal} | Part: ${part} | Stat: ${stat} | Team: ${team}`
+                //   );
+
+                  queryDB(
+                    `UPDATE Parts_Designs_StatValues
+                     SET UnitValue = ${newUnitVal}, Value = ${newVal}
+                     WHERE DesignID = ${designID} AND PartStat = ${stat}`
+                  );
+
+                  queryDB(`
+                    UPDATE Parts_TeamExpertise
+                    SET Expertise = ${newVal}
+                    WHERE TeamID = ${team}
+                        AND PartType = ${part}
+                        AND PartStat = ${stat}
+                    `);
+
+                  tmp[stat] = Math.round(newVal * 1000) / 1000; // redondeo a 3 decimales
+                }
+              }
+            statsValues[part] = tmp;
+        } else {
+            const zeroStats = {};
+            for (const stat of carConstants.defaultPartsStats[part]) {
+                zeroStats[stat] = 0;
+            }
+            statsValues[part] = zeroStats;
+        }
+    }
+    return statsValues;
+}
+
+function applyScaledBoostToStatValue(originalValue, statID, boost) {
+    // 1) Identificar el rango correspondiente a este stat
+    const [minVal, maxVal] = carConstants.statsMinMax[statID] || [0, 100]; // fallback [0,100] si no está en el diccionario
+    
+    // Evitar división por cero en caso de minVal == maxVal
+    const rangeSize = maxVal - minVal;
+    if (rangeSize <= 0) {
+      return originalValue; 
+    }
+  
+    // 2) Normalizar (0 a 1)
+    let normalized = (originalValue - minVal) / rangeSize;
+  
+    // 3) Multiplicar por el boost
+    normalized *= boost;
+  
+    // 4) Clamp a [0,1]
+    if (normalized > 1) normalized = 1;
+    if (normalized < 0) normalized = 0;
+  
+    // 5) Des-normalizar
+    const newValue = minVal + normalized * rangeSize;
+    return newValue;
+  }
 
 /**
  * Devuelve el UnitValue de cada stat de un dict de diseños
@@ -1230,9 +1358,12 @@ export function changeExpertiseBased(part, stat, newValue, teamId, type = "exist
           AND PartStat = ${stat}
       `, 'singleValue') || 0;
 
+    // console.log(newValue, currentValue, currentExpertise);
+
     const newExpertise = (Number(newValue) * Number(currentExpertise)) / Number(currentValue);
 
 
+    // console.log(`Old expertise: ${currentExpertise}, New expertise: ${newExpertise}`);
     queryDB(`
         UPDATE Parts_TeamExpertise
         SET Expertise = ${newExpertise}

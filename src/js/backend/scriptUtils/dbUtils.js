@@ -725,6 +725,23 @@ export function fetchTeamsStandings(year) {
     `, 'allRows') || [];
 }
 
+export function fetchPointsRegulations() {
+  const pointScheme = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 7`, 'singleValue');
+  const twoBiggestPoints = queryDB(`SELECT Points FROM Regulations_NonTechnical_PointSchemes WHERE (PointScheme = ${pointScheme}) AND (RacePos = 1 OR RacePos = 2); `, 'allRows');
+  const isLastraceDouble = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 8`, 'singleValue');
+  const fastestLapBonusPoint = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 9`, 'singleValue');
+  const poleBonusPoint = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 10`, 'singleValue');
+  const res = {
+    pointScheme: pointScheme,
+    twoBiggestPoints: twoBiggestPoints,
+    isLastraceDouble: isLastraceDouble,
+    fastestLapBonusPoint: fastestLapBonusPoint,
+    poleBonusPoint: poleBonusPoint
+  }
+
+  return res;
+}
+
 export function fetchOneTeamSeasonResults(team, year) {
   const teamID = team;
   const season = year;
@@ -813,27 +830,14 @@ export function fetchEventsDoneFrom(year) {
 
 export function fetchEventsFrom(year) {
   const seasonEventsRows = queryDB(`
-      SELECT TrackID
+      SELECT RaceID, TrackID, WeekendType
       FROM Races
       WHERE SeasonID = ${year}
     `, 'allRows') || [];
 
-  const seasonIdsRows = queryDB(`
-      SELECT RaceID
-      FROM Races
-      WHERE SeasonID = ${year}
-    `, 'allRows') || [];
-
-
-  const eventsIds = [];
-  for (let i = 0; i < seasonIdsRows.length; i++) {
-    const raceID = seasonIdsRows[i][0];
-    const trackID = seasonEventsRows[i][0];
-    eventsIds.push([raceID, trackID]);
-  }
-
-  return eventsIds;
+  return seasonEventsRows; // Ya es un array de arrays con [RaceID, TrackID]
 }
+
 
 
 export function formatSeasonResults(results, driverName, teamID, driver, year, sprints) {
@@ -1459,6 +1463,51 @@ export function editEngines(engineData) {
   }
 }
 
+export function check2025ModCompatibility(year_version) {
+  const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+  const currentDay = daySeason[0];
+  const currentSeason = daySeason[1];
+
+  const minDay2024 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2024`, 'singleValue');
+  const firstRaceState2024 = queryDB(`SELECT State FROM Races WHERE Day = ${minDay2024} AND SeasonID = 2024`, 'singleValue');
+  
+  const maxDay2024 = queryDB(`SELECT MAX(Day) FROM Races WHERE SeasonID = 2024`, 'singleValue');
+  const lastRaceState2024 = queryDB(`SELECT State FROM Races WHERE Day = ${maxDay2024} AND SeasonID = 2024`, 'singleValue');
+
+  const minDay2025 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2025`, 'singleValue');
+  const firstRaceState2025 = queryDB(`SELECT State FROM Races WHERE Day = ${minDay2025} AND SeasonID = 2025`, 'singleValue');
+
+  console.log("MOD COMPATIBILITY CHECK")
+  console.log({ firstRaceState2024, year_version, currentSeason, lastRaceState2024, firstRaceState2025 });
+
+  if (year_version !== "24") {
+    return "NotCompatible";
+  }
+
+  const edited = queryDB(`SELECT * FROM Custom_2025_SeasonMod WHERE value = 1`, 'allRows');
+  console.log({ edited });
+  if (edited.length > 0) {
+    return "AlreadyEdited";
+  }
+
+  if (firstRaceState2024 === 0 && currentSeason === 2024) {
+    return "Start2024";
+  }
+
+  if (lastRaceState2024 === 2 && currentSeason === 2024) {
+    // return "End2024";
+    return "NotCompatible";
+  }
+
+  if (currentSeason === 2025 && firstRaceState2025 === 0) {
+    // return "Direct2025";
+    return "NotCompatible";
+  }
+
+  return "NotCompatible";
+}
+
+
 export function updateTeamsSuppliedByEngine(engineId, stats) {
   const teamsSupplied = queryDB(`SELECT teamID FROM Custom_Engine_Allocations WHERE engineId = ${engineId}`, 'allRows');
   for (let team in teamsSupplied) {
@@ -1563,4 +1612,27 @@ export function fetchCustomConfig() {
   config.frozenMentality = triggers.frozenMentality
 
   return config;
+}
+
+
+export function fetch2025ModData(){
+  let tableExists = queryDB(`SELECT name FROM sqlite_master WHERE type='table' AND name='Custom_2025_SeasonMod'`, "singleRow");
+  if (!tableExists) {
+      queryDB(`CREATE TABLE Custom_2025_SeasonMod (key TEXT PRIMARY KEY, value TEXT)`);
+      //insert change-regulations with value 0
+      queryDB(`INSERT INTO Custom_2025_SeasonMod (key, value) VALUES ('time-travel', '0'), ('extra-drivers', '0'),
+        ('change-line-ups', '0'), ('change-stats', '0'), ('change-calendar', '0'), ('change-regulations', '0'), ('change-cfd', '0'), ('change-performance', '0')`);
+  }
+  
+  const rows = queryDB(`SELECT key, value FROM Custom_2025_SeasonMod`, 'allRows') || [];
+  const config = {};
+
+  rows.forEach(row => {
+    const key = row[0];
+    const value = row[1];
+    config[key] = value;
+  });
+
+  return config;
+
 }

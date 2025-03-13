@@ -22,6 +22,7 @@ import {
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups
 } from './stats';
 import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs, reload_h2h_graphs, init_colors_dict, edit_colors_dict } from './head2head';
+import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
 import { PUBLIC_KEY } from './public_key.js';
@@ -141,6 +142,8 @@ let scriptSelected = 0;
 let divBlocking = 1;
 let saveName;
 let tempImageData = null;
+
+let calendarEditMode = "Start2024"
 
 export let selectedTheme = "default-theme";
 
@@ -566,7 +569,17 @@ const messageHandlers = {
         sortList("free-drivers");
         place_drivers_editStats(message);
     },
+    "Drivers fetched": (message) => {
+        remove_drivers();
+        removeStatsDrivers();
+        listenersStaffGroups();
+        place_drivers(message);
+        sortList("free-drivers");
+        place_drivers_editStats(message);
+    },
     "Staff fetched": (message) => {
+        remove_drivers(true);
+        removeStatsDrivers(true);
         place_staff(message);
         sortList("free-staff")
         place_staff_editStats(message);
@@ -660,6 +673,12 @@ const messageHandlers = {
     },
     "Custom Engines fetched": (message) => {
         load_custom_engines(message.slice(1))
+    },
+    "Mod data fetched": (message) => {
+        updateEditsWithModData(message)
+    },
+    "Mod compatibility": (message) => {
+        updateModBlocking(message)
     }
 };
 
@@ -1307,7 +1326,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
 
 document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", function () {
     dbWorker.postMessage({
-        command: 'exportDB',
+        command: 'exportSave',
         data: {}
     });
 
@@ -1329,6 +1348,7 @@ document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", 
  * checks if a save and a script have been selected to unlock the tool
  */
 function check_selected() {
+    console.log(scriptSelected, isSaveSelected, divBlocking)
     if (scriptSelected === 1) {
         document.getElementById("scriptSelected").classList.add("completed")
     }
@@ -1405,7 +1425,9 @@ document.querySelector(".toolbar-logo-and-title").addEventListener("click", func
     manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 0
     document.getElementById("blockDiv").classList.remove("disappear")
-    document.querySelector(".scriptPills.active").classList.remove("active")
+    if (document.querySelector(".scriptPills.active")){
+        document.querySelector(".scriptPills.active").classList.remove("active")
+    }
     divBlocking = 1;
     check_selected()
 })
@@ -1791,6 +1813,7 @@ function hexToArrayBuffer(hex) {
 
 document.addEventListener('DOMContentLoaded', () => {
     versionNow = APP_VERSION;
+    const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
     document.querySelector(".splash-box").classList.add("appear")
@@ -1798,6 +1821,12 @@ document.addEventListener('DOMContentLoaded', () => {
     getPatchNotes()
     checkPatreonStatus();
     populateMarquee();
+
+    if (shouldShowPatchModal(storedVersion, versionNow)) {
+        localStorage.setItem('lastVersion', versionNow); // Guardar nueva versión
+        const patchModal = new bootstrap.Modal(document.getElementById('patchModal'));
+        patchModal.show();
+    }
 });
 
 function createMarqueeItem(name, tier) {
@@ -1817,7 +1846,9 @@ function populateMarquee() {
     const group2 = document.createElement("div");
     group2.classList.add("marquee__group", "second-group");
 
-    members.forEach(member => {
+    let randomizedMembers = members.sort(() => Math.random() - 0.5);
+
+    randomizedMembers.forEach(member => {
         const item = createMarqueeItem(member.name, member.tier);
         group1.appendChild(item.cloneNode(true));
         group2.appendChild(item.cloneNode(true));
@@ -1931,3 +1962,116 @@ document.getElementById('logButton').addEventListener('click', function () {
     body.appendChild(table);
     doc.body.appendChild(body);
 });
+
+/**
+ * Verifies if the patch modal should be shown
+ * @param {string|null} storedVersion - Version stored in localStorage
+ * @param {string} versionNow - Current version of the app
+ * @returns {boolean} - True if the modal should be shown, false otherwise
+ */
+function shouldShowPatchModal(storedVersion, versionNow) {
+    if (!storedVersion) return true; // Si no hay una versión guardada, mostrar el modal
+
+    const storedParts = storedVersion.split('.').map(Number);
+    const currentParts = versionNow.split('.').map(Number);
+
+    return storedParts[0] < currentParts[0] || storedParts[1] < currentParts[1];
+}
+
+function updateModBlocking(data){
+    console.log(data)
+    if (data === "AlreadyEdited"){
+        document.querySelector(".mod-blocking").classList.add("d-none")
+        document.querySelector(".changes-grid").classList.remove("d-none")
+    }
+    else if (data === "Start2024"){
+        document.querySelector(".mod-blocking").classList.add("d-none")
+        document.querySelector(".changes-grid").classList.remove("d-none")
+
+        document.querySelector(".time-travel").classList.remove("disabled")
+        document.querySelector(".time-travel span").textContent = "Apply"
+    }
+    else if (data === "Direct2025" || data === "End2024"){
+        document.querySelector(".mod-blocking").classList.add("d-none")
+        document.querySelector(".changes-grid").classList.remove("d-none")
+
+        document.querySelector(".time-travel").classList.add("disabled")
+        document.querySelector(".time-travel span").textContent = "Disabled"
+        calendarEditMode = data;
+    }
+    else{
+        document.querySelector(".mod-blocking").classList.remove("d-none")
+        document.querySelector(".changes-grid").classList.add("d-none")
+    }
+}
+
+document.querySelector(".time-travel").addEventListener("click", function () {
+    const command = new Command("timeTravel", {dayNumber: 45657});
+    command.execute();
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
+})
+
+document.querySelector(".change-line-ups").addEventListener("click", function () {
+    const command = new Command("changeLineUps", {});
+    command.execute();
+    document.querySelector(".ham-transfer").classList.remove("mefont")
+    document.querySelector(".sai-transfer").classList.remove("fefont")
+    document.querySelector(".ham-transfer").classList.add("fefont")
+    document.querySelector(".sai-transfer").classList.add("wifont")
+    document.querySelector(".ant-transfer").classList.add("mefont")
+    document.querySelector(".ant-ovr").classList.add("mefont")
+    document.querySelector(".bor-ovr").classList.remove("mcfont")
+    document.querySelector(".bor-ovr").classList.add("affont")
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
+})
+
+document.querySelector(".change-stats").addEventListener("click", function () {
+    const command = new Command("changeStats", {});
+    command.execute();
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
+})
+
+document.querySelector(".change-cfd").addEventListener("click", function () {
+    const command = new Command("changeCfd", {});
+    command.execute();
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
+})
+
+document.querySelector(".change-regulations").addEventListener("click", function () {
+    const command = new Command("changeRegulations", {});
+    command.execute();
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
+})
+
+document.querySelector(".extra-drivers").addEventListener("click", function () {
+    const command = new Command("extraDrivers", {});
+    command.execute();
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
+
+    document.querySelector(".change-line-ups").classList.remove("disabled")
+    document.querySelector(".change-line-ups span").textContent = "Apply"
+})
+
+document.querySelector(".change-calendar").addEventListener("click", function () {
+    const command = new Command("changeCalendar", {type: calendarEditMode});
+    command.execute();
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
+})
+
+
+document.querySelector(".change-performance").addEventListener("click", function () {
+    const command = new Command("changePerformance", {});
+    command.execute();
+    document.querySelector(".mclaren-performance").innerText = "63.7%"
+    document.querySelector(".redbull-performance").innerText = "59.4%"
+    document.querySelector(".williams-performance").innerText = "56.8%"
+    this.classList.add("completed")
+    this.querySelector("span").textContent = "Applied"
+})

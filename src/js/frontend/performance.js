@@ -79,7 +79,7 @@ export function load_cars(data) {
             name.innerText = car.dataset.teamshow + " " + carNumber.toString() + " -  #" + data[key][carNumber][1];
             let missing_parts = data[key][carNumber][2];
             let missing_copntainer = car.querySelector(".car-missing-parts")
-            missing_copntainer.innerHTML = ""
+            missing_copntainer.innerHTML = "<span class='value'></span>"
             if (missing_parts.length > 0) {
                 let list = document.createElement("span")
                 let string = ""
@@ -98,8 +98,7 @@ export function load_cars(data) {
                 icon.classList.add("bi", "bi-check-all")
                 missing_copntainer.appendChild(icon)
             }
-            let value = document.createElement("span")
-            value.classList.add("value")
+            let value = car.querySelector(".car-missing-parts .value")
             value.innerText = data[key][carNumber][0].toFixed(2) + " %"
             missing_copntainer.appendChild(value)
         })
@@ -182,8 +181,8 @@ document.getElementById("teamsCarsButton").addEventListener("click", function (e
 
 document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click", function () {
-        order_by(elem.dataset.attribute);
         document.querySelector("#attributeButton").innerText = elem.innerText;
+        order_by(elem.dataset.attribute);
     })
 })
 

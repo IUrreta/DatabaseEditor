@@ -17,6 +17,7 @@ let alpineReplace = "alpine"
 let alfaReplace = "alfa"
 let driverOrTeams = "drivers"
 let isYearSelected = false
+let racesLeftCount = 0, sprintsLeft = 0;
 export let engine_allocations;
 let driverCells;
 let teamCells;
@@ -217,29 +218,39 @@ function checkscroll() {
 }
 
 function new_color_drivers_table() {
-    let datazone = document.querySelector(".drivers-table-data")
-    let rows = datazone.querySelectorAll(".drivers-table-row")
-    rows.forEach(function (row, index) {
-        let cells = row.querySelectorAll(".drivers-table-normal")
+    let datazone = document.querySelector(".drivers-table-data");
+    let rows = datazone.querySelectorAll(".drivers-table-row");
+
+    rows.forEach(function (row) {
+        let cells = row.querySelectorAll(".drivers-table-normal");
+
         cells.forEach(function (cell) {
-            if (cell.dataset.pos === "1") {
-                cell.classList.add("first")
+            let pos = cell.dataset.pos;
+
+            if (pos) {
+                let match = pos.match(/^(\d)(?:\s*\(.*\))?$/);
+                if (match) {
+                    let number = match[1];
+                    if (number === "1") {
+                        cell.classList.add("first");
+                    } else if (number === "2") {
+                        cell.classList.add("second");
+                    } else if (number === "3") {
+                        cell.classList.add("third");
+                    }
+                }
             }
-            else if (cell.dataset.pos === "2") {
-                cell.classList.add("second")
-            }
-            else if (cell.dataset.pos === "3") {
-                cell.classList.add("third")
-            }
+
             if (cell.dataset.fastlap === "1") {
-                cell.classList.add("fastest")
+                cell.classList.add("fastest");
             }
             if (cell.dataset.quali === "1") {
-                cell.style.fontFamily = "Formula1Bold"
+                cell.style.fontFamily = "Formula1Bold";
             }
-        })
-    })
+        });
+    });
 }
+
 
 function manage_teams_table_logos() {
     let logos = document.querySelectorAll(".teams-table-logo-inner")
@@ -426,18 +437,52 @@ function order_teams_table() {
 export function new_load_drivers_table(data) {
     seasonResults = data
     let datazone = document.querySelector(".drivers-table-data")
+    let pointsInfo = data[2]
     datazone.innerHTML = ""
     data = data[0]
     data = new_order_drivers(data)
+    let driver1Poitns = 0, driver2Points = 0;
     data.forEach(function (driver, index) {
         let odd = index % 2 === 0
         let races_done = driver.slice(3).map(x => x[0])
-        new_addDriver(driver, races_done, odd)
+        let points = new_addDriver(driver, races_done, odd)
+        if (index === 0) {
+            driver1Poitns = points
+        }
+        else if (index === 1) {
+            driver2Points = points
+        }
     })
+    checkIfDriverIsChampion(data[0], driver1Poitns, driver2Points, pointsInfo)
     hoverListeners()
     checkscroll()
     new_color_drivers_table()
     driverCells = document.querySelectorAll(".drivers-table-data .drivers-table-normal")
+}
+
+function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsInfo) {
+    const lastRaceDone = driver1[driver1.length - 1][0]
+    const lastRaceIndex = calendarData.findIndex(x => x[0] === lastRaceDone);
+    racesLeftCount = calendarData.length - (lastRaceIndex + 1);
+    sprintsLeft = calendarData.filter(x => x[2] === 1 && x[0] >= lastRaceDone).length
+
+    const pointsDif = driver1Points - driver2Points
+    let pointsRemaining = racesLeftCount * pointsInfo.twoBiggestPoints[0] + sprintsLeft * 8 +
+    (pointsInfo.isLastRaceDouble ? pointsInfo.twoBiggestPoints[0] : 0) +
+    (pointsInfo.fastestLapBonusPoint === 1 ? racesLeftCount : 0) +
+    (pointsInfo.poleBonusPoint === 1 ? racesLeftCount : 0)
+
+    const firstDriverPos = document.querySelector(".drivers-table-data .drivers-table-position")
+    const firstDriverPoints = document.querySelector(".drivers-table-data .drivers-table-points")
+    console.log(firstDriverPos)
+    if (pointsDif > pointsRemaining){
+        firstDriverPos.classList.add("champion")
+        firstDriverPoints.classList.add("champion")
+    }
+    else{
+        firstDriverPos.classList.remove("champion")
+        firstDriverPoints.classList.remove("champion")
+    }
 }
 
 function new_order_drivers(array) {
@@ -477,12 +522,14 @@ export function reloadTables() {
 }
 
 export function new_load_teams_table(data) {
-    let pairTeamPos = data[data.length - 1]
+    let pairTeamPos = data[data.length - 2]
+    let pointsInfo = data[data.length - 1]
     //create dict with dirst element of pair as key and second as value
     let pairTeamPosDict = {}
     pairTeamPos.forEach(function (pair) {
         pairTeamPosDict[pair[0]] = pair[1]
     })
+    console.log(pairTeamPosDict)
     data = data[0]
     let datazone = document.querySelector(".teams-table-data")
     datazone.innerHTML = ""
@@ -507,17 +554,50 @@ export function new_load_teams_table(data) {
             teamData[team].push([])
         }
     }
+    let team1Points = 0, team2Points = 0, firstTeamId = 0;
     for (let team in combined_dict) {
         if (f1_teams.includes(parseInt(team))) {
             let pos = pairTeamPosDict[team]
-            new_addTeam(teamData[team], combined_dict[team], pos, team)
+            let points = new_addTeam(teamData[team], combined_dict[team], pos, team)
+            if (pairTeamPosDict[team] === 1) {
+                team1Points = points
+                firstTeamId = team
+            }
+            else if (pairTeamPosDict[team] === 2) {
+                team2Points = points
+            }
         }
     }
+    console.log(`team1Points: ${team1Points}, team2Points: ${team2Points}`)
     new_color_teams_table()
     order_teams_table()
+    checkIfTeamIsChamp(team1Points, team2Points, pointsInfo)
     manage_teams_table_logos()
     manage_teams_table_names()
     teamCells = document.querySelectorAll(".teams-table-data .teams-table-normal")
+}
+
+function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo) {
+    const pointsDif = team1Points - team2Points
+    let pointsRemaining = racesLeftCount * (parseInt(pointsInfo.twoBiggestPoints[0]) + parseInt(pointsInfo.twoBiggestPoints[1])) + sprintsLeft * 15 +
+    (pointsInfo.isLastRaceDouble ? pointsInfo.twoBiggestPoints[0] : 0) +
+    (pointsInfo.fastestLapBonusPoint === 1 ? racesLeftCount : 0) +
+    (pointsInfo.poleBonusPoint === 1 ? racesLeftCount : 0)
+
+    console.log(`pointsDif: ${pointsDif}, pointsRemaining: ${pointsRemaining}`)
+
+    const firstTeamPos = document.querySelector(".teams-table-data .teams-table-position")
+    const firstTeamPoints = document.querySelector(".teams-table-data .teams-table-points")
+
+    console.log(firstTeamPos)
+    if (pointsDif > pointsRemaining){
+        firstTeamPos.classList.add("champion")
+        firstTeamPoints.classList.add("champion")
+    }
+    else{
+        firstTeamPos.classList.remove("champion")
+        firstTeamPoints.classList.remove("champion")
+    }
 }
 
 function new_addTeam(teamData, name, pos, id) {
@@ -632,6 +712,8 @@ function new_addTeam(teamData, name, pos, id) {
     pointsDiv.innerText = teampoints
     row.appendChild(pointsDiv)
     data.appendChild(row)
+
+    return teampoints
 }
 
 
@@ -656,7 +738,7 @@ function new_addDriver(driver, races_done, odd) {
     nameContainer.appendChild(spanName)
     nameContainer.appendChild(spanLastName)
     nameDiv.appendChild(nameContainer)
-    manageColor(spanLastName, spanLastName)
+    // manageColor(spanLastName, spanLastName)
     let posDiv = document.createElement("div")
     posDiv.classList = "drivers-table-position bold-font"
     posDiv.innerText = driver[2]
@@ -750,6 +832,8 @@ function new_addDriver(driver, races_done, odd) {
         }
     })
     data.appendChild(row)
+
+    return driverpoints;
 }
 
 function manage_dataset_info_driver(info, sprintInfo, type){

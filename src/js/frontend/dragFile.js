@@ -41,6 +41,16 @@ dropDiv.addEventListener("drop", async (event) => {
         dbWorker.onmessage = (msg) => {
             if (msg.data.responseMessage === "Database loaded") {
                 console.log("[Main Thread] Database loaded in Worker");
+                const dateObj = new Date(msg.data.content);
+                const day = dateObj.getDate(); 
+                //get month in text
+                const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(dateObj);
+                const year = dateObj.getFullYear();
+                //get the day with the st. nd. rd. th. suffix
+                const completeDay = day + (day % 10 == 1 && day != 11 ? "st" : day % 10 == 2 && day != 12 ? "nd" : day % 10 == 3 && day != 13 ? "rd" : "th");
+                document.querySelector("#dateDay").textContent = completeDay;
+                document.querySelector("#dateMonth").textContent = month;
+                document.querySelector("#dateYear").textContent = year;
                 resolve();  // Continuamos cuando la base de datos esté cargada
             } else if (msg.data.error) {
                 console.error("[Main Thread] Error loading DB:", msg.data.error);

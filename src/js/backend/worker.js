@@ -2,7 +2,9 @@ import {
   fetchSeasonResults, fetchEventsFrom, fetchTeamsStandings,
   fetchDrivers, fetchStaff, fetchEngines, fetchCalendar, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContract,
-  editEngines, updateCustomConfig, fetchCustomConfig
+  editEngines, updateCustomConfig, fetchCustomConfig,
+  fetch2025ModData, check2025ModCompatibility,
+  fetchPointsRegulations
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
@@ -11,10 +13,11 @@ import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
 import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
-import { editContract, futureContract } from "./scriptUtils/transferUtils"
 import { editCalendar } from "./scriptUtils/calendarUtils";
-import { fireDriver, hireDriver, swapDrivers } from "./scriptUtils/trasnferUtils";
+import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
+import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025 } from "./scriptUtils/modUtils";
 import { teamReplaceDict } from "./commandGlobals";
+import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 
 import initSqlJs from 'sql.js';
@@ -30,11 +33,16 @@ const workerCommands = {
 
     const { db, metadata } = await analyzeFileToDatabase(data.file, SQL);
 
+    let day = metadata.careerSaveMetadata.Day;
+    let date = excelToDate(day);
+
+    console.log(metadata)
+
     setDatabase(db, metadata);
 
-    postMessage({ responseMessage: "Database loaded" });
+    postMessage({ responseMessage: "Database loaded", content: date });
   },
-  exportDB: async (data, postMessage) => {
+  exportSave: async (data, postMessage) => {
     const db = getDatabase();
     const metadata = getMetadata();
 
@@ -47,15 +55,15 @@ const workerCommands = {
     const results = fetchSeasonResults(year);
     const events = fetchEventsFrom(year);
     const teams = fetchTeamsStandings(year);
+    const pointsInfo = fetchPointsRegulations()
 
     postMessage({
       responseMessage: "Results fetched",
-      content: [events, results, teams]
+      content: [events, results, teams, pointsInfo]
     });
   },
 
   saveSelected: (data, postMessage) => {
-    
 
     const yearData = checkYearSave();
     postMessage({ responseMessage: "Game Year", content: yearData });
@@ -101,6 +109,12 @@ const workerCommands = {
     const carPerformance = getPerformanceAllCars(yearData[2]);
     const carAttributes = getAttributesAllCars(yearData[2]);
     postMessage({ responseMessage: "Cars fetched", content: [carPerformance, carAttributes] });
+
+    const mod2025Data = fetch2025ModData();
+    postMessage({ responseMessage: "Mod data fetched", content: mod2025Data });
+
+    const modCompatibility = check2025ModCompatibility(yearData[0]);
+    postMessage({ responseMessage: "Mod compatibility", content: modCompatibility });
   },
   configuredH2H: (data, postMessage) => {
     if (data.h2h !== "-1") {
@@ -292,7 +306,94 @@ const workerCommands = {
                   noti_msg: `Succesfully swapped ${data.driver1} and ${data.driver2}`, 
                   isEditCommand: true,
                   unlocksDownload: true  });
-  }
+  },
+  timeTravel: (data, postMessage) => {
+    timeTravelWithData(data.dayNumber, true);
+    // manageStandings();
+    postMessage({ responseMessage: "Time travel",
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+  },
+  changeLineUps: (data, postMessage) => {
+    changeDriverLineUps();
+    manageAffiliates();
+    manageFeederSeries();
+    changeDriverEngineerPairs();
+    postMessage({ responseMessage: "Line ups changed",
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+
+    const yearData = checkYearSave();
+
+    const drivers = fetchDrivers(yearData[0]);
+    postMessage({ responseMessage: "Drivers fetched", content: drivers});
+
+    const staff = fetchStaff(yearData[0]);
+    postMessage({ responseMessage: "Staff fetched", content: staff });
+  },
+  changeStats: (data, postMessage) => {
+    changeStats();
+    postMessage({ responseMessage: "Stats changed",
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+
+                  const yearData = checkYearSave();
+
+    const staff = fetchStaff(yearData[0]);
+    postMessage({ responseMessage: "Staff fetched", content: staff });
+  },
+  changeCfd: (data, postMessage) => {
+    change2024Standings();
+    postMessage({ responseMessage: "CFD times changed",
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+  },
+  changeRegulations: (data, postMessage) => {
+    removeFastestLap();
+    postMessage({ responseMessage: "Regulations changed",
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+  },
+  changeCalendar: (data, postMessage) => {
+    changeRaces(data.type);
+    postMessage({ responseMessage: "Calendar changed",
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+
+    const calendar = fetchCalendar();
+    postMessage({ responseMessage: "Calendar fetched", content: calendar });
+  },
+  extraDrivers: (data, postMessage) => {
+    insertStaff();
+    postMessage({ responseMessage: "Extra drivers added",
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+  },
+  changePerformance: (data, postMessage) => {
+    updatePerofmrnace2025();
+    postMessage({ responseMessage: "Performance changed",
+                  isEditCommand: true,
+                  unlocksDownload: true  });
+
+    const yearData = checkYearSave();
+
+    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
+    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races]};
+    postMessage(performanceResponse);
+
+    const attibutes = getAttributesAllTeams(yearData[2]);
+    const attributesResponse = { responseMessage: "Performance fetched", content: [performance[performance.length - 1], attibutes] };
+    postMessage(attributesResponse);
+
+    const carPerformance = getPerformanceAllCars(yearData[2]);
+    const carAttributes = getAttributesAllCars(yearData[2]);
+    const carPerformanceResponse = {  responseMessage: "Cars fetched", 
+                                      content: [carPerformance, carAttributes], 
+                                      isEditCommand: true,
+                                      unlocksDownload: true  };
+
+    postMessage(carPerformanceResponse);
+}
 
 };
 
