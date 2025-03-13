@@ -10730,6 +10730,15 @@ body.light-theme .founder {
 
 }
 
+
+body.light-theme .one-change{
+  background-color: #f5f5f5;
+}
+
+body.light-theme .one-change .one-change-description{
+  color: #282828;
+}
+
 .one-change-title{
   text-transform: uppercase;
   font-size: 20px;
