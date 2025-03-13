@@ -29,8 +29,6 @@ import { PUBLIC_KEY } from './public_key.js';
 import members from "../../data/members.json"
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { injectSpeedInsights } from '@vercel/speed-insights';
-import { inject } from '@vercel/analytics';
 
 
 const names_configs = {
@@ -159,8 +157,6 @@ let isShowingNotification = false;
 const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
 
-injectSpeedInsights();
-inject();
 
 
 (function () {
