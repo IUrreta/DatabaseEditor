@@ -1,7 +1,7 @@
 import { getGlobals } from "../commandGlobals.js";
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
-import { excelToDate, dateToExcel } from "./eidtStatsUtils.js";
-import { editContract, fireDriver, hireDriver, removeFutureContract } from "./transferUtils.js";
+import { excelToDate, dateToExcel, changeDriverNumber } from "./eidtStatsUtils.js";
+import { editContract, fireDriver, hireDriver, rearrangeDriverEngineerPairings, removeFutureContract } from "./transferUtils.js";
 import { editSuperlicense } from "./eidtStatsUtils.js";
 import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats } from "./carAnalysisUtils.js";
 import contracts from "../../../data/contracts.json"
@@ -246,10 +246,10 @@ export function changeDriverLineUps() {
 
     if (contracts.Fires && Array.isArray(contracts.Fires)) {
         contracts.Fires.forEach((fire) => {
-            const { DriverID, TeamID, ExtraTeamID, Retire } = fire;
+            const { DriverID, TeamID, ExtraTeamID, Retire, PosInTeam } = fire;
 
             if (TeamID !== null && TeamID !== undefined) {
-                fireDriver(DriverID, TeamID);
+                modFire(DriverID, TeamID, PosInTeam);
             }
             if (Retire !== null && Retire !== undefined) {
                 queryDB(`UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = ${DriverID}`);
@@ -336,9 +336,48 @@ export function changeDriverLineUps() {
     f1Workers.forEach((worker) => {
         removeFutureContract(worker[0]);
     });
+    changeDriverNumber(95, 30);
 
     update2025SeasonModTable("change-line-ups", 1);
 
+}
+
+export function modFire(driverID, teamID, PosInTeam) {
+    const isInTeam = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${driverID} AND TeamID = ${teamID} AND ContractType = 0`, "singleRow");
+    if (isInTeam) {
+        const position = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = ${driverID}`, "singleValue");
+        queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 0 AND TeamID = ${teamID}`);
+        if (position < 3) {
+            queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = ${driverID}`);
+        }
+        const engineerID = queryDB(
+            `SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = ${driverID}`,
+            "singleValue"
+        );
+        if (engineerID) {
+            queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${engineerID} AND DriverID = ${driverID}`);
+        }
+    }
+    else{
+        const staffType = queryDB(`SELECT StaffType FROM Staff_GameData WHERE StaffID = ${driverID}`, "singleValue");
+        const replacement = queryDB(`SELECT con.StaffID FROM Staff_Contracts con
+            JOIN Staff_GameData gd ON con.StaffID = gd.StaffID
+            WHERE gd.StaffType = ${staffType} AND
+            con.TeamID = ${teamID} AND con.PosInTeam = ${PosInTeam} AND con.ContractType = 0`, "singleValue");
+        if (replacement) {
+            queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${replacement} AND ContractType = 0 AND TeamID = ${teamID}`);
+            if (PosInTeam < 3) {
+                queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = ${replacement}`);
+            }
+            const engineerID = queryDB(
+                `SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = ${replacement}`,
+                "singleValue"
+            );
+            if (engineerID) {
+                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${engineerID} AND DriverID = ${replacement}`);
+            }
+        }
+    }
 }
 
 export function changeStats() {
@@ -362,30 +401,44 @@ export function changeStats() {
 }
 
 export function changeDriverEngineerPairs() {
-    console.log("DRIVER-ENGINEER PAIRS");
-    if (!changes.DriverEngineerPairs || !Array.isArray(changes.DriverEngineerPairs)) {
+    if (!changes.TeamLineUps || !Array.isArray(changes.TeamLineUps)) {
         console.error("No driver-engineer pairs");
     } else {
-        for (const entry of changes.DriverEngineerPairs) {
-            const { Driver1, Engineer1, Driver2, Engineer2 } = entry;
+        for (const entry of changes.TeamLineUps) {
+            const { TeamID, Driver1, Engineer1, Driver2, Engineer2 } = entry;
 
-            queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE DriverID = ${Driver1} OR DriverID = ${Driver2}`);
-            queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${Engineer1} OR RaceEngineerID = ${Engineer2}`);
-
-            let driver1Engineer1 = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ${Driver1} AND RaceEngineerID = ${Engineer1}`, "singleRow");
-            let driver2Engineer2 = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ${Driver2} AND RaceEngineerID = ${Engineer2}`, "singleRow");
-
-            if (driver1Engineer1 && driver1Engineer1.length > 0) {
-                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ${Driver1} AND RaceEngineerID = ${Engineer1}`);
-            } else {
-                queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (${Engineer1}, ${Driver1}, 0, 0, 1)`);
+            const areAllInSameTeam = 
+                queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${Driver1} AND TeamID = ${TeamID} AND PosInTeam <= 2 AND ContractType = 0`, "singleRow") &&
+                queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${Driver2} AND TeamID = ${TeamID} AND PosInTeam <= 2 AND ContractType = 0`, "singleRow") &&
+                queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${Engineer1} AND TeamID = ${TeamID} AND PosInTeam <= 2 AND ContractType = 0`, "singleRow") &&
+                queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${Engineer2} AND TeamID = ${TeamID} AND PosInTeam <= 2 AND ContractType = 0`, "singleRow");
+            
+            
+            if (areAllInSameTeam){
+                console.log("Drivers and engineers are in the same team: ", TeamID);
+                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE DriverID = ${Driver1} OR DriverID = ${Driver2}`);
+                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${Engineer1} OR RaceEngineerID = ${Engineer2}`);
+    
+                let driver1Engineer1 = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ${Driver1} AND RaceEngineerID = ${Engineer1}`, "singleRow");
+                let driver2Engineer2 = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ${Driver2} AND RaceEngineerID = ${Engineer2}`, "singleRow");
+    
+                if (driver1Engineer1 && driver1Engineer1.length > 0) {
+                    queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ${Driver1} AND RaceEngineerID = ${Engineer1}`);
+                } else {
+                    queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (${Engineer1}, ${Driver1}, 0, 0, 1)`);
+                }
+    
+                if (driver2Engineer2 && driver2Engineer2.length > 0) {
+                    queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ${Driver2} AND RaceEngineerID = ${Engineer2}`);
+                } else {
+                    queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (${Engineer2}, ${Driver2}, 0, 0, 1)`);
+                }
+            }
+            else{
+                console.log("Drivers and engineers are NOT in the same team: ", TeamID);
+                rearrangeDriverEngineerPairings(TeamID)
             }
 
-            if (driver2Engineer2 && driver2Engineer2.length > 0) {
-                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ${Driver2} AND RaceEngineerID = ${Engineer2}`);
-            } else {
-                queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (${Engineer2}, ${Driver2}, 0, 0, 1)`);
-            }
 
         }
     }
@@ -463,7 +516,8 @@ export function manageAffiliates() {
     if (contracts.Affiliates && Array.isArray(contracts.Affiliates)) {
         contracts.Affiliates.forEach((affiliate) => {
             const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${affiliate.DriverID} AND TeamID = 32`, "singleRow");
-            if (!hasContractWithTeam32) {
+            const isFullTimeDriver = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${affiliate.DriverID} AND PosInTeam <= 2`, "singleRow");
+            if (!hasContractWithTeam32 && !isFullTimeDriver) {
                 const {
                     DriverID,
                     TeamID,
@@ -475,6 +529,7 @@ export function manageAffiliates() {
                     EndSeason,
                     BreakoutClause
                 } = affiliate;
+                console.log(`Affiliate: ${DriverID} - ${TeamID} - ${PosInTeam} - ${Salary} - ${StartingBonus} - ${RaceBonus} - ${RaceBonusTargetPos} - ${EndSeason} - ${BreakoutClause}`);
 
                 hireDriver(
                     "manual",

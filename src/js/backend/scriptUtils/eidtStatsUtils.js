@@ -35,7 +35,7 @@ export const mentalityOverall = {
 export function editStats(driverID, type, stats, retirement, driverNum, wants1) {
   //creat sttasParasm from stats string to an array
   const statsParams = stats.split(" ");
-  
+
 
   if (type === "0") {
     const isStats = queryDB(`
@@ -81,23 +81,9 @@ export function editStats(driverID, type, stats, retirement, driverNum, wants1) 
       SET RetirementAge = ${retirement}
       WHERE StaffID = ${driverID}
     `);
-    const oldNum = queryDB(`
-      SELECT Number
-      FROM Staff_DriverNumbers
-      WHERE CurrentHolder = ${driverID}
-    `, 'singleValue');
-    if (oldNum) {
-      queryDB(`
-        UPDATE Staff_DriverNumbers
-        SET CurrentHolder = NULL
-        WHERE Number = ${oldNum}
-      `);
-    }
-    queryDB(`
-      UPDATE Staff_DriverNumbers
-      SET CurrentHolder = ${driverID}
-      WHERE Number = ${driverNum}
-    `);
+
+    changeDriverNumber(driverID, driverNum);
+    
     queryDB(`
       UPDATE Staff_DriverData
       SET WantsChampionDriverNumber = ${wants1}
@@ -181,6 +167,44 @@ export function editStats(driverID, type, stats, retirement, driverNum, wants1) 
       WHERE StaffID = ${driverID}
     `);
   }
+}
+
+export function changeDriverNumber(driverID, newNumber) {
+  const oldNum = queryDB(`
+    SELECT Number
+    FROM Staff_DriverNumbers
+    WHERE CurrentHolder = ${driverID}
+  `, 'singleValue');
+  if (oldNum) {
+    queryDB(`
+      UPDATE Staff_DriverNumbers
+      SET CurrentHolder = NULL
+      WHERE Number = ${oldNum}
+    `);
+  }
+  const oldHolderOfNum = queryDB(`
+    SELECT CurrentHolder
+    FROM Staff_DriverNumbers
+    WHERE Number = ${newNumber}
+  `, 'singleValue');
+  if (oldHolderOfNum) {
+    const emptyNumbers = queryDB(`
+      SELECT Number FROM Staff_DriverNumbers 
+      WHERE CurrentHolder IS NULL
+    `, 'allRows');
+    if (emptyNumbers.length) {
+      const randomNum = emptyNumbers[Math.floor(Math.random() * emptyNumbers.length)][0];
+
+      queryDB(`
+        UPDATE Staff_DriverNumbers SET CurrentHolder = ${oldHolderOfNum} WHERE Number = ${randomNum}
+      `);
+    }
+  }
+  queryDB(`
+    UPDATE Staff_DriverNumbers
+    SET CurrentHolder = ${driverID}
+    WHERE Number = ${newNumber}
+  `);
 }
 
 export function editName(driverID, newName) {
