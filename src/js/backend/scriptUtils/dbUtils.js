@@ -1134,9 +1134,7 @@ export function fetchCalendar() {
 export function fetchDriverNumbers() {
   const numbers = queryDB(`SELECT DISTINCT Number
        FROM Staff_DriverNumbers dn 
-       JOIN Staff_Contracts con 
-       ON dn.CurrentHolder = con.StaffID 
-       WHERE dn.CurrentHolder IS NULL OR con.PosInTeam > 2`, 'allRows');
+        `, 'allRows');
 
   return numbers.map(n => n[0]);
 }
