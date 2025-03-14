@@ -1,6 +1,6 @@
 import { getGlobals } from "../commandGlobals.js";
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
-import { excelToDate, dateToExcel } from "./eidtStatsUtils.js";
+import { excelToDate, dateToExcel, changeDriverNumber } from "./eidtStatsUtils.js";
 import { editContract, fireDriver, hireDriver, rearrangeDriverEngineerPairings, removeFutureContract } from "./transferUtils.js";
 import { editSuperlicense } from "./eidtStatsUtils.js";
 import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats } from "./carAnalysisUtils.js";
@@ -336,6 +336,7 @@ export function changeDriverLineUps() {
     f1Workers.forEach((worker) => {
         removeFutureContract(worker[0]);
     });
+    changeDriverNumber(95, 30);
 
     update2025SeasonModTable("change-line-ups", 1);
 
