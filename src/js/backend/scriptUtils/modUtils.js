@@ -516,7 +516,7 @@ export function manageAffiliates() {
     if (contracts.Affiliates && Array.isArray(contracts.Affiliates)) {
         contracts.Affiliates.forEach((affiliate) => {
             const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${affiliate.DriverID} AND TeamID = 32`, "singleRow");
-            const isFullTimeDriver = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${affiliate.DriverID} AND PosInTeam <= 2`, "singleRow");
+            const isFullTimeDriver = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${affiliate.DriverID} AND PosInTeam <= 2 AND (TeamID <= 10 OR TeamID == 32)`, "singleRow");
             if (!hasContractWithTeam32 && !isFullTimeDriver) {
                 const {
                     DriverID,
