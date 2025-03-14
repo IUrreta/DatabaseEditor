@@ -5130,21 +5130,6 @@
             "IsGeneratedForCustomTeam": 0
         },
         {
-            "StaffID": 634,
-            "FirstName": "[STRING_LITERAL:Value=|Peter|]",
-            "LastName": "[STRING_LITERAL:Value=|Prodromou|]",
-            "CountryID": 41,
-            "DOB": 25217,
-            "DOB_ISO": "1969-01-14",
-            "Gender": 0,
-            "IsGeneratedStaff": 1,
-            "PhotoDay": 45340,
-            "FaceType": null,
-            "FaceIndex": null,
-            "AgeType": 1,
-            "IsGeneratedForCustomTeam": 0
-        },
-        {
             "StaffID": 635,
             "FirstName": "[STRING_LITERAL:Value=|Sean|]",
             "LastName": "[STRING_LITERAL:Value=|Whitehead|]",
@@ -6719,54 +6704,6 @@
             "Max": 100
         },
         {
-            "StaffID": 634,
-            "StatID": 19,
-            "Val": 77,
-            "Max": 100
-        },
-        {
-            "StaffID": 634,
-            "StatID": 20,
-            "Val": 76,
-            "Max": 100
-        },
-        {
-            "StaffID": 634,
-            "StatID": 26,
-            "Val": 79,
-            "Max": 100
-        },
-        {
-            "StaffID": 634,
-            "StatID": 27,
-            "Val": 80,
-            "Max": 100
-        },
-        {
-            "StaffID": 634,
-            "StatID": 28,
-            "Val": 79,
-            "Max": 100
-        },
-        {
-            "StaffID": 634,
-            "StatID": 29,
-            "Val": 80,
-            "Max": 100
-        },
-        {
-            "StaffID": 634,
-            "StatID": 30,
-            "Val": 79,
-            "Max": 100
-        },
-        {
-            "StaffID": 634,
-            "StatID": 31,
-            "Val": 80,
-            "Max": 100
-        },
-        {
             "StaffID": 635,
             "StatID": 19,
             "Val": 89,
@@ -7322,14 +7259,6 @@
         },
         {
             "StaffID": 633,
-            "UnspentXP": 0,
-            "XPGainedLastRace": 0,
-            "XPGainedLastWeek": 0,
-            "Mentality": 80,
-            "MentalityOpinion": 2
-        },
-        {
-            "StaffID": 634,
             "UnspentXP": 0,
             "XPGainedLastRace": 0,
             "XPGainedLastWeek": 0,
@@ -8235,20 +8164,6 @@
             "ExpectedTimeScore": 0
         },
         {
-            "StaffID": 634,
-            "StaffType": 3,
-            "RetirementAge": 70,
-            "Retired": 0,
-            "PermaTraitSpawnBoost": 0,
-            "BestTeamFormula": null,
-            "BestF1PosInTeamSinceGameStart": null,
-            "DevelopmentPlan": null,
-            "ExpectedRankForTeam": 5,
-            "AchievementScore": 0,
-            "ExpectedQualityScore": 0,
-            "ExpectedTimeScore": 0
-        },
-        {
             "StaffID": 635,
             "StaffType": 3,
             "RetirementAge": 70,
@@ -8389,76 +8304,106 @@
             "ExpectedTimeScore": 0
         }
     ],
-    "DriverEngineerPairs": [
+    "TeamLineUps": [
         {
             "TeamID": 1,
             "Driver1": 2,
             "Driver2": 1,
             "Engineer1": 622,
-            "Engineer2": 7
+            "Engineer2": 7,
+            "TechnicalChief": 642,
+            "HeadAero": 26,
+            "SportingDirector": 392
         },
         {
             "TeamID": 2,
             "Driver1": 12,
             "Driver2": 102,
             "Engineer1": 48,
-            "Engineer2": 47
+            "Engineer2": 47,
+            "TechnicalChief": 628,
+            "HeadAero": 337,
+            "SportingDirector": 638
         },
         {
             "TeamID": 3,
             "Driver1": 10,
             "Driver2": 95,
             "Engineer1": 50,
-            "Engineer2": 623
+            "Engineer2": 623,
+            "TechnicalChief": 28,
+            "HeadAero": 635,
+            "SportingDirector": 639
         },
         {
             "TeamID": 4,
             "Driver1": 23,
             "Driver2": 376,
             "Engineer1": 320,
-            "Engineer2": 51
+            "Engineer2": 51,
+            "TechnicalChief": 333,
+            "HeadAero": 38,
+            "SportingDirector": 292
         },
         {
             "TeamID": 5,
             "Driver1": 15,
             "Driver2": 135,
             "Engineer1": 415,
-            "Engineer2": 54
+            "Engineer2": 54,
+            "TechnicalChief": 630,
+            "HeadAero": 40,
+            "SportingDirector": 397
         },
         {
             "TeamID": 6,
             "Driver1": 11,
             "Driver2": 3,
             "Engineer1": 56,
-            "Engineer2": 55
+            "Engineer2": 55,
+            "TechnicalChief": 633,
+            "HeadAero": 369,
+            "SportingDirector": 370
         },
         {
             "TeamID": 7,
             "Driver1": 14,
             "Driver2": 142,
             "Engineer1": 624,
-            "Engineer2": 625
+            "Engineer2": 625,
+            "TechnicalChief": 403,
+            "HeadAero": 404,
+            "SportingDirector": 640
         },
         {
             "TeamID": 8,
             "Driver1": 144,
             "Driver2": 81,
             "Engineer1": 59,
-            "Engineer2": 626
+            "Engineer2": 626,
+            "TechnicalChief": 33,
+            "HeadAero": 637,
+            "SportingDirector": 295
         },
         {
             "TeamID": 9,
             "Driver1": 279,
             "Driver2": 83,
             "Engineer1": 644,
-            "Engineer2": 643
+            "Engineer2": 643,
+            "TechnicalChief": 334,
+            "HeadAero": 43,
+            "SportingDirector": 641
         },
         {
             "TeamID": 10,
             "Driver1": 77,
             "Driver2": 18,
             "Engineer1": 63,
-            "Engineer2": 58
+            "Engineer2": 58,
+            "TechnicalChief": 4,
+            "HeadAero": 636,
+            "SportingDirector": 367
         }
     ],
     "Performance": [
