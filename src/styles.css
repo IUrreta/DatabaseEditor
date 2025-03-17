@@ -464,6 +464,12 @@ body {
   font-size: 18px;
 }
 
+.save-button:active {
+  transform: scale(0.95);
+  /* Ajusta esto a tu gusto */
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+}
+
 @keyframes slideAndColorChange {
   0% {
     right: -137px;
@@ -4269,7 +4275,7 @@ body.light-theme .flag, body.light-theme .flag-header img{
 }
 
 .engine-performance{
-  min-height: 320px;
+  min-height: 318px;
 }
 
 .engine-f2 {

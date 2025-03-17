@@ -283,11 +283,8 @@ function editModeHandler() {
         globalMentality = Math.floor(globalMentality / 3)
     }
     document.querySelector(".clicked").dataset.globalMentality = globalMentality
-    let new_ovr = calculateOverall(stats, typeOverall, mentality_to_global_menatality[globalMentality]);
-    document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = ""
-    if (new_ovr[1] !== new_ovr[0]) {
-        document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr[1];
-    }
+    let new_ovr = calculateOverall(stats, typeOverall);
+    document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr
 
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     let age = document.querySelector(".actual-age").textContent.split(" ")[1];
