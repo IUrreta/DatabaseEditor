@@ -202,8 +202,9 @@ const workerCommands = {
       }
     }
     editStats(data.driverID, data.typeStaff, data.statsArray, data.retirement, data.driverNum, data.wants1);
-
+    console.log(data)
     if (data.mentality !== "-1" && globals.yearIteration == "24") {
+
       editMentality(data.driverID, data.mentality);
     }
     editAge(data.driverID, data.age);
@@ -267,7 +268,7 @@ const workerCommands = {
   },
   editCalendar: (data, postMessage) => {
     const year = getGlobals().yearIteration;
-    editCalendar(data.calendarCodes, year);
+    editCalendar(data.calendarCodes, year, data.racesData);
     postMessage({ responseMessage: "Calendar updated", 
                   noti_msg: "Succesfully updated the calendar", 
                   isEditCommand: true,

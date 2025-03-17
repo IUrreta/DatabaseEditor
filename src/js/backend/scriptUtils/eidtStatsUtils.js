@@ -273,10 +273,11 @@ export function editAge(driverID, ageGap) {
   `);
 }
 
-export function editMentality(inputStr) {
-  const [driverID, ...rest] = inputStr.split(" ");
+export function editMentality(driverID, mentalityStr) {
+  const mentalityArray = mentalityStr.split(" ");
   let sum = 0;
-  rest.forEach((value, area) => {
+  mentalityArray.forEach((value, area) => {
+    console.log(value, area);
     queryDB(`
       UPDATE Staff_Mentality_AreaOpinions
       SET Opinion = ${value}

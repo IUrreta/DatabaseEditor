@@ -5031,7 +5031,7 @@
           "CountryID": 60,
           "DOB": 32874,
           "DOB_ISO": "1990-01-01",
-          "Gender": 0,
+          "Gender": 1,
           "IsGeneratedStaff": 1,
           "PhotoDay": 45340,
           "FaceType": 0,
@@ -5097,21 +5097,6 @@
           "FaceType": 1,
           "FaceIndex": 0,
           "AgeType": 1,
-          "IsGeneratedForCustomTeam": 0
-        },
-        {
-          "StaffID": 631,
-          "FirstName": "[STRING_LITERAL:Value=|Andrea|]",
-          "LastName": "[STRING_LITERAL:Value=|De Zordo|]",
-          "CountryID": 79,
-          "DOB": 27030,
-          "DOB_ISO": "1974-01-01",
-          "Gender": 0,
-          "IsGeneratedStaff": 1,
-          "PhotoDay": 45340,
-          "FaceType": 0,
-          "FaceIndex": 14,
-          "AgeType": 0,
           "IsGeneratedForCustomTeam": 0
         },
         {
@@ -6631,42 +6616,7 @@
             "Val": 88,
             "Max": 100
         },
-        {
-            "StaffID": 631,
-            "StatID": 0,
-            "Val": 84,
-            "Max": 100
-        },
-        {
-            "StaffID": 631,
-            "StatID": 1,
-            "Val": 84,
-            "Max": 100
-        },
-        {
-            "StaffID": 631,
-            "StatID": 14,
-            "Val": 86,
-            "Max": 100
-        },
-        {
-            "StaffID": 631,
-            "StatID": 15,
-            "Val": 83,
-            "Max": 100
-        },
-        {
-            "StaffID": 631,
-            "StatID": 16,
-            "Val": 85,
-            "Max": 100
-        },
-        {
-            "StaffID": 631,
-            "StatID": 17,
-            "Val": 85,
-            "Max": 100
-        },
+    
         {
             "StaffID": 633,
             "StatID": 0,
@@ -7243,14 +7193,6 @@
         },
         {
             "StaffID": 630,
-            "UnspentXP": 0,
-            "XPGainedLastRace": 0,
-            "XPGainedLastWeek": 0,
-            "Mentality": 80,
-            "MentalityOpinion": 2
-        },
-        {
-            "StaffID": 631,
             "UnspentXP": 0,
             "XPGainedLastRace": 0,
             "XPGainedLastWeek": 0,
@@ -8123,20 +8065,6 @@
         },
         {
             "StaffID": 630,
-            "StaffType": 1,
-            "RetirementAge": 70,
-            "Retired": 0,
-            "PermaTraitSpawnBoost": 0,
-            "BestTeamFormula": null,
-            "BestF1PosInTeamSinceGameStart": null,
-            "DevelopmentPlan": null,
-            "ExpectedRankForTeam": 5,
-            "AchievementScore": 0,
-            "ExpectedQualityScore": 0,
-            "ExpectedTimeScore": 0
-        },
-        {
-            "StaffID": 631,
             "StaffType": 1,
             "RetirementAge": 70,
             "Retired": 0,

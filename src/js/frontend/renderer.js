@@ -279,6 +279,7 @@ function editModeHandler() {
             document.querySelector(".clicked").dataset["mentality" + index] = elem.dataset.value
             globalMentality += parseInt(elem.dataset.value)
         })
+        mentality = mentality.slice(0, -1)
         globalMentality = Math.floor(globalMentality / 3)
     }
     document.querySelector(".clicked").dataset.globalMentality = globalMentality
@@ -360,14 +361,25 @@ function editModeHandler() {
 
 function calendarModeHandler() {
     let dataCodesString = '';
+    let raceArray = [];
 
     document.querySelectorAll(".race-calendar").forEach((race) => {
+        let raceData = {
+            trackId: race.dataset.trackid.toString(),
+            rainPractice: race.dataset.rainP.toString(),
+            rainQuali: race.dataset.rainQ.toString(),
+            rainRace: race.dataset.rainR.toString(),
+            type: race.dataset.type.toString(),
+            state: race.dataset.state.toString()
+        };
+        raceArray.push(raceData);
         dataCodesString += race.dataset.trackid.toString() + race.dataset.rainP.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString() + race.dataset.state.toString() + ' ';
     });
 
     dataCodesString = dataCodesString.trim();
     let dataCalendar = {
-        calendarCodes: dataCodesString
+        calendarCodes: dataCodesString,
+        racesData : raceArray
     };
 
     const command = new Command("editCalendar", dataCalendar);
