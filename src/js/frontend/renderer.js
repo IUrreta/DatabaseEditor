@@ -376,7 +376,7 @@ function calendarModeHandler() {
     dataCodesString = dataCodesString.trim();
     let dataCalendar = {
         calendarCodes: dataCodesString,
-        racesData : raceArray
+        racesData: raceArray
     };
 
     const command = new Command("editCalendar", dataCalendar);
@@ -537,9 +537,11 @@ function showNextNotification() {
     const nextMessage = notificationsQueue.shift();
 
     const footerNotification = document.querySelector('.footer-notification');
-
     footerNotification.textContent = nextMessage;
-    footerNotification.classList.add('show');
+
+    setTimeout(function () {
+        footerNotification.classList.add('show');
+    }, 5);
 
     setTimeout(() => {
         footerNotification.classList.remove('show');
@@ -1329,7 +1331,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
 
         replace_custom_team_logo(document.querySelector(".logo-preview").src)
     }
-    
+
 
 })
 
@@ -1434,7 +1436,7 @@ document.querySelector(".toolbar-logo-and-title").addEventListener("click", func
     manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 0
     document.getElementById("blockDiv").classList.remove("disappear")
-    if (document.querySelector(".scriptPills.active")){
+    if (document.querySelector(".scriptPills.active")) {
         document.querySelector(".scriptPills.active").classList.remove("active")
     }
     divBlocking = 1;
@@ -1539,7 +1541,7 @@ function manage_difficulty_warnings(level, triggerList) {
             element.className = elementConfig.className;
             element.textContent = elementConfig.text;
         }
-        else if(triggerList[id] === -1){
+        else if (triggerList[id] === -1) {
             document.getElementById(id).classList.add("disabled")
         }
     });
@@ -1987,20 +1989,20 @@ function shouldShowPatchModal(storedVersion, versionNow) {
     return storedParts[0] < currentParts[0] || storedParts[1] < currentParts[1];
 }
 
-function updateModBlocking(data){
+function updateModBlocking(data) {
     console.log(data)
-    if (data === "AlreadyEdited"){
+    if (data === "AlreadyEdited") {
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
     }
-    else if (data === "Start2024"){
+    else if (data === "Start2024") {
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
 
         document.querySelector(".time-travel").classList.remove("disabled")
         document.querySelector(".time-travel span").textContent = "Apply"
     }
-    else if (data === "Direct2025" || data === "End2024"){
+    else if (data === "Direct2025" || data === "End2024") {
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
 
@@ -2008,14 +2010,14 @@ function updateModBlocking(data){
         document.querySelector(".time-travel span").textContent = "Disabled"
         calendarEditMode = data;
     }
-    else{
+    else {
         document.querySelector(".mod-blocking").classList.remove("d-none")
         document.querySelector(".changes-grid").classList.add("d-none")
     }
 }
 
 document.querySelector(".time-travel").addEventListener("click", function () {
-    const command = new Command("timeTravel", {dayNumber: 45657});
+    const command = new Command("timeTravel", { dayNumber: 45657 });
     command.execute();
     this.classList.add("completed")
     this.querySelector("span").textContent = "Applied"
@@ -2068,7 +2070,7 @@ document.querySelector(".extra-drivers").addEventListener("click", function () {
 })
 
 document.querySelector(".change-calendar").addEventListener("click", function () {
-    const command = new Command("changeCalendar", {type: calendarEditMode});
+    const command = new Command("changeCalendar", { type: calendarEditMode });
     command.execute();
     this.classList.add("completed")
     this.querySelector("span").textContent = "Applied"

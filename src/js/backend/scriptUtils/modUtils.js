@@ -358,7 +358,7 @@ export function modFire(driverID, teamID, PosInTeam) {
             queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${engineerID} AND DriverID = ${driverID}`);
         }
     }
-    else{
+    else {
         const staffType = queryDB(`SELECT StaffType FROM Staff_GameData WHERE StaffID = ${driverID}`, "singleValue");
         const replacement = queryDB(`SELECT con.StaffID FROM Staff_Contracts con
             JOIN Staff_GameData gd ON con.StaffID = gd.StaffID
@@ -407,35 +407,33 @@ export function changeDriverEngineerPairs() {
         for (const entry of changes.TeamLineUps) {
             const { TeamID, Driver1, Engineer1, Driver2, Engineer2 } = entry;
 
-            const areAllInSameTeam = 
+            const areAllInSameTeam =
                 queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${Driver1} AND TeamID = ${TeamID} AND PosInTeam <= 2 AND ContractType = 0`, "singleRow") &&
                 queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${Driver2} AND TeamID = ${TeamID} AND PosInTeam <= 2 AND ContractType = 0`, "singleRow") &&
                 queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${Engineer1} AND TeamID = ${TeamID} AND PosInTeam <= 2 AND ContractType = 0`, "singleRow") &&
                 queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${Engineer2} AND TeamID = ${TeamID} AND PosInTeam <= 2 AND ContractType = 0`, "singleRow");
-            
-            
-            if (areAllInSameTeam){
-                console.log("Drivers and engineers are in the same team: ", TeamID);
+
+
+            if (areAllInSameTeam) {
                 queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE DriverID = ${Driver1} OR DriverID = ${Driver2}`);
                 queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${Engineer1} OR RaceEngineerID = ${Engineer2}`);
-    
+
                 let driver1Engineer1 = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ${Driver1} AND RaceEngineerID = ${Engineer1}`, "singleRow");
                 let driver2Engineer2 = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ${Driver2} AND RaceEngineerID = ${Engineer2}`, "singleRow");
-    
+
                 if (driver1Engineer1 && driver1Engineer1.length > 0) {
                     queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ${Driver1} AND RaceEngineerID = ${Engineer1}`);
                 } else {
                     queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (${Engineer1}, ${Driver1}, 0, 0, 1)`);
                 }
-    
+
                 if (driver2Engineer2 && driver2Engineer2.length > 0) {
                     queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ${Driver2} AND RaceEngineerID = ${Engineer2}`);
                 } else {
                     queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (${Engineer2}, ${Driver2}, 0, 0, 1)`);
                 }
             }
-            else{
-                console.log("Drivers and engineers are NOT in the same team: ", TeamID);
+            else {
                 rearrangeDriverEngineerPairings(TeamID)
             }
 
@@ -505,7 +503,6 @@ export function manageFeederSeries() {
 }
 
 export function manageAffiliates() {
-    console.log("AFFILIATES");
 
     queryDB(`
         DELETE FROM Staff_Contracts
@@ -529,7 +526,6 @@ export function manageAffiliates() {
                     EndSeason,
                     BreakoutClause
                 } = affiliate;
-                console.log(`Affiliate: ${DriverID} - ${TeamID} - ${PosInTeam} - ${Salary} - ${StartingBonus} - ${RaceBonus} - ${RaceBonusTargetPos} - ${EndSeason} - ${BreakoutClause}`);
 
                 hireDriver(
                     "manual",
@@ -661,7 +657,6 @@ export function manageStandings() {
 }
 
 export function changeRaces(type) {
-    console.log(type)
     if (!changes.Calendar || !Array.isArray(changes.Calendar)) {
         console.log("No calendar data found");
     }
@@ -837,7 +832,6 @@ export function updatePerofmrnace2025() {
         let teamboost = changes.Performance.find(x => x.TeamID === Number(team));
         applyBoostToCarStats(teamDict[team], teamboost.Boost, teamboost.TeamID);
         const tyreDegStatsTemas = getTyreDegStats(teamDict[team]);
-        console.log(tyreDegStatsTemas);
         tyreDegDict[team] = tyreDegStatsTemas;
     }
 
@@ -849,6 +843,20 @@ export function updatePerofmrnace2025() {
 
     update2025SeasonModTable("change-performance", 1);
 
+}
+
+export function fixes_mod() {
+    let error = false;
+    const extraDrivers = queryDB(`SELECT value FROM Custom_2025_SeasonMod WHERE key = 'extra-drivers'`, "singleValue");
+    if (extraDrivers === "1") {
+        const lauraMuellerGender = queryDB(`SELECT Gender FROM Staff_BasicData WHERE StaffID = 624`, "singleValue");
+        if (lauraMuellerGender === 0) {
+            error = true;
+            queryDB(`UPDATE Staff_BasicData SET Gender = 1 WHERE StaffID = 624`);
+        }
+    }
+
+    return error;
 }
 
 export function updateEditsWithModData(data) {

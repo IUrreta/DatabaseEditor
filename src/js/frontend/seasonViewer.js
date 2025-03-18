@@ -474,7 +474,6 @@ function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsIn
 
     const firstDriverPos = document.querySelector(".drivers-table-data .drivers-table-position")
     const firstDriverPoints = document.querySelector(".drivers-table-data .drivers-table-points")
-    console.log(firstDriverPos)
     if (pointsDif > pointsRemaining){
         firstDriverPos.classList.add("champion")
         firstDriverPoints.classList.add("champion")
@@ -529,7 +528,6 @@ export function new_load_teams_table(data) {
     pairTeamPos.forEach(function (pair) {
         pairTeamPosDict[pair[0]] = pair[1]
     })
-    console.log(pairTeamPosDict)
     data = data[0]
     let datazone = document.querySelector(".teams-table-data")
     datazone.innerHTML = ""
@@ -568,7 +566,6 @@ export function new_load_teams_table(data) {
             }
         }
     }
-    console.log(`team1Points: ${team1Points}, team2Points: ${team2Points}`)
     new_color_teams_table()
     order_teams_table()
     checkIfTeamIsChamp(team1Points, team2Points, pointsInfo)
@@ -584,12 +581,10 @@ function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo) {
     (pointsInfo.fastestLapBonusPoint === 1 ? racesLeftCount : 0) +
     (pointsInfo.poleBonusPoint === 1 ? racesLeftCount : 0)
 
-    console.log(`pointsDif: ${pointsDif}, pointsRemaining: ${pointsRemaining}`)
 
     const firstTeamPos = document.querySelector(".teams-table-data .teams-table-position")
     const firstTeamPoints = document.querySelector(".teams-table-data .teams-table-points")
 
-    console.log(firstTeamPos)
     if (pointsDif > pointsRemaining){
         firstTeamPos.classList.add("champion")
         firstTeamPoints.classList.add("champion")
