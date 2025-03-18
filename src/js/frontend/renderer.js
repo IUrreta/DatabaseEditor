@@ -539,9 +539,7 @@ function showNextNotification() {
     const footerNotification = document.querySelector('.footer-notification');
     footerNotification.textContent = nextMessage;
 
-    setTimeout(function () {
-        footerNotification.classList.add('show');
-    }, 5);
+    footerNotification.classList.add('show');
 
     setTimeout(() => {
         footerNotification.classList.remove('show');
@@ -1838,6 +1836,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const patchModal = new bootstrap.Modal(document.getElementById('patchModal'));
         patchModal.show();
     }
+
 });
 
 function createMarqueeItem(name, tier) {

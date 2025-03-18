@@ -277,7 +277,6 @@ export function editMentality(driverID, mentalityStr) {
   const mentalityArray = mentalityStr.split(" ");
   let sum = 0;
   mentalityArray.forEach((value, area) => {
-    console.log(value, area);
     queryDB(`
       UPDATE Staff_Mentality_AreaOpinions
       SET Opinion = ${value}

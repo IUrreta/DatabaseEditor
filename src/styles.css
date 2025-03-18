@@ -749,13 +749,13 @@ a:has(.patreon-button){
 }
 
 .version-panel {
-  transition: opacity 0.15s, color 0.15s, border-color 0.15s, text-shadow 0.15s;
+  transition: border 0.15s, opacity 0.15s, color 0.15s, text-shadow 0.15s;
   cursor: pointer;
   padding: 0 5px;
   border-left: 2px solid transparent;
   background-color: var(--generals);
   z-index: 3;
-
+  will-change: border;
 }
 
 .status:has(.footer-notification.show) .version-panel {
@@ -767,19 +767,14 @@ a:has(.patreon-button){
   padding-right: 5px;
   z-index: 1;
   color: var(--positive-general);
+  transform: translateX(17px); /* o 17px, el que prefieras */
 }
 
 .footer-notification:not(.show) {
-  transform: translateX(123%);
+  transform: translateX(125%);
 }
 
-.footer:has(.loader:not(.hidden)) .footer-notification.show {
-  transform: translateX(0);
-}
 
-.footer:has(.loader.hidden) .footer-notification.show {
-  transform: translateX(17px);
-}
 
 
 .version-panel:hover {

@@ -11,8 +11,6 @@ const weatherDict = {
 
 export function editCalendar(calendarStr, year_iteration, racesData) {
   const calendar = calendarStr.toLowerCase();
-  let races = calendar.split(" ");
-  console.log(racesData)
   const yearIteration = year_iteration;
 
   let maxRaces;
@@ -45,11 +43,8 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
   actualCalendar = actualCalendar.map(row => row[0]);
   //build newCalendar with trackId from each element from the array racesData
   const newCalendar = racesData.map(race => parseInt(race.trackId));
-  console.log("Actual Calendar: ", actualCalendar);
-  console.log("New Calendar: ", newCalendar);
 
   if (arraysEqual(actualCalendar, newCalendar)) {
-    console.log("SAME CALENDAR");
     const ids = queryDB(`
       SELECT RaceID
       FROM Races
@@ -83,7 +78,6 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
       `);
     }
   } else {
-    console.log("DIFFERENT CALENDAR");
     const randomBlanks = [];
     for (let i = 0; i < raceBlanks; i++) {
       let n = Math.floor(Math.random() * maxRaces);
@@ -100,7 +94,6 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
     weeks = weeks.filter(x => x !== 0);
     weeks.sort((a, b) => a - b);
 
-    console.log(weeks)
 
 
     let leapYearCount = 2;
@@ -160,7 +153,6 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
       const tempR = randomInt(temps[0], temps[1]);
 
       const day = ((weeks[i] + 1) * 7) + dayStart;
-      console.log(`Day for race ${i + 1}: ${day}`);
       raceid += 1;
 
       if (state !== "2") {
