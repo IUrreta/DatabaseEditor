@@ -191,6 +191,10 @@ export function setSaveName(name) {
     saveName = name;
 }
 
+export function setIsShowingNotification(value) {
+    isShowingNotification = value;
+}
+
 
 
 /**
@@ -512,7 +516,7 @@ export function updateFront(data) {
         handler(message);
     }
     if (data.noti_msg !== undefined) {
-        new_update_notifications(data.noti_msg)
+        new_update_notifications(data.noti_msg, "success");
     }
     if (data.isEditCommand !== undefined) {
         checkOpenSlideUp()
@@ -522,12 +526,15 @@ export function updateFront(data) {
     }
 }
 
-function new_update_notifications(message) {
+export function new_update_notifications(message, type = "success") {
+    console.log("NEW NOTIFICATION")
     notificationsQueue.push(message);
-    showNextNotification();
+    console.log(notificationsQueue)
+    showNextNotification(type);
 }
 
-function showNextNotification() {
+function showNextNotification(type) {
+    console.log(isShowingNotification, notificationsQueue.length)
     if (isShowingNotification || notificationsQueue.length === 0) {
         return;
     }
@@ -537,19 +544,28 @@ function showNextNotification() {
     const nextMessage = notificationsQueue.shift();
 
     const footerNotification = document.querySelector('.footer-notification');
-    footerNotification.textContent = nextMessage;
+    footerNotification.innerHTML  = nextMessage;
+    if (type === "error") {
+        footerNotification.classList.add('error');
+    }
+    else{
+        footerNotification.classList.remove('error');
+    }
 
     footerNotification.classList.add('show');
 
-    setTimeout(() => {
-        footerNotification.classList.remove('show');
-
-        isShowingNotification = false;
-        //wait another 250ms
+    if (type !== "error") {
         setTimeout(() => {
-            showNextNotification();
-        }, 550);
-    }, 4000);
+            footerNotification.classList.remove('show');
+    
+            isShowingNotification = false;
+            //wait another 250ms
+            setTimeout(() => {
+                showNextNotification();
+            }, 550);
+        }, 4000);
+    }
+
 }
 
 export function make_name_prettier(text) {

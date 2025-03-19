@@ -849,10 +849,20 @@ export function fixes_mod() {
     let error = false;
     const extraDrivers = queryDB(`SELECT value FROM Custom_2025_SeasonMod WHERE key = 'extra-drivers'`, "singleValue");
     if (extraDrivers === "1") {
-        const lauraMuellerGender = queryDB(`SELECT Gender FROM Staff_BasicData WHERE StaffID = 624`, "singleValue");
-        if (lauraMuellerGender === 0) {
-            error = true;
-            queryDB(`UPDATE Staff_BasicData SET Gender = 1 WHERE StaffID = 624`);
+        if (!changes.Fixes || !Array.isArray(changes.Fixes)) {
+            console.log("No fixes found");
+        }
+        else {
+            for (const fix of changes.Fixes) {
+                const { StaffID, Table, Column, Value } = fix;
+                const value = queryDB(`SELECT ${Column} FROM ${Table} WHERE StaffID = ${StaffID}`, "singleValue");
+                if (value !== undefined && value !== Value) {
+                    queryDB(`UPDATE ${Table} SET ${Column} = ${Value} WHERE StaffID = ${StaffID}`);
+                    error = true;
+                }
+                
+            }
+
         }
     }
 

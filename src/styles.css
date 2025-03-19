@@ -767,7 +767,18 @@ a:has(.patreon-button){
   padding-right: 5px;
   z-index: 1;
   color: var(--positive-general);
-  transform: translateX(17px); /* o 17px, el que prefieras */
+}
+
+.footer-notification.error{
+  color: var(--negative-general);
+}
+
+.footer-notification.error a{
+  color: color-mix(in srgb, var(--negative-general) 60%, white);
+}
+
+.footer-notification.error a:hover{
+  color: color-mix(in srgb, var(--negative-general) 80%, white);
 }
 
 .footer-notification:not(.show) {

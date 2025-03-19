@@ -114,10 +114,10 @@ document.querySelectorAll("#tableTypeDropdown a").forEach(function (elem) {
 
 function change_points_pos_drivers() {
     driverCells.forEach(function (cell) {
-        if (cell.dataset[pointsOrPos] !== undefined){
+        if (cell.dataset[pointsOrPos] !== undefined) {
             cell.innerText = cell.dataset[pointsOrPos]
         }
-        else{
+        else {
             cell.innerText = "-"
         }
     })
@@ -125,10 +125,10 @@ function change_points_pos_drivers() {
 
 function change_points_pos_teams() {
     teamCells.forEach(function (cell) {
-        if (cell.dataset[pointsOrPos] !== undefined){
+        if (cell.dataset[pointsOrPos] !== undefined) {
             cell.innerText = cell.dataset[pointsOrPos]
         }
-        else{
+        else {
             cell.innerText = "-"
         }
     })
@@ -461,26 +461,29 @@ export function new_load_drivers_table(data) {
 }
 
 function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsInfo) {
-    const lastRaceDone = driver1[driver1.length - 1][0]
-    const lastRaceIndex = calendarData.findIndex(x => x[0] === lastRaceDone);
-    racesLeftCount = calendarData.length - (lastRaceIndex + 1);
-    sprintsLeft = calendarData.filter(x => x[2] === 1 && x[0] >= lastRaceDone).length
+    console.log(driver1)
+    if (driver1 !== undefined) {
+        const lastRaceDone = driver1[driver1.length - 1][0]
+        const lastRaceIndex = calendarData.findIndex(x => x[0] === lastRaceDone);
+        racesLeftCount = calendarData.length - (lastRaceIndex + 1);
+        sprintsLeft = calendarData.filter(x => x[2] === 1 && x[0] >= lastRaceDone).length
 
-    const pointsDif = driver1Points - driver2Points
-    let pointsRemaining = racesLeftCount * pointsInfo.twoBiggestPoints[0] + sprintsLeft * 8 +
-    (pointsInfo.isLastRaceDouble ? pointsInfo.twoBiggestPoints[0] : 0) +
-    (pointsInfo.fastestLapBonusPoint === 1 ? racesLeftCount : 0) +
-    (pointsInfo.poleBonusPoint === 1 ? racesLeftCount : 0)
+        const pointsDif = driver1Points - driver2Points
+        let pointsRemaining = racesLeftCount * pointsInfo.twoBiggestPoints[0] + sprintsLeft * 8 +
+            (pointsInfo.isLastRaceDouble ? pointsInfo.twoBiggestPoints[0] : 0) +
+            (pointsInfo.fastestLapBonusPoint === 1 ? racesLeftCount : 0) +
+            (pointsInfo.poleBonusPoint === 1 ? racesLeftCount : 0)
 
-    const firstDriverPos = document.querySelector(".drivers-table-data .drivers-table-position")
-    const firstDriverPoints = document.querySelector(".drivers-table-data .drivers-table-points")
-    if (pointsDif > pointsRemaining){
-        firstDriverPos.classList.add("champion")
-        firstDriverPoints.classList.add("champion")
-    }
-    else{
-        firstDriverPos.classList.remove("champion")
-        firstDriverPoints.classList.remove("champion")
+        const firstDriverPos = document.querySelector(".drivers-table-data .drivers-table-position")
+        const firstDriverPoints = document.querySelector(".drivers-table-data .drivers-table-points")
+        if (pointsDif > pointsRemaining) {
+            firstDriverPos.classList.add("champion")
+            firstDriverPoints.classList.add("champion")
+        }
+        else {
+            firstDriverPos.classList.remove("champion")
+            firstDriverPoints.classList.remove("champion")
+        }
     }
 }
 
@@ -577,19 +580,19 @@ export function new_load_teams_table(data) {
 function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo) {
     const pointsDif = team1Points - team2Points
     let pointsRemaining = racesLeftCount * (parseInt(pointsInfo.twoBiggestPoints[0]) + parseInt(pointsInfo.twoBiggestPoints[1])) + sprintsLeft * 15 +
-    (pointsInfo.isLastRaceDouble ? pointsInfo.twoBiggestPoints[0] : 0) +
-    (pointsInfo.fastestLapBonusPoint === 1 ? racesLeftCount : 0) +
-    (pointsInfo.poleBonusPoint === 1 ? racesLeftCount : 0)
+        (pointsInfo.isLastRaceDouble ? pointsInfo.twoBiggestPoints[0] : 0) +
+        (pointsInfo.fastestLapBonusPoint === 1 ? racesLeftCount : 0) +
+        (pointsInfo.poleBonusPoint === 1 ? racesLeftCount : 0)
 
 
     const firstTeamPos = document.querySelector(".teams-table-data .teams-table-position")
     const firstTeamPoints = document.querySelector(".teams-table-data .teams-table-points")
 
-    if (pointsDif > pointsRemaining){
+    if (pointsDif > pointsRemaining) {
         firstTeamPos.classList.add("champion")
         firstTeamPoints.classList.add("champion")
     }
-    else{
+    else {
         firstTeamPos.classList.remove("champion")
         firstTeamPoints.classList.remove("champion")
     }
@@ -805,7 +808,7 @@ function new_addDriver(driver, races_done, odd) {
                     driverpoints += parseInt(raceDiv.dataset.sprintpoints)
                 }
             }
-            driverpoints += (parseInt(race[2]) >= 0 ? parseInt(race[2]): 0)
+            driverpoints += (parseInt(race[2]) >= 0 ? parseInt(race[2]) : 0)
             raceDiv.textContent = raceDiv.dataset[pointsOrPos]
             row.appendChild(raceDiv)
         }
@@ -831,23 +834,23 @@ function new_addDriver(driver, races_done, odd) {
     return driverpoints;
 }
 
-function manage_dataset_info_driver(info, sprintInfo, type){
+function manage_dataset_info_driver(info, sprintInfo, type) {
     let race, sprint;
-    if (type === "points"){
-        if (parseInt(info) === 0){
+    if (type === "points") {
+        if (parseInt(info) === 0) {
             race = ""
         }
-        else if (parseInt(info) === -1){
+        else if (parseInt(info) === -1) {
             race = "DNF"
         }
-        else{
+        else {
             race = info
         }
 
-        if (sprintInfo === undefined){
+        if (sprintInfo === undefined) {
             sprint = ""
         }
-        else if (parseInt(sprintInfo) === 0 || parseInt(sprintInfo) === -1){
+        else if (parseInt(sprintInfo) === 0 || parseInt(sprintInfo) === -1) {
             sprint = ""
         }
         else {
@@ -857,15 +860,15 @@ function manage_dataset_info_driver(info, sprintInfo, type){
         return res
 
     }
-    else if (type === "pos"){
-        if (parseInt(info) === -1){
+    else if (type === "pos") {
+        if (parseInt(info) === -1) {
             race = "DNF"
         }
-        else{
+        else {
             race = info;
         }
 
-        if (sprintInfo === undefined || parseInt(sprintInfo) > 8 || parseInt(sprintInfo) === -1){
+        if (sprintInfo === undefined || parseInt(sprintInfo) > 8 || parseInt(sprintInfo) === -1) {
             sprint = ""
         }
         else {
@@ -876,51 +879,51 @@ function manage_dataset_info_driver(info, sprintInfo, type){
         return res
 
     }
-    else if (type === "quali"){
+    else if (type === "quali") {
         race = info;
         return race;
     }
 }
 
-function manage_dataset_info_team(info, sprintInfo, type){
+function manage_dataset_info_team(info, sprintInfo, type) {
     let race, sprint;
-    if (type === "points"){
+    if (type === "points") {
         let d1Points = (info[0] !== -1 ? info[0] : 0)
         let d2Points = (info[1] !== -1 ? info[1] : 0)
         let combinedRace = parseInt(d1Points) + parseInt(d2Points)
         let combinedSprint;
-        if (sprintInfo !== undefined){
+        if (sprintInfo !== undefined) {
             combinedSprint = parseInt(sprintInfo[0]) + parseInt(sprintInfo[1])
         }
-        if (combinedRace === 0){
+        if (combinedRace === 0) {
             race = ""
         }
-        else{
+        else {
             race = combinedRace
         }
-        if (sprintInfo === undefined || combinedSprint === 0){
+        if (sprintInfo === undefined || combinedSprint === 0) {
             sprint = ""
         }
-        else if (combinedSprint !== 0){
+        else if (combinedSprint !== 0) {
             sprint = combinedSprint
         }
 
         let res = `${race}${(sprint !== "") ? "(" + sprint + ")" : ""}`
         return res;
     }
-    else if (type === "pos"){
-        if (parseInt(info[0]) === -1){
+    else if (type === "pos") {
+        if (parseInt(info[0]) === -1) {
             info[0] = "DNF"
         }
-        if (parseInt(info[1]) === -1){
+        if (parseInt(info[1]) === -1) {
             info[1] = "DNF"
         }
 
-        if (sprintInfo !== undefined){
-            if (parseInt(sprintInfo[0]) === -1 || parseInt(sprintInfo[0]) > 8){
+        if (sprintInfo !== undefined) {
+            if (parseInt(sprintInfo[0]) === -1 || parseInt(sprintInfo[0]) > 8) {
                 sprintInfo[0] = ""
             }
-            if (parseInt(sprintInfo[1]) === -1 || parseInt(sprintInfo[1]) > 8){
+            if (parseInt(sprintInfo[1]) === -1 || parseInt(sprintInfo[1]) > 8) {
                 sprintInfo[1] = ""
             }
         }
@@ -928,7 +931,7 @@ function manage_dataset_info_team(info, sprintInfo, type){
         let res = `${info[0]}${(sprintInfo !== undefined && sprintInfo[0] !== "") ? "(" + sprintInfo[0] + ")" : ""}\n${info[1]}${(sprintInfo !== undefined && sprintInfo[1] !== "") ? "(" + sprintInfo[1] + ")" : ""}`
         return res;
     }
-    else if (type === "quali"){
+    else if (type === "quali") {
         let res = `${info[0]}\n${info[1]}`
         return res;
     }
@@ -1122,7 +1125,7 @@ export function generateYearsMenu(actualYear) {
             isYearSelected = true
             manage_show_tables()
             const command = new Command("yearSelected", a.textContent);
-            command.execute(true);
+            command.execute();
 
         })
 

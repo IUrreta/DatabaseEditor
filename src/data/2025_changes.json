@@ -8390,5 +8390,73 @@
             "Boost": 1.166,
             "TyreDeg": 6
         }
+    ],
+    "Fixes": [
+        {
+            "StaffID": 624,
+            "Table": "Staff_BasicData",
+            "Column": "Gender",
+            "Value": 1
+        },
+        {
+            "StaffID": 626,
+            "Table": "Staff_BasicData",
+            "Column": "FaceType",
+            "Value": 0
+        },
+        {
+            "StaffID": 626,
+            "Table": "Staff_BasicData",
+            "Column": "FaceIndex",
+            "Value": 14
+        },
+        {
+            "StaffID": 631,
+            "Table": "Staff_BasicData",
+            "Column": "FaceType",
+            "Value": 0
+        },
+        {
+            "StaffID": 631,
+            "Table": "Staff_BasicData",
+            "Column": "FaceIndex",
+            "Value": 14
+        },
+        {
+            "StaffID": 635,
+            "Table": "Staff_BasicData",
+            "Column": "FaceType",
+            "Value": 0
+        },
+        {
+            "StaffID": 635,
+            "Table": "Staff_BasicData",
+            "Column": "FaceIndex",
+            "Value": 14
+        },
+        {
+            "StaffID": 636,
+            "Table": "Staff_BasicData",
+            "Column": "FaceType",
+            "Value": 0
+        },
+        {
+            "StaffID": 636,
+            "Table": "Staff_BasicData",
+            "Column": "FaceIndex",
+            "Value": 14
+        },
+        {
+            "StaffID": 638,
+            "Table": "Staff_BasicData",
+            "Column": "FaceType",
+            "Value": 0
+        },
+        {
+            "StaffID": 638,
+            "Table": "Staff_BasicData",
+            "Column": "FaceIndex",
+            "Value": 14
+        }
     ]
 }
