@@ -451,9 +451,9 @@ body {
 .save-button {
   position: fixed;
   bottom: 60px;
-  right: -137px;
+  right: -146px;
   z-index: 1000;
-  padding: 13px 15px;
+  padding: 13px 25px 13px 15px;
   background-color: var(--text-general);
   color: var(--negative-text);
   border: none;
@@ -462,6 +462,7 @@ body {
   transition: right 0.15s, background-color 0.15s, color 0.15s;
   border-radius: 10px;
   font-size: 18px;
+  box-shadow: none;
 }
 
 .save-button:active {
@@ -472,32 +473,36 @@ body {
 
 @keyframes slideAndColorChange {
   0% {
-    right: -137px;
+    right: -146px;
     background-color: var(--text-general);
   }
 
   10% {
-    right: -7px;
+    right: -17px;
     background-color: var(--new-primary);
+    box-shadow: 0 0 8px var(--new-primary);
   }
 
   45% {
-    right: -7px;
+    right: -17px;
     background-color: var(--new-primary);
+    box-shadow: 0 0 8px var(--new-primary);
   }
 
   55% {
-    right: -7px;
+    right: -17px;
     background-color: var(--new-secondary);
+    box-shadow: 0 0 8px var(--new-secondary);
   }
 
   90% {
-    right: -7px;
+    right: -17px;
     background-color: var(--new-secondary);
+    box-shadow: 0 0 8px var(--new-secondary);
   }
 
   100% {
-    right: -137px;
+    right: -146px;
     background-color: var(--text-general);
   }
 }
@@ -635,7 +640,7 @@ a:has(.patreon-button){
 }
 
 .save-button:hover {
-  right: -7px;
+  right: -17px;
   background-color: var(--new-primary);
 }
 
