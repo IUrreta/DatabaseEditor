@@ -191,6 +191,10 @@ export function setSaveName(name) {
     saveName = name;
 }
 
+export function setIsShowingNotification(value) {
+    isShowingNotification = value;
+}
+
 
 
 /**
@@ -279,14 +283,12 @@ function editModeHandler() {
             document.querySelector(".clicked").dataset["mentality" + index] = elem.dataset.value
             globalMentality += parseInt(elem.dataset.value)
         })
+        mentality = mentality.slice(0, -1)
         globalMentality = Math.floor(globalMentality / 3)
     }
     document.querySelector(".clicked").dataset.globalMentality = globalMentality
-    let new_ovr = calculateOverall(stats, typeOverall, mentality_to_global_menatality[globalMentality]);
-    document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = ""
-    if (new_ovr[1] !== new_ovr[0]) {
-        document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr[1];
-    }
+    let new_ovr = calculateOverall(stats, typeOverall);
+    document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr
 
     let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
     let age = document.querySelector(".actual-age").textContent.split(" ")[1];
@@ -360,14 +362,25 @@ function editModeHandler() {
 
 function calendarModeHandler() {
     let dataCodesString = '';
+    let raceArray = [];
 
     document.querySelectorAll(".race-calendar").forEach((race) => {
+        let raceData = {
+            trackId: race.dataset.trackid.toString(),
+            rainPractice: race.dataset.rainP.toString(),
+            rainQuali: race.dataset.rainQ.toString(),
+            rainRace: race.dataset.rainR.toString(),
+            type: race.dataset.type.toString(),
+            state: race.dataset.state.toString()
+        };
+        raceArray.push(raceData);
         dataCodesString += race.dataset.trackid.toString() + race.dataset.rainP.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString() + race.dataset.state.toString() + ' ';
     });
 
     dataCodesString = dataCodesString.trim();
     let dataCalendar = {
-        calendarCodes: dataCodesString
+        calendarCodes: dataCodesString,
+        racesData: raceArray
     };
 
     const command = new Command("editCalendar", dataCalendar);
@@ -503,7 +516,7 @@ export function updateFront(data) {
         handler(message);
     }
     if (data.noti_msg !== undefined) {
-        new_update_notifications(data.noti_msg)
+        new_update_notifications(data.noti_msg, "success");
     }
     if (data.isEditCommand !== undefined) {
         checkOpenSlideUp()
@@ -513,12 +526,15 @@ export function updateFront(data) {
     }
 }
 
-function new_update_notifications(message) {
+export function new_update_notifications(message, type = "success") {
+    console.log("NEW NOTIFICATION")
     notificationsQueue.push(message);
-    showNextNotification();
+    console.log(notificationsQueue)
+    showNextNotification(type);
 }
 
-function showNextNotification() {
+function showNextNotification(type) {
+    console.log(isShowingNotification, notificationsQueue.length)
     if (isShowingNotification || notificationsQueue.length === 0) {
         return;
     }
@@ -528,19 +544,28 @@ function showNextNotification() {
     const nextMessage = notificationsQueue.shift();
 
     const footerNotification = document.querySelector('.footer-notification');
+    footerNotification.innerHTML  = nextMessage;
+    if (type === "error") {
+        footerNotification.classList.add('error');
+    }
+    else{
+        footerNotification.classList.remove('error');
+    }
 
-    footerNotification.textContent = nextMessage;
     footerNotification.classList.add('show');
 
-    setTimeout(() => {
-        footerNotification.classList.remove('show');
-
-        isShowingNotification = false;
-        //wait another 250ms
+    if (type !== "error") {
         setTimeout(() => {
-            showNextNotification();
-        }, 550);
-    }, 4000);
+            footerNotification.classList.remove('show');
+    
+            isShowingNotification = false;
+            //wait another 250ms
+            setTimeout(() => {
+                showNextNotification();
+            }, 550);
+        }, 4000);
+    }
+
 }
 
 export function make_name_prettier(text) {
@@ -1320,7 +1345,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
 
         replace_custom_team_logo(document.querySelector(".logo-preview").src)
     }
-    
+
 
 })
 
@@ -1425,7 +1450,7 @@ document.querySelector(".toolbar-logo-and-title").addEventListener("click", func
     manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 0
     document.getElementById("blockDiv").classList.remove("disappear")
-    if (document.querySelector(".scriptPills.active")){
+    if (document.querySelector(".scriptPills.active")) {
         document.querySelector(".scriptPills.active").classList.remove("active")
     }
     divBlocking = 1;
@@ -1530,7 +1555,7 @@ function manage_difficulty_warnings(level, triggerList) {
             element.className = elementConfig.className;
             element.textContent = elementConfig.text;
         }
-        else if(triggerList[id] === -1){
+        else if (triggerList[id] === -1) {
             document.getElementById(id).classList.add("disabled")
         }
     });
@@ -1827,6 +1852,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const patchModal = new bootstrap.Modal(document.getElementById('patchModal'));
         patchModal.show();
     }
+
 });
 
 function createMarqueeItem(name, tier) {
@@ -1978,20 +2004,20 @@ function shouldShowPatchModal(storedVersion, versionNow) {
     return storedParts[0] < currentParts[0] || storedParts[1] < currentParts[1];
 }
 
-function updateModBlocking(data){
+function updateModBlocking(data) {
     console.log(data)
-    if (data === "AlreadyEdited"){
+    if (data === "AlreadyEdited") {
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
     }
-    else if (data === "Start2024"){
+    else if (data === "Start2024") {
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
 
         document.querySelector(".time-travel").classList.remove("disabled")
         document.querySelector(".time-travel span").textContent = "Apply"
     }
-    else if (data === "Direct2025" || data === "End2024"){
+    else if (data === "Direct2025" || data === "End2024") {
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
 
@@ -1999,14 +2025,14 @@ function updateModBlocking(data){
         document.querySelector(".time-travel span").textContent = "Disabled"
         calendarEditMode = data;
     }
-    else{
+    else {
         document.querySelector(".mod-blocking").classList.remove("d-none")
         document.querySelector(".changes-grid").classList.add("d-none")
     }
 }
 
 document.querySelector(".time-travel").addEventListener("click", function () {
-    const command = new Command("timeTravel", {dayNumber: 45657});
+    const command = new Command("timeTravel", { dayNumber: 45657 });
     command.execute();
     this.classList.add("completed")
     this.querySelector("span").textContent = "Applied"
@@ -2059,7 +2085,7 @@ document.querySelector(".extra-drivers").addEventListener("click", function () {
 })
 
 document.querySelector(".change-calendar").addEventListener("click", function () {
-    const command = new Command("changeCalendar", {type: calendarEditMode});
+    const command = new Command("changeCalendar", { type: calendarEditMode });
     command.execute();
     this.classList.add("completed")
     this.querySelector("span").textContent = "Applied"

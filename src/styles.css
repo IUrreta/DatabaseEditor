@@ -451,9 +451,9 @@ body {
 .save-button {
   position: fixed;
   bottom: 60px;
-  right: -137px;
+  right: -146px;
   z-index: 1000;
-  padding: 13px 15px;
+  padding: 13px 25px 13px 15px;
   background-color: var(--text-general);
   color: var(--negative-text);
   border: none;
@@ -462,36 +462,47 @@ body {
   transition: right 0.15s, background-color 0.15s, color 0.15s;
   border-radius: 10px;
   font-size: 18px;
+  box-shadow: none;
+}
+
+.save-button:active {
+  transform: scale(0.95);
+  /* Ajusta esto a tu gusto */
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
 }
 
 @keyframes slideAndColorChange {
   0% {
-    right: -137px;
+    right: -146px;
     background-color: var(--text-general);
   }
 
   10% {
-    right: -7px;
+    right: -17px;
     background-color: var(--new-primary);
+    box-shadow: 0 0 8px var(--new-primary);
   }
 
   45% {
-    right: -7px;
+    right: -17px;
     background-color: var(--new-primary);
+    box-shadow: 0 0 8px var(--new-primary);
   }
 
   55% {
-    right: -7px;
+    right: -17px;
     background-color: var(--new-secondary);
+    box-shadow: 0 0 8px var(--new-secondary);
   }
 
   90% {
-    right: -7px;
+    right: -17px;
     background-color: var(--new-secondary);
+    box-shadow: 0 0 8px var(--new-secondary);
   }
 
   100% {
-    right: -137px;
+    right: -146px;
     background-color: var(--text-general);
   }
 }
@@ -629,7 +640,7 @@ a:has(.patreon-button){
 }
 
 .save-button:hover {
-  right: -7px;
+  right: -17px;
   background-color: var(--new-primary);
 }
 
@@ -743,13 +754,13 @@ a:has(.patreon-button){
 }
 
 .version-panel {
-  transition: opacity 0.15s, color 0.15s, border-color 0.15s, text-shadow 0.15s;
+  transition: border 0.15s, opacity 0.15s, color 0.15s, text-shadow 0.15s;
   cursor: pointer;
   padding: 0 5px;
   border-left: 2px solid transparent;
   background-color: var(--generals);
   z-index: 3;
-
+  will-change: border;
 }
 
 .status:has(.footer-notification.show) .version-panel {
@@ -763,17 +774,23 @@ a:has(.patreon-button){
   color: var(--positive-general);
 }
 
+.footer-notification.error{
+  color: var(--negative-general);
+}
+
+.footer-notification.error a{
+  color: color-mix(in srgb, var(--negative-general) 60%, white);
+}
+
+.footer-notification.error a:hover{
+  color: color-mix(in srgb, var(--negative-general) 80%, white);
+}
+
 .footer-notification:not(.show) {
-  transform: translateX(123%);
+  transform: translateX(125%);
 }
 
-.footer:has(.loader:not(.hidden)) .footer-notification.show {
-  transform: translateX(0);
-}
 
-.footer:has(.loader.hidden) .footer-notification.show {
-  transform: translateX(17px);
-}
 
 
 .version-panel:hover {
@@ -4269,7 +4286,7 @@ body.light-theme .flag, body.light-theme .flag-header img{
 }
 
 .engine-performance{
-  min-height: 320px;
+  min-height: 318px;
 }
 
 .engine-f2 {

@@ -9,9 +9,8 @@ const weatherDict = {
   "5": 32
 };
 
-export function editCalendar(calendarStr, year_iteration) {
+export function editCalendar(calendarStr, year_iteration, racesData) {
   const calendar = calendarStr.toLowerCase();
-  let races = calendar.split(" ");
   const yearIteration = year_iteration;
 
   let maxRaces;
@@ -28,7 +27,7 @@ export function editCalendar(calendarStr, year_iteration) {
     weeks = [];
   }
 
-  const raceBlanks = maxRaces - races.length;
+  const raceBlanks = maxRaces - racesData.length;
 
   const daySeason = queryDB(`
     SELECT Day, CurrentSeason
@@ -42,7 +41,8 @@ export function editCalendar(calendarStr, year_iteration) {
   `, 'allRows') || [];
 
   actualCalendar = actualCalendar.map(row => row[0]);
-  const newCalendar = races.map(gp => parseInt(gp.slice(0, -5), 10));
+  //build newCalendar with trackId from each element from the array racesData
+  const newCalendar = racesData.map(race => parseInt(race.trackId));
 
   if (arraysEqual(actualCalendar, newCalendar)) {
     const ids = queryDB(`
@@ -52,21 +52,23 @@ export function editCalendar(calendarStr, year_iteration) {
     `, 'allRows') || [];
     const raceIDs = ids.map(row => row[0]);
 
-    for (let i = 0; i < races.length; i++) {
-      const race = races[i];
-      const state = race.slice(-1);
-      const format = race.slice(-2, -1);
-      const rainR = weatherDict[race.slice(-3, -2)];
+    for (let i = 0; i < racesData.length; i++) {
+      const race = racesData[i];
+      const state = race.state;
+      const format = race.type;
+      const rainR = weatherDict[race.rainRace];
       const rainRBool = (parseFloat(rainR) >= 8) ? 1 : 0;
-      const rainQ = weatherDict[race.slice(-4, -3)];
+      const rainQ = weatherDict[race.rainQuali];
       const rainQBool = (parseFloat(rainQ) >= 8) ? 1 : 0;
-      const rainP = weatherDict[race.slice(-5, -4)];
+      const rainP = weatherDict[race.rainPractice];
       const rainPBool = (parseFloat(rainP) >= 8) ? 1 : 0;
       // race_code = race.slice(0, -5); // en Python, no lo usas aquí para nada
 
       queryDB(`
         UPDATE Races
         SET
+          RainPractice = ${rainPBool},
+          WeatherStatePractice = ${rainP},
           RainQualifying = ${rainQBool},
           WeatherStateQualifying = ${rainQ},
           RainRace = ${rainRBool},
@@ -92,7 +94,6 @@ export function editCalendar(calendarStr, year_iteration) {
     weeks = weeks.filter(x => x !== 0);
     weeks.sort((a, b) => a - b);
 
-    console.log(weeks)
 
 
     let leapYearCount = 2;
@@ -129,17 +130,17 @@ export function editCalendar(calendarStr, year_iteration) {
         AND SeasonID = ${daySeason[1]}
     `);
 
-    for (let i = 0; i < races.length; i++) {
-      const race = races[i];
-      const state = race.slice(-1);
-      const format = race.slice(-2, -1);
-      const rainR = weatherDict[race.slice(-3, -2)];
+    for (let i = 0; i < racesData.length; i++) {
+      const race = racesData[i];
+      const state = race.state;
+      const format = race.type;
+      const rainR = weatherDict[race.rainRace];
       const rainRBool = (parseFloat(rainR) >= 8) ? 1 : 0;
-      const rainQ = weatherDict[race.slice(-4, -3)];
+      const rainQ = weatherDict[race.rainQuali];
       const rainQBool = (parseFloat(rainQ) >= 8) ? 1 : 0;
-      const rainP = weatherDict[race.slice(-5, -4)];
+      const rainP = weatherDict[race.rainPractice];
       const rainPBool = (parseFloat(rainP) >= 8) ? 1 : 0;
-      const raceCode = parseInt(race.slice(0, -5), 10);
+      const raceCode = parseInt(race.trackId);
 
       const temps = queryDB(`
         SELECT TemperatureMin, TemperatureMax
@@ -152,7 +153,6 @@ export function editCalendar(calendarStr, year_iteration) {
       const tempR = randomInt(temps[0], temps[1]);
 
       const day = ((weeks[i] + 1) * 7) + dayStart;
-      console.log(`Day for race ${i + 1}: ${day}`);
       raceid += 1;
 
       if (state !== "2") {
