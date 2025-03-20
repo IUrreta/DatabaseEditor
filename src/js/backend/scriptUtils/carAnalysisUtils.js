@@ -283,9 +283,6 @@ export function getTyreDegStats(designDict) {
 }
 
 export function updateTyreDegStats(designDictTeamReceiver, designDictTeamGiver, teamReceiver, teamGiver) {
-    console.log(designDictTeamReceiver);
-    console.log(designDictTeamGiver);
-    console.log(`Team Receiver: ${teamReceiver}, Team Giver: ${teamGiver}`);
     //only part 4 and 8
     const reducedDesignDictTeamReceiver = {4: designDictTeamReceiver[4][0][0], 8: designDictTeamReceiver[8][0][0]};
     for (const part in reducedDesignDictTeamReceiver){

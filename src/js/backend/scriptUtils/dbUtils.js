@@ -927,7 +927,6 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
     }
 
     if (parseInt(driverWithFastestLap) === parseInt(driverID)) {
-      console.log("METO FASTEST LAP");
       formatredResults[i].push(1);
     } else {
       formatredResults[i].push(0);
@@ -1475,15 +1474,12 @@ export function check2025ModCompatibility(year_version) {
   const minDay2025 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2025`, 'singleValue');
   const firstRaceState2025 = queryDB(`SELECT State FROM Races WHERE Day = ${minDay2025} AND SeasonID = 2025`, 'singleValue');
 
-  console.log("MOD COMPATIBILITY CHECK")
-  console.log({ firstRaceState2024, year_version, currentSeason, lastRaceState2024, firstRaceState2025 });
 
   if (year_version !== "24") {
     return "NotCompatible";
   }
 
   const edited = queryDB(`SELECT * FROM Custom_2025_SeasonMod WHERE value = 1`, 'allRows');
-  console.log({ edited });
   if (edited.length > 0) {
     return "AlreadyEdited";
   }
@@ -1508,12 +1504,12 @@ export function check2025ModCompatibility(year_version) {
 
 export function updateTeamsSuppliedByEngine(engineId, stats) {
   const teamsSupplied = queryDB(`SELECT teamID FROM Custom_Engine_Allocations WHERE engineId = ${engineId}`, 'allRows');
-  for (let team in teamsSupplied) {
+  teamsSupplied.forEach(team => {
     const teamEngineId = queryDB(`SELECT DesignID FROM Parts_Designs WHERE TeamID = ${team} AND PartType = 0`, 'singleValue');
     const teamERSId = queryDB(`SELECT DesignID FROM Parts_Designs WHERE TeamID = ${team} AND PartType = 1`, 'singleValue');
     const teamGearboxId = queryDB(`SELECT DesignID FROM Parts_Designs WHERE TeamID = ${team} AND PartType = 2`, 'singleValue');
     for (let stat in stats) {
-      if (parseInt < 18) {
+      if (parseInt(stat) < 18) {
         const untiValue = stats[stat];
         const value = engine_unitValueToValue[stat](untiValue);
         queryDB(`UPDATE Parts_Designs_StatValues SET Value = ${value}, UnitValue = ${untiValue} WHERE DesignID = ${teamEngineId} AND PartStat = ${stat}`);
@@ -1524,9 +1520,9 @@ export function updateTeamsSuppliedByEngine(engineId, stats) {
     const unitValueERS = stats[18];
     const valueGearbox = engine_unitValueToValue[19](stats[19]);
     const unitValueGearbox = stats[19];
-    queryDB(`UPDATE Parts_Designs_StatValues SET Value = ${valueERS}, UnitValue = ${unitValueERS} WHERE DesignID = ${teamERSId} AND PartStat = ${15}`);
-    queryDB(`UPDATE Parts_Designs_StatValues SET Value = ${valueGearbox}, UnitValue = ${unitValueGearbox} WHERE DesignID = ${teamGearboxId} AND PartStat = ${15}`);
-  }
+    queryDB(`UPDATE Parts_Designs_StatValues SET Value = ${valueERS}, UnitValue = ${unitValueERS} WHERE DesignID = ${teamERSId} AND PartStat = 15`);
+    queryDB(`UPDATE Parts_Designs_StatValues SET Value = ${valueGearbox}, UnitValue = ${unitValueGearbox} WHERE DesignID = ${teamGearboxId} AND PartStat = 15`);
+  });
 
 
 }

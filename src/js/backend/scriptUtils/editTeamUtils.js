@@ -85,7 +85,6 @@ export function fetchTeamData(teamID){
 
       const engineId = queryDB(`SELECT engineId FROM Custom_Engine_Allocations WHERE teamId = ${teamID}`, 'singleValue');
       const allEngines = queryDB(`SELECT * FROM Custom_Engine_Allocations`, 'allRows');
-      console.log(allEngines);
     
       data.push(seasonObj, longTermObj, teamBalance, costCap, confidence, daySeason[1], pitDict, engineId);
       return data;

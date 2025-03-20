@@ -96,8 +96,8 @@ export function place_drivers_editStats(driversArray) {
         let mentality = driver["global_mentality"]
 
         newDiv.dataset.marketability = driver["marketability"]
-        let ovr = calculateOverall(statsString, "driver", mentality)
-        ovrSpan.textContent = ovr[0]
+        let ovr = calculateOverall(statsString, "driver")
+        ovrSpan.textContent = ovr
         ovrDiv.appendChild(ovrSpan)
         ovrDiv.classList.add("bold-font")
         ovrDiv.classList.add("small-ovr")
@@ -214,8 +214,8 @@ export function place_staff_editStats(staffArray) {
             newDiv.dataset.globalMentality = staff["global_mentality"]
         }
         let mentality = staff["global_mentality"]
-        let ovr = calculateOverall(statsString, "staff", mentality)
-        ovrSpan.textContent = ovr[0]
+        let ovr = calculateOverall(statsString, "staff")
+        ovrSpan.textContent = ovr
 
         ovrDiv.appendChild(ovrSpan)
         ovrDiv.classList.add("bold-font")
@@ -258,7 +258,7 @@ function recalculateOverall() {
     })
     stats = stats.slice(0, -1);
     let oldovr = document.getElementById("ovrholder").innerHTML;
-    let ovr = calculateOverall(stats, typeOverall, 2, "big");
+    let ovr = calculateOverall(stats, typeOverall);
     if (oldovr > ovr) {
         document.getElementById("ovrholder").innerHTML = ovr;
         document.getElementById("ovrholder").className = "overall-holder bold-font alertNeg";
@@ -304,13 +304,9 @@ export function getName(html) {
  * @param {string} type type of staff
  * @returns the number of his overall value
  */
-export function calculateOverall(stats, type, mentality = 2, ovr = "small") {
+export function calculateOverall(stats, type) {
     let statsArray = stats.split(" ").map(Number);
-    let mentality_stats = [];
-    for (let i = 0; i < statsArray.length; i++) {
-        mentality_stats[i] = statsArray[i] + getMentalityModifier(mentality);
-    }
-    let rating, mentality_rating;
+    let rating;
     if (type === "driver") {
         let cornering = statsArray[0];
         let braking = statsArray[1];
@@ -323,24 +319,15 @@ export function calculateOverall(stats, type, mentality = 2, ovr = "small") {
         let accuracy = statsArray[8];
 
         rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.75 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 5;
-        mentality_rating = (mentality_stats[0] + mentality_stats[1] * 0.75 + mentality_stats[7] * 0.5 + mentality_stats[2] * 0.75 + mentality_stats[3] * 0.5 + mentality_stats[8] * 0.75 + mentality_stats[4] * 0.25 + mentality_stats[5] * 0.25 + mentality_stats[6] * 0.25) / 5;
     }
     else if (type === "staff") {
         let suma = 0;
-        mentality_rating = 0;
         for (let i = 0; i < statsArray.length; i++) {
             suma += statsArray[i];
-            mentality_rating += mentality_stats[i];
         }
         rating = suma / statsArray.length;
-        mentality_rating = mentality_rating / statsArray.length;
     }
-    if (ovr === "small") {
-        return [Math.round(rating), Math.round(mentality_rating)];
-    }
-    else {
-        return Math.round(rating)
-    }
+    return Math.round(rating)
 }
 
 function updateStat(input, increment) {

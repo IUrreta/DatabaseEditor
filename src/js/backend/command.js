@@ -15,12 +15,10 @@ export class Command {
     }
 
 
-    async execute(loader=false) {
+    async execute() {
         console.log(`[Command] Executing command: ${this.commandName}`);
         console.log(`[Command] Data:`, this.data);
-        if(loader){
-            document.querySelector(".loader").classList.remove("hidden");
-        }
+
         dbWorker.postMessage({ command: this.commandName, data: this.data });
 
         dbWorker.onmessage = (msg) => {
@@ -38,9 +36,7 @@ export class Command {
                     }
                 }
             }
-            if(loader){
-                document.querySelector(".loader").classList.add("hidden");
-            }
+
         };
     }
 
