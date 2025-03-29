@@ -5021,7 +5021,7 @@
           "PhotoDay": 45340,
           "FaceType": 0,
           "FaceIndex": 14,
-          "AgeType": 0,
+          "AgeType": 1,
           "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5066,7 +5066,7 @@
           "PhotoDay": 45340,
           "FaceType": 0,
           "FaceIndex": 14,
-          "AgeType": 0,
+          "AgeType": 1,
           "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5126,7 +5126,7 @@
           "PhotoDay": 45340,
           "FaceType": 0,
           "FaceIndex": 14,
-          "AgeType": 0,
+          "AgeType": 1,
           "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5141,7 +5141,7 @@
           "PhotoDay": 45340,
           "FaceType": 0,
           "FaceIndex": 14,
-          "AgeType": 0,
+          "AgeType": 1,
           "IsGeneratedForCustomTeam": 0
         },
         {
@@ -5171,7 +5171,7 @@
           "PhotoDay": 45340,
           "FaceType": 0,
           "FaceIndex": 14,
-          "AgeType": 0,
+          "AgeType": 1,
           "IsGeneratedForCustomTeam": 0
         },
         {
@@ -8393,6 +8393,24 @@
     ],
     "Fixes": [
         {
+            "StaffID": 623,
+            "Table": "Staff_BasicData",
+            "Column": "FaceType",
+            "Value": 0
+        },
+        {
+            "StaffID": 623,
+            "Table": "Staff_BasicData",
+            "Column": "FaceIndex",
+            "Value": 14
+        },
+        {
+            "StaffID": 623,
+            "Table": "Staff_BasicData",
+            "Column": "AgeType",
+            "Value": 1
+        },
+        {
             "StaffID": 624,
             "Table": "Staff_BasicData",
             "Column": "Gender",
@@ -8411,6 +8429,12 @@
             "Value": 14
         },
         {
+            "StaffID": 626,
+            "Table": "Staff_BasicData",
+            "Column": "AgeType",
+            "Value": 1
+        },
+        {
             "StaffID": 631,
             "Table": "Staff_BasicData",
             "Column": "FaceType",
@@ -8421,6 +8445,12 @@
             "Table": "Staff_BasicData",
             "Column": "FaceIndex",
             "Value": 14
+        },
+        {
+            "StaffID": 631,
+            "Table": "Staff_BasicData",
+            "Column": "AgeType",
+            "Value": 1
         },
         {
             "StaffID": 635,
@@ -8435,6 +8465,12 @@
             "Value": 14
         },
         {
+            "StaffID": 635,
+            "Table": "Staff_BasicData",
+            "Column": "AgeType",
+            "Value": 1
+        },
+        {
             "StaffID": 636,
             "Table": "Staff_BasicData",
             "Column": "FaceType",
@@ -8447,6 +8483,12 @@
             "Value": 14
         },
         {
+            "StaffID": 636,
+            "Table": "Staff_BasicData",
+            "Column": "AgeType",
+            "Value": 1
+        },
+        {
             "StaffID": 638,
             "Table": "Staff_BasicData",
             "Column": "FaceType",
@@ -8457,6 +8499,12 @@
             "Table": "Staff_BasicData",
             "Column": "FaceIndex",
             "Value": 14
+        },
+        {
+            "StaffID": 638,
+            "Table": "Staff_BasicData",
+            "Column": "AgeType",
+            "Value": 1
         }
     ]
 }
