@@ -9663,12 +9663,11 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
   height: 100%;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   border: 2px dashed var(--disabled-text);
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  padding-left: 35%;
   transition: all 0.15s;
 }
 
