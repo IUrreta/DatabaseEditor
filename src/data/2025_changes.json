@@ -8911,13 +8911,13 @@
             "StaffID": 630,
             "Table": "Staff_BasicData",
             "Column": "FaceIndex",
-            "Value": 1
+            "Value": 3
         },
         {
             "StaffID": 630,
             "Table": "Staff_BasicData",
             "Column": "AgeType",
-            "Value": 0
+            "Value": 1
         },
         {
             "StaffID": 633,
