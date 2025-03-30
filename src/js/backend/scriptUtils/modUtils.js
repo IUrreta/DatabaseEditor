@@ -855,6 +855,7 @@ export function fixes_mod() {
         else {
             for (const fix of changes.Fixes) {
                 const { StaffID, Table, Column, Value } = fix;
+                // console.log(`SELECT ${Column} FROM ${Table} WHERE StaffID = ${StaffID}`);
                 const value = queryDB(`SELECT ${Column} FROM ${Table} WHERE StaffID = ${StaffID}`, "singleValue");
                 if (value !== undefined && value !== Value) {
                     queryDB(`UPDATE ${Table} SET ${Column} = ${Value} WHERE StaffID = ${StaffID}`);

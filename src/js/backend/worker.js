@@ -36,8 +36,6 @@ const workerCommands = {
     let day = metadata.careerSaveMetadata.Day;
     let date = excelToDate(day);
 
-    console.log(metadata)
-
     setDatabase(db, metadata);
 
     postMessage({ responseMessage: "Database loaded", content: date });
@@ -207,7 +205,6 @@ const workerCommands = {
       }
     }
     editStats(data.driverID, data.typeStaff, data.statsArray, data.retirement, data.driverNum, data.wants1);
-    console.log(data)
     if (data.mentality !== "-1" && globals.yearIteration == "24") {
 
       editMentality(data.driverID, data.mentality);

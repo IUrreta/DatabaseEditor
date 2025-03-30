@@ -83,7 +83,7 @@ export function editStats(driverID, type, stats, retirement, driverNum, wants1) 
     `);
 
     changeDriverNumber(driverID, driverNum);
-    
+
     queryDB(`
       UPDATE Staff_DriverData
       SET WantsChampionDriverNumber = ${wants1}
@@ -274,44 +274,46 @@ export function editAge(driverID, ageGap) {
 }
 
 export function editMentality(driverID, mentalityStr) {
-  const mentalityArray = mentalityStr.split(" ");
-  let sum = 0;
-  mentalityArray.forEach((value, area) => {
-    queryDB(`
+  if (mentalityStr !== -1) {
+    const mentalityArray = mentalityStr.split(" ");
+    let sum = 0;
+    mentalityArray.forEach((value, area) => {
+      queryDB(`
       UPDATE Staff_Mentality_AreaOpinions
       SET Opinion = ${value}
       WHERE StaffID = ${driverID}
         AND Category = ${area}
     `);
-    const statuses = mentalityAreas[area];
-    const events = mentalityEvents[area];
-    sum += parseInt(value, 10);
-    statuses.forEach(status => {
-      queryDB(`
+      const statuses = mentalityAreas[area];
+      const events = mentalityEvents[area];
+      sum += parseInt(value, 10);
+      statuses.forEach(status => {
+        queryDB(`
         UPDATE Staff_Mentality_Statuses
         SET Opinion = ${value},
             Value = ${mentalityOpinions[value]}
         WHERE StaffID = ${driverID}
           AND Status = ${status}
       `);
-    });
-    events.forEach(ev => {
-      queryDB(`
+      });
+      events.forEach(ev => {
+        queryDB(`
         UPDATE Staff_Mentality_Events
         SET Opinion = ${value},
             Value = ${mentalityOpinions[value]}
         WHERE StaffID = ${driverID}
           AND Event = ${ev}
       `);
+      });
     });
-  });
-  const average = Math.floor(sum / 3);
-  queryDB(`
+    const average = Math.floor(sum / 3);
+    queryDB(`
     UPDATE Staff_State
     SET Mentality = ${mentalityOverall[average]},
         MentalityOpinion = ${average}
     WHERE StaffID = ${driverID}
   `);
+  }
 }
 
 export function editRetirement(driverID, value) {
