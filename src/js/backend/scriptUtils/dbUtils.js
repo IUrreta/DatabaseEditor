@@ -19,18 +19,26 @@ export function argbToHex(argb) {
  */
 export function checkYearSave() {
   // Ver si existe la tabla Countries_RaceRecord
-  const row = queryDB(`
+  const countries = queryDB(`
       SELECT name 
       FROM sqlite_master 
       WHERE type='table' AND name='Countries_RaceRecord'
     `, 'singleRow');
 
-  if (!row) {
-    // No existe la tabla -> asumo que es "23"
-    return ["23", null, null, null];
+  if (!countries) {
+    const commonData = queryDB(`
+      SELECT name 
+      FROM sqlite_master 
+      WHERE type='table' AND name='Staff_CommonData'
+    `, 'singleRow');
+    if (commonData) {
+      return ["22", null, null, null];
+    }
+    else{
+      return ["23", null, null, null];
+    }
   }
 
-  // Si existe, entonces busco TeamNameLocKey del TeamID=32
   const nameValue = queryDB(`
       SELECT TeamNameLocKey 
       FROM Teams 
@@ -341,6 +349,8 @@ export function formatNamesAndFetchStats(nameData, type) {
 }
 
 export function fetchDriverRetirement(driverID) {
+  const globals = getGlobals();
+  let basicDataTable = globals.yearIteration === "22" ? "Staff_CommonData" : "Staff_BasicData";
   const playerRow = queryDB(`
       SELECT Day, CurrentSeason
       FROM Player_State
@@ -355,13 +365,13 @@ export function fetchDriverRetirement(driverID) {
 
   const retirementAge = queryDB(`
       SELECT RetirementAge
-      FROM Staff_GameData
+      FROM ${basicDataTable}
       WHERE StaffID = ${driverID}
     `, 'singleValue');
 
   const dob = queryDB(`
       SELECT DOB
-      FROM Staff_BasicData
+      FROM ${basicDataTable}
       WHERE StaffID = ${driverID}
     `, 'singleValue');
 
@@ -464,15 +474,19 @@ export function fetchMarketability(driverID) {
 }
 
 export function fetchSuperlicense(driverID) {
+  const globals = getGlobals();
+  let superLicenseColumn = globals.yearIteration === "22" ? "HasRacedEnoughToJoinF1" : "HasSuperLicense";
   return queryDB(`
-      SELECT HasSuperLicense
+      SELECT ${superLicenseColumn}
       FROM Staff_DriverData
       WHERE StaffID = ${driverID}
     `, 'singleValue');
 }
 
 export function fetchDrivers(gameYear) {
-  const rows = queryDB(`
+  let rows;
+  if (gameYear !== "22"){
+    rows = queryDB(`
       SELECT DISTINCT 
         bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, 
         MIN(con.ContractType) AS MinContractType, gam.Retired, COUNT(*)
@@ -483,6 +497,20 @@ export function fetchDrivers(gameYear) {
       GROUP BY gam.StaffID
       ORDER BY con.TeamID;
     `, 'allRows');
+  }
+  else{
+    rows = queryDB(`
+      SELECT DISTINCT 
+        bas.FirstName, bas.LastName, bas.StaffID, con.TeamID, con.PosInTeam, 
+        MIN(con.ContractType) AS MinContractType, bas.Retired, COUNT(*)
+      FROM Staff_CommonData bas
+      JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+      LEFT JOIN Staff_Contracts con ON dri.StaffID = con.StaffID
+      GROUP BY bas.StaffID
+      ORDER BY con.TeamID;
+    `, 'allRows');
+  }
+
 
   const formattedData = [];
 
@@ -546,7 +574,9 @@ export function fetchDrivers(gameYear) {
 }
 
 export function fetchStaff(gameYear) {
-  const rows = queryDB(`
+  let rows;
+  if (gameYear !== "22") {
+    rows = queryDB(`
       SELECT DISTINCT
         bas.FirstName, 
         bas.LastName, 
@@ -563,6 +593,26 @@ export function fetchStaff(gameYear) {
         CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END,
         con.TeamID
     `, 'allRows');
+  }
+  else{
+    rows = queryDB(`
+      SELECT DISTINCT
+        bas.FirstName, 
+        bas.LastName, 
+        bas.StaffID, 
+        con.TeamID, 
+        bas.StaffType
+      FROM Staff_CommonData bas
+      LEFT JOIN Staff_Contracts con 
+        ON bas.StaffID = con.StaffID 
+        AND (con.ContractType = 0 OR con.ContractType IS NULL)
+      WHERE bas.StaffType != 0
+      ORDER BY 
+        CASE WHEN con.TeamID IS NULL THEN 1 ELSE 0 END,
+        con.TeamID
+    `, 'allRows');
+  }
+
 
   if (!rows.length) {
     console.warn("No staff data found.");
@@ -698,12 +748,24 @@ export function formatNamesSimple(name) {
 }
 
 export function fetchSeasonResults(yearSelected) {
-  const drivers = queryDB(`
+  const globals = getGlobals();
+  let drivers;
+  if (globals.yearIteration === "22") {
+    drivers = queryDB(`
+      SELECT DriverID
+      FROM Races_DriverStandings
+        WHERE SeasonID = ${yearSelected}
+    `, 'allRows') || [];
+  }
+  else{
+    drivers = queryDB(`
       SELECT DriverID
       FROM Races_DriverStandings
       WHERE RaceFormula = 1
         AND SeasonID = ${yearSelected}
     `, 'allRows') || [];
+  }
+
 
   const seasonResults = [];
   drivers.forEach((row) => {
@@ -717,12 +779,24 @@ export function fetchSeasonResults(yearSelected) {
 }
 
 export function fetchTeamsStandings(year) {
-  return queryDB(`
+  const globals = getGlobals();
+  let results;
+  if (globals.yearIteration === "22") {
+    results = queryDB(`
+      SELECT TeamID, Position
+      FROM Races_TeamStandings
+      WHERE SeasonID = ${year}
+    `, 'allRows') || [];
+  }
+  else{
+    results = queryDB(`
       SELECT TeamID, Position
       FROM Races_TeamStandings
       WHERE SeasonID = ${year}
         AND RaceFormula = 1
     `, 'allRows') || [];
+  }
+  return results
 }
 
 export function fetchPointsRegulations() {
@@ -766,6 +840,7 @@ export function fetchOneTeamSeasonResults(team, year) {
 export function fetchOneDriverSeasonResults(driver, year) {
   const driverID = driver;
   const season = year;
+  const globals = getGlobals();
 
   const results = queryDB(`
       SELECT DriverID, TeamID, FinishingPos, Points
@@ -775,13 +850,18 @@ export function fetchOneDriverSeasonResults(driver, year) {
     `, 'allRows') || [];
 
   if (results.length > 0) {
-    const sprintResults = queryDB(`
+    let sprintResults;
+    if (globals.yearIteration === "22") {
+      sprintResults = []
+    }
+    else{
+      sprintResults = queryDB(`
         SELECT RaceID, FinishingPos, ChampionshipPoints
         FROM Races_SprintResults
         WHERE SeasonID = ${season}
           AND DriverID = ${driverID}
       `, 'allRows') || [];
-
+    }
 
     const teamID = results[0][1];
 
@@ -829,11 +909,22 @@ export function fetchEventsDoneFrom(year) {
 }
 
 export function fetchEventsFrom(year) {
-  const seasonEventsRows = queryDB(`
+  const glovals = getGlobals();
+  let seasonEventsRows;
+  if (glovals.yearIteration === "22") {
+    seasonEventsRows = queryDB(`
+      SELECT RaceID, TrackID, 0
+      FROM Races
+      WHERE SeasonID = ${year}
+    `, 'allRows') || [];
+  }
+  else{
+    seasonEventsRows = queryDB(`
       SELECT RaceID, TrackID, WeekendType
       FROM Races
       WHERE SeasonID = ${year}
     `, 'allRows') || [];
+  }
 
   return seasonEventsRows; // Ya es un array de arrays con [RaceID, TrackID]
 }
@@ -1121,11 +1212,23 @@ export function fetchCalendar() {
   const [day, currentSeason] = daySeason;
 
   // Saco el calendario
-  const calendar = queryDB(`
+  const globals = getGlobals();
+  let calendar;
+  if (globals.yearIteration === "22") {
+    calendar = queryDB(`
+      SELECT TrackID, WeatherStatePractice, WeatherStateQualifying, WeatherStateRace, 0, State
+      FROM Races
+      WHERE SeasonID = ${currentSeason}
+    `, 'allRows');
+  }
+  else{
+    calendar = queryDB(`
       SELECT TrackID, WeatherStatePractice, WeatherStateQualifying, WeatherStateRace, WeekendType, State
       FROM Races
       WHERE SeasonID = ${currentSeason}
     `, 'allRows');
+  }
+
 
   return calendar;
 }
