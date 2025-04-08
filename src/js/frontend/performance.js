@@ -630,17 +630,10 @@ document.querySelectorAll(".part-performance-title .bi-caret-down-fill").forEach
         let generalPart = elem.parentNode.parentNode
         elem.parentNode.querySelector(".part-buttons").classList.toggle("d-none")
         if (elem.classList.contains("clicked")) {
-            generalPart.querySelector(".part-performance-stats").style.opacity = 0
-            generalPart.querySelector(".part-performance-stats").style.height = "0"
-            generalPart.querySelector(".part-performance-stats").style.pointerEvents = "none"
+            generalPart.querySelector(".part-performance-stats").classList.add("hidden")
         }
         else {
-            generalPart.querySelector(".part-performance-stats").style.opacity = 1
-            generalPart.querySelector(".part-performance-stats").style.pointerEvents = "auto"
-            //wait 0.2s and restore height
-            setTimeout(() => {
-                generalPart.querySelector(".part-performance-stats").style.height = "auto";
-            }, 200);
+            generalPart.querySelector(".part-performance-stats").classList.remove("hidden")
         }
     })
 })

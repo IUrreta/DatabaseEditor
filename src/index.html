@@ -552,67 +552,112 @@
                 difficulty selected may be incorrect.
               </div>
               <div class="game-changes">
-                <div class="mentality-changes">
-                  <div class="only-mentality">
-                    <div class="modal-subtitle bold-font">Mentality <span class="option-state default"
-                        id="mentalitySpan">Unfrozen</span></div>
-                    <div class="modal-text">
-                      Freezing the mentality means that all staff and driver's mentality will stay at neutral at all
-                      times.
+                <div class="managing-team">
+                  <span class="modal-subtitle bold-font">Player's team</span>
+                  <div class="managing-team-grid">
+                    <div class="team-logo-container fe" data-teamid="1">
+                      <img src="../assets/images/ferrari.png" class="team-logo">
                     </div>
-                    <div class="mentality-selector">
-                      <label class="form-check-label">Normal</label>
-                      <div class="form-check form-switch freeze-mentality">
-                        <input class="form-check-input custom-toggle" type="checkbox" role="switch"
-                          id="freezeMentalityToggle">
+                    <div class="team-logo-container mc" data-teamid="2">
+                      <img src="../assets/images/mclaren.png" class="team-logo">
+                    </div>
+                    <div class="team-logo-container rb" data-teamid="3">
+                      <img src="../assets/images/redbull.png" class="team-logo">
+                    </div>
+                    <div class="team-logo-container me" data-teamid="4">
+                      <img src="../assets/images/mercedes.png" class="team-logo">
+                    </div>
+                    <div class="team-logo-container al" data-teamid="5">
+                      <div class="alpine-logo-container">
+                        <div class="alpinelogo alpinelogo-replace"></div>
                       </div>
-                      <label class="form-check-label" style="margin-left: -10px;">Frozen</label>
+                    </div>
+                    <div class="team-logo-container wi" data-teamid="6">
+                      <img src="../assets/images/williams.png" class="team-logo">
+                    </div>
+                    <div class="team-logo-container ha"  data-teamid="7">
+                      <img src="../assets/images/haas.png" class="team-logo">
+                    </div>
+                    <div class="team-logo-container at" data-teamid="8">
+                      <div class="alphatauri-logo-container">
+                        <div class="alphataurilogo atlogo-replace"></div>
+                      </div>
+                    </div>
+                    <div class="team-logo-container af" data-teamid="9">
+                      <img src="../assets/images/alfaromeo.png" class="team-logo alfalogo-replace">
+                    </div>
+                    <div class="team-logo-container as" data-teamid="10">
+                      <img src="../assets/images/astonMartin.png" class="team-logo">
+                    </div>
+                    <div class="team-logo-container ct" data-teamid="32">
+                      <img src="../assets/images/placeholder.png" class="team-logo custom-replace">
                     </div>
                   </div>
-                  <div class="only-refurbish">
-                    <div class="modal-subtitle bold-font" id="refurbishTitle">Refurbish <span
-                        class="option-state default" id="refurbishSpan">Default</span></div>
+                </div>
+                <div class="mentality-difficulty">
+                  <div class="mentality-changes">
+                    <div class="only-mentality">
+                      <div class="modal-subtitle bold-font">Mentality <span class="option-state default"
+                          id="mentalitySpan">Unfrozen</span></div>
+                      <div class="modal-text">
+                        Freezing the mentality means that all staff and driver's mentality will stay at neutral at all
+                        times.
+                      </div>
+                      <div class="mentality-selector">
+                        <label class="form-check-label">Normal</label>
+                        <div class="form-check form-switch freeze-mentality">
+                          <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                            id="freezeMentalityToggle">
+                        </div>
+                        <label class="form-check-label" style="margin-left: -10px;">Frozen</label>
+                      </div>
+                    </div>
+                    <div class="only-refurbish">
+                      <div class="modal-subtitle bold-font" id="refurbishTitle">Refurbish <span
+                          class="option-state default" id="refurbishSpan">Default</span></div>
+                      <div class="modal-text">
+                        Enabling it fixes the AI not refurbishing their facilities, even in low conditions.
+                      </div>
+                      <div class="mentality-selector">
+                        <label class="form-check-label">Default</label>
+                        <div class="form-check form-switch freeze-mentality">
+                          <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                            id="refurbishingToggle">
+                        </div>
+                        <label class="form-check-label" style="margin-left: -10px;">Active</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="difficulty-changes">
+                    <div class="modal-subtitle bold-font">Game difficulty <i class="bi bi-gear-fill"
+                        id="customGearButton"></i> <span class="option-state default" id="difficultySpan">Default</span>
+                    </div>
+                    <div class="difficulty-warnings">
+                      <div class="dif-warning default" id="defaultDif">In-game difficulty</div>
+                      <div class="dif-warning extra-hard" id="lightDif">lightweight parts</div>
+                      <div class="dif-warning extra-hard" id="researchDif">ResearchBoost</div>
+                      <div class="dif-warning extra-hard" id="statDif">Stat boost</div>
+                      <div class="dif-warning brutal" id="designTimeDif">Design times reduced</div>
+                      <div class="dif-warning insane" id="buildDif">+1 part when design completed</div>
+                    </div>
                     <div class="modal-text">
-                      Enabling it fixes the AI not refurbishing their facilities, even in low conditions.
+                      Changes the difficulty of the development race against the AI.
+                      <br>
+                      Only recommended if you find Hard development difficulty not challenging.
+                      <br>
+                      Click on the <i class="bi bi-gear-fill"> </i> icon to customize the difficulty.
+                      <br>
+                      Click on any item on the list to <span class="custom-description">remove/add it</span>.
                     </div>
                     <div class="mentality-selector">
                       <label class="form-check-label">Default</label>
-                      <div class="form-check form-switch freeze-mentality">
-                        <input class="form-check-input custom-toggle" type="checkbox" role="switch"
-                          id="refurbishingToggle">
-                      </div>
-                      <label class="form-check-label" style="margin-left: -10px;">Active</label>
+                      <input type="range" class="form-range" id="difficultySlider" min="0" max="6" step="1" value="0">
+                      <label class="form-check-label">Impossible</label>
                     </div>
                   </div>
                 </div>
-                <div class="difficulty-changes">
-                  <div class="modal-subtitle bold-font">Game difficulty <i class="bi bi-gear-fill"
-                      id="customGearButton"></i> <span class="option-state default" id="difficultySpan">Default</span>
-                  </div>
-                  <div class="difficulty-warnings">
-                    <div class="dif-warning default" id="defaultDif">In-game difficulty</div>
-                    <div class="dif-warning extra-hard" id="lightDif">lightweight parts</div>
-                    <div class="dif-warning extra-hard" id="researchDif">ResearchBoost</div>
-                    <div class="dif-warning extra-hard" id="statDif">Stat boost</div>
-                    <div class="dif-warning brutal" id="designTimeDif">Design times reduced</div>
-                    <div class="dif-warning insane" id="buildDif">+1 part when design completed</div>
-                  </div>
-                  <div class="modal-text">
-                    Changes the difficulty of the development race against the AI.
-                    <br>
-                    Only recommended if you find Hard development difficulty not challenging.
-                    <br>
-                    Click on the <i class="bi bi-gear-fill"> </i> icon to customize the difficulty.
-                    <br>
-                    Click on any item on the list to <span class="custom-description">remove/add it</span>.
-                  </div>
-                  <div class="mentality-selector">
-                    <label class="form-check-label">Default</label>
-                    <input type="range" class="form-range" id="difficultySlider" min="0" max="6" step="1" value="0">
-                    <label class="form-check-label">Impossible</label>
-                  </div>
-                </div>
               </div>
+
             </div>
           </div>
           <div id="patreonChanges">
@@ -659,6 +704,17 @@
                 <div class="one-theme" id="lightTheme" data-theme="light-theme">
                   <div class="theme-title">
                     <span>Light</span>
+                    <i class="bi bi-check-lg"></i>
+                  </div>
+                  <div class="theme-colors">
+                    <div class="background-color"></div>
+                    <div class="primary-color"></div>
+                    <div class="secondary-color"></div>
+                  </div>
+                </div>
+                <div class="one-theme" id="ogTheme" data-theme="og-theme">
+                  <div class="theme-title">
+                    <span>OG</span>
                     <i class="bi bi-check-lg"></i>
                   </div>
                   <div class="theme-colors">
@@ -4362,9 +4418,9 @@
                         <i class="bi bi-plus-lg"></i>
                       </div>
                     </div>
-                    <i class="bi bi-caret-down-fill" data-bs-toggle="collapse" data-bs-target="#chasisList"></i>
+                    <i class="bi bi-caret-down-fill"></i>
                   </div>
-                  <div class="collapse parts-list" id="chasisList">
+                  <div class="parts-list" id="chasisList">
                   </div>
                   <div class="part-performance-stats">
                     <div class="part-stats">
@@ -4417,9 +4473,9 @@
                         <i class="bi bi-plus-lg"></i>
                       </div>
                     </div>
-                    <i class="bi bi-caret-down-fill" data-bs-toggle="collapse" data-bs-target="#frontList"></i>
+                    <i class="bi bi-caret-down-fill"></i>
                   </div>
-                  <div class="collapse parts-list" id="frontList">
+                  <div class="parts-list" id="frontList">
                   </div>
                   <div class="part-performance-stats">
                     <div class="part-stats">
@@ -4488,9 +4544,9 @@
                         <i class="bi bi-plus-lg"></i>
                       </div>
                     </div>
-                    <i class="bi bi-caret-down-fill" data-bs-toggle="collapse" data-bs-target="#rearList"></i>
+                    <i class="bi bi-caret-down-fill"></i>
                   </div>
-                  <div class="collapse parts-list" id="rearList">
+                  <div class="parts-list" id="rearList">
                   </div>
                   <div class="part-performance-stats">
                     <div class="part-stats">
@@ -4559,9 +4615,9 @@
                         <i class="bi bi-plus-lg"></i>
                       </div>
                     </div>
-                    <i class="bi bi-caret-down-fill" data-bs-toggle="collapse" data-bs-target="#sidepodsList"></i>
+                    <i class="bi bi-caret-down-fill" ></i>
                   </div>
-                  <div class="collapse parts-list" id="sidepodsList">
+                  <div class="parts-list" id="sidepodsList">
                   </div>
                   <div class="part-performance-stats">
                     <div class="part-stats">
@@ -4614,9 +4670,9 @@
                         <i class="bi bi-plus-lg"></i>
                       </div>
                     </div>
-                    <i class="bi bi-caret-down-fill" data-bs-toggle="collapse" data-bs-target="#underList"></i>
+                    <i class="bi bi-caret-down-fill"></i>
                   </div>
-                  <div class="collapse parts-list" id="underList">
+                  <div class="parts-list" id="underList">
                   </div>
                   <div class="part-performance-stats">
                     <div class="part-stats">
@@ -4677,9 +4733,9 @@
                         <i class="bi bi-plus-lg"></i>
                       </div>
                     </div>
-                    <i class="bi bi-caret-down-fill" data-bs-toggle="collapse" data-bs-target="#suspensionList"></i>
+                    <i class="bi bi-caret-down-fill"></i>
                   </div>
-                  <div class="collapse parts-list" id="suspensionList">
+                  <div class="parts-list" id="suspensionList">
                   </div>
                   <div class="part-performance-stats">
                     <div class="part-stats">

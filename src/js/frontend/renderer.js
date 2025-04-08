@@ -937,6 +937,7 @@ function replace_all_teams(info) {
     update_logo("alpine", logos_configs[teams["alpine"]], teams["alpine"])
     update_logo("alfa", logos_configs[teams["alfa"]], teams["alfa"])
     update_logo("alphatauri", logos_configs[teams["alphatauri"]], teams["alphatauri"])
+    document.querySelector(`.team-logo-container[data-teamid="${info["playerTeam"]}"]`).classList.add("active")
 }
 
 function manage_config_content(info, year_config = false) {
@@ -1299,6 +1300,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     let difficultyValue = document.getElementById("difficultySpan").textContent === "Custom" ? -2 : parseInt(difficultySlider.value)
     let disabledList = {}
     let triggerList = {}
+    let playerTeam = document.querySelector(".team-logo-container.active").dataset.teamid
     document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
         let id = elem.id
         if (elem.classList.contains("disabled") || elem.classList.contains("d-none")) {
@@ -1322,7 +1324,8 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         difficulty: difficultyValue,
         refurbish: refurbish,
         disabled: disabledList,
-        triggerList: triggerList
+        triggerList: triggerList,
+        playerTeam: playerTeam
     }
     changeTheme()
     if (custom_team) {
@@ -2101,3 +2104,13 @@ document.querySelector(".change-performance").addEventListener("click", function
     this.classList.add("completed")
     this.querySelector("span").textContent = "Applied"
 })
+
+document.querySelectorAll(".team-logo-container").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        let active = document.querySelector(".team-logo-container.active")
+        if (active) {
+            active.classList.remove("active")
+        }
+        elem.classList.add("active")
+    })
+});

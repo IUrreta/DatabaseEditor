@@ -1,8 +1,9 @@
 import { countries_abreviations } from "./countries.js";
 import { engine_unitValueToValue } from "./carConstants.js";
 import { manageDifficultyTriggers, manageRefurbishTrigger, editFreezeMentality, fetchExistingTriggers } from "./triggerUtils.js";
-import { queryDB } from "../dbManager.js";
+import { getMetadata, queryDB } from "../dbManager.js";
 import { getGlobals } from "../commandGlobals.js";
+import { default_dict } from "../../frontend/config.js";
 
 
 /**
@@ -88,7 +89,7 @@ export function fetchNationality(driverID, gameYear) {
         WHERE CountryID = ${countryID}
       `, 'singleValue');
     if (!countryName) return "";
-    
+
 
     const match = countryName.match(/(?<=\[Nationality_)[^\]]+/);
     if (match) {
@@ -893,7 +894,7 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
 
 
   for (let i = 0; i < racesParticipated.length; i++) {
-    const raceID = racesParticipated[i][0]; 
+    const raceID = racesParticipated[i][0];
 
     const driverWithFastestLap = queryDB(`
         SELECT DriverID
@@ -1348,11 +1349,11 @@ export function insertDefualtEnginesData(list, stats, allocations, customSave, y
   ];
 
   const teams = {
-    alphatauri : {
+    alphatauri: {
       23: "alphatauri",
       24: "visarb"
     },
-    alfa : {
+    alfa: {
       23: "alfa",
       24: "stake"
     },
@@ -1363,7 +1364,7 @@ export function insertDefualtEnginesData(list, stats, allocations, customSave, y
   }
 
   if (customSave) {
-    for (let key in teams){
+    for (let key in teams) {
       const newTeam = teams[key][year];
       queryDB(`INSERT OR REPLACE INTO Custom_Save_Config (key, value) VALUES ('${key}', '${newTeam}')`);
     }
@@ -1467,7 +1468,7 @@ export function check2025ModCompatibility(year_version) {
 
   const minDay2024 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2024`, 'singleValue');
   const firstRaceState2024 = queryDB(`SELECT State FROM Races WHERE Day = ${minDay2024} AND SeasonID = 2024`, 'singleValue');
-  
+
   const maxDay2024 = queryDB(`SELECT MAX(Day) FROM Races WHERE SeasonID = 2024`, 'singleValue');
   const lastRaceState2024 = queryDB(`SELECT State FROM Races WHERE Day = ${maxDay2024} AND SeasonID = 2024`, 'singleValue');
 
@@ -1527,34 +1528,35 @@ export function updateTeamsSuppliedByEngine(engineId, stats) {
 
 }
 
-export function updateCustomConfig(data){
+export function updateCustomConfig(data) {
   const alfaRomeo = data.alfa;
   const alphaTauri = data.alphatauri;
   const alpine = data.alpine;
   const primaryColor = data.primaryColor;
   const secondaryColor = data.secondaryColor;
   const difficulty = data.difficulty
+  const playerTeam = data.playerTeam
 
   queryDB(`
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
     VALUES ('alfa', '${alfaRomeo}')
   `);
-  
+
   queryDB(`
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
     VALUES ('alphatauri', '${alphaTauri}')
   `);
-  
+
   queryDB(`
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
     VALUES ('alpine', '${alpine}')
   `);
-  
+
   queryDB(`
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
     VALUES ('primaryColor', '${primaryColor}')
   `);
-  
+
   queryDB(`
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
     VALUES ('secondaryColor', '${secondaryColor}')
@@ -1565,15 +1567,41 @@ export function updateCustomConfig(data){
     VALUES ('difficulty', '${difficulty}')
   `);
 
+  updateTeam(playerTeam)
+
   manageDifficultyTriggers(data.triggerList)
   manageRefurbishTrigger(data.refurbish)
   const globals = getGlobals()
-  if (globals.yearIteration === "24"){
+  if (globals.yearIteration === "24") {
     editFreezeMentality(data.frozenMentality)
   }
 
 
-    
+
+}
+
+function updateTeam(teamID) {
+  const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+  const currentDay = daySeason[0];
+  const metadata = getMetadata()
+
+  const metaProperty = metadata.gvasMeta.Properties.Properties
+    .filter(p => p.Name === "MetaData")[0];
+
+  metaProperty.Properties[0].Properties.forEach(x => {
+    if (x.Name === "TeamID") {
+      x.Property = teamID;
+    }
+    if (x.Name === "TeamName") {
+      x.Property = default_dict[teamID];
+    }
+  });
+
+  queryDB(`UPDATE Player SET TeamID = ${teamID}`);
+  queryDB(`UPDATE Staff_NarrativeData SET TeamID = ${teamID} WHERE GenSource = 0`);
+  queryDB(`UPDATE Player_History SET EndDay = ${currentDay - 1} WHERE EndDay IS NULL`);
+  queryDB(`DELETE FROM Player_History WHERE EndDay < StartDay`);
+  queryDB(`INSERT INTO Player_History VALUES (${teamID}, ${currentDay}, NULL)`);
 }
 
 
@@ -1601,6 +1629,8 @@ export function fetchCustomConfig() {
   });
 
   const triggers = fetchExistingTriggers()
+  const playerTeam = fetchPlayerTeam()
+  config.playerTeam = playerTeam
   config.triggerList = triggers.triggerList
   config.refurbish = triggers.refurbish
   config.frozenMentality = triggers.frozenMentality
@@ -1608,16 +1638,24 @@ export function fetchCustomConfig() {
   return config;
 }
 
+function fetchPlayerTeam() {
+  const playerTeam = queryDB(`
+      SELECT TeamID
+      FROM Player
+    `, 'singleValue') || 0;
 
-export function fetch2025ModData(){
+  return playerTeam;
+}
+
+export function fetch2025ModData() {
   let tableExists = queryDB(`SELECT name FROM sqlite_master WHERE type='table' AND name='Custom_2025_SeasonMod'`, "singleRow");
   if (!tableExists) {
-      queryDB(`CREATE TABLE Custom_2025_SeasonMod (key TEXT PRIMARY KEY, value TEXT)`);
-      //insert change-regulations with value 0
-      queryDB(`INSERT INTO Custom_2025_SeasonMod (key, value) VALUES ('time-travel', '0'), ('extra-drivers', '0'),
+    queryDB(`CREATE TABLE Custom_2025_SeasonMod (key TEXT PRIMARY KEY, value TEXT)`);
+    //insert change-regulations with value 0
+    queryDB(`INSERT INTO Custom_2025_SeasonMod (key, value) VALUES ('time-travel', '0'), ('extra-drivers', '0'),
         ('change-line-ups', '0'), ('change-stats', '0'), ('change-calendar', '0'), ('change-regulations', '0'), ('change-cfd', '0'), ('change-performance', '0')`);
   }
-  
+
   const rows = queryDB(`SELECT key, value FROM Custom_2025_SeasonMod`, 'allRows') || [];
   const config = {};
 

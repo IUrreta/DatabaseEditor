@@ -33,6 +33,8 @@ const workerCommands = {
 
     const { db, metadata } = await analyzeFileToDatabase(data.file, SQL);
 
+    console.log(metadata)
+
     let day = metadata.careerSaveMetadata.Day;
     let date = excelToDate(day);
 

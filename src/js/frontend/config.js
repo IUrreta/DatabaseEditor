@@ -107,6 +107,11 @@ export const theme_colors = {
         "labels": "#252525",
         "grid": "#d6d6d6",
         "general_secondary": "#1f1f1f",
+    },
+    "og-theme" : {
+        "labels": "#dedde6",
+        "grid": "#323046",
+        "general_secondary": "#f1f1f1",
     }
 }
 
