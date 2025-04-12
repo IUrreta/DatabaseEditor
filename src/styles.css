@@ -7544,7 +7544,11 @@ input.disabled {
   -webkit-background-clip: text;
   animation: gradient-move-title 4s infinite linear;
   background-size: 200% 200%;
-  transform: scale(1.6);
+  transform: scale(1.5);
+}
+
+.download-save-button i:active {
+  transform: scale(1.35);
 }
 
 .active #mod25logo,

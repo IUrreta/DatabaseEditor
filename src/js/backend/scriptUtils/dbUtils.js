@@ -1588,15 +1588,6 @@ function updateTeam(teamID) {
   const metaProperty = metadata.gvasMeta.Properties.Properties
     .filter(p => p.Name === "MetaData")[0];
 
-  metaProperty.Properties[0].Properties.forEach(x => {
-    if (x.Name === "TeamID") {
-      x.Property = teamID;
-    }
-    if (x.Name === "TeamName") {
-      x.Property = default_dict[teamID];
-    }
-  });
-
   queryDB(`UPDATE Player SET TeamID = ${teamID}`);
   queryDB(`UPDATE Staff_NarrativeData SET TeamID = ${teamID} WHERE GenSource = 0`);
   queryDB(`UPDATE Player_History SET EndDay = ${currentDay - 1} WHERE EndDay IS NULL`);
