@@ -13,9 +13,6 @@ export function timeTravelWithData(dayNumber, extend = false) {
     version = metadata.gvasHeader.SaveGameVersion;
     let yearIteration = getGlobals().yearIteration;
 
-    if (version !== 3) {
-
-    }
 
     const daySeasonRow = queryDB(`
     SELECT Day, CurrentSeason
