@@ -1567,7 +1567,9 @@ export function updateCustomConfig(data) {
     VALUES ('difficulty', '${difficulty}')
   `);
 
-  updateTeam(playerTeam)
+  if (parseInt(playerTeam) !== -1){
+    updateTeam(playerTeam)
+  }
 
   manageDifficultyTriggers(data.triggerList)
   manageRefurbishTrigger(data.refurbish)
