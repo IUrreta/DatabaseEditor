@@ -128,15 +128,12 @@ let inverted_difficulty_dict = {
 }
 let difcultyCustom = "default"
 
-let conn = 0;
 export let game_version = 2023;
 export let custom_team = false;
-let customIconPath = null;
 let firstShow = false;
 let configCopy;
 
-let latestTag;
-
+let managingTeamChanged = false;
 let isSaveSelected = 0;
 let scriptSelected = 0;
 let divBlocking = 1;
@@ -1300,7 +1297,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     let difficultyValue = document.getElementById("difficultySpan").textContent === "Custom" ? -2 : parseInt(difficultySlider.value)
     let disabledList = {}
     let triggerList = {}
-    let playerTeam = document.querySelector(".team-logo-container.active").dataset.teamid
+    let playerTeam = managingTeamChanged ? document.querySelector(".team-logo-container.active").dataset.teamid : -1
     document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
         let id = elem.id
         if (elem.classList.contains("disabled") || elem.classList.contains("d-none")) {
@@ -2108,6 +2105,7 @@ document.querySelector(".change-performance").addEventListener("click", function
 document.querySelectorAll(".team-logo-container").forEach(function (elem) {
     elem.addEventListener("click", function () {
         let active = document.querySelector(".team-logo-container.active")
+        managingTeamChanged = true
         if (active) {
             active.classList.remove("active")
         }

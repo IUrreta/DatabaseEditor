@@ -1275,7 +1275,9 @@ body.og-theme input[type="checkbox"]:checked {
   border: none !important;
   box-shadow: 0 2px 6px 1px black;
   margin-top: 1px !important;
+  z-index: 9999 !important;
 }
+
 
 .dropdown-menu .dropdown-item {
   cursor: pointer;
@@ -1428,6 +1430,10 @@ body.og-theme .dropdown-menu a:hover {
   align-items: baseline;
   gap: 10px;
   padding: 2px 12px;
+}
+
+.filter-container:not(.focused) .category-filters{
+  pointer-events: none;
 }
 
 .filter-pills::before {
@@ -2088,9 +2094,6 @@ body.og-theme .background{
   transition: transform 0.15s ease;
 }
 
-.dropdown-menu {
-  z-index: 9999 !important;
-}
 
 .general-config {
   display: flex;
