@@ -504,8 +504,8 @@ export function manageSaveButton(show, mode) {
 }
 
 export function updateFront(data) {
-    console.log("UPDATING FRONT")
-    console.log(data)
+    // console.log("UPDATING FRONT")
+    // console.log(data)
     let responseTyppe = data.responseMessage
     let message = data.content
     let handler = messageHandlers[responseTyppe];
@@ -524,14 +524,11 @@ export function updateFront(data) {
 }
 
 export function new_update_notifications(message, type = "success") {
-    console.log("NEW NOTIFICATION")
     notificationsQueue.push(message);
-    console.log(notificationsQueue)
     showNextNotification(type);
 }
 
 function showNextNotification(type) {
-    console.log(isShowingNotification, notificationsQueue.length)
     if (isShowingNotification || notificationsQueue.length === 0) {
         return;
     }
@@ -920,7 +917,6 @@ document.querySelector(".gear-container").addEventListener("click", function () 
 })
 
 function manage_config(info, year_config = false) {
-    console.log(info)
     document.querySelector(".bi-gear").classList.remove("hidden")
     configCopy = info
     manage_config_content(info, year_config)
@@ -934,7 +930,7 @@ function replace_all_teams(info) {
     update_logo("alpine", logos_configs[teams["alpine"]], teams["alpine"])
     update_logo("alfa", logos_configs[teams["alfa"]], teams["alfa"])
     update_logo("alphatauri", logos_configs[teams["alphatauri"]], teams["alphatauri"])
-    document.querySelector(`.team-logo-container[data-teamid="${info["playerTeam"]}"]`).classList.add("active")
+
 }
 
 function manage_config_content(info, year_config = false) {
@@ -959,6 +955,8 @@ function manage_config_content(info, year_config = false) {
         else {
             document.getElementById("refurbishingToggle").checked = false
         }
+
+        document.querySelector(`.team-logo-container[data-teamid="${info["playerTeam"]}"]`).classList.add("active")
 
         update_mentality_span(info["mentalityFrozen"])
         let difficultySlider = document.getElementById("difficultySlider")
@@ -1359,10 +1357,6 @@ document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", 
         const finalData = msg.data.content.finalData;
         const metadata = msg.data.content.metadata;
 
-        console.log(msg.data)
-        console.log(finalData)
-        console.log(metadata)
-
         saveAs(new Blob([finalData], { type: "application/binary" }), metadata.filename);
     };
 })
@@ -1373,7 +1367,6 @@ document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", 
  * checks if a save and a script have been selected to unlock the tool
  */
 function check_selected() {
-    console.log(scriptSelected, isSaveSelected, divBlocking)
     if (scriptSelected === 1) {
         document.getElementById("scriptSelected").classList.add("completed")
     }
@@ -2005,7 +1998,6 @@ function shouldShowPatchModal(storedVersion, versionNow) {
 }
 
 function updateModBlocking(data) {
-    console.log(data)
     if (data === "AlreadyEdited") {
         document.querySelector(".mod-blocking").classList.add("d-none")
         document.querySelector(".changes-grid").classList.remove("d-none")
