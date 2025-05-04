@@ -639,7 +639,6 @@ const messageHandlers = {
     },
     "TeamData fetched": (message) => {
         fillLevels(message)
-
     },
     "Events to Predict Fetched": (message) => {
         placeRaces(message.slice(1))

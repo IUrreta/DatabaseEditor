@@ -7461,6 +7461,13 @@ input.disabled {
   width: 150px;
 }
 
+#newspill:hover,
+#newspill:hover .pill-line,
+#newspill.active .pill-line,
+#newspill.active {
+  width: 81px;
+}
+
 #viewerpill:hover,
 #viewerpill:hover .pill-line,
 #viewerpill.active .pill-line,

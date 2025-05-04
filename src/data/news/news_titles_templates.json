@@ -1,0 +1,140 @@
+[
+    {
+        "id": "quali_result",
+        "new_type": 1,
+        "titles": [
+            "{{pole_driver}} takes pole position at {{circuit}}",
+            "{{pole_driver}} secures P1 in qualifying at {{circuit}}",
+            "Pole for {{pole_driver}} after strong qualifying at {{circuit}}",
+            "{{pole_driver}} dominates qualifying session at {{circuit}}",
+            "Top spot on the grid for {{pole_driver}} at {{circuit}}",
+            "{{pole_driver}} leads the field for the {{circuit}} GP",
+            "Front row starts with {{pole_driver}} on pole in {{circuit}}",
+            "{{pole_driver}} fastest in qualifying at {{circuit}}",
+            "{{pole_driver}} sets the pace in qualifying at {{circuit}}",
+            "{{pole_driver}} claims pole at {{circuit}}",
+            "{{pole_driver}} on pole for the {{circuit}} Grand Prix",
+            "{{pole_driver}} takes the top spot in qualifying at {{circuit}}"
+        ]
+    },
+    {
+        "id": "race_result",
+        "new_type": 2,
+        "titles": [
+            "{{winner}} wins the {{season_year}} {{circuit}} Grand Prix",
+            "Victory for {{winner}} at the {{circuit}} GP",
+            "{{winner}} takes the checkered flag at {{circuit}}",
+            "{{winner}} finishes first in the {{circuit}} Grand Prix",
+            "Race win for {{winner}} in {{season_year}} at {{circuit}}",
+            "{{winner}} claims top spot at {{circuit}} GP",
+            "{{winner}} crosses the line first in {{circuit}}",
+            "{{winner}} victorious at the {{circuit}} Grand Prix",
+            "{{winner}} takes the win in the {{circuit}} GP",
+            "{{winner}} dominates the {{circuit}} Grand Prix"
+        ]
+    },
+    {
+        "id": "driver_comparison",
+        "new_type": 3,
+        "titles": [
+            "{{driver_a}} outperforms {{driver_b}} at {{team}}",
+            "{{team}}: {{driver_a}} leading internal battle over {{driver_b}}",
+            "{{driver_a}} showing stronger form than teammate {{driver_b}}",
+            "Performance gap growing between {{driver_a}} and {{driver_b}} at {{team}}",
+            "{{driver_a}} shines while {{driver_b}} struggles at {{team}}",
+            "{{team}} teammate comparison: {{driver_a}} ahead of {{driver_b}}",
+            "{{driver_a}} gaining edge over {{driver_b}} within {{team}}"
+        ]
+    },
+    {
+        "id": "transfer_rumor",
+        "new_type": 4,
+        "titles": [
+            "Rumors link {{driver}} from {{current_team}} to {{target_team}}",
+            "{{driver}} potentially moving to {{target_team}}",
+            "Speculation grows: {{driver}} on {{target_team}}'s radar",
+            "{{target_team}} rumored to be in talks with {{driver}}",
+            "Is {{driver}} switching teams? Interest from {{target_team}}",
+            "Driver market buzz: {{driver}} to {{target_team}}?",
+            "{{driver}} linked with possible move to {{target_team}}"
+        ]
+    },
+    {
+        "id": "technical_upgrade",
+        "new_type": 5,
+        "titles": [
+            "{{team}} brings upgrade package to {{circuit}}",
+            "New technical updates for {{team}} debut at {{circuit}}",
+            "{{team}} introduces new {{upgrade_type}} at {{circuit}}",
+            "{{circuit}} sees {{team}} unveil latest upgrades",
+            "Latest {{upgrade_type}} innovations from {{team}} hit the track",
+            "{{team}} pushing for performance with updates at {{circuit}}",
+            "Upgrades from {{team}} aim to boost pace at {{circuit}}"
+        ]
+    },
+    {
+        "id": "contract_uncertainty",
+        "new_type": 6,
+        "titles": [
+            "Future unclear for {{driver}} at {{team}}",
+            "{{driver}}'s contract situation remains unresolved",
+            "Will {{driver}} continue with {{team}} next season?",
+            "{{team}} yet to renew {{driver}}'s contract",
+            "No deal yet for {{driver}} at {{team}}",
+            "Contract discussions ongoing for {{driver}}",
+            "{{driver}} faces contract uncertainty heading into {{season_year}}"
+        ]
+    },
+    {
+        "id": "rookie_performance",
+        "new_type": 7,
+        "titles": [
+            "{{rookie}} impresses in debut season with {{team}}",
+            "Rookie {{rookie}} outperforming expectations at {{team}}",
+            "{{rookie}} delivers standout performances in rookie year",
+            "Strong results from {{rookie}} during first F1 season",
+            "{{rookie}} making a name for themselves at {{team}}",
+            "Newcomer {{rookie}} shining in {{season_year}}",
+            "Rising star {{rookie}} catching attention in debut campaign"
+        ]
+    },
+    {
+        "id": "poor_form",
+        "new_type": 8,
+        "titles": [
+            "{{driver}} struggling to score with {{team}}",
+            "Poor run continues for {{driver}} in {{season_year}}",
+            "{{driver}} fails to score again at {{circuit}}",
+            "{{driver}}'s tough season drags on",
+            "No points again for {{driver}} \u2013 concerns at {{team}}",
+            "Form slump: {{driver}}'s issues persist",
+            "{{driver}} in point drought \u2013 pressure mounts"
+        ]
+    },
+    {
+        "id": "midseason_summary",
+        "new_type": 9,
+        "titles": [
+            "Midseason review: {{championship_leader}} leads {{season_year}} standings",
+            "Halfway through {{season_year}} \u2013 {{championship_leader}} on top",
+            "F1 {{season_year}} midseason check-in: {{championship_leader}} dominates",
+            "Title race update: {{championship_leader}} ahead at halfway point",
+            "{{season_year}} so far: {{championship_leader}} strong, {{disappointment}} disappoints",
+            "Season midpoint: key takeaways from {{season_year}}",
+            "Midyear look: {{championship_leader}} leads the charge"
+        ]
+    },
+    {
+        "id": "title_battle",
+        "new_type": 10,
+        "titles": [
+            "Title fight intensifies: {{championship_leader}} vs {{challenger}}",
+            "Championship still wide open: {{championship_leader}} and {{challenger}} close",
+            "F1 title race heats up between {{championship_leader}} and {{challenger}}",
+            "Just {{races_remaining}} races left \u2013 who will take the crown?",
+            "{{season_year}} title battle tightens",
+            "Showdown for the title: {{championship_leader}} holds narrow lead",
+            "Neck-and-neck: {{championship_leader}} vs {{challenger}} in final stretch"
+        ]
+    }
+]

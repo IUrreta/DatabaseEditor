@@ -16,6 +16,7 @@ import { editAge, editMarketability, editName, editRetirement, editSuperlicense,
 import { editCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
+import { generate_news } from "./scriptUtils/newsUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
@@ -120,6 +121,8 @@ const workerCommands = {
     if (wasError){
       postMessage({ responseMessage: "Mod fixes", content: "", noti_msg: "An error in the 2025 DLC has been automatically fixed", unlocksDownload: true });
     }
+
+    generate_news();
   },
   configuredH2H: (data, postMessage) => {
     if (data.h2h !== "-1") {
