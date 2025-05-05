@@ -387,8 +387,13 @@ body.og-theme {
   --custom-team-secondary-transparent: color-mix(in srgb, var(--custom-team-secondary) 18%, var(--elements));
 }
 
-
-
+body.modal-open::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 900;
+}
 
 
 @font-face {
@@ -2539,7 +2544,7 @@ body.og-theme .main-columns-drag-section, body.og-theme .main-editStats-section,
 #driver_transfers,
 #season_viewer,
 #head2head_viewer,
-#car_performance, #mod_25 {
+#car_performance, #mod_25, #news {
   flex-direction: column;
 }
 
@@ -8916,6 +8921,10 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--redbull-primary) !important;
 }
 
+.rbborder-top{
+  border-top: 3px solid var(--redbull-primary) !important;
+}
+
 .rbborder::after {
   content: '';
   position: absolute;
@@ -8936,6 +8945,10 @@ input::-webkit-inner-spin-button {
 #ferrari,
 .feborder-down:hover {
   border-bottom: 2px solid var(--ferrari-primary) !important;
+}
+
+.feborder-top{
+  border-top: 3px solid var(--ferrari-primary) !important;
 }
 
 .feborder::after {
@@ -8959,6 +8972,10 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--mercedes-primary) !important;
 }
 
+.meborder-top{
+  border-top: 3px solid var(--mercedes-primary) !important;
+}
+
 .meborder::after {
   content: '';
   position: absolute;
@@ -8978,6 +8995,10 @@ input::-webkit-inner-spin-button {
 #mclaren,
 .mcborder-down:hover {
   border-bottom: 2px solid var(--mclaren-primary) !important;
+}
+
+.mcborder-top{
+  border-top: 3px solid var(--mclaren-primary) !important;
 }
 
 .mcborder::after {
@@ -9000,6 +9021,10 @@ input::-webkit-inner-spin-button {
 #alpine,
 .alborder-down:hover {
   border-bottom: 2px solid var(--alpine-primary) !important
+}
+
+.alborder-top{
+  border-top: 3px solid var(--alpine-primary) !important
 }
 
 .alborder-down-noC:hover {
@@ -9040,6 +9065,10 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--alfa-primary) !important
 }
 
+.afborder-top{
+  border-top: 3px solid var(--alfa-primary) !important
+}
+
 .afborder-down-noC:hover {
   border-bottom: 2px solid #C92D4B !important
 }
@@ -9066,6 +9095,10 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--aston-primary) !important
 }
 
+.asborder-top{
+  border-top: 3px solid var(--aston-primary) !important
+}
+
 .asactivated {
   background-color: var(--aston-primary);
 }
@@ -9086,6 +9119,10 @@ input::-webkit-inner-spin-button {
 .atborder-down:hover,
 .hugoborder-down:hover {
   border-bottom: 2px solid var(--alphatauri-primary) !important
+}
+
+.atborder-top{
+  border-top: 3px solid var(--alphatauri-primary) !important
 }
 
 .atborder-down-noC:hover {
@@ -9146,6 +9183,10 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--williams-primary) !important
 }
 
+.wiborder-top{
+  border-top: 3px solid var(--williams-primary) !important
+}
+
 .wiborder::after {
   content: '';
   position: absolute;
@@ -9168,6 +9209,10 @@ input::-webkit-inner-spin-button {
   border-bottom: 2px solid var(--haas-primary) !important
 }
 
+.haborder-top{
+  border-top: 3px solid var(--haas-primary) !important
+}
+
 .haborder::after {
   content: '';
   position: absolute;
@@ -9187,6 +9232,10 @@ input::-webkit-inner-spin-button {
 #ctstom,
 .ctborder-down:hover {
   border-bottom: 2px solid var(--custom-team-primary) !important
+}
+
+.ctborder-top{
+  border-top: 3px solid var(--custom-team-primary) !important
 }
 
 .ctborder::after {
@@ -11671,4 +11720,172 @@ body:has(.active #mod25logo) .one-change {
 
 .one-change:has(.completed) .redbull-performance-description{
   transform: translateY(24px);
+}
+
+.news-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  padding: 0 14px;
+}
+
+.news-item{
+  background-color: var(--elements);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  z-index: 0;
+  transition: none; 
+  
+}
+
+.news-item.active{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.05);
+  z-index: 999;
+}
+
+.news-body{
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.title-and-article{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.news-article{
+  color: var(--text-general);
+  white-space: pre-wrap;
+}
+
+.news-title{
+  font-size: 20px;
+  color: var(--text-general);
+}
+
+.news-image-container{
+  width: 100%;
+  height: 235px;
+  overflow: hidden;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  position: relative;
+}
+
+.race-overlay{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.05));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 10px 15px;
+}
+
+.race-overlay .position{
+  font-size: 20px;
+  color: var(--text-general);
+  font-family: 'Formula1Bold';
+  text-align: center;
+}
+
+.race-overlay .position.firstpos{
+  font-size: 24px;
+}
+
+.news-image{
+  width: 100%;
+  height: 100%;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  object-fit: cover;
+}
+
+.position-team{
+  padding-left: 26px;
+  font-size: 16px;
+  line-height: 1;
+  margin-bottom: 10px;
+  margin-top: -3px;
+  color: var(--text-general);
+}
+
+.position-team.firstpost{
+  margin-bottom: 0px;
+}
+
+.read-button-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.read-button{
+  border-radius: 5px;
+  background-color: var(--elements);
+  color: var(--dark-text);
+  align-self: flex-end;
+  padding: 5px 10px;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.read-button:hover{
+  background-color: var(--elements-hover);
+  color: var(--text-general);
+}
+
+@property --angle{
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.read-button:not(.closable)::after, .read-button:not(.closable)::before{
+  content: '';
+  background-image: conic-gradient(from var(--angle), #ff4545, #00ff99, #006aff, #ff0095, #ff4545);
+  position: absolute;
+  inset: -2px;  
+  z-index: -1;
+  border-radius: 5px;
+  animation: spin 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.read-button:not(.closable):hover::after{
+
+  opacity: 1;
+}
+
+.read-button:not(.closable)::before{
+  filter: blur(5px);
+  opacity: 0;
+}
+
+.read-button:not(.closable):hover::before{
+  opacity: 0.5;
+}
+
+@keyframes spin{
+  from{
+    --angle: 0deg;
+  }
+  to{
+    --angle: 360deg;
+  }
 }

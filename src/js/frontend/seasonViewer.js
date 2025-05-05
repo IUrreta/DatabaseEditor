@@ -1108,12 +1108,8 @@ export function generateYearsMenu(actualYear) {
     setCurrentSeason(actualYear)
     let yearMenu = document.querySelector("#yearMenu");
     let yearH2H = document.querySelector("#yearMenuH2H");
-    let yearPrediction = document.querySelector("#yearPredictionMenu");
-    let yearPredictionModal = document.querySelector("#yearPredictionModalMenu");
     yearMenu.innerHTML = ""
     yearH2H.innerHTML = ""
-    yearPrediction.innerHTML = ""
-    yearPredictionModal.innerHTML = ""
     for (let year = actualYear; year >= game_version; year--) {
         let a = document.createElement("a");
         a.textContent = year.toString();
@@ -1142,33 +1138,6 @@ export function generateYearsMenu(actualYear) {
             document.getElementById("yearButtonH2H").textContent = a2.textContent
             const command = new Command("yearSelectedH2H", { year: a2.textContent });
             command.execute();
-        })
-        let a3 = document.createElement("a");
-        a3.textContent = year.toString();
-        a3.classList = "dropdown-item"
-        a3.style.cursor = "pointer"
-        yearPrediction.appendChild(a3);
-        a3.addEventListener("click", function () {
-            document.getElementById("yearPredictionButton").textContent = a3.textContent
-            document.querySelector("#mainPred").classList.remove("d-none")
-            let dataYear = {
-                command: "yearSelectedPrediction",
-                year: a3.textContent
-            }
-            // socket.send(JSON.stringify(dataYear))
-        })
-        let a4 = document.createElement("a");
-        a4.textContent = year.toString();
-        a4.classList = "dropdown-item"
-        a4.style.cursor = "pointer"
-        yearPredictionModal.appendChild(a4);
-        a4.addEventListener("click", function () {
-            document.getElementById("yearPredictionModalButton").textContent = a4.textContent
-            let dataYear = {
-                command: "yearSelectedPredictionModal",
-                year: a4.textContent
-            }
-            // socket.send(JSON.stringify(dataYear))
         })
     }
     yearMenu.childNodes[0].click()

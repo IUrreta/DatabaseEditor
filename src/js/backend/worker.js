@@ -122,7 +122,8 @@ const workerCommands = {
       postMessage({ responseMessage: "Mod fixes", content: "", noti_msg: "An error in the 2025 DLC has been automatically fixed", unlocksDownload: true });
     }
 
-    generate_news();
+    const news = generate_news();
+    postMessage({ responseMessage: "News fetched", content: news });
   },
   configuredH2H: (data, postMessage) => {
     if (data.h2h !== "-1") {

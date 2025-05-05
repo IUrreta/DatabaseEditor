@@ -1465,88 +1465,15 @@
           </div>
         </div>
       </div>
-      <div class="script-view hide" id="predict_results">
-        <div class="w-100 d-flex">
-          <div class="prediction-buttons ps-3">
-            <div>
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                id="yearPredictionButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Year
-              </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="yearPredictionMenu" style="font-family: Formula1;">
-              </ul>
-            </div>
-            <div>
-              <button class="custom-dropdown custom-button bold-font d-none" id="predictButton" data-bs-toggle="modal"
-                data-bs-target="#predictModal">
-                Configure
-              </button>
-              <div class="dropdown-line"></div>
-            </div>
-            <div class="config-content bold-font ms-4" id="predictConfigContent"></div>
-          </div>
-          <div class="title bold-font w-100">
-            Forecast
-            <i class="info-titles bold-font" id="forecastinfo" data-bs-toggle="modal"
-              data-bs-target="#forecastmodal">?</i>
-          </div>
-          <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
-            <ul class="nav nav-pills">
-              <li class="nav-item">
-                <a class="nav-link bold-font generalPills active" data-bs-toggle="pill" id="predictionpill">
-                  <label class="bold-font basic-label">Races</label>
-                  <div class="pill-line"></div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link bold-font generalPills" data-bs-toggle="pill" id="probpill">
-                  <label class="bold-font basic-label">Standings</label>
-                  <div class="pill-line"></div>
-                </a>
-              </li>
-            </ul>
-          </div>
+      <div class="script-view hide" id="news">
+        <div class="title transfer-title bold-font">
+          Latest news
+          <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal"
+            data-bs-target="#contractsModal">?</i>
         </div>
-        <div class="d-flex" id="mainPrediction">
-          <div class="d-flex w-100" id="mainPred">
-            <div class="col-3 main-viewer-section" id="raceMenu">
-            </div>
-            <div class="main-viewer-section" id="predictionMenu">
-              <div class="prediction-table" id="predictionFirst">
-                <div class="prediction-table-header">
-                  <div class="header-label bold-font driver-prediction">Driver</div>
-                  <div class="header-label bold-font prediction-prediction">Prediction</div>
-                  <div class="header-label bold-font position-prediction">Position</div>
-                </div>
-                <div class="prediction-table-data">
-                </div>
-              </div>
-              <div class="separator-2"></div>
-              <div class="prediction-table" id="predictionSecond">
-                <div class="prediction-table-header">
-                  <div class="header-label bold-font driver-prediction">Driver</div>
-                  <div class="header-label bold-font prediction-prediction">Prediction</div>
-                  <div class="header-label bold-font position-prediction">Position</div>
-                </div>
-                <div class="prediction-table-data">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="d-none d-flex" id="mainProb">
-            <div class="main-viewer-section" id="probViewer">
-              <div class="prob-viewer-header">
-                <div class="viewer-header-driver bold-font">Driver</div>
-                <div class="viewer-header-position bold-font">Pos</div>
-              </div>
-              <div class="prob-viewer-data"></div>
-            </div>
-          </div>
+        <div class="news-grid">
 
         </div>
-
-
       </div>
       <div class="script-view hide" id="head2head_viewer">
         <div class="general-top-panel">

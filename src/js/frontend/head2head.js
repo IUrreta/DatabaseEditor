@@ -1,7 +1,6 @@
 import { races_names, team_dict, combined_dict, lightColors, theme_colors  } from "./config";
 import { game_version,  custom_team, selectedTheme } from "./renderer";
 import { insert_space, manageColor, format_name } from "./transfers";
-import { relative_grid } from "./predictions";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import annotationPlugin from 'chartjs-plugin-annotation';
@@ -36,6 +35,23 @@ let h2hTeamList = []
 let graphTeamList = []
 let mode = "driver"
 let h2hData;
+
+export let mid_grid = 10;
+export let max_races = 23;
+export let relative_grid = 5;
+
+export function setMidGrid(value){
+    mid_grid = value
+}
+
+export function setMaxRaces(value){
+    max_races = value
+}
+
+export function setRelativeGrid(value){
+    relative_grid = value
+}
+
 export let colors_dict;
 //changed as the ct colors changes, so it stays
 

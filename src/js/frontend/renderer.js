@@ -16,12 +16,13 @@ import {
     order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
     teamSelected, gather_engines_data, reload_performance_graph
 } from './performance';
-import { resetPredict, setMidGrid, setMaxRaces, setRelativeGrid, placeRaces, placeRacesInModal } from './predictions';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups
 } from './stats';
-import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs, reload_h2h_graphs, init_colors_dict, edit_colors_dict } from './head2head';
+import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
+     reload_h2h_graphs, init_colors_dict, edit_colors_dict, setMidGrid, setMaxRaces, setRelativeGrid } from './head2head';
+import { place_news } from './news.js';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
@@ -65,7 +66,7 @@ const carPill = document.getElementById("carpill");
 const viewPill = document.getElementById("viewerpill");
 const h2hPill = document.getElementById("h2hpill");
 const constructorsPill = document.getElementById("constructorspill")
-const predictPill = document.getElementById("predictpill")
+const newsPill = document.getElementById("newspill")
 const modPill = document.getElementById("modpill")
 
 export const editorPill = document.getElementById("editorPill")
@@ -79,14 +80,14 @@ const carPerformanceDiv = document.getElementById("car_performance");
 const viewDiv = document.getElementById("season_viewer");
 const h2hDiv = document.getElementById("head2head_viewer");
 const teamsDiv = document.getElementById("edit_teams");
-const predictDiv = document.getElementById("predict_results")
 const mod25Div = document.getElementById("mod_25")
+const newsDiv = document.getElementById("news")
 
 const patchNotesBody = document.getElementById("patchNotesBody")
 const selectImageButton = document.getElementById('selectImage');
 const patreonKeyButton = document.getElementById('patreonKeyButton');
 
-const scriptsArray = [predictDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv, teamsDiv, mod25Div]
+const scriptsArray = [ newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv, teamsDiv, mod25Div]
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -697,7 +698,11 @@ const messageHandlers = {
     },
     "Mod compatibility": (message) => {
         updateModBlocking(message)
-    }
+    },
+    "News fetched": (message) => {
+        place_news(message)
+
+    },
 };
 
 
@@ -739,7 +744,6 @@ function resizeWindowToHeight(mode) {
         })
         document.getElementById("free-drivers").style.height = "672px"
         document.getElementById("free-staff").style.height = "672px"
-        document.getElementById("raceMenu").style.height = "686px"
     }
     else if (mode === "10teams") {
         document.querySelectorAll(".main-resizable").forEach(function (elem) {
@@ -756,7 +760,6 @@ function resizeWindowToHeight(mode) {
         })
         document.getElementById("free-drivers").style.height = "612px"
         document.getElementById("free-staff").style.height = "612px"
-        document.getElementById("raceMenu").style.height = "660px"
     }
 }
 
@@ -1434,6 +1437,12 @@ carPill.addEventListener("click", function () {
 
 modPill.addEventListener("click", function () {
     manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
+    scriptSelected = 1
+    check_selected()
+})
+
+newsPill.addEventListener("click", function () {
+    manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
 })
