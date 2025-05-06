@@ -56,7 +56,6 @@ export function place_news(newsList) {
       titleEl.insertAdjacentElement('afterend', articleEl);
 
       const articleText = await manageRead(news, newsList);
-      console.log(articleText);
 
       typeWriter(articleEl, articleText, 25);
     });
@@ -81,7 +80,7 @@ async function manageRead(newData, newsList) {
   let circuit = names_full[races_names[parseInt(newData.data.trackId)]];
 
   let prompt = newsPromptsTemaplates.find(t => t.id === "race_result").prompt;
-  prompt.replace(/{{\s*winner\s*}}/g, winnerName)
+  prompt = prompt.replace(/{{\s*winner\s*}}/g, winnerName)
         .replace(/{{\s*season_year\s*}}/g, seasonYear)
         .replace(/{{\s*circuit\s*}}/g, circuit);
 
@@ -106,14 +105,16 @@ async function manageRead(newData, newsList) {
       const surname = row.name.trim().split(" ").slice(-1)[0];
       const gapStr =
         row.gapToWinner > 0
-          ? `${row.gapToWinner} segundos`
+          ? `${Number(row.gapToWinner.toFixed(3))} seconds`
           : row.gapLaps > 0
-            ? `${row.gapLaps} vueltas`
-            : `0 segundos`;
+            ? `${row.gapLaps} laps`
+            : `0 seconds`;
       return `${row.pos}. ${surname} (${combined_dict[row.teamId]}) +${gapStr}`;
     }).join("\n");
 
     prompt += "\n\nHere are the full race results:\n" + lines;
+
+    console.log("Prompt: ", prompt);
   }
 
   if (newData.text) {
@@ -218,11 +219,8 @@ function animateToCenter(newsItem) {
 async function askGenAI(prompt) {
   const response = await ai.models.generateContent({
     model: "gemini-2.0-flash",
-    contents: "Write ONLY the body of a news article speaking about the win that Andrea Kimi Antonelli got at the Bahrain Grand Prix in 2028. \
-         Ocon, Antonelli's teammate in Andretti finished second 6 seconds behind, and Verstappen finished 3rd in his Mercedes almost half a minute behind Ocon. \
-         The article should be in a formal tone and should not include any personal opinions. The article should be between 200 and 300 words long.",
+    contents: prompt
   });
-  console.log(response.text);
 
   return response.text;
 }
