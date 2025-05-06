@@ -40,6 +40,22 @@ export class Command {
         };
     }
 
+    pormiseExecute() {
+        return new Promise((resolve, reject) => {
+          const handler = (e) => {
+            const resp = e.data;
+            if (resp.command && resp.command !== this.commandName) return;
+            dbWorker.removeEventListener("message", handler);
+    
+            if (resp.error) return reject(resp.error);
+            resolve(resp);
+          };
+    
+          dbWorker.addEventListener("message", handler);
+          dbWorker.postMessage({ command: this.commandName, data: this.data });
+        });
+      }
+
     updateTeamsFor24(year) {
         if (year === "24") {
             const data = {

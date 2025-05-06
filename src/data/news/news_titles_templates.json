@@ -19,7 +19,7 @@
     },
     {
         "id": "race_result",
-        "new_type": 2,
+        
         "titles": [
             "{{winner}} wins the {{season_year}} {{circuit}} Grand Prix",
             "Victory for {{winner}} at the {{circuit}} GP",

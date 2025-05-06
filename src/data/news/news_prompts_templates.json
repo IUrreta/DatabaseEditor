@@ -1,0 +1,7 @@
+[
+    {
+        "id": "race_result",
+        "new_type": 2,
+        "prompt": "Write ONLY the body of a news article in English summarizing the win that {{winner}} got at the {{circuit}} Grand Prix in {{season_year}}. Use a formal tone, no personal opinions, 400–500 words. Take into account that you only have the race results, so you can't assume how hard the racing was, or how commanding the victory was."
+    }
+]

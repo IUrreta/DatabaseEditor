@@ -78,8 +78,13 @@ dropDiv.addEventListener("drop", async (event) => {
         editorPill.classList.remove("d-none");
         gamePill.classList.remove("d-none");
 
+        const savedNews = localStorage.getItem("save0_news") || "{}";
+        const parsedNews = JSON.parse(savedNews);
 
-        const command = new Command("saveSelected", {});
+
+        const command = new Command("saveSelected", {
+            news: parsedNews,
+        });
         command.execute();
     }
 });
