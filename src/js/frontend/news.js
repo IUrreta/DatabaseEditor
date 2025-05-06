@@ -81,8 +81,8 @@ async function manageRead(newData, newsList) {
 
   let prompt = newsPromptsTemaplates.find(t => t.id === "race_result").prompt;
   prompt = prompt.replace(/{{\s*winner\s*}}/g, winnerName)
-        .replace(/{{\s*season_year\s*}}/g, seasonYear)
-        .replace(/{{\s*circuit\s*}}/g, circuit);
+    .replace(/{{\s*season_year\s*}}/g, seasonYear)
+    .replace(/{{\s*circuit\s*}}/g, circuit);
 
   if (newData.type === "race_result") {
     const raceId = newData.id.split("_")[2];
@@ -101,7 +101,7 @@ async function manageRead(newData, newsList) {
     }
 
 
-    const lines = resp.content.map(row => {
+    const raceResults = resp.content.details.map(row => {
       const surname = row.name.trim().split(" ").slice(-1)[0];
       const gapStr =
         row.gapToWinner > 0
@@ -112,9 +112,29 @@ async function manageRead(newData, newsList) {
       return `${row.pos}. ${surname} (${combined_dict[row.teamId]}) +${gapStr}`;
     }).join("\n");
 
-    prompt += "\n\nHere are the full race results:\n" + lines;
 
-    console.log("Prompt: ", prompt);
+    prompt += "\n\nHere are the full race results:\n" + raceResults;
+
+    const driversChamp = resp.content.driverStandings
+      .map((d, i) => {
+        const surname = d.name.trim().split(" ").slice(-1)[0];
+        return `${i + 1}. ${surname} — ${d.points} pts`;
+      })
+      .join("\n");
+
+    prompt += `\n\nCurrent Drivers' Championship standings (after this race):\n${driversChamp}`;
+
+    // 5) Formatea la clasificación de equipos
+    const teamsChamp = resp.content.teamStandings
+      .map((t, i) => {
+        const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
+        return `${i + 1}. ${teamName} — ${t.points} pts`;
+      })
+      .join("\n");
+
+    prompt += `\n\nCurrent Constructors' Championship standings (after this race):\n${teamsChamp}`;
+
+    console.log("Final prompt:\n", prompt);
   }
 
   if (newData.text) {

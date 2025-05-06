@@ -1,6 +1,7 @@
 import { fetchEventsDoneFrom, formatNamesSimple } from "./dbUtils";
 import { races_names, countries_dict } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
+import { fetchSeasonResults } from "./dbUtils";
 import { queryDB } from "../dbManager";
 import { data } from "autoprefixer";
 import { track } from "@vercel/analytics";
@@ -121,14 +122,19 @@ function news_insert_space(str) {
 
 export function getOneRaceDetails(raceId) {
     const results = getOneRaceResults(raceId);
-    if (!results.length) return [];
+    if (!results.length) return {};
+
+    const season = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
+
+    const seasonResults = fetchSeasonResults(season);
+
+    const { driverStandings, teamStandings } = rebuildStandingsUntil(seasonResults, raceId);
 
     // 1) Obtenemos time y laps del ganador (primera fila)
     const winnerTime = results[0][10]; // índice 10 = res.Time
     const winnerLaps = results[0][11]; // índice 11 = res.Laps
 
-    // 2) Mappeamos incluyendo gapToWinner
-    return results.map(row => {
+    const details = results.map(row => {
         const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
         const time = row[10];
         const laps = row[11];
@@ -151,6 +157,12 @@ export function getOneRaceDetails(raceId) {
             gapLaps,
         };
     });
+
+    return {
+        details,
+        driverStandings,
+        teamStandings
+    }
 }
 
 
@@ -178,4 +190,56 @@ function getOneRaceResults(raceId) {
     const rows = queryDB(sql, 'allRows');
 
     return rows;
+}
+
+function rebuildStandingsUntil(seasonResults, raceId) {
+    // 4) Acumulamos puntos por piloto y por equipo
+    const driverMap = {};
+    const teamMap = {};
+
+    seasonResults.forEach(driverRec => {
+        const name = driverRec[0];
+
+        // obtenemos sólo las carreras hasta esta (de la 3ª columna en adelante)
+        const races = driverRec.slice(3);
+
+        // sumatorio de puntos (+fastLapPoint) si r[0] <= raceId
+        const totalDriverPoints = races.reduce((sum, r) => {
+            const thisRaceId = Number(r[0]);
+            if (thisRaceId <= raceId) {
+                const pts = r[2] > 0 ? r[2] : 0;
+                const fast = r[3] > 0 ? r[3] : 0;
+                return sum + pts + fast;
+            }
+            return sum;
+        }, 0);
+
+        driverMap[name] = {
+            name,
+            points: totalDriverPoints,
+        };
+
+        // por cada carrera sumo también al equipo que corrió esa carrera
+        races.forEach(r => {
+            const thisRaceId = Number(r[0]);
+            if (thisRaceId <= raceId) {
+                const teamId = r[r.length - 1]; 
+                const pts = r[2] > 0 ? r[2] : 0;
+                const fast = r[3] > 0 ? r[3] : 0;
+                teamMap[teamId] = (teamMap[teamId] || 0) + pts + fast;
+            }
+        });
+    });
+
+    const driverStandings = Object.values(driverMap)
+        .sort((a, b) => b.points - a.points);
+
+    const teamStandings = Object.entries(teamMap)
+        .map(([teamId, points]) => ({ teamId: Number(teamId), points }))
+        .sort((a, b) => b.points - a.points);
+
+    return {
+        driverStandings,
+        teamStandings
+    }
 }
