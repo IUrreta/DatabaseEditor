@@ -214,6 +214,9 @@ function rebuildStandingsUntil(seasonResults, raceId) {
         const name = driverRec[0];
         let resultsString = ""
         let driverRaces = []
+        let nPodiums = 0;
+        let nWins = 0;
+        let nPointsFinishes = 0;
 
         // obtenemos sólo las carreras hasta esta (de la 3ª columna en adelante)
         const races = driverRec.slice(3);
@@ -225,6 +228,9 @@ function rebuildStandingsUntil(seasonResults, raceId) {
                 if (thisRaceId < raceId) {
                     driverRaces.push(getCircuitInfo(thisRaceId).country);
                     resultsString += `${parseInt(r[1]) !== -1 ? `P${r[1]}` : "DNF"}, `;
+                    if (parseInt(r[1]) === 1) nWins++;
+                    if (parseInt(r[1]) <= 3) nPodiums++;
+                    if (parseInt(r[2]) > 0) nPointsFinishes++;
                 }
                 const pts = r[2] > 0 ? r[2] : 0;
                 const sprintPts = r.length >= 9 ? r[7] : 0;
@@ -251,7 +257,10 @@ function rebuildStandingsUntil(seasonResults, raceId) {
 
         driversResults.push({
             name: news_insert_space(name),
-            resultsString        
+            resultsString,
+            nPodiums,
+            nWins,
+            nPointsFinishes        
         });
 
         // por cada carrera sumo también al equipo que corrió esa carrera

@@ -121,12 +121,12 @@ async function manageRead(newData, newsList) {
 
 
     const previousResults = resp.content.driversResults.map((d, i) => {
-      return `${d.name} ${d.resultsString}`
+      return `${d.name} (${d.nWins > 0 ? d.nWins + " wins" : ""}${d.nPodiums > 0 ? (d.nWins > 0 ? ", " : "") + d.nPodiums + " podiums" : ""}${d.nWins === 0 && d.nPodiums === 0 ? d.nPointsFinishes + " points finishes" : ""}) ${d.resultsString}`;
     }).join("\n");
 
     if (resp.content.racesNames.length > 0) {
 
-      prompt += `\n\nHere are the previous results for each driver the past races:\n${previousRaces}`;
+      prompt += `\n\nHere are the previous results for each driver the PREVIOUS races:\n${previousRaces}`;
 
       prompt += `\n\n${previousResults}`;
 
@@ -174,7 +174,7 @@ async function manageRead(newData, newsList) {
     .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
     .join('\n\n');
 
-    prompt += `\n\nHere are the previous champions:\n${previousChampions}`;
+    prompt += `\n\nIf you want to mention that someone is the reigning chamipon, here are the last F1 world champions and runner ups:\n${previousChampions}`;
 
     console.log("Final prompt:\n", prompt);
   }
@@ -280,7 +280,7 @@ function animateToCenter(newsItem) {
 
 async function askGenAI(prompt) {
   const response = await ai.models.generateContent({
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-flash-preview-04-17",
     contents: prompt
   });
 
