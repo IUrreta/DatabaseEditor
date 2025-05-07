@@ -219,6 +219,37 @@ export const staff_pics = { 1: "../assets/images/technicalChief.png", 2: "../ass
 export let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 32: "ct", 33: "f2", 34: "f3" }
 export let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10, 'custom': 32 }
 
+
+// news
+export const countries_data = {
+    "BAH": { "country": "Bahrain", "adjective": "Bahraini", "circuit": "Bahrain" },
+    "AUS": { "country": "Australia", "adjective": "Australian", "circuit": "Albert Park" },
+    "SAU": { "country": "Saudi Arabia", "adjective": "Saudi Arabian", "circuit": "Jeddah" },
+    "IMO": { "country": "Imola", "adjective": "Emilia Romagna", "circuit": "Imola" },
+    "MIA": { "country": "Miami", "adjective": "Miami", "circuit": "Miami" },
+    "SPA": { "country": "Spain", "adjective": "Spanish", "circuit": "Barcelona" },
+    "MON": { "country": "Monaco", "adjective": "Monaco", "circuit": "Monaco" },
+    "AZE": { "country": "Azerbaijan", "adjective": "Azerbaijani", "circuit": "Baku" },
+    "CAN": { "country": "Canada", "adjective": "Canadian", "circuit": "Montreal" },
+    "GBR": { "country": "Great Britain", "adjective": "British", "circuit": "Silverstone" },
+    "AUT": { "country": "Austria", "adjective": "Austrian", "circuit": "Red Bull Ring" },
+    "FRA": { "country": "France", "adjective": "French", "circuit": "Paul Ricard" },
+    "HUN": { "country": "Hungary", "adjective": "Hungarian", "circuit": "Hungaroring" },
+    "BEL": { "country": "Belgium", "adjective": "Belgian", "circuit": "Spa" },
+    "ITA": { "country": "Italy", "adjective": "Italian", "circuit": "Monza" },
+    "SGP": { "country": "Singapore", "adjective": "Singapore", "circuit": "Marina Bay" },
+    "JAP": { "country": "Japan", "adjective": "Japanese", "circuit": "Suzuka" },
+    "USA": { "country": "United States", "adjective": "United States", "circuit": "COTA" },
+    "MEX": { "country": "Mexico", "adjective": "Mexican", "circuit": "Mexico City" },
+    "BRA": { "country": "Brazil", "adjective": "Brazilian", "circuit": "Interlagos" },
+    "UAE": { "country": "Abu Dhabi", "adjective": "Abu Dhabi", "circuit": "Yas Marina" },
+    "NED": { "country": "Netherlands", "adjective": "Dutch", "circuit": "Zandvoort" },
+    "VEG": { "country": "Vegas", "adjective": "Las Vegas", "circuit": "Las Vegas" },
+    "QAT": { "country": "Qatar", "adjective": "Qatari", "circuit": "Lusail" },
+    "CHI": { "country": "China", "adjective": "Chinese", "circuit": "Shanghai" }
+};
+
+
 // renderer
 export const difficultyConfig = {
     "default": {

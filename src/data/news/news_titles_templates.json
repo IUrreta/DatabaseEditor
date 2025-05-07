@@ -21,17 +21,22 @@
         "id": "race_result",
         
         "titles": [
-            "{{winner}} wins the {{season_year}} {{circuit}} Grand Prix",
+            "{{winner}} wins the {{season_year}} {{adjective}} Grand Prix",
             "Victory for {{winner}} at the {{circuit}} GP",
+            "{{winner}} triumphs in {{country}}",
             "{{winner}} takes the checkered flag at {{circuit}}",
-            "{{winner}} finishes first in the {{circuit}} Grand Prix",
-            "Race win for {{winner}} in {{season_year}} at {{circuit}}",
-            "{{winner}} claims top spot at {{circuit}} GP",
-            "{{winner}} crosses the line first in {{circuit}}",
-            "{{winner}} victorious at the {{circuit}} Grand Prix",
-            "{{winner}} takes the win in the {{circuit}} GP",
-            "{{winner}} dominates the {{circuit}} Grand Prix"
-        ]
+            "{{winner}} secures first place at the {{adjective}} GP",
+            "{{winner}} celebrates race win in {{country}}",
+            "{{winner}} dominates at {{circuit}}",
+            "{{winner}} comes out on top at the {{adjective}} GP",
+            "{{winner}} finishes first at {{circuit}}",
+            "{{winner}} grabs victory at {{country}}",
+            "{{winner}} is the winner at {{circuit}}",
+            "Another victory for {{winner}} in {{country}}",
+            "{{winner}} conquers the {{circuit}} circuit",
+            "{{winner}} leads the pack at the {{adjective}} Grand Prix",
+            "{{winner}} claims the top spot at {{circuit}}"
+          ]
     },
     {
         "id": "driver_comparison",

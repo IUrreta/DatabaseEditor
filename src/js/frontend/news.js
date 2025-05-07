@@ -1,7 +1,7 @@
-import { team_dict, combined_dict, races_names, names_full } from "./config";
+import { team_dict, combined_dict, races_names, names_full, countries_data } from "./config";
 import { Command } from "../backend/command";
 import { GoogleGenAI } from "@google/genai";
-import { getCircuitName } from "../backend/scriptUtils/newsUtils";
+import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 
 const newsGrid = document.querySelector('.news-grid');
@@ -77,7 +77,7 @@ async function manageRead(newData, newsList) {
   let articleText;
   let winnerName = newData.data.first;
   let seasonYear = newData.data.seasonYear
-  let circuit = names_full[races_names[parseInt(newData.data.trackId)]];
+  let circuit = countries_data[races_names[parseInt(newData.data.trackId)]].country;
 
   let prompt = newsPromptsTemaplates.find(t => t.id === "race_result").prompt;
   prompt = prompt.replace(/{{\s*winner\s*}}/g, winnerName)
@@ -100,16 +100,46 @@ async function manageRead(newData, newsList) {
       return;
     }
 
+    const raceNumber = resp.content.racesNames.length + 1;
+
+    let previousRaces = '';
+    resp.content.racesNames.forEach((r) => {
+      previousRaces += `${r}, `;
+    });
+    previousRaces = previousRaces.slice(0, -2);
+    
+    const safetyCars = resp.content.details[0].safetyCar;
+    const virtualSafetyCars = resp.content.details[0].virtualSafetyCar;
+
+    const numberOfRace = `This was race ${raceNumber} out of ${resp.content.nRaces} in this season.`;
+
+    prompt += `\n\n${numberOfRace}`;
+
+    const safetyCarPhrase = `\n\nThere were ${safetyCars} safety car${safetyCars > 1 ? "s" : ""} and ${virtualSafetyCars} virtual safety car${virtualSafetyCars > 1 ? "s" : ""} during the race.`
+
+    prompt += safetyCarPhrase;
+
+
+    const previousResults = resp.content.driversResults.map((d, i) => {
+      return `${d.name} ${d.resultsString}`
+    }).join("\n");
+
+    if (resp.content.racesNames.length > 0) {
+
+      prompt += `\n\nHere are the previous results for each driver the past races:\n${previousRaces}`;
+
+      prompt += `\n\n${previousResults}`;
+
+    }
 
     const raceResults = resp.content.details.map(row => {
-      const surname = row.name.trim().split(" ").slice(-1)[0];
       const gapStr =
         row.gapToWinner > 0
           ? `${Number(row.gapToWinner.toFixed(3))} seconds`
           : row.gapLaps > 0
             ? `${row.gapLaps} laps`
             : `0 seconds`;
-      return `${row.pos}. ${surname} (${combined_dict[row.teamId]}) +${gapStr}`;
+      return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) (Started P${row.grid}) +${gapStr}`;
     }).join("\n");
 
 
@@ -117,8 +147,7 @@ async function manageRead(newData, newsList) {
 
     const driversChamp = resp.content.driverStandings
       .map((d, i) => {
-        const surname = d.name.trim().split(" ").slice(-1)[0];
-        return `${i + 1}. ${surname} — ${d.points} pts`;
+        return `${i + 1}. ${d.name} — ${d.points} pts`;
       })
       .join("\n");
 
@@ -133,6 +162,19 @@ async function manageRead(newData, newsList) {
       .join("\n");
 
     prompt += `\n\nCurrent Constructors' Championship standings (after this race):\n${teamsChamp}`;
+
+    const previousChampions = Object.values(
+      resp.content.champions.reduce((acc, { season, pos, name, points }) => {
+        if (!acc[season]) acc[season] = { season, drivers: [] };
+        acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
+        return acc;
+      }, {}) 
+    )
+    .sort((a, b) => b.season - a.season)
+    .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
+    .join('\n\n');
+
+    prompt += `\n\nHere are the previous champions:\n${previousChampions}`;
 
     console.log("Final prompt:\n", prompt);
   }

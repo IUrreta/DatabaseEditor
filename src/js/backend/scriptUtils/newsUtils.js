@@ -1,5 +1,5 @@
 import { fetchEventsDoneFrom, formatNamesSimple } from "./dbUtils";
-import { races_names, countries_dict } from "../../frontend/config";
+import { races_names, countries_dict, countries_data } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import { fetchSeasonResults } from "./dbUtils";
 import { queryDB } from "../dbManager";
@@ -17,30 +17,33 @@ export function generate_news(savednews) {
 }
 
 
-export function getCircuitName(raceId) {
+export function getCircuitInfo(raceId) {
     const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
     const code = races_names[parseInt(trackId)];
     if (!code) return "Unknown Circuit";
-    const key = code.toLowerCase() + "0";
-    return countries_dict[key] || code;
+    return countries_data[code] || code;
 }
 
 
 function generateRaceResultTitle(raceId, seasonYear, winnerName) {
     const templateObj = newsTitleTemplates.find(t => t.id === "race_result");
+    const raceInfo = getCircuitInfo(raceId);
     if (!templateObj || !Array.isArray(templateObj.titles) || templateObj.titles.length === 0) {
         // fallback
-        return `${winnerName} wins the ${seasonYear} ${getCircuitName(raceId)} Grand Prix`;
+        return `${winnerName} wins the ${seasonYear} ${raceInfo.country} Grand Prix`;
     }
 
     const titles = templateObj.titles;
     const idx = Math.floor(Math.random() * titles.length);
     const tpl = titles[idx];
 
+    console.log
     return tpl
         .replace(/{{\s*winner\s*}}/g, winnerName)
         .replace(/{{\s*season_year\s*}}/g, seasonYear)
-        .replace(/{{\s*circuit\s*}}/g, getCircuitName(raceId));
+        .replace(/{{\s*circuit\s*}}/g, raceInfo.circuit)
+        .replace(/{{\s*country\s*}}/g, raceInfo.country)
+        .replace(/{{\s*adjective\s*}}/g, raceInfo.adjective);
 }
 
 export function generateRaceResultsNews(events, savednews) {
@@ -128,7 +131,7 @@ export function getOneRaceDetails(raceId) {
 
     const seasonResults = fetchSeasonResults(season);
 
-    const { driverStandings, teamStandings } = rebuildStandingsUntil(seasonResults, raceId);
+    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceId);
 
     // 1) Obtenemos time y laps del ganador (primera fila)
     const winnerTime = results[0][10]; // índice 10 = res.Time
@@ -144,7 +147,7 @@ export function getOneRaceDetails(raceId) {
         const gapLaps = winnerLaps - laps
 
         return {
-            name: nameFormatted,
+            name: news_insert_space(nameFormatted),
             driverId,
             teamId,
             pos: row[4],
@@ -158,10 +161,18 @@ export function getOneRaceDetails(raceId) {
         };
     });
 
+    const champions = getLatestChampions(season);
+
+    const numberOfRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season}`, 'singleRow')[0];
+
     return {
         details,
         driverStandings,
-        teamStandings
+        teamStandings,
+        driversResults,
+        racesNames,
+        champions,
+        nRaces : numberOfRaces,
     }
 }
 
@@ -196,9 +207,13 @@ function rebuildStandingsUntil(seasonResults, raceId) {
     // 4) Acumulamos puntos por piloto y por equipo
     const driverMap = {};
     const teamMap = {};
+    let racesNames = []
+    const driversResults = []
 
     seasonResults.forEach(driverRec => {
         const name = driverRec[0];
+        let resultsString = ""
+        let driverRaces = []
 
         // obtenemos sólo las carreras hasta esta (de la 3ª columna en adelante)
         const races = driverRec.slice(3);
@@ -207,17 +222,37 @@ function rebuildStandingsUntil(seasonResults, raceId) {
         const totalDriverPoints = races.reduce((sum, r) => {
             const thisRaceId = Number(r[0]);
             if (thisRaceId <= raceId) {
+                if (thisRaceId < raceId) {
+                    driverRaces.push(getCircuitInfo(thisRaceId).country);
+                    resultsString += `${parseInt(r[1]) !== -1 ? `P${r[1]}` : "DNF"}, `;
+                }
                 const pts = r[2] > 0 ? r[2] : 0;
-                const fast = r[3] > 0 ? r[3] : 0;
-                return sum + pts + fast;
+                const sprintPts = r.length >= 9 ? r[7] : 0;
+                return sum + pts + sprintPts;
             }
+
+
             return sum;
         }, 0);
 
+        //remove the last comma and space from resultsString
+        if (resultsString.length > 0) {
+            resultsString = resultsString.slice(0, -2);
+        }
+
+        if (driverRaces.length > racesNames.length) {
+            racesNames = driverRaces;
+        }
+
         driverMap[name] = {
-            name,
+            name: news_insert_space(name),
             points: totalDriverPoints,
         };
+
+        driversResults.push({
+            name: news_insert_space(name),
+            resultsString        
+        });
 
         // por cada carrera sumo también al equipo que corrió esa carrera
         races.forEach(r => {
@@ -225,8 +260,8 @@ function rebuildStandingsUntil(seasonResults, raceId) {
             if (thisRaceId <= raceId) {
                 const teamId = r[r.length - 1]; 
                 const pts = r[2] > 0 ? r[2] : 0;
-                const fast = r[3] > 0 ? r[3] : 0;
-                teamMap[teamId] = (teamMap[teamId] || 0) + pts + fast;
+                const sprintPts = r.length >= 9 ? r[7] : 0;
+                teamMap[teamId] = (teamMap[teamId] || 0) + pts + sprintPts;
             }
         });
     });
@@ -240,6 +275,49 @@ function rebuildStandingsUntil(seasonResults, raceId) {
 
     return {
         driverStandings,
-        teamStandings
+        teamStandings,
+        driversResults,
+        racesNames
     }
+}
+
+function getLatestChampions(seasonId) {
+    const sql = `
+    SELECT 
+      bas.FirstName, 
+      bas.LastName, 
+      sta.DriverID, 
+      sta.Position,
+      sta.SeasonID,
+      sta.Points
+    FROM Staff_BasicData bas
+    JOIN Races_DriverStandings sta
+        ON bas.StaffID = sta.DriverID
+        WHERE sta.Position <= 3
+        AND sta.RaceFormula = 1
+        AND sta.SeasonID < ${seasonId}
+    `;
+    const rows = queryDB(sql, 'allRows');
+
+    let champions = rows.map(row => {
+        const [nameFormatted, driverId] = formatNamesSimple(row);
+        return {
+            name: news_insert_space(nameFormatted),
+            driverId,
+            pos: row[3],
+            season: row[4],
+            points: row[5],
+        };
+    });
+
+    //order champions by season descending and by position ascending
+    champions.sort((a, b) => {
+        if (a.season === b.season) {
+            return a.pos - b.pos; // Ascending order by position
+        }
+        return b.season - a.season; // Descending order by season
+    });
+
+    return champions;
+
 }
