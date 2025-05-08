@@ -249,6 +249,25 @@ export const countries_data = {
     "CHI": { "country": "China", "adjective": "Chinese", "circuit": "Shanghai" }
 };
 
+export function getParamMap(data, raceInfo) {
+    return {
+        1: {
+            pole_driver: data.pole_driver,
+            season_year: data.seasonYear,
+            circuit: raceInfo.circuit,
+            country: raceInfo.country,
+            adjective: raceInfo.adjective
+        },
+        2: {
+            winner: data.winnerName,
+            season_year: data.seasonYear,
+            circuit: raceInfo.circuit,
+            country: raceInfo.country,
+            adjective: raceInfo.adjective
+        }
+    };
+}
+
 
 // renderer
 export const difficultyConfig = {

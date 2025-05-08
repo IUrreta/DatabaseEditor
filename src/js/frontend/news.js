@@ -5,11 +5,10 @@ import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 
 const newsGrid = document.querySelector('.news-grid');
-const ai = new GoogleGenAI({ apiKey: "API" });
+const ai = new GoogleGenAI({ apiKey: "AAA" });
 
 export function place_news(newsList) {
 
-  console.log(newsList)
 
   saveNews(newsList);
   newsGrid.innerHTML = '';
@@ -94,7 +93,6 @@ async function manageRead(newData, newsList) {
     let resp;
     try {
       resp = await command.pormiseExecute();
-      console.log(resp);
     } catch (err) {
       console.error("Error fetching race details:", err);
       return;
@@ -107,7 +105,7 @@ async function manageRead(newData, newsList) {
       previousRaces += `${r}, `;
     });
     previousRaces = previousRaces.slice(0, -2);
-    
+
     const safetyCars = resp.content.details[0].safetyCar;
     const virtualSafetyCars = resp.content.details[0].virtualSafetyCar;
 
@@ -120,6 +118,38 @@ async function manageRead(newData, newsList) {
     prompt += safetyCarPhrase;
 
 
+
+
+
+    if (resp.content.sprintDetails.length > 0) {
+      prompt += `\n\nThere was a sprint race held on Saturday, which was won by ${resp.content.sprintDetails[0].name} (${combined_dict[resp.content.sprintDetails[0].teamId]}). Dedicate a paragraph discussing the sprint results`;
+
+      const sprintResults = resp.content.sprintDetails.map(row => {
+        return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) +${row.gapToWinner.toFixed(3)} seconds (+${row.points} pts)`;
+      }).join("\n");
+
+      prompt += `\n\nHere are the sprint results:\n${sprintResults}`;
+    }
+
+    const raceResults = resp.content.details.map(row => {
+      const gapStr =
+        row.gapToWinner > 0
+          ? `${Number(row.gapToWinner.toFixed(3))} seconds`
+          : row.gapLaps > 0
+            ? `${row.gapLaps} laps`
+            : `0 seconds`;
+      return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) (Started P${row.grid}) +${gapStr} (+${row.points} pts)`;
+    }).join("\n");
+
+
+    prompt += "\n\nHere are the full race results:\n" + raceResults;
+
+    const driversChamp = resp.content.driverStandings
+      .map((d, i) => {
+        return `${i + 1}. ${d.name} — ${d.points} pts`;
+      })
+      .join("\n");
+
     const previousResults = resp.content.driversResults.map((d, i) => {
       return `${d.name} (${d.nWins > 0 ? d.nWins + " wins" : ""}${d.nPodiums > 0 ? (d.nWins > 0 ? ", " : "") + d.nPodiums + " podiums" : ""}${d.nWins === 0 && d.nPodiums === 0 ? d.nPointsFinishes + " points finishes" : ""}) ${d.resultsString}`;
     }).join("\n");
@@ -131,25 +161,6 @@ async function manageRead(newData, newsList) {
       prompt += `\n\n${previousResults}`;
 
     }
-
-    const raceResults = resp.content.details.map(row => {
-      const gapStr =
-        row.gapToWinner > 0
-          ? `${Number(row.gapToWinner.toFixed(3))} seconds`
-          : row.gapLaps > 0
-            ? `${row.gapLaps} laps`
-            : `0 seconds`;
-      return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) (Started P${row.grid}) +${gapStr}`;
-    }).join("\n");
-
-
-    prompt += "\n\nHere are the full race results:\n" + raceResults;
-
-    const driversChamp = resp.content.driverStandings
-      .map((d, i) => {
-        return `${i + 1}. ${d.name} — ${d.points} pts`;
-      })
-      .join("\n");
 
     prompt += `\n\nCurrent Drivers' Championship standings (after this race):\n${driversChamp}`;
 
@@ -168,11 +179,11 @@ async function manageRead(newData, newsList) {
         if (!acc[season]) acc[season] = { season, drivers: [] };
         acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
         return acc;
-      }, {}) 
+      }, {})
     )
-    .sort((a, b) => b.season - a.season)
-    .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
-    .join('\n\n');
+      .sort((a, b) => b.season - a.season)
+      .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
+      .join('\n\n');
 
     prompt += `\n\nIf you want to mention that someone is the reigning chamipon, here are the last F1 world champions and runner ups:\n${previousChampions}`;
 
@@ -338,3 +349,4 @@ function manage_overlay(imageContainer, overlay, data) {
     imageContainer.appendChild(overlayDiv);
   }
 }
+
