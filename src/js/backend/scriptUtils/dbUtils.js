@@ -717,6 +717,25 @@ export function fetchSeasonResults(yearSelected) {
   return seasonResults;
 }
 
+export function fetchQualiResults(yearSelected) {
+  const drivers = queryDB(`
+      SELECT DriverID
+      FROM Races_DriverStandings
+      WHERE RaceFormula = 1
+        AND SeasonID = ${yearSelected}
+    `, 'allRows') || [];
+
+  const seasonResults = [];
+  drivers.forEach((row) => {
+    const driverID = row[0];
+    const driverRes = fetchOneDriverQualiResults([driverID], [yearSelected]);
+    if (driverRes) {
+      seasonResults.push(driverRes);
+    }
+  });
+  return seasonResults;
+}
+
 export function fetchTeamsStandings(year) {
   return queryDB(`
       SELECT TeamID, Position
@@ -804,6 +823,41 @@ export function fetchOneDriverSeasonResults(driver, year) {
 
   return null;
 }
+
+export function fetchOneDriverQualiResults(driver, year) {
+  const driverID = driver;
+  const season = year;
+
+  const results = queryDB(`
+      SELECT DriverID, TeamID, StartingPos, Points
+      FROM Races_Results
+      WHERE Season = ${season}
+        AND DriverID = ${driverID}
+    `, 'allRows') || [];
+
+
+  if (results.length > 0) {
+    const teamID = results[0][1];
+
+    const driverNameRow = queryDB(`
+        SELECT FirstName, LastName
+        FROM Staff_BasicData
+        WHERE StaffID = ${driverID}
+      `, 'singleRow');
+
+    return formatSeasonResults(
+      results,
+      driverNameRow,
+      teamID,
+      driver,
+      year,
+      []
+    );
+  }
+
+  return null;
+}
+
 
 export function fetchEventsDoneFrom(year) {
   const daySeasonRow = queryDB(`
@@ -1567,7 +1621,7 @@ export function updateCustomConfig(data) {
     VALUES ('difficulty', '${difficulty}')
   `);
 
-  if (parseInt(playerTeam) !== -1){
+  if (parseInt(playerTeam) !== -1) {
     updateTeam(playerTeam)
   }
 

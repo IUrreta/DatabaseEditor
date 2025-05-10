@@ -1676,12 +1676,22 @@ document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) 
 function manageScripts(...divs) {
     scriptsArray.forEach(function (div, index) {
         if (divs[index] === "show") {
-            div.className = "script-view"
+            if (div.classList.contains("unloaded")) {
+                div.classList.remove("unloaded");
+            }
+            requestAnimationFrame(() => {
+                div.classList.remove("hide");
+            });
+        } else {
+            div.classList.add("hide");
+
+            setTimeout(() => {
+                if (div.classList.contains("hide")) {
+                    div.classList.add("unloaded");
+                }
+            }, 150);
         }
-        else {
-            div.className = "script-view hide"
-        }
-    })
+    });
 }
 
 document.querySelector("#cancelDetailsButton").addEventListener("click", function () {

@@ -1,7 +1,7 @@
 import { fetchEventsDoneFrom, formatNamesSimple } from "./dbUtils";
 import { races_names, countries_dict, countries_data, getParamMap, team_dict } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
-import { fetchSeasonResults } from "./dbUtils";
+import { fetchSeasonResults, fetchQualiResults } from "./dbUtils";
 import { queryDB } from "../dbManager";
 
 
@@ -13,9 +13,10 @@ export function generate_news(savednews) {
     const racesDone = fetchEventsDoneFrom(daySeason[1]);
     const raceNews = generateRaceResultsNews(racesDone, savednews);
     const qualiNews = generateQualifyingResultsNews(racesDone, savednews);
-    console.log("QUALI NEWS")
-    console.log(qualiNews);
-    const newsList = [...raceNews, ...qualiNews];
+
+    let newsList = [...raceNews, ...qualiNews];
+    //order by date descending
+    newsList.sort((a, b) => b.date - a.date);
     return newsList;
 }
 
@@ -96,11 +97,13 @@ export function generateRaceResultsNews(events, savednews) {
             seasonYear: seasonYear,
         }
 
+        const date = queryDB(`SELECT Day FROM Races WHERE RaceID = ${raceId}`, 'singleValue');
+
         const newsEntry = {
             id: entryId,
             type: "race_result",
             title: title,
-            date: daySeason[0],
+            date: date,
             image: image,
             overlay: overlay,
             data: newsData,
@@ -155,9 +158,9 @@ export function generateQualifyingResultsNews(events, savednews) {
         const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
         const code = races_names[parseInt(trackId)];
 
-        const image = getImagePath(formatted[0].teamId, code);
+        const image = getImagePath(formatted[0].teamId, `${code}_car`);
 
-        const overlay = "race-overlay"
+        const overlay = "quali-overlay"
 
         const newsData = {
             first: formatted[0].name,
@@ -170,11 +173,13 @@ export function generateQualifyingResultsNews(events, savednews) {
             seasonYear: seasonYear,
         }
 
+        const date = queryDB(`SELECT Day FROM Races WHERE RaceID = ${raceId}`, 'singleValue') - 1;
+
         const newsEntry = {
             id: entryId,
-            type: "race_result",
+            type: "quali_result",
             title: title,
-            date: daySeason[0],
+            date: date,
             image: image,
             overlay: overlay,
             data: newsData,
@@ -192,6 +197,49 @@ function news_insert_space(str) {
         .replace(/([A-Z])/g, ' $1')
         .trim()
         .replace(/\s+/g, ' ');
+}
+
+export function getOneQualiDetails(raceId) {
+    const results = getOneQualifyingResults(raceId);
+    if (!results.length) return {};
+
+    const season = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
+
+    const seasonResults = fetchQualiResults(season, true);
+
+    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceId);
+
+    // 1) Obtenemos time y laps del ganador (primera fila)
+    const poleTime = results[0][5]; // índice 5 = res.FastestLap
+
+    const poleDetails = results.map(row => {
+        const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
+        const time = row[5];
+
+        const gapToPole = time - poleTime;
+
+        return {
+            name: news_insert_space(nameFormatted),
+            driverId,
+            teamId,
+            pos: row[4],
+            gapToPole
+        };
+    });
+
+    const champions = getLatestChampions(season);
+
+    const numberOfRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season}`, 'singleRow')[0];
+
+    return {
+        details: poleDetails,
+        driverStandings,
+        teamStandings,
+        driversResults,
+        racesNames,
+        champions,
+        nRaces: numberOfRaces
+    }
 }
 
 export function getOneRaceDetails(raceId) {
@@ -298,6 +346,7 @@ function getOneRaceResults(raceId, sprint = false) {
     JOIN ${sprint ? "Races_SprintResults" : "Races_Results"} res 
       ON bas.StaffID = res.DriverID
     WHERE res.RaceID = ${raceId}
+    ${sprint ? "AND res.RaceFormula = 1" : ""}
     ORDER BY res.FinishingPos
   `;
     const rows = queryDB(sql, 'allRows');
@@ -325,6 +374,7 @@ function getOneQualifyingResults(raceId) {
         WHERE res2.RaceID = ${raceId} AND res2.DriverID = res.DriverID)
         ORDER BY res.FinishingPos;
     `
+
     const rows = queryDB(sql, 'allRows');
 
     return rows;

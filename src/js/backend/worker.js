@@ -16,7 +16,7 @@ import { editAge, editMarketability, editName, editRetirement, editSuperlicense,
 import { editCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
-import { generate_news, getOneRaceDetails } from "./scriptUtils/newsUtils";
+import { generate_news, getOneQualiDetails, getOneRaceDetails } from "./scriptUtils/newsUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
@@ -410,6 +410,12 @@ const workerCommands = {
     const results = getOneRaceDetails(raceId);
 
     postMessage({ responseMessage: "Race details fetched", content: results });
+  },
+  qualiDetailsRequest: (data, postMessage) => {
+    const qualiId = data.raceid;
+    const results = getOneQualiDetails(qualiId);
+
+    postMessage({ responseMessage: "Quali details fetched", content: results });
   }
 
 };

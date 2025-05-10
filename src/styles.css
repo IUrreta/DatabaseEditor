@@ -1252,7 +1252,7 @@ body.og-theme input[type="checkbox"]:checked {
 .prob-viewer-data::-webkit-scrollbar,
 #patchNotesBody::-webkit-scrollbar,
 .parts-list::-webkit-scrollbar,
-.engine-modal-body::-webkit-scrollbar {
+.engine-modal-body::-webkit-scrollbar{
   width: 4px;
 }
 
@@ -2076,6 +2076,7 @@ body.og-theme .background{
   position: absolute;
   top: 0;
   left: 0;
+  opacity: 1;
   /* overflow-x: hidden; */
 }
 
@@ -2085,6 +2086,9 @@ body.og-theme .background{
   visibility: none;
 }
 
+.script-view.hide.unloaded{
+  display: none;
+}
 
 
 .scirpt-info {
@@ -3961,11 +3965,11 @@ body.light-theme .flag, body.light-theme .flag-header img{
   margin-right: 14px;
 }
 
-.staff-list::-webkit-scrollbar {
+.staff-list::-webkit-scrollbar, .news-grid::-webkit-scrollbar {
   width: 4px;
 }
 
-.staff-list::-webkit-scrollbar-thumb {
+.staff-list::-webkit-scrollbar-thumb, .news-grid::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -11727,6 +11731,8 @@ body:has(.active #mod25logo) .one-change {
   grid-template-columns: repeat(3, 1fr);
   gap: 25px;
   padding: 0 14px;
+  overflow-y: auto;
+  max-height: calc(100vh - 160px);
 }
 
 .news-item{
@@ -11753,6 +11759,7 @@ body:has(.active #mod25logo) .one-change {
   flex-direction: column;
   justify-content: space-between;
   flex: 1;
+  gap: 10px;
 }
 
 .title-and-article{
@@ -11765,11 +11772,13 @@ body:has(.active #mod25logo) .one-change {
 .news-article{
   color: var(--text-general);
   white-space: pre-wrap;
+  transition: opacity 0.15s;
 }
 
 .news-title{
   font-size: 20px;
   color: var(--text-general);
+  line-height: 1.2;
 }
 
 .news-image-container{
@@ -11793,6 +11802,7 @@ body:has(.active #mod25logo) .one-change {
   align-items: flex-start;
   justify-content: flex-end;
   padding: 10px 15px;
+  z-index: 2;
 }
 
 .race-overlay .position{
@@ -11812,6 +11822,12 @@ body:has(.active #mod25logo) .one-change {
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.news-image.loaded {
+    opacity: 1;
 }
 
 .position-team{
@@ -11855,9 +11871,9 @@ body:has(.active #mod25logo) .one-change {
   inherits: false;
 }
 
-.read-button:not(.closable)::after, .read-button:not(.closable)::before{
+.read-button:not(.closable)::after{
   content: '';
-  background-image: conic-gradient(from var(--angle), #ff4545, #00ff99, #006aff, #ff0095, #ff4545);
+  background-image: conic-gradient(from var(--angle), #f33d71, #fcab98, #24c3eb, #be5ecc, #f33d71);
   position: absolute;
   inset: -2px;  
   z-index: -1;
@@ -11868,18 +11884,9 @@ body:has(.active #mod25logo) .one-change {
 }
 
 .read-button:not(.closable):hover::after{
-
   opacity: 1;
 }
 
-.read-button:not(.closable)::before{
-  filter: blur(5px);
-  opacity: 0;
-}
-
-.read-button:not(.closable):hover::before{
-  opacity: 0.5;
-}
 
 @keyframes spin{
   from{
@@ -11888,4 +11895,52 @@ body:has(.active #mod25logo) .one-change {
   to{
     --angle: 360deg;
   }
+}
+
+.session {
+  background-color: 
+  color-mix(in srgb, white 10%, transparent);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-general);
+  padding: 10px 29px;
+  text-transform: uppercase;
+  font-size: 16px;
+}
+
+.loader-div{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.15s;
+  opacity: 1;
+}
+
+.loader-div span{
+  font-size: 20px;
+  color: color-mix(in srgb, var(--elements) 60%, var(--text-general));
+}
+
+.ai-loader {
+  width: 34px;
+  aspect-ratio: 1;
+  --_c: no-repeat radial-gradient(farthest-side, var(--new-primary) 92%, #0000);
+  background: var(--_c) top, var(--_c) left, var(--_c) right, var(--_c) bottom;
+  background-size: 10px 10px;
+  animation: l7 1s infinite;
+}
+
+@keyframes l7 {to{transform: rotate(.5turn)}}
+
+.word-fade{
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }

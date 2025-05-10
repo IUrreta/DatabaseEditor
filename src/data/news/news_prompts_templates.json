@@ -1,5 +1,10 @@
 [
     {
+        "id": "quali_result",
+        "new_type": 1,
+        "prompt": "Write ONLY the body (not the title) of a news article in English summarizing the qualifying session of the {{circuit}} Grand Prix in {{season_year}} where {{pole_driver}} got pole position. Use a professional tone similar to that of a motorsport news outlet, but avoid sounding overly technical or robotic. The article should be between 300 and 400 words long. Focus on the results of the qualifying session and the starting grid, highlighting the pole position and the top qualifiers. Mention the key moments that determined the final positions, if provided, but do not speculate beyond the data given. Describe how the pole-sitter achieved the fastest time and highlight any unexpected performances or upsets. Use a flowing, paragraph-based structure like a typical F1 news report, and avoid bullet points or numbered lists. From this point onwards you have context to contextualize the article."
+    },
+    {
         "id": "race_result",
         "new_type": 2,
         "prompt": "Write ONLY the body (not the title) of a news article in English summarizing the win that {{winner}} achieved at the {{circuit}} Grand Prix in {{season_year}}. Use a professional tone similar to that of a motorsport news outlet, but avoid sounding overly technical or robotic. The article should be between 300 and 400 words long. Focus on the race results and championship implications, but do not assume how dominant or dramatic the race was unless the gaps clearly suggest it. Mention the top finishers in a narrative way, without listing all drivers or repeating every time gap. Instead of exact time gaps with decimals (e.g. +4.791s), use natural phrases like “a few seconds ahead”, “closely followed by”, or “just behind”. Use a flowing, paragraph-based structure like a typical F1 news report, and avoid bullet points or numbered lists. From this point onwards you have context to contextualize the article."
