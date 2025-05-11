@@ -1,5 +1,5 @@
 import { fetchEventsDoneFrom, formatNamesSimple } from "./dbUtils";
-import { races_names, countries_dict, countries_data, getParamMap, team_dict } from "../../frontend/config";
+import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import { fetchSeasonResults, fetchQualiResults } from "./dbUtils";
 import { queryDB } from "../dbManager";
@@ -13,6 +13,7 @@ export function generate_news(savednews) {
     const racesDone = fetchEventsDoneFrom(daySeason[1]);
     const raceNews = generateRaceResultsNews(racesDone, savednews);
     const qualiNews = generateQualifyingResultsNews(racesDone, savednews);
+    gettransferRumors();
 
     let newsList = [...raceNews, ...qualiNews];
     //order by date descending
@@ -39,6 +40,55 @@ function generateTitle(data, new_type) {
     const tpl = titles[idx];
 
     return tpl.replace(/{{\s*(\w+)\s*}}/g, (_, key) => paramMap[new_type][key] || '');
+}
+
+export function gettransferRumors() {
+    const sql = `
+    SELECT 
+        bas.FirstName, 
+        bas.LastName, 
+        dri.StaffID,
+        con.TeamID as ActualTeam,
+        ofe.TeamID as PotentialTeam,
+        ofe.ContractState,
+        ofe.PosInTeam,
+        enu.Name as State,
+        ofe.OfferDay
+    FROM Staff_BasicData bas
+    RIGHT JOIN Staff_DriverData dri
+        ON bas.StaffID = dri.StaffID
+    JOIN Staff_Contracts con
+        ON bas.StaffID = con.StaffID
+    JOIN Staff_ContractOffers ofe
+        ON bas.StaffID = ofe.StaffID
+    JOIN Staff_Enum_ContractState enu
+        ON ofe.ContractState = enu.Value
+    WHERE ofe.PosInTeam <= 2
+    `
+
+    const rows = queryDB(sql, 'allRows');
+
+    const formatted = rows.map(row => {
+        const [nameFormatted, driverId] = formatNamesSimple(row);
+        const actualTeam = combined_dict[row[3]];
+        const potentialTeam = combined_dict[row[4]];
+        const posInTeam = row[5];
+        const state = row[7];
+        const offerDay = row[8];
+
+        return {
+            name: news_insert_space(nameFormatted),
+            driverId,
+            actualTeam,
+            potentialTeam,
+            state,
+            offerDay,
+            posInTeam
+        };
+    })
+
+    console.log("FORMATTED OFFERS")
+    console.log(formatted);
 }
 
 export function generateRaceResultsNews(events, savednews) {
