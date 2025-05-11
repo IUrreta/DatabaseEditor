@@ -5,7 +5,7 @@ import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 
 const newsGrid = document.querySelector('.news-grid');
-const ai = new GoogleGenAI({ apiKey: "PI" });
+const ai = new GoogleGenAI({ apiKey: "API" });
 
 export function place_news(newsList) {
 
@@ -524,7 +524,14 @@ function manage_overlay(imageContainer, overlay, data) {
     firstTeam.innerText = combined_dict[data.firstTeam];
     let borderClass = team_dict[data.firstTeam] + "border-top";
     first.classList.add('position', 'firstpos', borderClass);
-    first.innerText = `1. ${data.first}`;
+    let numberSpan = document.createElement("span");
+    numberSpan.className = "new-number";
+    numberSpan.textContent = "1.";
+
+    let textNode = document.createTextNode(` ${data.first}`);
+
+    first.appendChild(numberSpan);
+    first.appendChild(textNode);
 
     const second = document.createElement('div');
     const secondTeam = document.createElement('div');
@@ -532,7 +539,14 @@ function manage_overlay(imageContainer, overlay, data) {
     secondTeam.innerText = combined_dict[data.secondTeam];
     borderClass = team_dict[data.secondTeam] + "border-top";
     second.classList.add('position', borderClass);
-    second.innerText = `2. ${data.second}`;
+    numberSpan = document.createElement("span");
+    numberSpan.className = "new-number";
+    numberSpan.textContent = "2.";
+
+    textNode = document.createTextNode(` ${data.second}`);
+
+    second.appendChild(numberSpan);
+    second.appendChild(textNode);
 
     const third = document.createElement('div');
     const thirdTeam = document.createElement('div');
@@ -540,7 +554,14 @@ function manage_overlay(imageContainer, overlay, data) {
     thirdTeam.innerText = combined_dict[data.thirdTeam];
     borderClass = team_dict[data.thirdTeam] + "border-top";
     third.classList.add('position', borderClass);
-    third.innerText = `3. ${data.third}`;
+    numberSpan = document.createElement("span");
+    numberSpan.className = "new-number";
+    numberSpan.textContent = "3.";
+
+    textNode = document.createTextNode(` ${data.third}`);
+
+    third.appendChild(numberSpan);
+    third.appendChild(textNode);
 
     const sessionDiv = document.createElement('div');
     sessionDiv.classList.add('session');

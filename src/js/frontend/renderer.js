@@ -140,6 +140,7 @@ let scriptSelected = 0;
 let divBlocking = 1;
 let saveName;
 let tempImageData = null;
+let lastVisibleIndex = 0;
 
 let calendarEditMode = "Start2024"
 
@@ -1674,24 +1675,53 @@ document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) 
  * @param  {Array} divs array of state of the divs
  */
 function manageScripts(...divs) {
-    scriptsArray.forEach(function (div, index) {
-        if (divs[index] === "show") {
-            if (div.classList.contains("unloaded")) {
-                div.classList.remove("unloaded");
-            }
-            requestAnimationFrame(() => {
-                div.classList.remove("hide");
-            });
-        } else {
-            div.classList.add("hide");
+  const newIndex = divs.findIndex(s => s === "show");
+  const prevIndex = lastVisibleIndex;
 
-            setTimeout(() => {
-                if (div.classList.contains("hide")) {
-                    div.classList.add("unloaded");
-                }
-            }, 150);
+
+  scriptsArray.forEach((div, i) => {
+
+    div.ontransitionend = null;
+    div.onanimationend = null;
+    div.classList.remove("enter-from-right", "enter-from-left");
+
+    if (i === newIndex) {
+      div.classList.remove("unloaded");
+
+      requestAnimationFrame(() => {
+        div.classList.remove("hide");
+
+        console.log("COMPARISON", newIndex, prevIndex)
+        const enterClass = newIndex > prevIndex
+          ? "enter-from-right"
+          : "enter-from-left";
+        
+        console.log("EMTER CLASS", enterClass) 
+
+        div.classList.add(enterClass);
+
+        div.onanimationend = () => {
+          div.classList.remove(enterClass);
+          div.onanimationend = null;
+        };
+      });
+
+    } else {
+
+      requestAnimationFrame(() => {
+        div.classList.add("hide");
+      });
+
+      div.ontransitionend = (e) => {
+        if (e.propertyName === "opacity" && div.classList.contains("hide")) {
+          div.classList.add("unloaded");
+          div.ontransitionend = null;
         }
-    });
+      };
+    }
+  });
+
+  lastVisibleIndex = newIndex >= 0 ? newIndex : lastVisibleIndex;
 }
 
 document.querySelector("#cancelDetailsButton").addEventListener("click", function () {

@@ -2088,6 +2088,17 @@ body.og-theme .background{
 
 .script-view.hide.unloaded{
   display: none;
+  opacity: 0;
+  pointer-events: none;
+  visibility: none;
+}
+
+.script-view.enter-from-right {
+  animation: slide-in-from-right 0.15s ease-out forwards;
+}
+
+.script-view.enter-from-left {
+  animation: slide-in-from-left 0.15s ease-out forwards;
 }
 
 
@@ -11831,7 +11842,7 @@ body:has(.active #mod25logo) .one-change {
 }
 
 .position-team{
-  padding-left: 26px;
+  padding-left: 4px;
   font-size: 16px;
   line-height: 1;
   margin-bottom: 10px;
@@ -11943,4 +11954,33 @@ body:has(.active #mod25logo) .one-change {
 .word-fade{
   opacity: 0;
   transition: opacity 0.15s ease;
+}
+
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Keyframes para entrada desde la izquierda */
+@keyframes slide-in-from-left {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.new-number{
+  font-family: "NumbersFont";
+  min-width: 27px;
+  display: inline-block;
 }
