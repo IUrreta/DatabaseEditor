@@ -69,6 +69,10 @@ export let combined_dict = {
     32: "Custom Team"
 }
 
+export function getUpdatedName(teamId){
+    return combined_dict[teamId]
+}
+
 //performance
 export const pars_abreviations = { "chassis": "C", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "S" }
 export const part_codes_abreviations = { 3: "C", 4: "FW", 5: "RW", 6: "UF", 7: "SP", 8: "S" }
@@ -249,23 +253,41 @@ export const countries_data = {
     "CHI": { "country": "China", "adjective": "Chinese", "circuit": "Shanghai" }
 };
 
-export function getParamMap(data, raceInfo) {
+export function getParamMap(data) {
     return {
         1: {
             pole_driver: data.pole_driver,
             season_year: data.seasonYear,
-            circuit: raceInfo.circuit,
-            country: raceInfo.country,
-            adjective: raceInfo.adjective
+            circuit: data.circuit,
+            country: data.country,
+            adjective: data.adjective
         },
         2: {
             winner: data.winnerName,
             season_year: data.seasonYear,
-            circuit: raceInfo.circuit,
-            country: raceInfo.country,
-            adjective: raceInfo.adjective
+            circuit: data.circuit,
+            country: data.country,
+            adjective: data.adjective
+        },
+        4: {
+            driver1: data.driver1,
+            driver2: data.driver2,
+            driver3: data.driver3,
+            team1: data.team1,
+            team2: data.team2,
+            team3: data.team3
+        },
+        7:{
+            driver1: data.driver1,
+            team1: data.team1
         }
     };
+}
+
+export const opinionDict = {
+    "0": "Positive",
+    "1": "Neutral",
+    "2": "Negative"
 }
 
 

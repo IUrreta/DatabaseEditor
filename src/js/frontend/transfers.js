@@ -1,4 +1,4 @@
-import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict, f1_teams, f2_teams, f3_teams, inverted_dict } from "./config";
+import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict, f1_teams, f2_teams, f3_teams, inverted_dict, getUpdatedName } from "./config";
 import { game_version, make_name_prettier } from "./renderer";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import interact from 'interactjs';
@@ -552,7 +552,7 @@ export function manage_modal(info) {
         else if (f3_teams.includes(info[0][5])) {
             teamID = 34
         }
-        document.getElementById("currentContract").innerText = combined_dict[info[0][5]].toUpperCase()
+        document.getElementById("currentContract").innerText = getUpdatedName(info[0][5]).toUpperCase()
         document.getElementById("currentContract").className = "team-contract engine-" + team_dict[teamID]
         document.getElementById("yearInput").dataset.maxYear = info[2]
         document.getElementById("yearInput").min = info[2]
@@ -579,7 +579,7 @@ export function manage_modal(info) {
         document.querySelector("#futureContractTitle").classList.remove("d-none")
         document.querySelector("#futureContractOptions").classList.remove("d-none")
         document.getElementById("futureYear").innerText = "Contract for " + parseInt(info[2] + 1)
-        document.getElementById("futureContract").innerText = combined_dict[info[1][6]].toUpperCase()
+        document.getElementById("futureContract").innerText = getUpdatedName(info[1][6]).toUpperCase()
         document.querySelector("#teamContractButton").dataset.teamid = info[1][6]
         document.getElementById("futureContract").className = "team-contract engine-" + team_dict[info[1][6]]
         document.querySelector("#futureContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem, index) {
@@ -902,7 +902,7 @@ function signDriver(type) {
         let data = {
             driverID: draggable.dataset.driverid,
             driver: driverName,
-            team: name_dict[teamOrigin.dataset.team],
+            team: getUpdatedName(inverted_dict[teamOrigin.dataset.team]),
             teamID: originalTeamId
         }
         if (!data["team"]) {
@@ -1143,7 +1143,7 @@ function hire_modal_standars() {
     document.querySelector(".add-contract").classList.add("d-none")
     document.querySelector("#futureContractTitle").classList.add("d-none")
     document.querySelector("#futureContractOptions").classList.add("d-none")
-    document.getElementById("currentContract").innerText = combined_dict[inverted_dict[teamDestiniy]].toUpperCase()
+    document.getElementById("currentContract").innerText = getUpdatedName(inverted_dict[teamDestiniy]).toUpperCase()
     document.getElementById("currentContract").className = "team-contract engine-" + team_dict[inverted_dict[teamDestiniy]]
 }
 
@@ -1305,7 +1305,7 @@ interact('.free-driver').draggable({
                         let data = {
                             driverID: draggable.dataset.driverid,
                             driver: make_name_prettier(draggable.innerText),
-                            team: name_dict[teamOrigin.dataset.team],
+                            team: getUpdatedName(inverted_dict[teamOrigin.dataset.team]),
                             teamID: originalTeamId
                         }
                         if (!data["team"]) {
@@ -1410,7 +1410,7 @@ interact('.free-driver').draggable({
                         let data = {
                             driverID: draggable.dataset.driverid,
                             driver: make_name_prettier(draggable.innerText),
-                            team: name_dict[teamOrigin.dataset.team],
+                            team: getUpdatedName(inverted_dict[teamOrigin.dataset.team]),
                             teamID: originalTeamId
                         }
                         if (!data["team"]) {

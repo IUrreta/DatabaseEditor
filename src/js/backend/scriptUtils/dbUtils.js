@@ -883,6 +883,29 @@ export function fetchEventsDoneFrom(year) {
   return eventsIds;
 }
 
+export function fetchEventsDoneBefore(year, day){
+    const daySeasonRow = queryDB(`
+      SELECT Day, CurrentSeason
+      FROM Player_State
+    `, 'singleRow');
+
+  if (!daySeasonRow) {
+    return [];
+  }
+
+  const seasonIdsRows = queryDB(`
+      SELECT RaceID
+      FROM Races
+      WHERE SeasonID = ${year}
+        AND Day < ${day}
+    `, 'allRows') || [];
+
+
+  const eventsIds = seasonIdsRows.map(row => row[0]);
+
+  return eventsIds;
+}
+
 export function fetchEventsFrom(year) {
   const seasonEventsRows = queryDB(`
       SELECT RaceID, TrackID, WeekendType

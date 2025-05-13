@@ -58,94 +58,74 @@
         ]
     },
     {
-        "id": "transfer_rumor",
+        "id": "silly_season_recap",
         "new_type": 4,
         "titles": [
-            "Rumors link {{driver}} from {{current_team}} to {{target_team}}",
-            "{{driver}} potentially moving to {{target_team}}",
-            "Speculation grows: {{driver}} on {{target_team}}'s radar",
-            "{{target_team}} rumored to be in talks with {{driver}}",
-            "Is {{driver}} switching teams? Interest from {{target_team}}",
-            "Driver market buzz: {{driver}} to {{target_team}}?",
-            "{{driver}} linked with possible move to {{target_team}}"
+            "Silly Season Madness: {{driver1}}, {{driver2}}, and {{driver3}} in the mix",
+            "{{driver1}} and {{driver2}} linked to {{team1}} and {{team2}}",
+            "EXCLUSIVE: {{driver1}} and {{driver2}} eyeing moves to {{team1}} and {{team2}}",
+            "Shockwave in the paddock: {{driver1}}, {{driver2}}, and {{driver3}} could change teams",
+            "Insider scoop: {{driver1}} and {{driver2}} in talks with {{team1}} and {{team2}}",
+            "Silly season chaos: Will {{driver1}}, {{driver2}}, or {{driver3}} make the move?",
+            "Driver market heating up: {{driver1}}, {{driver2}}, and {{driver3}} in the spotlight",
+            "Rumors swirl: {{driver1}} and {{driver2}} linked to potential moves",
+            "Driver shuffle: {{driver1}}, {{driver2}}, and {{driver3}} in the mix",
+            "Silly season shake-up: {{driver1}}, {{driver2}}, and {{driver3}} on the move?",
+            "Paddock gossip: {{driver1}} and {{driver2}} eyeing new teams"
         ]
     },
     {
-        "id": "technical_upgrade",
+        "id": "big_transfer_rumor",
         "new_type": 5,
         "titles": [
-            "{{team}} brings upgrade package to {{circuit}}",
-            "New technical updates for {{team}} debut at {{circuit}}",
-            "{{team}} introduces new {{upgrade_type}} at {{circuit}}",
-            "{{circuit}} sees {{team}} unveil latest upgrades",
-            "Latest {{upgrade_type}} innovations from {{team}} hit the track",
-            "{{team}} pushing for performance with updates at {{circuit}}",
-            "Upgrades from {{team}} aim to boost pace at {{circuit}}"
+            "EXCLUSIVE: {{driver1}} to {{team1}} deal in the works?",
+            "Breaking: {{driver1}} in advanced talks with {{team1}}",
+            "Shocking rumor: {{driver1}} leaving {{originalTeam}} for {{team1}}",
+            "Sources suggest {{driver1}} to {{team1}} deal imminent",
+            "Transfer drama: {{driver1}} could switch from {{originalTeam}} to {{team1}}",
+            "{{driver1}} on the verge of signing with {{team1}}",
+            "Big move incoming: {{driver1}} to {{team1}} rumors heat up",
+            "Paddock whispers: {{driver1}} set to join {{team1}}",
+            "Insider info: {{driver1}} in talks with {{team1}}",
+            "Driver market shake-up: {{driver1}} linked to {{team1}}",
+            "Transfer speculation: {{driver1}} to {{team1}} gaining traction",
+            "Rumors swirl: {{driver1}} to {{team1}} deal in the pipeline",
+            "Paddock buzz: {{driver1}} could be heading to {{team1}}",
+            "Transfer news: {{driver1}} linked to {{team1}}",
+            "Big news: {{driver1}} rumored to join {{team1}}"
         ]
     },
     {
-        "id": "contract_uncertainty",
+        "id": "big_transfer_confirm",
         "new_type": 6,
         "titles": [
-            "Future unclear for {{driver}} at {{team}}",
-            "{{driver}}'s contract situation remains unresolved",
-            "Will {{driver}} continue with {{team}} next season?",
-            "{{team}} yet to renew {{driver}}'s contract",
-            "No deal yet for {{driver}} at {{team}}",
-            "Contract discussions ongoing for {{driver}}",
-            "{{driver}} faces contract uncertainty heading into {{season_year}}"
+            "It's official: {{driver1}} signs with {{team1}}",
+            "Transfer confirmed: {{driver1}} leaves {{team2}} for {{team1}}",
+            "{{team1}} proudly announces the arrival of {{driver1}}",
+            "{{driver1}} joins {{team1}} for the upcoming season",
+            "Here we go! {{driver1}} completes move to {{team1}}",
+            "Confirmed: {{driver1}} switches from {{team2}} to {{team1}}",
+            "HERE WE GO! {{driver1}} to {{team1}} is official",
+            "Big news: {{driver1}} officially joins {{team1}}",
+            "{{team1}} welcomes {{driver1}} to the team",
+            "Transfer news: {{driver1}} officially signs with {{team1}}",
+            "Done deal! {{driver1}} will race for {{team1}} next season"
         ]
     },
     {
-        "id": "rookie_performance",
+        "id": "made_up_rumour",
         "new_type": 7,
         "titles": [
-            "{{rookie}} impresses in debut season with {{team}}",
-            "Rookie {{rookie}} outperforming expectations at {{team}}",
-            "{{rookie}} delivers standout performances in rookie year",
-            "Strong results from {{rookie}} during first F1 season",
-            "{{rookie}} making a name for themselves at {{team}}",
-            "Newcomer {{rookie}} shining in {{season_year}}",
-            "Rising star {{rookie}} catching attention in debut campaign"
-        ]
-    },
-    {
-        "id": "poor_form",
-        "new_type": 8,
-        "titles": [
-            "{{driver}} struggling to score with {{team}}",
-            "Poor run continues for {{driver}} in {{season_year}}",
-            "{{driver}} fails to score again at {{circuit}}",
-            "{{driver}}'s tough season drags on",
-            "No points again for {{driver}} \u2013 concerns at {{team}}",
-            "Form slump: {{driver}}'s issues persist",
-            "{{driver}} in point drought \u2013 pressure mounts"
-        ]
-    },
-    {
-        "id": "midseason_summary",
-        "new_type": 9,
-        "titles": [
-            "Midseason review: {{championship_leader}} leads {{season_year}} standings",
-            "Halfway through {{season_year}} \u2013 {{championship_leader}} on top",
-            "F1 {{season_year}} midseason check-in: {{championship_leader}} dominates",
-            "Title race update: {{championship_leader}} ahead at halfway point",
-            "{{season_year}} so far: {{championship_leader}} strong, {{disappointment}} disappoints",
-            "Season midpoint: key takeaways from {{season_year}}",
-            "Midyear look: {{championship_leader}} leads the charge"
-        ]
-    },
-    {
-        "id": "title_battle",
-        "new_type": 10,
-        "titles": [
-            "Title fight intensifies: {{championship_leader}} vs {{challenger}}",
-            "Championship still wide open: {{championship_leader}} and {{challenger}} close",
-            "F1 title race heats up between {{championship_leader}} and {{challenger}}",
-            "Just {{races_remaining}} races left \u2013 who will take the crown?",
-            "{{season_year}} title battle tightens",
-            "Showdown for the title: {{championship_leader}} holds narrow lead",
-            "Neck-and-neck: {{championship_leader}} vs {{challenger}} in final stretch"
+            "EXCLUSIVE: {{driver1}} in talks to leave {{team1}}",
+            "Is {{driver1}} considering an exit from {{team1}}?",
+            "Rumor alert: {{driver1}} eyeing a move away from {{team1}}",
+            "Paddock whispers: {{driver1}} unhappy at {{team1}}",
+            "Sources say {{driver1}} may leave {{team1}}",
+            "Insider info: {{driver1}} contemplating a switch from {{team1}}",
+            "Speculation mounts: {{driver1}} could be on the move from {{team1}}",
+            "Driver market buzz: {{driver1}} linked with a potential exit from {{team1}}",
+            "Could {{driver1}} be leaving {{team1}}?",
+            "{{driver1}} unhappy at {{team1}}? Rumors suggest a possible exit"
         ]
     }
 ]
