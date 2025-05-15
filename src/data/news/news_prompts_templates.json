@@ -8,5 +8,10 @@
         "id": "race_result",
         "new_type": 2,
         "prompt": "Write ONLY the body (not the title) of a news article in English summarizing the win that {{winner}} achieved at the {{circuit}} Grand Prix in {{season_year}}. Use a professional tone similar to that of a motorsport news outlet, but avoid sounding overly technical or robotic. The article should be between 300 and 400 words long. Focus on the race results and championship implications, but do not assume how dominant or dramatic the race was unless the gaps clearly suggest it. Mention the top finishers in a narrative way, without listing all drivers or repeating every time gap. Instead of exact time gaps with decimals (e.g. +4.791s), use natural phrases like “a few seconds ahead”, “closely followed by”, or “just behind”. Use a flowing, paragraph-based structure like a typical F1 news report, and avoid bullet points or numbered lists. From this point onwards you have context to contextualize the article."
+    },
+    {
+        "id": "made_up_rumor",
+        "new_type": 7,
+        "prompt": "Write ONLY the body (not the title) of a news article in English covering a rumor about {{driver1}} potentially leaving {{team1}}. Use a professional tone similar to that of a motorsport news outlet, but clearly indicate that the information is speculative and based on paddock gossip. The article should be between 300 and 400 words long. Discuss why this rumor has surfaced, mentioning any factors that might contribute to {{driver1}} considering a move. Highlight any potential destinations that have been suggested, but avoid stating anything as confirmed. Balance the tone between curiosity and skepticism, as the rumor has not been verified. Use a flowing, paragraph-based structure like a typical F1 news report, and avoid bullet points or numbered lists."
     }
 ]

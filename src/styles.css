@@ -11882,7 +11882,7 @@ body:has(.active #mod25logo) .one-change {
   inherits: false;
 }
 
-.read-button:not(.closable)::after{
+.read-button:not(.closable)::after, .read-button:not(.closable)::before{
   content: '';
   background-image: conic-gradient(from var(--angle), #f33d71, #fcab98, #24c3eb, #be5ecc, #f33d71);
   position: absolute;
@@ -11892,6 +11892,11 @@ body:has(.active #mod25logo) .one-change {
   animation: spin 3s linear infinite;
   opacity: 0;
   transition: opacity 0.15s;
+}
+
+.read-button:not(.closable):hover::before{
+  opacity: 0.9;
+  filter: blur(6px);
 }
 
 .read-button:not(.closable):hover::after{

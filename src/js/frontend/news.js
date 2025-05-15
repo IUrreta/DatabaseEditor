@@ -128,6 +128,9 @@ async function manageRead(newData, newsList) {
   else if (newData.type === "quali_result") {
     prompt = await contextualizeQualiResults(newData);
   }
+  else if (newData.type === "fake_transfer") {
+    prompt = await contextualizeTransferNews(newData);
+  }
 
 
   console.log("Final prompt:", prompt);
@@ -144,6 +147,62 @@ async function manageRead(newData, newsList) {
   return articleText;
 }
 
+async function contextualizeTransferNews(newData) {
+  console.log(newData)
+  let driverName = newData.data.drivers[0].name;
+  let teamName = newData.data.drivers[0].team;
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 7).prompt;
+  prompt = prompt.replace(/{{\s*driver1\s*}}/g, driverName)
+    .replace(/{{\s*team1\s*}}/g, teamName);
+
+  const command = new Command("transferRumorRequest", {
+    drivers: newData.data.drivers
+  }
+  );
+
+  let resp;
+  try {
+    resp = await command.pormiseExecute();
+    console.log("Transfer rumor response:", resp);
+  } catch (err) {
+    console.error("Error fetching race details:", err);
+    return;
+  }
+
+  prompt += `\n\nHere are the transfers that you have to talk about:\n`;
+
+  resp.content.driverMap.forEach((d) => {
+    prompt += `${d.name} could be leaving ${d.actualTeam} ${d.potentialTeam ? " for " + d.potentialTeam : ""} ${d.potentialSalary ? "with an expected salary of around " + d.potentialSalary : ""}\n`;
+
+    prompt += `\n\nHere are the porevious results of ${d.potentialTeam} in recent years:\n`;
+    d.actualTeamPreviousResults.forEach((t) => {
+      prompt += `${t.season} - ${t.position} ${t.points}pts\n`;
+    })
+  });
+
+
+
+  const driversChamp = resp.content.driverStandings
+    .map((d, i) => {
+      return `${i + 1}. ${d.name} — ${d.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Drivers' Championship standings (after this race):\n${driversChamp}`;
+
+  const teamsChamp = resp.content.teamStandings
+    .map((t, i) => {
+      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
+      return `${i + 1}. ${teamName} — ${t.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Constructors' Championship standings (after this race):\n${teamsChamp}`;
+
+  return prompt;
+}
+
 async function contextualizeQualiResults(newData) {
   let poleName = newData.data.first;
   let seasonYear = newData.data.seasonYear
@@ -156,6 +215,7 @@ async function contextualizeQualiResults(newData) {
 
 
   const raceId = newData.id.split("_")[2];
+
   const command = new Command("qualiDetailsRequest", {
     raceid: raceId,
   }
@@ -446,23 +506,12 @@ async function askGenAI(prompt) {
   return response.text;
 }
 
-function typeWriter(element, text, speed = 30) {
-  element.textContent = '';
-  let i = 0;
-  const timer = setInterval(() => {
-    element.textContent += text.charAt(i);
-    i++;
-    if (i >= text.length) clearInterval(timer);
-  }, speed);
-}
-
 /**
- * Escribe texto en un elemento HTML palabra por palabra,
- * haciendo que cada palabra aparezca gradualmente (efecto de fundido).
+ * Write text word by word with a typewriter effect.
  *
- * @param {HTMLElement} element El elemento HTML donde se mostrará el texto.
- * @param {string} text El texto que se va a escribir.
- * @param {number} [wordInterval=50] El intervalo de tiempo (en milisegundos) entre la aparición de cada palabra.
+ * @param {HTMLElement} elementn The HTML element where the text will be written.
+ * @param {string} text  The text to be written.
+ * @param {number} [wordInterval=50] Time interval between words in milliseconds.
  */
 function typeWriterWordByWord(element, text, wordInterval = 50) {
   element.innerHTML = '';
@@ -487,7 +536,7 @@ function typeWriterWordByWord(element, text, wordInterval = 50) {
     }
 
     if (partText === '' && partIndex >= parts.length) {
-        return;
+      return;
     }
 
     const partSpan = document.createElement('span');

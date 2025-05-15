@@ -704,8 +704,20 @@ const messageHandlers = {
         place_news(message)
 
     },
+    "Save selected finished": (message) => {
+        generateNews();
+    }
 };
 
+function generateNews(){
+    const savedNews = localStorage.getItem("save0_news") || "{}";
+    const parsedNews = JSON.parse(savedNews);
+
+    const command = new Command("generateNews", {
+        news: parsedNews,
+    });
+    command.execute();
+}
 
 function update_engine_allocations(message) {
     let engine_map = {}
@@ -1180,6 +1192,8 @@ function alfaReplace(info) {
     document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value = info
     combined_dict[9] = pretty_names[info]
     abreviations_dict[9] = abreviations_for_replacements[info]
+    const command = new Command("updateCombinedDict", { teamID: 9, newName: pretty_names[info] });
+    command.execute();
     document.querySelectorAll(".af-teamname").forEach(function (elem) {
         elem.dataset.teamshow = pretty_names[info]
     })

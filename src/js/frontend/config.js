@@ -73,6 +73,10 @@ export function getUpdatedName(teamId){
     return combined_dict[teamId]
 }
 
+export function getCombinedDict(){
+    return combined_dict
+}
+
 //performance
 export const pars_abreviations = { "chassis": "C", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "S" }
 export const part_codes_abreviations = { 3: "C", 4: "FW", 5: "RW", 6: "UF", 7: "SP", 8: "S" }
