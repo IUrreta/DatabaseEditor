@@ -1008,6 +1008,8 @@ function alphaTauriReplace(info) {
     document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
     combined_dict[8] = pretty_names[info]
     abreviations_dict[8] = abreviations_for_replacements[info]
+    const command = new Command("updateCombinedDict", {teamID: 8, newName: pretty_names[info] });
+    command.execute();
     document.querySelectorAll(".at-teamname").forEach(function (elem) {
         elem.dataset.teamshow = pretty_names[info]
     })
@@ -1109,6 +1111,8 @@ function alpineReplace(info) {
     document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value = info
     combined_dict[5] = pretty_names[info]
     abreviations_dict[5] = abreviations_for_replacements[info]
+    const command = new Command("updateCombinedDict", { teamID: 5, newName: pretty_names[info] });
+    command.execute();
     document.querySelectorAll(".al-teamname").forEach(function (elem) {
         elem.dataset.teamshow = pretty_names[info]
     })

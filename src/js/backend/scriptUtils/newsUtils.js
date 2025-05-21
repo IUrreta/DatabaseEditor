@@ -22,12 +22,17 @@ export function generate_news(savednews) {
 
 
     const sillySeasonNews = generateTransferRumorsNews(getTrueTransferRumors(), savednews);
+    console.log("Silly Season News", sillySeasonNews);
     const fakeTransferNews = generateFakeTransferNews(monthsDone, savednews);
 
     let newsList = [...raceNews, ...qualiNews, ...fakeTransferNews];
+
     if (sillySeasonNews) {
-        newsList.push(sillySeasonNews);
+        sillySeasonNews.forEach((entry) => 
+            newsList.push(entry)
+        );
     }
+
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
     return newsList;
@@ -51,7 +56,6 @@ function generateTitle(data, new_type) {
         data.country = raceInfo.country;
         data.adjective = raceInfo.adjective;
     }
-    console.log("Data", data);
     const paramMap = getParamMap(data);
 
     const titles = templateObj.titles;
@@ -82,11 +86,10 @@ export function generateFakeTransferNews(monthsDone, savedNews) {
         const worsened = calculateTeamDropsByDate(season, date);
         if (!worsened.length) return;
 
-        // const randomTeamId = worsened[
-        //     Math.floor(Math.random() * worsened.length)
-        // ].teamId;
+        const randomTeamId = worsened[
+            Math.floor(Math.random() * worsened.length)
+        ].teamId;
 
-        const randomTeamId = 9;
 
         const drivers = queryDB(
             `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
@@ -175,7 +178,8 @@ export function getTrueTransferRumors() {
         ofe.SalaryOpinion,
         ofe.EndSeason,
         ofe.LengthOpinion,
-        ofe.ExpirationDay
+        ofe.ExpirationDay,
+        con.TeamID
     FROM Staff_BasicData bas
     RIGHT JOIN Staff_DriverData dri
         ON bas.StaffID = dri.StaffID
@@ -183,7 +187,10 @@ export function getTrueTransferRumors() {
         ON bas.StaffID = ofe.StaffID
     JOIN Staff_Enum_ContractState enu
         ON ofe.ContractState = enu.Value
-    WHERE ofe.PosInTeam <= 2
+    JOIN Staff_Contracts con
+        ON bas.StaffID = con.StaffID
+    WHERE con.ContractType = 0
+    AND ofe.PosInTeam <= 2
     `
 
     const rows = queryDB(sql, 'allRows')
@@ -196,22 +203,29 @@ export function getTrueTransferRumors() {
         const [nameFormatted, driverId] = formatNamesSimple(r)
         let actualTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${[r[2]]} AND ContractType = 0`, 'singleValue')
         actualTeam = combined_dict[actualTeam]
+        let driverAtRisk = queryDB(`SELECT bas.FirstName, bas.LastName, con.StaffID, con.TeamID FROM Staff_Contracts con JOIN Staff_BasicData bas ON bas.StaffID = con.StaffID RIGHT JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID WHERE con.TeamID = ${r[3]} AND con.PosInTeam = ${r[5]} AND con.ContractType = 0`, 'singleRow')
+        //if driverAtRisk[2] is th same as r[2] then remove it
+        if (driverAtRisk[2] === r[2]) return null
+        driverAtRisk = formatNamesSimple(driverAtRisk)
+        const driverAtRiskName = news_insert_space(driverAtRisk[0])
         return {
             name: news_insert_space(nameFormatted),
             driverId,
             actualTeam,
+            actualTeamId: r[13],
             potentialTeam: combined_dict[r[3]],
             state: r[6],
             offerDay: excelToDate(r[7]),
             expirationDate: excelToDate(r[12]),
             posInTeam: r[5],
+            driverAtRisk: driverAtRiskName,
             salary: r[8],
             salaryOpinion: opinionDict[r[9]],
             endSeason: r[10],
             lengthOpinion: opinionDict[r[11]],
             overall: getDriverOverall(driverId),
         }
-    })
+    }).filter(r => r !== null);
 
 
     const seen = new Set()
@@ -239,8 +253,6 @@ export function getTrueTransferRumors() {
         }
     }
 
-    console.log("RUMORES ÚNICOS TIER 1 / TOP 5:", tier1OrTop5)
-    console.log("RUMORES ÚNICOS RESTANTES:", others)
 
     return {
         tier1OrTop5,
@@ -253,18 +265,34 @@ export function generateTransferRumorsNews(offers, savedNews) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const day = daySeason[0];
     const seasonYear = daySeason[1];
+    let newsList = [];
 
-    //get excelDate from 10th august with dateToExcel
+    const realDay = excelToDate(day);
+
+    if (realDay.getMonth() + 1 < 8  || (realDay.getMonth() + 1 === 8  && realDay.getDate() < 10)) {
+        return null;
+    }
+
     const date = dateToExcel(new Date(seasonYear, 8, 10));
 
     const validOffers = offers.others.filter(item => item.state !== 'Signed');
 
     const driversDict = validOffers.reduce((acc, item) => {
+        const previousResultsTeam = queryDB(`SELECT SeasonID, Points, Position FROM Races_TeamStandings WHERE TeamID = ${item.actualTeamId}`)
+            .map(r => {
+                return {
+                    season: r[0],
+                    points: r[1],
+                    position: r[2]
+                }
+            });
         const {
             driverId,
             name,
             overall,
             actualTeam,
+            teamId,
+            previouslyDrivenTeams,
             ...offerDetails
         } = item;
 
@@ -274,6 +302,9 @@ export function generateTransferRumorsNews(offers, savedNews) {
                 name,
                 overall,
                 actualTeam,
+                teamId: item.actualTeamId,
+                previouslyDrivenTeams: getPreviouslyDrivenTeams(driverId),
+                previousResultsTeam: previousResultsTeam,
                 offers: []
             };
         }
@@ -308,21 +339,32 @@ export function generateTransferRumorsNews(offers, savedNews) {
 
     const sillySeasonRumorsId = `silly_season_${seasonYear}`;
 
+    const driversArray = Object.values(driversDict);
 
+    const image = getImagePath(top3Drivers[0].teamId, top3Drivers[0].driverId, "transfer_generic");
 
     const sillySeasonNew = {
         id: sillySeasonRumorsId,
         type: "silly_season_rumors",
         title: title,
         date: date,
-        image: null,
-        overlay: null,
-        data: driversDict,
+        season: seasonYear,
+        image: image,
+        overlay: "silly_season",
+        data: {drivers: driversArray},
         text: null
     };
 
 
-    return sillySeasonNew;
+    newsList.push(sillySeasonNew);
+
+    //if 6th september has passed
+    if (realDay.getMonth() + 1 < 9 || (realDay.getMonth() + 1 === 9 && realDay.getDate() < 6)) {
+       return newsList;
+    }
+
+    return newsList
+    
 }
 
 export function generateRaceResultsNews(events, savednews) {
@@ -830,7 +872,10 @@ function getImagePath(teamId, code, type) {
         else{
             return `./assets/images/news/${code}_pad.webp`;
         }
-
+    }
+    else if (type === "transfer_generic"){
+        const randomNum = getRandomInt(1, 9);
+        return `./assets/images/news/con${randomNum}.webp`;
     }
 }
 
@@ -918,7 +963,8 @@ export function getPreviouslyDrivenTeams(driverId) {
     const teams = rows.map(r => {
         return {
             teamId: r[0],
-            season: r[1]
+            season: r[1],
+            teamName: combined_dict[r[0]],
         }
     });
 

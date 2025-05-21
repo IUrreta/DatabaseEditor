@@ -11860,6 +11860,24 @@ body:has(.active #mod25logo) .one-change {
   justify-content: flex-end;
 }
 
+.gradient-text {
+  display: inline-block;      
+  color: var(--text-general);
+  transition: color 0s;
+  --angle: 0deg;
+  animation: spin 3s linear infinite;
+}
+
+.read-button:hover .gradient-text {
+  color: transparent;
+  background-image: conic-gradient(
+    from var(--angle),
+    #f33d71, #fcab98, #24c3eb, #be5ecc, #f33d71
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
 .read-button{
   border-radius: 5px;
   background-color: var(--elements);

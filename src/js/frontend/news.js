@@ -5,10 +5,10 @@ import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 
 const newsGrid = document.querySelector('.news-grid');
-const ai = new GoogleGenAI({ apiKey: "API" });
+const ai = new GoogleGenAI({ apiKey: "AIzaSyD4VTAZ2xazGGxfHQUiMuS61i0mreHqe68" });
 
 export function place_news(newsList) {
-
+  console.log("Placing news:", newsList);
 
   saveNews(newsList);
   newsGrid.innerHTML = '';
@@ -42,7 +42,10 @@ export function place_news(newsList) {
 
     const readButton = document.createElement('div');
     readButton.classList.add('read-button');
-    readButton.innerText = "Read";
+    const readButtonSpan = document.createElement('span');
+    readButtonSpan.classList.add('gradient-text');
+    readButtonSpan.innerText = "Read";
+    readButton.appendChild(readButtonSpan);
 
     readButton.addEventListener('click', async () => {
       const clone = animateToCenter(newsItem);
@@ -129,7 +132,10 @@ async function manageRead(newData, newsList) {
     prompt = await contextualizeQualiResults(newData);
   }
   else if (newData.type === "fake_transfer") {
-    prompt = await contextualizeTransferNews(newData);
+    prompt = await contextualizeFakeTransferNews(newData);
+  }
+  else if (newData.type === "silly_season_rumors") {
+    prompt = await contextualizeSillySeasonTransferNews(newData);
   }
 
 
@@ -147,7 +153,69 @@ async function manageRead(newData, newsList) {
   return articleText;
 }
 
-async function contextualizeTransferNews(newData) {
+async function contextualizeSillySeasonTransferNews(newData) {
+  console.log(newData)
+  let season = newData.season;
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 4).prompt;
+  prompt = prompt.replace(/{{\s*season\s*}}/g, season);
+
+  const command = new Command("transferRumorRequest", {
+    drivers: newData.data.drivers
+  }
+  );
+
+  let resp;
+  try {
+    resp = await command.pormiseExecute();
+    console.log("Transfer rumor response:", resp);
+  } catch (err) {
+    console.error("Error fetching race details:", err);
+    return;
+  }
+
+  prompt += `\n\nHere are the transfers that you have to talk about:\n`;
+
+  newData.data.drivers.forEach((d) => {
+    prompt += `${d.name} could be leaving ${d.actualTeam}\n`;
+
+    prompt += `\n\nHere are the offers that ${d.name} has:\n`;
+    d.offers.forEach((o) => {
+      prompt += `${o.potentialTeam} with an expected salary of around ${o.salary}€ per year until ${o.endSeason}, targettint ${o.driverAtRisk}'s seat. ${d.name}'s opinion on salary is ${o.salaryOpinion} and on length is ${o.lengthOpinion}\n`;
+    });
+
+    prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
+    d.previousResultsTeam.forEach((t) => {
+      prompt += `${t.season} - ${t.position} ${t.points}pts\n`;
+    })
+
+    prompt += `\n\nHere are the teams that ${d.name} has drivern for in recent years:\n`;
+    d.previouslyDrivenTeams.forEach((t) => {
+      prompt += `${t.season} - ${t.teamName}\n`;
+    });
+  });
+
+  const driversChamp = resp.content.driverStandings
+    .map((d, i) => {
+      return `${i + 1}. ${d.name} — ${d.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
+
+  const teamsChamp = resp.content.teamStandings
+    .map((t, i) => {
+      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
+      return `${i + 1}. ${teamName} — ${t.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Constructors' Championship standings:\n${teamsChamp}`;
+
+  return prompt;
+}
+
+async function contextualizeFakeTransferNews(newData) {
   console.log(newData)
   let driverName = newData.data.drivers[0].name;
   let teamName = newData.data.drivers[0].team;
@@ -175,7 +243,7 @@ async function contextualizeTransferNews(newData) {
   resp.content.driverMap.forEach((d) => {
     prompt += `${d.name} could be leaving ${d.actualTeam} ${d.potentialTeam ? " for " + d.potentialTeam : ""} ${d.potentialSalary ? "with an expected salary of around " + d.potentialSalary : ""}\n`;
 
-    prompt += `\n\nHere are the porevious results of ${d.potentialTeam} in recent years:\n`;
+    prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
     d.actualTeamPreviousResults.forEach((t) => {
       prompt += `${t.season} - ${t.position} ${t.points}pts\n`;
     })
