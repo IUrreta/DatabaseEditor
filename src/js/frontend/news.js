@@ -5,7 +5,7 @@ import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 
 const newsGrid = document.querySelector('.news-grid');
-const ai = new GoogleGenAI({ apiKey: "AIzaSyD4VTAZ2xazGGxfHQUiMuS61i0mreHqe68" });
+const ai = new GoogleGenAI({ apiKey: "API" });
 
 export function place_news(newsList) {
   console.log("Placing news:", newsList);
