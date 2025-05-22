@@ -137,6 +137,9 @@ async function manageRead(newData, newsList) {
   else if (newData.type === "silly_season_rumors") {
     prompt = await contextualizeSillySeasonTransferNews(newData);
   }
+  else if (newData.type === "potential_champion") { // Match the type string used in newsUtils.js
+       prompt = await contextualizePotentialChampion(newData);
+   }
 
 
   console.log("Final prompt:", prompt);
@@ -151,6 +154,63 @@ async function manageRead(newData, newsList) {
   }
 
   return articleText;
+}
+
+async function contextualizePotentialChampion(newData) {
+    console.log("Contextualizing Potential Champion News:", newData);
+
+    // Find the prompt template for new_type: 8
+    // newsPromptsTemaplates should be imported or available in this scope
+    const promptTemplateEntry = newsPromptsTemaplates.find(t => t.new_type === 8);
+    if (!promptTemplateEntry) {
+        console.error("Prompt template for new_type 8 not found!");
+        return "Error: Prompt template not found.";
+    }
+    let prompt = promptTemplateEntry.prompt;
+
+    // Replace basic placeholders from newData.data
+    // These keys should match what's prepared in newsData by generatePotentialChampionNews
+    prompt = prompt.replace(/{{\s*driver_name\s*}}/g, newData.data.driver_name || 'The leading driver');
+    prompt = prompt.replace(/{{\s*season_year\s*}}/g, newData.data.season_year || 'the current season');
+    prompt = prompt.replace(/{{\s*circuit\s*}}/g, newData.data.circuit_name || 'the upcoming circuit'); // Ensure circuit_name is in newData.data
+    prompt = prompt.replace(/{{\s*rival_driver_name\s*}}/g, newData.data.rival_driver_name || 'their closest rival');
+    prompt = prompt.replace(/{{\s*driver_points\s*}}/g, newData.data.driver_points !== undefined ? newData.data.driver_points.toString() : 'current');
+    prompt = prompt.replace(/{{\s*rival_points\s*}}/g, newData.data.rival_points !== undefined ? newData.data.rival_points.toString() : 'current');
+    
+
+    // Fetch current driver and team standings (similar to contextualizeRaceResults)
+    // Use newData.data.raceId which corresponds to the raceIdToCheck for this news
+    const command = new Command("raceDetailsRequest", { // Or a more generic standings command if available
+        raceid: newData.data.raceId, 
+    });
+
+    let standingsResp;
+    try {
+        standingsResp = await command.pormiseExecute(); // Corrected to promiseExecute if that's the actual method name
+        if (standingsResp && standingsResp.content) {
+            const driversChamp = standingsResp.content.driverStandings
+                .map((d, i) => `${i + 1}. ${d.name} — ${d.points} pts`)
+                .join("\n"); // Use double backslash for newline in string to be interpreted later by AI
+            prompt += `\n\nCurrent Drivers' Championship standings (reflecting situation before this race):\n${driversChamp}`;
+
+            // Assuming combined_dict is available for team names
+            const teamsChamp = standingsResp.content.teamStandings
+                .map((t, i) => {
+                    const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
+                    return `${i + 1}. ${teamName} — ${t.points} pts`;
+                })
+                .join("\n");
+            prompt += `\n\nCurrent Constructors' Championship standings (reflecting situation before this race):\n${teamsChamp}`;
+        } else {
+            prompt += "\n\nCould not retrieve current championship standings.";
+        }
+    } catch (err) {
+        console.error("Error fetching standings for potential champion news:", err);
+        prompt += "\n\nError fetching championship standings.";
+    }
+    
+    console.log("Final prompt for Potential Champion:", prompt);
+    return prompt;
 }
 
 async function contextualizeSillySeasonTransferNews(newData) {

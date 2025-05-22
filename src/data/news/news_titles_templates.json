@@ -127,5 +127,27 @@
             "Could {{driver1}} be leaving {{team1}}?",
             "{{driver1}} unhappy at {{team1}}? Rumors suggest a possible exit"
         ]
+    },
+    {
+        "id": "potential_champion",
+        "new_type": 8,
+        "titles": [
+            "{{driver_name}} on the Brink of Glory: Can They Clinch the Title at {{circuit}}?",
+            "Championship Countdown: {{driver_name}} Has a Chance to Become World Champion in {{country}}",
+            "Title Permutations: {{driver_name}} Poised for Championship Victory at the {{adjective}} Grand Prix",
+            "{{driver_name}} Eyes Early Championship Win at the {{adjective}} GP",
+            "Can {{driver_name}} Seal the Deal? Championship Glory Awaits at {{circuit}}"
+        ]
+    },
+    {
+        "id": "world_champion",
+        "new_type": 9,
+        "titles": [
+            "{{driver_name}} Crowned World Champion at the {{adjective}} Grand Prix",
+            "History Made: {{driver_name}} Secures World Championship Title in {{country}}",
+            "Championship Glory: {{driver_name}} Clinches Title at the {{circuit}} GP",
+            "{{driver_name}} Celebrates World Championship Victory in {{country}}",
+            "Unstoppable Force: {{driver_name}} Becomes World Champion at the {{adjective}} GP"
+        ]
     }
 ]

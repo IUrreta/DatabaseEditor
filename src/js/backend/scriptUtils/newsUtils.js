@@ -1,4 +1,4 @@
-import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore } from "./dbUtils";
+import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations } from "./dbUtils";
 import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import { fetchSeasonResults, fetchQualiResults } from "./dbUtils";
@@ -7,11 +7,323 @@ import { excelToDate, dateToExcel } from "./eidtStatsUtils";
 import { getTier, getDriverOverall } from "./transferUtils";
 
 
+function getMaxPointsForRace(raceId, pointsSchema, seasonId = null) {
+    let maxPoints = parseInt(pointsSchema.twoBiggestPoints[0])
+    let fastestLapPoint = parseInt(pointsSchema.fastestLapBonusPoint)
+    let polePositionPoint = parseInt(pointsSchema.polePositionBonusPoint)
+    let isLastraceDouble = parseInt(pointsSchema.isLastraceDouble)
+    const isSprint = queryDB(`SELECT WeekendType FROM Races WHERE RaceID = ${raceId}`, 'singleValue') === 1;
+    const maxSprintPoints = 8;
+    const isLastRaceOfSeason = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${seasonId}`, 'singleValue') === raceId;
+
+    if (isLastRaceOfSeason && isLastraceDouble) {
+        maxPoints *= 2;
+    }
+
+    if (isSprint) {
+        maxPoints += parseInt(maxSprintPoints);
+    }
+
+    if (fastestLapPoint) {
+        maxPoints += parseInt(fastestLapPoint);
+    }
+
+    if (polePositionPoint) {
+        maxPoints += parseInt(polePositionPoint);
+    }
+
+    return parseInt(maxPoints);
+}
+
+function championshipStatus(
+  raceIdToCheck,
+  pointsSchema,
+  allSeasonRaces,
+  leader,
+  rival,
+  currentSeason
+) {
+  const raceInfo = allSeasonRaces.find(r => r.id === raceIdToCheck);
+  if (!raceInfo) throw new Error("Carrera no encontrada");
+
+  // 2) Lista de todas las carreras desde esta (incluida) en adelante
+  const remainingRaces = allSeasonRaces
+    .filter(r => r.day >= raceInfo.day)
+    .map(r => r.id);
+
+  // 3) Suma de puntos máximos que puede conseguir el rival
+  const maxPointsForRival = remainingRaces
+    .reduce((sum, id) =>
+      sum + getMaxPointsForRace(id, pointsSchema, currentSeason)
+    , 0);
+
+  // === COMPROBACIÓN A: ¿YA es campeón antes de la carrera? ===
+  // Si rival.points + maxPointsForRival < leader.points entonces no le alcanzan ni sumando TODO
+  const alreadyChampion = (rival.points + maxPointsForRival) < leader.points;
+
+  // === COMPROBACIÓN B: ¿Se corona EN esta carrera? ===
+  // Puntos máximos que puede sumar el líder en esta carrera
+  const maxPointsThisRace = getMaxPointsForRace(
+    raceIdToCheck,
+    pointsSchema,
+    currentSeason
+  );
+
+  // Puntos máximos que puede sumar el rival **solo en las posteriores** a esta carrera
+  const futureRaces = allSeasonRaces
+    .filter(r => r.day > raceInfo.day)
+    .map(r => r.id);
+
+  const maxPointsFutureOnly = futureRaces
+    .reduce((sum, id) =>
+      sum + getMaxPointsForRace(id, pointsSchema, currentSeason)
+    , 0);
+
+  // Si líder + maxPointsThisRace > rival + maxPointsFutureOnly, se corona EN esta carrera
+  const clinchThisRace = 
+    (leader.points + maxPointsThisRace) > (rival.points + maxPointsFutureOnly);
+
+  return { alreadyChampion, clinchThisRace };
+}
+
+function generatePotentialChampionNews(racesDone, savednews, targetRaceId = null) {
+    // Inside generatePotentialChampionNews:
+    let pointsSchema = fetchPointsRegulations();
+    let new_info = null;
+    let newsId, raceInfo;
+
+    if (targetRaceId !== null) {
+        const targetRaceDetails = queryDB(`SELECT SeasonID, Day, TrackID FROM Races WHERE RaceID = ${targetRaceId}`, 'singleRow');
+        if (!targetRaceDetails) {
+            return [];
+        }
+        const effectiveSeason = targetRaceDetails[0];
+        const effectiveRaceDayExcel = targetRaceDetails[1];
+
+        const allRacesInEffectiveSeasonQuery = queryDB(`SELECT RaceID, Day FROM Races WHERE SeasonID = ${effectiveSeason} ORDER BY Day ASC`, 'allRows');
+        if (!allRacesInEffectiveSeasonQuery || allRacesInEffectiveSeasonQuery.length === 0) return [];
+        const allRacesInEffectiveSeason = allRacesInEffectiveSeasonQuery.map(r => ({ id: r[0], day: r[1] }));
+
+        const seasonResults = fetchSeasonResults(effectiveSeason);
+        if (!seasonResults) return [];
+
+        let previousRaceIdInEffectiveSeason = 0;
+        const racesBeforeTargetInEffectiveSeason = allRacesInEffectiveSeason.filter(r => r.day < effectiveRaceDayExcel);
+        if (racesBeforeTargetInEffectiveSeason.length > 0) {
+            previousRaceIdInEffectiveSeason = racesBeforeTargetInEffectiveSeason[racesBeforeTargetInEffectiveSeason.length - 1].id;
+        }
+
+        const standingsData = rebuildStandingsUntil(seasonResults, previousRaceIdInEffectiveSeason);
+        if (!standingsData || !standingsData.driverStandings || standingsData.driverStandings.length < 2) return [];
+        const driverStandings = standingsData.driverStandings;
+
+        const leader = driverStandings[0];
+        const rival = driverStandings[1];
+
+
+        if (!leader || !rival || typeof leader.points === 'undefined' || typeof rival.points === 'undefined') return [];
+
+        const leaderFullName = leader.name;
+        const rivalFullName = rival.name;
+
+        const champStatus = championshipStatus(
+            targetRaceId,
+            pointsSchema,
+            allRacesInEffectiveSeason,
+            leader,
+            rival,
+            effectiveSeason
+        );
+
+        if (champStatus.alreadyChampion) {
+            new_info = {
+                id: "world_champion",
+                new_type: 9
+            }
+            newsId = `${effectiveSeason}_world_champion`;
+            raceInfo = getCircuitInfo(targetRaceId - 1);
+        }
+        else if (champStatus.clinchThisRace) {
+            new_info = {
+                id: "potential_champion",
+                new_type: 8
+            }
+            newsId = `${effectiveSeason}_potential_champion_${targetRaceId}`;
+            raceInfo = getCircuitInfo(targetRaceId);
+        }
+        else return [];
+
+        // Optional: Check savednews if this news can be saved, though dynamic generation for targetRaceId might be preferred.
+        // if (savednews && savednews[newsId]) { return [{ id: newsId, ...savednews[newsId] }]; }
+
+
+        const titleData = {
+            driver_name: leaderFullName,
+            circuit: raceInfo.circuit,
+            country: raceInfo.country,
+            adjective: raceInfo.adjective,
+            season_year: effectiveSeason // Use effectiveSeason for the title
+        };
+        const title = generateTitle(titleData, new_info.new_type);
+
+        const newsData = {
+            raceId: targetRaceId,
+            season_year: effectiveSeason,
+            driver_name: leaderFullName,
+            driver_points: leader.points,
+            rival_driver_name: rivalFullName,
+            rival_points: rival.points,
+            circuit_name: raceInfo.circuit,
+            country_name: raceInfo.country,
+            adjective: raceInfo.adjective
+        };
+
+        const jsRaceDate = excelToDate(effectiveRaceDayExcel);
+        jsRaceDate.setDate(jsRaceDate.getDate() - 2); // 2 days before the race
+        const finalNewsDateExcel = dateToExcel(jsRaceDate);
+
+        const newsEntry = {
+            id: newsId,
+            type: new_info.id,
+            title: title,
+            date: finalNewsDateExcel,
+            image: null,
+            overlay: null,
+            data: newsData,
+            text: null
+        };
+        return [newsEntry];
+
+    } else {
+        const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+        if (!daySeason) return [];
+        const currentSeason = daySeason[1];
+        const currentDateExcel = daySeason[0];
+
+        const allSeasonRacesQuery = queryDB(`SELECT RaceID, Day FROM Races WHERE SeasonID = ${currentSeason} ORDER BY Day ASC`, 'allRows');
+        if (!allSeasonRacesQuery || allSeasonRacesQuery.length === 0) return [];
+        const allSeasonRaces = allSeasonRacesQuery.map(r => ({ id: r[0], day: r[1] }));
+        
+        // Find the next race that is not in racesDone (State != 2) and is on or after current date
+        const nextRace = allSeasonRaces.find(r => !racesDone.includes(r.id) && r.day >= currentDateExcel);
+        if (!nextRace) return [];
+        
+        const raceIdToCheck = nextRace.id;
+        const raceDateExcel = nextRace.day;
+
+        // Only generate this news if the current date is close to the race date (e.g., within 7 days before)
+        if (raceDateExcel - currentDateExcel > 7 || raceDateExcel < currentDateExcel) {
+            return [];
+        }
+
+        // if (savednews && savednews[newsId]) { return [{ id: newsId, ...savednews[newsId] }]; } // Decide on savednews policy
+
+        const seasonResults = fetchSeasonResults(currentSeason);
+        if (!seasonResults) return [];
+
+        let previousRaceId = 0;
+        const raceIdToCheckInfo = allSeasonRaces.find(r => r.id === raceIdToCheck); // Should always be found from nextRace
+        if (!raceIdToCheckInfo) return []; 
+
+        const racesBeforeCheck = allSeasonRaces.filter(r => r.day < raceIdToCheckInfo.day);
+        if (racesBeforeCheck.length > 0) {
+            previousRaceId = racesBeforeCheck[racesBeforeCheck.length - 1].id;
+        }
+        
+        const standingsData = rebuildStandingsUntil(seasonResults, previousRaceId);
+        if (!standingsData || !standingsData.driverStandings || standingsData.driverStandings.length < 2) return [];
+        const driverStandings = standingsData.driverStandings;
+
+        const leader = driverStandings[0];
+        const rival = driverStandings[1];
+
+        if (!leader.driverId || !rival.driverId || typeof leader.points === 'undefined' || typeof rival.points === 'undefined') return [];
+
+        const leaderId = leader.driverId;
+        const rivalId = rival.driverId;
+        const leaderFullName = leader.name; 
+        const rivalFullName = rival.name;
+
+        const champStatus = championshipStatus(
+            raceIdToCheck,
+            pointsSchema,
+            allSeasonRaces,
+            leader,
+            rival,
+            currentSeason
+        );
+
+        if (champStatus.alreadyChampion) {
+            new_info = {
+                id: "world_champion",
+                new_type: 9
+            }
+            newsId = `${currentSeason}_world_champion`;
+            raceInfo = getCircuitInfo(targetRaceId - 1);
+        }
+        else if (champStatus.clinchThisRace) {
+            new_info = {
+                id: "potential_champion",
+                new_type: 8
+            }
+            newsId = `${currentSeason}_potential_champion_${raceIdToCheck}`;
+            raceInfo = getCircuitInfo(raceIdToCheck);
+        }
+        else return [];
+
+        const titleData = {
+            driver_name: leaderFullName,
+            circuit: raceInfo.circuit,
+            country: raceInfo.country,
+            adjective: raceInfo.adjective,
+            season_year: currentSeason
+        };
+        const title = generateTitle(titleData, new_info.new_type);
+
+        const newsData = { // Identical structure to the targetRaceId !== null case
+            raceId: raceIdToCheck,
+            season_year: currentSeason,
+            driver_id: leaderId,
+            driver_name: leaderFullName,
+            driver_points: leader.points,
+            rival_driver_id: rivalId,
+            rival_driver_name: rivalFullName,
+            rival_points: rival.points,
+            races_remaining_after_next: futureRaceIds.length,
+            circuit_name: raceInfo.circuit,
+            country_name: raceInfo.country,
+            adjective: raceInfo.adjective
+        };
+
+        const jsRaceDate = excelToDate(raceDateExcel);
+        jsRaceDate.setDate(jsRaceDate.getDate() - 2);
+        const finalNewsDateExcel = dateToExcel(jsRaceDate);
+
+        const newsEntry = {
+            id: newsId,
+            type: new_info.id,
+            title: title,
+            date: finalNewsDateExcel,
+            image: null,
+            overlay: null,
+            data: newsData,
+            text: null
+        };
+        return [newsEntry];
+    }
+}
 
 
 export function generate_news(savednews) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const racesDone = fetchEventsDoneFrom(daySeason[1]);
+
+    // TESTING: Set potentialChampionTestRaceId to a specific RaceID for testing this feature.
+    // Example: const potentialChampionTestRaceId = 1; // Replace 1 with a valid RaceID from your DB.
+    const potentialChampionTestRaceId = 216; // Set to null for normal operation.
+
+    const potentialChampionNewsList = generatePotentialChampionNews(racesDone, savednews, potentialChampionTestRaceId);
+
     const currentDate = excelToDate(daySeason[0]);
     const currentMonth = currentDate.getMonth() + 1;
     const rumorMonths = [2, 3, 4, 5, 6, 7];
@@ -26,6 +338,14 @@ export function generate_news(savednews) {
     const fakeTransferNews = generateFakeTransferNews(monthsDone, savednews);
 
     let newsList = [...raceNews, ...qualiNews, ...fakeTransferNews];
+
+    if (potentialChampionNewsList && potentialChampionNewsList.length > 0) {
+        potentialChampionNewsList.forEach(newNewsItem => {
+            if (!newsList.find(existingNews => existingNews.id === newNewsItem.id)) {
+                newsList.push(newNewsItem);
+            }
+        });
+    }
 
     if (sillySeasonNews) {
         sillySeasonNews.forEach((entry) => 
@@ -756,7 +1076,7 @@ function rebuildStandingsUntil(seasonResults, raceId) {
         driverMap[name] = {
             name: news_insert_space(name),
             points: totalDriverPoints,
-            teamId: driverRec[1]
+            teamId: driverRec[1],
         };
 
         driversResults.push({

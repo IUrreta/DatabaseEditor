@@ -284,6 +284,20 @@ export function getParamMap(data) {
         7:{
             driver1: data.driver1,
             team1: data.team1
+        },
+        8: {
+            driver_name: data.driver_name,
+            circuit: data.circuit,
+            country: data.country,
+            adjective: data.adjective,
+            season_year: data.season_year
+        },
+        9: {
+            driver_name: data.driver_name,
+            circuit: data.circuit,
+            country: data.country,
+            adjective: data.adjective,
+            season_year: data.season_year
         }
     };
 }
