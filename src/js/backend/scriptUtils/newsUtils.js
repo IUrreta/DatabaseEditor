@@ -36,54 +36,54 @@ function getMaxPointsForRace(raceId, pointsSchema, seasonId = null) {
 }
 
 function championshipStatus(
-  raceIdToCheck,
-  pointsSchema,
-  allSeasonRaces,
-  leader,
-  rival,
-  currentSeason
-) {
-  const raceInfo = allSeasonRaces.find(r => r.id === raceIdToCheck);
-  if (!raceInfo) throw new Error("Carrera no encontrada");
-
-  // 2) Lista de todas las carreras desde esta (incluida) en adelante
-  const remainingRaces = allSeasonRaces
-    .filter(r => r.day >= raceInfo.day)
-    .map(r => r.id);
-
-  // 3) Suma de puntos máximos que puede conseguir el rival
-  const maxPointsForRival = remainingRaces
-    .reduce((sum, id) =>
-      sum + getMaxPointsForRace(id, pointsSchema, currentSeason)
-    , 0);
-
-  // === COMPROBACIÓN A: ¿YA es campeón antes de la carrera? ===
-  // Si rival.points + maxPointsForRival < leader.points entonces no le alcanzan ni sumando TODO
-  const alreadyChampion = (rival.points + maxPointsForRival) < leader.points;
-
-  // === COMPROBACIÓN B: ¿Se corona EN esta carrera? ===
-  // Puntos máximos que puede sumar el líder en esta carrera
-  const maxPointsThisRace = getMaxPointsForRace(
     raceIdToCheck,
     pointsSchema,
+    allSeasonRaces,
+    leader,
+    rival,
     currentSeason
-  );
+) {
+    const raceInfo = allSeasonRaces.find(r => r.id === raceIdToCheck);
+    if (!raceInfo) throw new Error("Carrera no encontrada");
 
-  // Puntos máximos que puede sumar el rival **solo en las posteriores** a esta carrera
-  const futureRaces = allSeasonRaces
-    .filter(r => r.day > raceInfo.day)
-    .map(r => r.id);
+    // 2) Lista de todas las carreras desde esta (incluida) en adelante
+    const remainingRaces = allSeasonRaces
+        .filter(r => r.day >= raceInfo.day)
+        .map(r => r.id);
 
-  const maxPointsFutureOnly = futureRaces
-    .reduce((sum, id) =>
-      sum + getMaxPointsForRace(id, pointsSchema, currentSeason)
-    , 0);
+    // 3) Suma de puntos máximos que puede conseguir el rival
+    const maxPointsForRival = remainingRaces
+        .reduce((sum, id) =>
+            sum + getMaxPointsForRace(id, pointsSchema, currentSeason)
+            , 0);
 
-  // Si líder + maxPointsThisRace > rival + maxPointsFutureOnly, se corona EN esta carrera
-  const clinchThisRace = 
-    (leader.points + maxPointsThisRace) > (rival.points + maxPointsFutureOnly);
+    // === COMPROBACIÓN A: ¿YA es campeón antes de la carrera? ===
+    // Si rival.points + maxPointsForRival < leader.points entonces no le alcanzan ni sumando TODO
+    const alreadyChampion = (rival.points + maxPointsForRival) < leader.points;
 
-  return { alreadyChampion, clinchThisRace };
+    // === COMPROBACIÓN B: ¿Se corona EN esta carrera? ===
+    // Puntos máximos que puede sumar el líder en esta carrera
+    const maxPointsThisRace = getMaxPointsForRace(
+        raceIdToCheck,
+        pointsSchema,
+        currentSeason
+    );
+
+    // Puntos máximos que puede sumar el rival **solo en las posteriores** a esta carrera
+    const futureRaces = allSeasonRaces
+        .filter(r => r.day > raceInfo.day)
+        .map(r => r.id);
+
+    const maxPointsFutureOnly = futureRaces
+        .reduce((sum, id) =>
+            sum + getMaxPointsForRace(id, pointsSchema, currentSeason)
+            , 0);
+
+    // Si líder + maxPointsThisRace > rival + maxPointsFutureOnly, se corona EN esta carrera
+    const clinchThisRace =
+        (leader.points + maxPointsThisRace) > (rival.points + maxPointsFutureOnly);
+
+    return { alreadyChampion, clinchThisRace };
 }
 
 function generatePotentialChampionNews(racesDone, savednews, targetRaceId = null) {
@@ -170,6 +170,7 @@ function generatePotentialChampionNews(racesDone, savednews, targetRaceId = null
             raceId: targetRaceId,
             season_year: effectiveSeason,
             driver_name: leaderFullName,
+            driver_team_id: leader.teamId,
             driver_points: leader.points,
             rival_driver_name: rivalFullName,
             rival_points: rival.points,
@@ -182,12 +183,17 @@ function generatePotentialChampionNews(racesDone, savednews, targetRaceId = null
         jsRaceDate.setDate(jsRaceDate.getDate() - 2); // 2 days before the race
         const finalNewsDateExcel = dateToExcel(jsRaceDate);
 
+        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${targetRaceId}`, 'singleRow');
+        const code = races_names[parseInt(trackId)];
+
+        const image = getImagePath(leader.teamId, code, "champion");
+
         const newsEntry = {
             id: newsId,
             type: new_info.id,
             title: title,
             date: finalNewsDateExcel,
-            image: null,
+            image: image,
             overlay: null,
             data: newsData,
             text: null
@@ -203,11 +209,11 @@ function generatePotentialChampionNews(racesDone, savednews, targetRaceId = null
         const allSeasonRacesQuery = queryDB(`SELECT RaceID, Day FROM Races WHERE SeasonID = ${currentSeason} ORDER BY Day ASC`, 'allRows');
         if (!allSeasonRacesQuery || allSeasonRacesQuery.length === 0) return [];
         const allSeasonRaces = allSeasonRacesQuery.map(r => ({ id: r[0], day: r[1] }));
-        
+
         // Find the next race that is not in racesDone (State != 2) and is on or after current date
         const nextRace = allSeasonRaces.find(r => !racesDone.includes(r.id) && r.day >= currentDateExcel);
         if (!nextRace) return [];
-        
+
         const raceIdToCheck = nextRace.id;
         const raceDateExcel = nextRace.day;
 
@@ -223,13 +229,13 @@ function generatePotentialChampionNews(racesDone, savednews, targetRaceId = null
 
         let previousRaceId = 0;
         const raceIdToCheckInfo = allSeasonRaces.find(r => r.id === raceIdToCheck); // Should always be found from nextRace
-        if (!raceIdToCheckInfo) return []; 
+        if (!raceIdToCheckInfo) return [];
 
         const racesBeforeCheck = allSeasonRaces.filter(r => r.day < raceIdToCheckInfo.day);
         if (racesBeforeCheck.length > 0) {
             previousRaceId = racesBeforeCheck[racesBeforeCheck.length - 1].id;
         }
-        
+
         const standingsData = rebuildStandingsUntil(seasonResults, previousRaceId);
         if (!standingsData || !standingsData.driverStandings || standingsData.driverStandings.length < 2) return [];
         const driverStandings = standingsData.driverStandings;
@@ -241,7 +247,7 @@ function generatePotentialChampionNews(racesDone, savednews, targetRaceId = null
 
         const leaderId = leader.driverId;
         const rivalId = rival.driverId;
-        const leaderFullName = leader.name; 
+        const leaderFullName = leader.name;
         const rivalFullName = rival.name;
 
         const champStatus = championshipStatus(
@@ -284,6 +290,7 @@ function generatePotentialChampionNews(racesDone, savednews, targetRaceId = null
             raceId: raceIdToCheck,
             season_year: currentSeason,
             driver_id: leaderId,
+            driver_team_id: leader.teamId,
             driver_name: leaderFullName,
             driver_points: leader.points,
             rival_driver_id: rivalId,
@@ -299,12 +306,17 @@ function generatePotentialChampionNews(racesDone, savednews, targetRaceId = null
         jsRaceDate.setDate(jsRaceDate.getDate() - 2);
         const finalNewsDateExcel = dateToExcel(jsRaceDate);
 
+        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${raceIdToCheck}`, 'singleRow');
+        const code = races_names[parseInt(trackId)];
+
+        const image = getImagePath(leader.teamId, code, "champion");
+
         const newsEntry = {
             id: newsId,
             type: new_info.id,
             title: title,
             date: finalNewsDateExcel,
-            image: null,
+            image: image,
             overlay: null,
             data: newsData,
             text: null
@@ -318,11 +330,9 @@ export function generate_news(savednews) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const racesDone = fetchEventsDoneFrom(daySeason[1]);
 
-    // TESTING: Set potentialChampionTestRaceId to a specific RaceID for testing this feature.
-    // Example: const potentialChampionTestRaceId = 1; // Replace 1 with a valid RaceID from your DB.
-    const potentialChampionTestRaceId = 216; // Set to null for normal operation.
+    // const potentialChampionTestRaceId = 216; // Set to null for normal operation.
 
-    const potentialChampionNewsList = generatePotentialChampionNews(racesDone, savednews, potentialChampionTestRaceId);
+    const potentialChampionNewsList = generatePotentialChampionNews(racesDone, savednews);
 
     const currentDate = excelToDate(daySeason[0]);
     const currentMonth = currentDate.getMonth() + 1;
@@ -348,7 +358,7 @@ export function generate_news(savednews) {
     }
 
     if (sillySeasonNews) {
-        sillySeasonNews.forEach((entry) => 
+        sillySeasonNews.forEach((entry) =>
             newsList.push(entry)
         );
     }
@@ -589,7 +599,7 @@ export function generateTransferRumorsNews(offers, savedNews) {
 
     const realDay = excelToDate(day);
 
-    if (realDay.getMonth() + 1 < 8  || (realDay.getMonth() + 1 === 8  && realDay.getDate() < 10)) {
+    if (realDay.getMonth() + 1 < 8 || (realDay.getMonth() + 1 === 8 && realDay.getDate() < 10)) {
         return null;
     }
 
@@ -671,7 +681,7 @@ export function generateTransferRumorsNews(offers, savedNews) {
         season: seasonYear,
         image: image,
         overlay: "silly_season",
-        data: {drivers: driversArray},
+        data: { drivers: driversArray },
         text: null
     };
 
@@ -680,11 +690,11 @@ export function generateTransferRumorsNews(offers, savedNews) {
 
     //if 6th september has passed
     if (realDay.getMonth() + 1 < 9 || (realDay.getMonth() + 1 === 9 && realDay.getDate() < 6)) {
-       return newsList;
+        return newsList;
     }
 
     return newsList
-    
+
 }
 
 export function generateRaceResultsNews(events, savednews) {
@@ -1156,6 +1166,10 @@ function getLatestChampions(seasonId) {
 }
 
 function getImagePath(teamId, code, type) {
+    const maxImages = {
+        'fe': 5, 'mc': 2, 'rb': 4, 'me': 4, 'al': 2, 'wi': 3,
+        'ha': 2, 'at': 2, 'af': 2, 'as': 2, 'ct': 2, 'f2': 2, 'f3': 2
+    };
     if (type === "raceQuali") {
         if (teamId === 32) {
             return `./assets/images/news/${code.toLowerCase()}.webp`;
@@ -1171,31 +1185,36 @@ function getImagePath(teamId, code, type) {
         // Obtener el nombre del equipo desde el diccionario
         const teamName = team_dict[teamId];
 
-        // Definir la cantidad máxima de imágenes por equipo
-        const maxImages = {
-            'fe': 5, 'mc': 2, 'rb': 4, 'me': 4, 'al': 2, 'wi': 3,
-            'ha': 2, 'at': 2, 'af': 2, 'as': 2, 'ct': 2, 'f2': 2, 'f3': 2
-        };
-
         // Obtener el número aleatorio para el archivo
         const max = maxImages[teamName] || 1;
         const randomNum = getRandomInt(1, max);
 
         return `./assets/images/news/${teamName}${randomNum}.webp`;
     }
-    else if (type === "transfer"){
+    else if (type === "transfer") {
         const useGeneric = Math.random() > 0.35;
-        if (useGeneric){
+        if (useGeneric) {
             const randomNum = getRandomInt(1, 9);
             return `./assets/images/news/con${randomNum}.webp`;
         }
-        else{
+        else {
             return `./assets/images/news/${code}_pad.webp`;
         }
     }
-    else if (type === "transfer_generic"){
+    else if (type === "transfer_generic") {
         const randomNum = getRandomInt(1, 9);
         return `./assets/images/news/con${randomNum}.webp`;
+    }
+    else if (type === "champion") {
+        const useChamp = Math.random() < 0.5;
+        if (useChamp) {
+            const randomNum = getRandomInt(1, 5);
+            return `./assets/images/news/champ${randomNum}.webp`;
+        }
+        else {
+            return `./assets/images/news/${code}_tra.webp`;
+        }
+
     }
 }
 

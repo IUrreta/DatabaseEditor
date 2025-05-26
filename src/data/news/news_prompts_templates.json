@@ -23,5 +23,10 @@
         "id": "potential_champion",
         "new_type": 8,
         "prompt": "Write ONLY the body (not the title) of a news article in English about {{driver_name}} having the potential to become the {{season_year}} Formula 1 World Champion at the upcoming {{circuit}} Grand Prix. Use a professional tone similar to that of a motorsport news outlet, but avoid sounding overly technical or robotic. The article should be between 300 and 400 words long. Explain the conditions under which {{driver_name}} would secure the championship at this race, detailing the necessary points advantage over their closest rival, {{rival_driver_name}}, considering the points currently held by both ({{driver_points}} vs {{rival_points}}). Mention the maximum points available at this event (including any sprint race) and the number of races remaining after this one. Focus on what {{driver_name}} needs to achieve (e.g., win the race, finish in a certain position while {{rival_driver_name}} finishes outside another position). From this point onwards you have context to contextualize the article."
+    },
+    {
+        "id": "world_champion",
+        "new_type": 9,
+        "prompt": "Write ONLY the body (not the title) of a news article in English about {{driver_name}} winning the {{season_year}} Formula 1 World Championship at the {{circuit}} Grand Prix. Use a professional tone similar to that of a motorsport news outlet, but avoid sounding overly technical or robotic. The article should be between 300 and 400 words long. Summarize how {{driver_name}} clinched the championship, detailing their performance throughout the season and the key moments that led to this achievement. Mention the final points tally, comparing it to their closest rival, {{rival_driver_name}}, and highlight any significant result differences. Discuss the implications of this victory for both {{driver_name}} and their team, including any records set or milestones achieved. Use a flowing, paragraph-based structure like a typical F1 news report, and avoid bullet points or numbered lists. From this point onwards you have context to contextualize the article."
     }
 ]
