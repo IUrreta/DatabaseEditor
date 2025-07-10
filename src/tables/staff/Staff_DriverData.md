@@ -25,10 +25,10 @@ Column Information:
 
 [Foreign Key Details](../foreignKeyDetails.md)
 
-| ID | Seq | Foreign Table       | Local Column          | Foreign Column | On Update | On Delete | Match Type |
-|----|-----|---------------------|-----------------------|----------------|-----------|-----------|------------|
-| 0  | 0   | Staff_GameData      | StaffID               | StaffID        | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | Staff_DriverNumbers | LastKnownDriverNumber | Number         | NO ACTION | NO ACTION | NONE       |
+| ID | Seq | Foreign Table                                 | Local Column          | Foreign Column | On Update | On Delete | Match Type |
+|----|-----|-----------------------------------------------|-----------------------|----------------|-----------|-----------|------------|
+| 0  | 0   | [Staff_GameData](Staff_GameData.md)           | StaffID               | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Staff_DriverNumbers](Staff_DriverNumbers.md) | LastKnownDriverNumber | Number         | NO ACTION | NO ACTION | NONE       |
 
 ----------------------------------------------------------
 
