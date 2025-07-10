@@ -1,6 +1,6 @@
 Board_Enum_ConfidenceLevels table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 

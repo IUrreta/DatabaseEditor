@@ -1,6 +1,6 @@
 Staff_BasicData table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -20,12 +20,12 @@ Column Information:
 | 11 | AgeType                  | INTEGER   | No (0)   | null           | No (0)      |
 | 12 | IsGeneratedForCustomTeam | INTEGER   | Yes (1)  | '0'            | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                             | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Staff_Enum_Gender](Staff_Enum_Gender.md) | Gender       | Value          | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Countries](../Countries.md)              | CountryID    | CountryID      | RESTRICT  | RESTRICT  | NONE       |
+| 1  | 0   | [Countries](../../Countries.md)              | CountryID    | CountryID      | RESTRICT  | RESTRICT  | NONE       |
 
 FKs this table points to
 

@@ -1,6 +1,6 @@
 Board_Confidence_FinanceHistory table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 

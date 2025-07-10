@@ -1,6 +1,6 @@
 Staff_GameData table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -19,12 +19,12 @@ Column Information:
 | 10 | ExpectedQualityScore          | INTEGER        | Yes (1)  | '0'           | No (0)      |
 | 11 | ExpectedTimeScore             | INTEGER        | Yes (1)  | '0'           | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                                 | Local Column    | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------------------------------------------|-----------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_Enum_StaffType](Staff_Enum_StaffType.md)               | StaffType       | StaffType      | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Staff_Enum_DevelopmentPlans](Staff_Enum_DevelopmentPlans.md) | DevelopmentPlan | Value          | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Staff_Enum_StaffType](../Staff_Enum_StaffType.md)               | StaffType       | StaffType      | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Staff_Enum_DevelopmentPlans](../Staff_Enum_DevelopmentPlans.md) | DevelopmentPlan | Value          | NO ACTION | NO ACTION | NONE       |
 | 2  | 0   | [Staff_BasicData](Staff_BasicData.md)                         | StaffID         | StaffID        | RESTRICT  | CASCADE   | NONE       |
 
 FKs this table points to

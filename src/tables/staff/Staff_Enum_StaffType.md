@@ -26,5 +26,5 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                 | Local Column | Foreign Column |
 |----|-----|---------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Staff_GameData](Staff_GameData.md)                           | StaffType    | StaffType      |
+| 0  | 0   | [Staff_GameData](data/Staff_GameData.md)                           | StaffType    | StaffType      |
 | 1  | 0   | [Staff_Enum_DevelopmentPlans](Staff_Enum_DevelopmentPlans.md) | StaffType    | StaffType      |

@@ -1,6 +1,6 @@
 Staff_Contracts table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -19,10 +19,10 @@ Column Information:
 | 10 | BreakoutClause          | decimal (3, 2) | Yes (1)  | '0.5'         | No (0)      |
 | 11 | AffiliateDualRoleClause | INTEGER        | Yes (1)  | '0'           | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                         | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Teams](../team/Teams.md)                             | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Teams](../../team/Teams.md)                             | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |
 | 1  | 0   | [Staff_GameData](Staff_GameData.md)                   | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |
 | 2  | 0   | [Staff_Enum_ContractType](Staff_Enum_ContractType.md) | ContractType | Value          | RESTRICT  | CASCADE   | NONE       |

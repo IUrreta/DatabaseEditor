@@ -18,7 +18,7 @@ Column Information:
 
 | ID | Seq | Foreign Table                                               | Local Column    | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------------|-----------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_Enum_NameLocales](./staff/Staff_Enum_NameLocales.md) | StaffNameLocale | Value          | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Staff_Enum_NameLocales](staff/data/Staff_Enum_NameLocales.md) | StaffNameLocale | Value          | NO ACTION | NO ACTION | NONE       |
 
 ----------------------------------------------------------
 
@@ -27,4 +27,4 @@ FKs this table points to
 | ID | Seq | Foreign Table                                 | Local Column | Foreign Column |
 |----|-----|-----------------------------------------------|--------------|----------------|
 | 0  | 0   | [Races_Tracks](./race/Races_Tracks.md)        | CountryID    | CountryID      | 
-| 1  | 0   | [Staff_BasicData](./staff/Staff_BasicData.md) | CountryID    | CountryID      | 
+| 1  | 0   | [Staff_BasicData](staff/data/Staff_BasicData.md) | CountryID    | CountryID      | 

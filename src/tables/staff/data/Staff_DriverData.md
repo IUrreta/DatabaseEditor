@@ -1,6 +1,6 @@
 Staff_DriverData table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -23,7 +23,7 @@ Column Information:
 | 14 | MarketabilityProgress         | INTEGER   | Yes (1)  | '0'                          | No (0)      |
 | 15 | FeederSeriesAssignedCarNumber | INTEGER   | No (0)   | null                         | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                 | Local Column          | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------|-----------------------|----------------|-----------|-----------|------------|
@@ -36,4 +36,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                           | Local Column | Foreign Column     |
 |----|-----|-----------------------------------------|--------------|--------------------|
-| 0  | 0   | [Races_Tracks](../race/Races_Tracks.md) | StaffID      | FastestLapDriverID | 
+| 0  | 0   | [Races_Tracks](../../race/Races_Tracks.md) | StaffID      | FastestLapDriverID | 

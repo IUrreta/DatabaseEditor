@@ -26,6 +26,8 @@ Column Information:
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                  | Local Column | Foreign Column |
-|----|-----|------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Staff_Contracts](../staff/Staff_Contracts.md) | TeamID       | TeamID         |
+| ID | Seq | Foreign Table                                                           | Local Column | Foreign Column |
+|----|-----|-------------------------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Staff_Contracts](../staff/data/Staff_Contracts.md)                     | TeamID       | TeamID         |
+| 1  | 0   | [Board_Objectives](../board/objectives/Board_Objectives.md)             | TeamID       | TeamID         |
+| 2  | 0   | [Board_SeasonObjectives](../board/objectives/Board_SeasonObjectives.md) | TeamID       | TeamID         |
