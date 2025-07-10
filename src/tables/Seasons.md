@@ -1,12 +1,8 @@
 Seasons table
 
-Explanation of Flags:
-- ID (cid): Column's zero-based ordinal position.
-- Not Null: 1 = Cannot be NULL, 0 = Can be NULL.
-- Default Value (dflt_value): The column's default value, or null if none.
-- Primary Key (pk): 1 = Is the primary key, 0 = Not primary key.
-  (For composite keys, >1 indicates order in key).
-  Foreign Key Information for 'Races' Table (Outgoing FKs):
+[Column Guide](columnFlagsGuide.md)
+
+Column Information:
 
 | ID | Name               | Data Type  | Not Null | Default Value | Primary Key |
 |----|--------------------|------------|----------|---------------|-------------|
@@ -20,7 +16,7 @@ Table has no FKs that point to it.
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                   | Local Column | Foreign Column | On Update | On Delete | Match Type |
-|----|-----|---------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Player_State](Player_State.md) | SeasonID     | CurrentSeason  | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Races](./race/Races.md)        | SeasonID     | SeasonID       | NO ACTION | CASCADE   | NONE       |
+| ID | Seq | Foreign Table                   | Local Column | Foreign Column | 
+|----|-----|---------------------------------|--------------|----------------|
+| 0  | 0   | [Player_State](Player_State.md) | SeasonID     | CurrentSeason  |
+| 1  | 0   | [Races](./race/Races.md)        | SeasonID     | SeasonID       |
