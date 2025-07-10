@@ -26,8 +26,14 @@ Column Information:
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                                           | Local Column | Foreign Column |
-|----|-----|-------------------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Staff_Contracts](../staff/data/Staff_Contracts.md)                     | TeamID       | TeamID         |
-| 1  | 0   | [Board_Objectives](../board/objectives/Board_Objectives.md)             | TeamID       | TeamID         |
-| 2  | 0   | [Board_SeasonObjectives](../board/objectives/Board_SeasonObjectives.md) | TeamID       | TeamID         |
+| ID | Seq | Foreign Table                                                                  | Local Column | Foreign Column |
+|----|-----|--------------------------------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Staff_Contracts](../staff/data/Staff_Contracts.md)                            | TeamID       | TeamID         |
+| 1  | 0   | [Board_Objectives](../board/objectives/Board_Objectives.md)                    | TeamID       | TeamID         |
+| 2  | 0   | [Board_SeasonObjectives](../board/objectives/Board_SeasonObjectives.md)        | TeamID       | TeamID         |
+| 3  | 0   | [Finance_TeamBalance](../finance/Finance_TeamBalance.md)                       | TeamID       | TeamID         |
+| 4  | 0   | [Finance_Transactions](../finance/Finance_Transactions.md)                     | TeamID       | TeamID         |
+| 5  | 0   | [Parts_Designs](../parts/Parts_Designs.md)                                     | TeamID       | TeamID         |
+| 6  | 0   | [Parts_Designs_TeamData](../parts/Parts_Designs_TeamData.md)                   | TeamID       | TeamID         |
+| 7  | 0   | [Parts_NamingConventions](../parts/Parts_NamingConventions.md)                 | TeamID       | TeamID         |
+| 8  | 0   | [Parts_PowertrainRaceHistoryData](../parts/Parts_PowertrainRaceHistoryData.md) | TeamID       | TeamID         |

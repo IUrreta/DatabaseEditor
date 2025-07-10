@@ -11,3 +11,9 @@ Column Information:
 | 2  | Sublabel | TEXT      | No (0)   | 'NULL'        | No (0)      |
 
 Table has no FKs that point to it. 
+
+FKs this table points to
+
+| ID | Seq | Foreign Table                                       | Local Column | Foreign Column | 
+|----|-----|-----------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Buildings_Effects](./effects/Buildings_Effects.md) | Effect       | EffectID       |

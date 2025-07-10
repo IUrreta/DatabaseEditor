@@ -39,6 +39,7 @@ Column Information:
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                                            | Local Column | Foreign Column | 
-|----|-----|--------------------------------------------------------------------------|--------------|----------------|
+| ID | Seq | Foreign Table                                                                       | Local Column | Foreign Column | 
+|----|-----|-------------------------------------------------------------------------------------|--------------|----------------|
 | 0  | 0   | [Board_Confidence_RaceHistory](../board/confidence/Board_Confidence_RaceHistory.md) | TrackID      | TrackID        |
+| 1  | 0   | [Parts_PowertrainRaceHistoryData](../parts/Parts_PowertrainRaceHistoryData.md)      | TrackID      | TrackID        |

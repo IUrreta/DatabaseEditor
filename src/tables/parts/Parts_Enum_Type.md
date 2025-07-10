@@ -24,3 +24,12 @@ Column Information:
 | 15 | DamageDestroyedThreshold      | decimal(5,3) | Yes (1)  | '0.010'       | No (0)      |
 
 Table has no FKs that point to it. 
+
+FKs this table points to
+
+| ID | Seq | Foreign Table                                                             | Local Column | Foreign Column | 
+|----|-----|---------------------------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Buildings_Effects_Parts](../building/effects/Buildings_Effects_Parts.md) | Value        | PartType       |
+| 1  | 0   | [Parts_DamageEffects](Parts_DamageEffects.md)                             | Value        | PartType       |
+| 2  | 0   | [Parts_Designs](Parts_Designs.md)                                         | Value        | PartType       |
+| 3  | 0   | [Parts_Designs_TeamData](Parts_Designs_TeamData.md)                       | Value        | PartType       |
