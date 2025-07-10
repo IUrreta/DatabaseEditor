@@ -26,6 +26,6 @@ Format: [id, seq, table, from, to, on_update, on_delete, match]
 - on_delete: Action to perform on DELETE of the parent key (e.g., NO ACTION, CASCADE, SET NULL).
 - match: Matching algorithm (e.g., NONE, SIMPLE, PARTIAL, FULL).
 
-| ID | Seq | Foreign Table | Local Column  | Foreign Column | On Update | On Delete | Match Type |
-|----|-----|---------------|---------------|----------------|-----------|-----------|------------|
-| 0  | 0   | Seasons       | CurrentSeason | SeasonID       | NO ACTION | NO ACTION | NONE       |
+| ID | Seq | Foreign Table         | Local Column  | Foreign Column | On Update | On Delete | Match Type |
+|----|-----|-----------------------|---------------|----------------|-----------|-----------|------------|
+| 0  | 0   | [Seasons](Seasons.md) | CurrentSeason | SeasonID       | NO ACTION | NO ACTION | NONE       |

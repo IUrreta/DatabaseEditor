@@ -18,6 +18,6 @@ Table has no FKs that point to it.
 
 FKs this table points to
 
-| ID | Seq | Foreign Table | Local Column | Foreign Column | On Update | On Delete | Match Type |
-|----|-----|---------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | Races         | Type         | WeekendType    | NO ACTION | NO ACTION | NONE       |
+| ID | Seq | Foreign Table     | Local Column | Foreign Column | On Update | On Delete | Match Type |
+|----|-----|-------------------|--------------|----------------|-----------|-----------|------------|
+| 0  | 0   | [Races](Races.md) | Type         | WeekendType    | NO ACTION | NO ACTION | NONE       |

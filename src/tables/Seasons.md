@@ -20,7 +20,7 @@ Table has no FKs that point to it.
 
 FKs this table points to
 
-| ID | Seq | Foreign Table | Local Column | Foreign Column | On Update | On Delete | Match Type |
-|----|-----|---------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | Player_State  | SeasonID     | CurrentSeason  | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | Races         | SeasonID     | SeasonID       | NO ACTION | CASCADE   | NONE       |
+| ID | Seq | Foreign Table                   | Local Column | Foreign Column | On Update | On Delete | Match Type |
+|----|-----|---------------------------------|--------------|----------------|-----------|-----------|------------|
+| 0  | 0   | [Player_State](Player_State.md) | SeasonID     | CurrentSeason  | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Races](./race/Races.md)        | SeasonID     | SeasonID       | NO ACTION | CASCADE   | NONE       |

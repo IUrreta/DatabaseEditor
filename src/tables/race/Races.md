@@ -40,9 +40,9 @@ Format: [id, seq, table, from, to, on_update, on_delete, match]
 - match: Matching algorithm (e.g., NONE, SIMPLE, PARTIAL, FULL).
 
 --------------------------------------------------------------------------------------------------------------------------------------
-| ID | Seq | Foreign Table          | Local Column | Foreign Column | On Update | On Delete | Match Type |
-|----|-----|------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | Races_Tracks           | TrackID      | TrackID        | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | Seasons                | SeasonID     | SeasonID       | NO ACTION | CASCADE   | NONE       |
-| 2  | 0   | Races_Enum_State       | State        | State          | NO ACTION | NO ACTION | NONE       |
-| 3  | 0   | Races_Enum_WeekendType | WeekendType  | Type           | NO ACTION | NO ACTION | NONE       |
+| ID | Seq | Foreign Table                                       | Local Column | Foreign Column | On Update | On Delete | Match Type |
+|----|-----|-----------------------------------------------------|--------------|----------------|-----------|-----------|------------|
+| 0  | 0   | [Races_Tracks](Races_Tracks.md)                     | TrackID      | TrackID        | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Seasons](../Seasons.md)                            | SeasonID     | SeasonID       | NO ACTION | CASCADE   | NONE       |
+| 2  | 0   | [Races_Enum_State](Races_Enum_State.md)             | State        | State          | NO ACTION | NO ACTION | NONE       |
+| 3  | 0   | [Races_Enum_WeekendType](Races_Enum_WeekendType.md) | WeekendType  | Type           | NO ACTION | NO ACTION | NONE       |
