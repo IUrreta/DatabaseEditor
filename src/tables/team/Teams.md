@@ -44,8 +44,8 @@ FKs this table points to
 | 13 | 0   | [SubTeam_Assignments](../subteam/SubTeam_Assignments.md)                                                    | TeamID       | TeamID                            |
 | 14 | 0   | [SubTeam_Ownership](../subteam/SubTeam_Ownership.md)                                                        | TeamID       | TeamID                            |
 | 15 | 0   | [Parts_TeamExpertise](../parts/Parts_TeamExpertise.md)                                                      | TeamID       | TeamID                            |
-| 16 | 0   | [Save_Strategist](../save/Save_Strategist.md)                                                               | TeamID       | TeamID                            |
-| 17 | 0   | [Save_Strategist_QualificationRun](../save/Save_Strategist_QualificationRun.md)                             | TeamID       | TeamID                            |
+| 16 | 0   | [Save_Strategist](../save/strategist/Save_Strategist.md)                                                               | TeamID       | TeamID                            |
+| 17 | 0   | [Save_Strategist_QualificationRun](../save/strategist/Save_Strategist_QualificationRun.md)                             | TeamID       | TeamID                            |
 | 18 | 0   | [Races_PracticeResults](../race/Races_PracticeResults.md)                                                   | TeamID       | TeamID                            |
 | 19 | 0   | [Buildings_HQ](../building/Buildings_HQ.md)                                                                 | TeamID       | TeamID                            |
 | 20 | 0   | [Scouting_Staff_Bonuses](../scouting/staff/Scouting_Staff_Bonuses.md)                                             | TeamID       | TeamID                            |
@@ -68,7 +68,7 @@ FKs this table points to
 | 37 | 0   | [Teams_PitCrewRecordPerSeason](pitcrew/Teams_PitCrewRecordPerSeason.md)                                             | TeamID       | TeamID                            |
 | 38 | 0   | [Teams_PitCrewRecordSinceGameStart](pitcrew/Teams_PitCrewRecordSinceGameStart.md)                                   | TeamID       | TeamID                            |
 | 39 | 0   | [Teams_RaceRecordBeforeGameStart](racerecord/Teams_RaceRecordBeforeGameStart.md)                                       | TeamID       | TeamID                            |
-| 40 | 0   | [Save_Strategist_Practice](../save/Save_Strategist_Practice.md)                                             | TeamID       | TeamID                            |
+| 40 | 0   | [Save_Strategist_Practice](../save/strategist/Save_Strategist_Practice.md)                                             | TeamID       | TeamID                            |
 | 41 | 0   | [Player_History](../player/Player_History.md)                                                               | TeamID       | TeamID                            |
 | 41 | 0   | [Parts_ParcFerme](../parts/Parts_ParcFerme.md)                                                              | TeamID       | TeamID                            |
 | 42 | 0   | [Staff_CareerHistory](../staff/Staff_CareerHistory.md)                                                      | TeamID       | TeamID                            |
