@@ -38,3 +38,4 @@ FKs this table points to
 | 6  | 0   | [Parts_TeamExpertise](Parts_TeamExpertise.md)                                                                    | Value        | PartType       |
 | 7  | 0   | [Parts_StatDesignFocusModifiers](Parts_StatDesignFocusModifiers.md)                                              | Value        | PartType       |
 | 8  | 0   | [Parts_DesignFocusPresets](Parts_DesignFocusPresets.md)                                                          | Value        | PartType       |
+| 9  | 0   | [Parts_CarLoadout](Parts_CarLoadout.md)                                                                          | Value        | PartType       |

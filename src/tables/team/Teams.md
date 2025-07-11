@@ -26,25 +26,31 @@ Column Information:
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                                                   | Local Column | Foreign Column |
-|----|-----|---------------------------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Staff_Contracts](../staff/data/Staff_Contracts.md)                             | TeamID       | TeamID         |
-| 1  | 0   | [Board_Objectives](../board/objectives/Board_Objectives.md)                     | TeamID       | TeamID         |
-| 2  | 0   | [Board_SeasonObjectives](../board/objectives/Board_SeasonObjectives.md)         | TeamID       | TeamID         |
-| 3  | 0   | [Finance_TeamBalance](../finance/Finance_TeamBalance.md)                        | TeamID       | TeamID         |
-| 4  | 0   | [Finance_Transactions](../finance/Finance_Transactions.md)                      | TeamID       | TeamID         |
-| 5  | 0   | [Parts_Designs](../parts/Parts_Designs.md)                                      | TeamID       | TeamID         |
-| 6  | 0   | [Parts_Designs_TeamData](../parts/Parts_Designs_TeamData.md)                    | TeamID       | TeamID         |
-| 7  | 0   | [Parts_NamingConventions](../parts/Parts_NamingConventions.md)                  | TeamID       | TeamID         |
-| 8  | 0   | [Parts_PowertrainRaceHistoryData](../parts/Parts_PowertrainRaceHistoryData.md)  | TeamID       | TeamID         |
-| 9  | 0   | [Parts_TeamHistory](../parts/Parts_TeamHistory.md)                              | TeamID       | TeamID         |
-| 10 | 0   | [Races_TeamPerformance](../race/Races_TeamPerformance.md)                       | TeamID       | TeamID         |
-| 11 | 0   | [Races_TeamStandings](../race/Races_TeamStandings.md)                           | TeamID       | TeamID         |
-| 12 | 0   | [Regulations_TeamVotes](../regulations/Regulations_TeamVotes.md)                | TeamID       | TeamID         |
-| 13 | 0   | [SubTeam_Assignments](../subteam/SubTeam_Assignments.md)                        | TeamID       | TeamID         |
-| 14 | 0   | [SubTeam_Ownership](../subteam/SubTeam_Ownership.md)                            | TeamID       | TeamID         |
-| 15 | 0   | [Parts_TeamExpertise](../parts/Parts_TeamExpertise.md)                          | TeamID       | TeamID         |
-| 16 | 0   | [Save_Strategist](../save/Save_Strategist.md)                                   | TeamID       | TeamID         |
-| 17 | 0   | [Save_Strategist_QualificationRun](../save/Save_Strategist_QualificationRun.md) | TeamID       | TeamID         |
-| 18 | 0   | [Races_PracticeResults](../race/Races_PracticeResults.md)                       | TeamID       | TeamID         |
-| 19 | 0   | [Buildings_HQ](../building/Buildings_HQ.md)                                     | TeamID       | TeamID         |
+| ID | Seq | Foreign Table                                                                                               | Local Column | Foreign Column |
+|----|-----|-------------------------------------------------------------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Staff_Contracts](../staff/data/Staff_Contracts.md)                                                         | TeamID       | TeamID         |
+| 1  | 0   | [Board_Objectives](../board/objectives/Board_Objectives.md)                                                 | TeamID       | TeamID         |
+| 2  | 0   | [Board_SeasonObjectives](../board/objectives/Board_SeasonObjectives.md)                                     | TeamID       | TeamID         |
+| 3  | 0   | [Finance_TeamBalance](../finance/Finance_TeamBalance.md)                                                    | TeamID       | TeamID         |
+| 4  | 0   | [Finance_Transactions](../finance/Finance_Transactions.md)                                                  | TeamID       | TeamID         |
+| 5  | 0   | [Parts_Designs](../parts/Parts_Designs.md)                                                                  | TeamID       | TeamID         |
+| 6  | 0   | [Parts_Designs_TeamData](../parts/Parts_Designs_TeamData.md)                                                | TeamID       | TeamID         |
+| 7  | 0   | [Parts_NamingConventions](../parts/Parts_NamingConventions.md)                                              | TeamID       | TeamID         |
+| 8  | 0   | [Parts_PowertrainRaceHistoryData](../parts/Parts_PowertrainRaceHistoryData.md)                              | TeamID       | TeamID         |
+| 9  | 0   | [Parts_TeamHistory](../parts/Parts_TeamHistory.md)                                                          | TeamID       | TeamID         |
+| 10 | 0   | [Races_TeamPerformance](../race/Races_TeamPerformance.md)                                                   | TeamID       | TeamID         |
+| 11 | 0   | [Races_TeamStandings](../race/Races_TeamStandings.md)                                                       | TeamID       | TeamID         |
+| 12 | 0   | [Regulations_TeamVotes](../regulations/Regulations_TeamVotes.md)                                            | TeamID       | TeamID         |
+| 13 | 0   | [SubTeam_Assignments](../subteam/SubTeam_Assignments.md)                                                    | TeamID       | TeamID         |
+| 14 | 0   | [SubTeam_Ownership](../subteam/SubTeam_Ownership.md)                                                        | TeamID       | TeamID         |
+| 15 | 0   | [Parts_TeamExpertise](../parts/Parts_TeamExpertise.md)                                                      | TeamID       | TeamID         |
+| 16 | 0   | [Save_Strategist](../save/Save_Strategist.md)                                                               | TeamID       | TeamID         |
+| 17 | 0   | [Save_Strategist_QualificationRun](../save/Save_Strategist_QualificationRun.md)                             | TeamID       | TeamID         |
+| 18 | 0   | [Races_PracticeResults](../race/Races_PracticeResults.md)                                                   | TeamID       | TeamID         |
+| 19 | 0   | [Buildings_HQ](../building/Buildings_HQ.md)                                                                 | TeamID       | TeamID         |
+| 20 | 0   | [Scouting_Staff_Bonuses](../scouting/Scouting_Staff_Bonuses.md)                                             | TeamID       | TeamID         |
+| 21 | 0   | [Scouting_Staff_PerformanceStats](../scouting/Scouting_Staff_PerformanceStats.md)                           | TeamID       | TeamID         |
+| 22 | 0   | [Scouting_Staff_RaceEngineerDriverAssignments](../scouting/Scouting_Staff_RaceEngineerDriverAssignments.md) | TeamID       | TeamID         |
+| 23 | 0   | [Scouting_Staff_Traits](../scouting/Scouting_Staff_Traits.md)                                               | TeamID       | TeamID         |
+| 24 | 0   | [Staff_NarrativeData](../staff/Staff_NarrativeData.md)                                                      | TeamID       | TeamID         |
+| 25 | 0   | [Parts_CarLoadout](../parts/Parts_CarLoadout.md)                                                            | TeamID       | TeamID         |

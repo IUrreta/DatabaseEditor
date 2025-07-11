@@ -25,10 +25,11 @@ Column Information:
 | ID | Seq | Foreign Table                             | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Staff_Enum_Gender](Staff_Enum_Gender.md) | Gender       | Value          | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Countries](../../Countries.md)              | CountryID    | CountryID      | RESTRICT  | RESTRICT  | NONE       |
+| 1  | 0   | [Countries](../../Countries.md)           | CountryID    | CountryID      | RESTRICT  | RESTRICT  | NONE       |
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                       | Local Column | Foreign Column |
-|----|-----|-------------------------------------|--------------|----------------|
-| 0  | 0   | [Staff_GameData](Staff_GameData.md) | StaffID      | StaffID        |
+| ID | Seq | Foreign Table                                    | Local Column | Foreign Column |
+|----|-----|--------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Staff_GameData](Staff_GameData.md)              | StaffID      | StaffID        |
+| 1  | 0   | [Staff_NarrativeData](../Staff_NarrativeData.md) | StaffID      | StaffID        |

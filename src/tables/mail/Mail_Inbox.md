@@ -38,3 +38,4 @@ FKs this table points to
 | 1  | 0   | [Mail_Inbox_Attachments](Mail_Inbox_Attachments.md)   | MailID       | MailID         |
 | 2  | 0   | [Mail_Inbox_Links](Mail_Inbox_Links.md)               | MailID       | MailID         |
 | 3  | 0   | [Mail_ChainSequences](Mail_ChainSequences.md)         | MailID       | MailID         |
+| 4  | 0   | [Mail_Inbox_Sections](Mail_Inbox_Sections.md)         | MailID       | MailID         |

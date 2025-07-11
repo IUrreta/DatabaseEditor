@@ -17,3 +17,5 @@ FKs this table points to
 |----|-----|---------------------------------------------------------------------------------------|--------------|-----------------------|
 | 0  | 0   | [Staff_StaffTypePerformanceStatsTemplate](Staff_StaffTypePerformanceStatsTemplate.md) | Value        | PerformanceStatType   |
 | 1  | 0   | [Staff_Traits_Effects](Staff_Traits_Effects.md)                                       | Value        | TargetPerformanceStat |
+| 2  | 0   | [Staff_PerformanceStats](Staff_PerformanceStats.md)                                   | Value        | StatID                |
+| 3  | 0   | [Scouting_Staff_PerformanceStats](../scouting/Scouting_Staff_PerformanceStats.md)     | Value        | StatID                |

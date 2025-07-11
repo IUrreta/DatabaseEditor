@@ -25,3 +25,9 @@ Column Information:
 | 1  | 0   | [Staff_Enum_TraitConditions](./trait/Staff_Enum_TraitConditions.md)           | Condition      | Value          | NO ACTION | NO ACTION | NONE       |
 | 2  | 0   | [Staff_Enum_TraitCauseSpawnTypes](./trait/Staff_Enum_TraitCauseSpawnTypes.md) | CauseSpawnType | Value          | NO ACTION | NO ACTION | NONE       |
 | 3  | 0   | [Staff_Enum_TraitCauses](./trait/Staff_Enum_TraitCauses.md)                   | Cause          | Value          | NO ACTION | NO ACTION | NONE       |
+
+FKs this table points to
+
+| ID | Seq | Foreign Table                                                 | Local Column | Foreign Column | 
+|----|-----|---------------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Scouting_Staff_Traits](../scouting/Scouting_Staff_Traits.md) | TraitID      | TraitID        |

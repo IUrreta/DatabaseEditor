@@ -22,3 +22,9 @@ Column Information:
 | 0  | 0   | [Parts_Enum_DevSpeeds](Parts_Enum_DevSpeeds.md)          | ManufactureSpeed | Value          | NO ACTION | NO ACTION | NONE       |
 | 1  | 0   | [Parts_Designs](Parts_Designs.md)                        | DesignID         | DesignID       | NO ACTION | CASCADE   | NONE       |
 | 2  | 0   | [SubTeam_Assignments](../subteam/SubTeam_Assignments.md) | AssignmentID     | AssignmentID   | NO ACTION | NO ACTION | NONE       |
+
+FKs this table points to
+
+| ID | Seq | Foreign Table                 | Local Column | Foreign Column | 
+|----|-----|-------------------------------|--------------|----------------|
+| 0  | 0   | [Parts_Items](Parts_Items.md) | ProjectID    | ProjectID      |

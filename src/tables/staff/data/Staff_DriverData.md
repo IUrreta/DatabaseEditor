@@ -43,3 +43,5 @@ FKs this table points to
 | 4  | 0   | [Staff_DriverRivalryEventLogs](../Staff_DriverRivalryEventLogs.md)                               | StaffID      | RivalID            | 
 | 5  | 0   | [Staff_DriverRivalryEventLogs](../Staff_DriverRivalryEventLogs.md)                               | StaffID      | DriverID           | 
 | 6  | 0   | [Races_PracticeResults](../../race/Races_PracticeResults.md)                                     | StaffID      | DriverID           | 
+| 7  | 0   | [Staff_RaceEngineerDriverAssignments](../Staff_RaceEngineerDriverAssignments.md)                 | StaffID      | DriverID           | 
+| 8  | 0   | [Races_DriverStandings](../../race/Races_DriverStandings.md)                                     | StaffID      | DriverID           | 

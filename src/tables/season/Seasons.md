@@ -27,3 +27,4 @@ FKs this table points to
 | 6  | 0   | [Races_TeamPerformance](../race/Races_TeamPerformance.md)               | SeasonID     | SeasonID       |
 | 7  | 0   | [Races_TeamStandings](../race/Races_TeamStandings.md)                   | SeasonID     | SeasonID       |
 | 8  | 0   | [Races_PracticeResults](../race/Races_PracticeResults.md)               | SeasonID     | SeasonID       |
+| 9  | 0   | [Races_DriverStandings](../race/Races_DriverStandings.md)               | SeasonID     | SeasonID       |

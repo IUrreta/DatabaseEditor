@@ -21,3 +21,10 @@ Column Information:
 | 0  | 0   | [Mail_Enum_Attachment_Status](Mail_Enum_Attachment_Status.md)     | Status       | Status         | NO ACTION | NO ACTION | NONE       |
 | 1  | 0   | [Mail_Enum_Attachment_StatType](Mail_Enum_Attachment_StatType.md) | Type         | Type           | NO ACTION | NO ACTION | NONE       |
 | 2  | 0   | [Mail_Inbox_Attachments](Mail_Inbox_Attachments.md)               | AttachmentID | AttachmentID   | NO ACTION | CASCADE   | NONE       |
+
+FKs this table points to
+
+| ID | Seq | Foreign Table                                                             | Local Column     | Foreign Column   | 
+|----|-----|---------------------------------------------------------------------------|------------------|------------------|
+| 0  | 0   | [Mail_Inbox_AttachmentStats](Mail_Inbox_AttachmentStats.md)               | AttachmentStatID | AttachmentStatID |
+| 1  | 0   | [Mail_Inbox_AttachmentStats_Values](Mail_Inbox_AttachmentStats_Values.md) | AttachmentStatID | AttachmentStatID |
