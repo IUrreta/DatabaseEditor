@@ -24,13 +24,13 @@ Column Information:
 
 | ID | Seq | Foreign Table                                 | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Building_Enum_Types](Building_Enum_Types.md) | Type         | Type           | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Building_Enum_Types](Building_Enum_Types.md) | RequiredType | Type           | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Building_Enum_Types](enum/Building_Enum_Types.md) | Type         | Type           | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Building_Enum_Types](enum/Building_Enum_Types.md) | RequiredType | Type           | NO ACTION | NO ACTION | NONE       |
 
 FKs this table points to
 
 | ID | Seq | Foreign Table                                       | Local Column | Foreign Column | 
 |----|-----|-----------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Buildings_Effects](./effects/Buildings_Effects.md) | BuildingID   | BuildingID     |
+| 0  | 0   | [Buildings_Effects](Buildings_Effects.md) | BuildingID   | BuildingID     |
 | 1  | 0   | [Buildings_HQ](Buildings_HQ.md)                     | BuildingID   | BuildingID     |
 | 2  | 0   | [Buildings_HQ_History](Buildings_HQ_History.md)     | BuildingID   | BuildingID     |

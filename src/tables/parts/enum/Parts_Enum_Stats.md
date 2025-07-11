@@ -15,7 +15,7 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                                                                    | Local Column | Foreign Column | 
 |----|-----|------------------------------------------------------------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Buildings_Effects_Parts](../../building/effects/Buildings_Effects_Parts.md)                                        | Value        | StatID         |
+| 0  | 0   | [Buildings_Effects_Parts](../../building/Buildings_Effects_Parts.md)                                        | Value        | StatID         |
 | 1  | 0   | [Regulations_Technical_StatReductions](../../regulations/tech/Regulations_Technical_StatReductions.md)                   | Value        | PartStat       |
 | 2  | 0   | [Regulations_Technical_TypeStatComboReductions](../../regulations/tech/Regulations_Technical_TypeStatComboReductions.md) | Value        | PartStat       |
 | 3  | 0   | [Parts_TeamExpertise](../Parts_TeamExpertise.md)                                                                    | Value        | PartStat       |

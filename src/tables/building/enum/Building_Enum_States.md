@@ -1,6 +1,6 @@
 Building_Enum_States table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                   | Local Column | Foreign Column | 
 |----|-----|---------------------------------|--------------|----------------|
-| 0  | 0   | [Buildings_HQ](Buildings_HQ.md) | State        | BuildingState  |
+| 0  | 0   | [Buildings_HQ](../Buildings_HQ.md) | State        | BuildingState  |

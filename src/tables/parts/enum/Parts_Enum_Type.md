@@ -29,7 +29,7 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                                                                    | Local Column | Foreign Column | 
 |----|-----|------------------------------------------------------------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Buildings_Effects_Parts](../../building/effects/Buildings_Effects_Parts.md)                                        | Value        | PartType       |
+| 0  | 0   | [Buildings_Effects_Parts](../../building/Buildings_Effects_Parts.md)                                        | Value        | PartType       |
 | 1  | 0   | [Parts_DamageEffects](../Parts_DamageEffects.md)                                                                    | Value        | PartType       |
 | 2  | 0   | [Parts_Designs](../design/Parts_Designs.md)                                                                                | Value        | PartType       |
 | 3  | 0   | [Parts_Designs_TeamData](../design/Parts_Designs_TeamData.md)                                                              | Value        | PartType       |

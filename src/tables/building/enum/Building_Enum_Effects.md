@@ -1,6 +1,6 @@
 Building_Enum_Effects table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -16,4 +16,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                       | Local Column | Foreign Column | 
 |----|-----|-----------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Buildings_Effects](./effects/Buildings_Effects.md) | Effect       | EffectID       |
+| 0  | 0   | [Buildings_Effects](../Buildings_Effects.md) | Effect       | EffectID       |

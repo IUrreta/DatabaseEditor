@@ -1,6 +1,6 @@
 Buildings_Effects table
 
-[Column Guide](../../columnFlagsGuide.md)
+[Column Guide](../columnFlagsGuide.md)
 
 Column Information:
 
@@ -10,9 +10,9 @@ Column Information:
 | 1  | EffectID   | INTEGER      | Yes (1)  | null          | Order 2 (2) |
 | 2  | Value      | decimal(8,3) | No (0)   | 'NULL'        | No (0)      |
 
-[Foreign Key Details](../../foreignKeyDetails.md)
+[Foreign Key Details](../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                        | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Building_Enum_Effects](../Building_Enum_Effects.md) | EffectID     | Effect         | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Buildings](../Buildings.md)                         | BuildingID   | BuildingID     | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Building_Enum_Effects](enum/Building_Enum_Effects.md) | EffectID     | Effect         | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Buildings](Buildings.md)                         | BuildingID   | BuildingID     | NO ACTION | NO ACTION | NONE       |

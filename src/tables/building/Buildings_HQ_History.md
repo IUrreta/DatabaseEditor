@@ -16,5 +16,5 @@ Column Information:
 | ID | Seq | Foreign Table                                 | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Teams](../team/Teams.md)                     | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Building_Enum_Types](Building_Enum_Types.md) | Type         | Type           | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Building_Enum_Types](enum/Building_Enum_Types.md) | Type         | Type           | RESTRICT  | CASCADE   | NONE       |
 | 2  | 0   | [Buildings](Buildings.md)                     | BuildingID   | BuildingID     | RESTRICT  | CASCADE   | NONE       |

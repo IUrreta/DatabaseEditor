@@ -1,6 +1,6 @@
 Building_Enum_Groups table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 

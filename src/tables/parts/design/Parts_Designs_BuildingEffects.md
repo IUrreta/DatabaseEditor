@@ -15,6 +15,6 @@ Column Information:
 
 | ID | Seq | Foreign Table                                             | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Building_Enum_Types](../../building/Building_Enum_Types.md) | BuildingType | Type           | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Building_Enum_Types](../../building/enum/Building_Enum_Types.md) | BuildingType | Type           | RESTRICT  | CASCADE   | NONE       |
 | 1  | 0   | [Parts_Designs_StatValues](Parts_Designs_StatValues.md)   | DesignID     | DesignID       | RESTRICT  | CASCADE   | NONE       |
 | 1  | 1   | [Parts_Designs_StatValues](Parts_Designs_StatValues.md)   | PartStat     | PartStat       | RESTRICT  | CASCADE   | NONE       |
