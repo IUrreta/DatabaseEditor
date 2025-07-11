@@ -35,3 +35,6 @@ FKs this table points to
 | 3  | 0   | [Parts_Designs_TeamData](Parts_Designs_TeamData.md)                                                              | Value        | PartType       |
 | 4  | 0   | [Regulations_Technical_TypeReductions](../regulations/Regulations_Technical_TypeReductions.md)                   | Value        | PartType       |
 | 5  | 0   | [Regulations_Technical_TypeStatComboReductions](../regulations/Regulations_Technical_TypeStatComboReductions.md) | Value        | PartType       |
+| 6  | 0   | [Parts_TeamExpertise](Parts_TeamExpertise.md)                                                                    | Value        | PartType       |
+| 7  | 0   | [Parts_StatDesignFocusModifiers](Parts_StatDesignFocusModifiers.md)                                              | Value        | PartType       |
+| 8  | 0   | [Parts_DesignFocusPresets](Parts_DesignFocusPresets.md)                                                          | Value        | PartType       |

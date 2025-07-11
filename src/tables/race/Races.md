@@ -31,3 +31,9 @@ Column Information:
 | 1  | 0   | [Seasons](../season/Seasons.md)                     | SeasonID     | SeasonID       | NO ACTION | CASCADE   | NONE       |
 | 2  | 0   | [Races_Enum_State](Races_Enum_State.md)             | State        | State          | NO ACTION | NO ACTION | NONE       |
 | 3  | 0   | [Races_Enum_WeekendType](Races_Enum_WeekendType.md) | WeekendType  | Type           | NO ACTION | NO ACTION | NONE       |
+
+FKs this table points to
+
+| ID | Seq | Foreign Table                                     | Local Column | Foreign Column | 
+|----|-----|---------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Races_PracticeResults](Races_PracticeResults.md) | RaceID       | RaceID         |

@@ -46,3 +46,4 @@ FKs this table points to
 | 2  | 0   | [Parts_RecommendedTrackStats](../parts/Parts_RecommendedTrackStats.md)              | TrackID      | TrackID        |
 | 3  | 0   | [Races_Strategies](Races_Strategies.md)                                             | TrackID      | TrackID        |
 | 4  | 0   | [Races_TeamPerformance](Races_TeamPerformance.md)                                   | TrackID      | TrackID        |
+| 5  | 0   | [Races_FeederSeries_RaceLength](Races_FeederSeries_RaceLength.md)                   | TrackID      | TrackID        |

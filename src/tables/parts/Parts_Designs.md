@@ -38,7 +38,8 @@ Column Information:
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                         | Local Column | Foreign Column | 
-|----|-----|-------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Parts_DesignHistoryData](Parts_DesignHistoryData.md) | DesignID     | DesignID       |
-| 1  | 0   | [Parts_Projects](Parts_Projects.md)                   | DesignID     | DesignID       |
+| ID | Seq | Foreign Table                                           | Local Column | Foreign Column | 
+|----|-----|---------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Parts_DesignHistoryData](Parts_DesignHistoryData.md)   | DesignID     | DesignID       |
+| 1  | 0   | [Parts_Projects](Parts_Projects.md)                     | DesignID     | DesignID       |
+| 2  | 0   | [Parts_Designs_StatValues](Parts_Designs_StatValues.md) | DesignID     | DesignID       |
