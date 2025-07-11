@@ -1,6 +1,6 @@
 Staff_Enum_MentalityEvent table
 
-[Column Guide](../../columnFlagsGuide.md)
+[Column Guide](../../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                       | Local Column | Foreign Column | 
 |----|-----|-----------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Staff_Mentality_Events](../mentality/Staff_Mentality_Events.md) | Value        | Event          |
+| 0  | 0   | [Staff_Mentality_Events](../../mentality/Staff_Mentality_Events.md) | Value        | Event          |

@@ -18,4 +18,4 @@ Column Information:
 |----|-----|----------------------------------------------------------------------|-----------------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Staff_Traits_Definitions](Staff_Traits_Definitions.md)       | TraitID               | TraitID        | NO ACTION | NO ACTION | NONE       |
 | 1  | 0   | [Staff_Enum_PerformanceStatTypes](../enum/Staff_Enum_PerformanceStatTypes.md) | TargetPerformanceStat | Value          | NO ACTION | NO ACTION | NONE       |
-| 2  | 0   | [Staff_Enum_TraitTargets](../enum/Staff_Enum_TraitTargets.md)         | Target                | Value          | NO ACTION | NO ACTION | NONE       |
+| 2  | 0   | [Staff_Enum_TraitTargets](../enum/trait/Staff_Enum_TraitTargets.md)         | Target                | Value          | NO ACTION | NO ACTION | NONE       |

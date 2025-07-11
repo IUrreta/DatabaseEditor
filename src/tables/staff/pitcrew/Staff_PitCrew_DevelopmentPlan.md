@@ -16,7 +16,7 @@ Column Information:
 
 | ID | Seq | Foreign Table                                                         | Local Column    | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------------------------------|-----------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_Enum_PitCrewTrainingFocus](../enum/Staff_Enum_PitCrewTrainingFocus.md) | TrainingFocus   | Value          | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Staff_Enum_PitCrewTrainingFocus](../enum/pitcrew/Staff_Enum_PitCrewTrainingFocus.md) | TrainingFocus   | Value          | RESTRICT  | CASCADE   | NONE       |
 | 1  | 0   | [Staff_Enum_TrainingSession](../enum/Staff_Enum_TrainingSession.md)           | TrainingSession | Value          | RESTRICT  | CASCADE   | NONE       |
-| 2  | 0   | [Staff_Enum_PitCrewTrainingType](../enum/Staff_Enum_PitCrewTrainingType.md)   | TrainingType    | Value          | RESTRICT  | CASCADE   | NONE       |
+| 2  | 0   | [Staff_Enum_PitCrewTrainingType](../enum/pitcrew/Staff_Enum_PitCrewTrainingType.md)   | TrainingType    | Value          | RESTRICT  | CASCADE   | NONE       |
 | 3  | 0   | [Teams](../../team/Teams.md)                                             | TeamID          | TeamID         | RESTRICT  | CASCADE   | NONE       |

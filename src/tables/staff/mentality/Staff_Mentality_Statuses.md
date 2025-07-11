@@ -15,6 +15,6 @@ Column Information:
 
 | ID | Seq | Foreign Table                                               | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_Enum_Mentality](../enum/Staff_Enum_Mentality.md)             | Opinion      | Value          | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Staff_Enum_MentalityStatus](../enum/Staff_Enum_MentalityStatus.md) | Status       | Value          | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Staff_Enum_Mentality](../enum/mentality/Staff_Enum_Mentality.md)             | Opinion      | Value          | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Staff_Enum_MentalityStatus](../enum/mentality/Staff_Enum_MentalityStatus.md) | Status       | Value          | RESTRICT  | CASCADE   | NONE       |
 | 2  | 0   | [Staff_GameData](../data/Staff_GameData.md)           | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |

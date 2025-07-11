@@ -70,8 +70,8 @@ Column Information:
 | ID | Seq | Foreign Table                                                           | Local Column                     | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------------------------|----------------------------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Staff_Enum_Opinions](Staff_Enum_Opinions)                              | BreakoutClauseOpinion            | Value          | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Staff_Enum_ContractOfferType](../enum/Staff_Enum_ContractOfferType.md)         | OfferType                        | Value          | RESTRICT  | CASCADE   | NONE       |
-| 2  | 0   | [Staff_Enum_ContractState](../enum/Staff_Enum_ContractState.md)                 | ContractState                    | Value          | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Staff_Enum_ContractOfferType](../enum/contract/Staff_Enum_ContractOfferType.md)         | OfferType                        | Value          | RESTRICT  | CASCADE   | NONE       |
+| 2  | 0   | [Staff_Enum_ContractState](../enum/contract/Staff_Enum_ContractState.md)                 | ContractState                    | Value          | RESTRICT  | CASCADE   | NONE       |
 | 3  | 0   | [Teams](../../team/Teams.md)                                               | TeamID                           | TeamID         | RESTRICT  | CASCADE   | NONE       |
 | 4  | 0   | [Staff_Enum_Opinions](Staff_Enum_Opinions)                              | StartingBonusOpinion             | Value          | RESTRICT  | CASCADE   | NONE       |
 | 5  | 0   | [Staff_GameData](../data/Staff_GameData.md)                       | StaffID                          | StaffID        | RESTRICT  | CASCADE   | NONE       |
@@ -86,4 +86,4 @@ Column Information:
 | 14 | 0   | [Staff_Enum_Opinions](Staff_Enum_Opinions)                              | AffiliateCountOpinion            | Value          | RESTRICT  | CASCADE   | NONE       |
 | 15 | 0   | [Staff_Enum_Opinions](Staff_Enum_Opinions)                              | AffiliateAgeOpinion              | Value          | RESTRICT  | CASCADE   | NONE       |
 | 16 | 0   | [Staff_Enum_Opinions](Staff_Enum_Opinions)                              | StartDateTypeOpinion             | Value          | RESTRICT  | CASCADE   | NONE       |
-| 17 | 0   | [Staff_Enum_ContractStartDateType](../enum/Staff_Enum_ContractStartDateType.md) | StartDateType                    | Value          | RESTRICT  | CASCADE   | NONE       |
+| 17 | 0   | [Staff_Enum_ContractStartDateType](../enum/contract/Staff_Enum_ContractStartDateType.md) | StartDateType                    | Value          | RESTRICT  | CASCADE   | NONE       |

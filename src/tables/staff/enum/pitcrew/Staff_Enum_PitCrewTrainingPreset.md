@@ -1,6 +1,6 @@
-Staff_Enum_PitCrewTrainingGlobalFocus table
+Staff_Enum_PitCrewTrainingPreset table
 
-[Column Guide](../../columnFlagsGuide.md)
+[Column Guide](../../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                                         | Local Column | Foreign Column | 
 |----|-----|---------------------------------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Staff_PitCrew_DevelopmentPlanGlobalData](../pitcrew/Staff_PitCrew_DevelopmentPlanGlobalData.md) | Value        | TrainingFocus  |
+| 0  | 0   | [Staff_PitCrew_DevelopmentPlanGlobalData](../../pitcrew/Staff_PitCrew_DevelopmentPlanGlobalData.md) | Value        | TrainingPreset |

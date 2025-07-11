@@ -28,7 +28,7 @@ FKs this table points to
 | 7  | 0   | [Races_TeamStandings](../race/Races_TeamStandings.md)                                  | SeasonID     | SeasonID       |
 | 8  | 0   | [Races_PracticeResults](../race/results/Races_PracticeResults.md)                              | SeasonID     | SeasonID       |
 | 9  | 0   | [Races_DriverStandings](../race/Races_DriverStandings.md)                              | SeasonID     | SeasonID       |
-| 10 | 0   | [Staff_Driver_RaceRecordPerSeason](../staff/driver/Staff_Driver_RaceRecordPerSeason.md)       | SeasonID     | SeasonID       |
+| 10 | 0   | [Staff_Driver_RaceRecordPerSeason](../staff/driver/racerecord/Staff_Driver_RaceRecordPerSeason.md)       | SeasonID     | SeasonID       |
 | 11 | 0   | [Teams_RaceRecordPerSeason](../team/racerecord/Teams_RaceRecordPerSeason.md)                      | SeasonID     | SeasonID       |
 | 12 | 0   | [Races_PitCrewStandings](../race/pit/Races_PitCrewStandings.md)                            | SeasonID     | SeasonID       |
 | 13 | 0   | [Races_PitStopResults](../race/pit/Races_PitStopResults.md)                                | SeasonID     | SeasonID       |

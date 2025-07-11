@@ -1,6 +1,6 @@
 Staff_Enum_TraitTargets table
 
-[Column Guide](../../columnFlagsGuide.md)
+[Column Guide](../../../columnFlagsGuide.md)
 
 Column Information:
 

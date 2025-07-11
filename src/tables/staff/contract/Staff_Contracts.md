@@ -25,4 +25,4 @@ Column Information:
 |----|-----|--------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Teams](../../team/Teams.md)                                    | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |
 | 1  | 0   | [Staff_GameData](../data/Staff_GameData.md)                   | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |
-| 2  | 0   | [Staff_Enum_ContractType](../enum/Staff_Enum_ContractType.md) | ContractType | Value          | RESTRICT  | CASCADE   | NONE       |
+| 2  | 0   | [Staff_Enum_ContractType](../enum/contract/Staff_Enum_ContractType.md) | ContractType | Value          | RESTRICT  | CASCADE   | NONE       |

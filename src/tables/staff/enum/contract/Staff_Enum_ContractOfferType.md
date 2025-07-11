@@ -1,6 +1,6 @@
 Staff_Enum_ContractOfferType table
 
-[Column Guide](../../columnFlagsGuide.md)
+[Column Guide](../../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                   | Local Column | Foreign Column | 
 |----|-----|-------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Staff_ContractOffers](../contract/Staff_ContractOffers.md) | Value        | OfferType      |
+| 0  | 0   | [Staff_ContractOffers](../../contract/Staff_ContractOffers.md) | Value        | OfferType      |
