@@ -15,7 +15,7 @@ Column Information:
 
 | ID | Seq | Foreign Table                                                 | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Regulations_Enum_ChangeType](Regulations_Enum_ChangeType.md) | ChangeType   | Value          | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Regulations_Enum_ChangeType](enum/Regulations_Enum_ChangeType.md) | ChangeType   | Value          | NO ACTION | NO ACTION | NONE       |
 
 FKs this table points to
 

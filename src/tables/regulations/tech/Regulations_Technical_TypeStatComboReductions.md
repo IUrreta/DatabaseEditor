@@ -1,6 +1,6 @@
 Regulations_Technical_TypeStatComboReductions table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -11,10 +11,10 @@ Column Information:
 | 2  | PartStat       | INTEGER      | Yes (1)  | null          | Order 3 (3) |
 | 3  | ComboReduction | decimal(3,2) | Yes (1)  | '0.00'        | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                           | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Parts_Enum_Type](../parts/Parts_Enum_Type.md)          | PartType     | Value          | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Parts_Enum_Stats](../parts/Parts_Enum_Stats.md)        | PartStat     | Value          | CASCADE   | NO ACTION | NONE       |
-| 2  | 0   | [Regulations_ChangeGroups](Regulations_ChangeGroups.md) | GroupID      | GroupID        | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Parts_Enum_Type](../../parts/Parts_Enum_Type.md)          | PartType     | Value          | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Parts_Enum_Stats](../../parts/Parts_Enum_Stats.md)        | PartStat     | Value          | CASCADE   | NO ACTION | NONE       |
+| 2  | 0   | [Regulations_ChangeGroups](../Regulations_ChangeGroups.md) | GroupID      | GroupID        | NO ACTION | NO ACTION | NONE       |

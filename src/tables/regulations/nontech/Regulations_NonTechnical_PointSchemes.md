@@ -1,6 +1,6 @@
 Regulations_NonTechnical_PointSchemes table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 

@@ -14,7 +14,7 @@ Column Information:
 
 | ID | Seq | Foreign Table                                                 | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Regulations_Enum_ChangeType](Regulations_Enum_ChangeType.md) | ChangeType   | Value          | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Regulations_Enum_ChangeType](enum/Regulations_Enum_ChangeType.md) | ChangeType   | Value          | NO ACTION | NO ACTION | NONE       |
 
 FKs this table points to
 
@@ -22,10 +22,10 @@ FKs this table points to
 |----|-----|---------------------------------------------------------------------------------------------------|--------------|----------------|
 | 0  | 0   | [Regulations_ChangeGroups_VotingPairs](Regulations_ChangeGroups_VotingPairs.md)                   | GroupID      | ChangeGroup1   |
 | 1  | 0   | [Regulations_ChangeGroups_VotingPairs](Regulations_ChangeGroups_VotingPairs.md)                   | GroupID      | ChangeGroup2   |
-| 2  | 0   | [Regulations_NonTechnical](Regulations_NonTechnical.md)                                           | GroupID      | GroupID        |
+| 2  | 0   | [Regulations_NonTechnical](nontech/Regulations_NonTechnical.md)                                           | GroupID      | GroupID        |
 | 3  | 0   | [Regulations_Proposals_ChangeGroups](Regulations_Proposals_ChangeGroups.md)                       | GroupID      | GroupID        |
 | 4  | 0   | [Regulations_TeamVotes](Regulations_TeamVotes.md)                                                 | GroupID      | GroupID        |
-| 5  | 0   | [Regulations_Technical_StatReductions](Regulations_Technical_StatReductions.md)                   | GroupID      | GroupID        |
-| 6  | 0   | [Regulations_Technical_SweepingReductions](Regulations_Technical_SweepingReductions.md)           | GroupID      | GroupID        |
-| 7  | 0   | [Regulations_Technical_TypeReductions](Regulations_Technical_TypeReductions.md)                   | GroupID      | GroupID        |
-| 8  | 0   | [Regulations_Technical_TypeStatComboReductions](Regulations_Technical_TypeStatComboReductions.md) | GroupID      | GroupID        |
+| 5  | 0   | [Regulations_Technical_StatReductions](tech/Regulations_Technical_StatReductions.md)                   | GroupID      | GroupID        |
+| 6  | 0   | [Regulations_Technical_SweepingReductions](tech/Regulations_Technical_SweepingReductions.md)           | GroupID      | GroupID        |
+| 7  | 0   | [Regulations_Technical_TypeReductions](tech/Regulations_Technical_TypeReductions.md)                   | GroupID      | GroupID        |
+| 8  | 0   | [Regulations_Technical_TypeStatComboReductions](tech/Regulations_Technical_TypeStatComboReductions.md) | GroupID      | GroupID        |

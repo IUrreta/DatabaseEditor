@@ -1,6 +1,6 @@
 Regulations_Enum_Changes table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -16,7 +16,7 @@ Column Information:
 | 7  | LocKey            | TEXT        | Yes (1)  | null          | No (0)      |
 | 8  | DescriptionLocKey | TEXT        | Yes (1)  | null          | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                                 | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
@@ -26,4 +26,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                           | Local Column | Foreign Column | 
 |----|-----|---------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Regulations_NonTechnical](Regulations_NonTechnical.md) | GroupID      | GroupID        |
+| 0  | 0   | [Regulations_NonTechnical](../nontech/Regulations_NonTechnical.md) | GroupID      | GroupID        |

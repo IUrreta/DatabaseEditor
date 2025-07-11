@@ -1,6 +1,6 @@
 Regulations_Enum_State table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
