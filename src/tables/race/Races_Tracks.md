@@ -34,7 +34,7 @@ Column Information:
 | ID | Seq | Foreign Table                                         | Local Column       | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------|--------------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Races_Enum_TrackType](enum/Races_Enum_TrackType.md)       | TypeOfTrack        | Value          | RESTRICT  | RESTRICT  | NONE       |
-| 1  | 0   | [Staff_DriverData](../staff/data/Staff_DriverData.md) | FastestLapDriverID | StaffID        | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Staff_DriverData](../staff/Staff_DriverData.md) | FastestLapDriverID | StaffID        | NO ACTION | NO ACTION | NONE       |
 | 2  | 0   | [Countries](../countries/Countries.md)                          | CountryID          | CountryID      | RESTRICT  | RESTRICT  | NONE       |
 
 FKs this table points to

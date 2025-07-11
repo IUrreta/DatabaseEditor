@@ -19,4 +19,4 @@ Column Information:
 |----|-----|---------------------------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Sponsorship_Enum_RaceBonusDifficulty](Sponsorship_Enum_RaceBonusDifficulty.md) | Difficulty   | Value          | RESTRICT  | CASCADE   | NONE       |
 | 1  | 0   | [Races](../race/Races.md)                                                       | RaceID       | RaceID         | RESTRICT  | CASCADE   | NONE       |
-| 2  | 0   | [Staff_DriverData](../staff/data/Staff_DriverData.md)                           | DriverID     | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 2  | 0   | [Staff_DriverData](../staff/Staff_DriverData.md)                           | DriverID     | StaffID        | RESTRICT  | CASCADE   | NONE       |

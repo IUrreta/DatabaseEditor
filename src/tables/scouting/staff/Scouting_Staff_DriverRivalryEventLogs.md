@@ -18,5 +18,5 @@ Column Information:
 | ID | Seq | Foreign Table                                                            | Local Column     | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|--------------------------------------------------------------------------|------------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Staff_Enum_RivalryEventTypes](../../staff/Staff_Enum_RivalryEventTypes.md) | RivalryEventType | Value          | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Staff_DriverData](../../staff/data/Staff_DriverData.md)                    | RivalID          | StaffID        | CASCADE   | CASCADE   | NONE       |
-| 2  | 0   | [Staff_DriverData](../../staff/data/Staff_DriverData.md)                    | DriverID         | StaffID        | CASCADE   | CASCADE   | NONE       |
+| 1  | 0   | [Staff_DriverData](../../staff/Staff_DriverData.md)                    | RivalID          | StaffID        | CASCADE   | CASCADE   | NONE       |
+| 2  | 0   | [Staff_DriverData](../../staff/Staff_DriverData.md)                    | DriverID         | StaffID        | CASCADE   | CASCADE   | NONE       |

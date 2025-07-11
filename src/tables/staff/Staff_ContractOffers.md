@@ -74,7 +74,7 @@ Column Information:
 | 2  | 0   | [Staff_Enum_ContractState](Staff_Enum_ContractState.md)                 | ContractState                    | Value          | RESTRICT  | CASCADE   | NONE       |
 | 3  | 0   | [Teams](../team/Teams.md)                                               | TeamID                           | TeamID         | RESTRICT  | CASCADE   | NONE       |
 | 4  | 0   | [Staff_Enum_Opinions](Staff_Enum_Opinions)                              | StartingBonusOpinion             | Value          | RESTRICT  | CASCADE   | NONE       |
-| 5  | 0   | [Staff_GameData](../staff/data/Staff_GameData.md)                       | StaffID                          | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 5  | 0   | [Staff_GameData](Staff_GameData.md)                       | StaffID                          | StaffID        | RESTRICT  | CASCADE   | NONE       |
 | 6  | 0   | [Staff_Enum_Opinions](Staff_Enum_Opinions)                              | SalaryOpinion                    | Value          | RESTRICT  | CASCADE   | NONE       |
 | 7  | 0   | [Staff_Enum_Opinions](Staff_Enum_Opinions)                              | RaceBonusTargetPosOpinion        | Value          | RESTRICT  | CASCADE   | NONE       |
 | 8  | 0   | [Staff_Enum_Opinions](Staff_Enum_Opinions)                              | RaceBonusOpinion                 | Value          | RESTRICT  | CASCADE   | NONE       |

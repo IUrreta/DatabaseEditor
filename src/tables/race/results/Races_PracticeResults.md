@@ -26,4 +26,4 @@ Column Information:
 | 0  | 0   | [Teams](../../team/Teams.md)                             | TeamID       | TeamID         | NO ACTION | NO ACTION | NONE       |
 | 1  | 0   | [Seasons](../../season/Seasons.md)                       | SeasonID     | SeasonID       | NO ACTION | CASCADE   | NONE       |
 | 2  | 0   | [Races](../Races.md)                             | RaceID       | RaceID         | NO ACTION | CASCADE   | NONE       |
-| 3  | 0   | [Staff_DriverData](../../staff/data/Staff_DriverData.md) | DriverID     | StaffID        | NO ACTION | CASCADE   | NONE       |
+| 3  | 0   | [Staff_DriverData](../../staff/Staff_DriverData.md) | DriverID     | StaffID        | NO ACTION | CASCADE   | NONE       |

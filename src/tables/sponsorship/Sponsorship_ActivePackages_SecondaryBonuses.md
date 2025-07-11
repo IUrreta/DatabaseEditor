@@ -17,5 +17,5 @@ Column Information:
 |----|-----|-------------------------------------------------------------|----------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Sponsorship_ActivePackages](Sponsorship_ActivePackages.md) | TeamID         | TeamID         | RESTRICT  | CASCADE   | NONE       |
 | 0  | 1   | [Sponsorship_ActivePackages](Sponsorship_ActivePackages.md) | SponsorID      | SponsorID      | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Staff_DriverData](../staff/data/Staff_DriverData.md)       | AffiliateID    | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Staff_DriverData](../staff/Staff_DriverData.md)       | AffiliateID    | StaffID        | RESTRICT  | CASCADE   | NONE       |
 | 2  | 0   | [Effects_ActiveEffects](../effect/Effects_ActiveEffects.md) | ActiveEffectID | ActiveEffectID | RESTRICT  | CASCADE   | NONE       |

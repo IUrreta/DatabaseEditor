@@ -1,6 +1,6 @@
 Staff_Enum_Gender table
 
-[Column Guide](../../columnFlagsGuide.md)
+[Column Guide](../columnFlagsGuide.md)
 
 Column Information:
 
@@ -16,4 +16,4 @@ FKs this table points to
 | ID | Seq | Foreign Table                                  | Local Column | Foreign Column |
 |----|-----|------------------------------------------------|--------------|----------------|
 | 0  | 0   | [Staff_BasicData](Staff_BasicData.md)          | Value        | Gender         |
-| 1  | 0   | [Staff_ForenamePool](../Staff_ForenamePool.md) | Value        | Gender         |
+| 1  | 0   | [Staff_ForenamePool](Staff_ForenamePool.md) | Value        | Gender         |

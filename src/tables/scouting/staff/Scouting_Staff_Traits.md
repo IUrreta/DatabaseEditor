@@ -17,4 +17,4 @@ Column Information:
 |----|-----|------------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Staff_Traits_Definitions](../../staff/Staff_Traits_Definitions.md) | TraitID      | TraitID        | NO ACTION | NO ACTION | NONE       |
 | 1  | 0   | [Teams](../../team/Teams.md)                                        | TeamID       | TeamID         | NO ACTION | NO ACTION | NONE       |
-| 2  | 0   | [Staff_GameData](../../staff/data/Staff_GameData.md)                | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 2  | 0   | [Staff_GameData](../../staff/Staff_GameData.md)                | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |

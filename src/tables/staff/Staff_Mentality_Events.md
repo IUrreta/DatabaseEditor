@@ -20,4 +20,4 @@ Column Information:
 |----|-----|-----------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Staff_Enum_Mentality](Staff_Enum_Mentality.md)           | Opinion      | Value          | RESTRICT  | CASCADE   | NONE       |
 | 1  | 0   | [Staff_Enum_MentalityEvent](Staff_Enum_MentalityEvent.md) | Event        | Value          | RESTRICT  | CASCADE   | NONE       |
-| 2  | 0   | [Staff_GameData](../staff/data/Staff_GameData.md)         | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 2  | 0   | [Staff_GameData](Staff_GameData.md)         | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |

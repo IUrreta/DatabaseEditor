@@ -17,5 +17,5 @@ Column Information:
 
 | ID | Seq | Foreign Table                                         | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_DriverData](../../staff/data/Staff_DriverData.md) | DriverID     | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Staff_DriverData](../../staff/Staff_DriverData.md) | DriverID     | StaffID        | RESTRICT  | CASCADE   | NONE       |
 | 1  | 0   | [Teams](../Teams.md)                             | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |

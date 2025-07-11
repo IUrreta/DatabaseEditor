@@ -23,6 +23,6 @@ Column Information:
 | ID | Seq | Foreign Table                                            | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|----------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Teams](../team/Teams.md)                                | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Staff_GameData](../staff/data/Staff_GameData.md)        | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Staff_GameData](../staff/Staff_GameData.md)        | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |
 | 2  | 0   | [SubTeam_Assignments](../subteam/SubTeam_Assignments.md) | AssignmentID | AssignmentID   | CASCADE   | CASCADE   | NONE       |
 | 3  | 0   | [Scouting_Enum_ScoutType](Scouting_Enum_ScoutType.md)    | ScoutType    | Value          | NO ACTION | NO ACTION | NONE       |

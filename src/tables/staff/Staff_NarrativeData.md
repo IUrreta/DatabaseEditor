@@ -18,4 +18,4 @@ Column Information:
 |----|-----|----------------------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Teams](../team/Teams.md)                                                  | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |
 | 1  | 0   | [Staff_Enum_NarrativeGenSource](../staff/Staff_Enum_NarrativeGenSource.md) | GenSource    | Value          | RESTRICT  | CASCADE   | NONE       |
-| 2  | 0   | [Staff_BasicData](../staff/data/Staff_BasicData.md)                        | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 2  | 0   | [Staff_BasicData](Staff_BasicData.md)                        | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |

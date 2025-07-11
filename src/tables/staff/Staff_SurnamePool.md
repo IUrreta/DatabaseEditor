@@ -19,4 +19,4 @@ Column Information:
 
 | ID | Seq | Foreign Table                                              | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_Enum_NameLocales](./data/Staff_Enum_NameLocales.md) | Locale       | Value          | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Staff_Enum_NameLocales](Staff_Enum_NameLocales.md) | Locale       | Value          | NO ACTION | NO ACTION | NONE       |

@@ -1,6 +1,6 @@
 Staff_Enum_TraitTargets table
 
-[Column Guide](../../columnFlagsGuide.md)
+[Column Guide](../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                      | Local Column | Foreign Column | 
 |----|-----|----------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Staff_Traits_Effects](../Staff_Traits_Effects.md) | Value        | Target         |
+| 0  | 0   | [Staff_Traits_Effects](Staff_Traits_Effects.md) | Value        | Target         |

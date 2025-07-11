@@ -1,6 +1,6 @@
 Staff_Enum_NameLocales table
 
-[Column Guide](../../columnFlagsGuide.md)
+[Column Guide](../columnFlagsGuide.md)
 
 Column Information:
 
@@ -20,6 +20,6 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                  | Local Column | Foreign Column  |
 |----|-----|------------------------------------------------|--------------|-----------------|
-| 0  | 0   | [Countries](../../countries/Countries.md)                | Value        | StaffNameLocale | 
-| 1  | 0   | [Staff_SurnamePool](../Staff_SurnamePool.md)   | Value        | Locale          | 
-| 2  | 0   | [Staff_ForenamePool](../Staff_ForenamePool.md) | Value        | Locale          | 
+| 0  | 0   | [Countries](../countries/Countries.md)                | Value        | StaffNameLocale | 
+| 1  | 0   | [Staff_SurnamePool](Staff_SurnamePool.md)   | Value        | Locale          | 
+| 2  | 0   | [Staff_ForenamePool](Staff_ForenamePool.md) | Value        | Locale          | 

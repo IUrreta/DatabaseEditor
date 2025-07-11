@@ -16,7 +16,7 @@ Column Information:
 
 | ID | Seq | Foreign Table                                  | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_DriverData](./data/Staff_DriverData.md) | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Staff_DriverData](Staff_DriverData.md) | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |
 
 FKs this table points to
 

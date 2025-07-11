@@ -1,6 +1,6 @@
 Staff_Enum_ContractType table
 
-[Column Guide](../../columnFlagsGuide.md)
+[Column Guide](../columnFlagsGuide.md)
 
 Column Information:
 
@@ -13,6 +13,6 @@ Table has no FKs that point to it.
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                         | Local Column | Foreign Column |
-|----|-----|---------------------------------------|--------------|----------------|
+| ID | Seq | Foreign Table                            | Local Column | Foreign Column |
+|----|-----|------------------------------------------|--------------|----------------|
 | 0  | 0   | [Staff_Contracts](Staff_Contracts.md) | Value        | ContractType   |

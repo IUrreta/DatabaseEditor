@@ -1,6 +1,6 @@
-Staff_Enum_TraitCauses table
+Staff_Enum_TraitSolutions table
 
-[Column Guide](../../columnFlagsGuide.md)
+[Column Guide](../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                              | Local Column | Foreign Column | 
 |----|-----|------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Staff_Traits_Definitions](../Staff_Traits_Definitions.md) | Value        | Cause          |
+| 0  | 0   | [Staff_Traits_Definitions](Staff_Traits_Definitions.md) | Value        | Solution       |

@@ -16,4 +16,4 @@ Column Information:
 
 | ID | Seq | Foreign Table                                       | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_BasicData](../staff/data/Staff_BasicData.md) | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Staff_BasicData](Staff_BasicData.md) | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |

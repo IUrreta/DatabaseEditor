@@ -14,8 +14,8 @@ Column Information:
 
 [Foreign Key Details](../foreignKeyDetails.md)
 
-| ID | Seq | Foreign Table                                                         | Local Column          | Foreign Column | On Update | On Delete | Match Type |
-|----|-----|-----------------------------------------------------------------------|-----------------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_Traits_Definitions](./trait/Staff_Traits_Definitions.md)       | TraitID               | TraitID        | NO ACTION | NO ACTION | NONE       |
+| ID | Seq | Foreign Table                                                        | Local Column          | Foreign Column | On Update | On Delete | Match Type |
+|----|-----|----------------------------------------------------------------------|-----------------------|----------------|-----------|-----------|------------|
+| 0  | 0   | [Staff_Traits_Definitions](./Staff_Traits_Definitions.md)       | TraitID               | TraitID        | NO ACTION | NO ACTION | NONE       |
 | 1  | 0   | [Staff_Enum_PerformanceStatTypes](Staff_Enum_PerformanceStatTypes.md) | TargetPerformanceStat | Value          | NO ACTION | NO ACTION | NONE       |
-| 2  | 0   | [Staff_Enum_TraitTargets](./trait/Staff_Enum_TraitTargets.md)         | Target                | Value          | NO ACTION | NO ACTION | NONE       |
+| 2  | 0   | [Staff_Enum_TraitTargets](Staff_Enum_TraitTargets.md)         | Target                | Value          | NO ACTION | NO ACTION | NONE       |

@@ -21,10 +21,10 @@ Column Information:
 
 | ID | Seq | Foreign Table                                                                 | Local Column   | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------------------------------|----------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_Enum_TraitSolutions](./trait/Staff_Enum_TraitSolutions.md)             | Solution       | Value          | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Staff_Enum_TraitConditions](./trait/Staff_Enum_TraitConditions.md)           | Condition      | Value          | NO ACTION | NO ACTION | NONE       |
-| 2  | 0   | [Staff_Enum_TraitCauseSpawnTypes](./trait/Staff_Enum_TraitCauseSpawnTypes.md) | CauseSpawnType | Value          | NO ACTION | NO ACTION | NONE       |
-| 3  | 0   | [Staff_Enum_TraitCauses](./trait/Staff_Enum_TraitCauses.md)                   | Cause          | Value          | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Staff_Enum_TraitSolutions](Staff_Enum_TraitSolutions.md)             | Solution       | Value          | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Staff_Enum_TraitConditions](Staff_Enum_TraitConditions.md)           | Condition      | Value          | NO ACTION | NO ACTION | NONE       |
+| 2  | 0   | [Staff_Enum_TraitCauseSpawnTypes](Staff_Enum_TraitCauseSpawnTypes.md) | CauseSpawnType | Value          | NO ACTION | NO ACTION | NONE       |
+| 3  | 0   | [Staff_Enum_TraitCauses](Staff_Enum_TraitCauses.md)                   | Cause          | Value          | NO ACTION | NO ACTION | NONE       |
 
 FKs this table points to
 

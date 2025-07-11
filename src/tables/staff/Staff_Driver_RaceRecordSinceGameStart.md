@@ -47,7 +47,7 @@ Column Information:
 
 | ID | Seq | Foreign Table                                         | Local Column            | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------|-------------------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_DriverData](../staff/data/Staff_DriverData.md) | StaffID                 | StaffID        | CASCADE   | CASCADE   | NONE       |
+| 0  | 0   | [Staff_DriverData](Staff_DriverData.md) | StaffID                 | StaffID        | CASCADE   | CASCADE   | NONE       |
 | 1  | 0   | [Races_Tracks](../race/Races_Tracks.md)               | LastWinTrackID          | TrackID        | NO ACTION | NO ACTION | NONE       |
 | 2  | 0   | [Races_Tracks](../race/Races_Tracks.md)               | LastRaceTrackID         | TrackID        | NO ACTION | NO ACTION | NONE       |
 | 3  | 0   | [Races_Tracks](../race/Races_Tracks.md)               | FirstWinTrackID         | TrackID        | NO ACTION | NO ACTION | NONE       |
