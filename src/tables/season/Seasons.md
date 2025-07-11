@@ -35,8 +35,8 @@ FKs this table points to
 | 14 | 0   | [Races_PitStopTimings](../race/pit/Races_PitStopTimings.md)                                | SeasonID     | SeasonID       |
 | 15 | 0   | [Teams_PitCrewRecordPerSeason](../team/pitcrew/Teams_PitCrewRecordPerSeason.md)                | SeasonID     | SeasonID       |
 | 16 | 0   | [Teams_AI_Records](../team/Teams_AI_Records.md)                                        | SeasonID     | SeasonID       |
-| 17 | 0   | [Finance_TeamBudget_SpendingBuckets](../finance/Finance_TeamBudget_SpendingBuckets.md) | SeasonID     | SeasonID       |
-| 18 | 0   | [Finance_TeamBudget](../finance/Finance_TeamBudget.md)                                 | SeasonID     | SeasonID       |
+| 17 | 0   | [Finance_TeamBudget_SpendingBuckets](../finance/team/Finance_TeamBudget_SpendingBuckets.md) | SeasonID     | SeasonID       |
+| 18 | 0   | [Finance_TeamBudget](../finance/team/Finance_TeamBudget.md)                                 | SeasonID     | SeasonID       |
 | 19 | 0   | [Races_Results](../race/results/Races_Results.md)                                              | SeasonID     | SeasonID       |
 | 20 | 0   | [Races_SprintResults](../race/results/Races_SprintResults.md)                                  | SeasonID     | SeasonID       |
 | 21 | 0   | [Races_FeatureRaceResults](../race/Races_FeatureRaceResults.md)                        | SeasonID     | SeasonID       |

@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                               | Local Column | Foreign Column | 
 |----|-----|-----------------------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Finance_TeamBudget_SpendingBuckets](Finance_TeamBudget_SpendingBuckets.md) | Value        | Category       |
+| 0  | 0   | [Finance_TeamBudget_SpendingBuckets](team/Finance_TeamBudget_SpendingBuckets.md) | Value        | Category       |

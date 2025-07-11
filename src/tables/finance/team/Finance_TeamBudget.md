@@ -1,6 +1,6 @@
 Finance_TeamBudget table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -17,9 +17,9 @@ Column Information:
 | 8  | StrategyPresetID  | TEXT        | No (0)   | null          | No (0)      |
 | 9  | LastRebalanceDay  | INTEGER     | No (0)   | '- 1'         | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                   | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Seasons](../season/Seasons.md) | SeasonID     | SeasonID       | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Teams](../team/Teams.md)       | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Seasons](../../season/Seasons.md) | SeasonID     | SeasonID       | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Teams](../../team/Teams.md)       | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |

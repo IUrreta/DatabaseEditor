@@ -31,7 +31,7 @@ FKs this table points to
 | 0  | 0   | [Staff_Contracts](../staff/data/Staff_Contracts.md)                                                         | TeamID       | TeamID                            |
 | 1  | 0   | [Board_Objectives](../board/objectives/Board_Objectives.md)                                                 | TeamID       | TeamID                            |
 | 2  | 0   | [Board_SeasonObjectives](../board/objectives/Board_SeasonObjectives.md)                                     | TeamID       | TeamID                            |
-| 3  | 0   | [Finance_TeamBalance](../finance/Finance_TeamBalance.md)                                                    | TeamID       | TeamID                            |
+| 3  | 0   | [Finance_TeamBalance](../finance/team/Finance_TeamBalance.md)                                                    | TeamID       | TeamID                            |
 | 4  | 0   | [Finance_Transactions](../finance/Finance_Transactions.md)                                                  | TeamID       | TeamID                            |
 | 5  | 0   | [Parts_Designs](../parts/design/Parts_Designs.md)                                                                  | TeamID       | TeamID                            |
 | 6  | 0   | [Parts_Designs_TeamData](../parts/design/Parts_Designs_TeamData.md)                                                | TeamID       | TeamID                            |
@@ -94,8 +94,8 @@ FKs this table points to
 | 50 | 0   | [Parts_Enum_EngineManufacturers](../parts/enum/Parts_Enum_EngineManufacturers.md)                                | TeamID       | TeamID                            |
 | 51 | 0   | [Staff_ContractPatience](../staff/Staff_ContractPatience.md)                                                | TeamID       | TeamID                            |
 | 52 | 0   | [Sponsorship_ActivePackages](../sponsorship/Sponsorship_ActivePackages.md)                                  | TeamID       | TeamID                            |
-| 53 | 0   | [Finance_TeamBudget_SpendingBuckets](../finance/Finance_TeamBudget_SpendingBuckets.md)                      | TeamID       | TeamID                            |
-| 54 | 0   | [Finance_TeamBudget](../finance/Finance_TeamBudget.md)                                                      | TeamID       | TeamID                            |
+| 53 | 0   | [Finance_TeamBudget_SpendingBuckets](../finance/team/Finance_TeamBudget_SpendingBuckets.md)                      | TeamID       | TeamID                            |
+| 54 | 0   | [Finance_TeamBudget](../finance/team/Finance_TeamBudget.md)                                                      | TeamID       | TeamID                            |
 | 55 | 0   | [Scouting](../scouting/Scouting.md)                                                                         | TeamID       | TeamID                            |
 | 56 | 0   | [Sponsorship_EngagementActivities_Locks](../sponsorship/engagement/Sponsorship_EngagementActivities_Locks.md)          | TeamID       | TeamID                            |
 | 57 | 0   | [Sponsorship_EngagementActivities_Choices](../sponsorship/engagement/Sponsorship_EngagementActivities_Choices.md)      | TeamID       | TeamID                            |
