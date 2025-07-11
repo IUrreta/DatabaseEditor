@@ -20,3 +20,12 @@ Column Information:
 |----|-----|-----------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Parts_Enum_Stats](Parts_Enum_Stats.md) | PartStat     | Value          | CASCADE   | NO ACTION | NONE       |
 | 1  | 0   | [Parts_Designs](Parts_Designs.md)       | DesignID     | DesignID       | CASCADE   | CASCADE   | NONE       |
+
+FKs this table points to
+
+| ID | Seq | Foreign Table                                                     | Local Column | Foreign Column | 
+|----|-----|-------------------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Parts_Designs_StaffEffects](Parts_Designs_StaffEffects.md)       | DesignID     | DesignID       |
+| 0  | 1   | [Parts_Designs_StaffEffects](Parts_Designs_StaffEffects.md)       | PartStat     | PartStat       |
+| 1  | 0   | [Parts_Designs_BuildingEffects](Parts_Designs_BuildingEffects.md) | DesignID     | DesignID       |
+| 1  | 1   | [Parts_Designs_BuildingEffects](Parts_Designs_BuildingEffects.md) | PartStat     | PartStat       |

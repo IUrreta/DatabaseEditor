@@ -54,3 +54,9 @@ FKs this table points to
 | 23 | 0   | [Scouting_Staff_Traits](../scouting/Scouting_Staff_Traits.md)                                               | TeamID       | TeamID         |
 | 24 | 0   | [Staff_NarrativeData](../staff/Staff_NarrativeData.md)                                                      | TeamID       | TeamID         |
 | 25 | 0   | [Parts_CarLoadout](../parts/Parts_CarLoadout.md)                                                            | TeamID       | TeamID         |
+| 26 | 0   | [Teams_RaceRecordPerSeason](Teams_RaceRecordPerSeason.md)                                                   | TeamID       | TeamID         |
+| 27 | 0   | [Teams_RaceRecordSinceGameStart](Teams_RaceRecordSinceGameStart.md)                                         | TeamID       | TeamID         |
+| 28 | 0   | [Buildings_HQ_History](../building/Buildings_HQ_History.md)                                                 | TeamID       | TeamID         |
+| 29 | 0   | [Races_PitCrewStandings](../race/Races_PitCrewStandings.md)                                                 | TeamID       | TeamID         |
+| 30 | 0   | [Races_PitStopResults](../race/Races_PitStopResults.md)                                                     | TeamID       | TeamID         |
+| 31 | 0   | [Races_PitStopTimings](../race/Races_PitStopTimings.md)                                                     | TeamID       | TeamID         |

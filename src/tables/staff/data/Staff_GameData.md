@@ -42,3 +42,4 @@ FKs this table points to
 | 8  | 0   | [Staff_Driver_Achievements](../Staff_Driver_Achievements.md)                                                   | StaffID      | StaffID        |
 | 9  | 0   | [Scouting_Staff_Traits](../../scouting/Scouting_Staff_Traits.md)                                               | StaffID      | StaffID        |
 | 10 | 0   | [Staff_Traits](../Staff_Traits.md)                                                                             | StaffID      | StaffID        |
+| 11 | 0   | [Staff_PerformanceStats_StartOfMonth](../Staff_PerformanceStats_StartOfMonth.md)                               | StaffID      | StaffID        |

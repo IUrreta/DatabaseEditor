@@ -45,3 +45,7 @@ FKs this table points to
 | 6  | 0   | [Races_PracticeResults](../../race/Races_PracticeResults.md)                                     | StaffID      | DriverID           | 
 | 7  | 0   | [Staff_RaceEngineerDriverAssignments](../Staff_RaceEngineerDriverAssignments.md)                 | StaffID      | DriverID           | 
 | 8  | 0   | [Races_DriverStandings](../../race/Races_DriverStandings.md)                                     | StaffID      | DriverID           | 
+| 9  | 0   | [Staff_DriverPerformanceEvaluations](../Staff_DriverPerformanceEvaluations.md)                   | StaffID      | StaffID            | 
+| 10 | 0   | [Staff_Driver_RaceRecordPerSeason](../Staff_Driver_RaceRecordPerSeason.md)                       | StaffID      | StaffID            | 
+| 11 | 0   | [Races_PitStopResults](../../race/Races_PitStopResults.md)                                       | StaffID      | DriverID           | 
+| 12 | 0   | [Races_PitStopTimings](../../race/Races_PitStopTimings.md)                                       | StaffID      | DriverID           | 

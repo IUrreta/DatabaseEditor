@@ -33,3 +33,4 @@ FKs this table points to
 |----|-----|-----------------------------------------------------|--------------|----------------|
 | 0  | 0   | [Buildings_Effects](./effects/Buildings_Effects.md) | BuildingID   | BuildingID     |
 | 1  | 0   | [Buildings_HQ](Buildings_HQ.md)                     | BuildingID   | BuildingID     |
+| 2  | 0   | [Buildings_HQ_History](Buildings_HQ_History.md)     | BuildingID   | BuildingID     |
