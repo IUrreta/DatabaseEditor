@@ -11,6 +11,6 @@ Column Information:
 
 [Foreign Key Details](foreignKeyDetails.md)
 
-| ID | Seq | Foreign Table         | Local Column  | Foreign Column | On Update | On Delete | Match Type |
-|----|-----|-----------------------|---------------|----------------|-----------|-----------|------------|
+| ID | Seq | Foreign Table                | Local Column  | Foreign Column | On Update | On Delete | Match Type |
+|----|-----|------------------------------|---------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Seasons](season/Seasons.md) | CurrentSeason | SeasonID       | NO ACTION | NO ACTION | NONE       |

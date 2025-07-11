@@ -16,7 +16,8 @@ Table has no FKs that point to it.
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                       | Local Column | Foreign Column   | 
-|----|-----|-------------------------------------|--------------|------------------|
-| 0  | 0   | [Parts_Designs](Parts_Designs.md)   | Value        | DesignSpeed      |
-| 1  | 0   | [Parts_Projects](Parts_Projects.md) | Value        | ManufactureSpeed |
+| ID | Seq | Foreign Table                                                                                             | Local Column | Foreign Column   | 
+|----|-----|-----------------------------------------------------------------------------------------------------------|--------------|------------------|
+| 0  | 0   | [Parts_Designs](Parts_Designs.md)                                                                         | Value        | DesignSpeed      |
+| 1  | 0   | [Parts_Projects](Parts_Projects.md)                                                                       | Value        | ManufactureSpeed |
+| 2  | 0   | [Teams_PriorityList_Setting_DevelopCarPartData](../team/Teams_PriorityList_Setting_DevelopCarPartData.md) | Value        | Speed            |

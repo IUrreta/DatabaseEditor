@@ -34,6 +34,11 @@ Column Information:
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                           | Local Column | Foreign Column     |
-|----|-----|-----------------------------------------|--------------|--------------------|
-| 0  | 0   | [Races_Tracks](../../race/Races_Tracks.md) | StaffID      | FastestLapDriverID | 
+| ID | Seq | Foreign Table                                                                                    | Local Column | Foreign Column     |
+|----|-----|--------------------------------------------------------------------------------------------------|--------------|--------------------|
+| 0  | 0   | [Races_Tracks](../../race/Races_Tracks.md)                                                       | StaffID      | FastestLapDriverID | 
+| 1  | 0   | [Races_Strategies](../../race/Races_Strategies.md)                                               | StaffID      | DriverID           | 
+| 2  | 0   | [Scouting_Staff_DriverRivalryEventLogs](../../scouting/Scouting_Staff_DriverRivalryEventLogs.md) | StaffID      | RivalID            | 
+| 3  | 0   | [Scouting_Staff_DriverRivalryEventLogs](../../scouting/Scouting_Staff_DriverRivalryEventLogs.md) | StaffID      | DriverID           | 
+| 4  | 0   | [Staff_DriverRivalryEventLogs](../Staff_DriverRivalryEventLogs.md)                               | StaffID      | RivalID            | 
+| 5  | 0   | [Staff_DriverRivalryEventLogs](../Staff_DriverRivalryEventLogs.md)                               | StaffID      | DriverID           | 

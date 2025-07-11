@@ -17,8 +17,8 @@ Column Information:
 
 [Foreign Key Details](../foreignKeyDetails.md)
 
-| ID | Seq | Foreign Table                                    | Local Column     | Foreign Column | On Update | On Delete | Match Type |
-|----|-----|--------------------------------------------------|------------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Parts_Enum_DevSpeeds](Parts_Enum_DevSpeeds.md)  | ManufactureSpeed | Value          | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Parts_Designs](Parts_Designs.md)                | DesignID         | DesignID       | NO ACTION | CASCADE   | NONE       |
-| 2  | 0   | [SubTeam_Assignments](../SubTeam_Assignments.md) | AssignmentID     | AssignmentID   | NO ACTION | NO ACTION | NONE       |
+| ID | Seq | Foreign Table                                            | Local Column     | Foreign Column | On Update | On Delete | Match Type |
+|----|-----|----------------------------------------------------------|------------------|----------------|-----------|-----------|------------|
+| 0  | 0   | [Parts_Enum_DevSpeeds](Parts_Enum_DevSpeeds.md)          | ManufactureSpeed | Value          | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Parts_Designs](Parts_Designs.md)                        | DesignID         | DesignID       | NO ACTION | CASCADE   | NONE       |
+| 2  | 0   | [SubTeam_Assignments](../subteam/SubTeam_Assignments.md) | AssignmentID     | AssignmentID   | NO ACTION | NO ACTION | NONE       |

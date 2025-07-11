@@ -1,2 +1,3 @@
 Buildings
 Buildings_Effects_Parts
+Teams_PriorityList_Setting_DevelopBuildingData

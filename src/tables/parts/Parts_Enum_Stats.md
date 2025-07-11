@@ -1,1 +1,3 @@
 Buildings_Effects_Parts
+Regulations_Technical_StatReductions
+Regulations_Technical_TypeStatComboReductions

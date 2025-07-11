@@ -37,3 +37,9 @@ FKs this table points to
 | 6  | 0   | [Parts_Designs_TeamData](../parts/Parts_Designs_TeamData.md)                   | TeamID       | TeamID         |
 | 7  | 0   | [Parts_NamingConventions](../parts/Parts_NamingConventions.md)                 | TeamID       | TeamID         |
 | 8  | 0   | [Parts_PowertrainRaceHistoryData](../parts/Parts_PowertrainRaceHistoryData.md) | TeamID       | TeamID         |
+| 9  | 0   | [Parts_TeamHistory](../parts/Parts_TeamHistory.md)                             | TeamID       | TeamID         |
+| 10 | 0   | [Races_TeamPerformance](../race/Races_TeamPerformance.md)                      | TeamID       | TeamID         |
+| 11 | 0   | [Races_TeamStandings](../race/Races_TeamStandings.md)                          | TeamID       | TeamID         |
+| 12 | 0   | [Regulations_TeamVotes](../regulations/Regulations_TeamVotes.md)               | TeamID       | TeamID         |
+| 13 | 0   | [SubTeam_Assignments](../subteam/SubTeam_Assignments.md)                       | TeamID       | TeamID         |
+| 14 | 0   | [SubTeam_Ownership](../subteam/SubTeam_Ownership.md)                           | TeamID       | TeamID         |

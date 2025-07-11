@@ -43,3 +43,6 @@ FKs this table points to
 |----|-----|-------------------------------------------------------------------------------------|--------------|----------------|
 | 0  | 0   | [Board_Confidence_RaceHistory](../board/confidence/Board_Confidence_RaceHistory.md) | TrackID      | TrackID        |
 | 1  | 0   | [Parts_PowertrainRaceHistoryData](../parts/Parts_PowertrainRaceHistoryData.md)      | TrackID      | TrackID        |
+| 2  | 0   | [Parts_RecommendedTrackStats](../parts/Parts_RecommendedTrackStats.md)              | TrackID      | TrackID        |
+| 3  | 0   | [Races_Strategies](Races_Strategies.md)                                             | TrackID      | TrackID        |
+| 4  | 0   | [Races_TeamPerformance](Races_TeamPerformance.md)                                   | TrackID      | TrackID        |

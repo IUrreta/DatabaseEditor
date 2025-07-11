@@ -22,3 +22,7 @@ FKs this table points to
 | 1  | 0   | [Races](../race/Races.md)                                               | SeasonID     | SeasonID       |
 | 2  | 0   | [Board_Confidence](../board/confidence/Board_Confidence.md)             | SeasonID     | Season         |
 | 3  | 0   | [Board_SeasonObjectives](../board/objectives/Board_SeasonObjectives.md) | SeasonID     | SeasonID       |
+| 4  | 0   | [Parts_TeamHistory](../parts/Parts_TeamHistory.md)                      | SeasonID     | SeasonID       |
+| 5  | 0   | [Races_Strategies](../race/Races_Strategies.md)                         | SeasonID     | SeasonID       |
+| 6  | 0   | [Races_TeamPerformance](../race/Races_TeamPerformance.md)               | SeasonID     | SeasonID       |
+| 7  | 0   | [Races_TeamStandings](../race/Races_TeamStandings.md)                   | SeasonID     | SeasonID       |

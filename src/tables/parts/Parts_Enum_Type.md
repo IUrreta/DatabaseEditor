@@ -27,9 +27,11 @@ Table has no FKs that point to it.
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                                             | Local Column | Foreign Column | 
-|----|-----|---------------------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Buildings_Effects_Parts](../building/effects/Buildings_Effects_Parts.md) | Value        | PartType       |
-| 1  | 0   | [Parts_DamageEffects](Parts_DamageEffects.md)                             | Value        | PartType       |
-| 2  | 0   | [Parts_Designs](Parts_Designs.md)                                         | Value        | PartType       |
-| 3  | 0   | [Parts_Designs_TeamData](Parts_Designs_TeamData.md)                       | Value        | PartType       |
+| ID | Seq | Foreign Table                                                                                                    | Local Column | Foreign Column | 
+|----|-----|------------------------------------------------------------------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Buildings_Effects_Parts](../building/effects/Buildings_Effects_Parts.md)                                        | Value        | PartType       |
+| 1  | 0   | [Parts_DamageEffects](Parts_DamageEffects.md)                                                                    | Value        | PartType       |
+| 2  | 0   | [Parts_Designs](Parts_Designs.md)                                                                                | Value        | PartType       |
+| 3  | 0   | [Parts_Designs_TeamData](Parts_Designs_TeamData.md)                                                              | Value        | PartType       |
+| 4  | 0   | [Regulations_Technical_TypeReductions](../regulations/Regulations_Technical_TypeReductions.md)                   | Value        | PartType       |
+| 5  | 0   | [Regulations_Technical_TypeStatComboReductions](../regulations/Regulations_Technical_TypeStatComboReductions.md) | Value        | PartType       |

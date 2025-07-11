@@ -11,3 +11,10 @@ Column Information:
 | 2  | DefaultRivalryScore | decimal(6,2) | Yes (1)  | null          | No (0)      |
 
 Table has no FKs that point to it. 
+
+FKs this table points to
+
+| ID | Seq | Foreign Table                                                                                 | Local Column | Foreign Column   | 
+|----|-----|-----------------------------------------------------------------------------------------------|--------------|------------------|
+| 0  | 0   | [Scouting_Staff_DriverRivalryEventLogs](../scouting/Scouting_Staff_DriverRivalryEventLogs.md) | Value        | RivalryEventType |
+| 1  | 0   | [Staff_DriverRivalryEventLogs](Staff_DriverRivalryEventLogs.md)                               | Value        | RivalryEventType |

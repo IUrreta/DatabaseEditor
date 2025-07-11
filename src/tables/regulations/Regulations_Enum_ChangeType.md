@@ -14,3 +14,10 @@ Column Information:
 | 5  | SkipSeasonProbability | decimal(3,2) | Yes (1)  | '0.00'        | No (0)      |
 
 Table has no FKs that point to it. 
+
+FKs this table points to
+
+| ID | Seq | Foreign Table                                             | Local Column | Foreign Column | 
+|----|-----|-----------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Regulations_EventCalendar](Regulations_EventCalendar.md) | Value        | ChangeType     |
+| 1  | 0   | [Regulations_Proposals](Regulations_Proposals.md)         | Value        | ChangeType     |
