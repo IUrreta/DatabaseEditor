@@ -1,6 +1,6 @@
 Mail_Inbox table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -22,20 +22,20 @@ Column Information:
 | 13 | OnReadTrigger         | INTEGER   | Yes (1)  | '0'           | No (0)      |
 | 14 | Flagged               | INTEGER   | No (0)   | '0'           | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                 | Local Column     | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------|------------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Mail_Enum_Trigger](Mail_Enum_Trigger.md)     | OnReadTrigger    | Value          | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Mail_Enum_BlockType](Mail_Enum_BlockType.md) | InitialBlockType | Type           | RESTRICT  | CASCADE   | NONE       |
-| 2  | 0   | [Mail_Enum_BlockType](Mail_Enum_BlockType.md) | BlockType        | Type           | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Mail_Enum_Trigger](../enum/Mail_Enum_Trigger.md)     | OnReadTrigger    | Value          | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Mail_Enum_BlockType](../enum/Mail_Enum_BlockType.md) | InitialBlockType | Type           | RESTRICT  | CASCADE   | NONE       |
+| 2  | 0   | [Mail_Enum_BlockType](../enum/Mail_Enum_BlockType.md) | BlockType        | Type           | RESTRICT  | CASCADE   | NONE       |
 
 FKs this table points to
 
 | ID | Seq | Foreign Table                                         | Local Column | Foreign Column | 
 |----|-----|-------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Mail_Dilemmas_Responses](Mail_Dilemmas_Responses.md) | MailID       | MailID         |
-| 1  | 0   | [Mail_Inbox_Attachments](Mail_Inbox_Attachments.md)   | MailID       | MailID         |
+| 0  | 0   | [Mail_Dilemmas_Responses](../Mail_Dilemmas_Responses.md) | MailID       | MailID         |
+| 1  | 0   | [Mail_Inbox_Attachments](attachments/Mail_Inbox_Attachments.md)   | MailID       | MailID         |
 | 2  | 0   | [Mail_Inbox_Links](Mail_Inbox_Links.md)               | MailID       | MailID         |
-| 3  | 0   | [Mail_ChainSequences](Mail_ChainSequences.md)         | MailID       | MailID         |
+| 3  | 0   | [Mail_ChainSequences](../Mail_ChainSequences.md)         | MailID       | MailID         |
 | 4  | 0   | [Mail_Inbox_Sections](Mail_Inbox_Sections.md)         | MailID       | MailID         |

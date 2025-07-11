@@ -1,6 +1,6 @@
 Mail_Inbox_Sections table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -13,7 +13,7 @@ Column Information:
 | 4  | Image        | TEXT      | No (0)   | null          | No (0)      |
 | 5  | ImageCaption | TEXT      | No (0)   | null          | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table               | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------|--------------|----------------|-----------|-----------|------------|

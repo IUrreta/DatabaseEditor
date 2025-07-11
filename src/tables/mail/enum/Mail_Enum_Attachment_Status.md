@@ -1,6 +1,6 @@
 Mail_Enum_Attachment_Status table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                               | Local Column | Foreign Column | 
 |----|-----|-------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Mail_Inbox_AttachmentStats](Mail_Inbox_AttachmentStats.md) | Status       | Status         |
+| 0  | 0   | [Mail_Inbox_AttachmentStats](../inbox/attachments/Mail_Inbox_AttachmentStats.md) | Status       | Status         |

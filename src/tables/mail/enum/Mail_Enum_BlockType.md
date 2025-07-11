@@ -1,6 +1,6 @@
 Mail_Enum_BlockType table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -16,5 +16,5 @@ FKs this table points to
 
 | ID | Seq | Foreign Table               | Local Column | Foreign Column   | 
 |----|-----|-----------------------------|--------------|------------------|
-| 0  | 0   | [Mail_Inbox](Mail_Inbox.md) | Type         | InitialBlockType |
-| 1  | 0   | [Mail_Inbox](Mail_Inbox.md) | Type         | BlockType        |
+| 0  | 0   | [Mail_Inbox](../inbox/Mail_Inbox.md) | Type         | InitialBlockType |
+| 1  | 0   | [Mail_Inbox](../inbox/Mail_Inbox.md) | Type         | BlockType        |

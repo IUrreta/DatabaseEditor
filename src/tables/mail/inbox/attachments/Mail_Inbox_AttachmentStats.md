@@ -1,6 +1,6 @@
 Mail_Inbox_AttachmentStats table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -14,12 +14,12 @@ Column Information:
 | 5  | Icon             | TEXT      | No (0)   | 'NULL'        | No (0)      |
 | 6  | Modifiers        | TEXT      | No (0)   | 'NULL'        | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                                     | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Mail_Enum_Attachment_Status](Mail_Enum_Attachment_Status.md)     | Status       | Status         | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Mail_Enum_Attachment_StatType](Mail_Enum_Attachment_StatType.md) | Type         | Type           | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Mail_Enum_Attachment_Status](../../enum/Mail_Enum_Attachment_Status.md)     | Status       | Status         | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Mail_Enum_Attachment_StatType](../../enum/Mail_Enum_Attachment_StatType.md) | Type         | Type           | NO ACTION | NO ACTION | NONE       |
 | 2  | 0   | [Mail_Inbox_Attachments](Mail_Inbox_Attachments.md)               | AttachmentID | AttachmentID   | NO ACTION | CASCADE   | NONE       |
 
 FKs this table points to

@@ -16,7 +16,7 @@ Column Information:
 
 | ID | Seq | Foreign Table               | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Mail_Inbox](Mail_Inbox.md) | MailID       | MailID         | CASCADE   | CASCADE   | NONE       |
+| 0  | 0   | [Mail_Inbox](inbox/Mail_Inbox.md) | MailID       | MailID         | CASCADE   | CASCADE   | NONE       |
 
 FKs this table points to
 

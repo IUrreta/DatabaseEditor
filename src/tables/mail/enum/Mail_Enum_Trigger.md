@@ -1,6 +1,6 @@
 Mail_Enum_Trigger table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table               | Local Column | Foreign Column | 
 |----|-----|-----------------------------|--------------|----------------|
-| 0  | 0   | [Mail_Inbox](Mail_Inbox.md) | Value        | OnReadTrigger  |
+| 0  | 0   | [Mail_Inbox](../inbox/Mail_Inbox.md) | Value        | OnReadTrigger  |

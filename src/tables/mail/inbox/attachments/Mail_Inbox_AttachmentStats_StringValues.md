@@ -1,6 +1,6 @@
 Mail_Inbox_AttachmentStats_StringValues table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -10,7 +10,7 @@ Column Information:
 | 1  | Number           | INTEGER   | Yes (1)  | null          | Order 2 (2) |
 | 2  | Value            | STRING    | Yes (1)  | null          | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                               | Local Column     | Foreign Column   | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------------|------------------|------------------|-----------|-----------|------------|

@@ -19,4 +19,4 @@ Column Information:
 | 0  | 0   | [Mail_Chains](Mail_Chains.md) | ChainType      | ChainType      | RESTRICT  | CASCADE   | NONE       |
 | 0  | 1   | [Mail_Chains](Mail_Chains.md) | ReferenceID    | ReferenceID    | RESTRICT  | CASCADE   | NONE       |
 | 0  | 2   | [Mail_Chains](Mail_Chains.md) | SubReferenceID | SubReferenceID | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Mail_Inbox](Mail_Inbox.md)   | MailID         | MailID         | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Mail_Inbox](inbox/Mail_Inbox.md)   | MailID         | MailID         | RESTRICT  | CASCADE   | NONE       |

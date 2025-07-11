@@ -12,4 +12,4 @@ Column Information:
 
 | ID | Seq | Foreign Table                         | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Mail_Enum_Event](Mail_Enum_Event.md) | Event        | Value          | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Mail_Enum_Event](enum/Mail_Enum_Event.md) | Event        | Value          | RESTRICT  | CASCADE   | NONE       |

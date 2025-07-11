@@ -1,6 +1,6 @@
 Mail_Enum_Event table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                       | Local Column | Foreign Column | 
 |----|-----|-------------------------------------|--------------|----------------|
-| 0  | 0   | [Mail_EventPool](Mail_EventPool.md) | Value        | Event          |
+| 0  | 0   | [Mail_EventPool](../Mail_EventPool.md) | Value        | Event          |

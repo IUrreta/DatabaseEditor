@@ -1,6 +1,6 @@
 Mail_Inbox_AttachmentStats_Values table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -11,7 +11,7 @@ Column Information:
 | 2  | Value            | DECIMAL (10, 5) | Yes (1)  | null          | No (0)      |
 | 3  | NumOfDecimals    | INTEGER         | Yes (1)  | null          | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                               | Local Column     | Foreign Column   | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------------|------------------|------------------|-----------|-----------|------------|

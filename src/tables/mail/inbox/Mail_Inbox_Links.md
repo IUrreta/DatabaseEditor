@@ -1,6 +1,6 @@
 Mail_Inbox_Links table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -12,7 +12,7 @@ Column Information:
 | 3  | Label      | TEXT      | Yes (1)  | null          | No (0)      |
 | 4  | Icon       | TEXT      | No (0)   | 'NULL'        | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table               | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------|--------------|----------------|-----------|-----------|------------|

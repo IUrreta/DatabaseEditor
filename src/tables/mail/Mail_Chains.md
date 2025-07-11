@@ -17,7 +17,7 @@ Column Information:
 
 | ID | Seq | Foreign Table                                 | Local Column   | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------|----------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Mail_Enum_ChainType](Mail_Enum_ChainType.md) | ChainType      | Value          | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Mail_Enum_ChainType](enum/Mail_Enum_ChainType.md) | ChainType      | Value          | RESTRICT  | CASCADE   | NONE       |
 | 1  | 0   | [Mail_ChainSequences](Mail_ChainSequences.md) | ChainType      | ChainType      | RESTRICT  | CASCADE   | NONE       |
 | 2  | 0   | [Mail_ChainSequences](Mail_ChainSequences.md) | ReferenceID    | ReferenceID    | RESTRICT  | CASCADE   | NONE       |
 | 3  | 0   | [Mail_ChainSequences](Mail_ChainSequences.md) | SubReferenceID | SubReferenceID | RESTRICT  | CASCADE   | NONE       |

@@ -1,6 +1,6 @@
 Mail_Enum_ChainType table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                 | Local Column | Foreign Column | 
 |----|-----|-------------------------------|--------------|----------------|
-| 0  | 0   | [Mail_Chains](Mail_Chains.md) | Value        | ChainType      |
+| 0  | 0   | [Mail_Chains](../Mail_Chains.md) | Value        | ChainType      |
