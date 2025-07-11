@@ -33,3 +33,5 @@ FKs this table points to
 |----|-----|--------------------------------------------------|--------------|----------------|
 | 0  | 0   | [Staff_GameData](Staff_GameData.md)              | StaffID      | StaffID        |
 | 1  | 0   | [Staff_NarrativeData](../Staff_NarrativeData.md) | StaffID      | StaffID        |
+| 2  | 0   | [Staff_Team_CAS](../Staff_Team_CAS.md)           | StaffID      | StaffID        |
+| 3  | 0   | [Staff_DriverFocus](../Staff_DriverFocus.md)     | StaffID      | StaffID        |

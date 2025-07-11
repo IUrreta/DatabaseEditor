@@ -13,3 +13,9 @@ Column Information:
 | 4  | ScoutingAccuracy | INTEGER    | Yes (1)  | null          | No (0)      |
 
 Table has no FKs that point to it.
+
+FKs this table points to
+
+| ID | Seq | Foreign Table           | Local Column | Foreign Column | 
+|----|-----|-------------------------|--------------|----------------|
+| 0  | 0   | [Scouting](Scouting.md) | Value        | ScoutType      |

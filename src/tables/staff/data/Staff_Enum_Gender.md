@@ -13,6 +13,7 @@ Table has no FKs that point to it.
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                         | Local Column | Foreign Column |
-|----|-----|---------------------------------------|--------------|----------------|
-| 0  | 0   | [Staff_BasicData](Staff_BasicData.md) | Value        | Gender         |
+| ID | Seq | Foreign Table                                  | Local Column | Foreign Column |
+|----|-----|------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Staff_BasicData](Staff_BasicData.md)          | Value        | Gender         |
+| 1  | 0   | [Staff_ForenamePool](../Staff_ForenamePool.md) | Value        | Gender         |

@@ -24,3 +24,4 @@ FKs this table points to
 | ID | Seq | Foreign Table                                | Local Column | Foreign Column | 
 |----|-----|----------------------------------------------|--------------|----------------|
 | 0  | 0   | [Parts_Projects](../parts/Parts_Projects.md) | AssignmentID | AssignmentID   |
+| 1  | 0   | [Scouting](../scouting/Scouting.md)          | AssignmentID | AssignmentID   |

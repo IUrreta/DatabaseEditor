@@ -34,21 +34,24 @@ Column Information:
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                                                                    | Local Column | Foreign Column     |
-|----|-----|--------------------------------------------------------------------------------------------------|--------------|--------------------|
-| 0  | 0   | [Races_Tracks](../../race/Races_Tracks.md)                                                       | StaffID      | FastestLapDriverID | 
-| 1  | 0   | [Races_Strategies](../../race/Races_Strategies.md)                                               | StaffID      | DriverID           | 
-| 2  | 0   | [Scouting_Staff_DriverRivalryEventLogs](../../scouting/Scouting_Staff_DriverRivalryEventLogs.md) | StaffID      | RivalID            | 
-| 2  | 1   | [Scouting_Staff_DriverRivalryEventLogs](../../scouting/Scouting_Staff_DriverRivalryEventLogs.md) | StaffID      | DriverID           | 
-| 3  | 0   | [Staff_DriverRivalryEventLogs](../Staff_DriverRivalryEventLogs.md)                               | StaffID      | RivalID            | 
-| 3  | 1   | [Staff_DriverRivalryEventLogs](../Staff_DriverRivalryEventLogs.md)                               | StaffID      | DriverID           | 
-| 4  | 0   | [Races_PracticeResults](../../race/Races_PracticeResults.md)                                     | StaffID      | DriverID           | 
-| 5  | 0   | [Staff_RaceEngineerDriverAssignments](../Staff_RaceEngineerDriverAssignments.md)                 | StaffID      | DriverID           | 
-| 6  | 0   | [Races_DriverStandings](../../race/Races_DriverStandings.md)                                     | StaffID      | DriverID           | 
-| 7  | 0   | [Staff_DriverPerformanceEvaluations](../Staff_DriverPerformanceEvaluations.md)                   | StaffID      | StaffID            | 
-| 8  | 0   | [Staff_Driver_RaceRecordPerSeason](../Staff_Driver_RaceRecordPerSeason.md)                       | StaffID      | StaffID            | 
-| 9  | 0   | [Races_PitStopResults](../../race/Races_PitStopResults.md)                                       | StaffID      | DriverID           | 
-| 9  | 1   | [Races_PitStopTimings](../../race/Races_PitStopTimings.md)                                       | StaffID      | DriverID           | 
-| 10 | 0   | [Teams_PitCrewRecordBeforeGameStart](../../team/Teams_PitCrewRecordBeforeGameStart.md)           | StaffID      | DriverID           | 
-| 11 | 0   | [Teams_PitCrewRecordPerSeason](../../team/Teams_PitCrewRecordPerSeason.md)                       | StaffID      | DriverID           | 
-| 12 | 0   | [Teams_PitCrewRecordSinceGameStart](../../team/Teams_PitCrewRecordSinceGameStart.md)             | StaffID      | DriverID           | 
+| ID | Seq | Foreign Table                                                                                                   | Local Column | Foreign Column     |
+|----|-----|-----------------------------------------------------------------------------------------------------------------|--------------|--------------------|
+| 0  | 0   | [Races_Tracks](../../race/Races_Tracks.md)                                                                      | StaffID      | FastestLapDriverID | 
+| 1  | 0   | [Races_Strategies](../../race/Races_Strategies.md)                                                              | StaffID      | DriverID           | 
+| 2  | 0   | [Scouting_Staff_DriverRivalryEventLogs](../../scouting/Scouting_Staff_DriverRivalryEventLogs.md)                | StaffID      | RivalID            | 
+| 2  | 1   | [Scouting_Staff_DriverRivalryEventLogs](../../scouting/Scouting_Staff_DriverRivalryEventLogs.md)                | StaffID      | DriverID           | 
+| 3  | 0   | [Staff_DriverRivalryEventLogs](../Staff_DriverRivalryEventLogs.md)                                              | StaffID      | RivalID            | 
+| 3  | 1   | [Staff_DriverRivalryEventLogs](../Staff_DriverRivalryEventLogs.md)                                              | StaffID      | DriverID           | 
+| 4  | 0   | [Races_PracticeResults](../../race/Races_PracticeResults.md)                                                    | StaffID      | DriverID           | 
+| 5  | 0   | [Staff_RaceEngineerDriverAssignments](../Staff_RaceEngineerDriverAssignments.md)                                | StaffID      | DriverID           | 
+| 6  | 0   | [Races_DriverStandings](../../race/Races_DriverStandings.md)                                                    | StaffID      | DriverID           | 
+| 7  | 0   | [Staff_DriverPerformanceEvaluations](../Staff_DriverPerformanceEvaluations.md)                                  | StaffID      | StaffID            | 
+| 8  | 0   | [Staff_Driver_RaceRecordPerSeason](../Staff_Driver_RaceRecordPerSeason.md)                                      | StaffID      | StaffID            | 
+| 9  | 0   | [Races_PitStopResults](../../race/Races_PitStopResults.md)                                                      | StaffID      | DriverID           | 
+| 9  | 1   | [Races_PitStopTimings](../../race/Races_PitStopTimings.md)                                                      | StaffID      | DriverID           | 
+| 10 | 0   | [Teams_PitCrewRecordBeforeGameStart](../../team/Teams_PitCrewRecordBeforeGameStart.md)                          | StaffID      | DriverID           | 
+| 11 | 0   | [Teams_PitCrewRecordPerSeason](../../team/Teams_PitCrewRecordPerSeason.md)                                      | StaffID      | DriverID           | 
+| 12 | 0   | [Teams_PitCrewRecordSinceGameStart](../../team/Teams_PitCrewRecordSinceGameStart.md)                            | StaffID      | DriverID           | 
+| 13 | 0   | [Sponsorship_ActivePackages_SecondaryBonuses](../../sponsorship/Sponsorship_ActivePackages_SecondaryBonuses.md) | StaffID      | AffiliateID        | 
+| 14 | 0   | [Sponsorship_EngagementActivities_Choices](../../sponsorship/Sponsorship_EngagementActivities_Choices.md)       | StaffID      | AffiliateID        | 
+| 15 | 0   | [Sponsorship_AffiliateEngagementActivities](../../sponsorship/Sponsorship_AffiliateEngagementActivities.md)     | StaffID      | StaffID            | 

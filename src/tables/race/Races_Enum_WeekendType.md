@@ -13,6 +13,7 @@ Table has no FKs that point to it.
 
 FKs this table points to
 
-| ID | Seq | Foreign Table     | Local Column | Foreign Column | 
-|----|-----|-------------------|--------------|----------------|
-| 0  | 0   | [Races](Races.md) | Type         | WeekendType    |
+| ID | Seq | Foreign Table                         | Local Column | Foreign Column | 
+|----|-----|---------------------------------------|--------------|----------------|
+| 0  | 0   | [Races](Races.md)                     | Type         | WeekendType    |
+| 1  | 0   | [Races_Templates](Races_Templates.md) | Type         | WeekendType    |

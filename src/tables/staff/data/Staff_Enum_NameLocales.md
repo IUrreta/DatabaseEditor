@@ -18,7 +18,8 @@ Table has no FKs that point to it.
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                | Local Column | Foreign Column  |
-|----|-----|----------------------------------------------|--------------|-----------------|
-| 0  | 0   | [Countries](../../Countries.md)              | Value        | StaffNameLocale | 
-| 1  | 0   | [Staff_SurnamePool](../Staff_SurnamePool.md) | Value        | Locale          | 
+| ID | Seq | Foreign Table                                  | Local Column | Foreign Column  |
+|----|-----|------------------------------------------------|--------------|-----------------|
+| 0  | 0   | [Countries](../../Countries.md)                | Value        | StaffNameLocale | 
+| 1  | 0   | [Staff_SurnamePool](../Staff_SurnamePool.md)   | Value        | Locale          | 
+| 2  | 0   | [Staff_ForenamePool](../Staff_ForenamePool.md) | Value        | Locale          | 

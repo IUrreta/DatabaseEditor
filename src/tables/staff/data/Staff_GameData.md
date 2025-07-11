@@ -43,3 +43,10 @@ FKs this table points to
 | 9  | 0   | [Scouting_Staff_Traits](../../scouting/Scouting_Staff_Traits.md)                                               | StaffID      | StaffID        |
 | 10 | 0   | [Staff_Traits](../Staff_Traits.md)                                                                             | StaffID      | StaffID        |
 | 11 | 0   | [Staff_PerformanceStats_StartOfMonth](../Staff_PerformanceStats_StartOfMonth.md)                               | StaffID      | StaffID        |
+| 12 | 0   | [Staff_CareerHistory](../Staff_CareerHistory.md)                                                               | StaffID      | StaffID        |
+| 13 | 0   | [Scouting_Staff_Bookmark](../../scouting/Scouting_Staff_Bookmark.md)                                           | StaffID      | StaffID        |
+| 14 | 0   | [Staff_Team_CAS](../Staff_Team_CAS.md)                                                                         | StaffID      | StaffID        |
+| 15 | 0   | [Staff_ContractPatience](../Staff_ContractPatience.md)                                                         | StaffID      | StaffID        |
+| 16 | 0   | [Scouting](../../scouting/Scouting.md)                                                                         | StaffID      | StaffID        |
+| 17 | 0   | [Staff_ContractOffers](../Staff_ContractOffers.md)                                                             | StaffID      | StaffID        |
+| 18 | 0   | [Staff_Contracts](../Staff_Contracts.md)                                                                       | StaffID      | StaffID        |

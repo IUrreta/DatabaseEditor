@@ -1,3 +1,20 @@
+Building_Enum_Types table
+
+[Column Guide](../columnFlagsGuide.md)
+
+Column Information:
+
+| ID | Name          | Data Type | Not Null | Default Value | Primary Key |
+|----|---------------|-----------|----------|---------------|-------------|
+| 0  | Type          | INTEGER   | Yes (1)  | null          | Yes (1)     |
+| 1  | Name          | TEXT      | Yes (1)  | null          | No (0)      |
+| 2  | BuildingGroup | INTEGER   | No (0)   | null          | No (0)      |
+
+[Foreign Key Details](../foreignKeyDetails.md)
+
+| ID | Seq | Foreign Table                                   | Local Column  | Foreign Column | On Update | On Delete | Match Type |
+|----|-----|-------------------------------------------------|---------------|----------------|-----------|-----------|------------|
+| 0  | 0   | [Building_Enum_Groups](Building_Enum_Groups.md) | BuildingGroup | Value          | RESTRICT  | CASCADE   | NONE       |
 
 FKs this table points to
 

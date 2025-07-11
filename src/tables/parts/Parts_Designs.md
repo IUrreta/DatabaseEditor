@@ -38,11 +38,15 @@ Column Information:
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                           | Local Column | Foreign Column | 
-|----|-----|---------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Parts_DesignHistoryData](Parts_DesignHistoryData.md)   | DesignID     | DesignID       |
-| 1  | 0   | [Parts_Projects](Parts_Projects.md)                     | DesignID     | DesignID       |
-| 2  | 0   | [Parts_Designs_StatValues](Parts_Designs_StatValues.md) | DesignID     | DesignID       |
-| 3  | 0   | [Parts_CarLoadout](Parts_CarLoadout.md)                 | DesignID     | DesignID       |
-| 4  | 0   | [Parts_Items](Parts_Items.md)                           | DesignID     | DesignID       |
-| 5  | 0   | [Parts_InspectionResults](Parts_InspectionResults.md)   | DesignID     | DesignID       |
+| ID | Seq | Foreign Table                                                       | Local Column | Foreign Column  | 
+|----|-----|---------------------------------------------------------------------|--------------|-----------------|
+| 0  | 0   | [Parts_DesignHistoryData](Parts_DesignHistoryData.md)               | DesignID     | DesignID        |
+| 1  | 0   | [Parts_Projects](Parts_Projects.md)                                 | DesignID     | DesignID        |
+| 2  | 0   | [Parts_Designs_StatValues](Parts_Designs_StatValues.md)             | DesignID     | DesignID        |
+| 3  | 0   | [Parts_CarLoadout](Parts_CarLoadout.md)                             | DesignID     | DesignID        |
+| 4  | 0   | [Parts_Items](Parts_Items.md)                                       | DesignID     | DesignID        |
+| 5  | 0   | [Parts_InspectionResults](Parts_InspectionResults.md)               | DesignID     | DesignID        |
+| 6  | 0   | [Parts_ParcFerme](Parts_ParcFerme.md)                               | DesignID     | DesignID        |
+| 7  | 0   | [Parts_Enum_EngineManufacturers](Parts_Enum_EngineManufacturers.md) | DesignID     | EngineDesignID  |
+| 7  | 1   | [Parts_Enum_EngineManufacturers](Parts_Enum_EngineManufacturers.md) | DesignID     | GearboxDesignID |
+| 7  | 1   | [Parts_Enum_EngineManufacturers](Parts_Enum_EngineManufacturers.md) | DesignID     | ErsDesignID     |
