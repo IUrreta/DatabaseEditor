@@ -53,8 +53,8 @@ FKs this table points to
 | 11 | 0   | [Teams_PitCrewRecordPerSeason](../../team/pitcrew/Teams_PitCrewRecordPerSeason.md)                                      | StaffID      | DriverID           | 
 | 12 | 0   | [Teams_PitCrewRecordSinceGameStart](../../team/pitcrew/Teams_PitCrewRecordSinceGameStart.md)                            | StaffID      | DriverID           | 
 | 13 | 0   | [Sponsorship_ActivePackages_SecondaryBonuses](../../sponsorship/Sponsorship_ActivePackages_SecondaryBonuses.md) | StaffID      | AffiliateID        | 
-| 14 | 0   | [Sponsorship_EngagementActivities_Choices](../../sponsorship/Sponsorship_EngagementActivities_Choices.md)       | StaffID      | AffiliateID        | 
-| 15 | 0   | [Sponsorship_AffiliateEngagementActivities](../../sponsorship/Sponsorship_AffiliateEngagementActivities.md)     | StaffID      | StaffID            | 
+| 14 | 0   | [Sponsorship_EngagementActivities_Choices](../../sponsorship/engagement/Sponsorship_EngagementActivities_Choices.md)       | StaffID      | AffiliateID        | 
+| 15 | 0   | [Sponsorship_AffiliateEngagementActivities](../../sponsorship/engagement/Sponsorship_AffiliateEngagementActivities.md)     | StaffID      | StaffID            | 
 | 16 | 0   | [Staff_Driver_RaceRecordSinceGameStart](../Staff_Driver_RaceRecordSinceGameStart.md)                            | StaffID      | StaffID            | 
 | 17 | 0   | [Staff_Driver_RaceRecordBeforeGameStart](../Staff_Driver_RaceRecordBeforeGameStart.md)                          | StaffID      | StaffID            | 
 | 18 | 0   | [Races_Results](../../race/Races_Results.md)                                                                    | StaffID      | DriverID           | 

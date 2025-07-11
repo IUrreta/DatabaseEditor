@@ -97,8 +97,8 @@ FKs this table points to
 | 53 | 0   | [Finance_TeamBudget_SpendingBuckets](../finance/Finance_TeamBudget_SpendingBuckets.md)                      | TeamID       | TeamID                            |
 | 54 | 0   | [Finance_TeamBudget](../finance/Finance_TeamBudget.md)                                                      | TeamID       | TeamID                            |
 | 55 | 0   | [Scouting](../scouting/Scouting.md)                                                                         | TeamID       | TeamID                            |
-| 56 | 0   | [Sponsorship_EngagementActivities_Locks](../sponsorship/Sponsorship_EngagementActivities_Locks.md)          | TeamID       | TeamID                            |
-| 57 | 0   | [Sponsorship_EngagementActivities_Choices](../sponsorship/Sponsorship_EngagementActivities_Choices.md)      | TeamID       | TeamID                            |
+| 56 | 0   | [Sponsorship_EngagementActivities_Locks](../sponsorship/engagement/Sponsorship_EngagementActivities_Locks.md)          | TeamID       | TeamID                            |
+| 57 | 0   | [Sponsorship_EngagementActivities_Choices](../sponsorship/engagement/Sponsorship_EngagementActivities_Choices.md)      | TeamID       | TeamID                            |
 | 58 | 0   | [Player](../player/Player.md)                                                                               | TeamID       | TeamID                            |
 | 59 | 0   | [Staff_ContractOffers](../staff/Staff_ContractOffers.md)                                                    | TeamID       | TeamID                            |
 | 60 | 0   | [Staff_Contracts](../staff/Staff_Contracts.md)                                                              | TeamID       | TeamID                            |
@@ -108,4 +108,4 @@ FKs this table points to
 | 64 | 0   | [Board_TeamRating](../board/Board_TeamRating.md)                                                            | TeamID       | TeamID                            |
 | 65 | 0   | [Races_QualifyingResults](../race/Races_QualifyingResults.md)                                               | TeamID       | TeamID                            |
 | 66 | 0   | [Races_GridPenalties](../race/Races_GridPenalties.md)                                                       | TeamID       | TeamID                            |
-| 67 | 0   | [Sponsorship_EngagementActivities](../sponsorship/Sponsorship_EngagementActivities.md)                      | TeamID       | TeamID                            |
+| 67 | 0   | [Sponsorship_EngagementActivities](../sponsorship/engagement/Sponsorship_EngagementActivities.md)                      | TeamID       | TeamID                            |

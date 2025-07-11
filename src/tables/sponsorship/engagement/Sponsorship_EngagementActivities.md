@@ -1,6 +1,6 @@
 Sponsorship_EngagementActivities table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -13,11 +13,11 @@ Column Information:
 | 4  | EngagementGained             | INTEGER   | Yes (1)  | '0'           | No (0)      |
 | 5  | SponsorID                    | TEXT      | No (0)   | null          | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table             | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Teams](../team/Teams.md) | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Teams](../../team/Teams.md) | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |
 
 FKs this table points to
 
