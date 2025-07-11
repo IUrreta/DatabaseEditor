@@ -19,6 +19,6 @@ Column Information:
 
 | ID | Seq | Foreign Table                                                         | Local Column   | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------------------------------|----------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_BasicData](../../../staff/Staff_BasicData.md)                   | StaffID        | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Staff_BasicData](../../../staff/data/Staff_BasicData.md)                   | StaffID        | StaffID        | RESTRICT  | CASCADE   | NONE       |
 | 1  | 0   | [Onboarding_Tutorial_Enum_States](Onboarding_Tutorial_Enum_States.md) | State          | State          | NO ACTION | NO ACTION | NONE       |
 | 2  | 0   | [Onboarding_Enum_PlayerStepTypes](../../Onboarding_Enum_PlayerStepTypes.md) | PlayerStepType | PlayerStepType | NO ACTION | NO ACTION | NONE       |

@@ -15,6 +15,6 @@ Column Information:
 
 | ID | Seq | Foreign Table                                            | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|----------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_Enum_StaffType](../../staff/Staff_Enum_StaffType.md) | StaffType    | StaffType      | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Staff_Enum_StaffType](../../staff/enum/Staff_Enum_StaffType.md) | StaffType    | StaffType      | RESTRICT  | CASCADE   | NONE       |
 | 1  | 0   | [Parts_Designs_StatValues](Parts_Designs_StatValues.md)  | DesignID     | DesignID       | RESTRICT  | CASCADE   | NONE       |
 | 1  | 1   | [Parts_Designs_StatValues](Parts_Designs_StatValues.md)  | PartStat     | PartStat       | RESTRICT  | CASCADE   | NONE       |

@@ -19,4 +19,4 @@ Column Information:
 | ID | Seq | Foreign Table                                         | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Seasons](../season/Seasons.md)                       | SeasonID     | SeasonID       | NO ACTION | CASCADE   | NONE       |
-| 1  | 0   | [Staff_DriverData](../staff/Staff_DriverData.md) | DriverID     | StaffID        | CASCADE   | CASCADE   | NONE       |
+| 1  | 0   | [Staff_DriverData](../staff/driver/Staff_DriverData.md) | DriverID     | StaffID        | CASCADE   | CASCADE   | NONE       |

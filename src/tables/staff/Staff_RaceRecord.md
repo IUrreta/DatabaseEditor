@@ -17,4 +17,4 @@ Column Information:
 
 | ID | Seq | Foreign Table                                     | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_GameData](Staff_GameData.md) | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Staff_GameData](data/Staff_GameData.md) | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |

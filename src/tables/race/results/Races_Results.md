@@ -33,5 +33,5 @@ Column Information:
 | 0  | 0   | [Teams](../../team/Teams.md)                                                              | TeamID       | TeamID         | NO ACTION | NO ACTION | NONE       |
 | 1  | 0   | [Seasons](../../season/Seasons.md)                                                        | Season       | SeasonID       | NO ACTION | CASCADE   | NONE       |
 | 2  | 0   | [Races](../Races.md)                                                                      | RaceID       | RaceID         | NO ACTION | CASCADE   | NONE       |
-| 3  | 0   | [Staff_DriverData](../../staff/Staff_DriverData.md)                                  | DriverID     | StaffID        | CASCADE   | CASCADE   | NONE       |
-| 4  | 0   | [Staff_Enum_DriverSessionPerformance](../../staff/Staff_Enum_DriverSessionPerformance.md) | Performance  | Value          | RESTRICT  | CASCADE   | NONE       |
+| 3  | 0   | [Staff_DriverData](../../staff/driver/Staff_DriverData.md)                                  | DriverID     | StaffID        | CASCADE   | CASCADE   | NONE       |
+| 4  | 0   | [Staff_Enum_DriverSessionPerformance](../../staff/enum/Staff_Enum_DriverSessionPerformance.md) | Performance  | Value          | RESTRICT  | CASCADE   | NONE       |

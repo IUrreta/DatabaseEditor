@@ -19,5 +19,5 @@ Column Information:
 | ID | Seq | Foreign Table                                                                  | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|--------------------------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Teams](../../team/Teams.md)                                                      | TeamID       | TeamID         | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Staff_Enum_PerformanceStatTypes](../../staff/Staff_Enum_PerformanceStatTypes.md) | StatID       | Value          | NO ACTION | NO ACTION | NONE       |
-| 2  | 0   | [Staff_GameData](../../staff/Staff_GameData.md)                              | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Staff_Enum_PerformanceStatTypes](../../staff/enum/Staff_Enum_PerformanceStatTypes.md) | StatID       | Value          | NO ACTION | NO ACTION | NONE       |
+| 2  | 0   | [Staff_GameData](../../staff/data/Staff_GameData.md)                              | StaffID      | StaffID        | RESTRICT  | CASCADE   | NONE       |

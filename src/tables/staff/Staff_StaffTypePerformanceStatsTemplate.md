@@ -15,5 +15,5 @@ Column Information:
 
 | ID | Seq | Foreign Table                                                         | Local Column        | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------------------------------|---------------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_Enum_StaffType](Staff_Enum_StaffType.md)                       | StaffType           | StaffType      | CASCADE   | CASCADE   | NONE       |
-| 1  | 0   | [Staff_Enum_PerformanceStatTypes](Staff_Enum_PerformanceStatTypes.md) | PerformanceStatType | Value          | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Staff_Enum_StaffType](enum/Staff_Enum_StaffType.md)                       | StaffType           | StaffType      | CASCADE   | CASCADE   | NONE       |
+| 1  | 0   | [Staff_Enum_PerformanceStatTypes](enum/Staff_Enum_PerformanceStatTypes.md) | PerformanceStatType | Value          | NO ACTION | NO ACTION | NONE       |

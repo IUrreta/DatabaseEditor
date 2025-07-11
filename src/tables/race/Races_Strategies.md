@@ -25,4 +25,4 @@ Column Information:
 |----|-----|-------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Races_Tracks](Races_Tracks.md)                       | TrackID      | TrackID        | NO ACTION | CASCADE   | NONE       |
 | 1  | 0   | [Seasons](../season/Seasons.md)                       | SeasonID     | SeasonID       | NO ACTION | CASCADE   | NONE       |
-| 2  | 0   | [Staff_DriverData](../staff/Staff_DriverData.md) | DriverID     | StaffID        | NO ACTION | CASCADE   | NONE       |
+| 2  | 0   | [Staff_DriverData](../staff/driver/Staff_DriverData.md) | DriverID     | StaffID        | NO ACTION | CASCADE   | NONE       |

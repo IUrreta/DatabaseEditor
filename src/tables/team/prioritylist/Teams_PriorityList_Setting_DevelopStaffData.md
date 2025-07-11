@@ -14,7 +14,7 @@ Column Information:
 
 | ID | Seq | Foreign Table                                            | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|----------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_Enum_StaffType](../../staff/Staff_Enum_StaffType.md) | StaffType    | StaffType      | CASCADE   | CASCADE   | NONE       |
+| 0  | 0   | [Staff_Enum_StaffType](../../staff/enum/Staff_Enum_StaffType.md) | StaffType    | StaffType      | CASCADE   | CASCADE   | NONE       |
 
 FKs this table points to
 

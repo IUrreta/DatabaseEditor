@@ -19,5 +19,5 @@ Column Information:
 
 | ID | Seq | Foreign Table                                              | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_Enum_NameLocales](Staff_Enum_NameLocales.md) | Locale       | Value          | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Staff_Enum_Gender](Staff_Enum_Gender.md)           | Gender       | Value          | RESTRICT  | RESTRICT  | NONE       |
+| 0  | 0   | [Staff_Enum_NameLocales](enum/Staff_Enum_NameLocales.md) | Locale       | Value          | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Staff_Enum_Gender](enum/Staff_Enum_Gender.md)           | Gender       | Value          | RESTRICT  | RESTRICT  | NONE       |

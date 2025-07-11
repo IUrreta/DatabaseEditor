@@ -16,5 +16,5 @@ Column Information:
 
 | ID | Seq | Foreign Table                                  | Local Column   | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|------------------------------------------------|----------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_GameData](Staff_GameData.md)     | RaceEngineerID | StaffID        | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Staff_DriverData](Staff_DriverData.md) | DriverID       | StaffID        | CASCADE   | CASCADE   | NONE       |
+| 0  | 0   | [Staff_GameData](data/Staff_GameData.md)     | RaceEngineerID | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Staff_DriverData](driver/Staff_DriverData.md) | DriverID       | StaffID        | CASCADE   | CASCADE   | NONE       |
