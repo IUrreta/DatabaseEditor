@@ -48,10 +48,10 @@ FKs this table points to
 | 17 | 0   | [Save_Strategist_QualificationRun](../save/Save_Strategist_QualificationRun.md)                             | TeamID       | TeamID                            |
 | 18 | 0   | [Races_PracticeResults](../race/Races_PracticeResults.md)                                                   | TeamID       | TeamID                            |
 | 19 | 0   | [Buildings_HQ](../building/Buildings_HQ.md)                                                                 | TeamID       | TeamID                            |
-| 20 | 0   | [Scouting_Staff_Bonuses](../scouting/Scouting_Staff_Bonuses.md)                                             | TeamID       | TeamID                            |
-| 21 | 0   | [Scouting_Staff_PerformanceStats](../scouting/Scouting_Staff_PerformanceStats.md)                           | TeamID       | TeamID                            |
-| 22 | 0   | [Scouting_Staff_RaceEngineerDriverAssignments](../scouting/Scouting_Staff_RaceEngineerDriverAssignments.md) | TeamID       | TeamID                            |
-| 23 | 0   | [Scouting_Staff_Traits](../scouting/Scouting_Staff_Traits.md)                                               | TeamID       | TeamID                            |
+| 20 | 0   | [Scouting_Staff_Bonuses](../scouting/staff/Scouting_Staff_Bonuses.md)                                             | TeamID       | TeamID                            |
+| 21 | 0   | [Scouting_Staff_PerformanceStats](../scouting/staff/Scouting_Staff_PerformanceStats.md)                           | TeamID       | TeamID                            |
+| 22 | 0   | [Scouting_Staff_RaceEngineerDriverAssignments](../scouting/staff/Scouting_Staff_RaceEngineerDriverAssignments.md) | TeamID       | TeamID                            |
+| 23 | 0   | [Scouting_Staff_Traits](../scouting/staff/Scouting_Staff_Traits.md)                                               | TeamID       | TeamID                            |
 | 24 | 0   | [Staff_NarrativeData](../staff/Staff_NarrativeData.md)                                                      | TeamID       | TeamID                            |
 | 25 | 0   | [Parts_CarLoadout](../parts/Parts_CarLoadout.md)                                                            | TeamID       | TeamID                            |
 | 26 | 0   | [Teams_RaceRecordPerSeason](racerecord/Teams_RaceRecordPerSeason.md)                                                   | TeamID       | TeamID                            |
@@ -86,7 +86,7 @@ FKs this table points to
 | 44 | 10  | [Player_Record](../player/Player_Record.md)                                                                 | TeamID       | FirstWinTeamID                    |
 | 44 | 11  | [Player_Record](../player/Player_Record.md)                                                                 | TeamID       | LastRaceTeamID                    |
 | 44 | 12  | [Player_Record](../player/Player_Record.md)                                                                 | TeamID       | FirstRaceTeamID                   |
-| 45 | 0   | [Scouting_Staff_Bookmark](../scouting/Scouting_Staff_Bookmark.md)                                           | TeamID       | TeamID                            |
+| 45 | 0   | [Scouting_Staff_Bookmark](../scouting/staff/Scouting_Staff_Bookmark.md)                                           | TeamID       | TeamID                            |
 | 46 | 0   | [Sponsorship_AvailablePackages](../sponsorship/Sponsorship_AvailablePackages.md)                            | TeamID       | TeamID                            |
 | 47 | 0   | [Staff_Team_CAS](../staff/Staff_Team_CAS.md)                                                                | TeamID       | TeamID                            |
 | 48 | 0   | [Teams_AI_Records](Teams_AI_Records.md)                                                                     | TeamID       | TeamID                            |

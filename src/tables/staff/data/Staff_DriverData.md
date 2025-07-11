@@ -38,8 +38,8 @@ FKs this table points to
 |----|-----|-----------------------------------------------------------------------------------------------------------------|--------------|--------------------|
 | 0  | 0   | [Races_Tracks](../../race/Races_Tracks.md)                                                                      | StaffID      | FastestLapDriverID | 
 | 1  | 0   | [Races_Strategies](../../race/Races_Strategies.md)                                                              | StaffID      | DriverID           | 
-| 2  | 0   | [Scouting_Staff_DriverRivalryEventLogs](../../scouting/Scouting_Staff_DriverRivalryEventLogs.md)                | StaffID      | RivalID            | 
-| 2  | 1   | [Scouting_Staff_DriverRivalryEventLogs](../../scouting/Scouting_Staff_DriverRivalryEventLogs.md)                | StaffID      | DriverID           | 
+| 2  | 0   | [Scouting_Staff_DriverRivalryEventLogs](../../scouting/staff/Scouting_Staff_DriverRivalryEventLogs.md)                | StaffID      | RivalID            | 
+| 2  | 1   | [Scouting_Staff_DriverRivalryEventLogs](../../scouting/staff/Scouting_Staff_DriverRivalryEventLogs.md)                | StaffID      | DriverID           | 
 | 3  | 0   | [Staff_DriverRivalryEventLogs](../Staff_DriverRivalryEventLogs.md)                                              | StaffID      | RivalID            | 
 | 3  | 1   | [Staff_DriverRivalryEventLogs](../Staff_DriverRivalryEventLogs.md)                                              | StaffID      | DriverID           | 
 | 4  | 0   | [Races_PracticeResults](../../race/Races_PracticeResults.md)                                                    | StaffID      | DriverID           | 

@@ -16,5 +16,5 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                                                 | Local Column | Foreign Column   | 
 |----|-----|-----------------------------------------------------------------------------------------------|--------------|------------------|
-| 0  | 0   | [Scouting_Staff_DriverRivalryEventLogs](../scouting/Scouting_Staff_DriverRivalryEventLogs.md) | Value        | RivalryEventType |
+| 0  | 0   | [Scouting_Staff_DriverRivalryEventLogs](../scouting/staff/Scouting_Staff_DriverRivalryEventLogs.md) | Value        | RivalryEventType |
 | 1  | 0   | [Staff_DriverRivalryEventLogs](Staff_DriverRivalryEventLogs.md)                               | Value        | RivalryEventType |

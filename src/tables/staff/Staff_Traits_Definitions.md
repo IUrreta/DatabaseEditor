@@ -30,4 +30,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                 | Local Column | Foreign Column | 
 |----|-----|---------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Scouting_Staff_Traits](../scouting/Scouting_Staff_Traits.md) | TraitID      | TraitID        |
+| 0  | 0   | [Scouting_Staff_Traits](../scouting/staff/Scouting_Staff_Traits.md) | TraitID      | TraitID        |

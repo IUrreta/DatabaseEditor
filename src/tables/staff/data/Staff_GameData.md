@@ -33,18 +33,18 @@ FKs this table points to
 |----|-----|----------------------------------------------------------------------------------------------------------------|--------------|----------------|
 | 0  | 0   | [Staff_DriverData](Staff_DriverData.md)                                                                        | StaffID      | StaffID        |
 | 1  | 0   | [Staff_Contracts](Staff_Contracts.md)                                                                          | StaffID      | StaffID        |
-| 2  | 0   | [Scouting_Staff_Bonuses](../../scouting/Scouting_Staff_Bonuses.md)                                             | StaffID      | StaffID        |
+| 2  | 0   | [Scouting_Staff_Bonuses](../../scouting/staff/Scouting_Staff_Bonuses.md)                                             | StaffID      | StaffID        |
 | 3  | 0   | [Staff_PerformanceStats](../Staff_PerformanceStats.md)                                                         | StaffID      | StaffID        |
-| 4  | 0   | [Scouting_Staff_PerformanceStats](../../scouting/Scouting_Staff_PerformanceStats.md)                           | StaffID      | StaffID        |
-| 5  | 0   | [Scouting_Staff_RaceEngineerDriverAssignments](../../scouting/Scouting_Staff_RaceEngineerDriverAssignments.md) | StaffID      | RaceEngineerID |
-| 6  | 0   | [Scouting_Staff_RaceEngineerDriverAssignments](../../scouting/Scouting_Staff_RaceEngineerDriverAssignments.md) | StaffID      | DriverID       |
+| 4  | 0   | [Scouting_Staff_PerformanceStats](../../scouting/staff/Scouting_Staff_PerformanceStats.md)                           | StaffID      | StaffID        |
+| 5  | 0   | [Scouting_Staff_RaceEngineerDriverAssignments](../../scouting/staff/Scouting_Staff_RaceEngineerDriverAssignments.md) | StaffID      | RaceEngineerID |
+| 6  | 0   | [Scouting_Staff_RaceEngineerDriverAssignments](../../scouting/staff/Scouting_Staff_RaceEngineerDriverAssignments.md) | StaffID      | DriverID       |
 | 7  | 0   | [Staff_RaceEngineerDriverAssignments](../Staff_RaceEngineerDriverAssignments.md)                               | StaffID      | RaceEngineerID |
 | 8  | 0   | [Staff_Driver_Achievements](../Staff_Driver_Achievements.md)                                                   | StaffID      | StaffID        |
-| 9  | 0   | [Scouting_Staff_Traits](../../scouting/Scouting_Staff_Traits.md)                                               | StaffID      | StaffID        |
+| 9  | 0   | [Scouting_Staff_Traits](../../scouting/staff/Scouting_Staff_Traits.md)                                               | StaffID      | StaffID        |
 | 10 | 0   | [Staff_Traits](../Staff_Traits.md)                                                                             | StaffID      | StaffID        |
 | 11 | 0   | [Staff_PerformanceStats_StartOfMonth](../Staff_PerformanceStats_StartOfMonth.md)                               | StaffID      | StaffID        |
 | 12 | 0   | [Staff_CareerHistory](../Staff_CareerHistory.md)                                                               | StaffID      | StaffID        |
-| 13 | 0   | [Scouting_Staff_Bookmark](../../scouting/Scouting_Staff_Bookmark.md)                                           | StaffID      | StaffID        |
+| 13 | 0   | [Scouting_Staff_Bookmark](../../scouting/staff/Scouting_Staff_Bookmark.md)                                           | StaffID      | StaffID        |
 | 14 | 0   | [Staff_Team_CAS](../Staff_Team_CAS.md)                                                                         | StaffID      | StaffID        |
 | 15 | 0   | [Staff_ContractPatience](../Staff_ContractPatience.md)                                                         | StaffID      | StaffID        |
 | 16 | 0   | [Scouting](../../scouting/Scouting.md)                                                                         | StaffID      | StaffID        |
@@ -52,7 +52,7 @@ FKs this table points to
 | 18 | 0   | [Staff_Contracts](../Staff_Contracts.md)                                                                       | StaffID      | StaffID        |
 | 19 | 0   | [Staff_DriverData](../Staff_DriverData.md)                                                                     | StaffID      | StaffID        |
 | 20 | 0   | [Staff_State](../Staff_State.md)                                                                               | StaffID      | StaffID        |
-| 21 | 0   | [Scouting_Staff_CommonData](../../scouting/Scouting_Staff_CommonData.md)                                       | StaffID      | StaffID        |
+| 21 | 0   | [Scouting_Staff_CommonData](../../scouting/staff/Scouting_Staff_CommonData.md)                                       | StaffID      | StaffID        |
 | 22 | 0   | [Staff_Mentality_Statuses](../Staff_Mentality_Statuses.md)                                                     | StaffID      | StaffID        |
 | 23 | 0   | [Staff_Mentality_AreaOpinions](../Staff_Mentality_AreaOpinions.md)                                             | StaffID      | StaffID        |
 | 24 | 0   | [Staff_Mentality_Events](../Staff_Mentality_Events.md)                                                         | StaffID      | StaffID        |
