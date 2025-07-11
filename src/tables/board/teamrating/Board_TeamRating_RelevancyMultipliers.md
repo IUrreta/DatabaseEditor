@@ -1,6 +1,6 @@
 Board_TeamRating_RelevancyMultipliers table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 

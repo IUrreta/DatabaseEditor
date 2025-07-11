@@ -18,4 +18,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                           | Local Column | Foreign Column | 
 |----|-----|-----------------------------------------|--------------|----------------|
-| 0  | 0   | [Board_Objectives](Board_Objectives.md) | Value        | Type           |
+| 0  | 0   | [Board_Objectives](../Board_Objectives.md) | Value        | Type           |

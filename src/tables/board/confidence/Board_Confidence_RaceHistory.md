@@ -15,4 +15,4 @@ Column Information:
 | ID | Seq | Foreign Table                                                 | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Races_Tracks](../../race/Races_Tracks.md)                       | TrackID      | TrackID        | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Board_Enum_BoardPerformance](../Board_Enum_BoardPerformance.md) | Performance  | Value          | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Board_Enum_BoardPerformance](../enum/Board_Enum_BoardPerformance.md) | Performance  | Value          | NO ACTION | NO ACTION | NONE       |

@@ -21,7 +21,7 @@ FKs this table points to
 | 0  | 0   | [Player_State](../player/Player_State.md)                                              | SeasonID     | CurrentSeason  |
 | 1  | 0   | [Races](../race/Races.md)                                                              | SeasonID     | SeasonID       |
 | 2  | 0   | [Board_Confidence](../board/confidence/Board_Confidence.md)                            | SeasonID     | Season         |
-| 3  | 0   | [Board_SeasonObjectives](../board/objectives/Board_SeasonObjectives.md)                | SeasonID     | SeasonID       |
+| 3  | 0   | [Board_SeasonObjectives](../board/Board_SeasonObjectives.md)                | SeasonID     | SeasonID       |
 | 4  | 0   | [Parts_TeamHistory](../parts/Parts_TeamHistory.md)                                     | SeasonID     | SeasonID       |
 | 5  | 0   | [Races_Strategies](../race/Races_Strategies.md)                                        | SeasonID     | SeasonID       |
 | 6  | 0   | [Races_TeamPerformance](../race/Races_TeamPerformance.md)                              | SeasonID     | SeasonID       |
@@ -40,5 +40,5 @@ FKs this table points to
 | 19 | 0   | [Races_Results](../race/results/Races_Results.md)                                              | SeasonID     | SeasonID       |
 | 20 | 0   | [Races_SprintResults](../race/results/Races_SprintResults.md)                                  | SeasonID     | SeasonID       |
 | 21 | 0   | [Races_FeatureRaceResults](../race/Races_FeatureRaceResults.md)                        | SeasonID     | SeasonID       |
-| 22 | 0   | [Board_TeamRating](../board/Board_TeamRating.md)                                       | SeasonID     | SeasonID       |
+| 22 | 0   | [Board_TeamRating](../board/teamrating/Board_TeamRating.md)                                       | SeasonID     | SeasonID       |
 | 23 | 0   | [Races_QualifyingResults](../race/results/Races_QualifyingResults.md)                          | SeasonID     | SeasonID       |

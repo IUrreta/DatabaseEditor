@@ -1,6 +1,6 @@
 Board_Enum_BoardPerformance table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,7 +15,7 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                              | Local Column | Foreign Column                  | 
 |----|-----|----------------------------------------------------------------------------|--------------|---------------------------------|
-| 0  | 0   | [Board_Confidence_RaceHistory](confidence/Board_Confidence_RaceHistory.md) | Value        | Performance                     |
-| 1  | 0   | [Board_Confidence_RaceMods](confidence/Board_Confidence_RaceMods.md)       | Value        | BoardPerformance                |
-| 2  | 0   | [Board_Enum_ObjectiveStates](objectives/Board_Enum_ObjectiveStates.md)     | Value        | BoardPerformanceFromSeasonObj   |
-| 3  | 0   | [Board_Enum_ObjectiveStates](objectives/Board_Enum_ObjectiveStates.md)     | Value        | BoardPerformanceFromLongTermObj |
+| 0  | 0   | [Board_Confidence_RaceHistory](../confidence/Board_Confidence_RaceHistory.md) | Value        | Performance                     |
+| 1  | 0   | [Board_Confidence_RaceMods](../confidence/Board_Confidence_RaceMods.md)       | Value        | BoardPerformance                |
+| 2  | 0   | [Board_Enum_ObjectiveStates](Board_Enum_ObjectiveStates.md)     | Value        | BoardPerformanceFromSeasonObj   |
+| 3  | 0   | [Board_Enum_ObjectiveStates](Board_Enum_ObjectiveStates.md)     | Value        | BoardPerformanceFromLongTermObj |

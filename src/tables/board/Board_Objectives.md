@@ -1,6 +1,6 @@
 Board_Objectives table
 
-[Column Guide](../../columnFlagsGuide.md)
+[Column Guide](../columnFlagsGuide.md)
 
 Column Information:
 
@@ -13,10 +13,10 @@ Column Information:
 | 4  | State         | INTEGER   | Yes (1)  | '0'           | No (0)      |
 | 5  | EndYear       | INTEGER   | No (0)   | 'NULL'        | No (0)      |
 
-[Foreign Key Details](../../foreignKeyDetails.md)
+[Foreign Key Details](../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                               | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Board_Enum_ObjectiveTypes](Board_Enum_ObjectiveTypes.md)   | Type         | Value          | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Teams](../../team/Teams.md)                                | TeamID       | TeamID         | NO ACTION | NO ACTION | NONE       |
-| 2  | 0   | [Board_Enum_ObjectiveStates](Board_Enum_ObjectiveStates.md) | State        | Value          | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Board_Enum_ObjectiveTypes](enum/Board_Enum_ObjectiveTypes.md)   | Type         | Value          | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Teams](../team/Teams.md)                                | TeamID       | TeamID         | NO ACTION | NO ACTION | NONE       |
+| 2  | 0   | [Board_Enum_ObjectiveStates](enum/Board_Enum_ObjectiveStates.md) | State        | Value          | NO ACTION | NO ACTION | NONE       |

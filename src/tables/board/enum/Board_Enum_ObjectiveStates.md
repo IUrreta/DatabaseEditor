@@ -19,12 +19,12 @@ Column Information:
 
 | ID | Seq | Foreign Table                                                 | Local Column                    | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------------------------------------------|---------------------------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Board_Enum_BoardPerformance](../Board_Enum_BoardPerformance.md) | BoardPerformanceFromSeasonObj   | Value          | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Board_Enum_BoardPerformance](../Board_Enum_BoardPerformance.md) | BoardPerformanceFromLongTermObj | Value          | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Board_Enum_BoardPerformance](Board_Enum_BoardPerformance.md) | BoardPerformanceFromSeasonObj   | Value          | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Board_Enum_BoardPerformance](Board_Enum_BoardPerformance.md) | BoardPerformanceFromLongTermObj | Value          | NO ACTION | NO ACTION | NONE       |
 
 FKs this table points to
 
 | ID | Seq | Foreign Table                                       | Local Column | Foreign Column | 
 |----|-----|-----------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Board_Objectives](Board_Objectives.md)             | Value        | State          |
-| 1  | 0   | [Board_SeasonObjectives](Board_SeasonObjectives.md) | Value        | State          |
+| 0  | 0   | [Board_Objectives](../Board_Objectives.md)             | Value        | State          |
+| 1  | 0   | [Board_SeasonObjectives](../Board_SeasonObjectives.md) | Value        | State          |
