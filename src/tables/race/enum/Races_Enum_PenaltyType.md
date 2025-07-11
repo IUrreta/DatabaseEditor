@@ -1,6 +1,6 @@
 Races_Enum_PenaltyType table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -17,4 +17,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                 | Local Column | Foreign Column   | 
 |----|-----|-----------------------------------------------|--------------|------------------|
-| 0  | 0   | [Races_GridPenalties](Races_GridPenalties.md) | Type         | ReasonForPenalty |
+| 0  | 0   | [Races_GridPenalties](../Races_GridPenalties.md) | Type         | ReasonForPenalty |

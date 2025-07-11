@@ -1,6 +1,6 @@
 Races_Enum_WeekendType table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,5 +15,5 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                         | Local Column | Foreign Column | 
 |----|-----|---------------------------------------|--------------|----------------|
-| 0  | 0   | [Races](Races.md)                     | Type         | WeekendType    |
-| 1  | 0   | [Races_Templates](Races_Templates.md) | Type         | WeekendType    |
+| 0  | 0   | [Races](../Races.md)                     | Type         | WeekendType    |
+| 1  | 0   | [Races_Templates](../Races_Templates.md) | Type         | WeekendType    |

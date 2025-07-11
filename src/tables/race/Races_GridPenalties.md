@@ -21,4 +21,4 @@ Column Information:
 | ID | Seq | Foreign Table                                       | Local Column     | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------------|------------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Teams](../team/Teams.md)                           | TeamID           | TeamID         | NO ACTION | CASCADE   | NONE       |
-| 1  | 0   | [Races_Enum_PenaltyType](Races_Enum_PenaltyType.md) | ReasonForPenalty | Type           | NO ACTION | CASCADE   | NONE       |
+| 1  | 0   | [Races_Enum_PenaltyType](enum/Races_Enum_PenaltyType.md) | ReasonForPenalty | Type           | NO ACTION | CASCADE   | NONE       |

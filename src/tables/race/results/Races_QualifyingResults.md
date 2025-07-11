@@ -1,6 +1,6 @@
 Races_QualifyingResults table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -20,11 +20,11 @@ Column Information:
 | 11 | RaceFormula        | INTEGER        | No (0)   | '1'           | Order 6 (6) |
 | 12 | ChampionshipPoints | INTEGER        | No (0)   | '0'           | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                         | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Teams](../team/Teams.md)                             | TeamID       | TeamID         | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Seasons](../season/Seasons.md)                       | SeasonID     | SeasonID       | NO ACTION | CASCADE   | NONE       |
-| 2  | 0   | [Races](Races.md)                                     | RaceID       | RaceID         | NO ACTION | CASCADE   | NONE       |
-| 3  | 0   | [Staff_DriverData](../staff/data/Staff_DriverData.md) | DriverID     | StaffID        | CASCADE   | CASCADE   | NONE       |
+| 0  | 0   | [Teams](../../team/Teams.md)                             | TeamID       | TeamID         | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Seasons](../../season/Seasons.md)                       | SeasonID     | SeasonID       | NO ACTION | CASCADE   | NONE       |
+| 2  | 0   | [Races](../Races.md)                                     | RaceID       | RaceID         | NO ACTION | CASCADE   | NONE       |
+| 3  | 0   | [Staff_DriverData](../../staff/data/Staff_DriverData.md) | DriverID     | StaffID        | CASCADE   | CASCADE   | NONE       |

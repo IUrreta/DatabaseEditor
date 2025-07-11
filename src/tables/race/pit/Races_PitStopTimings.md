@@ -1,6 +1,6 @@
 Races_PitStopTimings table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -16,12 +16,12 @@ Column Information:
 | 7  | IncidentDelay | DECIMAL (6, 3) | Yes (1)  | '0.0'         | No (0)      |
 | 8  | Lap           | INTEGER        | Yes (1)  | '0'           | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                                  | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|----------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Staff_DriverData](../staff/data/Staff_DriverData.md)          | DriverID     | StaffID        | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Seasons](../season/Seasons.md)                                | SeasonID     | SeasonID       | RESTRICT  | CASCADE   | NONE       |
-| 2  | 0   | [Races](Races.md))                                             | RaceID       | RaceID         | RESTRICT  | CASCADE   | NONE       |
-| 3  | 0   | [Teams](../team/Teams.md)                                      | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |
-| 4  | 0   | [Staff_Enum_PitStopStage](../staff/Staff_Enum_PitStopStage.md) | PitStopStage | Value          | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Staff_DriverData](../../staff/data/Staff_DriverData.md)          | DriverID     | StaffID        | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Seasons](../../season/Seasons.md)                                | SeasonID     | SeasonID       | RESTRICT  | CASCADE   | NONE       |
+| 2  | 0   | [Races](../Races.md))                                             | RaceID       | RaceID         | RESTRICT  | CASCADE   | NONE       |
+| 3  | 0   | [Teams](../../team/Teams.md)                                      | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |
+| 4  | 0   | [Staff_Enum_PitStopStage](../../staff/Staff_Enum_PitStopStage.md) | PitStopStage | Value          | RESTRICT  | CASCADE   | NONE       |

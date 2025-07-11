@@ -22,4 +22,4 @@ Column Information:
 | ID | Seq | Foreign Table                                       | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Races_Tracks](Races_Tracks.md)                     | TrackID      | TrackID        | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Races_Enum_WeekendType](Races_Enum_WeekendType.md) | WeekendType  | Type           | RESTRICT  | RESTRICT  | NONE       |
+| 1  | 0   | [Races_Enum_WeekendType](enum/Races_Enum_WeekendType.md) | WeekendType  | Type           | RESTRICT  | RESTRICT  | NONE       |

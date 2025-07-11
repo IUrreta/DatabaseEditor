@@ -46,7 +46,7 @@ FKs this table points to
 | 15 | 0   | [Parts_TeamExpertise](../parts/Parts_TeamExpertise.md)                                                      | TeamID       | TeamID                            |
 | 16 | 0   | [Save_Strategist](../save/strategist/Save_Strategist.md)                                                               | TeamID       | TeamID                            |
 | 17 | 0   | [Save_Strategist_QualificationRun](../save/strategist/Save_Strategist_QualificationRun.md)                             | TeamID       | TeamID                            |
-| 18 | 0   | [Races_PracticeResults](../race/Races_PracticeResults.md)                                                   | TeamID       | TeamID                            |
+| 18 | 0   | [Races_PracticeResults](../race/results/Races_PracticeResults.md)                                                   | TeamID       | TeamID                            |
 | 19 | 0   | [Buildings_HQ](../building/Buildings_HQ.md)                                                                 | TeamID       | TeamID                            |
 | 20 | 0   | [Scouting_Staff_Bonuses](../scouting/staff/Scouting_Staff_Bonuses.md)                                             | TeamID       | TeamID                            |
 | 21 | 0   | [Scouting_Staff_PerformanceStats](../scouting/staff/Scouting_Staff_PerformanceStats.md)                           | TeamID       | TeamID                            |
@@ -57,9 +57,9 @@ FKs this table points to
 | 26 | 0   | [Teams_RaceRecordPerSeason](racerecord/Teams_RaceRecordPerSeason.md)                                                   | TeamID       | TeamID                            |
 | 27 | 0   | [Teams_RaceRecordSinceGameStart](racerecord/Teams_RaceRecordSinceGameStart.md)                                         | TeamID       | TeamID                            |
 | 28 | 0   | [Buildings_HQ_History](../building/Buildings_HQ_History.md)                                                 | TeamID       | TeamID                            |
-| 29 | 0   | [Races_PitCrewStandings](../race/Races_PitCrewStandings.md)                                                 | TeamID       | TeamID                            |
-| 30 | 0   | [Races_PitStopResults](../race/Races_PitStopResults.md)                                                     | TeamID       | TeamID                            |
-| 31 | 0   | [Races_PitStopTimings](../race/Races_PitStopTimings.md)                                                     | TeamID       | TeamID                            |
+| 29 | 0   | [Races_PitCrewStandings](../race/pit/Races_PitCrewStandings.md)                                                 | TeamID       | TeamID                            |
+| 30 | 0   | [Races_PitStopResults](../race/pit/Races_PitStopResults.md)                                                     | TeamID       | TeamID                            |
+| 31 | 0   | [Races_PitStopTimings](../race/pit/Races_PitStopTimings.md)                                                     | TeamID       | TeamID                            |
 | 32 | 0   | [Staff_PitCrew_DevelopmentPlan](../staff/Staff_PitCrew_DevelopmentPlan.md)                                  | TeamID       | TeamID                            |
 | 33 | 0   | [Staff_PitCrew_DevelopmentPlanGlobalData](../staff/Staff_PitCrew_DevelopmentPlanGlobalData.md)              | TeamID       | TeamID                            |
 | 34 | 0   | [Staff_PitCrew_PerformanceStats](../staff/Staff_PitCrew_PerformanceStats.md)                                | TeamID       | TeamID                            |
@@ -102,10 +102,10 @@ FKs this table points to
 | 58 | 0   | [Player](../player/Player.md)                                                                               | TeamID       | TeamID                            |
 | 59 | 0   | [Staff_ContractOffers](../staff/Staff_ContractOffers.md)                                                    | TeamID       | TeamID                            |
 | 60 | 0   | [Staff_Contracts](../staff/Staff_Contracts.md)                                                              | TeamID       | TeamID                            |
-| 61 | 0   | [Races_Results](../race/Races_Results.md)                                                                   | TeamID       | TeamID                            |
-| 62 | 0   | [Races_SprintResults](../race/Races_SprintResults.md)                                                       | TeamID       | TeamID                            |
+| 61 | 0   | [Races_Results](../race/results/Races_Results.md)                                                                   | TeamID       | TeamID                            |
+| 62 | 0   | [Races_SprintResults](../race/results/Races_SprintResults.md)                                                       | TeamID       | TeamID                            |
 | 63 | 0   | [Races_FeatureRaceResults](../race/Races_FeatureRaceResults.md)                                             | TeamID       | TeamID                            |
 | 64 | 0   | [Board_TeamRating](../board/Board_TeamRating.md)                                                            | TeamID       | TeamID                            |
-| 65 | 0   | [Races_QualifyingResults](../race/Races_QualifyingResults.md)                                               | TeamID       | TeamID                            |
+| 65 | 0   | [Races_QualifyingResults](../race/results/Races_QualifyingResults.md)                                               | TeamID       | TeamID                            |
 | 66 | 0   | [Races_GridPenalties](../race/Races_GridPenalties.md)                                                       | TeamID       | TeamID                            |
 | 67 | 0   | [Sponsorship_EngagementActivities](../sponsorship/engagement/Sponsorship_EngagementActivities.md)                      | TeamID       | TeamID                            |

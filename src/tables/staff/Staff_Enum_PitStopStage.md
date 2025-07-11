@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                           | Local Column | Foreign Column | 
 |----|-----|---------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Races_PitStopTimings](../race/Races_PitStopTimings.md) | Value        | PitStopStage   |
+| 0  | 0   | [Races_PitStopTimings](../race/pit/Races_PitStopTimings.md) | Value        | PitStopStage   |

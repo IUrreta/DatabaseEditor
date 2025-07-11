@@ -15,6 +15,6 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                   | Local Column | Foreign Column | 
 |----|-----|-----------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Races_Results](../race/Races_Results.md)                       | Value        | Performance    |
-| 1  | 0   | [Races_SprintResults](../race/Races_SprintResults.md)           | Value        | Performance    |
+| 0  | 0   | [Races_Results](../race/results/Races_Results.md)                       | Value        | Performance    |
+| 1  | 0   | [Races_SprintResults](../race/results/Races_SprintResults.md)           | Value        | Performance    |
 | 2  | 0   | [Races_FeatureRaceResults](../race/Races_FeatureRaceResults.md) | Value        | Performance    |
