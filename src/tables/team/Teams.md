@@ -22,7 +22,7 @@ Column Information:
 
 | ID | Seq | Foreign Table                | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Countries](../Countries.md) | CountryID    | CountryID      | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Countries](../countries/Countries.md) | CountryID    | CountryID      | RESTRICT  | CASCADE   | NONE       |
 
 FKs this table points to
 
@@ -102,3 +102,10 @@ FKs this table points to
 | 58 | 0   | [Player](../player/Player.md)                                                                               | TeamID       | TeamID                            |
 | 59 | 0   | [Staff_ContractOffers](../staff/Staff_ContractOffers.md)                                                    | TeamID       | TeamID                            |
 | 60 | 0   | [Staff_Contracts](../staff/Staff_Contracts.md)                                                              | TeamID       | TeamID                            |
+| 61 | 0   | [Races_Results](../race/Races_Results.md)                                                                   | TeamID       | TeamID                            |
+| 62 | 0   | [Races_SprintResults](../race/Races_SprintResults.md)                                                       | TeamID       | TeamID                            |
+| 63 | 0   | [Races_FeatureRaceResults](../race/Races_FeatureRaceResults.md)                                             | TeamID       | TeamID                            |
+| 64 | 0   | [Board_TeamRating](../board/Board_TeamRating.md)                                                            | TeamID       | TeamID                            |
+| 65 | 0   | [Races_QualifyingResults](../race/Races_QualifyingResults.md)                                               | TeamID       | TeamID                            |
+| 66 | 0   | [Races_GridPenalties](../race/Races_GridPenalties.md)                                                       | TeamID       | TeamID                            |
+| 67 | 0   | [Sponsorship_EngagementActivities](../sponsorship/Sponsorship_EngagementActivities.md)                      | TeamID       | TeamID                            |

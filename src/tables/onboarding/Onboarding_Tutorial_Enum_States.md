@@ -16,3 +16,4 @@ FKs this table points to
 | ID | Seq | Foreign Table                                                                 | Local Column | Foreign Column | 
 |----|-----|-------------------------------------------------------------------------------|--------------|----------------|
 | 0  | 0   | [Onboarding_Tutorial_Enum_Objectives](Onboarding_Tutorial_Enum_Objectives.md) | State        | State          |
+| 1  | 0   | [Onboarding_Tutorial_Enum_Sequences](Onboarding_Tutorial_Enum_Sequences.md)   | State        | State          |

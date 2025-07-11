@@ -12,3 +12,9 @@ Column Information:
 | 3  | FirstOffenceModifier | INTEGER   | Yes (1)  | '1'           | No (0)      |
 
 Table has no FKs that point to it. 
+
+FKs this table points to
+
+| ID | Seq | Foreign Table                                 | Local Column | Foreign Column   | 
+|----|-----|-----------------------------------------------|--------------|------------------|
+| 0  | 0   | [Races_GridPenalties](Races_GridPenalties.md) | Type         | ReasonForPenalty |

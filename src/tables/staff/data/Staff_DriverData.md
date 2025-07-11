@@ -55,3 +55,10 @@ FKs this table points to
 | 13 | 0   | [Sponsorship_ActivePackages_SecondaryBonuses](../../sponsorship/Sponsorship_ActivePackages_SecondaryBonuses.md) | StaffID      | AffiliateID        | 
 | 14 | 0   | [Sponsorship_EngagementActivities_Choices](../../sponsorship/Sponsorship_EngagementActivities_Choices.md)       | StaffID      | AffiliateID        | 
 | 15 | 0   | [Sponsorship_AffiliateEngagementActivities](../../sponsorship/Sponsorship_AffiliateEngagementActivities.md)     | StaffID      | StaffID            | 
+| 16 | 0   | [Staff_Driver_RaceRecordSinceGameStart](../Staff_Driver_RaceRecordSinceGameStart.md)                            | StaffID      | StaffID            | 
+| 17 | 0   | [Staff_Driver_RaceRecordBeforeGameStart](../Staff_Driver_RaceRecordBeforeGameStart.md)                          | StaffID      | StaffID            | 
+| 18 | 0   | [Races_Results](../../race/Races_Results.md)                                                                    | StaffID      | DriverID           | 
+| 19 | 0   | [Races_SprintResults](../../race/Races_SprintResults.md)                                                        | StaffID      | DriverID           | 
+| 20 | 0   | [Races_FeatureRaceResults](../../race/Races_FeatureRaceResults.md)                                              | StaffID      | DriverID           | 
+| 21 | 0   | [Sponsorship_RaceBonuses](../../sponsorship/Sponsorship_RaceBonuses.md)                                         | StaffID      | DriverID           | 
+| 22 | 0   | [Races_QualifyingResults](../../race/Races_QualifyingResults.md)                                                | StaffID      | DriverID           | 

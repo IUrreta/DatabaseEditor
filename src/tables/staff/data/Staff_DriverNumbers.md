@@ -19,6 +19,7 @@ Column Information:
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                           | Local Column | Foreign Column        |
-|----|-----|-----------------------------------------|--------------|-----------------------|
-| 0  | 0   | [Staff_DriverData](Staff_DriverData.md) | Number       | LastKnownDriverNumber | 
+| ID | Seq | Foreign Table                              | Local Column | Foreign Column        |
+|----|-----|--------------------------------------------|--------------|-----------------------|
+| 0  | 0   | [Staff_DriverData](Staff_DriverData.md)    | Number       | LastKnownDriverNumber | 
+| 1  | 0   | [Staff_DriverData](../Staff_DriverData.md) | Number       | LastKnownDriverNumber | 

@@ -50,3 +50,10 @@ FKs this table points to
 | 16 | 0   | [Scouting](../../scouting/Scouting.md)                                                                         | StaffID      | StaffID        |
 | 17 | 0   | [Staff_ContractOffers](../Staff_ContractOffers.md)                                                             | StaffID      | StaffID        |
 | 18 | 0   | [Staff_Contracts](../Staff_Contracts.md)                                                                       | StaffID      | StaffID        |
+| 19 | 0   | [Staff_DriverData](../Staff_DriverData.md)                                                                     | StaffID      | StaffID        |
+| 20 | 0   | [Staff_State](../Staff_State.md)                                                                               | StaffID      | StaffID        |
+| 21 | 0   | [Scouting_Staff_CommonData](../../scouting/Scouting_Staff_CommonData.md)                                       | StaffID      | StaffID        |
+| 22 | 0   | [Staff_Mentality_Statuses](../Staff_Mentality_Statuses.md)                                                     | StaffID      | StaffID        |
+| 23 | 0   | [Staff_Mentality_AreaOpinions](../Staff_Mentality_AreaOpinions.md)                                             | StaffID      | StaffID        |
+| 24 | 0   | [Staff_Mentality_Events](../Staff_Mentality_Events.md)                                                         | StaffID      | StaffID        |
+| 25 | 0   | [Staff_RaceRecord](../Staff_RaceRecord.md)                                                                     | StaffID      | StaffID        |

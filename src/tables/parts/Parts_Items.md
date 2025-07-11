@@ -26,6 +26,7 @@ Column Information:
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                           | Local Column | Foreign Column | 
-|----|-----|-----------------------------------------|--------------|----------------|
-| 0  | 0   | [Parts_CarLoadout](Parts_CarLoadout.md) | ItemID       | ItemID         |
+| ID | Seq | Foreign Table                               | Local Column | Foreign Column | 
+|----|-----|---------------------------------------------|--------------|----------------|
+| 0  | 0   | [Parts_CarLoadout](Parts_CarLoadout.md)     | ItemID       | ItemID         |
+| 1  | 0   | [Parts_Items_Faults](Parts_Items_Faults.md) | ItemID       | ItemID         |

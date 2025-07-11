@@ -1,4 +1,4 @@
-Staff_Enum_ContractOfferType table
+Staff_Enum_MentalityEvent table
 
 [Column Guide](../columnFlagsGuide.md)
 
@@ -13,6 +13,6 @@ Table has no FKs that point to it.
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                   | Local Column | Foreign Column | 
-|----|-----|-------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Staff_ContractOffers](Staff_ContractOffers.md) | Value        | OfferType      |
+| ID | Seq | Foreign Table                                       | Local Column | Foreign Column | 
+|----|-----|-----------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Staff_Mentality_Events](Staff_Mentality_Events.md) | Value        | Event          |

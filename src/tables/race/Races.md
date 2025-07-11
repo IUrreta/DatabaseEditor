@@ -34,9 +34,15 @@ Column Information:
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                                  | Local Column | Foreign Column | 
-|----|-----|----------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Races_PracticeResults](Races_PracticeResults.md)              | RaceID       | RaceID         |
-| 1  | 0   | [Races_PitStopResults](Races_PitStopResults.md)                | RaceID       | RaceID         |
-| 2  | 0   | [Races_PitStopTimings](Races_PitStopTimings.md)                | RaceID       | RaceID         |
-| 3  | 0   | [Parts_InspectionResults](../parts/Parts_InspectionResults.md) | RaceID       | RaceID         |
+| ID | Seq | Foreign Table                                                        | Local Column | Foreign Column | 
+|----|-----|----------------------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Races_PracticeResults](Races_PracticeResults.md)                    | RaceID       | RaceID         |
+| 1  | 0   | [Races_PitStopResults](Races_PitStopResults.md)                      | RaceID       | RaceID         |
+| 2  | 0   | [Races_PitStopTimings](Races_PitStopTimings.md)                      | RaceID       | RaceID         |
+| 3  | 0   | [Parts_InspectionResults](../parts/Parts_InspectionResults.md)       | RaceID       | RaceID         |
+| 4  | 0   | [Races_Results](Races_Results.md)                                    | RaceID       | RaceID         |
+| 5  | 0   | [Races_SprintResults](Races_SprintResults.md)                        | RaceID       | RaceID         |
+| 6  | 0   | [Races_FeatureRaceResults](Races_FeatureRaceResults.md)              | RaceID       | RaceID         |
+| 7  | 0   | [Save_Weekend](../save/Save_Weekend.md)                              | RaceID       | RaceID         |
+| 8  | 0   | [Sponsorship_RaceBonuses](../sponsorship/Sponsorship_RaceBonuses.md) | RaceID       | RaceID         |
+| 9  | 0   | [Races_QualifyingResults](Races_QualifyingResults.md)                | RaceID       | RaceID         |

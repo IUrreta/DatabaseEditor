@@ -1,4 +1,4 @@
-Effects_Enum_Effect table
+Sponsorship_Enum_RaceBonusDifficulty table
 
 [Column Guide](../columnFlagsGuide.md)
 
@@ -13,6 +13,6 @@ Table has no FKs that point to it.
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                     | Local Column | Foreign Column | 
-|----|-----|---------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Effects_ActiveEffects](Effects_ActiveEffects.md) | Value        | Effect         |
+| ID | Seq | Foreign Table                                         | Local Column | Foreign Column | 
+|----|-----|-------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Sponsorship_RaceBonuses](Sponsorship_RaceBonuses.md) | Value        | Difficulty     |
