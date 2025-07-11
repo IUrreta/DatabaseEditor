@@ -14,7 +14,7 @@ Column Information:
 
 | ID | Seq | Foreign Table                                            | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|----------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Parts_Enum_DevSpeeds](../../parts/Parts_Enum_DevSpeeds.md) | Speed        | Value          | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Parts_Enum_DevSpeeds](../../parts/enum/Parts_Enum_DevSpeeds.md) | Speed        | Value          | NO ACTION | NO ACTION | NONE       |
 
 FKs this table points to
 

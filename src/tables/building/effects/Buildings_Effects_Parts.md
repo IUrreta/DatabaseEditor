@@ -16,5 +16,5 @@ Column Information:
 | ID | Seq | Foreign Table                                       | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Building_Enum_Types](../Building_Enum_Types.md)    | BuildingType | Type           | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Parts_Enum_Stats](../../parts/Parts_Enum_Stats.md) | StatID       | Value          | CASCADE   | NO ACTION | NONE       |
-| 2  | 0   | [Parts_Enum_Type](../../parts/Parts_Enum_Type.md)   | PartType     | Value          | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Parts_Enum_Stats](../../parts/enum/Parts_Enum_Stats.md) | StatID       | Value          | CASCADE   | NO ACTION | NONE       |
+| 2  | 0   | [Parts_Enum_Type](../../parts/enum/Parts_Enum_Type.md)   | PartType     | Value          | NO ACTION | NO ACTION | NONE       |

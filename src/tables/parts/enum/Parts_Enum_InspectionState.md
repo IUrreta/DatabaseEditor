@@ -1,7 +1,7 @@
 
 Parts_Enum_InspectionState table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -16,5 +16,5 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                               | Local Column | Foreign Column  | 
 |----|-----|-------------------------------------------------------------|--------------|-----------------|
-| 0  | 0   | [Parts_Items](Parts_Items.md)                               | Value        | InspectionState |
+| 0  | 0   | [Parts_Items](../Parts_Items.md)                               | Value        | InspectionState |
 | 1  | 0   | [Parts_Enum_InspectionState](Parts_Enum_InspectionState.md) | Value        | Result          |

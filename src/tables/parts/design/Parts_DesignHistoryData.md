@@ -1,6 +1,6 @@
 Parts_DesignHistoryData table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -12,7 +12,7 @@ Column Information:
 | 3  | RacePodiums  | INTEGER   | Yes (1)  | '0'           | No (0)      |
 | 4  | NumPartsUsed | INTEGER   | Yes (1)  | '0'           | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                     | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------|--------------|----------------|-----------|-----------|------------|

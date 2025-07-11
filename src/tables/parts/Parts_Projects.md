@@ -19,8 +19,8 @@ Column Information:
 
 | ID | Seq | Foreign Table                                            | Local Column     | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|----------------------------------------------------------|------------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Parts_Enum_DevSpeeds](Parts_Enum_DevSpeeds.md)          | ManufactureSpeed | Value          | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Parts_Designs](Parts_Designs.md)                        | DesignID         | DesignID       | NO ACTION | CASCADE   | NONE       |
+| 0  | 0   | [Parts_Enum_DevSpeeds](enum/Parts_Enum_DevSpeeds.md)          | ManufactureSpeed | Value          | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Parts_Designs](design/Parts_Designs.md)                        | DesignID         | DesignID       | NO ACTION | CASCADE   | NONE       |
 | 2  | 0   | [SubTeam_Assignments](../subteam/SubTeam_Assignments.md) | AssignmentID     | AssignmentID   | NO ACTION | NO ACTION | NONE       |
 
 FKs this table points to

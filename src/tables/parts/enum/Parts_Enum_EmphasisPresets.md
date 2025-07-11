@@ -1,6 +1,6 @@
 Parts_Enum_EmphasisPresets table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                           | Local Column | Foreign Column | 
 |----|-----|---------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Parts_DesignFocusPresets](Parts_DesignFocusPresets.md) | Value        | Preset         |
+| 0  | 0   | [Parts_DesignFocusPresets](../design/Parts_DesignFocusPresets.md) | Value        | Preset         |

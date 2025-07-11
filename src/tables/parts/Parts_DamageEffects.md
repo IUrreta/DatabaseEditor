@@ -15,5 +15,5 @@ Column Information:
 
 | ID | Seq | Foreign Table                                         | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Parts_Enum_Type](Parts_Enum_Type.md)                 | PartType     | Value          | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Parts_Enum_DamageStates](Parts_Enum_DamageStates.md) | DamageState  | Value          | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Parts_Enum_Type](enum/Parts_Enum_Type.md)                 | PartType     | Value          | NO ACTION | NO ACTION | NONE       |
+| 1  | 0   | [Parts_Enum_DamageStates](enum/Parts_Enum_DamageStates.md) | DamageState  | Value          | NO ACTION | NO ACTION | NONE       |

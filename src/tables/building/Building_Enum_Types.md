@@ -26,4 +26,4 @@ FKs this table points to
 | 2  | 0   | [Teams_PriorityList_Setting_DevelopBuildingData](../team/prioritylist/Teams_PriorityList_Setting_DevelopBuildingData.md) | Type         | BuildingType   |
 | 3  | 0   | [Buildings_HQ](Buildings_HQ.md)                                                                             | Type         | BuildingType   |
 | 4  | 0   | [Buildings_HQ_History](Buildings_HQ_History.md)                                                             | Type         | Type           |
-| 5  | 0   | [Parts_Designs_BuildingEffects](../parts/Parts_Designs_BuildingEffects.md)                                  | Type         | BuildingType   |
+| 5  | 0   | [Parts_Designs_BuildingEffects](../parts/design/Parts_Designs_BuildingEffects.md)                                  | Type         | BuildingType   |

@@ -1,6 +1,6 @@
 Parts_Enum_EngineManufacturers table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -17,19 +17,19 @@ Column Information:
 | 8  | StartOfSeasonMonthlyCost          | INTEGER   | Yes (1)  | '0'           | No (0)      |
 | 9  | StartOfSeasonMonthlyCostNumMonths | INTEGER   | Yes (1)  | '0'           | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                     | Local Column    | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------|-----------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Teams](../team/Teams.md)         | TeamID          | TeamID         | CASCADE   | NO ACTION | NONE       |
-| 1  | 0   | [Parts_Designs](Parts_Designs.md) | EngineDesignID  | DesignID       | CASCADE   | NO ACTION | NONE       |
-| 2  | 0   | [Parts_Designs](Parts_Designs.md) | GearboxDesignID | DesignID       | CASCADE   | NO ACTION | NONE       |
-| 3  | 0   | [Parts_Designs](Parts_Designs.md) | ErsDesignID     | DesignID       | CASCADE   | NO ACTION | NONE       |
+| 0  | 0   | [Teams](../../team/Teams.md)         | TeamID          | TeamID         | CASCADE   | NO ACTION | NONE       |
+| 1  | 0   | [Parts_Designs](../design/Parts_Designs.md) | EngineDesignID  | DesignID       | CASCADE   | NO ACTION | NONE       |
+| 2  | 0   | [Parts_Designs](../design/Parts_Designs.md) | GearboxDesignID | DesignID       | CASCADE   | NO ACTION | NONE       |
+| 3  | 0   | [Parts_Designs](../design/Parts_Designs.md) | ErsDesignID     | DesignID       | CASCADE   | NO ACTION | NONE       |
 
 FKs this table points to
 
 | ID | Seq | Foreign Table                                                       | Local Column | Foreign Column             | 
 |----|-----|---------------------------------------------------------------------|--------------|----------------------------|
-| 0  | 0   | [Parts_TeamHistory](Parts_TeamHistory.md)                           | Value        | EngineManufacturer         |
-| 1  | 0   | [Player_PreSeason](../player/Player_PreSeason.md)                   | Value        | SelectedEngineManufacturer |
+| 0  | 0   | [Parts_TeamHistory](../Parts_TeamHistory.md)                           | Value        | EngineManufacturer         |
+| 1  | 0   | [Player_PreSeason](../../player/Player_PreSeason.md)                   | Value        | SelectedEngineManufacturer |
 | 2  | 0   | [Parts_Enum_EngineManufacturers](Parts_Enum_EngineManufacturers.md) | Value        | EngineManufacturerID       |

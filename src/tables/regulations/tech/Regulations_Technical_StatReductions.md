@@ -14,5 +14,5 @@ Column Information:
 
 | ID | Seq | Foreign Table                                           | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Parts_Enum_Stats](../../parts/Parts_Enum_Stats.md)        | PartStat     | Value          | CASCADE   | NO ACTION | NONE       |
+| 0  | 0   | [Parts_Enum_Stats](../../parts/enum/Parts_Enum_Stats.md)        | PartStat     | Value          | CASCADE   | NO ACTION | NONE       |
 | 1  | 0   | [Regulations_ChangeGroups](../Regulations_ChangeGroups.md) | GroupID      | GroupID        | CASCADE   | CASCADE   | NONE       |

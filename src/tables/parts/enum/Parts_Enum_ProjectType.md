@@ -1,6 +1,6 @@
-Parts_Enum_EffectStrength table
+Parts_Enum_ProjectType table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 

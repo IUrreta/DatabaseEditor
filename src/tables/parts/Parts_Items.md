@@ -21,8 +21,8 @@ Column Information:
 | ID | Seq | Foreign Table                                               | Local Column    | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------------|-----------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Parts_Projects](Parts_Projects.md)                         | ProjectID       | ProjectID      | NO ACTION | NO ACTION | NONE       |
-| 1  | 0   | [Parts_Designs](Parts_Designs.md)                           | DesignID        | DesignID       | NO ACTION | CASCADE   | NONE       |
-| 2  | 0   | [Parts_Enum_InspectionState](Parts_Enum_InspectionState.md) | InspectionState | Value          | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Parts_Designs](design/Parts_Designs.md)                           | DesignID        | DesignID       | NO ACTION | CASCADE   | NONE       |
+| 2  | 0   | [Parts_Enum_InspectionState](enum/Parts_Enum_InspectionState.md) | InspectionState | Value          | RESTRICT  | CASCADE   | NONE       |
 
 FKs this table points to
 

@@ -17,6 +17,6 @@ Column Information:
 
 | ID | Seq | Foreign Table                         | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|---------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Parts_Enum_Type](Parts_Enum_Type.md) | PartType     | Value          | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Parts_Enum_Type](enum/Parts_Enum_Type.md) | PartType     | Value          | RESTRICT  | CASCADE   | NONE       |
 | 1  | 0   | [Teams](../team/Teams.md)             | TeamID       | TeamID         | RESTRICT  | CASCADE   | NONE       |
-| 2  | 0   | [Parts_Designs](Parts_Designs.md)     | DesignID     | DesignID       | RESTRICT  | CASCADE   | NONE       |
+| 2  | 0   | [Parts_Designs](design/Parts_Designs.md)     | DesignID     | DesignID       | RESTRICT  | CASCADE   | NONE       |

@@ -12,4 +12,4 @@ Column Information:
 
 | ID | Seq | Foreign Table                                                                | Local Column               | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|------------------------------------------------------------------------------|----------------------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Parts_Enum_EngineManufacturers](../parts/Parts_Enum_EngineManufacturers.md) | SelectedEngineManufacturer | Value          | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Parts_Enum_EngineManufacturers](../parts/enum/Parts_Enum_EngineManufacturers.md) | SelectedEngineManufacturer | Value          | NO ACTION | NO ACTION | NONE       |

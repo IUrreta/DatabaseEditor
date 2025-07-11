@@ -17,6 +17,6 @@ Column Information:
 
 | ID | Seq | Foreign Table                                               | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Parts_Enum_InspectionState](Parts_Enum_InspectionState.md) | Result       | Value          | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Parts_Designs](Parts_Designs.md)                           | DesignID     | DesignID       | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Parts_Enum_InspectionState](enum/Parts_Enum_InspectionState.md) | Result       | Value          | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Parts_Designs](design/Parts_Designs.md)                           | DesignID     | DesignID       | RESTRICT  | CASCADE   | NONE       |
 | 2  | 0   | [Races](../race/Races.md)                                   | RaceID       | RaceID         | RESTRICT  | CASCADE   | NONE       |

@@ -1,6 +1,6 @@
 Parts_Enum_Type table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -29,14 +29,14 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                                                                    | Local Column | Foreign Column | 
 |----|-----|------------------------------------------------------------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Buildings_Effects_Parts](../building/effects/Buildings_Effects_Parts.md)                                        | Value        | PartType       |
-| 1  | 0   | [Parts_DamageEffects](Parts_DamageEffects.md)                                                                    | Value        | PartType       |
-| 2  | 0   | [Parts_Designs](Parts_Designs.md)                                                                                | Value        | PartType       |
-| 3  | 0   | [Parts_Designs_TeamData](Parts_Designs_TeamData.md)                                                              | Value        | PartType       |
-| 4  | 0   | [Regulations_Technical_TypeReductions](../regulations/tech/Regulations_Technical_TypeReductions.md)                   | Value        | PartType       |
-| 5  | 0   | [Regulations_Technical_TypeStatComboReductions](../regulations/tech/Regulations_Technical_TypeStatComboReductions.md) | Value        | PartType       |
-| 6  | 0   | [Parts_TeamExpertise](Parts_TeamExpertise.md)                                                                    | Value        | PartType       |
-| 7  | 0   | [Parts_StatDesignFocusModifiers](Parts_StatDesignFocusModifiers.md)                                              | Value        | PartType       |
-| 8  | 0   | [Parts_DesignFocusPresets](Parts_DesignFocusPresets.md)                                                          | Value        | PartType       |
-| 9  | 0   | [Parts_CarLoadout](Parts_CarLoadout.md)                                                                          | Value        | PartType       |
-| 9  | 0   | [Parts_ParcFerme](Parts_ParcFerme.md)                                                                            | Value        | PartType       |
+| 0  | 0   | [Buildings_Effects_Parts](../../building/effects/Buildings_Effects_Parts.md)                                        | Value        | PartType       |
+| 1  | 0   | [Parts_DamageEffects](../Parts_DamageEffects.md)                                                                    | Value        | PartType       |
+| 2  | 0   | [Parts_Designs](../design/Parts_Designs.md)                                                                                | Value        | PartType       |
+| 3  | 0   | [Parts_Designs_TeamData](../design/Parts_Designs_TeamData.md)                                                              | Value        | PartType       |
+| 4  | 0   | [Regulations_Technical_TypeReductions](../../regulations/tech/Regulations_Technical_TypeReductions.md)                   | Value        | PartType       |
+| 5  | 0   | [Regulations_Technical_TypeStatComboReductions](../../regulations/tech/Regulations_Technical_TypeStatComboReductions.md) | Value        | PartType       |
+| 6  | 0   | [Parts_TeamExpertise](../Parts_TeamExpertise.md)                                                                    | Value        | PartType       |
+| 7  | 0   | [Parts_StatDesignFocusModifiers](../Parts_StatDesignFocusModifiers.md)                                              | Value        | PartType       |
+| 8  | 0   | [Parts_DesignFocusPresets](../design/Parts_DesignFocusPresets.md)                                                          | Value        | PartType       |
+| 9  | 0   | [Parts_CarLoadout](../Parts_CarLoadout.md)                                                                          | Value        | PartType       |
+| 9  | 0   | [Parts_ParcFerme](../Parts_ParcFerme.md)                                                                            | Value        | PartType       |

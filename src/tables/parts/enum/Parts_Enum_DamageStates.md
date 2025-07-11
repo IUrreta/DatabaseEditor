@@ -1,6 +1,6 @@
 Parts_Enum_DamageStates table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                 | Local Column | Foreign Column | 
 |----|-----|-----------------------------------------------|--------------|----------------|
-| 0  | 0   | [Parts_DamageEffects](Parts_DamageEffects.md) | Value        | DamageState    |
+| 0  | 0   | [Parts_DamageEffects](../Parts_DamageEffects.md) | Value        | DamageState    |

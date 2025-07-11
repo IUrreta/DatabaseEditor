@@ -16,6 +16,6 @@ Column Information:
 
 | ID | Seq | Foreign Table                           | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Parts_Enum_Stats](Parts_Enum_Stats.md) | SourceStat   | Value          | CASCADE   | NO ACTION | NONE       |
-| 1  | 0   | [Parts_Enum_Type](Parts_Enum_Type.md)   | PartType     | Value          | NO ACTION | NO ACTION | NONE       |
-| 2  | 0   | [Parts_Enum_Stats](Parts_Enum_Stats.md) | ImpactStat   | Value          | CASCADE   | NO ACTION | NONE       |
+| 0  | 0   | [Parts_Enum_Stats](enum/Parts_Enum_Stats.md) | SourceStat   | Value          | CASCADE   | NO ACTION | NONE       |
+| 1  | 0   | [Parts_Enum_Type](enum/Parts_Enum_Type.md)   | PartType     | Value          | NO ACTION | NO ACTION | NONE       |
+| 2  | 0   | [Parts_Enum_Stats](enum/Parts_Enum_Stats.md) | ImpactStat   | Value          | CASCADE   | NO ACTION | NONE       |

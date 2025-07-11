@@ -1,6 +1,6 @@
 Parts_Designs_StatValues table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -14,11 +14,11 @@ Column Information:
 | 5  | ExpertiseGain   | decimal (8, 4) | Yes (1)  | '0.0'         | No (0)      |
 | 6  | ExpertiseEffect | decimal (8, 4) | Yes (1)  | '0.0'         | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                           | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Parts_Enum_Stats](Parts_Enum_Stats.md) | PartStat     | Value          | CASCADE   | NO ACTION | NONE       |
+| 0  | 0   | [Parts_Enum_Stats](../enum/Parts_Enum_Stats.md) | PartStat     | Value          | CASCADE   | NO ACTION | NONE       |
 | 1  | 0   | [Parts_Designs](Parts_Designs.md)       | DesignID     | DesignID       | CASCADE   | CASCADE   | NONE       |
 
 FKs this table points to
