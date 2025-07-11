@@ -19,9 +19,9 @@ Column Information:
 
 | ID | Seq | Foreign Table                                         | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Effects_Enum_Source](Effects_Enum_Source.md)         | Source       | Value          | RESTRICT  | CASCADE   | NONE       |
-| 1  | 0   | [Effects_Enum_EffectType](Effects_Enum_EffectType.md) | EffectType   | Type           | RESTRICT  | CASCADE   | NONE       |
-| 2  | 0   | [Effects_Enum_Effect](Effects_Enum_Effect.md)         | Effect       | Value          | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Effects_Enum_Source](enum/Effects_Enum_Source.md)         | Source       | Value          | RESTRICT  | CASCADE   | NONE       |
+| 1  | 0   | [Effects_Enum_EffectType](enum/Effects_Enum_EffectType.md) | EffectType   | Type           | RESTRICT  | CASCADE   | NONE       |
+| 2  | 0   | [Effects_Enum_Effect](enum/Effects_Enum_Effect.md)         | Effect       | Value          | RESTRICT  | CASCADE   | NONE       |
 
 FKs this table points to
 

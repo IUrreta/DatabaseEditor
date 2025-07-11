@@ -1,6 +1,6 @@
 Effects_Enum_Source table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                     | Local Column | Foreign Column | 
 |----|-----|---------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Effects_ActiveEffects](Effects_ActiveEffects.md) | Value        | Source         |
+| 0  | 0   | [Effects_ActiveEffects](../Effects_ActiveEffects.md) | Value        | Source         |
