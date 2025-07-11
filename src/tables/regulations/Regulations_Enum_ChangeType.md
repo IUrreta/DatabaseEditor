@@ -21,3 +21,5 @@ FKs this table points to
 |----|-----|-----------------------------------------------------------|--------------|----------------|
 | 0  | 0   | [Regulations_EventCalendar](Regulations_EventCalendar.md) | Value        | ChangeType     |
 | 1  | 0   | [Regulations_Proposals](Regulations_Proposals.md)         | Value        | ChangeType     |
+| 2  | 0   | [Regulations_ChangeGroups](Regulations_ChangeGroups.md)   | Value        | ChangeType     |
+| 3  | 0   | [Regulations_Enum_Changes](Regulations_Enum_Changes.md)   | Value        | ChangeType     |

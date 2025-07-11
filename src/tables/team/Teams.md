@@ -47,3 +47,4 @@ FKs this table points to
 | 16 | 0   | [Save_Strategist](../save/Save_Strategist.md)                                   | TeamID       | TeamID         |
 | 17 | 0   | [Save_Strategist_QualificationRun](../save/Save_Strategist_QualificationRun.md) | TeamID       | TeamID         |
 | 18 | 0   | [Races_PracticeResults](../race/Races_PracticeResults.md)                       | TeamID       | TeamID         |
+| 19 | 0   | [Buildings_HQ](../building/Buildings_HQ.md)                                     | TeamID       | TeamID         |

@@ -15,3 +15,9 @@ Column Information:
 | ID | Seq | Foreign Table               | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------|--------------|----------------|-----------|-----------|------------|
 | 0  | 0   | [Mail_Inbox](Mail_Inbox.md) | MailID       | MailID         | NO ACTION | CASCADE   | NONE       |
+
+FKs this table points to
+
+| ID | Seq | Foreign Table                                               | Local Column | Foreign Column | 
+|----|-----|-------------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Mail_Inbox_AttachmentStats](Mail_Inbox_AttachmentStats.md) | AttachmentID | AttachmentID   |

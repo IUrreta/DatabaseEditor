@@ -32,3 +32,4 @@ FKs this table points to
 | ID | Seq | Foreign Table                                       | Local Column | Foreign Column | 
 |----|-----|-----------------------------------------------------|--------------|----------------|
 | 0  | 0   | [Buildings_Effects](./effects/Buildings_Effects.md) | BuildingID   | BuildingID     |
+| 1  | 0   | [Buildings_HQ](Buildings_HQ.md)                     | BuildingID   | BuildingID     |
