@@ -60,3 +60,13 @@ FKs this table points to
 | 29 | 0   | [Races_PitCrewStandings](../race/Races_PitCrewStandings.md)                                                 | TeamID       | TeamID         |
 | 30 | 0   | [Races_PitStopResults](../race/Races_PitStopResults.md)                                                     | TeamID       | TeamID         |
 | 31 | 0   | [Races_PitStopTimings](../race/Races_PitStopTimings.md)                                                     | TeamID       | TeamID         |
+| 32 | 0   | [Staff_PitCrew_DevelopmentPlan](../staff/Staff_PitCrew_DevelopmentPlan.md)                                  | TeamID       | TeamID         |
+| 33 | 0   | [Staff_PitCrew_DevelopmentPlanGlobalData](../staff/Staff_PitCrew_DevelopmentPlanGlobalData.md)              | TeamID       | TeamID         |
+| 34 | 0   | [Staff_PitCrew_PerformanceStats](../staff/Staff_PitCrew_PerformanceStats.md)                                | TeamID       | TeamID         |
+| 35 | 0   | [Staff_PitCrew_RaceWeekendFatigue](../staff/Staff_PitCrew_RaceWeekendFatigue.md)                            | TeamID       | TeamID         |
+| 36 | 0   | [Teams_PitCrewRecordBeforeGameStart](Teams_PitCrewRecordBeforeGameStart.md)                                 | TeamID       | TeamID         |
+| 37 | 0   | [Teams_PitCrewRecordPerSeason](Teams_PitCrewRecordPerSeason.md)                                             | TeamID       | TeamID         |
+| 38 | 0   | [Teams_PitCrewRecordSinceGameStart](Teams_PitCrewRecordSinceGameStart.md)                                   | TeamID       | TeamID         |
+| 39 | 0   | [Teams_RaceRecordBeforeGameStart](Teams_RaceRecordBeforeGameStart.md)                                       | TeamID       | TeamID         |
+| 40 | 0   | [Save_Strategist_Practice](../save/Save_Strategist_Practice.md)                                             | TeamID       | TeamID         |
+| 41 | 0   | [Player_History](../player/Player_History.md)                                                               | TeamID       | TeamID         |

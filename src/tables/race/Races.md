@@ -34,8 +34,9 @@ Column Information:
 
 FKs this table points to
 
-| ID | Seq | Foreign Table                                     | Local Column | Foreign Column | 
-|----|-----|---------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Races_PracticeResults](Races_PracticeResults.md) | RaceID       | RaceID         |
-| 1  | 0   | [Races_PitStopResults](Races_PitStopResults.md)   | RaceID       | RaceID         |
-| 2  | 0   | [Races_PitStopTimings](Races_PitStopTimings.md)   | RaceID       | RaceID         |
+| ID | Seq | Foreign Table                                                  | Local Column | Foreign Column | 
+|----|-----|----------------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Races_PracticeResults](Races_PracticeResults.md)              | RaceID       | RaceID         |
+| 1  | 0   | [Races_PitStopResults](Races_PitStopResults.md)                | RaceID       | RaceID         |
+| 2  | 0   | [Races_PitStopTimings](Races_PitStopTimings.md)                | RaceID       | RaceID         |
+| 3  | 0   | [Parts_InspectionResults](../parts/Parts_InspectionResults.md) | RaceID       | RaceID         |

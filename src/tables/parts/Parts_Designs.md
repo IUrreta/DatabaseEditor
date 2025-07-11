@@ -45,3 +45,4 @@ FKs this table points to
 | 2  | 0   | [Parts_Designs_StatValues](Parts_Designs_StatValues.md) | DesignID     | DesignID       |
 | 3  | 0   | [Parts_CarLoadout](Parts_CarLoadout.md)                 | DesignID     | DesignID       |
 | 4  | 0   | [Parts_Items](Parts_Items.md)                           | DesignID     | DesignID       |
+| 5  | 0   | [Parts_InspectionResults](Parts_InspectionResults.md)   | DesignID     | DesignID       |

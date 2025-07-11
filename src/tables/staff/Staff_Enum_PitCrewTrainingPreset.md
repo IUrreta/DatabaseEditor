@@ -10,3 +10,9 @@ Column Information:
 | 1  | Name  | TEXT      | Yes (1)  | null          | No (0)      |
 
 Table has no FKs that point to it. 
+
+FKs this table points to
+
+| ID | Seq | Foreign Table                                                                         | Local Column | Foreign Column | 
+|----|-----|---------------------------------------------------------------------------------------|--------------|----------------|
+| 0  | 0   | [Staff_PitCrew_DevelopmentPlanGlobalData](Staff_PitCrew_DevelopmentPlanGlobalData.md) | Value        | TrainingPreset |

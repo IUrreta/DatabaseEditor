@@ -18,7 +18,7 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                                    | Local Column | Foreign Column | 
 |----|-----|----------------------------------------------------------------------------------|--------------|----------------|
-| 0  | 0   | [Player_State](../Player_State.md)                                               | SeasonID     | CurrentSeason  |
+| 0  | 0   | [Player_State](../player/Player_State.md)                                               | SeasonID     | CurrentSeason  |
 | 1  | 0   | [Races](../race/Races.md)                                                        | SeasonID     | SeasonID       |
 | 2  | 0   | [Board_Confidence](../board/confidence/Board_Confidence.md)                      | SeasonID     | Season         |
 | 3  | 0   | [Board_SeasonObjectives](../board/objectives/Board_SeasonObjectives.md)          | SeasonID     | SeasonID       |
@@ -33,3 +33,4 @@ FKs this table points to
 | 12 | 0   | [Races_PitCrewStandings](../race/Races_PitCrewStandings.md)                      | SeasonID     | SeasonID       |
 | 13 | 0   | [Races_PitStopResults](../race/Races_PitStopResults.md)                          | SeasonID     | SeasonID       |
 | 14 | 0   | [Races_PitStopTimings](../race/Races_PitStopTimings.md)                          | SeasonID     | SeasonID       |
+| 15 | 0   | [Teams_PitCrewRecordPerSeason](../team/Teams_PitCrewRecordPerSeason.md)          | SeasonID     | SeasonID       |
