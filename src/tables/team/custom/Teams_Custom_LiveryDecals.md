@@ -1,6 +1,6 @@
 Teams_Custom_LiveryDecals table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 

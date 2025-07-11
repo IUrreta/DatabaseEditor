@@ -29,11 +29,11 @@ FKs this table points to
 | 8  | 0   | [Races_PracticeResults](../race/Races_PracticeResults.md)                              | SeasonID     | SeasonID       |
 | 9  | 0   | [Races_DriverStandings](../race/Races_DriverStandings.md)                              | SeasonID     | SeasonID       |
 | 10 | 0   | [Staff_Driver_RaceRecordPerSeason](../staff/Staff_Driver_RaceRecordPerSeason.md)       | SeasonID     | SeasonID       |
-| 11 | 0   | [Teams_RaceRecordPerSeason](../team/Teams_RaceRecordPerSeason.md)                      | SeasonID     | SeasonID       |
+| 11 | 0   | [Teams_RaceRecordPerSeason](../team/racerecord/Teams_RaceRecordPerSeason.md)                      | SeasonID     | SeasonID       |
 | 12 | 0   | [Races_PitCrewStandings](../race/Races_PitCrewStandings.md)                            | SeasonID     | SeasonID       |
 | 13 | 0   | [Races_PitStopResults](../race/Races_PitStopResults.md)                                | SeasonID     | SeasonID       |
 | 14 | 0   | [Races_PitStopTimings](../race/Races_PitStopTimings.md)                                | SeasonID     | SeasonID       |
-| 15 | 0   | [Teams_PitCrewRecordPerSeason](../team/Teams_PitCrewRecordPerSeason.md)                | SeasonID     | SeasonID       |
+| 15 | 0   | [Teams_PitCrewRecordPerSeason](../team/pitcrew/Teams_PitCrewRecordPerSeason.md)                | SeasonID     | SeasonID       |
 | 16 | 0   | [Teams_AI_Records](../team/Teams_AI_Records.md)                                        | SeasonID     | SeasonID       |
 | 17 | 0   | [Finance_TeamBudget_SpendingBuckets](../finance/Finance_TeamBudget_SpendingBuckets.md) | SeasonID     | SeasonID       |
 | 18 | 0   | [Finance_TeamBudget](../finance/Finance_TeamBudget.md)                                 | SeasonID     | SeasonID       |

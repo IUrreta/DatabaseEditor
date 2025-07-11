@@ -1,6 +1,6 @@
 Teams_PriorityList table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -13,7 +13,7 @@ Column Information:
 | 4  | DevelopBuildingSettingsID | INTEGER   | No (0)   | 'NULL'        | No (0)      |
 | 5  | DevelopStaffSettingsID    | INTEGER   | No (0)   | 'NULL'        | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                                                                       | Local Column              | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------------------------------------------------------------|---------------------------|----------------|-----------|-----------|------------|

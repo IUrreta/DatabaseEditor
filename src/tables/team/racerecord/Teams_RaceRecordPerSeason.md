@@ -1,6 +1,6 @@
 Teams_RaceRecordPerSeason table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -52,18 +52,18 @@ Column Information:
 | 43 | BestSprintFinishYear                | INTEGER   | No (0)   | 'NULL'        | No (0)      |
 | 44 | BestSprintFinishTrackID             | INTEGER   | No (0)   | 'NULL'        | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                           | Local Column            | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------|-------------------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Teams](../team/Teams.md)               | TeamID                  | TeamID         | NO ACTION | CASCADE   | NONE       |
-| 1  | 0   | [Seasons](../season/Seasons.md)         | SeasonID                | SeasonID       | CASCADE   | CASCADE   | NONE       |
-| 2  | 0   | [Races_Tracks](../race/Races_Tracks.md) | LastWinTrackID          | TrackID        | NO ACTION | NO ACTION | NONE       |
-| 3  | 0   | [Races_Tracks](../race/Races_Tracks.md) | LastRaceTrackID         | TrackID        | NO ACTION | NO ACTION | NONE       |
-| 4  | 0   | [Races_Tracks](../race/Races_Tracks.md) | FirstWinTrackID         | TrackID        | NO ACTION | NO ACTION | NONE       |
-| 5  | 0   | [Races_Tracks](../race/Races_Tracks.md) | FirstRaceTrackID        | TrackID        | NO ACTION | NO ACTION | NONE       |
-| 6  | 0   | [Races_Tracks](../race/Races_Tracks.md) | FirstPointsTrackID      | TrackID        | NO ACTION | NO ACTION | NONE       |
-| 7  | 0   | [Races_Tracks](../race/Races_Tracks.md) | FirstPodiumTrackID      | TrackID        | NO ACTION | NO ACTION | NONE       |
-| 8  | 0   | [Races_Tracks](../race/Races_Tracks.md) | BestQualifyingTrackID   | TrackID        | NO ACTION | NO ACTION | NONE       |
-| 9  | 0   | [Races_Tracks](../race/Races_Tracks.md) | BestFinishTrackID       | TrackID        | NO ACTION | NO ACTION | NONE       |
-| 10 | 0   | [Races_Tracks](../race/Races_Tracks.md) | BestSprintFinishTrackID | TrackID        | RESTRICT  | CASCADE   | NONE       |
+| 0  | 0   | [Teams](../Teams.md)               | TeamID                  | TeamID         | NO ACTION | CASCADE   | NONE       |
+| 1  | 0   | [Seasons](../../season/Seasons.md)         | SeasonID                | SeasonID       | CASCADE   | CASCADE   | NONE       |
+| 2  | 0   | [Races_Tracks](../../race/Races_Tracks.md) | LastWinTrackID          | TrackID        | NO ACTION | NO ACTION | NONE       |
+| 3  | 0   | [Races_Tracks](../../race/Races_Tracks.md) | LastRaceTrackID         | TrackID        | NO ACTION | NO ACTION | NONE       |
+| 4  | 0   | [Races_Tracks](../../race/Races_Tracks.md) | FirstWinTrackID         | TrackID        | NO ACTION | NO ACTION | NONE       |
+| 5  | 0   | [Races_Tracks](../../race/Races_Tracks.md) | FirstRaceTrackID        | TrackID        | NO ACTION | NO ACTION | NONE       |
+| 6  | 0   | [Races_Tracks](../../race/Races_Tracks.md) | FirstPointsTrackID      | TrackID        | NO ACTION | NO ACTION | NONE       |
+| 7  | 0   | [Races_Tracks](../../race/Races_Tracks.md) | FirstPodiumTrackID      | TrackID        | NO ACTION | NO ACTION | NONE       |
+| 8  | 0   | [Races_Tracks](../../race/Races_Tracks.md) | BestQualifyingTrackID   | TrackID        | NO ACTION | NO ACTION | NONE       |
+| 9  | 0   | [Races_Tracks](../../race/Races_Tracks.md) | BestFinishTrackID       | TrackID        | NO ACTION | NO ACTION | NONE       |
+| 10 | 0   | [Races_Tracks](../../race/Races_Tracks.md) | BestSprintFinishTrackID | TrackID        | RESTRICT  | CASCADE   | NONE       |

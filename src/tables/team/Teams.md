@@ -54,8 +54,8 @@ FKs this table points to
 | 23 | 0   | [Scouting_Staff_Traits](../scouting/Scouting_Staff_Traits.md)                                               | TeamID       | TeamID                            |
 | 24 | 0   | [Staff_NarrativeData](../staff/Staff_NarrativeData.md)                                                      | TeamID       | TeamID                            |
 | 25 | 0   | [Parts_CarLoadout](../parts/Parts_CarLoadout.md)                                                            | TeamID       | TeamID                            |
-| 26 | 0   | [Teams_RaceRecordPerSeason](Teams_RaceRecordPerSeason.md)                                                   | TeamID       | TeamID                            |
-| 27 | 0   | [Teams_RaceRecordSinceGameStart](Teams_RaceRecordSinceGameStart.md)                                         | TeamID       | TeamID                            |
+| 26 | 0   | [Teams_RaceRecordPerSeason](racerecord/Teams_RaceRecordPerSeason.md)                                                   | TeamID       | TeamID                            |
+| 27 | 0   | [Teams_RaceRecordSinceGameStart](racerecord/Teams_RaceRecordSinceGameStart.md)                                         | TeamID       | TeamID                            |
 | 28 | 0   | [Buildings_HQ_History](../building/Buildings_HQ_History.md)                                                 | TeamID       | TeamID                            |
 | 29 | 0   | [Races_PitCrewStandings](../race/Races_PitCrewStandings.md)                                                 | TeamID       | TeamID                            |
 | 30 | 0   | [Races_PitStopResults](../race/Races_PitStopResults.md)                                                     | TeamID       | TeamID                            |
@@ -64,10 +64,10 @@ FKs this table points to
 | 33 | 0   | [Staff_PitCrew_DevelopmentPlanGlobalData](../staff/Staff_PitCrew_DevelopmentPlanGlobalData.md)              | TeamID       | TeamID                            |
 | 34 | 0   | [Staff_PitCrew_PerformanceStats](../staff/Staff_PitCrew_PerformanceStats.md)                                | TeamID       | TeamID                            |
 | 35 | 0   | [Staff_PitCrew_RaceWeekendFatigue](../staff/Staff_PitCrew_RaceWeekendFatigue.md)                            | TeamID       | TeamID                            |
-| 36 | 0   | [Teams_PitCrewRecordBeforeGameStart](Teams_PitCrewRecordBeforeGameStart.md)                                 | TeamID       | TeamID                            |
-| 37 | 0   | [Teams_PitCrewRecordPerSeason](Teams_PitCrewRecordPerSeason.md)                                             | TeamID       | TeamID                            |
-| 38 | 0   | [Teams_PitCrewRecordSinceGameStart](Teams_PitCrewRecordSinceGameStart.md)                                   | TeamID       | TeamID                            |
-| 39 | 0   | [Teams_RaceRecordBeforeGameStart](Teams_RaceRecordBeforeGameStart.md)                                       | TeamID       | TeamID                            |
+| 36 | 0   | [Teams_PitCrewRecordBeforeGameStart](pitcrew/Teams_PitCrewRecordBeforeGameStart.md)                                 | TeamID       | TeamID                            |
+| 37 | 0   | [Teams_PitCrewRecordPerSeason](pitcrew/Teams_PitCrewRecordPerSeason.md)                                             | TeamID       | TeamID                            |
+| 38 | 0   | [Teams_PitCrewRecordSinceGameStart](pitcrew/Teams_PitCrewRecordSinceGameStart.md)                                   | TeamID       | TeamID                            |
+| 39 | 0   | [Teams_RaceRecordBeforeGameStart](racerecord/Teams_RaceRecordBeforeGameStart.md)                                       | TeamID       | TeamID                            |
 | 40 | 0   | [Save_Strategist_Practice](../save/Save_Strategist_Practice.md)                                             | TeamID       | TeamID                            |
 | 41 | 0   | [Player_History](../player/Player_History.md)                                                               | TeamID       | TeamID                            |
 | 41 | 0   | [Parts_ParcFerme](../parts/Parts_ParcFerme.md)                                                              | TeamID       | TeamID                            |

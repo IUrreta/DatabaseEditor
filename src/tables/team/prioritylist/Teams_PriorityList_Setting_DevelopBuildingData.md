@@ -1,6 +1,6 @@
 Teams_PriorityList_Setting_DevelopBuildingData table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -11,11 +11,11 @@ Column Information:
 | 2  | Level              | INTEGER      | Yes (1)  | null          | No (0)      |
 | 3  | DegrationThreshold | decimal(3,2) | No (0)   | 'NULL'        | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                             | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------------------|--------------|----------------|-----------|-----------|------------|
-| 0  | 0   | [Building_Enum_Types](../building/Building_Enum_Types.md) | BuildingType | Type           | NO ACTION | NO ACTION | NONE       |
+| 0  | 0   | [Building_Enum_Types](../../building/Building_Enum_Types.md) | BuildingType | Type           | NO ACTION | NO ACTION | NONE       |
 
 FKs this table points to
 

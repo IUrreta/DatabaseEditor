@@ -30,5 +30,5 @@ FKs this table points to
 | 1  | 0   | [Staff_Enum_DevelopmentPlans](Staff_Enum_DevelopmentPlans.md)                                         | StaffType    | StaffType      |
 | 2  | 0   | [Staff_StaffTypePerformanceStatsTemplate](Staff_StaffTypePerformanceStatsTemplate.md)                 | StaffType    | StaffType      |
 | 3  | 0   | [Staff_Traits_Seeding](Staff_Traits_Seeding.md)                                                       | StaffType    | StaffType      |
-| 4  | 0   | [Teams_PriorityList_Setting_DevelopStaffData](../team/Teams_PriorityList_Setting_DevelopStaffData.md) | StaffType    | StaffType      |
+| 4  | 0   | [Teams_PriorityList_Setting_DevelopStaffData](../team/prioritylist/Teams_PriorityList_Setting_DevelopStaffData.md) | StaffType    | StaffType      |
 | 5  | 0   | [Parts_Designs_StaffEffects](../parts/Parts_Designs_StaffEffects.md)                                  | StaffType    | StaffType      |
