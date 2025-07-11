@@ -35,4 +35,4 @@ FKs this table points to
 | 1  | 0   | [Staff_NarrativeData](../Staff_NarrativeData.md)                                             | StaffID      | StaffID        |
 | 2  | 0   | [Staff_Team_CAS](../Staff_Team_CAS.md)                                                       | StaffID      | StaffID        |
 | 3  | 0   | [Staff_DriverFocus](../Staff_DriverFocus.md)                                                 | StaffID      | StaffID        |
-| 4  | 0   | [Onboarding_Tutorial_Enum_Sequences](../../onboarding/Onboarding_Tutorial_Enum_Sequences.md) | StaffID      | StaffID        |
+| 4  | 0   | [Onboarding_Tutorial_Enum_Sequences](../../onboarding/tutorial/enum/Onboarding_Tutorial_Enum_Sequences.md) | StaffID      | StaffID        |

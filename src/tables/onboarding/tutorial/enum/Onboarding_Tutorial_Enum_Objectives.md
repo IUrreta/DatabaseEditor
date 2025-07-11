@@ -1,6 +1,6 @@
 Onboarding_Tutorial_Enum_Objectives table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -10,7 +10,7 @@ Column Information:
 | 1  | Name      | TEXT      | Yes (1)  | null          | No (0)      |
 | 2  | State     | INTEGER   | Yes (1)  | null          | No (0)      |
 
-[Foreign Key Details](../foreignKeyDetails.md)
+[Foreign Key Details](../../../foreignKeyDetails.md)
 
 | ID | Seq | Foreign Table                                                         | Local Column | Foreign Column | On Update | On Delete | Match Type |
 |----|-----|-----------------------------------------------------------------------|--------------|----------------|-----------|-----------|------------|

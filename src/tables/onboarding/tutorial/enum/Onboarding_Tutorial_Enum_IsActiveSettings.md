@@ -1,6 +1,6 @@
 Onboarding_Tutorial_Enum_IsActiveSettings table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../../columnFlagsGuide.md)
 
 Column Information:
 
@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                                     | Local Column    | Foreign Column          | 
 |----|-----|-----------------------------------------------------------------------------------|-----------------|-------------------------|
-| 0  | 0   | [Onboarding_Tutorial_RestrictedActions](Onboarding_Tutorial_RestrictedActions.md) | IsActiveSetting | TutorialIsActiveSetting |
+| 0  | 0   | [Onboarding_Tutorial_RestrictedActions](../Onboarding_Tutorial_RestrictedActions.md) | IsActiveSetting | TutorialIsActiveSetting |

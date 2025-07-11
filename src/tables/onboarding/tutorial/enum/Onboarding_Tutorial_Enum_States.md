@@ -1,6 +1,6 @@
 Onboarding_Tutorial_Enum_States table
 
-[Column Guide](../columnFlagsGuide.md)
+[Column Guide](../../../columnFlagsGuide.md)
 
 Column Information:
 

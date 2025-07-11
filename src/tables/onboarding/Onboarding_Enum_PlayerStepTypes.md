@@ -15,4 +15,4 @@ FKs this table points to
 
 | ID | Seq | Foreign Table                                                               | Local Column   | Foreign Column | 
 |----|-----|-----------------------------------------------------------------------------|----------------|----------------|
-| 0  | 0   | [Onboarding_Tutorial_Enum_Sequences](Onboarding_Tutorial_Enum_Sequences.md) | PlayerStepType | PlayerStepType |
+| 0  | 0   | [Onboarding_Tutorial_Enum_Sequences](tutorial/enum/Onboarding_Tutorial_Enum_Sequences.md) | PlayerStepType | PlayerStepType |
