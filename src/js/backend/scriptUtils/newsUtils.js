@@ -402,6 +402,7 @@ export function generateFakeTransferNews(monthsDone, savedNews) {
     let newsList = [];
 
     monthsDone.forEach(m => {
+        console.log("Month: ", m);
         const entryId = `fake_transfer_${m}`;
 
         if (savedNews[entryId]) {
@@ -413,8 +414,14 @@ export function generateFakeTransferNews(monthsDone, savedNews) {
         const date = new Date(season, m, day);
         const excelDate = dateToExcel(date);
 
-        const worsened = calculateTeamDropsByDate(season, date);
-        if (!worsened.length) return;
+        // let worsened = calculateTeamDropsByDate(season, date);
+        let worsened = {};
+        console.log("Worsened Teams: ", worsened);
+        if (!worsened.length) {
+            const results = fetchSeasonResults(season);
+            const bottomDriversTeams = results.filter(driver => driver[2] > 14).map(driver => driver[1]);
+            worsened = bottomDriversTeams.map(teamId => ({ teamId }));
+        }
 
         const randomTeamId = worsened[
             Math.floor(Math.random() * worsened.length)
@@ -448,6 +455,7 @@ export function generateFakeTransferNews(monthsDone, savedNews) {
                 driverId,
                 team: combined_dict[randomTeamId],
                 teamId: randomTeamId,
+                previouslyDrivenTeams: getPreviouslyDrivenTeams(driverId),
             }],
         };
 
@@ -649,7 +657,7 @@ export function generateTransferRumorsNews(offers, savedNews) {
         .sort((a, b) => b.overall - a.overall)
         .slice(0, 3);
 
-    console.log("TOP 3 DRIVERS", top3Drivers)
+    // console.log("TOP 3 DRIVERS", top3Drivers)
 
     // Si no hay suficientes pilotos, no generamos la noticia
     if (top3Drivers.length < 3) {
@@ -1293,10 +1301,11 @@ export function getTransferDetails(drivers) {
 }
 
 export function getPreviouslyDrivenTeams(driverId) {
+    //select distinct from every race that is not raceID 122 or raceID 124
     const sql = `
         SELECT DISTINCT TeamID, Season
         FROM Races_Results
-        WHERE DriverID = ${driverId}
+        WHERE DriverID = ${driverId} AND RaceID NOT IN (122, 124)
     `
     const rows = queryDB(sql, 'allRows');
     const teams = rows.map(r => {

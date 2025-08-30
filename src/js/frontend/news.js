@@ -5,7 +5,7 @@ import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 
 const newsGrid = document.querySelector('.news-grid');
-const ai = new GoogleGenAI({ apiKey: "API" });
+const ai = new GoogleGenAI({ apiKey: "API_KEY" });
 
 export function place_news(newsList) {
   console.log("Placing news:", newsList);
@@ -354,7 +354,7 @@ async function contextualizeSillySeasonTransferNews(newData) {
 
     prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
     d.previousResultsTeam.forEach((t) => {
-      prompt += `${t.season} - ${t.position} ${t.points}pts\n`;
+      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
     })
 
     prompt += `\n\nHere are the teams that ${d.name} has drivern for in recent years:\n`;
@@ -413,10 +413,14 @@ async function contextualizeFakeTransferNews(newData) {
 
     prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
     d.actualTeamPreviousResults.forEach((t) => {
-      prompt += `${t.season} - ${t.position} ${t.points}pts\n`;
+      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
     })
-  });
 
+    prompt += `\n\nHere are the teams that ${d.name} has driven for in recent years:\n`;
+    d.previouslyDrivenTeams.forEach((t) => {
+      prompt += `${t.season} - ${t.teamName}\n`;
+    });
+  });
 
 
   const driversChamp = resp.content.driverStandings
@@ -735,7 +739,7 @@ function animateToCenter(newsItem) {
 
 async function askGenAI(prompt) {
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-preview-04-17",
+    model: "gemini-2.5-flash",
     contents: prompt
   });
 
@@ -863,3 +867,21 @@ function manage_overlay(imageContainer, overlay, data) {
   }
 }
 
+function getOrdinalSuffix(n) {
+  if (typeof n !== 'number' || isNaN(n) || !isFinite
+    (n)) {
+    console.error("Invalid input for getOrdinalSuffix:", n);
+    return n; // Return the original value if it's not a valid number
+  }
+  let j = n % 10, k = n % 100;
+  if (j == 1 && k != 11) {
+    return n + "st";
+  }
+  if (j == 2 && k != 12) {
+    return n + "nd";
+  }
+  if (j == 3 && k != 13) {
+    return n + "rd";
+  }
+  return n + "th";
+}

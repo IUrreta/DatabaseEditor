@@ -829,6 +829,9 @@ function manage_custom_team(nameColor) {
         document.querySelectorAll(".ct-teamname").forEach(function (elem) {
             elem.dataset.teamshow = nameColor[1]
         })
+        const command = new Command("updateCombinedDict", { teamID: 32, newName: nameColor[1] });
+        command.execute();
+
         document.getElementById("customTeamTransfers").classList.remove("d-none")
         document.getElementById("customTeamPerformance").classList.remove("d-none")
         document.getElementById("customTeamDropdown").classList.remove("d-none")
@@ -949,6 +952,7 @@ function replace_all_teams(info) {
 }
 
 function manage_config_content(info, year_config = false) {
+    console.log("Managing config content with info: ", info);
     replace_all_teams(info)
     if (!year_config) {
         let image = localStorage.getItem(`${saveName}_image`);
@@ -973,9 +977,9 @@ function manage_config_content(info, year_config = false) {
 
         document.querySelector(`.team-logo-container[data-teamid="${info["playerTeam"]}"]`).classList.add("active")
 
-        update_mentality_span(info["mentalityFrozen"])
+        update_mentality_span(info["frozenMentality"])
         let difficultySlider = document.getElementById("difficultySlider")
-        difficultySlider.value = info["difficulty"]
+        difficultySlider.value = info["difficulty"] || 0
         update_difficulty_span(info["difficulty"])
         if (info["difficulty"] === "-2") {
             load_difficulty_warnings(info["triggerList"])
@@ -1505,7 +1509,8 @@ document.getElementById("difficultySlider").addEventListener("input", function (
     document.getElementById("customGearButton").classList.remove("custom")
 });
 
-function update_difficulty_span(value) {
+function update_difficulty_span(value = 0) {
+    console.log("Updating difficulty span to: ", value)
     let span = document.querySelector("#difficultySpan")
     let difficulty = difficulty_dict[parseInt(value)]
     if (difficulty === "reduced weight") {
