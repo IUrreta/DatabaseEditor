@@ -40,7 +40,7 @@ export class Command {
         };
     }
 
-    pormiseExecute() {
+    promiseExecute() {
         return new Promise((resolve, reject) => {
           const handler = (e) => {
             const resp = e.data;

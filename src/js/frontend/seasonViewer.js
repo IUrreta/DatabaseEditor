@@ -461,7 +461,6 @@ export function new_load_drivers_table(data) {
 }
 
 function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsInfo) {
-    console.log(driver1)
     if (driver1 !== undefined) {
         const lastRaceDone = driver1[driver1.length - 1][0]
         const lastRaceIndex = calendarData.findIndex(x => x[0] === lastRaceDone);

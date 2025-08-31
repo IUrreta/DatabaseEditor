@@ -952,7 +952,6 @@ function replace_all_teams(info) {
 }
 
 function manage_config_content(info, year_config = false) {
-    console.log("Managing config content with info: ", info);
     replace_all_teams(info)
     if (!year_config) {
         let image = localStorage.getItem(`${saveName}_image`);
@@ -1510,7 +1509,6 @@ document.getElementById("difficultySlider").addEventListener("input", function (
 });
 
 function update_difficulty_span(value = 0) {
-    console.log("Updating difficulty span to: ", value)
     let span = document.querySelector("#difficultySpan")
     let difficulty = difficulty_dict[parseInt(value)]
     if (difficulty === "reduced weight") {

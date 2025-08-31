@@ -1336,8 +1336,6 @@ export function fixCustomEnginesStatsTable() {
   );
 
   if (!primaryKeyExists) {
-    console.log("La tabla Custom_Engines_Stats no tiene PRIMARY KEY. Se corregirá...");
-
     queryDB(`
       CREATE TABLE Custom_Engines_Stats_TEMP (
         engineId INTEGER,
@@ -1364,7 +1362,6 @@ export function fixCustomEnginesStatsTable() {
 
     queryDB(`ALTER TABLE Custom_Engines_Stats_TEMP RENAME TO Custom_Engines_Stats;`);
 
-    console.log("Fixed Custom_Engines_Stats table.");
 
   }
 }

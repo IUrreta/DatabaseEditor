@@ -362,15 +362,17 @@ export function generate_news(savednews) {
 
 
     const transferRumors = getTrueTransferRumors();
-    console.log("True Transfer Rumors: ", transferRumors);
+
     const sillySeasonNews = generateTransferRumorsNews(transferRumors, savednews);
 
     const bigConfirmedTransfers = getConfirmedTransfers(true);
+    const contractRenewals = getContractExtensions();
 
     const fakeTransferNews = generateFakeTransferNews(monthsDone, savednews);
     const bigConfirmedTransfersNews = generateBigConfirmedTransferNews(savednews, bigConfirmedTransfers, currentMonth);
+    const contractRenewalsNews = generateContractRenewalsNews(savednews, contractRenewals, currentMonth);
 
-    let newsList = [...raceNews, ...qualiNews, ...fakeTransferNews, ...bigConfirmedTransfersNews];
+    let newsList = [...raceNews, ...qualiNews, ...fakeTransferNews, ...bigConfirmedTransfersNews, ...contractRenewalsNews];
 
     if (potentialChampionNewsList && potentialChampionNewsList.length > 0) {
         potentialChampionNewsList.forEach(newNewsItem => {
@@ -612,6 +614,121 @@ export function generateBigConfirmedTransferNews(savedNews = {}, contracts = [],
     return newsList;
 }
 
+export function generateContractRenewalsNews(savedNews = {}, contractRenewals = [], currentMonth) {
+    const renewalMonths = [8, 9, 10].filter(m => m < currentMonth);
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const season = daySeason[1];
+
+    const used = new Set(
+        Object.values(savedNews)
+            .filter(n => n?.type === "contract_renewal" && n?.data?.driverId != null)
+            .map(n => n.data.driverId)
+    );
+
+    const newsList = [];
+    //iterate through months done of renewalMonths
+    for (const m of renewalMonths) {
+            const entryId = `contract_renewal_${m}`;
+
+            if (savedNews[entryId]) {
+                newsList.push({ id: entryId, ...savedNews[entryId] });
+                const dId = savedNews[entryId]?.data?.driverId;
+                if (dId != null) used.add(dId);
+                continue;
+            }
+
+            const pool = contractRenewals.filter(c => !used.has(c.driverId));
+            if (!pool.length) continue;
+
+            const contract = randomPick(pool);
+            used.add(contract.driverId);
+
+            const title = generateTitle(contract, 10);
+            const image = getImagePath(contract.team1Id, contract.driverId, "transfer");
+
+            // Generate a date from the current month
+            const newsDate = new Date(season, currentMonth, Math.floor(Math.random() * 28) + 1);
+            const excelDate = dateToExcel(newsDate);
+
+            newsList.push({
+                id: entryId,
+                type: "contract_renewal",
+                title,
+                date: excelDate,
+                image,
+                overlay: "contract_renewal",
+                data: contract,
+                text: null
+            });
+        }
+
+        return newsList;
+    
+}
+
+export function getContractExtensions() {
+    const daySeason = queryDB(
+        `SELECT Day, CurrentSeason FROM Player_State`,
+        'singleRow'
+    )
+    const seasonYear = daySeason[1]
+
+    let contractRenewals = queryDB(
+        `
+        SELECT 
+        bas.FirstName,
+        bas.LastName,
+        con3.StaffID,
+        con3.TeamID,
+        con3.EndSeason,
+        con3.Salary
+        FROM Staff_Contracts con3
+        JOIN Staff_DriverData dri ON con3.StaffID = dri.StaffID
+        JOIN Staff_BasicData bas  ON con3.StaffID = bas.StaffID
+        WHERE con3.ContractType = 3
+        AND con3.PosInTeam <= 2
+        AND EXISTS (
+            SELECT 1
+            FROM Staff_Contracts con0
+            WHERE con0.StaffID = con3.StaffID
+                AND con0.TeamID  = con3.TeamID
+                AND con0.ContractType = 0
+                AND con0.PosInTeam <= 2
+        );
+        `
+        , 'allRows')
+
+    // contractRenewals.forEach(contract => {
+    //     let driverID = contract[2];
+    //     const driverOverall = getDriverOverall(driverID);
+
+    //     if (driverOverall < 88) {
+    //         contractRenewals = contractRenewals.filter(c => c[2] !== driverID);
+    //     }
+    // });
+
+
+    const formattedContracts = contractRenewals.map(contract => {
+        const [nameFormatted, driverId, teamId] = formatNamesSimple(contract);
+        const currentTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driverId} AND ContractType = 0`, 'singleValue');
+        return {
+            driver1: nameFormatted,
+            driverId: driverId,
+            team1: combined_dict[teamId],
+            team2: combined_dict[currentTeam],
+            team1Id: teamId,
+            team2Id: currentTeam,
+            previouslyDrivenTeams: getPreviouslyDrivenTeams(driverId),
+            endSeason: contract[4],
+            salary: contract[5]
+        };
+    });
+
+    console.log("Contract Renewals", formattedContracts);
+
+    return formattedContracts;
+}
+
 
 
 export function getTrueTransferRumors() {
@@ -734,10 +851,28 @@ export function getConfirmedTransfers(bestDrivers = false) {
     const seasonYear = daySeason[1];
 
     let futureContracts = queryDB(
-        `SELECT bas.FirstName, bas.LastName, con.StaffID, con.TeamID, con.EndSeason, con.Salary FROM Staff_Contracts con 
-        JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
-        JOIN Staff_BasicData bas ON con.StaffID = bas.StaffID
-        WHERE con.ContractType = 3 AND con.PosInTeam <= 2`
+        `SELECT DISTINCT
+        bas.FirstName,
+        bas.LastName,
+        con3.StaffID,
+        con3.TeamID,
+        con3.EndSeason,
+        con3.Salary
+        FROM Staff_Contracts con3
+        JOIN Staff_DriverData  dri ON con3.StaffID = dri.StaffID
+        JOIN Staff_BasicData   bas ON con3.StaffID = bas.StaffID
+        WHERE con3.ContractType = 3
+        AND con3.PosInTeam <= 2
+        AND EXISTS (
+            SELECT 1
+            FROM Staff_Contracts con0
+            WHERE con0.StaffID = con3.StaffID
+                AND con0.ContractType = 0
+                AND con0.PosInTeam <= 2
+                AND con0.TeamID <> con3.TeamID   -- equipos distintos
+                -- Opcional: filtros por temporada si aplica, por ejemplo:
+                -- AND con0.EndSeason = con3.EndSeason
+        );`
         , 'allRows')
 
     if (bestDrivers) {
@@ -759,6 +894,9 @@ export function getConfirmedTransfers(bestDrivers = false) {
             driverId: driverId,
             team1: combined_dict[teamId],
             team2: combined_dict[currentTeam],
+            team1Id: teamId,
+            team2Id: currentTeam,
+            previouslyDrivenTeams: getPreviouslyDrivenTeams(driverId),
             endSeason: contract[4],
             salary: contract[5]
         };
@@ -1440,7 +1578,6 @@ export function calculateTeamDropsByDate(season, date) {
 }
 
 export function getTransferDetails(drivers) {
-    console.log("Drivers", drivers);
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const driverMap = []
     drivers.forEach(d => {
@@ -1459,7 +1596,8 @@ export function getTransferDetails(drivers) {
             actualTeam: d.team,
             actualTeamPreviousResults: previousResultsTeam,
             potentialSalary: d.potentialSalary ? d.potentialSalary : null,
-            potentialTeam: d.potentialTeam ? combined_dict[d.potentialTeam] : null
+            potentialTeam: d.potentialTeam ? combined_dict[d.potentialTeam] : null,
+            potentialYearEnd: d.potentialYearEnd ? d.potentialYearEnd : null
         })
 
     })
@@ -1480,7 +1618,7 @@ export function getPreviouslyDrivenTeams(driverId) {
     const sql = `
         SELECT DISTINCT TeamID, Season
         FROM Races_Results
-        WHERE DriverID = ${driverId} AND RaceID NOT IN (122, 124)
+        WHERE DriverID = ${driverId} AND RaceID NOT IN (122, 124, 100, 101)
     `
     const rows = queryDB(sql, 'allRows');
     const teams = rows.map(r => {

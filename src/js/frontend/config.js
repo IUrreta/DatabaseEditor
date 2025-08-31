@@ -303,6 +303,10 @@ export function getParamMap(data) {
             country: data.country,
             adjective: data.adjective,
             season_year: data.season_year
+        },
+        10: {
+            driver1: data.driver1,
+            team1: data.team1
         }
     };
 }

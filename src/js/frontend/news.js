@@ -143,7 +143,12 @@ async function manageRead(newData, newsList) {
   else if (newData.type === "world_champion") {
     prompt = await contextualizeWorldChampion(newData);
   }
-
+  else if (newData.type === "big_transfer") {
+    prompt = await contextualizeBigTransferConfirm(newData);
+  }
+  else if (newData.type === "contract_renewal") {
+    prompt = await contextualizeRenewalNews(newData);
+  }
 
   console.log("Final prompt:", prompt);
 
@@ -180,7 +185,7 @@ async function contextualizeWorldChampion(newData) {
 
   let standingsResp, previousRaces = '';
   try {
-    standingsResp = await command.pormiseExecute();
+    standingsResp = await command.promiseExecute();
     if (standingsResp && standingsResp.content) {
 
       const raceNumber = standingsResp.content.racesNames.length + 1;
@@ -239,8 +244,6 @@ async function contextualizeWorldChampion(newData) {
 }
 
 async function contextualizePotentialChampion(newData) {
-  console.log("Contextualizing Potential Champion News:", newData);
-
   const promptTemplateEntry = newsPromptsTemaplates.find(t => t.new_type === 8);
   if (!promptTemplateEntry) {
     console.error("Prompt template for new_type 8 not found!");
@@ -264,7 +267,7 @@ async function contextualizePotentialChampion(newData) {
 
   let standingsResp, previousRaces = '';
   try {
-    standingsResp = await command.pormiseExecute();
+    standingsResp = await command.promiseExecute();
     if (standingsResp && standingsResp.content) {
 
       const raceNumber = standingsResp.content.racesNames.length + 1;
@@ -322,7 +325,7 @@ async function contextualizePotentialChampion(newData) {
 }
 
 async function contextualizeSillySeasonTransferNews(newData) {
-  console.log(newData)
+  console.log("Silly season news:" , newData)
   let season = newData.season;
 
   let prompt = newsPromptsTemaplates.find(t => t.new_type === 4).prompt;
@@ -335,8 +338,7 @@ async function contextualizeSillySeasonTransferNews(newData) {
 
   let resp;
   try {
-    resp = await command.pormiseExecute();
-    console.log("Transfer rumor response:", resp);
+    resp = await command.promiseExecute();
   } catch (err) {
     console.error("Error fetching race details:", err);
     return;
@@ -384,7 +386,6 @@ async function contextualizeSillySeasonTransferNews(newData) {
 }
 
 async function contextualizeFakeTransferNews(newData) {
-  console.log(newData)
   let driverName = newData.data.drivers[0].name;
   let teamName = newData.data.drivers[0].team;
 
@@ -399,8 +400,7 @@ async function contextualizeFakeTransferNews(newData) {
 
   let resp;
   try {
-    resp = await command.pormiseExecute();
-    console.log("Transfer rumor response:", resp);
+    resp = await command.promiseExecute();
   } catch (err) {
     console.error("Error fetching race details:", err);
     return;
@@ -410,6 +410,148 @@ async function contextualizeFakeTransferNews(newData) {
 
   resp.content.driverMap.forEach((d) => {
     prompt += `${d.name} could be leaving ${d.actualTeam} ${d.potentialTeam ? " for " + d.potentialTeam : ""} ${d.potentialSalary ? "with an expected salary of around " + d.potentialSalary : ""}\n`;
+
+    prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
+    d.actualTeamPreviousResults.forEach((t) => {
+      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
+    })
+
+    prompt += `\n\nHere are the teams that ${d.name} has driven for in recent years:\n`;
+    d.previouslyDrivenTeams.forEach((t) => {
+      prompt += `${t.season} - ${t.teamName}\n`;
+    });
+  });
+
+
+  const driversChamp = resp.content.driverStandings
+    .map((d, i) => {
+      return `${i + 1}. ${d.name} — ${d.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Drivers' Championship standings (after this race):\n${driversChamp}`;
+
+  const teamsChamp = resp.content.teamStandings
+    .map((t, i) => {
+      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
+      return `${i + 1}. ${teamName} — ${t.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Constructors' Championship standings (after this race):\n${teamsChamp}`;
+
+  return prompt;
+}
+
+async function contextualizeBigTransferConfirm(newData) {
+  let driverName = newData.data.driver1
+  let potentialTeam = newData.data.team1
+  let originalTeam = newData.data.team2
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 6).prompt;
+  prompt = prompt.replace(/{{\s*driver1\s*}}/g, driverName)
+    .replace(/{{\s*team1\s*}}/g, potentialTeam)
+    .replace(/{{\s*team2\s*}}/g, originalTeam);
+
+
+  let drivers = [{
+    driverId: newData.data.driverId,
+    name: driverName,
+    team: originalTeam,
+    teamId: newData.data.team2Id,
+    previouslyDrivenTeams: newData.data.previouslyDrivenTeams,
+    potentialSalary: newData.data.salary,
+    potentialYearEnd: newData.data.endSeason
+  }]
+
+  const command = new Command("transferRumorRequest", {
+    drivers: drivers
+  }
+  );
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching race details:", err);
+    return;
+  }
+
+  prompt += `\n\nHere is the confirmed transfer that you have to talk about:\n`;
+
+  resp.content.driverMap.forEach((d) => {
+    prompt += `${d.name} will be leaving ${d.actualTeam} ${d.potentialTeam ? " for " + d.potentialTeam : ""} ${d.potentialSalary ? "with an expected salary of around " + d.potentialSalary : ""}\n`;
+
+    prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
+    d.actualTeamPreviousResults.forEach((t) => {
+      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
+    })
+
+    prompt += `\n\nHere are the teams that ${d.name} has driven for in recent years:\n`;
+    d.previouslyDrivenTeams.forEach((t) => {
+      prompt += `${t.season} - ${t.teamName}\n`;
+    });
+  });
+
+
+  const driversChamp = resp.content.driverStandings
+    .map((d, i) => {
+      return `${i + 1}. ${d.name} — ${d.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Drivers' Championship standings (after this race):\n${driversChamp}`;
+
+  const teamsChamp = resp.content.teamStandings
+    .map((t, i) => {
+      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
+      return `${i + 1}. ${teamName} — ${t.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Constructors' Championship standings (after this race):\n${teamsChamp}`;
+
+  return prompt;
+}
+
+async function contextualizeRenewalNews(newData){
+  let driverName = newData.data.driver1
+  let potentialTeam = newData.data.team1
+  let originalTeam = newData.data.team2
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 10).prompt;
+  prompt = prompt.replace(/{{\s*driver1\s*}}/g, driverName)
+    .replace(/{{\s*team1\s*}}/g, potentialTeam);
+
+
+  let drivers = [{
+    driverId: newData.data.driverId,
+    name: driverName,
+    team: originalTeam,
+    teamId: newData.data.team2Id,
+    previouslyDrivenTeams: newData.data.previouslyDrivenTeams,
+    potentialSalary: newData.data.salary,
+    potentialYearEnd: newData.data.endSeason
+  }]
+
+  const command = new Command("transferRumorRequest", {
+    drivers: drivers
+  }
+  );
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+    console.log("Renewal Offer:", resp);
+  } catch (err) {
+    console.error("Error fetching race details:", err);
+    return;
+  }
+
+  prompt += `\n\nHere is the confirmed contract renewal that you have to talk about:\n`;
+
+  resp.content.driverMap.forEach((d) => {
+    prompt += `${d.name} will be staying at ${d.actualTeam} ${d.potentialSalary ? "with an expected salary of around " + d.potentialSalary + "€" : ""} ${d.potentialYearEnd ? "until the end of " + d.potentialYearEnd : ""}\n`;
 
     prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
     d.actualTeamPreviousResults.forEach((t) => {
@@ -463,7 +605,7 @@ async function contextualizeQualiResults(newData) {
 
   let resp;
   try {
-    resp = await command.pormiseExecute();
+    resp = await command.promiseExecute();
   } catch (err) {
     console.error("Error fetching race details:", err);
     return;
@@ -488,7 +630,7 @@ async function contextualizeQualiResults(newData) {
   prompt += "\n\nHere are the full qualifying results:\n" + qualiResults;
 
   const previousResults = resp.content.driversResults.map((d, i) => {
-    return `${d.name} (${d.nWins > 0 ? d.nWins + " wins" : ""}${d.nPodiums > 0 ? (d.nWins > 0 ? ", " : "") + d.nPodiums + " podiums" : ""}${d.nWins === 0 && d.nPodiums === 0 ? d.nPointsFinishes + " points finishes" : ""}) ${d.resultsString}`;
+    return `${d.name} - ${d.resultsString}`;
   }).join("\n");
 
   if (resp.content.racesNames.length > 0) {
@@ -505,7 +647,7 @@ async function contextualizeQualiResults(newData) {
     })
     .join("\n");
 
-  prompt += `\n\nCurrent Drivers' Championship standings (after this race):\n${driversChamp}`;
+  prompt += `\n\nCurrent Drivers' Championship standings (before this race):\n${driversChamp}`;
 
   const teamsChamp = resp.content.teamStandings
     .map((t, i) => {
@@ -514,7 +656,7 @@ async function contextualizeQualiResults(newData) {
     })
     .join("\n");
 
-  prompt += `\n\nCurrent Constructors' Championship standings (after this race):\n${teamsChamp}`;
+  prompt += `\n\nCurrent Constructors' Championship standings (before this race):\n${teamsChamp}`;
 
   const previousChampions = Object.values(
     resp.content.champions.reduce((acc, { season, pos, name, points }) => {
@@ -553,7 +695,7 @@ async function contextualizeRaceResults(newData) {
 
   let resp;
   try {
-    resp = await command.pormiseExecute();
+    resp = await command.promiseExecute();
   } catch (err) {
     console.error("Error fetching race details:", err);
     return;
@@ -690,7 +832,7 @@ function animateToCenter(newsItem) {
   requestAnimationFrame(() => {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    const targetWidth = vw * 0.8;
+    const targetWidth = vw * 0.75;
     const aspectRatio = rect.height / rect.width;
     const targetHeight = targetWidth * aspectRatio;
     const targetTop = (vh - targetHeight) / 2;

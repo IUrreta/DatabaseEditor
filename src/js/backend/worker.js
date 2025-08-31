@@ -66,9 +66,7 @@ const workerCommands = {
   },
 
   saveSelected: (data, postMessage) => {
-    console.log("SAVESELECTED DATA:")
-    console.log(data)
-
+    
     const yearData = checkYearSave();
     postMessage({ responseMessage: "Game Year", content: yearData });
 
