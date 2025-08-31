@@ -230,14 +230,14 @@ export let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4
 
 // news
 export const countries_data = {
-    "BAH": { "country": "Bahrain", "adjective": "Bahraini", "circuit": "Bahrain" },
+    "BAH": { "country": "Bahrain", "adjective": "Bahrain", "circuit": "Bahrain" },
     "AUS": { "country": "Australia", "adjective": "Australian", "circuit": "Albert Park" },
     "SAU": { "country": "Saudi Arabia", "adjective": "Saudi Arabian", "circuit": "Jeddah" },
     "IMO": { "country": "Imola", "adjective": "Emilia Romagna", "circuit": "Imola" },
     "MIA": { "country": "Miami", "adjective": "Miami", "circuit": "Miami" },
     "SPA": { "country": "Spain", "adjective": "Spanish", "circuit": "Barcelona" },
     "MON": { "country": "Monaco", "adjective": "Monaco", "circuit": "Monaco" },
-    "AZE": { "country": "Azerbaijan", "adjective": "Azerbaijani", "circuit": "Baku" },
+    "AZE": { "country": "Azerbaijan", "adjective": "Azerbaijan", "circuit": "Baku" },
     "CAN": { "country": "Canada", "adjective": "Canadian", "circuit": "Montreal" },
     "GBR": { "country": "Great Britain", "adjective": "British", "circuit": "Silverstone" },
     "AUT": { "country": "Austria", "adjective": "Austrian", "circuit": "Red Bull Ring" },
@@ -251,9 +251,9 @@ export const countries_data = {
     "MEX": { "country": "Mexico", "adjective": "Mexican", "circuit": "Mexico City" },
     "BRA": { "country": "Brazil", "adjective": "Brazilian", "circuit": "Interlagos" },
     "UAE": { "country": "Abu Dhabi", "adjective": "Abu Dhabi", "circuit": "Yas Marina" },
-    "NED": { "country": "Netherlands", "adjective": "Dutch", "circuit": "Zandvoort" },
-    "VEG": { "country": "Vegas", "adjective": "Las Vegas", "circuit": "Las Vegas" },
-    "QAT": { "country": "Qatar", "adjective": "Qatari", "circuit": "Lusail" },
+    "NED": { "country": "Netherlands", "adjective": "Netherlands", "circuit": "Zandvoort" },
+    "VEG": { "country": "Vegas", "adjective": "Vegas", "circuit": "Las Vegas" },
+    "QAT": { "country": "Qatar", "adjective": "Qatar", "circuit": "Lusail" },
     "CHI": { "country": "China", "adjective": "Chinese", "circuit": "Shanghai" }
 };
 
@@ -280,6 +280,11 @@ export function getParamMap(data) {
             team1: data.team1,
             team2: data.team2,
             team3: data.team3
+        },
+        6: {
+            driver1: data.driver1,
+            team1: data.team1,
+            team2: data.team2
         },
         7:{
             driver1: data.driver1,

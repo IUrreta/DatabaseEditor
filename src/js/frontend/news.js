@@ -670,6 +670,7 @@ function saveNews(newsList) {
 function animateToCenter(newsItem) {
   const rect = newsItem.getBoundingClientRect();
   const clone = newsItem.cloneNode(true);
+  clone.classList.add('news-item-clone');
 
   Object.assign(clone.style, {
     position: 'fixed',
@@ -717,6 +718,8 @@ function animateToCenter(newsItem) {
     clone.style.width = rect.width + 'px';
     clone.style.height = rect.height + 'px';
     clone.style.boxShadow = 'none';
+
+    clone.querySelector(".news-title").style.fontSize = '20px';
 
     const articleEl = clone.querySelector('.news-article');
     if (articleEl) {

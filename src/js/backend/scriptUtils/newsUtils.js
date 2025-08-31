@@ -6,6 +6,24 @@ import { queryDB } from "../dbManager";
 import { excelToDate, dateToExcel } from "./eidtStatsUtils";
 import { getTier, getDriverOverall } from "./transferUtils";
 
+const _seasonResultsCache = new Map();
+const _standingsCache = new Map();
+const _dropsCache = new Map();
+
+function fetchSeasonResultsCached(season) {
+    if (_seasonResultsCache.has(season)) return _seasonResultsCache.get(season);
+    const res = fetchSeasonResults(season);
+    _seasonResultsCache.set(season, res);
+    return res;
+}
+
+function rebuildStandingsUntilCached(season, seasonResults, raceId) {
+    const key = `${season}:${raceId}`;
+    if (_standingsCache.has(key)) return _standingsCache.get(key);
+    const res = rebuildStandingsUntil(seasonResults, raceId);
+    _standingsCache.set(key, res);
+    return res;
+}
 
 function getMaxPointsForRace(raceId, pointsSchema, seasonId = null) {
     let maxPoints = parseInt(pointsSchema.twoBiggestPoints[0])
@@ -343,11 +361,16 @@ export function generate_news(savednews) {
     const qualiNews = generateQualifyingResultsNews(racesDone, savednews);
 
 
-    const sillySeasonNews = generateTransferRumorsNews(getTrueTransferRumors(), savednews);
-    console.log("Silly Season News", sillySeasonNews);
-    const fakeTransferNews = generateFakeTransferNews(monthsDone, savednews);
+    const transferRumors = getTrueTransferRumors();
+    console.log("True Transfer Rumors: ", transferRumors);
+    const sillySeasonNews = generateTransferRumorsNews(transferRumors, savednews);
 
-    let newsList = [...raceNews, ...qualiNews, ...fakeTransferNews];
+    const bigConfirmedTransfers = getConfirmedTransfers(true);
+
+    const fakeTransferNews = generateFakeTransferNews(monthsDone, savednews);
+    const bigConfirmedTransfersNews = generateBigConfirmedTransferNews(savednews, bigConfirmedTransfers, currentMonth);
+
+    let newsList = [...raceNews, ...qualiNews, ...fakeTransferNews, ...bigConfirmedTransfersNews];
 
     if (potentialChampionNewsList && potentialChampionNewsList.length > 0) {
         potentialChampionNewsList.forEach(newNewsItem => {
@@ -378,6 +401,7 @@ export function getCircuitInfo(raceId) {
 
 
 function generateTitle(data, new_type) {
+    console.log("Generating title for type:", new_type, "with data:", data);
     const templateObj = newsTitleTemplates.find(t => t.new_type === new_type);
     let raceInfo = null;
     if (data.raceId) {
@@ -399,6 +423,9 @@ export function generateFakeTransferNews(monthsDone, savedNews) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const season = daySeason[1];
 
+    fetchSeasonResultsCached(season);
+    fetchSeasonResultsCached(season - 1);
+
     let newsList = [];
 
     monthsDone.forEach(m => {
@@ -414,74 +441,177 @@ export function generateFakeTransferNews(monthsDone, savedNews) {
         const date = new Date(season, m, day);
         const excelDate = dateToExcel(date);
 
-        // let worsened = calculateTeamDropsByDate(season, date);
-        let worsened = {};
-        console.log("Worsened Teams: ", worsened);
-        if (!worsened.length) {
-            const results = fetchSeasonResults(season);
-            const bottomDriversTeams = results.filter(driver => driver[2] > 14).map(driver => driver[1]);
-            worsened = bottomDriversTeams.map(teamId => ({ teamId }));
+        let randomDriver, randomTeamId;
+
+        if (Math.random() < 0.5) { //half of the times we randomPick a driver from a worsened team
+            let worsened = calculateTeamDropsByDate(season, date);
+            let pool = worsened;
+            // let worsened = {};
+            console.log("Worsened Teams: ", worsened);
+            if (!pool.length) {
+                const results = fetchSeasonResults(season);
+                const bottomDriversTeams = results.filter(driver => driver[2] > 14).map(driver => driver[1]);
+                pool = bottomDriversTeams.map(teamId => ({ teamId }));
+            }
+
+
+            randomTeamId = pool[
+                Math.floor(Math.random() * pool.length)
+            ].teamId;
+
+
+            const drivers = queryDB(
+                `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
+                FROM Staff_BasicData bas
+                JOIN Staff_DriverData dri
+                ON bas.StaffID = dri.StaffID
+                JOIN Staff_Contracts con
+                ON bas.StaffID = con.StaffID
+                WHERE con.TeamID = ${randomTeamId}
+                AND con.ContractType = 0
+                AND con.PosInTeam <= 2
+                `,
+                'allRows'
+            );
+            if (!drivers.length) return;
+
+
+            randomDriver = drivers[Math.floor(Math.random() * drivers.length)];
+        }
+        else {
+            const top6DriversExpiringContracts = queryDB(
+                `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
+                FROM Staff_BasicData bas
+                JOIN Staff_DriverData dri
+                ON bas.StaffID = dri.StaffID
+                JOIN Staff_Contracts con
+                ON bas.StaffID = con.StaffID
+                JOIN Races_DriverStandings sta
+                ON dri.StaffID = sta.DriverID
+                WHERE con.ContractType = 0
+                AND con.PosInTeam <= 2
+                AND con.EndSeason = ${season}
+                AND sta.Position <= 6
+                AND sta.RaceFormula = 1
+                AND sta.SeasonID = ${season}
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM Staff_Contracts c3
+                    JOIN Staff_DriverData d3
+                    ON d3.StaffID = c3.StaffID
+                    WHERE c3.TeamID   = con.TeamID
+                    AND c3.PosInTeam = con.PosInTeam
+                    AND c3.ContractType = 3
+                );
+                `,
+                'allRows'
+            );
+
+            if (top6DriversExpiringContracts.length) {
+                randomDriver = randomPick(top6DriversExpiringContracts);
+                randomTeamId = randomDriver[3];
+            }
+
+            console.log("Selected top 6 driver with expiring contract:", randomDriver);
         }
 
-        const randomTeamId = worsened[
-            Math.floor(Math.random() * worsened.length)
-        ].teamId;
 
+        if (randomDriver) {
+            const [nameFormatted, driverId] = formatNamesSimple(randomDriver);
 
-        const drivers = queryDB(
-            `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
-        FROM Staff_BasicData bas
-        JOIN Staff_DriverData dri
-        ON bas.StaffID = dri.StaffID
-        JOIN Staff_Contracts con
-        ON bas.StaffID = con.StaffID
-        WHERE con.TeamID = ${randomTeamId}
-        AND con.ContractType = 0
-        AND con.PosInTeam <= 2
-        `,
-            'allRows'
-        );
-        if (!drivers.length) return;
+            const newData = {
+                drivers: [{
+                    name: news_insert_space(nameFormatted),
+                    driverId,
+                    team: combined_dict[randomTeamId],
+                    teamId: randomTeamId,
+                    previouslyDrivenTeams: getPreviouslyDrivenTeams(driverId),
+                }],
+            };
 
+            const titleData = {
+                driver1: news_insert_space(nameFormatted),
+                team1: combined_dict[randomTeamId],
+            }
 
-        const randomDriver = drivers[Math.floor(Math.random() * drivers.length)];
+            const title = generateTitle(titleData, 7);
 
-        const [nameFormatted, driverId] = formatNamesSimple(randomDriver);
+            const image = getImagePath(randomTeamId, driverId, "transfer");
 
-
-        const newData = {
-            drivers: [{
-                name: news_insert_space(nameFormatted),
-                driverId,
-                team: combined_dict[randomTeamId],
-                teamId: randomTeamId,
-                previouslyDrivenTeams: getPreviouslyDrivenTeams(driverId),
-            }],
-        };
-
-        const titleData = {
-            driver1: news_insert_space(nameFormatted),
-            team1: combined_dict[randomTeamId],
+            newsList.push({
+                id: entryId,
+                type: "fake_transfer",
+                title,
+                date: excelDate,
+                image: image,
+                overlay: "fake_transfer",
+                data: newData,
+                text: null
+            });
         }
-
-        const title = generateTitle(titleData, 7);
-
-        const image = getImagePath(randomTeamId, driverId, "transfer");
-
-        newsList.push({
-            id: entryId,
-            type: "fake_transfer",
-            title,
-            date: excelDate,
-            image: image,
-            overlay: "fake_transfer",
-            data: newData,
-            text: null
-        });
     });
+
 
     return newsList;
 }
+
+const randomPick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+export function generateBigConfirmedTransferNews(savedNews = {}, contracts = [], currentMonth) {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const season = daySeason[1];
+
+    const months = [7, 8, 9].filter(m => m < currentMonth);
+    const newsList = [];
+    if (!months.length || !contracts.length) return newsList;
+
+    // 1) Pilotos ya usados en big transfers guardados
+    const used = new Set(
+        Object.values(savedNews)
+            .filter(n => n?.type === "big_transfer" && n?.data?.driverId != null)
+            .map(n => n.data.driverId)
+    );
+
+
+
+    for (const m of months) {
+        const entryId = `big_transfer_${m}`;
+
+        if (savedNews[entryId]) {
+            newsList.push({ id: entryId, ...savedNews[entryId] });
+            const dId = savedNews[entryId]?.data?.driverId;
+            if (dId != null) used.add(dId);
+            continue;
+        }
+
+        const pool = contracts.filter(c => !used.has(c.driverId));
+        if (!pool.length) continue;
+
+        const contract = randomPick(pool);
+        used.add(contract.driverId);
+
+        const title = generateTitle(contract, 6);
+        const image = getImagePath(contract.teamId, contract.driverId, "transfer");
+
+        //generate a date from the month of the news
+        const newsDate = new Date(season, m, Math.floor(Math.random() * 28) + 1);
+        const excelDate = dateToExcel(newsDate);
+
+        newsList.push({
+            id: entryId,
+            type: "big_transfer",
+            title,
+            date: excelDate,
+            image,
+            overlay: "big_transfer",
+            data: contract,
+            text: null
+        });
+    }
+
+    return newsList;
+}
+
 
 
 export function getTrueTransferRumors() {
@@ -596,6 +726,47 @@ export function getTrueTransferRumors() {
         tier1OrTop5,
         others
     }
+}
+
+export function getConfirmedTransfers(bestDrivers = false) {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const day = daySeason[0];
+    const seasonYear = daySeason[1];
+
+    let futureContracts = queryDB(
+        `SELECT bas.FirstName, bas.LastName, con.StaffID, con.TeamID, con.EndSeason, con.Salary FROM Staff_Contracts con 
+        JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
+        JOIN Staff_BasicData bas ON con.StaffID = bas.StaffID
+        WHERE con.ContractType = 3 AND con.PosInTeam <= 2`
+        , 'allRows')
+
+    if (bestDrivers) {
+        futureContracts.forEach(contract => {
+            let driverID = contract[2];
+            const driverOverall = getDriverOverall(driverID);
+
+            if (driverOverall < 88) {
+                futureContracts = futureContracts.filter(c => c[2] !== driverID);
+            }
+        });
+    }
+
+    const formattedContracts = futureContracts.map(contract => {
+        const [nameFormatted, driverId, teamId] = formatNamesSimple(contract);
+        const currentTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driverId} AND ContractType = 0`, 'singleValue');
+        return {
+            driver1: nameFormatted,
+            driverId: driverId,
+            team1: combined_dict[teamId],
+            team2: combined_dict[currentTeam],
+            endSeason: contract[4],
+            salary: contract[5]
+        };
+    });
+
+    console.log("Future contracts", formattedContracts);
+
+    return formattedContracts;
 }
 
 export function generateTransferRumorsNews(offers, savedNews) {
@@ -1229,8 +1400,15 @@ function getImagePath(teamId, code, type) {
 export function calculateTeamDropsByDate(season, date) {
     const excelDate = dateToExcel(date);
 
+    // cachea el resultado completo de drops para esta fecha exacta
+    const dropKey = `${season}:${excelDate}`;
+    if (_dropsCache.has(dropKey)) return _dropsCache.get(dropKey);
+
     const racesDone = fetchEventsDoneBefore(season, excelDate);
-    if (!racesDone.length) return [];
+    if (!racesDone.length) {
+        _dropsCache.set(dropKey, []);
+        return [];
+    }
 
     const lastRaceId = racesDone[racesDone.length - 1];
 
@@ -1238,30 +1416,27 @@ export function calculateTeamDropsByDate(season, date) {
         `SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND RaceID <= ${lastRaceId}`,
         'singleValue'
     );
-
     const firstRacePrevSeason = queryDB(
         `SELECT MIN(RaceID) FROM Races WHERE SeasonID = ${season - 1}`,
         'singleValue'
     );
-
     const lastYearEquivalent = firstRacePrevSeason + (racesCount - 1);
 
-    const currentResults = fetchSeasonResults(season);
-    const lastYearResults = fetchSeasonResults(season - 1);
+    // Usa versiones cacheadas
+    const currentResults = fetchSeasonResultsCached(season);
+    const lastYearResults = fetchSeasonResultsCached(season - 1);
 
-    const currentStandings = rebuildStandingsUntil(currentResults, lastRaceId);
-    const lastYearStandings = rebuildStandingsUntil(lastYearResults, lastYearEquivalent);
+    const currentStandings = rebuildStandingsUntilCached(season, currentResults, lastRaceId);
+    const lastYearStandings = rebuildStandingsUntilCached(season - 1, lastYearResults, lastYearEquivalent);
 
     const drops = currentStandings.teamStandings.map(team => {
         const prev = lastYearStandings.teamStandings.find(t => t.teamId === team.teamId);
         const prevPoints = prev ? prev.points : 0;
-        return {
-            teamId: team.teamId,
-            drop: prevPoints - team.points
-        };
-    });
+        return { teamId: team.teamId, drop: prevPoints - team.points };
+    }).filter(x => x.drop > 0);
 
-    return drops.filter(x => x.drop > 0);
+    _dropsCache.set(dropKey, drops);
+    return drops;
 }
 
 export function getTransferDetails(drivers) {

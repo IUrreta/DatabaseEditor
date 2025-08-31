@@ -168,8 +168,8 @@ export const minMaxTypeStaff = {
   export function getParamsAutoContract(driverID, teamID, position, yearIteration = "24") {
     const day = queryDB("SELECT Day FROM Player_State", "singleValue");
     const year = queryDB("SELECT CurrentSeason FROM Player_State", "singleValue");
-    const [tier, type] = getTier(driverID);
-    
+    const [tier, type, rating] = getTier(driverID);
+
     // Calcular salary
     const salaryRange = minMaxTypeStaff[type].salary[tier];
     let salary = (Math.round((Math.random() * (salaryRange[1] - salaryRange[0]) + salaryRange[0]) * 1000) / 1000) * 1000000;
@@ -531,7 +531,7 @@ export const minMaxTypeStaff = {
     } else {
       tier = 4;
     }
-    return [tier, type];
+    return [tier, type, rating];
   }
 
   export function getDriverOverall(driverID) {

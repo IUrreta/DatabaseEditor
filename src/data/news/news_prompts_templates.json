@@ -12,12 +12,17 @@
     {
         "id": "silly_season_recap",
         "new_type": 4,
-        "prompt": "Write ONLY the body (not the title) of a news article in English summarizing the current state of the {{season}} F1 silly season. Use a professional tone similar to that of a motorsport news outlet, but avoid sounding overly technical or robotic. The article should be between 300 and 400 words long. Focus on the driver market, mentioning key drivers who are rumored to be moving teams, and any confirmed moves. Discuss the implications of these changes for the teams and drivers involved, but do not speculate beyond the data given. Use a flowing, paragraph-based structure like a typical F1 news report, and avoid bullet points or numbered lists."
+        "prompt": "Write ONLY the body (not the title) of a news article in English summarizing the current state of the {{season}} F1 silly season. Use a professional tone similar to that of a motorsport news outlet, but avoid sounding overly technical or robotic. The article should be between 300 and 400 words long. Focus on the driver market, mentioning key drivers who are rumored to be moving teams, and any confirmed moves. Discuss the implications of these changes for the teams and drivers involved. Use a flowing, paragraph-based structure like a typical F1 news report, and avoid bullet points or numbered lists. When talking about salaries, do not give overly specific figures, but rather discuss the approximate salary with a general number. And when discussing the targeting seats try to not say it in the same way every time."
     },
     {
         "id": "made_up_rumor",
         "new_type": 7,
         "prompt": "Write ONLY the body (not the title) of a news article in English covering a rumor about {{driver1}} potentially leaving {{team1}}. Use a professional tone similar to that of a motorsport news outlet, but clearly indicate that the information is speculative and based on paddock gossip. The article should be between 300 and 400 words long. Discuss why this rumor has surfaced, mentioning any factors that might contribute to {{driver1}} considering a move. Highlight any potential destinations that have been suggested, but avoid stating anything as confirmed. Balance the tone between curiosity and skepticism, as the rumor has not been verified. Use a flowing, paragraph-based structure like a typical F1 news report, and avoid bullet points or numbered lists."
+    },
+    {
+        "id": "big_transfer_confirm",
+        "new_type": 6,
+        "prompt": "Write ONLY the body (not the title) of a news article in English confirming the big transfer of {{driver_name}} to {{team_name}}. Use a professional tone similar to that of a motorsport news outlet, but avoid sounding overly technical or robotic. The article should be between 300 and 400 words long. Focus on the details of the transfer, including the reasons behind it and the implications for both the driver and the team. Use a flowing, paragraph-based structure like a typical F1 news report, and avoid bullet points or numbered lists."
     },
     {
         "id": "potential_champion",
