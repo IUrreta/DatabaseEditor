@@ -167,5 +167,38 @@
             "Stay Tuned: {{driver1}} and {{team1}} Prepare for Exciting Season Ahead",
             "Contract Negotiations: {{driver1}} and {{team1}} in Talks for Extension"
         ]
+    },
+    {
+        "id": "team_comparison_bad",
+        "new_type": 11,
+        "titles": [
+            "What's going on at {{team1}}? Recent Struggles Highlighted",
+            "Inside {{team1}} - Challenges and Setbacks Revealed",
+            "The Situation at {{team1}} - A Closer Look at Recent Issues",
+            "Unpacking the Problems at {{team1}} - What You Need to Know",
+            "The Latest from {{team1}} - Struggles and Challenges Ahead",
+            "Why is {{team1}} failing to deliver this season?",
+            "The Pressure Mounts at {{team1}} - A Season to Forget?",
+            "Is {{team1}} in Crisis? Analyzing the Current Situation",
+            "The Future Looks Bleak for {{team1}} - What Went Wrong?",
+            "Can {{team1}} Turn Things Around? A Look at the Challenges Ahead",
+            "The Clock is Ticking for {{team1}} - Urgent Changes Needed",
+            "Time is Running Out for {{team1}} - A Critical Juncture",
+            "The Pressure is On for {{team1}} - Can They Deliver?"
+        ]
+    },
+    {
+        "id": "team_comparison_good",
+        "new_type": 12,
+        "titles": [
+            "Positive Developments at {{team1}} - A Look Ahead",
+            "Inside {{team1}} - Optimism and Progress Reported",
+            "The Situation at {{team1}} - A Closer Look at Recent Improvements",
+            "Unpacking the Successes at {{team1}} - What You Need to Know",
+            "The Latest from {{team1}} - Triumphs and Achievements Highlighted",
+            "Why is {{team1}} Thriving This Season?",
+            "The Pressure is On for {{team1}} - Can They Maintain Momentum?",
+            "The Future Looks Bright for {{team1}} - What Lies Ahead?"
+        ]
     }
 ]

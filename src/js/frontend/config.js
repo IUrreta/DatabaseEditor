@@ -307,6 +307,12 @@ export function getParamMap(data) {
         10: {
             driver1: data.driver1,
             team1: data.team1
+        },
+        11:{
+            team1: data.teamId,
+        },
+        12: {
+            team1: data.teamId,
         }
     };
 }

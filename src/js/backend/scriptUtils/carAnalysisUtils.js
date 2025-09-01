@@ -31,32 +31,6 @@ export function getAllPartsFromTeam(teamId) {
         "singleRow"
     ) || [0, 0];
 
-    // Query para extraer las designs del PartType con DayCompleted > 0
-    const query = `
-        SELECT 
-          d.DesignID,
-          d.DayCreated,
-          d.DayCompleted, 
-          (
-            SELECT r.TrackID 
-            FROM Races r 
-            WHERE r.Day >= d.DayCompleted 
-            ORDER BY r.Day ASC 
-            LIMIT 1
-          ) AS TrackID
-        FROM Parts_Designs d
-        WHERE 
-          d.PartType = ?
-          AND d.TeamID = ?
-          AND d.ValidFrom = ?
-          AND d.DayCompleted > 0
-      `;
-
-    // En Python se usaba placeholders "?", en JS podemos hacer un template
-    // pero si necesitas SQL parametrizado, deberías adaptarlo. Por simplicidad:
-    // haremos un template string con la parte variable:
-    // d.PartType = {j}, d.TeamID = {teamId}, d.ValidFrom = {currentSeason}
-    // y repetimos para cada PartType.
 
     const partsDict = {};
 

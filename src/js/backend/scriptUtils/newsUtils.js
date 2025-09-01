@@ -5,6 +5,8 @@ import { fetchSeasonResults, fetchQualiResults } from "./dbUtils";
 import { queryDB } from "../dbManager";
 import { excelToDate, dateToExcel } from "./eidtStatsUtils";
 import { getTier, getDriverOverall } from "./transferUtils";
+import { getPerformanceAllTeamsSeason, getAllPartsFromTeam } from "./carAnalysisUtils";
+import { getGlobals } from "../commandGlobals";
 
 const _seasonResultsCache = new Map();
 const _standingsCache = new Map();
@@ -23,6 +25,57 @@ function rebuildStandingsUntilCached(season, seasonResults, raceId) {
     const res = rebuildStandingsUntil(seasonResults, raceId);
     _standingsCache.set(key, res);
     return res;
+}
+
+export function generate_news(savednews) {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const racesDone = fetchEventsDoneFrom(daySeason[1]);
+
+    // const potentialChampionTestRaceId = 216; // Set to null for normal operation.
+
+    const potentialChampionNewsList = generatePotentialChampionNews(racesDone, savednews);
+
+    const currentDate = excelToDate(daySeason[0]);
+    const currentMonth = currentDate.getMonth() + 1;
+    const rumorMonths = [2, 3, 4, 5, 6, 7];
+    const comparisonMonths = [4, 6, 8, 10];
+    const monthsDone = rumorMonths.filter(m => m < currentMonth);
+
+    const raceNews = generateRaceResultsNews(racesDone, savednews);
+    const qualiNews = generateQualifyingResultsNews(racesDone, savednews);
+
+    const comparisonNews = generateComparisonNews(comparisonMonths, savednews);
+
+    const transferRumors = getTrueTransferRumors();
+
+    const sillySeasonNews = generateTransferRumorsNews(transferRumors, savednews);
+
+    const bigConfirmedTransfers = getConfirmedTransfers(true);
+    const contractRenewals = getContractExtensions();
+
+    const fakeTransferNews = generateFakeTransferNews(monthsDone, savednews);
+    const bigConfirmedTransfersNews = generateBigConfirmedTransferNews(savednews, bigConfirmedTransfers, currentMonth);
+    const contractRenewalsNews = generateContractRenewalsNews(savednews, contractRenewals, currentMonth);
+
+    let newsList = [...raceNews, ...qualiNews, ...fakeTransferNews, ...bigConfirmedTransfersNews, ...contractRenewalsNews, ...comparisonNews];
+
+    if (potentialChampionNewsList && potentialChampionNewsList.length > 0) {
+        potentialChampionNewsList.forEach(newNewsItem => {
+            if (!newsList.find(existingNews => existingNews.id === newNewsItem.id)) {
+                newsList.push(newNewsItem);
+            }
+        });
+    }
+
+    if (sillySeasonNews) {
+        sillySeasonNews.forEach((entry) =>
+            newsList.push(entry)
+        );
+    }
+
+    //order by date descending
+    newsList.sort((a, b) => b.date - a.date);
+    return newsList;
 }
 
 function getMaxPointsForRace(raceId, pointsSchema, seasonId = null) {
@@ -344,54 +397,7 @@ function generatePotentialChampionNews(racesDone, savednews, targetRaceId = null
 }
 
 
-export function generate_news(savednews) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
-    const racesDone = fetchEventsDoneFrom(daySeason[1]);
 
-    // const potentialChampionTestRaceId = 216; // Set to null for normal operation.
-
-    const potentialChampionNewsList = generatePotentialChampionNews(racesDone, savednews);
-
-    const currentDate = excelToDate(daySeason[0]);
-    const currentMonth = currentDate.getMonth() + 1;
-    const rumorMonths = [2, 3, 4, 5, 6, 7];
-    const monthsDone = rumorMonths.filter(m => m < currentMonth);
-
-    const raceNews = generateRaceResultsNews(racesDone, savednews);
-    const qualiNews = generateQualifyingResultsNews(racesDone, savednews);
-
-
-    const transferRumors = getTrueTransferRumors();
-
-    const sillySeasonNews = generateTransferRumorsNews(transferRumors, savednews);
-
-    const bigConfirmedTransfers = getConfirmedTransfers(true);
-    const contractRenewals = getContractExtensions();
-
-    const fakeTransferNews = generateFakeTransferNews(monthsDone, savednews);
-    const bigConfirmedTransfersNews = generateBigConfirmedTransferNews(savednews, bigConfirmedTransfers, currentMonth);
-    const contractRenewalsNews = generateContractRenewalsNews(savednews, contractRenewals, currentMonth);
-
-    let newsList = [...raceNews, ...qualiNews, ...fakeTransferNews, ...bigConfirmedTransfersNews, ...contractRenewalsNews];
-
-    if (potentialChampionNewsList && potentialChampionNewsList.length > 0) {
-        potentialChampionNewsList.forEach(newNewsItem => {
-            if (!newsList.find(existingNews => existingNews.id === newNewsItem.id)) {
-                newsList.push(newNewsItem);
-            }
-        });
-    }
-
-    if (sillySeasonNews) {
-        sillySeasonNews.forEach((entry) =>
-            newsList.push(entry)
-        );
-    }
-
-    //order by date descending
-    newsList.sort((a, b) => b.date - a.date);
-    return newsList;
-}
 
 
 export function getCircuitInfo(raceId) {
@@ -417,6 +423,7 @@ function generateTitle(data, new_type) {
     const titles = templateObj.titles;
     const idx = Math.floor(Math.random() * titles.length);
     const tpl = titles[idx];
+    console.log("Selected template:", tpl);
 
     return tpl.replace(/{{\s*(\w+)\s*}}/g, (_, key) => paramMap[new_type][key] || '');
 }
@@ -1014,6 +1021,124 @@ export function generateTransferRumorsNews(offers, savedNews) {
 
 }
 
+export function generateTeamsUpgradesNews(events, savednews) {
+    //aparcado de momento
+    const globals = getGlobals();
+    let teamIds = [1,2,3,4,5,6,7,8,9,10]
+    if (globals.isCreateATeam){
+        teamIds.push(32);
+    }
+
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const seasonYear = daySeason[1];
+    const parts = getAllPartsFromTeam(32);
+    
+    console.log("UPGRADES", parts);
+    console.log("EVENTS", events);
+    
+    events.forEach(raceId => {
+        const entryId = `${seasonYear}_upgrades_${raceId}`;
+
+        if (savednews[entryId]) {
+            newsList.push({ id: entryId, ...savednews[entryId] });
+            return;
+        }
+
+        let nextRaceId = raceId + 1;
+        let trackIdNextRace = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${nextRaceId}`, 'singleValue');
+        let newParts = {};
+        teamIds.forEach(teamId => {
+            let teamName = combined_dict[teamId];
+            newParts[teamId] = [];
+            let parts = getAllPartsFromTeam(teamId);
+            //iterate through the parts dictionary
+            for (const part in parts) {
+                let partsArray = parts[part]
+                partsArray.forEach(partDetails => {
+                    let trackDebutForPart = partDetails[3];
+                    if (trackDebutForPart === trackIdNextRace) {
+                        newParts[teamId].push(part);
+                        return;
+                    }
+                });
+            }
+        });
+
+        console.log(`NEW PARTS FOR RACE ${raceId}: `, newParts);
+    });
+}
+
+export function generateComparisonNews(comparisonMonths, savedNews){
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const season = daySeason[1];
+    const currentDate = excelToDate(daySeason[0]);
+    const currentMonth = currentDate.getMonth() + 1;
+
+    let newsList = [];
+    comparisonMonths.forEach(month => {
+        if (month >= currentMonth) return; //only past months
+
+        const randomDay1 = Math.floor(Math.random() * 31) + 1;
+        const randomDay2 = Math.floor(Math.random() * 31) + 1;
+
+        const date = new Date(season, month, randomDay1);
+        const excelDate = dateToExcel(date);
+
+
+
+        let shifts = calculateTeamDropsByDate(season, date);
+        console.log(`shifted teams in ${month}/${season}: `, shifts);
+        //order by shift.drop
+        shifts.sort((a, b) => a.drop - b.drop);
+        const top3 = shifts.slice(0, 3);
+        const bottom3 = shifts.slice(-3);
+
+        //put together in the same array
+        const combined = [...top3, ...bottom3];
+        const teamToTalk = randomPick(combined);
+
+        //create the new
+        const entryId = `team_comparison_${season}_${month}`;
+
+        if (savedNews[entryId]) {
+            newsList.push({ id: entryId, ...savedNews[entryId] });
+            return;
+        }
+
+        let newTypeId, compType;
+        if (teamToTalk.drop > 0) {
+            newTypeId = 11;
+            compType = "bad"
+        }
+        else{
+            newTypeId = 12;
+            compType = "good";
+        }
+
+        const title = generateTitle({ teamId: combined_dict[teamToTalk.teamId], season }, newTypeId);
+        const image = getImagePath(teamToTalk.teamId, teamToTalk.teamId, "teamComparison");
+        const overlay = "team-comparison-overlay";
+
+        const newsEntry = {
+            id: entryId,
+            type: "team_comparison",
+            title: title,
+            date: excelDate,
+            image: image,
+            overlay: overlay,
+            data: {
+                team: teamToTalk,
+                season: season,
+                compType: compType
+            },
+            text: null
+        };
+        newsList.push(newsEntry);
+    });
+
+    return newsList;
+}
+
 export function generateRaceResultsNews(events, savednews) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const seasonYear = daySeason[1];
@@ -1411,6 +1536,7 @@ function rebuildStandingsUntil(seasonResults, raceId) {
             resultsString,
             nPodiums,
             nWins,
+            teamId: driverRec[1],
             nPointsFinishes
         });
 
@@ -1533,10 +1659,15 @@ function getImagePath(teamId, code, type) {
         }
 
     }
+    else if (type === "teamComparison") {
+        console.log("Getting team comparison image for teamId:", teamId);
+        return `./assets/images/news/${team_dict[teamId]}_factory.webp`;
+    }
 }
 
 export function calculateTeamDropsByDate(season, date) {
     const excelDate = dateToExcel(date);
+    console.log("excelDate:", excelDate);
 
     // cachea el resultado completo de drops para esta fecha exacta
     const dropKey = `${season}:${excelDate}`;
@@ -1547,6 +1678,8 @@ export function calculateTeamDropsByDate(season, date) {
         _dropsCache.set(dropKey, []);
         return [];
     }
+
+    console.log("Races done:", racesDone.length);
 
     const lastRaceId = racesDone[racesDone.length - 1];
 
@@ -1571,7 +1704,7 @@ export function calculateTeamDropsByDate(season, date) {
         const prev = lastYearStandings.teamStandings.find(t => t.teamId === team.teamId);
         const prevPoints = prev ? prev.points : 0;
         return { teamId: team.teamId, drop: prevPoints - team.points };
-    }).filter(x => x.drop > 0);
+    })
 
     _dropsCache.set(dropKey, drops);
     return drops;
@@ -1611,6 +1744,64 @@ export function getTransferDetails(drivers) {
         driverStandings,
         teamStandings
     }
+}
+
+export function getTeamComparisonDetails(teamId, season, date) {
+    const lastRaceBeforeDate = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${season} AND Day < '${date}'`, 'singleValue');
+    console.log(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${season} AND Day < '${date}'`)
+    const seasonResults = fetchSeasonResults(season);
+    const lastSeasonResults = fetchSeasonResults(season - 1);
+    const {
+    driverStandings: currentDriverStandings,
+    teamStandings:   currentTeamStandings,
+    driversResults:  currentDriversResults,
+    racesNames:      currentRacesNames
+    } = rebuildStandingsUntil(seasonResults, lastRaceBeforeDate);
+
+    const racesCount = queryDB(
+        `SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND RaceID <= ${lastRaceBeforeDate}`,
+        'singleValue'
+    );
+    console.log(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND RaceID <= ${lastRaceBeforeDate}`);
+
+    const firstRacePrevSeason = queryDB(
+        `SELECT MIN(RaceID) FROM Races WHERE SeasonID = ${season - 1}`,
+        'singleValue'
+    );
+
+    console.log("first race previous season:", firstRacePrevSeason);
+    console.log("races count:", racesCount);
+
+    const lastYearEquivalent = firstRacePrevSeason + (racesCount - 1);
+    console.log("Last year equivalent:", lastYearEquivalent);
+
+    const {
+    driverStandings: oldDriverStandings,
+    teamStandings:   oldTeamStandings,
+    driversResults:  oldDriversResults,
+    racesNames:      oldRacesNames
+    } = rebuildStandingsUntil(lastSeasonResults, lastYearEquivalent);
+
+    const previousResultsTeam = queryDB(`SELECT SeasonID, Points, Position FROM Races_TeamStandings WHERE TeamID = ${teamId}`)
+    .map(r => {
+        return {
+            season: r[0],
+            points: r[1],
+            position: r[2]
+        }
+    });
+
+    return {
+        currentDriverStandings,
+        currentTeamStandings,
+        currentDriversResults,
+        oldDriverStandings,
+        oldTeamStandings,
+        oldDriversResults,
+        currentRacesNames,
+        oldRacesNames,
+        previousResultsTeam
+    };
 }
 
 export function getPreviouslyDrivenTeams(driverId) {

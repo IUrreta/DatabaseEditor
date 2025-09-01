@@ -38,5 +38,15 @@
         "id": "contract_renewal",
         "new_type": 10,
         "prompt": "Write ONLY the body (not the title) of a news article in English about {{driver1}} renewing their contract with {{team1}}. Use a tone similar to that of a motorsport news outlet, but avoid sounding overly technical or robotic. The article should be between 200 and 310 words long. Focus on the details of the contract renewal, including the duration of the new contract and any improvements in terms or conditions. Discuss the reasons behind {{driver1}}'s decision to stay with {{team1}}, highlighting their performance and relationship with the team. Mention any statements from {{driver1}} or team representatives regarding the renewal. Use a flowing, paragraph-based structure like a typical F1 news report, and avoid bullet points or numbered lists. When talking about salaries,  do not give overly specific figures, but rather discuss the approximate salary with a general number"
+    },
+    {
+        "id": "team_comparison_bad",
+        "new_type": 11,
+        "prompt": "Write ONLY the body (not the title) of a news article in English about {{team1}}'s performance in the {{actualSeason}} Formula 1 season so far, comparing it to their better {{lastSeason}}. Use a tone similar to that of a motorsport news outlet, but avoid sounding overly technical or robotic. The article should be between 200 and 310 words long. Explain with all the info given why they are scoring less points this season."
+    },
+    {
+        "id": "team_comparison_good",
+        "new_type": 12,
+        "prompt": "Write ONLY the body (not the title) of a news article in English about {{team1}}'s performance in the {{actualSeason}} Formula 1 season so far, comparing it to their worse {{lastSeason}}. Use a tone similar to that of a motorsport news outlet, but avoid sounding overly technical or robotic. The article should be between 200 and 310 words long. Explain with all the info given why they are scoring more points this season."
     }
 ]
