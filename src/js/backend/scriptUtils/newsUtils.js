@@ -1084,8 +1084,6 @@ export function generateComparisonNews(comparisonMonths, savedNews){
         const date = new Date(season, month, randomDay1);
         const excelDate = dateToExcel(date);
 
-
-
         let shifts = calculateTeamDropsByDate(season, date);
         console.log(`shifted teams in ${month}/${season}: `, shifts);
         //order by shift.drop
@@ -1478,7 +1476,7 @@ function getOneQualifyingResults(raceId) {
     return rows;
 }
 
-function rebuildStandingsUntil(seasonResults, raceId) {
+function rebuildStandingsUntil(seasonResults, raceId, includeCurrentRace = false) {
     // 4) Acumulamos puntos por piloto y por equipo
     const driverMap = {};
     const teamMap = {};
@@ -1500,7 +1498,7 @@ function rebuildStandingsUntil(seasonResults, raceId) {
         const totalDriverPoints = races.reduce((sum, r) => {
             const thisRaceId = Number(r[0]);
             if (thisRaceId <= raceId) {
-                if (thisRaceId < raceId) {
+                if (thisRaceId < raceId || includeCurrentRace) {
                     driverRaces.push(getCircuitInfo(thisRaceId).country);
                     resultsString += `${parseInt(r[1]) !== -1 ? `P${r[1]}` : "DNF"}, `;
                     if (parseInt(r[1]) === 1) nWins++;
@@ -1756,7 +1754,7 @@ export function getTeamComparisonDetails(teamId, season, date) {
     teamStandings:   currentTeamStandings,
     driversResults:  currentDriversResults,
     racesNames:      currentRacesNames
-    } = rebuildStandingsUntil(seasonResults, lastRaceBeforeDate);
+    } = rebuildStandingsUntil(seasonResults, lastRaceBeforeDate, true);
 
     const racesCount = queryDB(
         `SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND RaceID <= ${lastRaceBeforeDate}`,
@@ -1780,7 +1778,7 @@ export function getTeamComparisonDetails(teamId, season, date) {
     teamStandings:   oldTeamStandings,
     driversResults:  oldDriversResults,
     racesNames:      oldRacesNames
-    } = rebuildStandingsUntil(lastSeasonResults, lastYearEquivalent);
+    } = rebuildStandingsUntil(lastSeasonResults, lastYearEquivalent, true);
 
     const previousResultsTeam = queryDB(`SELECT SeasonID, Points, Position FROM Races_TeamStandings WHERE TeamID = ${teamId}`)
     .map(r => {

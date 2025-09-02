@@ -3,6 +3,7 @@ import { Command } from "../backend/command";
 import { GoogleGenAI } from "@google/genai";
 import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
+import { currentSeason } from "./transfers";
 
 const newsGrid = document.querySelector('.news-grid');
 const ai = new GoogleGenAI({ apiKey: "API_KEY" });
@@ -148,6 +149,9 @@ async function manageRead(newData, newsList) {
   }
   else if (newData.type === "contract_renewal") {
     prompt = await contextualizeRenewalNews(newData);
+  }
+  else if (newData.type === "team_comparison") {
+    prompt = await contextualizeTeamComparison(newData);
   }
 
   console.log("Final prompt:", prompt);
@@ -581,6 +585,103 @@ async function contextualizeRenewalNews(newData){
     .join("\n");
 
   prompt += `\n\nCurrent Constructors' Championship standings (after this race):\n${teamsChamp}`;
+
+  return prompt;
+}
+
+async function contextualizeTeamComparison(newData) {
+  let team1 = combined_dict[newData.data.team.teamId];
+  let seasonYear = newData.data.season;
+  let compType = newData.data.compType;
+  let ptsDif = Math.abs(newData.data.team.drop);
+  let promptId;
+  if (compType === "good"){
+    promptId = 12
+  }
+  else{
+    promptId = 11
+  }
+
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === promptId).prompt;
+  prompt = prompt.replace(/{{\s*team1\s*}}/g, team1)
+    .replace(/{{\s*actualSeason\s*}}/g, seasonYear)
+    .replace(/{{\s*lastSeason\s*}}/g, seasonYear - 1);
+
+  const command = new Command("teamComparisonRequest", {
+    team: newData.data.team.teamId,
+    season: seasonYear,
+    date: newData.date
+  }
+  );
+
+  if (compType === "good"){
+    prompt += `\n\n${team1} has scored ${ptsDif} more points compared to last season at the same point of the season.`;
+  }
+  else{
+    prompt += `\n\n${team1} has scored ${ptsDif} fewer points compared to last season at the same point of the season.`;
+  }
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+    console.log("Team comparison:", resp);
+  } catch (err) {
+    console.error("Error fetching race details:", err);
+    return;
+  }
+
+  const driversChamp = resp.content.currentDriverStandings
+  .map((d, i) => {
+    return `${i + 1}. ${d.name} — ${d.points} pts`;
+  })
+  .join("\n");
+
+  prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
+
+  const teamsChamp = resp.content.currentTeamStandings
+    .map((t, i) => {
+      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
+      return `${i + 1}. ${teamName} — ${t.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Constructors' Championship standings:\n${teamsChamp}`;
+
+  let previousRaces = '';
+  resp.content.currentRacesNames.forEach((r) => {
+    previousRaces += `${r}, `;
+  });
+  previousRaces = previousRaces.slice(0, -2);
+
+  const previousResults = resp.content.currentDriversResults.filter(d => d.teamId === newData.data.team.teamId).map((d, i) => {
+    return `${d.name} - ${d.resultsString}`;
+  }).join("\n");
+
+
+  prompt +=  `\n\nHere are the results from ${team1}'s drivers in ${seasonYear}: ${previousRaces}\n`;
+  prompt += `\n\n${previousResults}`;
+
+  
+  previousRaces = '';
+    resp.content.oldRacesNames.forEach((r) => {
+    previousRaces += `${r}, `;
+  });
+  previousRaces = previousRaces.slice(0, -2);
+
+  const oldSeasonResults = resp.content.oldDriversResults.filter(d => d.teamId === newData.data.team.teamId).map((d, i) => {
+    return `${d.name} - ${d.resultsString}`;
+  }).join("\n");
+
+  prompt += `\n\nHere are the results from ${team1}'s drivers in ${seasonYear - 1}: ${previousRaces}\n`;
+  prompt += `\n\n${oldSeasonResults}`;
+
+  prompt += `\n\nHere are the previous results of ${team1} in recent years:\n`;
+    resp.content.previousResultsTeam.forEach((t) => {
+      if (t.season !== seasonYear){
+        prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
+      }
+  });
 
   return prompt;
 }
