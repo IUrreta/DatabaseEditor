@@ -200,5 +200,23 @@
             "The Pressure is On for {{team1}} - Can They Maintain Momentum?",
             "The Future Looks Bright for {{team1}} - What Lies Ahead?"
         ]
+    },
+    {
+        "id": "driver_comparison",
+        "new_type": 13,
+        "titles": [
+            "{{driver1}} outperforms {{driver2}} at {{team}}",
+            "{{team}} - {{driver1}} leading internal battle over {{driver2}}",
+            "{{driver1}} showing stronger form than {{driver2}}",
+            "Performance gap widening between {{driver1}} and {{driver2}} at {{team}}",
+            "{{driver1}} shines while {{driver2}} struggles at {{team}}",
+            "{{team}} teammate comparison: {{driver1}} ahead of {{driver2}}",
+            "{{driver1}} gaining edge over {{driver2}} within {{team}}",
+            "{{driver1}} continues to outpace {{driver2}} at {{team}}",
+            "{{driver1}} vs {{driver2}}: Who's leading the charge at {{team}}?",
+            "Inside {{team}}: {{driver1}} vs {{driver2}} performance analysis",
+            "{{driver1}} sets the pace while {{driver2}} lags at {{team}}",
+            "{{driver1}} outshines {{driver2}} in latest {{team}} showdown"
+        ]
     }
 ]

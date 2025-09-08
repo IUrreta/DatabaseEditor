@@ -3215,12 +3215,20 @@ DRIVERS TABLE
   background-color: var(--ferrari-primary)
 }
 
+.feNewBackground{
+  background-color: var(--ferrari-primary);
+}
+
 .drivers-table-row:hover .ashoverback {
   background-color: var(--aston-primary)
 }
 
 .teams-table-row .asiconback {
   background-color: var(--aston-primary)
+}
+
+.asNewBackground{
+  background-color: var(--aston-primary);
 }
 
 .drivers-table-row:hover .mehoverback {
@@ -3231,6 +3239,10 @@ DRIVERS TABLE
   background-color: var(--mercedes-primary)
 }
 
+.meNewBackground{
+  background-color: var(--mercedes-primary);
+}
+
 .drivers-table-row:hover .rbhoverback {
   background-color: var(--redbull-primary)
 }
@@ -3239,12 +3251,20 @@ DRIVERS TABLE
   background-color: var(--redbull-primary)
 }
 
+.rbNewBackground{
+  background-color: var(--redbull-primary);
+}
+
 .drivers-table-row:hover .mchoverback {
   background-color: var(--mclaren-primary)
 }
 
 .teams-table-row .mciconback {
   background-color: var(--mclaren-primary)
+}
+
+.mcNewBackground{
+  background-color: var(--mclaren-primary);
 }
 
 
@@ -3256,12 +3276,20 @@ DRIVERS TABLE
   background-color: var(--alpine-primary)
 }
 
+.alNewBackground{
+  background-color: var(--alpine-primary);
+}
+
 .drivers-table-row:hover .hahoverback {
   background-color: var(--haas-primary)
 }
 
 .teams-table-row .haiconback {
   background-color: var(--haas-primary)
+}
+
+.haNewBackground{
+  background-color: var(--haas-primary);
 }
 
 .drivers-table-row:hover .wihoverback {
@@ -3272,12 +3300,20 @@ DRIVERS TABLE
   background-color: var(--williams-primary)
 }
 
+.wiNewBackground{
+  background-color: var(--williams-primary);
+}
+
 .drivers-table-row:hover .athoverback {
   background-color: var(--alphatauri-primary)
 }
 
 .teams-table-row .aticonback {
   background-color: var(--alphatauri-primary)
+}
+
+.athNewBackground{
+  background-color: var(--alphatauri-primary);
 }
 
 .drivers-table-row:hover .afhoverback {
@@ -3288,6 +3324,10 @@ DRIVERS TABLE
   background-color: var(--alfa-primary)
 }
 
+.afNewBackground{
+  background-color: var(--alfa-primary);
+}
+
 .teams-table-row .cticonback {
   background-color: var(--custom-team-primary)
 }
@@ -3296,6 +3336,48 @@ DRIVERS TABLE
   background-color: var(--custom-team-primary)
 }
 
+.ctNewBackground{
+  background-color: var(--custom-team-primary);
+}
+
+.new-team-logo{
+  max-width: 50%;
+  align-self: center;
+  max-height: 60%;
+}
+
+.new-team-name{
+  text-transform: uppercase;
+  font-size: 36px;
+}
+
+.new-drivers-names{
+  font-size: 28px;
+}
+
+.new-vs{
+  font-size: 22px;
+  font-family: 'Formula1';
+  padding: 0px 4px 4px 4px;
+  position: relative;
+}
+
+
+
+.new-team-text{
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.driver-comparison-overlay{
+  display: flex;
+  height: 100%;
+  justify-content: center;
+}
 
 .prob-viewer-data {
   overflow-y: scroll;
@@ -11833,6 +11915,7 @@ body:has(.active #mod25logo) .one-change {
   text-align: center;
   min-width: 45%;
   text-align: left;
+  text-transform: uppercase;
 }
 
 .race-overlay .position.firstpos{

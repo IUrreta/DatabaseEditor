@@ -48,5 +48,10 @@
         "id": "team_comparison_good",
         "new_type": 12,
         "prompt": "Write ONLY the body (not the title) of a news article in English about {{team1}}'s performance in the {{actualSeason}} Formula 1 season so far, comparing it to their worse {{lastSeason}}. Use clear, natural English in a professional journalistic style, similar to outlets like Autosport or Motorsport.com. Avoid slang, overly dramatic phrasing, or unnecessary flourishes. The article should be between 300 and 400 words long. Explain with all the info given why they are scoring more points this season. Use a structured but flowing narrative, as in a typical F1 news report."
+    },
+    {
+        "id": "driver_comparison",
+        "new_type": 13,
+        "prompt": "Write ONLY the body (not the title) of a news article in English comparing the performances of {{driver1}} and {{driver2}} from {{team1}} in the {{actualSeason}} Formula 1 season so far. Use clear, natural English in a professional journalistic style, similar to outlets like Autosport or Motorsport.com. Avoid slang, overly dramatic phrasing, or unnecessary flourishes. The article should be between 300 and 400 words long. Analyze their performances based on the provided statistics, including points scored, qualifying positions, and race results. Compare how many times each driver has outqualified the other and their and how many times each has finished ahead of the other."
     }
 ]

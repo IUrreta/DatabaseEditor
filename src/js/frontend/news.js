@@ -1,12 +1,13 @@
-import { team_dict, combined_dict, races_names, names_full, countries_data } from "./config";
+import { team_dict, combined_dict, races_names, names_full, countries_data, logos_disc, lightColors } from "./config";
 import { Command } from "../backend/command";
 import { GoogleGenAI } from "@google/genai";
 import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 import { currentSeason } from "./transfers";
+import { colors_dict } from "./head2head";
 
 const newsGrid = document.querySelector('.news-grid');
-const ai = new GoogleGenAI({ apiKey: "API_KEY" });
+const ai = new GoogleGenAI({ apiKey: "API KEY" });
 
 export function place_news(newsList) {
   console.log("Placing news:", newsList);
@@ -329,7 +330,7 @@ async function contextualizePotentialChampion(newData) {
 }
 
 async function contextualizeSillySeasonTransferNews(newData) {
-  console.log("Silly season news:" , newData)
+  console.log("Silly season news:", newData)
   let season = newData.season;
 
   let prompt = newsPromptsTemaplates.find(t => t.new_type === 4).prompt;
@@ -518,7 +519,7 @@ async function contextualizeBigTransferConfirm(newData) {
   return prompt;
 }
 
-async function contextualizeRenewalNews(newData){
+async function contextualizeRenewalNews(newData) {
   let driverName = newData.data.driver1
   let potentialTeam = newData.data.team1
   let originalTeam = newData.data.team2
@@ -595,10 +596,10 @@ async function contextualizeTeamComparison(newData) {
   let compType = newData.data.compType;
   let ptsDif = Math.abs(newData.data.team.drop);
   let promptId;
-  if (compType === "good"){
+  if (compType === "good") {
     promptId = 12
   }
-  else{
+  else {
     promptId = 11
   }
 
@@ -615,10 +616,10 @@ async function contextualizeTeamComparison(newData) {
   }
   );
 
-  if (compType === "good"){
+  if (compType === "good") {
     prompt += `\n\n${team1} has scored ${ptsDif} more points compared to last season at the same point of the season.`;
   }
-  else{
+  else {
     prompt += `\n\n${team1} has scored ${ptsDif} fewer points compared to last season at the same point of the season.`;
   }
 
@@ -632,10 +633,10 @@ async function contextualizeTeamComparison(newData) {
   }
 
   const driversChamp = resp.content.currentDriverStandings
-  .map((d, i) => {
-    return `${i + 1}. ${d.name} — ${d.points} pts`;
-  })
-  .join("\n");
+    .map((d, i) => {
+      return `${i + 1}. ${d.name} — ${d.points} pts`;
+    })
+    .join("\n");
 
   prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
 
@@ -659,12 +660,12 @@ async function contextualizeTeamComparison(newData) {
   }).join("\n");
 
 
-  prompt +=  `\n\nHere are the results from ${team1}'s drivers in ${seasonYear}: ${previousRaces}\n`;
+  prompt += `\n\nHere are the results from ${team1}'s drivers in ${seasonYear}: ${previousRaces}\n`;
   prompt += `\n\n${previousResults}`;
 
-  
+
   previousRaces = '';
-    resp.content.oldRacesNames.forEach((r) => {
+  resp.content.oldRacesNames.forEach((r) => {
     previousRaces += `${r}, `;
   });
   previousRaces = previousRaces.slice(0, -2);
@@ -677,10 +678,10 @@ async function contextualizeTeamComparison(newData) {
   prompt += `\n\n${oldSeasonResults}`;
 
   prompt += `\n\nHere are the previous results of ${team1} in recent years:\n`;
-    resp.content.previousResultsTeam.forEach((t) => {
-      if (t.season !== seasonYear){
-        prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
-      }
+  resp.content.previousResultsTeam.forEach((t) => {
+    if (t.season !== seasonYear) {
+      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
+    }
   });
 
   return prompt;
@@ -893,6 +894,22 @@ async function contextualizeRaceResults(newData) {
   return prompt;
 }
 
+async function contextualizeDriverComparison(newData) {
+  let driver1 = newData.data.drivers[0].name;
+  let driver2 = newData.data.drivers[1].name;
+  let teamId = newData.data.teamId;
+  let seasonYear = newData.data.season;
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 13).prompt;
+  prompt = prompt.replace(/{{\s*driver1\s*}}/g, driver1)
+    .replace(/{{\s*driver2\s*}}/g, driver2)
+    .replace(/{{\s*team1\s*}}/g, combined_dict[teamId])
+    .replace(/{{\s*actualSeason\s*}}/g, seasonYear)
+
+
+
+
+}
+
 
 function saveNews(newsList) {
   const newsObj = newsList.reduce((acc, news) => {
@@ -1063,7 +1080,8 @@ function manage_overlay(imageContainer, overlay, data) {
     numberSpan.className = "new-number";
     numberSpan.textContent = "1.";
 
-    let textNode = document.createTextNode(` ${data.first}`);
+    //take only the lastname if there are multiple names
+    let textNode = document.createTextNode(` ${data.first.split(" ").pop()}`);
 
     first.appendChild(numberSpan);
     first.appendChild(textNode);
@@ -1078,7 +1096,7 @@ function manage_overlay(imageContainer, overlay, data) {
     numberSpan.className = "new-number";
     numberSpan.textContent = "2.";
 
-    textNode = document.createTextNode(` ${data.second}`);
+    textNode = document.createTextNode(` ${data.second.split(" ").pop()}`);
 
     second.appendChild(numberSpan);
     second.appendChild(textNode);
@@ -1093,7 +1111,7 @@ function manage_overlay(imageContainer, overlay, data) {
     numberSpan.className = "new-number";
     numberSpan.textContent = "3.";
 
-    textNode = document.createTextNode(` ${data.third}`);
+    textNode = document.createTextNode(` ${data.third.split(" ").pop()}`);
 
     third.appendChild(numberSpan);
     third.appendChild(textNode);
@@ -1110,6 +1128,72 @@ function manage_overlay(imageContainer, overlay, data) {
     overlayDiv.appendChild(third);
     overlayDiv.appendChild(thirdTeam);
     imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "driver-comparison-overlay") {
+    console.log("DRIVER COMPARISON DATA:", data);
+    const teamId = data.teamId;
+    const overlayDiv = document.createElement('div');
+    overlayDiv.classList.add('driver-comparison-overlay');
+    const teamColor = colors_dict[teamId + "0"] ?? '#000000';
+
+    let contrastColor;
+    if (lightColors.includes(teamColor)) {
+      contrastColor = "#272727";
+    } else {
+      contrastColor = "#eeeef1";
+    }
+
+    let gradientColor = `color-mix(in srgb, ${teamColor} 30%, ${contrastColor})`;
+
+
+
+    const rareLogosTeams = [5, 8, 9];
+    if (rareLogosTeams.includes(teamId)) {
+
+        overlayDiv.style.background = `linear-gradient(to top right,
+          ${gradientColor} 0%,
+          ${teamColor} 25%,
+          ${teamColor} 75%,
+          ${gradientColor} 100%)`;
+      const textDiv = document.createElement('div');
+      textDiv.classList.add('new-team-text', 'bold-font');
+      if (lightColors.indexOf(teamColor) !== -1) {
+        textDiv.style.color = "#272727";
+      }
+      else {
+        textDiv.style.color = '#eeeef1';
+      }
+      const teamName = document.createElement('div');
+      teamName.classList.add('new-team-name');
+      teamName.innerText = combined_dict[teamId];
+      const driversDiv = document.createElement('div');
+      driversDiv.classList.add('new-drivers-names');
+      driversDiv.innerHTML = `${data.drivers[0].name} <span class="new-vs">vs</span> ${data.drivers[1].name}`;
+      textDiv.appendChild(teamName);
+      textDiv.appendChild(driversDiv);
+      driversDiv.querySelector(".new-vs").style.backgroundColor = teamColor;
+      overlayDiv.appendChild(textDiv);
+    }
+    else {
+      overlayDiv.style.background = teamColor;
+      let value = logos_disc[teamId];
+      if (teamId === 2 || teamId === 6) {
+        value = value.replace(".png", "2.png");
+      }
+
+      const logoImg = document.createElement('img');
+
+      logoImg.src = value ?? '';
+      logoImg.dataset.src = value ?? '';
+
+      logoImg.classList.add('new-team-logo');
+      overlayDiv.appendChild(logoImg);
+
+    }
+
+    imageContainer.appendChild(overlayDiv);
+
+
   }
 }
 

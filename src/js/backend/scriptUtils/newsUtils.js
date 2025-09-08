@@ -635,42 +635,42 @@ export function generateContractRenewalsNews(savedNews = {}, contractRenewals = 
     const newsList = [];
     //iterate through months done of renewalMonths
     for (const m of renewalMonths) {
-            const entryId = `contract_renewal_${m}`;
+        const entryId = `contract_renewal_${m}`;
 
-            if (savedNews[entryId]) {
-                newsList.push({ id: entryId, ...savedNews[entryId] });
-                const dId = savedNews[entryId]?.data?.driverId;
-                if (dId != null) used.add(dId);
-                continue;
-            }
-
-            const pool = contractRenewals.filter(c => !used.has(c.driverId));
-            if (!pool.length) continue;
-
-            const contract = randomPick(pool);
-            used.add(contract.driverId);
-
-            const title = generateTitle(contract, 10);
-            const image = getImagePath(contract.team1Id, contract.driverId, "transfer");
-
-            // Generate a date from the current month
-            const newsDate = new Date(season, currentMonth, Math.floor(Math.random() * 28) + 1);
-            const excelDate = dateToExcel(newsDate);
-
-            newsList.push({
-                id: entryId,
-                type: "contract_renewal",
-                title,
-                date: excelDate,
-                image,
-                overlay: "contract_renewal",
-                data: contract,
-                text: null
-            });
+        if (savedNews[entryId]) {
+            newsList.push({ id: entryId, ...savedNews[entryId] });
+            const dId = savedNews[entryId]?.data?.driverId;
+            if (dId != null) used.add(dId);
+            continue;
         }
 
-        return newsList;
-    
+        const pool = contractRenewals.filter(c => !used.has(c.driverId));
+        if (!pool.length) continue;
+
+        const contract = randomPick(pool);
+        used.add(contract.driverId);
+
+        const title = generateTitle(contract, 10);
+        const image = getImagePath(contract.team1Id, contract.driverId, "transfer");
+
+        // Generate a date from the current month
+        const newsDate = new Date(season, currentMonth, Math.floor(Math.random() * 28) + 1);
+        const excelDate = dateToExcel(newsDate);
+
+        newsList.push({
+            id: entryId,
+            type: "contract_renewal",
+            title,
+            date: excelDate,
+            image,
+            overlay: "contract_renewal",
+            data: contract,
+            text: null
+        });
+    }
+
+    return newsList;
+
 }
 
 export function getContractExtensions() {
@@ -1024,18 +1024,18 @@ export function generateTransferRumorsNews(offers, savedNews) {
 export function generateTeamsUpgradesNews(events, savednews) {
     //aparcado de momento
     const globals = getGlobals();
-    let teamIds = [1,2,3,4,5,6,7,8,9,10]
-    if (globals.isCreateATeam){
+    let teamIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    if (globals.isCreateATeam) {
         teamIds.push(32);
     }
 
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const seasonYear = daySeason[1];
     const parts = getAllPartsFromTeam(32);
-    
+
     console.log("UPGRADES", parts);
     console.log("EVENTS", events);
-    
+
     events.forEach(raceId => {
         const entryId = `${seasonYear}_upgrades_${raceId}`;
 
@@ -1068,7 +1068,7 @@ export function generateTeamsUpgradesNews(events, savednews) {
     });
 }
 
-export function generateComparisonNews(comparisonMonths, savedNews){
+export function generateComparisonNews(comparisonMonths, savedNews) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const season = daySeason[1];
     const currentDate = excelToDate(daySeason[0]);
@@ -1079,59 +1079,132 @@ export function generateComparisonNews(comparisonMonths, savedNews){
         if (month >= currentMonth) return; //only past months
 
         const randomDay1 = Math.floor(Math.random() * 31) + 1;
-        const randomDay2 = Math.floor(Math.random() * 31) + 1;
 
         const date = new Date(season, month, randomDay1);
         const excelDate = dateToExcel(date);
 
-        let shifts = calculateTeamDropsByDate(season, date);
-        console.log(`shifted teams in ${month}/${season}: `, shifts);
-        //order by shift.drop
-        shifts.sort((a, b) => a.drop - b.drop);
-        const top3 = shifts.slice(0, 3);
-        const bottom3 = shifts.slice(-3);
+        if (month % 2 !== 0) {
+            let shifts = calculateTeamDropsByDate(season, date);
+            console.log(`shifted teams in ${month}/${season}: `, shifts);
+            //order by shift.drop
+            shifts.sort((a, b) => a.drop - b.drop);
+            const top3 = shifts.slice(0, 3);
+            const bottom3 = shifts.slice(-3);
 
-        //put together in the same array
-        const combined = [...top3, ...bottom3];
-        const teamToTalk = randomPick(combined);
+            //put together in the same array
+            const combined = [...top3, ...bottom3];
+            const teamToTalk = randomPick(combined);
 
-        //create the new
-        const entryId = `team_comparison_${season}_${month}`;
+            //create the new
+            const entryId = `team_comparison_${season}_${month}`;
 
-        if (savedNews[entryId]) {
-            newsList.push({ id: entryId, ...savedNews[entryId] });
-            return;
-        }
+            if (savedNews[entryId]) {
+                newsList.push({ id: entryId, ...savedNews[entryId] });
+                return;
+            }
 
-        let newTypeId, compType;
-        if (teamToTalk.drop > 0) {
-            newTypeId = 11;
-            compType = "bad"
+            let newTypeId, compType;
+            if (teamToTalk.drop > 0) {
+                newTypeId = 11;
+                compType = "bad"
+            }
+            else {
+                newTypeId = 12;
+                compType = "good";
+            }
+
+            const title = generateTitle({ teamId: combined_dict[teamToTalk.teamId], season }, newTypeId);
+            const image = getImagePath(teamToTalk.teamId, teamToTalk.teamId, "teamComparison");
+            const overlay = "team-comparison-overlay";
+
+            const newsEntry = {
+                id: entryId,
+                type: "team_comparison",
+                title: title,
+                date: excelDate,
+                image: image,
+                overlay: overlay,
+                data: {
+                    team: teamToTalk,
+                    season: season,
+                    compType: compType
+                },
+                text: null
+            };
+            newsList.push(newsEntry);
         }
         else{
-            newTypeId = 12;
-            compType = "good";
+            //drivers of the same team comparison
+            const isCreateATeam = getGlobals().isCreateATeam;
+            const teams = isCreateATeam ? [1,2,3,4,5,6,7,8,9,10,32] : [1,2,3,4,5,6,7,8,9,10];
+            const teamId = randomPick(teams);
+            const teamName = combined_dict[teamId];
+
+            const entryId = `driver_comparison_${season}_${month}`;
+
+            if (savedNews[entryId]) {
+                newsList.push({ id: entryId, ...savedNews[entryId] });
+                return;
+            }
+
+            const drivers = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID FROM Staff_BasicData bas
+                    JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID 
+                    JOIN Staff_Contracts con ON bas.StaffID = con.StaffID
+                    JOIN Races_DriverStandings sta ON dri.StaffID = sta.DriverID
+                    WHERE sta.SeasonID = ${season} AND sta.RaceFormula = 1
+                    AND con.TeamID = ${teamId} AND con.ContractType = 0 AND con.PosInTeam <= 2
+                    ORDER BY sta.Position`, 'allRows');
+            if (drivers.length < 2) return;
+
+            const formattedDrivers = drivers.map(driver => {
+                const [nameFormatted, driverId] = formatNamesSimple(driver);
+                return {
+                    name: news_insert_space(nameFormatted),
+                    driverId
+                }
+            });
+
+            //for each driver, select randomlky if taking his entire name or only last name
+            formattedDrivers.forEach(driver => {
+                if (Math.random() < 0.5) {
+                    const parts = driver.name.split(' ');
+                    driver.name = parts[parts.length - 1]; //last name only
+                }
+            });
+
+            console.log("COMPARISON DRIVERS: ", formattedDrivers);
+
+            let data = {
+                team: teamName,
+                driver1: formattedDrivers[0].name,
+                driver2: formattedDrivers[1].name,
+            }
+
+            const title = generateTitle(data, 13);
+            // const image = getImagePath(teamId, teamId, "driverComparison");
+            const overlay = "driver-comparison-overlay";
+            
+
+            const newsEntry = {
+                id: entryId,
+                type: "driver_comparison",
+                title: title,
+                date: excelDate,
+                image: null,
+                overlay: overlay,
+                data: {
+                    teamId,
+                    teamName,
+                    drivers: formattedDrivers,
+                    season
+                },
+                text: null
+            };
+            newsList.push(newsEntry);
+
         }
 
-        const title = generateTitle({ teamId: combined_dict[teamToTalk.teamId], season }, newTypeId);
-        const image = getImagePath(teamToTalk.teamId, teamToTalk.teamId, "teamComparison");
-        const overlay = "team-comparison-overlay";
 
-        const newsEntry = {
-            id: entryId,
-            type: "team_comparison",
-            title: title,
-            date: excelDate,
-            image: image,
-            overlay: overlay,
-            data: {
-                team: teamToTalk,
-                season: season,
-                compType: compType
-            },
-            text: null
-        };
-        newsList.push(newsEntry);
     });
 
     return newsList;
@@ -1565,6 +1638,21 @@ function rebuildStandingsUntil(seasonResults, raceId, includeCurrentRace = false
     }
 }
 
+function getFullChampionSeasonDetails(season) {
+    const seasonResults = fetchSeasonResults(season);
+    const lastRaceId = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${season} AND State = 2`, 'singleValue');
+    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, lastRaceId, true);
+    const champions = getLatestChampions(season);
+
+    return {
+        driverStandings,
+        teamStandings,
+        driversResults,
+        racesNames,
+        champions
+    };
+}
+
 function getLatestChampions(seasonId) {
     const sql = `
     SELECT 
@@ -1750,10 +1838,10 @@ export function getTeamComparisonDetails(teamId, season, date) {
     const seasonResults = fetchSeasonResults(season);
     const lastSeasonResults = fetchSeasonResults(season - 1);
     const {
-    driverStandings: currentDriverStandings,
-    teamStandings:   currentTeamStandings,
-    driversResults:  currentDriversResults,
-    racesNames:      currentRacesNames
+        driverStandings: currentDriverStandings,
+        teamStandings: currentTeamStandings,
+        driversResults: currentDriversResults,
+        racesNames: currentRacesNames
     } = rebuildStandingsUntil(seasonResults, lastRaceBeforeDate, true);
 
     const racesCount = queryDB(
@@ -1774,20 +1862,20 @@ export function getTeamComparisonDetails(teamId, season, date) {
     console.log("Last year equivalent:", lastYearEquivalent);
 
     const {
-    driverStandings: oldDriverStandings,
-    teamStandings:   oldTeamStandings,
-    driversResults:  oldDriversResults,
-    racesNames:      oldRacesNames
+        driverStandings: oldDriverStandings,
+        teamStandings: oldTeamStandings,
+        driversResults: oldDriversResults,
+        racesNames: oldRacesNames
     } = rebuildStandingsUntil(lastSeasonResults, lastYearEquivalent, true);
 
     const previousResultsTeam = queryDB(`SELECT SeasonID, Points, Position FROM Races_TeamStandings WHERE TeamID = ${teamId}`)
-    .map(r => {
-        return {
-            season: r[0],
-            points: r[1],
-            position: r[2]
-        }
-    });
+        .map(r => {
+            return {
+                season: r[0],
+                points: r[1],
+                position: r[2]
+            }
+        });
 
     return {
         currentDriverStandings,
@@ -1800,6 +1888,13 @@ export function getTeamComparisonDetails(teamId, season, date) {
         oldRacesNames,
         previousResultsTeam
     };
+}
+
+export function getFUllChampionSeasonDetails(season) {
+    const seasonResults = fetchSeasonResults(season);
+    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, 9999, true);
+    const champions = getLatestChampions(season + 1); // +1 to include this season champion
+    
 }
 
 export function getPreviouslyDrivenTeams(driverId) {

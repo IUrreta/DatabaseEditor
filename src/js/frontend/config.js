@@ -313,6 +313,12 @@ export function getParamMap(data) {
         },
         12: {
             team1: data.teamId,
+        },
+        13:{
+            driver1: data.driver1,
+            driver2: data.driver2,
+            team: data.team
+
         }
     };
 }
