@@ -996,7 +996,6 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
     // Python: formatred_results[i] = (raceID,) + formatred_results[i]
     formatredResults[i] = [raceID, ...formatredResults[i]];
 
-    // Si DNF = 1 => set FinishingPos y Points a -1
     if (dnfd === 1) {
       const arr = [...formatredResults[i]];
       arr[1] = -1; // FinishingPos
@@ -1010,7 +1009,6 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
       formatredResults[i].push(0);
     }
 
-    // 2.3) Quali Stage & FinishingPos
     const QStage = queryDB(`
         SELECT MAX(QualifyingStage)
         FROM Races_QualifyingResults
@@ -1030,46 +1028,26 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
           AND QualifyingStage = ${QStage}
       `, 'singleValue') || 99;
 
-    // 2.4) Cálculo de diferencias de tiempo (carrera y pole)
     const timeDifference = calculateTimeDifference(driverID, raceID);
     const poleDifference = calculateTimeToPole(driverID, raceID);
 
-    // Añadimos QRes, timeDifference y poleDifference
     formatredResults[i].push(QRes);
     formatredResults[i].push(timeDifference);
     formatredResults[i].push(poleDifference);
   }
 
-  // -------- 3) Añadir datos de sprint al formatredResults --------
-  // En Python: 
-  // for tupla1 in sprints:
-  //   for i, tupla2 in enumerate(formatred_results):
-  //     if tupla1[0] == tupla2[0]:
-  //       formatred_results[i] = tupla2 + (tupla1[2], tupla1[1])
-  //
-  // tupla1[0] => RaceID
-  // tupla1[1] => FinishingPos
-  // tupla1[2] => ChampionshipPoints
+
 
   for (const sprintRow of sprints) {
-    // sprintRow: [RaceID, FinishingPos, ChampionshipPoints]
     const [sprintRaceID, sprintPos, sprintPoints] = sprintRow;
-    // Buscamos coincidencia en formatredResults
     for (let i = 0; i < formatredResults.length; i++) {
       if (formatredResults[i][0] === sprintRaceID) {
-        // Agregamos ChampionshipPoints y FinishingPos al final
-        // (Ojo: en Python lo agregas en orden (tupla1[2], tupla1[1]) => (ChampPoints, FinishingPos)
         formatredResults[i] = [...formatredResults[i], sprintPoints, sprintPos];
         break;
       }
     }
   }
 
-  // -------- 4) Añadir TeamID a cada carrera --------
-  // En Python se hace un for i in range(len(...)):
-  //   team_in_race = ...
-  //   formatred_results[i] += (team_in_race)
-  //   latest_team = ...
   let latestTeam = null;
   for (let i = 0; i < formatredResults.length; i++) {
     const raceID = formatredResults[i][0];

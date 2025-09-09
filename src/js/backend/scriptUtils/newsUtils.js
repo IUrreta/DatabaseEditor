@@ -1557,6 +1557,7 @@ function rebuildStandingsUntil(seasonResults, raceId, includeCurrentRace = false
     const driversResults = []
 
     seasonResults.forEach(driverRec => {
+        console.log("Processing driver record: ", driverRec);
         const name = driverRec[0];
         let resultsString = ""
         let driverRaces = []
@@ -1638,20 +1639,6 @@ function rebuildStandingsUntil(seasonResults, raceId, includeCurrentRace = false
     }
 }
 
-function getFullChampionSeasonDetails(season) {
-    const seasonResults = fetchSeasonResults(season);
-    const lastRaceId = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${season} AND State = 2`, 'singleValue');
-    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, lastRaceId, true);
-    const champions = getLatestChampions(season);
-
-    return {
-        driverStandings,
-        teamStandings,
-        driversResults,
-        racesNames,
-        champions
-    };
-}
 
 function getLatestChampions(seasonId) {
     const sql = `
@@ -1890,10 +1877,22 @@ export function getTeamComparisonDetails(teamId, season, date) {
     };
 }
 
-export function getFUllChampionSeasonDetails(season) {
+export function getFullChampionSeasonDetails(season) {
     const seasonResults = fetchSeasonResults(season);
-    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, 9999, true);
-    const champions = getLatestChampions(season + 1); // +1 to include this season champion
+    const qualiResults = fetchQualiResults(season);
+    const lastRaceId = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${season} AND State = 2`, 'singleValue');
+    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, lastRaceId, true);
+    const { driverStandings: qualiDriverStandings, teamStandings: qualiTeamStandings, driversResults: driverQualiResults, racesNames: qualiRacesNames } = rebuildStandingsUntil(qualiResults, lastRaceId, true);
+    const champions = getLatestChampions(season);
+
+    return {
+        driverStandings,
+        teamStandings,
+        driversResults,
+        driverQualiResults,
+        racesNames,
+        champions
+    }
     
 }
 

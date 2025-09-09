@@ -16,7 +16,7 @@ import { editAge, editMarketability, editName, editRetirement, editSuperlicense,
 import { editCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
-import { generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails } from "./scriptUtils/newsUtils";
+import { generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails, getFullChampionSeasonDetails } from "./scriptUtils/newsUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
@@ -440,6 +440,12 @@ const workerCommands = {
 
     const results = getTeamComparisonDetails(teamId, season, date);
     postMessage({ responseMessage: "Team comparison details fetched", content: results });
+  },
+  fullChampionshipDetailsRequest: (data, postMessage) => {
+    const season = data.season;
+
+    const results = getFullChampionSeasonDetails(season);
+    postMessage({ responseMessage: "Full championship details fetched", content: results });
   }
 
 };

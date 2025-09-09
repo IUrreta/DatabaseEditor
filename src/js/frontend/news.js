@@ -5,9 +5,10 @@ import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
+import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
 
 const newsGrid = document.querySelector('.news-grid');
-const ai = new GoogleGenAI({ apiKey: "API KEY" });
+const ai = new GoogleGenAI({ apiKey: "API" });
 
 export function place_news(newsList) {
   console.log("Placing news:", newsList);
@@ -57,23 +58,68 @@ export function place_news(newsList) {
       const articleEl = document.createElement('div');
       articleEl.classList.add('news-article');
 
+      const dateDiv = document.createElement('div');
+      dateDiv.classList.add('news-article-date');
+      const calendarIcon = document.createElement('i');
+      calendarIcon.classList.add('bi', 'bi-calendar-event',);
+      const dateSpan = document.createElement('span');
+      const date = excelToDate(news.date);
+      //put date in dd/mm/yyyy format
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      dateSpan.textContent = `${day}/${month}/${year}`;
+      dateDiv.appendChild(calendarIcon);
+      dateDiv.appendChild(dateSpan);
+
       articleEl.style.whiteSpace = 'pre-wrap';
-      titleEl.insertAdjacentElement('afterend', articleEl);
+
+      //first title, then date, then article
+      titleEl.insertAdjacentElement('afterend', dateDiv);
+      dateDiv.insertAdjacentElement('afterend', articleEl);
 
       const loaderDiv = document.createElement('div');
       loaderDiv.classList.add('loader-div');
       const loadingSpan = document.createElement('span');
-      loadingSpan.textContent = "Generating...";
-      const loader = document.createElement('div');
-      loader.classList.add('ai-loader');
+      loadingSpan.textContent = "Generating";
+      const loadingDots = document.createElement('span');
+      loadingDots.textContent = "."
+      loadingDots.classList.add('loading-dots');
+      loadingSpan.appendChild(loadingDots);
 
-      loaderDiv.appendChild(loader);
+      setInterval(() => {
+        if (loadingDots.textContent.length >= 3) {
+          loadingDots.textContent = ".";
+        } else {
+          loadingDots.textContent += ".";
+        }
+      }, 500);
+
+      const progressBar = document.createElement('div');
+      progressBar.classList.add('ai-progress-bar');
+      const progressDiv = document.createElement('div');
+
+      progressDiv.classList.add('progress-div');
+      progressBar.appendChild(progressDiv);
       loaderDiv.appendChild(loadingSpan);
+      loaderDiv.appendChild(progressBar);
 
       articleEl.insertAdjacentElement('afterend', loaderDiv);
 
+      //start progress div moving every 100ms to 30%
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 3;
+        if (progressDiv) {
+          progressDiv.style.width = progress + '%';
+        }
+        if (progress >= 30) {
+          clearInterval(interval);
+        }
+      }, 150);
+
       try {
-        const articleText = await manageRead(news, newsList);
+        const articleText = await manageRead(news, newsList, progressDiv, interval);
         typeWriterWordByWord(articleEl, articleText, 15);
 
       } finally {
@@ -124,7 +170,7 @@ export function place_news(newsList) {
   });
 }
 
-async function manageRead(newData, newsList) {
+async function manageRead(newData, newsList, barProgressDiv, interval) {
   let articleText, prompt;
 
   if (newData.type === "race_result") {
@@ -154,6 +200,28 @@ async function manageRead(newData, newsList) {
   else if (newData.type === "team_comparison") {
     prompt = await contextualizeTeamComparison(newData);
   }
+  else if (newData.type === "driver_comparison") {
+    prompt = await contextualizeDriverComparison(newData);
+  }
+
+  clearInterval(interval);
+
+  //when prompt is ready change the progress width to 70%
+  if (barProgressDiv) {
+    barProgressDiv.style.width = '70%';
+  }
+
+
+  let progress = 70;
+  const interval2 = setInterval(() => {
+    progress += 1;
+    if (barProgressDiv) {
+      barProgressDiv.style.width = progress + '%';
+    }
+    if (progress >= 98) {
+      clearInterval(interval2);
+    }
+  }, 350);
 
   console.log("Final prompt:", prompt);
 
@@ -164,6 +232,10 @@ async function manageRead(newData, newsList) {
     articleText = await askGenAI(prompt);
     newData.text = articleText;
     saveNews(newsList);
+    //move progress bar to 100%
+    if (barProgressDiv) {
+      barProgressDiv.style.width = '100%';
+    }
   }
 
   return articleText;
@@ -905,9 +977,72 @@ async function contextualizeDriverComparison(newData) {
     .replace(/{{\s*team1\s*}}/g, combined_dict[teamId])
     .replace(/{{\s*actualSeason\s*}}/g, seasonYear)
 
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+    console.log("Full championship details:", resp);
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  const driversChamp = resp.content.driverStandings
+    .map((d, i) => {
+      return `${i + 1}. ${d.name} — ${d.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
 
 
+  const teamsChamp = resp.content.teamStandings
+    .map((t, i) => {
+      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
+      return `${i + 1}. ${teamName} — ${t.points} pts`;
+    })
+    .join("\n");
 
+  prompt += `\n\nCurrent Constructors' Championship standings:\n${teamsChamp}`;
+
+  let previousRaces = '';
+  resp.content.racesNames.forEach((r) => {
+    previousRaces += `${r}, `;
+  });
+  previousRaces = previousRaces.slice(0, -2);
+
+  prompt += `\n\nThe races that have already taken place in ${seasonYear} are: ${previousRaces}\n`;
+
+  const previousResults = resp.content.driversResults.filter(d => d.teamId === teamId).map((d, i) => {
+    return `${d.name} - ${d.resultsString}`;
+  }).join("\n");
+
+  prompt += `\n\nHere are the previous race results for ${combined_dict[teamId]}'s drivers in ${seasonYear}:\n${previousResults}`;
+
+  const previousQualiResults = resp.content.driverQualiResults.filter(d => d.teamId === teamId).map((d, i) => {
+    return `${d.name} - ${d.resultsString}`;
+  }).join("\n");
+
+  prompt += `\n\nHere are the previous qualifying results for ${combined_dict[teamId]}'s drivers in ${seasonYear}:\n${previousQualiResults}`;
+
+
+  const previousChampions = Object.values(
+    resp.content.champions.reduce((acc, { season, pos, name, points }) => {
+      if (!acc[season]) acc[season] = { season, drivers: [] };
+      acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
+      return acc;
+    }, {})
+  )
+    .sort((a, b) => b.season - a.season)
+    .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
+    .join('\n\n');
+
+  prompt += `\n\nIf you want to mention that someone is the reigning chamipon, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+
+  return prompt;
 }
 
 
@@ -1150,7 +1285,7 @@ function manage_overlay(imageContainer, overlay, data) {
     const rareLogosTeams = [5, 8, 9];
     if (rareLogosTeams.includes(teamId)) {
 
-        overlayDiv.style.background = `linear-gradient(to top right,
+      overlayDiv.style.background = `linear-gradient(to top right,
           ${gradientColor} 0%,
           ${teamColor} 25%,
           ${teamColor} 75%,

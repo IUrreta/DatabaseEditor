@@ -7576,7 +7576,7 @@ input.disabled {
 #viewerpill:hover .pill-line,
 #viewerpill.active .pill-line,
 #viewerpill.active {
-  width: 134px;
+  width: 111px;
 }
 
 #transferpill:hover,
@@ -11861,7 +11861,18 @@ body:has(.active #mod25logo) .one-change {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.news-article-date{
+  color: var(--disabled-text);
+  display: flex;
   gap: 10px;
+  align-items: center;
+  margin-bottom: 7px;
+}
+
+.news-article-date i{
+  font-size: 20px;
 }
 
 .news-article{
@@ -12041,10 +12052,10 @@ body:has(.active #mod25logo) .one-change {
 
 .loader-div{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 3px;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -12058,16 +12069,27 @@ body:has(.active #mod25logo) .one-change {
   color: color-mix(in srgb, var(--elements) 60%, var(--text-general));
 }
 
-.ai-loader {
-  width: 34px;
-  aspect-ratio: 1;
-  --_c: no-repeat radial-gradient(farthest-side, var(--new-primary) 92%, #0000);
-  background: var(--_c) top, var(--_c) left, var(--_c) right, var(--_c) bottom;
-  background-size: 10px 10px;
-  animation: l7 1s infinite;
+.ai-progress-bar{
+  height: 7px;
+  box-shadow: 0 0 0 2px var(--new-primary) inset;
+  background-color: transparent;
+  min-width: 160px;
+  outline: none;
 }
 
-@keyframes l7 {to{transform: rotate(.5turn)}}
+.progress-div{
+  width: 0%;
+  height: 100%;
+  background-color: var(--new-primary);
+  transition: width 0.15s;
+  will-change: width;
+}
+
+.loading-dots{
+      width: 15px;
+    display: inline-block;
+}
+
 
 .word-fade{
   opacity: 0;
