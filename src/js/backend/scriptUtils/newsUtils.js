@@ -37,7 +37,7 @@ export function generate_news(savednews) {
 
     const currentDate = excelToDate(daySeason[0]);
     const currentMonth = currentDate.getMonth() + 1;
-    const rumorMonths = [2, 3, 4, 5, 6, 7];
+    const rumorMonths = [4, 5, 6, 7];
     const comparisonMonths = [4, 6, 8, 10];
     const monthsDone = rumorMonths.filter(m => m < currentMonth);
 
@@ -57,7 +57,9 @@ export function generate_news(savednews) {
     const bigConfirmedTransfersNews = generateBigConfirmedTransferNews(savednews, bigConfirmedTransfers, currentMonth);
     const contractRenewalsNews = generateContractRenewalsNews(savednews, contractRenewals, currentMonth);
 
-    let newsList = [...raceNews, ...qualiNews, ...fakeTransferNews, ...bigConfirmedTransfersNews, ...contractRenewalsNews, ...comparisonNews];
+    const seasonReviews = generateSeasonReviewNews(savednews);
+
+    let newsList = [...raceNews, ...qualiNews, ...fakeTransferNews, ...bigConfirmedTransfersNews, ...contractRenewalsNews, ...comparisonNews, ...seasonReviews];
 
     if (potentialChampionNewsList && potentialChampionNewsList.length > 0) {
         potentialChampionNewsList.forEach(newNewsItem => {
@@ -407,9 +409,24 @@ export function getCircuitInfo(raceId) {
     return countries_data[code] || code;
 }
 
+function randomRemovalOfNames(data){
+    let paramsWithName = ["winnerName", "pole_driver", "driver1", " driver2", "driver3", "driver_name"];
+    //if data has any of these params, 50% chance to do split(" ").pop() to retain only last name
+    paramsWithName.forEach(param => {
+        if (data[param]) {
+            if (Math.random() < 0.5) {
+                data[param] = data[param].split(" ").pop();
+            }
+        }
+    });
+
+    return data;
+}
+
 
 function generateTitle(data, new_type) {
-    console.log("Generating title for type:", new_type, "with data:", data);
+    let dataRandomized = randomRemovalOfNames(data);
+    console.log("Generating title for type:", new_type, "with data:", dataRandomized);
     const templateObj = newsTitleTemplates.find(t => t.new_type === new_type);
     let raceInfo = null;
     if (data.raceId) {
@@ -418,7 +435,7 @@ function generateTitle(data, new_type) {
         data.country = raceInfo.country;
         data.adjective = raceInfo.adjective;
     }
-    const paramMap = getParamMap(data);
+    const paramMap = getParamMap(dataRandomized);
 
     const titles = templateObj.titles;
     const idx = Math.floor(Math.random() * titles.length);
@@ -1361,6 +1378,94 @@ export function generateQualifyingResultsNews(events, savednews) {
     return newsList;
 }
 
+export function generateSeasonReviewNews(savedNews){
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const nRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${daySeason[1]}`, 'singleValue');
+    let racesInterval = nRaces / 3;
+    const racesCompleted = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${daySeason[1]} AND State = 2`, 'singleValue');
+    let newsList = [];
+    const firstRaceSeasonId = queryDB(`SELECT MIN(RaceID) FROM Races WHERE SeasonID = ${daySeason[1]}`, 'singleValue');
+    const seasonResults = fetchSeasonResults(daySeason[1]);
+
+    
+    let reviewPoints = [];
+    if (racesCompleted >= racesInterval) {
+        reviewPoints.push({ part: 1, totalParts: 3 });
+    }
+    if (racesCompleted >= racesInterval * 2) {
+        reviewPoints.push({ part: 2, totalParts: 3 });
+    }
+    if (racesCompleted >= nRaces) {
+        reviewPoints.push({ part: 3, totalParts: 3 });
+    }
+
+    reviewPoints.forEach(review => {
+        const entryId = `season_review_${daySeason[1]}_${review.part}`;
+
+        if (savedNews[entryId]) {
+            newsList.push({ id: entryId, ...savedNews[entryId] });
+            return;
+        }
+
+        const raceIdInPoint = firstRaceSeasonId + Math.floor(racesInterval * review.part) - 1;
+        const nextRace = raceIdInPoint + 1;
+
+        const dates = queryDB(`SELECT Day FROM Races WHERE RaceID IN (${raceIdInPoint}, ${nextRace})`, 'allRows');
+        //pick a random date between those two dates
+        let date;
+        if (dates.length === 2) {
+            const day1 = dates[0][0] + 1;
+            const day2 = dates[1][0] - 1;
+            date = Math.floor(Math.random() * (day2 - day1 + 1)) + day1;
+        }
+
+        const excelDate = date
+
+        const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceIdInPoint);
+        const firstDriver = driverStandings[0];
+        const firstTeam = teamStandings[0];
+        const secondDriver = driverStandings[1];
+        const secondTeam = teamStandings[1];
+        const thirdDriver = driverStandings[2];
+        const thirdTeam = teamStandings[2];
+
+        let data = {
+            season: daySeason[1],
+            part: review.part,
+            driver1: firstDriver.name,
+            driver2: secondDriver.name,
+        }
+
+        let titleId;
+        if (review.part === 3) titleId = 15;
+        else titleId = 14;
+        const title = generateTitle(data, titleId);
+        const image = getImagePath(firstTeam ? firstTeam.id : 1, firstDriver ? firstDriver.id : 1, "season_review");
+
+        let newsData = {
+            season: daySeason[1],
+            part: review.part,
+            firstDriver,
+            secondDriver,
+            firstTeam,
+            secondTeam
+        }
+
+        newsList.push({
+            id: entryId,
+            type: "season_review",
+            title: title,
+            date: excelDate,
+            image: image,
+            overlay: null,
+            data: newsData,
+            text: null
+        });
+    });
+
+    return newsList;
+}
+
 function news_insert_space(str) {
     return str
         .replace(/([A-Z])/g, ' $1')
@@ -1735,6 +1840,11 @@ function getImagePath(teamId, code, type) {
     else if (type === "teamComparison") {
         console.log("Getting team comparison image for teamId:", teamId);
         return `./assets/images/news/${team_dict[teamId]}_factory.webp`;
+    }
+    else if (type === "season_review") {
+        //number bnetween 1 and 8 included 8
+        const randomNum = getRandomInt(1, 8);
+        return `./assets/images/news/${randomNum}_shot.webp`;
     }
 }
 

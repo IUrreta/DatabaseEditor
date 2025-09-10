@@ -8,7 +8,21 @@ import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
 
 const newsGrid = document.querySelector('.news-grid');
-const ai = new GoogleGenAI({ apiKey: "API" });
+
+let ai = null;
+
+export function initAI(apiKeyParam) {
+  if (!apiKeyParam) {
+    console.warn("No API key configured yet");
+    return null;
+  }
+  ai = new GoogleGenAI({ apiKey: apiKeyParam });
+  return ai;
+}
+
+export function getAI() {
+  return ai;
+}
 
 export function place_news(newsList) {
   console.log("Placing news:", newsList);
@@ -19,7 +33,7 @@ export function place_news(newsList) {
   newsList.forEach((news, index) => {
     const newsItem = document.createElement('div');
     newsItem.classList.add('news-item', 'fade-in');
-    // newsItem.setAttribute('style', '--order: ' + (index + 1));
+    newsItem.setAttribute('style', '--order: ' + (index + 1));
 
     const newwsBody = document.createElement('div');
     newwsBody.classList.add('news-body');
@@ -141,31 +155,31 @@ export function place_news(newsList) {
 
     newsGrid.appendChild(newsItem);
 
-    const lazyImages = document.querySelectorAll(".news-item");
+  //   const lazyImages = document.querySelectorAll(".news-item");
 
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const imageElement = entry.target.querySelector("img");
-          const dataSrc = entry.target.querySelector("img").getAttribute("data-src");
-          imageElement.src = dataSrc;
-          imageElement.onload = () => imageElement.classList.add("loaded");
-        }
-        else {
-          const imageElement = entry.target.querySelector("img");
-          imageElement.src = "";
-          imageElement.classList.remove("loaded");
-        }
-      });
-    }, {
-      root: document.querySelector('.news-grid'),
-      rootMargin: "0px",
-      threshold: 0
-    });
+  //   const imageObserver = new IntersectionObserver((entries, observer) => {
+  //     entries.forEach(entry => {
+  //       if (entry.isIntersecting) {
+  //         const imageElement = entry.target.querySelector("img");
+  //         const dataSrc = entry.target.querySelector("img").getAttribute("data-src");
+  //         imageElement.src = dataSrc;
+  //         imageElement.onload = () => imageElement.classList.add("loaded");
+  //       }
+  //       else {
+  //         const imageElement = entry.target.querySelector("img");
+  //         imageElement.src = "";
+  //         imageElement.classList.remove("loaded");
+  //       }
+  //     });
+  //   }, {
+  //     root: document.querySelector('.news-grid'),
+  //     rootMargin: "0px",
+  //     threshold: 0
+  //   });
 
-    lazyImages.forEach(item => {
-      imageObserver.observe(item);
-    });
+  //   lazyImages.forEach(item => {
+  //     imageObserver.observe(item);
+  //   });
 
   });
 }

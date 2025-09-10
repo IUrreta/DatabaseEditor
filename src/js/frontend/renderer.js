@@ -22,7 +22,7 @@ import {
 } from './stats';
 import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
      reload_h2h_graphs, init_colors_dict, edit_colors_dict, setMidGrid, setMaxRaces, setRelativeGrid } from './head2head';
-import { place_news } from './news.js';
+import { place_news, initAI, getAI } from './news.js';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
@@ -97,9 +97,11 @@ const logButton = document.getElementById("logFileButton");
 const patreonLogo = document.querySelector(".footer .bi-custom-patreon");
 const patreonSlideUp = document.querySelector(".patreon-slide-up");
 const slideUpClose = document.getElementById("patreonSlideUpClose")
-const patreonThemes = document.querySelector(".patreon-themes")
+const patreonUnlockables = document.querySelector(".patreon-unlockables")
 const downloadSaveButton = document.querySelector(".download-save-button")
 
+const apiKeyInput = document.getElementById("apiKeyInput");
+const apiKeyStatus = document.getElementById("apiKeyStatus");
 
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
@@ -1368,6 +1370,14 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         replace_custom_team_logo(document.querySelector(".logo-preview").src)
     }
 
+    //if apiKeyInput has a value, save it to localStorage
+    let apiKeyValue = apiKeyInput.value.trim();
+    if (apiKeyValue) {
+        localStorage.setItem("apiKey", apiKeyValue);
+        apiKeyStatus.classList.add("api-loaded")
+        apiKeyInput.value = ""
+        initAI(apiKeyValue);
+    }
 
 })
 
@@ -1807,7 +1817,7 @@ async function checkPatreonStatus() {
     const validSignature = await isPatronSignatureValid();
 
     if (validSignature) {
-        patreonThemes.classList.remove("d-none");
+        patreonUnlockables.classList.remove("d-none");
         document.getElementById("patreonKeyText").textContent = "Patreon key loaded";
         loadTheme();
     }
@@ -1913,6 +1923,13 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('lastVersion', versionNow); // Guardar nueva versión
         const patchModal = new bootstrap.Modal(document.getElementById('patchModal'));
         patchModal.show();
+    }
+
+    //check if apiKey in localStorage
+    const  apiKey = localStorage.getItem("apiKey");
+    if (apiKey) {
+        apiKeyStatus.classList.add("api-loaded")
+        initAI(apiKey);
     }
 
 });

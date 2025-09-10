@@ -10,7 +10,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-81CY6HY9K6"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());
 
   gtag('config', 'G-81CY6HY9K6');
@@ -515,7 +515,9 @@
                 <div class="logo-selector">
                   <div class="bold-font">Logo</div>
                   <div>
-                    Select any logo in a <span class="important-text bold-font">PNG</span>, <span class="important-text bold-font">JPG</span> or <span class="important-text bold-font">SVG</span> format
+                    Select any logo in a <span class="important-text bold-font">PNG</span>, <span
+                      class="important-text bold-font">JPG</span> or <span class="important-text bold-font">SVG</span>
+                    format
                   </div>
                   <div class="logo-and-preview">
                     <div style="width: max-content;">
@@ -574,7 +576,7 @@
                     <div class="team-logo-container wi" data-teamid="6">
                       <img src="../assets/images/williams.png" class="team-logo">
                     </div>
-                    <div class="team-logo-container ha"  data-teamid="7">
+                    <div class="team-logo-container ha" data-teamid="7">
                       <img src="../assets/images/haas.png" class="team-logo">
                     </div>
                     <div class="team-logo-container at" data-teamid="8">
@@ -660,11 +662,11 @@
             </div>
           </div>
           <div id="patreonChanges">
-            <div class="patreon-changes-text">
+            <div class="patreon-changes-text modal-text">
               <span>
-                Becoming a patreon supporter will not only support massively the development of the game, but also give
+                Becoming a patreon supporter will not only support massively the development of the editor, but also give
                 you access to
-                exclusive content and features. Please consider supporting the tool if oyu find it useful!
+                exclusive content and features. Please consider supporting the tool if you find it useful!
               </span>
               <span>
                 If you are already a patreon supporter, please download your patreon key from the patreon website and
@@ -686,44 +688,63 @@
                 <div class="dropdown-line"></div>
               </div>
             </div>
-            <div class="patreon-themes d-none">
-              <span class="modal-subtitle bold-font">Choose a theme</span>
-              <div class="themes-grid">
-                <div class="one-theme active" id="defaultTheme" data-theme="default-theme">
-                  <div class="theme-title">
-                    <span>Default</span>
-                    <i class="bi bi-check-lg"></i>
+            <div class="patreon-unlockables  d-none">
+              <div class="patreon-themes">
+                <span class="modal-subtitle bold-font">Choose a theme</span>
+                <div class="themes-grid">
+                  <div class="one-theme active" id="defaultTheme" data-theme="default-theme">
+                    <div class="theme-title">
+                      <span>Default</span>
+                      <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div class="theme-colors">
+                      <div class="background-color"></div>
+                      <div class="primary-color"></div>
+                      <div class="secondary-color"></div>
+                    </div>
                   </div>
-                  <div class="theme-colors">
-                    <div class="background-color"></div>
-                    <div class="primary-color"></div>
-                    <div class="secondary-color"></div>
+                  <div class="one-theme" id="lightTheme" data-theme="light-theme">
+                    <div class="theme-title">
+                      <span>Light</span>
+                      <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div class="theme-colors">
+                      <div class="background-color"></div>
+                      <div class="primary-color"></div>
+                      <div class="secondary-color"></div>
+                    </div>
                   </div>
-                </div>
-                <div class="one-theme" id="lightTheme" data-theme="light-theme">
-                  <div class="theme-title">
-                    <span>Light</span>
-                    <i class="bi bi-check-lg"></i>
-                  </div>
-                  <div class="theme-colors">
-                    <div class="background-color"></div>
-                    <div class="primary-color"></div>
-                    <div class="secondary-color"></div>
-                  </div>
-                </div>
-                <div class="one-theme" id="ogTheme" data-theme="og-theme">
-                  <div class="theme-title">
-                    <span>OG</span>
-                    <i class="bi bi-check-lg"></i>
-                  </div>
-                  <div class="theme-colors">
-                    <div class="background-color"></div>
-                    <div class="primary-color"></div>
-                    <div class="secondary-color"></div>
+                  <div class="one-theme" id="ogTheme" data-theme="og-theme">
+                    <div class="theme-title">
+                      <span>OG</span>
+                      <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div class="theme-colors">
+                      <div class="background-color"></div>
+                      <div class="primary-color"></div>
+                      <div class="secondary-color"></div>
+                    </div>
                   </div>
                 </div>
               </div>
+              <div class="api-key-section">
+                <span class="modal-subtitle bold-font">API Key</span>
+                <div class="modal-text">
+                  If you want to read AI-generated articles from the news section, please enter your API key here. You can get one for free
+                  from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on <span class="important-text bold-font">Create API Key</span> on the top right corner
+                  
+                </div>
+                <div class="api-input-and-status"> 
+                  <input type="text" class="" id="apiKeyInput" placeholder="Enter your API key">
+                  <div class="saved-status" id="apiKeyStatus">
+                    <i class="bi bi-check"></i>
+                    <span class="bold-font">Saved</span>
+                  </div>
+                </div>
+                
+              </div>
             </div>
+
 
           </div>
           <input class="d-none" type="file" id="patreonInput" accept=".json">
@@ -4548,7 +4569,7 @@
                         <i class="bi bi-plus-lg"></i>
                       </div>
                     </div>
-                    <i class="bi bi-caret-down-fill" ></i>
+                    <i class="bi bi-caret-down-fill"></i>
                   </div>
                   <div class="parts-list" id="sidepodsList">
                   </div>
@@ -5207,19 +5228,22 @@
           <div class="one-change" style="--order: 8">
             <div class="one-change-title bold-font">Performance</div>
             <div class="one-change-description-group">
-              <div class="one-change-description performance-description redbull-performance-description"><span class="bold-font one-change-performance-name">RED BULL</span>
+              <div class="one-change-description performance-description redbull-performance-description"><span
+                  class="bold-font one-change-performance-name">RED BULL</span>
                 <div class="one-change-bar-container">
                   <div class="one-change-bar-fill performance-bar-progress rb"></div>
                 </div>
                 <span class="redbull-performance">58.5%</span>
               </div>
-              <div class="one-change-description performance-description mclaren-performance-description"><span class="bold-font one-change-performance-name">MCLAREN</span>
+              <div class="one-change-description performance-description mclaren-performance-description"><span
+                  class="bold-font one-change-performance-name">MCLAREN</span>
                 <div class="one-change-bar-container">
                   <div class="one-change-bar-fill performance-bar-progress mc"></div>
                 </div>
                 <span class="mclaren-performance">56.5%</span>
               </div>
-              <div class="one-change-description performance-description"><span class="bold-font one-change-performance-name">WILLIAMS</span>
+              <div class="one-change-description performance-description"><span
+                  class="bold-font one-change-performance-name">WILLIAMS</span>
                 <div class="one-change-bar-container">
                   <div class="one-change-bar-fill performance-bar-progress wi"></div>
                 </div>

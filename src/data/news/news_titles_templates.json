@@ -42,7 +42,7 @@
             "{{winner}} conquers the {{circuit}} circuit",
             "{{winner}} leads the pack at the {{adjective}} Grand Prix",
             "{{winner}} claims the top spot at {{circuit}}"
-          ]
+        ]
     },
     {
         "id": "driver_comparison",
@@ -217,6 +217,37 @@
             "Inside {{team}}: {{driver1}} vs {{driver2}} performance analysis",
             "{{driver1}} sets the pace while {{driver2}} lags at {{team}}",
             "{{driver1}} outshines {{driver2}} in latest {{team}} showdown"
+        ]
+    },
+    {
+        "id": "season_review_mid",
+        "new_type": 14,
+        "titles": [
+            "{{driver1}} sets the benchmark in the title fight",
+            "{{driver1}} leads the way as the season unfolds",
+            "The title battle intensifies: {{driver1}} vs {{driver2}}",
+            "{{driver1}} strengthens championship bid",
+            "{{driver1}} holds the upper hand over {{driver2}}",
+            "Momentum with {{driver1}} as rivals chase",
+            "All eyes on {{driver1}} after strong run of form",
+            "Pressure builds on {{driver2}} as {{driver1}} extends lead",
+            "Championship picture shifts with {{driver1}} in control"
+        ]
+    },
+    {
+        "id": "season_review_end",
+        "new_type": 15,
+        "titles": [
+            "Winners and losers of the {{season_year}} F1 season",
+            "Who did best and who struggled in {{season_year}}?",
+            "Our Top performers and disappointments of the {{season_year}} season",
+            "Reviewing the highs and lows of the {{season_year}} F1 season",
+            "{{driver1}} was champion, but who else impressed in {{season_year}}?",
+            "The good, the bad, and the surprising of {{season_year}} F1",
+            "Season in review: standout drivers and teams of {{season_year}}",
+            "Reflecting on the {{season_year}} F1 season: who excelled and who didn't?",
+            "Analyzing the successes and failures of {{season_year}} F1",
+            "From champions to underdogs: {{season_year}} F1 season highlights"
         ]
     }
 ]
