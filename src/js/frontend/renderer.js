@@ -708,7 +708,6 @@ const messageHandlers = {
     },
     "News fetched": (message) => {
         place_news(message)
-
     },
     "Save selected finished": (message) => {
         generateNews();
@@ -723,6 +722,8 @@ function generateNews(){
     const savedNews = localStorage.getItem(newsName) || "{}";
     const parsedNews = JSON.parse(savedNews);
 
+    console.log("Parsed news:", parsedNews);
+
     const command = new Command("generateNews", {
         news: parsedNews,
     });
@@ -733,7 +734,7 @@ function generateNews(){
     const loaderDiv = document.createElement('div');
     loaderDiv.classList.add('loader-div', 'general-news-loader');
     const loadingSpan = document.createElement('span');
-    loadingSpan.textContent = "Generating";
+    loadingSpan.textContent = parsedNews !== "{}" ? "Updating" : "Generating";
     const loadingDots = document.createElement('span');
     loadingDots.textContent = "."
     loadingDots.classList.add('loading-dots');

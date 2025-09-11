@@ -219,7 +219,23 @@ export async function place_news(newsList) {
     newwsBody.appendChild(readbuttonContainer);
     newsItem.appendChild(newwsBody);
 
+    if(news.type === "race_result" || news.type === "quali_result") {
+      newsItem.dataset.type = news.type;
+    }
+    else if(news.type === "fake_transfer" || news.type === "big_transfer" || news.type === "contract_renewal" || news.type === "silly_season_rumors") {
+      newsItem.dataset.type = "driver_transfers";
+    }
+    else if(news.type === "potential_champion" || news.type === "world_champion" || news.type === "season_review" || news.type === "team_comparison" || news.type === "driver_comparison") {
+      newsItem.dataset.type = "others";
+    }
+
     newsGrid.appendChild(newsItem);
+    setTimeout(() =>
+    {
+      newsItem.classList.remove('fade-in');
+      newsItem.style.removeProperty('--order');
+      newsItem.style.opacity = '1';
+    }, 300);
 
 
   });
@@ -457,14 +473,15 @@ async function contextualizePotentialChampion(newData) {
 }
 
 async function contextualizeSillySeasonTransferNews(newData) {
-  console.log("Silly season news:", newData)
   let season = newData.season;
+  const date = newData.date || null;
 
   let prompt = newsPromptsTemaplates.find(t => t.new_type === 4).prompt;
   prompt = prompt.replace(/{{\s*season\s*}}/g, season);
 
   const command = new Command("transferRumorRequest", {
-    drivers: newData.data.drivers
+    drivers: newData.data.drivers,
+    date: date
   }
   );
 
@@ -520,13 +537,15 @@ async function contextualizeSillySeasonTransferNews(newData) {
 async function contextualizeFakeTransferNews(newData) {
   let driverName = newData.data.drivers[0].name;
   let teamName = newData.data.drivers[0].team;
+  const date = newData.date || null;
 
   let prompt = newsPromptsTemaplates.find(t => t.new_type === 7).prompt;
   prompt = prompt.replace(/{{\s*driver1\s*}}/g, driverName)
     .replace(/{{\s*team1\s*}}/g, teamName);
 
   const command = new Command("transferRumorRequest", {
-    drivers: newData.data.drivers
+    drivers: newData.data.drivers,
+    date: date
   }
   );
 
@@ -579,6 +598,7 @@ async function contextualizeBigTransferConfirm(newData) {
   let driverName = newData.data.driver1
   let potentialTeam = newData.data.team1
   let originalTeam = newData.data.team2
+  const date = newData.date || null;
 
   let prompt = newsPromptsTemaplates.find(t => t.new_type === 6).prompt;
   prompt = prompt.replace(/{{\s*driver1\s*}}/g, driverName)
@@ -597,7 +617,8 @@ async function contextualizeBigTransferConfirm(newData) {
   }]
 
   const command = new Command("transferRumorRequest", {
-    drivers: drivers
+    drivers: drivers,
+    date: date
   }
   );
 
@@ -666,8 +687,11 @@ async function contextualizeRenewalNews(newData) {
     potentialYearEnd: newData.data.endSeason
   }]
 
+  const date = newData.date || null;
+
   const command = new Command("transferRumorRequest", {
-    drivers: drivers
+    drivers: drivers,
+    date: date
   }
   );
 
@@ -1519,3 +1543,22 @@ function getOrdinalSuffix(n) {
   }
   return n + "th";
 }
+
+document.querySelectorAll('#newsTypeMenu .dropdown-item').forEach(item => {
+  item.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    item.classList.toggle('inactive');
+
+    // sincroniza el icono
+    item.querySelector('i').classList.toggle('unactive', item.classList.contains('inactive'));
+
+    const type = item.dataset.value;
+    const hide = item.classList.contains('inactive');
+
+    document.querySelectorAll(`.news-item[data-type="${type}"]`).forEach(n => {
+      n.style.display = hide ? 'none' : '';
+    });
+  });
+});

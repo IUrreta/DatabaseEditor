@@ -664,7 +664,8 @@
           <div id="patreonChanges">
             <div class="patreon-changes-text modal-text">
               <span>
-                Becoming a patreon supporter will not only support massively the development of the editor, but also give
+                Becoming a patreon supporter will not only support massively the development of the editor, but also
+                give
                 you access to
                 exclusive content and features. Please consider supporting the tool if you find it useful!
               </span>
@@ -730,18 +731,20 @@
               <div class="api-key-section">
                 <span class="modal-subtitle bold-font">API Key</span>
                 <div class="modal-text">
-                  If you want to read AI-generated articles from the news section, please enter your API key here. You can get one for free
-                  from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on <span class="important-text bold-font">Create API Key</span> on the top right corner
-                  
+                  If you want to read AI-generated articles from the news section, please enter your API key here. You
+                  can get one for free
+                  from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
+                  <span class="important-text bold-font">Create API Key</span> on the top right corner
+
                 </div>
-                <div class="api-input-and-status"> 
+                <div class="api-input-and-status">
                   <input type="text" class="" id="apiKeyInput" placeholder="Enter your API key">
                   <div class="saved-status" id="apiKeyStatus">
                     <i class="bi bi-check"></i>
                     <span class="bold-font">Saved</span>
                   </div>
                 </div>
-                
+
               </div>
             </div>
 
@@ -1486,11 +1489,29 @@
         </div>
       </div>
       <div class="script-view hide unloaded" id="news">
-        <div class="title transfer-title bold-font">
-          Latest news
-          <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal"
-            data-bs-target="#contractsModal">?</i>
+        <div class="general-top-panel">
+          <div class="title-buttons-left">
+            <div style="padding-bottom: 2px;">
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                id="newsTypeButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Filter
+              </button>
+              <div class="dropdown-line"></div>
+              <ul class="dropdown-menu" id="newsTypeMenu" style="font-family: Formula1;">
+                <a class="dropdown-item" data-value="race_result">Race results <i class="bi bi-check"></i></a>
+                <a class="dropdown-item" data-value="quali_result">Qualifying results <i class="bi bi-check"></i></a>
+                <a class="dropdown-item" data-value="driver_transfers">Driver transfers <i class="bi bi-check"></i></a>
+                <a class="dropdown-item" data-value="others">Other news <i class="bi bi-check"></i></a>
+              </ul>
+            </div>
+          </div>
+          <div class="title transfer-title bold-font">
+            Latest news
+            <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal"
+              data-bs-target="#contractsModal">?</i>
+          </div>
         </div>
+
         <div class="news-grid">
 
         </div>

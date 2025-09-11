@@ -428,8 +428,9 @@ const workerCommands = {
   },
   transferRumorRequest: (data, postMessage) => {
     const drivers = data.drivers;
+    const date = data.date || null; // New date parameter
 
-    const info = getTransferDetails(drivers)
+    const info = getTransferDetails(drivers, date)
 
     postMessage({ responseMessage: "Transfer details fetched", content: info });
   },
