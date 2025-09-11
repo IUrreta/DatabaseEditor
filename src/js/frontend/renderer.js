@@ -192,6 +192,10 @@ export function setSaveName(name) {
     saveName = name;
 }
 
+export function getSaveName() {
+    return saveName;
+}
+
 export function setIsShowingNotification(value) {
     isShowingNotification = value;
 }
@@ -712,13 +716,65 @@ const messageHandlers = {
 };
 
 function generateNews(){
-    const savedNews = localStorage.getItem("save0_news") || "{}";
+    let saveName = getSaveName();
+    //remove file extension if any
+    saveName = saveName.split(".")[0];
+    let newsName = `${saveName}_news`;
+    const savedNews = localStorage.getItem(newsName) || "{}";
     const parsedNews = JSON.parse(savedNews);
 
     const command = new Command("generateNews", {
         news: parsedNews,
     });
     command.execute();
+
+    const newsView = document.getElementById("news");
+
+    const loaderDiv = document.createElement('div');
+    loaderDiv.classList.add('loader-div', 'general-news-loader');
+    const loadingSpan = document.createElement('span');
+    loadingSpan.textContent = "Generating";
+    const loadingDots = document.createElement('span');
+    loadingDots.textContent = "."
+    loadingDots.classList.add('loading-dots');
+    loadingSpan.appendChild(loadingDots);
+
+    setInterval(() => {
+    if (loadingDots.textContent.length >= 3) {
+        loadingDots.textContent = ".";
+    } else {
+        loadingDots.textContent += ".";
+    }
+    }, 500);
+
+    const progressBar = document.createElement('div');
+    progressBar.classList.add('ai-progress-bar');
+    const progressDiv = document.createElement('div');
+    progressDiv.classList.add('progress-div', 'general-news-progress-div');
+
+    loadingSpan.appendChild(loadingDots);
+    loaderDiv.appendChild(loadingSpan);
+    progressBar.appendChild(progressDiv);
+    loaderDiv.appendChild(progressBar);
+
+    startGeneralNewsProgress(progressDiv);
+    newsView.appendChild(loaderDiv);
+}
+
+export function startGeneralNewsProgress(progressDiv) {
+  let width = 0;
+  const id = setInterval(() => {
+    if (!progressDiv?.isConnected) { clearInterval(id); return; }
+
+    if (width >= 100) {
+      clearInterval(id);
+      return;
+    }
+    width++;
+    progressDiv.style.width = width + '%';
+  }, 150);
+
+  progressDiv._progressIntervalId = id;
 }
 
 function update_engine_allocations(message) {

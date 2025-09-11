@@ -53,5 +53,15 @@
         "id": "driver_comparison",
         "new_type": 13,
         "prompt": "Write ONLY the body (not the title) of a news article in English comparing the performances of {{driver1}} and {{driver2}} from {{team1}} in the {{actualSeason}} Formula 1 season so far. Use clear, natural English in a professional journalistic style, similar to outlets like Autosport or Motorsport.com. Avoid slang, overly dramatic phrasing, or unnecessary flourishes. The article should be between 300 and 400 words long. Analyze their performances based on the provided statistics, including points scored, qualifying positions, and race results. Compare how many times each driver has outqualified the other and their and how many times each has finished ahead of the other."
+    },
+    {
+        "id": "season_review",
+        "new_type": 14,
+        "prompt": "Write ONLY the body (not the title) of a news article in English reviewing the {{season_year}} Formula 1 season so far, after the {{part}} third of the season has gone. {{driver1}} is leading the Drivers Championship followed by {{driver2}}, and {{team1}} is currently leading the Constructors Championship. Use clear, natural English in a professional journalistic style, similar to outlets like Autosport or Motorsport.com. Avoid slang, overly dramatic phrasing, or unnecessary flourishes. The article should be between 400 and 500 words long. Summarize the key events of the season, including the championship battle, standout performances by drivers and teams, and any significant controversies or developments. Highlight the main storylines that defined the season and discuss their implications for the future of Formula 1. Use a flowing, paragraph-based structure like a typical F1 news report."
+    },
+    {
+        "id": "season_review_end",
+        "new_type": 15,
+        "prompt": "Write ONLY the body (not the title) of a news article in English reviewing the recently concluded {{season_year}} Formula 1 season. {{driver1}} won the championship followed by {{driver2}}, and {{team1}} got the Constructors Championship. Use clear, natural English in a professional journalistic style, similar to outlets like Autosport or Motorsport.com. Avoid slang, overly dramatic phrasing, or unnecessary flourishes. The article should be between 500 and 650 words long. This article should mainly be focused on the best and worst performers of the season, both drivers and teams. Include your winners and losers, or your power rankings of the best and worst drivers and teams and why they delivered or underperformed. Discuss the main storylines that defined the season, including the championship battle, standout performances, and any significant controversies or developments. Use a flowing, paragraph-based structure like a typical F1 news report."
     }
 ]

@@ -11958,6 +11958,12 @@ body:has(.active #mod25logo) .one-change {
   gap: 10px;
   align-items: center;
   margin-bottom: 7px;
+  opacity: 1;
+  transition: opacity 0.15s;
+}
+
+.news-article-date.show{
+  opacity: 1;
 }
 
 .news-article-date i{
@@ -12056,23 +12062,6 @@ body:has(.active #mod25logo) .one-change {
   justify-content: flex-end;
 }
 
-.gradient-text {
-  display: inline-block;      
-  color: var(--text-general);
-  transition: color 0s;
-  --angle: 0deg;
-  animation: spin 3s linear infinite;
-}
-
-/* .read-button:hover .gradient-text {
-  color: transparent;
-  background-image: conic-gradient(
-    from var(--angle),
-    #f33d71, #fcab98, #24c3eb, #be5ecc, #f33d71
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-} */
 
 .read-button{
   border-radius: 5px;
@@ -12090,28 +12079,16 @@ body:has(.active #mod25logo) .one-change {
   color: var(--text-general);
 }
 
+.read-button:active{
+  transform: scale(0.96); 
+}
+
 @property --angle{
   syntax: "<angle>";
   initial-value: 0deg;
   inherits: false;
 }
 
-/* .read-button:not(.closable)::after, .read-button:not(.closable)::before{
-  content: '';
-  background-image: conic-gradient(from var(--angle), #f33d71, #fcab98, #24c3eb, #be5ecc, #f33d71);
-  position: absolute;
-  inset: -2px;  
-  z-index: -1;
-  border-radius: 5px;
-  animation: spin 3s linear infinite;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-
-.read-button:not(.closable):hover::before{
-  opacity: 0.9;
-  filter: blur(6px);
-} */
 
 .read-button:not(.closable):hover::after{
   opacity: 1;
@@ -12134,9 +12111,16 @@ body:has(.active #mod25logo) .one-change {
   align-items: center;
   justify-content: center;
   color: var(--text-general);
-  padding: 10px 29px;
+  padding: 5px 18px;
   text-transform: uppercase;
   font-size: 16px;
+  margin-bottom: 7px;
+  border-radius: 7px;
+}
+
+#news > .loader-div{
+  top: 450%;
+
 }
 
 .loader-div{
@@ -12150,6 +12134,10 @@ body:has(.active #mod25logo) .one-change {
   left: 50%;
   transform: translate(-50%, -50%);
   transition: opacity 0.15s;
+  opacity: 1;
+}
+
+.loader-div.show{
   opacity: 1;
 }
 

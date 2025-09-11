@@ -1344,7 +1344,6 @@ export function changeExpertiseBased(part, stat, newValue, teamId, type = "exist
         `);
 }
 
-// get_performance_all_teams_season(...) => ya lo tienes, o lo traduces igual
 
 export function getPerformanceAllTeamsSeason(customTeam = false) {
     const races = getRacesDays();

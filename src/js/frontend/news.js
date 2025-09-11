@@ -6,10 +6,12 @@ import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
+import { getSaveName } from "./renderer";
 
 const newsGrid = document.querySelector('.news-grid');
 
 let ai = null;
+let interval2 = null;
 
 export function initAI(apiKeyParam) {
   if (!apiKeyParam) {
@@ -24,8 +26,59 @@ export function getAI() {
   return ai;
 }
 
-export function place_news(newsList) {
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
+const onTransitionEnd = (el, propName, timeoutMs) =>
+  new Promise(resolve => {
+    let done = false;
+    const handler = (e) => {
+      if (!propName || e.propertyName === propName) {
+        done = true;
+        el.removeEventListener('transitionend', handler);
+        resolve();
+      }
+    };
+    el.addEventListener('transitionend', handler, { once: true });
+    if (timeoutMs != null) {
+      setTimeout(() => { if (!done) { el.removeEventListener('transitionend', handler); resolve(); } }, timeoutMs);
+    }
+  });
+
+async function finishGeneralLoader() {
+  const pageLoaderDiv = document.querySelector('.general-news-loader');
+  if (!pageLoaderDiv) return;
+
+  const pageProgressDiv =
+    pageLoaderDiv.querySelector('.general-news-progress-div') ||
+    document.querySelector('.general-news-progress-div');
+
+  const id = pageProgressDiv?._progressIntervalId;
+  if (id) {
+    clearInterval(id);
+    pageProgressDiv._progressIntervalId = null;
+  }
+
+  if (pageProgressDiv) {
+    await new Promise(requestAnimationFrame);     // asegura estado inicial
+    pageProgressDiv.style.width = '100%';
+    await Promise.race([
+      onTransitionEnd(pageProgressDiv, 'width', 220),
+      wait(200)
+    ]);
+  }
+
+  pageLoaderDiv.style.opacity = '0';
+  await Promise.race([
+    onTransitionEnd(pageLoaderDiv, 'opacity', 150),
+    wait(100)
+  ]);
+
+  pageLoaderDiv.remove();
+}
+
+export async function place_news(newsList) {
   console.log("Placing news:", newsList);
+
+  await finishGeneralLoader();
 
   saveNews(newsList);
   newsGrid.innerHTML = '';
@@ -78,7 +131,8 @@ export function place_news(newsList) {
       calendarIcon.classList.add('bi', 'bi-calendar-event',);
       const dateSpan = document.createElement('span');
       const date = excelToDate(news.date);
-      //put date in dd/mm/yyyy format
+
+
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
@@ -112,8 +166,8 @@ export function place_news(newsList) {
       const progressBar = document.createElement('div');
       progressBar.classList.add('ai-progress-bar');
       const progressDiv = document.createElement('div');
-
       progressDiv.classList.add('progress-div');
+
       progressBar.appendChild(progressDiv);
       loaderDiv.appendChild(loadingSpan);
       loaderDiv.appendChild(progressBar);
@@ -134,15 +188,27 @@ export function place_news(newsList) {
 
       try {
         const articleText = await manageRead(news, newsList, progressDiv, interval);
-        typeWriterWordByWord(articleEl, articleText, 15);
 
-      } finally {
+        clearInterval(interval);
+        clearInterval(interval2);
+        progressDiv.style.width = '100%';
+
         setTimeout(() => {
           loaderDiv.style.opacity = '0';
-        }, 150);
-        loaderDiv.remove();
+
+          setTimeout(() => {
+            loaderDiv.remove();
+            typeWriterWordByWord(articleEl, articleText, 15);
+          }, 150);
+
+        }, 200);
+
       }
 
+      catch (err) {
+        console.error("Error generating article:", err);
+        clearInterval(interval);
+      }
     });
 
     imageContainer.appendChild(image);
@@ -155,31 +221,6 @@ export function place_news(newsList) {
 
     newsGrid.appendChild(newsItem);
 
-  //   const lazyImages = document.querySelectorAll(".news-item");
-
-  //   const imageObserver = new IntersectionObserver((entries, observer) => {
-  //     entries.forEach(entry => {
-  //       if (entry.isIntersecting) {
-  //         const imageElement = entry.target.querySelector("img");
-  //         const dataSrc = entry.target.querySelector("img").getAttribute("data-src");
-  //         imageElement.src = dataSrc;
-  //         imageElement.onload = () => imageElement.classList.add("loaded");
-  //       }
-  //       else {
-  //         const imageElement = entry.target.querySelector("img");
-  //         imageElement.src = "";
-  //         imageElement.classList.remove("loaded");
-  //       }
-  //     });
-  //   }, {
-  //     root: document.querySelector('.news-grid'),
-  //     rootMargin: "0px",
-  //     threshold: 0
-  //   });
-
-  //   lazyImages.forEach(item => {
-  //     imageObserver.observe(item);
-  //   });
 
   });
 }
@@ -217,17 +258,20 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
   else if (newData.type === "driver_comparison") {
     prompt = await contextualizeDriverComparison(newData);
   }
+  else if (newData.type === "season_review") {
+    prompt = await contextualizeSeasonReview(newData);
+  }
 
   clearInterval(interval);
 
-  //when prompt is ready change the progress width to 70%
+
   if (barProgressDiv) {
-    barProgressDiv.style.width = '70%';
+    barProgressDiv.style.width = '50%';
   }
 
 
-  let progress = 70;
-  const interval2 = setInterval(() => {
+  let progress = 50;
+  interval2 = setInterval(() => {
     progress += 1;
     if (barProgressDiv) {
       barProgressDiv.style.width = progress + '%';
@@ -246,10 +290,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
     articleText = await askGenAI(prompt);
     newData.text = articleText;
     saveNews(newsList);
-    //move progress bar to 100%
-    if (barProgressDiv) {
-      barProgressDiv.style.width = '100%';
-    }
+
   }
 
   return articleText;
@@ -299,7 +340,7 @@ async function contextualizeWorldChampion(newData) {
 
 
       const driversChamp = standingsResp.content.driverStandings
-        .map((d, i) => `${i + 1}. ${d.name} — ${d.points} pts`)
+        .map((d, i) => `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`)
         .join("\n");
       prompt += `\n\nCurrent Drivers' Championship standings (after this race):\n${driversChamp}`;
 
@@ -322,7 +363,7 @@ async function contextualizeWorldChampion(newData) {
         .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
         .join('\n\n');
 
-      prompt += `\n\nIf you want to mention that someone is the reigning chamipon, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+      prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
     } else {
       prompt += "\n\nCould not retrieve current championship standings.";
     }
@@ -380,7 +421,7 @@ async function contextualizePotentialChampion(newData) {
       }
 
       const driversChamp = standingsResp.content.driverStandings
-        .map((d, i) => `${i + 1}. ${d.name} — ${d.points} pts`)
+        .map((d, i) => `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`)
         .join("\n");
       prompt += `\n\nCurrent Drivers' Championship standings (before this race):\n${driversChamp}`;
 
@@ -403,7 +444,7 @@ async function contextualizePotentialChampion(newData) {
         .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
         .join('\n\n');
 
-      prompt += `\n\nIf you want to mention that someone is the reigning chamipon, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+      prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
     } else {
       prompt += "\n\nCould not retrieve current championship standings.";
     }
@@ -458,7 +499,7 @@ async function contextualizeSillySeasonTransferNews(newData) {
 
   const driversChamp = resp.content.driverStandings
     .map((d, i) => {
-      return `${i + 1}. ${d.name} — ${d.points} pts`;
+      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
     })
     .join("\n");
 
@@ -516,7 +557,7 @@ async function contextualizeFakeTransferNews(newData) {
 
   const driversChamp = resp.content.driverStandings
     .map((d, i) => {
-      return `${i + 1}. ${d.name} — ${d.points} pts`;
+      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
     })
     .join("\n");
 
@@ -587,7 +628,7 @@ async function contextualizeBigTransferConfirm(newData) {
 
   const driversChamp = resp.content.driverStandings
     .map((d, i) => {
-      return `${i + 1}. ${d.name} — ${d.points} pts`;
+      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
     })
     .join("\n");
 
@@ -658,7 +699,7 @@ async function contextualizeRenewalNews(newData) {
 
   const driversChamp = resp.content.driverStandings
     .map((d, i) => {
-      return `${i + 1}. ${d.name} — ${d.points} pts`;
+      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
     })
     .join("\n");
 
@@ -720,7 +761,7 @@ async function contextualizeTeamComparison(newData) {
 
   const driversChamp = resp.content.currentDriverStandings
     .map((d, i) => {
-      return `${i + 1}. ${d.name} — ${d.points} pts`;
+      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
     })
     .join("\n");
 
@@ -831,7 +872,7 @@ async function contextualizeQualiResults(newData) {
 
   const driversChamp = resp.content.driverStandings
     .map((d, i) => {
-      return `${i + 1}. ${d.name} — ${d.points} pts`;
+      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
     })
     .join("\n");
 
@@ -857,7 +898,7 @@ async function contextualizeQualiResults(newData) {
     .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
     .join('\n\n');
 
-  prompt += `\n\nIf you want to mention that someone is the reigning chamipon, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+  prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
 
 
   return prompt;
@@ -948,7 +989,7 @@ async function contextualizeRaceResults(newData) {
 
   const driversChamp = resp.content.driverStandings
     .map((d, i) => {
-      return `${i + 1}. ${d.name} — ${d.points} pts`;
+      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
     })
     .join("\n");
 
@@ -974,7 +1015,7 @@ async function contextualizeRaceResults(newData) {
     .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
     .join('\n\n');
 
-  prompt += `\n\nIf you want to mention that someone is the reigning chamipon, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+  prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
 
 
   return prompt;
@@ -1006,7 +1047,7 @@ async function contextualizeDriverComparison(newData) {
 
   const driversChamp = resp.content.driverStandings
     .map((d, i) => {
-      return `${i + 1}. ${d.name} — ${d.points} pts`;
+      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
     })
     .join("\n");
 
@@ -1054,9 +1095,113 @@ async function contextualizeDriverComparison(newData) {
     .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
     .join('\n\n');
 
-  prompt += `\n\nIf you want to mention that someone is the reigning chamipon, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+  prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
 
   return prompt;
+}
+
+async function contextualizeSeasonReview(newData) {
+  let seasonYear = newData.data.season;
+  let driver1 = newData.data.firstDriver.name;
+  let driver2 = newData.data.secondDriver.name;
+  let team1 = combined_dict[newData.data.firstTeam.teamId];
+  let team2 = combined_dict[newData.data.secondTeam.teamId];
+  let part = newData.data.part;
+
+  let newType = part === 3 ? 15 : 14;
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === newType).prompt;
+  prompt = prompt.replace(/{{\s*season_year\s*}}/g, seasonYear)
+    .replace(/{{\s*part\s*}}/g, part)
+    .replace(/{{\s*driver1\s*}}/g, driver1)
+    .replace(/{{\s*driver2\s*}}/g, driver2)
+    .replace(/{{\s*team1\s*}}/g, team1)
+    .replace(/{{\s*team2\s*}}/g, team2);
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+
+  try {
+    resp = await command.promiseExecute();
+    console.log("Full championship details:", resp);
+  }
+  catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  const driversChamp = resp.content.driverStandings
+    .map((d, i) => {
+      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
+
+  const teamsChamp = resp.content.teamStandings
+    .map((t, i) => {
+      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
+      return `${i + 1}. ${teamName} — ${t.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Constructors' Championship standings:\n${teamsChamp}`;
+
+  let previousRaces = '';
+  resp.content.racesNames.forEach((r) => {
+    previousRaces += `${r}, `;
+  });
+
+  previousRaces = previousRaces.slice(0, -2);
+
+  prompt += `\n\nThe races that have already taken place in ${seasonYear} are: ${previousRaces}\n`;
+
+  const previousResults = resp.content.driversResults.map((d, i) => {
+    return `${d.name} (${combined_dict[d.teamId]}) - ${d.resultsString}`;
+  }).join("\n");
+
+  prompt += `\n\nHere are the previous race results each driver in ${seasonYear}:\n${previousResults}`;
+
+  const previousQualiResults = resp.content.driverQualiResults.map((d, i) => {
+    return `${d.name} (${combined_dict[d.teamId]}) - ${d.resultsString}`;
+  }).join("\n");
+
+  prompt += `\n\nHere are the previous qualifying results for each driver in ${seasonYear}:\n${previousQualiResults}`;
+
+  const carPerformanceStart = Object.entries(resp.content.carsPerformance[0])
+    .sort((a, b) => b[1] - a[1])
+    .map(([team, value]) => `${team}: ${value.toFixed(2)}`)
+    .join("\n");
+
+  const carPerformanceEnd = Object.entries(resp.content.carsPerformance[resp.content.carsPerformance.length - 1])
+    .sort((a, b) => b[1] - a[1])
+    .map(([team, value]) => `${team}: ${value.toFixed(2)}`)
+    .join("\n");
+
+  prompt += `\n\nThe performance of each car is measured on a scale from 0 to 100, where 100 represents the ideal possible performance. A higher value indicates a better-performing car. The performance values should be taken with a grain of salt, as they are estimates, but they are very important to understand drivers and teams performance. Never ever mention the numbers given as they are only an estimate rather than an absolute truth and are only there to put into numbers the performance of each car. You can mention if a car is performing well or poorly, or how has it evolved but never give the exact numbers.\n`;
+
+  prompt += `\n\nHere is the performance of each car at the start of the season:\n${carPerformanceStart}`;
+  prompt += `\n\nHere is the performance of each car at the latest race:\n${carPerformanceEnd}`;
+
+  const previousChampions = Object.values(
+    resp.content.champions.reduce((acc, { season, pos, name, points }) => {
+      if (!acc[season]) acc[season] = { season, drivers: [] };
+      acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
+      return acc;
+    }, {})
+  )
+    .sort((a, b) => b.season - a.season)
+    .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
+    .join('\n\n');
+
+  prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+
+  return prompt;
+
+
 }
 
 
@@ -1073,7 +1218,11 @@ function saveNews(newsList) {
     };
     return acc;
   }, {});
-  localStorage.setItem('save0_news', JSON.stringify(newsObj));
+  let saveName = getSaveName();
+  //remove file extension if any
+  saveName = saveName.split('.')[0];
+  let newsName = `${saveName}_news`;
+  localStorage.setItem(newsName, JSON.stringify(newsObj));
 }
 
 function animateToCenter(newsItem) {
@@ -1121,6 +1270,15 @@ function animateToCenter(newsItem) {
 
   // listener de cierre en el botón “Close”
   btn.addEventListener('click', () => {
+    const articleEl = clone.querySelector('.news-article');
+    if (articleEl) {
+      articleEl.remove();
+    }
+
+    const dateEl = clone.querySelector('.news-article-date');
+    if (dateEl) {
+      dateEl.remove();
+    }
     document.body.classList.remove('modal-open');
     clone.style.top = rect.top + 'px';
     clone.style.left = rect.left + 'px';
@@ -1130,10 +1288,7 @@ function animateToCenter(newsItem) {
 
     clone.querySelector(".news-title").style.fontSize = '20px';
 
-    const articleEl = clone.querySelector('.news-article');
-    if (articleEl) {
-      articleEl.remove();
-    }
+
 
     const onEnd = (e) => {
       if (e.propertyName === 'width') {
