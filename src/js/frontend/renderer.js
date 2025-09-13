@@ -20,8 +20,10 @@ import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups
 } from './stats';
-import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
-     reload_h2h_graphs, init_colors_dict, edit_colors_dict, setMidGrid, setMaxRaces, setRelativeGrid } from './head2head';
+import {
+    resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
+    reload_h2h_graphs, init_colors_dict, edit_colors_dict, setMidGrid, setMaxRaces, setRelativeGrid
+} from './head2head';
 import { place_news, initAI, getAI } from './news.js';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker } from './dragFile';
@@ -87,7 +89,7 @@ const patchNotesBody = document.getElementById("patchNotesBody")
 const selectImageButton = document.getElementById('selectImage');
 const patreonKeyButton = document.getElementById('patreonKeyButton');
 
-const scriptsArray = [ newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, carPerformanceDiv,  mod25Div]
+const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, carPerformanceDiv, mod25Div]
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -546,11 +548,11 @@ function showNextNotification(type) {
     const nextMessage = notificationsQueue.shift();
 
     const footerNotification = document.querySelector('.footer-notification');
-    footerNotification.innerHTML  = nextMessage;
+    footerNotification.innerHTML = nextMessage;
     if (type === "error") {
         footerNotification.classList.add('error');
     }
-    else{
+    else {
         footerNotification.classList.remove('error');
     }
 
@@ -559,7 +561,7 @@ function showNextNotification(type) {
     if (type !== "error") {
         setTimeout(() => {
             footerNotification.classList.remove('show');
-    
+
             isShowingNotification = false;
             //wait another 250ms
             setTimeout(() => {
@@ -714,7 +716,7 @@ const messageHandlers = {
     }
 };
 
-function generateNews(){
+export function generateNews() {
     let saveName = getSaveName();
     //remove file extension if any
     saveName = saveName.split(".")[0];
@@ -734,18 +736,22 @@ function generateNews(){
     const loaderDiv = document.createElement('div');
     loaderDiv.classList.add('loader-div', 'general-news-loader');
     const loadingSpan = document.createElement('span');
-    loadingSpan.textContent = parsedNews !== "{}" ? "Updating" : "Generating";
+    if (Object.keys(parsedNews).length === 0) {
+        loadingSpan.textContent = "Generating";
+    } else {
+        loadingSpan.textContent = "Updating";
+    }
     const loadingDots = document.createElement('span');
     loadingDots.textContent = "."
     loadingDots.classList.add('loading-dots');
     loadingSpan.appendChild(loadingDots);
 
     setInterval(() => {
-    if (loadingDots.textContent.length >= 3) {
-        loadingDots.textContent = ".";
-    } else {
-        loadingDots.textContent += ".";
-    }
+        if (loadingDots.textContent.length >= 3) {
+            loadingDots.textContent = ".";
+        } else {
+            loadingDots.textContent += ".";
+        }
     }, 500);
 
     const progressBar = document.createElement('div');
@@ -763,19 +769,19 @@ function generateNews(){
 }
 
 export function startGeneralNewsProgress(progressDiv) {
-  let width = 0;
-  const id = setInterval(() => {
-    if (!progressDiv?.isConnected) { clearInterval(id); return; }
+    let width = 0;
+    const id = setInterval(() => {
+        if (!progressDiv?.isConnected) { clearInterval(id); return; }
 
-    if (width >= 100) {
-      clearInterval(id);
-      return;
-    }
-    width++;
-    progressDiv.style.width = width + '%';
-  }, 150);
+        if (width >= 100) {
+            clearInterval(id);
+            return;
+        }
+        width++;
+        progressDiv.style.width = width + '%';
+    }, 150);
 
-  progressDiv._progressIntervalId = id;
+    progressDiv._progressIntervalId = id;
 }
 
 function update_engine_allocations(message) {
@@ -1070,7 +1076,7 @@ function alphaTauriReplace(info) {
     document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
     combined_dict[8] = pretty_names[info]
     abreviations_dict[8] = abreviations_for_replacements[info]
-    const command = new Command("updateCombinedDict", {teamID: 8, newName: pretty_names[info] });
+    const command = new Command("updateCombinedDict", { teamID: 8, newName: pretty_names[info] });
     command.execute();
     document.querySelectorAll(".at-teamname").forEach(function (elem) {
         elem.dataset.teamshow = pretty_names[info]
@@ -1763,53 +1769,53 @@ document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) 
  * @param  {Array} divs array of state of the divs
  */
 function manageScripts(...divs) {
-  const newIndex = divs.findIndex(s => s === "show");
-  const prevIndex = lastVisibleIndex;
+    const newIndex = divs.findIndex(s => s === "show");
+    const prevIndex = lastVisibleIndex;
 
 
-  scriptsArray.forEach((div, i) => {
+    scriptsArray.forEach((div, i) => {
 
-    div.ontransitionend = null;
-    div.onanimationend = null;
-    div.classList.remove("enter-from-right", "enter-from-left");
+        div.ontransitionend = null;
+        div.onanimationend = null;
+        div.classList.remove("enter-from-right", "enter-from-left");
 
-    if (i === newIndex) {
-      div.classList.remove("unloaded");
+        if (i === newIndex) {
+            div.classList.remove("unloaded");
 
-      requestAnimationFrame(() => {
-        div.classList.remove("hide");
+            requestAnimationFrame(() => {
+                div.classList.remove("hide");
 
-        console.log("COMPARISON", newIndex, prevIndex)
-        const enterClass = newIndex > prevIndex
-          ? "enter-from-right"
-          : "enter-from-left";
-        
-        console.log("EMTER CLASS", enterClass) 
+                console.log("COMPARISON", newIndex, prevIndex)
+                const enterClass = newIndex > prevIndex
+                    ? "enter-from-right"
+                    : "enter-from-left";
 
-        div.classList.add(enterClass);
+                console.log("EMTER CLASS", enterClass)
 
-        div.onanimationend = () => {
-          div.classList.remove(enterClass);
-          div.onanimationend = null;
-        };
-      });
+                div.classList.add(enterClass);
 
-    } else {
+                div.onanimationend = () => {
+                    div.classList.remove(enterClass);
+                    div.onanimationend = null;
+                };
+            });
 
-      requestAnimationFrame(() => {
-        div.classList.add("hide");
-      });
+        } else {
 
-      div.ontransitionend = (e) => {
-        if (e.propertyName === "opacity" && div.classList.contains("hide")) {
-          div.classList.add("unloaded");
-          div.ontransitionend = null;
+            requestAnimationFrame(() => {
+                div.classList.add("hide");
+            });
+
+            div.ontransitionend = (e) => {
+                if (e.propertyName === "opacity" && div.classList.contains("hide")) {
+                    div.classList.add("unloaded");
+                    div.ontransitionend = null;
+                }
+            };
         }
-      };
-    }
-  });
+    });
 
-  lastVisibleIndex = newIndex >= 0 ? newIndex : lastVisibleIndex;
+    lastVisibleIndex = newIndex >= 0 ? newIndex : lastVisibleIndex;
 }
 
 document.querySelector("#cancelDetailsButton").addEventListener("click", function () {
@@ -1983,7 +1989,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     //check if apiKey in localStorage
-    const  apiKey = localStorage.getItem("apiKey");
+    const apiKey = localStorage.getItem("apiKey");
     if (apiKey) {
         apiKeyStatus.classList.add("api-loaded")
         initAI(apiKey);

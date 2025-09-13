@@ -50,6 +50,7 @@ export function generate_news(savednews) {
     const transferRumors = getTrueTransferRumors();
 
     const sillySeasonNews = generateTransferRumorsNews(transferRumors, savednews);
+    console.log("sillySeasonNews", sillySeasonNews);
 
     const bigConfirmedTransfers = getConfirmedTransfers(true);
     const contractRenewals = getContractExtensions();
@@ -60,7 +61,7 @@ export function generate_news(savednews) {
 
     const seasonReviews = generateSeasonReviewNews(savednews);
 
-    let newsList = [...raceNews, ...qualiNews, ...fakeTransferNews, ...bigConfirmedTransfersNews, ...contractRenewalsNews, ...comparisonNews, ...seasonReviews, ...potentialChampionNewsList, ...sillySeasonNews];
+    let newsList = [...raceNews || [], ...qualiNews || [], ...fakeTransferNews || [], ...bigConfirmedTransfersNews || [], ...contractRenewalsNews || [], ...comparisonNews || [], ...seasonReviews || [], ...potentialChampionNewsList || [], ...sillySeasonNews || []];
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
@@ -146,219 +147,201 @@ function championshipStatus(
     return { alreadyChampion, clinchThisRace };
 }
 
-function generateChampionMilestones(racesDone, savednews) {
-    const pointsSchema = fetchPointsRegulations();
+function generateChampionMilestones(racesDone, savednews = {}) {
+  const pointsSchema = fetchPointsRegulations();
 
-    const ps = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
-    if (!ps) return [];
-    const currentSeason = ps[1];
+  const ps = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+  if (!ps) return [];
+  const currentSeason = ps[1];
 
-    const allSeasonRacesQuery = queryDB(
-        `SELECT RaceID, Day, TrackID FROM Races WHERE SeasonID = ${currentSeason} ORDER BY Day ASC`,
-        'allRows'
-    );
-    if (!allSeasonRacesQuery || allSeasonRacesQuery.length === 0) return [];
+  const allSeasonRacesQuery = queryDB(
+    `SELECT RaceID, Day, TrackID FROM Races WHERE SeasonID = ${currentSeason} ORDER BY Day ASC`,
+    'allRows'
+  );
+  if (!allSeasonRacesQuery || allSeasonRacesQuery.length === 0) return [];
 
-    const allRaces = allSeasonRacesQuery.map(r => ({ id: r[0], day: r[1], trackId: r[2] }));
-    const totalRaces = allRaces.length;
-    const halfIndex = Math.floor(totalRaces / 2); // segunda mitad a partir de aquí (incluida)
+  const allRaces = allSeasonRacesQuery.map(r => ({ id: r[0], day: r[1], trackId: r[2] }));
+  const totalRaces = allRaces.length;
+  const halfIndex = Math.floor(totalRaces / 2);
 
-    const seasonResults = fetchSeasonResults(currentSeason);
-    if (!seasonResults) return [];
+  const seasonResults = fetchSeasonResults(currentSeason);
+  if (!seasonResults) return [];
 
-    const out = [];
-    let wasAlreadyChampionBeforeThisRace = false; // estado “global” al ir avanzando carrera a carrera
+  const doneSet = new Set(racesDone ?? []);
+  let lastDoneIdx = -1;
+  for (let i = 0; i < allRaces.length; i++) {
+    if (doneSet.has(allRaces[i].id)) lastDoneIdx = i;
+  }
 
-    for (let i = halfIndex; i < totalRaces; i++) {
-        const race = allRaces[i];
-        const prevRaceId = i > 0 ? allRaces[i - 1].id : 0;
+  if (lastDoneIdx < halfIndex) return [];
 
-        // --- 1) Estado ANTES de la carrera (para POTENTIAL CHAMPION) ---
-        const standingsBefore = rebuildStandingsUntil(seasonResults, prevRaceId);
-        if (!standingsBefore?.driverStandings || standingsBefore.driverStandings.length < 2) continue;
+  const out = [];
 
-        const leaderB = standingsBefore.driverStandings[0];
-        const rivalB = standingsBefore.driverStandings[1];
-        if (!leaderB || !rivalB || leaderB.points == null || rivalB.points == null) continue;
+  const iStart = halfIndex;
+  const prevRaceIdStart = iStart > 0 ? allRaces[iStart - 1].id : 0;
+  const standingsBeforeStart = rebuildStandingsUntil(seasonResults, prevRaceIdStart);
+  let wasAlreadyChampionBeforeThisRace = false;
+  if (standingsBeforeStart?.driverStandings?.length >= 2) {
+    const leaderS = standingsBeforeStart.driverStandings[0];
+    const rivalS  = standingsBeforeStart.driverStandings[1];
+    if (leaderS && rivalS) {
+      const statusAtStart = championshipStatus(
+        allRaces[iStart].id,
+        pointsSchema,
+        allRaces,
+        leaderS,
+        rivalS,
+        currentSeason
+      );
+      wasAlreadyChampionBeforeThisRace = !!statusAtStart?.alreadyChampion;
+    }
+  }
 
+  for (let i = iStart; i <= lastDoneIdx; i++) {
+    const race = allRaces[i];
+    const prevRaceId = i > 0 ? allRaces[i - 1].id : 0;
+
+    const standingsBefore = rebuildStandingsUntil(seasonResults, prevRaceId);
+    if (standingsBefore?.driverStandings?.length >= 2) {
+      const leaderB = standingsBefore.driverStandings[0];
+      const rivalB  = standingsBefore.driverStandings[1];
+
+      if (leaderB && rivalB && leaderB.points != null && rivalB.points != null) {
         const statusAtRace = championshipStatus(
-            race.id,
-            pointsSchema,
-            allRaces,
-            leaderB,
-            rivalB,
-            currentSeason
+          race.id,
+          pointsSchema,
+          allRaces,
+          leaderB,
+          rivalB,
+          currentSeason
         );
 
         if (statusAtRace?.clinchThisRace) {
-            // Noticia de "puede ser campeón" 2 días antes
+          const newsId = `${currentSeason}_potential_champion_${race.id}`;
+          if (savednews && savednews[newsId]) {
+            out.push({ id: newsId, ...savednews[newsId] });
+          } else {
             const raceInfo = getCircuitInfo(race.id);
-            const jsDate = excelToDate(race.day);
-            jsDate.setDate(jsDate.getDate() - 2);
+            const jsDate = excelToDate(race.day); jsDate.setDate(jsDate.getDate() - 2);
             const finalNewsDateExcel = dateToExcel(jsDate);
 
-            const code = races_names[Number(race.trackId)];
+            const code  = races_names[Number(race.trackId)];
             const image = getImagePath(leaderB.teamId, code, "champion");
 
             const title = generateTitle({
+              driver_name: leaderB.name,
+              circuit: raceInfo.circuit,
+              country: raceInfo.country,
+              adjective: raceInfo.adjective,
+              season_year: currentSeason
+            }, 8);
+
+            out.push({
+              id: newsId,
+              type: "potential_champion",
+              title,
+              date: finalNewsDateExcel,
+              image,
+              overlay: null,
+              text: null,
+              data: {
+                raceId: race.id,
+                season_year: currentSeason,
+                driver_id: leaderB.driverId,
+                driver_team_id: leaderB.teamId,
                 driver_name: leaderB.name,
-                circuit: raceInfo.circuit,
-                country: raceInfo.country,
-                adjective: raceInfo.adjective,
-                season_year: currentSeason
-            }, 8 /* potential_champion */);
-
-            const newsId = `${currentSeason}_potential_champion_${race.id}`;
-            if (savednews && savednews[newsId]) {
-                out.push({ id: newsId, ...savednews[newsId] });
-            } else {
-                // (solo si NO existe) -> generar y pushear
-                const raceInfo = getCircuitInfo(race.id);
-                const jsDate = excelToDate(race.day);
-                jsDate.setDate(jsDate.getDate() - 2);
-                const finalNewsDateExcel = dateToExcel(jsDate);
-
-                const code = races_names[Number(race.trackId)];
-                const image = getImagePath(leaderB.teamId, code, "champion");
-
-                const title = generateTitle({
-                    driver_name: leaderB.name,
-                    circuit: raceInfo.circuit,
-                    country: raceInfo.country,
-                    adjective: raceInfo.adjective,
-                    season_year: currentSeason
-                }, 8);
-
-                out.push({
-                    id: newsId,
-                    type: "potential_champion",
-                    title,
-                    date: finalNewsDateExcel,
-                    image,
-                    overlay: null,
-                    text: null,
-                    data: {
-                        raceId: race.id,
-                        season_year: currentSeason,
-                        driver_id: leaderB.driverId,
-                        driver_team_id: leaderB.teamId,
-                        driver_name: leaderB.name,
-                        driver_points: leaderB.points,
-                        rival_driver_id: rivalB.driverId,
-                        rival_driver_name: rivalB.name,
-                        rival_points: rivalB.points,
-                        circuit_name: raceInfo.circuit,
-                        country_name: raceInfo.country,
-                        adjective: raceInfo.adjective
-                    }
-                });
-            }
+                driver_points: leaderB.points,
+                rival_driver_id: rivalB.driverId,
+                rival_driver_name: rivalB.name,
+                rival_points: rivalB.points,
+                circuit_name: raceInfo.circuit,
+                country_name: raceInfo.country,
+                adjective: raceInfo.adjective
+              }
+            });
+          }
         }
+      }
+    }
 
-        // --- 2) Estado DESPUÉS de la carrera (para WORLD CHAMPION recién decidido) ---
-        // standings hasta e incluyendo ESTA carrera
-        const standingsAfter = rebuildStandingsUntil(seasonResults, race.id);
-        if (!standingsAfter?.driverStandings || standingsAfter.driverStandings.length < 2) {
-            // actualizamos flag conservadoramente
-            wasAlreadyChampionBeforeThisRace = wasAlreadyChampionBeforeThisRace || false;
-            continue;
-        }
+    const standingsAfter = rebuildStandingsUntil(seasonResults, race.id);
+    let alreadyChampionBeforeNext = false;
 
-        const leaderA = standingsAfter.driverStandings[0];
-        const rivalA = standingsAfter.driverStandings[1];
-        if (!leaderA || !rivalA || leaderA.points == null || rivalA.points == null) {
-            wasAlreadyChampionBeforeThisRace = wasAlreadyChampionBeforeThisRace || false;
-            continue;
-        }
+    if (standingsAfter?.driverStandings?.length >= 2) {
+      const leaderA = standingsAfter.driverStandings[0];
+      const rivalA  = standingsAfter.driverStandings[1];
 
-        // Para saber si tras ESTA carrera ya es campeón, evaluamos el estado "antes de la SIGUIENTE".
-        // Si no hay siguiente, el campeonato queda decidido por definición cuando termina la última.
-        const hasNext = i + 1 < totalRaces;
-        let alreadyChampionBeforeNext = false;
-
+      if (leaderA && rivalA && leaderA.points != null && rivalA.points != null) {
+        const hasNext = i + 1 < allRaces.length;
         if (hasNext) {
-            const nextRace = allRaces[i + 1];
-            const statusBeforeNext = championshipStatus(
-                nextRace.id,
-                pointsSchema,
-                allRaces,
-                leaderA,
-                rivalA,
-                currentSeason
-            );
-            alreadyChampionBeforeNext = !!statusBeforeNext?.alreadyChampion;
+          const nextRace = allRaces[i + 1];
+          const statusBeforeNext = championshipStatus(
+            nextRace.id,
+            pointsSchema,
+            allRaces,
+            leaderA,
+            rivalA,
+            currentSeason
+          );
+          alreadyChampionBeforeNext = !!statusBeforeNext?.alreadyChampion;
         } else {
-            // Última carrera: si acabas líder, eres campeón
-            alreadyChampionBeforeNext = (leaderA.points >= rivalA.points);
+          alreadyChampionBeforeNext = (leaderA.points >= rivalA.points);
         }
 
-        // "se acaba de decidir" cuando AHORA pasa a true y antes NO lo era
         if (alreadyChampionBeforeNext && !wasAlreadyChampionBeforeThisRace) {
+          const newsId = `${currentSeason}_world_champion`;
+          if (savednews && savednews[newsId]) {
+            out.push({ id: newsId, ...savednews[newsId] });
+          } else {
             const raceInfo = getCircuitInfo(race.id);
-            const finalNewsDateExcel = race.day; // mismo día de la carrera; cámbialo si prefieres “día siguiente”
+            const finalNewsDateExcel = race.day + 1;
 
-            const code = races_names[Number(race.trackId)];
+            const code  = races_names[Number(race.trackId)];
             const image = getImagePath(leaderA.teamId, code, "champion");
 
             const title = generateTitle({
+              driver_name: leaderA.name,
+              circuit: raceInfo.circuit,
+              country: raceInfo.country,
+              adjective: raceInfo.adjective,
+              season_year: currentSeason
+            }, 9);
+
+            out.push({
+              id: newsId,
+              type: "world_champion",
+              title,
+              date: finalNewsDateExcel,
+              image,
+              overlay: null,
+              text: null,
+              data: {
+                raceId: race.id,
+                season_year: currentSeason,
+                driver_id: leaderA.driverId,
+                driver_team_id: leaderA.teamId,
                 driver_name: leaderA.name,
-                circuit: raceInfo.circuit,
-                country: raceInfo.country,
-                adjective: raceInfo.adjective,
-                season_year: currentSeason
-            }, 9 /* world_champion */);
-
-            const newsId = `${currentSeason}_world_champion`;
-            if (savednews && savednews[newsId]) {
-                out.push({ id: newsId, ...savednews[newsId] });
-            } else {
-                // (solo si NO existe) -> generar y pushear
-                const raceInfo = getCircuitInfo(race.id);
-                const finalNewsDateExcel = race.day + 1; // o el día siguiente si prefieres
-
-                const code = races_names[Number(race.trackId)];
-                const image = getImagePath(leaderA.teamId, code, "champion");
-
-                const title = generateTitle({
-                    driver_name: leaderA.name,
-                    circuit: raceInfo.circuit,
-                    country: raceInfo.country,
-                    adjective: raceInfo.adjective,
-                    season_year: currentSeason
-                }, 9);
-
-                out.push({
-                    id: newsId,
-                    type: "world_champion",
-                    title,
-                    date: finalNewsDateExcel,
-                    image,
-                    overlay: null,
-                    text: null,
-                    data: {
-                        raceId: race.id,
-                        season_year: currentSeason,
-                        driver_id: leaderA.driverId,
-                        driver_team_id: leaderA.teamId,
-                        driver_name: leaderA.name,
-                        driver_points: leaderA.points,
-                        rival_driver_id: rivalA.driverId,
-                        rival_driver_name: rivalA.name,
-                        rival_points: rivalA.points,
-                        circuit_name: raceInfo.circuit,
-                        country_name: raceInfo.country,
-                        adjective: raceInfo.adjective
-                    }
-                });
-            }
+                driver_points: leaderA.points,
+                rival_driver_id: rivalA.driverId,
+                rival_driver_name: rivalA.name,
+                rival_points: rivalA.points,
+                circuit_name: raceInfo.circuit,
+                country_name: raceInfo.country,
+                adjective: raceInfo.adjective
+              }
+            });
+          }
         }
-
-        // Actualiza el flag para el siguiente ciclo:
-        wasAlreadyChampionBeforeThisRace = alreadyChampionBeforeNext;
+      }
     }
 
-    return out;
+    // Avanza el flag para el próximo i
+    wasAlreadyChampionBeforeThisRace = alreadyChampionBeforeNext;
+  }
+
+  return out;
 }
+
 
 
 
@@ -376,7 +359,7 @@ function randomRemovalOfNames(data) {
     //if data has any of these params, 50% chance to do split(" ").pop() to retain only last name
     paramsWithName.forEach(param => {
         if (data[param]) {
-            if (Math.random() < 0.5) {
+            if (Math.random() < 0.3) {
                 data[param] = data[param].split(" ").pop();
             }
         }
@@ -532,7 +515,7 @@ export function generateFakeTransferNews(monthsDone, savedNews) {
                 title,
                 date: excelDate,
                 image: image,
-                overlay: "fake_transfer",
+                overlay: null,
                 data: newData,
                 text: null
             });
@@ -591,7 +574,7 @@ export function generateBigConfirmedTransferNews(savedNews = {}, contracts = [],
             title,
             date: excelDate,
             image,
-            overlay: "big_transfer",
+            overlay: null,
             data: contract,
             text: null
         });
@@ -644,7 +627,7 @@ export function generateContractRenewalsNews(savedNews = {}, contractRenewals = 
             title,
             date: excelDate,
             image,
-            overlay: "contract_renewal",
+            overlay: null,
             data: contract,
             text: null
         });
@@ -985,7 +968,7 @@ export function generateTransferRumorsNews(offers, savedNews) {
         date: date,
         season: seasonYear,
         image: image,
-        overlay: "silly_season",
+        overlay: null,
         data: { drivers: driversArray },
         text: null
     };
@@ -1099,7 +1082,6 @@ export function generateComparisonNews(comparisonMonths, savedNews) {
 
             const title = generateTitle({ teamId: combined_dict[teamToTalk.teamId], season }, newTypeId);
             const image = getImagePath(teamToTalk.teamId, teamToTalk.teamId, "teamComparison");
-            const overlay = "team-comparison-overlay";
 
             const newsEntry = {
                 id: entryId,
@@ -1107,7 +1089,7 @@ export function generateComparisonNews(comparisonMonths, savedNews) {
                 title: title,
                 date: excelDate,
                 image: image,
-                overlay: overlay,
+                overlay: null,
                 data: {
                     team: teamToTalk,
                     season: season,

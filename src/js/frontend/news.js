@@ -6,7 +6,7 @@ import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
-import { getSaveName } from "./renderer";
+import { generateNews, getSaveName } from "./renderer";
 
 const newsGrid = document.querySelector('.news-grid');
 
@@ -100,7 +100,7 @@ export async function place_news(newsList) {
     const imageContainer = document.createElement('div');
     imageContainer.classList.add('news-image-container');
 
-    manage_overlay(imageContainer, news.overlay, news.data);
+    manage_overlay(imageContainer, news.overlay, news.data, news.image);
 
     const image = document.createElement('img');
     image.classList.add('news-image');
@@ -219,19 +219,18 @@ export async function place_news(newsList) {
     newwsBody.appendChild(readbuttonContainer);
     newsItem.appendChild(newwsBody);
 
-    if(news.type === "race_result" || news.type === "quali_result") {
+    if (news.type === "race_result" || news.type === "quali_result") {
       newsItem.dataset.type = news.type;
     }
-    else if(news.type === "fake_transfer" || news.type === "big_transfer" || news.type === "contract_renewal" || news.type === "silly_season_rumors") {
+    else if (news.type === "fake_transfer" || news.type === "big_transfer" || news.type === "contract_renewal" || news.type === "silly_season_rumors") {
       newsItem.dataset.type = "driver_transfers";
     }
-    else if(news.type === "potential_champion" || news.type === "world_champion" || news.type === "season_review" || news.type === "team_comparison" || news.type === "driver_comparison") {
+    else if (news.type === "potential_champion" || news.type === "world_champion" || news.type === "season_review" || news.type === "team_comparison" || news.type === "driver_comparison") {
       newsItem.dataset.type = "others";
     }
 
     newsGrid.appendChild(newsItem);
-    setTimeout(() =>
-    {
+    setTimeout(() => {
       newsItem.classList.remove('fade-in');
       newsItem.style.removeProperty('--order');
       newsItem.style.opacity = '1';
@@ -240,6 +239,8 @@ export async function place_news(newsList) {
 
   });
 }
+
+
 
 async function manageRead(newData, newsList, barProgressDiv, interval) {
   let articleText, prompt;
@@ -1390,12 +1391,38 @@ function typeWriterWordByWord(element, text, wordInterval = 50) {
   }
 }
 
+function buildEmergencyOverlay() {
+  const overlayDiv = document.createElement('div');
+  overlayDiv.classList.add('breaking-news-overlay', 'bold-font');
 
-function manage_overlay(imageContainer, overlay, data) {
-  if (overlay === null) return;
+  const breakingSpan = document.createElement('span');
+  breakingSpan.classList.add('breaking-news-breaking');
+  breakingSpan.innerText = 'BREAKING';
+  overlayDiv.appendChild(breakingSpan);
 
+  const newsSpan = document.createElement('span');
+  newsSpan.classList.add('breaking-news-news');
+  newsSpan.innerText = 'NEWS';
+  overlayDiv.appendChild(newsSpan);
+
+  const bar = document.createElement('div');
+  bar.classList.add('breaking-news-bar');
+  overlayDiv.appendChild(bar);
+
+  document.body.appendChild(overlayDiv);
+  return overlayDiv;
+}
+
+function ensureEmergencyOverlay(imageContainer) {
+  if (!imageContainer.querySelector('.breaking-news-overlay')) {
+    imageContainer.appendChild(buildEmergencyOverlay());
+  }
+}
+
+function manage_overlay(imageContainer, overlay, data, image) {
+  let overlayDiv = null;
   if (overlay === "race-overlay" || overlay === "quali-overlay") {
-    const overlayDiv = document.createElement('div');
+    overlayDiv = document.createElement('div');
     overlayDiv.classList.add('race-overlay');
 
     const first = document.createElement('div');
@@ -1460,7 +1487,7 @@ function manage_overlay(imageContainer, overlay, data) {
   else if (overlay === "driver-comparison-overlay") {
     console.log("DRIVER COMPARISON DATA:", data);
     const teamId = data.teamId;
-    const overlayDiv = document.createElement('div');
+    overlayDiv = document.createElement('div');
     overlayDiv.classList.add('driver-comparison-overlay');
     const teamColor = colors_dict[teamId + "0"] ?? '#000000';
 
@@ -1523,6 +1550,24 @@ function manage_overlay(imageContainer, overlay, data) {
 
 
   }
+
+  try {
+    const url =
+      (image instanceof HTMLImageElement)
+        ? (image.currentSrc || image.src)
+        : (typeof image === 'string' ? image : null);
+
+    if (!url) return;
+    if (imageContainer.querySelector('.breaking-news-overlay, [class$="-overlay"]')) {
+      return;
+    }
+    const probe = new Image();
+    probe.onload = () => { /* ok, no hacemos nada */ };
+    probe.onerror = () => { ensureEmergencyOverlay(imageContainer); };
+    probe.src = url;
+  } catch {
+    console.warn('Image probe failed unexpectedly');
+  }
 }
 
 function getOrdinalSuffix(n) {
@@ -1561,4 +1606,13 @@ document.querySelectorAll('#newsTypeMenu .dropdown-item').forEach(item => {
       n.style.display = hide ? 'none' : '';
     });
   });
+});
+
+document.querySelector(".reload-news").addEventListener("click", async () => {
+  const newsGrid = document.querySelector(".news-grid");
+  newsGrid.innerHTML = '';
+  const saveName = getSaveName();
+  const newsName = `${saveName.split('.')[0]}_news`;
+  localStorage.removeItem(newsName);
+  generateNews();
 });

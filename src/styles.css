@@ -11795,6 +11795,69 @@ body:has(.active #mod25logo) .one-change {
   position: relative;
 }
 
+.breaking-news-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #cc0000, #990000);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.breaking-news-breaking {
+    font-size: 50px;
+    letter-spacing: 0.1em;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    margin-bottom: -0.2em;
+}
+
+.breaking-news-news {
+    font-size: 50px;
+    letter-spacing: 0.2em;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.breaking-news-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: #ffffff;
+}
+
+.reload-news{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  color: var(--dark-text);
+  cursor: pointer;
+  transition: color 0.15s, transfrorm 0.15s;
+  font-size: 16px;
+}
+
+.reload-news::selection{
+  background: transparent;
+}
+
+.reload-news:hover{
+  color: var(--new-primary);
+}
+
+.reload-news:active span{
+  transform: scale(0.96);
+}
+
 .race-overlay{
   position: absolute;
   top: 0;
