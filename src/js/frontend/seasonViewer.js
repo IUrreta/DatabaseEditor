@@ -1116,12 +1116,7 @@ export function generateYearsMenu(actualYear) {
         a.style.cursor = "pointer"
         yearMenu.appendChild(a);
         a.addEventListener("click", function () {
-            document.getElementById("yearButton").textContent = a.textContent
-            isYearSelected = true
-            manage_show_tables()
-            const command = new Command("yearSelected", a.textContent);
-            command.execute();
-
+            manageRecordsSelected(a)
         })
 
         let a2 = document.createElement("a");
@@ -1142,6 +1137,43 @@ export function generateYearsMenu(actualYear) {
     yearMenu.childNodes[0].click()
 }
 
+function manageRecordsSelected(yearSelected) {
+    console.log("MANAGING RECORDS SELECTED: ", yearSelected)
+    let yearMenu = document.querySelector("#yearMenu");
+    let value = document.querySelector("#recordsTypeButton").dataset.value
+    console.log("RECORD TYPE: ", value)
+    if (yearSelected !== null) {
+        document.getElementById("yearButton").textContent = yearSelected.textContent
+    }
+    else {
+        yearSelected = yearMenu.childNodes[0]
+        yearSelected.click()
+    }
+    if (value === "standings") {
 
+        isYearSelected = true
+        manage_show_tables()
+        let isCurrentYear = (yearSelected === yearMenu.childNodes[0])
+        let data = {
+            year: yearSelected.textContent,
+            isCurrentYear
+        }
+        const command = new Command("yearSelected", data);
+        command.execute();
+    }
+    else if (value === "wins") {
+        const command = new Command("recordSelected", { type: "wins", year: yearSelected.textContent });
+        command.execute();
+
+    }
+}
+
+document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        document.querySelector("#recordsTypeButton").textContent = elem.textContent
+        document.querySelector("#recordsTypeButton").dataset.value = elem.dataset.value
+        manageRecordsSelected(null)
+    })
+})
 
 

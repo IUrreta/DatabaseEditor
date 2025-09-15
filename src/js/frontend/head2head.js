@@ -977,12 +977,21 @@ function H2HReady() {
         list1 = h2hTeamList
         list2 = graphTeamList
     }
+
+
+    let isCurrentYear = false
+    if (document.querySelector("#yearMenuH2H").firstChild.textContent === document.querySelector("#yearButtonH2H").textContent) {
+        isCurrentYear = true
+    }
+
     let data = {
         h2h: h2hCount === 2 ? list1 : -1,
         graph: list2,
         year: document.querySelector("#yearButtonH2H").textContent,
-        mode: mode
+        mode: mode,
+        isCurrentYear: isCurrentYear
     }
+
 
     manageH2hState()
     const command = new Command("configuredH2H",  data);

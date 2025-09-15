@@ -1,6 +1,6 @@
 import { queryDB } from "../dbManager";
 
-export function fetchHead2Head(driver1ID, driver2ID, year) {
+export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true) {
 
   // Helpers para estadísticos:
   const mean = (arr) => {
@@ -88,8 +88,10 @@ export function fetchHead2Head(driver1ID, driver2ID, year) {
           AND DriverID = ${driver2ID}
       `, 'singleValue') || 0;
 
-    // --- 3.2) Posición en la fase final que corrieron
-    const d1_QRes = queryDB(`
+    let d1_QRes, d2_QRes;
+
+    if (isCurrentYear) {
+      d1_QRes = queryDB(`
         SELECT FinishingPos
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
@@ -99,7 +101,7 @@ export function fetchHead2Head(driver1ID, driver2ID, year) {
           AND QualifyingStage = ${d1_QStage}
       `, 'singleValue') || 99;
 
-    const d2_QRes = queryDB(`
+      d2_QRes = queryDB(`
         SELECT FinishingPos
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
@@ -108,6 +110,10 @@ export function fetchHead2Head(driver1ID, driver2ID, year) {
           AND DriverID = ${driver2ID}
           AND QualifyingStage = ${d2_QStage}
       `, 'singleValue') || 99;
+    } else {
+      d1_QRes = queryDB(`SELECT StartingPos FROM Races_Results WHERE RaceID = ${raceID} AND Season = ${year} AND DriverID = ${driver1ID}`, 'singleValue') || 99;
+      d2_QRes = queryDB(`SELECT StartingPos FROM Races_Results WHERE RaceID = ${raceID} AND Season = ${year} AND DriverID = ${driver2ID}`, 'singleValue') || 99;
+    }
 
     // --- 3.3) Quién ganó el “duelo” de qualy
     if (d1_QStage < d2_QStage) {
@@ -356,7 +362,7 @@ export function fetchHead2Head(driver1ID, driver2ID, year) {
   return resultList;
 }
 
-export function fetchHead2HeadTeam(teamID1, teamID2, year) {
+export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true) {
   const t1 = teamID1[0];
   const t2 = teamID2[0];
   const season = year;
@@ -449,8 +455,12 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year) {
           AND DriverID IN (${drivers2Str})
       `, 'singleValue') || 0;
 
+    let d1_QRes, d2_QRes;
+
     // 3.3) Posición mínima en esa fase de Qualy (equivalente a "SELECT MIN(FinishingPos)")
-    const d1_QRes = queryDB(`
+    if (!isCurrentYear) {
+      
+      d1_QRes = queryDB(`
         SELECT MIN(FinishingPos)
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
@@ -460,7 +470,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year) {
           AND QualifyingStage = ${d1_QStage}
       `, 'singleValue') || 99;
 
-    const d2_QRes = queryDB(`
+      d2_QRes = queryDB(`
         SELECT MIN(FinishingPos)
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
@@ -469,6 +479,10 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year) {
           AND DriverID IN (${drivers2Str})
           AND QualifyingStage = ${d2_QStage}
       `, 'singleValue') || 99;
+    } else {
+      d1_QRes = queryDB(`SELECT MIN(StartingPos) FROM Races_Results WHERE RaceID = ${raceID} AND Season = ${season} AND DriverID IN (${drivers1Str})`, 'singleValue') || 99;
+      d2_QRes = queryDB(`SELECT MIN(StartingPos) FROM Races_Results WHERE RaceID = ${raceID} AND Season = ${season} AND DriverID IN (${drivers2Str})`, 'singleValue') || 99;
+    }
 
     // 3.4) Comparativa H2H de qualy
     if (d1_QStage < d2_QStage) {
@@ -710,14 +724,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year) {
   const avg_racediff = Number(mean(rDifferences).toFixed(3));
   const avg_qualidiff = Number(mean(qDifferences).toFixed(3));
 
-  // 6) Construimos resultList con los 12 elementos, en el mismo orden que en Python
-  // resultList = [
-  //   raceH2H, qualiH2H, pointsH2H, podiumsH2H,
-  //   bestRace, bestQuali, dnfH2H, winsH2H,
-  //   polesH2H, sprintWinsH2H,
-  //   (-avg_racediff, avg_racediff),
-  //   (-avg_qualidiff, avg_qualidiff)
-  // ]
+
   const resultList = [
     raceH2H,
     qualiH2H,

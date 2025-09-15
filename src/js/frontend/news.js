@@ -88,8 +88,8 @@ export async function place_news(newsList) {
     newsItem.classList.add('news-item', 'fade-in');
     newsItem.setAttribute('style', '--order: ' + (index + 1));
 
-    const newwsBody = document.createElement('div');
-    newwsBody.classList.add('news-body');
+    const newsBody = document.createElement('div');
+    newsBody.classList.add('news-body');
     const titleAndArticle = document.createElement('div');
     titleAndArticle.classList.add('title-and-article');
 
@@ -146,78 +146,92 @@ export async function place_news(newsList) {
       titleEl.insertAdjacentElement('afterend', dateDiv);
       dateDiv.insertAdjacentElement('afterend', articleEl);
 
-      const loaderDiv = document.createElement('div');
-      loaderDiv.classList.add('loader-div');
-      const loadingSpan = document.createElement('span');
-      loadingSpan.textContent = "Generating";
-      const loadingDots = document.createElement('span');
-      loadingDots.textContent = "."
-      loadingDots.classList.add('loading-dots');
-      loadingSpan.appendChild(loadingDots);
+      if (ai) {
+        const loaderDiv = document.createElement('div');
+        loaderDiv.classList.add('loader-div');
+        const loadingSpan = document.createElement('span');
+        loadingSpan.textContent = "Generating";
+        const loadingDots = document.createElement('span');
+        loadingDots.textContent = "."
+        loadingDots.classList.add('loading-dots');
+        loadingSpan.appendChild(loadingDots);
 
-      setInterval(() => {
-        if (loadingDots.textContent.length >= 3) {
-          loadingDots.textContent = ".";
-        } else {
-          loadingDots.textContent += ".";
-        }
-      }, 500);
+        setInterval(() => {
+          if (loadingDots.textContent.length >= 3) {
+            loadingDots.textContent = ".";
+          } else {
+            loadingDots.textContent += ".";
+          }
+        }, 500);
 
-      const progressBar = document.createElement('div');
-      progressBar.classList.add('ai-progress-bar');
-      const progressDiv = document.createElement('div');
-      progressDiv.classList.add('progress-div');
+        const progressBar = document.createElement('div');
+        progressBar.classList.add('ai-progress-bar');
+        const progressDiv = document.createElement('div');
+        progressDiv.classList.add('progress-div');
 
-      progressBar.appendChild(progressDiv);
-      loaderDiv.appendChild(loadingSpan);
-      loaderDiv.appendChild(progressBar);
+        progressBar.appendChild(progressDiv);
+        loaderDiv.appendChild(loadingSpan);
+        loaderDiv.appendChild(progressBar);
 
-      articleEl.insertAdjacentElement('afterend', loaderDiv);
+        articleEl.insertAdjacentElement('afterend', loaderDiv);
 
-      //start progress div moving every 100ms to 30%
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 3;
-        if (progressDiv) {
-          progressDiv.style.width = progress + '%';
-        }
-        if (progress >= 30) {
+        //start progress div moving every 100ms to 30%
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += 3;
+          if (progressDiv) {
+            progressDiv.style.width = progress + '%';
+          }
+          if (progress >= 30) {
+            clearInterval(interval);
+          }
+        }, 150);
+
+        try {
+          const articleText = await manageRead(news, newsList, progressDiv, interval);
+          if (ai === null) {
+            console.warn("AI not initialized");
+            return;
+          }
+
           clearInterval(interval);
-        }
-      }, 150);
-
-      try {
-        const articleText = await manageRead(news, newsList, progressDiv, interval);
-
-        clearInterval(interval);
-        clearInterval(interval2);
-        progressDiv.style.width = '100%';
-
-        setTimeout(() => {
-          loaderDiv.style.opacity = '0';
+          clearInterval(interval2);
+          progressDiv.style.width = '100%';
 
           setTimeout(() => {
-            loaderDiv.remove();
-            typeWriterWordByWord(articleEl, articleText, 15);
-          }, 150);
+            loaderDiv.style.opacity = '0';
 
-        }, 200);
+            setTimeout(() => {
+              loaderDiv.remove();
+              typeWriterWordByWord(articleEl, articleText, 15);
+            }, 150);
+
+          }, 200);
+
+        }
+
+        catch (err) {
+          console.error("Error generating article:", err);
+          clearInterval(interval);
+        }
 
       }
-
-      catch (err) {
-        console.error("Error generating article:", err);
-        clearInterval(interval);
+      else{
+        const noApiFoundSpan = document.createElement('span');
+        noApiFoundSpan.classList.add('news-error');
+        noApiFoundSpan.textContent = "No API key found. Please set it in the settings.";
+        articleEl.appendChild(noApiFoundSpan);
       }
+
     });
 
     imageContainer.appendChild(image);
     newsItem.appendChild(imageContainer);
     titleAndArticle.appendChild(newsTitle);
-    newwsBody.appendChild(titleAndArticle);
+    newsBody.appendChild(titleAndArticle);
     readbuttonContainer.appendChild(readButton);
-    newwsBody.appendChild(readbuttonContainer);
-    newsItem.appendChild(newwsBody);
+    newsBody.appendChild(readbuttonContainer);
+    newsItem.appendChild(newsBody);
 
     if (news.type === "race_result" || news.type === "quali_result") {
       newsItem.dataset.type = news.type;
@@ -234,7 +248,7 @@ export async function place_news(newsList) {
       newsItem.classList.remove('fade-in');
       newsItem.style.removeProperty('--order');
       newsItem.style.opacity = '1';
-    }, 300);
+    }, 1500);
 
 
   });
