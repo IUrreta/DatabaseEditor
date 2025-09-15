@@ -1418,7 +1418,7 @@ export function generateSeasonReviewNews(savedNews) {
     return newsList;
 }
 
-function news_insert_space(str) {
+export function news_insert_space(str) {
     return str
         .replace(/([A-Z])/g, ' $1')
         .trim()

@@ -25,6 +25,7 @@ import {
     reload_h2h_graphs, init_colors_dict, edit_colors_dict, setMidGrid, setMaxRaces, setRelativeGrid
 } from './head2head';
 import { place_news, initAI, getAI } from './news.js';
+import { loadRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
@@ -713,6 +714,9 @@ const messageHandlers = {
     },
     "Save selected finished": (message) => {
         generateNews();
+    },
+    "Record fetched": (message) => {
+        loadRecordsList(message)
     }
 };
 

@@ -454,6 +454,8 @@ body.og-theme .footer{
   justify-content: space-between;
   max-height: 35px;
   overflow-y: clip;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .scroll-wrapper {
@@ -1990,6 +1992,8 @@ body.og-theme .dropdown-menu a:hover {
   display: flex;
   flex-direction: row;
   position: relative;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 body.og-theme .tools-panel{
@@ -6599,6 +6603,44 @@ input.disabled {
   white-space: nowrap;
 }
 
+.main-viewer-section:has(.records-list:not(.d-none)){
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.records-list{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: transparent;
+}
+
+.records-list .record-item{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: var(--elements);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.number-and-name{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+}
+
+.record-number{
+  font-size: 24px;
+}
+
+.record-name{
+  font-size: 20px;
+  color: var(--text-general);
+}
+
 /* .free-driver span.bold-font,
 .normal-driver span.bold-font,
 .drivers-table-driver span.bold-font,
@@ -7501,6 +7543,7 @@ input.disabled {
   right: 0px;
   background: linear-gradient(to right, transparent, #202020 50%);
   width: 135px;
+  border-bottom-right-radius: 10px;
 }
 
 #amoLogo {

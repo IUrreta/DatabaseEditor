@@ -2,6 +2,7 @@ import { races_names, team_dict, codes_dict, combined_dict, logos_disc, races_ma
 import { resetH2H } from './head2head';
 import { game_version, custom_team } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
+import { news_insert_space } from "../backend/scriptUtils/newsUtils.js";
 import { Command } from "../backend/command.js";
 
 
@@ -79,6 +80,9 @@ document.getElementById("teamspill").addEventListener("click", function () {
 
 
 function manage_show_tables() {
+    const recordsList = document.querySelector(".records-list")
+    recordsList.innerHTML = ""
+    recordsList.classList.add("d-none")
     if (isYearSelected) {
         if (driverOrTeams === "drivers") {
             document.querySelector(".teams-table").classList.add("d-none")
@@ -1134,20 +1138,35 @@ export function generateYearsMenu(actualYear) {
             command.execute();
         })
     }
-    yearMenu.childNodes[0].click()
+
+    let allTime = document.createElement("a");
+    allTime.textContent = "All Time";
+    allTime.classList = "dropdown-item"
+    allTime.id = "allTimeRecords"
+    yearMenu.insertBefore(allTime, yearMenu.childNodes[0]);
+    allTime.addEventListener("click", function () {
+        document.getElementById("yearButton").textContent = "All Time"
+        let value = document.querySelector("#recordsTypeButton").dataset.value
+        const command = new Command("recordSelected", { type: value, year: "all" });
+        command.execute();
+    })
+
+    document.getElementById("standingspill").click();
 }
 
 function manageRecordsSelected(yearSelected) {
-    console.log("MANAGING RECORDS SELECTED: ", yearSelected)
+    console.log("ENTERING MANAGE RECORDS SELECTED WITH PARAM: ", yearSelected)
+
     let yearMenu = document.querySelector("#yearMenu");
     let value = document.querySelector("#recordsTypeButton").dataset.value
-    console.log("RECORD TYPE: ", value)
+
+    
     if (yearSelected !== null) {
         document.getElementById("yearButton").textContent = yearSelected.textContent
     }
     else {
-        yearSelected = yearMenu.childNodes[0]
-        yearSelected.click()
+        yearSelected = yearMenu.childNodes[1]
+        document.getElementById("yearButton").textContent = yearSelected.textContent
     }
     if (value === "standings") {
 
@@ -1161,17 +1180,69 @@ function manageRecordsSelected(yearSelected) {
         const command = new Command("yearSelected", data);
         command.execute();
     }
-    else if (value === "wins") {
-        const command = new Command("recordSelected", { type: "wins", year: yearSelected.textContent });
+    else {
+        const command = new Command("recordSelected", { type: value, year: yearSelected.textContent });
         command.execute();
-
+        manageShowRecords();
     }
+}
+
+function manageShowRecords(){
+    const driversTable = document.querySelector(".drivers-table")
+    const teamsTable = document.querySelector(".teams-table")
+    driversTable.classList.add("d-none")
+    teamsTable.classList.add("d-none")
+
+    const recordsList = document.querySelector(".records-list")
+    recordsList.classList.remove("d-none")
+    recordsList.innerHTML = ""
+}
+
+export function loadRecordsList(data) {
+    console.log("RECORD DATA: ", data)
+    const recordsList = document.querySelector(".records-list")
+    recordsList.innerHTML = ""
+    data.forEach(function (record, index) {
+        let recordDiv = document.createElement("div")
+        recordDiv.classList = "record-item"
+        let number = document.createElement("div")
+        number.classList = "record-number bold-font"
+        number.textContent = index + 1
+        let recordName = document.createElement("div")
+        recordName.classList = "record-name"
+        recordName.textContent = news_insert_space(record.name)
+
+        let numberAndName = document.createElement("div")
+        numberAndName.classList = "number-and-name"
+        numberAndName.appendChild(number)
+        numberAndName.appendChild(recordName)
+
+        let recordValue = document.createElement("div")
+        recordValue.classList = "record-value bold-font"
+        recordValue.textContent = record.value
+
+
+        recordDiv.appendChild(numberAndName)
+        recordDiv.appendChild(recordValue)
+        recordsList.appendChild(recordDiv)
+    });
 }
 
 document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {
     elem.addEventListener("click", function () {
         document.querySelector("#recordsTypeButton").textContent = elem.textContent
         document.querySelector("#recordsTypeButton").dataset.value = elem.dataset.value
+        if (elem.dataset.value === "standings") {
+            const allTime = document.getElementById("allTimeRecords")
+            if (allTime)
+                allTime.classList.add("d-none")
+        }
+        else {
+            const allTime = document.getElementById("allTimeRecords")
+            if (allTime)
+                allTime.classList.remove("d-none")
+        }
+
         manageRecordsSelected(null)
     })
 })

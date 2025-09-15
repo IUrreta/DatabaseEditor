@@ -458,6 +458,7 @@ const workerCommands = {
 
     const record = getSelectedRecord(type, year);
 
+    postMessage({ responseMessage: "Record fetched", content: record });
   }
 
 };
