@@ -967,7 +967,7 @@ i.bi-file-text:hover {
   gap: 10px;
   padding-right: 14px;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
 }
 
 .title-buttons-left .custom-dropdown {
@@ -10696,6 +10696,21 @@ a.bi-custom-patreon.close-slide-up{
   gap: 5px;
 }
 
+#patreonChanges > .api-key-section {
+  margin-top: 10px;
+  padding-top: 5px;
+  border-top: 2px solid var(--separator);
+}
+
+#news .modal-text{
+  position: absolute;
+  top: 350%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  text-align: center;
+}
+
 .modal-text a{
   color: var(--new-primary);
   transition: color 0.15s;
@@ -11982,7 +11997,11 @@ body:has(.active #mod25logo) .one-change {
 
 }
 
-.loader-div{
+span.news-error{
+  color: color-mix(in srgb, var(--elements) 60%, var(--text-general));
+}
+
+.loader-div, .news-error{
   display: flex;
   flex-direction: column;
   align-items: center;
