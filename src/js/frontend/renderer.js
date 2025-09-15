@@ -716,7 +716,12 @@ const messageHandlers = {
     }
 };
 
-export function generateNews() {
+export async function generateNews() {
+    const isValid = await isPatronSignatureValid();
+    const generateNews = checkGenerableNews(isValid);
+    if (generateNews === "no") {
+        return;
+    }
     let saveName = getSaveName();
     //remove file extension if any
     saveName = saveName.split(".")[0];
@@ -739,7 +744,7 @@ export function generateNews() {
     if (Object.keys(parsedNews).length === 0) {
         loadingSpan.textContent = "Generating";
     } else {
-        loadingSpan.textContent = "Updating";
+        loadingSpan.textContent = "Updating news";
     }
     const loadingDots = document.createElement('span');
     loadingDots.textContent = "."
@@ -1875,15 +1880,85 @@ async function isPatronSignatureValid() {
 }
 
 async function checkPatreonStatus() {
-
+const validSignature = await isPatronSignatureValid();
     init_colors_dict(selectedTheme)
-    const validSignature = await isPatronSignatureValid();
+    isPatronSignatureValid
 
     if (validSignature) {
         patreonUnlockables.classList.remove("d-none");
         document.getElementById("patreonKeyText").textContent = "Patreon key loaded";
         loadTheme();
     }
+    manageNewsStatus(validSignature);
+}
+
+function manageNewsStatus(valid) {
+    const generateNews = checkGenerableNews(valid);
+    if (generateNews === "yes") {
+        const extraApiKeySection = document.querySelector('#extraApiKeySection');
+        if (extraApiKeySection) {
+            extraApiKeySection.remove();
+        }
+        const newsgenerationEnded = document.querySelector('.news-generation-ended');
+        if (newsgenerationEnded) {
+            newsgenerationEnded.remove();
+            const newsGrid = document.createElement('div');
+            newsGrid.className = 'news-grid';
+            document.querySelector('#news').appendChild(newsGrid);
+            generateNews();
+        }
+    }
+    else {
+        if (generateNews === "provisional") {
+            const apiKeySection = document.querySelector('.api-key-section');
+            //create a copy
+            const apiKeySectionCopy = apiKeySection.cloneNode(true);
+            //put a special id
+            apiKeySectionCopy.id = "extraApiKeySection";
+            if (apiKeySection && patreonUnlockables.parentNode) {
+                patreonUnlockables.parentNode.insertBefore(apiKeySectionCopy, patreonUnlockables);
+                const timeRemainingSpan = document.createElement('span');
+                timeRemainingSpan.className = 'modal-text';
+                timeRemainingSpan.innerHTML = `You have: <span class="important-text bold-font">${7 - diffDays} days </span> left of free news generation. Become a <a href="https://www.patreon.com/f1dbeditor" target="_blank">patreon member</a> to continue using this feature!`;
+
+                const modalSubtitle = apiKeySectionCopy.querySelector('.modal-subtitle');
+                modalSubtitle.parentNode.insertBefore(timeRemainingSpan, modalSubtitle.nextSibling);
+            }
+        }
+        else if (generateNews === "no") {
+            const newsGrid = document.querySelector('.news-grid');
+            const parent = newsGrid.parentNode;
+            newsGrid.remove();
+            const message = document.createElement('div');
+            message.className = 'modal-text important-text bold-font news-generation-ended';
+            message.innerHTML = `Your free news generation period has ended. Become a <a href="https://www.patreon.com/f1dbeditor" target="_blank">patreon member</a> to continue using this feature!`;
+            parent.appendChild(message);
+        }
+    }
+
+}
+
+function checkGenerableNews(validSignature){
+    let canGenerate = "no";
+    if(validSignature){
+        canGenerate = "yes";
+    }
+    else{
+        const firstNewsEntered = localStorage.getItem('firstNewsEntered');
+        if (!firstNewsEntered) {
+            const today = new Date().toISOString().split('T')[0];
+            localStorage.setItem('firstNewsEntered', today);
+            canGenerate = "provisional";
+        }
+        else{
+            const firstDate = new Date(firstNewsEntered);
+            const now = new Date();
+            const diffTime = Math.abs(now - firstDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            canGenerate = diffDays < 7 ? "provisional" : "no";
+        }
+    }
+    return canGenerate;
 }
 
 
