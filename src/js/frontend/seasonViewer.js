@@ -1,4 +1,4 @@
-import { races_names, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams } from "./config";
+import { races_names, names_full, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams } from "./config";
 import { resetH2H } from './head2head';
 import { game_version, custom_team } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
@@ -1205,20 +1205,70 @@ export function loadRecordsList(data) {
     data.forEach(function (record, index) {
         let recordDiv = document.createElement("div")
         recordDiv.classList = "record-item"
+
+        if (record.teamId !== -1){
+            recordDiv.classList.add(`${team_dict[record.teamId]}-record`)
+        }
+        else{
+            recordDiv.classList.add("generic-record")
+        }
+        
         let number = document.createElement("div")
-        number.classList = "record-number bold-font"
-        number.textContent = index + 1
+        number.classList = "record-number"
+        number.textContent = `${index + 1}.`
         let recordName = document.createElement("div")
         recordName.classList = "record-name"
         recordName.textContent = news_insert_space(record.name)
 
         let numberAndName = document.createElement("div")
         numberAndName.classList = "number-and-name"
+
+        let nameAndTeam = document.createElement("div")
+        nameAndTeam.classList = "name-and-team"
+
+        let teamDiv = document.createElement("div")
+        teamDiv.classList = "record-team"
+        teamDiv.textContent = record.retired === 1 ? "Retired" : (combined_dict[record.teamId] || "N/A");
+
+        nameAndTeam.appendChild(recordName)
+        nameAndTeam.appendChild(teamDiv)
+
         numberAndName.appendChild(number)
-        numberAndName.appendChild(recordName)
+        numberAndName.appendChild(nameAndTeam)
+
+        let extraStatsSection = document.createElement("div")
+        extraStatsSection.classList = "extra-stats-section"
+
+        let totalStarts = document.createElement("div")
+        totalStarts.classList = "extra-stat"
+        totalStarts.textContent = `Races: ${record.totalStarts}`
+
+        let firstRace = document.createElement("div")
+        firstRace.classList = "extra-stat"
+        firstRace.textContent = `First Race: ${names_full[races_names[record.firstRace.trackId]]} ${record.firstRace.season}`
+
+        let firstPodium = document.createElement("div")
+        firstPodium.classList = "extra-stat"
+        firstPodium.textContent = record.firstPodium !== -1 ? `First Podium: ${record.firstPodium.trackId ? names_full[races_names[record.firstPodium.trackId]] : ""} ${record.firstPodium.season}` : "First Podium: N/A"
+
+        let firstWin = document.createElement("div")
+        firstWin.classList = "extra-stat"
+        firstWin.textContent = record.firstWin !== -1 ? `First Win: ${record.firstWin.trackId ? names_full[races_names[record.firstWin.trackId]] : ""} ${record.firstWin.season}` : "First Win: N/A"
+
+        let lastWin = document.createElement("div")
+        lastWin.classList = "extra-stat"
+        lastWin.textContent = record.lastWin !== -1 ? `Last Win: ${record.lastWin.trackId ? names_full[races_names[record.lastWin.trackId]] : ""} ${record.lastWin.season}` : "Last Win: N/A"
+
+        extraStatsSection.appendChild(totalStarts)
+        extraStatsSection.appendChild(firstRace)
+        extraStatsSection.appendChild(firstPodium)
+        extraStatsSection.appendChild(firstWin)
+        extraStatsSection.appendChild(lastWin)
+
+        numberAndName.appendChild(extraStatsSection)
 
         let recordValue = document.createElement("div")
-        recordValue.classList = "record-value bold-font"
+        recordValue.classList = "record-value"
         recordValue.textContent = record.value
 
 
@@ -1236,11 +1286,13 @@ document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {
             const allTime = document.getElementById("allTimeRecords")
             if (allTime)
                 allTime.classList.add("d-none")
+            document.getElementById("standingsSettings").classList.remove("d-none")
         }
         else {
             const allTime = document.getElementById("allTimeRecords")
             if (allTime)
                 allTime.classList.remove("d-none")
+            document.getElementById("standingsSettings").classList.add("d-none")
         }
 
         manageRecordsSelected(null)

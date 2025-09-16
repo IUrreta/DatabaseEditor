@@ -4032,11 +4032,11 @@ body.light-theme .flag, body.light-theme .flag-header img{
   margin-right: 14px;
 }
 
-.staff-list::-webkit-scrollbar, .news-grid::-webkit-scrollbar {
+.staff-list::-webkit-scrollbar, .news-grid::-webkit-scrollbar, .records-list::-webkit-scrollbar {
   width: 4px;
 }
 
-.staff-list::-webkit-scrollbar-thumb, .news-grid::-webkit-scrollbar-thumb {
+.staff-list::-webkit-scrollbar-thumb, .news-grid::-webkit-scrollbar-thumb, .records-list::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -6613,6 +6613,9 @@ input.disabled {
   flex-direction: column;
   gap: 10px;
   background-color: transparent;
+  overflow-y: auto;
+  max-height: calc(100vh - 160px);
+  padding-right: 5px;
 }
 
 .records-list .record-item{
@@ -6622,7 +6625,9 @@ input.disabled {
   justify-content: space-between;
   background-color: var(--elements);
   border-radius: 10px;
-  padding: 10px;
+  padding: 10px 20px;
+  align-items: center;
+  position: relative;
 }
 
 .number-and-name{
@@ -6630,15 +6635,246 @@ input.disabled {
   flex-direction: row;
   gap: 20px;
   align-items: center;
+  z-index: 2;
 }
 
 .record-number{
-  font-size: 24px;
+  font-size: 22px;
+  font-family: 'NumbersFont';
+  letter-spacing: -3.2px;
+  padding-top: 4px;
+  width: 37px;
+  display: flex;
+  justify-content: center;
 }
 
 .record-name{
   font-size: 20px;
   color: var(--text-general);
+  line-height: 1.3;
+}
+
+.record-value{
+  font-size: 22px;
+  font-family: 'NumbersFont';
+  letter-spacing: -3.2px;
+  padding-top: 4px;
+  z-index: 2;
+}
+
+.name-and-team{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.record-team{
+  font-size: 14px;
+  color: var(--engine-table-name);
+}
+
+.rb-record::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -19% 4%, var(--redbull-primary), transparent 30%);
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.rb-record .record-team{
+  color: var(--redbull-primary);
+}
+
+.mc-record::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -19% 4%, var(--mclaren-primary), transparent 30%);
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.mc-record .record-team{
+  color: var(--mclaren-primary);
+}
+
+.as-record::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -19% 4%, var(--aston-primary), transparent 30%);
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.as-record .record-team{
+  color: var(--aston-primary);
+}
+
+.al-record::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -19% 4%, var(--alpine-primary), transparent 30%);
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.al-record .record-team{
+  color: var(--alpine-primary);
+}
+
+.af-record::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -19% 4%, var(--alfa-primary), transparent 30%);
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.af-record .record-team{
+  color: var(--alfa-primary);
+}
+
+.ha-record::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -19% 4%, var(--haas-primary), transparent 30%);
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.ha-record .record-team{
+  color: var(--haas-primary);
+}
+
+.wi-record::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -19% 4%, var(--williams-primary), transparent 30%);
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.wi-record .record-team{
+  color: var(--williams-primary);
+}
+
+.at-record::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -19% 4%, var(--alphatauri-primary), transparent 30%);
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.at-record .record-team{
+  color: var(--alphatauri-primary);
+}
+
+.fe-record::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -19% 4%, var(--ferrari-primary), transparent 30%);
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.fe-record .record-team{
+  color: var(--ferrari-primary);
+}
+
+.me-record::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -19% 4%, var(--mercedes-primary), transparent 30%);
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.me-record .record-team{
+  color: var(--mercedes-primary);
+}
+
+.ct-record::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -19% 4%, var(--custom-team-primary), transparent 30%);
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.ct-record .record-team{
+  color: var(--custom-team-primary);
+}
+
+.generic-record::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at -19% 4%, color-mix(in srgb, var(--text-general) 60%, var(--engine-table-name)), transparent 30%);
+  border-radius: 10px;
+  z-index: 0;
+}
+
+.generic-record .record-team{
+  color: color-mix(in srgb, var(--text-general) 60%, var(--engine-table-name));
+}
+
+.extra-stats-section{
+  display: grid;
+  grid-auto-flow: column;             
+  grid-template-rows: repeat(2, auto); 
+  grid-auto-columns: minmax(150px, max-content);
+  color: var(--engine-table-name);
+  border-left: 2px solid var(--engine-table-name);
+  padding-left: 25px;
+  column-gap: 15px;
+  font-size: 15px;
 }
 
 /* .free-driver span.bold-font,
@@ -11762,6 +11998,7 @@ body:has(.active #mod25logo) .one-change {
   padding: 0 14px;
   overflow-y: auto;
   max-height: calc(100vh - 160px);
+  margin-right: 8px;
 }
 
 .news-item{
