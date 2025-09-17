@@ -1243,9 +1243,22 @@ export function loadRecordsList(data) {
         totalStarts.classList = "extra-stat"
         totalStarts.textContent = `Races: ${record.totalStarts}`
 
+        let percentageRate = document.createElement("div")
+        percentageRate.classList = "extra-stat"
+        if (record.record === "wins" || record.record === "champs"){
+            percentageRate.textContent = `Win Rate: ${(record.totalWins / record.totalStarts * 100).toFixed(2)}%`
+        }
+        else if (record.record === "podiums"){
+            percentageRate.textContent = `Podium Rate: ${(record.totalPodiums / record.totalStarts * 100).toFixed(2)}%`
+        }
+        else if(record.record === "poles"){
+            percentageRate.textContent = `Pole Rate: ${(record.totalPoles / record.totalStarts * 100).toFixed(2)}%`
+        }
+        extraStatsSection.appendChild(percentageRate)
+
         let firstRace = document.createElement("div")
         firstRace.classList = "extra-stat"
-        firstRace.textContent = `First Race: ${names_full[races_names[record.firstRace.trackId]]} ${record.firstRace.season}`
+        firstRace.textContent = `First Race: ${record.firstRace.trackId ? names_full[races_names[record.firstRace.trackId]] : ""} ${record.firstRace.season}`
 
         let firstPodium = document.createElement("div")
         firstPodium.classList = "extra-stat"

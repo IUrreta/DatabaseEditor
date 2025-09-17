@@ -15,7 +15,8 @@ function fetchHistoryMap(tableName, ids) {
       FirstRace   AS FirstRaceSeason,   FirstRaceTrackID,
       FirstPodium AS FirstPodiumSeason, FirstPodiumTrackID,
       FirstWin    AS FirstWinSeason,    FirstWinTrackID,
-      LastWin     AS LastWinSeason,     LastWinTrackID
+      LastWin     AS LastWinSeason,     LastWinTrackID,
+      TotalPoles, TotalPodiums, TotalWins, TotalSprintWins, TotalChampionshipWins, TotalPointsScored, TotalFastestLaps
     FROM ${tableName}
     WHERE StaffID IN (${csv})
     AND Formula = 1
@@ -29,6 +30,13 @@ function fetchHistoryMap(tableName, ids) {
             firstPodium: { season: r[4], trackId: r[5] },
             firstWin: { season: r[6], trackId: r[7] },
             lastWin: { season: r[8], trackId: r[9] },
+            totalPoles: r[10] ?? 0,
+            totalPodiums: r[11] ?? 0,
+            totalWins: r[12] ?? 0,
+            totalSprintWins: r[13] ?? 0,
+            totalChampionshipWins: r[14] ?? 0,
+            totalPointsScored: r[15] ?? 0,
+            totalFastestLaps: r[16] ?? 0
         });
     }
     return map;
@@ -61,6 +69,14 @@ function enrichDriversWithHistory(drivers) {
 
         const lastWin = validSeason(s.lastWin) ? s.lastWin : (validSeason(b.lastWin) ? b.lastWin : { season: 0, trackId: null });
 
+        const totalPoles = (b.totalPoles ?? 0) + (s.totalPoles ?? 0);
+        const totalPodiums = (b.totalPodiums ?? 0) + (s.totalPodiums ?? 0);
+        const totalWins = (b.totalWins ?? 0) + (s.totalWins ?? 0);
+        const totalSprintWins = (b.totalSprintWins ?? 0) + (s.totalSprintWins ?? 0);
+        const totalChampionshipWins = (b.totalChampionshipWins ?? 0) + (s.totalChampionshipWins ?? 0);
+        const totalPointsScored = (b.totalPointsScored ?? 0) + (s.totalPointsScored ?? 0);
+        const totalFastestLaps = (b.totalFastestLaps ?? 0) + (s.totalFastestLaps ?? 0);
+
         return {
             ...d,
             totalStarts,
@@ -68,6 +84,13 @@ function enrichDriversWithHistory(drivers) {
             firstPodium,
             firstWin,
             lastWin,
+            totalPoles,
+            totalPodiums,
+            totalWins,
+            totalSprintWins,
+            totalChampionshipWins,
+            totalPointsScored,
+            totalFastestLaps
         };
     });
 }
