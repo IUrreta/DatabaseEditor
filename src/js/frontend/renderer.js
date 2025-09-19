@@ -102,6 +102,9 @@ const slideUpClose = document.getElementById("patreonSlideUpClose")
 const patreonUnlockables = document.querySelector(".patreon-unlockables")
 const downloadSaveButton = document.querySelector(".download-save-button")
 
+const patreonThemes = document.querySelector(".patreon-themes");
+const apiKeySection = document.getElementById("apiKeySection");
+
 const apiKeyInput = document.getElementById("apiKeyInput");
 const apiKeyStatus = document.getElementById("apiKeyStatus");
 
@@ -1910,19 +1913,19 @@ function manageNewsStatus(valid) {
     }
     else {
         if (generateNews === "provisional") {
+            console.log("PROVISIONAL")
             const apiKeySection = document.querySelector('.api-key-section');
-            //create a copy
-            const apiKeySectionCopy = apiKeySection.cloneNode(true);
-            //put a special id
-            apiKeySectionCopy.id = "extraApiKeySection";
-            if (apiKeySection && patreonUnlockables.parentNode) {
-                patreonUnlockables.parentNode.insertBefore(apiKeySectionCopy, patreonUnlockables);
+
+            patreonUnlockables.classList.remove("d-none");
+            patreonThemes.classList.add("d-none");
+
+            if (apiKeySection) {
                 const timeRemainingSpan = document.createElement('span');
                 timeRemainingSpan.className = 'modal-text';
                 timeRemainingSpan.innerHTML = `You have: <span class="important-text bold-font">${7 - diffDays} days </span> left of free news generation. Become a <a href="https://www.patreon.com/f1dbeditor" target="_blank">patreon member</a> to continue using this feature!`;
 
-                const modalSubtitle = apiKeySectionCopy.querySelector('.modal-subtitle');
-                modalSubtitle.parentNode.insertBefore(timeRemainingSpan, modalSubtitle.nextSibling);
+                //insert before the modal text in apiKeySection
+                apiKeySection.querySelector('.modal-text').after(timeRemainingSpan);
             }
         }
         else if (generateNews === "no") {
