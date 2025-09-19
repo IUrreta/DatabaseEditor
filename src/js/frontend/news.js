@@ -106,6 +106,7 @@ export async function place_news(newsList) {
     image.classList.add('news-image');
     image.setAttribute('data-src', news.image);
     image.src = news.image;
+    image.setAttribute("loading", "lazy");
 
     const readbuttonContainer = document.createElement('div');
     readbuttonContainer.classList.add('read-button-container');

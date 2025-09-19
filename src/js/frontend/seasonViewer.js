@@ -7,6 +7,7 @@ import { Command } from "../backend/command.js";
 
 
 
+
 let seasonTable;
 let teamsTable;
 let races_ids = []
@@ -1107,87 +1108,94 @@ function hoverListeners() {
  * @param {String} actualYear current year of the save
  */
 export function generateYearsMenu(actualYear) {
-    document.querySelector("#yearInput").min = actualYear
-    setCurrentSeason(actualYear)
-    let yearMenu = document.querySelector("#yearMenu");
-    let yearH2H = document.querySelector("#yearMenuH2H");
-    yearMenu.innerHTML = ""
-    yearH2H.innerHTML = ""
-    for (let year = actualYear; year >= game_version; year--) {
-        let a = document.createElement("a");
-        a.textContent = year.toString();
-        a.classList = "dropdown-item"
-        a.style.cursor = "pointer"
-        yearMenu.appendChild(a);
-        a.addEventListener("click", function () {
-            manageRecordsSelected(a)
-        })
+    document.querySelector("#yearInput").min = actualYear;
+    setCurrentSeason(actualYear);
 
-        let a2 = document.createElement("a");
-        a2.textContent = year.toString();
-        a2.classList = "dropdown-item"
-        a2.style.cursor = "pointer"
+    const yearMenu = document.querySelector("#yearMenu");
+    const yearH2H = document.querySelector("#yearMenuH2H");
+    yearMenu.innerHTML = "";
+    yearH2H.innerHTML = "";
+
+    // años (con data-year)
+    for (let year = actualYear; year >= game_version; year--) {
+        const a = document.createElement("a");
+        a.textContent = String(year);
+        a.className = "dropdown-item";
+        a.style.cursor = "pointer";
+        a.dataset.year = String(year);                 // <- aquí
+        yearMenu.appendChild(a);
+        a.addEventListener("click", () => manageRecordsSelected(a));
+
+        const a2 = document.createElement("a");
+        a2.textContent = String(year);
+        a2.className = "dropdown-item";
+        a2.style.cursor = "pointer";
+        a2.dataset.year = String(year);
         yearH2H.appendChild(a2);
-        a2.addEventListener("click", function () {
-            resetH2H()
-            document.querySelectorAll(".modal-team").forEach(function (elem) {
-                elem.classList.remove("d-none")
-            })
-            document.getElementById("yearButtonH2H").textContent = a2.textContent
-            const command = new Command("yearSelectedH2H", { year: a2.textContent });
-            command.execute();
-        })
+        a2.addEventListener("click", () => {
+            resetH2H();
+            document.querySelectorAll(".modal-team").forEach(el => el.classList.remove("d-none"));
+            const yearBtnH2H = document.getElementById("yearButtonH2H");
+            yearBtnH2H.textContent = a2.textContent;
+            yearBtnH2H.dataset.year = a2.dataset.year;  // <- también lo guardo
+            new Command("yearSelectedH2H", { year: a2.dataset.year }).execute();
+        });
     }
 
-    let allTime = document.createElement("a");
+    // All Time al principio (con data-year="all")
+    const allTime = document.createElement("a");
     allTime.textContent = "All Time";
-    allTime.classList = "dropdown-item"
-    allTime.id = "allTimeRecords"
-    yearMenu.insertBefore(allTime, yearMenu.childNodes[0]);
-    allTime.addEventListener("click", function () {
-        document.getElementById("yearButton").textContent = "All Time"
-        let value = document.querySelector("#recordsTypeButton").dataset.value
-        const command = new Command("recordSelected", { type: value, year: "all" });
-        command.execute();
-    })
+    allTime.className = "dropdown-item";
+    allTime.id = "allTimeRecords";
+    allTime.dataset.year = "all";                   // <- clave
+    yearMenu.insertBefore(allTime, yearMenu.firstChild);
+    allTime.addEventListener("click", () => {
+        setYearButton(allTime);
+        const value = document.querySelector("#recordsTypeButton").dataset.value;
+        new Command("recordSelected", { type: value, year: "all" }).execute();
+    });
 
     document.getElementById("standingspill").click();
 }
 
-function manageRecordsSelected(yearSelected) {
-    console.log("ENTERING MANAGE RECORDS SELECTED WITH PARAM: ", yearSelected)
 
-    let yearMenu = document.querySelector("#yearMenu");
-    let value = document.querySelector("#recordsTypeButton").dataset.value
 
-    
-    if (yearSelected !== null) {
-        document.getElementById("yearButton").textContent = yearSelected.textContent
+function manageRecordsSelected(forcedYearEl = null) {
+    const yearMenu = document.querySelector("#yearMenu");
+    const yearItems = Array.from(yearMenu.querySelectorAll("a"));
+    const yearBtn = document.getElementById("yearButton");
+    const typeVal = document.querySelector("#recordsTypeButton").dataset.value;
+
+    // resolve seleccionado actual
+    let selectedEl = forcedYearEl
+        || yearItems.find(i => i.dataset.year === yearBtn.dataset.year)
+        || yearItems[0];
+
+    const isAllTime = el => el.dataset.year === "all";
+
+    // si es standings y estaba en All Time, forzar primer año real
+    if (typeVal === "standings" && isAllTime(selectedEl)) {
+        const firstReal = yearItems.find(i => !isAllTime(i));
+        if (firstReal) selectedEl = firstReal;
     }
-    else {
-        yearSelected = yearMenu.childNodes[1]
-        document.getElementById("yearButton").textContent = yearSelected.textContent
-    }
-    if (value === "standings") {
 
+    // reflejar en el botón
+    setYearButton(selectedEl);
+
+    const selectedYear = selectedEl.dataset.year;
+    const isCurrentYear = selectedYear === yearItems[1].dataset.year;
+
+    if (typeVal === "standings") {
         isYearSelected = true
-        manage_show_tables()
-        let isCurrentYear = (yearSelected === yearMenu.childNodes[0])
-        let data = {
-            year: yearSelected.textContent,
-            isCurrentYear
-        }
-        const command = new Command("yearSelected", data);
-        command.execute();
-    }
-    else {
-        const command = new Command("recordSelected", { type: value, year: yearSelected.textContent });
-        command.execute();
+        manage_show_tables();
+        new Command("yearSelected", { year: selectedYear, isCurrentYear }).execute();
+    } else {
+        new Command("recordSelected", { type: typeVal, year: selectedYear }).execute();
         manageShowRecords();
     }
 }
 
-function manageShowRecords(){
+function manageShowRecords() {
     const driversTable = document.querySelector(".drivers-table")
     const teamsTable = document.querySelector(".teams-table")
     driversTable.classList.add("d-none")
@@ -1198,6 +1206,12 @@ function manageShowRecords(){
     recordsList.innerHTML = ""
 }
 
+function setYearButton(el) {
+    const yearBtn = document.getElementById("yearButton");
+    yearBtn.textContent = el.textContent.trim();
+    yearBtn.dataset.year = el.dataset.year;           // <- guardamos el valor
+}
+
 export function loadRecordsList(data) {
     console.log("RECORD DATA: ", data)
     const recordsList = document.querySelector(".records-list")
@@ -1206,13 +1220,13 @@ export function loadRecordsList(data) {
         let recordDiv = document.createElement("div")
         recordDiv.classList = "record-item"
 
-        if (record.teamId !== -1){
+        if (record.teamId !== -1) {
             recordDiv.classList.add(`${team_dict[record.teamId]}-record`)
         }
-        else{
+        else {
             recordDiv.classList.add("generic-record")
         }
-        
+
         let number = document.createElement("div")
         number.classList = "record-number"
         number.textContent = `${index + 1}.`
@@ -1245,38 +1259,90 @@ export function loadRecordsList(data) {
 
         let percentageRate = document.createElement("div")
         percentageRate.classList = "extra-stat"
-        if (record.record === "wins" || record.record === "champs"){
+        if (record.record === "wins" || record.record === "champs") {
             percentageRate.textContent = `Win Rate: ${(record.totalWins / record.totalStarts * 100).toFixed(2)}%`
         }
-        else if (record.record === "podiums"){
+        else if (record.record === "podiums") {
             percentageRate.textContent = `Podium Rate: ${(record.totalPodiums / record.totalStarts * 100).toFixed(2)}%`
         }
-        else if(record.record === "poles"){
+        else if (record.record === "poles") {
             percentageRate.textContent = `Pole Rate: ${(record.totalPoles / record.totalStarts * 100).toFixed(2)}%`
         }
         extraStatsSection.appendChild(percentageRate)
 
         let firstRace = document.createElement("div")
         firstRace.classList = "extra-stat"
-        firstRace.textContent = `First Race: ${record.firstRace.trackId ? names_full[races_names[record.firstRace.trackId]] : ""} ${record.firstRace.season}`
+        let trackName = record.firstRace.trackName ? record.firstRace.trackName : (record.firstRace.trackId ? names_full[races_names[record.firstRace.trackId]] : "")
+        firstRace.textContent = `First Race: ${trackName} ${record.firstRace.season}`
 
         let firstPodium = document.createElement("div")
         firstPodium.classList = "extra-stat"
-        firstPodium.textContent = record.firstPodium !== -1 ? `First Podium: ${record.firstPodium.trackId ? names_full[races_names[record.firstPodium.trackId]] : ""} ${record.firstPodium.season}` : "First Podium: N/A"
+        let podiumTrackName = record.firstPodium.trackName ? record.firstPodium.trackName : (record.firstPodium.trackId ? names_full[races_names[record.firstPodium.trackId]] : "")
+        firstPodium.textContent = `First Podium: ${podiumTrackName} ${record.firstPodium.season}`
 
         let firstWin = document.createElement("div")
         firstWin.classList = "extra-stat"
-        firstWin.textContent = record.firstWin !== -1 ? `First Win: ${record.firstWin.trackId ? names_full[races_names[record.firstWin.trackId]] : ""} ${record.firstWin.season}` : "First Win: N/A"
+        let winTrackName = record.firstWin.trackName ? record.firstWin.trackName : (record.firstWin.trackId ? names_full[races_names[record.firstWin.trackId]] : "")
+        firstWin.textContent = `First Win: ${winTrackName} ${record.firstWin.season}`
 
         let lastWin = document.createElement("div")
         lastWin.classList = "extra-stat"
-        lastWin.textContent = record.lastWin !== -1 ? `Last Win: ${record.lastWin.trackId ? names_full[races_names[record.lastWin.trackId]] : ""} ${record.lastWin.season}` : "Last Win: N/A"
+        let lastWinTrackName = record.lastWin.trackName ? record.lastWin.trackName : (record.lastWin.trackId ? names_full[races_names[record.lastWin.trackId]] : "")
+        lastWin.textContent = `Last Win: ${lastWinTrackName} ${record.lastWin.season}`
+
+        let fastestLaps = document.createElement("div")
+        fastestLaps.classList = "extra-stat"
+        fastestLaps.textContent = `Fastest Laps: ${record.totalFastestLaps}`
+        extraStatsSection.appendChild(fastestLaps)
+
+        let sprintWins = document.createElement("div")
+        sprintWins.classList = "extra-stat"
+        sprintWins.textContent = `Sprint Wins: ${record.totalSprintWins}`
+
+        let poles = document.createElement("div")
+        poles.classList = "extra-stat"
+        poles.textContent = `Poles: ${record.totalPoles}`
+
+        let podiums = document.createElement("div")
+        podiums.classList = "extra-stat"
+        podiums.textContent = `Podiums: ${record.totalPodiums}`
+
+
+        let wins = document.createElement("div")
+        wins.classList = "extra-stat"
+        wins.textContent = `Wins: ${record.totalWins}`
+
+        let champs = document.createElement("div")
+        champs.classList = "extra-stat"
+        champs.textContent = `Championships: ${record.totalChampionshipWins}`
 
         extraStatsSection.appendChild(totalStarts)
         extraStatsSection.appendChild(firstRace)
         extraStatsSection.appendChild(firstPodium)
         extraStatsSection.appendChild(firstWin)
         extraStatsSection.appendChild(lastWin)
+
+        if (record.totalFastestLaps > 0){
+            extraStatsSection.appendChild(fastestLaps)
+        }
+
+        if (record.totalSprintWins > 0){
+            extraStatsSection.appendChild(sprintWins)
+        }
+
+        console.log(record.record, record.totalWins)
+        if (record.record !== "wins" && record.totalWins > 0){
+            extraStatsSection.appendChild(wins)
+        }
+        if (record.record !== "podiums" && record.totalPodiums > 0){
+            extraStatsSection.appendChild(podiums)
+        }
+        if (record.record !== "poles" && record.totalPoles > 0 ){
+            extraStatsSection.appendChild(poles)
+        }
+        if (record.record !== "champs" && record.totalChampionshipWins > 0){
+            extraStatsSection.appendChild(champs)
+        }
 
         numberAndName.appendChild(extraStatsSection)
 

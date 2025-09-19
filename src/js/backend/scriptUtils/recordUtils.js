@@ -1,6 +1,6 @@
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
 import { formatNamesSimple } from "./dbUtils.js";
-
+import records from "../../../data/records.json";
 function idsToCsv(ids) {
     return Array.from(new Set(ids)).filter(x => x != null).join(",");
 }
@@ -156,7 +156,15 @@ export function getSelectedRecord(type, year) {
         const combinedArray = Object.values(byId).sort((a, b) => b.value - a.value);
 
         // enriquecemos aquí
-        return enrichDriversWithHistory(combinedArray);
+        const enriched = enrichDriversWithHistory(combinedArray);
+
+        const ALLTIME_EXTERNAL_DRIVERS = records;
+        const merged = mergeWithExternalRecords(enriched, ALLTIME_EXTERNAL_DRIVERS, type, year);
+
+        //sort again after merging
+        merged.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+
+        return merged;
     }
 
     // temporada concreta
@@ -202,4 +210,64 @@ export function getSelectedRecord(type, year) {
 
     // enriquecemos también para temporada concreta con histórico all-time
     return enrichDriversWithHistory(formatted);
+}
+
+function pickValueFromType(item, type) {
+  if (!item) return 0;
+  switch (type) {
+    case "wins":   return item.totalWins ?? 0;
+    case "podiums":return item.totalPodiums ?? 0;
+    case "poles":  return item.totalPoles ?? 0;
+    case "champs": return item.totalChampionshipWins ?? 0;
+    default:       return 0;
+  }
+}
+
+function mapExternalItem(item, type) {
+  return {
+    ...item,
+    // forzados como pediste
+    id: -1,
+    retired: 1,
+    teamId: -1,
+    record: type,
+    value: pickValueFromType(item, type),
+
+    // por si en tu app esperas que existan siempre
+    totalStarts: item.totalStarts ?? 0,
+    totalPoles: item.totalPoles ?? 0,
+    totalPodiums: item.totalPodiums ?? 0,
+    totalWins: item.totalWins ?? 0,
+    totalSprintWins: item.totalSprintWins ?? 0,
+    totalChampionshipWins: item.totalChampionshipWins ?? 0,
+    totalPointsScored: item.totalPointsScored ?? 0,
+    totalFastestLaps: item.totalFastestLaps ?? 0,
+
+
+    firstRace: item.firstRace ?? { season: 0, trackName: null },
+    firstPodium: item.firstPodium ?? { season: 0, trackName: null },
+    firstWin: item.firstWin ?? { season: 0, trackName: null },
+    lastWin: item.lastWin ?? { season: 0, trackName: null },
+
+  };
+}
+
+function mergeWithExternalRecords(dbDrivers, externalJson, type, year) {
+    const normName = (name) => {
+        return (name || "").replace(/\s+/g, " ").trim().toLowerCase();
+    };
+
+    if (year !== "all") return dbDrivers || [];
+
+    const byName = new Set((dbDrivers || []).map(d => normName(d.name)));
+
+    const externalMapped = (externalJson || [])
+        .map(it => mapExternalItem(it, type))
+        .filter(it => !byName.has(normName(it.name)));
+
+    const merged = [...(dbDrivers || []), ...externalMapped];
+
+    // Ordenamos por la columna value desc
+    merged.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+    return merged;
 }
