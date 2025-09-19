@@ -1213,7 +1213,6 @@ function setYearButton(el) {
 }
 
 export function loadRecordsList(data) {
-    console.log("RECORD DATA: ", data)
     const recordsList = document.querySelector(".records-list")
     recordsList.innerHTML = ""
     data.forEach(function (record, index) {
@@ -1242,7 +1241,7 @@ export function loadRecordsList(data) {
 
         let teamDiv = document.createElement("div")
         teamDiv.classList = "record-team"
-        teamDiv.textContent = record.retired === 1 ? "Retired" : (combined_dict[record.teamId] || "N/A");
+        teamDiv.textContent = record.teamId !== -1 ? combined_dict[record.teamId] : record.retired === 1 ? "Retired" : "N/A";
 
         nameAndTeam.appendChild(recordName)
         nameAndTeam.appendChild(teamDiv)
@@ -1293,7 +1292,6 @@ export function loadRecordsList(data) {
         let fastestLaps = document.createElement("div")
         fastestLaps.classList = "extra-stat"
         fastestLaps.textContent = `Fastest Laps: ${record.totalFastestLaps}`
-        extraStatsSection.appendChild(fastestLaps)
 
         let sprintWins = document.createElement("div")
         sprintWins.classList = "extra-stat"
@@ -1330,7 +1328,6 @@ export function loadRecordsList(data) {
             extraStatsSection.appendChild(sprintWins)
         }
 
-        console.log(record.record, record.totalWins)
         if (record.record !== "wins" && record.totalWins > 0){
             extraStatsSection.appendChild(wins)
         }

@@ -76,7 +76,6 @@ async function finishGeneralLoader() {
 }
 
 export async function place_news(newsList) {
-  console.log("Placing news:", newsList);
 
   await finishGeneralLoader();
 
@@ -217,7 +216,7 @@ export async function place_news(newsList) {
         }
 
       }
-      else{
+      else {
         const noApiFoundSpan = document.createElement('span');
         noApiFoundSpan.classList.add('news-error');
         noApiFoundSpan.textContent = "No API key found. Please set it in the settings.";
@@ -253,6 +252,27 @@ export async function place_news(newsList) {
 
 
   });
+
+
+  //wait 10 seconds
+  setTimeout(() => {
+    (function estimateImageRAM() {
+      const imgs = [...document.images];
+      const bytes = imgs.reduce((sum, img) => sum + (img.naturalWidth * img.naturalHeight * 4), 0);
+      console.log('Imágenes (decodificadas) ~', (bytes / 1048576).toFixed(1), 'MB', 'en', imgs.length, 'imgs');
+    })();
+
+    (function () {
+      const imgs = [...document.images];
+      imgs.sort((a, b) => (b.naturalWidth * b.naturalHeight) - (a.naturalWidth * a.naturalHeight));
+      console.log(imgs.slice(0, 10).map(img => ({
+        src: img.src,
+        w: img.naturalWidth,
+        h: img.naturalHeight,
+        mb: (img.naturalWidth * img.naturalHeight * 4 / 1048576).toFixed(1)
+      })));
+    })();
+  }, 5000);
 }
 
 
@@ -313,7 +333,6 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
     }
   }, 350);
 
-  console.log("Final prompt:", prompt);
 
   if (newData.text) {
     articleText = newData.text;
@@ -714,7 +733,6 @@ async function contextualizeRenewalNews(newData) {
   let resp;
   try {
     resp = await command.promiseExecute();
-    console.log("Renewal Offer:", resp);
   } catch (err) {
     console.error("Error fetching race details:", err);
     return;
@@ -793,7 +811,6 @@ async function contextualizeTeamComparison(newData) {
   let resp;
   try {
     resp = await command.promiseExecute();
-    console.log("Team comparison:", resp);
   } catch (err) {
     console.error("Error fetching race details:", err);
     return;
@@ -1079,7 +1096,6 @@ async function contextualizeDriverComparison(newData) {
   let resp;
   try {
     resp = await command.promiseExecute();
-    console.log("Full championship details:", resp);
   } catch (err) {
     console.error("Error fetching full championship details:", err);
     return;
@@ -1166,7 +1182,6 @@ async function contextualizeSeasonReview(newData) {
 
   try {
     resp = await command.promiseExecute();
-    console.log("Full championship details:", resp);
   }
   catch (err) {
     console.error("Error fetching full championship details:", err);
@@ -1500,7 +1515,6 @@ function manage_overlay(imageContainer, overlay, data, image) {
     imageContainer.appendChild(overlayDiv);
   }
   else if (overlay === "driver-comparison-overlay") {
-    console.log("DRIVER COMPARISON DATA:", data);
     const teamId = data.teamId;
     overlayDiv = document.createElement('div');
     overlayDiv.classList.add('driver-comparison-overlay');

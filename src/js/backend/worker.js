@@ -31,7 +31,7 @@ const workerCommands = {
     console.log(data)
     const SQL = await initSqlJs({
       locateFile: file => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/sql-wasm.wasm',
-      wasmMemory: new WebAssembly.Memory({ initial: 1024 })
+      wasmMemory: new WebAssembly.Memory({ initial: 1024, maximum: 2048 })
     });
 
     const { db, metadata } = await analyzeFileToDatabase(data.file, SQL);
