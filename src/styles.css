@@ -12065,9 +12065,9 @@ body:has(.active #mod25logo) .one-change {
   color: color-mix(in srgb, var(--text-general) 80%, gray);
   white-space: pre-wrap;
   transition: opacity 0.15s;
-  /* min-height: 300px; */
   max-height: 500px;
   overflow-y: auto;
+  padding-right: 10px;
 }
 
 .news-title{
@@ -12130,7 +12130,23 @@ body:has(.active #mod25logo) .one-change {
     background: #ffffff;
 }
 
-.reload-news{
+.hide-historic-drivers.active .bi-eye{
+  display: none;
+}
+
+.hide-historic-drivers.active .bi-eye-slash{
+  display: inline;
+}
+
+.hide-historic-drivers .bi-eye{
+  display: inline;
+}
+
+.hide-historic-drivers .bi-eye-slash{
+  display: none;
+}
+
+.reload-news, .hide-historic-drivers{
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -12141,15 +12157,15 @@ body:has(.active #mod25logo) .one-change {
   font-size: 16px;
 }
 
-.reload-news::selection{
+.reload-news::selection, .hide-historic-drivers::selection{
   background: transparent;
 }
 
-.reload-news:hover{
+.reload-news:hover, .hide-historic-drivers:hover{
   color: var(--new-primary);
 }
 
-.reload-news:active span{
+.reload-news:active span, .hide-historic-drivers:active span{
   transform: scale(0.96);
 }
 

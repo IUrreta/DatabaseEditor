@@ -1215,6 +1215,9 @@ function setYearButton(el) {
 export function loadRecordsList(data) {
     const recordsList = document.querySelector(".records-list")
     recordsList.innerHTML = ""
+    let visibleIndex = 0;
+    const hideHistoric = document.querySelector(".hide-historic-drivers").classList.contains("active");
+
     data.forEach(function (record, index) {
         let recordDiv = document.createElement("div")
         recordDiv.classList = "record-item"
@@ -1226,9 +1229,20 @@ export function loadRecordsList(data) {
             recordDiv.classList.add("generic-record")
         }
 
-        let number = document.createElement("div")
-        number.classList = "record-number"
-        number.textContent = `${index + 1}.`
+        const isHistoric = record.id === -1;
+        if (isHistoric) recordDiv.classList.add("historic-driver");
+
+        const shouldHide = isHistoric && hideHistoric;
+        if (shouldHide) recordDiv.classList.add("d-none");
+
+        const number = document.createElement("div");
+        number.className = "record-number";
+        if (!shouldHide) {
+            number.textContent = `${++visibleIndex}.`;
+        } else {
+            number.textContent = "";
+        }
+
         let recordName = document.createElement("div")
         recordName.classList = "record-name"
         recordName.textContent = news_insert_space(record.name)
@@ -1312,32 +1326,43 @@ export function loadRecordsList(data) {
 
         let champs = document.createElement("div")
         champs.classList = "extra-stat"
-        champs.textContent = `Championships: ${record.totalChampionshipWins}`
+        champs.textContent = `WDCs: ${record.totalChampionshipWins}`
 
-        extraStatsSection.appendChild(totalStarts)
-        extraStatsSection.appendChild(firstRace)
-        extraStatsSection.appendChild(firstPodium)
-        extraStatsSection.appendChild(firstWin)
-        extraStatsSection.appendChild(lastWin)
+        if (document.querySelector("#yearButton").dataset.year === "all") {
+            extraStatsSection.appendChild(totalStarts)
+        }
 
-        if (record.totalFastestLaps > 0){
+        if (record.firstRace.season !== 0) {
+            extraStatsSection.appendChild(firstRace)
+        }
+        if (record.firstPodium.season !== 0) {
+            extraStatsSection.appendChild(firstPodium)
+        }
+        if (record.firstWin.season !== 0) {
+            extraStatsSection.appendChild(firstWin)
+        }
+        if (record.lastWin.season !== 0) {
+            extraStatsSection.appendChild(lastWin)
+        }
+
+        if (record.totalFastestLaps > 0) {
             extraStatsSection.appendChild(fastestLaps)
         }
 
-        if (record.totalSprintWins > 0){
+        if (record.totalSprintWins > 0) {
             extraStatsSection.appendChild(sprintWins)
         }
 
-        if (record.record !== "wins" && record.totalWins > 0){
+        if (record.record !== "wins" && record.totalWins > 0) {
             extraStatsSection.appendChild(wins)
         }
-        if (record.record !== "podiums" && record.totalPodiums > 0){
+        if (record.record !== "podiums" && record.totalPodiums > 0) {
             extraStatsSection.appendChild(podiums)
         }
-        if (record.record !== "poles" && record.totalPoles > 0 ){
+        if (record.record !== "poles" && record.totalPoles > 0) {
             extraStatsSection.appendChild(poles)
         }
-        if (record.record !== "champs" && record.totalChampionshipWins > 0){
+        if (record.record !== "champs" && record.totalChampionshipWins > 0) {
             extraStatsSection.appendChild(champs)
         }
 
@@ -1363,16 +1388,42 @@ document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {
             if (allTime)
                 allTime.classList.add("d-none")
             document.getElementById("standingsSettings").classList.remove("d-none")
+            document.getElementById("recordsSettings").classList.add("d-none")
         }
         else {
             const allTime = document.getElementById("allTimeRecords")
             if (allTime)
                 allTime.classList.remove("d-none")
             document.getElementById("standingsSettings").classList.add("d-none")
+            document.getElementById("recordsSettings").classList.remove("d-none")
         }
 
         manageRecordsSelected(null)
     })
 })
 
+document.querySelector(".hide-historic-drivers").addEventListener("click", function () {
+    this.classList.toggle("active");
+    this.querySelector("span").textContent = this.classList.contains("active") ? "Show Historic Drivers" : "Hide Historic Drivers"
 
+    const recordsList = document.querySelectorAll(".record-item");
+
+    // Ocultar/mostrar históricos
+    recordsList.forEach(function (record) {
+        if (record.classList.contains("historic-driver")) {
+            record.classList.toggle("d-none");
+        }
+    });
+
+    // Renumerar solo los visibles
+    let visibleIndex = 1;
+    recordsList.forEach(function (record) {
+        if (!record.classList.contains("d-none")) {
+            const numberEl = record.querySelector(".record-number");
+            if (numberEl) {
+                numberEl.textContent = `${visibleIndex}.`;
+            }
+            visibleIndex++;
+        }
+    });
+});
