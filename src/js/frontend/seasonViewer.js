@@ -413,7 +413,24 @@ function new_color_teams_table() {
                     cell.classList.add("fastest")
                 }
             });
-            values.sort((a, b) => b[0] - a[0]);
+            values.sort((a, b) => {
+                function parseValue(val) {
+                    if (typeof val === "number") return val;
+
+                    const match = val.match(/^(\d+)(?:\((\d+)\))?$/);
+                    if (match) {
+                        const base = parseInt(match[1], 10);
+                        const extra = match[2] ? parseInt(match[2], 10) : 0;
+                        return base + extra;
+                    }
+                    return 0; 
+                }
+
+                const totalA = parseValue(a[0]);
+                const totalB = parseValue(b[0]);
+
+                return totalB - totalA;
+            });
             let topThree = values.slice(0, 3);
             colCells[topThree[0][1]].classList.add("first");
             colCells[topThree[1][1]].classList.add("second");
@@ -1281,6 +1298,9 @@ export function loadRecordsList(data) {
         else if (record.record === "poles") {
             percentageRate.textContent = `Pole Rate: ${(record.totalPoles / record.totalStarts * 100).toFixed(2)}%`
         }
+        else if (record.record === "fastestlaps") {
+            percentageRate.textContent = `Fastest Lap Rate: ${(record.totalFastestLaps / record.totalStarts * 100).toFixed(2)}%`
+        }
         extraStatsSection.appendChild(percentageRate)
 
         let firstRace = document.createElement("div")
@@ -1345,7 +1365,7 @@ export function loadRecordsList(data) {
             extraStatsSection.appendChild(lastWin)
         }
 
-        if (record.totalFastestLaps > 0) {
+        if (record.record !== "fastestlaps" && record.totalFastestLaps > 0) {
             extraStatsSection.appendChild(fastestLaps)
         }
 

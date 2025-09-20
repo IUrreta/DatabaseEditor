@@ -209,6 +209,7 @@ export function getSelectedRecord(type, year) {
     else if (type === "podiums") recordTargetColumn = "TotalPodiums";
     else if (type === "poles") recordTargetColumn = "TotalPoles";
     else if (type === "champs") recordTargetColumn = "TotalChampionshipWins";
+    else if (type === "fastestlaps") recordTargetColumn = "TotalFastestLaps";
 
     if (year === "all") {
         const recordTargetTableBefore = "Staff_Driver_RaceRecordBeforeGameStart";
@@ -328,6 +329,7 @@ function pickValueFromType(item, type) {
         case "podiums": return item.totalPodiums ?? 0;
         case "poles": return item.totalPoles ?? 0;
         case "champs": return item.totalChampionshipWins ?? 0;
+        case "fastestLaps": return item.totalFastestLaps ?? 0;
         default: return 0;
     }
 }
