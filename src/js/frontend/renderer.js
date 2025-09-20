@@ -1919,10 +1919,19 @@ function manageNewsStatus(valid) {
             patreonUnlockables.classList.remove("d-none");
             patreonThemes.classList.add("d-none");
 
+            let diffDays = 0;
+            const firstNewsEntered = localStorage.getItem('firstNewsEntered');
+            if (firstNewsEntered) {
+                const firstDate = new Date(firstNewsEntered);
+                const now = new Date();
+                const diffTime = Math.abs(now - firstDate);
+                diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            }
+
             if (apiKeySection) {
                 const timeRemainingSpan = document.createElement('span');
                 timeRemainingSpan.className = 'modal-text';
-                timeRemainingSpan.innerHTML = `You have: <span class="important-text bold-font">${7 - diffDays} days </span> left of free news generation. Become a <a href="https://www.patreon.com/f1dbeditor" target="_blank">patreon member</a> to continue using this feature!`;
+                timeRemainingSpan.innerHTML = `You have: <span class="important-text bold-font">${8 - diffDays} days </span> left of free news generation. Become a <a href="https://www.patreon.com/f1dbeditor" target="_blank">patreon member</a> to continue using this feature!`;
 
                 //insert before the modal text in apiKeySection
                 apiKeySection.querySelector('.modal-text').after(timeRemainingSpan);
