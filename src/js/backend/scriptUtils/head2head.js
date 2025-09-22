@@ -363,9 +363,11 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
 }
 
 export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true) {
-  const t1 = teamID1[0];
-  const t2 = teamID2[0];
+  const t1 = teamID1;
+  const t2 = teamID2;
   const season = year;
+  console.log("TEAMS: ", teamID1, teamID2, season, isCurrentYear);
+
 
 
   // 1) Obtenemos todas las carreras en las que participaron ambos equipos
@@ -412,20 +414,21 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     // Pilotos del team1
     const drivers1 = queryDB(`
         SELECT DISTINCT DriverID
-        FROM Races_QualifyingResults
-        WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
+        FROM Races_Results
+        WHERE RaceID = ${raceID}
           AND TeamID = ${t1}
       `, 'allRows') || [];
 
     // Pilotos del team2
     const drivers2 = queryDB(`
         SELECT DISTINCT DriverID
-        FROM Races_QualifyingResults
-        WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
+        FROM Races_Results
+        WHERE RaceID = ${raceID}
           AND TeamID = ${t2}
       `, 'allRows') || [];
+
+    console.log("Drivers1: ", drivers1);
+    console.log("Drivers2: ", drivers2);
 
     // Transformamos el array de arrays/tuplas en un array de IDs
     const drivers1IDs = drivers1.map(d => d[0]);
@@ -530,10 +533,10 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     }
 
     // Poles: si QStage = 3 y la "mejor" posición = 1
-    if (d1_QStage === 3 && d1_QRes === 1) {
+    if (d1_QRes === 1 && (!isCurrentYear || d1_QStage === 3)) {
       polesH2H[0] += 1;
     }
-    if (d2_QStage === 3 && d2_QRes === 1) {
+    if (d2_QRes === 1 && (!isCurrentYear || d2_QStage === 3)) {
       polesH2H[1] += 1;
     }
 
