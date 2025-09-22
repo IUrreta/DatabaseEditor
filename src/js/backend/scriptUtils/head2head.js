@@ -1,22 +1,22 @@
 import { queryDB } from "../dbManager";
 
+// Helpers para estadísticos:
+const mean = (arr) => {
+  if (!arr.length) return 0;
+  const total = arr.reduce((acc, n) => acc + n, 0);
+  return total / arr.length;
+};
+
+const median = (arr) => {
+  if (!arr.length) return 0;
+  const sorted = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return (sorted.length % 2 === 1)
+    ? sorted[mid]
+    : (sorted[mid - 1] + sorted[mid]) / 2;
+};
+
 export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true) {
-
-  // Helpers para estadísticos:
-  const mean = (arr) => {
-    if (!arr.length) return 0;
-    const total = arr.reduce((acc, n) => acc + n, 0);
-    return total / arr.length;
-  };
-
-  const median = (arr) => {
-    if (!arr.length) return 0;
-    const sorted = [...arr].sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    return (sorted.length % 2 === 1)
-      ? sorted[mid]
-      : (sorted[mid - 1] + sorted[mid]) / 2;
-  };
 
   // 1) Obtenemos todas las carreras en las que participaron ambos pilotos
   const racesBoth = queryDB(`
@@ -162,10 +162,10 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     }
 
     // --- 3.5) Poles: Q3 y posición 1
-    if (d1_QStage === 3 && d1_QRes === 1) {
+    if (d1_QRes === 1 && (!isCurrentYear || d1_QStage === 3)) {
       stats.polesH2H[0] += 1;
     }
-    if (d2_QStage === 3 && d2_QRes === 1) {
+    if (d2_QRes === 1 && (!isCurrentYear || d2_QStage === 3)) {
       stats.polesH2H[1] += 1;
     }
 
@@ -368,12 +368,17 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
   const season = year;
 
 
-  // 1) Obtenemos todas las carreras de la temporada (Distinct RaceID)
-  const races = queryDB(`
-      SELECT DISTINCT RaceID
+  // 1) Obtenemos todas las carreras en las que participaron ambos equipos
+  const racesBoth = queryDB(`
+      SELECT RaceID
       FROM Races_Results
       WHERE Season = ${season}
+        AND TeamID IN (${t1}, ${t2})
+      GROUP BY RaceID
+      HAVING COUNT(DISTINCT TeamID) = 2
     `, 'allRows') || [];
+
+  const raceIDs = racesBoth.map(row => row[0]);
 
   // 2) Inicializamos contadores / arreglos
   const raceH2H = [0, 0];
@@ -398,8 +403,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
   const d2_avgQPace = [];
 
   // 3) Iteramos por cada carrera encontrada
-  for (const gp of races) {
-    const raceID = gp[0];
+  for (const raceID of raceIDs) {
 
     // 3.1) Obtenemos todos los DriverIDs de cada equipo en Quali
     //      (En Python, se guardan como tuples y luego se hace "IN (drivers1_str)").
@@ -458,8 +462,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     let d1_QRes, d2_QRes;
 
     // 3.3) Posición mínima en esa fase de Qualy (equivalente a "SELECT MIN(FinishingPos)")
-    if (!isCurrentYear) {
-      
+    if (isCurrentYear) {
       d1_QRes = queryDB(`
         SELECT MIN(FinishingPos)
         FROM Races_QualifyingResults
@@ -599,55 +602,43 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
           AND DriverID IN (${drivers2Str})
       `, 'singleValue') || 0;
 
-    if (d1_RDNF > 0) {
-      dnfH2H[0] += d1_RDNF;
-    }
-    if (d2_RDNF > 0) {
-      dnfH2H[1] += d2_RDNF;
-    }
+    dnfH2H[0] += d1_RDNF;
+    dnfH2H[1] += d2_RDNF;
 
-    // 3.8) Ritmo de carrera, si ambos equipos no sumaron DNFs
-    if (d1_RDNF === 0 && d2_RDNF === 0) {
-      // Tomamos el promedio de "Time" y "Laps" de los pilotos del equipo
-      const d1_raceTotal = queryDB(`
-          SELECT AVG(Time)
-          FROM Races_Results
-          WHERE RaceID = ${raceID}
-            AND Season = ${season}
-            AND DriverID IN (${drivers1Str})
-        `, 'singleValue') || 0;
 
-      const d2_raceTotal = queryDB(`
-          SELECT AVG(Time)
-          FROM Races_Results
-          WHERE RaceID = ${raceID}
-            AND Season = ${season}
-            AND DriverID IN (${drivers2Str})
-        `, 'singleValue') || 0;
+    // 3.8) Ritmo de carrera (si al menos un piloto del equipo no hizo DNF)
+    const d1_racePaceStats = queryDB(`
+        SELECT COUNT(*), AVG(Time), AVG(Laps)
+        FROM Races_Results
+        WHERE RaceID = ${raceID}
+          AND Season = ${season}
+          AND DriverID IN (${drivers1Str})
+          AND DNF = 0
+      `, 'singleRow') || [0, 0, 0];
 
-      const d1_raceLaps = queryDB(`
-          SELECT AVG(Laps)
-          FROM Races_Results
-          WHERE RaceID = ${raceID}
-            AND Season = ${season}
-            AND DriverID IN (${drivers1Str})
-        `, 'singleValue') || 0;
-
-      const d2_raceLaps = queryDB(`
-          SELECT AVG(Laps)
-          FROM Races_Results
-          WHERE RaceID = ${raceID}
-            AND Season = ${season}
-            AND DriverID IN (${drivers2Str})
-        `, 'singleValue') || 0;
-
-      // Si no son 0, agregamos
-      if (d1_raceLaps && d1_raceTotal) {
-        const pace = Number((d1_raceTotal / d1_raceLaps).toFixed(3));
+    if (d1_racePaceStats[0] > 0) { // [0] is COUNT
+      const avgTime = d1_racePaceStats[1];
+      const avgLaps = d1_racePaceStats[2];
+      if (avgLaps && avgTime) {
+        const pace = Number((avgTime / avgLaps).toFixed(3));
         d1_avgPace.push(pace);
       }
-      if (d2_raceLaps && d2_raceTotal) {
-        const pace = Number((d2_raceTotal / d2_raceLaps).toFixed(3));
+    }
+
+    const d2_racePaceStats = queryDB(`
+        SELECT COUNT(*), AVG(Time), AVG(Laps)
+        FROM Races_Results
+        WHERE RaceID = ${raceID}
+          AND Season = ${season}
+          AND DriverID IN (${drivers2Str})
+          AND DNF = 0
+      `, 'singleRow') || [0, 0, 0];
+
+    if (d2_racePaceStats[0] > 0) { // [0] is COUNT
+      const avgTime = d2_racePaceStats[1];
+      const avgLaps = d2_racePaceStats[2];
+      if (avgLaps && avgTime) {
+        const pace = Number((avgTime / avgLaps).toFixed(3));
         d2_avgPace.push(pace);
       }
     }
