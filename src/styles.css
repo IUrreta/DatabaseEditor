@@ -6618,6 +6618,10 @@ input.disabled {
   padding-right: 5px;
 }
 
+.record-surname{
+  text-transform: uppercase;
+}
+
 .records-list .record-item{
   width: 100%;
   display: flex;
@@ -6641,7 +6645,7 @@ input.disabled {
 .record-number{
   font-size: 22px;
   font-family: 'NumbersFont';
-  letter-spacing: -3.2px;
+  letter-spacing: -2.2px;
   padding-top: 4px;
   width: 37px;
   display: flex;

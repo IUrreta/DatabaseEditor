@@ -1262,7 +1262,16 @@ export function loadRecordsList(data) {
 
         let recordName = document.createElement("div")
         recordName.classList = "record-name"
-        recordName.textContent = news_insert_space(record.name)
+        let fullName = news_insert_space(record.name)
+        let surname = fullName.split(" ").pop()
+        let nameSpan = document.createElement("span")
+        nameSpan.textContent = fullName.replace(surname, "")
+        let surnameSpan = document.createElement("span")
+        surnameSpan.textContent = surname
+        surnameSpan.classList = "bold-font record-surname"
+
+        recordName.appendChild(nameSpan)
+        recordName.appendChild(surnameSpan)
 
         let numberAndName = document.createElement("div")
         numberAndName.classList = "number-and-name"
