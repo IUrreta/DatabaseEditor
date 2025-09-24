@@ -14,6 +14,15 @@ export function argbToHex(argb) {
   return `#${rgb.toString(16).padStart(6, '0').toUpperCase()}`;
 }
 
+export function getDate(){
+    const daySeason = queryDB(`
+        SELECT Day, CurrentSeason
+        FROM Player_State
+    `, 'singleRow');
+    
+    return daySeason
+}
+
 /**
  * Verifica si el archivo de guardado es de un año específico.
  * @returns {Array} [ "23" o "24", TeamName, primaryColor, secondaryColor ]

@@ -321,6 +321,12 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
     prompt = await contextualizeSeasonReview(newData);
   }
 
+  const normalDate = excelToDate(newData.date).toISOString().split("T")[0];
+
+  prompt = `The current date is ${normalDate} \n\n` + prompt;
+
+  console.log("Final prompt:", prompt);
+
   clearInterval(interval);
 
 
