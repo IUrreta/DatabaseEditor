@@ -68,6 +68,7 @@ function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
     const img = document.createElement('img');
     img.src = imageUrl;
     img.classList.add('flag');
+    img.setAttribute("loading","lazy");
 
     upperDiv.appendChild(textDiv);
     upperDiv.appendChild(img);
@@ -273,6 +274,7 @@ function load_addRaces() {
         let img = document.createElement('img');
         img.src = imageUrl;
         img.classList.add('menuFlag');
+        img.setAttribute("loading","lazy");
 
         a.appendChild(img)
 

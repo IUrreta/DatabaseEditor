@@ -14,13 +14,15 @@ export const prettyNames = {
 let path = null;
 let yearIteration = null;
 let isCreateATeam = false;
+let currentDate = null;
 
-export function setGlobals({dbPath, year, createTeam }) {
+export function setGlobals({dbPath, year, createTeam, date }) {
     path = dbPath || path;
     yearIteration = year || yearIteration;
     isCreateATeam = createTeam || isCreateATeam;
+    currentDate = date || currentDate;
 }
 
 export function getGlobals() {
-    return { path, yearIteration, isCreateATeam };
+    return { path, yearIteration, isCreateATeam, currentDate };
 }

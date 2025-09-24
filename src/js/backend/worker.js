@@ -4,7 +4,8 @@ import {
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContract,
   editEngines, updateCustomConfig, fetchCustomConfig,
   fetch2025ModData, check2025ModCompatibility,
-  fetchPointsRegulations
+  fetchPointsRegulations,
+  getDate
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
@@ -17,6 +18,7 @@ import { editCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
 import { generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails, getFullChampionSeasonDetails } from "./scriptUtils/newsUtils";
+import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
@@ -30,7 +32,7 @@ const workerCommands = {
     console.log(data)
     const SQL = await initSqlJs({
       locateFile: file => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/sql-wasm.wasm',
-      wasmMemory: new WebAssembly.Memory({ initial: 1024 })
+      wasmMemory: new WebAssembly.Memory({ initial: 1024, maximum: 2048 })
     });
 
     const { db, metadata } = await analyzeFileToDatabase(data.file, SQL);
@@ -53,8 +55,11 @@ const workerCommands = {
     postMessage({ responseMessage: "Database exported", content: result });
   },
 
-  yearSelected: (year, postMessage) => {
-    const results = fetchSeasonResults(year);
+  yearSelected: (data, postMessage) => {
+    const year = data.year
+    const isCurrentYear = data.isCurrentYear
+    console.log("IIS CURRENT YER:", isCurrentYear)
+    const results = fetchSeasonResults(year, isCurrentYear);
     const events = fetchEventsFrom(year);
     const teams = fetchTeamsStandings(year);
     const pointsInfo = fetchPointsRegulations()
@@ -80,6 +85,9 @@ const workerCommands = {
     }
 
     setGlobals({year: yearData[0]});
+
+    const date = getDate();
+    setGlobals({date: date});
 
     const drivers = fetchDrivers(yearData[0]);
     postMessage({ responseMessage: "Save loaded succesfully", content: drivers, noti_msg: "Save loaded succesfully" });
@@ -129,9 +137,9 @@ const workerCommands = {
     if (data.h2h !== "-1") {
       let h2hRes;
       if (data.mode === "driver") {
-        h2hRes = fetchHead2Head(data.h2h[0], data.h2h[1], data.year);
+        h2hRes = fetchHead2Head(data.h2h[0], data.h2h[1], data.year, data.isCurrentYear);
       } else if (data.mode === "team") {
-        h2hRes = fetchHead2HeadTeam(data.h2h[0], data.h2h[1], data.year, "team");
+        h2hRes = fetchHead2HeadTeam(data.h2h[0], data.h2h[1], data.year, data.isCurrentYear);
       }
 
       if (h2hRes) {
@@ -143,7 +151,7 @@ const workerCommands = {
     data.graph.forEach(driver => {
       let res;
       if (data.mode === "driver") {
-        res = fetchOneDriverSeasonResults(driver, data.year);
+        res = fetchOneDriverSeasonResults(driver, data.year, data.isCurrentYear);
       } else if (data.mode === "team") {
         res = fetchOneTeamSeasonResults(driver, data.year);
       }
@@ -447,6 +455,14 @@ const workerCommands = {
 
     const results = getFullChampionSeasonDetails(season);
     postMessage({ responseMessage: "Full championship details fetched", content: results });
+  },
+  recordSelected: (data, postMessage) => {
+    const type = data.type;
+    const year = data.year;
+
+    const record = getSelectedRecord(type, year);
+
+    postMessage({ responseMessage: "Record fetched", content: record });
   }
 
 };

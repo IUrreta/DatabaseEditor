@@ -25,6 +25,7 @@ import {
     reload_h2h_graphs, init_colors_dict, edit_colors_dict, setMidGrid, setMaxRaces, setRelativeGrid
 } from './head2head';
 import { place_news, initAI, getAI } from './news.js';
+import { loadRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
@@ -517,8 +518,8 @@ export function manageSaveButton(show, mode) {
 }
 
 export function updateFront(data) {
-    // console.log("UPDATING FRONT")
-    // console.log(data)
+    console.log("UPDATING FRONT")
+    console.log(data)
     let responseTyppe = data.responseMessage
     let message = data.content
     let handler = messageHandlers[responseTyppe];
@@ -716,6 +717,9 @@ const messageHandlers = {
     },
     "Save selected finished": (message) => {
         generateNews();
+    },
+    "Record fetched": (message) => {
+        loadRecordsList(message)
     }
 };
 
@@ -732,7 +736,6 @@ export async function generateNews() {
     const savedNews = localStorage.getItem(newsName) || "{}";
     const parsedNews = JSON.parse(savedNews);
 
-    console.log("Parsed news:", parsedNews);
 
     const command = new Command("generateNews", {
         news: parsedNews,
@@ -1793,12 +1796,10 @@ function manageScripts(...divs) {
             requestAnimationFrame(() => {
                 div.classList.remove("hide");
 
-                console.log("COMPARISON", newIndex, prevIndex)
                 const enterClass = newIndex > prevIndex
                     ? "enter-from-right"
                     : "enter-from-left";
 
-                console.log("EMTER CLASS", enterClass)
 
                 div.classList.add(enterClass);
 
@@ -1913,7 +1914,6 @@ function manageNewsStatus(valid) {
     }
     else {
         if (generateNews === "provisional") {
-            console.log("PROVISIONAL")
             const apiKeySection = document.querySelector('.api-key-section');
 
             patreonUnlockables.classList.remove("d-none");

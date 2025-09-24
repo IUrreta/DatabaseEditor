@@ -14,6 +14,15 @@ export function argbToHex(argb) {
   return `#${rgb.toString(16).padStart(6, '0').toUpperCase()}`;
 }
 
+export function getDate(){
+    const daySeason = queryDB(`
+        SELECT Day, CurrentSeason
+        FROM Player_State
+    `, 'singleRow');
+    
+    return daySeason
+}
+
 /**
  * Verifica si el archivo de guardado es de un año específico.
  * @returns {Array} [ "23" o "24", TeamName, primaryColor, secondaryColor ]
@@ -698,7 +707,7 @@ export function formatNamesSimple(name) {
   return [nameFormatted, name[2], teamId];
 }
 
-export function fetchSeasonResults(yearSelected) {
+export function fetchSeasonResults(yearSelected, isCurrentYear = true) {
   const drivers = queryDB(`
       SELECT DriverID
       FROM Races_DriverStandings
@@ -709,7 +718,7 @@ export function fetchSeasonResults(yearSelected) {
   const seasonResults = [];
   drivers.forEach((row) => {
     const driverID = row[0];
-    const driverRes = fetchOneDriverSeasonResults([driverID], [yearSelected]);
+    const driverRes = fetchOneDriverSeasonResults([driverID], [yearSelected], isCurrentYear);
     if (driverRes) {
       seasonResults.push(driverRes);
     }
@@ -783,7 +792,7 @@ export function fetchOneTeamSeasonResults(team, year) {
   return results;
 }
 
-export function fetchOneDriverSeasonResults(driver, year) {
+export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true) {
   const driverID = driver;
   const season = year;
 
@@ -817,7 +826,8 @@ export function fetchOneDriverSeasonResults(driver, year) {
       teamID,
       driver,
       year,
-      sprintResults
+      sprintResults,
+      isCurrentYear
     );
   }
 
@@ -883,8 +893,8 @@ export function fetchEventsDoneFrom(year) {
   return eventsIds;
 }
 
-export function fetchEventsDoneBefore(year, day){
-    const daySeasonRow = queryDB(`
+export function fetchEventsDoneBefore(year, day) {
+  const daySeasonRow = queryDB(`
       SELECT Day, CurrentSeason
       FROM Player_State
     `, 'singleRow');
@@ -918,7 +928,7 @@ export function fetchEventsFrom(year) {
 
 
 
-export function formatSeasonResults(results, driverName, teamID, driver, year, sprints) {
+export function formatSeasonResults(results, driverName, teamID, driver, year, sprints, isCurrentYear = true) {
   const driverID = driver;
   const season = year;
 
@@ -1008,8 +1018,10 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
     } else {
       formatredResults[i].push(0);
     }
+    let QRes;
 
-    const QStage = queryDB(`
+    if (isCurrentYear) {
+      const QStage = queryDB(`
         SELECT MAX(QualifyingStage)
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
@@ -1018,7 +1030,7 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
           AND DriverID = ${driverID}
       `, 'singleValue') || 0;
 
-    const QRes = queryDB(`
+      QRes = queryDB(`
         SELECT FinishingPos
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
@@ -1027,6 +1039,13 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
           AND DriverID = ${driverID}
           AND QualifyingStage = ${QStage}
       `, 'singleValue') || 99;
+
+    } else {
+      QRes = queryDB(`SELECT StartingPos FROM Races_Results
+        WHERE RaceID = ${raceID}
+          AND DriverID = ${driverID}
+      `, 'singleValue') || 99;
+    }
 
     const timeDifference = calculateTimeDifference(driverID, raceID);
     const poleDifference = calculateTimeToPole(driverID, raceID);
