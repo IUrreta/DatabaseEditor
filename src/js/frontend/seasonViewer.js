@@ -1236,6 +1236,7 @@ export function loadRecordsList(data) {
     const hideHistoric = document.querySelector(".hide-historic-drivers").classList.contains("active");
 
     data.forEach(function (record, index) {
+        if (record.value <= 0) return;
         let recordDiv = document.createElement("div")
         recordDiv.classList = "record-item"
 

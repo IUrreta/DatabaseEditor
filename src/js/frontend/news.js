@@ -119,6 +119,7 @@ export async function place_news(newsList) {
 
     readButton.addEventListener('click', async () => {
       const clone = animateToCenter(newsItem);
+      clone.classList.add("expanded")
 
       const bodyEl = clone.querySelector('.news-body');
       const titleEl = bodyEl.querySelector('.news-title');
@@ -221,6 +222,12 @@ export async function place_news(newsList) {
         noApiFoundSpan.classList.add('news-error');
         noApiFoundSpan.textContent = "No API key found. Please set it in the settings.";
         articleEl.appendChild(noApiFoundSpan);
+        const googleAIStudioSpan = document.createElement('p');
+        googleAIStudioSpan.classList.add('news-error', 'news-error-api-key');
+        googleAIStudioSpan.innerHTML = `If you want to read AI-generated articles from the news section, please enter your API key here. You can get one for free
+                  from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
+                  <span class="important-text bold-font">Create API Key</span> on the top right corner`
+        articleEl.appendChild(googleAIStudioSpan);
       }
 
     });
@@ -1285,6 +1292,9 @@ function animateToCenter(newsItem) {
   const clone = newsItem.cloneNode(true);
   clone.classList.add('news-item-clone');
 
+  const origImgContainer = newsItem.querySelector('.news-image-container');
+  const origImgWidth = origImgContainer.offsetWidth;
+
   Object.assign(clone.style, {
     position: 'fixed',
     top: rect.top + 'px',
@@ -1325,6 +1335,12 @@ function animateToCenter(newsItem) {
 
   // listener de cierre en el botón “Close”
   btn.addEventListener('click', () => {
+    const cloneImgContainer = clone.querySelector('.news-image-container');
+
+    cloneImgContainer.style.maxWidth = "none";
+    cloneImgContainer.style.width = origImgWidth + "px";
+
+
     const articleEl = clone.querySelector('.news-article');
     if (articleEl) {
       articleEl.remove();

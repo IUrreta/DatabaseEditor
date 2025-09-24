@@ -282,14 +282,14 @@ function fill_bars(elem, d1_width, d2_width) {
     document.querySelector(".driver1-name").className = "driver1-name"
     document.querySelector(".driver2-name").className = "driver2-name"
     elem.querySelector(".driver1-bar").classList.add(team_dict[h2hTeamList[0]] + "bar-primary")
-    document.querySelector(".driver1-name").classList.add(team_dict[h2hTeamList[0]] + "-back-transparent")
+    document.querySelector(".driver1-name").classList.add(team_dict[h2hTeamList[0]] + "-back-normal")
     if (h2hTeamList[0] === h2hTeamList[1]) {
         elem.querySelector(".driver2-bar").classList.add(team_dict[h2hTeamList[1]] + "bar-secondary")
-        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-transparent-secondary")
+        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-normal-secondary")
     }
     else {
         elem.querySelector(".driver2-bar").classList.add(team_dict[h2hTeamList[1]] + "bar-primary")
-        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-transparent")
+        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-normal")
     }
     elem.querySelector(".driver1-bar").style.width = d1_width + "%"
     elem.querySelector(".driver2-bar").style.width = d2_width + "%"
