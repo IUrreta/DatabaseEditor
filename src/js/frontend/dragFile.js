@@ -3,6 +3,7 @@ import { analyzeFileToDatabase } from "../backend/UESaveHandler";
 import { setDatabase, queryDB } from "../backend/dbManager.js";
 import { gamePill, editorPill, setSaveName, new_update_notifications, setIsShowingNotification } from "./renderer.js";
 import { Command } from "../backend/command.js";
+import { getCombinedDict } from "./config.js";
 
 let carAnalysisUtils = null;
 export const dbWorker = new Worker(new URL('../backend/worker.js', import.meta.url));

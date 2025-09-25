@@ -1,0 +1,253 @@
+[
+    {
+        "id": "quali_result",
+        "new_type": 1,
+        "titles": [
+            "{{pole_driver}} takes pole position at {{circuit}}",
+            "{{pole_driver}} secures P1 in qualifying at {{circuit}}",
+            "Pole for {{pole_driver}} after strong qualifying at {{circuit}}",
+            "{{pole_driver}} shines under pressure at the {{adjective}} Grand Prix qualifying",
+            "Stunning lap from {{pole_driver}} secures pole at {{circuit}}",
+            "{{pole_driver}} sets the benchmark in {{country}} qualifying session",
+            "Unstoppable {{pole_driver}} on top after intense qualifying at {{circuit}}",
+            "Masterclass from {{pole_driver}} at the {{adjective}} GP qualifying",
+            "{{pole_driver}} edges out rivals for pole position at {{circuit}}",
+            "Dominant performance from {{pole_driver}} in {{country}} qualifying",
+            "Precision and pace - {{pole_driver}} takes pole at the {{adjective}} Grand Prix",
+            "{{pole_driver}} holds off the competition to claim pole at {{circuit}}",
+            "Blistering pace from {{pole_driver}} locks in P1 at the {{adjective}} GP",
+            "{{pole_driver}} beats the clock to secure pole at {{country}}",
+            "Nail-biting finish sees {{pole_driver}} on pole at {{circuit}}",
+            "Perfect lap from {{pole_driver}} gives pole at the {{adjective}} GP",
+            "{{pole_driver}} steals the show in {{country}} qualifying",
+            "Pole position locked in by {{pole_driver}} after dramatic {{circuit}} session"
+        ]
+    },
+    {
+        "id": "race_result",
+        "new_type": 2,
+        "titles": [
+            "{{winner}} wins the {{season_year}} {{adjective}} Grand Prix",
+            "Victory for {{winner}} at the {{circuit}} GP",
+            "{{winner}} triumphs in {{country}}",
+            "{{winner}} takes the checkered flag at {{circuit}}",
+            "{{winner}} secures first place at the {{adjective}} GP",
+            "{{winner}} celebrates race win in {{country}}",
+            "{{winner}} dominates at {{circuit}}",
+            "{{winner}} comes out on top at the {{adjective}} GP",
+            "{{winner}} finishes first at {{circuit}}",
+            "{{winner}} grabs victory at {{country}}",
+            "{{winner}} is the winner at {{circuit}}",
+            "Another victory for {{winner}} in {{country}}",
+            "{{winner}} conquers the {{circuit}} circuit",
+            "{{winner}} leads the pack at the {{adjective}} Grand Prix",
+            "{{winner}} claims the top spot at {{circuit}}"
+        ]
+    },
+    {
+        "id": "driver_comparison",
+        "new_type": 3,
+        "titles": [
+            "{{driver_a}} outperforms {{driver_b}} at {{team}}",
+            "{{team}} - {{driver_a}} leading internal battle over {{driver_b}}",
+            "{{driver_a}} showing stronger form than teammate {{driver_b}}",
+            "Performance gap growing between {{driver_a}} and {{driver_b}} at {{team}}",
+            "{{driver_a}} shines while {{driver_b}} struggles at {{team}}",
+            "{{team}} teammate comparison: {{driver_a}} ahead of {{driver_b}}",
+            "{{driver_a}} gaining edge over {{driver_b}} within {{team}}"
+        ]
+    },
+    {
+        "id": "silly_season_recap",
+        "new_type": 4,
+        "titles": [
+            "Silly Season Madness - {{driver1}}, {{driver2}}, and {{driver3}} in the mix",
+            "{{driver1}} and {{driver2}} linked to {{team1}} and {{team2}}",
+            "EXCLUSIVE - {{driver1}} and {{driver2}} eyeing moves to {{team1}} and {{team2}}",
+            "Shockwave in the paddock - {{driver1}}, {{driver2}}, and {{driver3}} could change teams",
+            "Insider scoop - {{driver1}} and {{driver2}} in talks with {{team1}} and {{team2}}",
+            "Silly season chaos - Will {{driver1}}, {{driver2}}, or {{driver3}} make the move?",
+            "Driver market heating up - {{driver1}}, {{driver2}}, and {{driver3}} in the spotlight",
+            "Rumors swirl - {{driver1}} and {{driver2}} linked to potential moves",
+            "Driver shuffle - {{driver1}}, {{driver2}}, and {{driver3}} in the mix",
+            "Silly season shake-up - {{driver1}}, {{driver2}}, and {{driver3}} on the move?",
+            "Paddock gossip - {{driver1}} and {{driver2}} eyeing new teams"
+        ]
+    },
+    {
+        "id": "big_transfer_rumor",
+        "new_type": 5,
+        "titles": [
+            "EXCLUSIVE - {{driver1}} to {{team1}} deal in the works?",
+            "Breaking - {{driver1}} in advanced talks with {{team1}}",
+            "Shocking rumor - {{driver1}} leaving {{originalTeam}} for {{team1}}",
+            "Sources suggest {{driver1}} to {{team1}} deal imminent",
+            "Insider info - {{driver1}} considering move to {{team1}}",
+            "Could {{driver1}} be switching from {{originalTeam}} to {{team1}}?",
+            "Silly season hits hard - {{driver1}} linked with {{team1}}",
+            "{{team1}} ready to hijack {{driver1}} from {{originalTeam}}?",
+            "Is it true that {{driver1}} is set to join {{team1}}? Our sources say so",
+            "{{driver1}} to {{team1}} - is the big transfer happening?",
+            "BREAKING NEWS - {{driver1}} to {{team1}} transfer saga unfolds",
+            "{{driver1}} move to {{team1}} - what we know so far",
+            "Why a move from {{originalTeam}} to {{team1}} makes sense for {{driver1}}"
+        ]
+
+    },
+    {
+        "id": "big_transfer",
+        "new_type": 6,
+        "titles": [
+            "It's official - {{driver1}} signs with {{team1}}",
+            "Transfer confirmed - {{driver1}} leaves {{team2}} for {{team1}}",
+            "{{team1}} proudly announces the arrival of {{driver1}}",
+            "{{driver1}} joins {{team1}} for the upcoming season",
+            "Here we go! {{driver1}} completes move to {{team1}}",
+            "Confirmed - {{driver1}} switches from {{team2}} to {{team1}}",
+            "HERE WE GO! {{driver1}} to {{team1}} is official",
+            "Big news - {{driver1}} officially joins {{team1}}",
+            "{{team1}} welcomes {{driver1}} to the team",
+            "Transfer news - {{driver1}} officially signs with {{team1}}",
+            "Done deal! {{driver1}} will race for {{team1}} next season",
+            "THERE WE LAND! {{driver1}} officially signs with {{team1}}"
+        ]
+    },
+    {
+        "id": "made_up_rumour",
+        "new_type": 7,
+        "titles": [
+            "EXCLUSIVE - {{driver1}} in talks to leave {{team1}}",
+            "Is {{driver1}} considering an exit from {{team1}}?",
+            "Rumor alert - {{driver1}} eyeing a move away from {{team1}}",
+            "Paddock whispers - {{driver1}} unhappy at {{team1}}",
+            "Sources say {{driver1}} may leave {{team1}}",
+            "Insider info - {{driver1}} contemplating a switch from {{team1}}",
+            "Speculation mounts - {{driver1}} could be on the move from {{team1}}",
+            "Driver market buzz - {{driver1}} linked with a potential exit from {{team1}}",
+            "Could {{driver1}} be leaving {{team1}}?",
+            "{{driver1}} unhappy at {{team1}}? Rumors suggest a possible exit"
+        ]
+    },
+    {
+        "id": "potential_champion",
+        "new_type": 8,
+        "titles": [
+            "{{driver_name}} on the Brink of Glory: Can They Clinch the Title at {{circuit}}?",
+            "Championship Countdown: {{driver_name}} Has a Chance to Become World Champion in {{country}}",
+            "Title Permutations: {{driver_name}} Poised for Championship Victory at the {{adjective}} Grand Prix",
+            "{{driver_name}} Eyes Early Championship Win at the {{adjective}} GP",
+            "Can {{driver_name}} Seal the Deal? Championship Glory Awaits at {{circuit}}"
+        ]
+    },
+    {
+        "id": "world_champion",
+        "new_type": 9,
+        "titles": [
+            "{{driver_name}} Crowned World Champion at the {{adjective}} Grand Prix",
+            "History Made: {{driver_name}} Secures World Championship Title in {{country}}",
+            "Championship Glory: {{driver_name}} Clinches Title at the {{circuit}} GP",
+            "{{driver_name}} Celebrates World Championship Victory in {{country}}",
+            "Unstoppable Force: {{driver_name}} Becomes World Champion at the {{adjective}} GP"
+        ]
+    },
+    {
+        "id": "contract_renewal",
+        "new_type": 10,
+        "titles": [
+            "{{driver1}} Extends Contract with {{team1}}",
+            "Breaking: {{driver1}} Signs New Deal with {{team1}}",
+            "Contract Renewal: {{driver1}} Commits to {{team1}}",
+            "It's Official! {{driver1}} Stays with {{team1}}",
+            "{{driver1}} Renews Contract with {{team1}}",
+            "Contract Extension: {{driver1}} Remains with {{team1}}",
+            "Long-Term Deal: {{driver1}} Signs New Contract with {{team1}}",
+            "It's a Match! {{driver1}} and {{team1}} Agree to New Terms",
+            "Exciting News: {{driver1}} and {{team1}} Finalize Contract Extension",
+            "Big Announcement: {{driver1}} and {{team1}} Reach New Agreement",
+            "Stay Tuned: {{driver1}} and {{team1}} Prepare for Exciting Season Ahead",
+            "Contract Negotiations: {{driver1}} and {{team1}} in Talks for Extension"
+        ]
+    },
+    {
+        "id": "team_comparison_bad",
+        "new_type": 11,
+        "titles": [
+            "What's going on at {{team1}}? Recent Struggles Highlighted",
+            "Inside {{team1}} - Challenges and Setbacks Revealed",
+            "The Situation at {{team1}} - A Closer Look at Recent Issues",
+            "Unpacking the Problems at {{team1}} - What You Need to Know",
+            "The Latest from {{team1}} - Struggles and Challenges Ahead",
+            "Why is {{team1}} failing to deliver this season?",
+            "The Pressure Mounts at {{team1}} - A Season to Forget?",
+            "Is {{team1}} in Crisis? Analyzing the Current Situation",
+            "The Future Looks Bleak for {{team1}} - What Went Wrong?",
+            "Can {{team1}} Turn Things Around? A Look at the Challenges Ahead",
+            "The Clock is Ticking for {{team1}} - Urgent Changes Needed",
+            "Time is Running Out for {{team1}} - A Critical Juncture",
+            "The Pressure is On for {{team1}} - Can They Deliver?"
+        ]
+    },
+    {
+        "id": "team_comparison_good",
+        "new_type": 12,
+        "titles": [
+            "Positive Developments at {{team1}} - A Look Ahead",
+            "Inside {{team1}} - Optimism and Progress Reported",
+            "The Situation at {{team1}} - A Closer Look at Recent Improvements",
+            "Unpacking the Successes at {{team1}} - What You Need to Know",
+            "The Latest from {{team1}} - Triumphs and Achievements Highlighted",
+            "Why is {{team1}} Thriving This Season?",
+            "The Pressure is On for {{team1}} - Can They Maintain Momentum?",
+            "The Future Looks Bright for {{team1}} - What Lies Ahead?"
+        ]
+    },
+    {
+        "id": "driver_comparison",
+        "new_type": 13,
+        "titles": [
+            "{{driver1}} outperforms {{driver2}} at {{team}}",
+            "{{team}} - {{driver1}} leading internal battle over {{driver2}}",
+            "{{driver1}} showing stronger form than {{driver2}}",
+            "Performance gap widening between {{driver1}} and {{driver2}} at {{team}}",
+            "{{driver1}} shines while {{driver2}} struggles at {{team}}",
+            "{{team}} teammate comparison: {{driver1}} ahead of {{driver2}}",
+            "{{driver1}} gaining edge over {{driver2}} within {{team}}",
+            "{{driver1}} continues to outpace {{driver2}} at {{team}}",
+            "{{driver1}} vs {{driver2}}: Who's leading the charge at {{team}}?",
+            "Inside {{team}}: {{driver1}} vs {{driver2}} performance analysis",
+            "{{driver1}} sets the pace while {{driver2}} lags at {{team}}",
+            "{{driver1}} outshines {{driver2}} in latest {{team}} showdown"
+        ]
+    },
+    {
+        "id": "season_review_mid",
+        "new_type": 14,
+        "titles": [
+            "{{driver1}} sets the benchmark in the title fight",
+            "{{driver1}} leads the way as the season unfolds",
+            "The title battle intensifies: {{driver1}} vs {{driver2}}",
+            "{{driver1}} strengthens championship bid",
+            "{{driver1}} holds the upper hand over {{driver2}}",
+            "Momentum with {{driver1}} as rivals chase",
+            "All eyes on {{driver1}} after strong run of form",
+            "Pressure builds on {{driver2}} as {{driver1}} extends lead",
+            "Championship picture shifts with {{driver1}} in control"
+        ]
+    },
+    {
+        "id": "season_review_end",
+        "new_type": 15,
+        "titles": [
+            "Winners and losers of the {{season_year}} F1 season",
+            "Who did best and who struggled in {{season_year}}?",
+            "Our Top performers and disappointments of the {{season_year}} season",
+            "Reviewing the highs and lows of the {{season_year}} F1 season",
+            "{{driver1}} was champion, but who else impressed in {{season_year}}?",
+            "The good, the bad, and the surprising of {{season_year}} F1",
+            "Season in review: standout drivers and teams of {{season_year}}",
+            "Reflecting on the {{season_year}} F1 season: who excelled and who didn't?",
+            "Analyzing the successes and failures of {{season_year}} F1",
+            "From champions to underdogs: {{season_year}} F1 season highlights"
+        ]
+    }
+]

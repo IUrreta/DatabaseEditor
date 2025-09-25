@@ -1,7 +1,6 @@
 import { races_names, team_dict, combined_dict, lightColors, theme_colors  } from "./config";
 import { game_version,  custom_team, selectedTheme } from "./renderer";
 import { insert_space, manageColor, format_name } from "./transfers";
-import { relative_grid } from "./predictions";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import annotationPlugin from 'chartjs-plugin-annotation';
@@ -36,6 +35,23 @@ let h2hTeamList = []
 let graphTeamList = []
 let mode = "driver"
 let h2hData;
+
+export let mid_grid = 10;
+export let max_races = 23;
+export let relative_grid = 5;
+
+export function setMidGrid(value){
+    mid_grid = value
+}
+
+export function setMaxRaces(value){
+    max_races = value
+}
+
+export function setRelativeGrid(value){
+    relative_grid = value
+}
+
 export let colors_dict;
 //changed as the ct colors changes, so it stays
 
@@ -43,7 +59,6 @@ Chart.register(ChartDataLabels);
 Chart.register(annotationPlugin);
 
 export function init_colors_dict(theme){
-    console.log(theme)
     colors_dict = { "10": "#F91536", "11": theme_colors[theme].general_secondary, "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": theme_colors[theme].general_secondary, "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": theme_colors[theme].general_secondary, "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": theme_colors[theme].general_secondary, "90": "#C92D4B", "91": theme_colors[theme].general_secondary, "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000"}
 }
 
@@ -267,14 +282,14 @@ function fill_bars(elem, d1_width, d2_width) {
     document.querySelector(".driver1-name").className = "driver1-name"
     document.querySelector(".driver2-name").className = "driver2-name"
     elem.querySelector(".driver1-bar").classList.add(team_dict[h2hTeamList[0]] + "bar-primary")
-    document.querySelector(".driver1-name").classList.add(team_dict[h2hTeamList[0]] + "-back-transparent")
+    document.querySelector(".driver1-name").classList.add(team_dict[h2hTeamList[0]] + "-back-normal")
     if (h2hTeamList[0] === h2hTeamList[1]) {
         elem.querySelector(".driver2-bar").classList.add(team_dict[h2hTeamList[1]] + "bar-secondary")
-        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-transparent-secondary")
+        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-normal-secondary")
     }
     else {
         elem.querySelector(".driver2-bar").classList.add(team_dict[h2hTeamList[1]] + "bar-primary")
-        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-transparent")
+        document.querySelector(".driver2-name").classList.add(team_dict[h2hTeamList[1]] + "-back-normal")
     }
     elem.querySelector(".driver1-bar").style.width = d1_width + "%"
     elem.querySelector(".driver2-bar").style.width = d2_width + "%"
@@ -961,12 +976,21 @@ function H2HReady() {
         list1 = h2hTeamList
         list2 = graphTeamList
     }
+
+
+    let isCurrentYear = false
+    if (document.querySelector("#yearMenuH2H").firstChild.textContent === document.querySelector("#yearButtonH2H").textContent) {
+        isCurrentYear = true
+    }
+
     let data = {
         h2h: h2hCount === 2 ? list1 : -1,
         graph: list2,
         year: document.querySelector("#yearButtonH2H").textContent,
-        mode: mode
+        mode: mode,
+        isCurrentYear: isCurrentYear
     }
+
 
     manageH2hState()
     const command = new Command("configuredH2H",  data);

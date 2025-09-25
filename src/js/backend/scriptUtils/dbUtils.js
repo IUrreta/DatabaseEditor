@@ -14,6 +14,15 @@ export function argbToHex(argb) {
   return `#${rgb.toString(16).padStart(6, '0').toUpperCase()}`;
 }
 
+export function getDate(){
+    const daySeason = queryDB(`
+        SELECT Day, CurrentSeason
+        FROM Player_State
+    `, 'singleRow');
+    
+    return daySeason
+}
+
 /**
  * Verifica si el archivo de guardado es de un año específico.
  * @returns {Array} [ "23" o "24", TeamName, primaryColor, secondaryColor ]
@@ -698,7 +707,7 @@ export function formatNamesSimple(name) {
   return [nameFormatted, name[2], teamId];
 }
 
-export function fetchSeasonResults(yearSelected) {
+export function fetchSeasonResults(yearSelected, isCurrentYear = true) {
   const drivers = queryDB(`
       SELECT DriverID
       FROM Races_DriverStandings
@@ -709,7 +718,26 @@ export function fetchSeasonResults(yearSelected) {
   const seasonResults = [];
   drivers.forEach((row) => {
     const driverID = row[0];
-    const driverRes = fetchOneDriverSeasonResults([driverID], [yearSelected]);
+    const driverRes = fetchOneDriverSeasonResults([driverID], [yearSelected], isCurrentYear);
+    if (driverRes) {
+      seasonResults.push(driverRes);
+    }
+  });
+  return seasonResults;
+}
+
+export function fetchQualiResults(yearSelected) {
+  const drivers = queryDB(`
+      SELECT DriverID
+      FROM Races_DriverStandings
+      WHERE RaceFormula = 1
+        AND SeasonID = ${yearSelected}
+    `, 'allRows') || [];
+
+  const seasonResults = [];
+  drivers.forEach((row) => {
+    const driverID = row[0];
+    const driverRes = fetchOneDriverQualiResults([driverID], [yearSelected]);
     if (driverRes) {
       seasonResults.push(driverRes);
     }
@@ -764,7 +792,7 @@ export function fetchOneTeamSeasonResults(team, year) {
   return results;
 }
 
-export function fetchOneDriverSeasonResults(driver, year) {
+export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true) {
   const driverID = driver;
   const season = year;
 
@@ -798,12 +826,48 @@ export function fetchOneDriverSeasonResults(driver, year) {
       teamID,
       driver,
       year,
-      sprintResults
+      sprintResults,
+      isCurrentYear
     );
   }
 
   return null;
 }
+
+export function fetchOneDriverQualiResults(driver, year) {
+  const driverID = driver;
+  const season = year;
+
+  const results = queryDB(`
+      SELECT DriverID, TeamID, StartingPos, Points
+      FROM Races_Results
+      WHERE Season = ${season}
+        AND DriverID = ${driverID}
+    `, 'allRows') || [];
+
+
+  if (results.length > 0) {
+    const teamID = results[0][1];
+
+    const driverNameRow = queryDB(`
+        SELECT FirstName, LastName
+        FROM Staff_BasicData
+        WHERE StaffID = ${driverID}
+      `, 'singleRow');
+
+    return formatSeasonResults(
+      results,
+      driverNameRow,
+      teamID,
+      driver,
+      year,
+      []
+    );
+  }
+
+  return null;
+}
+
 
 export function fetchEventsDoneFrom(year) {
   const daySeasonRow = queryDB(`
@@ -829,6 +893,29 @@ export function fetchEventsDoneFrom(year) {
   return eventsIds;
 }
 
+export function fetchEventsDoneBefore(year, day) {
+  const daySeasonRow = queryDB(`
+      SELECT Day, CurrentSeason
+      FROM Player_State
+    `, 'singleRow');
+
+  if (!daySeasonRow) {
+    return [];
+  }
+
+  const seasonIdsRows = queryDB(`
+      SELECT RaceID
+      FROM Races
+      WHERE SeasonID = ${year}
+        AND Day < ${day}
+    `, 'allRows') || [];
+
+
+  const eventsIds = seasonIdsRows.map(row => row[0]);
+
+  return eventsIds;
+}
+
 export function fetchEventsFrom(year) {
   const seasonEventsRows = queryDB(`
       SELECT RaceID, TrackID, WeekendType
@@ -841,7 +928,7 @@ export function fetchEventsFrom(year) {
 
 
 
-export function formatSeasonResults(results, driverName, teamID, driver, year, sprints) {
+export function formatSeasonResults(results, driverName, teamID, driver, year, sprints, isCurrentYear = true) {
   const driverID = driver;
   const season = year;
 
@@ -919,7 +1006,6 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
     // Python: formatred_results[i] = (raceID,) + formatred_results[i]
     formatredResults[i] = [raceID, ...formatredResults[i]];
 
-    // Si DNF = 1 => set FinishingPos y Points a -1
     if (dnfd === 1) {
       const arr = [...formatredResults[i]];
       arr[1] = -1; // FinishingPos
@@ -932,9 +1018,10 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
     } else {
       formatredResults[i].push(0);
     }
+    let QRes;
 
-    // 2.3) Quali Stage & FinishingPos
-    const QStage = queryDB(`
+    if (isCurrentYear) {
+      const QStage = queryDB(`
         SELECT MAX(QualifyingStage)
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
@@ -943,7 +1030,7 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
           AND DriverID = ${driverID}
       `, 'singleValue') || 0;
 
-    const QRes = queryDB(`
+      QRes = queryDB(`
         SELECT FinishingPos
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
@@ -953,46 +1040,33 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
           AND QualifyingStage = ${QStage}
       `, 'singleValue') || 99;
 
-    // 2.4) Cálculo de diferencias de tiempo (carrera y pole)
+    } else {
+      QRes = queryDB(`SELECT StartingPos FROM Races_Results
+        WHERE RaceID = ${raceID}
+          AND DriverID = ${driverID}
+      `, 'singleValue') || 99;
+    }
+
     const timeDifference = calculateTimeDifference(driverID, raceID);
     const poleDifference = calculateTimeToPole(driverID, raceID);
 
-    // Añadimos QRes, timeDifference y poleDifference
     formatredResults[i].push(QRes);
     formatredResults[i].push(timeDifference);
     formatredResults[i].push(poleDifference);
   }
 
-  // -------- 3) Añadir datos de sprint al formatredResults --------
-  // En Python: 
-  // for tupla1 in sprints:
-  //   for i, tupla2 in enumerate(formatred_results):
-  //     if tupla1[0] == tupla2[0]:
-  //       formatred_results[i] = tupla2 + (tupla1[2], tupla1[1])
-  //
-  // tupla1[0] => RaceID
-  // tupla1[1] => FinishingPos
-  // tupla1[2] => ChampionshipPoints
+
 
   for (const sprintRow of sprints) {
-    // sprintRow: [RaceID, FinishingPos, ChampionshipPoints]
     const [sprintRaceID, sprintPos, sprintPoints] = sprintRow;
-    // Buscamos coincidencia en formatredResults
     for (let i = 0; i < formatredResults.length; i++) {
       if (formatredResults[i][0] === sprintRaceID) {
-        // Agregamos ChampionshipPoints y FinishingPos al final
-        // (Ojo: en Python lo agregas en orden (tupla1[2], tupla1[1]) => (ChampPoints, FinishingPos)
         formatredResults[i] = [...formatredResults[i], sprintPoints, sprintPos];
         break;
       }
     }
   }
 
-  // -------- 4) Añadir TeamID a cada carrera --------
-  // En Python se hace un for i in range(len(...)):
-  //   team_in_race = ...
-  //   formatred_results[i] += (team_in_race)
-  //   latest_team = ...
   let latestTeam = null;
   for (let i = 0; i < formatredResults.length; i++) {
     const raceID = formatredResults[i][0];
@@ -1259,8 +1333,6 @@ export function fixCustomEnginesStatsTable() {
   );
 
   if (!primaryKeyExists) {
-    console.log("La tabla Custom_Engines_Stats no tiene PRIMARY KEY. Se corregirá...");
-
     queryDB(`
       CREATE TABLE Custom_Engines_Stats_TEMP (
         engineId INTEGER,
@@ -1287,7 +1359,6 @@ export function fixCustomEnginesStatsTable() {
 
     queryDB(`ALTER TABLE Custom_Engines_Stats_TEMP RENAME TO Custom_Engines_Stats;`);
 
-    console.log("Fixed Custom_Engines_Stats table.");
 
   }
 }
@@ -1567,7 +1638,7 @@ export function updateCustomConfig(data) {
     VALUES ('difficulty', '${difficulty}')
   `);
 
-  if (parseInt(playerTeam) !== -1){
+  if (parseInt(playerTeam) !== -1) {
     updateTeam(playerTeam)
   }
 

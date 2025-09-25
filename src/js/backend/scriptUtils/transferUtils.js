@@ -168,8 +168,8 @@ export const minMaxTypeStaff = {
   export function getParamsAutoContract(driverID, teamID, position, yearIteration = "24") {
     const day = queryDB("SELECT Day FROM Player_State", "singleValue");
     const year = queryDB("SELECT CurrentSeason FROM Player_State", "singleValue");
-    const [tier, type] = getTier(driverID);
-    
+    const [tier, type, rating] = getTier(driverID);
+
     // Calcular salary
     const salaryRange = minMaxTypeStaff[type].salary[tier];
     let salary = (Math.round((Math.random() * (salaryRange[1] - salaryRange[0]) + salaryRange[0]) * 1000) / 1000) * 1000000;
@@ -511,6 +511,7 @@ export const minMaxTypeStaff = {
       const reactions = parseFloat(driverStats[7][0]);
       const accuracy = parseFloat(driverStats[8][0]);
       rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.75 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 5;
+      rating = Math.round(rating);
     } else if (driverStats && driverStats.length > 0) {
       type = "staff";
       driverStats.forEach(stat => {
@@ -530,7 +531,32 @@ export const minMaxTypeStaff = {
     } else {
       tier = 4;
     }
-    return [tier, type];
+    return [tier, type, rating];
+  }
+
+  export function getDriverOverall(driverID) {
+    const driverStats = queryDB(`SELECT Val FROM Staff_PerformanceStats WHERE StaffID = ${driverID}`, "allRows");
+    let rating = 0;
+    if (driverStats && driverStats.length === 9) {
+      const cornering = parseFloat(driverStats[0][0]);
+      const braking = parseFloat(driverStats[1][0]);
+      const control = parseFloat(driverStats[2][0]);
+      const smoothness = parseFloat(driverStats[3][0]);
+      const adaptability = parseFloat(driverStats[4][0]);
+      const overtaking = parseFloat(driverStats[5][0]);
+      const defence = parseFloat(driverStats[6][0]);
+      const reactions = parseFloat(driverStats[7][0]);
+      const accuracy = parseFloat(driverStats[8][0]);
+      rating = (cornering + braking * 0.75 + reactions * 0.5 + control * 0.75 + smoothness * 0.5 + accuracy * 0.75 + adaptability * 0.25 + overtaking * 0.25 + defence * 0.25) / 5;
+    } else if (driverStats && driverStats.length > 0) {
+      driverStats.forEach(stat => {
+        rating += parseFloat(stat[0]);
+      });
+      rating = rating / driverStats.length;
+    } else {
+      rating = 0;
+    }
+    return Math.round(rating);
   }
   
   export function getDriverId(name) {

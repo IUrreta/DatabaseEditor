@@ -10,7 +10,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-81CY6HY9K6"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());
 
   gtag('config', 'G-81CY6HY9K6');
@@ -515,8 +515,9 @@
                 <div class="logo-selector">
                   <div class="bold-font">Logo</div>
                   <div>
-                    Place your custom logo on the <span class="important-text bold-font">assets/custom</span> folder and
-                    then select it from the Select icon button
+                    Select any logo in a <span class="important-text bold-font">PNG</span>, <span
+                      class="important-text bold-font">JPG</span> or <span class="important-text bold-font">SVG</span>
+                    format
                   </div>
                   <div class="logo-and-preview">
                     <div style="width: max-content;">
@@ -575,7 +576,7 @@
                     <div class="team-logo-container wi" data-teamid="6">
                       <img src="../assets/images/williams.png" class="team-logo">
                     </div>
-                    <div class="team-logo-container ha"  data-teamid="7">
+                    <div class="team-logo-container ha" data-teamid="7">
                       <img src="../assets/images/haas.png" class="team-logo">
                     </div>
                     <div class="team-logo-container at" data-teamid="8">
@@ -661,11 +662,12 @@
             </div>
           </div>
           <div id="patreonChanges">
-            <div class="patreon-changes-text">
+            <div class="patreon-changes-text modal-text">
               <span>
-                Becoming a patreon supporter will not only support massively the development of the game, but also give
+                Becoming a patreon supporter will not only support massively the development of the editor, but also
+                give
                 you access to
-                exclusive content and features. Please consider supporting the tool if oyu find it useful!
+                exclusive content and features. Please consider supporting the tool if you find it useful!
               </span>
               <span>
                 If you are already a patreon supporter, please download your patreon key from the patreon website and
@@ -687,44 +689,70 @@
                 <div class="dropdown-line"></div>
               </div>
             </div>
-            <div class="patreon-themes d-none">
-              <span class="modal-subtitle bold-font">Choose a theme</span>
-              <div class="themes-grid">
-                <div class="one-theme active" id="defaultTheme" data-theme="default-theme">
-                  <div class="theme-title">
-                    <span>Default</span>
-                    <i class="bi bi-check-lg"></i>
+            <div class="patreon-unlockables  d-none">
+              <div class="patreon-themes">
+                <span class="modal-subtitle bold-font">Choose a theme</span>
+                <div class="themes-grid">
+                  <div class="one-theme active" id="defaultTheme" data-theme="default-theme">
+                    <div class="theme-title">
+                      <span>Default</span>
+                      <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div class="theme-colors">
+                      <div class="background-color"></div>
+                      <div class="primary-color"></div>
+                      <div class="secondary-color"></div>
+                    </div>
                   </div>
-                  <div class="theme-colors">
-                    <div class="background-color"></div>
-                    <div class="primary-color"></div>
-                    <div class="secondary-color"></div>
+                  <div class="one-theme" id="lightTheme" data-theme="light-theme">
+                    <div class="theme-title">
+                      <span>Light</span>
+                      <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div class="theme-colors">
+                      <div class="background-color"></div>
+                      <div class="primary-color"></div>
+                      <div class="secondary-color"></div>
+                    </div>
                   </div>
-                </div>
-                <div class="one-theme" id="lightTheme" data-theme="light-theme">
-                  <div class="theme-title">
-                    <span>Light</span>
-                    <i class="bi bi-check-lg"></i>
-                  </div>
-                  <div class="theme-colors">
-                    <div class="background-color"></div>
-                    <div class="primary-color"></div>
-                    <div class="secondary-color"></div>
-                  </div>
-                </div>
-                <div class="one-theme" id="ogTheme" data-theme="og-theme">
-                  <div class="theme-title">
-                    <span>OG</span>
-                    <i class="bi bi-check-lg"></i>
-                  </div>
-                  <div class="theme-colors">
-                    <div class="background-color"></div>
-                    <div class="primary-color"></div>
-                    <div class="secondary-color"></div>
+                  <div class="one-theme" id="ogTheme" data-theme="og-theme">
+                    <div class="theme-title">
+                      <span>OG</span>
+                      <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div class="theme-colors">
+                      <div class="background-color"></div>
+                      <div class="primary-color"></div>
+                      <div class="secondary-color"></div>
+                    </div>
                   </div>
                 </div>
               </div>
+              <div class="api-key-section">
+                <span class="modal-subtitle bold-font">API Key</span>
+                <div class="modal-text">
+                  If you want to read AI-generated articles from the news section, please enter your API key here. You
+                  can get one for free
+                  from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
+                  <span class="important-text bold-font">Create API Key</span> on the top right corner
+
+                </div>
+                <div class="api-input-and-status">
+                  <input type="text" class="" id="apiKeyInput" placeholder="Enter your API key">
+                  <div class="saved-status" id="apiKeyStatus">
+                    <i class="bi bi-check"></i>
+                    <span class="bold-font">Saved</span>
+                  </div>
+                  <div class="separator" id="savedKeySeparator"></div>
+                  <div class="remove-key" id="removeApiKey">
+                    <i class="bi bi-x"></i>
+                    <span class="bold-font">Remove</span>
+                  </div>
+                </div>
+
+              </div>
             </div>
+
 
           </div>
           <input class="d-none" type="file" id="patreonInput" accept=".json">
@@ -1322,6 +1350,13 @@
       <div class="py-2">
         <ul class="nav nav-pills">
           <li class="nav-item">
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" id="newspill">
+              <i class="bi bi bi-newspaper pill-icon"></i>
+              <label class="bold-font pill-label">NEWS</label>
+              <div class="pill-line"></div>
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" id="h2hpill">
               <i class="bi bi-bar-chart-fill pill-icon"></i>
               <label class="bold-font pill-label">COMPARISON</label>
@@ -1330,8 +1365,8 @@
           </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" id="viewerpill">
-              <i class="bi bi-list-ol pill-icon"></i>
-              <label class="bold-font pill-label">STANDINGS</label>
+              <i class="bi bi-trophy pill-icon"></i>
+              <label class="bold-font pill-label">RECORDS</label>
               <div class="pill-line"></div>
             </a>
           </li>
@@ -1458,90 +1493,39 @@
           </div>
         </div>
       </div>
-      <div class="script-view hide" id="predict_results">
-        <div class="w-100 d-flex">
-          <div class="prediction-buttons ps-3">
-            <div>
+      <div class="script-view hide unloaded" id="news">
+        <div class="general-top-panel">
+          <div class="title-buttons-left">
+            <div style="padding-bottom: 2px;">
               <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                id="yearPredictionButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Year
+                id="newsTypeButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Filter
               </button>
               <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="yearPredictionMenu" style="font-family: Formula1;">
+              <ul class="dropdown-menu" id="newsTypeMenu" style="font-family: Formula1;">
+                <a class="dropdown-item" data-value="race_result">Race results <i class="bi bi-check"></i></a>
+                <a class="dropdown-item" data-value="quali_result">Qualifying results <i class="bi bi-check"></i></a>
+                <a class="dropdown-item" data-value="driver_transfers">Driver transfers <i class="bi bi-check"></i></a>
+                <a class="dropdown-item" data-value="others">Other news <i class="bi bi-check"></i></a>
               </ul>
             </div>
-            <div>
-              <button class="custom-dropdown custom-button bold-font d-none" id="predictButton" data-bs-toggle="modal"
-                data-bs-target="#predictModal">
-                Configure
-              </button>
-              <div class="dropdown-line"></div>
+          </div>
+          <div class="title transfer-title bold-font">
+            Latest news
+          </div>
+          <div class="title-buttons-right">
+            <div class="reload-news">
+              <i class="bi bi-arrow-clockwise"></i>
+              <span class="">Regenerate news</span>
             </div>
-            <div class="config-content bold-font ms-4" id="predictConfigContent"></div>
-          </div>
-          <div class="title bold-font w-100">
-            Forecast
-            <i class="info-titles bold-font" id="forecastinfo" data-bs-toggle="modal"
-              data-bs-target="#forecastmodal">?</i>
-          </div>
-          <div class="ps-3" style="padding-top: 1.12rem; padding-bottom: 0.7rem; position: absolute; right:14px;">
-            <ul class="nav nav-pills">
-              <li class="nav-item">
-                <a class="nav-link bold-font generalPills active" data-bs-toggle="pill" id="predictionpill">
-                  <label class="bold-font basic-label">Races</label>
-                  <div class="pill-line"></div>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link bold-font generalPills" data-bs-toggle="pill" id="probpill">
-                  <label class="bold-font basic-label">Standings</label>
-                  <div class="pill-line"></div>
-                </a>
-              </li>
-            </ul>
           </div>
         </div>
-        <div class="d-flex" id="mainPrediction">
-          <div class="d-flex w-100" id="mainPred">
-            <div class="col-3 main-viewer-section" id="raceMenu">
-            </div>
-            <div class="main-viewer-section" id="predictionMenu">
-              <div class="prediction-table" id="predictionFirst">
-                <div class="prediction-table-header">
-                  <div class="header-label bold-font driver-prediction">Driver</div>
-                  <div class="header-label bold-font prediction-prediction">Prediction</div>
-                  <div class="header-label bold-font position-prediction">Position</div>
-                </div>
-                <div class="prediction-table-data">
-                </div>
-              </div>
-              <div class="separator-2"></div>
-              <div class="prediction-table" id="predictionSecond">
-                <div class="prediction-table-header">
-                  <div class="header-label bold-font driver-prediction">Driver</div>
-                  <div class="header-label bold-font prediction-prediction">Prediction</div>
-                  <div class="header-label bold-font position-prediction">Position</div>
-                </div>
-                <div class="prediction-table-data">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="d-none d-flex" id="mainProb">
-            <div class="main-viewer-section" id="probViewer">
-              <div class="prob-viewer-header">
-                <div class="viewer-header-driver bold-font">Driver</div>
-                <div class="viewer-header-position bold-font">Pos</div>
-              </div>
-              <div class="prob-viewer-data"></div>
-            </div>
-          </div>
+
+        <div class="news-grid">
 
         </div>
-
-
       </div>
-      <div class="script-view hide" id="head2head_viewer">
+      <div class="script-view hide unloaded" id="head2head_viewer">
         <div class="general-top-panel">
           <div class="title-buttons-left">
             <div>
@@ -1742,37 +1726,16 @@
 
 
       </div>
-      <div class="script-view hide" id="season_viewer">
+      <div class="script-view hide unloaded" id="season_viewer">
         <div class="general-top-panel">
-          <div class="title-buttons-right">
-            <div>
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                id="tableTypeButton" data-bs-toggle="dropdown">
-                Points
-              </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="tableTypeDropdown" style="font-family: Formula1;">
-                <a class="dropdown-item" style="cursor: pointer;" id="pointspill" data-value="points">Points</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="pospill" data-value="pos">Positions</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="qualipill" data-value="quali">Qualifying</a>
-              </ul>
+          <div class="title-buttons-right" id="recordsSettings">
+            <div class="hide-historic-drivers">
+              <i class="bi bi-eye"></i>
+              <i class="bi bi-eye-slash"></i>
+              <span class="">Hide historic drivers</span>
             </div>
           </div>
-          <div class="title bold-font">
-            Season Results
-            <i class="info-titles bold-font" id="standingsinfo" data-bs-toggle="modal"
-              data-bs-target="#standingsmodal">?</i>
-          </div>
-          <div class="title-buttons-left">
-            <div style="padding-bottom: 2px;">
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButton"
-                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Year
-              </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="yearMenu" style="font-family: Formula1;">
-              </ul>
-            </div>
+          <div class="title-buttons-right" id="standingsSettings">
             <div class="drivers-teams-pills">
               <ul class="nav nav-pills">
                 <li class="nav-item">
@@ -1789,6 +1752,49 @@
                 </li>
               </ul>
             </div>
+            <div>
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                id="tableTypeButton" data-bs-toggle="dropdown">
+                Points
+              </button>
+              <div class="dropdown-line"></div>
+              <ul class="dropdown-menu" id="tableTypeDropdown" style="font-family: Formula1;">
+                <a class="dropdown-item" style="cursor: pointer;" id="pointspill" data-value="points">Points</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="pospill" data-value="pos">Positions</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="qualipill" data-value="quali">Qualifying</a>
+              </ul>
+            </div>
+          </div>
+          <div class="title bold-font">
+            Records Hub
+            <i class="info-titles bold-font" id="standingsinfo" data-bs-toggle="modal"
+              data-bs-target="#standingsmodal">?</i>
+          </div>
+          <div class="title-buttons-left">
+            <div>
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                id="recordsTypeButton" data-bs-toggle="dropdown" data-value="standings">
+                Standings
+              </button>
+              <div class="dropdown-line"></div>
+              <ul class="dropdown-menu" id="recordsTypeDropdown" style="font-family: Formula1;">
+                <a class="dropdown-item" style="cursor: pointer;" id="standingspill" data-value="standings">Standings</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="winspill" data-value="wins">Wins</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="polespill" data-value="poles">Poles</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="podiumspill" data-value="podiums">Podiums</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="champspill" data-value="champs">Championships</a>
+              </ul>
+            </div>
+            <div style=" /* padding-bottom: 2px; */">
+              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButton"
+                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Year
+              </button>
+              <div class="dropdown-line"></div>
+              <ul class="dropdown-menu" id="yearMenu" style="font-family: Formula1;">
+              </ul>
+            </div>
+
           </div>
         </div>
         <div class="main-viewer-section">
@@ -1808,11 +1814,14 @@
             </div>
             <div class="teams-table-data"></div>
           </div>
+          <div class="records-list">
+            
+          </div>
         </div>
 
 
       </div>
-      <div class="script-view hide" id="driver_transfers">
+      <div class="script-view hide unloaded" id="driver_transfers">
         <div class="transfer-top-panel">
           <div class="title-buttons-left">
             <div class="dropdown">
@@ -2174,7 +2183,7 @@
           </div>
         </div>
       </div>
-      <div class="script-view hide" id="edit_stats">
+      <div class="script-view hide unloaded" id="edit_stats">
         <div class="general-top-panel">
           <div class="title-buttons-left">
             <div>
@@ -2915,7 +2924,7 @@
           </div>
         </div>
       </div>
-      <div class="script-view hide" id="edit_teams">
+      <div class="script-view hide unloaded" id="edit_teams">
         <div class="general-top-panel">
           <div class="title-buttons-left">
             <div>
@@ -3759,7 +3768,7 @@
 
         </div>
       </div>
-      <div class="script-view hide" id="custom_calendar">
+      <div class="script-view hide unloaded" id="custom_calendar">
         <div class="blocking-div d-none" id="calendarBlockDiv">
           There is already a modified calendar or you already did the first race! Try again next season!
         </div>
@@ -3793,7 +3802,7 @@
         </div>
 
       </div>
-      <div class="script-view hide" id="car_performance">
+      <div class="script-view hide unloaded" id="car_performance">
         <div class="general-top-panel">
           <div class="title-buttons-left" id="carAttributeSelector">
             <div>
@@ -4615,7 +4624,7 @@
                         <i class="bi bi-plus-lg"></i>
                       </div>
                     </div>
-                    <i class="bi bi-caret-down-fill" ></i>
+                    <i class="bi bi-caret-down-fill"></i>
                   </div>
                   <div class="parts-list" id="sidepodsList">
                   </div>
@@ -5128,7 +5137,7 @@
         </div>
 
       </div>
-      <div class="script-view hide" id="mod_25">
+      <div class="script-view hide unloaded" id="mod_25">
         <div class="mod-banner">
           <div class="mod-name">
             <img src="../assets/images/logoMod2Colors.svg" alt="">
@@ -5274,19 +5283,22 @@
           <div class="one-change" style="--order: 8">
             <div class="one-change-title bold-font">Performance</div>
             <div class="one-change-description-group">
-              <div class="one-change-description performance-description redbull-performance-description"><span class="bold-font one-change-performance-name">RED BULL</span>
+              <div class="one-change-description performance-description redbull-performance-description"><span
+                  class="bold-font one-change-performance-name">RED BULL</span>
                 <div class="one-change-bar-container">
                   <div class="one-change-bar-fill performance-bar-progress rb"></div>
                 </div>
                 <span class="redbull-performance">58.5%</span>
               </div>
-              <div class="one-change-description performance-description mclaren-performance-description"><span class="bold-font one-change-performance-name">MCLAREN</span>
+              <div class="one-change-description performance-description mclaren-performance-description"><span
+                  class="bold-font one-change-performance-name">MCLAREN</span>
                 <div class="one-change-bar-container">
                   <div class="one-change-bar-fill performance-bar-progress mc"></div>
                 </div>
                 <span class="mclaren-performance">56.5%</span>
               </div>
-              <div class="one-change-description performance-description"><span class="bold-font one-change-performance-name">WILLIAMS</span>
+              <div class="one-change-description performance-description"><span
+                  class="bold-font one-change-performance-name">WILLIAMS</span>
                 <div class="one-change-bar-container">
                   <div class="one-change-bar-fill performance-bar-progress wi"></div>
                 </div>

@@ -1,8 +1,10 @@
-import { races_names, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams } from "./config";
+import { races_names, names_full, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams } from "./config";
 import { resetH2H } from './head2head';
 import { game_version, custom_team } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
+import { news_insert_space } from "../backend/scriptUtils/newsUtils.js";
 import { Command } from "../backend/command.js";
+
 
 
 
@@ -79,6 +81,9 @@ document.getElementById("teamspill").addEventListener("click", function () {
 
 
 function manage_show_tables() {
+    const recordsList = document.querySelector(".records-list")
+    recordsList.innerHTML = ""
+    recordsList.classList.add("d-none")
     if (isYearSelected) {
         if (driverOrTeams === "drivers") {
             document.querySelector(".teams-table").classList.add("d-none")
@@ -408,7 +413,24 @@ function new_color_teams_table() {
                     cell.classList.add("fastest")
                 }
             });
-            values.sort((a, b) => b[0] - a[0]);
+            values.sort((a, b) => {
+                function parseValue(val) {
+                    if (typeof val === "number") return val;
+
+                    const match = val.match(/^(\d+)(?:\((\d+)\))?$/);
+                    if (match) {
+                        const base = parseInt(match[1], 10);
+                        const extra = match[2] ? parseInt(match[2], 10) : 0;
+                        return base + extra;
+                    }
+                    return 0; 
+                }
+
+                const totalA = parseValue(a[0]);
+                const totalB = parseValue(b[0]);
+
+                return totalB - totalA;
+            });
             let topThree = values.slice(0, 3);
             colCells[topThree[0][1]].classList.add("first");
             colCells[topThree[1][1]].classList.add("second");
@@ -461,7 +483,6 @@ export function new_load_drivers_table(data) {
 }
 
 function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsInfo) {
-    console.log(driver1)
     if (driver1 !== undefined) {
         const lastRaceDone = driver1[driver1.length - 1][0]
         const lastRaceIndex = calendarData.findIndex(x => x[0] === lastRaceDone);
@@ -1104,76 +1125,335 @@ function hoverListeners() {
  * @param {String} actualYear current year of the save
  */
 export function generateYearsMenu(actualYear) {
-    document.querySelector("#yearInput").min = actualYear
-    setCurrentSeason(actualYear)
-    let yearMenu = document.querySelector("#yearMenu");
-    let yearH2H = document.querySelector("#yearMenuH2H");
-    let yearPrediction = document.querySelector("#yearPredictionMenu");
-    let yearPredictionModal = document.querySelector("#yearPredictionModalMenu");
-    yearMenu.innerHTML = ""
-    yearH2H.innerHTML = ""
-    yearPrediction.innerHTML = ""
-    yearPredictionModal.innerHTML = ""
+    document.querySelector("#yearInput").min = actualYear;
+    setCurrentSeason(actualYear);
+
+    const yearMenu = document.querySelector("#yearMenu");
+    const yearH2H = document.querySelector("#yearMenuH2H");
+    yearMenu.innerHTML = "";
+    yearH2H.innerHTML = "";
+
+    // años (con data-year)
     for (let year = actualYear; year >= game_version; year--) {
-        let a = document.createElement("a");
-        a.textContent = year.toString();
-        a.classList = "dropdown-item"
-        a.style.cursor = "pointer"
+        const a = document.createElement("a");
+        a.textContent = String(year);
+        a.className = "dropdown-item";
+        a.style.cursor = "pointer";
+        a.dataset.year = String(year);                 // <- aquí
         yearMenu.appendChild(a);
-        a.addEventListener("click", function () {
-            document.getElementById("yearButton").textContent = a.textContent
-            isYearSelected = true
-            manage_show_tables()
-            const command = new Command("yearSelected", a.textContent);
-            command.execute();
+        a.addEventListener("click", () => manageRecordsSelected(a));
 
-        })
-
-        let a2 = document.createElement("a");
-        a2.textContent = year.toString();
-        a2.classList = "dropdown-item"
-        a2.style.cursor = "pointer"
+        const a2 = document.createElement("a");
+        a2.textContent = String(year);
+        a2.className = "dropdown-item";
+        a2.style.cursor = "pointer";
+        a2.dataset.year = String(year);
         yearH2H.appendChild(a2);
-        a2.addEventListener("click", function () {
-            resetH2H()
-            document.querySelectorAll(".modal-team").forEach(function (elem) {
-                elem.classList.remove("d-none")
-            })
-            document.getElementById("yearButtonH2H").textContent = a2.textContent
-            const command = new Command("yearSelectedH2H", { year: a2.textContent });
-            command.execute();
-        })
-        let a3 = document.createElement("a");
-        a3.textContent = year.toString();
-        a3.classList = "dropdown-item"
-        a3.style.cursor = "pointer"
-        yearPrediction.appendChild(a3);
-        a3.addEventListener("click", function () {
-            document.getElementById("yearPredictionButton").textContent = a3.textContent
-            document.querySelector("#mainPred").classList.remove("d-none")
-            let dataYear = {
-                command: "yearSelectedPrediction",
-                year: a3.textContent
-            }
-            // socket.send(JSON.stringify(dataYear))
-        })
-        let a4 = document.createElement("a");
-        a4.textContent = year.toString();
-        a4.classList = "dropdown-item"
-        a4.style.cursor = "pointer"
-        yearPredictionModal.appendChild(a4);
-        a4.addEventListener("click", function () {
-            document.getElementById("yearPredictionModalButton").textContent = a4.textContent
-            let dataYear = {
-                command: "yearSelectedPredictionModal",
-                year: a4.textContent
-            }
-            // socket.send(JSON.stringify(dataYear))
-        })
+        a2.addEventListener("click", () => {
+            resetH2H();
+            document.querySelectorAll(".modal-team").forEach(el => el.classList.remove("d-none"));
+            const yearBtnH2H = document.getElementById("yearButtonH2H");
+            yearBtnH2H.textContent = a2.textContent;
+            yearBtnH2H.dataset.year = a2.dataset.year;  // <- también lo guardo
+            new Command("yearSelectedH2H", { year: a2.dataset.year }).execute();
+        });
     }
-    yearMenu.childNodes[0].click()
+
+    // All Time al principio (con data-year="all")
+    const allTime = document.createElement("a");
+    allTime.textContent = "All Time";
+    allTime.className = "dropdown-item";
+    allTime.id = "allTimeRecords";
+    allTime.dataset.year = "all";                   // <- clave
+    yearMenu.insertBefore(allTime, yearMenu.firstChild);
+    allTime.addEventListener("click", () => {
+        setYearButton(allTime);
+        const value = document.querySelector("#recordsTypeButton").dataset.value;
+        new Command("recordSelected", { type: value, year: "all" }).execute();
+    });
+
+    document.getElementById("standingspill").click();
 }
 
 
 
+function manageRecordsSelected(forcedYearEl = null) {
+    const yearMenu = document.querySelector("#yearMenu");
+    const yearItems = Array.from(yearMenu.querySelectorAll("a"));
+    const yearBtn = document.getElementById("yearButton");
+    const typeVal = document.querySelector("#recordsTypeButton").dataset.value;
 
+    // resolve seleccionado actual
+    let selectedEl = forcedYearEl
+        || yearItems.find(i => i.dataset.year === yearBtn.dataset.year)
+        || yearItems[0];
+
+    const isAllTime = el => el.dataset.year === "all";
+
+    // si es standings y estaba en All Time, forzar primer año real
+    if (typeVal === "standings" && isAllTime(selectedEl)) {
+        const firstReal = yearItems.find(i => !isAllTime(i));
+        if (firstReal) selectedEl = firstReal;
+    }
+
+    // reflejar en el botón
+    setYearButton(selectedEl);
+
+    const selectedYear = selectedEl.dataset.year;
+    const isCurrentYear = selectedYear === yearItems[1].dataset.year;
+
+    if (typeVal === "standings") {
+        isYearSelected = true
+        manage_show_tables();
+        new Command("yearSelected", { year: selectedYear, isCurrentYear }).execute();
+    } else {
+        new Command("recordSelected", { type: typeVal, year: selectedYear }).execute();
+        manageShowRecords();
+    }
+}
+
+function manageShowRecords() {
+    const driversTable = document.querySelector(".drivers-table")
+    const teamsTable = document.querySelector(".teams-table")
+    driversTable.classList.add("d-none")
+    teamsTable.classList.add("d-none")
+
+    const recordsList = document.querySelector(".records-list")
+    recordsList.classList.remove("d-none")
+    recordsList.innerHTML = ""
+}
+
+function setYearButton(el) {
+    const yearBtn = document.getElementById("yearButton");
+    yearBtn.textContent = el.textContent.trim();
+    yearBtn.dataset.year = el.dataset.year;           // <- guardamos el valor
+}
+
+export function loadRecordsList(data) {
+    const recordsList = document.querySelector(".records-list")
+    recordsList.innerHTML = ""
+    let visibleIndex = 0;
+    const hideHistoric = document.querySelector(".hide-historic-drivers").classList.contains("active");
+
+    data.forEach(function (record, index) {
+        if (record.value <= 0) return;
+        let recordDiv = document.createElement("div")
+        recordDiv.classList = "record-item"
+
+        if (record.teamId !== -1) {
+            recordDiv.classList.add(`${team_dict[record.teamId]}-record`)
+        }
+        else {
+            recordDiv.classList.add("generic-record")
+        }
+
+        const isHistoric = record.id === -1;
+        if (isHistoric) recordDiv.classList.add("historic-driver");
+
+        const shouldHide = isHistoric && hideHistoric;
+        if (shouldHide) recordDiv.classList.add("d-none");
+
+        const number = document.createElement("div");
+        number.className = "record-number";
+        if (!shouldHide) {
+            number.textContent = `${++visibleIndex}.`;
+        } else {
+            number.textContent = "";
+        }
+
+        let recordName = document.createElement("div")
+        recordName.classList = "record-name"
+        let fullName = news_insert_space(record.name)
+        let surname = fullName.split(" ").pop()
+        let nameSpan = document.createElement("span")
+        nameSpan.textContent = fullName.replace(surname, "")
+        let surnameSpan = document.createElement("span")
+        surnameSpan.textContent = surname
+        surnameSpan.classList = "bold-font record-surname"
+
+        recordName.appendChild(nameSpan)
+        recordName.appendChild(surnameSpan)
+
+        let numberAndName = document.createElement("div")
+        numberAndName.classList = "number-and-name"
+
+        let nameAndTeam = document.createElement("div")
+        nameAndTeam.classList = "name-and-team"
+
+        let teamDiv = document.createElement("div")
+        teamDiv.classList = "record-team"
+        teamDiv.textContent = record.teamId !== -1 ? combined_dict[record.teamId] : record.retired === 1 ? "Retired" : "N/A";
+
+        nameAndTeam.appendChild(recordName)
+        nameAndTeam.appendChild(teamDiv)
+
+        numberAndName.appendChild(number)
+        numberAndName.appendChild(nameAndTeam)
+
+        let extraStatsSection = document.createElement("div")
+        extraStatsSection.classList = "extra-stats-section"
+
+        let totalStarts = document.createElement("div")
+        totalStarts.classList = "extra-stat"
+        totalStarts.textContent = `Races: ${record.totalStarts}`
+
+        let percentageRate = document.createElement("div")
+        percentageRate.classList = "extra-stat"
+        if (record.record === "wins" || record.record === "champs") {
+            percentageRate.textContent = `Win Rate: ${(record.totalWins / record.totalStarts * 100).toFixed(2)}%`
+        }
+        else if (record.record === "podiums") {
+            percentageRate.textContent = `Podium Rate: ${(record.totalPodiums / record.totalStarts * 100).toFixed(2)}%`
+        }
+        else if (record.record === "poles") {
+            percentageRate.textContent = `Pole Rate: ${(record.totalPoles / record.totalStarts * 100).toFixed(2)}%`
+        }
+        else if (record.record === "fastestlaps") {
+            percentageRate.textContent = `Fastest Lap Rate: ${(record.totalFastestLaps / record.totalStarts * 100).toFixed(2)}%`
+        }
+        extraStatsSection.appendChild(percentageRate)
+
+        let firstRace = document.createElement("div")
+        firstRace.classList = "extra-stat"
+        let trackName = record.firstRace.trackName ? record.firstRace.trackName : (record.firstRace.trackId ? names_full[races_names[record.firstRace.trackId]] : "")
+        firstRace.textContent = `First Race: ${trackName} ${record.firstRace.season}`
+
+        let firstPodium = document.createElement("div")
+        firstPodium.classList = "extra-stat"
+        let podiumTrackName = record.firstPodium.trackName ? record.firstPodium.trackName : (record.firstPodium.trackId ? names_full[races_names[record.firstPodium.trackId]] : "")
+        firstPodium.textContent = `First Podium: ${podiumTrackName} ${record.firstPodium.season}`
+
+        let firstWin = document.createElement("div")
+        firstWin.classList = "extra-stat"
+        let winTrackName = record.firstWin.trackName ? record.firstWin.trackName : (record.firstWin.trackId ? names_full[races_names[record.firstWin.trackId]] : "")
+        firstWin.textContent = `First Win: ${winTrackName} ${record.firstWin.season}`
+
+        let lastWin = document.createElement("div")
+        lastWin.classList = "extra-stat"
+        let lastWinTrackName = record.lastWin.trackName ? record.lastWin.trackName : (record.lastWin.trackId ? names_full[races_names[record.lastWin.trackId]] : "")
+        lastWin.textContent = `Last Win: ${lastWinTrackName} ${record.lastWin.season}`
+
+        let fastestLaps = document.createElement("div")
+        fastestLaps.classList = "extra-stat"
+        fastestLaps.textContent = `Fastest Laps: ${record.totalFastestLaps}`
+
+        let sprintWins = document.createElement("div")
+        sprintWins.classList = "extra-stat"
+        sprintWins.textContent = `Sprint Wins: ${record.totalSprintWins}`
+
+        let poles = document.createElement("div")
+        poles.classList = "extra-stat"
+        poles.textContent = `Poles: ${record.totalPoles}`
+
+        let podiums = document.createElement("div")
+        podiums.classList = "extra-stat"
+        podiums.textContent = `Podiums: ${record.totalPodiums}`
+
+
+        let wins = document.createElement("div")
+        wins.classList = "extra-stat"
+        wins.textContent = `Wins: ${record.totalWins}`
+
+        let champs = document.createElement("div")
+        champs.classList = "extra-stat"
+        champs.textContent = `WDCs: ${record.totalChampionshipWins}`
+
+        if (document.querySelector("#yearButton").dataset.year === "all") {
+            extraStatsSection.appendChild(totalStarts)
+        }
+
+        if (record.firstRace.season !== 0) {
+            extraStatsSection.appendChild(firstRace)
+        }
+        if (record.firstPodium.season !== 0) {
+            extraStatsSection.appendChild(firstPodium)
+        }
+        if (record.firstWin.season !== 0) {
+            extraStatsSection.appendChild(firstWin)
+        }
+        if (record.lastWin.season !== 0) {
+            extraStatsSection.appendChild(lastWin)
+        }
+
+        if (record.record !== "fastestlaps" && record.totalFastestLaps > 0) {
+            extraStatsSection.appendChild(fastestLaps)
+        }
+
+        if (record.totalSprintWins > 0) {
+            extraStatsSection.appendChild(sprintWins)
+        }
+
+        if (record.record !== "wins" && record.totalWins > 0) {
+            extraStatsSection.appendChild(wins)
+        }
+        if (record.record !== "podiums" && record.totalPodiums > 0) {
+            extraStatsSection.appendChild(podiums)
+        }
+        if (record.record !== "poles" && record.totalPoles > 0) {
+            extraStatsSection.appendChild(poles)
+        }
+        if (record.record !== "champs" && record.totalChampionshipWins > 0) {
+            extraStatsSection.appendChild(champs)
+        }
+
+        numberAndName.appendChild(extraStatsSection)
+
+        let recordValue = document.createElement("div")
+        recordValue.classList = "record-value"
+        recordValue.textContent = record.value
+
+
+        recordDiv.appendChild(numberAndName)
+        recordDiv.appendChild(recordValue)
+        recordsList.appendChild(recordDiv)
+    });
+}
+
+document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        document.querySelector("#recordsTypeButton").textContent = elem.textContent
+        document.querySelector("#recordsTypeButton").dataset.value = elem.dataset.value
+        if (elem.dataset.value === "standings") {
+            const allTime = document.getElementById("allTimeRecords")
+            if (allTime)
+                allTime.classList.add("d-none")
+            document.getElementById("standingsSettings").classList.remove("d-none")
+            document.getElementById("recordsSettings").classList.add("d-none")
+        }
+        else {
+            const allTime = document.getElementById("allTimeRecords")
+            if (allTime)
+                allTime.classList.remove("d-none")
+            document.getElementById("standingsSettings").classList.add("d-none")
+            document.getElementById("recordsSettings").classList.remove("d-none")
+        }
+
+        manageRecordsSelected(null)
+    })
+})
+
+document.querySelector(".hide-historic-drivers").addEventListener("click", function () {
+    this.classList.toggle("active");
+    this.querySelector("span").textContent = this.classList.contains("active") ? "Show Historic Drivers" : "Hide Historic Drivers"
+
+    const recordsList = document.querySelectorAll(".record-item");
+
+    // Ocultar/mostrar históricos
+    recordsList.forEach(function (record) {
+        if (record.classList.contains("historic-driver")) {
+            record.classList.toggle("d-none");
+        }
+    });
+
+    // Renumerar solo los visibles
+    let visibleIndex = 1;
+    recordsList.forEach(function (record) {
+        if (!record.classList.contains("d-none")) {
+            const numberEl = record.querySelector(".record-number");
+            if (numberEl) {
+                numberEl.textContent = `${visibleIndex}.`;
+            }
+            visibleIndex++;
+        }
+    });
+});

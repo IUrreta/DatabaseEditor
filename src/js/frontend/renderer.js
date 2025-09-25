@@ -16,12 +16,16 @@ import {
     order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
     teamSelected, gather_engines_data, reload_performance_graph
 } from './performance';
-import { resetPredict, setMidGrid, setMaxRaces, setRelativeGrid, placeRaces, placeRacesInModal } from './predictions';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups
 } from './stats';
-import { resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs, reload_h2h_graphs, init_colors_dict, edit_colors_dict } from './head2head';
+import {
+    resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
+    reload_h2h_graphs, init_colors_dict, edit_colors_dict, setMidGrid, setMaxRaces, setRelativeGrid
+} from './head2head';
+import { place_news, initAI, getAI } from './news.js';
+import { loadRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker } from './dragFile';
 import { Command } from "../backend/command.js";
@@ -65,7 +69,7 @@ const carPill = document.getElementById("carpill");
 const viewPill = document.getElementById("viewerpill");
 const h2hPill = document.getElementById("h2hpill");
 const constructorsPill = document.getElementById("constructorspill")
-const predictPill = document.getElementById("predictpill")
+const newsPill = document.getElementById("newspill")
 const modPill = document.getElementById("modpill")
 
 export const editorPill = document.getElementById("editorPill")
@@ -79,14 +83,14 @@ const carPerformanceDiv = document.getElementById("car_performance");
 const viewDiv = document.getElementById("season_viewer");
 const h2hDiv = document.getElementById("head2head_viewer");
 const teamsDiv = document.getElementById("edit_teams");
-const predictDiv = document.getElementById("predict_results")
 const mod25Div = document.getElementById("mod_25")
+const newsDiv = document.getElementById("news")
 
 const patchNotesBody = document.getElementById("patchNotesBody")
 const selectImageButton = document.getElementById('selectImage');
 const patreonKeyButton = document.getElementById('patreonKeyButton');
 
-const scriptsArray = [predictDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, customCalendarDiv, carPerformanceDiv, teamsDiv, mod25Div]
+const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, carPerformanceDiv, mod25Div]
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -96,9 +100,15 @@ const logButton = document.getElementById("logFileButton");
 const patreonLogo = document.querySelector(".footer .bi-custom-patreon");
 const patreonSlideUp = document.querySelector(".patreon-slide-up");
 const slideUpClose = document.getElementById("patreonSlideUpClose")
-const patreonThemes = document.querySelector(".patreon-themes")
+const patreonUnlockables = document.querySelector(".patreon-unlockables")
 const downloadSaveButton = document.querySelector(".download-save-button")
 
+const patreonThemes = document.querySelector(".patreon-themes");
+const apiKeySection = document.getElementById("apiKeySection");
+
+const apiKeyInput = document.getElementById("apiKeyInput");
+const apiKeyStatus = document.getElementById("apiKeyStatus");
+const removeApiKey = document.getElementById("removeApiKey");
 
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
@@ -139,6 +149,7 @@ let scriptSelected = 0;
 let divBlocking = 1;
 let saveName;
 let tempImageData = null;
+let lastVisibleIndex = 0;
 
 let calendarEditMode = "Start2024"
 
@@ -186,6 +197,10 @@ const repoName = 'DatabaseEditor';
 
 export function setSaveName(name) {
     saveName = name;
+}
+
+export function getSaveName() {
+    return saveName;
 }
 
 export function setIsShowingNotification(value) {
@@ -504,8 +519,8 @@ export function manageSaveButton(show, mode) {
 }
 
 export function updateFront(data) {
-    // console.log("UPDATING FRONT")
-    // console.log(data)
+    console.log("UPDATING FRONT")
+    console.log(data)
     let responseTyppe = data.responseMessage
     let message = data.content
     let handler = messageHandlers[responseTyppe];
@@ -538,11 +553,11 @@ function showNextNotification(type) {
     const nextMessage = notificationsQueue.shift();
 
     const footerNotification = document.querySelector('.footer-notification');
-    footerNotification.innerHTML  = nextMessage;
+    footerNotification.innerHTML = nextMessage;
     if (type === "error") {
         footerNotification.classList.add('error');
     }
-    else{
+    else {
         footerNotification.classList.remove('error');
     }
 
@@ -551,7 +566,7 @@ function showNextNotification(type) {
     if (type !== "error") {
         setTimeout(() => {
             footerNotification.classList.remove('show');
-    
+
             isShowingNotification = false;
             //wait another 250ms
             setTimeout(() => {
@@ -639,7 +654,6 @@ const messageHandlers = {
     },
     "TeamData fetched": (message) => {
         fillLevels(message)
-
     },
     "Events to Predict Fetched": (message) => {
         placeRaces(message.slice(1))
@@ -698,9 +712,89 @@ const messageHandlers = {
     },
     "Mod compatibility": (message) => {
         updateModBlocking(message)
+    },
+    "News fetched": (message) => {
+        place_news(message)
+    },
+    "Save selected finished": (message) => {
+        generateNews();
+    },
+    "Record fetched": (message) => {
+        loadRecordsList(message)
     }
 };
 
+export async function generateNews() {
+    const isValid = await isPatronSignatureValid();
+    const generateNews = checkGenerableNews(isValid);
+    if (generateNews === "no") {
+        return;
+    }
+    let saveName = getSaveName();
+    //remove file extension if any
+    saveName = saveName.split(".")[0];
+    let newsName = `${saveName}_news`;
+    const savedNews = localStorage.getItem(newsName) || "{}";
+    const parsedNews = JSON.parse(savedNews);
+
+
+    const command = new Command("generateNews", {
+        news: parsedNews,
+    });
+    command.execute();
+
+    const newsView = document.getElementById("news");
+
+    const loaderDiv = document.createElement('div');
+    loaderDiv.classList.add('loader-div', 'general-news-loader');
+    const loadingSpan = document.createElement('span');
+    if (Object.keys(parsedNews).length === 0) {
+        loadingSpan.textContent = "Generating";
+    } else {
+        loadingSpan.textContent = "Updating news";
+    }
+    const loadingDots = document.createElement('span');
+    loadingDots.textContent = "."
+    loadingDots.classList.add('loading-dots');
+    loadingSpan.appendChild(loadingDots);
+
+    setInterval(() => {
+        if (loadingDots.textContent.length >= 3) {
+            loadingDots.textContent = ".";
+        } else {
+            loadingDots.textContent += ".";
+        }
+    }, 500);
+
+    const progressBar = document.createElement('div');
+    progressBar.classList.add('ai-progress-bar');
+    const progressDiv = document.createElement('div');
+    progressDiv.classList.add('progress-div', 'general-news-progress-div');
+
+    loadingSpan.appendChild(loadingDots);
+    loaderDiv.appendChild(loadingSpan);
+    progressBar.appendChild(progressDiv);
+    loaderDiv.appendChild(progressBar);
+
+    startGeneralNewsProgress(progressDiv);
+    newsView.appendChild(loaderDiv);
+}
+
+export function startGeneralNewsProgress(progressDiv) {
+    let width = 0;
+    const id = setInterval(() => {
+        if (!progressDiv?.isConnected) { clearInterval(id); return; }
+
+        if (width >= 100) {
+            clearInterval(id);
+            return;
+        }
+        width++;
+        progressDiv.style.width = width + '%';
+    }, 150);
+
+    progressDiv._progressIntervalId = id;
+}
 
 function update_engine_allocations(message) {
     let engine_map = {}
@@ -740,7 +834,6 @@ function resizeWindowToHeight(mode) {
         })
         document.getElementById("free-drivers").style.height = "672px"
         document.getElementById("free-staff").style.height = "672px"
-        document.getElementById("raceMenu").style.height = "686px"
     }
     else if (mode === "10teams") {
         document.querySelectorAll(".main-resizable").forEach(function (elem) {
@@ -757,7 +850,6 @@ function resizeWindowToHeight(mode) {
         })
         document.getElementById("free-drivers").style.height = "612px"
         document.getElementById("free-staff").style.height = "612px"
-        document.getElementById("raceMenu").style.height = "660px"
     }
 }
 
@@ -814,6 +906,9 @@ function manage_custom_team(nameColor) {
         document.querySelectorAll(".ct-teamname").forEach(function (elem) {
             elem.dataset.teamshow = nameColor[1]
         })
+        const command = new Command("updateCombinedDict", { teamID: 32, newName: nameColor[1] });
+        command.execute();
+
         document.getElementById("customTeamTransfers").classList.remove("d-none")
         document.getElementById("customTeamPerformance").classList.remove("d-none")
         document.getElementById("customTeamDropdown").classList.remove("d-none")
@@ -958,9 +1053,9 @@ function manage_config_content(info, year_config = false) {
 
         document.querySelector(`.team-logo-container[data-teamid="${info["playerTeam"]}"]`).classList.add("active")
 
-        update_mentality_span(info["mentalityFrozen"])
+        update_mentality_span(info["frozenMentality"])
         let difficultySlider = document.getElementById("difficultySlider")
-        difficultySlider.value = info["difficulty"]
+        difficultySlider.value = info["difficulty"] || 0
         update_difficulty_span(info["difficulty"])
         if (info["difficulty"] === "-2") {
             load_difficulty_warnings(info["triggerList"])
@@ -993,6 +1088,8 @@ function alphaTauriReplace(info) {
     document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
     combined_dict[8] = pretty_names[info]
     abreviations_dict[8] = abreviations_for_replacements[info]
+    const command = new Command("updateCombinedDict", { teamID: 8, newName: pretty_names[info] });
+    command.execute();
     document.querySelectorAll(".at-teamname").forEach(function (elem) {
         elem.dataset.teamshow = pretty_names[info]
     })
@@ -1094,6 +1191,8 @@ function alpineReplace(info) {
     document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value = info
     combined_dict[5] = pretty_names[info]
     abreviations_dict[5] = abreviations_for_replacements[info]
+    const command = new Command("updateCombinedDict", { teamID: 5, newName: pretty_names[info] });
+    command.execute();
     document.querySelectorAll(".al-teamname").forEach(function (elem) {
         elem.dataset.teamshow = pretty_names[info]
     })
@@ -1177,6 +1276,8 @@ function alfaReplace(info) {
     document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value = info
     combined_dict[9] = pretty_names[info]
     abreviations_dict[9] = abreviations_for_replacements[info]
+    const command = new Command("updateCombinedDict", { teamID: 9, newName: pretty_names[info] });
+    command.execute();
     document.querySelectorAll(".af-teamname").forEach(function (elem) {
         elem.dataset.teamshow = pretty_names[info]
     })
@@ -1344,6 +1445,14 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         replace_custom_team_logo(document.querySelector(".logo-preview").src)
     }
 
+    //if apiKeyInput has a value, save it to localStorage
+    let apiKeyValue = apiKeyInput.value.trim();
+    if (apiKeyValue) {
+        localStorage.setItem("apiKey", apiKeyValue);
+        apiKeyStatus.classList.add("api-loaded")
+        apiKeyInput.value = ""
+        initAI(apiKeyValue);
+    }
 
 })
 
@@ -1412,7 +1521,7 @@ editStatsPill.addEventListener("click", function () {
 })
 
 constructorsPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "show", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "teams")
@@ -1420,14 +1529,14 @@ constructorsPill.addEventListener("click", function () {
 
 
 CalendarPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "calendar")
 })
 
 carPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "show", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(!viewingGraph, "performance")
@@ -1437,6 +1546,14 @@ modPill.addEventListener("click", function () {
     manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
     scriptSelected = 1
     check_selected()
+    manageSaveButton(false)
+})
+
+newsPill.addEventListener("click", function () {
+    manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+    scriptSelected = 1
+    check_selected()
+    manageSaveButton(false)
 })
 
 document.querySelector(".toolbar-logo-and-title").addEventListener("click", function () {
@@ -1478,7 +1595,7 @@ document.getElementById("difficultySlider").addEventListener("input", function (
     document.getElementById("customGearButton").classList.remove("custom")
 });
 
-function update_difficulty_span(value) {
+function update_difficulty_span(value = 0) {
     let span = document.querySelector("#difficultySpan")
     let difficulty = difficulty_dict[parseInt(value)]
     if (difficulty === "reduced weight") {
@@ -1666,14 +1783,51 @@ document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) 
  * @param  {Array} divs array of state of the divs
  */
 function manageScripts(...divs) {
-    scriptsArray.forEach(function (div, index) {
-        if (divs[index] === "show") {
-            div.className = "script-view"
+    const newIndex = divs.findIndex(s => s === "show");
+    const prevIndex = lastVisibleIndex;
+
+
+    scriptsArray.forEach((div, i) => {
+
+        div.ontransitionend = null;
+        div.onanimationend = null;
+        div.classList.remove("enter-from-right", "enter-from-left");
+
+        if (i === newIndex) {
+            div.classList.remove("unloaded");
+
+            requestAnimationFrame(() => {
+                div.classList.remove("hide");
+
+                const enterClass = newIndex > prevIndex
+                    ? "enter-from-right"
+                    : "enter-from-left";
+
+
+                div.classList.add(enterClass);
+
+                div.onanimationend = () => {
+                    div.classList.remove(enterClass);
+                    div.onanimationend = null;
+                };
+            });
+
+        } else {
+
+            requestAnimationFrame(() => {
+                div.classList.add("hide");
+            });
+
+            div.ontransitionend = (e) => {
+                if (e.propertyName === "opacity" && div.classList.contains("hide")) {
+                    div.classList.add("unloaded");
+                    div.ontransitionend = null;
+                }
+            };
         }
-        else {
-            div.className = "script-view hide"
-        }
-    })
+    });
+
+    lastVisibleIndex = newIndex >= 0 ? newIndex : lastVisibleIndex;
 }
 
 document.querySelector("#cancelDetailsButton").addEventListener("click", function () {
@@ -1733,15 +1887,96 @@ async function isPatronSignatureValid() {
 }
 
 async function checkPatreonStatus() {
-
+const validSignature = await isPatronSignatureValid();
     init_colors_dict(selectedTheme)
-    const validSignature = await isPatronSignatureValid();
+    isPatronSignatureValid
 
     if (validSignature) {
-        patreonThemes.classList.remove("d-none");
+        patreonUnlockables.classList.remove("d-none");
         document.getElementById("patreonKeyText").textContent = "Patreon key loaded";
         loadTheme();
     }
+    manageNewsStatus(validSignature);
+}
+
+function manageNewsStatus(valid) {
+    const generateNews = checkGenerableNews(valid);
+    if (generateNews === "yes") {
+        const extraApiKeySection = document.querySelector('#extraApiKeySection');
+        if (extraApiKeySection) {
+            extraApiKeySection.remove();
+        }
+        const newsgenerationEnded = document.querySelector('.news-generation-ended');
+        if (newsgenerationEnded) {
+            newsgenerationEnded.remove();
+            const newsGrid = document.createElement('div');
+            newsGrid.className = 'news-grid';
+            document.querySelector('#news').appendChild(newsGrid);
+            generateNews();
+        }
+    }
+    else {
+        if (generateNews === "provisional") {
+            const apiKeySection = document.querySelector('.api-key-section');
+
+            patreonUnlockables.classList.remove("d-none");
+            patreonThemes.classList.add("d-none");
+
+            let diffDays = 0;
+            const firstNewsEntered = localStorage.getItem('firstNewsEntered');
+            if (firstNewsEntered) {
+                const firstDate = new Date(firstNewsEntered);
+                const now = new Date();
+                const diffTime = Math.abs(now - firstDate);
+                diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            }
+
+            if (apiKeySection) {
+                const timeRemainingSpan = document.createElement('span');
+                timeRemainingSpan.className = 'modal-text';
+                timeRemainingSpan.innerHTML = `You have: <span class="important-text bold-font">${8 - diffDays} days </span> left of free news generation. Become a <a href="https://www.patreon.com/f1dbeditor" target="_blank">patreon member</a> to continue using this feature!`;
+
+                //insert after modal-subtitle in apiKeySection
+                const subtitle = apiKeySection.querySelector('.modal-subtitle');
+                if (subtitle) {
+                    subtitle.insertAdjacentElement('afterend', timeRemainingSpan);
+                }
+            }
+        }
+        else if (generateNews === "no") {
+            const newsGrid = document.querySelector('.news-grid');
+            const parent = newsGrid.parentNode;
+            newsGrid.remove();
+            const message = document.createElement('div');
+            message.className = 'modal-text important-text bold-font news-generation-ended';
+            message.innerHTML = `Your free news generation period has ended. Become a <a href="https://www.patreon.com/f1dbeditor" target="_blank">patreon member</a> to continue using this feature!`;
+            parent.appendChild(message);
+        }
+    }
+
+}
+
+function checkGenerableNews(validSignature){
+    let canGenerate = "no";
+    if(validSignature){
+        canGenerate = "yes";
+    }
+    else{
+        const firstNewsEntered = localStorage.getItem('firstNewsEntered');
+        if (!firstNewsEntered) {
+            const today = new Date().toISOString().split('T')[0];
+            localStorage.setItem('firstNewsEntered', today);
+            canGenerate = "provisional";
+        }
+        else{
+            const firstDate = new Date(firstNewsEntered);
+            const now = new Date();
+            const diffTime = Math.abs(now - firstDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            canGenerate = diffDays < 8 ? "provisional" : "no";
+        }
+    }
+    return canGenerate;
 }
 
 
@@ -1846,6 +2081,19 @@ document.addEventListener('DOMContentLoaded', () => {
         patchModal.show();
     }
 
+    //check if apiKey in localStorage
+    const apiKey = localStorage.getItem("apiKey");
+    if (apiKey) {
+        apiKeyStatus.classList.add("api-loaded")
+        initAI(apiKey);
+    }
+
+});
+
+removeApiKey.addEventListener('click', () => {
+    localStorage.removeItem("apiKey");
+    apiKeyStatus.classList.remove("api-loaded")
+    initAI(null);
 });
 
 function createMarqueeItem(name, tier) {

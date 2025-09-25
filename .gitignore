@@ -14,3 +14,5 @@ assets/custom/*.jpeg
 !base24_config.json
 dist/
 patreon/
+*.txt
+resize_images.js

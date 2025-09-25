@@ -69,6 +69,14 @@ export let combined_dict = {
     32: "Custom Team"
 }
 
+export function getUpdatedName(teamId){
+    return combined_dict[teamId]
+}
+
+export function getCombinedDict(){
+    return combined_dict
+}
+
 //performance
 export const pars_abreviations = { "chassis": "C", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "S" }
 export const part_codes_abreviations = { 3: "C", 4: "FW", 5: "RW", 6: "UF", 7: "SP", 8: "S" }
@@ -218,6 +226,116 @@ export const staff_positions = { 1: "technical-chief", 2: "race-engineer", 3: "h
 export const staff_pics = { 1: "../assets/images/technicalChief.png", 2: "../assets/images/raceEngineer2.png", 3: "../assets/images/headAero.png", 4: "../assets/images/sportingDirector.png" }
 export let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 32: "ct", 33: "f2", 34: "f3" }
 export let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10, 'custom': 32 }
+
+
+// news
+export const countries_data = {
+    "BAH": { "country": "Bahrain", "adjective": "Bahrain", "circuit": "Bahrain" },
+    "AUS": { "country": "Australia", "adjective": "Australian", "circuit": "Albert Park" },
+    "SAU": { "country": "Saudi Arabia", "adjective": "Saudi Arabian", "circuit": "Jeddah" },
+    "IMO": { "country": "Imola", "adjective": "Emilia Romagna", "circuit": "Imola" },
+    "MIA": { "country": "Miami", "adjective": "Miami", "circuit": "Miami" },
+    "SPA": { "country": "Spain", "adjective": "Spanish", "circuit": "Barcelona" },
+    "MON": { "country": "Monaco", "adjective": "Monaco", "circuit": "Monaco" },
+    "AZE": { "country": "Azerbaijan", "adjective": "Azerbaijan", "circuit": "Baku" },
+    "CAN": { "country": "Canada", "adjective": "Canadian", "circuit": "Montreal" },
+    "GBR": { "country": "Great Britain", "adjective": "British", "circuit": "Silverstone" },
+    "AUT": { "country": "Austria", "adjective": "Austrian", "circuit": "Red Bull Ring" },
+    "FRA": { "country": "France", "adjective": "French", "circuit": "Paul Ricard" },
+    "HUN": { "country": "Hungary", "adjective": "Hungarian", "circuit": "Hungaroring" },
+    "BEL": { "country": "Belgium", "adjective": "Belgian", "circuit": "Spa" },
+    "ITA": { "country": "Italy", "adjective": "Italian", "circuit": "Monza" },
+    "SGP": { "country": "Singapore", "adjective": "Singapore", "circuit": "Marina Bay" },
+    "JAP": { "country": "Japan", "adjective": "Japanese", "circuit": "Suzuka" },
+    "USA": { "country": "United States", "adjective": "United States", "circuit": "COTA" },
+    "MEX": { "country": "Mexico", "adjective": "Mexican", "circuit": "Mexico City" },
+    "BRA": { "country": "Brazil", "adjective": "Brazilian", "circuit": "Interlagos" },
+    "UAE": { "country": "Abu Dhabi", "adjective": "Abu Dhabi", "circuit": "Yas Marina" },
+    "NED": { "country": "Netherlands", "adjective": "Netherlands", "circuit": "Zandvoort" },
+    "VEG": { "country": "Vegas", "adjective": "Vegas", "circuit": "Las Vegas" },
+    "QAT": { "country": "Qatar", "adjective": "Qatar", "circuit": "Lusail" },
+    "CHI": { "country": "China", "adjective": "Chinese", "circuit": "Shanghai" }
+};
+
+export function getParamMap(data) {
+    return {
+        1: {
+            pole_driver: data.pole_driver,
+            season_year: data.seasonYear,
+            circuit: data.circuit,
+            country: data.country,
+            adjective: data.adjective
+        },
+        2: {
+            winner: data.winnerName,
+            season_year: data.seasonYear,
+            circuit: data.circuit,
+            country: data.country,
+            adjective: data.adjective
+        },
+        4: {
+            driver1: data.driver1,
+            driver2: data.driver2,
+            driver3: data.driver3,
+            team1: data.team1,
+            team2: data.team2,
+            team3: data.team3
+        },
+        6: {
+            driver1: data.driver1,
+            team1: data.team1,
+            team2: data.team2
+        },
+        7:{
+            driver1: data.driver1,
+            team1: data.team1
+        },
+        8: {
+            driver_name: data.driver_name,
+            circuit: data.circuit,
+            country: data.country,
+            adjective: data.adjective,
+            season_year: data.season_year
+        },
+        9: {
+            driver_name: data.driver_name,
+            circuit: data.circuit,
+            country: data.country,
+            adjective: data.adjective,
+            season_year: data.season_year
+        },
+        10: {
+            driver1: data.driver1,
+            team1: data.team1
+        },
+        11:{
+            team1: data.teamId,
+        },
+        12: {
+            team1: data.teamId,
+        },
+        13:{
+            driver1: data.driver1,
+            driver2: data.driver2,
+            team: data.team
+        },
+        14:{
+            driver1: data.driver1,
+            driver2: data.driver2
+        },
+        15:{
+            season_year: data.season,
+            driver1: data.driver1,
+        }
+    };
+}
+
+export const opinionDict = {
+    "0": "Positive",
+    "1": "Neutral",
+    "2": "Negative"
+}
+
 
 // renderer
 export const difficultyConfig = {
