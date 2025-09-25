@@ -108,6 +108,7 @@ const apiKeySection = document.getElementById("apiKeySection");
 
 const apiKeyInput = document.getElementById("apiKeyInput");
 const apiKeyStatus = document.getElementById("apiKeyStatus");
+const removeApiKey = document.getElementById("removeApiKey");
 
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
@@ -1545,12 +1546,14 @@ modPill.addEventListener("click", function () {
     manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
     scriptSelected = 1
     check_selected()
+    manageSaveButton(false)
 })
 
 newsPill.addEventListener("click", function () {
     manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
+    manageSaveButton(false)
 })
 
 document.querySelector(".toolbar-logo-and-title").addEventListener("click", function () {
@@ -1933,8 +1936,11 @@ function manageNewsStatus(valid) {
                 timeRemainingSpan.className = 'modal-text';
                 timeRemainingSpan.innerHTML = `You have: <span class="important-text bold-font">${8 - diffDays} days </span> left of free news generation. Become a <a href="https://www.patreon.com/f1dbeditor" target="_blank">patreon member</a> to continue using this feature!`;
 
-                //insert before the modal text in apiKeySection
-                apiKeySection.querySelector('.modal-text').after(timeRemainingSpan);
+                //insert after modal-subtitle in apiKeySection
+                const subtitle = apiKeySection.querySelector('.modal-subtitle');
+                if (subtitle) {
+                    subtitle.insertAdjacentElement('afterend', timeRemainingSpan);
+                }
             }
         }
         else if (generateNews === "no") {
@@ -1967,7 +1973,7 @@ function checkGenerableNews(validSignature){
             const now = new Date();
             const diffTime = Math.abs(now - firstDate);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            canGenerate = diffDays < 7 ? "provisional" : "no";
+            canGenerate = diffDays < 8 ? "provisional" : "no";
         }
     }
     return canGenerate;
@@ -2082,6 +2088,12 @@ document.addEventListener('DOMContentLoaded', () => {
         initAI(apiKey);
     }
 
+});
+
+removeApiKey.addEventListener('click', () => {
+    localStorage.removeItem("apiKey");
+    apiKeyStatus.classList.remove("api-loaded")
+    initAI(null);
 });
 
 function createMarqueeItem(name, tier) {

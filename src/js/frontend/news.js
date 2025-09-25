@@ -16,6 +16,7 @@ let interval2 = null;
 export function initAI(apiKeyParam) {
   if (!apiKeyParam) {
     console.warn("No API key configured yet");
+    ai = null;
     return null;
   }
   ai = new GoogleGenAI({ apiKey: apiKeyParam });

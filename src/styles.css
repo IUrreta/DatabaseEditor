@@ -50,6 +50,8 @@
   --reddit: #f87444;
   --custom-dif: #52ebbd;
 
+  --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
+
   --amo-1: #bd6962;
   --amo-2: #eec987;
 
@@ -262,7 +264,7 @@ body.light-theme {
   --mentality-negative: #8a8100;
   --mentality-demoralized: #dd3356;
 
-
+  --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
 
   --redbull-primary-transparent: color-mix(in srgb, var(--redbull-primary) 30%, var(--elements));
   --redbull-secondary-transparent: color-mix(in srgb, var(--redbull-secondary) 30%, var(--elements));
@@ -335,6 +337,8 @@ body.og-theme {
   --box-shadow: #00000044;
   --footer-og: #797599;
   --separator: #5f5c77;
+
+  --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
 
   --table-default: #494561;
   --table-default-odd: #3c3952;
@@ -481,6 +485,11 @@ body.og-theme .footer{
 #free-staff::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px !important;
+}
+
+#free-drivers::-webkit-scrollbar-thumb:hover,
+#free-staff::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-hover);
 }
 
 .socials a,
@@ -1275,6 +1284,21 @@ body.og-theme input[type="checkbox"]:checked {
   border-radius: 3px;
 }
 
+#numberMenu::-webkit-scrollbar-thumb:hover,
+#d1Menu::-webkit-scrollbar-thumb:hover,
+#d2Menu::-webkit-scrollbar-thumb:hover,
+#teamMenu::-webkit-scrollbar-thumb:hover,
+#teamContractMenu::-webkit-scrollbar-thumb:hover,
+#raceMenu::-webkit-scrollbar-thumb:hover,
+#raceProbMenu::-webkit-scrollbar-thumb:hover,
+.prob-viewer-data::-webkit-scrollbar-thumb:hover,
+#patchNotesBody::-webkit-scrollbar-thumb:hover,
+.parts-list::-webkit-scrollbar-thumb:hover,
+.engine-modal-body::-webkit-scrollbar-thumb:hover,
+.news-article::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-hover);
+}
+
 #allDrivers {
   overflow-y: hidden;
 }
@@ -1364,6 +1388,10 @@ body.og-theme .dropdown-menu a:hover {
   position: relative;
   align-items: center;
   width: 33%;
+}
+
+.api-key-section .separator{
+  height: 20px;
 }
 
 .separator-3 {
@@ -2407,6 +2435,10 @@ body.og-theme .background{
   border-radius: 3px;
 }
 
+#addTrackMenu::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-hover);
+}
+
 .nav-item {
   cursor: pointer;
 }
@@ -2737,6 +2769,9 @@ DRIVERS TABLE
   border-radius: 3px !important;
 }
 
+.drivers-table-data::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-hover);
+}
 
 
 .drivers-table-row:hover .drivers-table-driver,
@@ -4045,9 +4080,14 @@ body.light-theme .flag, body.light-theme .flag-header img{
   border-radius: 3px;
 }
 
+.staff-list::-webkit-scrollbar-thumb:hover, .news-grid::-webkit-scrollbar-thumb:hover, .records-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-hover);
+}
+
 .staff-list {
   overflow-y: auto;
   height: 610px;
+  margin-right: 4px;
 }
 
 .staff-logo {
@@ -4079,6 +4119,10 @@ body.light-theme .flag, body.light-theme .flag-header img{
 .main-columns-drag-section::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
+}
+
+.main-columns-drag-section::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-hover);
 }
 
 
@@ -4605,10 +4649,8 @@ input.engine-performance-title:focus {
   top: 30px;
   width: 95%;
   transition: all 0.15s;
-}
-
-.parts-list.list-overflow {
-  padding-right: 6px;
+  height: calc(100% - 50px);
+  padding-right: 5px;
 }
 
 
@@ -7526,6 +7568,7 @@ input.disabled {
 #free-drivers,
 #free-staff {
   overflow-y: scroll;
+  margin-right: 4px;
 }
 
 
@@ -7648,7 +7691,7 @@ input.disabled {
   cursor: pointer;
   border-radius: 10px;
   padding: 10px;
-  margin: 10px;
+  margin: 10px 7px;
   color: var(--text-general);
   transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   display: flex;
@@ -11453,10 +11496,49 @@ a.bi-custom-patreon.close-slide-up{
   transform: translateY(0px);
 }
 
-.saved-status i{
+.saved-status i, .remove-key i{
   display: flex;
   font-size: 28px;
   max-height: 28px;
+}
+
+.remove-key{
+  color: var(--modal-text);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 0.15s, transform 0.15s;
+  pointer-events: none;
+  margin-left: -7px;
+}
+
+#savedKeySeparator{
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 0.15s, transform 0.15s;
+  pointer-events: none;
+}
+
+.api-input-and-status:has(.saved-status.api-loaded) .remove-key, .api-input-and-status:has(.saved-status.api-loaded) #savedKeySeparator{
+  opacity: 1;
+  transform: translateY(0px);
+  pointer-events: auto;
+}
+
+.remove-key i, .remove-key span{
+  transition: color 0.15s, transform 0.15s;
+}
+
+.remove-key:hover i, .remove-key:hover span{
+  color: var(--negative-general);
+}
+
+.remove-key:active span{
+  transform: scale(0.95);
 }
 
 .themes-grid{

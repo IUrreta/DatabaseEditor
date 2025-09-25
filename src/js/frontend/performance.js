@@ -430,11 +430,6 @@ export function load_parts_list(data) {
 
         }
         add_new_part_button(list)
-        if (list.scrollHeight > list.clientHeight) {
-            list.classList.add("list-overflow");
-        } else {
-            list.classList.remove("list-overflow");
-        }
     }
 }
 
