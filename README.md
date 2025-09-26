@@ -68,6 +68,11 @@ Friendly user interface that helps you make the modifications you wish for the d
     
 <img width="2351" height="1155" alt="image" src="https://github.com/user-attachments/assets/b50df0de-e9f1-4d3a-8554-95ba5d81524f" />
 
+19. Follow stories from your save with the **NEWS TAB**
+
+<img width="2346" height="1156" alt="image" src="https://github.com/user-attachments/assets/368896bc-5c13-4384-adfc-d40ab61f3b45" />
+
+
 
 > [!CAUTION]
 > For editing the **ORDER OR NUMBER** of races it is still recommended to only do it once before the first race of the season.
