@@ -12738,6 +12738,17 @@ body:has(.active #mod25logo) .one-change {
   margin-bottom: 0px;
 }
 
+@media (max-height: 768px) {
+
+  .expanded .read-button-container{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+}
+
+
+
 .read-button-container{
   display: flex;
   flex-direction: row;
