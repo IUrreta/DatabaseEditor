@@ -947,6 +947,11 @@ export function generateTransferRumorsNews(offers, savedNews) {
 
     const sillySeasonRumorsId = `silly_season_${seasonYear}`;
 
+    if (savedNews[sillySeasonRumorsId]) {
+        newsList.push({ id: sillySeasonRumorsId, ...savedNews[sillySeasonRumorsId] });
+        return newsList;
+    }
+
     const driversArray = Object.values(driversDict);
 
     const image = getImagePath(top3Drivers[0].teamId, top3Drivers[0].driverId, "transfer_generic");
