@@ -1586,6 +1586,7 @@ function getOneQualifyingResults(raceId) {
         (SELECT MAX(res2.QualifyingStage)
         FROM Races_QualifyingResults res2
         WHERE res2.RaceID = ${raceId} AND res2.DriverID = res.DriverID)
+        AND SprintShootout = 0
         ORDER BY res.FinishingPos;
     `
 
