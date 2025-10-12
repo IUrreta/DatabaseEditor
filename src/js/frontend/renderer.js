@@ -725,7 +725,8 @@ const messageHandlers = {
 };
 
 export async function generateNews() {
-    const isValid = await isPatronSignatureValid();
+    let isValid = await isPatronSignatureValid();
+    isValid = isValid === "valid" ? true : false;
     const generateNews = checkGenerableNews(isValid);
     if (generateNews === "no") {
         return;
@@ -1872,35 +1873,39 @@ patreonInput.addEventListener('change', async (e) => {
 
 async function isPatronSignatureValid() {
     const stored = localStorage.getItem('patreonKey');
-    if (!stored) return false;
+    if (!stored) return "missing"; // No hay clave guardada
 
     try {
         const { dateData, signature } = JSON.parse(stored);
-
-        const dataObj = JSON.parse(dateData);
+        if (!dateData || !signature) return "invalid"; // Datos incompletos
 
         const valid = await verifySignature(dateData, signature, PUBLIC_KEY);
-        return valid;
+        return valid ? "valid" : "invalid";
     } catch (err) {
-        return false;
+        console.error("Error verificando firma:", err);
+        return "invalid"; // JSON corrupto o error en verificación
     }
 }
 
 async function checkPatreonStatus() {
 const validSignature = await isPatronSignatureValid();
     init_colors_dict(selectedTheme)
-    isPatronSignatureValid
 
-    if (validSignature) {
+    if (validSignature === "valid") {
         patreonUnlockables.classList.remove("d-none");
         document.getElementById("patreonKeyText").textContent = "Patreon key loaded";
         loadTheme();
+    }
+    else if (validSignature === "invalid") {
+        //put the text saying that maybe the old key is invalid
+        console.log("Patreon key invalid or expired");
     }
     manageNewsStatus(validSignature);
 }
 
 function manageNewsStatus(valid) {
-    const generateNews = checkGenerableNews(valid);
+    let valid2 = valid === "valid";
+    const generateNews = checkGenerableNews(valid2);
     if (generateNews === "yes") {
         const extraApiKeySection = document.querySelector('#extraApiKeySection');
         if (extraApiKeySection) {
