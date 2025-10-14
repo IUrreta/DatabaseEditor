@@ -49,6 +49,7 @@
   --twitter: #51afe9;
   --reddit: #f87444;
   --custom-dif: #52ebbd;
+  --discord: #7289da;
 
   --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
 
@@ -916,6 +917,10 @@ a.bi-twitter-x:hover,
 
 a.bi-cup-hot-fill:hover {
   color: var(--support-me);
+}
+
+a.bi-discord:hover {
+  color: var(--discord);
 }
 
 a.bi-linkedin:hover {
@@ -11766,7 +11771,7 @@ a.bi-custom-patreon.close-slide-up{
 
 .marquee__inner {
   display: flex;
-  animation: scroll 75s linear infinite;
+  animation: scroll 165s linear infinite;
   gap: 1em;
 }
 
