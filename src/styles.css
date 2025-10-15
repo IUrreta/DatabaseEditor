@@ -79,6 +79,7 @@
   --positive-general-clicked: #11ac5e;
   --positive-general-darker: #3f8a6b;
   --positive--general-darker2: #2f6a4b;
+  --random-general: #d4ff6f;
   --h2h-general: #34c297;
   --graph-general: #34bdc2;
   --h2h-detail: #88ebcd;
@@ -12760,6 +12761,10 @@ body:has(.active #mod25logo) .one-change {
   justify-content: flex-end;
 }
 
+.read-button-container:has(.turning-point-div){
+  justify-content: space-between;
+}
+
 
 .read-button{
   border-radius: 5px;
@@ -12925,4 +12930,53 @@ p.news-error-api-key{
 #newsTypeMenu .dropdown-item i.unactive{
   transform: rotate(-90deg);
   opacity: 0;
+}
+
+.turning-point-div{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+}
+
+.turning-point-div .bi{
+  font-size: 18px;
+}
+
+.tp-button{
+  border-radius: 5px;
+  padding: 1px 5px;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.tp-button:hover{
+  transform: scale(1.04);
+}
+
+.tp-button:active{
+  transform: scale(0.96);
+}
+
+.cancel-tp{
+  color: var(--negative-general);
+  background-color: color-mix(in srgb, var(--elements) 60%, var(--negative-general));
+  cursor: pointer;
+  border: 1px solid var(--negative-general);
+}
+
+.approve-tp{
+  color: var(--positive-general);
+  background-color: color-mix(in srgb, var(--elements) 60%, var(--positive-general));
+  cursor: pointer;
+  border: 1px solid var(--positive-general);
+}
+
+.random-tp{
+  color: var(--random-general);
+  background-color: color-mix(in srgb, var(--elements) 60%, var(--random-general));
+  cursor: pointer;
+  border: 1px solid var(--random-general);
 }

@@ -1,0 +1,182 @@
+[
+    {
+        "id": "fia_directive",
+        "new_type": 100,
+        "turning_titles": [
+            "FIA reportedly drafting new technical directive on {{component}}",
+            "Rumors suggest FIA preparing a rule adjustment concerning {{component}}",
+            "Sources indicate FIA is considering action over {{component}} performance",
+            "Potential FIA intervention expected regarding {{component}} regulations",
+            "Whispers in the paddock: FIA to address {{component}} issues soon",
+            "A new technical directive on {{component}} could be imminent, say insiders",
+            "FIA looking into possible changes for {{component}} rules",
+            "Teams brace for potential FIA directive on {{component}} performance"
+        ],
+        "positive_titles": [
+            "FIA enforces new directive affecting {{component}} performance across the grid",
+            "Official: FIA technical directive on {{component}} now in effect",
+            "Teams react as FIA implements new {{component}} rules",
+            "FIA confirms new regulation changes regarding {{component}}",
+            "FIA's new {{component}} directive shakes up the competition",
+            "New FIA rules on {{component}} expected to impact car performance",
+            "FIA's {{component}} directive sparks debate among teams",
+            "FIA's latest technical directive on {{component}} set to change the landscape"
+        ],
+        "negative_titles": [
+            "FIA shelves planned directive on {{component}} after internal review",
+            "Rumored {{component}} directive abandoned following team objections",
+            "No changes to {{component}} regulations after FIA evaluation",
+            "FIA denies reports of imminent {{component}} technical directive",
+            "FIA decides against new {{component}} rules after consultation",
+            "Relief among teams as FIA drops {{component}} directive plans",
+            "FIA opts not to pursue new {{component}} regulations", 
+            "FIA confirms no changes to {{component}} rules at this time"
+        ]
+    },
+    {
+        "id": "mid_season_transfer",
+        "new_type": 101,
+        "turning_titles": [
+            "{{team}} reportedly considering replacing {{driver_out}} with {{driver_in}} mid-season",
+            "Internal tension at {{team}} as rumors link {{driver_in}} to {{driver_out}}’s seat",
+            "Sources suggest {{team}} evaluating a possible swap involving {{driver_out}} and {{driver_in}}",
+            "Speculation grows around {{team}}’s lineup after disappointing results from {{driver_out}}",
+            "Whispers in the paddock: {{driver_in}} could be set to replace {{driver_out}} at {{team}}",
+            "Rumors of a mid-season driver change at {{team}} involving {{driver_out}} and {{driver_in}}",
+            "{{team}} under pressure to consider {{driver_in}} for {{driver_out}}’s seat",
+            "Insiders hint at potential driver shuffle at {{team}} with {{driver_in}} eyeing {{driver_out}}’s position",
+            "'We think about every option' – {{team}} on possible mid-season driver change"
+        ],
+        "positive_titles": [
+            "It’s official: {{driver_in}} replaces {{driver_out}} at {{team}} for the remainder of the season",
+            "{{team}} confirms driver change – {{driver_out}} out, {{driver_in}} in",
+            "{{driver_in}} steps in for {{driver_out}} as {{team}} reshuffles lineup",
+            "Confirmed: {{driver_in}} joins {{team}} mid-season, replacing {{driver_out}}",
+            "{{team}} makes bold move, swaps {{driver_out}} for {{driver_in}}",
+            "{{team}} shakes up lineup with mid-season switch to {{driver_in}}",
+            "HERE WE GO: {{driver_in}} takes over {{driver_out}}’s seat at {{team}}",
+            "{{team}} announces mid-season driver change, {{driver_in}} to replace {{driver_out}}",
+            "'I'm excited for the challenge' – {{driver_in}} on joining {{team}} mid-season"
+        ],
+        "negative_titles": [
+            "{{team}} denies rumors of replacing {{driver_out}} mid-season",
+            "No changes at {{team}} as management reaffirms trust in {{driver_out}}",
+            "Rumors dismissed: {{driver_out}} keeps seat at {{team}} despite speculation",
+            "{{team}} closes talks of a mid-season driver change",
+            "{{team}} stands by {{driver_out}}, quashes replacement rumors",
+            "Relief for {{driver_out}} as {{team}} confirms no driver changes",
+            "{{team}} rebuffs speculation, {{driver_out}} remains in the lineup",
+            "{{team}} puts an end to mid-season driver change rumors, {{driver_out}} safe",
+            "{{team}} reaffirms commitment to {{driver_out}}, denies replacement talks",
+            "'I never felt threatened' – {{driver_out}} on rumors of being replaced at {{team}}"
+        ]
+    },
+    {
+        "id": "investment_takeover",
+        "new_type": 102,
+        "turning_titles": [
+            "Reports suggest major investment from {{country}} into {{team}} on the horizon",
+            "Sources indicate {{team}} in advanced talks with investors from {{country}}",
+            "Rumors of large-scale {{country}} backing for {{team}} gaining traction",
+            "{{team}} reportedly attracting significant financial interest from {{country}}",
+            "Whispers in the paddock: {{team}} could be set for a {{country}} investment deal",
+            "Insiders hint at potential {{country}} consortium investing in {{team}}",
+            "Will {{team}} submit to a takeover bid from {{country}} investors?",
+            "Speculation mounts over possible {{country}} investment in {{team}}"
+        ],
+        "positive_titles": [
+            "Confirmed: {{team}} secures massive investment deal with {{country}} group",
+            "{{country}} investment in {{team}} finalized, major funding boost expected",
+            "New ownership injection – {{team}} officially partners with investors from {{country}}",
+            "Huge financial boost for {{team}} as {{country}} consortium takes stake in the team",
+            "{{team}} announces strategic investment from {{country}} backers",
+            "Game changer: {{team}} welcomes {{country}} investors on board",
+            "{{team}} secures {{country}} funding, eyes ambitious future plans",
+            "BREAKING: {{team}} confirms investment deal with {{country}} group",
+            "'This is just the beginning' – {{team}} on new {{country}} investment partnership"
+        ],
+        "negative_titles": [
+            "{{team}} denies ongoing talks with investors from {{country}}",
+            "Investment rumors dismissed – no deal between {{team}} and {{country}} group",
+            "No agreement reached between {{team}} and potential {{country}} backers",
+            "Sources confirm {{team}} investment deal with {{country}} has collapsed",
+            "{{team}} puts an end to takeover speculation from {{country}} investors",
+            "Relief for {{team}} as {{country}} investment talks fall through",
+            "{{team}} rebuffs {{country}} investment rumors, no deal in sight",
+            "{{team}} confirms no investment agreement with {{country}} group",
+            "'We are not for sale' – {{team}} shuts down {{country}} investment speculation"
+        ]
+    },
+    {
+        "id": "turning_point_dsq",
+        "new_type": 103,
+        "turning_titles": [
+            "FIA reportedly investigating {{team}} for irregularities at the {{race_name}} GP",
+            "Post-race inspection raises questions over {{team}}’s {{component}} compliance",
+            "Sources claim {{team}} could face disqualification from {{race_name}} GP",
+            "Controversy brewing as {{team}} is under FIA scrutiny after {{race_name}} GP",
+            "Whispers in the paddock: {{team}} may be in breach of regulations after {{race_name}} GP",
+            "Rumors of potential penalties for {{team}} following {{race_name}} GP",
+            "Insiders hint at possible disqualification for {{team}} after {{race_name}} Grand Prix",
+            "{{team}} faces FIA probe over {{component}} legality after {{race_name}} GP inspection",
+            "'At the moment we are gathering information' – FIA on {{team}} investigation"
+        ],
+        "positive_titles": [
+            "FIA confirms {{team}} disqualified from {{race_name}} GP following irregularities",
+            "Both {{team}} cars disqualified from {{race_name}} GP – FIA releases statement",
+            "Major blow for {{team}} as post-race penalties confirmed at {{race_name}}",
+            "{{team}} loses {{race_name}} GP results after FIA investigation outcome",
+            "FIA rules against {{team}}, disqualifies them from {{race_name}}",
+            "{{team}} stripped of {{race_name}} GP points after regulatory breach",
+            "Disappointment for {{team}} as FIA enforces disqualification from {{race_name}}",
+            "BREAKING: {{team}} disqualified from {{race_name}} GP after FIA review",
+            "'We don't agree with the decision' – {{team}} responds to {{race_name}} disqualification"
+        ],
+        "negative_titles": [
+            "FIA clears {{team}} of wrongdoing after {{race_name}} investigation",
+            "Investigation closed: {{team}} retains {{race_name}} GP results",
+            "{{team}} exonerated as FIA finds no breach after {{race_name}} review",
+            "Rumors dismissed – no penalties issued to {{team}} after {{race_name}}",
+            "Relief for {{team}} as FIA ends probe with no action taken",
+            "{{team}} avoids disqualification, FIA confirms compliance after {{race_name}}",
+            "{{team}} retains points after FIA investigation finds no irregularities",
+            "{{team}} cleared of any violations following {{race_name}} GP",
+            "'I knew we didn't do anything wrong' – {{team}} on FIA investigation outcome"
+        ]
+    },
+    {
+        "id": "engine_update",
+        "new_type": 104,
+        "turning_titles": [
+            "{{engine_supplier}} preparing major power unit upgrade for next races",
+            "Reports indicate {{engine_supplier}} developing improved engine spec",
+            "Rumors of significant {{engine_supplier}} update spark excitement in the paddock",
+            "Insiders hint at performance boost from upcoming {{engine_supplier}} power unit",
+            "Whispers in the paddock: {{engine_supplier}} set to unveil new engine update",
+            "Sources suggest {{engine_supplier}} working on competitive engine upgrade",
+            "Could {{engine_supplier}}’s new engine spec be a game-changer?",
+            "Speculation grows over potential performance leap from {{engine_supplier}} update",
+            "'I think it's a step in the right direction' – {{engine_supplier}} on upcoming upgrade"
+        ],
+        "positive_titles": [
+            "Success for {{engine_supplier}} as new power unit delivers strong results",
+            "{{engine_supplier}}’s latest engine spec praised for improved performance",
+            "Positive outcome – {{engine_supplier}} upgrade boosts customer teams",
+            "New {{engine_supplier}} engine update proves decisive improvement",
+            "{{engine_supplier}} engine upgrade impresses teams with performance gains",
+            "Teams laud {{engine_supplier}} for effective power unit update",
+            "BREAKING: {{engine_supplier}} engine update shows promising results",
+            "'We are very happy with the progress' – {{engine_supplier}} on new engine spec"
+        ],
+        "negative_titles": [
+            "No improvement seen after {{engine_supplier}} engine update",
+            "{{engine_supplier}} engine upgrade fails to deliver expected gains",
+            "Disappointment as {{engine_supplier}} update shows no performance increase",
+            "{{engine_supplier}} engine spec remains unchanged after recent update",
+            "Relief for rival teams as {{engine_supplier}} upgrade falls short",
+            "{{engine_supplier}} engine update does not meet performance expectations",
+            "{{engine_supplier}} confirms no significant changes after latest upgrade",
+            "'It's not the step we hoped for' – {{engine_supplier}} on engine update results"
+        ]
+    }
+]

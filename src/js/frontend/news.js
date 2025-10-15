@@ -237,6 +237,36 @@ export async function place_news(newsList) {
     newsItem.appendChild(imageContainer);
     titleAndArticle.appendChild(newsTitle);
     newsBody.appendChild(titleAndArticle);
+
+    if (news.turning_point_type !== undefined){
+      const tpDiv = document.createElement('div');
+      tpDiv.classList.add('turning-point-div');
+
+      const cancelButton = document.createElement('div');
+      cancelButton.classList.add('cancel-tp', 'tp-button');
+      const cancelIcon = document.createElement('i');
+      cancelIcon.classList.add('bi', 'bi-x', 'tp-icon');
+      cancelButton.appendChild(cancelIcon);
+      tpDiv.appendChild(cancelButton);
+
+      const randomButton = document.createElement('div');
+      randomButton.classList.add('random-tp', 'tp-button');
+      const randomIcon = document.createElement('i');
+      randomIcon.classList.add('bi', 'bi-question', 'tp-icon');
+      randomButton.appendChild(randomIcon);
+      tpDiv.appendChild(randomButton);
+
+      const approveButton = document.createElement('div');
+      approveButton.classList.add('approve-tp', 'tp-button');
+      const approveIcon = document.createElement('i');
+      approveIcon.classList.add('bi', 'bi-check', 'tp-icon');
+      approveButton.appendChild(approveIcon);
+      tpDiv.appendChild(approveButton);
+
+      readbuttonContainer.appendChild(tpDiv);
+    }
+
+
     readbuttonContainer.appendChild(readButton);
     newsBody.appendChild(readbuttonContainer);
     newsItem.appendChild(newsBody);
