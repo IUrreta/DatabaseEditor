@@ -412,7 +412,7 @@ const workerCommands = {
     postMessage(carPerformanceResponse);
   },
   generateNews: (data, postMessage) => {
-    const news = generate_news(data["news"]);
+    const news = generate_news(data["news"], data["tpState"]);
     postMessage({ responseMessage: "News fetched", content: news });
   },
   updateCombinedDict: (data, postMessage) => {

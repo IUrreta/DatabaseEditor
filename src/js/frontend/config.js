@@ -327,6 +327,11 @@ export function getParamMap(data) {
             season_year: data.season,
             driver1: data.driver1,
         },
+        101:{
+            team: data.team,
+            driver_out: data.driver_out,
+            driver_in: data.driver_in
+        },
         103:{
             team: data.team,
             race_name: data.race_name,

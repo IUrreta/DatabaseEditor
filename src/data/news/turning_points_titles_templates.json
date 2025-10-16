@@ -43,7 +43,7 @@
             "Speculation grows around {{team}}’s lineup after disappointing results from {{driver_out}}",
             "Whispers in the paddock: {{driver_in}} could be set to replace {{driver_out}} at {{team}}",
             "Rumors of a mid-season driver change at {{team}} involving {{driver_out}} and {{driver_in}}",
-            "{{team}} under pressure to consider {{driver_in}} for {{driver_out}}’s seat",
+            "{{team}} is thinking about releasing {{driver_out}} – could {{driver_in}} be the replacement?",
             "Insiders hint at potential driver shuffle at {{team}} with {{driver_in}} eyeing {{driver_out}}’s position",
             "'We think about every option' – {{team}} on possible mid-season driver change"
         ],

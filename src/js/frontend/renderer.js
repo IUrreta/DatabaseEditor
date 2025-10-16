@@ -738,9 +738,12 @@ export async function generateNews() {
     const savedNews = localStorage.getItem(newsName) || "{}";
     const parsedNews = JSON.parse(savedNews);
 
+    const tpState = ensureTurningPointsStructure(saveName);
+
 
     const command = new Command("generateNews", {
         news: parsedNews,
+        tpState: tpState,
     });
     command.execute();
 
@@ -780,6 +783,32 @@ export async function generateNews() {
     startGeneralNewsProgress(progressDiv);
     newsView.appendChild(loaderDiv);
 }
+
+function ensureTurningPointsStructure(saveName) {
+    const baseName = saveName.split(".")[0];
+    const key = `${baseName}_tps`;
+
+    if (localStorage.getItem(key)){
+        let data = JSON.parse(localStorage.getItem(key));
+        return data;
+    }
+
+    const defaultStructure = {
+        checkedRaces: [],
+        ilegalRaces: [],
+        transfers: {
+            6: null,
+            7: null,
+            8: null
+        }
+    };
+
+    localStorage.setItem(key, JSON.stringify(defaultStructure));
+
+    return defaultStructure;
+}
+
+
 
 export function startGeneralNewsProgress(progressDiv) {
     let width = 0;
