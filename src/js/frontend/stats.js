@@ -7,6 +7,9 @@ export let statPanelShown = 0;
 export let typeOverall = "driver";
 export let typeEdit;
 let oldNum;
+let editStatsItems = [];
+let timer;
+const clearIcon2 = document.querySelector("#filterContainer .bi-x");
 
 export function setStatPanelShown(value) {
     statPanelShown = value;
@@ -28,7 +31,7 @@ export function removeStatsDrivers(staffOnly = false) {
         if (elem.id === "fulldriverlist" && staffOnly === false) {
             elem.innerHTML = ""
         }
-        else if(elem.id !== "fulldriverlist") {
+        else if (elem.id !== "fulldriverlist") {
             elem.innerHTML = ""
         }
     })
@@ -132,6 +135,15 @@ export function place_drivers_editStats(driversArray) {
     manage_order(0)
 
 }
+
+export function initStatsDrivers() {
+    editStatsItems = [...document.querySelectorAll(".normal-driver")].map(el => {
+        const first = el.children[0]?.children[0]?.textContent || "";
+        const last = el.children[0]?.children[1]?.textContent || "";
+        return { el, name: (first + " " + last).toLowerCase() };
+    });
+}
+
 
 
 /**
@@ -422,27 +434,15 @@ document.querySelectorAll(".age-holder .bi-dash-lg").forEach(function (elem) {
 });
 
 document.querySelector("#nameFilter").addEventListener("input", function (event) {
-    let text = event.target.value
-    if (text !== "") {
-        document.querySelector("#filterContainer").querySelector(".bi-x").classList.remove("d-none")
-    }
-    else {
-        document.querySelector("#filterContainer").querySelector(".bi-x").classList.add("d-none")
-    }
-    let elements = document.querySelectorAll(".normal-driver")
-    elements.forEach(function (elem) {
-        let first_name = elem.children[0].children[0].innerText
-        let last_name = elem.children[0].children[1].innerText
-        let full_name = first_name + " " + last_name
-        let minus = full_name.toLowerCase()
-        let name = text.toLowerCase()
-        if (minus.includes(name)) {
-            elem.classList.remove("d-none")
-        }
-        else {
-            elem.classList.add("d-none")
-        }
-    })
+    const val = event.target.value;
+    clearIcon2.classList.toggle("d-none", val === "");
+
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+        const q = val.trim().toLowerCase();
+        if (!q) { for (const { el } of editStatsItems) el.classList.remove("d-none"); return; }
+        for (const { el, name } of editStatsItems) el.classList.toggle("d-none", !name.includes(q));
+    }, 150);
 })
 
 document.querySelectorAll(".text-filter-container .bi-x").forEach(function (elem) {

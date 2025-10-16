@@ -8,7 +8,8 @@ import {
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict } from './config';
 import {
     freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
-    manage_modal
+    manage_modal,
+    initFreeDriversElems
 } from './transfers';
 import { load_calendar } from './calendar';
 import {
@@ -18,7 +19,8 @@ import {
 } from './performance';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
-    typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups
+    typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups,
+    initStatsDrivers
 } from './stats';
 import {
     resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
@@ -617,6 +619,8 @@ const messageHandlers = {
         place_staff(message);
         sortList("free-staff")
         place_staff_editStats(message);
+        initFreeDriversElems();
+        initStatsDrivers();
     },
     "Calendar fetched": (message) => {
         load_calendar(message)

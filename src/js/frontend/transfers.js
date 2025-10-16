@@ -19,6 +19,10 @@ const freeStaffDiv = document.getElementById("free-staff");
 const f2DriversDiv = document.getElementById("f2-drivers");
 const f3DriversDiv = document.getElementById("f3-drivers");
 
+const clearIcon = document.querySelector("#filterTransfersContainer .bi-x");
+let freeDriverItems = []
+let t;
+
 const autoContractToggle = document.getElementById("autoContractToggle")
 
 const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
@@ -129,6 +133,7 @@ export function place_drivers(driversArray) {
         document.getElementById(divPosition).appendChild(newDiv)
 
     })
+
 
 }
 
@@ -262,6 +267,18 @@ export function place_staff(staffArray) {
 
 
     })
+}
+
+export function initFreeDriversElems() {
+    freeDriverItems = [
+        ...document.querySelectorAll("#free-drivers .free-driver"),
+        ...document.querySelectorAll("#free-staff .free-driver"),
+    ].map(el => {
+        const first = el.children[0]?.textContent || "";
+        const last = el.children[1]?.textContent || "";
+        const full = (first + " " + last).toLowerCase();
+        return { el, name: full };
+    });
 }
 
 document.querySelectorAll("#stafftransfersMenu a").forEach(function (elem) {
@@ -983,43 +1000,22 @@ document.getElementById("cancelButton").addEventListener('click', function () {
     setTimeout(clearModal, 500);
 })
 
-document.querySelector("#nameFilterTransfer").addEventListener("input", function (event) {
-    let text = event.target.value
-    if (text !== "") {
-        document.querySelector("#filterTransfersContainer").querySelector(".bi-x").classList.remove("d-none")
+document.querySelector("#nameFilterTransfer").addEventListener("input", (e) => {
+  const val = e.target.value;
+  clearIcon.classList.toggle("d-none", val === "");
+
+  clearTimeout(t);
+  t = setTimeout(() => {
+    const q = val.trim().toLowerCase();
+    if (!q) {
+      for (const {el} of freeDriverItems) el.classList.remove("d-none");
+      return;
     }
-    else {
-        document.querySelector("#filterTransfersContainer").querySelector(".bi-x").classList.add("d-none")
+    for (const {el, name} of freeDriverItems) {
+      el.classList.toggle("d-none", !name.includes(q));
     }
-    let driverElements = document.querySelectorAll("#free-drivers .free-driver")
-    driverElements.forEach(function (elem) {
-        let first_name = elem.children[0].innerText
-        let last_name = elem.children[1].innerText
-        let full_name = first_name + " " + last_name
-        let minus = full_name.toLowerCase()
-        let name = text.toLowerCase()
-        if (minus.includes(name)) {
-            elem.classList.remove("d-none")
-        }
-        else {
-            elem.classList.add("d-none")
-        }
-    })
-    let staffElements = document.querySelectorAll("#free-staff .free-driver")
-    staffElements.forEach(function (elem) {
-        let first_name = elem.children[0].innerText
-        let last_name = elem.children[1].innerText
-        let full_name = first_name + " " + last_name
-        let minus = full_name.toLowerCase()
-        let name = text.toLowerCase()
-        if (minus.includes(name)) {
-            elem.classList.remove("d-none")
-        }
-        else {
-            elem.classList.add("d-none")
-        }
-    })
-})
+  }, 150);
+});
 
 document.querySelector("#filterIconTransfers").addEventListener("click", function () {
     document.querySelector(".category-filters").classList.toggle("show")
