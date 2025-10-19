@@ -467,11 +467,21 @@ const workerCommands = {
   approveTurningPoint: (data, postMessage) => {
     const turningPointData = data.turningPointData;
     const type = data.type;
-    const originalDate = data.originalDate;
+    const maxDate = data.maxDate;
 
-    const newResponse = generateTurningResponse(turningPointData, type, originalDate, "positive");
+    const newResponse = generateTurningResponse(turningPointData, type, maxDate, "positive");
+    
 
     postMessage({ responseMessage: "Turning point positive", content: newResponse, isEditCommand: true, unlocksDownload: true });
+  },
+  cancelTurningPoint: (data, postMessage) => {
+    const turningPointData = data.turningPointData;
+    const type = data.type;
+    const maxDate = data.maxDate;
+
+    const newResponse = generateTurningResponse(turningPointData, type, maxDate, "negative");
+
+    postMessage({ responseMessage: "Turning point negative", content: newResponse, isEditCommand: true, unlocksDownload: true });
   }
 
 };

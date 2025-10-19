@@ -334,8 +334,10 @@ export function getParamMap(data) {
         },
         103:{
             team: data.team,
-            race_name: data.race_name,
-            component: data.component
+            adjective: data.adjective,
+            component: data.component,
+            country: data.country,
+            circuit: data.circuit
         }
     };
 }

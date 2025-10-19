@@ -82,6 +82,8 @@ export async function place_news(newsAndTurningPoints) {
   let turningPointState = newsAndTurningPoints.turningPointState;
   await finishGeneralLoader();
 
+  let maxDate;
+
   saveNews(newsList);
   saveTurningPoints(turningPointState);
   newsGrid.innerHTML = '';
@@ -241,7 +243,7 @@ export async function place_news(newsAndTurningPoints) {
     titleAndArticle.appendChild(newsTitle);
     newsBody.appendChild(titleAndArticle);
 
-    if (news.turning_point_type !== undefined) {
+    if (news.turning_point_type === "original") {
       const tpDiv = document.createElement('div');
       tpDiv.classList.add('turning-point-div');
 
@@ -251,6 +253,32 @@ export async function place_news(newsAndTurningPoints) {
       cancelIcon.classList.add('bi', 'bi-x', 'tp-icon');
       cancelButton.appendChild(cancelIcon);
       tpDiv.appendChild(cancelButton);
+
+      cancelButton.addEventListener('click', async () => {
+        randomButton.remove();
+        approveButton.remove();
+        cancelButton.classList.add('tp-button-selected');
+
+        const resultSpan = document.createElement('span');
+        resultSpan.classList.add('tp-result-span');
+        resultSpan.innerText = "Cancelled";
+        cancelButton.innerHTML = '';
+        cancelButton.appendChild(resultSpan);
+
+        cancelButton.replaceWith(cancelButton.cloneNode(true));
+        newsList[index].turning_point_type = "cancelled";
+
+        const command = new Command("cancelTurningPoint", {
+          turningPointData: news.data,
+          type: news.type,
+          maxDate: maxDate
+        });
+        let newResp = await command.promiseExecute();
+        place_turning_outcome(newResp.content);
+        newsList.push(newResp.content);
+
+        saveNews(newsList);
+      });
 
       const randomButton = document.createElement('div');
       randomButton.classList.add('random-tp', 'tp-button');
@@ -280,16 +308,32 @@ export async function place_news(newsAndTurningPoints) {
 
         //remove the eventListener
         approveButton.replaceWith(approveButton.cloneNode(true));
+        newsList[index].turning_point_type = "approved";
 
         const command = new Command("approveTurningPoint", {
           turningPointData: news.data,
           type: news.type,
-          originalDate: news.date
+          maxDate: maxDate
         });
-        let newResp = await command.promiseExecute();
+        const newResp = await command.promiseExecute();
         place_turning_outcome(newResp.content);
+        newsList.push(newResp.content);
+
+        saveNews(newsList);
       });
 
+      readbuttonContainer.appendChild(tpDiv);
+    }
+    else if (news.turning_point_type === "approved") {
+      const tpDiv = document.createElement('div');
+      tpDiv.classList.add('turning-point-div');
+      const approvedButton = document.createElement('div');
+      approvedButton.classList.add('approve-tp', 'tp-button', 'tp-button-selected');
+      const approvedSpan = document.createElement('span');
+      approvedSpan.classList.add('tp-result-span');
+      approvedSpan.innerText = "Approved";
+      approvedButton.appendChild(approvedSpan);
+      tpDiv.appendChild(approvedButton);
       readbuttonContainer.appendChild(tpDiv);
     }
 
@@ -315,7 +359,9 @@ export async function place_news(newsAndTurningPoints) {
       newsItem.style.opacity = '1';
     }, 1500);
 
-
+    if (!maxDate || news.date > maxDate) {
+      maxDate = news.date;
+    }
   });
 
 }
@@ -335,12 +381,12 @@ export async function place_turning_outcome(turningPointResponse) {
   const imageContainer = document.createElement('div');
   imageContainer.classList.add('news-image-container');
 
-  manage_overlay(imageContainer, news.overlay, news.data, news.image);
+  manage_overlay(imageContainer, turningPointResponse.overlay, turningPointResponse.data, turningPointResponse.image);
 
   const image = document.createElement('img');
   image.classList.add('news-image');
-  image.setAttribute('data-src', news.image);
-  image.src = news.image;
+  image.setAttribute('data-src', turningPointResponse.image);
+  image.src = turningPointResponse.image;
   image.setAttribute("loading", "lazy");
 
   const readbuttonContainer = document.createElement('div');
@@ -367,7 +413,7 @@ export async function place_turning_outcome(turningPointResponse) {
     const calendarIcon = document.createElement('i');
     calendarIcon.classList.add('bi', 'bi-calendar-event',);
     const dateSpan = document.createElement('span');
-    const date = excelToDate(news.date);
+    const date = excelToDate(turningPointResponse.date);
 
 
     const day = String(date.getDate()).padStart(2, '0');
@@ -478,9 +524,83 @@ export async function place_turning_outcome(turningPointResponse) {
   
 
   //append it at the start of the news grid
-  newsGrid.insertBefore(newsItem, newsGrid.firstChild);
+  prependAnimated(newsGrid, newsItem, 250, 'cubic-bezier(.2,.8,.2,1)');
 }
 
+function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
+  // 1) Hijos actuales y posiciones BEFORE
+  const oldChildren = Array.from(container.children);
+  const before = new Map();
+  oldChildren.forEach(el => before.set(el, el.getBoundingClientRect()));
+
+  // 2) Inserta el nuevo al principio (todavía sin transición)
+  container.insertBefore(newEl, container.firstChild);
+
+  // 3) Forzamos reflow tras el insert (importante)
+  //    Leer una propiedad de layout obliga al navegador a calcular posiciones.
+  //    offsetHeight / getBoundingClientRect / getComputedStyle valen.
+  void container.offsetHeight;
+
+  // 4) Posiciones AFTER de los elementos que ya estaban
+  const after = new Map();
+  oldChildren.forEach(el => after.set(el, el.getBoundingClientRect()));
+
+  // 5) Preparar el NUEVO para entrar desde arriba (sin transición aún)
+  const newRect = newEl.getBoundingClientRect();
+  newEl.style.willChange = 'transform, opacity';
+  newEl.style.transform = `translateY(-${newRect.height}px)`;
+  newEl.style.opacity = '0';
+
+  // 6) Preparar los ANTIGUOS con el delta (sin transición aún)
+  oldChildren.forEach(el => {
+    const a = after.get(el);
+    const b = before.get(el);
+    if (!a || !b) return;
+    const dx = b.left - a.left;
+    const dy = b.top  - a.top;
+    if (dx === 0 && dy === 0) return;
+    el.style.willChange = 'transform';
+    el.style.transform = `translate(${dx}px, ${dy}px)`;
+  });
+
+  // 7) Forzamos reflow otra vez para “congelar” los transforms iniciales
+  void container.offsetHeight;
+
+  // 8) Activamos transición y “soltamos” a 0 para que animen
+  newEl.style.transition = `transform ${duration}ms ${easing}, opacity ${duration}ms ${easing}`;
+  oldChildren.forEach(el => {
+    el.style.transition = `transform ${duration}ms ${easing}`;
+  });
+
+  // Usar rAF ayuda a que el navegador separe bien los pasos
+  requestAnimationFrame(() => {
+    newEl.style.transform = 'translate(0, 0)';
+    newEl.style.opacity = '1';
+    oldChildren.forEach(el => {
+      el.style.transform = 'translate(0, 0)';
+    });
+  });
+
+  // 9) Limpieza al terminar
+  const clean = (el, prop) => (e) => {
+    if (e.propertyName !== prop) return;
+    el.style.transition = '';
+    el.style.transform = '';
+    el.style.willChange = '';
+    if (el === newEl) el.style.opacity = '';
+    el.removeEventListener('transitionend', cleanupFns.get(el));
+    cleanupFns.delete(el);
+  };
+  const cleanupFns = new Map();
+  oldChildren.forEach(el => {
+    const fn = clean(el, 'transform');
+    cleanupFns.set(el, fn);
+    el.addEventListener('transitionend', fn);
+  });
+  const newFn = clean(newEl, 'opacity');
+  cleanupFns.set(newEl, newFn);
+  newEl.addEventListener('transitionend', newFn);
+}
 
 
 async function manageRead(newData, newsList, barProgressDiv, interval) {

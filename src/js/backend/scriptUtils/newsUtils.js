@@ -64,7 +64,17 @@ export function generate_news(savednews, turningPointState) {
 
     const midSeasonTransfersTurningPointNews = generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, savednews, turningPointState);
 
-    let newsList = [...raceNews || [], ...qualiNews || [], ...fakeTransferNews || [], ...bigConfirmedTransfersNews || [], ...contractRenewalsNews || [], ...comparisonNews || [], ...seasonReviews || [], ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...dsqTurningPointNews || [], ...midSeasonTransfersTurningPointNews || []];
+    let turningPointOutcomes = [];
+    if (Object.keys(savednews).length > 0) {
+        turningPointOutcomes = Object.entries(savednews)
+            .filter(([_, n]) => n.type && n.type.startsWith("turning_point_outcome"))
+            .map(([id, n]) => ({ id, ...n }));
+    }
+
+    let newsList = [...raceNews || [], ...qualiNews || [], ...fakeTransferNews || [],
+    ...bigConfirmedTransfersNews || [], ...contractRenewalsNews || [], ...comparisonNews || [], ...seasonReviews || [],
+    ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...dsqTurningPointNews || [], ...midSeasonTransfersTurningPointNews || [],
+    ...turningPointOutcomes || []];
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
@@ -74,30 +84,33 @@ export function generate_news(savednews, turningPointState) {
     };
 }
 
-export function generateTurningResponse(turningPointData, type, originalDate, outcome) {
+export function generateTurningResponse(turningPointData, type, maxDate, outcome) {
     let newEntry;
     if (type === "turning_point_transfer") {
         //manage the transfer
     } else if (type === "turning_point_dsq") {
-        const pointsReg = fetchPointsRegulations();
+        if (outcome === "positive") {
+            const pointsReg = fetchPointsRegulations();
 
-        disqualifyTeamInRace({
-            raceId: turningPointData.race_id,
-            teamId: turningPointData.teamId,
-            queryDB,
-            pointsReg
-        });
+            disqualifyTeamInRace({
+                raceId: turningPointData.race_id,
+                teamId: turningPointData.teamId,
+                queryDB,
+                pointsReg
+            });
+        }
 
         const entryId = `turning_point_outcome_dsq_${turningPointData.race_id}`;
         const title = generateTurningPointTitle(turningPointData, 103, outcome);
-        const image = null;
+        const image = getImagePath(null, null, "dsq");
+
 
         newEntry = {
             id: entryId,
             title,
             image,
             data: turningPointData,
-            date: originalDate + 2,
+            date: maxDate + 1,
             turning_point_type: outcome,
             type: "turning_point_outcome_dsq"
         }
@@ -384,7 +397,9 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
 
     const titleData = {
         team: teamName,
-        race_name: getCircuitInfo(raceId).adjective,
+        adjective: getCircuitInfo(raceId).adjective,
+        circuit: getCircuitInfo(raceId).circuit,
+        country: getCircuitInfo(raceId).country,
         race_id: raceId,
         component: component,
         teamId: teamId
@@ -393,7 +408,7 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
     turningPointState.ilegalRaces.push(titleData);
 
     const title = generateTurningPointTitle(titleData, 103, "original");
-    const image = null;
+    const image = getImagePath(null, null, "dsq");
 
     const newEntry = {
         id: entryId,
@@ -2146,6 +2161,12 @@ function getImagePath(teamId, code, type) {
         //number bnetween 1 and 8 included 8
         const randomNum = getRandomInt(1, 8);
         return `./assets/images/news/${randomNum}_shot.webp`;
+    }
+    else if (type === "dsq") {
+        const randomNum = getRandomInt(1, 8);
+        console.log("full path:", `./assets/images/news/dsq_${randomNum}.webp`);
+        return `./assets/images/news/dsq_${randomNum}.webp`;
+
     }
 }
 
