@@ -68,8 +68,45 @@ export function generate_news(savednews, turningPointState) {
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
-    return newsList;
+    return {
+        newsList,
+        turningPointState
+    };
 }
+
+export function generateTurningResponse(turningPointData, type, originalDate, outcome) {
+    let newEntry;
+    if (type === "turning_point_transfer") {
+        //manage the transfer
+    } else if (type === "turning_point_dsq") {
+        const pointsReg = fetchPointsRegulations();
+
+        disqualifyTeamInRace({
+            raceId: turningPointData.race_id,
+            teamId: turningPointData.teamId,
+            queryDB,
+            pointsReg
+        });
+
+        const entryId = `turning_point_outcome_dsq_${turningPointData.race_id}`;
+        const title = generateTurningPointTitle(turningPointData, 103, outcome);
+        const image = null;
+
+        newEntry = {
+            id: entryId,
+            title,
+            image,
+            data: turningPointData,
+            date: originalDate + 2,
+            turning_point_type: outcome,
+            type: "turning_point_outcome_dsq"
+        }
+
+    }
+
+    return newEntry;
+}
+
 
 function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, savednews = {}, turningPointState = {}) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
@@ -127,17 +164,17 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
     const randomTeam = randomPick(teamsWithImbalance);
     const randomTeamName = combined_dict[randomTeam] || "Unknown Team";
 
-    const entryId = `turning_point_mid_season_transfer_${currentMonth}`;
+    const entryId = `turning_point_transfer_${currentMonth}`;
 
-    // if (savednews[entryId]) {
-    //     return [savednews[entryId]];
-    // }
+    if (savednews[entryId]) {
+        return [savednews[entryId]];
+    }
 
     console.log("Selected team for mid-season transfer TP:", randomTeamName);
 
     //the driver from the randomteam with less points
     let driverOut = teamsById[randomTeam] ? Object.entries(teamsById[randomTeam].drivers).sort((a, b) => a[1] - b[1])[0] : null;
-    let driverIn;
+    let driverIn, driverSubstitute;
 
     if (randomTeam === 3) {
         if (combined_dict[8] === "Alpha Tauri" || combined_dict[8] === "Visa Cashapp RB") { //red bull special case
@@ -148,7 +185,9 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
             const freeAgents = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID
                     FROM Staff_BasicData bas
                     JOIN Drivers dri ON bas.StaffID = dri.StaffID
-                    WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)`, 'allRows');
+                    JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
+                    WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)
+                    AND gd.Retired = 0`, 'allRows');
             if (freeAgents.length) {
                 for (const fa of freeAgents) {
                     const overall = getDriverOverall(fa[2]);
@@ -173,7 +212,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
             const reserveDrivers = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
                 FROM Staff_Contracts con
                 JOIN Staff_BasicData bas ON con.StaffID = bas.StaffID
-                JOIN Drivers dri ON con.StaffID = dri.StaffID
+                JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
                 WHERE con.TeamID = ${randomTeam} AND con.ContractType = 1 AND con.PosInTeam > 2`, 'allRows');
             if (reserveDrivers.length) {
                 const randomReserve = randomPick(reserveDrivers);
@@ -181,36 +220,70 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
                 driverIn = [nameFormatted, driverId];
                 console.log("Driver OUT:", driverOut, "Driver IN (reserve):", driverIn);
             }
-            else if (top4Teams.includes(randomTeam)) {
-                //sign the best free agent available (drivers that are in driverData but not appear in contracts)
-                const freeAgents = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID
+        }
+        else if (top4Teams.includes(randomTeam)) {
+            //sign the best free agent available (drivers that are in driverData but not appear in contracts)
+            const freeAgents = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID
                     FROM Staff_BasicData bas
-                    JOIN Drivers dri ON bas.StaffID = dri.StaffID
-                    WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)`, 'allRows');
-                if (freeAgents.length) {
-                    for (const fa of freeAgents) {
-                        const overall = getDriverOverall(fa[2]);
-                        fa.push(overall);
-                    }
-                    freeAgents.sort((a, b) => b[3] - a[3]);
-                    driverIn = [freeAgents[0][2], freeAgents[0][3]];
-                    console.log("Driver OUT:", driverOut, "Driver IN (free agent):", driverIn);
+                    JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+                    JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
+                    WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)
+                    AND gd.Retired = 0`, 'allRows');
+            if (freeAgents.length) {
+                for (const fa of freeAgents) {
+                    const overall = getDriverOverall(fa[2]);
+                    fa.push(overall);
                 }
+                freeAgents.sort((a, b) => b[3] - a[3]);
+                driverIn = [freeAgents[0][2], freeAgents[0][3]];
+                console.log("Driver OUT:", driverOut, "Driver IN (free agent):", driverIn);
             }
         }
         else {
-            //get the driver from the bottom 3 teams with most points
+            //get the driver from the bottom 3 teams with most points (can't be from the same team as driverOut)
             const candidates = [];
-            for (const tId of bottom3Teams) {
+            for (const tId of bottom3Teams.filter(tid => tid != randomTeam)) {
                 if (teamsById[tId]) {
                     for (const [dId, pts] of Object.entries(teamsById[tId].drivers)) {
-                        candidates.push({ driverId: dId, points: pts });
+                        candidates.push({ driverId: dId, points: pts, teamId: tId });
                     }
                 }
             }
             candidates.sort((a, b) => b.points - a.points);
             driverIn = candidates[0] ? [candidates[0].driverId, candidates[0].points] : null;
             console.log("Driver OUT:", driverOut, "Driver IN (bottom 3 teams):", driverIn);
+            //get the team of the driverIN
+            const teamId = candidates[0].teamId;
+
+            //sign a reserve driver from that team
+            const reserveDrivers = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
+                FROM Staff_Contracts con
+                JOIN Staff_BasicData bas ON con.StaffID = bas.StaffID
+                JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
+                WHERE con.TeamID = ${teamId} AND con.ContractType = 1 AND con.PosInTeam > 2`, 'allRows');
+            if (reserveDrivers.length) {
+                const randomReserve = randomPick(reserveDrivers);
+                const [nameFormatted, driverId] = formatNamesSimple(randomReserve);
+                driverSubstitute = [nameFormatted, driverId];
+                console.log("Driver SUBSTITUTE for driver IN:", driverSubstitute);
+            }
+            else {
+                const freeAgents = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID
+                    FROM Staff_BasicData bas
+                    JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+                    JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
+                    WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)
+                    AND gd.Retired = 0`, 'allRows');
+                if (freeAgents.length) {
+                    for (const fa of freeAgents) {
+                        const overall = getDriverOverall(fa[2]);
+                        fa.push(overall);
+                    }
+                    freeAgents.sort((a, b) => b[3] - a[3]);
+                    driverSubstitute = [freeAgents[0][2], freeAgents[0][3]];
+                    console.log("Driver SUBSTITUTE for driver IN:", driverSubstitute);
+                }
+            }
         }
     }
 
@@ -227,12 +300,26 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
     driverInName.push(driverIn[0], driverIn[1]);
     driverInName = formatNamesSimple(driverInName || ["Unknown", "Driver"]);
 
-    const newData  = {
+    let driverSubstituteName = [];
+    if (driverSubstitute) {
+        console.log("Fetching name for substitute driver:", driverSubstitute);
+        driverSubstituteName = queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ${driverSubstitute[0]}`, 'singleRow');
+        driverSubstituteName.push(driverSubstitute[0], driverSubstitute[1]);
+        driverSubstituteName = formatNamesSimple(driverSubstituteName || ["Unknown", "Driver"]);
+    }
+
+    const newData = {
         team: randomTeamName,
         teamId: randomTeam,
         driver_out: driverOutName[0],
-        driver_in: driverInName[0]
+        driver_out_id: driverOutName[1],
+        driver_in: driverInName[0],
+        driver_in_id: driverInName[1],
+        driver_substitute: driverSubstituteName ? driverSubstituteName[0] : null,
+        driver_substitute_id: driverSubstituteName ? driverSubstituteName[1] : null
     }
+
+    turningPointState.transfers[6] = newData; //tendria que ser currentMonth, pero para pruebas lo dejo fijo en junio
 
     const title = generateTurningPointTitle(newData, 101, "original");
 
@@ -242,10 +329,9 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
         image: null,
         data: newData,
         date: excelDate,
-        turning_point_type: "original"
+        turning_point_type: "original",
+        type: "turning_point_transfer"
     };
-
-
 
 
 
@@ -255,9 +341,18 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
 function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointState = {}) {
     const last3Races = racesDone.slice(-3);
 
-    //if the last 3 races are not in turningPointState.checkedRaces, add them, if they all are, return []
+    //if the last 3 races are not in turningPointState.checkedRaces, add them, if they all are, return the rray with ilegal races news
     if (turningPointState.checkedRaces && last3Races.every(r => turningPointState.checkedRaces.includes(r))) {
-        return [];
+        //for every ilegal race, get savedNews entry
+        const ilegalRacesNewsArray = turningPointState.ilegalRaces.map(raceData => {
+            const entryId = `turning_point_dsq_${raceData.race_id}`;
+            if (savednews[entryId]) {
+                return { id: entryId, ...savednews[entryId] };
+            }
+        });
+
+        return ilegalRacesNewsArray;
+
     }
 
     for (const r of last3Races) {
@@ -290,7 +385,9 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
     const titleData = {
         team: teamName,
         race_name: getCircuitInfo(raceId).adjective,
-        component: component
+        race_id: raceId,
+        component: component,
+        teamId: teamId
     }
 
     turningPointState.ilegalRaces.push(titleData);
@@ -302,8 +399,10 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
         id: entryId,
         title,
         image,
+        data: titleData,
         date: raceDate + 2,
-        turning_point_type: "original"
+        turning_point_type: "original",
+        type: "turning_point_dsq"
     }
 
 
@@ -2245,15 +2344,195 @@ export function getPreviouslyDrivenTeams(driverId) {
     return teams;
 }
 
+function buildPointsTable(positionAndPointsRows) {
+    // rows: [RacePos, Points]
+    const tbl = new Map();
+    for (const [pos, pts] of positionAndPointsRows) {
+        tbl.set(Number(pos), Number(pts) || 0);
+    }
+    return tbl;
+}
+
+function getBasePointsForPos(pos, pointsTable, doublePoints) {
+    const base = pointsTable.get(pos) ?? 0;
+    return doublePoints ? base * 2 : base;
+}
+
+// ---- Fastest Lap (FastestLap en segundos) ----
+function getFastestLapHolderBySeconds(raceId, queryDB) {
+    const row = queryDB(`
+    SELECT DriverID 
+    FROM Races_Results
+    WHERE RaceID = ${raceId} AND FastestLap IS NOT NULL AND FastestLap > 0
+    ORDER BY FastestLap ASC
+    LIMIT 1
+  `, 'singleRow');
+    return row ? Number(row[0]) : null;
+}
+
+/**
+ * Descalifica al equipo y recalcula todo lo necesario (pilotos + constructores + vuelta rápida).
+ *
+ * @param {Object} params
+ * @param {number} params.raceId
+ * @param {number} params.teamId
+ * @param {Function} params.queryDB
+ * @param {Object} params.pointsReg - objeto de fetchPointsRegulations()
+ */
+function disqualifyTeamInRace({
+    raceId,
+    teamId,
+    queryDB,
+    pointsReg,
+}) {
+    // 0) Contexto temporada
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const seasonId = daySeason?.[1];
+
+    // 1) Config de puntos
+    const pointsTable = buildPointsTable(pointsReg.positionAndPoints);
+    const flEnabled = Number(pointsReg.fastestLapBonusPoint) === 1;
+    const doublePts = pointsReg.isLastraceDouble ? true : false; //falta añadir que si la regulacion esta activa Y ES LA ULTIMA CARRERA
+
+    // 2) Estado inicial de la carrera
+    const allRes = queryDB(`
+    SELECT DriverID, TeamID, FinishingPos, Points, IFNULL(DNF,0) AS DNF, FastestLap
+    FROM Races_Results
+    WHERE RaceID = ${raceId}
+    ORDER BY FinishingPos ASC
+  `, 'allRows') || [];
+    if (!allRes.length) return;
+
+    const prevRacePoints = new Map(); // DriverID -> puntos antes
+    const driverTeam = new Map(); // DriverID -> TeamID
+    for (const r of allRes) {
+        prevRacePoints.set(Number(r[0]), Number(r[3]) || 0);
+        driverTeam.set(Number(r[0]), Number(r[1]));
+    }
+
+    // Identifica DSQ del teamId
+    const dsqRows = allRes.filter(r => Number(r[1]) === Number(teamId));
+    if (!dsqRows.length) return;
+    const dsqIds = new Set(dsqRows.map(r => Number(r[0])));
+
+    // 1) Offset temporal a TODA la carrera para no violar UNIQUE
+    queryDB(`
+    UPDATE Races_Results
+    SET FinishingPos = FinishingPos + 1000
+    WHERE RaceID = ${raceId}
+  `);
+
+    // 2) Construye el nuevo orden completo
+    const classified = allRes
+        .filter(r => r[4] === 0 && !dsqIds.has(Number(r[0])))
+        .sort((a, b) => a[2] - b[2]); // por FinishingPos original
+
+    const dnfsOther = allRes
+        .filter(r => r[4] === 1 && !dsqIds.has(Number(r[0])))
+        .sort((a, b) => a[2] - b[2]); // conserva su orden relativo
+
+    const dsqSorted = dsqRows.slice().sort((a, b) => a[2] - b[2]); // el que estaba más arriba primero
+
+    // 3) Reasignar FinishingPos secuencialmente y puntos base
+    let pos = 1;
+    const afterRacePoints = new Map(); // DriverID -> puntos tras recálculo (sin FL aún)
+
+    // Clasificados: posiciones 1..K + puntos
+    for (const r of classified) {
+        const driverId = Number(r[0]);
+        const pts = getBasePointsForPos(pos, pointsTable, doublePts);
+        afterRacePoints.set(driverId, pts);
+        queryDB(`
+      UPDATE Races_Results
+      SET FinishingPos = ${pos}, Points = ${pts}, DNF = 0
+      WHERE RaceID = ${raceId} AND DriverID = ${driverId}
+    `);
+        pos++;
+    }
+
+    // DNFs no DSQ: van detrás de clasificados, sin puntos
+    for (const r of dnfsOther) {
+        const driverId = Number(r[0]);
+        afterRacePoints.set(driverId, 0);
+        queryDB(`
+      UPDATE Races_Results
+      SET FinishingPos = ${pos}, Points = 0, DNF = 1
+      WHERE RaceID = ${raceId} AND DriverID = ${driverId}
+    `);
+        pos++;
+    }
+
+    // DSQ del equipo: los dos últimos
+    for (let i = 0; i < dsqSorted.length; i++) {
+        const driverId = Number(dsqSorted[i][0]);
+        afterRacePoints.set(driverId, 0);
+        queryDB(`
+      UPDATE Races_Results
+      SET FinishingPos = ${pos}, Points = 0, DNF = 1
+      WHERE RaceID = ${raceId} AND DriverID = ${driverId}
+    `);
+        pos++;
+    }
+
+    // 4) BONUS VUELTA RÁPIDA (si habilitado y el portador queda top-10 y DNF=0)
+    if (flEnabled) {
+        const flDriver = getFastestLapHolderBySeconds(raceId, queryDB);
+        if (flDriver != null && !dsqIds.has(flDriver)) {
+            const row = queryDB(`
+        SELECT FinishingPos, IFNULL(DNF,0)
+        FROM Races_Results
+        WHERE RaceID = ${raceId} AND DriverID = ${flDriver}
+      `, 'singleRow');
+            const fPos = Number(row?.[0] ?? 9999);
+            const fDNF = Number(row?.[1] ?? 0);
+
+            if (fDNF === 0 && fPos <= 10) {
+                const bonus = doublePts ? 2 : 1; // si en tu norma el bonus no dobla, pon 1 fijo
+                const base = afterRacePoints.get(flDriver) ?? 0;
+                const withBonus = base + bonus;
+                afterRacePoints.set(flDriver, withBonus);
+                queryDB(`
+          UPDATE Races_Results
+          SET Points = ${withBonus}
+          WHERE RaceID = ${raceId} AND DriverID = ${flDriver}
+        `);
+            }
+        }
+    }
+
+    // 5) Deltas campeonato (pilotos) + acumulado por equipo (constructores)
+    const teamDelta = new Map(); // TeamID -> delta total
+    for (const r of allRes) {
+        const driverId = Number(r[0]);
+        const team = driverTeam.get(driverId);
+        const before = prevRacePoints.get(driverId) || 0;
+        const after = afterRacePoints.get(driverId) ?? 0;
+        const delta = after - before;
+
+        if (delta !== 0 && seasonId != null) {
+            queryDB(`
+        UPDATE Races_DriverStandings
+        SET Points = Points + ${delta}
+        WHERE SeasonID = ${seasonId} AND DriverID = ${driverId}
+      `);
+        }
+        teamDelta.set(team, (teamDelta.get(team) || 0) + delta);
+    }
+
+    if (seasonId != null) {
+        for (const [team, delta] of teamDelta.entries()) {
+            if (delta !== 0) {
+                queryDB(`
+          UPDATE Races_TeamStandings
+          SET Points = Points + ${delta}
+          WHERE SeasonID = ${seasonId} AND TeamID = ${team}
+        `);
+            }
+        }
+    }
+}
 
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
-// export function saveTurningPointsState(state) {
-//     let saveName = getSaveName();
-//     saveName = saveName.split(".")[0];
-//     const key = `${saveName}_tps`;
-//     localStorage.setItem(key, JSON.stringify(state));
-// }

@@ -76,11 +76,14 @@ async function finishGeneralLoader() {
   pageLoaderDiv.remove();
 }
 
-export async function place_news(newsList) {
+export async function place_news(newsAndTurningPoints) {
 
+  let newsList = newsAndTurningPoints.newsList;
+  let turningPointState = newsAndTurningPoints.turningPointState;
   await finishGeneralLoader();
 
   saveNews(newsList);
+  saveTurningPoints(turningPointState);
   newsGrid.innerHTML = '';
 
   newsList.forEach((news, index) => {
@@ -238,7 +241,7 @@ export async function place_news(newsList) {
     titleAndArticle.appendChild(newsTitle);
     newsBody.appendChild(titleAndArticle);
 
-    if (news.turning_point_type !== undefined){
+    if (news.turning_point_type !== undefined) {
       const tpDiv = document.createElement('div');
       tpDiv.classList.add('turning-point-div');
 
@@ -262,6 +265,30 @@ export async function place_news(newsList) {
       approveIcon.classList.add('bi', 'bi-check', 'tp-icon');
       approveButton.appendChild(approveIcon);
       tpDiv.appendChild(approveButton);
+
+      approveButton.addEventListener('click', async () => {
+        //remove the other 2 buttons
+        randomButton.remove();
+        cancelButton.remove();
+        approveButton.classList.add('tp-button-selected');
+        //remove the icon and add text "Approved"
+        const resultSpan = document.createElement('span');
+        resultSpan.classList.add('tp-result-span');
+        resultSpan.innerText = "Approved";
+        approveButton.innerHTML = '';
+        approveButton.appendChild(resultSpan);
+
+        //remove the eventListener
+        approveButton.replaceWith(approveButton.cloneNode(true));
+
+        const command = new Command("approveTurningPoint", {
+          turningPointData: news.data,
+          type: news.type,
+          originalDate: news.date
+        });
+        let newResp = await command.promiseExecute();
+        place_turning_outcome(newResp.content);
+      });
 
       readbuttonContainer.appendChild(tpDiv);
     }
@@ -291,26 +318,167 @@ export async function place_news(newsList) {
 
   });
 
+}
 
-  //wait 10 seconds
-  setTimeout(() => {
-    (function estimateImageRAM() {
-      const imgs = [...document.images];
-      const bytes = imgs.reduce((sum, img) => sum + (img.naturalWidth * img.naturalHeight * 4), 0);
-      console.log('Imágenes (decodificadas) ~', (bytes / 1048576).toFixed(1), 'MB', 'en', imgs.length, 'imgs');
-    })();
+export async function place_turning_outcome(turningPointResponse) {
+  const newsItem = document.createElement('div');
+  newsItem.classList.add('news-item', 'fade-in');
 
-    (function () {
-      const imgs = [...document.images];
-      imgs.sort((a, b) => (b.naturalWidth * b.naturalHeight) - (a.naturalWidth * a.naturalHeight));
-      console.log(imgs.slice(0, 10).map(img => ({
-        src: img.src,
-        w: img.naturalWidth,
-        h: img.naturalHeight,
-        mb: (img.naturalWidth * img.naturalHeight * 4 / 1048576).toFixed(1)
-      })));
-    })();
-  }, 5000);
+  const newsBody = document.createElement('div');
+  newsBody.classList.add('news-body');
+  const titleAndArticle = document.createElement('div');
+  titleAndArticle.classList.add('title-and-article');
+  const newsTitle = document.createElement('span');
+  newsTitle.classList.add('news-title', 'bold-font');
+  newsTitle.textContent = turningPointResponse.title;
+
+  const imageContainer = document.createElement('div');
+  imageContainer.classList.add('news-image-container');
+
+  manage_overlay(imageContainer, news.overlay, news.data, news.image);
+
+  const image = document.createElement('img');
+  image.classList.add('news-image');
+  image.setAttribute('data-src', news.image);
+  image.src = news.image;
+  image.setAttribute("loading", "lazy");
+
+  const readbuttonContainer = document.createElement('div');
+  readbuttonContainer.classList.add('read-button-container');
+
+  const readButton = document.createElement('div');
+  readButton.classList.add('read-button');
+  const readButtonSpan = document.createElement('span');
+  readButtonSpan.classList.add('gradient-text');
+  readButtonSpan.innerText = "Read";
+  readButton.appendChild(readButtonSpan);
+
+  readButton.addEventListener('click', async () => {
+    const clone = animateToCenter(newsItem);
+    clone.classList.add("expanded")
+
+    const bodyEl = clone.querySelector('.news-body');
+    const titleEl = bodyEl.querySelector('.news-title');
+    const articleEl = document.createElement('div');
+    articleEl.classList.add('news-article');
+
+    const dateDiv = document.createElement('div');
+    dateDiv.classList.add('news-article-date');
+    const calendarIcon = document.createElement('i');
+    calendarIcon.classList.add('bi', 'bi-calendar-event',);
+    const dateSpan = document.createElement('span');
+    const date = excelToDate(news.date);
+
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    dateSpan.textContent = `${day}/${month}/${year}`;
+    dateDiv.appendChild(calendarIcon);
+    dateDiv.appendChild(dateSpan);
+
+    articleEl.style.whiteSpace = 'pre-wrap';
+
+    //first title, then date, then article
+    titleEl.insertAdjacentElement('afterend', dateDiv);
+    dateDiv.insertAdjacentElement('afterend', articleEl);
+
+    if (ai) {
+      const loaderDiv = document.createElement('div');
+      loaderDiv.classList.add('loader-div');
+      const loadingSpan = document.createElement('span');
+      loadingSpan.textContent = "Generating";
+      const loadingDots = document.createElement('span');
+      loadingDots.textContent = "."
+      loadingDots.classList.add('loading-dots');
+      loadingSpan.appendChild(loadingDots);
+
+      setInterval(() => {
+        if (loadingDots.textContent.length >= 3) {
+          loadingDots.textContent = ".";
+        } else {
+          loadingDots.textContent += ".";
+        }
+      }, 500);
+
+      const progressBar = document.createElement('div');
+      progressBar.classList.add('ai-progress-bar');
+      const progressDiv = document.createElement('div');
+      progressDiv.classList.add('progress-div');
+
+      progressBar.appendChild(progressDiv);
+      loaderDiv.appendChild(loadingSpan);
+      loaderDiv.appendChild(progressBar);
+
+      articleEl.insertAdjacentElement('afterend', loaderDiv);
+
+      //start progress div moving every 100ms to 30%
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 3;
+        if (progressDiv) {
+          progressDiv.style.width = progress + '%';
+        }
+        if (progress >= 30) {
+          clearInterval(interval);
+        }
+      }, 150);
+
+      try {
+        const articleText = await manageRead(news, newsList, progressDiv, interval);
+        if (ai === null) {
+          console.warn("AI not initialized");
+          return;
+        }
+
+        clearInterval(interval);
+        clearInterval(interval2);
+        progressDiv.style.width = '100%';
+
+        setTimeout(() => {
+          loaderDiv.style.opacity = '0';
+
+          setTimeout(() => {
+            loaderDiv.remove();
+            typeWriterWordByWord(articleEl, articleText, 15);
+          }, 150);
+
+        }, 200);
+
+      }
+
+      catch (err) {
+        console.error("Error generating article:", err);
+        clearInterval(interval);
+      }
+
+    }
+    else {
+      const noApiFoundSpan = document.createElement('span');
+      noApiFoundSpan.classList.add('news-error');
+      noApiFoundSpan.textContent = "No API key found. Please set it in the settings.";
+      articleEl.appendChild(noApiFoundSpan);
+      const googleAIStudioSpan = document.createElement('p');
+      googleAIStudioSpan.classList.add('news-error', 'news-error-api-key');
+      googleAIStudioSpan.innerHTML = `If you want to read AI-generated articles from the news section, please enter your API key here. You can get one for free
+                  from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
+                  <span class="important-text bold-font">Create API Key</span> on the top right corner`
+      articleEl.appendChild(googleAIStudioSpan);
+    }
+
+  });
+
+  imageContainer.appendChild(image);
+  newsItem.appendChild(imageContainer);
+  titleAndArticle.appendChild(newsTitle);
+  newsBody.appendChild(titleAndArticle);
+  readbuttonContainer.appendChild(readButton);
+  newsBody.appendChild(readbuttonContainer);
+  newsItem.appendChild(newsBody);
+  
+
+  //append it at the start of the news grid
+  newsGrid.insertBefore(newsItem, newsGrid.firstChild);
 }
 
 
@@ -1313,7 +1481,8 @@ function saveNews(newsList) {
       image: news.image,
       overlay: news.overlay,
       data: news.data,
-      text: news.text
+      text: news.text,
+      turning_point_type: news.turning_point_type
     };
     return acc;
   }, {});
@@ -1322,6 +1491,14 @@ function saveNews(newsList) {
   saveName = saveName.split('.')[0];
   let newsName = `${saveName}_news`;
   localStorage.setItem(newsName, JSON.stringify(newsObj));
+}
+
+function saveTurningPoints(turningPoints) {
+  let saveName = getSaveName();
+  //remove file extension if any
+  saveName = saveName.split('.')[0];
+  let tpName = `${saveName}_tps`;
+  localStorage.setItem(tpName, JSON.stringify(turningPoints));
 }
 
 function animateToCenter(newsItem) {

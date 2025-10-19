@@ -10588,6 +10588,18 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
   }
 }
 
+@keyframes fadeAppearLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @keyframes fadeInHigher {
   0% {
     opacity: 0;
@@ -12952,11 +12964,23 @@ p.news-error-api-key{
   align-items: center;
 }
 
-.tp-button:hover{
+.tp-button-selected{
+  border: none !important;
+  cursor: default !important;
+  width: 100px !important;
+  justify-content: center;
+}
+
+.tp-result-span{
+  opacity: 0;
+  animation: fadeAppearLeft 0.2s forwards 0.05s;
+}
+
+.tp-button:not(.tp-button-selected):hover{
   transform: scale(1.04);
 }
 
-.tp-button:active{
+.tp-button:not(.tp-button-selected):active{
   transform: scale(0.96);
 }
 

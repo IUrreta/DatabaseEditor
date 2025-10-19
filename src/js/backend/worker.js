@@ -17,7 +17,7 @@ import { editAge, editMarketability, editName, editRetirement, editSuperlicense,
 import { editCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
-import { generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails, getFullChampionSeasonDetails } from "./scriptUtils/newsUtils";
+import { generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails, getFullChampionSeasonDetails, generateTurningResponse } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
@@ -412,8 +412,8 @@ const workerCommands = {
     postMessage(carPerformanceResponse);
   },
   generateNews: (data, postMessage) => {
-    const news = generate_news(data["news"], data["tpState"]);
-    postMessage({ responseMessage: "News fetched", content: news });
+    const newsAndTurningPoints = generate_news(data["news"], data["tpState"]);
+    postMessage({ responseMessage: "News fetched", content: newsAndTurningPoints });
   },
   updateCombinedDict: (data, postMessage) => {
     const teamId = data.teamID;
@@ -463,6 +463,15 @@ const workerCommands = {
     const record = getSelectedRecord(type, year);
 
     postMessage({ responseMessage: "Record fetched", content: record });
+  },
+  approveTurningPoint: (data, postMessage) => {
+    const turningPointData = data.turningPointData;
+    const type = data.type;
+    const originalDate = data.originalDate;
+
+    const newResponse = generateTurningResponse(turningPointData, type, originalDate, "positive");
+
+    postMessage({ responseMessage: "Turning point positive", content: newResponse, isEditCommand: true, unlocksDownload: true });
   }
 
 };
