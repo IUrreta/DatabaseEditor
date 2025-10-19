@@ -8,6 +8,7 @@ import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
 import { generateNews, getSaveName } from "./renderer";
+import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const newsGrid = document.querySelector('.news-grid');
 
@@ -125,34 +126,26 @@ export async function place_news(newsAndTurningPoints) {
     readButton.appendChild(readButtonSpan);
 
     readButton.addEventListener('click', async () => {
-      const clone = animateToCenter(newsItem);
-      clone.classList.add("expanded")
+      const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
+        keyboard: false
+      });
 
-      const bodyEl = clone.querySelector('.news-body');
-      const titleEl = bodyEl.querySelector('.news-title');
-      const articleEl = document.createElement('div');
-      articleEl.classList.add('news-article');
+      newsModal.show();
+      const modalTitle = document.querySelector('#newsModal .modal-title');
+      modalTitle.textContent = news.title;
 
-      const dateDiv = document.createElement('div');
-      dateDiv.classList.add('news-article-date');
-      const calendarIcon = document.createElement('i');
-      calendarIcon.classList.add('bi', 'bi-calendar-event',);
-      const dateSpan = document.createElement('span');
+      const modalBody = document.querySelector('#newsModal .modal-body');
+      modalBody.innerHTML = '';
+
+      const dateSpan = document.querySelector('#newsModal .news-article-date .dateSpan');
       const date = excelToDate(news.date);
-
 
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
       dateSpan.textContent = `${day}/${month}/${year}`;
-      dateDiv.appendChild(calendarIcon);
-      dateDiv.appendChild(dateSpan);
 
-      articleEl.style.whiteSpace = 'pre-wrap';
-
-      //first title, then date, then article
-      titleEl.insertAdjacentElement('afterend', dateDiv);
-      dateDiv.insertAdjacentElement('afterend', articleEl);
+      modalBody.style.whiteSpace = 'pre-wrap';
 
       if (ai) {
         const loaderDiv = document.createElement('div');
@@ -181,7 +174,7 @@ export async function place_news(newsAndTurningPoints) {
         loaderDiv.appendChild(loadingSpan);
         loaderDiv.appendChild(progressBar);
 
-        articleEl.insertAdjacentElement('afterend', loaderDiv);
+        modalBody.appendChild(loaderDiv);
 
         //start progress div moving every 100ms to 30%
         let progress = 0;
@@ -211,7 +204,7 @@ export async function place_news(newsAndTurningPoints) {
 
             setTimeout(() => {
               loaderDiv.remove();
-              typeWriterWordByWord(articleEl, articleText, 15);
+              typeWriterWordByWord(modalBody, articleText, 15);
             }, 150);
 
           }, 200);

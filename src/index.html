@@ -1074,60 +1074,24 @@
       </div>
     </div>
   </div>
-  <div class="modal custom-modal fade" id="predictModal" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-med modal-dialog-centered" role="document">
+  <div class="modal custom-modal fade" id="newsModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-lg modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
         <div class="modal-header custom-header">
-          <h3 class="modal-title bold-font" id="predictModalTitle">Configure prediction</h3>
-        </div>
-        <div class="modal-body custom-body" id="predictModalBody">
-          <div class="modal-subtitle bold-font">Important information</div>
-          <div class="predict-warning">
-            When you click on “Confirm”, the tool will start running dozens of simulations for each race in the
-            championship from the one selected in the dropdown button.
-            This means that the earlier the selected race is in the championship, the more races it will have to
-            simulate until the end of the championship, and the prediction will take longer.
-            Depending on your system, the simulation may take more time.
-          </div>
-          <div class="modal-subtitle bold-font pt-3">Predict championship from</div>
-          <div class="year-and-race">
-            <div class="pos-relative">
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                id="yearPredictionModalButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Year
-              </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="yearPredictionModalMenu" style="font-family: Formula1;">
-              </ul>
-            </div>
-            <div class="pos-relative">
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                id="raceProbButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Race
-              </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="raceProbMenu" style="font-family: Formula1;">
-              </ul>
-            </div>
+          <h3 class="modal-title bold-font" id="newsModalTitle">Example news</h3>
+          <div class="news-article-date">
+            <i class="bi bi-calendar-event"></i>
+            <span class="dateSpan"></span>
           </div>
         </div>
-        <div class="modal-footer custom-footer predict-footer">
-          <div class="bar-and-indicator">
-            <div class="progress custom-bar">
-              <div class="progress-bar progress-bar-striped progress-bar-animated" id="predictBar" role="progressbar"
-                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <div class="indicator bold-font">0%</div>
-          </div>
+        <div class="modal-body custom-body news-article" id="newsModalBody">
+
+        </div>
+        <div class="modal-footer custom-footer">
           <div class="d-flex">
             <div class="pos-relative">
-              <button type="button" class="btn btn-secondary custom-delete bold-font" id="cancelPredict"
+              <button type="button" class="close-modal"
                 data-bs-dismiss="modal">Close</button>
-              <div class="dropdown-line"></div>
-            </div>
-            <div class="pos-relative">
-              <button type="button" class="btn btn-primary custom-confirm bold-font" id="confirmPredict"
-                disabled>Confirm</button>
               <div class="dropdown-line"></div>
             </div>
           </div>

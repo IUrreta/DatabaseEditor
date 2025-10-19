@@ -1146,11 +1146,6 @@ body.og-theme input[type="checkbox"]:checked {
   background-color: var(--new-secondary);
 }
 
-.custom-footer button {
-  font-family: "Formula1Bold";
-}
-
-
 
 .main-team-changes {
   display: flex;
@@ -5283,18 +5278,18 @@ input.disabled {
 
 .custom-header {
   color: var(--white-general) !important;
-  border-bottom: 1px solid var(--separator) !important;
+  border-bottom: 1px solid var(--separator);
   background-color: var(--generals) !important;
   display: flex;
   justify-content: space-between;
-
 }
+
 
 .custom-footer {
   color: var(--white-general) !important;
   background-color: var(--generals) !important;
   z-index: -3;
-  border-top: 1px solid var(--separator) !important;
+  border-top: 1px solid var(--separator);
 }
 
 ::-webkit-input-placeholder {
@@ -12595,9 +12590,32 @@ body:has(.active #mod25logo) .one-change {
   color: color-mix(in srgb, var(--text-general) 80%, gray);
   white-space: pre-wrap;
   transition: opacity 0.15s;
-  max-height: 450px;
+  max-height: 500px;
   overflow-y: auto;
   padding-right: 10px;
+  min-height: 350px;
+}
+
+.modal-content{
+  background-color: var(--generals) !important;          /* evita el “hairline” durante la animación */
+}
+
+#newsModal .modal-header{
+  border-bottom: 0 !important;
+}
+
+#newsModal .custom-header{
+  border-bottom: none !important;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+#newsModal .modal-footer{
+  border-top: 0 !important;
+} 
+
+#newsModal .custom-footer{
+  border-top: none !important;
 }
 
 .news-title{
@@ -12789,12 +12807,33 @@ body:has(.active #mod25logo) .one-change {
   transition: background-color 0.15s, color 0.15s;
 }
 
+.close-modal, .confirm-modal{
+  border-radius: 5px;
+  background-color: transparent;
+  color: var(--dark-text);
+  padding: 5px 10px;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.15s, color 0.15s;
+  border: none;
+}
+
+.close-modal:hover{
+  background-color: color-mix(in srgb, var(--elements) 75%, var(--negative-general));
+  color: var(--negative-general);
+}
+
+.confirm-modal:hover{
+  background-color: color-mix(in srgb, var(--elements) 75%, var(--new-primary));
+  color: var(--new-primary);
+}
+
 .read-button:hover{
   background-color: var(--elements-hover);
   color: var(--text-general);
 }
 
-.read-button:active{
+.read-button:active, .close-modal:active, .confirm-modal:active{
   transform: scale(0.96); 
 }
 
