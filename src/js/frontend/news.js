@@ -3,6 +3,7 @@ import { Command } from "../backend/command";
 import { GoogleGenAI } from "@google/genai";
 import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
+import turningPointsTemplates from "../../data/news/turning_points_prompts_templates.json";
 import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
@@ -367,6 +368,16 @@ export async function place_news(newsAndTurningPoints) {
 }
 
 export async function place_turning_outcome(turningPointResponse) {
+  let saveName = getSaveName();
+  saveName = saveName.split('.')[0];
+  //get news
+  let newsName = `${saveName}_news`;
+  let news = JSON.parse(localStorage.getItem(newsName)) || [];
+  let newsList = Object.entries(news).map(([id, n]) => ({ id, ...n }));
+
+  console.log(newsList);
+
+
   const newsItem = document.createElement('div');
   newsItem.classList.add('news-item', 'fade-in');
 
@@ -521,7 +532,7 @@ export async function place_turning_outcome(turningPointResponse) {
   readbuttonContainer.appendChild(readButton);
   newsBody.appendChild(readbuttonContainer);
   newsItem.appendChild(newsBody);
-  
+
 
   //append it at the start of the news grid
   prependAnimated(newsGrid, newsItem, 250, 'cubic-bezier(.2,.8,.2,1)');
@@ -557,7 +568,7 @@ function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
     const b = before.get(el);
     if (!a || !b) return;
     const dx = b.left - a.left;
-    const dy = b.top  - a.top;
+    const dy = b.top - a.top;
     if (dx === 0 && dy === 0) return;
     el.style.willChange = 'transform';
     el.style.transform = `translate(${dx}px, ${dy}px)`;
@@ -639,10 +650,17 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
   else if (newData.type === "season_review") {
     prompt = await contextualizeSeasonReview(newData);
   }
+  else if (newData.type === "turning_point_dsq" || newData.type === "turning_point_outcome_dsq") {
+    prompt = await contextualizeDSQ(newData, newData.turning_point_type);
+  }
 
   const normalDate = excelToDate(newData.date).toISOString().split("T")[0];
 
+  prompt += `\n\n Add any quote you find apporpiate from the drivers or team principals if involved in the article. Do not take this as a mandatory instruction, only add quotes if you find them relevant to the context of the article.`
+
   prompt = `The current date is ${normalDate} \n\n` + prompt;
+
+  prompt += `\n The title of the article is: "${newData.title}"\n\n Please write a detailed article based on the title and the context provided.`
 
   console.log("Final prompt:", prompt);
 
@@ -677,6 +695,94 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
   }
 
   return articleText;
+}
+
+async function contextualizeDSQ(newData, type) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 103);
+  let prompt;
+  let currentSeason = newData.data.currentSeason;
+  let teamName = newData.data.team;
+  let teamId = newData.data.teamId;
+  if (type.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (type.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+
+  prompt = prompt.replace(/{{\s*team\s*}}/g, newData.data.team || 'The team').
+    replace(/{{\s*adjective\s*}}/g, newData.data.adjective || 'current').
+    replace(/{{\s*component\s*}}/g, newData.data.component || 'floor');
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: currentSeason,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  const driversChamp = resp.content.driverStandings
+    .map((d, i) => {
+      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Drivers' Championship standings ${type.includes("positive") ? "after the disqualification" : ""}:\n${driversChamp}`;
+
+
+  const teamsChamp = resp.content.teamStandings
+    .map((t, i) => {
+      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
+      return `${i + 1}. ${teamName} — ${t.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Constructors' Championship standings ${type.includes("positive") ? "after the disqualification" : ""}:\n${teamsChamp}`;
+
+  let previousRaces = '';
+  resp.content.racesNames.forEach((r) => {
+    previousRaces += `${r}, `;
+  });
+  previousRaces = previousRaces.slice(0, -2);
+
+  prompt += `\n\nThe races that have already taken place in ${currentSeason} are: ${previousRaces}\n`;
+
+  const previousResults = resp.content.driversResults.filter(d => d.teamId === teamId).map((d, i) => {
+    return `${d.name} - ${d.resultsString}`;
+  }).join("\n");
+
+  prompt += `\n\nHere are the previous race results for ${teamName}'s drivers in ${currentSeason}:\n${previousResults}`;
+
+  const previousQualiResults = resp.content.driverQualiResults.filter(d => d.teamId === teamId).map((d, i) => {
+    return `${d.name} - ${d.resultsString}`;
+  }).join("\n");
+
+  prompt += `\n\nHere are the previous qualifying results for ${teamName}'s drivers in ${currentSeason}:\n${previousQualiResults}`;
+
+
+  const previousChampions = Object.values(
+    resp.content.champions.reduce((acc, { season, pos, name, points }) => {
+      if (!acc[season]) acc[season] = { season, drivers: [] };
+      acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
+      return acc;
+    }, {})
+  )
+    .sort((a, b) => b.season - a.season)
+    .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
+    .join('\n\n');
+
+  prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+
+  return prompt;
+
 }
 
 async function contextualizeWorldChampion(newData) {

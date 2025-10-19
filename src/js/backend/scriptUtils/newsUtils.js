@@ -374,6 +374,8 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
         }
     }
 
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+
     // if (Math.random() > 0.05) return [];
 
     const raceId = randomPick(last3Races);
@@ -402,7 +404,8 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
         country: getCircuitInfo(raceId).country,
         race_id: raceId,
         component: component,
-        teamId: teamId
+        teamId: teamId,
+        currentSeason: daySeason[1]
     }
 
     turningPointState.ilegalRaces.push(titleData);
