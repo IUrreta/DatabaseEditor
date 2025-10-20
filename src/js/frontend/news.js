@@ -134,8 +134,8 @@ export async function place_news(newsAndTurningPoints) {
       const modalTitle = document.querySelector('#newsModal .modal-title');
       modalTitle.textContent = news.title;
 
-      const modalBody = document.querySelector('#newsModal .modal-body');
-      modalBody.innerHTML = '';
+      const newsArticle = document.querySelector('#newsModal .news-article');
+      newsArticle.innerHTML = '';
 
       const dateSpan = document.querySelector('#newsModal .news-article-date .dateSpan');
       const date = excelToDate(news.date);
@@ -145,7 +145,8 @@ export async function place_news(newsAndTurningPoints) {
       const year = date.getFullYear();
       dateSpan.textContent = `${day}/${month}/${year}`;
 
-      modalBody.style.whiteSpace = 'pre-wrap';
+      const image = document.querySelector('#newsModal .news-image-background');
+      image.src = news.image;
 
       if (ai) {
         const loaderDiv = document.createElement('div');
@@ -174,7 +175,7 @@ export async function place_news(newsAndTurningPoints) {
         loaderDiv.appendChild(loadingSpan);
         loaderDiv.appendChild(progressBar);
 
-        modalBody.appendChild(loaderDiv);
+        newsArticle.appendChild(loaderDiv);
 
         //start progress div moving every 100ms to 30%
         let progress = 0;
@@ -201,10 +202,11 @@ export async function place_news(newsAndTurningPoints) {
 
           setTimeout(() => {
             loaderDiv.style.opacity = '0';
-
+            newsArticle.style.opacity = '0';
             setTimeout(() => {
               loaderDiv.remove();
-              typeWriterWordByWord(modalBody, articleText, 15);
+              newsArticle.textContent = articleText;
+              newsArticle.style.opacity = '1';
             }, 150);
 
           }, 200);
@@ -404,7 +406,6 @@ export async function place_turning_outcome(turningPointResponse) {
   readButton.appendChild(readButtonSpan);
 
   readButton.addEventListener('click', async () => {
-    const clone = animateToCenter(newsItem);
     clone.classList.add("expanded")
 
     const bodyEl = clone.querySelector('.news-body');
@@ -490,7 +491,7 @@ export async function place_turning_outcome(turningPointResponse) {
 
           setTimeout(() => {
             loaderDiv.remove();
-            typeWriterWordByWord(articleEl, articleText, 15);
+            articleEl.textContent = articleText;
           }, 150);
 
         }, 200);
@@ -1720,94 +1721,6 @@ function saveTurningPoints(turningPoints) {
   localStorage.setItem(tpName, JSON.stringify(turningPoints));
 }
 
-function animateToCenter(newsItem) {
-  const rect = newsItem.getBoundingClientRect();
-  const clone = newsItem.cloneNode(true);
-  clone.classList.add('news-item-clone');
-
-  const origImgContainer = newsItem.querySelector('.news-image-container');
-  const origImgWidth = origImgContainer.offsetWidth;
-
-  Object.assign(clone.style, {
-    position: 'fixed',
-    top: rect.top + 'px',
-    left: rect.left + 'px',
-    width: rect.width + 'px',
-    height: rect.height + 'px',
-    margin: '0',
-    zIndex: '1000',
-    transition: 'all .4s ease',
-  });
-
-  document.body.appendChild(clone);
-  newsItem.style.visibility = 'hidden';
-
-  // animar al centro
-  requestAnimationFrame(() => {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const targetWidth = vw * 0.75;
-    const aspectRatio = rect.height / rect.width;
-    const targetHeight = targetWidth * aspectRatio;
-    const targetTop = (vh - targetHeight) / 2;
-    const targetLeft = (vw - targetWidth) / 2;
-
-    clone.style.top = targetTop + 'px';
-    clone.style.left = targetLeft + 'px';
-    clone.style.width = targetWidth + 'px';
-    clone.style.height = targetHeight + 'px';
-    clone.style.boxShadow = '0 15px 40px rgba(0,0,0,0.3)';
-    clone.style.borderRadius = '12px';
-  });
-
-  // overlay + botón
-  document.body.classList.add('modal-open');
-  const btn = clone.querySelector('.read-button');
-  btn.classList.add('closable');
-  btn.innerText = 'Close';
-
-  // listener de cierre en el botón “Close”
-  btn.addEventListener('click', () => {
-    const cloneImgContainer = clone.querySelector('.news-image-container');
-
-    cloneImgContainer.style.maxWidth = "none";
-    cloneImgContainer.style.width = origImgWidth + "px";
-
-
-    const articleEl = clone.querySelector('.news-article');
-    if (articleEl) {
-      articleEl.remove();
-    }
-
-    const dateEl = clone.querySelector('.news-article-date');
-    if (dateEl) {
-      dateEl.remove();
-    }
-    document.body.classList.remove('modal-open');
-    clone.style.top = rect.top + 'px';
-    clone.style.left = rect.left + 'px';
-    clone.style.width = rect.width + 'px';
-    clone.style.height = rect.height + 'px';
-    clone.style.boxShadow = 'none';
-
-    clone.querySelector(".news-title").style.fontSize = '20px';
-
-
-
-    const onEnd = (e) => {
-      if (e.propertyName === 'width') {
-        document.body.removeChild(clone);
-        newsItem.style.visibility = '';
-        clone.removeEventListener('transitionend', onEnd);
-      }
-    };
-    clone.addEventListener('transitionend', onEnd);
-  });
-
-  return clone;
-}
-
-
 async function askGenAI(prompt) {
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
@@ -1817,58 +1730,6 @@ async function askGenAI(prompt) {
   return response.text;
 }
 
-/**
- * Write text word by word with a typewriter effect.
- *
- * @param {HTMLElement} elementn The HTML element where the text will be written.
- * @param {string} text  The text to be written.
- * @param {number} [wordInterval=50] Time interval between words in milliseconds.
- */
-function typeWriterWordByWord(element, text, wordInterval = 50) {
-  element.innerHTML = '';
-
-
-  const parts = text.split(/(\s+)/);
-
-  let partIndex = 0;
-
-  function appendNextPart() {
-    if (partIndex >= parts.length) {
-      return;
-    }
-
-    const partText = parts[partIndex];
-    partIndex++;
-
-
-    if (partText === '' && partIndex < parts.length) {
-      appendNextPart();
-      return;
-    }
-
-    if (partText === '' && partIndex >= parts.length) {
-      return;
-    }
-
-    const partSpan = document.createElement('span');
-    partSpan.classList.add('word-fade')
-    partSpan.textContent = partText;
-
-    element.appendChild(partSpan);
-
-    void partSpan.offsetHeight;
-
-    partSpan.style.opacity = '1';
-
-    if (partIndex < parts.length) {
-      setTimeout(appendNextPart, wordInterval);
-    }
-  }
-
-  if (parts.length > 0 && !(parts.length === 1 && parts[0] === '')) {
-    appendNextPart();
-  }
-}
 
 function buildEmergencyOverlay() {
   const overlayDiv = document.createElement('div');
