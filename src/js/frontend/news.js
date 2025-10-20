@@ -741,7 +741,13 @@ async function contextualizeDSQ(newData, type) {
 
   prompt = prompt.replace(/{{\s*team\s*}}/g, newData.data.team || 'The team').
     replace(/{{\s*adjective\s*}}/g, newData.data.adjective || 'current').
-    replace(/{{\s*component\s*}}/g, newData.data.component || 'floor');
+    replace(/{{\s*component\s*}}/g, newData.data.component || 'floor').
+    replace(/{{\s*driver_1\s*}}/g, newData.data.driver_1.name || 'Driver 1').
+    replace(/{{\s*driver_2\s*}}/g, newData.data.driver_2.name || 'Driver 2').
+    replace(/{{\s*driver_1_pos\s*}}/g, newData.data.driver_1.position !== undefined ? newData.data.driver_1.position.toString() : 'X').
+    replace(/{{\s*driver_2_pos\s*}}/g, newData.data.driver_2.position !== undefined ? newData.data.driver_2.position.toString() : 'X').
+    replace(/{{\s*driver_1_points\s*}}/g, newData.data.driver_1.points !== undefined ? newData.data.driver_1.points.toString() : 'X').
+    replace(/{{\s*driver_2_points\s*}}/g, newData.data.driver_2.points !== undefined ? newData.data.driver_2.points.toString() : 'X');
 
   const command = new Command("fullChampionshipDetailsRequest", {
     season: currentSeason,

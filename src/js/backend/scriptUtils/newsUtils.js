@@ -397,6 +397,17 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
     const components = ["Engine brake map", "Fuel flow", "Front wing", "Rear wing", "Diffuser", "Floor", "Brake ducts", "Suspension", "Gearbox", "Cooling system", "Hydraulics", "Clutch", "Turbo", "Battery", "Control electronics"];
     const component = randomPick(components);
 
+    let driver1, driver2;
+    const drivers = queryDB(`SELECT bas.FirstName, bas.LastName, res.TeamID, res.Points, bas.StaffID, res.FinishingPos FROM Races_Results res JOIN Staff_BasicData bas ON res.DriverID = bas.StaffID WHERE res.RaceID = ${raceId}  AND res.TeamID = ${teamId}`, 'allRows');
+    drivers.forEach((d, idx) => {
+        const nameFormatted = formatNamesSimple(d);
+        if (idx === 0) {
+            driver1 = { name: nameFormatted[0], points: d[3], position: d[5], driverId: d[4] };
+        } else if (idx === 1) {
+            driver2 = { name: nameFormatted[0], points: d[3], position: d[5], driverId: d[4] };
+        }
+    });
+
     const titleData = {
         team: teamName,
         adjective: getCircuitInfo(raceId).adjective,
@@ -405,7 +416,9 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
         race_id: raceId,
         component: component,
         teamId: teamId,
-        currentSeason: daySeason[1]
+        currentSeason: daySeason[1],
+        driver_1: driver1,
+        driver_2: driver2
     }
 
     turningPointState.ilegalRaces.push(titleData);
@@ -748,6 +761,7 @@ function generateTurningPointTitle(data, new_type, turningPointType) {
 
 
 function generateTitle(data, new_type) {
+    console.log("Generating title for type:", new_type, "with data:", data);
     let dataRandomized = randomRemovalOfNames(data);
     let templateObj = null;
     templateObj = newsTitleTemplates.find(t => t.new_type === new_type);
