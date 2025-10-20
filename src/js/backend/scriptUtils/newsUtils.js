@@ -2511,7 +2511,7 @@ function disqualifyTeamInRace({
             const fDNF = Number(row?.[1] ?? 0);
 
             if (fDNF === 0 && fPos <= 10) {
-                const bonus = doublePts ? 2 : 1; // si en tu norma el bonus no dobla, pon 1 fijo
+                const bonus = 1;
                 const base = afterRacePoints.get(flDriver) ?? 0;
                 const withBonus = base + bonus;
                 afterRacePoints.set(flDriver, withBonus);
@@ -2520,6 +2520,31 @@ function disqualifyTeamInRace({
           SET Points = ${withBonus}
           WHERE RaceID = ${raceId} AND DriverID = ${flDriver}
         `);
+            }
+        }
+    }
+
+    if (Number(pointsReg.poleBonusPoint) === 1) {
+        const poleDriverId = queryDB(`
+        SELECT DriverID
+        FROM Races_Results
+        WHERE RaceID = ${raceId} AND StartingPos = 1
+    `, 'singleValue');
+
+        if (poleDriverId != null) {
+            const poleId = Number(poleDriverId);
+            if (!dsqIds.has(poleId)) {
+                // Si tu normativa NO duplica la pole, fija bonus = 1.
+                const bonus = 1;
+                const base = afterRacePoints.get(poleId) ?? 0;
+                const withBonus = base + bonus;
+                afterRacePoints.set(poleId, withBonus);
+
+                queryDB(`
+                UPDATE Races_Results
+                SET Points = ${withBonus}
+                WHERE RaceID = ${raceId} AND DriverID = ${poleId}
+            `);
             }
         }
     }
@@ -2553,6 +2578,48 @@ function disqualifyTeamInRace({
         `);
             }
         }
+        queryDB(`
+        WITH ranked AS (
+            SELECT
+                DriverID,
+                ROW_NUMBER() OVER (PARTITION BY SeasonID ORDER BY Points DESC, DriverID ASC) AS pos
+            FROM Races_DriverStandings
+            WHERE SeasonID = ${seasonId}
+            AND RaceFormula = 1
+        )
+        UPDATE Races_DriverStandings
+        SET Position = (
+            SELECT pos
+            FROM ranked
+            WHERE ranked.DriverID = Races_DriverStandings.DriverID
+              AND ${seasonId} = ${seasonId}
+              AND RaceFormula = 1
+        )
+        WHERE SeasonID = ${seasonId}
+        AND RaceFormula = 1;
+    `);
+
+        // Recalcular posición en la clasificación de constructores
+        queryDB(`
+        WITH ranked AS (
+            SELECT
+                TeamID,
+                ROW_NUMBER() OVER (PARTITION BY SeasonID ORDER BY Points DESC, TeamID ASC) AS pos
+            FROM Races_TeamStandings
+            WHERE SeasonID = ${seasonId}
+            AND RaceFormula = 1
+        )
+        UPDATE Races_TeamStandings
+        SET Position = (
+            SELECT pos
+            FROM ranked
+            WHERE ranked.TeamID = Races_TeamStandings.TeamID
+              AND ${seasonId} = ${seasonId}
+            AND RaceFormula = 1
+        )
+        WHERE SeasonID = ${seasonId}
+        AND RaceFormula = 1;
+    `);
     }
 }
 

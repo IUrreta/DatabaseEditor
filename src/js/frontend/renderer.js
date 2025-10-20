@@ -2386,3 +2386,45 @@ document.querySelectorAll(".team-logo-container").forEach(function (elem) {
         elem.classList.add("active")
     })
 });
+
+export async function confirmModal({ title, body, confirmText = "Confirm", cancelText = "Cancel" }) {
+  const modalEl = document.getElementById('confirmModal');
+  const bsModal  = new bootstrap.Modal(modalEl, { keyboard: false });
+
+  // Elementos
+  const confirmTitle = modalEl.querySelector('.modal-title');
+  const confirmBody  = modalEl.querySelector('.modal-body p');
+  const confirmBtn   = modalEl.querySelector('.confirm-modal');
+  const cancelBtn    = modalEl.querySelector('.close-modal');
+
+  // Texto
+  if (confirmTitle) confirmTitle.textContent = title;
+  if (confirmBody)  confirmBody.textContent  = body;
+  if (confirmBtn)   confirmBtn.textContent   = confirmText;
+  if (cancelBtn)    cancelBtn.textContent    = cancelText;
+
+  return new Promise((resolve) => {
+    let clicked = false;
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    confirmBtn?.addEventListener('click', () => {
+      clicked = true;
+      resolve(true);
+      bsModal.hide();
+    }, { once: true, signal });
+
+    cancelBtn?.addEventListener('click', () => {
+      clicked = true;
+      resolve(false);
+      bsModal.hide();
+    }, { once: true, signal });
+
+    modalEl.addEventListener('hidden.bs.modal', () => {
+      if (!clicked) resolve(false);
+      controller.abort();
+    }, { once: true });
+
+    bsModal.show();
+  });
+}

@@ -7,7 +7,7 @@ import turningPointsTemplates from "../../data/news/turning_points_prompts_templ
 import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
-import { generateNews, getSaveName } from "./renderer";
+import { generateNews, getSaveName, confirmModal } from "./renderer";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const newsGrid = document.querySelector('.news-grid');
@@ -223,13 +223,13 @@ export async function place_news(newsAndTurningPoints) {
         const noApiFoundSpan = document.createElement('span');
         noApiFoundSpan.classList.add('news-error');
         noApiFoundSpan.textContent = "No API key found. Please set it in the settings.";
-        articleEl.appendChild(noApiFoundSpan);
+        newsArticle.appendChild(noApiFoundSpan);
         const googleAIStudioSpan = document.createElement('p');
         googleAIStudioSpan.classList.add('news-error', 'news-error-api-key');
         googleAIStudioSpan.innerHTML = `If you want to read AI-generated articles from the news section, please enter your API key here. You can get one for free
                   from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
                   <span class="important-text bold-font">Create API Key</span> on the top right corner`
-        articleEl.appendChild(googleAIStudioSpan);
+        newsArticle.appendChild(googleAIStudioSpan);
       }
 
     });
@@ -262,7 +262,7 @@ export async function place_news(newsAndTurningPoints) {
         cancelButton.appendChild(resultSpan);
 
         cancelButton.replaceWith(cancelButton.cloneNode(true));
-        newsList[index].turning_point_type = "cancelled";
+        news.turning_point_type = "cancelled";
 
         const command = new Command("cancelTurningPoint", {
           turningPointData: news.data,
@@ -291,6 +291,27 @@ export async function place_news(newsAndTurningPoints) {
       tpDiv.appendChild(approveButton);
 
       approveButton.addEventListener('click', async () => {
+        //has the news text
+        if (!news.text || news.text.length === 0) {
+          const ok = await confirmModal({
+            title: "Approve Turning Point",
+            body: "Are you sure you want to approve this turning point? If you approve it before reading the article, it will not be able to generate the article further down the line.",
+            confirmText: "Approve",
+            cancelText: "Cancel"
+          });
+
+          if (!ok) {
+            return;
+          }
+          else {
+            const readButton = newsBody.querySelector('.read-button-container .read-button');
+            readButton.remove();
+            news.nonReadable = true;
+            news.turning_point_type = "approved";
+            saveNews(newsList);
+          }
+        }
+
         //remove the other 2 buttons
         randomButton.remove();
         cancelButton.remove();
@@ -304,7 +325,7 @@ export async function place_news(newsAndTurningPoints) {
 
         //remove the eventListener
         approveButton.replaceWith(approveButton.cloneNode(true));
-        newsList[index].turning_point_type = "approved";
+        news.turning_point_type = "approved";
 
         const command = new Command("approveTurningPoint", {
           turningPointData: news.data,
@@ -332,10 +353,23 @@ export async function place_news(newsAndTurningPoints) {
       tpDiv.appendChild(approvedButton);
       readbuttonContainer.appendChild(tpDiv);
     }
-
+    else if (news.turning_point_type === "cancelled") {
+      const tpDiv = document.createElement('div');
+      tpDiv.classList.add('turning-point-div');
+      const cancelledButton = document.createElement('div');
+      cancelledButton.classList.add('cancel-tp', 'tp-button', 'tp-button-selected');
+      const cancelledSpan = document.createElement('span');
+      cancelledSpan.classList.add('tp-result-span');
+      cancelledSpan.innerText = "Cancelled";
+      cancelledButton.appendChild(cancelledSpan);
+      tpDiv.appendChild(cancelledButton);
+      readbuttonContainer.appendChild(tpDiv);
+    }
 
     readbuttonContainer.appendChild(readButton);
-    newsBody.appendChild(readbuttonContainer);
+    if (!news.nonReadable || news.nonReadable === false) {
+      newsBody.appendChild(readbuttonContainer);
+    }
     newsItem.appendChild(newsBody);
 
     if (news.type === "race_result" || news.type === "quali_result") {
@@ -406,18 +440,19 @@ export async function place_turning_outcome(turningPointResponse) {
   readButton.appendChild(readButtonSpan);
 
   readButton.addEventListener('click', async () => {
-    clone.classList.add("expanded")
+    const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
+      keyboard: false
+    });
+    newsModal.show();
 
-    const bodyEl = clone.querySelector('.news-body');
-    const titleEl = bodyEl.querySelector('.news-title');
-    const articleEl = document.createElement('div');
-    articleEl.classList.add('news-article');
+    const modalTitle = document.querySelector('#newsModal .modal-title');
+    modalTitle.textContent = turningPointResponse.title;
 
-    const dateDiv = document.createElement('div');
-    dateDiv.classList.add('news-article-date');
-    const calendarIcon = document.createElement('i');
-    calendarIcon.classList.add('bi', 'bi-calendar-event',);
-    const dateSpan = document.createElement('span');
+    const newsArticle = document.querySelector('#newsModal .news-article');
+    newsArticle.innerHTML = '';
+
+
+    const dateSpan = document.querySelector('#newsModal .news-article-date .dateSpan');
     const date = excelToDate(turningPointResponse.date);
 
 
@@ -425,14 +460,9 @@ export async function place_turning_outcome(turningPointResponse) {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     dateSpan.textContent = `${day}/${month}/${year}`;
-    dateDiv.appendChild(calendarIcon);
-    dateDiv.appendChild(dateSpan);
 
-    articleEl.style.whiteSpace = 'pre-wrap';
-
-    //first title, then date, then article
-    titleEl.insertAdjacentElement('afterend', dateDiv);
-    dateDiv.insertAdjacentElement('afterend', articleEl);
+    const image = document.querySelector('#newsModal .news-image-background');
+    image.src = turningPointResponse.image;
 
     if (ai) {
       const loaderDiv = document.createElement('div');
@@ -461,7 +491,7 @@ export async function place_turning_outcome(turningPointResponse) {
       loaderDiv.appendChild(loadingSpan);
       loaderDiv.appendChild(progressBar);
 
-      articleEl.insertAdjacentElement('afterend', loaderDiv);
+      newsArticle.insertAdjacentElement('afterend', loaderDiv);
 
       //start progress div moving every 100ms to 30%
       let progress = 0;
@@ -476,7 +506,7 @@ export async function place_turning_outcome(turningPointResponse) {
       }, 150);
 
       try {
-        const articleText = await manageRead(news, newsList, progressDiv, interval);
+        const articleText = await manageRead(turningPointResponse, newsList, progressDiv, interval);
         if (ai === null) {
           console.warn("AI not initialized");
           return;
@@ -491,7 +521,7 @@ export async function place_turning_outcome(turningPointResponse) {
 
           setTimeout(() => {
             loaderDiv.remove();
-            articleEl.textContent = articleText;
+            newsArticle.textContent = articleText;
           }, 150);
 
         }, 200);
@@ -508,13 +538,13 @@ export async function place_turning_outcome(turningPointResponse) {
       const noApiFoundSpan = document.createElement('span');
       noApiFoundSpan.classList.add('news-error');
       noApiFoundSpan.textContent = "No API key found. Please set it in the settings.";
-      articleEl.appendChild(noApiFoundSpan);
+      newsArticle.appendChild(noApiFoundSpan);
       const googleAIStudioSpan = document.createElement('p');
       googleAIStudioSpan.classList.add('news-error', 'news-error-api-key');
       googleAIStudioSpan.innerHTML = `If you want to read AI-generated articles from the news section, please enter your API key here. You can get one for free
                   from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
                   <span class="important-text bold-font">Create API Key</span> on the top right corner`
-      articleEl.appendChild(googleAIStudioSpan);
+      newsArticle.appendChild(googleAIStudioSpan);
     }
 
   });
@@ -647,6 +677,8 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
   else if (newData.type === "turning_point_dsq" || newData.type === "turning_point_outcome_dsq") {
     prompt = await contextualizeDSQ(newData, newData.turning_point_type);
   }
+
+  console.log("NEwData:", newData);
 
   const normalDate = excelToDate(newData.date).toISOString().split("T")[0];
 
@@ -1702,7 +1734,8 @@ function saveNews(newsList) {
       overlay: news.overlay,
       data: news.data,
       text: news.text,
-      turning_point_type: news.turning_point_type
+      turning_point_type: news.turning_point_type,
+      nonReadable: news.nonReadable
     };
     return acc;
   }, {});
