@@ -329,8 +329,8 @@ export function getParamMap(data) {
         },
         101: {
             team: data.team,
-            driver_out: data.driver_out,
-            driver_in: data.driver_in
+            driver_out: data.driver_out.name,
+            driver_in: data.driver_in.name
         },
         103: {
             team: data.team,
