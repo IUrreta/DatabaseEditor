@@ -89,20 +89,19 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
     if (type === "turning_point_transfer") {
         if (outcome === "positive") {
             executeMidSeasonTransfer(turningPointData);
+        }
+        const entryId = `turning_point_outcome_transfer_${turningPointData.teamId}`;
+        const title = generateTurningPointTitle(turningPointData, 101, outcome);
+        const image = getImagePath(null, turningPointData.driver_in.id, "transfer");
 
-            const entryId = `turning_point_outcome_transfer_${turningPointData.teamId}`;
-            const title = generateTurningPointTitle(turningPointData, 101, outcome);
-            const image = getImagePath(null, turningPointData.driver_in.id, "transfer");
-
-            newEntry = {
-                id: entryId,
-                title,
-                image,
-                data: turningPointData,
-                date: maxDate + 1,
-                turning_point_type: outcome,
-                type: "turning_point_outcome_transfer"
-            }
+        newEntry = {
+            id: entryId,
+            title,
+            image,
+            data: turningPointData,
+            date: maxDate + 1,
+            turning_point_type: outcome,
+            type: "turning_point_outcome_transfer"
         }
     } else if (type === "turning_point_dsq") {
         if (outcome === "positive") {
@@ -2379,7 +2378,9 @@ export function getTransferDetails(drivers, date = null) {
     return {
         driverMap,
         driverStandings,
-        teamStandings
+        teamStandings,
+        driversResults,
+        racesNames
     }
 }
 

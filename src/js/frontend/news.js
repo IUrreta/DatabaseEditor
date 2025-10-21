@@ -336,7 +336,7 @@ export async function place_news(newsAndTurningPoints) {
         place_turning_outcome(newResp.content);
         newsList.push(newResp.content);
 
-        
+
         const commandDrivers = new Command("driversRefresh", {});
         commandDrivers.execute();
 
@@ -681,6 +681,9 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
   else if (newData.type === "turning_point_dsq" || newData.type === "turning_point_outcome_dsq") {
     prompt = await contextualizeDSQ(newData, newData.turning_point_type);
   }
+  else if (newData.type === "turning_point_transfer" || newData.type === "turning_point_outcome_transfer") {
+    prompt = await contextualizeTurningPointTransfer(newData, newData.turning_point_type);
+  }
 
   console.log("NEwData:", newData);
 
@@ -816,6 +819,75 @@ async function contextualizeDSQ(newData, type) {
     .join('\n\n');
 
   prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+
+  return prompt;
+
+}
+
+async function contextualizeTurningPointTransfer(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 101);
+  let prompt;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+
+  let driverInTeam = combined_dict[newData.data.driver_in.teamId] || 'the previous team';
+
+  prompt = prompt.replace(/{{\s*driver_in\s*}}/g, newData.data.driver_in.name || 'The driver').
+    replace(/{{\s*driver_out\s*}}/g, newData.data.driver_out.name || 'The driver').
+    replace(/{{\s*team\s*}}/g, newData.data.team || 'The team').
+    replace(/{{\s*driver_in_team\s*}}/g, driverInTeam || 'The previous team')
+
+
+
+  // const command = new Command("transferRumorRequest", {
+  //   drivers: newData.data.drivers,
+  //   date: date
+  // }
+  // );
+
+  // let resp;
+  // try {
+  //   resp = await command.promiseExecute();
+  // } catch (err) {
+  //   console.error("Error fetching transfer rumor:", err);
+  //   return;
+  // }
+
+  if (newData.data.driver_substitute) {
+    let driverSubstituteTeam = combined_dict[newData.data.driver_substitute.teamId] || '';
+    prompt = prompt.replace(
+      /{{\s*driver_substitute_part\s*}}/g,
+      () => {
+        const substituteName = newData.data.driver_substitute.name;
+        const driverInName = newData.data.driver_in.name;
+        const inTeam = driverInTeam || 'the team';
+
+        let fromPart;
+
+        if (driverSubstituteTeam) {
+          if (driverSubstituteTeam === driverInTeam) {
+            fromPart = `as a reserve for ${inTeam}`;
+          } else {
+            fromPart = `from ${driverSubstituteTeam}`;
+          }
+        } else {
+          fromPart = 'as a free agent';
+        }
+
+        return `${substituteName} will sign for ${inTeam} as a substitute for ${driverInName}, coming ${fromPart}.`;
+      }
+    );
+  }
+  else {
+    prompt = prompt.replace(/{{\s*driver_substitute_part\s*}}/g, '');
+  }
 
   return prompt;
 
