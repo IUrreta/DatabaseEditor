@@ -37,7 +37,7 @@
         "id": "mid_season_transfer",
         "new_type": 101,
         "turning_titles": [
-            "{{team}} reportedly considering replacing {{driver_out}} with {{driver_in}} mid-season",
+            "{{team}} reportedly considering replacing {{driver_out}} with {{driver_in}} as soon as possible",
             "Internal tension at {{team}} as rumors link {{driver_in}} to {{driver_out}}’s seat",
             "Sources suggest {{team}} evaluating a possible swap involving {{driver_out}} and {{driver_in}}",
             "Speculation grows around {{team}}’s lineup after disappointing results from {{driver_out}}",
@@ -45,28 +45,28 @@
             "Rumors of a mid-season driver change at {{team}} involving {{driver_out}} and {{driver_in}}",
             "{{team}} is thinking about releasing {{driver_out}} – could {{driver_in}} be the replacement?",
             "Insiders hint at potential driver shuffle at {{team}} with {{driver_in}} eyeing {{driver_out}}’s position",
-            "'We think about every option' – {{team}} on possible mid-season driver change"
+            "'We think about every option' – {{team}} on possible driver change"
         ],
         "positive_titles": [
             "It’s official: {{driver_in}} replaces {{driver_out}} at {{team}} for the remainder of the season",
             "{{team}} confirms driver change – {{driver_out}} out, {{driver_in}} in",
             "{{driver_in}} steps in for {{driver_out}} as {{team}} reshuffles lineup",
-            "Confirmed: {{driver_in}} joins {{team}} mid-season, replacing {{driver_out}}",
+            "Confirmed: {{driver_in}} joins {{team}} for the next race, replacing {{driver_out}}",
             "{{team}} makes bold move, swaps {{driver_out}} for {{driver_in}}",
-            "{{team}} shakes up lineup with mid-season switch to {{driver_in}}",
+            "{{team}} shakes up lineup with a surprise move involving {{driver_in}}",
             "HERE WE GO: {{driver_in}} takes over {{driver_out}}’s seat at {{team}}",
             "{{team}} announces mid-season driver change, {{driver_in}} to replace {{driver_out}}",
-            "'I'm excited for the challenge' – {{driver_in}} on joining {{team}} mid-season"
+            "'I'm excited for the challenge' – {{driver_in}} on joining {{team}} for the next race"
         ],
         "negative_titles": [
-            "{{team}} denies rumors of replacing {{driver_out}} mid-season",
+            "{{team}} denies rumors of replacing {{driver_out}} as soon as possible",
             "No changes at {{team}} as management reaffirms trust in {{driver_out}}",
             "Rumors dismissed: {{driver_out}} keeps seat at {{team}} despite speculation",
-            "{{team}} closes talks of a mid-season driver change",
+            "{{team}} closes talks of a driver change during the season",
             "{{team}} stands by {{driver_out}}, quashes replacement rumors",
             "Relief for {{driver_out}} as {{team}} confirms no driver changes",
             "{{team}} rebuffs speculation, {{driver_out}} remains in the lineup",
-            "{{team}} puts an end to mid-season driver change rumors, {{driver_out}} safe",
+            "{{team}} puts an end to the silly season driver change rumors, {{driver_out}} safe",
             "{{team}} reaffirms commitment to {{driver_out}}, denies replacement talks",
             "'I never felt threatened' – {{driver_out}} on rumors of being replaced at {{team}}"
         ]

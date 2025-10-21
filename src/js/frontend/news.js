@@ -844,21 +844,30 @@ async function contextualizeTurningPointTransfer(newData, turningPointType) {
     replace(/{{\s*team\s*}}/g, newData.data.team || 'The team').
     replace(/{{\s*driver_in_team\s*}}/g, driverInTeam || 'The previous team')
 
+  let drivers = [
+    {
+      driverId: newData.data.driver_in.id,
+      teamId: newData.data.driver_in.teamId,
+      name: newData.data.driver_in.name,
+      team: combined_dict[newData.data.driver_in.teamId]
+    }
+  ]
 
+  let date = newData.date;
 
-  // const command = new Command("transferRumorRequest", {
-  //   drivers: newData.data.drivers,
-  //   date: date
-  // }
-  // );
+  const command = new Command("transferRumorRequest", {
+    drivers,
+    date
+  });
 
-  // let resp;
-  // try {
-  //   resp = await command.promiseExecute();
-  // } catch (err) {
-  //   console.error("Error fetching transfer rumor:", err);
-  //   return;
-  // }
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+    console.log("Transfer rumor response:", resp);
+  } catch (err) {
+    console.error("Error fetching transfer rumor:", err);
+    return;
+  }
 
   if (newData.data.driver_substitute) {
     let driverSubstituteTeam = combined_dict[newData.data.driver_substitute.teamId] || '';
@@ -873,7 +882,7 @@ async function contextualizeTurningPointTransfer(newData, turningPointType) {
 
         if (driverSubstituteTeam) {
           if (driverSubstituteTeam === driverInTeam) {
-            fromPart = `as a reserve for ${inTeam}`;
+            fromPart = `from the ${inTeam}'s academy program`;
           } else {
             fromPart = `from ${driverSubstituteTeam}`;
           }
@@ -888,6 +897,41 @@ async function contextualizeTurningPointTransfer(newData, turningPointType) {
   else {
     prompt = prompt.replace(/{{\s*driver_substitute_part\s*}}/g, '');
   }
+
+
+  let previousRaces = '';
+  resp.content.racesNames.forEach((r) => {
+    previousRaces += `${r}, `;
+  });
+
+  const previousResults = resp.content.driversResults.map((d, i) => {
+    return `${d.name} (${d.nWins > 0 ? d.nWins + " wins" : ""}${d.nPodiums > 0 ? (d.nWins > 0 ? ", " : "") + d.nPodiums + " podiums" : ""}${d.nWins === 0 && d.nPodiums === 0 ? d.nPointsFinishes + " points finishes" : ""}) ${d.resultsString}`;
+  }).join("\n");
+
+  if (resp.content.racesNames.length > 0) {
+
+    prompt += `\n\nHere are the previous results for each driver the PREVIOUS races:\n${previousRaces}`;
+
+    prompt += `\n\n${previousResults}`;
+
+  }
+
+  const driversChamp = resp.content.driverStandings
+    .map((d, i) => {
+      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
+
+  const teamsChamp = resp.content.teamStandings
+    .map((t, i) => {
+      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
+      return `${i + 1}. ${teamName} — ${t.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Constructors' Championship standings:\n${teamsChamp}`;
 
   return prompt;
 
@@ -1081,7 +1125,7 @@ async function contextualizeSillySeasonTransferNews(newData) {
 
     prompt += `\n\nHere are the offers that ${d.name} has:\n`;
     d.offers.forEach((o) => {
-      prompt += `${o.potentialTeam} with an expected salary of around ${o.salary}€ per year until ${o.endSeason}, targettint ${o.driverAtRisk}'s seat. ${d.name}'s opinion on salary is ${o.salaryOpinion} and on length is ${o.lengthOpinion}\n`;
+      prompt += `${o.potentialTeam} with an expected salary of around ${o.salary}€ per year until ${o.endSeason}, targeting ${o.driverAtRisk}'s seat. ${d.name}'s opinion on salary is ${o.salaryOpinion} and on length is ${o.lengthOpinion}\n`;
     });
 
     prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;

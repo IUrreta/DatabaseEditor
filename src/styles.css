@@ -5235,6 +5235,7 @@ input.disabled {
   color: var(--text-general);
   background-color: var(--generals);
   z-index: -2;
+  padding: 15px 20px 4px 20px;
 }
 
 .pos-relative {
