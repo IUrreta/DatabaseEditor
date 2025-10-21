@@ -336,6 +336,10 @@ export async function place_news(newsAndTurningPoints) {
         place_turning_outcome(newResp.content);
         newsList.push(newResp.content);
 
+        
+        const commandDrivers = new Command("driversRefresh", {});
+        commandDrivers.execute();
+
         saveNews(newsList);
       });
 

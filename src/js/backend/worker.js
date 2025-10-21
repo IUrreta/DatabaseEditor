@@ -348,6 +348,12 @@ const workerCommands = {
     const staff = fetchStaff(yearData[0]);
     postMessage({ responseMessage: "Staff fetched", content: staff });
   },
+  driversRefresh: (data, postMessage) => {
+    const yearData = checkYearSave();
+
+    const drivers = fetchDrivers(yearData[0]);
+    postMessage({ responseMessage: "Drivers fetched", content: drivers});
+  },
   changeStats: (data, postMessage) => {
     changeStats();
     postMessage({ responseMessage: "Stats changed",

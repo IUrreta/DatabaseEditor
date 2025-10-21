@@ -89,6 +89,20 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
     if (type === "turning_point_transfer") {
         if (outcome === "positive") {
             executeMidSeasonTransfer(turningPointData);
+
+            const entryId = `turning_point_outcome_transfer_${turningPointData.teamId}`;
+            const title = generateTurningPointTitle(turningPointData, 101, outcome);
+            const image = getImagePath(null, turningPointData.driver_in.id, "transfer");
+
+            newEntry = {
+                id: entryId,
+                title,
+                image,
+                data: turningPointData,
+                date: maxDate + 1,
+                turning_point_type: outcome,
+                type: "turning_point_outcome_transfer"
+            }
         }
     } else if (type === "turning_point_dsq") {
         if (outcome === "positive") {
@@ -116,6 +130,7 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
             turning_point_type: outcome,
             type: "turning_point_outcome_dsq"
         }
+        maxDate += 1;
 
     }
 
@@ -132,11 +147,11 @@ function executeMidSeasonTransfer(turningPointData) {
         fireDriver(driver_in.id, driver_in.teamId);
 
         // Hire them in their new teams
-        const existingDrivers = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE TeamID = ${driver_out.teamId} AND ContractType = 0 AND PosInTeam <= 2`, 'allRows').map(r => r[0]);
+        const existingDrivers = queryDB(`SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID WHERE con.TeamID = ${driver_out.teamId} AND con.ContractType = 0 AND con.PosInTeam <= 2`, 'allRows').map(r => r[0]);
         const posInTeamForDriverIn = existingDrivers.includes(1) ? 2 : 1;
         hireDriver("auto", driver_in.id, driver_out.teamId, posInTeamForDriverIn);
 
-        const existingDriversSubTeam = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE TeamID = ${driver_in.teamId} AND ContractType = 0 AND PosInTeam <= 2`, 'allRows').map(r => r[0]);
+        const existingDriversSubTeam = queryDB(`SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID WHERE con.TeamID = ${driver_in.teamId} AND con.ContractType = 0 AND con.PosInTeam <= 2`, 'allRows').map(r => r[0]);
         const posInTeamForDriverOut = existingDriversSubTeam.includes(1) ? 2 : 1;
         hireDriver("auto", driver_out.id, driver_in.teamId, posInTeamForDriverOut);
         return;
@@ -155,13 +170,13 @@ function executeMidSeasonTransfer(turningPointData) {
 
     // 2. Hire drivers into their new teams
     // Hire driver_in to the main team (teamId)
-    const existingDrivers = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE TeamID = ${teamId} AND ContractType = 0 AND PosInTeam <= 2`, 'allRows').map(r => r[0]);
+    const existingDrivers = queryDB(`SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID WHERE con.TeamID = ${teamId} AND con.ContractType = 0 AND con.PosInTeam <= 2`, 'allRows').map(r => r[0]);
     const posInTeamForDriverIn = existingDrivers.includes(1) ? 2 : 1;
     hireDriver("auto", driver_in.id, teamId, posInTeamForDriverIn);
 
     // Hire driver_substitute to driver_in's original team (if applicable)
     if (driver_substitute && driver_in.teamId) {
-        const existingDriversSubTeam = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE TeamID = ${driver_in.teamId} AND ContractType = 0 AND PosInTeam <= 2`, 'allRows').map(r => r[0]);
+        const existingDriversSubTeam = queryDB(`SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID WHERE con.TeamID = ${driver_in.teamId} AND con.ContractType = 0 AND con.PosInTeam <= 2`, 'allRows').map(r => r[0]);
         const posInTeamForSubstitute = existingDriversSubTeam.includes(1) ? 2 : 1;
         hireDriver("auto", driver_substitute.id, driver_in.teamId, posInTeamForSubstitute);
     }
@@ -241,19 +256,40 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
             driverIn = Object.entries(teamsById[8].drivers).sort((a, b) => b[1] - a[1])[0];
             driverInTeamId = 8;
         } else {
-            const freeAgents = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID
+            const teamsByTotalPoints = Object.entries(teamsById).sort((a, b) => a[1].total - b[1].total);
+            const lowerTeams = teamsByTotalPoints.filter(entry => entry[1].total < teamsById[3].total).map(entry => entry[0]);
+            //get all the drivers from those teams and order them by rating
+            const candidates = [];
+            for (const tId of lowerTeams) {
+                if (teamsById[tId]) {
+                    for (const [dId, pts] of Object.entries(teamsById[tId].drivers)) {
+                        let rating = getDriverOverall(dId);
+                        candidates.push({ driverId: dId, points: pts, teamId: tId, rating });
+                    }
+                }
+            }
+            candidates.sort((a, b) => b.rating - a.rating);
+            if (candidates.length > 0) {
+                driverIn = [candidates[0].driverId, candidates[0].points];
+                driverInTeamId = candidates[0].teamId;
+            }
+
+            //fallback if not driverIn, get the best free agent
+            if (!driverIn) {
+                const freeAgents = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID
                     FROM Staff_BasicData bas
-                    JOIN Drivers dri ON bas.StaffID = dri.StaffID
+                    JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
                     JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
                     WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)
                     AND gd.Retired = 0`, 'allRows');
-            if (freeAgents.length) {
-                for (const fa of freeAgents) {
-                    const overall = getDriverOverall(fa[2]);
-                    fa.push(overall);
+                if (freeAgents.length) {
+                    for (const fa of freeAgents) {
+                        const overall = getDriverOverall(fa[2]);
+                        fa.push(overall);
+                    }
+                    freeAgents.sort((a, b) => b[3] - a[3]);
+                    driverIn = [freeAgents[0][2], freeAgents[0][3]];
                 }
-                freeAgents.sort((a, b) => b[3] - a[3]);
-                driverIn = [freeAgents[0][2], freeAgents[0][3]];
             }
         }
     } else {
@@ -261,31 +297,61 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
         const bottom3Teams = teamsByTotalPoints.slice(0, 3).map(entry => entry[0]);
         const top4Teams = teamsByTotalPoints.slice(-4).map(entry => entry[0]);
 
-        if (bottom3Teams.includes(randomTeam)) {
+
+        const teamToCompare = String(randomTeam);
+
+        if (bottom3Teams.includes(teamToCompare)) {
             const reserveDrivers = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
                 FROM Staff_Contracts con
                 JOIN Staff_BasicData bas ON con.StaffID = bas.StaffID
                 JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
-                WHERE con.TeamID = ${randomTeam} AND con.ContractType = 1 AND con.PosInTeam > 2`, 'allRows');
+                WHERE con.TeamID = ${randomTeam} AND con.ContractType = 0 AND con.PosInTeam > 2`, 'allRows');
             if (reserveDrivers.length) {
-                const randomReserve = randomPick(reserveDrivers);
-                driverIn = [randomReserve[2], 0]; // Points are not relevant here
-                driverInTeamId = randomReserve[3];
-            }
-        } else if (top4Teams.includes(randomTeam)) {
-            const freeAgents = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID
-                    FROM Staff_BasicData bas
-                    JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
-                    JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
-                    WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)
-                    AND gd.Retired = 0`, 'allRows');
-            if (freeAgents.length) {
-                for (const fa of freeAgents) {
-                    const overall = getDriverOverall(fa[2]);
-                    fa.push(overall);
+                //get the best reserve driver by overall
+                const reserveCandidates = [];
+                for (const rd of reserveDrivers) {
+                    const overall = getDriverOverall(rd[2]);
+                    reserveCandidates.push({ driverId: rd[2], teamId: rd[3], rating: overall });
                 }
-                freeAgents.sort((a, b) => b[3] - a[3]);
-                driverIn = [freeAgents[0][2], freeAgents[0][3]];
+                reserveCandidates.sort((a, b) => b.rating - a.rating);
+                driverIn = [reserveCandidates[0].driverId, reserveCandidates[0].rating];
+                driverInTeamId = reserveCandidates[0].teamId;
+            }
+        } else if (top4Teams.includes(teamToCompare)) {
+            const teamsByTotalPoints = Object.entries(teamsById).sort((a, b) => a[1].total - b[1].total);
+            const lowerTeams = teamsByTotalPoints.filter(entry => entry[1].total < teamsById[randomTeam].total).map(entry => entry[0]);
+            //get all the drivers from those teams and order them by rating
+            const candidates = [];
+            for (const tId of lowerTeams) {
+                if (teamsById[tId]) {
+                    for (const [dId, pts] of Object.entries(teamsById[tId].drivers)) {
+                        let rating = getDriverOverall(dId);
+                        candidates.push({ driverId: dId, points: pts, teamId: tId, rating });
+                    }
+                }
+            }
+            candidates.sort((a, b) => b.rating - a.rating);
+            if (candidates.length > 0) {
+                //get a random pick from the top 5 candidates
+                const topCandidates = candidates.slice(0, 5);
+                const selectedCandidate = randomPick(topCandidates);
+                driverIn = [selectedCandidate.driverId, selectedCandidate.points];
+                driverInTeamId = selectedCandidate.teamId;
+
+                const freeAgents = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID
+                        FROM Staff_BasicData bas
+                        JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+                        JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
+                        WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)
+                        AND gd.Retired = 0`, 'allRows');
+                if (freeAgents.length) {
+                    for (const fa of freeAgents) {
+                        const overall = getDriverOverall(fa[2]);
+                        fa.push(overall);
+                    }
+                    freeAgents.sort((a, b) => b[3] - a[3]);
+                    driverSubstitute = [freeAgents[0][2], freeAgents[0][3]];
+                }
             }
         } else {
             const candidates = [];
@@ -305,12 +371,17 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
                     FROM Staff_Contracts con
                     JOIN Staff_BasicData bas ON con.StaffID = bas.StaffID
                     JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
-                    WHERE con.TeamID = ${driverInTeamId} AND con.ContractType = 1 AND con.PosInTeam > 2`, 'allRows');
+                    WHERE con.TeamID = ${driverInTeamId} AND con.ContractType = 0 AND con.PosInTeam > 2`, 'allRows');
 
                 if (reserveDrivers.length) {
-                    const randomReserve = randomPick(reserveDrivers);
-                    driverSubstitute = [randomReserve[2], 0];
-                    driverSubstituteTeamId = randomReserve[3];
+                    const reserveCandidates = [];
+                    for (const rd of reserveDrivers) {
+                        const overall = getDriverOverall(rd[2]);
+                        reserveCandidates.push({ driverId: rd[2], teamId: rd[3], rating: overall });
+                    }
+                    reserveCandidates.sort((a, b) => b.rating - a.rating);
+                    driverSubstitute = [reserveCandidates[0].driverId, reserveCandidates[0].rating];
+                    driverSubstituteTeamId = reserveCandidates[0].teamId;
                 } else {
                     const freeAgents = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID
                         FROM Staff_BasicData bas
@@ -331,9 +402,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
         }
     }
 
-    const date = new Date();
-    date.setDate(Math.floor(Math.random() * 28) + 1);
-    const excelDate = dateToExcel(date);
+    const excelDate = dateToExcel(new Date(daySeason[1], 6, Math.floor(Math.random() * 28) + 1));
 
     let driverOutName = driverOut ? queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ${driverOut[0]}`, 'singleRow') : null;
     driverOutName.push(driverOut[0], driverOut[1]);
@@ -373,11 +442,13 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
     turningPointState.transfers[6] = newData; //tendria que ser currentMonth, pero para pruebas lo dejo fijo en junio
 
     const title = generateTurningPointTitle(newData, 101, "original");
+    const image = getImagePath(null, driverOutName[1], "transfer");
+    console.log("image path for turning point transfer:", image);
 
     const newEntry = {
         id: entryId,
         title,
-        image: null,
+        image,
         data: newData,
         date: excelDate,
         turning_point_type: "original",
@@ -799,7 +870,6 @@ function generateTurningPointTitle(data, new_type, turningPointType) {
 
 
 function generateTitle(data, new_type) {
-    console.log("Generating title for type:", new_type, "with data:", data);
     let dataRandomized = randomRemovalOfNames(data);
     let templateObj = null;
     templateObj = newsTitleTemplates.find(t => t.new_type === new_type);
