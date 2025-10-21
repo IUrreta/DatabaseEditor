@@ -16,3 +16,4 @@ dist/
 patreon/
 *.txt
 resize_images.js
+.vscode/
