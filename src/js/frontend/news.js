@@ -336,9 +336,14 @@ export async function place_news(newsAndTurningPoints) {
         place_turning_outcome(newResp.content);
         newsList.push(newResp.content);
 
-
-        const commandDrivers = new Command("driversRefresh", {});
-        commandDrivers.execute();
+        if (news.type === "turning_point_transfer" || news.type === "turning_point_outcome_transfer") {
+          const commandDrivers = new Command("driversRefresh", {});
+          commandDrivers.execute();
+        }
+        else if (news.type === "turning_point_technical_directive") {
+          const commandTechDir = new Command("performanceRefresh", {});
+          commandTechDir.execute();
+        }
 
         saveNews(newsList);
       });

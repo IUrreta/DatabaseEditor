@@ -6,8 +6,9 @@ import { fetchSeasonResults, fetchQualiResults } from "./dbUtils";
 import { queryDB } from "../dbManager";
 import { excelToDate, dateToExcel } from "./eidtStatsUtils";
 import { getTier, getDriverOverall, fireDriver, hireDriver, swapDrivers } from "./transferUtils";
-import { getPerformanceAllTeamsSeason, getAllPartsFromTeam } from "./carAnalysisUtils";
+import { getPerformanceAllTeamsSeason, getAllPartsFromTeam, getPerformanceAllTeams } from "./carAnalysisUtils";
 import { getGlobals } from "../commandGlobals";
+import { unitValueToValue } from "./carConstants";
 
 const _seasonResultsCache = new Map();
 const _standingsCache = new Map();
@@ -64,6 +65,8 @@ export function generate_news(savednews, turningPointState) {
 
     const midSeasonTransfersTurningPointNews = generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, savednews, turningPointState);
 
+    const technicalDirectiveTurningPointNews = generateTechnicalDirectiveTurningPointNews(currentMonth, savednews, turningPointState);
+
     let turningPointOutcomes = [];
     if (Object.keys(savednews).length > 0) {
         turningPointOutcomes = Object.entries(savednews)
@@ -74,7 +77,7 @@ export function generate_news(savednews, turningPointState) {
     let newsList = [...raceNews || [], ...qualiNews || [], ...fakeTransferNews || [],
     ...bigConfirmedTransfersNews || [], ...contractRenewalsNews || [], ...comparisonNews || [], ...seasonReviews || [],
     ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...dsqTurningPointNews || [], ...midSeasonTransfersTurningPointNews || [],
-    ...turningPointOutcomes || []];
+    ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || []];
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
@@ -90,7 +93,7 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
         if (outcome === "positive") {
             executeMidSeasonTransfer(turningPointData);
         }
-        const entryId = `turning_point_outcome_transfer_${turningPointData.teamId}`;
+        const entryId = `turning_point_outcome_transfer_${turningPointData.month}`;
         const title = generateTurningPointTitle(turningPointData, 101, outcome);
         const image = getImagePath(null, turningPointData.driver_in.id, "transfer");
 
@@ -103,7 +106,8 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
             turning_point_type: outcome,
             type: "turning_point_outcome_transfer"
         }
-    } else if (type === "turning_point_dsq") {
+    }
+    else if (type === "turning_point_dsq") {
         if (outcome === "positive") {
             const pointsReg = fetchPointsRegulations();
 
@@ -131,6 +135,24 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
         }
         maxDate += 1;
 
+    }
+    else if (type === "turning_point_technical_directive") {
+        if (outcome === "positive") {
+            applyTechnicalDirectiveEffect(turningPointData);
+        }
+        const entryId = `turning_point_outcome_technical_directive_${turningPointData.month}`;
+        const title = generateTurningPointTitle(turningPointData, 100, outcome);
+        const image = getImagePath(null, turningPointData.componentId, "technical");
+        newEntry = {
+            id: entryId,
+            title,
+            image,
+            data: turningPointData,
+            date: maxDate + 1,
+            turning_point_type: outcome,
+            type: "turning_point_outcome_technical_directive"
+        }
+        maxDate += 1;
     }
 
     return newEntry;
@@ -181,18 +203,61 @@ function executeMidSeasonTransfer(turningPointData) {
     }
 }
 
+function applyTechnicalDirectiveEffect(turningPointData) {
+    //iterate through the object turningPointData.effectOnEachteam
+    const componentId = turningPointData.componentId;
+    for (const [teamIdStr, effect] of Object.entries(turningPointData.effectOnEachteam)) {
+        const teamId = Number(teamIdStr);
+        const performanceChange = Number(effect.performanceGainLoss);
+        const designs = queryDB(`SELECT DesignID FROM Parts_Designs WHERE TeamID = ${teamId} AND PartType = ${componentId}`, 'allRows');
+        for (const designRow of designs) {
+            const designId = designRow[0];
+            const unitValues = queryDB(`SELECT UnitValue, PartStat FROM Parts_Designs_StatValues WHERE DesignID = ${designId} AND  PartStat != 15`, 'allRows');
+            for (const valueRow of unitValues) {
+                const partStat = valueRow[1];
+                const currentUnitValue = Number(valueRow[0]);
+                const newRelative = 100 + performanceChange;
+                const newUnitValue = (currentUnitValue * newRelative) / 100;
+                const newValue = unitValueToValue[partStat](newUnitValue);
+                queryDB(`UPDATE Parts_Designs_StatValues SET Value = ${newValue}, UnitValue = ${newUnitValue} WHERE DesignID = ${designId} AND PartStat = ${partStat}`);
+            }
+        }
+        //now the expertise
+        const expertise = queryDB(`SELECT Expertise, PartStat FROM Parts_TeamExpertise WHERE TeamID = ${teamId} AND PartType = ${componentId} AND PartStat != 15`, 'allRows');
+        for (const expRow of expertise) {
+            const currentExpertise = Number(expRow[0]);
+            const partStat = expRow[1];
+            const newRelative = 100 + performanceChange;
+            const newExpertise = (currentExpertise * newRelative) / 100;
+            queryDB(`UPDATE Parts_TeamExpertise SET Expertise = ${newExpertise} WHERE TeamID = ${teamId} AND PartType = ${componentId} AND PartStat = ${partStat}`);
+        }
+    }
+}
+
 function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
     let newsList = [];
+    //get previous technical directive turning point news
+    for (let month of [5, 9]) {
+        const entryId = `turning_point_technical_directive_${month}`;
+        if (savednews[entryId]) {
+            newsList.push(savednews[entryId]);
+        }
+    }
 
-    if (currentMonth !== 5 || currentMonth !== 9) return newsList; //if its not month 5 or 9, return all previous techincal directive news generated
+    // if (currentMonth !== 5 || currentMonth !== 9) return newsList; 
 
     //60% chance of happening
-    if (Math.random() < 0.6) return newsList;
+    // if (Math.random() < 0.6){
+    //     turningPointState.technicalDirectives[currentMonth] = "None";
+    //     return newsList;
+    // }
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+
 
     const entryId = `turning_point_technical_directive_${currentMonth}`;
     const parts = [3, 4, 5, 6, 7, 8]
     const partId = randomPick(parts);
-    const partName = part_full_names[partId] || "Unknown Part";
+    const partName = part_full_names[partId].toLowerCase() || "Unknown Part";
 
     const globals = getGlobals();
     let teamIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -200,29 +265,127 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
         teamIds.push(32);
     }
 
-    let effectOnEachteam = {};
-    for (const teamId of teamIds) {
-        const performanceGainLoss = Math.floor(Math.random() * 11) - 5;
-        effectOnEachteam[teamId] = {
-            performanceGainLoss: performanceGainLoss,
-            teamName: combined_dict[teamId] || "Unknown Team"
+    const excelDate = dateToExcel(new Date(daySeason[1], currentMonth, Math.floor(Math.random() * 28) + 1));
+
+
+    const performance = getPerformanceAllTeams(excelDate, null, globals.isCreateATeam)
+    console.log("Performance data for technical directive TP:", performance);
+    const championship = queryDB(`SELECT TeamID, Points, Position FROM Races_TeamStandings WHERE SeasonID = ${daySeason[1]} AND RaceFormula = 1 ORDER BY Position`, 'allRows');
+
+    const constructorsStandings = {};
+    for (const row of championship) {
+        const teamId = Number(row[0]);
+        constructorsStandings[teamId] = {
+            points: Number(row[1]),
+            rank: Number(row[2])
         };
     }
-    //get the 3 teams that gain the most performance
-    const sortedTeams = Object.entries(effectOnEachteam).sort((a, b) => b[1].performanceGainLoss - a[1].performanceGainLoss);
-    const top3Teams = sortedTeams.slice(0, 3);
-    const bottom3Teams = sortedTeams.slice(-3);
+
+    const cap = 7.5;                 // máximo +/-2
+    const standingsWeight = 0.25;   // 0 = ignora standings; prueba 0.2–0.3 si quieres mezclar un poco
+    const zeroSum = true;          // intenta balance neto ~0 en compresión
+    let effectOnEachteam = {};
+
+    // Normaliza tipos de teamIds por si vienen como strings
+    const ids = teamIds.map(id => Number(id));
+
+    // Helper clamp
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+    if (Math.random() < 0.5) {
+        // --- MODO RANDOM PURO (50%) ---
+        for (const teamId of ids) {
+            const v = (Math.random() * 2 * cap) - cap; // [-2, 2]
+            effectOnEachteam[teamId] = {
+                performanceGainLoss: v.toFixed(2),
+                teamName: combined_dict[teamId] || "Unknown Team"
+            };
+        }
+    } else {
+        console.log("MODO COMPRESION");
+        // --- MODO COMPRESIÓN (50%) basado en rendimiento (+ opcional standings) ---
+        const vals = ids
+            .map(id => performance[id])
+            .filter(v => typeof v === "number" && Number.isFinite(v));
+        const mean = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
+
+        let maxAbsDev = 1e-9; // evita div/0
+        for (const id of ids) {
+            const dev = ((performance[id] ?? mean) - mean);
+            if (Math.abs(dev) > maxAbsDev) maxAbsDev = Math.abs(dev);
+        }
+
+        // Precompute máximo de puntos para normalizar standings si se usa
+        const maxPts = Math.max(...ids.map(id => constructorsStandings[id]?.points ?? 0), 1);
+
+        // Calcula efectos crudos
+        const raw = ids.map(teamId => {
+            const score = performance[teamId] ?? mean;
+            const norm = (score - mean) / maxAbsDev; // [-1, 1]
+
+            // efecto “compresión” por rendimiento
+            let eff = -norm * cap;
+
+            // mezcla ligera con standings (mejores => leve castigo, peores => ayuda)
+            if (standingsWeight > 0) {
+                const pts = constructorsStandings[teamId]?.points ?? 0;
+                const ptsNorm = (pts / maxPts);                // 0..1
+                const standingsEff = -(ptsNorm - 0.5) * cap;   // centra en 0.5
+                eff = (1 - standingsWeight) * eff + standingsWeight * standingsEff;
+            }
+
+            // un pelín de ruido para que no sea tan lineal
+            eff += (Math.random() * 0.3) - 0.15;
+
+            return { teamId, eff };
+        });
+
+        // Cero-suma (opcional)
+        let adjusted = raw;
+        if (zeroSum && adjusted.length) {
+            const avg = adjusted.reduce((a, r) => a + r.eff, 0) / adjusted.length;
+            adjusted = adjusted.map(r => ({ teamId: r.teamId, eff: r.eff - avg }));
+        }
+
+        // clamp + salida
+        for (const { teamId, eff } of adjusted) {
+            effectOnEachteam[teamId] = {
+                performanceGainLoss: clamp(eff, -cap, cap).toFixed(2),
+                teamName: combined_dict[teamId] || "Unknown Team",
+                teamId: teamId
+            };
+        }
+    }
+
 
     const titleData = {
+        component: partName,
+        componentId: partId,
+        effectOnEachteam: effectOnEachteam,
+        month: currentMonth
+    }
+
+    const title = generateTurningPointTitle(titleData, 100, "original");
+    const image = getImagePath(null, partId, "technical");
+    //generate a RANDOM date in the current month
+
+    turningPointState.technicalDirectives[currentMonth] = {
         component: partName,
         componentId: partId,
         effectOnEachteam: effectOnEachteam
     }
 
-    const title = generateTurningPointTitle(titleData, 100, "original");
-    const image = getImagePath(null, partId, "technical");
+    const newData = {
+        id: entryId,
+        title: title,
+        image: image,
+        date: excelDate,
+        data: titleData,
+        turning_point_type: "original",
+        type: "turning_point_technical_directive"
+    }
 
-    
+    newsList.push(newData);
 
     return newsList;
 }
@@ -237,7 +400,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
         }
     }
 
-    //   if (![6, 7, 8].includes(currentMonth)) return newsList;
+    //   if (![5, 6, 7].includes(currentMonth)) return newsList;
 
     //   // 50% chance
     if (Math.random() >= 0.5) {
@@ -489,7 +652,8 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
             id: driverSubstituteName[1],
             name: driverSubstituteName[0],
             teamId: driverSubstituteTeamId
-        } : null
+        } : null,
+        month: currentMonth
     };
 
     turningPointState.transfers[6] = newData; //tendria que ser currentMonth, pero para pruebas lo dejo fijo en junio
@@ -2350,7 +2514,7 @@ function getImagePath(teamId, code, type) {
             const randomNum = getRandomInt(1, 8);
             return `./assets/images/news/dsq_${randomNum}.webp`;
         }
-        else{
+        else {
             const randomNum = getRandomInt(1, 3);
             return `./assets/images/news/part_${code}_${randomNum}.webp`;
         }
