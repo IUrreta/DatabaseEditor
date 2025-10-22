@@ -281,7 +281,16 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
         };
     }
 
-    const cap = 7.5;                 // máximo +/-2
+    const capsByPart = {
+        3: 7.5, //chasis
+        4: 4, //front wing
+        5: 4, //rear wing
+        6: 4, //underfloor
+        7: 7, //suspension
+        8: 5  //sidepod
+    }
+
+    const cap = capsByPart[partId] || 5;               // máximo +/-
     const standingsWeight = 0.25;   // 0 = ignora standings; prueba 0.2–0.3 si quieres mezclar un poco
     const zeroSum = true;          // intenta balance neto ~0 en compresión
     let effectOnEachteam = {};
@@ -357,12 +366,16 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
         }
     }
 
+    const possibleReasons = ["improve safety", "reduce costs", "standardize components", "enhance performance parity", "improve racing", "address a grey area in the regulations"];
+    const reason = randomPick(possibleReasons);
 
     const titleData = {
         component: partName,
         componentId: partId,
         effectOnEachteam: effectOnEachteam,
-        month: currentMonth
+        month: currentMonth,
+        reason: reason,
+        season: daySeason[1]
     }
 
     const title = generateTurningPointTitle(titleData, 100, "original");

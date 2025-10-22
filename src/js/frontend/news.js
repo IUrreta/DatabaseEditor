@@ -689,6 +689,9 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
   else if (newData.type === "turning_point_transfer" || newData.type === "turning_point_outcome_transfer") {
     prompt = await contextualizeTurningPointTransfer(newData, newData.turning_point_type);
   }
+  else if (newData.type === "turning_point_technical_directive" || newData.type === "turning_point_outcome_technical_directive") {
+    prompt = await contextualizeTurningPointTechnicalDirective(newData, newData.turning_point_type);
+  }
 
   console.log("NEwData:", newData);
 
@@ -827,6 +830,104 @@ async function contextualizeDSQ(newData, type) {
 
   return prompt;
 
+}
+
+async function contextualizeTurningPointTechnicalDirective(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 100);
+  let prompt;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+  let seasonYear = newData.data.season;
+
+  const teams = newData.data.effectOnEachteam;
+  //get the best 2 teams and worse 2 by performanceGainLoss. Each team is an object where the key is the teamId and it has an object that has teamName and performanceGainLoss
+  const teamPerformances = Object.entries(teams).map(([teamId, { teamName, performanceGainLoss }]) => ({
+    teamId,
+    teamName,
+    performanceGainLoss
+  }));
+
+  const bestTeams = teamPerformances.sort((a, b) => b.performanceGainLoss - a.performanceGainLoss).slice(0, 2);
+  const worstTeams = teamPerformances.sort((a, b) => a.performanceGainLoss - b.performanceGainLoss).slice(0, 2);
+
+  prompt = prompt.replace(/{{\s*component\s*}}/g, newData.data.component || 'The component').
+  replace(/{{\s*best_team\s*}}/g, bestTeams[0]?.teamName || 'The team').
+  replace(/{{\s*second_best\s*}}/g, bestTeams[1]?.teamName || 'The team').
+  replace(/{{\s*worse_team\s*}}/g, worstTeams[0]?.teamName || 'The team').
+  replace(/{{\s*second_worse\s*}}/g, worstTeams[1]?.teamName || 'The team').
+  replace(/{{\s*reason\s*}}/g, newData.data.reason || 'The reason')
+
+    const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+    const driversChamp = resp.content.driverStandings
+    .map((d, i) => {
+      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
+
+
+  const teamsChamp = resp.content.teamStandings
+    .map((t, i) => {
+      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
+      return `${i + 1}. ${teamName} — ${t.points} pts`;
+    })
+    .join("\n");
+
+  prompt += `\n\nCurrent Constructors' Championship standings:\n${teamsChamp}`;
+
+  let previousRaces = '';
+  resp.content.racesNames.forEach((r) => {
+    previousRaces += `${r}, `;
+  });
+  previousRaces = previousRaces.slice(0, -2);
+
+  prompt += `\n\nThe races that have already taken place in ${seasonYear} are: ${previousRaces}\n`;
+
+  const previousResults = resp.content.driversResults.map((d, i) => {
+    return `${d.name} - ${d.resultsString}`;
+  }).join("\n");
+
+  prompt += `\n\nHere are the previous race results for each driver in ${seasonYear}:\n${previousResults}`;
+
+  const previousQualiResults = resp.content.driverQualiResults.map((d, i) => {
+    return `${d.name} - ${d.resultsString}`;
+  }).join("\n");
+
+  prompt += `\n\nHere are the previous qualifying results for each driver in ${seasonYear}:\n${previousQualiResults}`;
+
+  const previousChampions = Object.values(
+    resp.content.champions.reduce((acc, { season, pos, name, points }) => {
+      if (!acc[season]) acc[season] = { season, drivers: [] };
+      acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
+      return acc;
+    }, {})
+  )
+    .sort((a, b) => b.season - a.season)
+    .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
+    .join('\n\n');
+
+  prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+
+  return prompt;
 }
 
 async function contextualizeTurningPointTransfer(newData, turningPointType) {
