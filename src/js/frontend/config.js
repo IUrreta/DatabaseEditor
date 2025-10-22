@@ -80,6 +80,7 @@ export function getCombinedDict() {
 //performance
 export const pars_abreviations = { "chassis": "C", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "S" }
 export const part_codes_abreviations = { 3: "C", 4: "FW", 5: "RW", 6: "UF", 7: "SP", 8: "S" }
+export const part_full_names = { 3: "Chassis", 4: "Front Wing", 5: "Rear Wing", 6: "Underfloor", 7: "Sidepods", 8: "Suspension" }
 
 export let abreviations_dict = {
     1: "FE",
@@ -326,6 +327,9 @@ export function getParamMap(data) {
         15: {
             season_year: data.season,
             driver1: data.driver1,
+        },
+        100: {
+            component: data.component
         },
         101: {
             team: data.team,

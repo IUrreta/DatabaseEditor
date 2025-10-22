@@ -1,5 +1,5 @@
 import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations } from "./dbUtils";
-import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict } from "../../frontend/config";
+import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import turningPointsTitleTemplates from "../../../data/news/turning_points_titles_templates.json";
 import { fetchSeasonResults, fetchQualiResults } from "./dbUtils";
@@ -181,17 +181,71 @@ function executeMidSeasonTransfer(turningPointData) {
     }
 }
 
+function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
+    let newsList = [];
+
+    if (currentMonth !== 5 || currentMonth !== 9) return newsList; //if its not month 5 or 9, return all previous techincal directive news generated
+
+    //60% chance of happening
+    if (Math.random() < 0.6) return newsList;
+
+    const entryId = `turning_point_technical_directive_${currentMonth}`;
+    const parts = [3, 4, 5, 6, 7, 8]
+    const partId = randomPick(parts);
+    const partName = part_full_names[partId] || "Unknown Part";
+
+    const globals = getGlobals();
+    let teamIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    if (globals.isCreateATeam) {
+        teamIds.push(32);
+    }
+
+    let effectOnEachteam = {};
+    for (const teamId of teamIds) {
+        const performanceGainLoss = Math.floor(Math.random() * 11) - 5;
+        effectOnEachteam[teamId] = {
+            performanceGainLoss: performanceGainLoss,
+            teamName: combined_dict[teamId] || "Unknown Team"
+        };
+    }
+    //get the 3 teams that gain the most performance
+    const sortedTeams = Object.entries(effectOnEachteam).sort((a, b) => b[1].performanceGainLoss - a[1].performanceGainLoss);
+    const top3Teams = sortedTeams.slice(0, 3);
+    const bottom3Teams = sortedTeams.slice(-3);
+
+    const titleData = {
+        component: partName,
+        componentId: partId,
+        effectOnEachteam: effectOnEachteam
+    }
+
+    const title = generateTurningPointTitle(titleData, 100, "original");
+    const image = getImagePath(null, partId, "technical");
+
+    
+
+    return newsList;
+}
 
 function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, savednews = {}, turningPointState = {}) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    let newsList = [];
+    for (let month = 6; month <= 8; month++) {
+        const entryId = `turning_point_transfer_${month}`;
+        if (savednews[entryId]) {
+            newsList.push(savednews[entryId]);
+        }
+    }
 
-    //   if (![6, 7, 8].includes(currentMonth)) return [];
+    //   if (![6, 7, 8].includes(currentMonth)) return newsList;
 
     //   // 50% chance
-    //   if (Math.random() >= 0.5){
-    //       turningPointState.transfers[currentMonth] = "None";
-    //       return [];
-    //   }
+    if (Math.random() >= 0.5) {
+
+        turningPointState.transfers[currentMonth] = "None";
+
+        return newsList;
+    }
 
     const driversTeamPoints = queryDB(`
     SELECT
@@ -454,9 +508,9 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
         type: "turning_point_transfer"
     };
 
+    newsList.push(newEntry);
 
-
-    return [newEntry];
+    return newsList;
 }
 
 function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointState = {}) {
@@ -502,7 +556,7 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
         return [{ id: entryId, ...savednews[entryId] }];
     }
 
-    const components = ["Engine brake map", "Fuel flow", "Front wing", "Rear wing", "Diffuser", "Floor", "Brake ducts", "Suspension", "Gearbox", "Cooling system", "Hydraulics", "Clutch", "Turbo", "Battery", "Control electronics"];
+    const components = ["engine brake map", "fuel flow", "front wing", "rear wing", "diffuser", "floor", "brake ducts", "suspension", "gearbox", "cooling system", "hydraulics", "clutch", "plank wear"];
     const component = randomPick(components);
 
     let driver1, driver2;
@@ -2288,9 +2342,18 @@ function getImagePath(teamId, code, type) {
     }
     else if (type === "dsq") {
         const randomNum = getRandomInt(1, 8);
-        console.log("full path:", `./assets/images/news/dsq_${randomNum}.webp`);
         return `./assets/images/news/dsq_${randomNum}.webp`;
-
+    }
+    else if (type === "technical") {
+        const useGeneric = Math.random() < 0.4;
+        if (useGeneric) {
+            const randomNum = getRandomInt(1, 8);
+            return `./assets/images/news/dsq_${randomNum}.webp`;
+        }
+        else{
+            const randomNum = getRandomInt(1, 3);
+            return `./assets/images/news/part_${code}_${randomNum}.webp`;
+        }
     }
 }
 

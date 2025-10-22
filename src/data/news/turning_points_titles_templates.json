@@ -10,7 +10,10 @@
             "Whispers in the paddock: FIA to address {{component}} issues soon",
             "A new technical directive on {{component}} could be imminent, say insiders",
             "FIA looking into possible changes for {{component}} rules",
-            "Teams brace for potential FIA directive on {{component}} performance"
+            "Teams brace for potential FIA directive on {{component}} performance",
+            "Earthquake in the paddock? FIA thinks about new regulations on {{component}}",
+            "'It is a possibility' – FIA on upcoming {{component}} technical directive",
+            "Shake-up ahead? FIA technical directive on {{component}} rumored to be in the works"
         ],
         "positive_titles": [
             "FIA enforces new directive affecting {{component}} performance across the grid",
@@ -20,7 +23,9 @@
             "FIA's new {{component}} directive shakes up the competition",
             "New FIA rules on {{component}} expected to impact car performance",
             "FIA's {{component}} directive sparks debate among teams",
-            "FIA's latest technical directive on {{component}} set to change the landscape"
+            "FIA's latest technical directive on {{component}} set to change the landscape",
+            "'We have to adapt quickly' – Teams respond to FIA's {{component}} directive",
+            "'It wont change much' – FIA downplays impact of new {{component}} directive"
         ],
         "negative_titles": [
             "FIA shelves planned directive on {{component}} after internal review",
@@ -30,7 +35,9 @@
             "FIA decides against new {{component}} rules after consultation",
             "Relief among teams as FIA drops {{component}} directive plans",
             "FIA opts not to pursue new {{component}} regulations", 
-            "FIA confirms no changes to {{component}} rules at this time"
+            "FIA confirms no changes to {{component}} rules at this time",
+            "'We found no need for changes' – FIA on scrapped {{component}} directive",
+            "'It was never going to happen' – FIA on rumors of {{component}} technical directive"
         ]
     },
     {
