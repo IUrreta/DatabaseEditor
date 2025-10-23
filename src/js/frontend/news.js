@@ -647,6 +647,80 @@ function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
 }
 
 
+function buildContextualPrompt(data, config = {}) {
+  const {
+    driverStandings,
+    teamStandings,
+    driversResults,
+    racesNames,
+    champions
+  } = data;
+  const { timing = '', teamId = null, teamName = '' } = config;
+
+  let prompt = '';
+
+  if (driverStandings) {
+    const driversChamp = driverStandings
+      .map((d, i) => `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`)
+      .join("\n");
+    prompt += `\n\nCurrent Drivers' Championship standings ${timing}:\n${driversChamp}`;
+  }
+
+  if (teamStandings) {
+    const teamsChamp = teamStandings
+      .map((t, i) => {
+        const name = combined_dict[t.teamId] || `Team ${t.teamId}`;
+        return `${i + 1}. ${name} — ${t.points} pts`;
+      })
+      .join("\n");
+    prompt += `\n\nCurrent Constructors' Championship standings ${timing}:\n${teamsChamp}`;
+  }
+
+  if (racesNames && racesNames.length > 0) {
+    let previousRaces = racesNames.join(', ');
+    prompt += `\n\nThe races that have already taken place are: ${previousRaces}\n`;
+  }
+
+  if (driversResults) {
+    let resultsToProcess = driversResults;
+    if (teamId) {
+        resultsToProcess = driversResults.filter(d => d.teamId === teamId);
+    }
+
+    const previousResults = resultsToProcess.map((d) => {
+      const details = [
+        d.nWins > 0 ? `${d.nWins} wins` : '',
+        d.nPodiums > 0 ? `${d.nPodiums} podiums` : '',
+        (d.nWins === 0 && d.nPodiums === 0 && d.nPointsFinishes > 0) ? `${d.nPointsFinishes} points finishes` : ''
+      ].filter(Boolean).join(', ');
+
+      return `${d.name}${details ? ` (${details})` : ''} ${d.resultsString}`;
+    }).join("\n");
+
+    if (teamId && teamName) {
+        prompt += `\n\nHere are the previous race results for ${teamName}'s drivers:\n${previousResults}`;
+    } else if (resultsToProcess.length > 0){
+        prompt += `\n\nHere are the previous race results for each driver:\n${previousResults}`;
+    }
+  }
+
+  if (champions) {
+    const previousChampions = Object.values(
+      champions.reduce((acc, { season, pos, name, points }) => {
+        if (!acc[season]) acc[season] = { season, drivers: [] };
+        acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
+        return acc;
+      }, {})
+    )
+      .sort((a, b) => b.season - a.season)
+      .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
+      .join('\n\n');
+    prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+  }
+
+  return prompt;
+}
+
 async function manageRead(newData, newsList, barProgressDiv, interval) {
   let articleText, prompt;
 
@@ -776,57 +850,14 @@ async function contextualizeDSQ(newData, type) {
     return;
   }
 
-  const driversChamp = resp.content.driverStandings
-    .map((d, i) => {
-      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Drivers' Championship standings ${type.includes("positive") ? "after the disqualification" : ""}:\n${driversChamp}`;
-
-
-  const teamsChamp = resp.content.teamStandings
-    .map((t, i) => {
-      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-      return `${i + 1}. ${teamName} — ${t.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Constructors' Championship standings ${type.includes("positive") ? "after the disqualification" : ""}:\n${teamsChamp}`;
-
-  let previousRaces = '';
-  resp.content.racesNames.forEach((r) => {
-    previousRaces += `${r}, `;
-  });
-  previousRaces = previousRaces.slice(0, -2);
-
-  prompt += `\n\nThe races that have already taken place in ${currentSeason} are: ${previousRaces}\n`;
-
-  const previousResults = resp.content.driversResults.filter(d => d.teamId === teamId).map((d, i) => {
-    return `${d.name} - ${d.resultsString}`;
-  }).join("\n");
-
-  prompt += `\n\nHere are the previous race results for ${teamName}'s drivers in ${currentSeason}:\n${previousResults}`;
+  const timing = type.includes("positive") ? "after the disqualification" : "";
+  prompt += buildContextualPrompt(resp.content, { timing, teamId, teamName });
 
   const previousQualiResults = resp.content.driverQualiResults.filter(d => d.teamId === teamId).map((d, i) => {
     return `${d.name} - ${d.resultsString}`;
   }).join("\n");
 
   prompt += `\n\nHere are the previous qualifying results for ${teamName}'s drivers in ${currentSeason}:\n${previousQualiResults}`;
-
-
-  const previousChampions = Object.values(
-    resp.content.champions.reduce((acc, { season, pos, name, points }) => {
-      if (!acc[season]) acc[season] = { season, drivers: [] };
-      acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
-      return acc;
-    }, {})
-  )
-    .sort((a, b) => b.season - a.season)
-    .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
-    .join('\n\n');
-
-  prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
 
   return prompt;
 
@@ -876,56 +907,13 @@ async function contextualizeTurningPointTechnicalDirective(newData, turningPoint
     return;
   }
 
-    const driversChamp = resp.content.driverStandings
-    .map((d, i) => {
-      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
-
-
-  const teamsChamp = resp.content.teamStandings
-    .map((t, i) => {
-      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-      return `${i + 1}. ${teamName} — ${t.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Constructors' Championship standings:\n${teamsChamp}`;
-
-  let previousRaces = '';
-  resp.content.racesNames.forEach((r) => {
-    previousRaces += `${r}, `;
-  });
-  previousRaces = previousRaces.slice(0, -2);
-
-  prompt += `\n\nThe races that have already taken place in ${seasonYear} are: ${previousRaces}\n`;
-
-  const previousResults = resp.content.driversResults.map((d, i) => {
-    return `${d.name} - ${d.resultsString}`;
-  }).join("\n");
-
-  prompt += `\n\nHere are the previous race results for each driver in ${seasonYear}:\n${previousResults}`;
+  prompt += buildContextualPrompt(resp.content);
 
   const previousQualiResults = resp.content.driverQualiResults.map((d, i) => {
     return `${d.name} - ${d.resultsString}`;
   }).join("\n");
 
   prompt += `\n\nHere are the previous qualifying results for each driver in ${seasonYear}:\n${previousQualiResults}`;
-
-  const previousChampions = Object.values(
-    resp.content.champions.reduce((acc, { season, pos, name, points }) => {
-      if (!acc[season]) acc[season] = { season, drivers: [] };
-      acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
-      return acc;
-    }, {})
-  )
-    .sort((a, b) => b.season - a.season)
-    .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
-    .join('\n\n');
-
-  prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
 
   return prompt;
 }
@@ -1005,39 +993,7 @@ async function contextualizeTurningPointTransfer(newData, turningPointType) {
   }
 
 
-  let previousRaces = '';
-  resp.content.racesNames.forEach((r) => {
-    previousRaces += `${r}, `;
-  });
-
-  const previousResults = resp.content.driversResults.map((d, i) => {
-    return `${d.name} (${d.nWins > 0 ? d.nWins + " wins" : ""}${d.nPodiums > 0 ? (d.nWins > 0 ? ", " : "") + d.nPodiums + " podiums" : ""}${d.nWins === 0 && d.nPodiums === 0 ? d.nPointsFinishes + " points finishes" : ""}) ${d.resultsString}`;
-  }).join("\n");
-
-  if (resp.content.racesNames.length > 0) {
-
-    prompt += `\n\nHere are the previous results for each driver the PREVIOUS races:\n${previousRaces}`;
-
-    prompt += `\n\n${previousResults}`;
-
-  }
-
-  const driversChamp = resp.content.driverStandings
-    .map((d, i) => {
-      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
-
-  const teamsChamp = resp.content.teamStandings
-    .map((t, i) => {
-      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-      return `${i + 1}. ${teamName} — ${t.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Constructors' Championship standings:\n${teamsChamp}`;
+  prompt += buildContextualPrompt(resp.content);
 
   return prompt;
 
@@ -1073,44 +1029,7 @@ async function contextualizeWorldChampion(newData) {
 
       prompt += `\n\n${numberOfRace}`;
 
-      const previousResults = standingsResp.content.driversResults.map((d, i) => {
-        return `${d.name} (${d.nWins > 0 ? d.nWins + " wins" : ""}${d.nPodiums > 0 ? (d.nWins > 0 ? ", " : "") + d.nPodiums + " podiums" : ""}${d.nWins === 0 && d.nPodiums === 0 ? d.nPointsFinishes + " points finishes" : ""}) ${d.resultsString}`;
-      }).join("\n");
-
-      if (standingsResp.content.racesNames.length > 0) {
-
-        prompt += `\n\nHere are the previous results for each driver the PREVIOUS races:\n${previousRaces}`;
-
-        prompt += `\n\n${previousResults}`;
-
-      }
-
-
-      const driversChamp = standingsResp.content.driverStandings
-        .map((d, i) => `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`)
-        .join("\n");
-      prompt += `\n\nCurrent Drivers' Championship standings (after this race):\n${driversChamp}`;
-
-      const teamsChamp = standingsResp.content.teamStandings
-        .map((t, i) => {
-          const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-          return `${i + 1}. ${teamName} — ${t.points} pts`;
-        })
-        .join("\n");
-      prompt += `\n\nCurrent Constructors' Championship standings (after this race):\n${teamsChamp}`;
-
-      const previousChampions = Object.values(
-        standingsResp.content.champions.reduce((acc, { season, pos, name, points }) => {
-          if (!acc[season]) acc[season] = { season, drivers: [] };
-          acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
-          return acc;
-        }, {})
-      )
-        .sort((a, b) => b.season - a.season)
-        .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
-        .join('\n\n');
-
-      prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+      prompt += buildContextualPrompt(standingsResp.content, { timing: "after this race" });
     } else {
       prompt += "\n\nCould not retrieve current championship standings.";
     }
@@ -1155,43 +1074,7 @@ async function contextualizePotentialChampion(newData) {
 
       prompt += `\n\n${numberOfRace}`;
 
-      const previousResults = standingsResp.content.driversResults.map((d, i) => {
-        return `${d.name} (${d.nWins > 0 ? d.nWins + " wins" : ""}${d.nPodiums > 0 ? (d.nWins > 0 ? ", " : "") + d.nPodiums + " podiums" : ""}${d.nWins === 0 && d.nPodiums === 0 ? d.nPointsFinishes + " points finishes" : ""}) ${d.resultsString}`;
-      }).join("\n");
-
-      if (standingsResp.content.racesNames.length > 0) {
-
-        prompt += `\n\nHere are the previous results for each driver the PREVIOUS races:\n${previousRaces}`;
-
-        prompt += `\n\n${previousResults}`;
-
-      }
-
-      const driversChamp = standingsResp.content.driverStandings
-        .map((d, i) => `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`)
-        .join("\n");
-      prompt += `\n\nCurrent Drivers' Championship standings (before this race):\n${driversChamp}`;
-
-      const teamsChamp = standingsResp.content.teamStandings
-        .map((t, i) => {
-          const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-          return `${i + 1}. ${teamName} — ${t.points} pts`;
-        })
-        .join("\n");
-      prompt += `\n\nCurrent Constructors' Championship standings (before this race):\n${teamsChamp}`;
-
-      const previousChampions = Object.values(
-        standingsResp.content.champions.reduce((acc, { season, pos, name, points }) => {
-          if (!acc[season]) acc[season] = { season, drivers: [] };
-          acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
-          return acc;
-        }, {})
-      )
-        .sort((a, b) => b.season - a.season)
-        .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
-        .join('\n\n');
-
-      prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+      prompt += buildContextualPrompt(standingsResp.content, { timing: "before this race" });
     } else {
       prompt += "\n\nCould not retrieve current championship standings.";
     }
@@ -1245,22 +1128,7 @@ async function contextualizeSillySeasonTransferNews(newData) {
     });
   });
 
-  const driversChamp = resp.content.driverStandings
-    .map((d, i) => {
-      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
-
-  const teamsChamp = resp.content.teamStandings
-    .map((t, i) => {
-      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-      return `${i + 1}. ${teamName} — ${t.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Constructors' Championship standings:\n${teamsChamp}`;
+  prompt += buildContextualPrompt(resp.content);
 
   return prompt;
 }
@@ -1305,22 +1173,7 @@ async function contextualizeFakeTransferNews(newData) {
   });
 
 
-  const driversChamp = resp.content.driverStandings
-    .map((d, i) => {
-      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Drivers' Championship standings (after this race):\n${driversChamp}`;
-
-  const teamsChamp = resp.content.teamStandings
-    .map((t, i) => {
-      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-      return `${i + 1}. ${teamName} — ${t.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Constructors' Championship standings (after this race):\n${teamsChamp}`;
+  prompt += buildContextualPrompt(resp.content, { timing: "after this race" });
 
   return prompt;
 }
@@ -1378,22 +1231,7 @@ async function contextualizeBigTransferConfirm(newData) {
   });
 
 
-  const driversChamp = resp.content.driverStandings
-    .map((d, i) => {
-      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Drivers' Championship standings (after this race):\n${driversChamp}`;
-
-  const teamsChamp = resp.content.teamStandings
-    .map((t, i) => {
-      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-      return `${i + 1}. ${teamName} — ${t.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Constructors' Championship standings (after this race):\n${teamsChamp}`;
+  prompt += buildContextualPrompt(resp.content, { timing: "after this race" });
 
   return prompt;
 }
@@ -1451,22 +1289,7 @@ async function contextualizeRenewalNews(newData) {
   });
 
 
-  const driversChamp = resp.content.driverStandings
-    .map((d, i) => {
-      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Drivers' Championship standings (after this race):\n${driversChamp}`;
-
-  const teamsChamp = resp.content.teamStandings
-    .map((t, i) => {
-      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-      return `${i + 1}. ${teamName} — ${t.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Constructors' Championship standings (after this race):\n${teamsChamp}`;
+  prompt += buildContextualPrompt(resp.content, { timing: "after this race" });
 
   return prompt;
 }
@@ -1512,36 +1335,13 @@ async function contextualizeTeamComparison(newData) {
     return;
   }
 
-  const driversChamp = resp.content.currentDriverStandings
-    .map((d, i) => {
-      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
-
-  const teamsChamp = resp.content.currentTeamStandings
-    .map((t, i) => {
-      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-      return `${i + 1}. ${teamName} — ${t.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Constructors' Championship standings:\n${teamsChamp}`;
-
-  let previousRaces = '';
-  resp.content.currentRacesNames.forEach((r) => {
-    previousRaces += `${r}, `;
-  });
-  previousRaces = previousRaces.slice(0, -2);
-
-  const previousResults = resp.content.currentDriversResults.filter(d => d.teamId === newData.data.team.teamId).map((d, i) => {
-    return `${d.name} - ${d.resultsString}`;
-  }).join("\n");
-
-
-  prompt += `\n\nHere are the results from ${team1}'s drivers in ${seasonYear}: ${previousRaces}\n`;
-  prompt += `\n\n${previousResults}`;
+  const currentContextData = {
+      driverStandings: resp.content.currentDriverStandings,
+      teamStandings: resp.content.currentTeamStandings,
+      driversResults: resp.content.currentDriversResults,
+      racesNames: resp.content.currentRacesNames
+  };
+  prompt += buildContextualPrompt(currentContextData, { teamId: newData.data.team.teamId, teamName: team1 });
 
 
   previousRaces = '';
@@ -1611,47 +1411,7 @@ async function contextualizeQualiResults(newData) {
 
   prompt += "\n\nHere are the full qualifying results:\n" + qualiResults;
 
-  const previousResults = resp.content.driversResults.map((d, i) => {
-    return `${d.name} - ${d.resultsString}`;
-  }).join("\n");
-
-  if (resp.content.racesNames.length > 0) {
-
-    prompt += `\n\nHere are the previous results for each driver the PREVIOUS quaifyings:\n${previousRaces}`;
-
-    prompt += `\n\n${previousResults}`;
-
-  }
-
-  const driversChamp = resp.content.driverStandings
-    .map((d, i) => {
-      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Drivers' Championship standings (before this race):\n${driversChamp}`;
-
-  const teamsChamp = resp.content.teamStandings
-    .map((t, i) => {
-      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-      return `${i + 1}. ${teamName} — ${t.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Constructors' Championship standings (before this race):\n${teamsChamp}`;
-
-  const previousChampions = Object.values(
-    resp.content.champions.reduce((acc, { season, pos, name, points }) => {
-      if (!acc[season]) acc[season] = { season, drivers: [] };
-      acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
-      return acc;
-    }, {})
-  )
-    .sort((a, b) => b.season - a.season)
-    .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
-    .join('\n\n');
-
-  prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+  prompt += buildContextualPrompt(resp.content, { timing: "before this race" });
 
 
   return prompt;
@@ -1728,47 +1488,7 @@ async function contextualizeRaceResults(newData) {
 
 
 
-  const previousResults = resp.content.driversResults.map((d, i) => {
-    return `${d.name} (${d.nWins > 0 ? d.nWins + " wins" : ""}${d.nPodiums > 0 ? (d.nWins > 0 ? ", " : "") + d.nPodiums + " podiums" : ""}${d.nWins === 0 && d.nPodiums === 0 ? d.nPointsFinishes + " points finishes" : ""}) ${d.resultsString}`;
-  }).join("\n");
-
-  if (resp.content.racesNames.length > 0) {
-
-    prompt += `\n\nHere are the previous results for each driver the PREVIOUS races:\n${previousRaces}`;
-
-    prompt += `\n\n${previousResults}`;
-
-  }
-
-  const driversChamp = resp.content.driverStandings
-    .map((d, i) => {
-      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Drivers' Championship standings (after this race):\n${driversChamp}`;
-
-  const teamsChamp = resp.content.teamStandings
-    .map((t, i) => {
-      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-      return `${i + 1}. ${teamName} — ${t.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Constructors' Championship standings (after this race):\n${teamsChamp}`;
-
-  const previousChampions = Object.values(
-    resp.content.champions.reduce((acc, { season, pos, name, points }) => {
-      if (!acc[season]) acc[season] = { season, drivers: [] };
-      acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
-      return acc;
-    }, {})
-  )
-    .sort((a, b) => b.season - a.season)
-    .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
-    .join('\n\n');
-
-  prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+  prompt += buildContextualPrompt(resp.content, { timing: "after this race" });
 
 
   return prompt;
@@ -1797,57 +1517,13 @@ async function contextualizeDriverComparison(newData) {
     return;
   }
 
-  const driversChamp = resp.content.driverStandings
-    .map((d, i) => {
-      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
-
-
-  const teamsChamp = resp.content.teamStandings
-    .map((t, i) => {
-      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-      return `${i + 1}. ${teamName} — ${t.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Constructors' Championship standings:\n${teamsChamp}`;
-
-  let previousRaces = '';
-  resp.content.racesNames.forEach((r) => {
-    previousRaces += `${r}, `;
-  });
-  previousRaces = previousRaces.slice(0, -2);
-
-  prompt += `\n\nThe races that have already taken place in ${seasonYear} are: ${previousRaces}\n`;
-
-  const previousResults = resp.content.driversResults.filter(d => d.teamId === teamId).map((d, i) => {
-    return `${d.name} - ${d.resultsString}`;
-  }).join("\n");
-
-  prompt += `\n\nHere are the previous race results for ${combined_dict[teamId]}'s drivers in ${seasonYear}:\n${previousResults}`;
+  prompt += buildContextualPrompt(resp.content, { teamId, teamName: combined_dict[teamId] });
 
   const previousQualiResults = resp.content.driverQualiResults.filter(d => d.teamId === teamId).map((d, i) => {
     return `${d.name} - ${d.resultsString}`;
   }).join("\n");
 
   prompt += `\n\nHere are the previous qualifying results for ${combined_dict[teamId]}'s drivers in ${seasonYear}:\n${previousQualiResults}`;
-
-
-  const previousChampions = Object.values(
-    resp.content.champions.reduce((acc, { season, pos, name, points }) => {
-      if (!acc[season]) acc[season] = { season, drivers: [] };
-      acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
-      return acc;
-    }, {})
-  )
-    .sort((a, b) => b.season - a.season)
-    .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
-    .join('\n\n');
-
-  prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
 
   return prompt;
 }
@@ -1884,37 +1560,7 @@ async function contextualizeSeasonReview(newData) {
     return;
   }
 
-  const driversChamp = resp.content.driverStandings
-    .map((d, i) => {
-      return `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Drivers' Championship standings:\n${driversChamp}`;
-
-  const teamsChamp = resp.content.teamStandings
-    .map((t, i) => {
-      const teamName = combined_dict[t.teamId] || `Team ${t.teamId}`;
-      return `${i + 1}. ${teamName} — ${t.points} pts`;
-    })
-    .join("\n");
-
-  prompt += `\n\nCurrent Constructors' Championship standings:\n${teamsChamp}`;
-
-  let previousRaces = '';
-  resp.content.racesNames.forEach((r) => {
-    previousRaces += `${r}, `;
-  });
-
-  previousRaces = previousRaces.slice(0, -2);
-
-  prompt += `\n\nThe races that have already taken place in ${seasonYear} are: ${previousRaces}\n`;
-
-  const previousResults = resp.content.driversResults.map((d, i) => {
-    return `${d.name} (${combined_dict[d.teamId]}) - ${d.resultsString}`;
-  }).join("\n");
-
-  prompt += `\n\nHere are the previous race results each driver in ${seasonYear}:\n${previousResults}`;
+  prompt += buildContextualPrompt(resp.content);
 
   const previousQualiResults = resp.content.driverQualiResults.map((d, i) => {
     return `${d.name} (${combined_dict[d.teamId]}) - ${d.resultsString}`;
@@ -1936,19 +1582,6 @@ async function contextualizeSeasonReview(newData) {
 
   prompt += `\n\nHere is the performance of each car at the start of the season:\n${carPerformanceStart}`;
   prompt += `\n\nHere is the performance of each car at the latest race:\n${carPerformanceEnd}`;
-
-  const previousChampions = Object.values(
-    resp.content.champions.reduce((acc, { season, pos, name, points }) => {
-      if (!acc[season]) acc[season] = { season, drivers: [] };
-      acc[season].drivers.push(`${pos}. ${name} ${points}pts`);
-      return acc;
-    }, {})
-  )
-    .sort((a, b) => b.season - a.season)
-    .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
-    .join('\n\n');
-
-  prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
 
   return prompt;
 
