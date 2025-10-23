@@ -653,9 +653,10 @@ function buildContextualPrompt(data, config = {}) {
     teamStandings,
     driversResults,
     racesNames,
-    champions
+    champions,
+    driverQualiResults
   } = data;
-  const { timing = '', teamId = null, teamName = '' } = config;
+  const { timing = '', teamId = null, teamName = '', seasonYear = '' } = config;
 
   let prompt = '';
 
@@ -678,7 +679,7 @@ function buildContextualPrompt(data, config = {}) {
 
   if (racesNames && racesNames.length > 0) {
     let previousRaces = racesNames.join(', ');
-    prompt += `\n\nThe races that have already taken place are: ${previousRaces}\n`;
+    prompt += `\n\nThe races that have already taken place in ${seasonYear} are: ${previousRaces}\n`;
   }
 
   if (driversResults) {
@@ -716,6 +717,21 @@ function buildContextualPrompt(data, config = {}) {
       .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
       .join('\n\n');
     prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
+  }
+
+  if (driverQualiResults) {
+    let qualiResultsToProcess = driverQualiResults;
+    if (teamId) {
+      qualiResultsToProcess = driverQualiResults.filter(d => d.teamId === teamId);
+    }
+
+    const previousQualiResults = qualiResultsToProcess.map(d => `${d.name} - ${d.resultsString}`).join("\n");
+
+    if (teamId && teamName) {
+      prompt += `\n\nHere are the previous qualifying results for ${teamName}'s drivers:\n${previousQualiResults}`;
+    } else if (qualiResultsToProcess.length > 0) {
+      prompt += `\n\nHere are the previous qualifying results for each driver:\n${previousQualiResults}`;
+    }
   }
 
   return prompt;
@@ -851,13 +867,7 @@ async function contextualizeDSQ(newData, type) {
   }
 
   const timing = type.includes("positive") ? "after the disqualification" : "";
-  prompt += buildContextualPrompt(resp.content, { timing, teamId, teamName });
-
-  const previousQualiResults = resp.content.driverQualiResults.filter(d => d.teamId === teamId).map((d, i) => {
-    return `${d.name} - ${d.resultsString}`;
-  }).join("\n");
-
-  prompt += `\n\nHere are the previous qualifying results for ${teamName}'s drivers in ${currentSeason}:\n${previousQualiResults}`;
+  prompt += buildContextualPrompt(resp.content, { timing, teamId, teamName, seasonYear: currentSeason });
 
   return prompt;
 
@@ -907,13 +917,7 @@ async function contextualizeTurningPointTechnicalDirective(newData, turningPoint
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content);
-
-  const previousQualiResults = resp.content.driverQualiResults.map((d, i) => {
-    return `${d.name} - ${d.resultsString}`;
-  }).join("\n");
-
-  prompt += `\n\nHere are the previous qualifying results for each driver in ${seasonYear}:\n${previousQualiResults}`;
+  prompt += buildContextualPrompt(resp.content, { seasonYear });
 
   return prompt;
 }
@@ -993,7 +997,7 @@ async function contextualizeTurningPointTransfer(newData, turningPointType) {
   }
 
 
-  prompt += buildContextualPrompt(resp.content);
+  prompt += buildContextualPrompt(resp.content, { seasonYear });
 
   return prompt;
 
@@ -1344,17 +1348,13 @@ async function contextualizeTeamComparison(newData) {
   prompt += buildContextualPrompt(currentContextData, { teamId: newData.data.team.teamId, teamName: team1 });
 
 
-  previousRaces = '';
-  resp.content.oldRacesNames.forEach((r) => {
-    previousRaces += `${r}, `;
-  });
-  previousRaces = previousRaces.slice(0, -2);
+  const oldRacesNames = resp.content.oldRacesNames.join(', ');
+  const oldSeasonResults = resp.content.oldDriversResults
+    .filter(d => d.teamId === newData.data.team.teamId)
+    .map(d => `${d.name} - ${d.resultsString}`)
+    .join("\n");
 
-  const oldSeasonResults = resp.content.oldDriversResults.filter(d => d.teamId === newData.data.team.teamId).map((d, i) => {
-    return `${d.name} - ${d.resultsString}`;
-  }).join("\n");
-
-  prompt += `\n\nHere are the results from ${team1}'s drivers in ${seasonYear - 1}: ${previousRaces}\n`;
+  prompt += `\n\nHere are the results from ${team1}'s drivers in ${seasonYear - 1}: ${oldRacesNames}\n`;
   prompt += `\n\n${oldSeasonResults}`;
 
   prompt += `\n\nHere are the previous results of ${team1} in recent years:\n`;
@@ -1517,13 +1517,7 @@ async function contextualizeDriverComparison(newData) {
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { teamId, teamName: combined_dict[teamId] });
-
-  const previousQualiResults = resp.content.driverQualiResults.filter(d => d.teamId === teamId).map((d, i) => {
-    return `${d.name} - ${d.resultsString}`;
-  }).join("\n");
-
-  prompt += `\n\nHere are the previous qualifying results for ${combined_dict[teamId]}'s drivers in ${seasonYear}:\n${previousQualiResults}`;
+  prompt += buildContextualPrompt(resp.content, { teamId, teamName: combined_dict[teamId], seasonYear });
 
   return prompt;
 }
@@ -1561,12 +1555,6 @@ async function contextualizeSeasonReview(newData) {
   }
 
   prompt += buildContextualPrompt(resp.content);
-
-  const previousQualiResults = resp.content.driverQualiResults.map((d, i) => {
-    return `${d.name} (${combined_dict[d.teamId]}) - ${d.resultsString}`;
-  }).join("\n");
-
-  prompt += `\n\nHere are the previous qualifying results for each driver in ${seasonYear}:\n${previousQualiResults}`;
 
   const carPerformanceStart = Object.entries(resp.content.carsPerformance[0])
     .sort((a, b) => b[1] - a[1])
