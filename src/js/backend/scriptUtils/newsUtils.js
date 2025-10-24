@@ -246,6 +246,12 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
 
     // if (currentMonth !== 5 || currentMonth !== 9) return newsList; 
 
+    const entryId = `turning_point_technical_directive_${currentMonth}`;
+
+    if (savednews[entryId]) {
+        return newsList;
+    }
+
     //60% chance of happening
     // if (Math.random() < 0.6){
     //     turningPointState.technicalDirectives[currentMonth] = "None";
@@ -254,7 +260,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
 
 
-    const entryId = `turning_point_technical_directive_${currentMonth}`;
+    
     const parts = [3, 4, 5, 6, 7, 8]
     const partId = randomPick(parts);
     const partName = part_full_names[partId].toLowerCase() || "Unknown Part";

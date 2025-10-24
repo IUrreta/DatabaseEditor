@@ -195,9 +195,11 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
       imageContainer.appendChild(blockedDiv);
       if (news.turning_point_type === undefined) {
         infoSpan.innerHTML = "Subscribe to the <span class='bold-font'>BACKER</span> tier to unlock and read all news articles!";
+        newsTitle.textContent = "Backer-only content";
       }
       else {
         infoSpan.innerHTML = "Subscribe to the <span class='bold-font'>INSIDER</span> tier to read and <span class='bold-font'>DECIDE</span> the outcome of turning points!";
+        newsTitle.textContent = "Insider-only content";
       }
 
       const patreonButton = document.createElement('a');
@@ -329,12 +331,14 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
     titleAndArticle.appendChild(newsTitle);
     newsBody.appendChild(titleAndArticle);
 
-    if (newsAvailable.turning === true) {
+    let approveButton, randomButton, cancelButton;
+
+    if (news.hiddenByAvailability) {
       if (news.turning_point_type === "original") {
         const tpDiv = document.createElement('div');
         tpDiv.classList.add('turning-point-div');
 
-        const cancelButton = document.createElement('div');
+        cancelButton = document.createElement('div');
         cancelButton.classList.add('cancel-tp', 'tp-button');
         const cancelIcon = document.createElement('i');
         cancelIcon.classList.add('bi', 'bi-x', 'tp-icon');
@@ -367,14 +371,14 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
           saveNews(newsList);
         });
 
-        const randomButton = document.createElement('div');
+        randomButton = document.createElement('div');
         randomButton.classList.add('random-tp', 'tp-button');
         const randomIcon = document.createElement('i');
         randomIcon.classList.add('bi', 'bi-question', 'tp-icon');
         randomButton.appendChild(randomIcon);
         tpDiv.appendChild(randomButton);
 
-        const approveButton = document.createElement('div');
+        approveButton = document.createElement('div');
         approveButton.classList.add('approve-tp', 'tp-button');
         const approveIcon = document.createElement('i');
         approveIcon.classList.add('bi', 'bi-check', 'tp-icon');
@@ -467,14 +471,42 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
       }
     }
 
-    if (newsAvailable.normal === true) {
-      readbuttonContainer.appendChild(readButton);
+    if (!newsAvailable.turning) {
+      const showInsiderModal = async () => {
+        await confirmModal({
+          title: "Insider News Unavailable",
+          body: "Insider news are currently unavailable. To unlock insider news and be able to decide the outcome of turning points, please consider subscribing to the INSIDER tier on our Patreon page.",
+          confirmText: "Okay"
+        });
+      };
+
+      const swap = (btn) => {
+        if (!btn) return null;
+        const clone = btn.cloneNode(true); // clona (sin listeners)
+        btn.replaceWith(clone);            // mete el clon en el DOM
+        clone.addEventListener('click', showInsiderModal); // añade el nuevo listener
+        return clone;                       // devuelve la nueva referencia
+      };
+
+      // ¡OJO!: usa let para poder reasignar
+      approveButton = swap(approveButton);
+      randomButton = swap(randomButton);
+      cancelButton = swap(cancelButton);
     }
 
+    newsBody.appendChild(readbuttonContainer);
 
-    if (!news.nonReadable || news.nonReadable === false) {
-      newsBody.appendChild(readbuttonContainer);
+    if (!news.nonReadable || news.nonReadable === false) { //first check - if the news is readable
+      if (newsAvailable.normal === true && !isTurning) { //second check - if normal news are available
+        readbuttonContainer.appendChild(readButton);
+      }
+
+      if (newsAvailable.turning === true && isTurning) { //second check - if insider news are available
+        readbuttonContainer.appendChild(readButton);
+      }
+
     }
+
 
     newsItem.appendChild(newsBody);
 

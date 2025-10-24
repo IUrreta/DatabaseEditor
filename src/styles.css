@@ -11495,9 +11495,18 @@ a.bi-custom-patreon.close-slide-up{
   gap: 10px;
 }
 
-.saved-status:has(.patreonX:not(.d-none)){
-  color: var(--negative-general);
+.patreon-status.negative{
+  color: var(--negative-general) !important;
 }
+
+.patreon-status.positive{
+  color: var(--positive-general) !important;
+}
+
+.patreon-status{
+  color: var(--modal-text) !important;
+}
+
 
 .no-image-by-availability{
   background-color: color-mix(in srgb, var(--new-primary-dark) 60%, var(--generals));
@@ -12599,6 +12608,7 @@ body:has(.active #mod25logo) .one-change {
   justify-content: space-between;
   flex: 1;
   gap: 10px;
+  min-height: 112px;
 }
 
 .title-and-article{

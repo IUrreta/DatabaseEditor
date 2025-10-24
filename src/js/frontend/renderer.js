@@ -1930,6 +1930,8 @@ async function checkPatreonStatus() {
     init_colors_dict(selectedTheme)
 
     if (validSignature.status === "valid") {
+        document.querySelector(".patreon-status").classList.remove("negative")
+        document.querySelector(".patreon-status").classList.add("positive");
         patreonUnlockables.classList.remove("d-none");
         patreonThemes.classList.remove("d-none");
         document.querySelector(".patreonCheck").classList.remove("d-none");
@@ -1940,10 +1942,20 @@ async function checkPatreonStatus() {
     }
     else if (validSignature.status === "invalid") {
         //put the text saying that maybe the old key is invalid
+        document.querySelector(".patreon-status").classList.remove("positive")
+        document.querySelector(".patreon-status").classList.add("negative");
         document.getElementById("patreonKeyText").textContent = "Invalid";
         document.querySelector(".patreonCheck").classList.add("d-none");
         document.querySelector(".patreonX").classList.remove("d-none");
         console.log("Patreon key invalid or expired");
+    }
+    else if (validSignature.status === "missing") {
+        document.querySelector(".patreon-status").classList.remove("positive")
+        document.querySelector(".patreon-status").classList.remove("negative");
+        document.getElementById("patreonKeyText").textContent = "Not set";
+        document.querySelector(".patreonCheck").classList.add("d-none");
+        document.querySelector(".patreonX").classList.add("d-none");
+        console.log("No patreon key found");
     }
     manageNewsStatus(validSignature);
 }
@@ -2409,7 +2421,12 @@ document.querySelectorAll(".team-logo-container").forEach(function (elem) {
     })
 });
 
-export async function confirmModal({ title, body, confirmText = "Confirm", cancelText = "Cancel" }) {
+export async function confirmModal({
+  title,
+  body,
+  confirmText,
+  cancelText
+}) {
   const modalEl = document.getElementById('confirmModal');
   const bsModal  = new bootstrap.Modal(modalEl, { keyboard: false });
 
@@ -2419,11 +2436,26 @@ export async function confirmModal({ title, body, confirmText = "Confirm", cance
   const confirmBtn   = modalEl.querySelector('.confirm-modal');
   const cancelBtn    = modalEl.querySelector('.close-modal');
 
-  // Texto
   if (confirmTitle) confirmTitle.textContent = title;
   if (confirmBody)  confirmBody.textContent  = body;
-  if (confirmBtn)   confirmBtn.textContent   = confirmText;
-  if (cancelBtn)    cancelBtn.textContent    = cancelText;
+
+  if (confirmBtn) {
+    if (confirmText) {
+      confirmBtn.textContent = confirmText;
+      confirmBtn.classList.remove('d-none');
+    } else {
+      confirmBtn.classList.add('d-none');
+    }
+  }
+
+  if (cancelBtn) {
+    if (cancelText) {
+      cancelBtn.textContent = cancelText;
+      cancelBtn.classList.remove('d-none');
+    } else {
+      cancelBtn.classList.add('d-none');
+    }
+  }
 
   return new Promise((resolve) => {
     let clicked = false;
