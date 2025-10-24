@@ -78,7 +78,20 @@ async function finishGeneralLoader() {
   pageLoaderDiv.remove();
 }
 
-export async function place_news(newsAndTurningPoints) {
+function hashStr(str) {
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return h >>> 0;
+}
+
+const BUCKET_TURNING = 5;
+const BUCKET_NORMAL = 7;
+
+export async function place_news(newsAndTurningPoints, newsAvailable) {
+  console.log(newsAvailable)
 
   let newsList = newsAndTurningPoints.newsList;
   let turningPointState = newsAndTurningPoints.turningPointState;
@@ -90,10 +103,47 @@ export async function place_news(newsAndTurningPoints) {
   saveTurningPoints(turningPointState);
   newsGrid.innerHTML = '';
 
+  let modified = false;
+
   newsList.forEach((news, index) => {
+    const isTurning =
+      news.turning_point_type === 'original' ||
+      news.turning_point_type === 'approved' ||
+      news.turning_point_type === 'cancelled';
+
+    if (typeof news.hiddenByAvailability === 'undefined') {
+      // clave estable por noticia
+      const stableKey = String(
+        news.id ?? (news.title + '|' + news.date)
+      );
+      const h = hashStr(stableKey);
+
+      let hide = false;
+      let reason = null;
+
+      if (!newsAvailable.turning && isTurning) {
+        // muestra 1 de cada 5
+        hide = (h % BUCKET_TURNING) !== 0;
+        reason = 'turning';
+      } else if (!newsAvailable.normal && !isTurning) {
+        // muestra 1 de cada 7 (cambia a 8 si quieres)
+        hide = (h % BUCKET_NORMAL) !== 0;
+        reason = 'normal';
+      }
+
+      news.hiddenByAvailability = hide;
+      news.hiddenReason = hide ? reason : null;
+      modified = true;
+    }
+
     const newsItem = document.createElement('div');
     newsItem.classList.add('news-item', 'fade-in');
     newsItem.setAttribute('style', '--order: ' + (index + 1));
+
+    if (news.hiddenByAvailability) {
+      newsItem.dataset.hiddenReason = news.hiddenReason || 'none';
+      newsItem.classList.add('hidden-by-availability'); // para que lo estilices si quieres
+    }
 
     const newsBody = document.createElement('div');
     newsBody.classList.add('news-body');
@@ -107,14 +157,6 @@ export async function place_news(newsAndTurningPoints) {
     const imageContainer = document.createElement('div');
     imageContainer.classList.add('news-image-container');
 
-    manage_overlay(imageContainer, news.overlay, news.data, news.image);
-
-    const image = document.createElement('img');
-    image.classList.add('news-image');
-    image.setAttribute('data-src', news.image);
-    image.src = news.image;
-    image.setAttribute("loading", "lazy");
-
     const readbuttonContainer = document.createElement('div');
     readbuttonContainer.classList.add('read-button-container');
 
@@ -124,6 +166,53 @@ export async function place_news(newsAndTurningPoints) {
     readButtonSpan.classList.add('gradient-text');
     readButtonSpan.innerText = "Read";
     readButton.appendChild(readButtonSpan);
+
+    if (newsAvailable.normal === true) {
+      readbuttonContainer.appendChild(readButton);
+    }
+
+
+    if (!news.hiddenByAvailability) {
+      manage_overlay(imageContainer, news.overlay, news.data, news.image);
+
+      const image = document.createElement('img');
+      image.classList.add('news-image');
+      image.setAttribute('data-src', news.image);
+      image.src = news.image;
+      image.setAttribute('loading', 'lazy');
+
+      imageContainer.appendChild(image);
+    } else if (news.turning_point_type === undefined) { // normal news hidden
+      imageContainer.classList.add('no-image-by-availability');
+      const lockIcon = document.createElement('i');
+      lockIcon.classList.add('bi', 'bi-lock', 'no-image-lock-icon');
+      const infoSpan = document.createElement('span');
+      infoSpan.classList.add('no-image-info');
+      infoSpan.innerHTML = "Subscribe to the <span class='bold-font'>BACKER</span> tier to unlock and read all news articles!";
+      imageContainer.appendChild(lockIcon);
+      imageContainer.appendChild(infoSpan);
+      newsTitle.classList.add('disabled-title');
+      const secondLockIcon = document.createElement('i');
+      secondLockIcon.classList.add('bi', 'bi-lock-fill', 'disabled-title-lock-icon');
+      titleAndArticle.prepend(secondLockIcon);
+      newsTitle.textContent = "Backer-only content";
+    }
+    else { // turning point news hidden
+      imageContainer.classList.add('no-image-by-availability');
+      const lockIcon = document.createElement('i');
+      lockIcon.classList.add('bi', 'bi-lock', 'no-image-lock-icon');
+      const infoSpan = document.createElement('span');
+      infoSpan.classList.add('no-image-info');
+      infoSpan.innerHTML = "Subscribe to the <span class='bold-font'>INSIDER</span> tier to read and <span class='bold-font'>DECIDE</span> the outcome of turning points!";
+      imageContainer.appendChild(lockIcon);
+      imageContainer.appendChild(infoSpan);
+      newsTitle.classList.add('disabled-title');
+      const secondLockIcon = document.createElement('i');
+      secondLockIcon.classList.add('bi', 'bi-lock-fill', 'disabled-title-lock-icon');
+      titleAndArticle.prepend(secondLockIcon);
+      newsTitle.textContent = "Insider-only content";
+    }
+
 
     readButton.addEventListener('click', async () => {
       const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
@@ -234,151 +323,153 @@ export async function place_news(newsAndTurningPoints) {
 
     });
 
-    imageContainer.appendChild(image);
     newsItem.appendChild(imageContainer);
     titleAndArticle.appendChild(newsTitle);
     newsBody.appendChild(titleAndArticle);
 
-    if (news.turning_point_type === "original") {
-      const tpDiv = document.createElement('div');
-      tpDiv.classList.add('turning-point-div');
+    if (newsAvailable.turning === true) {
+      if (news.turning_point_type === "original") {
+        const tpDiv = document.createElement('div');
+        tpDiv.classList.add('turning-point-div');
 
-      const cancelButton = document.createElement('div');
-      cancelButton.classList.add('cancel-tp', 'tp-button');
-      const cancelIcon = document.createElement('i');
-      cancelIcon.classList.add('bi', 'bi-x', 'tp-icon');
-      cancelButton.appendChild(cancelIcon);
-      tpDiv.appendChild(cancelButton);
+        const cancelButton = document.createElement('div');
+        cancelButton.classList.add('cancel-tp', 'tp-button');
+        const cancelIcon = document.createElement('i');
+        cancelIcon.classList.add('bi', 'bi-x', 'tp-icon');
+        cancelButton.appendChild(cancelIcon);
+        tpDiv.appendChild(cancelButton);
 
-      cancelButton.addEventListener('click', async () => {
-        randomButton.remove();
-        approveButton.remove();
-        cancelButton.classList.add('tp-button-selected');
+        cancelButton.addEventListener('click', async () => {
+          randomButton.remove();
+          approveButton.remove();
+          cancelButton.classList.add('tp-button-selected');
 
-        const resultSpan = document.createElement('span');
-        resultSpan.classList.add('tp-result-span');
-        resultSpan.innerText = "Cancelled";
-        cancelButton.innerHTML = '';
-        cancelButton.appendChild(resultSpan);
+          const resultSpan = document.createElement('span');
+          resultSpan.classList.add('tp-result-span');
+          resultSpan.innerText = "Cancelled";
+          cancelButton.innerHTML = '';
+          cancelButton.appendChild(resultSpan);
 
-        cancelButton.replaceWith(cancelButton.cloneNode(true));
-        news.turning_point_type = "cancelled";
+          cancelButton.replaceWith(cancelButton.cloneNode(true));
+          news.turning_point_type = "cancelled";
 
-        const command = new Command("cancelTurningPoint", {
-          turningPointData: news.data,
-          type: news.type,
-          maxDate: maxDate
-        });
-        let newResp = await command.promiseExecute();
-        place_turning_outcome(newResp.content);
-        newsList.push(newResp.content);
-
-        saveNews(newsList);
-      });
-
-      const randomButton = document.createElement('div');
-      randomButton.classList.add('random-tp', 'tp-button');
-      const randomIcon = document.createElement('i');
-      randomIcon.classList.add('bi', 'bi-question', 'tp-icon');
-      randomButton.appendChild(randomIcon);
-      tpDiv.appendChild(randomButton);
-
-      const approveButton = document.createElement('div');
-      approveButton.classList.add('approve-tp', 'tp-button');
-      const approveIcon = document.createElement('i');
-      approveIcon.classList.add('bi', 'bi-check', 'tp-icon');
-      approveButton.appendChild(approveIcon);
-      tpDiv.appendChild(approveButton);
-
-      approveButton.addEventListener('click', async () => {
-        //has the news text
-        if (!news.text || news.text.length === 0) {
-          const ok = await confirmModal({
-            title: "Approve Turning Point",
-            body: "Are you sure you want to approve this turning point? If you approve it before reading the article, it will not be able to generate the article further down the line.",
-            confirmText: "Approve",
-            cancelText: "Cancel"
+          const command = new Command("cancelTurningPoint", {
+            turningPointData: news.data,
+            type: news.type,
+            maxDate: maxDate
           });
+          let newResp = await command.promiseExecute();
+          place_turning_outcome(newResp.content);
+          newsList.push(newResp.content);
 
-          if (!ok) {
-            return;
-          }
-          else {
-            const readButton = newsBody.querySelector('.read-button-container .read-button');
-            readButton.remove();
-            news.nonReadable = true;
-            news.turning_point_type = "approved";
-            saveNews(newsList);
-          }
-        }
-
-        //remove the other 2 buttons
-        randomButton.remove();
-        cancelButton.remove();
-        approveButton.classList.add('tp-button-selected');
-        //remove the icon and add text "Approved"
-        const resultSpan = document.createElement('span');
-        resultSpan.classList.add('tp-result-span');
-        resultSpan.innerText = "Approved";
-        approveButton.innerHTML = '';
-        approveButton.appendChild(resultSpan);
-
-        //remove the eventListener
-        approveButton.replaceWith(approveButton.cloneNode(true));
-        news.turning_point_type = "approved";
-
-        const command = new Command("approveTurningPoint", {
-          turningPointData: news.data,
-          type: news.type,
-          maxDate: maxDate
+          saveNews(newsList);
         });
-        const newResp = await command.promiseExecute();
-        place_turning_outcome(newResp.content);
-        newsList.push(newResp.content);
 
-        if (news.type === "turning_point_transfer" || news.type === "turning_point_outcome_transfer") {
-          const commandDrivers = new Command("driversRefresh", {});
-          commandDrivers.execute();
-        }
-        else if (news.type === "turning_point_technical_directive") {
-          const commandTechDir = new Command("performanceRefresh", {});
-          commandTechDir.execute();
-        }
+        const randomButton = document.createElement('div');
+        randomButton.classList.add('random-tp', 'tp-button');
+        const randomIcon = document.createElement('i');
+        randomIcon.classList.add('bi', 'bi-question', 'tp-icon');
+        randomButton.appendChild(randomIcon);
+        tpDiv.appendChild(randomButton);
 
-        saveNews(newsList);
-      });
+        const approveButton = document.createElement('div');
+        approveButton.classList.add('approve-tp', 'tp-button');
+        const approveIcon = document.createElement('i');
+        approveIcon.classList.add('bi', 'bi-check', 'tp-icon');
+        approveButton.appendChild(approveIcon);
+        tpDiv.appendChild(approveButton);
 
-      readbuttonContainer.appendChild(tpDiv);
+        approveButton.addEventListener('click', async () => {
+          //has the news text
+          if (!news.text || news.text.length === 0) {
+            const ok = await confirmModal({
+              title: "Approve Turning Point",
+              body: "Are you sure you want to approve this turning point? If you approve it before reading the article, it will not be able to generate the article further down the line.",
+              confirmText: "Approve",
+              cancelText: "Cancel"
+            });
+
+            if (!ok) {
+              return;
+            }
+            else {
+              const readButton = newsBody.querySelector('.read-button-container .read-button');
+              readButton.remove();
+              news.nonReadable = true;
+              news.turning_point_type = "approved";
+              saveNews(newsList);
+            }
+          }
+
+          //remove the other 2 buttons
+          randomButton.remove();
+          cancelButton.remove();
+          approveButton.classList.add('tp-button-selected');
+          //remove the icon and add text "Approved"
+          const resultSpan = document.createElement('span');
+          resultSpan.classList.add('tp-result-span');
+          resultSpan.innerText = "Approved";
+          approveButton.innerHTML = '';
+          approveButton.appendChild(resultSpan);
+
+          //remove the eventListener
+          approveButton.replaceWith(approveButton.cloneNode(true));
+          news.turning_point_type = "approved";
+
+          const command = new Command("approveTurningPoint", {
+            turningPointData: news.data,
+            type: news.type,
+            maxDate: maxDate
+          });
+          const newResp = await command.promiseExecute();
+          place_turning_outcome(newResp.content);
+          newsList.push(newResp.content);
+
+          if (news.type === "turning_point_transfer" || news.type === "turning_point_outcome_transfer") {
+            const commandDrivers = new Command("driversRefresh", {});
+            commandDrivers.execute();
+          }
+          else if (news.type === "turning_point_technical_directive") {
+            const commandTechDir = new Command("performanceRefresh", {});
+            commandTechDir.execute();
+          }
+
+          saveNews(newsList);
+        });
+
+        readbuttonContainer.appendChild(tpDiv);
+      }
+      else if (news.turning_point_type === "approved") {
+        const tpDiv = document.createElement('div');
+        tpDiv.classList.add('turning-point-div');
+        const approvedButton = document.createElement('div');
+        approvedButton.classList.add('approve-tp', 'tp-button', 'tp-button-selected');
+        const approvedSpan = document.createElement('span');
+        approvedSpan.classList.add('tp-result-span');
+        approvedSpan.innerText = "Approved";
+        approvedButton.appendChild(approvedSpan);
+        tpDiv.appendChild(approvedButton);
+        readbuttonContainer.appendChild(tpDiv);
+      }
+      else if (news.turning_point_type === "cancelled") {
+        const tpDiv = document.createElement('div');
+        tpDiv.classList.add('turning-point-div');
+        const cancelledButton = document.createElement('div');
+        cancelledButton.classList.add('cancel-tp', 'tp-button', 'tp-button-selected');
+        const cancelledSpan = document.createElement('span');
+        cancelledSpan.classList.add('tp-result-span');
+        cancelledSpan.innerText = "Cancelled";
+        cancelledButton.appendChild(cancelledSpan);
+        tpDiv.appendChild(cancelledButton);
+        readbuttonContainer.appendChild(tpDiv);
+      }
     }
-    else if (news.turning_point_type === "approved") {
-      const tpDiv = document.createElement('div');
-      tpDiv.classList.add('turning-point-div');
-      const approvedButton = document.createElement('div');
-      approvedButton.classList.add('approve-tp', 'tp-button', 'tp-button-selected');
-      const approvedSpan = document.createElement('span');
-      approvedSpan.classList.add('tp-result-span');
-      approvedSpan.innerText = "Approved";
-      approvedButton.appendChild(approvedSpan);
-      tpDiv.appendChild(approvedButton);
-      readbuttonContainer.appendChild(tpDiv);
-    }
-    else if (news.turning_point_type === "cancelled") {
-      const tpDiv = document.createElement('div');
-      tpDiv.classList.add('turning-point-div');
-      const cancelledButton = document.createElement('div');
-      cancelledButton.classList.add('cancel-tp', 'tp-button', 'tp-button-selected');
-      const cancelledSpan = document.createElement('span');
-      cancelledSpan.classList.add('tp-result-span');
-      cancelledSpan.innerText = "Cancelled";
-      cancelledButton.appendChild(cancelledSpan);
-      tpDiv.appendChild(cancelledButton);
-      readbuttonContainer.appendChild(tpDiv);
-    }
 
-    readbuttonContainer.appendChild(readButton);
+
     if (!news.nonReadable || news.nonReadable === false) {
       newsBody.appendChild(readbuttonContainer);
     }
+
     newsItem.appendChild(newsBody);
 
     if (news.type === "race_result" || news.type === "quali_result") {
@@ -402,6 +493,8 @@ export async function place_news(newsAndTurningPoints) {
       maxDate = news.date;
     }
   });
+
+  if (modified) saveNews(newsList);
 
 }
 
@@ -685,7 +778,7 @@ function buildContextualPrompt(data, config = {}) {
   if (driversResults) {
     let resultsToProcess = driversResults;
     if (teamId) {
-        resultsToProcess = driversResults.filter(d => d.teamId === teamId);
+      resultsToProcess = driversResults.filter(d => d.teamId === teamId);
     }
 
     const previousResults = resultsToProcess.map((d) => {
@@ -699,9 +792,9 @@ function buildContextualPrompt(data, config = {}) {
     }).join("\n");
 
     if (teamId && teamName) {
-        prompt += `\n\nHere are the previous race results for ${teamName}'s drivers:\n${previousResults}`;
-    } else if (resultsToProcess.length > 0){
-        prompt += `\n\nHere are the previous race results for each driver:\n${previousResults}`;
+      prompt += `\n\nHere are the previous race results for ${teamName}'s drivers:\n${previousResults}`;
+    } else if (resultsToProcess.length > 0) {
+      prompt += `\n\nHere are the previous race results for each driver:\n${previousResults}`;
     }
   }
 
@@ -899,13 +992,13 @@ async function contextualizeTurningPointTechnicalDirective(newData, turningPoint
   const worstTeams = teamPerformances.sort((a, b) => a.performanceGainLoss - b.performanceGainLoss).slice(0, 2);
 
   prompt = prompt.replace(/{{\s*component\s*}}/g, newData.data.component || 'The component').
-  replace(/{{\s*best_team\s*}}/g, bestTeams[0]?.teamName || 'The team').
-  replace(/{{\s*second_best\s*}}/g, bestTeams[1]?.teamName || 'The team').
-  replace(/{{\s*worse_team\s*}}/g, worstTeams[0]?.teamName || 'The team').
-  replace(/{{\s*second_worse\s*}}/g, worstTeams[1]?.teamName || 'The team').
-  replace(/{{\s*reason\s*}}/g, newData.data.reason || 'The reason')
+    replace(/{{\s*best_team\s*}}/g, bestTeams[0]?.teamName || 'The team').
+    replace(/{{\s*second_best\s*}}/g, bestTeams[1]?.teamName || 'The team').
+    replace(/{{\s*worse_team\s*}}/g, worstTeams[0]?.teamName || 'The team').
+    replace(/{{\s*second_worse\s*}}/g, worstTeams[1]?.teamName || 'The team').
+    replace(/{{\s*reason\s*}}/g, newData.data.reason || 'The reason')
 
-    const command = new Command("fullChampionshipDetailsRequest", {
+  const command = new Command("fullChampionshipDetailsRequest", {
     season: seasonYear,
   });
 
@@ -1340,10 +1433,10 @@ async function contextualizeTeamComparison(newData) {
   }
 
   const currentContextData = {
-      driverStandings: resp.content.currentDriverStandings,
-      teamStandings: resp.content.currentTeamStandings,
-      driversResults: resp.content.currentDriversResults,
-      racesNames: resp.content.currentRacesNames
+    driverStandings: resp.content.currentDriverStandings,
+    teamStandings: resp.content.currentTeamStandings,
+    driversResults: resp.content.currentDriversResults,
+    racesNames: resp.content.currentRacesNames
   };
   prompt += buildContextualPrompt(currentContextData, { teamId: newData.data.team.teamId, teamName: team1 });
 

@@ -675,18 +675,13 @@
                 exclusive features and remove the pop-ups!
               </span>
             </div>
-            <div class="upload-key-and-patreon-button">
-              <a href="https://www.patreon.com/f1dbeditor" target="_blank">
-                <div class="patreon-button">
-                  <div class="patreon-button-logo"></div>
-                  <span class="patreon-button-text bold-font">PATREON PAGE</span>
-                </div>
-              </a>
-              <div>
-                <button class="custom-dropdown custom-button" id="patreonKeyButton">
-                  <div class="front-gradient" id="patreonKeyText">Upload patreon key</div>
-                </button>
-                <div class="dropdown-line"></div>
+            <div class="api-input-and-status" id="patreonKeyGeneral">
+              <button type="button" class="confirm-modal" id="patreonKeyButton"><i class="bi bi-cloud-arrow-up"></i>
+                Upload patreon key</button>
+              <div class="saved-status api-loaded" id="patreonKeyStatus">
+                <i class="bi bi-check patreonCheck"></i>
+                <i class="bi bi-x d-none patreonX"></i>
+                <span class="bold-font" id="patreonKeyText">Valid</span>
               </div>
             </div>
             <div class="patreon-unlockables  d-none">
@@ -759,17 +754,8 @@
 
         </div>
         <div class="modal-footer custom-footer">
-          <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-              id="cancelDetailsButton">Close</button>
-            <div class="dropdown-line"></div>
-          </div>
-          <div class="pos-relative">
-            <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
-              id="configDetailsButton">Save</button>
-            <div class="dropdown-line"></div>
-          </div>
-
+          <button type="button" class="close-modal" data-bs-dismiss="modal" id="cancelDetailsButton">Close</button>
+          <button type="button" class="confirm-modal" id="configDetailsButton">Save</button>
         </div>
       </div>
     </div>

@@ -617,11 +617,8 @@ body.og-theme .important-text{
   width: 199px;
 }
 
-.upload-key-and-patreon-button{
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: flex-end;
+#patreonKeyGeneral{
+  margin-top: 10px;
 }
 
 .patreon-button{
@@ -5235,7 +5232,7 @@ input.disabled {
   color: var(--text-general);
   background-color: var(--generals);
   z-index: -2;
-  padding: 15px 20px 4px 20px;
+  padding: 0px 20px 5px 20px;
 }
 
 .pos-relative {
@@ -11494,6 +11491,38 @@ a.bi-custom-patreon.close-slide-up{
   gap: 10px;
 }
 
+.saved-status:has(.patreonX:not(.d-none)){
+  color: var(--negative-general);
+}
+
+.no-image-by-availability{
+  background-color: color-mix(in srgb, var(--new-primary-dark) 60%, var(--generals));
+  color: var(--text-general);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  font-size: 18px;
+  padding: 10px;
+  justify-content: center;
+}
+
+.no-image-by-availability i{
+  font-size: 130px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.2;
+  z-index: 1;
+}
+
+.no-image-by-availability span{
+  text-align: center;
+  z-index: 2;
+}
+
+
 .saved-status{
   color: var(--positive-general);
   display: flex;
@@ -12569,6 +12598,18 @@ body:has(.active #mod25logo) .one-change {
   align-items: flex-start;
 }
 
+.title-and-article:has(.disabled-title){
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.title-and-article:has(.disabled-title) i{
+  color: var(--disabled-text);
+  font-size: 20px;
+}
+
 .news-article-date{
   color: var(--disabled-text);
   display: flex;
@@ -12634,6 +12675,10 @@ body:has(.active #mod25logo) .one-change {
   color: var(--text-general);
   line-height: 1.2;
   /* transition: font-size 0.15s; */
+}
+
+.news-title.disabled-title{
+  color: var(--disabled-text);
 }
 
 .news-item-clone .news-title{
@@ -12812,6 +12857,7 @@ body:has(.active #mod25logo) .one-change {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  min-height: 30px;
 }
 
 .read-button-container:has(.turning-point-div){
