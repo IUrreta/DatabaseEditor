@@ -167,50 +167,52 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
     readButtonSpan.innerText = "Read";
     readButton.appendChild(readButtonSpan);
 
-    if (newsAvailable.normal === true) {
-      readbuttonContainer.appendChild(readButton);
-    }
+    manage_overlay(imageContainer, news.overlay, news.data, news.image);
+
+    const image = document.createElement('img');
+    image.classList.add('news-image');
+    image.setAttribute('data-src', news.image);
+    image.src = news.image;
+    image.setAttribute('loading', 'lazy');
+
+    imageContainer.appendChild(image);
 
 
-    if (!news.hiddenByAvailability) {
-      manage_overlay(imageContainer, news.overlay, news.data, news.image);
-
-      const image = document.createElement('img');
-      image.classList.add('news-image');
-      image.setAttribute('data-src', news.image);
-      image.src = news.image;
-      image.setAttribute('loading', 'lazy');
-
-      imageContainer.appendChild(image);
-    } else if (news.turning_point_type === undefined) { // normal news hidden
-      imageContainer.classList.add('no-image-by-availability');
+    if (news.hiddenByAvailability) {
+      const blockedDiv = document.createElement('div');
+      blockedDiv.classList.add('no-image-by-availability');
       const lockIcon = document.createElement('i');
       lockIcon.classList.add('bi', 'bi-lock', 'no-image-lock-icon');
       const infoSpan = document.createElement('span');
       infoSpan.classList.add('no-image-info');
-      infoSpan.innerHTML = "Subscribe to the <span class='bold-font'>BACKER</span> tier to unlock and read all news articles!";
-      imageContainer.appendChild(lockIcon);
-      imageContainer.appendChild(infoSpan);
+      blockedDiv.appendChild(lockIcon);
+      blockedDiv.appendChild(infoSpan);
       newsTitle.classList.add('disabled-title');
       const secondLockIcon = document.createElement('i');
       secondLockIcon.classList.add('bi', 'bi-lock-fill', 'disabled-title-lock-icon');
       titleAndArticle.prepend(secondLockIcon);
       newsTitle.textContent = "Backer-only content";
-    }
-    else { // turning point news hidden
-      imageContainer.classList.add('no-image-by-availability');
-      const lockIcon = document.createElement('i');
-      lockIcon.classList.add('bi', 'bi-lock', 'no-image-lock-icon');
-      const infoSpan = document.createElement('span');
-      infoSpan.classList.add('no-image-info');
-      infoSpan.innerHTML = "Subscribe to the <span class='bold-font'>INSIDER</span> tier to read and <span class='bold-font'>DECIDE</span> the outcome of turning points!";
-      imageContainer.appendChild(lockIcon);
-      imageContainer.appendChild(infoSpan);
-      newsTitle.classList.add('disabled-title');
-      const secondLockIcon = document.createElement('i');
-      secondLockIcon.classList.add('bi', 'bi-lock-fill', 'disabled-title-lock-icon');
-      titleAndArticle.prepend(secondLockIcon);
-      newsTitle.textContent = "Insider-only content";
+      imageContainer.appendChild(blockedDiv);
+      if (news.turning_point_type === undefined) {
+        infoSpan.innerHTML = "Subscribe to the <span class='bold-font'>BACKER</span> tier to unlock and read all news articles!";
+      }
+      else {
+        infoSpan.innerHTML = "Subscribe to the <span class='bold-font'>INSIDER</span> tier to read and <span class='bold-font'>DECIDE</span> the outcome of turning points!";
+      }
+
+      const patreonButton = document.createElement('a');
+      patreonButton.classList.add('patreon-button');
+      patreonButton.href = "https://www.patreon.com/cw/f1dbeditor/membership";
+      //open in a new window
+      patreonButton.target = "_blank";
+      const patreonIcon = document.createElement('div');
+      patreonIcon.classList.add('patreon-button-logo');
+      const patreonSpan = document.createElement('span');
+      patreonSpan.classList.add('patreon-button-text');
+      patreonSpan.textContent = "Support us on Patreon";
+      patreonButton.appendChild(patreonIcon);
+      patreonButton.appendChild(patreonSpan);
+      blockedDiv.appendChild(patreonButton);
     }
 
 
@@ -463,6 +465,10 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
         tpDiv.appendChild(cancelledButton);
         readbuttonContainer.appendChild(tpDiv);
       }
+    }
+
+    if (newsAvailable.normal === true) {
+      readbuttonContainer.appendChild(readButton);
     }
 
 

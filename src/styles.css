@@ -626,12 +626,12 @@ body.og-theme .important-text{
   flex-direction: row;
   gap: 5px;
   align-items: center;
-  background-color: var(--support-me);
-  transition: all 0.15s;
+  transition: background-color 0.15s, color 0.15s;
   padding: 8px 15px;
   border-radius: 7px;
   cursor: pointer;
   width: max-content;
+  text-decoration: none;
 }
 
 a:has(.patreon-button){
@@ -642,12 +642,16 @@ a:has(.patreon-button){
   background-color: var(--text-general);
 }
 
-.patreon-button:hover .patreon-button-text{
+.patreon-button:hover .patreon-button-text, patreon-button:active .patreon-button-text{
   color: var(--negative-text);
 }
 
-.patreon-button:hover .patreon-button-logo{
+.patreon-button:hover .patreon-button-logo, .patreon-button:active .patreon-button-logo{
   background-color: var(--negative-text);
+}
+
+.patreon-button:active{
+  transform: scale(0.98);
 }
 
 .patreon-button-logo{
@@ -11505,6 +11509,11 @@ a.bi-custom-patreon.close-slide-up{
   font-size: 18px;
   padding: 10px;
   justify-content: center;
+  position: absolute;
+  top: 0;
+  height: 235px;
+  opacity: 0.97;
+  z-index: 5;
 }
 
 .no-image-by-availability i{
@@ -12539,7 +12548,7 @@ body:has(.active #mod25logo) .one-change {
 
 .news-grid{
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   gap: 25px;
   padding: 0 14px;
   overflow-y: auto;
@@ -12600,7 +12609,6 @@ body:has(.active #mod25logo) .one-change {
 
 .title-and-article:has(.disabled-title){
   flex-direction: row;
-  justify-content: center;
   align-items: center;
   gap: 10px;
 }
