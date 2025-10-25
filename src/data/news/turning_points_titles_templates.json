@@ -34,7 +34,7 @@
             "FIA denies reports of imminent {{component}} technical directive",
             "FIA decides against new {{component}} rules after consultation",
             "Relief among teams as FIA drops {{component}} directive plans",
-            "FIA opts not to pursue new {{component}} regulations", 
+            "FIA opts not to pursue new {{component}} regulations",
             "FIA confirms no changes to {{component}} rules at this time",
             "'We found no need for changes' – FIA on scrapped {{component}} directive",
             "'It was never going to happen' – FIA on rumors of {{component}} technical directive"
@@ -82,36 +82,36 @@
         "id": "investment_takeover",
         "new_type": 102,
         "turning_titles": [
-            "Reports suggest major investment from {{country}} into {{team}} on the horizon",
-            "Sources indicate {{team}} in advanced talks with investors from {{country}}",
-            "Rumors of large-scale {{country}} backing for {{team}} gaining traction",
-            "{{team}} reportedly attracting significant financial interest from {{country}}",
-            "Whispers in the paddock: {{team}} could be set for a {{country}} investment deal",
-            "Insiders hint at potential {{country}} consortium investing in {{team}}",
-            "Will {{team}} submit to a takeover bid from {{country}} investors?",
-            "Speculation mounts over possible {{country}} investment in {{team}}"
+            "Reports hint at {{amount}}M {{country}} investment in {{team}}",
+            "{{team}} in talks with {{country}} investors for {{share}}% stake",
+            "Rumors grow of {{amount}}M {{country}} deal for {{team}}",
+            "{{team}} draws {{country}} interest worth about {{amount}}M",
+            "Whispers: {{team}} set for {{country}} funding near {{amount}}M",
+            "Insiders point to {{country}} group eyeing {{share}}% of {{team}}",
+            "Could {{team}} face a {{share}}% takeover bid from {{country}}?",
+            "Speculation over {{country}}-{{team}} deal valued at {{amount}}M"
         ],
         "positive_titles": [
-            "Confirmed: {{team}} secures massive investment deal with {{country}} group",
-            "{{country}} investment in {{team}} finalized, major funding boost expected",
-            "New ownership injection – {{team}} officially partners with investors from {{country}}",
-            "Huge financial boost for {{team}} as {{country}} consortium takes stake in the team",
-            "{{team}} announces strategic investment from {{country}} backers",
-            "Game changer: {{team}} welcomes {{country}} investors on board",
-            "{{team}} secures {{country}} funding, eyes ambitious future plans",
-            "BREAKING: {{team}} confirms investment deal with {{country}} group",
-            "'This is just the beginning' – {{team}} on new {{country}} investment partnership"
+            "Confirmed: {{team}} lands {{amount}}M {{country}} deal ({{share}}%)",
+            "{{team}} finalizes {{amount}}M {{country}} investment boost",
+            "{{team}} partners with {{country}} investors ({{share}}% stake)",
+            "Huge boost as {{country}} group buys {{share}}% of {{team}}",
+            "{{team}} announces {{amount}}M {{country}} investment",
+            "{{team}} welcomes {{country}} investors ({{share}}%)",
+            "{{team}} secures {{amount}}M {{country}} funding",
+            "BREAKING: {{team}} confirms {{country}} {{amount}}M deal",
+            "{{team}} celebrates {{country}} partnership worth {{amount}}M"
         ],
         "negative_titles": [
-            "{{team}} denies ongoing talks with investors from {{country}}",
-            "Investment rumors dismissed – no deal between {{team}} and {{country}} group",
-            "No agreement reached between {{team}} and potential {{country}} backers",
-            "Sources confirm {{team}} investment deal with {{country}} has collapsed",
-            "{{team}} puts an end to takeover speculation from {{country}} investors",
-            "Relief for {{team}} as {{country}} investment talks fall through",
-            "{{team}} rebuffs {{country}} investment rumors, no deal in sight",
-            "{{team}} confirms no investment agreement with {{country}} group",
-            "'We are not for sale' – {{team}} shuts down {{country}} investment speculation"
+            "{{team}} denies {{amount}}M {{country}} talks",
+            "No {{amount}}M {{country}} deal for {{team}}",
+            "{{team}} and {{country}} group fail to reach deal",
+            "{{team}}–{{country}} investment collapsed after {{share}}% talks",
+            "{{team}} ends {{country}} takeover speculation ({{share}}%)",
+            "{{team}} {{country}} talks fall through – {{amount}}M off table",
+            "{{team}} rebuffs {{country}} investment rumors",
+            "No {{share}}% deal between {{team}} and {{country}} group",
+            "'We are not for sale' – {{team}} shuts down {{country}} rumors"
         ]
     },
     {
@@ -184,6 +184,24 @@
             "{{engine_supplier}} engine update does not meet performance expectations",
             "{{engine_supplier}} confirms no significant changes after latest upgrade",
             "'It's not the step we hoped for' – {{engine_supplier}} on engine update results"
+        ]
+    },
+    {
+        "id": "race_substitution",
+        "new_type": 105,
+        "turning_titles": [
+            "{{original_race}} Grand Prix at risk of cancellation due to {{reason}}",
+            "Reports suggest {{original_race}} GP may be called off amid {{reason}} concerns",
+            "Sources indicate potential cancellation of {{original_race}} Grand Prix",
+            "FIA considering alternatives as {{original_race}} GP faces {{reason}} issues",
+            "Could {{substitute_race}} replace {{original_race}} GP this season?",
+            "Speculation grows over possible cancellation of {{original_race}} Grand Prix",
+            "'It doesn't look good' – insiders on {{original_race}} GP status amid {{reason}}",
+            "'We're exploring options' – FIA on potential changes to {{original_race}} GP"
+        ],
+        "positive_titles": [
+            "Confirmed: {{original_race}} Grand Prix cancelled, {{substitute_race}} to take its place",
+            "{{substitute_race}} officially announced as replacement for {{original_race}} GP"
         ]
     }
 ]

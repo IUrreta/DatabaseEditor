@@ -336,6 +336,12 @@ export function getParamMap(data) {
             driver_out: data.driver_out?.name ?? "",
             driver_in: data.driver_in?.name ?? ""
         },
+        102: {
+            team: data.teamName,
+            country: data.country,
+            amount: data.investmentAmount,
+            share: data.investmentShare
+        },
         103: {
             team: data.team,
             adjective: data.adjective,

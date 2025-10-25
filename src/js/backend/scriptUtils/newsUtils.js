@@ -67,6 +67,8 @@ export function generate_news(savednews, turningPointState) {
 
     const technicalDirectiveTurningPointNews = generateTechnicalDirectiveTurningPointNews(currentMonth, savednews, turningPointState);
 
+    const investmentTurningPointNews = generateInvestmentTurningPointNews(currentMonth, savednews, turningPointState);
+
     let turningPointOutcomes = [];
     if (Object.keys(savednews).length > 0) {
         turningPointOutcomes = Object.entries(savednews)
@@ -77,7 +79,7 @@ export function generate_news(savednews, turningPointState) {
     let newsList = [...raceNews || [], ...qualiNews || [], ...fakeTransferNews || [],
     ...bigConfirmedTransfersNews || [], ...contractRenewalsNews || [], ...comparisonNews || [], ...seasonReviews || [],
     ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...dsqTurningPointNews || [], ...midSeasonTransfersTurningPointNews || [],
-    ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || []];
+    ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || []];
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
@@ -154,8 +156,68 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
         }
         maxDate += 1;
     }
+    else if (type === "turning_point_investment") {
+        if (outcome === "positive") {
+            //apply investment effects: add the money and improve key facilities
+            applyInvestmentEffect(turningPointData);
+        }
+        const entryId = `turning_point_outcome_investment_${turningPointData.month}`;
+        const title = generateTurningPointTitle(turningPointData, 102, outcome);
+        const image = getImagePath(null, turningPointData.investmentId, "investment") || "null.png";
+
+        newEntry = {
+            id: entryId,
+            title,
+            image,
+            data: turningPointData,
+            date: maxDate + 1,
+            turning_point_type: outcome,
+            type: "turning_point_outcome_investment"
+        }
+        maxDate += 1;
+    }
 
     return newEntry;
+}
+
+function applyInvestmentEffect(turningPointData) {
+    const teamId = turningPointData.teamId;
+    const investmentAmount = turningPointData.investmentAmount;
+    const keyBuildings = [1,2,3,4,5,6,7,8,9,15];
+    const level4Buildings = [2,3,5,6,7,8];
+
+    for (const buildingId of keyBuildings) {
+        //buildingID is a number that first has the actual id and the last number represents its level
+        if (level4Buildings.includes(buildingId)) {
+            //put it to at least level4, if its already at 4, improve to 5
+            const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ${teamId} AND BuildingType = ${buildingId}`, 'singleValue');
+            let newLevel = 4;
+            if (current) {
+                //get last digit
+                const currentLevel = parseInt(current.toString().slice(-1));
+                if (currentLevel === 4) {
+                    newLevel = 5;
+                }
+                const newBuildingId = parseInt(current.toString().slice(0, -1) + newLevel.toString());
+                queryDB(`UPDATE Buildings_HQ SET BuildingID = ${newBuildingId}, DegradationValue = 1 WHERE BuildingType = ${buildingId} AND TeamID = ${teamId}`);
+            }
+                
+        }
+        else{//improve by 1 level
+            const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ${teamId} AND BuildingType = ${buildingId}`, 'singleValue');
+            if (current) {
+                // Upgrade the building by 1 level (parse to int first) and refurbish
+                const newLevel = parseInt(current) + 1;
+                queryDB(`UPDATE Buildings_HQ SET BuildingID = ${newLevel}, DegradationValue = 1 WHERE BuildingType = ${buildingId} AND TeamID = ${teamId}`);
+            }
+
+        }
+
+    }
+
+    //multiply investment amount by 1 million
+    const moneyToAdd = investmentAmount * 1000000;
+    queryDB(`UPDATE Finance_TeamBalance SET Balance = Balance + ${moneyToAdd} WHERE TeamID = ${teamId}`);
 }
 
 function executeMidSeasonTransfer(turningPointData) {
@@ -232,6 +294,92 @@ function applyTechnicalDirectiveEffect(turningPointData) {
             queryDB(`UPDATE Parts_TeamExpertise SET Expertise = ${newExpertise} WHERE TeamID = ${teamId} AND PartType = ${componentId} AND PartStat = ${partStat}`);
         }
     }
+}
+
+function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    let newsList = [];
+    //check if there is anmy news with investment turning point, and return the first one found
+    for (let month of [4,5,6,7,8,9,10,11]) {
+        const entryId = `turning_point_investment_${month}`;
+        if (savednews[entryId]) {
+            newsList.push(savednews[entryId]);
+            return newsList;
+        }
+    }
+
+    //if season is odd, return empty array
+    if (daySeason[1] % 2 === 1) {
+        return newsList;
+    }
+    //if that month has already been calculated then skip chance
+    if (turningPointState.investmentOpportunities[currentMonth] !== null) {        
+        return newsList;
+    }
+
+    //10% chance of happening,
+    // if (Math.random() < 0.1) {
+    //     turningPointState.investmentOpportunities[currentMonth] = "None";
+    //     return newsList;
+    // }
+
+    //rich countries with interest in motorsport, especially middle eastern
+    const investmentCountries = ["China", "Saudi Arabia", "United Arab Emirates", "India", "Russia", "South Africa", "Qatar", "Bahrain", "Singapore", "Vietnam"];
+    const countryName = randomPick(investmentCountries);
+
+    
+    const globals = getGlobals();
+    let teamIds = [2, 3, 4, 5, 6, 7, 8, 9, 10] //exclude ferrari
+    if (globals.isCreateATeam) {
+        teamIds.push(32);
+    }
+    const randomTeamId = randomPick(teamIds);
+    const randomTeamName = combined_dict[randomTeamId] || "Unknown Team";
+
+    const amountOptions = [50, 75, 100, 125, 150, 200];
+    const investmentAmount = randomPick(amountOptions);
+
+    const shareOptions = [10, 15, 20, 25, 30, 35, 40, 51, 65, 80];
+    const investmentShare = randomPick(shareOptions);
+
+    const titleData = {
+        country: countryName,
+        teamId: randomTeamId,
+        teamName: randomTeamName,
+        investmentAmount: investmentAmount,
+        investmentShare: investmentShare,
+        season: daySeason[1],
+    };
+
+    const title = generateTurningPointTitle(titleData, 102, "original");
+
+    const image = "null.png"; //placeholder image
+    const excelDate = dateToExcel(new Date(daySeason[1], currentMonth, Math.floor(Math.random() * 28) + 1));
+
+    turningPointState.investmentOpportunities[currentMonth] = {
+        country: countryName,
+        teamId: randomTeamId,
+        teamName: randomTeamName,
+        investmentAmount: investmentAmount,
+        investmentShare: investmentShare,
+        season: daySeason[1],
+        month: currentMonth,
+    }
+
+    const entryId = `turning_point_investment_${currentMonth}`;
+
+    const newsEntry = {
+        id: entryId,
+        title: title,
+        image: image,
+        date: excelDate,
+        data: titleData,
+        turning_point_type: "original",
+        type: "turning_point_investment"
+    }
+    newsList.push(newsEntry);
+    
+    return newsList;
 }
 
 function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {

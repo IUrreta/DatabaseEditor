@@ -808,6 +808,16 @@ function ensureTurningPointsStructure(saveName) {
         technicalDirectives:{
             6: null,
             9: null
+        },
+        investmentOpportunities:{
+            4: null,
+            5: null,
+            6: null,
+            7: null,
+            8: null,
+            9: null,
+            10: null,
+            11: null
         }
     };
 
