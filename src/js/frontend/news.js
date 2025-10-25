@@ -978,8 +978,8 @@ async function contextualizeTurningPointInvestment(newData, turningPointType) {
   }
 
   prompt = prompt.replace(/{{\s*team\s*}}/g, newData.data.team || 'The team').
-    replace(/{{\s*amount\s*}}/g, newData.data.amount || 'X').
-    replace(/{{\s*share\s*}}/g, newData.data.share || 'X').
+    replace(/{{\s*amount\s*}}/g, newData.data.investmentAmount || 'X').
+    replace(/{{\s*share\s*}}/g, newData.data.investmentShare || 'X').
     replace(/{{\s*country\s*}}/g, newData.data.country || 'X');
 
   const command = new Command("fullChampionshipDetailsRequest", {

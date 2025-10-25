@@ -183,8 +183,8 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
 function applyInvestmentEffect(turningPointData) {
     const teamId = turningPointData.teamId;
     const investmentAmount = turningPointData.investmentAmount;
-    const keyBuildings = [1,2,3,4,5,6,7,8,9,15];
-    const level4Buildings = [2,3,5,6,7,8];
+    const keyBuildings = [1, 2, 3, 4, 5, 6, 7, 8, 9, 15];
+    const level4Buildings = [2, 3, 5, 6, 7, 8];
 
     for (const buildingId of keyBuildings) {
         //buildingID is a number that first has the actual id and the last number represents its level
@@ -201,9 +201,9 @@ function applyInvestmentEffect(turningPointData) {
                 const newBuildingId = parseInt(current.toString().slice(0, -1) + newLevel.toString());
                 queryDB(`UPDATE Buildings_HQ SET BuildingID = ${newBuildingId}, DegradationValue = 1 WHERE BuildingType = ${buildingId} AND TeamID = ${teamId}`);
             }
-                
+
         }
-        else{//improve by 1 level
+        else {//improve by 1 level
             const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ${teamId} AND BuildingType = ${buildingId}`, 'singleValue');
             if (current) {
                 // Upgrade the building by 1 level (parse to int first) and refurbish
@@ -300,10 +300,10 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     let newsList = [];
     //check if there is anmy news with investment turning point, and return the first one found
-    for (let month of [4,5,6,7,8,9,10,11]) {
+    for (let month of [4, 5, 6, 7, 8, 9, 10, 11]) {
         const entryId = `turning_point_investment_${month}`;
         if (savednews[entryId]) {
-            newsList.push(savednews[entryId]);
+            newsList.push({id: entryId, ...savednews[entryId]});
             return newsList;
         }
     }
@@ -313,7 +313,7 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
         return newsList;
     }
     //if that month has already been calculated then skip chance
-    if (turningPointState.investmentOpportunities[currentMonth] !== null) {        
+    if (turningPointState.investmentOpportunities[currentMonth] !== null) {
         return newsList;
     }
 
@@ -327,7 +327,9 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
     const investmentCountries = ["China", "Saudi Arabia", "United Arab Emirates", "India", "Russia", "South Africa", "Qatar", "Bahrain", "Singapore", "Vietnam"];
     const countryName = randomPick(investmentCountries);
 
-    
+    const countryCode = countryName.slice(0, 3).toLowerCase();
+
+
     const globals = getGlobals();
     let teamIds = [2, 3, 4, 5, 6, 7, 8, 9, 10] //exclude ferrari
     if (globals.isCreateATeam) {
@@ -336,11 +338,22 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
     const randomTeamId = randomPick(teamIds);
     const randomTeamName = combined_dict[randomTeamId] || "Unknown Team";
 
-    const amountOptions = [50, 75, 100, 125, 150, 200];
-    const investmentAmount = randomPick(amountOptions);
+    const investmentRanges = [
+        { share: 10, amounts: [30, 40, 50, 60] },
+        { share: 15, amounts: [40, 50, 60, 70] },
+        { share: 20, amounts: [50, 60, 75, 90] },
+        { share: 25, amounts: [70, 80, 90, 100] },
+        { share: 30, amounts: [80, 100, 120, 140] },
+        { share: 35, amounts: [100, 120, 150] },
+        { share: 40, amounts: [120, 150, 180] },
+        { share: 51, amounts: [150, 180, 200, 220] },
+        { share: 65, amounts: [200, 250, 300] },
+        { share: 80, amounts: [250, 300, 350, 400] }
+    ];
 
-    const shareOptions = [10, 15, 20, 25, 30, 35, 40, 51, 65, 80];
-    const investmentShare = randomPick(shareOptions);
+    const selectedRange = randomPick(investmentRanges);
+    const investmentShare = selectedRange.share;
+    const investmentAmount = randomPick(selectedRange.amounts);
 
     const titleData = {
         country: countryName,
@@ -353,7 +366,7 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
 
     const title = generateTurningPointTitle(titleData, 102, "original");
 
-    const image = "null.png"; //placeholder image
+    const image = getImagePath(null, countryCode, "investment");
     const excelDate = dateToExcel(new Date(daySeason[1], currentMonth, Math.floor(Math.random() * 28) + 1));
 
     turningPointState.investmentOpportunities[currentMonth] = {
@@ -378,17 +391,18 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
         type: "turning_point_investment"
     }
     newsList.push(newsEntry);
-    
+
     return newsList;
 }
 
 function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
     let newsList = [];
+    currentMonth = 6;
     //get previous technical directive turning point news
-    for (let month of [5, 9]) {
+    for (let month of [6, 9]) {
         const entryId = `turning_point_technical_directive_${month}`;
         if (savednews[entryId]) {
-            newsList.push(savednews[entryId]);
+            newsList.push({id: entryId, ...savednews[entryId]});
         }
     }
 
@@ -408,7 +422,6 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
 
 
-    
     const parts = [3, 4, 5, 6, 7, 8]
     const partId = randomPick(parts);
     const partName = part_full_names[partId].toLowerCase() || "Unknown Part";
@@ -563,7 +576,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
     for (let month = 6; month <= 8; month++) {
         const entryId = `turning_point_transfer_${month}`;
         if (savednews[entryId]) {
-            newsList.push(savednews[entryId]);
+            newsList.push({id: entryId, ...savednews[entryId]});
         }
     }
 
@@ -625,7 +638,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
     const entryId = `turning_point_transfer_${currentMonth}`;
 
     if (savednews[entryId]) {
-        return [savednews[entryId]];
+        return newsList;
     }
 
     console.log("Selected team for mid-season transfer TP:", randomTeamName);
@@ -823,7 +836,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
         month: currentMonth
     };
 
-    turningPointState.transfers[6] = newData; //tendria que ser currentMonth, pero para pruebas lo dejo fijo en junio
+    turningPointState.transfers[currentMonth] = newData; //tendria que ser currentMonth, pero para pruebas lo dejo fijo en junio
 
     const title = generateTurningPointTitle(newData, 101, "original");
     const image = getImagePath(null, driverOutName[1], "transfer");
@@ -846,6 +859,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
 
 function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointState = {}) {
     const last3Races = racesDone.slice(-3);
+    let newsList = [];
 
     //if the last 3 races are not in turningPointState.checkedRaces, add them, if they all are, return the rray with ilegal races news
     if (turningPointState.checkedRaces && last3Races.every(r => turningPointState.checkedRaces.includes(r))) {
@@ -853,6 +867,7 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
         const ilegalRacesNewsArray = turningPointState.ilegalRaces.map(raceData => {
             const entryId = `turning_point_dsq_${raceData.race_id}`;
             if (savednews[entryId]) {
+                newsList.push({ id: entryId, ...savednews[entryId] });
                 return { id: entryId, ...savednews[entryId] };
             }
         });
@@ -884,7 +899,8 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
 
     const entryId = `turning_point_dsq_${raceId}`;
     if (savednews[entryId]) {
-        return [{ id: entryId, ...savednews[entryId] }];
+        newsList.push({ id: entryId, ...savednews[entryId] });
+        return newsList;
     }
 
     const components = ["engine brake map", "fuel flow", "front wing", "rear wing", "diffuser", "floor", "brake ducts", "suspension", "gearbox", "cooling system", "hydraulics", "clutch", "plank wear"];
@@ -2685,6 +2701,9 @@ function getImagePath(teamId, code, type) {
             const randomNum = getRandomInt(1, 3);
             return `./assets/images/news/part_${code}_${randomNum}.webp`;
         }
+    }
+    else if (type === "investment") {
+        return `./assets/images/news/${code}_inv.webp`;
     }
 }
 
