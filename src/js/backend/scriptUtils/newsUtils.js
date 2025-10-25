@@ -1,5 +1,5 @@
 import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations } from "./dbUtils";
-import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names } from "../../frontend/config";
+import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names, continentDict, contintntRacesRegions } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import turningPointsTitleTemplates from "../../../data/news/turning_points_titles_templates.json";
 import { fetchSeasonResults, fetchQualiResults } from "./dbUtils";
@@ -69,6 +69,8 @@ export function generate_news(savednews, turningPointState) {
 
     const investmentTurningPointNews = generateInvestmentTurningPointNews(currentMonth, savednews, turningPointState);
 
+    const raceSubstitutionTurningPointNews = generateRaceSubstitutionTurningPointNews(currentMonth,savednews, turningPointState);
+
     let turningPointOutcomes = [];
     if (Object.keys(savednews).length > 0) {
         turningPointOutcomes = Object.entries(savednews)
@@ -79,7 +81,7 @@ export function generate_news(savednews, turningPointState) {
     let newsList = [...raceNews || [], ...qualiNews || [], ...fakeTransferNews || [],
     ...bigConfirmedTransfersNews || [], ...contractRenewalsNews || [], ...comparisonNews || [], ...seasonReviews || [],
     ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...dsqTurningPointNews || [], ...midSeasonTransfersTurningPointNews || [],
-    ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || []];
+    ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [], ...raceSubstitutionTurningPointNews || []];
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
@@ -176,8 +178,34 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
         }
         maxDate += 1;
     }
+    else if (type === "turning_point_race_substitution") {
+        if (outcome === "positive") {
+            applyRaceSubstitution(turningPointData);
+        }
+        const entryId = `turning_point_outcome_race_substitution_${turningPointData.month}`;
+        const title = generateTurningPointTitle(turningPointData, 105, outcome);
+        const code = races_names[Number(turningPointData.newRaceTrackId)].toLowerCase()
+        const image = getImagePath(null, code, "race_substitution") || "null.png";
+        newEntry = {
+            id: entryId,
+            title,
+            image,
+            data: turningPointData,
+            date: maxDate + 1,
+            turning_point_type: outcome,
+            type: "turning_point_outcome_race_substitution"
+        }
+        maxDate += 1;
+    }
 
     return newEntry;
+}
+
+function applyRaceSubstitution(turningPointData) {
+    const raceId = turningPointData.raceId;
+    const newTrackId = turningPointData.newRaceTrackId;
+    const newDay = turningPointData.newRaceDay;
+    queryDB(`UPDATE Races SET TrackID = ${newTrackId}, Day = ${newDay} WHERE RaceID = ${raceId}`);
 }
 
 function applyInvestmentEffect(turningPointData) {
@@ -296,6 +324,149 @@ function applyTechnicalDirectiveEffect(turningPointData) {
     }
 }
 
+function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    let newsList = [];
+    //check if there is anmy news with race substitution turning point, and return the first one found
+    for (let month of [4, 5, 6, 7, 8, 9, 10, 11]) {
+        const entryId = `turning_point_race_substitution_${month}`;
+        if (savednews[entryId]) {
+            newsList.push({id: entryId, ...savednews[entryId]});
+            return newsList;
+        }
+    }
+
+    if (turningPointState.raceSubstitutionOpportunities[currentMonth] !== null) {
+        return newsList;
+    }
+
+    //10% chance of happening,
+    // if (Math.random() < 0.1) {
+    //     turningPointState.raceSubstitutionOpportunities[currentMonth] = "None";
+    //     return newsList;
+    // }
+
+    //get races that are still to be done
+    const calendar = queryDB(`SELECT RaceID, TrackID, Day FROM Races WHERE SeasonID = ${daySeason[1]} AND State = 0 ORDER BY Day`, 'allRows');
+    //remove the first 4
+    const potentialRaces = calendar.slice(4);
+
+    if (potentialRaces.length < 2) { //too little races
+        return newsList;
+    }
+
+    //pick one randomly between nber 5 and 9 of the remaining races
+    const potentialCancellations = potentialRaces.slice(0, Math.min(5, potentialRaces.length - 1));
+    const cancellationRace = randomPick(potentialCancellations);
+    let originalTrackId = cancellationRace[1];
+    let originalRaceId = cancellationRace[0];
+    let availableRaceBefore = false, availableRaceAfter = false;
+    let newRaceTrackId = null;
+    let newRaceDay = null;
+
+    //check if the race before is more than 7 days before or the race after is more than 7 days after
+    const cancellationIndex = calendar.findIndex(r => r[0] === cancellationRace[0]);
+    if (cancellationIndex > 0) {
+        const previousRace = calendar[cancellationIndex - 1];
+        const dayDiff = cancellationRace[2] - previousRace[2];
+        if (dayDiff > 7){
+            availableRaceBefore = true;
+        }
+    }
+    if (cancellationIndex < calendar.length - 1) {
+        const nextRace = calendar[cancellationIndex + 1];
+        const dayDiff = nextRace[2] - cancellationRace[2];
+        if (dayDiff > 7){
+            availableRaceAfter = true;
+        }
+    }
+    
+    if (availableRaceAfter){
+        //50% chance
+        if (Math.random() < 0.5){ //put the same race that the race after but 7 days before
+            const nextRace = calendar[cancellationIndex + 1];
+            newRaceTrackId = nextRace[1];
+            newRaceDay = nextRace[2] - 7;
+        }
+        else{
+            let region = continentDict[originalTrackId] || "Europe";
+            let racesPool = contintntRacesRegions[region].filter(tid => tid !== originalTrackId);
+            newRaceTrackId = randomPick(racesPool);
+            newRaceDay = cancellationRace[2]; //same day
+        }
+    }
+    else if (availableRaceBefore){
+        //50% chance
+        if (Math.random() < 0.5){ //put the same race that the race before but 7 days after
+            const previousRace = calendar[cancellationIndex - 1];
+            newRaceTrackId = previousRace[1];
+            newRaceDay = previousRace[2] + 7;
+        }
+        else{
+            let region = continentDict[originalTrackId] || "Europe";
+            let racesPool = contintntRacesRegions[region].filter(tid => tid !== originalTrackId);
+            newRaceTrackId = randomPick(racesPool);
+            newRaceDay = cancellationRace[2]; //same day
+        }
+    }
+    else{
+        let region = continentDict[originalTrackId] || "Europe";
+        let racesPool = contintntRacesRegions[region].filter(tid => tid !== originalTrackId);
+        newRaceTrackId = randomPick(racesPool);
+        newRaceDay = cancellationRace[2]; 
+    }
+    const originalCountry = countries_data[races_names[originalTrackId]]?.adjective || "Unknown Country";
+    const substituteCountry = countries_data[races_names[newRaceTrackId]]?.country || "Unknown Country";
+
+    const reasons_pool = [
+    "infrastructure delays",
+    "contractual disputes",
+    "financial uncertainty",
+    "logistical challenges",
+    "homologation issues",
+    "political instability",
+    "travel restrictions",
+    "calendar restructuring",
+    "environmental concerns",
+    "permit complications with local authorities"
+    ];
+    const reason = randomPick(reasons_pool);
+
+    const newEntryId = `turning_point_race_substitution_${currentMonth}`;
+    const code = races_names[Number(originalTrackId)].toLowerCase()
+    const image = getImagePath(null, code, "race_substitution");
+
+    const titleData = {
+        originalCountry: originalCountry,
+        substituteCountry: substituteCountry,
+        reason: reason,
+        originalTrackId: originalTrackId,
+        newRaceTrackId: newRaceTrackId,
+        newRaceDay: newRaceDay,
+        raceId: originalRaceId,
+        month: currentMonth,
+        season: daySeason[1]
+    };
+
+    const title = generateTurningPointTitle(titleData, 105, "original");
+    const excelDate = dateToExcel(new Date(daySeason[1], currentMonth, Math.floor(Math.random() * 28) + 1));
+    turningPointState.raceSubstitutionOpportunities[currentMonth] = titleData;
+    const newsEntry = {
+        id: newEntryId,
+        title: title,
+        image: image,
+        date: excelDate,
+        data: titleData,
+        turning_point_type: "original",
+        type: "turning_point_race_substitution"
+    }
+
+    newsList.push(newsEntry);
+
+
+    return newsList;
+}
+
 function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     let newsList = [];
@@ -362,6 +533,7 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
         investmentAmount: investmentAmount,
         investmentShare: investmentShare,
         season: daySeason[1],
+        month: currentMonth,
     };
 
     const title = generateTurningPointTitle(titleData, 102, "original");
@@ -2704,6 +2876,9 @@ function getImagePath(teamId, code, type) {
     }
     else if (type === "investment") {
         return `./assets/images/news/${code}_inv.webp`;
+    }
+    else if (type === "race_substitution") {
+        return `./assets/images/news/${code}_tra.webp`;
     }
 }
 

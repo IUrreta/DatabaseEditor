@@ -78,6 +78,15 @@ async function finishGeneralLoader() {
   pageLoaderDiv.remove();
 }
 
+document.getElementById("closeNewsArticle").addEventListener("click", async () => {
+  const newsItem = document.querySelector('.news-item.opened');
+  if (newsItem) {
+    newsItem.classList.remove('opened');
+    await onTransitionEnd(newsItem, 'transform', 150);
+    newsItem.classList.remove('with-transition');
+  }
+});
+
 function hashStr(str) {
   let h = 2166136261 >>> 0;
   for (let i = 0; i < str.length; i++) {
@@ -219,6 +228,7 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
 
 
     readButton.addEventListener('click', async () => {
+      newsItem.classList.add('with-transition', 'opened');
       const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
         keyboard: false
       });
@@ -239,7 +249,22 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
       dateSpan.textContent = `${day}/${month}/${year}`;
 
       const image = document.querySelector('#newsModal .news-image-background');
-      image.src = news.image;
+
+      (async () => {
+        const url = news.image;
+        const exists = await imageExists(url);
+
+        if (exists) {
+          //remove d-none from image
+          image.classList.remove('d-none');
+          console.log("✅ La imagen existe:", url);
+          image.src = news.image;
+        } else {
+          //add d-none to image
+          image.classList.add('d-none');
+        }
+      })();
+      
 
       if (ai) {
         const loaderDiv = document.createElement('div');
@@ -438,6 +463,16 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
         else if (news.type === "turning_point_technical_directive") {
           const commandTechDir = new Command("performanceRefresh", {});
           commandTechDir.execute();
+        }
+        else if (news.type === "turning_point_race_substitution") {
+          const commandYear = new Command("yearSelected", {
+            year: news.data.season,
+            isCurrentYear: true
+          });
+          commandYear.execute();
+
+          const commandCalendar = new Command("calendarRefresh", {});
+          commandCalendar.execute();
         }
 
         saveNews(newsList);
@@ -702,6 +737,15 @@ export async function place_turning_outcome(turningPointResponse) {
   prependAnimated(newsGrid, newsItem, 250, 'cubic-bezier(.2,.8,.2,1)');
 }
 
+async function imageExists(url) {
+  try {
+    const res = await fetch(url, { method: 'HEAD' });
+    return res.ok;
+  } catch (err) {
+    return false;
+  }
+}
+
 function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
   // 1) Hijos actuales y posiciones BEFORE
   const oldChildren = Array.from(container.children);
@@ -916,6 +960,9 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
   else if (newData.type === "turning_point_investment" || newData.type === "turning_point_outcome_investment") {
     prompt = await contextualizeTurningPointInvestment(newData, newData.turning_point_type);
   }
+  else if( newData.type === "turning_point_race_substitution" || newData.type === "turning_point_outcome_race_substitution") {
+    prompt = await contextualizeTurningPointRaceSubstitution(newData, newData.turning_point_type);
+  }
 
   console.log("NEwData:", newData);
 
@@ -960,6 +1007,40 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
   }
 
   return articleText;
+}
+
+async function contextualizeTurningPointRaceSubstitution(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 105);
+  let prompt;
+  let seasonYear = newData.data.season;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+  prompt = prompt.replace(/{{\s*original_race\s*}}/g, newData.data.originalCountry || 'The original race').
+    replace(/{{\s*substitute_race\s*}}/g, newData.data.substituteCountry || 'The substituted race').
+    replace(/{{\s*reason\s*}}/g, newData.data.reason || 'The reason');
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  prompt += buildContextualPrompt(resp.content, { seasonYear });
+
+  return prompt;
 }
 
 async function contextualizeTurningPointInvestment(newData, turningPointType) {

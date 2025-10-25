@@ -163,6 +163,18 @@ export let driversTableLogosDict = {
 export const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0", 3: "chi0" };
 export const invertedRacesMap = { "bah0": 2, "aus0": 1, "sau0": 11, "imo0": 24, "mia0": 22, "spa0": 5, "mon0": 6, "aze0": 4, "can0": 7, "gbr0": 10, "aut0": 9, "fra0": 8, "hun0": 12, "bel0": 13, "ita0": 14, "sgp0": 15, "jap0": 17, "usa0": 19, "mex0": 18, "bra0": 20, "uae0": 21, "ned0": 23, "veg0": 25, "qat0": 26, "chi0": 3 };
 export const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT", 3: "CHI" };
+export const contintntRacesRegions = {
+    "Europe": [24, 5, 6, 10, 9, 8, 12, 13, 14, 23],
+    "Asia": [17, 3, 15, 1],
+    "America": [19, 20, 18, 25, 22], 
+    "Middle East": [2, 11, 21, 26, 4], 
+}
+export const continentDict = {
+    24: "Europe", 5: "Europe", 6: "Europe", 10: "Europe", 9: "Europe", 8: "Europe", 12: "Europe", 13: "Europe", 14: "Europe", 23: "Europe",
+    17: "Asia", 3: "Asia", 15: "Asia", 1: "Asia",
+    19: "America", 20: "America", 18: "America", 25: "America", 22: "America",
+    2: "Middle East", 11: "Middle East", 21: "Middle East", 26: "Middle East", 4: "Middle East"
+}
 export const teams_full_name_dict = { 'FERRARI': 1, 'MCLAREN': 2, 'RED BULL': 3, 'MERCEDES': 4, 'ALPINE': 5, 'WILLIAMS': 6, 'HAAS': 7, 'ALPHA TAURI': 8, 'ALFA ROMEO': 9, 'ASTON MARTIN': 10 }
 export let logos_disc = {
     1: '../assets/images/ferrari.png',
@@ -348,6 +360,11 @@ export function getParamMap(data) {
             component: data.component,
             country: data.country,
             circuit: data.circuit
+        },
+        105: {
+            original_race: data.originalCountry,
+            substitute_race: data.substituteCountry,
+            reason: data.reason
         }
     };
 }

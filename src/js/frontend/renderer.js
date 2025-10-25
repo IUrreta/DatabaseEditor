@@ -818,6 +818,16 @@ function ensureTurningPointsStructure(saveName) {
             9: null,
             10: null,
             11: null
+        },
+        raceSubstitutionOpportunities:{
+            4: null,
+            5: null,
+            6: null,
+            7: null,
+            8: null,
+            9: null,
+            10: null,
+            11: null
         }
     };
 

@@ -57,7 +57,7 @@ const workerCommands = {
 
   yearSelected: (data, postMessage) => {
     const year = data.year
-    const isCurrentYear = data.isCurrentYear
+    const isCurrentYear = data.isCurrentYear || true;
     console.log("IIS CURRENT YER:", isCurrentYear)
     const results = fetchSeasonResults(year, isCurrentYear);
     const events = fetchEventsFrom(year);
@@ -381,6 +381,10 @@ const workerCommands = {
 
     const drivers = fetchDrivers(yearData[0]);
     postMessage({ responseMessage: "Drivers fetched", content: drivers });
+  },
+  calendarRefresh: (data, postMessage) => {
+    const calendar = fetchCalendar();
+    postMessage({ responseMessage: "Calendar fetched", content: calendar });
   },
   changeStats: (data, postMessage) => {
     changeStats();

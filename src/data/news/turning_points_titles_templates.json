@@ -197,11 +197,42 @@
             "Could {{substitute_race}} replace {{original_race}} GP this season?",
             "Speculation grows over possible cancellation of {{original_race}} Grand Prix",
             "'It doesn't look good' – insiders on {{original_race}} GP status amid {{reason}}",
-            "'We're exploring options' – FIA on potential changes to {{original_race}} GP"
+            "'We're exploring options' – FIA on potential changes to {{original_race}} GP",
+            "{{original_race}} GP future uncertain as organizers struggle with {{reason}}",
+            "Calendar shake-up likely: {{original_race}} GP in doubt over {{reason}}",
+            "Backup venues being evaluated after concerns surrounding {{original_race}} GP",
+            "{{substitute_race}} emerges as leading candidate to replace {{original_race}} Grand Prix",
+            "Talks intensify between FOM and {{substitute_race}} officials amid {{original_race}} GP uncertainty",
+            "Calendar rumors suggest {{original_race}} GP may be swapped for {{substitute_race}} due to {{reason}}",
+            "Officials admit contingency discussions underway for {{original_race}} GP amid {{reason}} concerns"
         ],
         "positive_titles": [
             "Confirmed: {{original_race}} Grand Prix cancelled, {{substitute_race}} to take its place",
-            "{{substitute_race}} officially announced as replacement for {{original_race}} GP"
+            "{{substitute_race}} officially announced as replacement for {{original_race}} GP",
+            "Calendar update: {{substitute_race}} joins F1 schedule after {{original_race}} GP cancellation",
+            "FIA confirms {{substitute_race}} will step in following {{original_race}} Grand Prix cancellation",
+            "{{substitute_race}} steps up as replacement event after {{original_race}} GP called off",
+            "Formula 1 confirms {{substitute_race}} as official substitute for {{original_race}} Grand Prix",
+            "Breaking: {{original_race}} GP cancelled — {{substitute_race}} fills the gap in this year's calendar",
+            "{{substitute_race}} to make surprise return as {{original_race}} GP replacement",
+            "F1 calendar reshuffled: {{substitute_race}} replaces {{original_race}} Grand Prix",
+            "Official statement: {{original_race}} GP dropped, {{substitute_race}} joins the lineup",
+            "'We're excited to host F1 again' – {{substitute_race}} organizers on replacing {{original_race}} GP",
+            "FIA and FOM confirm {{substitute_race}} as new venue after {{original_race}} cancellation"
+        ],
+        "negative_titles": [
+            "FIA confirms {{original_race}} Grand Prix will go ahead as planned despite {{reason}} concerns",
+            "{{original_race}} GP officially back on as issues surrounding {{reason}} resolved",
+            "After weeks of uncertainty, {{original_race}} Grand Prix confirmed to proceed as scheduled",
+            "Rumors dismissed: {{original_race}} GP to take place as originally planned",
+            "FIA statement ends speculation – {{original_race}} Grand Prix safe for this season",
+            "Organizers confirm {{original_race}} GP will happen after resolving {{reason}} complications",
+            "False alarm: {{original_race}} GP remains on the calendar despite earlier doubts",
+            "{{original_race}} organizers secure final approval, event to go ahead as planned",
+            "{{original_race}} GP cleared to proceed following successful FIA inspection",
+            "All systems go: {{original_race}} Grand Prix confirmed following resolution of {{reason}}",
+            "Confirmed - {{original_race}} Grand Prix to proceed as scheduled",
+            "'At the end of the day, we all wanted to race there' – FIA on {{original_race}} GP confirmation"
         ]
     }
 ]
