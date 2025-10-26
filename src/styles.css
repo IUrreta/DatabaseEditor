@@ -10579,7 +10579,7 @@ body.og-theme #blockDiv{
   display: flex;
   flex-direction: column;
   gap: 20px;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  box-shadow: var(--shadow-m);
   opacity: 0;
   transform: translateY(50px);
   z-index: 2;

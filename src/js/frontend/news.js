@@ -225,7 +225,7 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
 
   });
 }
-function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbuttonContainer) {
+function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbuttonContainer, newsAvailable) {
   let approveButton, randomButton, cancelButton;
 
 
@@ -492,7 +492,7 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
   titleAndArticle.appendChild(newsTitle);
   newsBody.appendChild(titleAndArticle);
 
-  manageTurningPointButtons(news, newsList, maxDate, newsBody, readbuttonContainer);
+  manageTurningPointButtons(news, newsList, maxDate, newsBody, readbuttonContainer, newsAvailable);
 
 
   newsBody.appendChild(readbuttonContainer);
