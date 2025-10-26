@@ -99,6 +99,430 @@ function hashStr(str) {
 const BUCKET_TURNING = 5;
 const BUCKET_NORMAL = 7;
 
+function addReadButtonListener(readButton, newsItem, news, newsList) {
+  readButton.addEventListener('click', async () => {
+    newsItem.classList.add('with-transition', 'opened');
+    const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
+      keyboard: false
+    });
+
+    newsModal.show();
+    const modalTitle = document.querySelector('#newsModal .modal-title');
+    modalTitle.textContent = news.title;
+
+    const newsArticle = document.querySelector('#newsModal .news-article');
+    newsArticle.innerHTML = '';
+
+    const dateSpan = document.querySelector('#newsModal .news-article-date .dateSpan');
+    const date = excelToDate(news.date);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    dateSpan.textContent = `${day}/${month}/${year}`;
+
+    const image = document.querySelector('#newsModal .news-image-background');
+
+    (async () => {
+      const url = news.image;
+      const exists = await imageExists(url);
+
+      if (exists) {
+        //remove d-none from image
+        image.classList.remove('d-none');
+        console.log("✅ La imagen existe:", url);
+        image.src = news.image;
+      } else {
+        //add d-none to image
+        image.classList.add('d-none');
+      }
+    })();
+
+
+    if (ai) {
+      const loaderDiv = document.createElement('div');
+      loaderDiv.classList.add('loader-div');
+      const loadingSpan = document.createElement('span');
+      loadingSpan.textContent = "Generating";
+      const loadingDots = document.createElement('span');
+      loadingDots.textContent = "."
+      loadingDots.classList.add('loading-dots');
+      loadingSpan.appendChild(loadingDots);
+
+      setInterval(() => {
+        if (loadingDots.textContent.length >= 3) {
+          loadingDots.textContent = ".";
+        } else {
+          loadingDots.textContent += ".";
+        }
+      }, 500);
+
+      const progressBar = document.createElement('div');
+      progressBar.classList.add('ai-progress-bar');
+      const progressDiv = document.createElement('div');
+      progressDiv.classList.add('progress-div');
+
+      progressBar.appendChild(progressDiv);
+      loaderDiv.appendChild(loadingSpan);
+      loaderDiv.appendChild(progressBar);
+
+      newsArticle.appendChild(loaderDiv);
+
+      //start progress div moving every 100ms to 30%
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 3;
+        if (progressDiv) {
+          progressDiv.style.width = progress + '%';
+        }
+        if (progress >= 30) {
+          clearInterval(interval);
+        }
+      }, 150);
+
+      try {
+        const articleText = await manageRead(news, newsList, progressDiv, interval);
+        if (ai === null) {
+          console.warn("AI not initialized");
+          return;
+        }
+
+        clearInterval(interval);
+        clearInterval(interval2);
+        progressDiv.style.width = '100%';
+
+        setTimeout(() => {
+          loaderDiv.style.opacity = '0';
+          newsArticle.style.opacity = '0';
+          setTimeout(() => {
+            loaderDiv.remove();
+            newsArticle.textContent = articleText;
+            newsArticle.style.opacity = '1';
+          }, 150);
+
+        }, 200);
+
+      }
+
+      catch (err) {
+        console.error("Error generating article:", err);
+        clearInterval(interval);
+      }
+
+    }
+    else {
+      const noApiFoundSpan = document.createElement('span');
+      noApiFoundSpan.classList.add('news-error');
+      noApiFoundSpan.textContent = "No API key found. Please set it in the settings.";
+      newsArticle.appendChild(noApiFoundSpan);
+      const googleAIStudioSpan = document.createElement('p');
+      googleAIStudioSpan.classList.add('news-error', 'news-error-api-key');
+      googleAIStudioSpan.innerHTML = `If you want to read AI-generated articles from the news section, please enter your API key here. You can get one for free
+                from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
+                <span class="important-text bold-font">Create API Key</span> on the top right corner`
+      newsArticle.appendChild(googleAIStudioSpan);
+    }
+
+  });
+}
+function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbuttonContainer, newsAvailable) {
+  let approveButton, randomButton, cancelButton;
+
+
+  if (news.turning_point_type === "original") {
+    const tpDiv = document.createElement('div');
+    tpDiv.classList.add('turning-point-div');
+
+    cancelButton = document.createElement('div');
+    cancelButton.classList.add('cancel-tp', 'tp-button');
+    const cancelIcon = document.createElement('i');
+    cancelIcon.classList.add('bi', 'bi-x', 'tp-icon');
+    cancelButton.appendChild(cancelIcon);
+    tpDiv.appendChild(cancelButton);
+
+    cancelButton.addEventListener('click', async () => {
+      randomButton.remove();
+      approveButton.remove();
+      cancelButton.classList.add('tp-button-selected');
+
+      const resultSpan = document.createElement('span');
+      resultSpan.classList.add('tp-result-span');
+      resultSpan.innerText = "Cancelled";
+      cancelButton.innerHTML = '';
+      cancelButton.appendChild(resultSpan);
+
+      cancelButton.replaceWith(cancelButton.cloneNode(true));
+      news.turning_point_type = "cancelled";
+
+      const command = new Command("cancelTurningPoint", {
+        turningPointData: news.data,
+        type: news.type,
+        maxDate: maxDate
+      });
+      let newResp = await command.promiseExecute();
+      place_turning_outcome(newResp.content);
+      newsList.push(newResp.content);
+
+      saveNews(newsList);
+    });
+
+    randomButton = document.createElement('div');
+    randomButton.classList.add('random-tp', 'tp-button');
+    const randomIcon = document.createElement('i');
+    randomIcon.classList.add('bi', 'bi-question', 'tp-icon');
+    randomButton.appendChild(randomIcon);
+    tpDiv.appendChild(randomButton);
+
+    approveButton = document.createElement('div');
+    approveButton.classList.add('approve-tp', 'tp-button');
+    const approveIcon = document.createElement('i');
+    approveIcon.classList.add('bi', 'bi-check', 'tp-icon');
+    approveButton.appendChild(approveIcon);
+    tpDiv.appendChild(approveButton);
+
+    approveButton.addEventListener('click', async () => {
+      //has the news text
+      if (!news.text || news.text.length === 0) {
+        const ok = await confirmModal({
+          title: "Approve Turning Point",
+          body: "Are you sure you want to approve this turning point? If you approve it before reading the article, it will not be able to generate the article further down the line.",
+          confirmText: "Approve",
+          cancelText: "Cancel"
+        });
+
+        if (!ok) {
+          return;
+        }
+        else {
+          const readButton = newsBody.querySelector('.read-button-container .read-button');
+          readButton.remove();
+          news.nonReadable = true;
+          news.turning_point_type = "approved";
+          saveNews(newsList);
+        }
+      }
+
+      //remove the other 2 buttons
+      randomButton.remove();
+      cancelButton.remove();
+      approveButton.classList.add('tp-button-selected');
+      //remove the icon and add text "Approved"
+      const resultSpan = document.createElement('span');
+      resultSpan.classList.add('tp-result-span');
+      resultSpan.innerText = "Approved";
+      approveButton.innerHTML = '';
+      approveButton.appendChild(resultSpan);
+
+      //remove the eventListener
+      approveButton.replaceWith(approveButton.cloneNode(true));
+      news.turning_point_type = "approved";
+
+      const command = new Command("approveTurningPoint", {
+        turningPointData: news.data,
+        type: news.type,
+        maxDate: maxDate
+      });
+      const newResp = await command.promiseExecute();
+      place_turning_outcome(newResp.content);
+      newsList.push(newResp.content);
+
+      if (news.type === "turning_point_transfer" || news.type === "turning_point_outcome_transfer") {
+        const commandDrivers = new Command("driversRefresh", {});
+        commandDrivers.execute();
+      }
+      else if (news.type === "turning_point_technical_directive") {
+        const commandTechDir = new Command("performanceRefresh", {});
+        commandTechDir.execute();
+      }
+      else if (news.type === "turning_point_race_substitution") {
+        const commandYear = new Command("yearSelected", {
+          year: news.data.season,
+          isCurrentYear: true
+        });
+        commandYear.execute();
+
+        const commandCalendar = new Command("calendarRefresh", {});
+        commandCalendar.execute();
+      }
+
+      saveNews(newsList);
+    });
+
+    readbuttonContainer.appendChild(tpDiv);
+  }
+  else if (news.turning_point_type === "approved") {
+    const tpDiv = document.createElement('div');
+    tpDiv.classList.add('turning-point-div');
+    const approvedButton = document.createElement('div');
+    approvedButton.classList.add('approve-tp', 'tp-button', 'tp-button-selected');
+    const approvedSpan = document.createElement('span');
+    approvedSpan.classList.add('tp-result-span');
+    approvedSpan.innerText = "Approved";
+    approvedButton.appendChild(approvedSpan);
+    tpDiv.appendChild(approvedButton);
+    readbuttonContainer.appendChild(tpDiv);
+  }
+  else if (news.turning_point_type === "cancelled") {
+    const tpDiv = document.createElement('div');
+    tpDiv.classList.add('turning-point-div');
+    const cancelledButton = document.createElement('div');
+    cancelledButton.classList.add('cancel-tp', 'tp-button', 'tp-button-selected');
+    const cancelledSpan = document.createElement('span');
+    cancelledSpan.classList.add('tp-result-span');
+    cancelledSpan.innerText = "Cancelled";
+    cancelledButton.appendChild(cancelledSpan);
+    tpDiv.appendChild(cancelledButton);
+    readbuttonContainer.appendChild(tpDiv);
+  }
+
+
+  if (!newsAvailable.turning) {
+    const showInsiderModal = async () => {
+      await confirmModal({
+        title: "Insider News Unavailable",
+        body: "Insider news are currently unavailable. To unlock insider news and be able to decide the outcome of turning points, please consider subscribing to the INSIDER tier on our Patreon page.",
+        confirmText: "Okay"
+      });
+    };
+
+    const swap = (btn) => {
+      if (!btn) return null;
+      const clone = btn.cloneNode(true); // clona (sin listeners)
+      btn.replaceWith(clone);            // mete el clon en el DOM
+      clone.addEventListener('click', showInsiderModal); // añade el nuevo listener
+      return clone;                       // devuelve la nueva referencia
+    };
+
+    // ¡OJO!: usa let para poder reasignar
+    approveButton = swap(approveButton);
+    randomButton = swap(randomButton);
+    cancelButton = swap(cancelButton);
+  }
+}
+function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
+  const isTurning =
+    news.turning_point_type === 'original' ||
+    news.turning_point_type === 'approved' ||
+    news.turning_point_type === 'cancelled';
+  const newsItem = document.createElement('div');
+  newsItem.classList.add('news-item', 'fade-in');
+  newsItem.setAttribute('style', '--order: ' + (index + 1));
+
+  if (news.hiddenByAvailability) {
+    newsItem.dataset.hiddenReason = news.hiddenReason || 'none';
+    newsItem.classList.add('hidden-by-availability'); // para que lo estilices si quieres
+  }
+
+  const newsBody = document.createElement('div');
+  newsBody.classList.add('news-body');
+  const titleAndArticle = document.createElement('div');
+  titleAndArticle.classList.add('title-and-article');
+
+  const newsTitle = document.createElement('span');
+  newsTitle.classList.add('news-title', 'bold-font');
+  newsTitle.textContent = news.title;
+
+  const imageContainer = document.createElement('div');
+  imageContainer.classList.add('news-image-container');
+
+  const readbuttonContainer = document.createElement('div');
+  readbuttonContainer.classList.add('read-button-container');
+
+  const readButton = document.createElement('div');
+  readButton.classList.add('read-button');
+  const readButtonSpan = document.createElement('span');
+  readButtonSpan.classList.add('gradient-text');
+  readButtonSpan.innerText = "Read";
+  readButton.appendChild(readButtonSpan);
+
+  manage_overlay(imageContainer, news.overlay, news.data, news.image);
+
+  const image = document.createElement('img');
+  image.classList.add('news-image');
+  image.setAttribute('data-src', news.image);
+  image.src = news.image;
+  image.setAttribute('loading', 'lazy');
+
+  imageContainer.appendChild(image);
+
+
+  if (news.hiddenByAvailability) {
+    const blockedDiv = document.createElement('div');
+    blockedDiv.classList.add('no-image-by-availability');
+    const lockIcon = document.createElement('i');
+    lockIcon.classList.add('bi', 'bi-lock', 'no-image-lock-icon');
+    const infoSpan = document.createElement('span');
+    infoSpan.classList.add('no-image-info');
+    blockedDiv.appendChild(lockIcon);
+    blockedDiv.appendChild(infoSpan);
+    newsTitle.classList.add('disabled-title');
+    const secondLockIcon = document.createElement('i');
+    secondLockIcon.classList.add('bi', 'bi-lock-fill', 'disabled-title-lock-icon');
+    titleAndArticle.prepend(secondLockIcon);
+    newsTitle.textContent = "Backer-only content";
+    imageContainer.appendChild(blockedDiv);
+    if (news.turning_point_type === undefined) {
+      infoSpan.innerHTML = "Subscribe to the <span class='bold-font'>BACKER</span> tier to unlock and read all news articles!";
+      newsTitle.textContent = "Backer-only content";
+    }
+    else {
+      infoSpan.innerHTML = "Subscribe to the <span class='bold-font'>INSIDER</span> tier to read and <span class='bold-font'>DECIDE</span> the outcome of turning points!";
+      newsTitle.textContent = "Insider-only content";
+    }
+
+    const patreonButton = document.createElement('a');
+    patreonButton.classList.add('patreon-button');
+    patreonButton.href = "https://www.patreon.com/cw/f1dbeditor/membership";
+    //open in a new window
+    patreonButton.target = "_blank";
+    const patreonIcon = document.createElement('div');
+    patreonIcon.classList.add('patreon-button-logo');
+    const patreonSpan = document.createElement('span');
+    patreonSpan.classList.add('patreon-button-text');
+    patreonSpan.textContent = "Support us on Patreon";
+    patreonButton.appendChild(patreonIcon);
+    patreonButton.appendChild(patreonSpan);
+    blockedDiv.appendChild(patreonButton);
+  }
+
+
+  addReadButtonListener(readButton, newsItem, news, newsList);
+
+  newsItem.appendChild(imageContainer);
+  titleAndArticle.appendChild(newsTitle);
+  newsBody.appendChild(titleAndArticle);
+
+  manageTurningPointButtons(news, newsList, maxDate, newsBody, readbuttonContainer, newsAvailable);
+
+
+  newsBody.appendChild(readbuttonContainer);
+
+  if (!news.nonReadable || news.nonReadable === false) { //first check - if the news is readable
+    if (newsAvailable.normal === true && !isTurning) { //second check - if normal news are available
+      readbuttonContainer.appendChild(readButton);
+    }
+
+    if (newsAvailable.turning === true && isTurning) { //second check - if insider news are available
+      readbuttonContainer.appendChild(readButton);
+    }
+
+  }
+
+
+  newsItem.appendChild(newsBody);
+
+  if (news.type === "race_result" || news.type === "quali_result") {
+    newsItem.dataset.type = news.type;
+  }
+  else if (news.type === "fake_transfer" || news.type === "big_transfer" || news.type === "contract_renewal" || news.type === "silly_season_rumors") {
+    newsItem.dataset.type = "driver_transfers";
+  }
+  else if (news.type === "potential_champion" || news.type === "world_champion" || news.type === "season_review" || news.type === "team_comparison" || news.type === "driver_comparison") {
+    newsItem.dataset.type = "others";
+  }
+  return newsItem;
+}
+
 export async function place_news(newsAndTurningPoints, newsAvailable) {
   let newsList = newsAndTurningPoints.newsList;
   let turningPointState = newsAndTurningPoints.turningPointState;
@@ -118,440 +542,29 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
       news.turning_point_type === 'approved' ||
       news.turning_point_type === 'cancelled';
 
-    if (typeof news.hiddenByAvailability === 'undefined') {
-      // clave estable por noticia
-      const stableKey = String(
-        news.id ?? (news.title + '|' + news.date)
-      );
-      const h = hashStr(stableKey);
+    // clave estable por noticia
+    const stableKey = String(
+      news.id ?? (news.title + '|' + news.date)
+    );
+    const h = hashStr(stableKey);
 
-      let hide = false;
-      let reason = null;
+    let hide = false;
+    let reason = null;
 
-      if (!newsAvailable.turning && isTurning) {
-        // muestra 1 de cada 5
-        hide = (h % BUCKET_TURNING) !== 0;
-        reason = 'turning';
-      } else if (!newsAvailable.normal && !isTurning) {
-        // muestra 1 de cada 7 (cambia a 8 si quieres)
-        hide = (h % BUCKET_NORMAL) !== 0;
-        reason = 'normal';
-      }
-
-      news.hiddenByAvailability = hide;
-      news.hiddenReason = hide ? reason : null;
-      modified = true;
+    if (!newsAvailable.turning && isTurning) {
+      // muestra 1 de cada 5
+      hide = (h % BUCKET_TURNING) !== 0;
+      reason = 'turning';
+    } else if (!newsAvailable.normal && !isTurning) {
+      // muestra 1 de cada 7 (cambia a 8 si quieres)
+      hide = (h % BUCKET_NORMAL) !== 0;
+      reason = 'normal';
     }
 
-    const newsItem = document.createElement('div');
-    newsItem.classList.add('news-item', 'fade-in');
-    newsItem.setAttribute('style', '--order: ' + (index + 1));
-
-    if (news.hiddenByAvailability) {
-      newsItem.dataset.hiddenReason = news.hiddenReason || 'none';
-      newsItem.classList.add('hidden-by-availability'); // para que lo estilices si quieres
-    }
-
-    const newsBody = document.createElement('div');
-    newsBody.classList.add('news-body');
-    const titleAndArticle = document.createElement('div');
-    titleAndArticle.classList.add('title-and-article');
-
-    const newsTitle = document.createElement('span');
-    newsTitle.classList.add('news-title', 'bold-font');
-    newsTitle.textContent = news.title;
-
-    const imageContainer = document.createElement('div');
-    imageContainer.classList.add('news-image-container');
-
-    const readbuttonContainer = document.createElement('div');
-    readbuttonContainer.classList.add('read-button-container');
-
-    const readButton = document.createElement('div');
-    readButton.classList.add('read-button');
-    const readButtonSpan = document.createElement('span');
-    readButtonSpan.classList.add('gradient-text');
-    readButtonSpan.innerText = "Read";
-    readButton.appendChild(readButtonSpan);
-
-    manage_overlay(imageContainer, news.overlay, news.data, news.image);
-
-    const image = document.createElement('img');
-    image.classList.add('news-image');
-    image.setAttribute('data-src', news.image);
-    image.src = news.image;
-    image.setAttribute('loading', 'lazy');
-
-    imageContainer.appendChild(image);
-
-
-    if (news.hiddenByAvailability) {
-      const blockedDiv = document.createElement('div');
-      blockedDiv.classList.add('no-image-by-availability');
-      const lockIcon = document.createElement('i');
-      lockIcon.classList.add('bi', 'bi-lock', 'no-image-lock-icon');
-      const infoSpan = document.createElement('span');
-      infoSpan.classList.add('no-image-info');
-      blockedDiv.appendChild(lockIcon);
-      blockedDiv.appendChild(infoSpan);
-      newsTitle.classList.add('disabled-title');
-      const secondLockIcon = document.createElement('i');
-      secondLockIcon.classList.add('bi', 'bi-lock-fill', 'disabled-title-lock-icon');
-      titleAndArticle.prepend(secondLockIcon);
-      newsTitle.textContent = "Backer-only content";
-      imageContainer.appendChild(blockedDiv);
-      if (news.turning_point_type === undefined) {
-        infoSpan.innerHTML = "Subscribe to the <span class='bold-font'>BACKER</span> tier to unlock and read all news articles!";
-        newsTitle.textContent = "Backer-only content";
-      }
-      else {
-        infoSpan.innerHTML = "Subscribe to the <span class='bold-font'>INSIDER</span> tier to read and <span class='bold-font'>DECIDE</span> the outcome of turning points!";
-        newsTitle.textContent = "Insider-only content";
-      }
-
-      const patreonButton = document.createElement('a');
-      patreonButton.classList.add('patreon-button');
-      patreonButton.href = "https://www.patreon.com/cw/f1dbeditor/membership";
-      //open in a new window
-      patreonButton.target = "_blank";
-      const patreonIcon = document.createElement('div');
-      patreonIcon.classList.add('patreon-button-logo');
-      const patreonSpan = document.createElement('span');
-      patreonSpan.classList.add('patreon-button-text');
-      patreonSpan.textContent = "Support us on Patreon";
-      patreonButton.appendChild(patreonIcon);
-      patreonButton.appendChild(patreonSpan);
-      blockedDiv.appendChild(patreonButton);
-    }
-
-
-    readButton.addEventListener('click', async () => {
-      newsItem.classList.add('with-transition', 'opened');
-      const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
-        keyboard: false
-      });
-
-      newsModal.show();
-      const modalTitle = document.querySelector('#newsModal .modal-title');
-      modalTitle.textContent = news.title;
-
-      const newsArticle = document.querySelector('#newsModal .news-article');
-      newsArticle.innerHTML = '';
-
-      const dateSpan = document.querySelector('#newsModal .news-article-date .dateSpan');
-      const date = excelToDate(news.date);
-
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const year = date.getFullYear();
-      dateSpan.textContent = `${day}/${month}/${year}`;
-
-      const image = document.querySelector('#newsModal .news-image-background');
-
-      (async () => {
-        const url = news.image;
-        const exists = await imageExists(url);
-
-        if (exists) {
-          //remove d-none from image
-          image.classList.remove('d-none');
-          console.log("✅ La imagen existe:", url);
-          image.src = news.image;
-        } else {
-          //add d-none to image
-          image.classList.add('d-none');
-        }
-      })();
-      
-
-      if (ai) {
-        const loaderDiv = document.createElement('div');
-        loaderDiv.classList.add('loader-div');
-        const loadingSpan = document.createElement('span');
-        loadingSpan.textContent = "Generating";
-        const loadingDots = document.createElement('span');
-        loadingDots.textContent = "."
-        loadingDots.classList.add('loading-dots');
-        loadingSpan.appendChild(loadingDots);
-
-        setInterval(() => {
-          if (loadingDots.textContent.length >= 3) {
-            loadingDots.textContent = ".";
-          } else {
-            loadingDots.textContent += ".";
-          }
-        }, 500);
-
-        const progressBar = document.createElement('div');
-        progressBar.classList.add('ai-progress-bar');
-        const progressDiv = document.createElement('div');
-        progressDiv.classList.add('progress-div');
-
-        progressBar.appendChild(progressDiv);
-        loaderDiv.appendChild(loadingSpan);
-        loaderDiv.appendChild(progressBar);
-
-        newsArticle.appendChild(loaderDiv);
-
-        //start progress div moving every 100ms to 30%
-        let progress = 0;
-        const interval = setInterval(() => {
-          progress += 3;
-          if (progressDiv) {
-            progressDiv.style.width = progress + '%';
-          }
-          if (progress >= 30) {
-            clearInterval(interval);
-          }
-        }, 150);
-
-        try {
-          const articleText = await manageRead(news, newsList, progressDiv, interval);
-          if (ai === null) {
-            console.warn("AI not initialized");
-            return;
-          }
-
-          clearInterval(interval);
-          clearInterval(interval2);
-          progressDiv.style.width = '100%';
-
-          setTimeout(() => {
-            loaderDiv.style.opacity = '0';
-            newsArticle.style.opacity = '0';
-            setTimeout(() => {
-              loaderDiv.remove();
-              newsArticle.textContent = articleText;
-              newsArticle.style.opacity = '1';
-            }, 150);
-
-          }, 200);
-
-        }
-
-        catch (err) {
-          console.error("Error generating article:", err);
-          clearInterval(interval);
-        }
-
-      }
-      else {
-        const noApiFoundSpan = document.createElement('span');
-        noApiFoundSpan.classList.add('news-error');
-        noApiFoundSpan.textContent = "No API key found. Please set it in the settings.";
-        newsArticle.appendChild(noApiFoundSpan);
-        const googleAIStudioSpan = document.createElement('p');
-        googleAIStudioSpan.classList.add('news-error', 'news-error-api-key');
-        googleAIStudioSpan.innerHTML = `If you want to read AI-generated articles from the news section, please enter your API key here. You can get one for free
-                  from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
-                  <span class="important-text bold-font">Create API Key</span> on the top right corner`
-        newsArticle.appendChild(googleAIStudioSpan);
-      }
-
-    });
-
-    newsItem.appendChild(imageContainer);
-    titleAndArticle.appendChild(newsTitle);
-    newsBody.appendChild(titleAndArticle);
-
-    let approveButton, randomButton, cancelButton;
-
-
-    if (news.turning_point_type === "original") {
-      const tpDiv = document.createElement('div');
-      tpDiv.classList.add('turning-point-div');
-
-      cancelButton = document.createElement('div');
-      cancelButton.classList.add('cancel-tp', 'tp-button');
-      const cancelIcon = document.createElement('i');
-      cancelIcon.classList.add('bi', 'bi-x', 'tp-icon');
-      cancelButton.appendChild(cancelIcon);
-      tpDiv.appendChild(cancelButton);
-
-      cancelButton.addEventListener('click', async () => {
-        randomButton.remove();
-        approveButton.remove();
-        cancelButton.classList.add('tp-button-selected');
-
-        const resultSpan = document.createElement('span');
-        resultSpan.classList.add('tp-result-span');
-        resultSpan.innerText = "Cancelled";
-        cancelButton.innerHTML = '';
-        cancelButton.appendChild(resultSpan);
-
-        cancelButton.replaceWith(cancelButton.cloneNode(true));
-        news.turning_point_type = "cancelled";
-
-        const command = new Command("cancelTurningPoint", {
-          turningPointData: news.data,
-          type: news.type,
-          maxDate: maxDate
-        });
-        let newResp = await command.promiseExecute();
-        place_turning_outcome(newResp.content);
-        newsList.push(newResp.content);
-
-        saveNews(newsList);
-      });
-
-      randomButton = document.createElement('div');
-      randomButton.classList.add('random-tp', 'tp-button');
-      const randomIcon = document.createElement('i');
-      randomIcon.classList.add('bi', 'bi-question', 'tp-icon');
-      randomButton.appendChild(randomIcon);
-      tpDiv.appendChild(randomButton);
-
-      approveButton = document.createElement('div');
-      approveButton.classList.add('approve-tp', 'tp-button');
-      const approveIcon = document.createElement('i');
-      approveIcon.classList.add('bi', 'bi-check', 'tp-icon');
-      approveButton.appendChild(approveIcon);
-      tpDiv.appendChild(approveButton);
-
-      approveButton.addEventListener('click', async () => {
-        //has the news text
-        if (!news.text || news.text.length === 0) {
-          const ok = await confirmModal({
-            title: "Approve Turning Point",
-            body: "Are you sure you want to approve this turning point? If you approve it before reading the article, it will not be able to generate the article further down the line.",
-            confirmText: "Approve",
-            cancelText: "Cancel"
-          });
-
-          if (!ok) {
-            return;
-          }
-          else {
-            const readButton = newsBody.querySelector('.read-button-container .read-button');
-            readButton.remove();
-            news.nonReadable = true;
-            news.turning_point_type = "approved";
-            saveNews(newsList);
-          }
-        }
-
-        //remove the other 2 buttons
-        randomButton.remove();
-        cancelButton.remove();
-        approveButton.classList.add('tp-button-selected');
-        //remove the icon and add text "Approved"
-        const resultSpan = document.createElement('span');
-        resultSpan.classList.add('tp-result-span');
-        resultSpan.innerText = "Approved";
-        approveButton.innerHTML = '';
-        approveButton.appendChild(resultSpan);
-
-        //remove the eventListener
-        approveButton.replaceWith(approveButton.cloneNode(true));
-        news.turning_point_type = "approved";
-
-        const command = new Command("approveTurningPoint", {
-          turningPointData: news.data,
-          type: news.type,
-          maxDate: maxDate
-        });
-        const newResp = await command.promiseExecute();
-        place_turning_outcome(newResp.content);
-        newsList.push(newResp.content);
-
-        if (news.type === "turning_point_transfer" || news.type === "turning_point_outcome_transfer") {
-          const commandDrivers = new Command("driversRefresh", {});
-          commandDrivers.execute();
-        }
-        else if (news.type === "turning_point_technical_directive") {
-          const commandTechDir = new Command("performanceRefresh", {});
-          commandTechDir.execute();
-        }
-        else if (news.type === "turning_point_race_substitution") {
-          const commandYear = new Command("yearSelected", {
-            year: news.data.season,
-            isCurrentYear: true
-          });
-          commandYear.execute();
-
-          const commandCalendar = new Command("calendarRefresh", {});
-          commandCalendar.execute();
-        }
-
-        saveNews(newsList);
-      });
-
-      readbuttonContainer.appendChild(tpDiv);
-    }
-    else if (news.turning_point_type === "approved") {
-      const tpDiv = document.createElement('div');
-      tpDiv.classList.add('turning-point-div');
-      const approvedButton = document.createElement('div');
-      approvedButton.classList.add('approve-tp', 'tp-button', 'tp-button-selected');
-      const approvedSpan = document.createElement('span');
-      approvedSpan.classList.add('tp-result-span');
-      approvedSpan.innerText = "Approved";
-      approvedButton.appendChild(approvedSpan);
-      tpDiv.appendChild(approvedButton);
-      readbuttonContainer.appendChild(tpDiv);
-    }
-    else if (news.turning_point_type === "cancelled") {
-      const tpDiv = document.createElement('div');
-      tpDiv.classList.add('turning-point-div');
-      const cancelledButton = document.createElement('div');
-      cancelledButton.classList.add('cancel-tp', 'tp-button', 'tp-button-selected');
-      const cancelledSpan = document.createElement('span');
-      cancelledSpan.classList.add('tp-result-span');
-      cancelledSpan.innerText = "Cancelled";
-      cancelledButton.appendChild(cancelledSpan);
-      tpDiv.appendChild(cancelledButton);
-      readbuttonContainer.appendChild(tpDiv);
-    }
-
-
-    if (!newsAvailable.turning) {
-      const showInsiderModal = async () => {
-        await confirmModal({
-          title: "Insider News Unavailable",
-          body: "Insider news are currently unavailable. To unlock insider news and be able to decide the outcome of turning points, please consider subscribing to the INSIDER tier on our Patreon page.",
-          confirmText: "Okay"
-        });
-      };
-
-      const swap = (btn) => {
-        if (!btn) return null;
-        const clone = btn.cloneNode(true); // clona (sin listeners)
-        btn.replaceWith(clone);            // mete el clon en el DOM
-        clone.addEventListener('click', showInsiderModal); // añade el nuevo listener
-        return clone;                       // devuelve la nueva referencia
-      };
-
-      // ¡OJO!: usa let para poder reasignar
-      approveButton = swap(approveButton);
-      randomButton = swap(randomButton);
-      cancelButton = swap(cancelButton);
-    }
-
-    newsBody.appendChild(readbuttonContainer);
-
-    if (!news.nonReadable || news.nonReadable === false) { //first check - if the news is readable
-      if (newsAvailable.normal === true && !isTurning) { //second check - if normal news are available
-        readbuttonContainer.appendChild(readButton);
-      }
-
-      if (newsAvailable.turning === true && isTurning) { //second check - if insider news are available
-        readbuttonContainer.appendChild(readButton);
-      }
-
-    }
-
-
-    newsItem.appendChild(newsBody);
-
-    if (news.type === "race_result" || news.type === "quali_result") {
-      newsItem.dataset.type = news.type;
-    }
-    else if (news.type === "fake_transfer" || news.type === "big_transfer" || news.type === "contract_renewal" || news.type === "silly_season_rumors") {
-      newsItem.dataset.type = "driver_transfers";
-    }
-    else if (news.type === "potential_champion" || news.type === "world_champion" || news.type === "season_review" || news.type === "team_comparison" || news.type === "driver_comparison") {
-      newsItem.dataset.type = "others";
-    }
+    news.hiddenByAvailability = hide;
+    news.hiddenReason = hide ? reason : null;
+    modified = true;
+    const newsItem = createNewsItemElement(news, index, newsAvailable, newsList, maxDate);
 
     newsGrid.appendChild(newsItem);
     setTimeout(() => {
@@ -1839,8 +1852,7 @@ function saveNews(newsList) {
       data: news.data,
       text: news.text,
       turning_point_type: news.turning_point_type,
-      nonReadable: news.nonReadable,
-      hiddenByAvailability: news.hiddenByAvailability
+      nonReadable: news.nonReadable
     };
     return acc;
   }, {});
