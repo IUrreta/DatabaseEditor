@@ -2,9 +2,9 @@
   /*
   GENERAL COLORS
   */
-  --background: #161616;
-  --generals: #202020;
-  --superficials: #242424;
+  --background: #111111;
+  --generals: #1e1e1e;
+  --superficials: #222222;
   --dropdown-back: #272727;
   --elements: #303030;
   --dropdown-hover: #363636;
@@ -122,6 +122,21 @@
   --f3-back: #cf2e2e;
   --f3-border: #ff7968;
   --f1-first: #ff0000;
+
+  --shadow-no: 0 1px 2px #00000030,  /*dark shadow */
+    0 2px 4px #00000015;  /*soft shadow */
+
+  --shadow-s: inset 0 1px 2px #ffffff30, /*top highlight */
+    0 1px 2px #00000030,  /*dark shadow */
+    0 2px 4px #00000015;  /*soft shadow */
+
+  --shadow-m: inset 0 1px 2px #ffffff50, /*top highlight */
+    0 2px 4px #00000030,  /*dark shadow */
+    0 4px 8px #00000015;  /*soft shadow */
+
+  --shadow-l: inset 0 1px 2px #ffffff70, /*top highlight */
+    0 4px 6px #00000030,  /*dark shadow */
+    0 6px 110px #00000015;  /*soft shadow */
 
 
   /*
@@ -1411,7 +1426,7 @@ body.og-theme .dropdown-menu a:hover {
 .text-filter {
   background-color: transparent;
   color: var(--white-general);
-  border-bottom: 2px solid transparent;
+  border-bottom: 2px solid var(--separator);
   border-right: 0px;
   border-left: 0px;
   border-top: 0px;
@@ -1487,7 +1502,7 @@ body.og-theme .dropdown-menu a:hover {
 
 .filter-container.focused {
   background-color: var(--generals);
-  box-shadow: 0 0 3px 1px var(--box-shadow);
+  box-shadow: var(--shadow-s)
 
 }
 
@@ -2489,7 +2504,7 @@ body.og-theme .main-columns-drag-section, body.og-theme .main-editStats-section,
   color: var(--white-general);
   overflow-y: auto;
   border-radius: 10px;
-  box-shadow: 0px 0px 3px 2px var(--box-shadow);
+  box-shadow: var(--shadow-s)
 }
 
 .main-panel-stats {
@@ -3690,7 +3705,7 @@ DRIVERS TABLE
   color: var(--white-general);
   overflow: hidden;
   border-radius: 10px;
-  box-shadow: 0px 0px 3px 2px var(--box-shadow);
+  box-shadow: var(--shadow-s);
 }
 
 
@@ -3817,7 +3832,7 @@ DRIVERS TABLE
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   background-color: var(--generals);
-  box-shadow: 0px 0px 3px 2px var(--box-shadow);
+  box-shadow: var(--shadow-s);
   gap: 8px;
   padding: 8px;
   grid-auto-rows: min-content;
@@ -3870,7 +3885,7 @@ DRIVERS TABLE
   cursor: grab !important;
   max-height: 112px;
   gap: 8px;
-  box-shadow: 0px 0px 10px 1px var(--box-shadow);
+  box-shadow: var(--shadow-s);
   justify-content: space-between;
   border: none;
 }
@@ -4063,7 +4078,7 @@ body.light-theme .flag, body.light-theme .flag-header img{
   border-radius: 10px;
   scrollbar-width: thin;
   scrollbar-color: var(--white-general);
-  box-shadow: 0px 0px 3px 2px var(--box-shadow);
+  box-shadow: var(--shadow-s);
   margin-right: 14px;
 }
 
@@ -4485,7 +4500,7 @@ body.light-theme .flag, body.light-theme .flag-header img{
 .engine-performance {
   background-color: var(--elements);
   border-radius: 10px;
-  box-shadow: 0px 0px 10px 1px var(--box-shadow);
+  box-shadow: var(--shadow-s);
   padding: 5px 10px;
   overflow-y: hidden;
   position: relative;
@@ -5190,12 +5205,14 @@ input.disabled {
 }
 
 .teams-columns {
-  padding-top: 10px;
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
   margin-left: 0%;
   margin-right: 14px;
+  background: transparent;
+  box-shadow: none;
+  gap: 10px;
 }
 
 .performance-bar {
@@ -5367,7 +5384,14 @@ input.disabled {
 }
 
 .team {
-  margin: 10.8px 7px;
+  margin: 0;
+  border: none;
+  padding: 5.8px;
+  transition: box-shadow 0.15s;
+}
+
+.team.selected{
+  box-shadow: var(--shadow-s);
 }
 
 .car {
@@ -6641,7 +6665,7 @@ input.disabled {
   height: 36px;
   display: flex;
   gap: 3px;
-  box-shadow: 0 0 2px 1px var(--box-shadow);
+  box-shadow: var(--shadow-s);
   align-items: center;
 }
 
@@ -6684,6 +6708,7 @@ input.disabled {
   padding: 10px 20px;
   align-items: center;
   position: relative;
+  box-shadow: var(--shadow-s);
 }
 
 .number-and-name{
@@ -7574,6 +7599,19 @@ input.disabled {
 #free-staff {
   overflow-y: scroll;
   margin-right: 4px;
+  margin-left: 0px;
+}
+
+#allDrivers{
+  box-shadow: var(--shadow-s);
+}
+
+#free-drivers{
+  box-shadow: none;
+}
+
+#free-staff{
+  box-shadow: none;
 }
 
 
@@ -7702,6 +7740,7 @@ input.disabled {
   display: flex;
   justify-content: space-between;
   position: relative;
+  box-shadow: var(--shadow-s);
 }
 
 .one-stat-panel {
@@ -7718,7 +7757,7 @@ input.disabled {
   align-items: center;
   max-height: 70px;
   flex-direction: column;
-  box-shadow: 0 0 10px 1px var(--box-shadow);
+  box-shadow: var(--shadow-s);
 }
 
 .super-license-holder {
@@ -8005,6 +8044,14 @@ input.disabled {
 
 #teamButton {
   z-index: 2;
+}
+
+#teamsDiv{
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  padding: 10px;
+  justify-content: space-between;
 }
 
 
@@ -8501,18 +8548,16 @@ input::-webkit-inner-spin-button {
 
 .team-template {
   background-color: var(--superficials);
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
   border: none;
   color: var(--white-general);
-  margin: 10px;
-  margin-top: 0px;
   display: flex;
   flex-direction: row;
   position: relative;
   padding: 5px;
-  box-shadow: 0 0 10px 1px var(--box-shadow);
+  box-shadow: var(--shadow-s);
   flex-grow: 1;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .viewer-top {
@@ -10125,7 +10170,6 @@ input::-webkit-inner-spin-button {
 .staff-section {
   display: flex;
   overflow: hidden;
-  margin-bottom: 3px;
   width: 100%;
   align-items: center;
 }
