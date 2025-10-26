@@ -100,8 +100,6 @@ const BUCKET_TURNING = 5;
 const BUCKET_NORMAL = 7;
 
 export async function place_news(newsAndTurningPoints, newsAvailable) {
-  console.log(newsAvailable)
-
   let newsList = newsAndTurningPoints.newsList;
   let turningPointState = newsAndTurningPoints.turningPointState;
   await finishGeneralLoader();

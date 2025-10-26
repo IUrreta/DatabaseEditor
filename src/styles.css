@@ -10,6 +10,7 @@
   --dropdown-hover: #363636;
   --table-default: #1b1b1b;
   --table-default-odd: #1e1e1e;
+  --table-header: #2f2f2f;
   --dark-text: #b1b1b1;
   --disabled-text: #7a7a7a;
   --modal-text: #777777;
@@ -2714,6 +2715,8 @@ DRIVERS TABLE
   display: flex;
   flex-direction: row;
   color: var(--text-general);
+  padding-top: 1px;
+  background-color: var(--table-header);
 }
 
 .drivers-table-row {
@@ -2887,12 +2890,12 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 4px;
+  padding-top: 3px;
 }
 
 .drivers-table-data .drivers-table-points,
 .teams-table-data .teams-table-points {
-  padding-top: 4px;
+  padding-top: 3px;
 }
 
 .drivers-table-data .drivers-table-position, .teams-table-data .teams-table-position {
@@ -12630,6 +12633,7 @@ body:has(.active #mod25logo) .one-change {
   flex-direction: column;
   z-index: 0;
   transition: none; 
+  box-shadow: var(--shadow-s);
 }
 
 .news-item.with-transition{
@@ -12786,6 +12790,10 @@ body:has(.active #mod25logo) .one-change {
   border-top-left-radius: 10px;
   position: relative;
 }
+
+/* .news-image-container img{
+  padding: 1px 0px 0px 0px;
+} */
 
 .breaking-news-overlay {
     position: absolute;
