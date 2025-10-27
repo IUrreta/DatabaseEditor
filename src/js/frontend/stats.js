@@ -109,7 +109,7 @@ export function place_drivers_editStats(driversArray) {
             let elementosClicked = document.querySelectorAll('.clicked');
             elementosClicked.forEach(item => item.classList.remove('clicked'));
             newDiv.classList.toggle('clicked');
-            driverStatTitle.value = newDiv.dataset.name
+            driverStatTitle.innerText = newDiv.dataset.name
             load_stats(newDiv)
             if (statPanelShown == 0) {
                 document.getElementById("editStatsPanel").className = "left-panel-stats"
@@ -713,7 +713,7 @@ function load_stats(div) {
     let numberButton = document.querySelector("#numberButton")
     let numberWC = document.querySelector("#driverNumber1")
     let codeInput = document.querySelector("#driverCode")
-    codeInput.value = div.dataset.driverCode
+    codeInput.innerText = div.dataset.driverCode
     oldNum = div.dataset.number
     actualAge.innerText = "Age " + div.dataset.age
     retirementAge.innerText = "Ret " + div.dataset.retirement

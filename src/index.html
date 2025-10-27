@@ -2246,13 +2246,26 @@
             <div class="main-editStats-section main-resizable">
               <div class="left-panel-stats d-none" id="editStatsPanel">
                 <div class="upper-section-stats">
-                  <div class="name-age-and-retired">
-                    <div class="stats-title bold-font">
-                      <i class="bi bi-pencil"></i>
-                      <input type="text" class="old-custom-input-number" id="driverStatsTitle">
-                      <div class="separator-3"></div>
-                      <input type="text" class="old-custom-input-number" id="driverCode">
+                  <div class="name-and-info">
+                    <div class="name-and-code">
+                      <span class="name-editor bold-font" id="driverStatsTitle"></span>
+                      <div class="custom-separator"></div>
+                      <span class="code-editor bold-font" id="driverCode"></span>
+                      <i class="bi bi-pencil-fill"></i>
                     </div>
+                    <div class="flag-and-team">
+                      <div class="image-and-text">
+                        <img src="../assets/images/australia.png" class="driver-info-driver-flag" id="driverFlag">
+                        <span class="info-text">Placeholder</span>
+                      </div>
+                      <div class="image-and-text">
+                        <img src="../assets/images/mclaren.png" class="driver-info-team-logo" id="driverTeamLogo">
+                        <span class="info-text" id="driverTeamName">Placeholder 2</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="stats-header-separator"></div>
+                  <div class="name-age-and-retired">
                     <div class="age-holder bold-font">
                       <div class="age">
                         <div class="actual-age age-ret" data-text="Age">Age 56</div>

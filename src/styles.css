@@ -36,6 +36,7 @@
   --toast-background: #5a5b5c;
   --console-transparent: #42424299;
   --separator: #4a4a4a;
+  --separator-light: #4f4f4f;
   --frozen: #77e2f0;
   --extra-hard: #edf037;
   --brutal: #f0c537;
@@ -74,8 +75,14 @@
   --slight-contrast: #797599;
   --white-general: #f3f3f3;
   --gold-gradient-text: #f3f3f3;
+
+
   --text-general: #dedde6;
   --text-general-transparent: #e9e8f0be;
+
+  --text-secondary: #cecece;
+  --text-tertiary: #9a99a8;
+  
   --negative-general: #e95656;
   --negative-general-clicked: #cf2626;
   --positive-general: #5bd999;
@@ -1374,19 +1381,87 @@ body.og-theme .dropdown-menu a:hover {
   color: var(--text-general);
 }
 
+.upper-section-stats {
+  display: flex;
+  padding-right: 16px;
+  background: var(--elements);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  box-shadow: var(--shadow-s);
+  align-items: center;
+  padding: 18px 25px;
+  height: 116px;
+  gap: 20px;
+}
+
+
+.name-and-info{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: calc(40% - 20px)
+}
+
+.stats-header-separator{
+  width: 3px;
+  background-color: var(--separator-light);
+  height: 100%;
+}
+
+.name-and-code{
+  display: flex;
+  flex-direction: row;
+  height: 36px;
+  align-items: center;
+  gap: 30px;
+}
+
+.custom-separator{
+  width: 3px;
+  background-color: var(--separator-light);
+  height: 85%;
+}
+
+.flag-and-team{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.image-and-text{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+.driver-info-driver-flag{
+  width: 52px;
+  height: auto;
+  border-radius: 5px;
+}
+
+.driver-info-team-logo{
+  width: 40px;
+  height: auto;
+  border-radius: 5px;
+}
+
+.info-text{
+  color: var(--disabled-text);
+  font-size: 20px;
+}
+
 #driverStatsTitle {
-  max-width: none;
-  max-width: none;
-  text-align: left;
-  font-size: 24px;
-  width: 70%;
+  font-size: 26px;
+  min-width: max-content;
 }
 
 #driverCode {
-  font-size: 24px;
-  text-align: left;
-  max-width: none;
-  width: 30%;
+  font-size: 26px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
 }
 
 
@@ -1706,12 +1781,7 @@ body.og-theme .dropdown-menu a:hover {
   display: flex;
 }
 
-.upper-section-stats {
-  display: flex;
-  justify-content: space-between;
-  padding-right: 16px;
-  min-height: 71px;
-}
+
 
 .name-age-and-retired {
   display: flex;
