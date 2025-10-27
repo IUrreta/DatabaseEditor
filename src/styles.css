@@ -15,7 +15,7 @@
   --disabled-text: #7a7a7a;
   --modal-text: #777777;
   --negative-text: #292929;
-  --new-primary: #c89efc;
+  --new-primary: #c89efc; /* C37CF9 alternative*/
   --new-primary-dark: #ba82ff;
   --new-primary-transparent: #c89efc99;
   --text-selected: #e7d3ff;
@@ -80,8 +80,8 @@
   --text-general: #dedde6;
   --text-general-transparent: #e9e8f0be;
 
-  --text-secondary: #cecece;
-  --text-tertiary: #9a99a8;
+  --text-secondary: #a8a8a8;
+  --text-tertiary: #777777;
   
   --negative-general: #e95656;
   --negative-general-clicked: #cf2626;
@@ -1132,21 +1132,26 @@ input[role="switch"]:focus {
   box-shadow: none;
 }
 
+input[role="switch"]:not(:checked) {
+  --bs-form-switch-bg: url('../assets/images/thumb-disabled.svg') !important;
+}
+
+
 input[role="switch"]:not(:checked):focus {
-  --bs-form-switch-bg: url('../assets/images/thumb.svg');
+  --bs-form-switch-bg: url('../assets/images/thumb-disabled.svg') !important;
 }
 
 input[role="switch"]:checked {
-  background-color: var(--new-primary-dark);
+  --bs-form-switch-bg: url('../assets/images/thumb.svg') !important;
+  border: 2px solid var(--new-primary) !important;
 }
 
-body.light-theme input[role="switch"]:not(:checked) {
-  background-color: #bebdc5;
+input[role="switch"] {
+  background-color: transparent !important;
+  transition: border-color 0.15s;
+  border: 2px solid var(--text-general) !important;
 }
 
-body:not(.light-theme) input[role="switch"]:not(:checked) {
-  background-color: #eeedf1;
-}
 
 input[type="checkbox"] {
   border: none;
@@ -1156,13 +1161,6 @@ input[type="checkbox"]:focus {
   box-shadow: none;
 }
 
-input[type="checkbox"]:checked {
-  background-color: var(--new-primary-dark);
-}
-
-body.og-theme input[type="checkbox"]:checked {
-  background-color: var(--new-secondary);
-}
 
 
 .main-team-changes {
@@ -1398,12 +1396,13 @@ body.og-theme .dropdown-menu a:hover {
 .name-and-info{
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  width: calc(40% - 20px)
+  gap: 10px;
+  flex-grow: 1;
+  max-width: calc(40% - 20px)
 }
 
 .stats-header-separator{
-  width: 3px;
+  width: 2px;
   background-color: var(--separator-light);
   height: 100%;
 }
@@ -1417,7 +1416,7 @@ body.og-theme .dropdown-menu a:hover {
 }
 
 .custom-separator{
-  width: 3px;
+  width: 2px;
   background-color: var(--separator-light);
   height: 85%;
 }
@@ -1443,7 +1442,7 @@ body.og-theme .dropdown-menu a:hover {
 }
 
 .driver-info-team-logo{
-  width: 40px;
+  width: 34px;
   height: auto;
   border-radius: 5px;
 }
@@ -1465,18 +1464,6 @@ body.og-theme .dropdown-menu a:hover {
 }
 
 
-.stats-title {
-  text-align: left;
-  color: var(--white-general);
-  font-size: 26px;
-  display: flex;
-  gap: 10px;
-  padding-left: 14px;
-  position: relative;
-  align-items: center;
-  width: 33%;
-}
-
 .api-key-section .separator{
   height: 20px;
 }
@@ -1487,16 +1474,36 @@ body.og-theme .dropdown-menu a:hover {
   height: calc(100% - 22px);
 }
 
-.stats-title .bi-pencil {
-  color: var(--dark-text);
+.title-and-details{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.title-and-details.special-overall{
+  align-items: center;
+}
+
+.stats-title{
+  font-size: 17px;
+  color: var(--text-secondary);
 }
 
 .age-holder {
-  color: var(--dark-text);
   display: flex;
-  gap: 25px;
-  font-size: 26px;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.age-title{
+  color: var(--text-general);
+}
+
+.age-text{
+  color: var(--text-secondary);
+  margin-left: 20px;
 }
 
 .text-filter {
@@ -1771,8 +1778,38 @@ body.og-theme .dropdown-menu a:hover {
 .age-buttons {
   font-size: 18px;
   display: flex;
+  flex-direction: row;
+  margin-top: 4px;
+}
+
+.number-selector-and-number-1{
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
+}
+
+.number-selector{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+.number-holder{
+  font-size: 20px;
+  color: var(--text-general);
+}
+
+.wc-number{
+  display: flex;
   flex-direction: column;
-  margin-top: 3px;
+}
+
+.number-buttons{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .retirement-buttons i,
@@ -7839,7 +7876,12 @@ input.disabled {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding-left: 15px !important;
+  padding-left: 0px !important;
+  margin-bottom: 0px !important;
+}
+
+.super-license-holder .form-check{
+  margin-bottom: 0px !important;
 }
 
 .name-and-stat {

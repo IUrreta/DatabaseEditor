@@ -2265,23 +2265,50 @@
                     </div>
                   </div>
                   <div class="stats-header-separator"></div>
-                  <div class="name-age-and-retired">
-                    <div class="age-holder bold-font">
+                  <div class="title-and-details">
+                    <div class="stats-title">Details</div>
+                    <div class="age-holder">
                       <div class="age">
-                        <div class="actual-age age-ret" data-text="Age">Age 56</div>
+                        <div class="age-ret age-title bold-font" data-text="Age">Age</div>
+                        <span class="age-text actual-age">25 years old</span>
                         <div class="age-buttons">
                           <i class="bi bi-plus-lg"></i>
                           <i class="bi bi-dash-lg"></i>
                         </div>
                       </div>
                       <div class="retirement-age">
-                        <div class="actual-retirement age-ret" data-text="Ret">Ret 56</div>
+                        <div class="age-ret age-title bold-font" data-text="Ret">Retirement</div>
+                        <span class="age-text actual-retirement">56 years old</span>
                         <div class="retirement-buttons">
                           <i class="bi bi-plus-lg"></i>
                           <i class="bi bi-dash-lg"></i>
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div class="stats-header-separator"></div>
+                  <div class="title-and-details">
+                    <div class="stats-title">Number</div>
+                    <div class="number-selector-and-number-1">
+                      <div class="number-selector">
+                        <span class="number-holder bold-font">81</span>
+                        <div class="number-buttons">
+                          <i class="bi bi-plus-lg"></i>
+                          <i class="bi bi-dash-lg"></i>
+                        </div>
+                      </div>
+                      <div class="wc-number">
+                        <div class="form-check form-switch">
+                          <span class="form-check-label" for="flexSwitchCheckDefault">1 if WC</span>
+                          <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                            id="driverNumber1">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="stats-header-separator"></div>
+                  <div class="title-and-details">
+                    <div class="stats-title">Availability</div>
                     <div class="super-license-holder form-check form-switch">
                       <div class="form-check form-switch" id="superLicenseSwitch">
                         <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="superLicense">
@@ -2294,14 +2321,11 @@
 
                     </div>
                   </div>
-                  <div class="ovrcombined">
+                  <div class="stats-header-separator"></div>
+                  <div class="title-and-details special-overall">
+                    <div class="stats-title">Overall</div>
                     <div class="overall-holder bold-font" id="ovrholder"></div>
-                    <div class="ovr bold-font">
-                      OVR
-                    </div>
-                    <span class="mentality-change-ovr"></span>
                   </div>
-
                 </div>
                 <div class="attirbutes-panel">
                   <div class="main-panel-space">
@@ -2816,11 +2840,7 @@
                                 <ul class="dropdown-menu" id="numberMenu" style="font-family: Formula1;">
                                 </ul>
                               </div>
-                              <div class="form-check ms-3 mt-2 form-switch">
-                                <input class="form-check-input custom-toggle" type="checkbox" role="switch"
-                                  id="driverNumber1">
-                                <span class="form-check-label" for="flexSwitchCheckDefault">1 if WC</span>
-                              </div>
+
                             </div>
                           </div>
                         </div>

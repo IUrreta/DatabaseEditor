@@ -393,11 +393,10 @@ document.querySelectorAll(".attirbutes-panel .bi-dash-lg").forEach(button => {
 document.querySelectorAll(".age-holder .bi-plus-lg").forEach(function (elem) {
     elem.addEventListener('mousedown', function (event) {
         let intervalId;
-        let input = event.target.parentNode.parentNode.querySelector(".age-ret");
+        let input = event.target.parentNode.parentNode.querySelector(".actual-age");
         function updateRetirement(increment) {
-            let age = parseInt(input.innerText.split(" ")[1]) + increment;
-
-            input.innerText = input.dataset.text + " " + age;
+            let age = parseInt(input.innerText.split(" ")[0]) + increment;
+            input.innerText = age + " years old";
         }
         updateRetirement(1);
         intervalId = setInterval(() => {
@@ -415,10 +414,10 @@ document.querySelectorAll(".age-holder .bi-plus-lg").forEach(function (elem) {
 document.querySelectorAll(".age-holder .bi-dash-lg").forEach(function (elem) {
     elem.addEventListener('mousedown', function (event) {
         let intervalId;
-        let input = event.target.parentNode.parentNode.querySelector(".age-ret");
+        let input = event.target.parentNode.parentNode.querySelector(".actual-retirement");
         function updateRetirement(increment) {
-            let age = parseInt(input.innerText.split(" ")[1]) + increment;
-            input.innerText = input.dataset.text + " " + age;
+            let age = parseInt(input.innerText.split(" ")[0]) + increment;
+            input.innerText = age + " years old";
         }
         updateRetirement(-1);
         intervalId = setInterval(() => {
@@ -715,8 +714,8 @@ function load_stats(div) {
     let codeInput = document.querySelector("#driverCode")
     codeInput.innerText = div.dataset.driverCode
     oldNum = div.dataset.number
-    actualAge.innerText = "Age " + div.dataset.age
-    retirementAge.innerText = "Ret " + div.dataset.retirement
+    actualAge.innerText = div.dataset.age + " years old"
+    retirementAge.innerText = div.dataset.retirement + " years old"
     numberButton.querySelector(".front-gradient").innerText = div.dataset.number
     if (div.dataset.numWC === "0") {
         numberWC.checked = false
