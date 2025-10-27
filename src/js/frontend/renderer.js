@@ -157,6 +157,11 @@ let calendarEditMode = "Start2024"
 
 export let selectedTheme = "default-theme";
 
+let newsAvailable = {
+    "normal": false,
+    "turning": false,
+}
+
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
 const parchModalTitle = document.getElementById("patchModalTitle")
@@ -718,7 +723,7 @@ const messageHandlers = {
         updateModBlocking(message)
     },
     "News fetched": (message) => {
-        place_news(message)
+        place_news(message, newsAvailable)
     },
     "Save selected finished": (message) => {
         generateNews();
@@ -730,7 +735,6 @@ const messageHandlers = {
 
 export async function generateNews() {
     let isValid = await isPatronSignatureValid();
-    isValid = isValid === "valid" ? true : false;
     const generateNews = checkGenerableNews(isValid);
     if (generateNews === "no") {
         return;
@@ -742,9 +746,12 @@ export async function generateNews() {
     const savedNews = localStorage.getItem(newsName) || "{}";
     const parsedNews = JSON.parse(savedNews);
 
+    const tpState = ensureTurningPointsStructure(saveName);
+
 
     const command = new Command("generateNews", {
         news: parsedNews,
+        tpState: tpState,
     });
     command.execute();
 
@@ -784,6 +791,56 @@ export async function generateNews() {
     startGeneralNewsProgress(progressDiv);
     newsView.appendChild(loaderDiv);
 }
+
+function ensureTurningPointsStructure(saveName) {
+    const baseName = saveName.split(".")[0];
+    const key = `${baseName}_tps`;
+
+    if (localStorage.getItem(key)){
+        let data = JSON.parse(localStorage.getItem(key));
+        return data;
+    }
+
+    const defaultStructure = {
+        checkedRaces: [],
+        ilegalRaces: [],
+        transfers: {
+            6: null,
+            7: null,
+            8: null
+        },
+        technicalDirectives:{
+            6: null,
+            9: null
+        },
+        investmentOpportunities:{
+            4: null,
+            5: null,
+            6: null,
+            7: null,
+            8: null,
+            9: null,
+            10: null,
+            11: null
+        },
+        raceSubstitutionOpportunities:{
+            4: null,
+            5: null,
+            6: null,
+            7: null,
+            8: null,
+            9: null,
+            10: null,
+            11: null
+        }
+    };
+
+    localStorage.setItem(key, JSON.stringify(defaultStructure));
+
+    return defaultStructure;
+}
+
+
 
 export function startGeneralNewsProgress(progressDiv) {
     let width = 0;
@@ -1857,17 +1914,17 @@ patreonInput.addEventListener('change', async (e) => {
         return;
     }
 
-    const { dateData, signature } = parsed;
-    if (!dateData || !signature) {
+    const { dataString, signature } = parsed;
+    if (!dataString || !signature) {
         alert('Error');
         return;
     }
 
-    const isValid = await verifySignature(dateData, signature, PUBLIC_KEY);
+    const isValid = await verifySignature(dataString, signature, PUBLIC_KEY);
     if (isValid) {
-        const dataObj = JSON.parse(dateData);
+        const dataObj = JSON.parse(dataString);
 
-        localStorage.setItem('patreonKey', JSON.stringify({ dateData, signature }));
+        localStorage.setItem('patreonKey', JSON.stringify({ dataString, signature }));
         checkPatreonStatus();
     } else {
         alert('Invalid file');
@@ -1876,40 +1933,59 @@ patreonInput.addEventListener('change', async (e) => {
 
 
 async function isPatronSignatureValid() {
-    const stored = localStorage.getItem('patreonKey');
-    if (!stored) return "missing"; // No hay clave guardada
+  const stored = localStorage.getItem('patreonKey');
+  if (!stored) return { status: "missing", role: null };
 
-    try {
-        const { dateData, signature } = JSON.parse(stored);
-        if (!dateData || !signature) return "invalid"; // Datos incompletos
+  try {
+    const { dataString, signature } = JSON.parse(stored);
+    if (!dataString || !signature) return { status: "invalid", role: null };
 
-        const valid = await verifySignature(dateData, signature, PUBLIC_KEY);
-        return valid ? "valid" : "invalid";
-    } catch (err) {
-        console.error("Error verificando firma:", err);
-        return "invalid"; // JSON corrupto o error en verificación
-    }
+    const valid = await verifySignature(dataString, signature, PUBLIC_KEY);
+    const role = valid ? JSON.parse(dataString).role : null;
+    return { status: valid ? "valid" : "invalid", role };
+  } catch (err) {
+    console.error("Error verificando firma:", err);
+    return { status: "invalid", role: null };
+  }
 }
 
 async function checkPatreonStatus() {
-const validSignature = await isPatronSignatureValid();
+    const validSignature = await isPatronSignatureValid();
     init_colors_dict(selectedTheme)
 
-    if (validSignature === "valid") {
+    if (validSignature.status === "valid") {
+        document.querySelector(".patreon-status").classList.remove("negative")
+        document.querySelector(".patreon-status").classList.add("positive");
         patreonUnlockables.classList.remove("d-none");
-        document.getElementById("patreonKeyText").textContent = "Patreon key loaded";
+        patreonThemes.classList.remove("d-none");
+        document.querySelector(".patreonCheck").classList.remove("d-none");
+        document.getElementById("patreonKeyText").textContent = validSignature.role.charAt(0).toUpperCase() + validSignature.role.slice(1);
+        document.querySelector(".patreonX").classList.add("d-none");
+        console.log("Patreon key valid");
         loadTheme();
     }
-    else if (validSignature === "invalid") {
+    else if (validSignature.status === "invalid") {
         //put the text saying that maybe the old key is invalid
+        document.querySelector(".patreon-status").classList.remove("positive")
+        document.querySelector(".patreon-status").classList.add("negative");
+        document.getElementById("patreonKeyText").textContent = "Invalid";
+        document.querySelector(".patreonCheck").classList.add("d-none");
+        document.querySelector(".patreonX").classList.remove("d-none");
         console.log("Patreon key invalid or expired");
+    }
+    else if (validSignature.status === "missing") {
+        document.querySelector(".patreon-status").classList.remove("positive")
+        document.querySelector(".patreon-status").classList.remove("negative");
+        document.getElementById("patreonKeyText").textContent = "Not set";
+        document.querySelector(".patreonCheck").classList.add("d-none");
+        document.querySelector(".patreonX").classList.add("d-none");
+        console.log("No patreon key found");
     }
     manageNewsStatus(validSignature);
 }
 
 function manageNewsStatus(valid) {
-    let valid2 = valid === "valid";
-    const generateNews = checkGenerableNews(valid2);
+    const generateNews = checkGenerableNews(valid);
     if (generateNews === "yes") {
         const extraApiKeySection = document.querySelector('#extraApiKeySection');
         if (extraApiKeySection) {
@@ -1952,23 +2028,22 @@ function manageNewsStatus(valid) {
                 }
             }
         }
-        else if (generateNews === "no") {
-            const newsGrid = document.querySelector('.news-grid');
-            const parent = newsGrid.parentNode;
-            newsGrid.remove();
-            const message = document.createElement('div');
-            message.className = 'modal-text important-text bold-font news-generation-ended';
-            message.innerHTML = `Your free news generation period has ended. Become a <a href="https://www.patreon.com/f1dbeditor" target="_blank">patreon member</a> to continue using this feature!`;
-            parent.appendChild(message);
-        }
     }
 
 }
 
 function checkGenerableNews(validSignature){
     let canGenerate = "no";
-    if(validSignature){
+    if(validSignature.status === "valid"){
         canGenerate = "yes";
+        if (validSignature.role === "insider"){
+            newsAvailable.normal = true;
+            newsAvailable.turning = true;
+        }
+        else{
+            newsAvailable.normal = true;
+            newsAvailable.turning = false;
+        }
     }
     else{
         const firstNewsEntered = localStorage.getItem('firstNewsEntered');
@@ -1982,7 +2057,15 @@ function checkGenerableNews(validSignature){
             const now = new Date();
             const diffTime = Math.abs(now - firstDate);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            canGenerate = diffDays < 8 ? "provisional" : "no";
+            canGenerate = diffDays < 8 ? "provisional" : "hiding";
+        }
+        if (canGenerate === "provisional") {
+            newsAvailable.normal = true;
+            newsAvailable.turning = false;
+        }
+        else if (canGenerate === "hiding") {
+            newsAvailable.normal = false;
+            newsAvailable.turning = false;
         }
     }
     return canGenerate;
@@ -1994,7 +2077,7 @@ async function checkOpenSlideUp() {
 
 
     const lastShownStr = localStorage.getItem('patreonModalLastShown');
-    if (!canShowPatreonModal(lastShownStr) || validSignature) {
+    if (!canShowPatreonModal(lastShownStr) || validSignature.status === "valid") {
         return;
     }
 
@@ -2361,3 +2444,65 @@ document.querySelectorAll(".team-logo-container").forEach(function (elem) {
         elem.classList.add("active")
     })
 });
+
+export async function confirmModal({
+  title,
+  body,
+  confirmText,
+  cancelText
+}) {
+  const modalEl = document.getElementById('confirmModal');
+  const bsModal  = new bootstrap.Modal(modalEl, { keyboard: false });
+
+  // Elementos
+  const confirmTitle = modalEl.querySelector('.modal-title');
+  const confirmBody  = modalEl.querySelector('.modal-body p');
+  const confirmBtn   = modalEl.querySelector('.confirm-modal');
+  const cancelBtn    = modalEl.querySelector('.close-modal');
+
+  if (confirmTitle) confirmTitle.textContent = title;
+  if (confirmBody)  confirmBody.textContent  = body;
+
+  if (confirmBtn) {
+    if (confirmText) {
+      confirmBtn.textContent = confirmText;
+      confirmBtn.classList.remove('d-none');
+    } else {
+      confirmBtn.classList.add('d-none');
+    }
+  }
+
+  if (cancelBtn) {
+    if (cancelText) {
+      cancelBtn.textContent = cancelText;
+      cancelBtn.classList.remove('d-none');
+    } else {
+      cancelBtn.classList.add('d-none');
+    }
+  }
+
+  return new Promise((resolve) => {
+    let clicked = false;
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    confirmBtn?.addEventListener('click', () => {
+      clicked = true;
+      resolve(true);
+      bsModal.hide();
+    }, { once: true, signal });
+
+    cancelBtn?.addEventListener('click', () => {
+      clicked = true;
+      resolve(false);
+      bsModal.hide();
+    }, { once: true, signal });
+
+    modalEl.addEventListener('hidden.bs.modal', () => {
+      if (!clicked) resolve(false);
+      controller.abort();
+    }, { once: true });
+
+    bsModal.show();
+  });
+}

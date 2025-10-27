@@ -1,21 +1,21 @@
 // calendar
 export let codes_dict = {
-    "bah0": "../assets/images/bahrain.png","sau0": "../assets/images/saudi.jpg","aus0": "../assets/images/australia.png","aze0": "../assets/images/azerbaiyan.png",
-    "mia0": "../assets/images/usa.png","imo0": "../assets/images/italy.png","mon0": "../assets/images/monaco.png","spa0": "../assets/images/spain.png","can0": "../assets/images/canada.png",
-    "aut0": "../assets/images/austria.png","gbr0": "../assets/images/gbr.png","hun0": "../assets/images/hungry.png","bel0": "../assets/images/balgium.png","ned0": "../assets/images/ned.png",
-    "ita0": "../assets/images/italy.png","jap0": "../assets/images/japan.png","sgp0": "../assets/images/singapore.png","qat0": "../assets/images/qatar.png","usa0": "../assets/images/usa.png","mex0": "../assets/images/mexico.png",
-    "bra0": "../assets/images/brazil.png","veg0": "../assets/images/usa.png","uae0": "../assets/images/uae.png", "chi0": "../assets/images/china.png"
+    "bah0": "../assets/images/bahrain.png", "sau0": "../assets/images/saudi.jpg", "aus0": "../assets/images/australia.png", "aze0": "../assets/images/azerbaiyan.png",
+    "mia0": "../assets/images/usa.png", "imo0": "../assets/images/italy.png", "mon0": "../assets/images/monaco.png", "spa0": "../assets/images/spain.png", "can0": "../assets/images/canada.png",
+    "aut0": "../assets/images/austria.png", "gbr0": "../assets/images/gbr.png", "hun0": "../assets/images/hungry.png", "bel0": "../assets/images/balgium.png", "ned0": "../assets/images/ned.png",
+    "ita0": "../assets/images/italy.png", "jap0": "../assets/images/japan.png", "sgp0": "../assets/images/singapore.png", "qat0": "../assets/images/qatar.png", "usa0": "../assets/images/usa.png", "mex0": "../assets/images/mexico.png",
+    "bra0": "../assets/images/brazil.png", "veg0": "../assets/images/usa.png", "uae0": "../assets/images/uae.png", "chi0": "../assets/images/china.png"
 }
 export let countries_dict = {
-    "bah0": "Bahrain","sau0": "Saudi Arabia","aus0": "Australia","aze0": "Azerbaijan",
-    "mia0": "Miami","imo0": "Imola","mon0": "Monaco","spa0": "Spain","can0": "Canada",
-    "aut0": "Austria","gbr0": "United Kingdom","hun0": "Hungary","bel0": "Belgium","ned0": "Netherlands",
-    "ita0": "Italy","sgp0": "Singapore","jap0": "Japan","qat0": "Qatar","usa0": "USA","mex0": "Mexico",
-    "bra0": "Brazil","veg0": "Vegas","uae0": "Abu Dhbai", "chi0": "China"
+    "bah0": "Bahrain", "sau0": "Saudi Arabia", "aus0": "Australia", "aze0": "Azerbaijan",
+    "mia0": "Miami", "imo0": "Imola", "mon0": "Monaco", "spa0": "Spain", "can0": "Canada",
+    "aut0": "Austria", "gbr0": "United Kingdom", "hun0": "Hungary", "bel0": "Belgium", "ned0": "Netherlands",
+    "ita0": "Italy", "sgp0": "Singapore", "jap0": "Japan", "qat0": "Qatar", "usa0": "USA", "mex0": "Mexico",
+    "bra0": "Brazil", "veg0": "Vegas", "uae0": "Abu Dhbai", "chi0": "China"
 };
 
 export let weather_dict = {
-    0: "bi bi-sun", 1:"bi bi-cloud-sun", 2: "bi bi-cloud", 3: "bi bi-cloud-drizzle", 4: "bi bi-cloud-rain", 5: "bi bi-cloud-rain-heavy"
+    0: "bi bi-sun", 1: "bi bi-cloud-sun", 2: "bi bi-cloud", 3: "bi bi-cloud-drizzle", 4: "bi bi-cloud-rain", 5: "bi bi-cloud-rain-heavy"
 }
 
 //h2h
@@ -69,19 +69,20 @@ export let combined_dict = {
     32: "Custom Team"
 }
 
-export function getUpdatedName(teamId){
+export function getUpdatedName(teamId) {
     return combined_dict[teamId]
 }
 
-export function getCombinedDict(){
+export function getCombinedDict() {
     return combined_dict
 }
 
 //performance
 export const pars_abreviations = { "chassis": "C", "front_wing": "FW", "rear_wing": "RW", "underfloor": "UF", "sidepods": "SP", "suspension": "S" }
 export const part_codes_abreviations = { 3: "C", 4: "FW", 5: "RW", 6: "UF", 7: "SP", 8: "S" }
+export const part_full_names = { 3: "Chassis", 4: "Front Wing", 5: "Rear Wing", 6: "Underfloor", 7: "Sidepods", 8: "Suspension" }
 
-export  let abreviations_dict = {
+export let abreviations_dict = {
     1: "FE",
     2: "MC",
     3: "RB",
@@ -106,17 +107,17 @@ export let engine_stats_dict = new Map([
 ]);
 
 export const theme_colors = {
-    "default-theme" : {
+    "default-theme": {
         "labels": "#dedde6",
         "grid": "#292929",
         "general_secondary": "#f1f1f1",
     },
-    "light-theme" : {
+    "light-theme": {
         "labels": "#252525",
         "grid": "#d6d6d6",
         "general_secondary": "#1f1f1f",
     },
-    "og-theme" : {
+    "og-theme": {
         "labels": "#dedde6",
         "grid": "#323046",
         "general_secondary": "#f1f1f1",
@@ -162,6 +163,18 @@ export let driversTableLogosDict = {
 export const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0", 3: "chi0" };
 export const invertedRacesMap = { "bah0": 2, "aus0": 1, "sau0": 11, "imo0": 24, "mia0": 22, "spa0": 5, "mon0": 6, "aze0": 4, "can0": 7, "gbr0": 10, "aut0": 9, "fra0": 8, "hun0": 12, "bel0": 13, "ita0": 14, "sgp0": 15, "jap0": 17, "usa0": 19, "mex0": 18, "bra0": 20, "uae0": 21, "ned0": 23, "veg0": 25, "qat0": 26, "chi0": 3 };
 export const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT", 3: "CHI" };
+export const contintntRacesRegions = {
+    "Europe": [24, 5, 6, 10, 9, 8, 12, 13, 14, 23],
+    "Asia": [17, 3, 15, 1],
+    "America": [19, 20, 18, 25, 22], 
+    "Middle East": [2, 11, 21, 26, 4], 
+}
+export const continentDict = {
+    24: "Europe", 5: "Europe", 6: "Europe", 10: "Europe", 9: "Europe", 8: "Europe", 12: "Europe", 13: "Europe", 14: "Europe", 23: "Europe",
+    17: "Asia", 3: "Asia", 15: "Asia", 1: "Asia",
+    19: "America", 20: "America", 18: "America", 25: "America", 22: "America",
+    2: "Middle East", 11: "Middle East", 21: "Middle East", 26: "Middle East", 4: "Middle East"
+}
 export const teams_full_name_dict = { 'FERRARI': 1, 'MCLAREN': 2, 'RED BULL': 3, 'MERCEDES': 4, 'ALPINE': 5, 'WILLIAMS': 6, 'HAAS': 7, 'ALPHA TAURI': 8, 'ALFA ROMEO': 9, 'ASTON MARTIN': 10 }
 export let logos_disc = {
     1: '../assets/images/ferrari.png',
@@ -190,7 +203,7 @@ export let default_points = ["25", "18", "15", "12", "10", "8", "6", "4", "2", "
 export let typeStaff_dict = { 0: "fulldriverlist", 1: "fullTechnicalList", 2: "fullEngineerList", 3: "fullAeroList", 4: "fullDirectorList" }
 export let mentality_dict = { 0: "enthusiastic", 1: "positive", 2: "neutral", 3: "negative", 4: "demoralized" }
 export let teamOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
-export const mentality_bonuses = {0: 7, 1: 4, 2: 0, 3: -2, 4: -6}
+export const mentality_bonuses = { 0: 7, 1: 4, 2: 0, 3: -2, 4: -6 }
 export const mentalityModifiers = {
     5: -8,
     9: -7,
@@ -286,7 +299,7 @@ export function getParamMap(data) {
             team1: data.team1,
             team2: data.team2
         },
-        7:{
+        7: {
             driver1: data.driver1,
             team1: data.team1
         },
@@ -308,24 +321,50 @@ export function getParamMap(data) {
             driver1: data.driver1,
             team1: data.team1
         },
-        11:{
+        11: {
             team1: data.teamId,
         },
         12: {
             team1: data.teamId,
         },
-        13:{
+        13: {
             driver1: data.driver1,
             driver2: data.driver2,
             team: data.team
         },
-        14:{
+        14: {
             driver1: data.driver1,
             driver2: data.driver2
         },
-        15:{
+        15: {
             season_year: data.season,
             driver1: data.driver1,
+        },
+        100: {
+            component: data.component
+        },
+        101: {
+            team: data.team,
+            driver_out: data.driver_out?.name ?? "",
+            driver_in: data.driver_in?.name ?? ""
+        },
+        102: {
+            team: data.teamName,
+            country: data.country,
+            amount: data.investmentAmount,
+            share: data.investmentShare
+        },
+        103: {
+            team: data.team,
+            adjective: data.adjective,
+            component: data.component,
+            country: data.country,
+            circuit: data.circuit
+        },
+        105: {
+            original_race: data.originalCountry,
+            substitute_race: data.substituteCountry,
+            reason: data.reason
         }
     };
 }
@@ -372,7 +411,7 @@ export const difficultyConfig = {
         designTimeDif: { className: "dif-warning unfair", text: "Design times reduced 11%" },
     },
     "insane": {
-        visible: ["lightDif", "researchDif", "statDif", "designTimeDif",  "buildDif"],
+        visible: ["lightDif", "researchDif", "statDif", "designTimeDif", "buildDif"],
         lightDif: { className: "dif-warning extra-hard", text: "Lightweight parts" },
         researchDif: { className: "dif-warning insane", text: "Huge research boost" },
         statDif: { className: "dif-warning insane", text: "Stats boost +2%" },
@@ -380,7 +419,7 @@ export const difficultyConfig = {
         buildDif: { className: "dif-warning insane", text: "+1 part when design completed" },
     },
     "impossible": {
-        visible: ["lightDif", "researchDif", "statDif", "designTimeDif",  "buildDif"],
+        visible: ["lightDif", "researchDif", "statDif", "designTimeDif", "buildDif"],
         lightDif: { className: "dif-warning impossible", text: "ULTRA-lightweight parts" },
         researchDif: { className: "dif-warning impossible", text: "Massive research boost" },
         statDif: { className: "dif-warning impossible", text: "Stats boost +3%" },

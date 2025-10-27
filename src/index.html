@@ -675,18 +675,13 @@
                 exclusive features and remove the pop-ups!
               </span>
             </div>
-            <div class="upload-key-and-patreon-button">
-              <a href="https://www.patreon.com/f1dbeditor" target="_blank">
-                <div class="patreon-button">
-                  <div class="patreon-button-logo"></div>
-                  <span class="patreon-button-text bold-font">PATREON PAGE</span>
-                </div>
-              </a>
-              <div>
-                <button class="custom-dropdown custom-button" id="patreonKeyButton">
-                  <div class="front-gradient" id="patreonKeyText">Upload patreon key</div>
-                </button>
-                <div class="dropdown-line"></div>
+            <div class="api-input-and-status" id="patreonKeyGeneral">
+              <button type="button" class="confirm-modal" id="patreonKeyButton"><i class="bi bi-cloud-arrow-up"></i>
+                Upload patreon key</button>
+              <div class="saved-status api-loaded patreon-status" id="patreonKeyStatus">
+                <i class="bi bi-check patreonCheck"></i>
+                <i class="bi bi-x d-none patreonX"></i>
+                <span class="bold-font" id="patreonKeyText">Valid</span>
               </div>
             </div>
             <div class="patreon-unlockables  d-none">
@@ -759,17 +754,8 @@
 
         </div>
         <div class="modal-footer custom-footer">
-          <div class="pos-relative">
-            <button type="button" class="btn btn-secondary custom-delete" data-bs-dismiss="modal"
-              id="cancelDetailsButton">Close</button>
-            <div class="dropdown-line"></div>
-          </div>
-          <div class="pos-relative">
-            <button type="button" class="btn btn-primary custom-confirm" data-bs-dismiss="modal"
-              id="configDetailsButton">Save</button>
-            <div class="dropdown-line"></div>
-          </div>
-
+          <button type="button" class="close-modal" data-bs-dismiss="modal" id="cancelDetailsButton">Close</button>
+          <button type="button" class="confirm-modal" id="configDetailsButton" data-bs-dismiss="modal">Save</button>
         </div>
       </div>
     </div>
@@ -1074,61 +1060,46 @@
       </div>
     </div>
   </div>
-  <div class="modal custom-modal fade" id="predictModal" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-dialog-med modal-dialog-centered" role="document">
+  <div class="modal custom-modal fade" id="newsModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-lg modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
         <div class="modal-header custom-header">
-          <h3 class="modal-title bold-font" id="predictModalTitle">Configure prediction</h3>
-        </div>
-        <div class="modal-body custom-body" id="predictModalBody">
-          <div class="modal-subtitle bold-font">Important information</div>
-          <div class="predict-warning">
-            When you click on “Confirm”, the tool will start running dozens of simulations for each race in the
-            championship from the one selected in the dropdown button.
-            This means that the earlier the selected race is in the championship, the more races it will have to
-            simulate until the end of the championship, and the prediction will take longer.
-            Depending on your system, the simulation may take more time.
+          <h3 class="modal-title bold-font" id="newsModalTitle">Example news</h3>
+          <div class="news-article-date">
+            <i class="bi bi-calendar-event"></i>
+            <span class="dateSpan"></span>
           </div>
-          <div class="modal-subtitle bold-font pt-3">Predict championship from</div>
-          <div class="year-and-race">
-            <div class="pos-relative">
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                id="yearPredictionModalButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Year
-              </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="yearPredictionModalMenu" style="font-family: Formula1;">
-              </ul>
-            </div>
-            <div class="pos-relative">
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                id="raceProbButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Race
-              </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="raceProbMenu" style="font-family: Formula1;">
-              </ul>
-            </div>
+          <img src="" alt="" class="news-image-background">
+        </div>
+        <div class="modal-body custom-body" id="newsModalBody">
+          <div class="news-article">
+
           </div>
         </div>
-        <div class="modal-footer custom-footer predict-footer">
-          <div class="bar-and-indicator">
-            <div class="progress custom-bar">
-              <div class="progress-bar progress-bar-striped progress-bar-animated" id="predictBar" role="progressbar"
-                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <div class="indicator bold-font">0%</div>
-          </div>
+        <div class="modal-footer custom-footer">
           <div class="d-flex">
             <div class="pos-relative">
-              <button type="button" class="btn btn-secondary custom-delete bold-font" id="cancelPredict"
-                data-bs-dismiss="modal">Close</button>
-              <div class="dropdown-line"></div>
+              <button type="button" class="close-modal" data-bs-dismiss="modal" id="closeNewsArticle">Close</button>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="confirmModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-sm modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font" id="confirmModalTitle">Confirm Action</h3>
+        </div>
+        <div class="modal-body custom-body" id="confirmModalBody">
+          <p>Are you sure you want to proceed with this action?</p>
+        </div>
+        <div class="modal-footer custom-footer">
+          <div class="d-flex">
             <div class="pos-relative">
-              <button type="button" class="btn btn-primary custom-confirm bold-font" id="confirmPredict"
-                disabled>Confirm</button>
-              <div class="dropdown-line"></div>
+              <button type="button" class="close-modal" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="confirm-modal" id="confirmActionButton">Confirm</button>
             </div>
           </div>
         </div>
@@ -1779,7 +1750,8 @@
               </button>
               <div class="dropdown-line"></div>
               <ul class="dropdown-menu" id="recordsTypeDropdown" style="font-family: Formula1;">
-                <a class="dropdown-item" style="cursor: pointer;" id="standingspill" data-value="standings">Standings</a>
+                <a class="dropdown-item" style="cursor: pointer;" id="standingspill"
+                  data-value="standings">Standings</a>
                 <a class="dropdown-item" style="cursor: pointer;" id="winspill" data-value="wins">Wins</a>
                 <a class="dropdown-item" style="cursor: pointer;" id="polespill" data-value="poles">Poles</a>
                 <a class="dropdown-item" style="cursor: pointer;" id="podiumspill" data-value="podiums">Podiums</a>
@@ -1816,7 +1788,7 @@
             <div class="teams-table-data"></div>
           </div>
           <div class="records-list">
-            
+
           </div>
         </div>
 
@@ -1884,7 +1856,7 @@
               </div>
               <div id="free-drivers">
               </div>
-              <div class="d-none" id="free-staff"></div>
+              <div class="d-none main-columns-drag-section" id="free-staff"></div>
             </div>
           </div>
           <div class="col-10">

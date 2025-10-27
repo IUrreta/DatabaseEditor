@@ -17,7 +17,7 @@ import { editAge, editMarketability, editName, editRetirement, editSuperlicense,
 import { editCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
-import { generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails, getFullChampionSeasonDetails } from "./scriptUtils/newsUtils";
+import { generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails, getFullChampionSeasonDetails, generateTurningResponse } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
@@ -51,13 +51,13 @@ const workerCommands = {
     const metadata = getMetadata();
 
     const result = repack(db, metadata);
-    
+
     postMessage({ responseMessage: "Database exported", content: result });
   },
 
   yearSelected: (data, postMessage) => {
     const year = data.year
-    const isCurrentYear = data.isCurrentYear
+    const isCurrentYear = data.isCurrentYear || true;
     console.log("IIS CURRENT YER:", isCurrentYear)
     const results = fetchSeasonResults(year, isCurrentYear);
     const events = fetchEventsFrom(year);
@@ -71,7 +71,7 @@ const workerCommands = {
   },
 
   saveSelected: (data, postMessage) => {
-    
+
     const yearData = checkYearSave();
     postMessage({ responseMessage: "Game Year", content: yearData });
 
@@ -84,10 +84,10 @@ const workerCommands = {
       setGlobals({ createTeam: false });
     }
 
-    setGlobals({year: yearData[0]});
+    setGlobals({ year: yearData[0] });
 
     const date = getDate();
-    setGlobals({date: date});
+    setGlobals({ date: date });
 
     const drivers = fetchDrivers(yearData[0]);
     postMessage({ responseMessage: "Save loaded succesfully", content: drivers, noti_msg: "Save loaded succesfully" });
@@ -127,7 +127,7 @@ const workerCommands = {
     postMessage({ responseMessage: "Mod compatibility", content: modCompatibility });
 
     const wasError = fixes_mod();
-    if (wasError){
+    if (wasError) {
       postMessage({ responseMessage: "Mod fixes", content: "", noti_msg: "An error in the 2025 DLC has been automatically fixed", unlocksDownload: true });
     }
 
@@ -168,10 +168,12 @@ const workerCommands = {
   },
   customEngines: (data, postMessage) => {
     updateCustomEngines(data.enginesData);
-    postMessage({ responseMessage: "Custom engines updated",
-                  noti_msg: "Succesfully updated the custom engines", 
-                  isEditCommand: true, 
-                  unlocksDownload: true });
+    postMessage({
+      responseMessage: "Custom engines updated",
+      noti_msg: "Succesfully updated the custom engines",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
     const engines = fetchEngines();
     postMessage({ responseMessage: "Engines fetched", content: engines });
   },
@@ -204,10 +206,12 @@ const workerCommands = {
   },
   editTeam: (data, postMessage) => {
     editTeam(data);
-    postMessage({ responseMessage: "Team updated", 
-                  noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s details`, 
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Team updated",
+      noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s details`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   editStats: (data, postMessage) => {
     const globals = getGlobals();
@@ -231,10 +235,12 @@ const workerCommands = {
       editCode(data.driverID, data.newCode);
     }
 
-    postMessage({ responseMessage: "Stats updated", 
-                  noti_msg: `Succesfully edited ${data.driver}'s stats`, 
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Stats updated",
+      noti_msg: `Succesfully edited ${data.driver}'s stats`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   editPerformance: (data, postMessage) => {
     let globals = getGlobals();
@@ -255,18 +261,22 @@ const workerCommands = {
 
     const carPerformance = getPerformanceAllCars(yearData[2]);
     const carAttributes = getAttributesAllCars(yearData[2]);
-    const carPerformanceResponse = {  responseMessage: "Cars fetched", 
-                                      content: [carPerformance, carAttributes], 
-                                      isEditCommand: true,
-                                      unlocksDownload: true  };
+    const carPerformanceResponse = {
+      responseMessage: "Cars fetched",
+      content: [carPerformance, carAttributes],
+      isEditCommand: true,
+      unlocksDownload: true
+    };
     postMessage(carPerformanceResponse);
   },
   editEngine: (data, postMessage) => {
     editEngines(data.engines)
-    postMessage({ responseMessage: "Engines updated", 
-                  noti_msg: "Succesfully edited all engines performance", 
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Engines updated",
+      noti_msg: "Succesfully edited all engines performance",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   editContract: (data, postMessage) => {
     const year = getGlobals().yearIteration;
@@ -277,125 +287,165 @@ const workerCommands = {
     futureContract(data.futureTeam, data.driverID, data.futureSalary, data.futureYear,
       data.futureSignBonus, data.futureRaceBonus, data.futureRaceBonusPos, data.futurePosition, year);
 
-    postMessage({ responseMessage: "Contract updated", 
-                  noti_msg: `Succesfully edited ${data.driver}'s contract`, 
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Contract updated",
+      noti_msg: `Succesfully edited ${data.driver}'s contract`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   editCalendar: (data, postMessage) => {
     const year = getGlobals().yearIteration;
     editCalendar(data.calendarCodes, year, data.racesData);
-    postMessage({ responseMessage: "Calendar updated", 
-                  noti_msg: "Succesfully updated the calendar", 
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Calendar updated",
+      noti_msg: "Succesfully updated the calendar",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   configUpdate: (data, postMessage) => {
     updateCustomConfig(data);
-    postMessage({ responseMessage: "Config updated", 
-                  noti_msg: "Succesfully updated the configuration",
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Config updated",
+      noti_msg: "Succesfully updated the configuration",
+      unlocksDownload: true
+    });
   },
   fireDriver: (data, postMessage) => {
     fireDriver(data.driverID, data.teamID);
-    postMessage({ responseMessage: "Driver fired", 
-                  noti_msg: `Succesfully fired ${data.driver} from ${data.team}`, 
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Driver fired",
+      noti_msg: `Succesfully fired ${data.driver} from ${data.team}`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   hireDriver: (data, postMessage) => {
     hireDriver("hire", data.driverID, data.teamID, data.position, data.salary, data.signBonus, data.raceBonus, data.raceBonusPos, data.year, getGlobals().yearIteration);
-    postMessage({ responseMessage: "Driver hired", 
-                  noti_msg: `Succesfully hired ${data.driver} to ${data.team}`, 
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Driver hired",
+      noti_msg: `Succesfully hired ${data.driver} to ${data.team}`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   autoContract: (data, postMessage) => {
     hireDriver("auto", data.driverID, data.teamID, data.position, getGlobals().yearIteration);
-    postMessage({ responseMessage: "Driver hired", 
-                  noti_msg: `Succesfully hired ${data.driver} to ${data.team}`, 
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Driver hired",
+      noti_msg: `Succesfully hired ${data.driver} to ${data.team}`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   swapDrivers: (data, postMessage) => {
     swapDrivers(data.driver1ID, data.driver2ID);
-    postMessage({ responseMessage: "Drivers swapped", 
-                  noti_msg: `Succesfully swapped ${data.driver1} and ${data.driver2}`, 
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Drivers swapped",
+      noti_msg: `Succesfully swapped ${data.driver1} and ${data.driver2}`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   timeTravel: (data, postMessage) => {
     timeTravelWithData(data.dayNumber, true);
     // manageStandings();
-    postMessage({ responseMessage: "Time travel",
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Time travel",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   changeLineUps: (data, postMessage) => {
     changeDriverLineUps();
     manageAffiliates();
     manageFeederSeries();
     changeDriverEngineerPairs();
-    postMessage({ responseMessage: "Line ups changed",
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Line ups changed",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
 
     const yearData = checkYearSave();
 
     const drivers = fetchDrivers(yearData[0]);
-    postMessage({ responseMessage: "Drivers fetched", content: drivers});
+    postMessage({ responseMessage: "Drivers fetched", content: drivers });
 
     const staff = fetchStaff(yearData[0]);
     postMessage({ responseMessage: "Staff fetched", content: staff });
   },
+  driversRefresh: (data, postMessage) => {
+    const yearData = checkYearSave();
+
+    const drivers = fetchDrivers(yearData[0]);
+    postMessage({ responseMessage: "Drivers fetched", content: drivers });
+  },
+  calendarRefresh: (data, postMessage) => {
+    const calendar = fetchCalendar();
+    postMessage({ responseMessage: "Calendar fetched", content: calendar });
+  },
   changeStats: (data, postMessage) => {
     changeStats();
-    postMessage({ responseMessage: "Stats changed",
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Stats changed",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
 
-                  const yearData = checkYearSave();
+    const yearData = checkYearSave();
 
     const staff = fetchStaff(yearData[0]);
     postMessage({ responseMessage: "Staff fetched", content: staff });
   },
   changeCfd: (data, postMessage) => {
     change2024Standings();
-    postMessage({ responseMessage: "CFD times changed",
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "CFD times changed",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   changeRegulations: (data, postMessage) => {
     removeFastestLap();
-    postMessage({ responseMessage: "Regulations changed",
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Regulations changed",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   changeCalendar: (data, postMessage) => {
     changeRaces(data.type);
-    postMessage({ responseMessage: "Calendar changed",
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Calendar changed",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
 
     const calendar = fetchCalendar();
     postMessage({ responseMessage: "Calendar fetched", content: calendar });
   },
   extraDrivers: (data, postMessage) => {
     insertStaff();
-    postMessage({ responseMessage: "Extra drivers added",
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Extra drivers added",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   changePerformance: (data, postMessage) => {
     updatePerofmrnace2025();
-    postMessage({ responseMessage: "Performance changed",
-                  isEditCommand: true,
-                  unlocksDownload: true  });
+    postMessage({
+      responseMessage: "Performance changed",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
 
     const yearData = checkYearSave();
 
     const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
-    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races]};
+    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races] };
     postMessage(performanceResponse);
 
     const attibutes = getAttributesAllTeams(yearData[2]);
@@ -404,21 +454,45 @@ const workerCommands = {
 
     const carPerformance = getPerformanceAllCars(yearData[2]);
     const carAttributes = getAttributesAllCars(yearData[2]);
-    const carPerformanceResponse = {  responseMessage: "Cars fetched", 
-                                      content: [carPerformance, carAttributes], 
-                                      isEditCommand: true,
-                                      unlocksDownload: true  };
+    const carPerformanceResponse = {
+      responseMessage: "Cars fetched",
+      content: [carPerformance, carAttributes],
+      isEditCommand: true,
+      unlocksDownload: true
+    };
+
+    postMessage(carPerformanceResponse);
+  },
+  performanceRefresh: (data, postMessage) => {
+    const yearData = checkYearSave();
+
+    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
+    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races] };
+    postMessage(performanceResponse);
+
+    const attibutes = getAttributesAllTeams(yearData[2]);
+    const attributesResponse = { responseMessage: "Performance fetched", content: [performance[performance.length - 1], attibutes] };
+    postMessage(attributesResponse);
+
+    const carPerformance = getPerformanceAllCars(yearData[2]);
+    const carAttributes = getAttributesAllCars(yearData[2]);
+    const carPerformanceResponse = {
+      responseMessage: "Cars fetched",
+      content: [carPerformance, carAttributes],
+      isEditCommand: true,
+      unlocksDownload: true
+    };
 
     postMessage(carPerformanceResponse);
   },
   generateNews: (data, postMessage) => {
-    const news = generate_news(data["news"]);
-    postMessage({ responseMessage: "News fetched", content: news });
+    const newsAndTurningPoints = generate_news(data["news"], data["tpState"]);
+    postMessage({ responseMessage: "News fetched", content: newsAndTurningPoints });
   },
   updateCombinedDict: (data, postMessage) => {
     const teamId = data.teamID;
     const newName = data.newName;
-    
+
     combined_dict[teamId] = newName;
     postMessage({ responseMessage: "Combined dict updated", content: combined_dict });
   },
@@ -463,6 +537,25 @@ const workerCommands = {
     const record = getSelectedRecord(type, year);
 
     postMessage({ responseMessage: "Record fetched", content: record });
+  },
+  approveTurningPoint: (data, postMessage) => {
+    const turningPointData = data.turningPointData;
+    const type = data.type;
+    const maxDate = data.maxDate;
+
+    const newResponse = generateTurningResponse(turningPointData, type, maxDate, "positive");
+
+
+    postMessage({ responseMessage: "Turning point positive", content: newResponse, isEditCommand: true, unlocksDownload: true });
+  },
+  cancelTurningPoint: (data, postMessage) => {
+    const turningPointData = data.turningPointData;
+    const type = data.type;
+    const maxDate = data.maxDate;
+
+    const newResponse = generateTurningResponse(turningPointData, type, maxDate, "negative");
+
+    postMessage({ responseMessage: "Turning point negative", content: newResponse, isEditCommand: true, unlocksDownload: true });
   }
 
 };
