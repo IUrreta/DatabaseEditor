@@ -1,4 +1,6 @@
-import { team_dict, mentalityModifiers, teamOrder, mentality_dict } from "./config";
+import { inverted_countries_abreviations } from "../backend/scriptUtils/countries";
+import { team_dict, mentalityModifiers, teamOrder, mentality_dict, combined_dict, logos_disc } from "./config";
+import { attachHold } from "./renderer";
 import { insert_space, manageColor, format_name } from "./transfers";
 
 
@@ -10,6 +12,13 @@ let oldNum;
 let editStatsItems = [];
 let timer;
 const clearIcon2 = document.querySelector("#filterContainer .bi-x");
+
+const plusBtn  = document.querySelector('.age-holder .bi-plus');
+const minusBtn = document.querySelector('.age-holder .bi-dash');
+const ageSpan  = document.querySelector('.age-holder .actual-age');
+const plusR  = document.querySelector('.retirement-age .bi-plus');
+const minusR = document.querySelector('.retirement-age .bi-dash');
+const inputR = document.querySelector('.retirement-age .actual-retirement');
 
 export function setStatPanelShown(value) {
     statPanelShown = value;
@@ -84,11 +93,7 @@ export function place_drivers_editStats(driversArray) {
         newDiv.dataset.driverCode = driver["driver_code"]
         newDiv.dataset.isRetired = driver[4]
         if (driver["nationality"] !== "") {
-            let country_code = driver["nationality"]
-            let flag = document.createElement("img")
-            flag.className = "name-flag"
-            flag.src = `https://flagsapi.com/${country_code}/flat/24.png`
-            nameDiv.appendChild(flag)
+            newDiv.dataset.nationality = driver["nationality"]
         }
         if (driver["mentality0"] >= 0) {
             newDiv.dataset.mentality0 = driver["mentality0"]
@@ -352,85 +357,19 @@ function updateStat(input, increment) {
 }
 
 
-document.querySelectorAll(".attirbutes-panel .bi-plus-lg").forEach(button => {
-    let intervalId;
-    button.addEventListener('mousedown', function () {
-        let input = this.parentNode.parentNode.querySelector("input");
-        updateStat(input, 1);
-        intervalId = setInterval(() => {
-            updateStat(input, 1);
-        }, 100);
-    });
-
-    button.addEventListener('mouseup', function () {
-        clearInterval(intervalId);
-    });
-
-    button.addEventListener('mouseleave', function () {
-        clearInterval(intervalId);
-    });
+document.querySelectorAll(".attirbutes-panel .bi-plus").forEach(button => {
+    attachHold(button, button.parentNode.parentNode.querySelector("input"), +1, { min: 0, max: 99 });
 });
 
-document.querySelectorAll(".attirbutes-panel .bi-dash-lg").forEach(button => {
-    let intervalId;
-    button.addEventListener('mousedown', function () {
-        let input = this.parentNode.parentNode.querySelector("input");
-        updateStat(input, -1);
-        intervalId = setInterval(() => {
-            updateStat(input, -1);
-        }, 100);
-    });
-
-    button.addEventListener('mouseup', function () {
-        clearInterval(intervalId);
-    });
-
-    button.addEventListener('mouseleave', function () {
-        clearInterval(intervalId);
-    });
+document.querySelectorAll(".attirbutes-panel .bi-dash").forEach(button => {
+    attachHold(button, button.parentNode.parentNode.querySelector("input"), -1, { min: 0, max: 99 });
 });
 
-document.querySelectorAll(".age-holder .bi-plus-lg").forEach(function (elem) {
-    elem.addEventListener('mousedown', function (event) {
-        let intervalId;
-        let input = event.target.parentNode.parentNode.querySelector(".actual-age");
-        function updateRetirement(increment) {
-            let age = parseInt(input.innerText.split(" ")[0]) + increment;
-            input.innerText = age + " years old";
-        }
-        updateRetirement(1);
-        intervalId = setInterval(() => {
-            updateRetirement(1);
-        }, 100);
-        this.addEventListener('mouseup', function () {
-            clearInterval(intervalId);
-        });
-        this.addEventListener('mouseleave', function () {
-            clearInterval(intervalId);
-        });
-    });
-});
+attachHold(plusBtn,  ageSpan,  +1, { min: 0, max: 100 });
+attachHold(minusBtn, ageSpan,  -1, { min: 0, max: 100 });
 
-document.querySelectorAll(".age-holder .bi-dash-lg").forEach(function (elem) {
-    elem.addEventListener('mousedown', function (event) {
-        let intervalId;
-        let input = event.target.parentNode.parentNode.querySelector(".actual-retirement");
-        function updateRetirement(increment) {
-            let age = parseInt(input.innerText.split(" ")[0]) + increment;
-            input.innerText = age + " years old";
-        }
-        updateRetirement(-1);
-        intervalId = setInterval(() => {
-            updateRetirement(-1);
-        }, 100);
-        this.addEventListener('mouseup', function () {
-            clearInterval(intervalId);
-        });
-        this.addEventListener('mouseleave', function () {
-            clearInterval(intervalId);
-        });
-    });
-});
+attachHold(plusR,  inputR, +1, { min: 30, max: 80 });
+attachHold(minusR, inputR, -1, { min: 30, max: 80 });
 
 document.querySelector("#nameFilter").addEventListener("input", function (event) {
     const val = event.target.value;
@@ -714,8 +653,8 @@ function load_stats(div) {
     let codeInput = document.querySelector("#driverCode")
     codeInput.innerText = div.dataset.driverCode
     oldNum = div.dataset.number
-    actualAge.innerText = div.dataset.age + " years old"
-    retirementAge.innerText = div.dataset.retirement + " years old"
+    actualAge.innerText = div.dataset.age
+    retirementAge.innerText = div.dataset.retirement
     numberButton.querySelector(".front-gradient").innerText = div.dataset.number
     if (div.dataset.numWC === "0") {
         numberWC.checked = false
@@ -770,6 +709,12 @@ function load_stats(div) {
     else {
         document.querySelector("#marketability").classList.add("d-none")
     }
+    if (div.dataset.nationality) {
+        document.querySelector(".driver-info-driver-flag").src = `https://flagsapi.com/${div.dataset.nationality}/flat/64.png`
+        document.querySelector(".flag-text").textContent = inverted_countries_abreviations[div.dataset.nationality] || div.dataset.nationality
+    }
+    document.querySelector(".driver-info-team-logo").src = logos_disc[div.dataset.teamid] || logos_disc[0]
+    document.querySelector(".team-text").textContent = combined_dict[div.dataset.teamid] || "Free Agent"
 }
 
 document.querySelectorAll(".bar-container .bi-chevron-right").forEach(function (elem) {

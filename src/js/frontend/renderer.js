@@ -2506,3 +2506,78 @@ export async function confirmModal({
     bsModal.show();
   });
 }
+
+export function attachHold(btn, el, step = 1, opts = {}) {
+  const min = opts.min ?? -Infinity;
+  const max = opts.max ?? Infinity;
+  const initialDelay = opts.initialDelay ?? 400;
+  // Tramos de aceleración: (tiempo_mantenido_ms, intervalo_ms)
+  const tiers = opts.tiers ?? [
+    [0,    250],  // lento
+    [750,  150],  // medio
+    [1500,  80],  // rápido
+    [3000,  40],  // muy rápido
+  ];
+
+  let timer, start;
+
+  const getNum = () => {
+    if (!el) return 0;
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      const v = parseFloat(el.value);
+      return Number.isFinite(v) ? v : 0;
+    }
+    const m = (el.innerText || '').match(/-?\d+(\.\d+)?/);
+    return m ? parseFloat(m[0]) : 0;
+  };
+
+  const setNum = (val) => {
+    val = Math.max(min, Math.min(max, val));
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.value = String(val);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    } else {
+      const txt = el.innerText || '';
+      el.innerText = /-?\d+(\.\d+)?/.test(txt) ? txt.replace(/-?\d+(\.\d+)?/, String(val)) : String(val);
+    }
+  };
+
+  const pickInterval = (heldMs) => {
+    let ms = tiers[0][1];
+    for (const [t, interval] of tiers) if (heldMs >= t) ms = interval; else break;
+    return ms;
+  };
+
+  const tick = () => setNum(getNum() + step);
+
+  const startLoop = () => {
+    start = performance.now();
+    tick(); // clic inmediato
+    const loop = () => {
+      const held = performance.now() - start;
+      timer = setTimeout(() => {
+        tick();
+        loop();
+      }, pickInterval(held));
+    };
+    timer = setTimeout(loop, initialDelay);
+  };
+
+  const stopLoop = () => {
+    clearTimeout(timer);
+    timer = null;
+  };
+
+  const downEv = 'onpointerdown' in window ? 'pointerdown' : 'mousedown';
+  const upEv   = 'onpointerup'   in window ? 'pointerup'   : 'mouseup';
+  const leaveEv= 'onpointerleave'in window ? 'pointerleave': 'mouseleave';
+  const cancelEv='pointercancel';
+
+  btn.addEventListener(downEv, (e) => {
+    e.preventDefault();
+    startLoop();
+  });
+  document.addEventListener(upEv, stopLoop, true);
+  document.addEventListener(cancelEv, stopLoop, true);
+  btn.addEventListener(leaveEv, stopLoop, true);
+}

@@ -7,6 +7,8 @@
   --superficials: #222222;
   --dropdown-back: #272727;
   --elements: #303030;
+  --augment-buttons-bg: #474747;
+  --augment-buttons-hover: #5a5a5a;
   --dropdown-hover: #363636;
   --table-default: #1b1b1b;
   --table-default-odd: #1e1e1e;
@@ -1425,20 +1427,24 @@ body.og-theme .dropdown-menu a:hover {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
+  height: 30px;
 }
 
 .image-and-text{
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
 }
 
+
 .driver-info-driver-flag{
-  width: 52px;
+  width: 44px;
   height: auto;
-  border-radius: 5px;
+  border-radius: 6px;
+  height: 24px;
+  object-fit: cover;
 }
 
 .driver-info-team-logo{
@@ -1447,9 +1453,16 @@ body.og-theme .dropdown-menu a:hover {
   border-radius: 5px;
 }
 
+.actual-age, .actual-retirement{
+  width: 30px;
+  text-align: center;
+  display: inline-block;
+}
+
 .info-text{
-  color: var(--disabled-text);
-  font-size: 20px;
+  color: var(--text-secondary);
+  font-size: 18px;
+  text-transform: capitalize;
 }
 
 #driverStatsTitle {
@@ -1503,7 +1516,7 @@ body.og-theme .dropdown-menu a:hover {
 
 .age-text{
   color: var(--text-secondary);
-  margin-left: 20px;
+  margin-left: 12px;
 }
 
 .text-filter {
@@ -1780,20 +1793,21 @@ body.og-theme .dropdown-menu a:hover {
   display: flex;
   flex-direction: row;
   margin-top: 4px;
+  gap: 5px;
+  margin-left: 5px;
 }
 
 .number-selector-and-number-1{
   display: flex;
-  flex-direction: row;
-  gap: 15px;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .number-selector{
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 5px;
+  gap: 9px;
 }
 
 .number-holder{
@@ -1804,20 +1818,45 @@ body.og-theme .dropdown-menu a:hover {
 .wc-number{
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
 }
 
 .number-buttons{
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 5px;
 }
 
-.retirement-buttons i,
-.age-buttons i {
-  height: 20px;
-  display: flex;
+.new-augment-button.transparent{
+  background-color: transparent;
 }
 
+.new-augment-button.transparent:hover{
+  background-color: var(--augment-buttons-bg);
+}
+
+.new-augment-button{
+  background-color: var(--augment-buttons-bg);
+  border-radius: 5px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.new-augment-button:hover{
+  background-color: var(--augment-buttons-hover);
+  color: var(--new-primary);
+}
+
+.new-augment-button:active{
+  transform: scale(0.95);
+  color: var(--new-primary);
+}
 
 
 .name-age-and-retired {
@@ -1856,9 +1895,13 @@ body.og-theme .dropdown-menu a:hover {
   gap: 5px;
 }
 
+.wc-number .custom-toggle{
+    margin-left: -20px;
+}
+
 
 .overall-holder {
-  font-size: 40px;
+  font-size: 34px;
 }
 
 .upper-panel {
@@ -4306,18 +4349,12 @@ body.light-theme .flag, body.light-theme .flag-header img{
   box-shadow: 0px 0px 10px 1px var(--box-shadow);
 }
 
-.one-statH2H i,
-.name-and-stat i,
-.retirement-buttons i,
-.age-buttons i {
+.one-statH2H i{
   cursor: pointer;
   transition: color 0.15s, transform 0.15s ease-in-out;
 }
 
-.one-statH2H i:hover,
-.name-and-stat i:hover,
-.retirement-buttons i:hover,
-.age-buttons i:hover {
+.one-statH2H i:hover{
   cursor: pointer;
   color: var(--text-selected);
   transform: scale(1.1);
@@ -7868,6 +7905,11 @@ input.disabled {
   max-height: 70px;
   flex-direction: column;
   box-shadow: var(--shadow-s);
+}
+
+.one-stat-panel .custom-input-number{
+  width: 36px;
+  padding: 0;
 }
 
 .super-license-holder {
