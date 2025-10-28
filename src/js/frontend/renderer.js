@@ -2510,57 +2510,137 @@ export async function confirmModal({
 export function attachHold(btn, el, step = 1, opts = {}) {
   const min = opts.min ?? -Infinity;
   const max = opts.max ?? Infinity;
+  const progressEl = opts.progressEl ?? null;
+  const values = Array.isArray(opts.values) && opts.values.length ? opts.values.slice() : null;
+  const loop = !!opts.loop;
+  const onChange = typeof opts.onChange === 'function' ? opts.onChange : () => {};
+
+  console.log("progessEl", progressEl);
+
   const initialDelay = opts.initialDelay ?? 400;
-  // Tramos de aceleración: (tiempo_mantenido_ms, intervalo_ms)
   const tiers = opts.tiers ?? [
-    [0,    250],  // lento
-    [750,  150],  // medio
-    [1500,  80],  // rápido
-    [3000,  40],  // muy rápido
+    [0,    250],
+    [750,  150],
+    [1500,  80],
+    [3000,  40],
   ];
 
   let timer, start;
 
-  const getNum = () => {
-    if (!el) return 0;
+  const getText = () => (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') ? (el.value ?? '') : (el.innerText ?? '');
+  const setText = (txt) => {
     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-      const v = parseFloat(el.value);
-      return Number.isFinite(v) ? v : 0;
+      el.value = String(txt);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    } else {
+      const current = el.innerText || '';
+      // si contiene un número, sustituimos solo el primero; si no, ponemos el texto entero
+      if (/-?\d+(\.\d+)?/.test(current) && typeof txt === 'number') {
+        el.innerText = current.replace(/-?\d+(\.\d+)?/, String(txt));
+      } else {
+        el.innerText = String(txt);
+      }
     }
-    const m = (el.innerText || '').match(/-?\d+(\.\d+)?/);
+  };
+
+  const getNum = () => {
+    if (values) return NaN; // no aplica
+    const raw = getText();
+    const m = String(raw).match(/-?\d+(\.\d+)?/);
     return m ? parseFloat(m[0]) : 0;
   };
 
   const setNum = (val) => {
-    val = Math.max(min, Math.min(max, val));
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-      el.value = String(val);
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-    } else {
-      const txt = el.innerText || '';
-      el.innerText = /-?\d+(\.\d+)?/.test(txt) ? txt.replace(/-?\d+(\.\d+)?/, String(val)) : String(val);
+    const clamped = Math.max(min, Math.min(max, val));
+    setText(clamped);
+    updateProgress(clamped);
+    onChange(clamped, currentPercent(clamped));
+  };
+
+  const findCurrentIndex = () => {
+    const raw = String(getText()).trim();
+    // intentamos match estricto; si values numéricos y en el el hay número suelto, los comparamos como string también
+    let idx = values.findIndex(v => String(v) === raw);
+    if (idx === -1) {
+      // si no coincide textual y hay número en el elemento y values son numéricos, intentamos por número
+      const numMatch = raw.match(/-?\d+(\.\d+)?/);
+      if (numMatch && values.every(v => !isNaN(parseFloat(v)))) {
+        const num = parseFloat(numMatch[0]);
+        idx = values.findIndex(v => Number(v) === num);
+      }
     }
+    return idx === -1 ? 0 : idx;
+  };
+
+  const setIndex = (i) => {
+    const len = values.length;
+    let next = i;
+    if (loop) {
+      next = ((i % len) + len) % len; // wrap-around
+    } else {
+      next = Math.max(0, Math.min(len - 1, i));
+    }
+    const val = values[next];
+    setText(val);
+    updateProgress(next, /*isIndex*/true);
+    onChange(val, currentPercent(val, /*isIndex*/true));
+    return next;
   };
 
   const pickInterval = (heldMs) => {
     let ms = tiers[0][1];
-    for (const [t, interval] of tiers) if (heldMs >= t) ms = interval; else break;
+    for (const [t, interval] of tiers) {
+      if (heldMs >= t) ms = interval; else break;
+    }
     return ms;
   };
 
-  const tick = () => setNum(getNum() + step);
+  const currentPercent = (valOrIdx, isIndex = false) => {
+    // si hay values => % por índice
+    if (values) {
+      const len = values.length;
+      if (len <= 1) return 100;
+      const idx = isIndex ? valOrIdx : values.findIndex(v => String(v) === String(valOrIdx));
+      const i = idx < 0 ? 0 : idx;
+      return Math.round((i / (len - 1)) * 100);
+    }
+    // numérico => % por min/max si finitos
+    if (isFinite(min) && isFinite(max) && max > min) {
+      const v = Number(valOrIdx);
+      const p = ((v - min) / (max - min)) * 100;
+      return Math.round(Math.max(0, Math.min(100, p)));
+    }
+    return 0; // sin rango definido no podemos mapear bien
+  };
+
+  const updateProgress = (valOrIdx, isIndex = false) => {
+    if (!progressEl) return;
+    const p = currentPercent(valOrIdx, isIndex);
+    progressEl.style.width = p + '%';
+    progressEl.ariaValueNow = String(p);
+  };
+
+  const tick = () => {
+    if (values) {
+      const cur = findCurrentIndex();
+      setIndex(cur + (step >= 0 ? +1 : -1));
+    } else {
+      const cur = getNum();
+      setNum(cur + step);
+    }
+  };
 
   const startLoop = () => {
     start = performance.now();
     tick(); // clic inmediato
-    const loop = () => {
+    const loopFn = () => {
       const held = performance.now() - start;
       timer = setTimeout(() => {
         tick();
-        loop();
+        loopFn();
       }, pickInterval(held));
     };
-    timer = setTimeout(loop, initialDelay);
+    timer = setTimeout(loopFn, initialDelay);
   };
 
   const stopLoop = () => {
@@ -2573,10 +2653,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
   const leaveEv= 'onpointerleave'in window ? 'pointerleave': 'mouseleave';
   const cancelEv='pointercancel';
 
-  btn.addEventListener(downEv, (e) => {
-    e.preventDefault();
-    startLoop();
-  });
+  btn.addEventListener(downEv, (e) => { e.preventDefault(); startLoop(); });
   document.addEventListener(upEv, stopLoop, true);
   document.addEventListener(cancelEv, stopLoop, true);
   btn.addEventListener(leaveEv, stopLoop, true);

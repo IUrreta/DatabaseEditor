@@ -358,11 +358,15 @@ function updateStat(input, increment) {
 
 
 document.querySelectorAll(".attirbutes-panel .bi-plus").forEach(button => {
-    attachHold(button, button.parentNode.parentNode.querySelector("input"), +1, { min: 0, max: 99 });
+    let bar = button.parentNode.parentNode.parentNode.querySelector(".one-stat-progress");
+    let statInput = button.parentNode.parentNode.querySelector("input");
+    attachHold(button, statInput, +1, { min: 0, max: 99, progressEl: bar });
 });
 
 document.querySelectorAll(".attirbutes-panel .bi-dash").forEach(button => {
-    attachHold(button, button.parentNode.parentNode.querySelector("input"), -1, { min: 0, max: 99 });
+    let bar = button.parentNode.parentNode.parentNode.querySelector(".one-stat-progress");
+    let statInput = button.parentNode.parentNode.querySelector("input");
+    attachHold(button, statInput, -1, { min: 0, max: 99, progressEl: bar });
 });
 
 attachHold(plusBtn,  ageSpan,  +1, { min: 0, max: 100 });
@@ -643,19 +647,20 @@ function load_stats(div) {
     let inputArray = document.querySelectorAll(".elegible")
     inputArray.forEach(function (input, index) {
         let value = statsArray[index]
+        let label = input.parentNode.parentNode.querySelector("span.bold-font")
         input.value = value
         manage_stat_bar(input, value)
     });
     let actualAge = document.querySelector(".actual-age")
     let retirementAge = document.querySelector(".actual-retirement")
-    let numberButton = document.querySelector("#numberButton")
+    let numberHolder = document.querySelector(".number-holder")
     let numberWC = document.querySelector("#driverNumber1")
     let codeInput = document.querySelector("#driverCode")
     codeInput.innerText = div.dataset.driverCode
     oldNum = div.dataset.number
     actualAge.innerText = div.dataset.age
     retirementAge.innerText = div.dataset.retirement
-    numberButton.querySelector(".front-gradient").innerText = div.dataset.number
+    numberHolder.innerText = div.dataset.number
     if (div.dataset.numWC === "0") {
         numberWC.checked = false
     }

@@ -2658,20 +2658,80 @@ body.og-theme .main-columns-drag-section, body.og-theme .main-editStats-section,
   box-shadow: var(--shadow-s)
 }
 
-.main-panel-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 0.34fr);
+.attributes-panel{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.attributes-column{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.stats-graph{
+  background: red;
+  width: 30%;
+  padding: 40px 25px;
+}
+
+.title-and-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 18px 25px;
+}
+
+.stats-and-graph{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
+}
+
+
+
+.attributes-title{
+  font-size: 20px;
+  color: var(--text-secondary);
+}
+
+.main-panel-stats, .other-attributes-stats {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+}
+
+.stats-row{
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
+}
+
+.stats-row-separator{
+  width: 2px;
+  background-color: var(--separator-light);
+  height: 63px;
+}
+
+.stats-row-separator-invisible{
+  width: 2px;
+  background-color: transparent;
+  height: 60px;
+  pointer-events: none;
+  opacity: 0;
 }
 
 .extra-atributes {
   display: grid;
   width: 100%;
   grid-template-columns: repeat(3, 0.34fr);
-}
-
-.attribute-and-preferences {
-  display: flex;
-  flex-direction: column;
+  gap: 10px 15px;
 }
 
 .bottom-panel {
@@ -2694,9 +2754,6 @@ body.og-theme .main-columns-drag-section, body.og-theme .main-editStats-section,
   background-color: var(--separator);
 }
 
-#specialStatsPanel {
-  width: 100%;
-}
 
 .categoryPills,
 .scriptPills,
@@ -7890,21 +7947,22 @@ input.disabled {
   box-shadow: var(--shadow-s);
 }
 
-.one-stat-panel {
-  background-color: var(--elements);
+.one-stat-panel, .one-stat-invisible {
   border-radius: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
-  margin: 10px;
   color: var(--text-general);
   transition: border-color 0.15s, background-color 0.15s;
   min-height: 70px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   max-height: 70px;
   flex-direction: column;
-  box-shadow: var(--shadow-s);
+  flex: 1 1 0;
+}
+
+.one-stat-invisible{
+  pointer-events: none;
+  opacity: 0;
 }
 
 .one-stat-panel .custom-input-number{
@@ -7932,7 +7990,7 @@ input.disabled {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 36px !important;
+  height: 20px !important;
 }
 
 .name-and-stat.mentality {
