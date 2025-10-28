@@ -15,6 +15,11 @@ let timer;
 let statsRadarChart = null;
 const clearIcon2 = document.querySelector("#filterContainer .bi-x");
 
+let isComparisonModeActive = false;
+let firstDriverStats = null;
+let secondDriverStats = null;
+
+const compareButton = document.getElementById('compareButton');
 const plusBtn = document.querySelector('.age-holder .bi-plus');
 const minusBtn = document.querySelector('.age-holder .bi-dash');
 const ageSpan = document.querySelector('.age-holder .actual-age');
@@ -113,17 +118,21 @@ export function place_drivers_editStats(driversArray) {
         ovrDiv.classList.add("small-ovr")
         newDiv.appendChild(ovrDiv)
         newDiv.addEventListener('click', () => {
-            let elementosClicked = document.querySelectorAll('.clicked');
-            elementosClicked.forEach(item => item.classList.remove('clicked'));
-            newDiv.classList.toggle('clicked');
-            driverStatTitle.innerText = newDiv.dataset.name
-            load_stats(newDiv)
-            if (statPanelShown == 0) {
-                document.getElementById("editStatsPanel").className = "left-panel-stats"
-                statPanelShown = 1
+            if (!isComparisonModeActive) {
+                let elementosClicked = document.querySelectorAll('.clicked');
+                elementosClicked.forEach(item => item.classList.remove('clicked'));
+                newDiv.classList.toggle('clicked');
+                driverStatTitle.innerText = newDiv.dataset.name;
+                load_stats(newDiv);
+                if (statPanelShown == 0) {
+                    document.getElementById("editStatsPanel").className = "left-panel-stats";
+                    statPanelShown = 1;
+                }
+                recalculateOverall();
+            } else if (isComparisonModeActive && firstDriverStats) {
+                secondDriverStats = newDiv.dataset.stats;
+                updateComparisonUI();
             }
-            recalculateOverall()
-
         });
         document.getElementById(divPosition).appendChild(newDiv)
 
@@ -241,16 +250,21 @@ export function place_staff_editStats(staffArray) {
         ovrDiv.classList.add("small-ovr")
         newDiv.appendChild(ovrDiv)
         newDiv.addEventListener('click', () => {
-            let elementosClicked = document.querySelectorAll('.clicked');
-            elementosClicked.forEach(item => item.classList.remove('clicked'));
-            newDiv.classList.toggle('clicked');
-            driverStatTitle.value = newDiv.dataset.name
-            load_stats(newDiv)
-            if (statPanelShown == 0) {
-                document.getElementById("editStatsPanel").className = "left-panel-stats"
-                statPanelShown = 1
+            if (!isComparisonModeActive) {
+                let elementosClicked = document.querySelectorAll('.clicked');
+                elementosClicked.forEach(item => item.classList.remove('clicked'));
+                newDiv.classList.toggle('clicked');
+                driverStatTitle.value = newDiv.dataset.name
+                load_stats(newDiv)
+                if (statPanelShown == 0) {
+                    document.getElementById("editStatsPanel").className = "left-panel-stats"
+                    statPanelShown = 1
+                }
+                recalculateOverall()
+            } else if (isComparisonModeActive && firstDriverStats) {
+                secondDriverStats = newDiv.dataset.stats;
+                updateComparisonUI();
             }
-            recalculateOverall()
         });
 
         document.getElementById(divPosition).appendChild(newDiv)
@@ -895,6 +909,7 @@ function createStatsRadarChart(labels) {
   }
 
   const labelColor = cssVar('--text-secondary', '#e8eaed');
+  const primaryColor = cssVar('--new-primary', '#c89efc');
 
   statsRadarChart = new Chart(ctx, {
     type: 'radar',
@@ -903,12 +918,12 @@ function createStatsRadarChart(labels) {
       datasets: [{
         label: 'Stats',
         data: [],
-        borderColor: '#c89efc',
-        backgroundColor: '#c89efc99',
+        borderColor: primaryColor,
+        backgroundColor: `${primaryColor}99`,
         borderWidth: 2,
         pointRadius: 2,
         pointHoverRadius: 4,
-        pointBackgroundColor: '#c89efc'
+        pointBackgroundColor: primaryColor
       }]
     },
     options: {
@@ -949,4 +964,122 @@ function updateStatsRadarData(values) {
     if (!statsRadarChart) return;
     statsRadarChart.data.datasets[0].data = values;
     statsRadarChart.update();
+}
+
+function toggleComparisonMode() {
+    isComparisonModeActive = !isComparisonModeActive;
+    const editStatsPanel = document.getElementById('editStatsPanel');
+
+    if (isComparisonModeActive) {
+        compareButton.textContent = 'Cancel';
+        editStatsPanel.classList.add('comparison-active');
+
+        const clickedDriver = document.querySelector('.normal-driver.clicked');
+        if (clickedDriver) {
+            firstDriverStats = clickedDriver.dataset.stats;
+        } else {
+            // Handle case where no driver is selected, maybe disable the button?
+            console.warn("No driver selected for comparison.");
+            // possibly exit comparison mode if no driver is selected to start with
+            isComparisonModeActive = false;
+            compareButton.textContent = 'Compare';
+            editStatsPanel.classList.remove('comparison-active');
+        }
+    } else {
+        compareButton.textContent = 'Compare';
+        editStatsPanel.classList.remove('comparison-active');
+        firstDriverStats = null;
+        secondDriverStats = null;
+        resetComparisonUI();
+    }
+}
+
+if (compareButton) {
+    compareButton.addEventListener('click', toggleComparisonMode);
+}
+
+function resetComparisonUI() {
+    // Restore UI to single-driver view
+    const statPanels = document.querySelectorAll('.one-stat-panel');
+    statPanels.forEach(panel => {
+        const comparisonBar = panel.querySelector('.comparison-bar');
+        if (comparisonBar) comparisonBar.remove();
+
+        const comparisonValue = panel.querySelector('.comparison-stat-value');
+        if (comparisonValue) comparisonValue.remove();
+
+        const plusButton = panel.querySelector('.bi-plus');
+        const minusButton = panel.querySelector('.bi-dash');
+        if(plusButton) plusButton.style.display = '';
+        if(minusButton) minusButton.style.display = '';
+    });
+
+    // Reset Radar Chart
+    if (statsRadarChart && statsRadarChart.data.datasets.length > 1) {
+        statsRadarChart.data.datasets.pop();
+        statsRadarChart.update();
+    }
+}
+
+function updateComparisonUI() {
+    if (!firstDriverStats || !secondDriverStats) return;
+
+    const stats1 = firstDriverStats.split(' ').map(Number);
+    const stats2 = secondDriverStats.split(' ').map(Number);
+
+    const statPanels = document.querySelectorAll('.one-stat-panel');
+
+    statPanels.forEach((panel, index) => {
+        if (index < stats1.length) {
+            // Remove previous comparison elements if they exist
+            const existingComparisonBar = panel.querySelector('.comparison-stat-progress');
+            if (existingComparisonBar) existingComparisonBar.parentElement.remove();
+
+            const existingComparisonValue = panel.querySelector('.comparison-stat-value');
+            if (existingComparisonValue) existingComparisonValue.remove();
+
+            // Create and append the second stat bar
+            const barContainer = panel.querySelector('.bar-container');
+            const comparisonBarWrapper = document.createElement('div');
+            comparisonBarWrapper.className = 'one-stat-bar comparison-bar';
+            const comparisonProgressBar = document.createElement('div');
+            comparisonProgressBar.className = 'one-stat-progress comparison-stat-progress';
+            comparisonProgressBar.style.width = `${stats2[index]}%`;
+            comparisonBarWrapper.appendChild(comparisonProgressBar);
+            barContainer.insertBefore(comparisonBarWrapper, barContainer.firstChild);
+
+            // Create and append the second stat value
+            const statNumberDiv = panel.querySelector('.stat-number');
+            const comparisonValueDiv = document.createElement('div');
+            comparisonValueDiv.className = 'comparison-stat-value';
+            comparisonValueDiv.textContent = stats2[index];
+            statNumberDiv.appendChild(comparisonValueDiv);
+
+            // Hide plus/minus buttons
+            const plusButton = statNumberDiv.querySelector('.bi-plus');
+            const minusButton = statNumberDiv.querySelector('.bi-dash');
+            if(plusButton) plusButton.style.display = 'none';
+            if(minusButton) minusButton.style.display = 'none';
+        }
+    });
+
+    // Update Radar Chart
+    const values1 = stats1.slice(0, 9);
+    const values2 = stats2.slice(0, 9);
+
+    if (statsRadarChart) {
+        const secondaryColor = cssVar('--new-secondary', 'rgba(255, 99, 132, 1)');
+        if (statsRadarChart.data.datasets.length < 2) {
+            statsRadarChart.data.datasets.push({
+                label: 'Driver 2 Stats',
+                data: values2,
+                borderColor: secondaryColor,
+                backgroundColor: `${secondaryColor}99`,
+                borderWidth: 1,
+            });
+        } else {
+            statsRadarChart.data.datasets[1].data = values2;
+        }
+        statsRadarChart.update();
+    }
 }
