@@ -1395,6 +1395,114 @@ body.og-theme .dropdown-menu a:hover {
   justify-content: space-between;
 }
 
+.button-with-icon{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color 0.15s, background-color 0.15s;
+  font-size: 16px;
+  padding: 3px 7px;
+  border-radius: 5px;
+}
+
+.button-with-icon:hover{
+  color: var(--new-primary);
+  background-color: color-mix(in srgb, var(--new-primary) 35%, transparent);
+}
+
+.button-with-icon.active{
+  color: var(--new-primary);
+  background-color: color-mix(in srgb, var(--new-primary) 35%, transparent);
+}
+
+.button-with-icon:active{
+  color: var(--new-primary);
+  background-color: color-mix(in srgb, var(--new-primary) 35%, transparent);
+  transform: scale(0.97);
+}
+
+.comparing-tag{
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: capitalize;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.bar-container.comparing{
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+input.comparing-tag{
+  font-weight: normal !important;
+  font-size: 18px !important;
+  color: var(--text-general) !important;
+  padding: 2px !important;
+  line-height: 1.5;
+}
+
+.comparing-tag.ct{
+  background-color: color-mix(in srgb, var(--custom-team-primary) 35%, transparent);
+  color: var(--custom-team-primary);
+}
+
+
+.comparing-tag.fe{
+  background-color: color-mix(in srgb, var(--ferrari-primary) 35%, transparent);
+  color: var(--ferrari-primary);
+}
+
+.comparing-tag.me{
+  background-color: color-mix(in srgb, var(--mercedes-primary) 35%, transparent);
+  color: var(--mercedes-primary);
+}
+
+.comparing-tag.rb{
+  background-color: color-mix(in srgb, var(--redbull-primary) 35%, transparent);
+  color: var(--redbull-primary);
+}
+
+.comparing-tag.mc{
+  background-color: color-mix(in srgb, var(--mclaren-primary) 35%, transparent);
+  color: var(--mclaren-primary);
+}
+
+.comparing-tag.wi{
+  background-color: color-mix(in srgb, var(--williams-primary) 35%, transparent);
+  color: var(--williams-primary);
+}
+
+.comparing-tag.ha{
+  background-color: color-mix(in srgb, var(--haas-primary) 35%, transparent);
+  color: var(--haas-primary);
+}
+
+.comparing-tag.as{
+  background-color: color-mix(in srgb, var(--aston-primary) 35%, transparent);
+  color: var(--aston-primary);
+}
+
+.comparing-tag.al{
+  background-color: color-mix(in srgb, var(--alpine-primary) 35%, transparent);
+  color: var(--alpine-primary);
+}
+
+.comparing-tag.af{
+  background-color: color-mix(in srgb, var(--alfa-primary) 35%, transparent);
+  color: var(--alfa-primary);
+}
+
+.comparing-tag.at{
+  background-color: color-mix(in srgb, var(--alphatauri-primary) 35%, transparent);
+  color: var(--alphatauri-primary);
+}
+
 
 .name-and-info{
   display: flex;

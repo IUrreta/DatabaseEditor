@@ -1,5 +1,6 @@
 import { inverted_countries_abreviations } from "../backend/scriptUtils/countries";
 import { team_dict, mentalityModifiers, teamOrder, mentality_dict, combined_dict, logos_disc } from "./config";
+import { colors_dict } from "./head2head";
 import { attachHold } from "./renderer";
 import { insert_space, manageColor, format_name } from "./transfers";
 import Chart from 'chart.js/auto';
@@ -130,6 +131,25 @@ export function place_drivers_editStats(driversArray) {
                 }
                 recalculateOverall();
             } else if (isComparisonModeActive && firstDriverStats) {
+                //remove clicked class from actual comparing driver
+                let comparingDriver = document.querySelector('.comparing-driver');
+                if (comparingDriver) {
+                    comparingDriver.classList.remove('clicked', 'comparing-driver');
+
+                    let nameDivOld = comparingDriver.children[0];
+                    let comparingTagOld = nameDivOld.querySelector(".comparing-tag");
+                    if (comparingTagOld) {
+                        nameDivOld.removeChild(comparingTagOld);
+                    }
+                }
+                //add clicked class
+                newDiv.classList.add('clicked', 'comparing-driver');
+                let nameDiv = newDiv.children[0];
+                let comparingTag = document.createElement("span");
+                let teamClass = team_dict[newDiv.dataset.teamid];
+                comparingTag.className = `comparing-tag ${teamClass}`;
+                comparingTag.textContent = "Comparing";
+                nameDiv.appendChild(comparingTag);
                 secondDriverStats = newDiv.dataset.stats;
                 updateComparisonUI();
             }
@@ -919,7 +939,7 @@ function createStatsRadarChart(labels) {
         label: 'Stats',
         data: [],
         borderColor: primaryColor,
-        backgroundColor: `${primaryColor}99`,
+        backgroundColor: `${primaryColor}6f`,
         borderWidth: 2,
         pointRadius: 2,
         pointHoverRadius: 4,
@@ -941,10 +961,11 @@ function createStatsRadarChart(labels) {
       scales: {
         r: {
           min: 0,
-          max: 100,             // ajusta el rango si no es 0–100
+          max: 100,             
           ticks: {
-            display: false,     // ⛔️ quita números de las circunferencias
-            showLabelBackdrop: false
+            display: false,     
+            showLabelBackdrop: false,
+            stepSize: 50
           },
           grid: { color: 'rgba(128,128,128,0.25)' },
           angleLines: { color: 'rgba(128,128,128,0.25)' },
@@ -963,7 +984,6 @@ function createStatsRadarChart(labels) {
 function updateStatsRadarData(values) {
     if (!statsRadarChart) return;
     statsRadarChart.data.datasets[0].data = values;
-    statsRadarChart.update();
 }
 
 function toggleComparisonMode() {
@@ -971,22 +991,37 @@ function toggleComparisonMode() {
     const editStatsPanel = document.getElementById('editStatsPanel');
 
     if (isComparisonModeActive) {
-        compareButton.textContent = 'Cancel';
+        compareButton.querySelector("span").textContent = 'Cancel';
+        compareButton.classList.add('active');
         editStatsPanel.classList.add('comparison-active');
 
         const clickedDriver = document.querySelector('.normal-driver.clicked');
         if (clickedDriver) {
             firstDriverStats = clickedDriver.dataset.stats;
+            let nameDiv = clickedDriver.children[0];
+            let comparingTag = document.createElement("span");
+            let teamClass = team_dict[clickedDriver.dataset.teamid];
+            comparingTag.className = `comparing-tag ${teamClass}`;
+            comparingTag.textContent = "Comparing";
+            nameDiv.appendChild(comparingTag);
         } else {
             // Handle case where no driver is selected, maybe disable the button?
             console.warn("No driver selected for comparison.");
             // possibly exit comparison mode if no driver is selected to start with
             isComparisonModeActive = false;
-            compareButton.textContent = 'Compare';
+            compareButton.querySelector("span").textContent = 'Compare';
             editStatsPanel.classList.remove('comparison-active');
         }
     } else {
-        compareButton.textContent = 'Compare';
+        //remove all comparison tags
+        document.querySelectorAll('.normal-driver .comparing-tag').forEach(tag => tag.remove());
+        //remove comparing-driver class
+        let comparingDriver = document.querySelector('.comparing-driver');
+        if (comparingDriver) {
+            comparingDriver.classList.remove('comparing-driver', 'clicked');
+        }
+        compareButton.classList.remove('active');
+        compareButton.querySelector("span").textContent = 'Compare';
         editStatsPanel.classList.remove('comparison-active');
         firstDriverStats = null;
         secondDriverStats = null;
@@ -1002,6 +1037,17 @@ function resetComparisonUI() {
     // Restore UI to single-driver view
     const statPanels = document.querySelectorAll('.one-stat-panel');
     statPanels.forEach(panel => {
+        const barContainer = panel.querySelector('.bar-container');
+        if (barContainer) barContainer.classList.remove('comparing');
+
+        //reset bar colors
+        const actualBar = panel.querySelector('.one-stat-progress');
+        if (actualBar) actualBar.style.backgroundColor = '';
+
+        //remove comparing-tag from inputs
+        const input = panel.querySelector('input.custom-input-number');
+        if (input) input.classList.remove('comparing-tag');
+
         const comparisonBar = panel.querySelector('.comparison-bar');
         if (comparisonBar) comparisonBar.remove();
 
@@ -1017,12 +1063,23 @@ function resetComparisonUI() {
     // Reset Radar Chart
     if (statsRadarChart && statsRadarChart.data.datasets.length > 1) {
         statsRadarChart.data.datasets.pop();
+        //reset to --new-primary the color of the chart
+        const primaryColor = cssVar('--new-primary', '#c89efc');
+        statsRadarChart.data.datasets[0].borderColor = primaryColor;
+        statsRadarChart.data.datasets[0].backgroundColor = `${primaryColor}6f`;
         statsRadarChart.update();
     }
 }
 
 function updateComparisonUI() {
     if (!firstDriverStats || !secondDriverStats) return;
+
+    //get team ids from both drivers
+    const teamId1 = document.querySelector('.normal-driver.clicked').dataset.teamid;
+    const teamId2 = document.querySelector('.normal-driver.clicked.comparing-driver').dataset.teamid;
+    let color1 = colors_dict[`${teamId1}0`];
+    let secondColorSuffix = teamId1 === teamId2 ? '1' : '0';
+    let color2 = colors_dict[`${teamId2}${secondColorSuffix}`];
 
     const stats1 = firstDriverStats.split(' ').map(Number);
     const stats2 = secondDriverStats.split(' ').map(Number);
@@ -1040,20 +1097,36 @@ function updateComparisonUI() {
 
             // Create and append the second stat bar
             const barContainer = panel.querySelector('.bar-container');
-            const comparisonBarWrapper = document.createElement('div');
-            comparisonBarWrapper.className = 'one-stat-bar comparison-bar';
+            barContainer.classList.add('comparing');
+            let actualBar = barContainer.querySelector('.one-stat-progress');
+            actualBar.style.backgroundColor = color1;
+            const comparisonStatBarContainer = document.createElement('div');
+            comparisonStatBarContainer.className = 'one-stat-bar comparison-bar';
             const comparisonProgressBar = document.createElement('div');
             comparisonProgressBar.className = 'one-stat-progress comparison-stat-progress';
             comparisonProgressBar.style.width = `${stats2[index]}%`;
-            comparisonBarWrapper.appendChild(comparisonProgressBar);
-            barContainer.insertBefore(comparisonBarWrapper, barContainer.firstChild);
+            comparisonProgressBar.style.backgroundColor = color2;
+            comparisonStatBarContainer.append(comparisonProgressBar);
+            barContainer.appendChild(comparisonStatBarContainer);
 
             // Create and append the second stat value
             const statNumberDiv = panel.querySelector('.stat-number');
-            const comparisonValueDiv = document.createElement('div');
-            comparisonValueDiv.className = 'comparison-stat-value';
-            comparisonValueDiv.textContent = stats2[index];
-            statNumberDiv.appendChild(comparisonValueDiv);
+            const comparisonValueInput = document.createElement('input');
+            //make the input non-editable
+            comparisonValueInput.setAttribute('readonly', 'readonly');
+            comparisonValueInput.className = 'custom-input-number comparison-stat-value';
+            comparisonValueInput.value = stats2[index];
+            //add comparing-tag and the team
+            const teamClass2 = team_dict[teamId2];
+            comparisonValueInput.classList.add(`comparing-tag`, teamClass2);
+            statNumberDiv.appendChild(comparisonValueInput);
+
+            //add comparing tag to the already existing stat value
+            const existingValueInput = statNumberDiv.querySelector('input.custom-input-number:not(.comparison-stat-value)');
+            if (existingValueInput && !existingValueInput.classList.contains('comparing-tag')) {
+                let teamClass = team_dict[teamId1];
+                existingValueInput.classList.add('comparing-tag', teamClass);
+            }
 
             // Hide plus/minus buttons
             const plusButton = statNumberDiv.querySelector('.bi-plus');
@@ -1067,14 +1140,24 @@ function updateComparisonUI() {
     const values1 = stats1.slice(0, 9);
     const values2 = stats2.slice(0, 9);
 
+    //update the first dataset with the first driver color
+    const primaryColor = color1;
     if (statsRadarChart) {
-        const secondaryColor = cssVar('--new-secondary', 'rgba(255, 99, 132, 1)');
+        statsRadarChart.data.datasets[0].borderColor = primaryColor;
+        statsRadarChart.data.datasets[0].backgroundColor = `${primaryColor}6f`;
+        statsRadarChart.data.datasets[0].data = values1;
+        statsRadarChart.update();
+    }
+
+    //add the second dataset with the second driver color
+    if (statsRadarChart) {
+        const secondaryColor = color2;
         if (statsRadarChart.data.datasets.length < 2) {
             statsRadarChart.data.datasets.push({
                 label: 'Driver 2 Stats',
                 data: values2,
                 borderColor: secondaryColor,
-                backgroundColor: `${secondaryColor}99`,
+                backgroundColor: `${secondaryColor}6f`,
                 borderWidth: 1,
             });
         } else {
