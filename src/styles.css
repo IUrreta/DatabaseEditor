@@ -1392,6 +1392,7 @@ body.og-theme .dropdown-menu a:hover {
   padding: 18px 25px;
   height: 116px;
   gap: 20px;
+  justify-content: space-between;
 }
 
 
@@ -1400,7 +1401,7 @@ body.og-theme .dropdown-menu a:hover {
   flex-direction: column;
   gap: 10px;
   flex-grow: 1;
-  max-width: calc(40% - 20px)
+  max-width: calc(42% - 20px)
 }
 
 .stats-header-separator{
@@ -2672,9 +2673,11 @@ body.og-theme .main-columns-drag-section, body.og-theme .main-editStats-section,
 }
 
 .stats-graph{
-  background: red;
   width: 30%;
-  padding: 40px 25px;
+  padding: 0px;
+  height: 230px;
+  transform: translateY(53px);
+  border-left: 2px solid var(--separator-light);
 }
 
 .title-and-stats {
@@ -2682,7 +2685,7 @@ body.og-theme .main-columns-drag-section, body.og-theme .main-editStats-section,
   flex-direction: column;
   gap: 10px;
   width: 100%;
-  padding: 18px 25px;
+  padding: 18px 0px 10px 25px;
 }
 
 .stats-and-graph{

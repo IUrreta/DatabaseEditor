@@ -2,6 +2,7 @@ import { inverted_countries_abreviations } from "../backend/scriptUtils/countrie
 import { team_dict, mentalityModifiers, teamOrder, mentality_dict, combined_dict, logos_disc } from "./config";
 import { attachHold } from "./renderer";
 import { insert_space, manageColor, format_name } from "./transfers";
+import Chart from 'chart.js/auto';
 
 
 let driverStatTitle = document.getElementById("driverStatsTitle")
@@ -11,12 +12,13 @@ export let typeEdit;
 let oldNum;
 let editStatsItems = [];
 let timer;
+let statsRadarChart = null;
 const clearIcon2 = document.querySelector("#filterContainer .bi-x");
 
-const plusBtn  = document.querySelector('.age-holder .bi-plus');
+const plusBtn = document.querySelector('.age-holder .bi-plus');
 const minusBtn = document.querySelector('.age-holder .bi-dash');
-const ageSpan  = document.querySelector('.age-holder .actual-age');
-const plusR  = document.querySelector('.retirement-age .bi-plus');
+const ageSpan = document.querySelector('.age-holder .actual-age');
+const plusR = document.querySelector('.retirement-age .bi-plus');
 const minusR = document.querySelector('.retirement-age .bi-dash');
 const inputR = document.querySelector('.retirement-age .actual-retirement');
 
@@ -369,10 +371,10 @@ document.querySelectorAll(".attirbutes-panel .bi-dash").forEach(button => {
     attachHold(button, statInput, -1, { min: 0, max: 99, progressEl: bar });
 });
 
-attachHold(plusBtn,  ageSpan,  +1, { min: 0, max: 100 });
-attachHold(minusBtn, ageSpan,  -1, { min: 0, max: 100 });
+attachHold(plusBtn, ageSpan, +1, { min: 0, max: 100 });
+attachHold(minusBtn, ageSpan, -1, { min: 0, max: 100 });
 
-attachHold(plusR,  inputR, +1, { min: 30, max: 80 });
+attachHold(plusR, inputR, +1, { min: 30, max: 80 });
 attachHold(minusR, inputR, -1, { min: 30, max: 80 });
 
 document.querySelector("#nameFilter").addEventListener("input", function (event) {
@@ -651,6 +653,31 @@ function load_stats(div) {
         input.value = value
         manage_stat_bar(input, value)
     });
+
+    const graphInputArray = document.querySelectorAll(".elegible");
+    const pairs = Array.from(graphInputArray).map((input, index) => {
+        const labelEl = input.parentNode?.parentNode?.querySelector("span.bold-font");
+        const labelFull = (labelEl?.textContent || '').trim();
+        const value = statsArray[index];
+        return { labelFull, value };
+    });
+
+    // Excluir Growth y Aggression (incluida variante "Aggresion")
+    const excluded = new Set(['growth', 'aggression', 'aggresion', 'marketability']);
+    const filtered = pairs.filter(p => !excluded.has(p.labelFull.toLowerCase()));
+
+    // Labels = 3 primeras letras en MAYÚSCULAS
+    const labelsArray = filtered.map(p => p.labelFull.slice(0, 3).toUpperCase());
+    const valuesArray = filtered.map(p => p.value);
+
+    // (Re)crear si cambian etiquetas; si no, solo actualizar datos
+    if (!statsRadarChart ||
+        statsRadarChart.data.labels.length !== labelsArray.length ||
+        statsRadarChart.data.labels.some((l, i) => l !== labelsArray[i])) {
+        createStatsRadarChart(labelsArray);
+    }
+    updateStatsRadarData(valuesArray);
+
     let actualAge = document.querySelector(".actual-age")
     let retirementAge = document.querySelector(".actual-retirement")
     let numberHolder = document.querySelector(".number-holder")
@@ -820,4 +847,106 @@ export function change_elegibles(divID) {
     })
     divStats.classList.remove("d-none")
 
+}
+
+function cssVar(name, fallback) {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v || fallback;
+}
+
+
+function ensureStatsGraphCanvas() {
+    const wrap = document.querySelector('.stats-graph');
+    let canvas = wrap.querySelector('canvas');
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'statsRadar';
+        wrap.innerHTML = '';         // por si acaso
+        wrap.appendChild(canvas);
+    }
+    return canvas.getContext('2d');
+}
+
+function getThemeColor(fallback = '#4DA3FF') {
+    // intenta leer de CSS variables; ajusta nombres si ya las tienes
+    const root = getComputedStyle(document.documentElement);
+    const c = root.getPropertyValue('--accent')?.trim()
+        || root.getPropertyValue('--primary')?.trim()
+        || fallback;
+    return c;
+}
+
+function rgbaFromHex(hex, alpha) {
+    // admite #RGB o #RRGGBB
+    let h = hex.replace('#', '');
+    if (h.length === 3) h = h.split('').map(x => x + x).join('');
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function createStatsRadarChart(labels) {
+  const ctx = ensureStatsGraphCanvas();
+
+  if (statsRadarChart) {
+    statsRadarChart.destroy();
+    statsRadarChart = null;
+  }
+
+  const labelColor = cssVar('--text-secondary', '#e8eaed');
+
+  statsRadarChart = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels, // ya vienen en 3 letras
+      datasets: [{
+        label: 'Stats',
+        data: [],
+        borderColor: '#c89efc',
+        backgroundColor: '#c89efc99',
+        borderWidth: 2,
+        pointRadius: 2,
+        pointHoverRadius: 4,
+        pointBackgroundColor: '#c89efc'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        // si usas chartjs-plugin-datalabels, lo apagamos aquí:
+        datalabels: { display: false },
+        tooltip: {
+          // déjalo si quieres tooltip; si no quieres nada, pon enabled:false
+          enabled: true
+        }
+      },
+      scales: {
+        r: {
+          min: 0,
+          max: 100,             // ajusta el rango si no es 0–100
+          ticks: {
+            display: false,     // ⛔️ quita números de las circunferencias
+            showLabelBackdrop: false
+          },
+          grid: { color: 'rgba(128,128,128,0.25)' },
+          angleLines: { color: 'rgba(128,128,128,0.25)' },
+          pointLabels: {
+            color: labelColor,              // ✔ color desde var CSS
+            font: { family: 'Formula1Bold' } // ✔ fuente Formula1Bold
+          }
+        }
+      },
+      elements: { line: { tension: 0 } }
+    }
+  });
+}
+
+
+function updateStatsRadarData(values) {
+    if (!statsRadarChart) return;
+    statsRadarChart.data.datasets[0].data = values;
+    statsRadarChart.update();
 }
