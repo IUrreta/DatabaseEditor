@@ -989,11 +989,13 @@ function updateStatsRadarData(values) {
 function toggleComparisonMode() {
     isComparisonModeActive = !isComparisonModeActive;
     const editStatsPanel = document.getElementById('editStatsPanel');
+    const header = document.querySelector('.main-upper-driver-info');
 
     if (isComparisonModeActive) {
         compareButton.querySelector("span").textContent = 'Cancel';
         compareButton.classList.add('active');
         editStatsPanel.classList.add('comparison-active');
+        header.classList.add('comparison-active');
 
         const clickedDriver = document.querySelector('.normal-driver.clicked');
         if (clickedDriver) {
@@ -1011,6 +1013,7 @@ function toggleComparisonMode() {
             isComparisonModeActive = false;
             compareButton.querySelector("span").textContent = 'Compare';
             editStatsPanel.classList.remove('comparison-active');
+            header.classList.remove('comparison-active');
         }
     } else {
         //remove all comparison tags
@@ -1023,9 +1026,16 @@ function toggleComparisonMode() {
         compareButton.classList.remove('active');
         compareButton.querySelector("span").textContent = 'Compare';
         editStatsPanel.classList.remove('comparison-active');
+        header.classList.remove('comparison-active');
         firstDriverStats = null;
         secondDriverStats = null;
         resetComparisonUI();
+
+        // Remove cloned elements
+        const clonedInfo = document.querySelector('.driver-info.cloned');
+        if (clonedInfo) clonedInfo.remove();
+        const clonedOvr = document.querySelector('.overall-holder.cloned');
+        if (clonedOvr) clonedOvr.remove();
     }
 }
 
@@ -1035,7 +1045,8 @@ if (compareButton) {
 
 function resetComparisonUI() {
     // Restore UI to single-driver view
-    const statPanels = document.querySelectorAll('.one-stat-panel');
+    const activeStatsPanel = document.querySelector('.main-panel-stats:not(.d-none)');
+    const statPanels = activeStatsPanel.querySelectorAll('.one-stat-panel');
     statPanels.forEach(panel => {
         const barContainer = panel.querySelector('.bar-container');
         if (barContainer) barContainer.classList.remove('comparing');
@@ -1044,9 +1055,16 @@ function resetComparisonUI() {
         const actualBar = panel.querySelector('.one-stat-progress');
         if (actualBar) actualBar.style.backgroundColor = '';
 
-        //remove comparing-tag from inputs
         const input = panel.querySelector('input.custom-input-number');
-        if (input) input.classList.remove('comparing-tag');
+        if (input) {
+            input.classList.remove('comparing-tag');
+            // Also remove any team color classes that might have been added
+            for (const key in team_dict) {
+                if (team_dict.hasOwnProperty(key)) {
+                    input.classList.remove(team_dict[key]);
+                }
+            }
+        }
 
         const comparisonBar = panel.querySelector('.comparison-bar');
         if (comparisonBar) comparisonBar.remove();
@@ -1069,6 +1087,34 @@ function resetComparisonUI() {
         statsRadarChart.data.datasets[0].backgroundColor = `${primaryColor}6f`;
         statsRadarChart.update();
     }
+
+    // Reset Marketability
+    const marketabilityPanel = document.getElementById('marketability');
+    if (marketabilityPanel) {
+        const barContainer = marketabilityPanel.querySelector('.bar-container');
+        if (barContainer) barContainer.classList.remove('comparing');
+
+        const actualBar = marketabilityPanel.querySelector('.one-stat-progress');
+        if (actualBar) actualBar.style.backgroundColor = '';
+
+        const comparisonBar = marketabilityPanel.querySelector('.comparison-bar');
+        if (comparisonBar) comparisonBar.remove();
+
+        const comparisonValue = marketabilityPanel.querySelector('.comparison-stat-value');
+        if (comparisonValue) comparisonValue.remove();
+    }
+
+    // Reset Mentality
+    for (let i = 0; i < 3; i++) {
+        const mentalityPanel = document.getElementById(`mentality${i}`).parentNode.parentNode;
+        if (mentalityPanel) {
+            const comparisonBar = mentalityPanel.querySelector('.comparison-bar');
+            if (comparisonBar) comparisonBar.remove();
+
+            const buttons = mentalityPanel.querySelectorAll('.bi-chevron-left, .bi-chevron-right');
+            buttons.forEach(btn => btn.style.display = '');
+        }
+    }
 }
 
 function updateComparisonUI() {
@@ -1084,7 +1130,8 @@ function updateComparisonUI() {
     const stats1 = firstDriverStats.split(' ').map(Number);
     const stats2 = secondDriverStats.split(' ').map(Number);
 
-    const statPanels = document.querySelectorAll('.one-stat-panel');
+    const activeStatsPanel = document.querySelector('.main-panel-stats:not(.d-none)');
+    const statPanels = activeStatsPanel.querySelectorAll('.one-stat-panel');
 
     statPanels.forEach((panel, index) => {
         if (index < stats1.length) {
@@ -1136,6 +1183,42 @@ function updateComparisonUI() {
         }
     });
 
+    // Update Marketability
+    const marketabilityPanel = document.getElementById('marketability');
+    if (marketabilityPanel) {
+        const driver1 = document.querySelector('.normal-driver.clicked');
+        const driver2 = document.querySelector('.normal-driver.clicked.comparing-driver');
+
+        if (driver1.dataset.marketability && driver2.dataset.marketability) {
+            const marketability1 = driver1.dataset.marketability;
+            const marketability2 = driver2.dataset.marketability;
+
+            const barContainer = marketabilityPanel.querySelector('.bar-container');
+            barContainer.classList.add('comparing');
+
+            let actualBar = barContainer.querySelector('.one-stat-progress');
+            actualBar.style.backgroundColor = color1;
+
+            const comparisonStatBarContainer = document.createElement('div');
+            comparisonStatBarContainer.className = 'one-stat-bar comparison-bar';
+            const comparisonProgressBar = document.createElement('div');
+            comparisonProgressBar.className = 'one-stat-progress comparison-stat-progress';
+            comparisonProgressBar.style.width = `${marketability2}%`;
+            comparisonProgressBar.style.backgroundColor = color2;
+            comparisonStatBarContainer.append(comparisonProgressBar);
+            barContainer.appendChild(comparisonStatBarContainer);
+
+            const statNumberDiv = marketabilityPanel.querySelector('.stat-number');
+            const comparisonValueInput = document.createElement('input');
+            comparisonValueInput.setAttribute('readonly', 'readonly');
+            comparisonValueInput.className = 'custom-input-number comparison-stat-value';
+            comparisonValueInput.value = marketability2;
+            const teamClass2 = team_dict[driver2.dataset.teamid];
+            comparisonValueInput.classList.add(`comparing-tag`, teamClass2);
+            statNumberDiv.appendChild(comparisonValueInput);
+        }
+    }
+
     // Update Radar Chart
     const values1 = stats1.slice(0, 9);
     const values2 = stats2.slice(0, 9);
@@ -1165,4 +1248,62 @@ function updateComparisonUI() {
         }
         statsRadarChart.update();
     }
+
+    // Update Mentality
+    const driver1 = document.querySelector('.normal-driver.clicked');
+    const driver2 = document.querySelector('.normal-driver.clicked.comparing-driver');
+
+    for (let i = 0; i < 3; i++) {
+        if (driver1.dataset[`mentality${i}`] && driver2.dataset[`mentality${i}`]) {
+            const mentality1 = driver1.dataset[`mentality${i}`];
+            const mentality2 = driver2.dataset[`mentality${i}`];
+
+            const mentalityPanel = document.getElementById(`mentality${i}`).parentNode.parentNode;
+            const barContainer = mentalityPanel.querySelector('.bar-container');
+
+            // Hide buttons
+            const buttons = mentalityPanel.querySelectorAll('.bi-chevron-left, .bi-chevron-right');
+            buttons.forEach(btn => btn.style.display = 'none');
+
+            // Create and prepend the second mentality bar
+            const comparisonBar = document.createElement('div');
+            comparisonBar.className = 'mentality-level-indicator comparison-bar';
+            for (let j = 0; j < 5; j++) {
+                const level = document.createElement('div');
+                level.className = 'mentality-level';
+                if (j <= 4 - mentality2) {
+                    level.classList.add(mentality_dict[mentality2]);
+                }
+                comparisonBar.appendChild(level);
+            }
+            barContainer.prepend(comparisonBar);
+        }
+    }
+
+    // Redesign Header
+    const header = document.querySelector('.main-upper-driver-info');
+    const originalInfo = header.querySelector('.driver-info');
+    const originalOvr = header.querySelector('.overall-holder');
+
+    // Clone and populate driver 2 info
+    let clonedInfo = header.querySelector('.driver-info.cloned');
+    if (!clonedInfo) {
+        clonedInfo = originalInfo.cloneNode(true);
+        clonedInfo.classList.add('cloned');
+        header.appendChild(clonedInfo);
+    }
+    clonedInfo.querySelector('.driver-info-driver-flag').src = `https://flagsapi.com/${driver2.dataset.nationality}/flat/64.png`;
+    clonedInfo.querySelector('.flag-text').textContent = inverted_countries_abreviations[driver2.dataset.nationality] || driver2.dataset.nationality;
+    clonedInfo.querySelector('.driver-info-team-logo').src = logos_disc[driver2.dataset.teamid] || logos_disc[0];
+    clonedInfo.querySelector('.team-text').textContent = combined_dict[driver2.dataset.teamid] || "Free Agent";
+    driverStatTitle.innerText = `${driver1.dataset.name} vs ${driver2.dataset.name}`;
+
+    // Clone and populate driver 2 overall
+    let clonedOvr = header.querySelector('.overall-holder.cloned');
+    if (!clonedOvr) {
+        clonedOvr = originalOvr.cloneNode(true);
+        clonedOvr.classList.add('cloned');
+        header.insertBefore(clonedOvr, clonedInfo);
+    }
+    clonedOvr.innerHTML = calculateOverall(driver2.dataset.stats, "driver");
 }
