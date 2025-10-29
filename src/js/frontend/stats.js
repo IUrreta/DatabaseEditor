@@ -709,8 +709,10 @@ function load_stats(div) {
         statsRadarChart.data.labels.length !== labelsArray.length ||
         statsRadarChart.data.labels.some((l, i) => l !== labelsArray[i])) {
         createStatsRadarChart(labelsArray);
+        statsRadarChart.config._fullLabels = filtered.map(p => p.labelFull);
+
     }
-    updateStatsRadarData(valuesArray);
+    updateStatsRadarData(valuesArray, 0, cssVar("--new-primary"), div.dataset.name.split(" ").pop());
 
     let actualAge = document.querySelector(".actual-age")
     let retirementAge = document.querySelector(".actual-retirement")
@@ -784,7 +786,7 @@ function load_stats(div) {
     if (logo === undefined) {
         document.querySelector(".driver-info-team-logo").classList.add("d-none")
     }
-    else{
+    else {
         document.querySelector(".driver-info-team-logo").classList.remove("d-none")
         document.querySelector(".driver-info-team-logo").src = logo
     }
@@ -938,16 +940,18 @@ function createStatsRadarChart(labels) {
 
     const labelColor = cssVar('--text-secondary', '#e8eaed');
     const primaryColor = cssVar('--new-primary', '#c89efc');
+    const secondaryColor = cssVar('--new-secondary', '#9efcc8');
+
 
     statsRadarChart = new Chart(ctx, {
         type: 'radar',
         data: {
-            labels, // ya vienen en 3 letras
+            labels,
             datasets: [{
                 label: 'Stats',
                 data: [],
                 borderColor: primaryColor,
-                backgroundColor: `${primaryColor}6f`,
+                backgroundColor: `${primaryColor}40`,
                 borderWidth: 2,
                 pointRadius: 2,
                 pointHoverRadius: 4,
@@ -957,50 +961,118 @@ function createStatsRadarChart(labels) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+            },
             plugins: {
                 legend: { display: false },
-                // si usas chartjs-plugin-datalabels, lo apagamos aquí:
                 datalabels: { display: false },
                 tooltip: {
-                    // déjalo si quieres tooltip; si no quieres nada, pon enabled:false
-                    enabled: true
+                    enabled: true,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: {
+                        family: 'Formula1Bold',
+                        size: 13
+                    },
+                    bodyFont: {
+                        family: 'Formula1',
+                        size: 12
+                    },
+                    callbacks: {
+                        // Mostrar el nombre completo de la stat
+                        title: function (tooltipItems) {
+                            const index = tooltipItems[0].dataIndex;
+                            // Recupera el nombre completo desde tu array original
+                            // (debes tenerlo guardado globalmente o en chart.config._fullLabels)
+                            const fullLabel = statsRadarChart?.config?._fullLabels?.[index];
+                            return fullLabel || tooltipItems[0].label;
+                        },
+                        // Línea del dataset
+                        label: function (context) {
+                            const datasetLabel = context.dataset.label || '';
+                            const value = context.formattedValue;
+                            return `${datasetLabel}: ${value}`;
+                        }
+                    }
                 }
             },
             scales: {
                 r: {
                     min: 0,
                     max: 100,
-                    ticks: {
-                        display: false,
-                        showLabelBackdrop: false,
-                        stepSize: 50
-                    },
+                    ticks: { display: false, showLabelBackdrop: false, stepSize: 50 },
                     grid: { color: 'rgba(128,128,128,0.25)' },
                     angleLines: { color: 'rgba(128,128,128,0.25)' },
                     pointLabels: {
-                        color: labelColor,              // ✔ color desde var CSS
-                        font: { family: 'Formula1Bold' } // ✔ fuente Formula1Bold
+                        color: labelColor,
+                        font: { family: 'Formula1Bold' }
                     }
                 }
             },
             layout: {
-                padding: {
-                    top: 0,
-                    bottom: 0,
-                    left: -20,
-                    right: -20
-                }
+                padding: { top: 8, bottom: 16, left: -20, right: -20 }
             },
-            elements: { line: { tension: 0 } }
+            elements: {
+                point: {
+                    radius: 2,         
+                    hoverRadius: 4,     
+                    hitRadius: 12      
+                },
+                line: { tension: 0 }
+            }
         }
     });
 }
 
 
-function updateStatsRadarData(values) {
+
+function updateStatsRadarData(values, index = 0, color, name) {
     if (!statsRadarChart) return;
-    statsRadarChart.data.datasets[0].data = values;
+    statsRadarChart.data.datasets[index].data = values;
+    if (color) {
+        statsRadarChart.data.datasets[index].borderColor = color;
+        statsRadarChart.data.datasets[index].backgroundColor = rgbaFromHex(color, 0.25);
+    }
+    if (name) {
+        statsRadarChart.data.datasets[index].label = name;
+    }
+    recalculateRadarScale();
     statsRadarChart.update();
+}
+
+function addDatasetToStatsRadarData(values, color, name) {
+    if (!statsRadarChart) return;
+    statsRadarChart.data.datasets.push({
+        label: name || `Stats ${statsRadarChart.data.datasets.length + 1}`,
+        data: values,
+        borderColor: color,
+        backgroundColor: rgbaFromHex(color, 0.25),
+        borderWidth: 2,
+        pointRadius: 2,
+        pointHoverRadius: 4,
+        pointBackgroundColor: color
+    });
+    recalculateRadarScale();
+    statsRadarChart.update();
+}
+
+function recalculateRadarScale() {
+    if (!statsRadarChart) return;
+
+    // 1️⃣ Obtenemos todos los valores de todos los datasets
+    const allValues = statsRadarChart.data.datasets.flatMap(ds => ds.data);
+
+    // 2️⃣ Calculamos el mínimo y máximo reales
+    const minVal = Math.min(...allValues);
+    const maxVal = Math.max(...allValues);
+
+    // 3️⃣ Creamos un margen dinámico (por ejemplo, 20 por debajo y 5 por encima)
+    const lowerMargin = 20;
+    const upperMargin = 5;
+
+    // 4️⃣ Ajustamos la escala del radar chart
+    statsRadarChart.options.scales.r.min = Math.max(0, minVal - lowerMargin);
+    statsRadarChart.options.scales.r.max = Math.min(100, maxVal + upperMargin);
 }
 
 function toggleComparisonMode() {
@@ -1107,16 +1179,6 @@ function resetComparisonUI() {
         header.querySelector("#availabilityDetails").classList.remove("d-none");
     });
 
-    // Reset Radar Chart
-    if (statsRadarChart && statsRadarChart.data.datasets.length > 1) {
-        statsRadarChart.data.datasets.pop();
-        //reset to --new-primary the color of the chart
-        const primaryColor = cssVar('--new-primary', '#c89efc');
-        statsRadarChart.data.datasets[0].borderColor = primaryColor;
-        statsRadarChart.data.datasets[0].backgroundColor = `${primaryColor}6f`;
-        statsRadarChart.update();
-    }
-
     // Reset Marketability
     const marketabilityPanel = document.getElementById('marketability');
     if (marketabilityPanel) {
@@ -1160,10 +1222,8 @@ function updateComparisonUI() {
     //get team ids from both drivers
     const teamId1 = document.querySelector('.normal-driver.clicked').dataset.teamid;
     const teamId2 = document.querySelector('.normal-driver.clicked.comparing-driver').dataset.teamid;
-    let color1 = colors_dict[`${teamId1}0`];
     let secondColorSuffix = teamId1 === teamId2 ? '1' : '0';
-    let color2 = colors_dict[`${teamId2}${secondColorSuffix}`];
-    console.log("Colors for comparison:", color1, color2);
+    let color2 = cssVar(`--new-secondary`)
 
     const stats1 = firstDriverStats.split(' ').map(Number);
     const stats2 = secondDriverStats.split(' ').map(Number);
@@ -1183,7 +1243,6 @@ function updateComparisonUI() {
             const barContainer = panel.querySelector('.bar-container');
             barContainer.classList.add('comparing');
             let actualBar = barContainer.querySelector('.one-stat-progress');
-            actualBar.style.backgroundColor = color1;
             const comparisonStatBarContainer = document.createElement('div');
             comparisonStatBarContainer.className = 'one-stat-bar comparison-bar';
             const comparisonProgressBar = document.createElement('div');
@@ -1201,15 +1260,14 @@ function updateComparisonUI() {
             comparisonValueInput.className = 'custom-input-number comparison-stat-value';
             comparisonValueInput.value = stats2[index];
 
-            const teamClass2 = team_dict[teamId2];
 
             const existingValueInput = statNumberDiv.querySelector('input.custom-input-number:not(.comparison-stat-value)');
             if (stats2[index] > stats1[index]) {
-                comparisonValueInput.classList.add(`comparing-tag`, teamClass2);
-                existingValueInput.classList.remove("comparing-tag", team_dict[teamId1]);
+                comparisonValueInput.classList.add(`comparing-tag`, `secondary`);
+                existingValueInput.classList.remove("comparing-tag", "primary");
             } else if (stats2[index] < stats1[index]) {
-                if (existingValueInput) existingValueInput.classList.add(`comparing-tag`, team_dict[teamId1]);
-                comparisonValueInput.classList.remove("comparing-tag", teamClass2);
+                if (existingValueInput) existingValueInput.classList.add(`comparing-tag`, `primary`);
+                comparisonValueInput.classList.remove("comparing-tag", "secondary");
             }
             statNumberDiv.appendChild(comparisonValueInput);
 
@@ -1243,7 +1301,6 @@ function updateComparisonUI() {
             barContainer.classList.add('comparing');
 
             let actualBar = barContainer.querySelector('.one-stat-progress');
-            actualBar.style.backgroundColor = color1;
 
             //remove plus/minus buttons
             const plusButton = marketabilityPanel.querySelector('.bi-plus');
@@ -1265,17 +1322,16 @@ function updateComparisonUI() {
             comparisonValueInput.setAttribute('readonly', 'readonly');
             comparisonValueInput.className = 'custom-input-number comparison-stat-value';
             comparisonValueInput.value = marketability2;
-            const teamClass2 = team_dict[driver2.dataset.teamid];
 
             const existingValueInput = statNumberDiv.querySelector('input.custom-input-number:not(.comparison-stat-value)');
             if (parseInt(marketability2) > parseInt(marketability1)) {
                 console.log("Marketability2 is greater than Marketability1");
-                comparisonValueInput.classList.add(`comparing-tag`, teamClass2);
-                existingValueInput.classList.remove("comparing-tag", team_dict[driver1.dataset.teamid]);
+                comparisonValueInput.classList.add(`comparing-tag`, `secondary`);
+                existingValueInput.classList.remove("comparing-tag", "primary");
             } else if (parseInt(marketability2) < parseInt(marketability1)) {
                 console.log("Marketability1 is greater than Marketability2");
-                comparisonValueInput.classList.remove("comparing-tag", teamClass2);
-                existingValueInput.classList.add("comparing-tag", team_dict[driver1.dataset.teamid]);
+                comparisonValueInput.classList.remove("comparing-tag", "secondary");
+                existingValueInput.classList.add("comparing-tag", "primary");
             }
 
             statNumberDiv.appendChild(comparisonValueInput);
@@ -1287,36 +1343,25 @@ function updateComparisonUI() {
     const values2 = stats2.slice(0, 9);
 
     //update the first dataset with the first driver color
-    const primaryColor = color1;
     if (statsRadarChart) {
-        statsRadarChart.data.datasets[0].borderColor = primaryColor;
-        statsRadarChart.data.datasets[0].backgroundColor = `${primaryColor}6f`;
-        statsRadarChart.data.datasets[0].data = values1;
-        statsRadarChart.update();
-    }
-
-    //add the second dataset with the second driver color
-    if (statsRadarChart) {
-        let secondaryColor = color2;
-        if (statsRadarChart.data.datasets.length < 2) {
-            statsRadarChart.data.datasets.push({
-                label: 'Driver 2 Stats',
-                data: values2,
-                borderColor: secondaryColor,
-                backgroundColor: `${secondaryColor}6f`,
-                borderWidth: 1,
-            });
-        } else {
-            statsRadarChart.data.datasets[1].data = values2;
-            statsRadarChart.data.datasets[1].borderColor = secondaryColor;
-            statsRadarChart.data.datasets[1].backgroundColor = `${secondaryColor}6f`;
-        }
-        statsRadarChart.update();
+        updateStatsRadarData(values1, 0, cssVar(`--new-primary`));
     }
 
     // Update Mentality
     const driver1 = document.querySelector('.normal-driver.clicked');
     const driver2 = document.querySelector('.normal-driver.clicked.comparing-driver');
+
+    //add the second dataset with the second driver color
+    if (statsRadarChart) {
+        let secondaryColor = color2;
+        if (statsRadarChart.data.datasets.length < 2) {
+            addDatasetToStatsRadarData(values2, secondaryColor, driver2.dataset.name.split(' ').pop());
+        } else {
+            updateStatsRadarData(values2, 1, secondaryColor, driver2.dataset.name.split(' ').pop());
+        }
+    }
+
+
 
 
     for (let i = 0; i < 3; i++) {

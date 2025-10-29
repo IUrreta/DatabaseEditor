@@ -19,10 +19,11 @@
   --negative-text: #292929;
   --new-primary: #c89efc; /* C37CF9 alternative*/
   --new-primary-dark: #ba82ff;
-  --new-primary-transparent: #c89efc40;
+  --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, transparent);
   --text-selected: #e7d3ff;
   --text-selected-secondary: #b1dbd6;
   --new-secondary: #9AD2CB;
+  --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, transparent);
   --new-secondary-dark: #74aaa4;
   --table-hover: #4a4a4a;
   --elements-hover: #3a3a3a;
@@ -1146,7 +1147,7 @@ input[role="switch"]:not(:checked):focus {
 input[role="switch"]:checked {
   --bs-form-switch-bg: url('../assets/images/thumb.svg') !important;
   border: 2px solid var(--new-primary) !important;
-  background-color: var(--new-primary-transparent) !important;
+  background-color: transparent !important;
 }
 
 input[role="switch"] {
@@ -1394,11 +1395,59 @@ body.og-theme .dropdown-menu a:hover {
   height: 116px;
   gap: 20px;
   justify-content: space-between;
+  position: relative;
 }
 
 .special-overall.cloned{
   margin-left: auto;
 }
+
+/*Gradient from left to right with new primary to transparent*/
+.upper-section-stats.comparison-active:has(.cloned-separator)::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, var(--new-primary) -39%, transparent 36%);
+  z-index: 1;
+  border-top-left-radius: 10px;
+}
+
+.upper-section-stats.comparison-active:has(.cloned-separator)::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to left, var(--new-secondary) -39%, transparent 36%);
+  z-index: 1;
+  border-top-right-radius: 10px;
+}
+
+.stats-radar-wrap { position: relative; }
+
+/* capa HTML encima del canvas */
+.radar-overlay {
+  position: absolute; inset: 0; pointer-events: none;
+  font-family: Formula1Bold; line-height: 1;
+}
+
+.radar-overlay .tick {
+  position: absolute; transform: translate(-50%, -50%);
+  text-align: center; white-space: nowrap;
+  /* si se corta en bordes, añade un poco de padding externo al chart: options.layout.padding */
+}
+
+.radar-overlay .values {
+  display: inline-flex; gap: 6px; justify-content: center;
+  font-size: 11px;
+}
+.radar-overlay .v1 { color: var(--new-primary); }
+.radar-overlay .v2 { color: var(--new-secondary); }
+.radar-overlay .lab { display:block; font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 
 .upper-section-stats.comparison-active:has(.cloned-separator) .name-and-info{
   flex-grow: 0;
@@ -1425,17 +1474,17 @@ body.og-theme .dropdown-menu a:hover {
 
 .button-with-icon:hover{
   color: var(--new-primary);
-  background-color: color-mix(in srgb, var(--new-primary) 35%, transparent);
+  background-color: var(--new-primary-transparent)
 }
 
 .button-with-icon.active{
   color: var(--new-primary);
-  background-color: color-mix(in srgb, var(--new-primary) 35%, transparent);
+  background-color: var(--new-primary-transparent);
 }
 
 .button-with-icon:active{
   color: var(--new-primary);
-  background-color: color-mix(in srgb, var(--new-primary) 35%, transparent);
+  background-color: var(--new-primary-transparent);
   transform: scale(0.97);
 }
 
@@ -1461,6 +1510,16 @@ input.comparing-tag{
   padding: 2px !important;
   line-height: 1.5;
   margin: 0 5px !important;
+}
+
+.comparing-tag.primary{
+  background-color: var(--new-primary-transparent);
+  color: var(--new-primary);
+}
+
+.comparing-tag.secondary{
+  background-color: var(--new-secondary-transparent);
+  color: var(--new-secondary);
 }
 
 .comparing-tag.ct{
@@ -1525,7 +1584,8 @@ input.comparing-tag{
   flex-direction: column;
   gap: 10px;
   flex-grow: 1;
-  max-width: calc(42% - 20px)
+  max-width: calc(42% - 20px);
+  z-index: 3;
 }
 
 .name-and-info.cloned{
@@ -1540,6 +1600,7 @@ input.comparing-tag{
   width: 2px;
   background-color: var(--separator-light);
   height: 100%;
+  z-index: 3;
 }
 
 .name-and-code{
@@ -1548,12 +1609,14 @@ input.comparing-tag{
   height: 36px;
   align-items: center;
   gap: 30px;
+  z-index: 3;
 }
 
 .custom-separator{
   width: 2px;
   background-color: var(--separator-light);
   height: 85%;
+  z-index: 3;
 }
 
 .flag-and-team{
@@ -1562,6 +1625,7 @@ input.comparing-tag{
   align-items: center;
   gap: 15px;
   height: 30px;
+  z-index: 3;
 }
 
 .image-and-text{
@@ -1569,6 +1633,7 @@ input.comparing-tag{
   flex-direction: row;
   align-items: center;
   gap: 10px;
+  z-index: 3;
 }
 
 
@@ -1626,6 +1691,7 @@ input.comparing-tag{
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
+  z-index: 3;
 }
 
 .title-and-details.special-overall{

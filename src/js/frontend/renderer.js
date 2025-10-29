@@ -2515,7 +2515,6 @@ export function attachHold(btn, el, step = 1, opts = {}) {
   const loop = !!opts.loop;
   const onChange = typeof opts.onChange === 'function' ? opts.onChange : () => {};
 
-  console.log("progessEl", progressEl);
 
   const initialDelay = opts.initialDelay ?? 400;
   const tiers = opts.tiers ?? [
