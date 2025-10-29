@@ -393,13 +393,13 @@ function updateStat(input, increment) {
 }
 
 
-document.querySelectorAll(".attirbutes-panel .bi-plus").forEach(button => {
+document.querySelectorAll(".attributes-panel .bi-plus").forEach(button => {
     let bar = button.parentNode.parentNode.parentNode.querySelector(".one-stat-progress");
     let statInput = button.parentNode.parentNode.querySelector("input");
     attachHold(button, statInput, +1, { min: 0, max: 99, progressEl: bar });
 });
 
-document.querySelectorAll(".attirbutes-panel .bi-dash").forEach(button => {
+document.querySelectorAll(".attributes-panel .bi-dash").forEach(button => {
     let bar = button.parentNode.parentNode.parentNode.querySelector(".one-stat-progress");
     let statInput = button.parentNode.parentNode.querySelector("input");
     attachHold(button, statInput, -1, { min: 0, max: 99, progressEl: bar });
@@ -779,7 +779,15 @@ function load_stats(div) {
         document.querySelector(".driver-info-driver-flag").src = `https://flagsapi.com/${div.dataset.nationality}/flat/64.png`
         document.querySelector(".flag-text").textContent = inverted_countries_abreviations[div.dataset.nationality] || div.dataset.nationality
     }
-    document.querySelector(".driver-info-team-logo").src = logos_disc[div.dataset.teamid] || logos_disc[0]
+    let logo = undefined;
+    logo = logos_disc[div.dataset.teamid];
+    if (logo === undefined) {
+        document.querySelector(".driver-info-team-logo").classList.add("d-none")
+    }
+    else{
+        document.querySelector(".driver-info-team-logo").classList.remove("d-none")
+        document.querySelector(".driver-info-team-logo").src = logo
+    }
     document.querySelector(".team-text").textContent = combined_dict[div.dataset.teamid] || "Free Agent"
 }
 
@@ -884,8 +892,8 @@ export function change_elegibles(divID) {
 }
 
 function cssVar(name, fallback) {
-  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return v || fallback;
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
 }
 
 
@@ -921,75 +929,84 @@ function rgbaFromHex(hex, alpha) {
 }
 
 function createStatsRadarChart(labels) {
-  const ctx = ensureStatsGraphCanvas();
+    const ctx = ensureStatsGraphCanvas();
 
-  if (statsRadarChart) {
-    statsRadarChart.destroy();
-    statsRadarChart = null;
-  }
-
-  const labelColor = cssVar('--text-secondary', '#e8eaed');
-  const primaryColor = cssVar('--new-primary', '#c89efc');
-
-  statsRadarChart = new Chart(ctx, {
-    type: 'radar',
-    data: {
-      labels, // ya vienen en 3 letras
-      datasets: [{
-        label: 'Stats',
-        data: [],
-        borderColor: primaryColor,
-        backgroundColor: `${primaryColor}6f`,
-        borderWidth: 2,
-        pointRadius: 2,
-        pointHoverRadius: 4,
-        pointBackgroundColor: primaryColor
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        // si usas chartjs-plugin-datalabels, lo apagamos aquí:
-        datalabels: { display: false },
-        tooltip: {
-          // déjalo si quieres tooltip; si no quieres nada, pon enabled:false
-          enabled: true
-        }
-      },
-      scales: {
-        r: {
-          min: 0,
-          max: 100,             
-          ticks: {
-            display: false,     
-            showLabelBackdrop: false,
-            stepSize: 50
-          },
-          grid: { color: 'rgba(128,128,128,0.25)' },
-          angleLines: { color: 'rgba(128,128,128,0.25)' },
-          pointLabels: {
-            color: labelColor,              // ✔ color desde var CSS
-            font: { family: 'Formula1Bold' } // ✔ fuente Formula1Bold
-          }
-        }
-      },
-      elements: { line: { tension: 0 } }
+    if (statsRadarChart) {
+        statsRadarChart.destroy();
+        statsRadarChart = null;
     }
-  });
+
+    const labelColor = cssVar('--text-secondary', '#e8eaed');
+    const primaryColor = cssVar('--new-primary', '#c89efc');
+
+    statsRadarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels, // ya vienen en 3 letras
+            datasets: [{
+                label: 'Stats',
+                data: [],
+                borderColor: primaryColor,
+                backgroundColor: `${primaryColor}6f`,
+                borderWidth: 2,
+                pointRadius: 2,
+                pointHoverRadius: 4,
+                pointBackgroundColor: primaryColor
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                // si usas chartjs-plugin-datalabels, lo apagamos aquí:
+                datalabels: { display: false },
+                tooltip: {
+                    // déjalo si quieres tooltip; si no quieres nada, pon enabled:false
+                    enabled: true
+                }
+            },
+            scales: {
+                r: {
+                    min: 0,
+                    max: 100,
+                    ticks: {
+                        display: false,
+                        showLabelBackdrop: false,
+                        stepSize: 50
+                    },
+                    grid: { color: 'rgba(128,128,128,0.25)' },
+                    angleLines: { color: 'rgba(128,128,128,0.25)' },
+                    pointLabels: {
+                        color: labelColor,              // ✔ color desde var CSS
+                        font: { family: 'Formula1Bold' } // ✔ fuente Formula1Bold
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    top: 0,
+                    bottom: 0,
+                    left: -20,
+                    right: -20
+                }
+            },
+            elements: { line: { tension: 0 } }
+        }
+    });
 }
 
 
 function updateStatsRadarData(values) {
     if (!statsRadarChart) return;
     statsRadarChart.data.datasets[0].data = values;
+    statsRadarChart.update();
 }
 
 function toggleComparisonMode() {
     isComparisonModeActive = !isComparisonModeActive;
     const editStatsPanel = document.getElementById('editStatsPanel');
-    const header = document.querySelector('.main-upper-driver-info');
+    const header = document.querySelector('.upper-section-stats');
 
     if (isComparisonModeActive) {
         compareButton.querySelector("span").textContent = 'Cancel';
@@ -1015,6 +1032,8 @@ function toggleComparisonMode() {
             editStatsPanel.classList.remove('comparison-active');
             header.classList.remove('comparison-active');
         }
+
+
     } else {
         //remove all comparison tags
         document.querySelectorAll('.normal-driver .comparing-tag').forEach(tag => tag.remove());
@@ -1032,10 +1051,16 @@ function toggleComparisonMode() {
         resetComparisonUI();
 
         // Remove cloned elements
-        const clonedInfo = document.querySelector('.driver-info.cloned');
+        const clonedInfo = document.querySelector('.name-and-info.cloned');
         if (clonedInfo) clonedInfo.remove();
-        const clonedOvr = document.querySelector('.overall-holder.cloned');
+        const clonedOvr = document.querySelector('.special-overall.cloned');
         if (clonedOvr) clonedOvr.remove();
+        const separator = document.querySelector('.cloned-separator');
+        if (separator) separator.remove();
+
+        document.querySelectorAll(".hidable-separator").forEach(separator => {
+            separator.classList.remove("d-none");
+        });
     }
 }
 
@@ -1045,8 +1070,7 @@ if (compareButton) {
 
 function resetComparisonUI() {
     // Restore UI to single-driver view
-    const activeStatsPanel = document.querySelector('.main-panel-stats:not(.d-none)');
-    const statPanels = activeStatsPanel.querySelectorAll('.one-stat-panel');
+    const statPanels = document.querySelectorAll('.one-stat-panel:has(.elegible)');
     statPanels.forEach(panel => {
         const barContainer = panel.querySelector('.bar-container');
         if (barContainer) barContainer.classList.remove('comparing');
@@ -1074,8 +1098,13 @@ function resetComparisonUI() {
 
         const plusButton = panel.querySelector('.bi-plus');
         const minusButton = panel.querySelector('.bi-dash');
-        if(plusButton) plusButton.style.display = '';
-        if(minusButton) minusButton.style.display = '';
+        if (plusButton) plusButton.style.display = '';
+        if (minusButton) minusButton.style.display = '';
+
+        const header = document.querySelector('.upper-section-stats');
+        header.querySelector("#ageDetails").classList.remove("d-none");
+        header.querySelector("#numberDetails").classList.remove("d-none");
+        header.querySelector("#availabilityDetails").classList.remove("d-none");
     });
 
     // Reset Radar Chart
@@ -1102,6 +1131,14 @@ function resetComparisonUI() {
 
         const comparisonValue = marketabilityPanel.querySelector('.comparison-stat-value');
         if (comparisonValue) comparisonValue.remove();
+
+        const plusButton = marketabilityPanel.querySelector('.bi-plus');
+        const minusButton = marketabilityPanel.querySelector('.bi-dash');
+        if (plusButton) plusButton.style.display = '';
+        if (minusButton) minusButton.style.display = '';
+
+        const comparisonValueInput = marketabilityPanel.querySelector('.custom-input-number');
+        if (comparisonValueInput) comparisonValueInput.className = "custom-input-number elegible";
     }
 
     // Reset Mentality
@@ -1126,12 +1163,12 @@ function updateComparisonUI() {
     let color1 = colors_dict[`${teamId1}0`];
     let secondColorSuffix = teamId1 === teamId2 ? '1' : '0';
     let color2 = colors_dict[`${teamId2}${secondColorSuffix}`];
+    console.log("Colors for comparison:", color1, color2);
 
     const stats1 = firstDriverStats.split(' ').map(Number);
     const stats2 = secondDriverStats.split(' ').map(Number);
 
-    const activeStatsPanel = document.querySelector('.main-panel-stats:not(.d-none)');
-    const statPanels = activeStatsPanel.querySelectorAll('.one-stat-panel');
+    const statPanels = document.querySelectorAll('.one-stat-panel:has(.elegible)');
 
     statPanels.forEach((panel, index) => {
         if (index < stats1.length) {
@@ -1163,23 +1200,25 @@ function updateComparisonUI() {
             comparisonValueInput.setAttribute('readonly', 'readonly');
             comparisonValueInput.className = 'custom-input-number comparison-stat-value';
             comparisonValueInput.value = stats2[index];
-            //add comparing-tag and the team
+
             const teamClass2 = team_dict[teamId2];
-            comparisonValueInput.classList.add(`comparing-tag`, teamClass2);
+
+            const existingValueInput = statNumberDiv.querySelector('input.custom-input-number:not(.comparison-stat-value)');
+            if (stats2[index] > stats1[index]) {
+                comparisonValueInput.classList.add(`comparing-tag`, teamClass2);
+                existingValueInput.classList.remove("comparing-tag", team_dict[teamId1]);
+            } else if (stats2[index] < stats1[index]) {
+                if (existingValueInput) existingValueInput.classList.add(`comparing-tag`, team_dict[teamId1]);
+                comparisonValueInput.classList.remove("comparing-tag", teamClass2);
+            }
             statNumberDiv.appendChild(comparisonValueInput);
 
-            //add comparing tag to the already existing stat value
-            const existingValueInput = statNumberDiv.querySelector('input.custom-input-number:not(.comparison-stat-value)');
-            if (existingValueInput && !existingValueInput.classList.contains('comparing-tag')) {
-                let teamClass = team_dict[teamId1];
-                existingValueInput.classList.add('comparing-tag', teamClass);
-            }
 
             // Hide plus/minus buttons
             const plusButton = statNumberDiv.querySelector('.bi-plus');
             const minusButton = statNumberDiv.querySelector('.bi-dash');
-            if(plusButton) plusButton.style.display = 'none';
-            if(minusButton) minusButton.style.display = 'none';
+            if (plusButton) plusButton.style.display = 'none';
+            if (minusButton) minusButton.style.display = 'none';
         }
     });
 
@@ -1193,11 +1232,24 @@ function updateComparisonUI() {
             const marketability1 = driver1.dataset.marketability;
             const marketability2 = driver2.dataset.marketability;
 
+            //remove previous comparison elements if they exist
+            const existingComparisonBar = marketabilityPanel.querySelector('.comparison-stat-progress');
+            if (existingComparisonBar) existingComparisonBar.parentElement.remove();
+
+            const existingComparisonValue = marketabilityPanel.querySelector('.comparison-stat-value');
+            if (existingComparisonValue) existingComparisonValue.remove();
+
             const barContainer = marketabilityPanel.querySelector('.bar-container');
             barContainer.classList.add('comparing');
 
             let actualBar = barContainer.querySelector('.one-stat-progress');
             actualBar.style.backgroundColor = color1;
+
+            //remove plus/minus buttons
+            const plusButton = marketabilityPanel.querySelector('.bi-plus');
+            const minusButton = marketabilityPanel.querySelector('.bi-dash');
+            if (plusButton) plusButton.style.display = 'none';
+            if (minusButton) minusButton.style.display = 'none';
 
             const comparisonStatBarContainer = document.createElement('div');
             comparisonStatBarContainer.className = 'one-stat-bar comparison-bar';
@@ -1214,7 +1266,18 @@ function updateComparisonUI() {
             comparisonValueInput.className = 'custom-input-number comparison-stat-value';
             comparisonValueInput.value = marketability2;
             const teamClass2 = team_dict[driver2.dataset.teamid];
-            comparisonValueInput.classList.add(`comparing-tag`, teamClass2);
+
+            const existingValueInput = statNumberDiv.querySelector('input.custom-input-number:not(.comparison-stat-value)');
+            if (parseInt(marketability2) > parseInt(marketability1)) {
+                console.log("Marketability2 is greater than Marketability1");
+                comparisonValueInput.classList.add(`comparing-tag`, teamClass2);
+                existingValueInput.classList.remove("comparing-tag", team_dict[driver1.dataset.teamid]);
+            } else if (parseInt(marketability2) < parseInt(marketability1)) {
+                console.log("Marketability1 is greater than Marketability2");
+                comparisonValueInput.classList.remove("comparing-tag", teamClass2);
+                existingValueInput.classList.add("comparing-tag", team_dict[driver1.dataset.teamid]);
+            }
+
             statNumberDiv.appendChild(comparisonValueInput);
         }
     }
@@ -1234,7 +1297,7 @@ function updateComparisonUI() {
 
     //add the second dataset with the second driver color
     if (statsRadarChart) {
-        const secondaryColor = color2;
+        let secondaryColor = color2;
         if (statsRadarChart.data.datasets.length < 2) {
             statsRadarChart.data.datasets.push({
                 label: 'Driver 2 Stats',
@@ -1245,6 +1308,8 @@ function updateComparisonUI() {
             });
         } else {
             statsRadarChart.data.datasets[1].data = values2;
+            statsRadarChart.data.datasets[1].borderColor = secondaryColor;
+            statsRadarChart.data.datasets[1].backgroundColor = `${secondaryColor}6f`;
         }
         statsRadarChart.update();
     }
@@ -1253,10 +1318,15 @@ function updateComparisonUI() {
     const driver1 = document.querySelector('.normal-driver.clicked');
     const driver2 = document.querySelector('.normal-driver.clicked.comparing-driver');
 
+
     for (let i = 0; i < 3; i++) {
         if (driver1.dataset[`mentality${i}`] && driver2.dataset[`mentality${i}`]) {
             const mentality1 = driver1.dataset[`mentality${i}`];
             const mentality2 = driver2.dataset[`mentality${i}`];
+
+            //remove previous comparison bar if exists
+            const existingComparisonBar = document.getElementById(`mentality${i}`).parentNode.parentNode.querySelector('.comparison-bar');
+            if (existingComparisonBar) existingComparisonBar.remove();
 
             const mentalityPanel = document.getElementById(`mentality${i}`).parentNode.parentNode;
             const barContainer = mentalityPanel.querySelector('.bar-container');
@@ -1281,29 +1351,40 @@ function updateComparisonUI() {
     }
 
     // Redesign Header
-    const header = document.querySelector('.main-upper-driver-info');
-    const originalInfo = header.querySelector('.driver-info');
-    const originalOvr = header.querySelector('.overall-holder');
+    const header = document.querySelector('.upper-section-stats');
+    const originalInfo = header.querySelector('.name-and-info');
+    const originalOvr = header.querySelector('.special-overall');
 
     // Clone and populate driver 2 info
-    let clonedInfo = header.querySelector('.driver-info.cloned');
+    let clonedInfo = header.querySelector('.name-and-info.cloned');
     if (!clonedInfo) {
         clonedInfo = originalInfo.cloneNode(true);
         clonedInfo.classList.add('cloned');
+        header.querySelector("#ageDetails").classList.add("d-none");
+        header.querySelector("#numberDetails").classList.add("d-none");
+        header.querySelector("#availabilityDetails").classList.add("d-none");
         header.appendChild(clonedInfo);
     }
+    document.querySelectorAll(".hidable-separator").forEach(separator => {
+        separator.classList.add("d-none");
+    });
+    //put second driver name
+    clonedInfo.querySelector("#driverStatsTitle").innerText = `${driver2.dataset.name}`;
+    clonedInfo.querySelector("#driverCode").innerText = `${driver2.dataset.driverCode}`;
     clonedInfo.querySelector('.driver-info-driver-flag').src = `https://flagsapi.com/${driver2.dataset.nationality}/flat/64.png`;
     clonedInfo.querySelector('.flag-text').textContent = inverted_countries_abreviations[driver2.dataset.nationality] || driver2.dataset.nationality;
     clonedInfo.querySelector('.driver-info-team-logo').src = logos_disc[driver2.dataset.teamid] || logos_disc[0];
     clonedInfo.querySelector('.team-text').textContent = combined_dict[driver2.dataset.teamid] || "Free Agent";
-    driverStatTitle.innerText = `${driver1.dataset.name} vs ${driver2.dataset.name}`;
 
     // Clone and populate driver 2 overall
-    let clonedOvr = header.querySelector('.overall-holder.cloned');
+    let clonedOvr = header.querySelector('.special-overall.cloned');
     if (!clonedOvr) {
         clonedOvr = originalOvr.cloneNode(true);
         clonedOvr.classList.add('cloned');
         header.insertBefore(clonedOvr, clonedInfo);
+        const separator = document.createElement('div');
+        separator.className = 'stats-header-separator cloned-separator';
+        header.insertBefore(separator, clonedInfo);
     }
-    clonedOvr.innerHTML = calculateOverall(driver2.dataset.stats, "driver");
+    clonedOvr.querySelector(".overall-holder").innerText = calculateOverall(driver2.dataset.stats, "driver");
 }

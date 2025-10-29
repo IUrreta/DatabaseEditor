@@ -19,7 +19,7 @@
   --negative-text: #292929;
   --new-primary: #c89efc; /* C37CF9 alternative*/
   --new-primary-dark: #ba82ff;
-  --new-primary-transparent: #c89efc99;
+  --new-primary-transparent: #c89efc40;
   --text-selected: #e7d3ff;
   --text-selected-secondary: #b1dbd6;
   --new-secondary: #9AD2CB;
@@ -556,7 +556,7 @@ body.og-theme .footer i {
   transition: right 0.15s, background-color 0.15s, color 0.15s;
   border-radius: 10px;
   font-size: 18px;
-  box-shadow: none;
+  box-shadow: var(--shadow-m);
 }
 
 .save-button:active {
@@ -1146,6 +1146,7 @@ input[role="switch"]:not(:checked):focus {
 input[role="switch"]:checked {
   --bs-form-switch-bg: url('../assets/images/thumb.svg') !important;
   border: 2px solid var(--new-primary) !important;
+  background-color: var(--new-primary-transparent) !important;
 }
 
 input[role="switch"] {
@@ -1395,6 +1396,20 @@ body.og-theme .dropdown-menu a:hover {
   justify-content: space-between;
 }
 
+.special-overall.cloned{
+  margin-left: auto;
+}
+
+.upper-section-stats.comparison-active:has(.cloned-separator) .name-and-info{
+  flex-grow: 0;
+  max-width: none;
+}
+
+.upper-section-stats.comparison-active:has(.cloned-separator) .bi-pencil-fill{
+  display: none;
+  pointer-events: none;
+}
+
 .button-with-icon{
   display: flex;
   flex-direction: row;
@@ -1445,6 +1460,7 @@ input.comparing-tag{
   color: var(--text-general) !important;
   padding: 2px !important;
   line-height: 1.5;
+  margin: 0 5px !important;
 }
 
 .comparing-tag.ct{
@@ -1510,6 +1526,14 @@ input.comparing-tag{
   gap: 10px;
   flex-grow: 1;
   max-width: calc(42% - 20px)
+}
+
+.name-and-info.cloned{
+  align-items: flex-end;
+}
+
+.name-and-info.cloned .name-and-code, .name-and-info.cloned .flag-and-team{
+  flex-direction: row-reverse;
 }
 
 .stats-header-separator{
@@ -1955,6 +1979,10 @@ input.comparing-tag{
   font-size: 22px;
   cursor: pointer;
   transition: background-color 0.15s, color 0.15s;
+}
+
+.new-augment-button.small{
+  font-size: 16px;
 }
 
 .new-augment-button:hover{
@@ -8077,7 +8105,7 @@ input.disabled {
 }
 
 .one-stat-panel .custom-input-number{
-  width: 36px;
+  width: 3ch;
   padding: 0;
 }
 
@@ -8117,8 +8145,9 @@ input.disabled {
 
 .one-stat-bar {
   width: 100%;
-  height: 4px;
-  background-color: var(--generals);
+  height: 6px;
+  border-radius: 2px;
+  background-color: var(--background);
   position: relative;
 }
 
@@ -9417,7 +9446,8 @@ input::-webkit-inner-spin-button {
 }
 
 .mentality-level {
-  height: 6px;
+  height: 8px;
+  border-radius: 2px;
   width: 20%;
   background-color: var(--mid-gray-contrast);
   transition: background-color 0.15s;
@@ -9465,14 +9495,11 @@ input::-webkit-inner-spin-button {
 }
 
 .bar-container i {
-  transition: transform 0.15s, color 0.15s;
+  transition: color 0.15s;
   cursor: pointer;
 }
 
-.bar-container i:hover {
-  transform: scale(1.1);
-  color: var(--new-primary);
-}
+
 
 .name-and-emoji {
   transition: color 0.15s;
@@ -10615,6 +10642,11 @@ grid of 11 columns and one row
 
 .team-logo-container.as img{
   padding: 4px;
+}
+
+body:has(#mentalitySpan.frozen) #driverMentalityAttributes{
+  display: none;
+  pointer-events: none;
 }
 
 .mentality-difficulty {
