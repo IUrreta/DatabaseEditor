@@ -930,10 +930,10 @@ document.querySelector("#editNameButton").addEventListener("click", function (e)
         const codeInput = codeSpan.querySelector("textarea");
 
         // Restaurar tamaño original
-        nameSpan.style.width = nameSpan.dataset.originalWidth + "px";
-        nameSpan.style.height = nameSpan.dataset.originalHeight + "px";
-        codeSpan.style.width = codeSpan.dataset.originalWidth + "px";
-        codeSpan.style.height = codeSpan.dataset.originalHeight + "px";
+        nameSpan.style.width = "auto"
+        nameSpan.style.height = "auto";
+        codeSpan.style.width = "auto";
+        codeSpan.style.height = "auto";
 
         // Restaurar texto
         nameSpan.innerText = nameInput.value.trim();

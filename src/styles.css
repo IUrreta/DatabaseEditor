@@ -1455,8 +1455,12 @@ body.og-theme .dropdown-menu a:hover {
   max-width: none;
 }
 
+.upper-section-stats.comparison-active:has(.cloned-separator){
+  gap: 15px;
+}
+
 .upper-section-stats.comparison-active:has(.cloned-separator) .bi-pencil-fill{
-  display: none;
+  display: none !important;
   pointer-events: none;
 }
 
