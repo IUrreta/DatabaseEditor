@@ -1459,6 +1459,28 @@ body.og-theme .dropdown-menu a:hover {
   pointer-events: none;
 }
 
+.upper-section-stats.comparison-active:has(.cloned-separator) .name-and-code{
+  gap: 10px;
+}
+
+.upper-section-stats.comparison-active:has(.cloned-separator) .hiddable-text, .upper-section-stats.comparison-active:has(.cloned-separator) .age-buttons,
+.upper-section-stats.comparison-active:has(.cloned-separator) .retirement-buttons{
+  display: none;
+  pointer-events: none;
+}
+
+.title-and-details.cloned{
+  align-items: flex-end;
+}
+
+.title-and-details.cloned .age-holder{
+  align-items: flex-end;
+}
+
+.title-and-details.cloned .age, .title-and-details.cloned .retirement-age{
+  flex-direction: row-reverse;
+}
+
 .button-with-icon{
   display: flex;
   flex-direction: row;
@@ -2879,7 +2901,7 @@ body.og-theme .main-columns-drag-section, body.og-theme .main-editStats-section,
   padding: 0px;
   height: 230px;
   transform: translateY(53px);
-  border-left: 2px solid var(--separator-light);
+  border-left: 3px solid var(--separator-light);
 }
 
 .title-and-stats {
@@ -8212,7 +8234,7 @@ input.disabled {
 .one-stat-bar {
   width: 100%;
   height: 6px;
-  border-radius: 2px;
+  border-radius: 1px;
   background-color: var(--background);
   position: relative;
 }
@@ -8221,7 +8243,12 @@ input.disabled {
   position: absolute;
   background-color: var(--new-primary);
   transition: width 0.15s;
+  border-radius: 1px;
   height: 100%;
+}
+
+.bar-container:has(.mentality-level-indicator.comparison-bar){
+  flex-direction: row-reverse;
 }
 
 .stat-number {

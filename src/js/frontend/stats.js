@@ -249,11 +249,7 @@ export function place_staff_editStats(staffArray) {
         newDiv.dataset.raceFormula = staff["race_formula"]
         newDiv.dataset.isRetired = staff[4]
         if (staff["nationality"] !== "") {
-            let country_code = staff["nationality"]
-            let flag = document.createElement("img")
-            flag.className = "name-flag"
-            flag.src = `https://flagsapi.com/${country_code}/flat/24.png`
-            nameDiv.appendChild(flag)
+            newDiv.dataset.nationality = staff["nationality"]
         }
         if (staff["mentality0"] >= 0) {
             newDiv.dataset.mentality0 = staff["mentality0"]
@@ -274,14 +270,33 @@ export function place_staff_editStats(staffArray) {
                 let elementosClicked = document.querySelectorAll('.clicked');
                 elementosClicked.forEach(item => item.classList.remove('clicked'));
                 newDiv.classList.toggle('clicked');
-                driverStatTitle.value = newDiv.dataset.name
-                load_stats(newDiv)
+                driverStatTitle.innerText = newDiv.dataset.name;
+                load_stats(newDiv);
                 if (statPanelShown == 0) {
-                    document.getElementById("editStatsPanel").className = "left-panel-stats"
-                    statPanelShown = 1
+                    document.getElementById("editStatsPanel").className = "left-panel-stats";
+                    statPanelShown = 1;
                 }
-                recalculateOverall()
+                recalculateOverall();
             } else if (isComparisonModeActive && firstDriverStats) {
+                //remove clicked class from actual comparing driver
+                let comparingDriver = document.querySelector('.comparing-driver');
+                if (comparingDriver) {
+                    comparingDriver.classList.remove('clicked', 'comparing-driver');
+
+                    let nameDivOld = comparingDriver.children[0];
+                    let comparingTagOld = nameDivOld.querySelector(".comparing-tag");
+                    if (comparingTagOld) {
+                        nameDivOld.removeChild(comparingTagOld);
+                    }
+                }
+                //add clicked class
+                newDiv.classList.add('clicked', 'comparing-driver');
+                let nameDiv = newDiv.children[0];
+                let comparingTag = document.createElement("span");
+                let teamClass = team_dict[newDiv.dataset.teamid];
+                comparingTag.className = `comparing-tag ${teamClass}`;
+                comparingTag.textContent = "Comparing";
+                nameDiv.appendChild(comparingTag);
                 secondDriverStats = newDiv.dataset.stats;
                 updateComparisonUI();
             }
@@ -571,6 +586,7 @@ document.querySelector(".order-space").querySelectorAll("i").forEach(function (e
 export function listenersStaffGroups() {
     document.querySelectorAll('#staffMenu a').forEach(item => {
         item.addEventListener("click", function () {
+            if (isComparisonModeActive) toggleComparisonMode();
             const staffButton = document.getElementById('staffDropdown');
             let staffSelected = item.innerHTML
             let staffCode = item.dataset.spacestats
@@ -790,7 +806,8 @@ function load_stats(div) {
         document.querySelector(".driver-info-team-logo").classList.remove("d-none")
         document.querySelector(".driver-info-team-logo").src = logo
     }
-    document.querySelector(".team-text").textContent = combined_dict[div.dataset.teamid] || "Free Agent"
+    let teamName = combined_dict[div.dataset.teamid] || "Free Agent";
+    document.querySelector(".team-text").textContent = teamName !== "Visa Cashapp RB" ? teamName : "VCARB";
 }
 
 document.querySelectorAll(".bar-container .bi-chevron-right").forEach(function (elem) {
@@ -938,7 +955,7 @@ function createStatsRadarChart(labels) {
         statsRadarChart = null;
     }
 
-    const labelColor = cssVar('--text-secondary', '#e8eaed');
+    const labelColor = cssVar('--text-general', '#e8eaed');
     const primaryColor = cssVar('--new-primary', '#c89efc');
     const secondaryColor = cssVar('--new-secondary', '#9efcc8');
 
@@ -1024,7 +1041,13 @@ function createStatsRadarChart(labels) {
     });
 }
 
-
+function removeDatasetFromStatsRadarData(index) {
+    if (!statsRadarChart) return;
+    if (index < 0 || index >= statsRadarChart.data.datasets.length) return;
+    statsRadarChart.data.datasets.splice(index, 1);
+    recalculateRadarScale();
+    statsRadarChart.update();
+}
 
 function updateStatsRadarData(values, index = 0, color, name) {
     if (!statsRadarChart) return;
@@ -1067,7 +1090,7 @@ function recalculateRadarScale() {
     const maxVal = Math.max(...allValues);
 
     // 3️⃣ Creamos un margen dinámico (por ejemplo, 20 por debajo y 5 por encima)
-    const lowerMargin = 20;
+    const lowerMargin = 15;
     const upperMargin = 5;
 
     // 4️⃣ Ajustamos la escala del radar chart
@@ -1085,6 +1108,9 @@ function toggleComparisonMode() {
         compareButton.classList.add('active');
         editStatsPanel.classList.add('comparison-active');
         header.classList.add('comparison-active');
+        document.querySelectorAll(".mentality-and-emoji").forEach(indicator => {
+            indicator.classList.add("d-none");
+        });
 
         const clickedDriver = document.querySelector('.normal-driver.clicked');
         if (clickedDriver) {
@@ -1121,14 +1147,20 @@ function toggleComparisonMode() {
         firstDriverStats = null;
         secondDriverStats = null;
         resetComparisonUI();
+        removeDatasetFromStatsRadarData(1);
+
+        document.querySelectorAll(".mentality-and-emoji").forEach(indicator => {
+            indicator.classList.remove("d-none");
+        });
 
         // Remove cloned elements
         const clonedInfo = document.querySelector('.name-and-info.cloned');
         if (clonedInfo) clonedInfo.remove();
         const clonedOvr = document.querySelector('.special-overall.cloned');
         if (clonedOvr) clonedOvr.remove();
-        const separator = document.querySelector('.cloned-separator');
-        if (separator) separator.remove();
+        document.querySelectorAll('.cloned-separator').forEach(separator => separator.remove());
+        const clonedAgeDetails = document.querySelector('#ageDetails.cloned');
+        if (clonedAgeDetails) clonedAgeDetails.remove();
 
         document.querySelectorAll(".hidable-separator").forEach(separator => {
             separator.classList.remove("d-none");
@@ -1174,7 +1206,7 @@ function resetComparisonUI() {
         if (minusButton) minusButton.style.display = '';
 
         const header = document.querySelector('.upper-section-stats');
-        header.querySelector("#ageDetails").classList.remove("d-none");
+        // header.querySelector("#ageDetails").classList.remove("d-none");
         header.querySelector("#numberDetails").classList.remove("d-none");
         header.querySelector("#availabilityDetails").classList.remove("d-none");
     });
@@ -1220,7 +1252,7 @@ function updateComparisonUI() {
     if (!firstDriverStats || !secondDriverStats) return;
 
     //get team ids from both drivers
-    const teamId1 = document.querySelector('.normal-driver.clicked').dataset.teamid;
+    const teamId1 = document.querySelector('.normal-driver.clicked:not(.comparing-driver)').dataset.teamid;
     const teamId2 = document.querySelector('.normal-driver.clicked.comparing-driver').dataset.teamid;
     let secondColorSuffix = teamId1 === teamId2 ? '1' : '0';
     let color2 = cssVar(`--new-secondary`)
@@ -1283,9 +1315,11 @@ function updateComparisonUI() {
     // Update Marketability
     const marketabilityPanel = document.getElementById('marketability');
     if (marketabilityPanel) {
-        const driver1 = document.querySelector('.normal-driver.clicked');
+        const driver1 = document.querySelector('.normal-driver.clicked:not(.comparing-driver)');
         const driver2 = document.querySelector('.normal-driver.clicked.comparing-driver');
 
+        console.log("driver1", driver1);
+        console.log("driver2", driver2);
         if (driver1.dataset.marketability && driver2.dataset.marketability) {
             const marketability1 = driver1.dataset.marketability;
             const marketability2 = driver2.dataset.marketability;
@@ -1348,7 +1382,7 @@ function updateComparisonUI() {
     }
 
     // Update Mentality
-    const driver1 = document.querySelector('.normal-driver.clicked');
+    const driver1 = document.querySelector('.normal-driver.clicked:not(.comparing-driver)');
     const driver2 = document.querySelector('.normal-driver.clicked.comparing-driver');
 
     //add the second dataset with the second driver color
@@ -1399,13 +1433,14 @@ function updateComparisonUI() {
     const header = document.querySelector('.upper-section-stats');
     const originalInfo = header.querySelector('.name-and-info');
     const originalOvr = header.querySelector('.special-overall');
+    const originalAgeDetails = header.querySelector('#ageDetails');
 
     // Clone and populate driver 2 info
     let clonedInfo = header.querySelector('.name-and-info.cloned');
     if (!clonedInfo) {
         clonedInfo = originalInfo.cloneNode(true);
         clonedInfo.classList.add('cloned');
-        header.querySelector("#ageDetails").classList.add("d-none");
+        // header.querySelector("#ageDetails").classList.add("d-none");
         header.querySelector("#numberDetails").classList.add("d-none");
         header.querySelector("#availabilityDetails").classList.add("d-none");
         header.appendChild(clonedInfo);
@@ -1419,7 +1454,8 @@ function updateComparisonUI() {
     clonedInfo.querySelector('.driver-info-driver-flag').src = `https://flagsapi.com/${driver2.dataset.nationality}/flat/64.png`;
     clonedInfo.querySelector('.flag-text').textContent = inverted_countries_abreviations[driver2.dataset.nationality] || driver2.dataset.nationality;
     clonedInfo.querySelector('.driver-info-team-logo').src = logos_disc[driver2.dataset.teamid] || logos_disc[0];
-    clonedInfo.querySelector('.team-text').textContent = combined_dict[driver2.dataset.teamid] || "Free Agent";
+    let teamName = combined_dict[driver2.dataset.teamid] || "Free Agent";
+    clonedInfo.querySelector('.team-text').textContent = teamName !== "Visa Cashapp RB" ? teamName : "VCARB";
 
     // Clone and populate driver 2 overall
     let clonedOvr = header.querySelector('.special-overall.cloned');
@@ -1430,6 +1466,19 @@ function updateComparisonUI() {
         const separator = document.createElement('div');
         separator.className = 'stats-header-separator cloned-separator';
         header.insertBefore(separator, clonedInfo);
+        clonedOvr.querySelector(".overall-holder").innerText = calculateOverall(driver2.dataset.stats, "driver");
     }
-    clonedOvr.querySelector(".overall-holder").innerText = calculateOverall(driver2.dataset.stats, "driver");
+
+    let clonedAgeDetails = header.querySelector('#ageDetails.cloned');
+    if (originalAgeDetails && !clonedAgeDetails) {
+        clonedAgeDetails = originalAgeDetails.cloneNode(true);
+        clonedAgeDetails.classList.add('cloned');
+        header.insertBefore(clonedAgeDetails, clonedInfo);
+        const separator = document.createElement('div');
+        separator.className = 'stats-header-separator cloned-separator';
+        header.insertBefore(separator, clonedInfo);
+        //populate age
+        clonedAgeDetails.querySelector('.actual-age').innerText = driver2.dataset.age;
+        clonedAgeDetails.querySelector('.actual-retirement').innerText = driver2.dataset.retirement;
+    }
 }
