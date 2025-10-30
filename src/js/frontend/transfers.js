@@ -276,7 +276,7 @@ export function initFreeDriversElems() {
     ].map(el => {
         const first = el.children[0]?.textContent || "";
         const last = el.children[1]?.textContent || "";
-        const full = (first + " " + last).toLowerCase();
+        const full = (first +  last).toLowerCase();
         return { el, name: full };
     });
 }

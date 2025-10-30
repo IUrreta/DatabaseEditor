@@ -180,8 +180,9 @@ export function initStatsDrivers() {
     editStatsItems = [...document.querySelectorAll(".normal-driver")].map(el => {
         const first = el.children[0]?.children[0]?.textContent || "";
         const last = el.children[0]?.children[1]?.textContent || "";
-        return { el, name: (first + " " + last).toLowerCase() };
+        return { el, name: (first + last).toLowerCase() };
     });
+    console.log("Initialized editStatsItems", editStatsItems);
 }
 
 
@@ -437,6 +438,7 @@ document.querySelector("#nameFilter").addEventListener("input", function (event)
     clearTimeout(timer);
     timer = setTimeout(() => {
         const q = val.trim().toLowerCase();
+        console.log("Filtering with query:", q);
         if (!q) { for (const { el } of editStatsItems) el.classList.remove("d-none"); return; }
         for (const { el, name } of editStatsItems) el.classList.toggle("d-none", !name.includes(q));
     }, 150);
@@ -1245,6 +1247,10 @@ function toggleComparisonMode() {
             indicator.classList.remove("d-none");
         });
 
+        document.querySelectorAll(".shorten-ret").forEach(elem => {
+            elem.innerText = "Retirement"
+        });
+
         // Remove cloned elements
         const clonedInfo = document.querySelector('.name-and-info.cloned');
         if (clonedInfo) clonedInfo.remove();
@@ -1572,5 +1578,9 @@ function updateComparisonUI() {
         //populate age
         clonedAgeDetails.querySelector('.actual-age').innerText = driver2.dataset.age;
         clonedAgeDetails.querySelector('.actual-retirement').innerText = driver2.dataset.retirement;
+
+        document.querySelectorAll(".shorten-ret").forEach(elem => {
+            elem.innerText = "Ret"
+        });
     }
 }
