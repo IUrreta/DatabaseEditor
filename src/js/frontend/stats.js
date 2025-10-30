@@ -19,6 +19,7 @@ const clearIcon2 = document.querySelector("#filterContainer .bi-x");
 let isComparisonModeActive = false;
 let firstDriverStats = null;
 let secondDriverStats = null;
+let numbersAvailable = [];
 
 const compareButton = document.getElementById('compareButton');
 const plusBtn = document.querySelector('.age-holder .bi-plus');
@@ -27,6 +28,9 @@ const ageSpan = document.querySelector('.age-holder .actual-age');
 const plusR = document.querySelector('.retirement-age .bi-plus');
 const minusR = document.querySelector('.retirement-age .bi-dash');
 const inputR = document.querySelector('.retirement-age .actual-retirement');
+let plusNumberBtn = document.querySelector('.number-buttons .bi-plus');
+let minusNumberBtn = document.querySelector('.number-buttons .bi-dash');
+let numberSpan = document.querySelector('.number-holder');
 
 export function setStatPanelShown(value) {
     statPanelShown = value;
@@ -859,6 +863,94 @@ document.querySelectorAll(".bar-container .bi-chevron-left").forEach(function (e
     })
 })
 
+/**
+ * Loads all the numbers into the number menu
+ * @param {Object} nums all numbers array
+ */
+export function loadNumbers(nums) {
+    numbersAvailable = nums;
+}
+
+attachHold(plusNumberBtn, numberSpan, +1, { min: 0, max: 99, });
+attachHold(minusNumberBtn, numberSpan, -1, { min: 0, max: 99 });
+
+
+document.querySelector("#editNameButton").addEventListener("click", function (e) {
+    const btn = e.target;
+    const nameSpan = document.getElementById("driverStatsTitle");
+    const codeSpan = document.getElementById("driverCode");
+
+    if (!btn.classList.contains("editing")) {
+        // --- ENTRAMOS EN MODO EDICIÓN ---
+        btn.className = "bi bi-check editing";
+
+        // Guardar tamaños originales como dataset
+        const nameRect = nameSpan.getBoundingClientRect();
+        const codeRect = codeSpan.getBoundingClientRect();
+        nameSpan.dataset.originalWidth = nameRect.width;
+        nameSpan.dataset.originalHeight = nameRect.height;
+        codeSpan.dataset.originalWidth = codeRect.width;
+        codeSpan.dataset.originalHeight = codeRect.height;
+
+        // Crear textareas
+        const nameInput = document.createElement("textarea");
+        const codeInput = document.createElement("textarea");
+
+        // Asignar valores
+        nameInput.value = nameSpan.innerText.trim();
+        codeInput.value = codeSpan.innerText.trim();
+
+        const newNameWidth = nameRect.width;
+        const newCodeWidth = codeRect.width;
+
+        // Asignar tamaño
+        nameInput.style.width = newNameWidth + "px";
+        nameInput.style.height = nameRect.height + "px";
+        nameSpan.style.width = newNameWidth + "px";
+        nameSpan.style.height = nameRect.height + "px";
+
+        codeInput.style.width = newCodeWidth + "px";
+        codeInput.style.height = codeRect.height + "px";
+        codeSpan.style.width = newCodeWidth + "px";
+        codeSpan.style.height = codeRect.height + "px";
+
+        // Reemplazar contenido
+        nameSpan.innerHTML = "";
+        nameSpan.appendChild(nameInput);
+
+        codeSpan.innerHTML = "";
+        codeSpan.appendChild(codeInput);
+    } 
+    else {
+        // --- GUARDAMOS CAMBIOS ---
+        btn.className = "bi bi-pencil-fill";
+        btn.classList.remove("editing");
+
+        const nameInput = nameSpan.querySelector("textarea");
+        const codeInput = codeSpan.querySelector("textarea");
+
+        // Restaurar tamaño original
+        nameSpan.style.width = nameSpan.dataset.originalWidth + "px";
+        nameSpan.style.height = nameSpan.dataset.originalHeight + "px";
+        codeSpan.style.width = codeSpan.dataset.originalWidth + "px";
+        codeSpan.style.height = codeSpan.dataset.originalHeight + "px";
+
+        // Restaurar texto
+        nameSpan.innerText = nameInput.value.trim();
+        codeSpan.innerText = codeInput.value.trim();
+
+        // Limpiar los datasets
+        delete nameSpan.dataset.originalWidth;
+        delete nameSpan.dataset.originalHeight;
+        delete codeSpan.dataset.originalWidth;
+        delete codeSpan.dataset.originalHeight;
+    }
+});
+
+
+
+
+
 function capitalizeFirstLetter(str) {
     if (!str) return str; // Manejo de cadena vacía
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -1031,9 +1123,9 @@ function createStatsRadarChart(labels) {
             },
             elements: {
                 point: {
-                    radius: 2,         
-                    hoverRadius: 4,     
-                    hitRadius: 12      
+                    radius: 2,
+                    hoverRadius: 4,
+                    hitRadius: 12
                 },
                 line: { tension: 0 }
             }

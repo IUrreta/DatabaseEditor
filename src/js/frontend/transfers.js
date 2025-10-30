@@ -372,26 +372,7 @@ export function manageColor(div, lastName) {
     }
 }
 
-/**
- * Loads all the numbers into the number menu
- * @param {Object} nums all numbers array
- */
-export function loadNumbers(nums) {
-    let numsMenu = document.getElementById("numberMenu")
-    numsMenu.innerHTML = ""
-    nums.forEach(function (elem) {
-        let a = document.createElement("a");
-        a.textContent = elem.toString();
-        a.classList = "dropdown-item"
-        a.style.cursor = "pointer"
-        numsMenu.appendChild(a);
-        a.addEventListener("click", function () {
-            document.getElementById("numberButton").querySelector(".front-gradient").textContent = a.textContent
-        })
-    })
 
-
-}
 
 /**
  * Adds the edit icon
