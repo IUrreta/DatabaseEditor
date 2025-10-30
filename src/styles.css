@@ -1459,6 +1459,10 @@ body.og-theme .dropdown-menu a:hover {
   gap: 15px;
 }
 
+.upper-section-stats.comparison-active:has(.cloned-separator) .age-text{
+  margin-left: 0 !important;
+}
+
 .upper-section-stats.comparison-active:has(.cloned-separator) .bi-pencil-fill{
   display: none !important;
   pointer-events: none;

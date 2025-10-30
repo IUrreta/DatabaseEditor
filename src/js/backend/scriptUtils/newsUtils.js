@@ -340,11 +340,11 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
         return newsList;
     }
 
-    //10% chance of happening,
-    // if (Math.random() < 0.1) {
-    //     turningPointState.raceSubstitutionOpportunities[currentMonth] = "None";
-    //     return newsList;
-    // }
+    //10% chance of happening
+    if (Math.random() > 0.1) {
+        turningPointState.raceSubstitutionOpportunities[currentMonth] = "None";
+        return newsList;
+    }
 
     //get races that are still to be done
     const calendar = queryDB(`SELECT RaceID, TrackID, Day FROM Races WHERE SeasonID = ${daySeason[1]} AND State = 0 ORDER BY Day`, 'allRows');
@@ -489,10 +489,10 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
     }
 
     //10% chance of happening,
-    // if (Math.random() < 0.1) {
-    //     turningPointState.investmentOpportunities[currentMonth] = "None";
-    //     return newsList;
-    // }
+    if (Math.random() < 0.1) {
+        turningPointState.investmentOpportunities[currentMonth] = "None";
+        return newsList;
+    }
 
     //rich countries with interest in motorsport, especially middle eastern
     const investmentCountries = ["China", "Saudi Arabia", "United Arab Emirates", "India", "Russia", "South Africa", "Qatar", "Bahrain", "Singapore", "Vietnam"];
@@ -578,7 +578,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
         }
     }
 
-    // if (currentMonth !== 5 || currentMonth !== 9) return newsList; 
+    if (currentMonth !== 5 || currentMonth !== 9) return newsList; 
 
     const entryId = `turning_point_technical_directive_${currentMonth}`;
 
@@ -587,10 +587,10 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
     }
 
     //60% chance of happening
-    // if (Math.random() < 0.6){
-    //     turningPointState.technicalDirectives[currentMonth] = "None";
-    //     return newsList;
-    // }
+    if (Math.random() < 0.6){
+        turningPointState.technicalDirectives[currentMonth] = "None";
+        return newsList;
+    }
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
 
 
@@ -752,7 +752,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
         }
     }
 
-    //   if (![5, 6, 7].includes(currentMonth)) return newsList;
+      if (![5, 6, 7].includes(currentMonth)) return newsList;
 
     //   // 50% chance
     if (Math.random() >= 0.5) {
@@ -1056,7 +1056,7 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
 
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
 
-    // if (Math.random() > 0.05) return [];
+    if (Math.random() > 0.05) return [];
 
     const raceId = randomPick(last3Races);
     const raceDate = queryDB(`SELECT Day FROM Races WHERE RaceID = ${raceId}`, 'singleValue');

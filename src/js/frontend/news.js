@@ -832,6 +832,42 @@ function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
   newEl.addEventListener('transitionend', newFn);
 }
 
+function addTurningPointContexts(prompt){
+    let saveName = getSaveName();
+    //remove file extension if any
+    saveName = saveName.split('.')[0];
+    let newsName = `${saveName}_news`;
+    const news = JSON.parse(localStorage.getItem(newsName)) || [];
+    const newsWithId = Object.entries(news).map(([id, n]) => ({ id, ...n }));
+    const turningPointsOutcomes = newsWithId.filter(n => n.id.startsWith('turning_point_outcome_'));
+
+    if (turningPointsOutcomes.length > 0) {
+      let number = 1;
+      prompt += `\n\nHere are some other events that happened through the season. Talk about them if relevant to the article:`
+      const turningOutcomesText = turningPointsOutcomes.map(tp => {
+          if (tp.turning_point_type === "positive"){
+            if (tp.id.includes("investment")){
+                return `${number++}. ${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`
+            }
+            else if(tp.id.includes("technical_directive")){
+              return `${number++}. The FIA introduced a technical directive in relation to the ${tp.data.component} because of ${tp.data.reason}.`
+            }
+            else if(tp.id.includes("dsq")){
+              return `${number++}. After the post-race technical inspection of the ${tp.data.country} GP, both cars from ${tp.data.team} were disqualified due to an ilegality with their ${tp.data.component}.`
+            }
+            else if(tp.id.includes("substitution")){
+              return  `${number++}. The race that was going to be held in ${tp.data.originalCountry} was cancelled due to ${tp.data.reason} and was substituted by a race in ${tp.data.substituteCountry}.`
+            }
+            else if(tp.id.includes("transfer")){
+              return  `${number++}. ${tp.data.driver_out?.name} lost his seat at ${tp.data.team} and ${tp.data.driver_in?.name} has been signed to replace him.`;
+            }
+          }
+      }).join("\n");
+      prompt += `\n${turningOutcomesText}`;
+    }
+    return prompt;
+}
+
 
 function buildContextualPrompt(data, config = {}) {
   const {
@@ -975,8 +1011,6 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
     prompt = await contextualizeTurningPointRaceSubstitution(newData, newData.turning_point_type);
   }
 
-  console.log("NEwData:", newData);
-
   const normalDate = excelToDate(newData.date).toISOString().split("T")[0];
 
   prompt += `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. Do not take this as a mandatory instruction, only add quotes if you find them relevant to the context of the article.`
@@ -984,6 +1018,8 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
   prompt = `The current date is ${normalDate} \n\n` + prompt;
 
   prompt += `\nThe title of the article is: "${newData.title}"\n\n Please write a detailed article based on the title and the context provided.`
+
+  prompt = addTurningPointContexts(prompt);
 
   console.log("Final prompt:", prompt);
 
