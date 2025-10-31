@@ -210,6 +210,8 @@ export function getSelectedRecord(type, year) {
     else if (type === "poles") recordTargetColumn = "TotalPoles";
     else if (type === "champs") recordTargetColumn = "TotalChampionshipWins";
     else if (type === "fastestlaps") recordTargetColumn = "TotalFastestLaps";
+    else if (type === "points") recordTargetColumn = "TotalPointsScored";
+    else if (type === "races") recordTargetColumn = "TotalStarts";
 
     if (year === "all") {
         const recordTargetTableBefore = "Staff_Driver_RaceRecordBeforeGameStart";
@@ -271,6 +273,8 @@ export function getSelectedRecord(type, year) {
         //sort again after merging
         merged.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
 
+        console.log("final all-time records:", merged);
+
         return merged;
     }
     else {
@@ -330,6 +334,8 @@ function pickValueFromType(item, type) {
         case "poles": return item.totalPoles ?? 0;
         case "champs": return item.totalChampionshipWins ?? 0;
         case "fastestLaps": return item.totalFastestLaps ?? 0;
+        case "points": return item.totalPointsScored ?? 0;
+        case "races": return item.totalStarts ?? 0;
         default: return 0;
     }
 }

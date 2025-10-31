@@ -7,7 +7,7 @@ import {
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict } from './config';
 import {
-    freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
+    freeDriversDiv, insert_space, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal,
     initFreeDriversElems
 } from './transfers';
@@ -20,7 +20,7 @@ import {
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups,
-    initStatsDrivers
+    initStatsDrivers, loadNumbers
 } from './stats';
 import {
     resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
@@ -309,26 +309,26 @@ function editModeHandler() {
     let new_ovr = calculateOverall(stats, typeOverall);
     document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr
 
-    let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
-    let age = document.querySelector(".actual-age").textContent.split(" ")[1];
+    let retirement = document.querySelector(".actual-retirement").textContent
+    let age = document.querySelector(".actual-age").textContent
     document.querySelector(".clicked").dataset.retirement = retirement;
     let ageGap = parseInt(document.querySelector(".clicked").dataset.age - age);
     document.querySelector(".clicked").dataset.age = age;
-    let newName = document.querySelector("#driverStatsTitle").value
+    let newName = document.querySelector("#driverStatsTitle").value || document.querySelector("#driverStatsTitle").textContent;
     if (newName === document.querySelector(".clicked").dataset.name) {
         newName = "-1"
     }
     else {
         update_name(id, newName)
     }
-    let newCode = document.querySelector("#driverCode").value
+    let newCode = document.querySelector("#driverCode").value || document.querySelector("#driverCode").textContent;
     if (newCode === document.querySelector(".clicked").dataset.code) {
         newCode = "-1"
     }
     else {
         document.querySelector(".clicked").dataset.driverCode = newCode
     }
-    let driverNum = document.querySelector("#numberButton .front-gradient").textContent;
+    let driverNum = document.querySelector(".number-holder").textContent;
     let wants1, superLicense, isRetired;
     document.querySelector(".clicked").dataset.number = driverNum;
     if (document.querySelector("#driverNumber1").checked) {
@@ -2522,4 +2522,155 @@ export async function confirmModal({
 
         bsModal.show();
     });
+}
+
+export function attachHold(btn, el, step = 1, opts = {}) {
+  const min = opts.min ?? -Infinity;
+  const max = opts.max ?? Infinity;
+  const progressEl = opts.progressEl ?? null;
+  const values = Array.isArray(opts.values) && opts.values.length ? opts.values.slice() : null;
+  const loop = !!opts.loop;
+  const onChange = typeof opts.onChange === 'function' ? opts.onChange : () => {};
+
+
+  const initialDelay = opts.initialDelay ?? 400;
+  const tiers = opts.tiers ?? [
+    [0,    250],
+    [750,  150],
+    [1500,  80],
+    [3000,  40],
+  ];
+
+  let timer, start;
+
+  const getText = () => (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') ? (el.value ?? '') : (el.innerText ?? '');
+  const setText = (txt) => {
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.value = String(txt);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    } else {
+      const current = el.innerText || '';
+      // si contiene un número, sustituimos solo el primero; si no, ponemos el texto entero
+      if (/-?\d+(\.\d+)?/.test(current) && typeof txt === 'number') {
+        el.innerText = current.replace(/-?\d+(\.\d+)?/, String(txt));
+      } else {
+        el.innerText = String(txt);
+      }
+    }
+  };
+
+  const getNum = () => {
+    if (values) return NaN; // no aplica
+    const raw = getText();
+    const m = String(raw).match(/-?\d+(\.\d+)?/);
+    return m ? parseFloat(m[0]) : 0;
+  };
+
+  const setNum = (val) => {
+    const clamped = Math.max(min, Math.min(max, val));
+    setText(clamped);
+    updateProgress(clamped);
+    onChange(clamped, currentPercent(clamped));
+  };
+
+  const findCurrentIndex = () => {
+    const raw = String(getText()).trim();
+    // intentamos match estricto; si values numéricos y en el el hay número suelto, los comparamos como string también
+    let idx = values.findIndex(v => String(v) === raw);
+    if (idx === -1) {
+      // si no coincide textual y hay número en el elemento y values son numéricos, intentamos por número
+      const numMatch = raw.match(/-?\d+(\.\d+)?/);
+      if (numMatch && values.every(v => !isNaN(parseFloat(v)))) {
+        const num = parseFloat(numMatch[0]);
+        idx = values.findIndex(v => Number(v) === num);
+      }
+    }
+    return idx === -1 ? 0 : idx;
+  };
+
+  const setIndex = (i) => {
+    const len = values.length;
+    let next = i;
+    if (loop) {
+      next = ((i % len) + len) % len; // wrap-around
+    } else {
+      next = Math.max(0, Math.min(len - 1, i));
+    }
+    const val = values[next];
+    setText(val);
+    updateProgress(next, /*isIndex*/true);
+    onChange(val, currentPercent(val, /*isIndex*/true));
+    return next;
+  };
+
+  const pickInterval = (heldMs) => {
+    let ms = tiers[0][1];
+    for (const [t, interval] of tiers) {
+      if (heldMs >= t) ms = interval; else break;
+    }
+    return ms;
+  };
+
+  const currentPercent = (valOrIdx, isIndex = false) => {
+    // si hay values => % por índice
+    if (values) {
+      const len = values.length;
+      if (len <= 1) return 100;
+      const idx = isIndex ? valOrIdx : values.findIndex(v => String(v) === String(valOrIdx));
+      const i = idx < 0 ? 0 : idx;
+      return Math.round((i / (len - 1)) * 100);
+    }
+    // numérico => % por min/max si finitos
+    if (isFinite(min) && isFinite(max) && max > min) {
+      const v = Number(valOrIdx);
+      const p = ((v - min) / (max - min)) * 100;
+      return Math.round(Math.max(0, Math.min(100, p)));
+    }
+    return 0; // sin rango definido no podemos mapear bien
+  };
+
+  const updateProgress = (valOrIdx, isIndex = false) => {
+    if (!progressEl) return;
+    const p = currentPercent(valOrIdx, isIndex);
+    progressEl.style.width = p + '%';
+    progressEl.ariaValueNow = String(p);
+  };
+
+  const tick = () => {
+    if (values) {
+      const cur = findCurrentIndex();
+      setIndex(cur + (step >= 0 ? +1 : -1));
+    } else {
+      const cur = getNum();
+      setNum(cur + step);
+    }
+  };
+
+  const startLoop = () => {
+    start = performance.now();
+    tick(); // clic inmediato
+    const loopFn = () => {
+      const held = performance.now() - start;
+      timer = setTimeout(() => {
+        tick();
+        loopFn();
+      }, pickInterval(held));
+    };
+    timer = setTimeout(loopFn, initialDelay);
+  };
+
+  const stopLoop = () => {
+    clearTimeout(timer);
+    timer = null;
+  };
+
+  const downEv = 'onpointerdown' in window ? 'pointerdown' : 'mousedown';
+  const upEv   = 'onpointerup'   in window ? 'pointerup'   : 'mouseup';
+  const leaveEv= 'onpointerleave'in window ? 'pointerleave': 'mouseleave';
+  const cancelEv='pointercancel';
+
+  btn.addEventListener(downEv, (e) => { e.preventDefault(); startLoop(); });
+  document.addEventListener(upEv, stopLoop, true);
+  document.addEventListener(cancelEv, stopLoop, true);
+  btn.addEventListener(leaveEv, stopLoop, true);
 }

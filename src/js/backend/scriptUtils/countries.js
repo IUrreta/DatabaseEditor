@@ -249,4 +249,7 @@ export const countries_abreviations = {
     "Zambia": "ZM",
     "Zimbabwe": "ZW"
 }
-   
+
+export const inverted_countries_abreviations = Object.fromEntries(
+    Object.entries(countries_abreviations).map(([key, value]) => [value, key])
+);
