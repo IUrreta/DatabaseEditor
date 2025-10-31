@@ -449,7 +449,7 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
     };
 
     const title = generateTurningPointTitle(titleData, 105, "original");
-    const excelDate = dateToExcel(new Date(daySeason[1], currentMonth, Math.floor(Math.random() * 28) + 1));
+    const excelDate = dateToExcel(new Date(daySeason[1], currentMonth - 1, Math.floor(Math.random() * 28) + 1));
     turningPointState.raceSubstitutionOpportunities[currentMonth] = titleData;
     const newsEntry = {
         id: newEntryId,
@@ -488,8 +488,8 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
         return newsList;
     }
 
-    //10% chance of happening,
-    if (Math.random() < 0.1) {
+    //90% chance of NOT happening,
+    if (Math.random() >= 0.1) {
         turningPointState.investmentOpportunities[currentMonth] = "None";
         return newsList;
     }
@@ -539,7 +539,7 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
     const title = generateTurningPointTitle(titleData, 102, "original");
 
     const image = getImagePath(null, countryCode, "investment");
-    const excelDate = dateToExcel(new Date(daySeason[1], currentMonth, Math.floor(Math.random() * 28) + 1));
+    const excelDate = dateToExcel(new Date(daySeason[1], currentMonth - 1, Math.floor(Math.random() * 28) + 1));
 
     turningPointState.investmentOpportunities[currentMonth] = {
         country: countryName,
@@ -569,7 +569,6 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
 
 function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
     let newsList = [];
-    currentMonth = 6;
     //get previous technical directive turning point news
     for (let month of [6, 9]) {
         const entryId = `turning_point_technical_directive_${month}`;
@@ -578,7 +577,9 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
         }
     }
 
-    if (currentMonth !== 5 || currentMonth !== 9) return newsList; 
+    if ((currentMonth !== 6 && currentMonth !== 9) || turningPointState.technicalDirectives[currentMonth] === "None") {
+        return newsList;
+    }
 
     const entryId = `turning_point_technical_directive_${currentMonth}`;
 
@@ -604,7 +605,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
         teamIds.push(32);
     }
 
-    const excelDate = dateToExcel(new Date(daySeason[1], currentMonth, Math.floor(Math.random() * 28) + 1));
+    const excelDate = dateToExcel(new Date(daySeason[1], currentMonth - 1, Math.floor(Math.random() * 28) + 1));
 
 
     const performance = getPerformanceAllTeams(excelDate, null, globals.isCreateATeam)
@@ -745,20 +746,20 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
 function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, savednews = {}, turningPointState = {}) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     let newsList = [];
-    for (let month = 6; month <= 8; month++) {
+    for (let month = 5; month <= 7; month++) {
         const entryId = `turning_point_transfer_${month}`;
         if (savednews[entryId]) {
             newsList.push({id: entryId, ...savednews[entryId]});
         }
     }
 
-      if (![5, 6, 7].includes(currentMonth)) return newsList;
+    if (![5, 6, 7].includes(currentMonth) || turningPointState.transfers[currentMonth]) {
+        return newsList;
+    }
 
     //   // 50% chance
     if (Math.random() >= 0.5) {
-
         turningPointState.transfers[currentMonth] = "None";
-
         return newsList;
     }
 
@@ -970,7 +971,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
         }
     }
 
-    const excelDate = dateToExcel(new Date(daySeason[1], 6, Math.floor(Math.random() * 28) + 1));
+    const excelDate = dateToExcel(new Date(daySeason[1], currentMonth - 1, Math.floor(Math.random() * 28) + 1));
 
     let driverOutName = driverOut ? queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ${driverOut[0]}`, 'singleRow') : null;
     driverOutName.push(driverOut[0], driverOut[1]);
@@ -1033,45 +1034,52 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
     const last3Races = racesDone.slice(-3);
     let newsList = [];
 
-    //if the last 3 races are not in turningPointState.checkedRaces, add them, if they all are, return the rray with ilegal races news
-    if (turningPointState.checkedRaces && last3Races.every(r => turningPointState.checkedRaces.includes(r))) {
-        //for every ilegal race, get savedNews entry
-        const ilegalRacesNewsArray = turningPointState.ilegalRaces.map(raceData => {
+    // Populate newsList with existing news from savednews that correspond to illegal races
+    if (turningPointState.ilegalRaces) {
+        turningPointState.ilegalRaces.forEach(raceData => {
             const entryId = `turning_point_dsq_${raceData.race_id}`;
             if (savednews[entryId]) {
                 newsList.push({ id: entryId, ...savednews[entryId] });
-                return { id: entryId, ...savednews[entryId] };
             }
         });
-
-        return ilegalRacesNewsArray;
-
     }
 
+    const racesNotChecked = [];
     for (const r of last3Races) {
         if (!turningPointState.checkedRaces.includes(r)) {
+            racesNotChecked.push(r);
             turningPointState.checkedRaces.push(r);
         }
     }
 
+    if (racesNotChecked.length === 0) {
+        return newsList; // All recent races checked, return existing news
+    }
+
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
 
-    if (Math.random() > 0.05) return [];
+    if (Math.random() > 0.05) {
+        return newsList; // Random chance to not generate
+    }
 
-    const raceId = randomPick(last3Races);
+    const raceId = randomPick(racesNotChecked); // Pick from only the new races to check
     const raceDate = queryDB(`SELECT Day FROM Races WHERE RaceID = ${raceId}`, 'singleValue');
     const teamsWithPoints = queryDB(`SELECT TeamID, SUM(Points) FROM Races_Results WHERE RaceID = ${raceId} AND Points > 0 GROUP BY TeamID`, 'allRows');
 
-    if (!teamsWithPoints.length) return [];
+    if (!teamsWithPoints.length) {
+        return newsList;
+    }
     const teamRow = randomPick(teamsWithPoints);
 
     const teamId = teamRow[0];
     const teamName = combined_dict[teamId] || "Unknown Team";
-    const teamPoints = teamRow[1];
 
     const entryId = `turning_point_dsq_${raceId}`;
     if (savednews[entryId]) {
-        newsList.push({ id: entryId, ...savednews[entryId] });
+        // This case should ideally not be hit if logic is correct, but as a safeguard:
+        if (!newsList.some(item => item.id === entryId)) {
+            newsList.push({ id: entryId, ...savednews[entryId] });
+        }
         return newsList;
     }
 
@@ -1117,8 +1125,9 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
         type: "turning_point_dsq"
     }
 
+    newsList.push(newEntry);
 
-    return [newEntry];
+    return newsList;
 }
 
 function getMaxPointsForRace(raceId, pointsSchema, seasonId = null) {
@@ -1269,7 +1278,7 @@ function generateChampionMilestones(racesDone, savednews = {}) {
                     currentSeason
                 );
 
-                if (statusAtRace?.clinchThisRace) {
+                if (statusAtRace?.clinchThisRace && !wasAlreadyChampionBeforeThisRace) {
                     const newsId = `${currentSeason}_potential_champion_${race.id}`;
                     if (savednews && savednews[newsId]) {
                         out.push({ id: newsId, ...savednews[newsId] });
