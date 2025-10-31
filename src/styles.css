@@ -6063,6 +6063,7 @@ input.disabled {
   flex-direction: column;
   justify-content: flex-start;
   color: transparent;
+  position: relative;
   /* Necesario para aplicar el gradiente */
 
 }
@@ -6078,6 +6079,32 @@ input.disabled {
   -webkit-background-clip: text;
   background-size: 200% 200%;
   animation: gradient-move-title 6s infinite linear;
+}
+
+.toolbar-title.nightly span{
+  display: inline-block;
+  line-height: 1;
+  background: linear-gradient(to right, var(--new-secondary), var(--text-general), var(--new-secondary));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-size: 200% 200%;
+  animation: gradient-move-title 6s infinite linear;
+}
+
+.nightly-icon{
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 14px;
+  height: 14px;
+  font-size: 10px;
+  background-color: var(--new-secondary);
+  border-radius: 50%;
+  color: var(--elements);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @keyframes gradient-move-title {

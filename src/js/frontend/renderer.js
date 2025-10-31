@@ -796,7 +796,7 @@ function ensureTurningPointsStructure(saveName) {
     const baseName = saveName.split(".")[0];
     const key = `${baseName}_tps`;
 
-    if (localStorage.getItem(key)){
+    if (localStorage.getItem(key)) {
         let data = JSON.parse(localStorage.getItem(key));
         return data;
     }
@@ -809,11 +809,11 @@ function ensureTurningPointsStructure(saveName) {
             7: null,
             8: null
         },
-        technicalDirectives:{
+        technicalDirectives: {
             6: null,
             9: null
         },
-        investmentOpportunities:{
+        investmentOpportunities: {
             4: null,
             5: null,
             6: null,
@@ -823,7 +823,7 @@ function ensureTurningPointsStructure(saveName) {
             10: null,
             11: null
         },
-        raceSubstitutionOpportunities:{
+        raceSubstitutionOpportunities: {
             4: null,
             5: null,
             6: null,
@@ -1933,20 +1933,20 @@ patreonInput.addEventListener('change', async (e) => {
 
 
 async function isPatronSignatureValid() {
-  const stored = localStorage.getItem('patreonKey');
-  if (!stored) return { status: "missing", role: null };
+    const stored = localStorage.getItem('patreonKey');
+    if (!stored) return { status: "missing", role: null };
 
-  try {
-    const { dataString, signature } = JSON.parse(stored);
-    if (!dataString || !signature) return { status: "invalid", role: null };
+    try {
+        const { dataString, signature } = JSON.parse(stored);
+        if (!dataString || !signature) return { status: "invalid", role: null };
 
-    const valid = await verifySignature(dataString, signature, PUBLIC_KEY);
-    const role = valid ? JSON.parse(dataString).role : null;
-    return { status: valid ? "valid" : "invalid", role };
-  } catch (err) {
-    console.error("Error verificando firma:", err);
-    return { status: "invalid", role: null };
-  }
+        const valid = await verifySignature(dataString, signature, PUBLIC_KEY);
+        const role = valid ? JSON.parse(dataString).role : null;
+        return { status: valid ? "valid" : "invalid", role };
+    } catch (err) {
+        console.error("Error verificando firma:", err);
+        return { status: "invalid", role: null };
+    }
 }
 
 async function checkPatreonStatus() {
@@ -2032,27 +2032,27 @@ function manageNewsStatus(valid) {
 
 }
 
-function checkGenerableNews(validSignature){
+function checkGenerableNews(validSignature) {
     let canGenerate = "no";
-    if(validSignature.status === "valid"){
+    if (validSignature.status === "valid") {
         canGenerate = "yes";
-        if (validSignature.role === "insider"){
+        if (validSignature.role === "insider") {
             newsAvailable.normal = true;
             newsAvailable.turning = true;
         }
-        else{
+        else {
             newsAvailable.normal = true;
             newsAvailable.turning = false;
         }
     }
-    else{
+    else {
         const firstNewsEntered = localStorage.getItem('firstNewsEntered');
         if (!firstNewsEntered) {
             const today = new Date().toISOString().split('T')[0];
             localStorage.setItem('firstNewsEntered', today);
             canGenerate = "provisional";
         }
-        else{
+        else {
             const firstDate = new Date(firstNewsEntered);
             const now = new Date();
             const diffTime = Math.abs(now - firstDate);
@@ -2157,6 +2157,23 @@ function hexToArrayBuffer(hex) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const hostname = window.location.hostname;
+    const isNightly = hostname.includes("nightly");
+    
+
+    if (isNightly) {
+        const favicon = document.querySelector('link[rel="icon"]'); //testing
+        if (favicon) favicon.href = "../assets/images/logoNightly.png";
+
+        const logoImg = document.querySelector(".toolbar-logo");
+        if (logoImg) logoImg.src = "../assets/images/logoNightly.svg";
+        document.querySelector(".toolbar-title").classList.add("nightly");
+
+        const moonIcon = document.createElement("i");
+        moonIcon.className = "bi bi-moon-stars-fill nightly-icon";
+        document.querySelector(".toolbar-title").appendChild(moonIcon);
+    }
+
     versionNow = APP_VERSION;
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
@@ -2446,63 +2463,63 @@ document.querySelectorAll(".team-logo-container").forEach(function (elem) {
 });
 
 export async function confirmModal({
-  title,
-  body,
-  confirmText,
-  cancelText
+    title,
+    body,
+    confirmText,
+    cancelText
 }) {
-  const modalEl = document.getElementById('confirmModal');
-  const bsModal  = new bootstrap.Modal(modalEl, { keyboard: false });
+    const modalEl = document.getElementById('confirmModal');
+    const bsModal = new bootstrap.Modal(modalEl, { keyboard: false });
 
-  // Elementos
-  const confirmTitle = modalEl.querySelector('.modal-title');
-  const confirmBody  = modalEl.querySelector('.modal-body p');
-  const confirmBtn   = modalEl.querySelector('.confirm-modal');
-  const cancelBtn    = modalEl.querySelector('.close-modal');
+    // Elementos
+    const confirmTitle = modalEl.querySelector('.modal-title');
+    const confirmBody = modalEl.querySelector('.modal-body p');
+    const confirmBtn = modalEl.querySelector('.confirm-modal');
+    const cancelBtn = modalEl.querySelector('.close-modal');
 
-  if (confirmTitle) confirmTitle.textContent = title;
-  if (confirmBody)  confirmBody.textContent  = body;
+    if (confirmTitle) confirmTitle.textContent = title;
+    if (confirmBody) confirmBody.textContent = body;
 
-  if (confirmBtn) {
-    if (confirmText) {
-      confirmBtn.textContent = confirmText;
-      confirmBtn.classList.remove('d-none');
-    } else {
-      confirmBtn.classList.add('d-none');
+    if (confirmBtn) {
+        if (confirmText) {
+            confirmBtn.textContent = confirmText;
+            confirmBtn.classList.remove('d-none');
+        } else {
+            confirmBtn.classList.add('d-none');
+        }
     }
-  }
 
-  if (cancelBtn) {
-    if (cancelText) {
-      cancelBtn.textContent = cancelText;
-      cancelBtn.classList.remove('d-none');
-    } else {
-      cancelBtn.classList.add('d-none');
+    if (cancelBtn) {
+        if (cancelText) {
+            cancelBtn.textContent = cancelText;
+            cancelBtn.classList.remove('d-none');
+        } else {
+            cancelBtn.classList.add('d-none');
+        }
     }
-  }
 
-  return new Promise((resolve) => {
-    let clicked = false;
-    const controller = new AbortController();
-    const { signal } = controller;
+    return new Promise((resolve) => {
+        let clicked = false;
+        const controller = new AbortController();
+        const { signal } = controller;
 
-    confirmBtn?.addEventListener('click', () => {
-      clicked = true;
-      resolve(true);
-      bsModal.hide();
-    }, { once: true, signal });
+        confirmBtn?.addEventListener('click', () => {
+            clicked = true;
+            resolve(true);
+            bsModal.hide();
+        }, { once: true, signal });
 
-    cancelBtn?.addEventListener('click', () => {
-      clicked = true;
-      resolve(false);
-      bsModal.hide();
-    }, { once: true, signal });
+        cancelBtn?.addEventListener('click', () => {
+            clicked = true;
+            resolve(false);
+            bsModal.hide();
+        }, { once: true, signal });
 
-    modalEl.addEventListener('hidden.bs.modal', () => {
-      if (!clicked) resolve(false);
-      controller.abort();
-    }, { once: true });
+        modalEl.addEventListener('hidden.bs.modal', () => {
+            if (!clicked) resolve(false);
+            controller.abort();
+        }, { once: true });
 
-    bsModal.show();
-  });
+        bsModal.show();
+    });
 }
