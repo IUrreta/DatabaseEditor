@@ -502,7 +502,7 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
 
 
     const globals = getGlobals();
-    let teamIds = [2, 3, 4, 5, 6, 7, 8, 9, 10] //exclude ferrari
+    let teamIds = [2, 3, 5, 6, 7, 8, 9, 10] //exclude ferrari abd mercedes
     if (globals.isCreateATeam) {
         teamIds.push(32);
     }
@@ -1965,7 +1965,7 @@ export function generateTransferRumorsNews(offers, savedNews) {
         return null;
     }
 
-    const date = dateToExcel(new Date(seasonYear, 9, 10));
+    const date = dateToExcel(new Date(seasonYear, 7, 10));
 
     const validOffers = offers.others.filter(item => item.state !== 'Signed');
 
@@ -2053,11 +2053,6 @@ export function generateTransferRumorsNews(offers, savedNews) {
 
 
     newsList.push(sillySeasonNew);
-
-    //if 6th september has passed
-    if (realDay.getMonth() + 1 < 9 || (realDay.getMonth() + 1 === 9 && realDay.getDate() < 6)) {
-        return newsList;
-    }
 
     return newsList
 

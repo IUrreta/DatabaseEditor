@@ -225,6 +225,7 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
 
   });
 }
+
 function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbuttonContainer, newsAvailable) {
   let approveButton, randomButton, cancelButton;
 
@@ -348,6 +349,30 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       saveNews(newsList);
     });
 
+
+
+    randomButton.addEventListener('click', () => {
+      // Evita dobles clics
+      randomButton.classList.add('tp-button-selected');
+      const span = document.createElement('span');
+      span.classList.add('tp-result-span');
+      span.innerText = 'Deciding...';
+      randomButton.innerHTML = '';
+      randomButton.appendChild(span);
+      randomButton.style.pointerEvents = 'none';
+
+      // 50-50
+      const approve = Math.random() < 0.5;
+
+      if (approve && approveButton?.isConnected) {
+        approveButton.click();
+      } else if (cancelButton?.isConnected) {
+        cancelButton.click();
+      } else if (approveButton) {
+        approveButton.click();
+      }
+    });
+
     readbuttonContainer.appendChild(tpDiv);
   }
   else if (news.turning_point_type === "approved") {
@@ -399,6 +424,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
     cancelButton = swap(cancelButton);
   }
 }
+
 function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
   const isTurning =
     news.turning_point_type === 'original' ||
@@ -832,40 +858,40 @@ function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
   newEl.addEventListener('transitionend', newFn);
 }
 
-function addTurningPointContexts(prompt){
-    let saveName = getSaveName();
-    //remove file extension if any
-    saveName = saveName.split('.')[0];
-    let newsName = `${saveName}_news`;
-    const news = JSON.parse(localStorage.getItem(newsName)) || [];
-    const newsWithId = Object.entries(news).map(([id, n]) => ({ id, ...n }));
-    const turningPointsOutcomes = newsWithId.filter(n => n.id.startsWith('turning_point_outcome_'));
+function addTurningPointContexts(prompt) {
+  let saveName = getSaveName();
+  //remove file extension if any
+  saveName = saveName.split('.')[0];
+  let newsName = `${saveName}_news`;
+  const news = JSON.parse(localStorage.getItem(newsName)) || [];
+  const newsWithId = Object.entries(news).map(([id, n]) => ({ id, ...n }));
+  const turningPointsOutcomes = newsWithId.filter(n => n.id.startsWith('turning_point_outcome_'));
 
-    if (turningPointsOutcomes.length > 0) {
-      let number = 1;
-      prompt += `\n\nHere are some other events that happened through the season. Talk about them if relevant to the article:`
-      const turningOutcomesText = turningPointsOutcomes.map(tp => {
-          if (tp.turning_point_type === "positive"){
-            if (tp.id.includes("investment")){
-                return `${number++}. ${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`
-            }
-            else if(tp.id.includes("technical_directive")){
-              return `${number++}. The FIA introduced a technical directive in relation to the ${tp.data.component} because of ${tp.data.reason}.`
-            }
-            else if(tp.id.includes("dsq")){
-              return `${number++}. After the post-race technical inspection of the ${tp.data.country} GP, both cars from ${tp.data.team} were disqualified due to an ilegality with their ${tp.data.component}.`
-            }
-            else if(tp.id.includes("substitution")){
-              return  `${number++}. The race that was going to be held in ${tp.data.originalCountry} was cancelled due to ${tp.data.reason} and was substituted by a race in ${tp.data.substituteCountry}.`
-            }
-            else if(tp.id.includes("transfer")){
-              return  `${number++}. ${tp.data.driver_out?.name} lost his seat at ${tp.data.team} and ${tp.data.driver_in?.name} has been signed to replace him.`;
-            }
-          }
-      }).join("\n");
-      prompt += `\n${turningOutcomesText}`;
-    }
-    return prompt;
+  if (turningPointsOutcomes.length > 0) {
+    let number = 1;
+    prompt += `\n\nHere are some other events that happened through the season. Talk about them if relevant to the article:`
+    const turningOutcomesText = turningPointsOutcomes.map(tp => {
+      if (tp.turning_point_type === "positive") {
+        if (tp.id.includes("investment")) {
+          return `${number++}. ${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`
+        }
+        else if (tp.id.includes("technical_directive")) {
+          return `${number++}. The FIA introduced a technical directive in relation to the ${tp.data.component} because of ${tp.data.reason}.`
+        }
+        else if (tp.id.includes("dsq")) {
+          return `${number++}. After the post-race technical inspection of the ${tp.data.country} GP, both cars from ${tp.data.team} were disqualified due to an ilegality with their ${tp.data.component}.`
+        }
+        else if (tp.id.includes("substitution")) {
+          return `${number++}. The race that was going to be held in ${tp.data.originalCountry} was cancelled due to ${tp.data.reason} and was substituted by a race in ${tp.data.substituteCountry}.`
+        }
+        else if (tp.id.includes("transfer")) {
+          return `${number++}. ${tp.data.driver_out?.name} lost his seat at ${tp.data.team} and ${tp.data.driver_in?.name} has been signed to replace him.`;
+        }
+      }
+    }).join("\n");
+    prompt += `\n${turningOutcomesText}`;
+  }
+  return prompt;
 }
 
 
@@ -1007,7 +1033,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
   else if (newData.type === "turning_point_investment" || newData.type === "turning_point_outcome_investment") {
     prompt = await contextualizeTurningPointInvestment(newData, newData.turning_point_type);
   }
-  else if( newData.type === "turning_point_race_substitution" || newData.type === "turning_point_outcome_race_substitution") {
+  else if (newData.type === "turning_point_race_substitution" || newData.type === "turning_point_outcome_race_substitution") {
     prompt = await contextualizeTurningPointRaceSubstitution(newData, newData.turning_point_type);
   }
 

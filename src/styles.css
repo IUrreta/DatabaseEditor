@@ -4690,7 +4690,8 @@ body.light-theme .flag, body.light-theme .flag-header img{
   transition: border-color 0.15s, background-color 0.15s;
   align-items: center;
   min-height: 66px;
-  box-shadow: 0px 0px 10px 1px var(--box-shadow);
+  box-shadow: var(--shadow-s);
+  border: none;
 }
 
 .one-statH2H i{
@@ -4867,7 +4868,7 @@ body.light-theme .flag, body.light-theme .flag-header img{
   justify-content: center;
   align-items: center;
   transition: background-color 0.15s, color 0.15s;
-  box-shadow: 0px 0px 10px 1px var(--box-shadow);
+  box-shadow: var(--shadow-s);
   position: relative;
 }
 
@@ -5770,9 +5771,9 @@ input.disabled {
   border-radius: 10px;
   width: 100%;
   display: grid;
-  background-color: var(--superficials);
+  gap: 12px;
+  background-color: transparent;
   grid-template-columns: repeat(4, 1fr);
-  box-shadow: 0px 0px 10px 2px var(--box-shadow);
 }
 
 
@@ -7877,16 +7878,17 @@ input.disabled {
 
 
 .H2Hradio {
-  border-bottom: 2px solid transparent;
+  border-bottom: none;
   color: var(--text-general);
   background-color: transparent;
-  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+  transition: color 0.15s, background-color 0.15s;
   height: 28px;
   font-size: 16px;
-  padding: 0 3px;
+  padding: 1px 5px;
   cursor: pointer;
   z-index: 100;
   position: relative;
+  border-radius: 5px;
 }
 
 .performance-graph-button {
@@ -7909,16 +7911,18 @@ input.disabled {
 }
 
 .GraphButton {
-  border-bottom: 2px solid transparent;
+  border-bottom: none;
   color: var(--text-general);
   background-color: transparent;
-  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+  transition:  color 0.15s, background-color 0.15s;
   height: 28px;
   font-size: 16px;
   padding: 0 3px;
   cursor: pointer;
   z-index: 100;
   position: relative;
+  border-radius: 5px;
+  padding: 1px 5px;
 }
 
 .buttons-drivers-modal {
@@ -7927,21 +7931,25 @@ input.disabled {
 }
 
 .H2Hradio:hover {
-  border-bottom: 2px solid var(--new-primary)
+  background-color: var(--new-primary-transparent);
 }
 
 .GraphButton:hover {
-  border-bottom: 2px solid var(--new-secondary)
+  background-color: var(--new-secondary-transparent);
 }
 
 .H2Hradio.activated {
-  border-bottom: 2px solid var(--new-primary);
+  background-color: var(--new-primary-transparent);
   color: var(--text-selected);
 }
 
 .GraphButton.activated {
-  border-bottom: 2px solid var(--new-secondary);
+  background-color: var(--new-secondary-transparent);
   color: var(--text-selected-secondary);
+}
+
+.H2Hradio:active, .GraphButton:active {
+  transform: scale(0.95);
 }
 
 .no-pointer {
@@ -7985,7 +7993,6 @@ input.disabled {
   background-color: var(--elements);
   border-radius: 10px;
   padding: 8px;
-  margin: 8px;
   color: var(--text-general);
   transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   position: relative;
@@ -7993,14 +8000,13 @@ input.disabled {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 0 10px 1px var(--box-shadow);
+  box-shadow: var(--shadow-s);
 }
 
 .modal-team {
   background-color: var(--elements);
   border-radius: 10px;
   padding: 2px 8px;
-  margin: 8px;
   color: var(--text-general);
   transition: border-color 0.15s, color 0.15s, background-color 0.15s;
   position: relative;
@@ -8008,7 +8014,7 @@ input.disabled {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 0 10px 1px var(--box-shadow);
+  box-shadow: var(--shadow-s);
 }
 
 .free-driver .custom-icon {
