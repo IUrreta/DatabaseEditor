@@ -864,6 +864,11 @@ a:has(.patreon-button){
   will-change: border;
 }
 
+.version-panel.nightly{
+  color: var(--new-secondary) !important;
+  pointer-events: none;
+}
+
 .status:has(.footer-notification.show) .version-panel {
   border-left: 2px solid var(--separator);
 }

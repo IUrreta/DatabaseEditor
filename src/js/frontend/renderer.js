@@ -2159,7 +2159,7 @@ function hexToArrayBuffer(hex) {
 document.addEventListener('DOMContentLoaded', () => {
     const hostname = window.location.hostname;
     const isNightly = hostname.includes("nightly");
-    
+    versionNow = APP_VERSION;
 
     if (isNightly) {
         const favicon = document.querySelector('link[rel="icon"]'); //testing
@@ -2172,9 +2172,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const moonIcon = document.createElement("i");
         moonIcon.className = "bi bi-moon-stars-fill nightly-icon";
         document.querySelector(".toolbar-title").appendChild(moonIcon);
+
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = String(now.getFullYear());
+        //remove -dev from APP_VERSION
+        versionNow = `${APP_VERSION.replace("-dev", "")}-nightly-${day}-${month}-${year}`;
+        versionPanel.classList.add("nightly");
     }
 
-    versionNow = APP_VERSION;
+
+    
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
