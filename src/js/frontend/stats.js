@@ -602,6 +602,10 @@ export function listenersStaffGroups() {
                 document.getElementById("driverSpecialAttributes").classList.remove("d-none")
                 document.querySelector("#superLicenseSwitch").classList.remove("d-none")
                 document.querySelector("#driverCode").classList.remove("d-none")
+
+                document.querySelector("#numberDetails").previousElementSibling.classList.remove("d-none")
+                document.querySelector("#numberDetails").classList.remove("d-none")
+                document.querySelector(".upper-section-stats").classList.add("showing-driver")
             }
             else {
                 typeOverall = "staff"
@@ -621,7 +625,12 @@ export function listenersStaffGroups() {
                     typeEdit = "4"
                 }
 
+                document.querySelector("#numberDetails").previousElementSibling.classList.add("d-none")
+                document.querySelector("#numberDetails").classList.add("d-none")
+                document.querySelector(".upper-section-stats").classList.remove("showing-driver")
+
             }
+
             staffButton.innerHTML = staffSelected;
             change_elegibles(item.dataset.spacestats)
             document.querySelectorAll(".staff-list").forEach(function (elem) {
@@ -1283,6 +1292,7 @@ function resetComparisonUI() {
 
         const input = panel.querySelector('input.custom-input-number');
         if (input) {
+            input.removeAttribute('readonly');
             input.classList.remove('comparing-tag');
             // Also remove any team color classes that might have been added
             for (const key in team_dict) {
@@ -1330,7 +1340,10 @@ function resetComparisonUI() {
         if (minusButton) minusButton.style.display = '';
 
         const comparisonValueInput = marketabilityPanel.querySelector('.custom-input-number');
-        if (comparisonValueInput) comparisonValueInput.className = "custom-input-number elegible";
+        if (comparisonValueInput){
+            comparisonValueInput.removeAttribute('readonly');
+            comparisonValueInput.className = "custom-input-number elegible";
+        } 
     }
 
     // Reset Mentality
@@ -1392,6 +1405,7 @@ function updateComparisonUI() {
 
 
             const existingValueInput = statNumberDiv.querySelector('input.custom-input-number:not(.comparison-stat-value)');
+            existingValueInput.setAttribute('readonly', 'readonly');
             if (stats2[index] > stats1[index]) {
                 comparisonValueInput.classList.add(`comparing-tag`, `secondary`);
                 existingValueInput.classList.remove("comparing-tag", "primary");
@@ -1416,8 +1430,6 @@ function updateComparisonUI() {
         const driver1 = document.querySelector('.normal-driver.clicked:not(.comparing-driver)');
         const driver2 = document.querySelector('.normal-driver.clicked.comparing-driver');
 
-        console.log("driver1", driver1);
-        console.log("driver2", driver2);
         if (driver1.dataset.marketability && driver2.dataset.marketability) {
             const marketability1 = driver1.dataset.marketability;
             const marketability2 = driver2.dataset.marketability;
@@ -1456,12 +1468,11 @@ function updateComparisonUI() {
             comparisonValueInput.value = marketability2;
 
             const existingValueInput = statNumberDiv.querySelector('input.custom-input-number:not(.comparison-stat-value)');
+            existingValueInput.setAttribute('readonly', 'readonly');
             if (parseInt(marketability2) > parseInt(marketability1)) {
-                console.log("Marketability2 is greater than Marketability1");
                 comparisonValueInput.classList.add(`comparing-tag`, `secondary`);
                 existingValueInput.classList.remove("comparing-tag", "primary");
             } else if (parseInt(marketability2) < parseInt(marketability1)) {
-                console.log("Marketability1 is greater than Marketability2");
                 comparisonValueInput.classList.remove("comparing-tag", "secondary");
                 existingValueInput.classList.add("comparing-tag", "primary");
             }
@@ -1564,8 +1575,9 @@ function updateComparisonUI() {
         const separator = document.createElement('div');
         separator.className = 'stats-header-separator cloned-separator';
         header.insertBefore(separator, clonedInfo);
-        clonedOvr.querySelector(".overall-holder").innerText = calculateOverall(driver2.dataset.stats, "driver");
     }
+    if (clonedOvr) clonedOvr.querySelector(".overall-holder").innerText = calculateOverall(driver2.dataset.stats, "driver");
+
 
     let clonedAgeDetails = header.querySelector('#ageDetails.cloned');
     if (originalAgeDetails && !clonedAgeDetails) {
@@ -1575,12 +1587,13 @@ function updateComparisonUI() {
         const separator = document.createElement('div');
         separator.className = 'stats-header-separator cloned-separator';
         header.insertBefore(separator, clonedInfo);
-        //populate age
-        clonedAgeDetails.querySelector('.actual-age').innerText = driver2.dataset.age;
-        clonedAgeDetails.querySelector('.actual-retirement').innerText = driver2.dataset.retirement;
 
         document.querySelectorAll(".shorten-ret").forEach(elem => {
             elem.innerText = "Ret"
         });
+    }
+    if (clonedAgeDetails) {
+        clonedAgeDetails.querySelector('.actual-age').innerText = driver2.dataset.age;
+        clonedAgeDetails.querySelector('.actual-retirement').innerText = driver2.dataset.retirement;
     }
 }

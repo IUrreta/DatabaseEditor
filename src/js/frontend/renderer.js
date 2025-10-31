@@ -309,26 +309,26 @@ function editModeHandler() {
     let new_ovr = calculateOverall(stats, typeOverall);
     document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr
 
-    let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
-    let age = document.querySelector(".actual-age").textContent.split(" ")[1];
+    let retirement = document.querySelector(".actual-retirement").textContent
+    let age = document.querySelector(".actual-age").textContent
     document.querySelector(".clicked").dataset.retirement = retirement;
     let ageGap = parseInt(document.querySelector(".clicked").dataset.age - age);
     document.querySelector(".clicked").dataset.age = age;
-    let newName = document.querySelector("#driverStatsTitle").value
+    let newName = document.querySelector("#driverStatsTitle").value || document.querySelector("#driverStatsTitle").textContent;
     if (newName === document.querySelector(".clicked").dataset.name) {
         newName = "-1"
     }
     else {
         update_name(id, newName)
     }
-    let newCode = document.querySelector("#driverCode").value
+    let newCode = document.querySelector("#driverCode").value || document.querySelector("#driverCode").textContent;
     if (newCode === document.querySelector(".clicked").dataset.code) {
         newCode = "-1"
     }
     else {
         document.querySelector(".clicked").dataset.driverCode = newCode
     }
-    let driverNum = document.querySelector("#numberButton .front-gradient").textContent;
+    let driverNum = document.querySelector(".number-holder").textContent;
     let wants1, superLicense, isRetired;
     document.querySelector(".clicked").dataset.number = driverNum;
     if (document.querySelector("#driverNumber1").checked) {

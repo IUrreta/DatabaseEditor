@@ -1609,13 +1609,15 @@ input.comparing-tag{
   color: var(--alphatauri-primary);
 }
 
+.upper-section-stats.showing-driver .name-and-info{
+  max-width: calc(42% - 20px);
+}
 
 .name-and-info{
   display: flex;
   flex-direction: column;
   gap: 10px;
   flex-grow: 1;
-  max-width: calc(42% - 20px);
   z-index: 3;
 }
 
@@ -1696,8 +1698,17 @@ input.comparing-tag{
 
 #driverStatsTitle {
   font-size: 26px;
-  min-width: max-content;
+  width: max-content;
   position: relative;
+  max-width: 350px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+#availabilityDetails:has(#superLicenseSwitch.d-none){
+  justify-content: flex-start;
+  gap: 6px;
 }
 
 #driverCode {
@@ -5698,6 +5709,10 @@ input.disabled {
 
 .car-info {
   font-size: 14px;
+}
+
+body.og-theme .teams-columns, body.og-theme .records-list{
+  padding: 12px 10px;
 }
 
 .teams-columns {
