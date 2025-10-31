@@ -3420,8 +3420,9 @@ DRIVERS TABLE
 }
 
 
-.drivers-table-header .drivers-table-position{
+.drivers-table-header .drivers-table-position, .teams-table-header .teams-table-position {
   padding-top: 0;
+  padding-bottom: 1px;
 }
 
 .aston-team-table-logo {
