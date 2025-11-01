@@ -8,6 +8,8 @@ import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
 import { generateNews, getSaveName, confirmModal } from "./renderer";
+import { marked } from 'marked';
+import DOMPurify from "dompurify";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const newsGrid = document.querySelector('.news-grid');
@@ -196,7 +198,11 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
           newsArticle.style.opacity = '0';
           setTimeout(() => {
             loaderDiv.remove();
-            newsArticle.textContent = articleText;
+            const rawHtml = marked.parse(articleText);
+
+            const cleanHtml = DOMPurify.sanitize(rawHtml);
+
+            newsArticle.innerHTML = cleanHtml;
             newsArticle.style.opacity = '1';
           }, 150);
 
@@ -545,6 +551,9 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
   }
   else if (news.type === "potential_champion" || news.type === "world_champion" || news.type === "season_review" || news.type === "team_comparison" || news.type === "driver_comparison") {
     newsItem.dataset.type = "others";
+  }
+  else if (news.type.includes("turning_point")) {
+    newsItem.dataset.type = "turning_points";
   }
   return newsItem;
 }
@@ -1048,6 +1057,15 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
 
   prompt = addTurningPointContexts(prompt);
 
+  prompt += `
+  Use **Markdown** formatting in your response for better readability:
+  - Use "#" or "##" for main and secondary titles.
+  - Use **bold** for important names or key phrases.
+  - Use *italics* for quotes or emotional emphasis.
+  - Use bullet points or numbered lists if needed.
+  Do not include any raw HTML or code blocks.
+  The final output must be valid Markdown ready to render as HTML.`;
+
   console.log("Final prompt:", prompt);
 
   clearInterval(interval);
@@ -1261,6 +1279,7 @@ async function contextualizeTurningPointTransfer(newData, turningPointType) {
     prompt = promptTemplateEntry.prompt;
   }
 
+  let seasonYear = newData.data.season;
   let driverInTeam = combined_dict[newData.data.driver_in.teamId] || 'the previous team';
 
   prompt = prompt.replace(/{{\s*driver_in\s*}}/g, newData.data.driver_in.name || 'The driver').

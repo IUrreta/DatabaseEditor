@@ -13272,6 +13272,20 @@ body:has(.active #mod25logo) .one-change {
   font-size: 20px;
 }
 
+.news-article p{
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.news-article em{
+  color: var(--text-selected);
+}
+
+.news-article strong{
+  color: var(--text-general);
+  font-family: 'Formula1Bold';
+}
+
 .news-article-date{
   color: var(--negative-text);
   display: flex;

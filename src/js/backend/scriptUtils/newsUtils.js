@@ -1006,7 +1006,8 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
             name: driverSubstituteName[0],
             teamId: driverSubstituteTeamId
         } : null,
-        month: currentMonth
+        month: currentMonth,
+        season: daySeason[1]
     };
 
     turningPointState.transfers[currentMonth] = newData; //tendria que ser currentMonth, pero para pruebas lo dejo fijo en junio
@@ -1033,6 +1034,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
 function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointState = {}) {
     const last3Races = racesDone.slice(-3);
     let newsList = [];
+    let forcedCleanSeason = false;
 
     // Populate newsList with existing news from savednews that correspond to illegal races
     if (turningPointState.ilegalRaces) {
@@ -1040,6 +1042,8 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
             const entryId = `turning_point_dsq_${raceData.race_id}`;
             if (savednews[entryId]) {
                 newsList.push({ id: entryId, ...savednews[entryId] });
+                //if there is alredy two ilegal races, the rest of the season will be clean
+                if (turningPointState.ilegalRaces.length >= 2) forcedCleanSeason = true;
             }
         });
     }
@@ -1058,7 +1062,7 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
 
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
 
-    if (Math.random() > 0.05) {
+    if (Math.random() > 0.08 || forcedCleanSeason) {
         return newsList; // Random chance to not generate
     }
 

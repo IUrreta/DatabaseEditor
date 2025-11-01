@@ -807,9 +807,9 @@ function ensureTurningPointsStructure(saveName) {
         checkedRaces: [],
         ilegalRaces: [],
         transfers: {
+            5: null,
             6: null,
-            7: null,
-            8: null
+            7: null
         },
         technicalDirectives: {
             6: null,
