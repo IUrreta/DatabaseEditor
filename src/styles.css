@@ -13310,6 +13310,10 @@ body:has(.active #mod25logo) .one-change {
   margin-top: 10px;
 }
 
+body.default-theme .news-article-date{
+  background: color-mix(in srgb, white 30%, transparent);
+}
+
 .news-article-date.show{
   opacity: 1;
 }
