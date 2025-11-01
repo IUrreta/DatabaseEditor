@@ -164,7 +164,7 @@ export const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mi
 export const invertedRacesMap = { "bah0": 2, "aus0": 1, "sau0": 11, "imo0": 24, "mia0": 22, "spa0": 5, "mon0": 6, "aze0": 4, "can0": 7, "gbr0": 10, "aut0": 9, "fra0": 8, "hun0": 12, "bel0": 13, "ita0": 14, "sgp0": 15, "jap0": 17, "usa0": 19, "mex0": 18, "bra0": 20, "uae0": 21, "ned0": 23, "veg0": 25, "qat0": 26, "chi0": 3 };
 export const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT", 3: "CHI" };
 export const contintntRacesRegions = {
-    "Europe": [24, 5, 6, 10, 9, 8, 12, 13, 14, 23],
+    "Europe": [24, 5, 6, 10, 9, 12, 13, 14, 23],
     "Asia": [17, 3, 15, 1],
     "America": [19, 20, 18, 25, 22], 
     "Middle East": [2, 11, 21, 26, 4], 
