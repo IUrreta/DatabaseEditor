@@ -30,7 +30,8 @@
           </div>
         </div>
         <div class="modal-footer custom-footer">
-          <button type="button" class="close-modal" data-bs-dismiss="modal" id="cancelCustomEnginesButton">Close</button>
+          <button type="button" class="close-modal" data-bs-dismiss="modal"
+            id="cancelCustomEnginesButton">Close</button>
           <button type="button" class="confirm-modal" id="confirmCustomEnginesButton">Confirm</button>
         </div>
       </div>
@@ -301,7 +302,7 @@
         <div class="modal-body custom-body" id="patchNotesBody">
         </div>
         <div class="modal-footer custom-footer">
-            <button type="button" class="close-modal" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="close-modal" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -661,12 +662,27 @@
               </div>
             </div>
             <div class="api-input-and-status" id="patreonKeyGeneral">
-              <button type="button" class="confirm-modal" id="patreonKeyButton"><i class="bi bi-cloud-arrow-up"></i>
-                Upload patreon key</button>
+              <div type="button" class="confirm-modal button-with-icon" id="patreonKeyButton">
+                <i class="bi bi-cloud-arrow-up"></i>
+                <span>Upload patreon key</span>
+              </div>
               <div class="saved-status api-loaded patreon-status" id="patreonKeyStatus">
                 <i class="bi bi-check patreonCheck"></i>
                 <i class="bi bi-x d-none patreonX"></i>
                 <span class="bold-font" id="patreonKeyText">Valid</span>
+              </div>
+            </div>
+            <div class="export-import-news d-none">
+              <div class="modal-subtitle bold-font">Export/Import News</div>
+              <div class="patreon-links">
+                <div class="export-news-button button-with-icon" id="exportNewsButton">
+                  <i class="bi bi-box-arrow-up-right"></i>
+                  <span class="">Export News</span>
+                </div>
+                <div class="import-news-button button-with-icon" id="importNewsButton">
+                  <i class="bi bi-box-arrow-in-down-right"></i>
+                  <span class="">Import News</span>
+                </div>
               </div>
             </div>
             <div class="patreon-unlockables  d-none">
@@ -2224,7 +2240,8 @@
                     <div class="age-holder">
                       <div class="age">
                         <div class="age-ret age-title bold-font" data-text="Age">Age</div>
-                        <span class="age-text"><span class="actual-age">25</span> <span class="hiddable-text">years old</span></span>
+                        <span class="age-text"><span class="actual-age">25</span> <span class="hiddable-text">years
+                            old</span></span>
                         <div class="age-buttons">
                           <i class="bi bi-dash new-augment-button"></i>
                           <i class="bi bi-plus new-augment-button"></i>
@@ -2232,7 +2249,8 @@
                       </div>
                       <div class="retirement-age">
                         <div class="age-ret age-title bold-font shorten-ret" data-text="Ret">Retirement</div>
-                        <span class="age-text"><span class="actual-retirement">56</span> <span class="hiddable-text">years old</span></span>
+                        <span class="age-text"><span class="actual-retirement">56</span> <span
+                            class="hiddable-text">years old</span></span>
                         <div class="retirement-buttons">
                           <i class="bi bi-dash new-augment-button"></i>
                           <i class="bi bi-plus new-augment-button"></i>

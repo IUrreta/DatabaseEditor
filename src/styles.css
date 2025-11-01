@@ -6612,6 +6612,10 @@ body.og-theme .teams-columns, body.og-theme .records-list{
   gap: 10px;
 }
 
+.patreon-themes .modal-subtitle{
+  margin-bottom: 3px;
+}
+
 .nightly-icon{
   position: absolute;
   top: 0px;
@@ -9789,6 +9793,14 @@ input::-webkit-inner-spin-button {
   width: 50%;
 }
 
+#editorPill{
+  width: 70px;
+}
+
+#gamePill{
+  width: 78px;
+}
+
 #edit_teams .team-viewer .bi-chevron-left,
 #edit_teams .team-viewer .bi-chevron-right {
   transition: color 0.15s;
@@ -12057,11 +12069,10 @@ a.bi-custom-patreon.close-slide-up{
   border-top: 2px solid var(--separator);
 }
 
-.patreon-themes{
+.patreon-themes, .export-import-news{
   display: flex;
   flex-direction: column;
   gap: 5px;
-  
 }
 
 .patreon-unlockables .modal-subtitle{

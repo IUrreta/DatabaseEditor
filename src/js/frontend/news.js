@@ -587,6 +587,10 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
       reason = 'normal';
     }
 
+    if (!maxDate || news.date > maxDate) {
+      maxDate = news.date;
+    }
+
     news.hiddenByAvailability = hide;
     news.hiddenReason = hide ? reason : null;
     modified = true;
@@ -599,9 +603,6 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
       newsItem.style.opacity = '1';
     }, 1500);
 
-    if (!maxDate || news.date > maxDate) {
-      maxDate = news.date;
-    }
   });
 
   if (modified) saveNews(newsList);

@@ -106,6 +106,7 @@ const patreonUnlockables = document.querySelector(".patreon-unlockables")
 const downloadSaveButton = document.querySelector(".download-save-button")
 
 const patreonThemes = document.querySelector(".patreon-themes");
+const exportImportNews = document.querySelector(".export-import-news");
 const apiKeySection = document.getElementById("apiKeySection");
 
 const apiKeyInput = document.getElementById("apiKeyInput");
@@ -723,6 +724,7 @@ const messageHandlers = {
         updateModBlocking(message)
     },
     "News fetched": (message) => {
+        manageExportImportNews();
         place_news(message, newsAvailable)
     },
     "Save selected finished": (message) => {
@@ -2007,6 +2009,7 @@ function manageNewsStatus(valid) {
             patreonUnlockables.classList.remove("d-none");
             patreonThemes.classList.add("d-none");
 
+
             let diffDays = 0;
             const firstNewsEntered = localStorage.getItem('firstNewsEntered');
             if (firstNewsEntered) {
@@ -2183,7 +2186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    
+
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
@@ -2471,6 +2474,78 @@ document.querySelectorAll(".team-logo-container").forEach(function (elem) {
     })
 });
 
+async function manageExportImportNews() {
+    //get if signature is valid
+    let isValid = await isPatronSignatureValid();
+    if (isValid.status === "valid") {
+        exportImportNews.classList.remove("d-none");
+        const exportButton = document.getElementById("exportNewsButton");
+        const importButton = document.getElementById("importNewsButton");
+        exportButton.addEventListener("click", function () {
+            //download a json with saveX_news and saveX_tps
+            let saveName = getSaveName();
+            saveName = saveName.split('.')[0];
+            //get news and tps from localStorage
+            let news = localStorage.getItem(`${saveName}_news`);
+            let tps = localStorage.getItem(`${saveName}_tps`);
+            let data = {
+                news: JSON.parse(news || "{}"),
+                turningPointState: JSON.parse(tps || "{}")
+            };
+            let dataStr = JSON.stringify(data, null, 2);
+            let blob = new Blob([dataStr], { type: "application/json" });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.href = url;
+            a.download = `${saveName}_news_backup.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+        importButton.addEventListener("click", function () {
+            let input = document.createElement("input");
+            input.type = "file";
+            input.accept = "application/json";
+            input.addEventListener("change", function (e) {
+                let file = e.target.files[0];
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        let data = JSON.parse(e.target.result);
+                        let saveName = getSaveName();
+                        saveName = saveName.split('.')[0];
+                        //if they are not called newsList and turningPointState, rename then accordingly, being arrays, and newsList having the key as the .id
+                        if (!data.newsList) {
+                            data.news = Object.entries(data.news).map(([key, value]) => ({
+                                id: key,
+                                ...value
+                            }));
+                            data.newsList = data.news;
+                            //remove news from data
+                            delete data.news;
+                        }
+                        if (!data.turningPointState) {
+                            data.turningPointState = data.tps;
+                            //remove tps from data
+                            delete data.tps;
+                        }
+                        console.log("News and TPs imported successfully.");
+                        console.log(data);
+                        place_news(data, newsAvailable);
+                    } catch (err) {
+                        alert(`Error importing news: ${err.message}`);
+                        console.error("Error importing news:", err);
+                    }
+                };
+                reader.readAsText(file);
+            });
+            input.click();
+        });
+    }
+
+}
+
 export async function confirmModal({
     title,
     body,
@@ -2534,152 +2609,152 @@ export async function confirmModal({
 }
 
 export function attachHold(btn, el, step = 1, opts = {}) {
-  const min = opts.min ?? -Infinity;
-  const max = opts.max ?? Infinity;
-  const progressEl = opts.progressEl ?? null;
-  const values = Array.isArray(opts.values) && opts.values.length ? opts.values.slice() : null;
-  const loop = !!opts.loop;
-  const onChange = typeof opts.onChange === 'function' ? opts.onChange : () => {};
+    const min = opts.min ?? -Infinity;
+    const max = opts.max ?? Infinity;
+    const progressEl = opts.progressEl ?? null;
+    const values = Array.isArray(opts.values) && opts.values.length ? opts.values.slice() : null;
+    const loop = !!opts.loop;
+    const onChange = typeof opts.onChange === 'function' ? opts.onChange : () => { };
 
 
-  const initialDelay = opts.initialDelay ?? 400;
-  const tiers = opts.tiers ?? [
-    [0,    250],
-    [750,  150],
-    [1500,  80],
-    [3000,  40],
-  ];
+    const initialDelay = opts.initialDelay ?? 400;
+    const tiers = opts.tiers ?? [
+        [0, 250],
+        [750, 150],
+        [1500, 80],
+        [3000, 40],
+    ];
 
-  let timer, start;
+    let timer, start;
 
-  const getText = () => (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') ? (el.value ?? '') : (el.innerText ?? '');
-  const setText = (txt) => {
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-      el.value = String(txt);
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-    } else {
-      const current = el.innerText || '';
-      // si contiene un número, sustituimos solo el primero; si no, ponemos el texto entero
-      if (/-?\d+(\.\d+)?/.test(current) && typeof txt === 'number') {
-        el.innerText = current.replace(/-?\d+(\.\d+)?/, String(txt));
-      } else {
-        el.innerText = String(txt);
-      }
-    }
-  };
-
-  const getNum = () => {
-    if (values) return NaN; // no aplica
-    const raw = getText();
-    const m = String(raw).match(/-?\d+(\.\d+)?/);
-    return m ? parseFloat(m[0]) : 0;
-  };
-
-  const setNum = (val) => {
-    const clamped = Math.max(min, Math.min(max, val));
-    setText(clamped);
-    updateProgress(clamped);
-    onChange(clamped, currentPercent(clamped));
-  };
-
-  const findCurrentIndex = () => {
-    const raw = String(getText()).trim();
-    // intentamos match estricto; si values numéricos y en el el hay número suelto, los comparamos como string también
-    let idx = values.findIndex(v => String(v) === raw);
-    if (idx === -1) {
-      // si no coincide textual y hay número en el elemento y values son numéricos, intentamos por número
-      const numMatch = raw.match(/-?\d+(\.\d+)?/);
-      if (numMatch && values.every(v => !isNaN(parseFloat(v)))) {
-        const num = parseFloat(numMatch[0]);
-        idx = values.findIndex(v => Number(v) === num);
-      }
-    }
-    return idx === -1 ? 0 : idx;
-  };
-
-  const setIndex = (i) => {
-    const len = values.length;
-    let next = i;
-    if (loop) {
-      next = ((i % len) + len) % len; // wrap-around
-    } else {
-      next = Math.max(0, Math.min(len - 1, i));
-    }
-    const val = values[next];
-    setText(val);
-    updateProgress(next, /*isIndex*/true);
-    onChange(val, currentPercent(val, /*isIndex*/true));
-    return next;
-  };
-
-  const pickInterval = (heldMs) => {
-    let ms = tiers[0][1];
-    for (const [t, interval] of tiers) {
-      if (heldMs >= t) ms = interval; else break;
-    }
-    return ms;
-  };
-
-  const currentPercent = (valOrIdx, isIndex = false) => {
-    // si hay values => % por índice
-    if (values) {
-      const len = values.length;
-      if (len <= 1) return 100;
-      const idx = isIndex ? valOrIdx : values.findIndex(v => String(v) === String(valOrIdx));
-      const i = idx < 0 ? 0 : idx;
-      return Math.round((i / (len - 1)) * 100);
-    }
-    // numérico => % por min/max si finitos
-    if (isFinite(min) && isFinite(max) && max > min) {
-      const v = Number(valOrIdx);
-      const p = ((v - min) / (max - min)) * 100;
-      return Math.round(Math.max(0, Math.min(100, p)));
-    }
-    return 0; // sin rango definido no podemos mapear bien
-  };
-
-  const updateProgress = (valOrIdx, isIndex = false) => {
-    if (!progressEl) return;
-    const p = currentPercent(valOrIdx, isIndex);
-    progressEl.style.width = p + '%';
-    progressEl.ariaValueNow = String(p);
-  };
-
-  const tick = () => {
-    if (values) {
-      const cur = findCurrentIndex();
-      setIndex(cur + (step >= 0 ? +1 : -1));
-    } else {
-      const cur = getNum();
-      setNum(cur + step);
-    }
-  };
-
-  const startLoop = () => {
-    start = performance.now();
-    tick(); // clic inmediato
-    const loopFn = () => {
-      const held = performance.now() - start;
-      timer = setTimeout(() => {
-        tick();
-        loopFn();
-      }, pickInterval(held));
+    const getText = () => (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') ? (el.value ?? '') : (el.innerText ?? '');
+    const setText = (txt) => {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.value = String(txt);
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        } else {
+            const current = el.innerText || '';
+            // si contiene un número, sustituimos solo el primero; si no, ponemos el texto entero
+            if (/-?\d+(\.\d+)?/.test(current) && typeof txt === 'number') {
+                el.innerText = current.replace(/-?\d+(\.\d+)?/, String(txt));
+            } else {
+                el.innerText = String(txt);
+            }
+        }
     };
-    timer = setTimeout(loopFn, initialDelay);
-  };
 
-  const stopLoop = () => {
-    clearTimeout(timer);
-    timer = null;
-  };
+    const getNum = () => {
+        if (values) return NaN; // no aplica
+        const raw = getText();
+        const m = String(raw).match(/-?\d+(\.\d+)?/);
+        return m ? parseFloat(m[0]) : 0;
+    };
 
-  const downEv = 'onpointerdown' in window ? 'pointerdown' : 'mousedown';
-  const upEv   = 'onpointerup'   in window ? 'pointerup'   : 'mouseup';
-  const leaveEv= 'onpointerleave'in window ? 'pointerleave': 'mouseleave';
-  const cancelEv='pointercancel';
+    const setNum = (val) => {
+        const clamped = Math.max(min, Math.min(max, val));
+        setText(clamped);
+        updateProgress(clamped);
+        onChange(clamped, currentPercent(clamped));
+    };
 
-  btn.addEventListener(downEv, (e) => { e.preventDefault(); startLoop(); });
-  document.addEventListener(upEv, stopLoop, true);
-  document.addEventListener(cancelEv, stopLoop, true);
-  btn.addEventListener(leaveEv, stopLoop, true);
+    const findCurrentIndex = () => {
+        const raw = String(getText()).trim();
+        // intentamos match estricto; si values numéricos y en el el hay número suelto, los comparamos como string también
+        let idx = values.findIndex(v => String(v) === raw);
+        if (idx === -1) {
+            // si no coincide textual y hay número en el elemento y values son numéricos, intentamos por número
+            const numMatch = raw.match(/-?\d+(\.\d+)?/);
+            if (numMatch && values.every(v => !isNaN(parseFloat(v)))) {
+                const num = parseFloat(numMatch[0]);
+                idx = values.findIndex(v => Number(v) === num);
+            }
+        }
+        return idx === -1 ? 0 : idx;
+    };
+
+    const setIndex = (i) => {
+        const len = values.length;
+        let next = i;
+        if (loop) {
+            next = ((i % len) + len) % len; // wrap-around
+        } else {
+            next = Math.max(0, Math.min(len - 1, i));
+        }
+        const val = values[next];
+        setText(val);
+        updateProgress(next, /*isIndex*/true);
+        onChange(val, currentPercent(val, /*isIndex*/true));
+        return next;
+    };
+
+    const pickInterval = (heldMs) => {
+        let ms = tiers[0][1];
+        for (const [t, interval] of tiers) {
+            if (heldMs >= t) ms = interval; else break;
+        }
+        return ms;
+    };
+
+    const currentPercent = (valOrIdx, isIndex = false) => {
+        // si hay values => % por índice
+        if (values) {
+            const len = values.length;
+            if (len <= 1) return 100;
+            const idx = isIndex ? valOrIdx : values.findIndex(v => String(v) === String(valOrIdx));
+            const i = idx < 0 ? 0 : idx;
+            return Math.round((i / (len - 1)) * 100);
+        }
+        // numérico => % por min/max si finitos
+        if (isFinite(min) && isFinite(max) && max > min) {
+            const v = Number(valOrIdx);
+            const p = ((v - min) / (max - min)) * 100;
+            return Math.round(Math.max(0, Math.min(100, p)));
+        }
+        return 0; // sin rango definido no podemos mapear bien
+    };
+
+    const updateProgress = (valOrIdx, isIndex = false) => {
+        if (!progressEl) return;
+        const p = currentPercent(valOrIdx, isIndex);
+        progressEl.style.width = p + '%';
+        progressEl.ariaValueNow = String(p);
+    };
+
+    const tick = () => {
+        if (values) {
+            const cur = findCurrentIndex();
+            setIndex(cur + (step >= 0 ? +1 : -1));
+        } else {
+            const cur = getNum();
+            setNum(cur + step);
+        }
+    };
+
+    const startLoop = () => {
+        start = performance.now();
+        tick(); // clic inmediato
+        const loopFn = () => {
+            const held = performance.now() - start;
+            timer = setTimeout(() => {
+                tick();
+                loopFn();
+            }, pickInterval(held));
+        };
+        timer = setTimeout(loopFn, initialDelay);
+    };
+
+    const stopLoop = () => {
+        clearTimeout(timer);
+        timer = null;
+    };
+
+    const downEv = 'onpointerdown' in window ? 'pointerdown' : 'mousedown';
+    const upEv = 'onpointerup' in window ? 'pointerup' : 'mouseup';
+    const leaveEv = 'onpointerleave' in window ? 'pointerleave' : 'mouseleave';
+    const cancelEv = 'pointercancel';
+
+    btn.addEventListener(downEv, (e) => { e.preventDefault(); startLoop(); });
+    document.addEventListener(upEv, stopLoop, true);
+    document.addEventListener(cancelEv, stopLoop, true);
+    btn.addEventListener(leaveEv, stopLoop, true);
 }
