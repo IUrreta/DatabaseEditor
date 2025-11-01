@@ -13,9 +13,12 @@ import DOMPurify from "dompurify";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const newsGrid = document.querySelector('.news-grid');
+const newsModalEl = document.getElementById('newsModal');
+const closeBtn = document.getElementById('closeNewsArticle');
 
 let ai = null;
 let interval2 = null;
+let cleaning = false;
 
 export function initAI(apiKeyParam) {
   if (!apiKeyParam) {
@@ -80,13 +83,34 @@ async function finishGeneralLoader() {
   pageLoaderDiv.remove();
 }
 
-document.getElementById("closeNewsArticle").addEventListener("click", async () => {
+async function cleanupOpenedNewsItem() {
+  if (cleaning) return;
+  cleaning = true;
+
   const newsItem = document.querySelector('.news-item.opened');
   if (newsItem) {
     newsItem.classList.remove('opened');
+    // Espera a que termine la transición del item (tu utilidad)
     await onTransitionEnd(newsItem, 'transform', 150);
     newsItem.classList.remove('with-transition');
   }
+
+  cleaning = false;
+}
+
+closeBtn.addEventListener('click', async () => {
+  await cleanupOpenedNewsItem();
+
+  const modal =
+    bootstrap.Modal.getInstance(newsModalEl) ||
+    new bootstrap.Modal(newsModalEl);
+
+  modal.hide();
+});
+
+
+newsModalEl.addEventListener('hide.bs.modal', () => {
+  cleanupOpenedNewsItem();
 });
 
 function hashStr(str) {
@@ -1057,8 +1081,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval) {
 
   prompt = addTurningPointContexts(prompt);
 
-  prompt += `
-  Use **Markdown** formatting in your response for better readability:
+  prompt += `\n\nUse **Markdown** formatting in your response for better readability:
   - Use "#" or "##" for main and secondary titles.
   - Use **bold** for important names or key phrases.
   - Use *italics* for quotes or emotional emphasis.
@@ -1424,6 +1447,21 @@ async function contextualizePotentialChampion(newData) {
       prompt += `\n\n${numberOfRace}`;
 
       prompt += buildContextualPrompt(standingsResp.content, { timing: "before this race" });
+
+      prompt += `\n\nThe maximum amount of points for the winner in each race is ${standingsResp.content.pointsSchema.twoBiggestPoints[0]}.
+      \nIn each sprint race the maximum points for the winner is 8.
+      \n${standingsResp.content.pointsSchema.isLastraceDouble ? 'The last race of the season awards double points.' : ''}
+      \n${standingsResp.content.pointsSchema.fastestLapBonusPoint ? 'There is also 1 bonus point for the driver who achieves the fastest lap in the race, provided they finish in the top 10.' : ''}
+      \n${standingsResp.content.pointsSchema.poleBonusPoint ? 'There is also 1 bonus point for the driver who achieves pole position in qualifying.' : ''}`;
+
+      const rem = standingsResp.content.remainingRaces;
+      if (rem && rem.length > 0) {
+        const racesText = rem
+          .map(r => `${r.trackName}${r.sprint ? " (Sprint)" : ""}`)
+          .join(", ");
+        prompt += `\n\nThere are ${rem.length} races left: ${racesText}.`;
+      }
+
     } else {
       prompt += "\n\nCould not retrieve current championship standings.";
     }

@@ -9,6 +9,7 @@ import { getTier, getDriverOverall, fireDriver, hireDriver, swapDrivers } from "
 import { getPerformanceAllTeamsSeason, getAllPartsFromTeam, getPerformanceAllTeams } from "./carAnalysisUtils";
 import { getGlobals } from "../commandGlobals";
 import { unitValueToValue } from "./carConstants";
+import { track } from "@vercel/analytics";
 
 const _seasonResultsCache = new Map();
 const _standingsCache = new Map();
@@ -2547,8 +2548,20 @@ export function getOneRaceDetails(raceId) {
     const season = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
 
     const seasonResults = fetchSeasonResults(season);
+    const pointsSchema = fetchPointsRegulations();
 
     const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceId);
+
+    const remainingRaces = queryDB(`SELECT RaceID, TrackID, WeekendType FROM Races WHERE SeasonID = ${season} AND RaceID > ${raceId} ORDER BY RaceID`, 'allRows');
+    //make an object that has raceid, trackId, and race track
+    const remainingRacesDetails = remainingRaces.map(r => {
+        return {
+            raceId: r[0],
+            trackId: r[1],
+            sprint: r[2] === 1,
+            trackName: countries_data[races_names[r[1]]].country
+        }
+    });
 
     // 1) Obtenemos time y laps del ganador (primera fila)
     const winnerTime = results[0][10]; // índice 10 = res.Time
@@ -2618,7 +2631,9 @@ export function getOneRaceDetails(raceId) {
         racesNames,
         champions,
         nRaces: numberOfRaces,
-        sprintDetails
+        sprintDetails, 
+        pointsSchema,
+        remainingRaces: remainingRacesDetails
     }
 }
 

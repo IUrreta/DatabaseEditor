@@ -56,6 +56,9 @@
   --custom-dif: #52ebbd;
   --discord: #7289da;
 
+  --news-overlays-text: #dedde6;
+  --news-date-text: #292929;
+
   --primary-gradient: linear-gradient(to right, var(--new-primary) 0%, #ffb38c 100%);
 
   --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
@@ -259,6 +262,9 @@ body.light-theme {
   --table-default-odd: #e0e0e0;
   --dropdown-hover: #bbbbbb;
   --text-general: #252525;
+  --text-secondary: #666666;
+  --text-tertiary: #999999;
+
   --white-general: #131313;
   --dark-text: #444444;
   --disabled-text: #888888;
@@ -266,11 +272,12 @@ body.light-theme {
   --negative-text: #eeeeee;
   --new-primary: #7a5fd8;
   --new-primary-dark: #5a42b5;
-  --new-primary-transparent: #7a5fd899;
+  --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, transparent);
   --text-selected: #aa88ff;
   --text-selected-secondary: #55aaa9;
   --new-secondary: #66aabb;
   --new-secondary-dark: #447788;
+  --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, transparent);
   --table-hover: #cccccc;
   --elements-hover: #bbbbbb;
   --box-shadow: #00000022;
@@ -358,11 +365,12 @@ body.og-theme {
   --negative-text: #3c3c5b;
   --new-primary: #8f89b8;
   --new-primary-dark: #6a678f;
-  --new-primary-transparent: #8f89b899;
+  --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, transparent);
   --text-selected: #e7d3ff;
   --text-selected-secondary: #ff8f63;
   --new-secondary: #ff7c47;
   --new-secondary-dark: #d76a3b;
+  --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, transparent);
   --table-hover: #50577c;
   --elements-hover: #3a3852;
   --box-shadow: #00000044;
@@ -13287,7 +13295,7 @@ body:has(.active #mod25logo) .one-change {
 }
 
 .news-article-date{
-  color: var(--negative-text);
+  color: var(--news-date-text);
   display: flex;
   gap: 10px;
   align-items: center;
@@ -13295,7 +13303,7 @@ body:has(.active #mod25logo) .one-change {
   opacity: 1;
   transition: opacity 0.15s;
   z-index: 1;
-  background: color-mix(in srgb, white 30%, transparent);
+  background: color-mix(in srgb, var(--text-general) 30%, transparent);
   padding: 3px 8px;
   border-radius: 8px;
   backdrop-filter: blur(10px);
@@ -13482,13 +13490,13 @@ body:has(.active #mod25logo) .one-change {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-end;
-  padding: 10px 15px;
+  padding: 10px 15px 4px 15px;
   z-index: 2;
 }
 
 .race-overlay .position{
   font-size: 20px;
-  color: var(--text-general);
+  color: var(--news-overlays-text);
   font-family: 'Formula1Bold';
   text-align: center;
   min-width: 45%;
@@ -13521,7 +13529,7 @@ body:has(.active #mod25logo) .one-change {
   line-height: 1;
   margin-bottom: 10px;
   margin-top: -3px;
-  color: var(--text-general);
+  color: var(--news-overlays-text);
 }
 
 .position-team.firstpost{
@@ -13619,7 +13627,7 @@ body:has(.active #mod25logo) .one-change {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-general);
+  color: var(--news-overlays-text);
   padding: 5px 18px;
   text-transform: uppercase;
   font-size: 16px;
