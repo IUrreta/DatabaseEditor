@@ -2170,7 +2170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector(".toolbar-title").classList.add("nightly");
 
         const moonIcon = document.createElement("i");
-        moonIcon.className = "bi bi-moon-stars-fill nightly-icon";
+        moonIcon.className = "bi bi-moon-fill nightly-icon";
         document.querySelector(".toolbar-title").appendChild(moonIcon);
 
         const now = new Date();

@@ -6606,13 +6606,19 @@ body.og-theme .teams-columns, body.og-theme .records-list{
   animation: gradient-move-title 6s infinite linear;
 }
 
+.patreon-links{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
 .nightly-icon{
   position: absolute;
   top: 0px;
   right: 0px;
   width: 14px;
   height: 14px;
-  font-size: 10px;
+  font-size: 8px;
   background-color: var(--new-secondary);
   border-radius: 50%;
   color: var(--elements);
