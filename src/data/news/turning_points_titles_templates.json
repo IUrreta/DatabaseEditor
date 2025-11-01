@@ -1,0 +1,238 @@
+[
+    {
+        "id": "fia_directive",
+        "new_type": 100,
+        "turning_titles": [
+            "FIA reportedly drafting new technical directive on {{component}}",
+            "Rumors suggest FIA preparing a rule adjustment concerning {{component}}",
+            "Sources indicate FIA is considering action over {{component}} performance",
+            "Potential FIA intervention expected regarding {{component}} regulations",
+            "Whispers in the paddock: FIA to address {{component}} issues soon",
+            "A new technical directive on {{component}} could be imminent, say insiders",
+            "FIA looking into possible changes for {{component}} rules",
+            "Teams brace for potential FIA directive on {{component}} performance",
+            "Earthquake in the paddock? FIA thinks about new regulations on {{component}}",
+            "'It is a possibility' – FIA on upcoming {{component}} technical directive",
+            "Shake-up ahead? FIA technical directive on {{component}} rumored to be in the works"
+        ],
+        "positive_titles": [
+            "FIA enforces new directive affecting {{component}} performance across the grid",
+            "Official: FIA technical directive on {{component}} now in effect",
+            "Teams react as FIA implements new {{component}} rules",
+            "FIA confirms new regulation changes regarding {{component}}",
+            "FIA's new {{component}} directive shakes up the competition",
+            "New FIA rules on {{component}} expected to impact car performance",
+            "FIA's {{component}} directive sparks debate among teams",
+            "FIA's latest technical directive on {{component}} set to change the landscape",
+            "'We have to adapt quickly' – Teams respond to FIA's {{component}} directive",
+            "'It wont change much' – FIA downplays impact of new {{component}} directive"
+        ],
+        "negative_titles": [
+            "FIA shelves planned directive on {{component}} after internal review",
+            "Rumored {{component}} directive abandoned following team objections",
+            "No changes to {{component}} regulations after FIA evaluation",
+            "FIA denies reports of imminent {{component}} technical directive",
+            "FIA decides against new {{component}} rules after consultation",
+            "Relief among teams as FIA drops {{component}} directive plans",
+            "FIA opts not to pursue new {{component}} regulations",
+            "FIA confirms no changes to {{component}} rules at this time",
+            "'We found no need for changes' – FIA on scrapped {{component}} directive",
+            "'It was never going to happen' – FIA on rumors of {{component}} technical directive"
+        ]
+    },
+    {
+        "id": "mid_season_transfer",
+        "new_type": 101,
+        "turning_titles": [
+            "{{team}} reportedly considering replacing {{driver_out}} with {{driver_in}} as soon as possible",
+            "Internal tension at {{team}} as rumors link {{driver_in}} to {{driver_out}}’s seat",
+            "Sources suggest {{team}} evaluating a possible swap involving {{driver_out}} and {{driver_in}}",
+            "Speculation grows around {{team}}’s lineup after disappointing results from {{driver_out}}",
+            "Whispers in the paddock: {{driver_in}} could be set to replace {{driver_out}} at {{team}}",
+            "Rumors of a mid-season driver change at {{team}} involving {{driver_out}} and {{driver_in}}",
+            "{{team}} is thinking about releasing {{driver_out}} – could {{driver_in}} be the replacement?",
+            "Insiders hint at potential driver shuffle at {{team}} with {{driver_in}} eyeing {{driver_out}}’s position",
+            "'We think about every option' – {{team}} on possible driver change"
+        ],
+        "positive_titles": [
+            "It’s official: {{driver_in}} replaces {{driver_out}} at {{team}} for the remainder of the season",
+            "{{team}} confirms driver change – {{driver_out}} out, {{driver_in}} in",
+            "{{driver_in}} steps in for {{driver_out}} as {{team}} reshuffles lineup",
+            "Confirmed: {{driver_in}} joins {{team}} for the next race, replacing {{driver_out}}",
+            "{{team}} makes bold move, swaps {{driver_out}} for {{driver_in}}",
+            "{{team}} shakes up lineup with a surprise move involving {{driver_in}}",
+            "HERE WE GO: {{driver_in}} takes over {{driver_out}}’s seat at {{team}}",
+            "{{team}} announces mid-season driver change, {{driver_in}} to replace {{driver_out}}",
+            "'I'm excited for the challenge' – {{driver_in}} on joining {{team}} for the next race"
+        ],
+        "negative_titles": [
+            "{{team}} denies rumors of replacing {{driver_out}} as soon as possible",
+            "No changes at {{team}} as management reaffirms trust in {{driver_out}}",
+            "Rumors dismissed: {{driver_out}} keeps seat at {{team}} despite speculation",
+            "{{team}} closes talks of a driver change during the season",
+            "{{team}} stands by {{driver_out}}, quashes replacement rumors",
+            "Relief for {{driver_out}} as {{team}} confirms no driver changes",
+            "{{team}} rebuffs speculation, {{driver_out}} remains in the lineup",
+            "{{team}} puts an end to the silly season driver change rumors, {{driver_out}} safe",
+            "{{team}} reaffirms commitment to {{driver_out}}, denies replacement talks",
+            "'I never felt threatened' – {{driver_out}} on rumors of being replaced at {{team}}"
+        ]
+    },
+    {
+        "id": "investment_takeover",
+        "new_type": 102,
+        "turning_titles": [
+            "Reports hint at {{amount}}M {{country}} investment in {{team}}",
+            "{{team}} in talks with {{country}} investors for {{share}}% stake",
+            "Rumors grow of {{amount}}M {{country}} deal for {{team}}",
+            "{{team}} draws {{country}} interest worth about {{amount}}M",
+            "Whispers: {{team}} set for {{country}} funding near {{amount}}M",
+            "Insiders point to {{country}} group eyeing {{share}}% of {{team}}",
+            "Could {{team}} face a {{share}}% takeover bid from {{country}}?",
+            "Speculation over {{country}}-{{team}} deal valued at {{amount}}M"
+        ],
+        "positive_titles": [
+            "Confirmed: {{team}} lands {{amount}}M {{country}} deal ({{share}}%)",
+            "{{team}} finalizes {{amount}}M {{country}} investment boost",
+            "{{team}} partners with {{country}} investors ({{share}}% stake)",
+            "Huge boost as {{country}} group buys {{share}}% of {{team}}",
+            "{{team}} announces {{amount}}M {{country}} investment",
+            "{{team}} welcomes {{country}} investors ({{share}}%)",
+            "{{team}} secures {{amount}}M {{country}} funding",
+            "BREAKING: {{team}} confirms {{country}} {{amount}}M deal",
+            "{{team}} celebrates {{country}} partnership worth {{amount}}M"
+        ],
+        "negative_titles": [
+            "{{team}} denies {{amount}}M {{country}} talks",
+            "No {{amount}}M {{country}} deal for {{team}}",
+            "{{team}} and {{country}} group fail to reach deal",
+            "{{team}}–{{country}} investment collapsed after {{share}}% talks",
+            "{{team}} ends {{country}} takeover speculation ({{share}}%)",
+            "{{team}} {{country}} talks fall through – {{amount}}M off table",
+            "{{team}} rebuffs {{country}} investment rumors",
+            "No {{share}}% deal between {{team}} and {{country}} group",
+            "'We are not for sale' – {{team}} shuts down {{country}} rumors"
+        ]
+    },
+    {
+        "id": "turning_point_dsq",
+        "new_type": 103,
+        "turning_titles": [
+            "FIA reportedly investigating {{team}} for irregularities at the {{adjective}} Grand Prix",
+            "Post-race inspection raises questions over {{team}}’s {{component}} compliance",
+            "Sources claim {{team}} could face disqualification from {{circuit}}",
+            "Controversy brewing as {{team}} is under FIA scrutiny after {{adjective}} Grand Prix",
+            "Whispers in the paddock: {{team}} may be in breach of regulations after {{country}}",
+            "Rumors of potential penalties for {{team}} following {{adjective}} GP",
+            "Insiders hint at possible disqualification for {{team}} after {{adjective}} Grand Prix race",
+            "{{team}} faces FIA probe over {{component}} legality after {{adjective}} GP inspection",
+            "'At the moment we are gathering information' – FIA on {{team}} investigation"
+        ],
+        "positive_titles": [
+            "FIA confirms {{team}} disqualified from {{adjective}} Grand Prix following irregularities",
+            "Both {{team}} cars disqualified from {{adjective}} GP – FIA releases statement",
+            "Major blow for {{team}} as post-race penalties confirmed at {{adjective}} Grand Prix",
+            "{{team}} loses {{adjective}} GP results after FIA investigation outcome on {{component}}",
+            "FIA rules against {{team}}, disqualifies them from {{country}}",
+            "{{team}} stripped of {{adjective}} Grand Prix points after {{component}} breach confirmed",
+            "Disappointment for {{team}} as FIA enforces disqualification from {{circuit}}",
+            "BREAKING: {{team}} disqualified from {{adjective}} GP after FIA review on their {{component}}",
+            "'We don't agree with the decision' – {{team}} responds to {{country}} disqualification"
+        ],
+        "negative_titles": [
+            "FIA clears {{team}} of wrongdoing after {{adjective}} investigation into {{component}}",
+            "Investigation closed: {{team}} retains {{adjective}} GP results",
+            "{{team}} exonerated as FIA finds no breach after {{circuit}} review of {{component}}",
+            "Rumors dismissed – no penalties issued to {{team}} after {{circuit}}",
+            "Relief for {{team}} as FIA ends probe with no action taken",
+            "{{team}} avoids disqualification, FIA confirms compliance after {{adjective}} GP",
+            "{{team}} retains points after FIA investigation finds no irregularities with their {{component}}",
+            "{{team}} cleared of any violations following {{adjective}} GP",
+            "'I knew we didn't do anything wrong' – {{team}} on FIA investigation outcome"
+        ]
+    },
+    {
+        "id": "engine_update",
+        "new_type": 104,
+        "turning_titles": [
+            "{{engine_supplier}} preparing major power unit upgrade for next races",
+            "Reports indicate {{engine_supplier}} developing improved engine spec",
+            "Rumors of significant {{engine_supplier}} update spark excitement in the paddock",
+            "Insiders hint at performance boost from upcoming {{engine_supplier}} power unit",
+            "Whispers in the paddock: {{engine_supplier}} set to unveil new engine update",
+            "Sources suggest {{engine_supplier}} working on competitive engine upgrade",
+            "Could {{engine_supplier}}’s new engine spec be a game-changer?",
+            "Speculation grows over potential performance leap from {{engine_supplier}} update",
+            "'I think it's a step in the right direction' – {{engine_supplier}} on upcoming upgrade"
+        ],
+        "positive_titles": [
+            "Success for {{engine_supplier}} as new power unit delivers strong results",
+            "{{engine_supplier}}’s latest engine spec praised for improved performance",
+            "Positive outcome – {{engine_supplier}} upgrade boosts customer teams",
+            "New {{engine_supplier}} engine update proves decisive improvement",
+            "{{engine_supplier}} engine upgrade impresses teams with performance gains",
+            "Teams laud {{engine_supplier}} for effective power unit update",
+            "BREAKING: {{engine_supplier}} engine update shows promising results",
+            "'We are very happy with the progress' – {{engine_supplier}} on new engine spec"
+        ],
+        "negative_titles": [
+            "No improvement seen after {{engine_supplier}} engine update",
+            "{{engine_supplier}} engine upgrade fails to deliver expected gains",
+            "Disappointment as {{engine_supplier}} update shows no performance increase",
+            "{{engine_supplier}} engine spec remains unchanged after recent update",
+            "Relief for rival teams as {{engine_supplier}} upgrade falls short",
+            "{{engine_supplier}} engine update does not meet performance expectations",
+            "{{engine_supplier}} confirms no significant changes after latest upgrade",
+            "'It's not the step we hoped for' – {{engine_supplier}} on engine update results"
+        ]
+    },
+    {
+        "id": "race_substitution",
+        "new_type": 105,
+        "turning_titles": [
+            "{{original_race}} Grand Prix at risk of cancellation due to {{reason}}",
+            "Reports suggest {{original_race}} GP may be called off amid {{reason}} concerns",
+            "Sources indicate potential cancellation of {{original_race}} Grand Prix",
+            "FIA considering alternatives as {{original_race}} GP faces {{reason}} issues",
+            "Could {{substitute_race}} replace {{original_race}} GP this season?",
+            "Speculation grows over possible cancellation of {{original_race}} Grand Prix",
+            "'It doesn't look good' – insiders on {{original_race}} GP status amid {{reason}}",
+            "'We're exploring options' – FIA on potential changes to {{original_race}} GP",
+            "{{original_race}} GP future uncertain as organizers struggle with {{reason}}",
+            "Calendar shake-up likely: {{original_race}} GP in doubt over {{reason}}",
+            "Backup venues being evaluated after concerns surrounding {{original_race}} GP",
+            "{{substitute_race}} emerges as leading candidate to replace {{original_race}} Grand Prix",
+            "Talks intensify between FOM and {{substitute_race}} officials amid {{original_race}} GP uncertainty",
+            "Calendar rumors suggest {{original_race}} GP may be swapped for {{substitute_race}} due to {{reason}}",
+            "Officials admit contingency discussions underway for {{original_race}} GP amid {{reason}} concerns"
+        ],
+        "positive_titles": [
+            "Confirmed: {{original_race}} Grand Prix cancelled, {{substitute_race}} to take its place",
+            "{{substitute_race}} officially announced as replacement for {{original_race}} GP",
+            "Calendar update: {{substitute_race}} joins F1 schedule after {{original_race}} GP cancellation",
+            "FIA confirms {{substitute_race}} will step in following {{original_race}} Grand Prix cancellation",
+            "{{substitute_race}} steps up as replacement event after {{original_race}} GP called off",
+            "Formula 1 confirms {{substitute_race}} as official substitute for {{original_race}} Grand Prix",
+            "Breaking: {{original_race}} GP cancelled — {{substitute_race}} fills the gap in this year's calendar",
+            "{{substitute_race}} to make surprise return as {{original_race}} GP replacement",
+            "F1 calendar reshuffled: {{substitute_race}} replaces {{original_race}} Grand Prix",
+            "Official statement: {{original_race}} GP dropped, {{substitute_race}} joins the lineup",
+            "'We're excited to host F1 again' – {{substitute_race}} organizers on replacing {{original_race}} GP",
+            "FIA and FOM confirm {{substitute_race}} as new venue after {{original_race}} cancellation"
+        ],
+        "negative_titles": [
+            "FIA confirms {{original_race}} Grand Prix will go ahead as planned despite {{reason}} concerns",
+            "{{original_race}} GP officially back on as issues surrounding {{reason}} resolved",
+            "After weeks of uncertainty, {{original_race}} Grand Prix confirmed to proceed as scheduled",
+            "Rumors dismissed: {{original_race}} GP to take place as originally planned",
+            "FIA statement ends speculation – {{original_race}} Grand Prix safe for this season",
+            "Organizers confirm {{original_race}} GP will happen after resolving {{reason}} complications",
+            "False alarm: {{original_race}} GP remains on the calendar despite earlier doubts",
+            "{{original_race}} organizers secure final approval, event to go ahead as planned",
+            "{{original_race}} GP cleared to proceed following successful FIA inspection",
+            "All systems go: {{original_race}} Grand Prix confirmed following resolution of {{reason}}",
+            "Confirmed - {{original_race}} Grand Prix to proceed as scheduled",
+            "'At the end of the day, we all wanted to race there' – FIA on {{original_race}} GP confirmation"
+        ]
+    }
+]

@@ -1230,6 +1230,7 @@ function setYearButton(el) {
 }
 
 export function loadRecordsList(data) {
+    console.log("PUTO DATA RECORDS:", data);
     const recordsList = document.querySelector(".records-list")
     recordsList.innerHTML = ""
     let visibleIndex = 0;
@@ -1298,7 +1299,7 @@ export function loadRecordsList(data) {
         totalStarts.textContent = `Races: ${record.totalStarts}`
 
         let percentageRate = document.createElement("div")
-        percentageRate.classList = "extra-stat"
+        percentageRate.classList = "extra-stat perecentage-rate"
         if (record.record === "wins" || record.record === "champs") {
             percentageRate.textContent = `Win Rate: ${(record.totalWins / record.totalStarts * 100).toFixed(2)}%`
         }
@@ -1311,7 +1312,9 @@ export function loadRecordsList(data) {
         else if (record.record === "fastestlaps") {
             percentageRate.textContent = `Fastest Lap Rate: ${(record.totalFastestLaps / record.totalStarts * 100).toFixed(2)}%`
         }
-        extraStatsSection.appendChild(percentageRate)
+        if (record.record !== "races" && record.record !== "points") {
+            extraStatsSection.appendChild(percentageRate)
+        }
 
         let firstRace = document.createElement("div")
         firstRace.classList = "extra-stat"
@@ -1349,6 +1352,9 @@ export function loadRecordsList(data) {
         podiums.classList = "extra-stat"
         podiums.textContent = `Podiums: ${record.totalPodiums}`
 
+        let points = document.createElement("div")
+        points.classList = "extra-stat"
+        points.textContent = `Points: ${record.totalPointsScored}`
 
         let wins = document.createElement("div")
         wins.classList = "extra-stat"
@@ -1358,8 +1364,11 @@ export function loadRecordsList(data) {
         champs.classList = "extra-stat"
         champs.textContent = `WDCs: ${record.totalChampionshipWins}`
 
-        if (document.querySelector("#yearButton").dataset.year === "all") {
+        if (document.querySelector("#yearButton").dataset.year === "all" && record.record !== "races") {
             extraStatsSection.appendChild(totalStarts)
+        }
+        if (record.record !== "points"){
+            extraStatsSection.appendChild(points)
         }
 
         if (record.firstRace.season !== 0) {
@@ -1395,6 +1404,10 @@ export function loadRecordsList(data) {
         if (record.record !== "champs" && record.totalChampionshipWins > 0) {
             extraStatsSection.appendChild(champs)
         }
+        
+        let totalPoints = document.createElement("div")
+        totalPoints.classList = "extra-stat"
+        totalPoints.textContent = `Points: ${record.totalPointsScored}`
 
         numberAndName.appendChild(extraStatsSection)
 

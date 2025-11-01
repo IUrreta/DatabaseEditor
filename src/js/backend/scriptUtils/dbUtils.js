@@ -760,12 +760,14 @@ export function fetchPointsRegulations() {
   const isLastraceDouble = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 8`, 'singleValue');
   const fastestLapBonusPoint = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 9`, 'singleValue');
   const poleBonusPoint = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 10`, 'singleValue');
+  const positionAndPointsRows = queryDB(`SELECT RacePos, Points FROM Regulations_NonTechnical_PointSchemes WHERE PointScheme = ${pointScheme}`, 'allRows');
   const res = {
     pointScheme: pointScheme,
     twoBiggestPoints: twoBiggestPoints,
     isLastraceDouble: isLastraceDouble,
     fastestLapBonusPoint: fastestLapBonusPoint,
-    poleBonusPoint: poleBonusPoint
+    poleBonusPoint: poleBonusPoint,
+    positionAndPoints: positionAndPointsRows
   }
 
   return res;

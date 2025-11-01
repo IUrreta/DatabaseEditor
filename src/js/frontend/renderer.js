@@ -7,7 +7,7 @@ import {
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict } from './config';
 import {
-    freeDriversDiv, insert_space, loadNumbers, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
+    freeDriversDiv, insert_space, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal,
     initFreeDriversElems
 } from './transfers';
@@ -20,7 +20,7 @@ import {
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups,
-    initStatsDrivers
+    initStatsDrivers, loadNumbers
 } from './stats';
 import {
     resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
@@ -106,6 +106,7 @@ const patreonUnlockables = document.querySelector(".patreon-unlockables")
 const downloadSaveButton = document.querySelector(".download-save-button")
 
 const patreonThemes = document.querySelector(".patreon-themes");
+const exportImportNews = document.querySelector(".export-import-news");
 const apiKeySection = document.getElementById("apiKeySection");
 
 const apiKeyInput = document.getElementById("apiKeyInput");
@@ -156,6 +157,11 @@ let lastVisibleIndex = 0;
 let calendarEditMode = "Start2024"
 
 export let selectedTheme = "default-theme";
+
+let newsAvailable = {
+    "normal": false,
+    "turning": false,
+}
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
@@ -304,26 +310,26 @@ function editModeHandler() {
     let new_ovr = calculateOverall(stats, typeOverall);
     document.querySelector(".clicked").childNodes[1].childNodes[0].textContent = new_ovr
 
-    let retirement = document.querySelector(".actual-retirement").textContent.split(" ")[1];
-    let age = document.querySelector(".actual-age").textContent.split(" ")[1];
+    let retirement = document.querySelector(".actual-retirement").textContent
+    let age = document.querySelector(".actual-age").textContent
     document.querySelector(".clicked").dataset.retirement = retirement;
     let ageGap = parseInt(document.querySelector(".clicked").dataset.age - age);
     document.querySelector(".clicked").dataset.age = age;
-    let newName = document.querySelector("#driverStatsTitle").value
+    let newName = document.querySelector("#driverStatsTitle").value || document.querySelector("#driverStatsTitle").textContent;
     if (newName === document.querySelector(".clicked").dataset.name) {
         newName = "-1"
     }
     else {
         update_name(id, newName)
     }
-    let newCode = document.querySelector("#driverCode").value
+    let newCode = document.querySelector("#driverCode").value || document.querySelector("#driverCode").textContent;
     if (newCode === document.querySelector(".clicked").dataset.code) {
         newCode = "-1"
     }
     else {
         document.querySelector(".clicked").dataset.driverCode = newCode
     }
-    let driverNum = document.querySelector("#numberButton .front-gradient").textContent;
+    let driverNum = document.querySelector(".number-holder").textContent;
     let wants1, superLicense, isRetired;
     document.querySelector(".clicked").dataset.number = driverNum;
     if (document.querySelector("#driverNumber1").checked) {
@@ -718,7 +724,8 @@ const messageHandlers = {
         updateModBlocking(message)
     },
     "News fetched": (message) => {
-        place_news(message)
+        manageExportImportNews();
+        place_news(message, newsAvailable)
     },
     "Save selected finished": (message) => {
         generateNews();
@@ -730,7 +737,6 @@ const messageHandlers = {
 
 export async function generateNews() {
     let isValid = await isPatronSignatureValid();
-    isValid = isValid === "valid" ? true : false;
     const generateNews = checkGenerableNews(isValid);
     if (generateNews === "no") {
         return;
@@ -742,9 +748,12 @@ export async function generateNews() {
     const savedNews = localStorage.getItem(newsName) || "{}";
     const parsedNews = JSON.parse(savedNews);
 
+    const tpState = ensureTurningPointsStructure(saveName);
+
 
     const command = new Command("generateNews", {
         news: parsedNews,
+        tpState: tpState,
     });
     command.execute();
 
@@ -784,6 +793,56 @@ export async function generateNews() {
     startGeneralNewsProgress(progressDiv);
     newsView.appendChild(loaderDiv);
 }
+
+function ensureTurningPointsStructure(saveName) {
+    const baseName = saveName.split(".")[0];
+    const key = `${baseName}_tps`;
+
+    if (localStorage.getItem(key)) {
+        let data = JSON.parse(localStorage.getItem(key));
+        return data;
+    }
+
+    const defaultStructure = {
+        checkedRaces: [],
+        ilegalRaces: [],
+        transfers: {
+            5: null,
+            6: null,
+            7: null
+        },
+        technicalDirectives: {
+            6: null,
+            9: null
+        },
+        investmentOpportunities: {
+            4: null,
+            5: null,
+            6: null,
+            7: null,
+            8: null,
+            9: null,
+            10: null,
+            11: null
+        },
+        raceSubstitutionOpportunities: {
+            4: null,
+            5: null,
+            6: null,
+            7: null,
+            8: null,
+            9: null,
+            10: null,
+            11: null
+        }
+    };
+
+    localStorage.setItem(key, JSON.stringify(defaultStructure));
+
+    return defaultStructure;
+}
+
+
 
 export function startGeneralNewsProgress(progressDiv) {
     let width = 0;
@@ -1857,17 +1916,17 @@ patreonInput.addEventListener('change', async (e) => {
         return;
     }
 
-    const { dateData, signature } = parsed;
-    if (!dateData || !signature) {
+    const { dataString, signature } = parsed;
+    if (!dataString || !signature) {
         alert('Error');
         return;
     }
 
-    const isValid = await verifySignature(dateData, signature, PUBLIC_KEY);
+    const isValid = await verifySignature(dataString, signature, PUBLIC_KEY);
     if (isValid) {
-        const dataObj = JSON.parse(dateData);
+        const dataObj = JSON.parse(dataString);
 
-        localStorage.setItem('patreonKey', JSON.stringify({ dateData, signature }));
+        localStorage.setItem('patreonKey', JSON.stringify({ dataString, signature }));
         checkPatreonStatus();
     } else {
         alert('Invalid file');
@@ -1877,39 +1936,58 @@ patreonInput.addEventListener('change', async (e) => {
 
 async function isPatronSignatureValid() {
     const stored = localStorage.getItem('patreonKey');
-    if (!stored) return "missing"; // No hay clave guardada
+    if (!stored) return { status: "missing", role: null };
 
     try {
-        const { dateData, signature } = JSON.parse(stored);
-        if (!dateData || !signature) return "invalid"; // Datos incompletos
+        const { dataString, signature } = JSON.parse(stored);
+        if (!dataString || !signature) return { status: "invalid", role: null };
 
-        const valid = await verifySignature(dateData, signature, PUBLIC_KEY);
-        return valid ? "valid" : "invalid";
+        const valid = await verifySignature(dataString, signature, PUBLIC_KEY);
+        const role = valid ? JSON.parse(dataString).role : null;
+        return { status: valid ? "valid" : "invalid", role };
     } catch (err) {
         console.error("Error verificando firma:", err);
-        return "invalid"; // JSON corrupto o error en verificación
+        return { status: "invalid", role: null };
     }
 }
 
 async function checkPatreonStatus() {
-const validSignature = await isPatronSignatureValid();
+    const validSignature = await isPatronSignatureValid();
     init_colors_dict(selectedTheme)
 
-    if (validSignature === "valid") {
+    if (validSignature.status === "valid") {
+        document.querySelector(".patreon-status").classList.remove("negative")
+        document.querySelector(".patreon-status").classList.add("positive");
         patreonUnlockables.classList.remove("d-none");
-        document.getElementById("patreonKeyText").textContent = "Patreon key loaded";
+        patreonThemes.classList.remove("d-none");
+        document.querySelector(".patreonCheck").classList.remove("d-none");
+        document.getElementById("patreonKeyText").textContent = validSignature.role.charAt(0).toUpperCase() + validSignature.role.slice(1);
+        document.querySelector(".patreonX").classList.add("d-none");
+        console.log("Patreon key valid");
         loadTheme();
     }
-    else if (validSignature === "invalid") {
+    else if (validSignature.status === "invalid") {
         //put the text saying that maybe the old key is invalid
+        document.querySelector(".patreon-status").classList.remove("positive")
+        document.querySelector(".patreon-status").classList.add("negative");
+        document.getElementById("patreonKeyText").textContent = "Invalid";
+        document.querySelector(".patreonCheck").classList.add("d-none");
+        document.querySelector(".patreonX").classList.remove("d-none");
         console.log("Patreon key invalid or expired");
+    }
+    else if (validSignature.status === "missing") {
+        document.querySelector(".patreon-status").classList.remove("positive")
+        document.querySelector(".patreon-status").classList.remove("negative");
+        document.getElementById("patreonKeyText").textContent = "Not set";
+        document.querySelector(".patreonCheck").classList.add("d-none");
+        document.querySelector(".patreonX").classList.add("d-none");
+        console.log("No patreon key found");
     }
     manageNewsStatus(validSignature);
 }
 
 function manageNewsStatus(valid) {
-    let valid2 = valid === "valid";
-    const generateNews = checkGenerableNews(valid2);
+    const generateNews = checkGenerableNews(valid);
     if (generateNews === "yes") {
         const extraApiKeySection = document.querySelector('#extraApiKeySection');
         if (extraApiKeySection) {
@@ -1930,6 +2008,7 @@ function manageNewsStatus(valid) {
 
             patreonUnlockables.classList.remove("d-none");
             patreonThemes.classList.add("d-none");
+
 
             let diffDays = 0;
             const firstNewsEntered = localStorage.getItem('firstNewsEntered');
@@ -1952,37 +2031,44 @@ function manageNewsStatus(valid) {
                 }
             }
         }
-        else if (generateNews === "no") {
-            const newsGrid = document.querySelector('.news-grid');
-            const parent = newsGrid.parentNode;
-            newsGrid.remove();
-            const message = document.createElement('div');
-            message.className = 'modal-text important-text bold-font news-generation-ended';
-            message.innerHTML = `Your free news generation period has ended. Become a <a href="https://www.patreon.com/f1dbeditor" target="_blank">patreon member</a> to continue using this feature!`;
-            parent.appendChild(message);
-        }
     }
 
 }
 
-function checkGenerableNews(validSignature){
+function checkGenerableNews(validSignature) {
     let canGenerate = "no";
-    if(validSignature){
+    if (validSignature.status === "valid") {
         canGenerate = "yes";
+        if (validSignature.role === "insider") {
+            newsAvailable.normal = true;
+            newsAvailable.turning = true;
+        }
+        else {
+            newsAvailable.normal = true;
+            newsAvailable.turning = false;
+        }
     }
-    else{
+    else {
         const firstNewsEntered = localStorage.getItem('firstNewsEntered');
         if (!firstNewsEntered) {
             const today = new Date().toISOString().split('T')[0];
             localStorage.setItem('firstNewsEntered', today);
             canGenerate = "provisional";
         }
-        else{
+        else {
             const firstDate = new Date(firstNewsEntered);
             const now = new Date();
             const diffTime = Math.abs(now - firstDate);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            canGenerate = diffDays < 8 ? "provisional" : "no";
+            canGenerate = diffDays < 8 ? "provisional" : "hiding";
+        }
+        if (canGenerate === "provisional") {
+            newsAvailable.normal = true;
+            newsAvailable.turning = false;
+        }
+        else if (canGenerate === "hiding") {
+            newsAvailable.normal = false;
+            newsAvailable.turning = false;
         }
     }
     return canGenerate;
@@ -1994,7 +2080,7 @@ async function checkOpenSlideUp() {
 
 
     const lastShownStr = localStorage.getItem('patreonModalLastShown');
-    if (!canShowPatreonModal(lastShownStr) || validSignature) {
+    if (!canShowPatreonModal(lastShownStr) || validSignature.status === "valid") {
         return;
     }
 
@@ -2074,7 +2160,33 @@ function hexToArrayBuffer(hex) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const hostname = window.location.hostname;
+    const isNightly = hostname.includes("nightly");
     versionNow = APP_VERSION;
+
+    if (isNightly) {
+        const favicon = document.querySelector('link[rel="icon"]'); //testing
+        if (favicon) favicon.href = "../assets/images/logoNightly.png";
+
+        const logoImg = document.querySelector(".toolbar-logo");
+        if (logoImg) logoImg.src = "../assets/images/logoNightly.svg";
+        document.querySelector(".toolbar-title").classList.add("nightly");
+
+        const moonIcon = document.createElement("i");
+        moonIcon.className = "bi bi-moon-fill nightly-icon";
+        document.querySelector(".toolbar-title").appendChild(moonIcon);
+
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = String(now.getFullYear());
+        //remove -dev from APP_VERSION
+        versionNow = `${APP_VERSION.replace("-dev", "")}-nightly-${day}-${month}-${year}`;
+        versionPanel.classList.add("nightly");
+    }
+
+
+
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
@@ -2361,3 +2473,288 @@ document.querySelectorAll(".team-logo-container").forEach(function (elem) {
         elem.classList.add("active")
     })
 });
+
+async function manageExportImportNews() {
+    //get if signature is valid
+    let isValid = await isPatronSignatureValid();
+    if (isValid.status === "valid") {
+        exportImportNews.classList.remove("d-none");
+        const exportButton = document.getElementById("exportNewsButton");
+        const importButton = document.getElementById("importNewsButton");
+        exportButton.addEventListener("click", function () {
+            //download a json with saveX_news and saveX_tps
+            let saveName = getSaveName();
+            saveName = saveName.split('.')[0];
+            //get news and tps from localStorage
+            let news = localStorage.getItem(`${saveName}_news`);
+            let tps = localStorage.getItem(`${saveName}_tps`);
+            let data = {
+                news: JSON.parse(news || "{}"),
+                turningPointState: JSON.parse(tps || "{}")
+            };
+            let dataStr = JSON.stringify(data, null, 2);
+            let blob = new Blob([dataStr], { type: "application/json" });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.href = url;
+            a.download = `${saveName}_news_backup.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+        importButton.addEventListener("click", function () {
+            let input = document.createElement("input");
+            input.type = "file";
+            input.accept = "application/json";
+            input.addEventListener("change", function (e) {
+                let file = e.target.files[0];
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    try {
+                        let data = JSON.parse(e.target.result);
+                        let saveName = getSaveName();
+                        saveName = saveName.split('.')[0];
+                        //if they are not called newsList and turningPointState, rename then accordingly, being arrays, and newsList having the key as the .id
+                        if (!data.newsList) {
+                            data.news = Object.entries(data.news).map(([key, value]) => ({
+                                id: key,
+                                ...value
+                            }));
+                            data.newsList = data.news;
+                            //remove news from data
+                            delete data.news;
+                        }
+                        if (!data.turningPointState) {
+                            data.turningPointState = data.tps;
+                            //remove tps from data
+                            delete data.tps;
+                        }
+                        console.log("News and TPs imported successfully.");
+                        console.log(data);
+                        place_news(data, newsAvailable);
+                    } catch (err) {
+                        alert(`Error importing news: ${err.message}`);
+                        console.error("Error importing news:", err);
+                    }
+                };
+                reader.readAsText(file);
+            });
+            input.click();
+        });
+    }
+
+}
+
+export async function confirmModal({
+    title,
+    body,
+    confirmText,
+    cancelText
+}) {
+    const modalEl = document.getElementById('confirmModal');
+    const bsModal = new bootstrap.Modal(modalEl, { keyboard: false });
+
+    // Elementos
+    const confirmTitle = modalEl.querySelector('.modal-title');
+    const confirmBody = modalEl.querySelector('.modal-body p');
+    const confirmBtn = modalEl.querySelector('.confirm-modal');
+    const cancelBtn = modalEl.querySelector('.close-modal');
+
+    if (confirmTitle) confirmTitle.textContent = title;
+    if (confirmBody) confirmBody.textContent = body;
+
+    if (confirmBtn) {
+        if (confirmText) {
+            confirmBtn.textContent = confirmText;
+            confirmBtn.classList.remove('d-none');
+        } else {
+            confirmBtn.classList.add('d-none');
+        }
+    }
+
+    if (cancelBtn) {
+        if (cancelText) {
+            cancelBtn.textContent = cancelText;
+            cancelBtn.classList.remove('d-none');
+        } else {
+            cancelBtn.classList.add('d-none');
+        }
+    }
+
+    return new Promise((resolve) => {
+        let clicked = false;
+        const controller = new AbortController();
+        const { signal } = controller;
+
+        confirmBtn?.addEventListener('click', () => {
+            clicked = true;
+            resolve(true);
+            bsModal.hide();
+        }, { once: true, signal });
+
+        cancelBtn?.addEventListener('click', () => {
+            clicked = true;
+            resolve(false);
+            bsModal.hide();
+        }, { once: true, signal });
+
+        modalEl.addEventListener('hidden.bs.modal', () => {
+            if (!clicked) resolve(false);
+            controller.abort();
+        }, { once: true });
+
+        bsModal.show();
+    });
+}
+
+export function attachHold(btn, el, step = 1, opts = {}) {
+    const min = opts.min ?? -Infinity;
+    const max = opts.max ?? Infinity;
+    const progressEl = opts.progressEl ?? null;
+    const values = Array.isArray(opts.values) && opts.values.length ? opts.values.slice() : null;
+    const loop = !!opts.loop;
+    const onChange = typeof opts.onChange === 'function' ? opts.onChange : () => { };
+
+
+    const initialDelay = opts.initialDelay ?? 400;
+    const tiers = opts.tiers ?? [
+        [0, 250],
+        [750, 150],
+        [1500, 80],
+        [3000, 40],
+    ];
+
+    let timer, start;
+
+    const getText = () => (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') ? (el.value ?? '') : (el.innerText ?? '');
+    const setText = (txt) => {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.value = String(txt);
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        } else {
+            const current = el.innerText || '';
+            // si contiene un número, sustituimos solo el primero; si no, ponemos el texto entero
+            if (/-?\d+(\.\d+)?/.test(current) && typeof txt === 'number') {
+                el.innerText = current.replace(/-?\d+(\.\d+)?/, String(txt));
+            } else {
+                el.innerText = String(txt);
+            }
+        }
+    };
+
+    const getNum = () => {
+        if (values) return NaN; // no aplica
+        const raw = getText();
+        const m = String(raw).match(/-?\d+(\.\d+)?/);
+        return m ? parseFloat(m[0]) : 0;
+    };
+
+    const setNum = (val) => {
+        const clamped = Math.max(min, Math.min(max, val));
+        setText(clamped);
+        updateProgress(clamped);
+        onChange(clamped, currentPercent(clamped));
+    };
+
+    const findCurrentIndex = () => {
+        const raw = String(getText()).trim();
+        // intentamos match estricto; si values numéricos y en el el hay número suelto, los comparamos como string también
+        let idx = values.findIndex(v => String(v) === raw);
+        if (idx === -1) {
+            // si no coincide textual y hay número en el elemento y values son numéricos, intentamos por número
+            const numMatch = raw.match(/-?\d+(\.\d+)?/);
+            if (numMatch && values.every(v => !isNaN(parseFloat(v)))) {
+                const num = parseFloat(numMatch[0]);
+                idx = values.findIndex(v => Number(v) === num);
+            }
+        }
+        return idx === -1 ? 0 : idx;
+    };
+
+    const setIndex = (i) => {
+        const len = values.length;
+        let next = i;
+        if (loop) {
+            next = ((i % len) + len) % len; // wrap-around
+        } else {
+            next = Math.max(0, Math.min(len - 1, i));
+        }
+        const val = values[next];
+        setText(val);
+        updateProgress(next, /*isIndex*/true);
+        onChange(val, currentPercent(val, /*isIndex*/true));
+        return next;
+    };
+
+    const pickInterval = (heldMs) => {
+        let ms = tiers[0][1];
+        for (const [t, interval] of tiers) {
+            if (heldMs >= t) ms = interval; else break;
+        }
+        return ms;
+    };
+
+    const currentPercent = (valOrIdx, isIndex = false) => {
+        // si hay values => % por índice
+        if (values) {
+            const len = values.length;
+            if (len <= 1) return 100;
+            const idx = isIndex ? valOrIdx : values.findIndex(v => String(v) === String(valOrIdx));
+            const i = idx < 0 ? 0 : idx;
+            return Math.round((i / (len - 1)) * 100);
+        }
+        // numérico => % por min/max si finitos
+        if (isFinite(min) && isFinite(max) && max > min) {
+            const v = Number(valOrIdx);
+            const p = ((v - min) / (max - min)) * 100;
+            return Math.round(Math.max(0, Math.min(100, p)));
+        }
+        return 0; // sin rango definido no podemos mapear bien
+    };
+
+    const updateProgress = (valOrIdx, isIndex = false) => {
+        if (!progressEl) return;
+        const p = currentPercent(valOrIdx, isIndex);
+        progressEl.style.width = p + '%';
+        progressEl.ariaValueNow = String(p);
+    };
+
+    const tick = () => {
+        if (values) {
+            const cur = findCurrentIndex();
+            setIndex(cur + (step >= 0 ? +1 : -1));
+        } else {
+            const cur = getNum();
+            setNum(cur + step);
+        }
+    };
+
+    const startLoop = () => {
+        start = performance.now();
+        tick(); // clic inmediato
+        const loopFn = () => {
+            const held = performance.now() - start;
+            timer = setTimeout(() => {
+                tick();
+                loopFn();
+            }, pickInterval(held));
+        };
+        timer = setTimeout(loopFn, initialDelay);
+    };
+
+    const stopLoop = () => {
+        clearTimeout(timer);
+        timer = null;
+    };
+
+    const downEv = 'onpointerdown' in window ? 'pointerdown' : 'mousedown';
+    const upEv = 'onpointerup' in window ? 'pointerup' : 'mouseup';
+    const leaveEv = 'onpointerleave' in window ? 'pointerleave' : 'mouseleave';
+    const cancelEv = 'pointercancel';
+
+    btn.addEventListener(downEv, (e) => { e.preventDefault(); startLoop(); });
+    document.addEventListener(upEv, stopLoop, true);
+    document.addEventListener(cancelEv, stopLoop, true);
+    btn.addEventListener(leaveEv, stopLoop, true);
+}
