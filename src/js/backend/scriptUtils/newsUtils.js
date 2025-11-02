@@ -359,11 +359,12 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
     //pick one randomly between nber 5 and 9 of the remaining races
     const potentialCancellations = potentialRaces.slice(0, Math.min(5, potentialRaces.length - 1));
     const cancellationRace = randomPick(potentialCancellations);
-    let originalTrackId = cancellationRace[1];
+    const originalTrackId = Number(String(cancellationRace[1]).trim());
     let originalRaceId = cancellationRace[0];
     let availableRaceBefore = false, availableRaceAfter = false;
     let newRaceTrackId = null;
     let newRaceDay = null;
+    let typeOfSubstitution = null;
 
     //check if the race before is more than 7 days before or the race after is more than 7 days after
     const cancellationIndex = calendar.findIndex(r => r[0] === cancellationRace[0]);
@@ -388,12 +389,14 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
             const nextRace = calendar[cancellationIndex + 1];
             newRaceTrackId = nextRace[1];
             newRaceDay = nextRace[2] - 7;
+            typeOfSubstitution = "same_as_next";
         }
         else{
             let region = continentDict[originalTrackId] || "Europe";
             let racesPool = contintntRacesRegions[region].filter(tid => tid !== originalTrackId);
             newRaceTrackId = randomPick(racesPool);
             newRaceDay = cancellationRace[2]; //same day
+            typeOfSubstitution = "different_race";
         }
     }
     else if (availableRaceBefore){
@@ -402,12 +405,14 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
             const previousRace = calendar[cancellationIndex - 1];
             newRaceTrackId = previousRace[1];
             newRaceDay = previousRace[2] + 7;
+            typeOfSubstitution = "same_as_previous";
         }
         else{
             let region = continentDict[originalTrackId] || "Europe";
             let racesPool = contintntRacesRegions[region].filter(tid => tid !== originalTrackId);
             newRaceTrackId = randomPick(racesPool);
             newRaceDay = cancellationRace[2]; //same day
+            typeOfSubstitution = "different_race";
         }
     }
     else{
@@ -415,6 +420,7 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
         let racesPool = contintntRacesRegions[region].filter(tid => tid !== originalTrackId);
         newRaceTrackId = randomPick(racesPool);
         newRaceDay = cancellationRace[2]; 
+        typeOfSubstitution = "different_race";
     }
     const originalCountry = countries_data[races_names[originalTrackId]]?.adjective || "Unknown Country";
     const substituteCountry = countries_data[races_names[newRaceTrackId]]?.country || "Unknown Country";
@@ -446,7 +452,8 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
         newRaceDay: newRaceDay,
         raceId: originalRaceId,
         month: currentMonth,
-        season: daySeason[1]
+        season: daySeason[1],
+        typeOfSubstitution: typeOfSubstitution
     };
 
     const title = generateTurningPointTitle(titleData, 105, "original");
