@@ -321,15 +321,12 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
           cancelText: "Cancel"
         });
 
-        if (!ok) {
-          return;
-        }
+        if (!ok) return;
         else {
           const readButton = newsBody.querySelector('.read-button-container .read-button');
           readButton.remove();
           news.nonReadable = true;
           news.turning_point_type = "approved";
-          saveNews(newsList);
         }
       }
 
@@ -582,64 +579,65 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
   return newsItem;
 }
 
+function computeStableKey(n) {
+  if (n.id != null && n.id !== "") return String(n.id);
+  return "h:" + hashStr(`${n.title}|${n.date}`);
+}
+
+function loadSavedNewsMap() {
+  try {
+    const saveName = getSaveName().split('.')[0] + "_news";
+    return JSON.parse(localStorage.getItem(saveName) || "{}");
+  } catch { return {}; }
+}
+
+
 export async function place_news(newsAndTurningPoints, newsAvailable) {
   let newsList = newsAndTurningPoints.newsList;
   let turningPointState = newsAndTurningPoints.turningPointState;
   await finishGeneralLoader();
 
   let maxDate;
-
-  saveNews(newsList);
-  saveTurningPoints(turningPointState);
   newsGrid.innerHTML = '';
 
-  let modified = false;
+  for (let i = 0; i < newsList.length; i++) {
+    const news = newsList[i];
 
-  newsList.forEach((news, index) => {
-    const isTurning =
+    // clave estable
+    news.stableKey = news.stableKey ?? computeStableKey(news);
+
+    const isTurning = (
       news.turning_point_type === 'original' ||
       news.turning_point_type === 'approved' ||
-      news.turning_point_type === 'cancelled';
-
-    // clave estable por noticia
-    const stableKey = String(
-      news.id ?? (news.title + '|' + news.date)
+      news.turning_point_type === 'cancelled'
     );
-    const h = hashStr(stableKey);
 
-    let hide = false;
-    let reason = null;
-
+    const h = hashStr(news.stableKey);
     if (!newsAvailable.turning && isTurning) {
-      // muestra 1 de cada 5
-      hide = (h % BUCKET_TURNING) !== 0;
-      reason = 'turning';
+      news.hiddenByAvailability = (h % BUCKET_TURNING) !== 0;
+      news.hiddenReason = news.hiddenByAvailability ? 'turning' : null;
     } else if (!newsAvailable.normal && !isTurning) {
-      // muestra 1 de cada 7 (cambia a 8 si quieres)
-      hide = (h % BUCKET_NORMAL) !== 0;
-      reason = 'normal';
+      news.hiddenByAvailability = (h % BUCKET_NORMAL) !== 0;
+      news.hiddenReason = news.hiddenByAvailability ? 'normal' : null;
+    } else {
+      news.hiddenByAvailability = false;
+      news.hiddenReason = null;
     }
 
-    if (!maxDate || news.date > maxDate) {
-      maxDate = news.date;
-    }
 
-    news.hiddenByAvailability = hide;
-    news.hiddenReason = hide ? reason : null;
-    modified = true;
-    const newsItem = createNewsItemElement(news, index, newsAvailable, newsList, maxDate);
+    if (!maxDate || news.date > maxDate) maxDate = news.date;
 
+    const newsItem = createNewsItemElement(news, i, newsAvailable, newsList, maxDate);
     newsGrid.appendChild(newsItem);
     setTimeout(() => {
       newsItem.classList.remove('fade-in');
       newsItem.style.removeProperty('--order');
       newsItem.style.opacity = '1';
     }, 1500);
+  }
 
-  });
-
-  if (modified) saveNews(newsList);
-
+  saveNews(newsList);
+  saveTurningPoints(turningPointState);
 }
 
 export async function place_turning_outcome(turningPointResponse) {
@@ -767,7 +765,7 @@ export async function place_turning_outcome(turningPointResponse) {
 
           setTimeout(() => {
             loaderDiv.remove();
-            
+
             const rawHtml = marked.parse(articleText);
 
             const cleanHtml = DOMPurify.sanitize(rawHtml);
@@ -1967,27 +1965,35 @@ async function contextualizeSeasonReview(newData) {
 
 
 function saveNews(newsList) {
-  console.log("Saving news:", newsList);
-  const newsObj = newsList.reduce((acc, news) => {
-    acc[news.id] = {
-      title: news.title,
-      type: news.type,
-      date: news.date,
-      image: news.image,
-      overlay: news.overlay,
-      data: news.data,
-      text: news.text,
-      turning_point_type: news.turning_point_type,
-      nonReadable: news.nonReadable
-    };
-    return acc;
-  }, {});
-  let saveName = getSaveName();
-  //remove file extension if any
-  saveName = saveName.split('.')[0];
-  let newsName = `${saveName}_news`;
-  localStorage.setItem(newsName, JSON.stringify(newsObj));
+  console.log("Saving news list:", newsList);
+  try {
+    const saveName = getSaveName().split('.')[0] + "_news";
+    const prev = loadSavedNewsMap();
+    const out = { ...prev };
+
+    for (const n of newsList) {
+      const key = n.stableKey ?? computeStableKey(n);
+      const old = out[key] || {};
+      out[key] = {
+        ...old,
+        title: n.title,
+        type: n.type,
+        date: n.date,
+        image: n.image,
+        overlay: n.overlay,
+        data: n.data,
+        text: n.text ?? old.text,
+        turning_point_type: n.turning_point_type ?? old.turning_point_type,
+        nonReadable: n.nonReadable ?? old.nonReadable,
+        hiddenByAvailability: n.hiddenByAvailability ?? old.hiddenByAvailability,
+        hiddenReason: n.hiddenReason ?? old.hiddenReason,
+        stableKey: key,
+      };
+    }
+    localStorage.setItem(saveName, JSON.stringify(out));
+  } catch (e) { console.error("Error saving news:", e); }
 }
+
 
 function saveTurningPoints(turningPoints) {
   let saveName = getSaveName();
