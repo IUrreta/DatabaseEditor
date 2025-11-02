@@ -767,7 +767,13 @@ export async function place_turning_outcome(turningPointResponse) {
 
           setTimeout(() => {
             loaderDiv.remove();
-            newsArticle.textContent = articleText;
+            
+            const rawHtml = marked.parse(articleText);
+
+            const cleanHtml = DOMPurify.sanitize(rawHtml);
+
+            newsArticle.innerHTML = cleanHtml;
+            newsArticle.style.opacity = '1';
           }, 150);
 
         }, 200);
