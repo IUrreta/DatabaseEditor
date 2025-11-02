@@ -234,5 +234,54 @@
             "Confirmed - {{original_race}} Grand Prix to proceed as scheduled",
             "'At the end of the day, we all wanted to race there' – FIA on {{original_race}} GP confirmation"
         ]
+    },
+    {
+        "id": "driver_injury_or_illness",
+        "new_type": 106,
+        "turning_titles": [
+            "{{driver}} ({{team}}) doubtful for {{next_race}} due to {{condition}}",
+            "Concerns grow over {{driver}}'s fitness: {{condition}} reported",
+            "Sources: {{driver}} facing {{condition}}; participation in {{next_race}} uncertain",
+            "Medical checks for {{driver}} amid {{condition}} — race against time for {{next_race}}",
+            "{{team}} monitoring {{driver}} after {{condition}}; decision expected before {{next_race}}",
+            "Uncertainty around {{driver}} as {{condition}} sidelines preparations",
+            "‘Not ideal timing’ — {{team}} on {{driver}}’s {{condition}} ahead of {{next_race}}",
+            "Rumors suggest {{driver}} could miss upcoming events due to {{condition}}",
+            "Paddock talk: {{driver}} dealing with {{condition}}; standby plans in motion",
+            "{{driver}} under evaluation after {{reason}}; {{next_race}} start in doubt",
+            "Fitness question mark for {{driver}}: {{condition}} could force time out",
+            "Timeline unclear: {{driver}} managing {{condition}} from {{start_date}} to {{end_date}}",
+            "Fallback options considered by {{team}} as {{driver}} battles {{condition}}",
+            "Could {{driver}} be ruled out of {{races_affected_count}} race(s)? {{condition}} update pending",
+            "Setback for {{team}}: {{driver}} dealing with {{condition}} following {{reason}}"
+        ],
+        "positive_titles": [
+            "Confirmed: {{driver}} ({{team}}) sidelined with {{condition}}; out until {{expected_return}}",
+            "{{team}} statement: {{driver}} to miss {{races_affected_count}} race(s) due to {{condition}}",
+            "{{driver}} ruled out of {{next_race}} with {{condition}}; recovery underway",
+            "Medical update: {{driver}} unavailable from {{start_date}} to {{end_date}} ({{condition}})",
+            "It’s official — {{driver}} to sit out upcoming events; {{condition}} cited",
+            "Timeline set: {{driver}} expected to return by {{expected_return}} after {{condition}}",
+            "‘Health comes first’: {{team}} confirms absence for {{driver}} due to {{condition}}",
+            "Out of contention: {{driver}} to miss {{next_race}} following {{reason}}",
+            "Recovery plan agreed: {{driver}} targeting {{expected_return}} comeback",
+            "Confirmed absence: {{driver}} to skip {{races_affected_count}} race(s) — {{condition}}",
+            "Doctors advise rest: {{driver}} sidelined until {{end_date}}",
+            "{{team}}: ‘We’ll support {{driver}} through recovery’ — {{condition}} update"
+        ],
+        "negative_titles": [
+            "Cleared to race: {{driver}} fit for {{next_race}} despite recent {{condition}}",
+            "Good news for {{team}}: {{driver}} passed medical checks — no time out required",
+            "Speculation ends: {{driver}} will participate in {{next_race}} after {{condition}} scare",
+            "All clear — {{driver}} given green light to compete following assessment",
+            "{{driver}} feeling ready: ‘I’m fit to race’ after brief {{condition}} concerns",
+            "No layoff needed: {{driver}} completes program and will start at {{next_race}}",
+            "False alarm: {{driver}} available for selection despite {{condition}} reports",
+            "Fitness confirmed: {{driver}} to race as planned; {{team}} stands down contingency",
+            "Back to full prep: {{driver}} resumes normal workload after checks",
+            "Update: {{driver}} avoids time on the sidelines; focus shifts to {{next_race}}",
+            "‘We’re good to go’ — {{team}} confirms {{driver}} ready after medical review",
+            "Cleared: {{driver}} will line up for {{next_race}}; {{condition}} under control"
+        ]
     }
 ]

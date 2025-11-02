@@ -568,6 +568,245 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
     return newsList;
 }
 
+function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
+  turningPointState.injuries = turningPointState.injuries || {};
+
+  const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+  const todayExcel = Number(daySeason[0]);
+  const seasonYear = Number(daySeason[1]);
+
+  const newsList = [];
+  for (const m of [4, 5, 6]) {
+    const id = `turning_point_injury_${m}`;
+    if (savednews[id]) newsList.push({ id, ...savednews[id] });
+  }
+
+  // Only trigger in April, May, June
+  if (![4, 5, 6].includes(currentMonth) || turningPointState.injuries[currentMonth]) {
+    return newsList;
+  }
+
+  // 30% chance to happen
+  if (Math.random() >= 0.3) {
+    turningPointState.injuries[currentMonth] = "None";
+    return newsList;
+  }
+
+  const INJURY_CATALOG = [
+    {
+      share: 35,
+      type: "illness",
+      condition: "illness",
+      durations: [7, 10, 14],
+      reasons: [
+        "Has caught a strong virus and requires rest.",
+        "Suffering from high fever and fatigue due to a viral infection.",
+        "Severe stomach flu prevents proper physical performance."
+      ]
+    },
+    {
+      share: 20,
+      type: "minor_injury",
+      condition: "sprained wrist",
+      durations: [14, 21, 28],
+      reasons: [
+        "Sustained a minor wrist sprain during strength training.",
+        "Twisted wrist awkwardly during a reaction exercise.",
+        "Harmed his wrist after falling while doing bicycle training."
+      ]
+    },
+    {
+      share: 15,
+      type: "back_pain",
+      condition: "back pain flare-up",
+      durations: [14, 21, 28, 35],
+      reasons: [
+        "Back pain flare-up after long simulator sessions.",
+        "Lower back muscle strain; requires physiotherapy and rest.",
+        "Persistent lumbar discomfort; medical rest required."
+      ]
+    },
+    {
+      share: 15,
+      type: "concussion",
+      condition: "concussion",
+      durations: [21, 28, 35, 42],
+      reasons: [
+        "Undergoing concussion protocol after a light crash during private testing.",
+        "Suffering mild concussion symptoms; medical clearance required.",
+        "Experiencing dizziness and headache after an impact; following FIA concussion procedure."
+      ]
+    },
+    {
+      share: 10,
+      type: "fracture",
+      condition: "small fracture",
+      durations: [28, 42, 56],
+      reasons: [
+        "Suffered a small collarbone fracture while cycling.",
+        "Hairline rib fracture during a bike session.",
+        "Minor hand fracture; immobilization required."
+      ]
+    },
+    {
+      share: 5,
+      type: "surgery",
+      condition: "minor surgery recovery",
+      durations: [35, 49, 63],
+      reasons: [
+        "Recovering from a minor scheduled surgery.",
+        "Successful minor intervention; undergoing rehabilitation.",
+        "Preventive surgery to solve recurring pain issues."
+      ]
+    }
+  ];
+
+  // Weighted random pick helper
+  function weightedPick(arr, key = "share") {
+    const total = arr.reduce((s, it) => s + (it[key] || 0), 0);
+    let r = Math.random() * total;
+    for (const it of arr) {
+      r -= (it[key] || 0);
+      if (r <= 0) return it;
+    }
+    return arr[arr.length - 1];
+  }
+
+  const pickedInjury = weightedPick(INJURY_CATALOG);
+  const baseDuration = randomPick(pickedInjury.durations);
+
+  // --- Get teams with two official drivers ---
+  const pairs = queryDB(`
+    SELECT con.TeamID, con.StaffID
+    FROM Staff_Contracts con
+    JOIN Staff_DriverData d ON d.StaffID = con.StaffID
+    WHERE con.ContractType = 0 AND con.PosInTeam <= 2
+  `, 'allRows');
+
+  if (!pairs || !pairs.length) {
+    turningPointState.injuries[currentMonth] = "None";
+    return newsList;
+  }
+
+  const teamToDrivers = {};
+  for (const row of pairs) {
+    const teamId = Number(row[0]);
+    const driverId = Number(row[1]);
+    (teamToDrivers[teamId] ||= []).push(driverId);
+  }
+  const eligibleTeams = Object.keys(teamToDrivers).filter(t => teamToDrivers[t].length >= 2).map(Number);
+  if (!eligibleTeams.length) {
+    turningPointState.injuries[currentMonth] = "None";
+    return newsList;
+  }
+
+  // Pick random team and driver
+  const teamId = randomPick(eligibleTeams);
+  const teamDrivers = teamToDrivers[teamId];
+  const driverId = randomPick(teamDrivers);
+  const teamName = combined_dict[teamId] || "Unknown Team";
+
+  // Get driver name
+  let nameRow = queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ${driverId}`, 'singleRow') || ["Unknown", "Driver"];
+  const driverName = formatNamesSimple([...nameRow, driverId]);
+
+  // --- Injury dates ---
+  const startDate = new Date(seasonYear, currentMonth - 1, Math.floor(Math.random() * 28) + 1);
+  const startExcel = dateToExcel(startDate);
+
+  // Get next race after start date
+  const nextRaceDay = queryDB(`
+    SELECT MIN(Day) FROM Races
+    WHERE Day > ${startExcel}
+  `, 'singleValue');
+  const nextRaceExcel = nextRaceDay ? Number(nextRaceDay) + 2 : null;
+
+  // Compute end date (extended to cover at least the next race)
+  let endDate = new Date(startDate.getTime());
+  endDate.setDate(endDate.getDate() + baseDuration);
+
+  if (nextRaceExcel) {
+    const nextRaceDate = excelToDate(nextRaceExcel);
+    if (endDate < nextRaceDate) {
+      endDate = new Date(nextRaceDate.getTime());
+    }
+  }
+
+  const endExcel = dateToExcel(endDate);
+
+  // Find affected races between start and end
+  const racesAffected = queryDB(`
+    SELECT RaceID, Day
+    FROM Races
+    WHERE Day >= ${startExcel} AND Day <= ${endExcel}
+    ORDER BY Day ASC
+  `, 'allRows') || [];
+
+  const expectedRaceReturn = queryDB(`
+    SELECT MIN(Day), RaceID FROM Races
+    WHERE Day > ${endExcel}
+  `, 'singleRow');
+  const expectedReturnRaceId = expectedRaceReturn ? Number(expectedRaceReturn[1]) : null;
+  const expectedReturnCountry = countries_data[races_names[Number(expectedReturnRaceId)]]?.country
+
+  const reason = randomPick(pickedInjury.reasons);
+
+  // Build data object
+  const entryId = `turning_point_injury_${currentMonth}`;
+  if (savednews[entryId]) return newsList;
+
+  const newData = {
+    team: teamName,
+    teamId,
+    driver_affected: {
+      id: driverId,
+      name: driverName[0],
+      teamId
+    },
+    condition: {
+      type: pickedInjury.type,
+      condition: pickedInjury.condition,
+      reason,
+      start_date: startExcel,
+      end_date: endExcel,
+      next_race_min_enforced: !!nextRaceExcel,
+      races_affected: racesAffected.map(r => ({
+        raceId: Number(r[0]),
+        country: countries_data[races_names[Number(r[0])]]?.country,
+        day: Number(r[1])
+      })),
+      expectedReturnRaceId: expectedReturnRaceId,
+      expectedReturnCountry: expectedReturnCountry
+    },
+    month: currentMonth,
+    season: seasonYear
+  };
+
+  turningPointState.injuries[currentMonth] = newData;
+
+  const title = typeof generateTurningPointTitle === "function"
+    ? generateTurningPointTitle(newData, 201, "original")
+    : `${driverName[0]} sidelined due to ${pickedInjury.condition}`;
+
+  const image = getImagePath(null, driverId, "injury");
+
+  const entry = {
+    id: entryId,
+    title,
+    image,
+    data: newData,
+    date: startExcel,
+    turning_point_type: "original",
+    type: "turning_point_injury"
+  };
+
+  console.log(`[TurningPoint] ${driverName[0]} (${teamName}) injury: ${pickedInjury.condition} → ${reason}`);
+  newsList.push(entry);
+  return newsList;
+}
+
+
+
 function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
     let newsList = [];
     //get previous technical directive turning point news
