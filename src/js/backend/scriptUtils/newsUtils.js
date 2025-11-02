@@ -1264,7 +1264,8 @@ function generateChampionMilestones(racesDone, savednews = {}) {
         }
     }
 
-    for (let i = iStart; i <= lastDoneIdx; i++) {
+    const iEnd = Math.min(lastDoneIdx + 1, allRaces.length - 1);
+    for (let i = iStart; i <= iEnd; i++) {
         const race = allRaces[i];
         const prevRaceId = i > 0 ? allRaces[i - 1].id : 0;
 
@@ -1331,8 +1332,13 @@ function generateChampionMilestones(racesDone, savednews = {}) {
             }
         }
 
+        if (i >= lastDoneIdx) {
+            continue;
+        }
+
         const standingsAfter = rebuildStandingsUntil(seasonResults, race.id);
         let alreadyChampionBeforeNext = false;
+        //if we have arrived at lastDoneIdx,, dont check actual champion
 
         if (standingsAfter?.driverStandings?.length >= 2) {
             const leaderA = standingsAfter.driverStandings[0];
