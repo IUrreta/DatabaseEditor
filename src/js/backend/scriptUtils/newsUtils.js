@@ -1077,7 +1077,7 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
 
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
 
-    if (Math.random() > 1.08 || forcedCleanSeason) { //testing, should be 0.08
+    if (Math.random() > 0.08 || forcedCleanSeason) { //testing, should be 0.08
         return newsList; // Random chance to not generate
     }
 
