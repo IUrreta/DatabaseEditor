@@ -17,7 +17,18 @@ import { editAge, editMarketability, editName, editRetirement, editSuperlicense,
 import { editCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
-import { generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails, getFullChampionSeasonDetails, generateTurningResponse } from "./scriptUtils/newsUtils";
+import {
+  generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
+  getFullChampionSeasonDetails, generateTurningResponse, upsertNews,
+  updateNewsFields,
+  upsertTurningPoints,
+  loadTPFromDB,
+  computeStableKey,
+  migrateLegacyData,
+  loadNewsMapFromDB,
+  ensureTurningPointsStructure,
+  deleteNews
+} from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
@@ -486,8 +497,25 @@ const workerCommands = {
     postMessage(carPerformanceResponse);
   },
   generateNews: (data, postMessage) => {
-    const newsAndTurningPoints = generate_news(data["news"], data["tpState"]);
-    postMessage({ responseMessage: "News fetched", content: newsAndTurningPoints });
+    try {
+      const savedNewsMap = loadNewsMapFromDB();   // ← desde DB
+      const tpStateFromDB = loadTPFromDB();        // ← desde DB
+
+      // si necesitas asegurar estructura mínima de TP, hazlo aquí
+      const tpState = ensureTurningPointsStructure(tpStateFromDB);
+
+      const { newsList, turningPointState } = generate_news(savedNewsMap, tpState);
+
+      postMessage({
+        responseMessage: "News fetched",
+        noti_msg: "News generated successfully",
+        content: { newsList, turningPointState },
+        unlocksDownload: true
+      });
+    } catch (e) {
+      console.error(e);
+      postMessage({ responseMessage: "Error", error: e.message });
+    }
   },
   updateCombinedDict: (data, postMessage) => {
     const teamId = data.teamID;
@@ -542,21 +570,94 @@ const workerCommands = {
     const turningPointData = data.turningPointData;
     const type = data.type;
     const maxDate = data.maxDate;
+    const originalStableKey = data.id;
+    const nonReadable = data.nonReadable || false;
 
     const newResponse = generateTurningResponse(turningPointData, type, maxDate, "positive");
+    newResponse.stableKey = newResponse.stableKey ?? computeStableKey(newResponse);
+
+    if (originalStableKey) {
+      updateNewsFields(originalStableKey, {
+        turning_point_type: "approved",
+        ...(nonReadable ? { nonReadable: true } : {})
+      });
+    }
+
+    upsertNews([newResponse]);
 
 
-    postMessage({ responseMessage: "Turning point positive", content: newResponse, isEditCommand: true, unlocksDownload: true });
+    postMessage({ responseMessage: "Turning point positive", noti_msg: "Accepted turning point", content: newResponse, isEditCommand: true, unlocksDownload: true });
   },
   cancelTurningPoint: (data, postMessage) => {
     const turningPointData = data.turningPointData;
     const type = data.type;
     const maxDate = data.maxDate;
+    const originalStableKey = data.id;
 
     const newResponse = generateTurningResponse(turningPointData, type, maxDate, "negative");
+    newResponse.stableKey = newResponse.stableKey ?? computeStableKey(newResponse);
 
-    postMessage({ responseMessage: "Turning point negative", content: newResponse, isEditCommand: true, unlocksDownload: true });
+    if (originalStableKey) {
+      updateNewsFields(originalStableKey, { turning_point_type: "cancelled" });
+    }
+
+    upsertNews([newResponse]);
+
+    postMessage({ responseMessage: "Turning point negative", noti_msg: "Cancelled turning point", content: newResponse, isEditCommand: true, unlocksDownload: true });
+  },
+  saveNewsState: (data, postMessage) => {
+    try {
+      upsertNews(data.newsList || []);
+      postMessage({ responseMessage: "News saved", noti_msg: "News saved successfully", isEditCommand: true, unlocksDownload: true });
+    } catch (e) {
+      console.error(e);
+      postMessage({ responseMessage: "Error", error: e.message, unlocksDownload: true });
+    }
+  },
+  updateNews: (data, postMessage) => {
+    try {
+      const ok = updateNewsFields(
+        data.stableKey,
+        data.patch || {} // { text, nonReadable, turning_point_type, ... }
+      );
+      postMessage({ responseMessage: ok ? "News updated" : "News not found", noti_msg: ok ? "News updated successfully" : "News not found", isEditCommand: true, unlocksDownload: true });
+    } catch (e) {
+      console.error(e);
+      postMessage({ responseMessage: "Error", error: e.message, unlocksDownload: true });
+    }
+  },
+  getNews: (data, postMessage) => {
+    const newsMap = loadNewsMapFromDB();
+    postMessage({ responseMessage: "News map", content: newsMap });
+  },
+  saveTurningPoints: (data, postMessage) => {
+    try {
+      upsertTurningPoints(data.turningPointState || {});
+      postMessage({ responseMessage: "Turning points saved successfully" });
+    } catch (e) {
+      console.error(e);
+      postMessage({ responseMessage: "Error", error: e.message, unlocksDownload: true });
+    }
+  },
+  getTurningPoints: (data, postMessage) => {
+    const turningPoints = loadTPFromDB();
+    postMessage({ responseMessage: "Turning points", content: turningPoints });
+  },
+  migrateFromLocalStorage: (data, postMessage) => {
+    try {
+      const { lsNewsTxt, lsTPTxt } = data || {};
+      const res = migrateLegacyData(lsNewsTxt, lsTPTxt);
+      postMessage({ responseMessage: "Migration done", status: res, noti_msg: "Migration completed successfully", isEditCommand: true, unlocksDownload: true });
+    } catch (e) {
+      console.error("Migration error (worker):", e);
+      postMessage({ responseMessage: "Error", error: e.message });
+    }
+  },
+  deleteNews: (data, postMessage) => {
+    deleteNews();
+    postMessage({ responseMessage: "News deleted successfully", unlocksDownload: true });
   }
+
 
 };
 

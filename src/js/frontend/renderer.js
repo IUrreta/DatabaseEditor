@@ -526,7 +526,7 @@ export function manageSaveButton(show, mode) {
     }
 }
 
-export function updateFront(data) {
+export async function updateFront(data) {
     console.log("UPDATING FRONT")
     console.log(data)
     let responseTyppe = data.responseMessage
@@ -727,7 +727,8 @@ const messageHandlers = {
         manageExportImportNews();
         place_news(message, newsAvailable)
     },
-    "Save selected finished": (message) => {
+    "Save selected finished": async (message) => {
+        await migrateLegacyNewsOnce();
         generateNews();
     },
     "Record fetched": (message) => {
@@ -735,113 +736,83 @@ const messageHandlers = {
     }
 };
 
+async function migrateLegacyNewsOnce() {
+  try {
+    const base = getSaveName().split('.')[0];
+    const lsNewsKey = `${base}_news`;
+    const lsTPKey   = `${base}_tps`;
+    const lsFlagKey = `${base}_migration_v1_done`;
+
+    // si ya migraste (fallback local) no hagas nada
+    if (localStorage.getItem(lsFlagKey) === "1") return;
+
+    const lsNewsTxt = localStorage.getItem(lsNewsKey);
+    const lsTPTxt   = localStorage.getItem(lsTPKey);
+
+    // nada que migrar
+    if (!lsNewsTxt && !lsTPTxt) {
+      localStorage.setItem(lsFlagKey, "1");
+      return;
+    }
+
+    // pide al worker que haga la migración (merge + flag en DB)
+    const resp = await new Command("migrateFromLocalStorage", {
+      base,
+      lsNewsTxt, // pueden ser null/undefined, el worker ya comprueba
+      lsTPTxt
+    }).promiseExecute();
+
+    if (resp?.responseMessage === "Migration done") {
+      // limpia LS y marca flag local como backup
+      localStorage.removeItem(lsNewsKey);
+      localStorage.removeItem(lsTPKey);
+      localStorage.setItem(lsFlagKey, "1");
+    }
+  } catch (e) {
+    console.error("Migration error (front):", e);
+  }
+}
+
+
 export async function generateNews() {
-    let isValid = await isPatronSignatureValid();
-    const generateNews = checkGenerableNews(isValid);
-    if (generateNews === "no") {
-        return;
-    }
-    let saveName = getSaveName();
-    //remove file extension if any
-    saveName = saveName.split(".")[0];
-    let newsName = `${saveName}_news`;
-    const savedNews = localStorage.getItem(newsName) || "{}";
-    const parsedNews = JSON.parse(savedNews);
+  const isValid = await isPatronSignatureValid();
+  const canGenerate = checkGenerableNews(isValid);
+  if (canGenerate === "no") return;
 
-    const tpState = ensureTurningPointsStructure(saveName);
+  // lanzar sin payload, el worker lee de DB
+  new Command("generateNews", {}).execute();
 
+  // loader UI (igual que antes si quieres)
+  const newsView = document.getElementById("news");
+  const loaderDiv = document.createElement('div');
+  loaderDiv.classList.add('loader-div', 'general-news-loader');
 
-    const command = new Command("generateNews", {
-        news: parsedNews,
-        tpState: tpState,
-    });
-    command.execute();
+  const loadingSpan = document.createElement('span');
+  loadingSpan.textContent = "Updating news";
+  const loadingDots = document.createElement('span');
+  loadingDots.textContent = ".";
+  loadingDots.classList.add('loading-dots');
+  loadingSpan.textContent = "Updating news";
+  loadingSpan.appendChild(loadingDots);
+  
 
-    const newsView = document.getElementById("news");
+  setInterval(() => {
+    if (loadingDots.textContent.length >= 3) loadingDots.textContent = ".";
+    else loadingDots.textContent += ".";
+  }, 500);
 
-    const loaderDiv = document.createElement('div');
-    loaderDiv.classList.add('loader-div', 'general-news-loader');
-    const loadingSpan = document.createElement('span');
-    if (Object.keys(parsedNews).length === 0) {
-        loadingSpan.textContent = "Generating";
-    } else {
-        loadingSpan.textContent = "Updating news";
-    }
-    const loadingDots = document.createElement('span');
-    loadingDots.textContent = "."
-    loadingDots.classList.add('loading-dots');
-    loadingSpan.appendChild(loadingDots);
+  const progressBar = document.createElement('div');
+  progressBar.classList.add('ai-progress-bar');
+  const progressDiv = document.createElement('div');
+  progressDiv.classList.add('progress-div', 'general-news-progress-div');
 
-    setInterval(() => {
-        if (loadingDots.textContent.length >= 3) {
-            loadingDots.textContent = ".";
-        } else {
-            loadingDots.textContent += ".";
-        }
-    }, 500);
+  loaderDiv.appendChild(loadingSpan);
+  progressBar.appendChild(progressDiv);
+  loaderDiv.appendChild(progressBar);
 
-    const progressBar = document.createElement('div');
-    progressBar.classList.add('ai-progress-bar');
-    const progressDiv = document.createElement('div');
-    progressDiv.classList.add('progress-div', 'general-news-progress-div');
-
-    loadingSpan.appendChild(loadingDots);
-    loaderDiv.appendChild(loadingSpan);
-    progressBar.appendChild(progressDiv);
-    loaderDiv.appendChild(progressBar);
-
-    startGeneralNewsProgress(progressDiv);
-    newsView.appendChild(loaderDiv);
+  startGeneralNewsProgress(progressDiv);
+  newsView.appendChild(loaderDiv);
 }
-
-function ensureTurningPointsStructure(saveName) {
-    const baseName = saveName.split(".")[0];
-    const key = `${baseName}_tps`;
-
-    if (localStorage.getItem(key)) {
-        let data = JSON.parse(localStorage.getItem(key));
-        return data;
-    }
-
-    const defaultStructure = {
-        checkedRaces: [],
-        ilegalRaces: [],
-        transfers: {
-            5: null,
-            6: null,
-            7: null
-        },
-        technicalDirectives: {
-            6: null,
-            9: null
-        },
-        investmentOpportunities: {
-            4: null,
-            5: null,
-            6: null,
-            7: null,
-            8: null,
-            9: null,
-            10: null,
-            11: null
-        },
-        raceSubstitutionOpportunities: {
-            4: null,
-            5: null,
-            6: null,
-            7: null,
-            8: null,
-            9: null,
-            10: null,
-            11: null
-        }
-    };
-
-    localStorage.setItem(key, JSON.stringify(defaultStructure));
-
-    return defaultStructure;
-}
-
 
 
 export function startGeneralNewsProgress(progressDiv) {

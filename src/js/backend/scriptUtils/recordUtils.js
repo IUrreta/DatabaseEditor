@@ -141,7 +141,7 @@ function validSeason(x) {
     return x && x.season && x.season !== 0;
 }
 
-function enrichDriversWithHistory(drivers, season = null) {
+export function enrichDriversWithHistory(drivers, season = null) {
     if (!drivers || drivers.length === 0) return drivers;
 
     const ids = drivers.map(d => d.id);
