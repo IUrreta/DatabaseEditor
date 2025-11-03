@@ -283,18 +283,15 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       cancelButton.appendChild(resultSpan);
 
       cancelButton.replaceWith(cancelButton.cloneNode(true));
-      news.turning_point_type = "cancelled";
 
       const command = new Command("cancelTurningPoint", {
         turningPointData: news.data,
         type: news.type,
-        maxDate: maxDate
+        maxDate: maxDate,
+        id: news.id
       });
       let newResp = await command.promiseExecute();
-      place_turning_outcome(newResp.content);
-      newsList.push(newResp.content);
-
-      saveNews(newsList);
+      place_turning_outcome(newResp.content, newsList);
     });
 
     randomButton = document.createElement('div');
@@ -310,6 +307,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
     approveIcon.classList.add('bi', 'bi-check', 'tp-icon');
     approveButton.appendChild(approveIcon);
     tpDiv.appendChild(approveButton);
+    let nonReadable = false;
 
     approveButton.addEventListener('click', async () => {
       //has the news text
@@ -325,8 +323,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
         else {
           const readButton = newsBody.querySelector('.read-button-container .read-button');
           readButton.remove();
-          news.nonReadable = true;
-          news.turning_point_type = "approved";
+          nonReadable = true;
         }
       }
 
@@ -343,16 +340,17 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
 
       //remove the eventListener
       approveButton.replaceWith(approveButton.cloneNode(true));
-      news.turning_point_type = "approved";
 
       const command = new Command("approveTurningPoint", {
         turningPointData: news.data,
         type: news.type,
-        maxDate: maxDate
+        maxDate: maxDate,
+        id: news.id,
+        nonReadable: nonReadable === true
       });
+
       const newResp = await command.promiseExecute();
-      place_turning_outcome(newResp.content);
-      newsList.push(newResp.content);
+      place_turning_outcome(newResp.content, newsList);
 
       if (news.type === "turning_point_transfer" || news.type === "turning_point_outcome_transfer") {
         const commandDrivers = new Command("driversRefresh", {});
@@ -373,7 +371,6 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
         commandCalendar.execute();
       }
 
-      saveNews(newsList);
     });
 
 
@@ -584,12 +581,6 @@ function computeStableKey(n) {
   return "h:" + hashStr(`${n.title}|${n.date}`);
 }
 
-function loadSavedNewsMap() {
-  try {
-    const saveName = getSaveName().split('.')[0] + "_news";
-    return JSON.parse(localStorage.getItem(saveName) || "{}");
-  } catch { return {}; }
-}
 
 
 export async function place_news(newsAndTurningPoints, newsAvailable) {
@@ -635,21 +626,11 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
       newsItem.style.opacity = '1';
     }, 1500);
   }
-
-  saveNews(newsList);
-  saveTurningPoints(turningPointState);
 }
 
-export async function place_turning_outcome(turningPointResponse) {
+export async function place_turning_outcome(turningPointResponse, newsList) {
   let saveName = getSaveName();
   saveName = saveName.split('.')[0];
-  //get news
-  let newsName = `${saveName}_news`;
-  let news = JSON.parse(localStorage.getItem(newsName)) || [];
-  let newsList = Object.entries(news).map(([id, n]) => ({ id, ...n }));
-
-  console.log(newsList);
-
 
   const newsItem = document.createElement('div');
   newsItem.classList.add('news-item', 'fade-in');
@@ -1024,109 +1005,109 @@ function buildContextualPrompt(data, config = {}) {
 }
 
 async function manageRead(newData, newsList, barProgressDiv, interval) {
-  let articleText, prompt;
-
-  if (newData.type === "race_result") {
-    prompt = await contextualizeRaceResults(newData);
-  }
-  else if (newData.type === "quali_result") {
-    prompt = await contextualizeQualiResults(newData);
-  }
-  else if (newData.type === "fake_transfer") {
-    prompt = await contextualizeFakeTransferNews(newData);
-  }
-  else if (newData.type === "silly_season_rumors") {
-    prompt = await contextualizeSillySeasonTransferNews(newData);
-  }
-  else if (newData.type === "potential_champion") {
-    prompt = await contextualizePotentialChampion(newData);
-  }
-  else if (newData.type === "world_champion") {
-    prompt = await contextualizeWorldChampion(newData);
-  }
-  else if (newData.type === "big_transfer") {
-    prompt = await contextualizeBigTransferConfirm(newData);
-  }
-  else if (newData.type === "contract_renewal") {
-    prompt = await contextualizeRenewalNews(newData);
-  }
-  else if (newData.type === "team_comparison") {
-    prompt = await contextualizeTeamComparison(newData);
-  }
-  else if (newData.type === "driver_comparison") {
-    prompt = await contextualizeDriverComparison(newData);
-  }
-  else if (newData.type === "season_review") {
-    prompt = await contextualizeSeasonReview(newData);
-  }
-  else if (newData.type === "turning_point_dsq" || newData.type === "turning_point_outcome_dsq") {
-    prompt = await contextualizeDSQ(newData, newData.turning_point_type);
-  }
-  else if (newData.type === "turning_point_transfer" || newData.type === "turning_point_outcome_transfer") {
-    prompt = await contextualizeTurningPointTransfer(newData, newData.turning_point_type);
-  }
-  else if (newData.type === "turning_point_technical_directive" || newData.type === "turning_point_outcome_technical_directive") {
-    prompt = await contextualizeTurningPointTechnicalDirective(newData, newData.turning_point_type);
-  }
-  else if (newData.type === "turning_point_investment" || newData.type === "turning_point_outcome_investment") {
-    prompt = await contextualizeTurningPointInvestment(newData, newData.turning_point_type);
-  }
-  else if (newData.type === "turning_point_race_substitution" || newData.type === "turning_point_outcome_race_substitution") {
-    prompt = await contextualizeTurningPointRaceSubstitution(newData, newData.turning_point_type);
-  }
-
-  const normalDate = excelToDate(newData.date).toISOString().split("T")[0];
-
-  prompt += `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. Do not take this as a mandatory instruction, only add quotes if you find them relevant to the context of the article.`
-
-  prompt = `The current date is ${normalDate} \n\n` + prompt;
-
-  prompt += `\nThe title of the article is: "${newData.title}"\n\n Please write a detailed article based on the title and the context provided.`
-
-  prompt = addTurningPointContexts(prompt);
-
-  prompt += `\n\nUse **Markdown** formatting in your response for better readability:
-  - Use "#" or "##" for main and secondary titles.
-  - Use **bold** for important names or key phrases.
-  - Use *italics* for quotes or emotional emphasis.
-  - Use bullet points or numbered lists if needed.
-  Do not include any raw HTML or code blocks.
-  The final output must be valid Markdown ready to render as HTML.`;
-
-  console.log("Final prompt:", prompt);
-
-  clearInterval(interval);
-
-
-  if (barProgressDiv) {
-    barProgressDiv.style.width = '50%';
-  }
-
-
-  let progress = 50;
-  interval2 = setInterval(() => {
-    progress += 1;
-    if (barProgressDiv) {
-      barProgressDiv.style.width = progress + '%';
-    }
-    if (progress >= 98) {
-      clearInterval(interval2);
-    }
-  }, 350);
-
-
+  // 1) Si ya hay texto, no construimos prompt ni llamamos a la IA
   if (newData.text) {
-    articleText = newData.text;
+    clearInterval(interval);
+    if (barProgressDiv) barProgressDiv.style.width = '100%';
+    return newData.text;
   }
-  else {
-    articleText = await askGenAI(prompt);
+
+  // 2) Tabla de contextualizadores
+  const ctx = {
+    race_result: contextualizeRaceResults,
+    quali_result: contextualizeQualiResults,
+    fake_transfer: contextualizeFakeTransferNews,
+    silly_season_rumors: contextualizeSillySeasonTransferNews,
+    potential_champion: contextualizePotentialChampion,
+    world_champion: contextualizeWorldChampion,
+    big_transfer: contextualizeBigTransferConfirm,
+    contract_renewal: contextualizeRenewalNews,
+    team_comparison: contextualizeTeamComparison,
+    driver_comparison: contextualizeDriverComparison,
+    season_review: contextualizeSeasonReview,
+
+    // Turning points: outcome_ y no-outcome comparten handler
+    turning_point_dsq: (nd) => contextualizeDSQ(nd, nd.turning_point_type),
+    turning_point_transfer: (nd) => contextualizeTurningPointTransfer(nd, nd.turning_point_type),
+    turning_point_technical_directive: (nd) => contextualizeTurningPointTechnicalDirective(nd, nd.turning_point_type),
+    turning_point_investment: (nd) => contextualizeTurningPointInvestment(nd, nd.turning_point_type),
+    turning_point_race_substitution: (nd) => contextualizeTurningPointRaceSubstitution(nd, nd.turning_point_type),
+  };
+
+  // 3) Normaliza tipos "turning_point_outcome_*" -> "turning_point_*"
+  const normalizeType = (t) =>
+    t?.startsWith("turning_point_outcome_")
+      ? t.replace("turning_point_outcome_", "turning_point_")
+      : t;
+
+  const type = normalizeType(newData.type);
+  const handler = ctx[type];
+  if (!handler) {
+    console.warn("No handler for news type:", newData.type);
+  }
+
+  // 4) Progreso visual
+  clearInterval(interval); // detenemos el anterior
+  let progressInterval;
+  try {
+    if (barProgressDiv) barProgressDiv.style.width = '50%';
+    let progress = 50;
+    progressInterval = setInterval(() => {
+      progress = Math.min(progress + 1, 98);
+      if (barProgressDiv) barProgressDiv.style.width = progress + '%';
+      if (progress >= 98) clearInterval(progressInterval);
+    }, 350);
+
+    // 5) Construir prompt SOLO si hace falta
+    let prompt = "";
+    if (handler) {
+      const base = await handler(newData);
+      const normalDate = excelToDate(newData.date); // ya la tienes
+      const isoDate = new Date(
+        normalDate.getFullYear(),
+        normalDate.getMonth(),
+        normalDate.getDate()
+      ).toISOString().split("T")[0]; // evita sorpresas de TZ en toISOString
+
+      prompt =
+        `The current date is ${isoDate}\n\n` +
+        base +
+        `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
+        `Do not take this as a mandatory instruction, only add quotes if you find them relevant to the context of the article.` +
+        `\nThe title of the article is: "${newData.title}"\n\nPlease write a detailed article based on the title and the context provided.`;
+
+      // Contextos extra de Turning Points (si tu helper ya es idempotente, no pasa nada por llamarlo siempre)
+      prompt = addTurningPointContexts(prompt);
+
+      prompt += `
+      Use **Markdown** formatting in your response for better readability:
+      - Use "#" or "##" for main and secondary titles.
+      - Use **bold** for important names or key phrases.
+      - Use *italics* for quotes or emotional emphasis.
+      - Use bullet points or numbered lists if needed.
+      Do not include any raw HTML or code blocks.
+      The final output must be valid Markdown ready to render as HTML.`;
+    }
+
+    console.log("Final prompt for AI:", prompt);
+
+    // 6) Llama a la IA y guarda
+    const articleText = await askGenAI(prompt);
     newData.text = articleText;
-    saveNews(newsList);
 
+    new Command("updateNews", {
+      stableKey: newData.id ?? computeStableKey(newData),
+      patch: { text: articleText }
+    }).execute();
+
+    if (barProgressDiv) barProgressDiv.style.width = '100%';
+    return articleText;
+
+  } finally {
+    if (progressInterval) clearInterval(progressInterval);
   }
-
-  return articleText;
 }
+
 
 async function contextualizeTurningPointRaceSubstitution(newData, turningPointType) {
   const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 105);
@@ -1964,36 +1945,6 @@ async function contextualizeSeasonReview(newData) {
 }
 
 
-function saveNews(newsList) {
-  console.log("Saving news list:", newsList);
-  try {
-    const saveName = getSaveName().split('.')[0] + "_news";
-    const prev = loadSavedNewsMap();
-    const out = { ...prev };
-
-    for (const n of newsList) {
-      const key = n.stableKey ?? computeStableKey(n);
-      const old = out[key] || {};
-      out[key] = {
-        ...old,
-        title: n.title,
-        type: n.type,
-        date: n.date,
-        image: n.image,
-        overlay: n.overlay,
-        data: n.data,
-        text: n.text ?? old.text,
-        turning_point_type: n.turning_point_type ?? old.turning_point_type,
-        nonReadable: n.nonReadable ?? old.nonReadable,
-        hiddenByAvailability: n.hiddenByAvailability ?? old.hiddenByAvailability,
-        hiddenReason: n.hiddenReason ?? old.hiddenReason,
-        stableKey: key,
-      };
-    }
-    localStorage.setItem(saveName, JSON.stringify(out));
-  } catch (e) { console.error("Error saving news:", e); }
-}
-
 
 function saveTurningPoints(turningPoints) {
   let saveName = getSaveName();
@@ -2232,10 +2183,9 @@ document.querySelectorAll('#newsTypeMenu .dropdown-item').forEach(item => {
 document.querySelector(".reload-news").addEventListener("click", async () => {
   const newsGrid = document.querySelector(".news-grid");
   newsGrid.innerHTML = '';
-  const saveName = getSaveName();
-  const newsName = `${saveName.split('.')[0]}_news`;
-  const tpName = `${saveName.split('.')[0]}_tps`;
-  localStorage.removeItem(tpName);
-  localStorage.removeItem(newsName);
+
+  const command = new Command("deleteNews");
+  command.execute();
+
   generateNews();
 });

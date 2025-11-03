@@ -10,6 +10,8 @@ import { getPerformanceAllTeamsSeason, getAllPartsFromTeam, getPerformanceAllTea
 import { getGlobals } from "../commandGlobals";
 import { unitValueToValue } from "./carConstants";
 import { track } from "@vercel/analytics";
+import LZString from "lz-string";
+const USE_COMPRESSION = false;
 
 const _seasonResultsCache = new Map();
 const _standingsCache = new Map();
@@ -70,7 +72,7 @@ export function generate_news(savednews, turningPointState) {
 
     const investmentTurningPointNews = generateInvestmentTurningPointNews(currentMonth, savednews, turningPointState);
 
-    const raceSubstitutionTurningPointNews = generateRaceSubstitutionTurningPointNews(currentMonth,savednews, turningPointState);
+    const raceSubstitutionTurningPointNews = generateRaceSubstitutionTurningPointNews(currentMonth, savednews, turningPointState);
 
     let turningPointOutcomes = [];
     if (Object.keys(savednews).length > 0) {
@@ -86,6 +88,10 @@ export function generate_news(savednews, turningPointState) {
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
+
+    upsertNews(newsList);
+    upsertTurningPoints(turningPointState);
+
     return {
         newsList,
         turningPointState
@@ -332,7 +338,7 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
     for (let month of [4, 5, 6, 7, 8, 9, 10, 11]) {
         const entryId = `turning_point_race_substitution_${month}`;
         if (savednews[entryId]) {
-            newsList.push({id: entryId, ...savednews[entryId]});
+            newsList.push({ id: entryId, ...savednews[entryId] });
             return newsList;
         }
     }
@@ -371,27 +377,27 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
     if (cancellationIndex > 0) {
         const previousRace = calendar[cancellationIndex - 1];
         const dayDiff = cancellationRace[2] - previousRace[2];
-        if (dayDiff > 7){
+        if (dayDiff > 7) {
             availableRaceBefore = true;
         }
     }
     if (cancellationIndex < calendar.length - 1) {
         const nextRace = calendar[cancellationIndex + 1];
         const dayDiff = nextRace[2] - cancellationRace[2];
-        if (dayDiff > 7){
+        if (dayDiff > 7) {
             availableRaceAfter = true;
         }
     }
-    
-    if (availableRaceAfter){
+
+    if (availableRaceAfter) {
         //50% chance
-        if (Math.random() < 0.5){ //put the same race that the race after but 7 days before
+        if (Math.random() < 0.5) { //put the same race that the race after but 7 days before
             const nextRace = calendar[cancellationIndex + 1];
             newRaceTrackId = nextRace[1];
             newRaceDay = nextRace[2] - 7;
             typeOfSubstitution = "same_as_next";
         }
-        else{
+        else {
             let region = continentDict[originalTrackId] || "Europe";
             let racesPool = contintntRacesRegions[region].filter(tid => tid !== originalTrackId);
             newRaceTrackId = randomPick(racesPool);
@@ -399,15 +405,15 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
             typeOfSubstitution = "different_race";
         }
     }
-    else if (availableRaceBefore){
+    else if (availableRaceBefore) {
         //50% chance
-        if (Math.random() < 0.5){ //put the same race that the race before but 7 days after
+        if (Math.random() < 0.5) { //put the same race that the race before but 7 days after
             const previousRace = calendar[cancellationIndex - 1];
             newRaceTrackId = previousRace[1];
             newRaceDay = previousRace[2] + 7;
             typeOfSubstitution = "same_as_previous";
         }
-        else{
+        else {
             let region = continentDict[originalTrackId] || "Europe";
             let racesPool = contintntRacesRegions[region].filter(tid => tid !== originalTrackId);
             newRaceTrackId = randomPick(racesPool);
@@ -415,27 +421,27 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
             typeOfSubstitution = "different_race";
         }
     }
-    else{
+    else {
         let region = continentDict[originalTrackId] || "Europe";
         let racesPool = contintntRacesRegions[region].filter(tid => tid !== originalTrackId);
         newRaceTrackId = randomPick(racesPool);
-        newRaceDay = cancellationRace[2]; 
+        newRaceDay = cancellationRace[2];
         typeOfSubstitution = "different_race";
     }
     const originalCountry = countries_data[races_names[originalTrackId]]?.adjective || "Unknown Country";
     const substituteCountry = countries_data[races_names[newRaceTrackId]]?.country || "Unknown Country";
 
     const reasons_pool = [
-    "infrastructure delays",
-    "contractual disputes",
-    "financial uncertainty",
-    "logistical challenges",
-    "homologation issues",
-    "political instability",
-    "travel restrictions",
-    "calendar restructuring",
-    "environmental concerns",
-    "permit complications with local authorities"
+        "infrastructure delays",
+        "contractual disputes",
+        "financial uncertainty",
+        "logistical challenges",
+        "homologation issues",
+        "political instability",
+        "travel restrictions",
+        "calendar restructuring",
+        "environmental concerns",
+        "permit complications with local authorities"
     ];
     const reason = randomPick(reasons_pool);
 
@@ -482,7 +488,7 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
     for (let month of [4, 5, 6, 7, 8, 9, 10, 11]) {
         const entryId = `turning_point_investment_${month}`;
         if (savednews[entryId]) {
-            newsList.push({id: entryId, ...savednews[entryId]});
+            newsList.push({ id: entryId, ...savednews[entryId] });
             return newsList;
         }
     }
@@ -581,7 +587,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
     for (let month of [6, 9]) {
         const entryId = `turning_point_technical_directive_${month}`;
         if (savednews[entryId]) {
-            newsList.push({id: entryId, ...savednews[entryId]});
+            newsList.push({ id: entryId, ...savednews[entryId] });
         }
     }
 
@@ -596,7 +602,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
     }
 
     //60% chance of happening
-    if (Math.random() < 0.6){
+    if (Math.random() < 0.6) {
         turningPointState.technicalDirectives[currentMonth] = "None";
         return newsList;
     }
@@ -757,7 +763,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
     for (let month = 5; month <= 7; month++) {
         const entryId = `turning_point_transfer_${month}`;
         if (savednews[entryId]) {
-            newsList.push({id: entryId, ...savednews[entryId]});
+            newsList.push({ id: entryId, ...savednews[entryId] });
         }
     }
 
@@ -1040,6 +1046,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
 }
 
 function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointState = {}) {
+    console.log("TURNING POINT STATE IN DSQ TP NEWS:", turningPointState);
     const last3Races = racesDone.slice(-3);
     let newsList = [];
     let forcedCleanSeason = false;
@@ -1070,7 +1077,7 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
 
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
 
-    if (Math.random() > 0.08 || forcedCleanSeason) {
+    if (Math.random() > 1.08 || forcedCleanSeason) { //testing, should be 0.08
         return newsList; // Random chance to not generate
     }
 
@@ -2644,7 +2651,7 @@ export function getOneRaceDetails(raceId) {
         racesNames,
         champions,
         nRaces: numberOfRaces,
-        sprintDetails, 
+        sprintDetails,
         pointsSchema,
         remainingRaces: remainingRacesDetails
     }
@@ -3373,4 +3380,224 @@ function disqualifyTeamInRace({
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// SAVING NEWS
+const encodeJSON = (obj) =>
+    USE_COMPRESSION ? LZString.compressToUTF16(JSON.stringify(obj)) : JSON.stringify(obj);
+
+const decodeJSON = (txt) => {
+    if (!txt) return {};
+    const raw = USE_COMPRESSION ? LZString.decompressFromUTF16(txt) : txt;
+    try { return JSON.parse(raw || "{}"); } catch { return {}; }
+};
+
+// --- DB helpers ---
+export function ensureEditorStateTable() {
+    const exists = queryDB(
+        `SELECT name FROM sqlite_master WHERE type='table' AND name='Custom_News_State'`,
+        "singleRow"
+    );
+    if (!exists) queryDB(`CREATE TABLE Custom_News_State (key TEXT PRIMARY KEY, value TEXT)`);
+}
+
+export function getEditorState(key) {
+    ensureEditorStateTable();
+    const row = queryDB(`SELECT value FROM Custom_News_State WHERE key='${key}'`, "singleRow");
+    return row ? row[0] : null;
+}
+
+export function setEditorState(key, valueText) {
+    ensureEditorStateTable();
+    const safe = valueText.replaceAll("'", "''");
+    queryDB(`
+    INSERT INTO Custom_News_State (key,value) VALUES ('${key}','${safe}')
+    ON CONFLICT(key) DO UPDATE SET value=excluded.value
+  `);
+}
+
+// --- computeStableKey compartido (mismo algoritmo en front y worker) ---
+export function computeStableKey(n) {
+    if (n.id != null && n.id !== "") return String(n.id);
+    // ajusta por tipo si quieres; fallback seguro:
+    return `h:${n.type}|${n.title}|${n.date}`;
+}
+
+// --- NEWS: load/save/upsert ---
+export function loadNewsMapFromDB() {
+    const globals = getGlobals();
+    const year = globals?.currentDate[1]
+    const key = `${year}_news`;
+    return decodeJSON(getEditorState(key)) || {};
+}
+
+export function saveNewsToDBMap(map) {
+    const globals = getGlobals();
+    const year = globals?.currentDate[1]
+    const key = `${year}_news`;
+    setEditorState(key, encodeJSON(map));
+}
+
+export function deleteNews(){
+    const globals = getGlobals();
+    const year = globals?.currentDate[1]
+    const key = `${year}_news`;
+    setEditorState(key, encodeJSON({}));
+}
+
+export function deleteTurningPoints(){
+    const globals = getGlobals();
+    const year = globals?.currentDate[1]
+    const key = `${year}_turning_points`;
+    setEditorState(key, encodeJSON({}));
+}
+
+export function upsertNews(newsList = []) {
+    const prev = loadNewsMapFromDB();
+    const out = { ...prev };
+    for (const n of newsList) {
+        const key = n.stableKey ?? computeStableKey(n);
+        const old = out[key] || {};
+        out[key] = {
+            ...old,
+            title: n.title,
+            type: n.type,
+            date: n.date,
+            image: n.image,
+            overlay: n.overlay,
+            data: n.data,
+            text: n.text ?? old.text,
+            turning_point_type: n.turning_point_type ?? old.turning_point_type,
+            nonReadable: n.nonReadable ?? old.nonReadable,
+            hiddenByAvailability: n.hiddenByAvailability ?? old.hiddenByAvailability,
+            hiddenReason: n.hiddenReason ?? old.hiddenReason,
+            stableKey: key,
+        };
+    }
+    saveNewsToDBMap(out);
+    return out; // por si quieres devolver el estado
+}
+
+// --- TP: load/save/upsert (simple: arrays -> replace, objetos -> merge, primitivos -> replace) ---
+export function loadTPFromDB() {
+    const globals = getGlobals();
+    const year = globals?.currentDate[1]
+    const key = `${year}_turning_points`;
+    return decodeJSON(getEditorState(key)) || {};
+}
+
+export function saveTPToDBMap(map) {
+    const globals = getGlobals();
+    const year = globals?.currentDate[1]
+    const key = `${year}_turning_points`;
+    setEditorState(key, encodeJSON(map));
+}
+
+export function upsertTurningPoints(tpPartial = {}) {
+    const prev = loadTPFromDB();
+    const out = { ...prev };
+    for (const [k, v] of Object.entries(tpPartial)) {
+        const old = out[k];
+        if (Array.isArray(v)) out[k] = v.slice();
+        else if (v && typeof v === "object") out[k] = { ...(old || {}), ...v };
+        else out[k] = v;
+    }
+    saveTPToDBMap(out);
+    return out;
+}
+
+export function updateNewsFields(stableKey, patch) {
+    const map = loadNewsMapFromDB();
+    const old = map[stableKey] || null;
+    if (!old) return false; // o lanzar error si prefieres
+
+    // Solo actualiza los campos permitidos
+    const allowed = ["text", "turning_point_type", "nonReadable", "hiddenByAvailability", "hiddenReason", "overlay", "image", "title"];
+    const next = { ...old };
+    for (const k of allowed) {
+        if (patch[k] !== undefined) next[k] = patch[k];
+    }
+    map[stableKey] = next;
+    saveNewsToDBMap(map);
+    return true;
+}
+
+export function isMigrationDone() {
+    return getEditorState("_migration_v1_done") === "1";
+}
+export function markMigrationDone() {
+    setEditorState("_migration_v1_done", "1");
+}
+
+// util segura
+function safeParse(txt, fallback) {
+    try { return JSON.parse(txt); } catch { return fallback; }
+}
+
+function mergeNewsMaps(dbMap, lsMap) {
+    // preferimos LS para no perder artículos generados/ediciones locales
+    return { ...dbMap, ...lsMap };
+}
+function mergeTPMaps(dbMap, lsMap) {
+    const out = { ...dbMap };
+    for (const [k, v] of Object.entries(lsMap)) {
+        const old = out[k];
+        if (Array.isArray(v)) out[k] = v.slice();                 // arrays -> replace
+        else if (v && typeof v === "object") out[k] = { ...(old || {}), ...v }; // objetos -> merge
+        else out[k] = v;                                          // primitivos/null -> replace
+    }
+    return out;
+}
+
+export function migrateLegacyData(lsNewsTxt, lsTPTxt) {
+    if (isMigrationDone()) return "already"; // idempotente
+
+    if (lsNewsTxt) {
+        const lsNewsMap = safeParse(lsNewsTxt, {});
+        const dbNewsMap = loadNewsMapFromDB();
+        const outNews = mergeNewsMaps(dbNewsMap, lsNewsMap);
+        saveNewsToDBMap(outNews);
+    }
+
+    if (lsTPTxt) {
+        const lsTPMap = safeParse(lsTPTxt, {});
+        const dbTPMap = loadTPFromDB();
+        const outTP = mergeTPMaps(dbTPMap, lsTPMap);
+        saveTPToDBMap(outTP);
+    }
+
+    markMigrationDone();
+    return "migrated";
+}
+
+export function ensureTurningPointsStructure() {
+  const globals = getGlobals?.(); // si lo tienes disponible
+  const year = globals?.currentDate?.[1];
+  const key = `${year}_tps`;
+
+  let data = loadTPFromDB();
+  if (data && Object.keys(data).length > 0) {
+    return data;
+  }
+
+  // Estructura por defecto
+  const defaultStructure = {
+    checkedRaces: [],
+    ilegalRaces: [],
+    transfers: { 5: null, 6: null, 7: null },
+    technicalDirectives: { 6: null, 9: null },
+    investmentOpportunities: {
+      4: null, 5: null, 6: null, 7: null,
+      8: null, 9: null, 10: null, 11: null
+    },
+    raceSubstitutionOpportunities: {
+      4: null, 5: null, 6: null, 7: null,
+      8: null, 9: null, 10: null, 11: null
+    }
+  };
+
+  // guarda en DB si no existía
+  saveTPToDBMap(defaultStructure);
+
+  return defaultStructure;
 }
