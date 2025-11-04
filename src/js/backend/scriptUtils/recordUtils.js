@@ -42,7 +42,7 @@ function fetchHistoryMap(tableName, ids) {
     return map;
 }
 
-function fetchDriverHistoryRecords(historyTable, ids, season) {
+export function fetchDriverHistoryRecords(historyTable, ids, season) {
     const map = new Map();
     if (!ids || !ids.length) return map;
 

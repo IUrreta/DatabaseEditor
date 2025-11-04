@@ -707,7 +707,7 @@ export function formatNamesSimple(name) {
   return [nameFormatted, name[2], teamId];
 }
 
-export function fetchSeasonResults(yearSelected, isCurrentYear = true) {
+export function fetchSeasonResults(yearSelected, isCurrentYear = true, includeId = false) {
   const drivers = queryDB(`
       SELECT DriverID
       FROM Races_DriverStandings
@@ -718,7 +718,7 @@ export function fetchSeasonResults(yearSelected, isCurrentYear = true) {
   const seasonResults = [];
   drivers.forEach((row) => {
     const driverID = row[0];
-    const driverRes = fetchOneDriverSeasonResults([driverID], [yearSelected], isCurrentYear);
+    const driverRes = fetchOneDriverSeasonResults([driverID], [yearSelected], isCurrentYear, includeId);
     if (driverRes) {
       seasonResults.push(driverRes);
     }
@@ -726,7 +726,7 @@ export function fetchSeasonResults(yearSelected, isCurrentYear = true) {
   return seasonResults;
 }
 
-export function fetchQualiResults(yearSelected) {
+export function fetchQualiResults(yearSelected, includeId = false) {
   const drivers = queryDB(`
       SELECT DriverID
       FROM Races_DriverStandings
@@ -737,7 +737,7 @@ export function fetchQualiResults(yearSelected) {
   const seasonResults = [];
   drivers.forEach((row) => {
     const driverID = row[0];
-    const driverRes = fetchOneDriverQualiResults([driverID], [yearSelected]);
+    const driverRes = fetchOneDriverQualiResults([driverID], [yearSelected], includeId);
     if (driverRes) {
       seasonResults.push(driverRes);
     }
@@ -794,7 +794,7 @@ export function fetchOneTeamSeasonResults(team, year) {
   return results;
 }
 
-export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true) {
+export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true, includeId = false) {
   const driverID = driver;
   const season = year;
 
@@ -829,14 +829,15 @@ export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true) 
       driver,
       year,
       sprintResults,
-      isCurrentYear
+      isCurrentYear,
+      includeId
     );
   }
 
   return null;
 }
 
-export function fetchOneDriverQualiResults(driver, year) {
+export function fetchOneDriverQualiResults(driver, year, includeId = false) {
   const driverID = driver;
   const season = year;
 
@@ -863,7 +864,9 @@ export function fetchOneDriverQualiResults(driver, year) {
       teamID,
       driver,
       year,
-      []
+      [],
+      true,
+      includeId
     );
   }
 
@@ -930,7 +933,7 @@ export function fetchEventsFrom(year) {
 
 
 
-export function formatSeasonResults(results, driverName, teamID, driver, year, sprints, isCurrentYear = true) {
+export function formatSeasonResults(results, driverName, teamID, driver, year, sprints, isCurrentYear = true, includeId = false) {
   const driverID = driver;
   const season = year;
 
@@ -1098,6 +1101,10 @@ export function formatSeasonResults(results, driverName, teamID, driver, year, s
   formatredResults.unshift(nameFormatted);
 
   // Devolvemos el array final
+    if (includeId) {
+    return { driverID: driverID[0], data: formatredResults };
+  }
+  // Si no, exactamente lo de siempre
   return formatredResults;
 }
 

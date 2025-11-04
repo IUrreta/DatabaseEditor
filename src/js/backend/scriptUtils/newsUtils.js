@@ -11,6 +11,7 @@ import { getGlobals } from "../commandGlobals";
 import { unitValueToValue } from "./carConstants";
 import { track } from "@vercel/analytics";
 import LZString from "lz-string";
+import { enrichDriversWithHistory, fetchDriverHistoryRecords } from "./recordUtils";
 const USE_COMPRESSION = false;
 
 const _seasonResultsCache = new Map();
@@ -815,11 +816,25 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
         if (hasCarry) teamsWithImbalance.push(teamId);
     }
 
+    const usedTeams = new Set();
 
-    console.log('teamsById:', teamsById);
-    console.log('teamsWithImbalance (>70%):', teamsWithImbalance);
+    if (turningPointState?.transfers) {
+        for (const m of [5, 6, 7]) {
+            const tp = turningPointState.transfers[m];
+            if (tp && tp !== "None" && tp?.teamId != null) {
+                usedTeams.add(Number(tp.teamId));
+            }
+        }
+    }
 
-    const randomTeam = randomPick(teamsWithImbalance);
+    const candidateTeams = teamsWithImbalance.filter(tid => !usedTeams.has(tid));
+
+    if (candidateTeams.length === 0) {
+        turningPointState.transfers[currentMonth] = "None";
+        return newsList;
+    }
+
+    const randomTeam = randomPick(candidateTeams);
     const randomTeamName = combined_dict[randomTeam] || "Unknown Team";
 
     const entryId = `turning_point_transfer_${currentMonth}`;
@@ -2548,6 +2563,12 @@ export function getOneQualiDetails(raceId) {
 
     const numberOfRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season}`, 'singleRow')[0];
 
+    const drivers = seasonResults.map(r => ({
+        id: r.driverID,
+        name: r.data?.[0] ?? ""
+    }));
+    const enrichedAllTime = enrichDriversWithHistory(drivers);
+
     return {
         details: poleDetails,
         driverStandings,
@@ -2555,7 +2576,8 @@ export function getOneQualiDetails(raceId) {
         driversResults,
         racesNames,
         champions,
-        nRaces: numberOfRaces
+        nRaces: numberOfRaces,
+        enrichedAllTime
     }
 }
 
@@ -2567,7 +2589,7 @@ export function getOneRaceDetails(raceId) {
 
     const season = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
 
-    const seasonResults = fetchSeasonResults(season);
+    const seasonResults = fetchSeasonResults(season, true, true);
     const pointsSchema = fetchPointsRegulations();
 
     const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceId);
@@ -2643,6 +2665,12 @@ export function getOneRaceDetails(raceId) {
 
     const numberOfRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season}`, 'singleRow')[0];
 
+    const drivers = seasonResults.map(r => ({
+        id: r.driverID,
+        name: r.data?.[0] ?? ""
+    }));
+    const enrichedAllTime = enrichDriversWithHistory(drivers);
+
     return {
         details: raceDetails,
         driverStandings,
@@ -2653,7 +2681,8 @@ export function getOneRaceDetails(raceId) {
         nRaces: numberOfRaces,
         sprintDetails,
         pointsSchema,
-        remainingRaces: remainingRacesDetails
+        remainingRaces: remainingRacesDetails,
+        enrichedAllTime
     }
 }
 
@@ -2712,12 +2741,20 @@ function getOneQualifyingResults(raceId) {
     return rows;
 }
 
-function rebuildStandingsUntil(seasonResults, raceId, includeCurrentRace = false) {
+function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRace = false) {
     // 4) Acumulamos puntos por piloto y por equipo
     const driverMap = {};
     const teamMap = {};
     let racesNames = []
     const driversResults = []
+
+    const seasonResults = seasonResultsRaw
+        .map(r => {
+            if (Array.isArray(r)) return r;
+            if (r && Array.isArray(r.data)) return r.data;
+            return r; // por si ya viene como array-like
+        })
+        .filter(Array.isArray);
 
     seasonResults.forEach(driverRec => {
         const name = driverRec[0];
@@ -3003,21 +3040,27 @@ export function getTransferDetails(drivers, date = null) {
         objRace = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${daySeason[1]} AND State = 2 AND Day <= '${date}'`, 'singleValue');
     }
 
-    const seasonResults = fetchSeasonResults(daySeason[1]);
+    const seasonResults = fetchSeasonResults(daySeason[1], true, true);
     const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, objRace);
+    const driversForRecords = seasonResults.map(r => ({
+        id: r.driverID,
+        name: r.data?.[0] ?? ""
+    }));
+    const enrichedAllTime = enrichDriversWithHistory(driversForRecords);
 
     return {
         driverMap,
         driverStandings,
         teamStandings,
         driversResults,
-        racesNames
+        racesNames,
+        enrichedAllTime
     }
 }
 
 export function getTeamComparisonDetails(teamId, season, date) {
     const lastRaceBeforeDate = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${season} AND Day < '${date}'`, 'singleValue');
-    const seasonResults = fetchSeasonResults(season);
+    const seasonResults = fetchSeasonResults(season, true, true);
     const lastSeasonResults = fetchSeasonResults(season - 1);
     const {
         driverStandings: currentDriverStandings,
@@ -3054,6 +3097,12 @@ export function getTeamComparisonDetails(teamId, season, date) {
             }
         });
 
+    const drivers = seasonResults.map(r => ({
+        id: r.driverID,
+        name: r.data?.[0] ?? ""
+    }));
+    const enrichedAllTime = enrichDriversWithHistory(drivers);
+
     return {
         currentDriverStandings,
         currentTeamStandings,
@@ -3063,12 +3112,13 @@ export function getTeamComparisonDetails(teamId, season, date) {
         oldDriversResults,
         currentRacesNames,
         oldRacesNames,
-        previousResultsTeam
+        previousResultsTeam,
+        enrichedAllTime
     };
 }
 
 export function getFullChampionSeasonDetails(season) {
-    const seasonResults = fetchSeasonResults(season);
+    const seasonResults = fetchSeasonResults(season, true, true);
     const qualiResults = fetchQualiResults(season);
     const lastRaceId = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${season} AND State = 2`, 'singleValue');
     const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, lastRaceId, true);
@@ -3076,6 +3126,11 @@ export function getFullChampionSeasonDetails(season) {
     const champions = getLatestChampions(season);
 
     const racesCompleted = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND State = 2`, 'singleValue');
+    const drivers = seasonResults.map(r => ({
+        id: r.driverID,
+        name: r.data?.[0] ?? ""
+    }));
+    const enrichedAllTime = enrichDriversWithHistory(drivers);
 
     const isCreateATeam = getGlobals().isCreateATeam;
 
@@ -3098,7 +3153,8 @@ export function getFullChampionSeasonDetails(season) {
         driverQualiResults,
         racesNames,
         champions,
-        carsPerformance: remapped
+        carsPerformance: remapped,
+        enrichedAllTime: enrichedAllTime,
     }
 
 }
@@ -3438,14 +3494,14 @@ export function saveNewsToDBMap(map) {
     setEditorState(key, encodeJSON(map));
 }
 
-export function deleteNews(){
+export function deleteNews() {
     const globals = getGlobals();
     const year = globals?.currentDate[1]
     const key = `${year}_news`;
     setEditorState(key, encodeJSON({}));
 }
 
-export function deleteTurningPoints(){
+export function deleteTurningPoints() {
     const globals = getGlobals();
     const year = globals?.currentDate[1]
     const key = `${year}_turning_points`;
@@ -3571,33 +3627,33 @@ export function migrateLegacyData(lsNewsTxt, lsTPTxt) {
 }
 
 export function ensureTurningPointsStructure() {
-  const globals = getGlobals?.(); // si lo tienes disponible
-  const year = globals?.currentDate?.[1];
-  const key = `${year}_tps`;
+    const globals = getGlobals?.(); // si lo tienes disponible
+    const year = globals?.currentDate?.[1];
+    const key = `${year}_tps`;
 
-  let data = loadTPFromDB();
-  if (data && Object.keys(data).length > 0) {
-    return data;
-  }
-
-  // Estructura por defecto
-  const defaultStructure = {
-    checkedRaces: [],
-    ilegalRaces: [],
-    transfers: { 5: null, 6: null, 7: null },
-    technicalDirectives: { 6: null, 9: null },
-    investmentOpportunities: {
-      4: null, 5: null, 6: null, 7: null,
-      8: null, 9: null, 10: null, 11: null
-    },
-    raceSubstitutionOpportunities: {
-      4: null, 5: null, 6: null, 7: null,
-      8: null, 9: null, 10: null, 11: null
+    let data = loadTPFromDB();
+    if (data && Object.keys(data).length > 0) {
+        return data;
     }
-  };
 
-  // guarda en DB si no existía
-  saveTPToDBMap(defaultStructure);
+    // Estructura por defecto
+    const defaultStructure = {
+        checkedRaces: [],
+        ilegalRaces: [],
+        transfers: { 5: null, 6: null, 7: null },
+        technicalDirectives: { 6: null, 9: null },
+        investmentOpportunities: {
+            4: null, 5: null, 6: null, 7: null,
+            8: null, 9: null, 10: null, 11: null
+        },
+        raceSubstitutionOpportunities: {
+            4: null, 5: null, 6: null, 7: null,
+            8: null, 9: null, 10: null, 11: null
+        }
+    };
 
-  return defaultStructure;
+    // guarda en DB si no existía
+    saveTPToDBMap(defaultStructure);
+
+    return defaultStructure;
 }

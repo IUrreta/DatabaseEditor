@@ -13460,6 +13460,14 @@ body.default-theme .news-article-date{
   display: none;
 }
 
+.reload-article{
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 3;
+  opacity: 1;
+}
+
 .reload-news, .hide-historic-drivers{
   display: flex;
   flex-direction: row;

@@ -165,80 +165,23 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
     })();
 
 
+
+
+
+
     if (ai) {
-      const loaderDiv = document.createElement('div');
-      loaderDiv.classList.add('loader-div');
-      const loadingSpan = document.createElement('span');
-      loadingSpan.textContent = "Generating";
-      const loadingDots = document.createElement('span');
-      loadingDots.textContent = "."
-      loadingDots.classList.add('loading-dots');
-      loadingSpan.appendChild(loadingDots);
+      await generateAndRenderArticle(news, newsList, "Generating", false);
 
-      setInterval(() => {
-        if (loadingDots.textContent.length >= 3) {
-          loadingDots.textContent = ".";
-        } else {
-          loadingDots.textContent += ".";
-        }
-      }, 500);
+      const regenerateButton = document.getElementById('regenerateArticle');
+      if (regenerateButton) {
+        // evitar listeners duplicados si abres varias noticias
+        regenerateButton.replaceWith(regenerateButton.cloneNode(true));
+        const newRegenerateButton = document.getElementById('regenerateArticle');
 
-      const progressBar = document.createElement('div');
-      progressBar.classList.add('ai-progress-bar');
-      const progressDiv = document.createElement('div');
-      progressDiv.classList.add('progress-div');
-
-      progressBar.appendChild(progressDiv);
-      loaderDiv.appendChild(loadingSpan);
-      loaderDiv.appendChild(progressBar);
-
-      newsArticle.appendChild(loaderDiv);
-
-      //start progress div moving every 100ms to 30%
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 3;
-        if (progressDiv) {
-          progressDiv.style.width = progress + '%';
-        }
-        if (progress >= 30) {
-          clearInterval(interval);
-        }
-      }, 150);
-
-      try {
-        const articleText = await manageRead(news, newsList, progressDiv, interval);
-        if (ai === null) {
-          console.warn("AI not initialized");
-          return;
-        }
-
-        clearInterval(interval);
-        clearInterval(interval2);
-        progressDiv.style.width = '100%';
-
-        setTimeout(() => {
-          loaderDiv.style.opacity = '0';
-          newsArticle.style.opacity = '0';
-          setTimeout(() => {
-            loaderDiv.remove();
-            const rawHtml = marked.parse(articleText);
-
-            const cleanHtml = DOMPurify.sanitize(rawHtml);
-
-            newsArticle.innerHTML = cleanHtml;
-            newsArticle.style.opacity = '1';
-          }, 150);
-
-        }, 200);
-
+        newRegenerateButton.addEventListener('click', async () => {
+          await generateAndRenderArticle(news, newsList, "Regenerating", true);
+        });
       }
-
-      catch (err) {
-        console.error("Error generating article:", err);
-        clearInterval(interval);
-      }
-
     }
     else {
       const noApiFoundSpan = document.createElement('span');
@@ -254,6 +197,72 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
     }
 
   });
+}
+
+async function generateAndRenderArticle(news, newsList, label = "Generating", force = false) {
+  if (!ai) {
+    console.warn("AI not initialized");
+    return;
+  }
+
+  const newsArticle = document.querySelector('#newsModal .news-article');
+  newsArticle.innerHTML = '';
+
+  const loaderDiv = document.createElement('div');
+  loaderDiv.classList.add('loader-div');
+
+  const loadingSpan = document.createElement('span');
+  loadingSpan.textContent = label;
+
+  const loadingDots = document.createElement('span');
+  loadingDots.textContent = ".";
+  loadingDots.classList.add('loading-dots');
+  loadingSpan.appendChild(loadingDots);
+
+  const dotsInterval = setInterval(() => {
+    loadingDots.textContent = loadingDots.textContent.length >= 3 ? "." : loadingDots.textContent + ".";
+  }, 500);
+
+  const progressBar = document.createElement('div');
+  progressBar.classList.add('ai-progress-bar');
+  const progressDiv = document.createElement('div');
+  progressDiv.classList.add('progress-div');
+
+  progressBar.appendChild(progressDiv);
+  loaderDiv.appendChild(loadingSpan);
+  loaderDiv.appendChild(progressBar);
+  newsArticle.appendChild(loaderDiv);
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += 3;
+    if (progressDiv) progressDiv.style.width = progress + '%';
+    if (progress >= 30) clearInterval(interval);
+  }, 150);
+
+  try {
+    const articleText = await manageRead(news, newsList, progressDiv, interval, { force });
+
+    clearInterval(interval);
+    clearInterval(dotsInterval);
+    progressDiv.style.width = '100%';
+
+    setTimeout(() => {
+      loaderDiv.style.opacity = '0';
+      newsArticle.style.opacity = '0';
+      setTimeout(() => {
+        loaderDiv.remove();
+        const rawHtml = marked.parse(articleText);
+        const cleanHtml = DOMPurify.sanitize(rawHtml);
+        newsArticle.innerHTML = cleanHtml;
+        newsArticle.style.opacity = '1';
+      }, 150);
+    }, 200);
+  } catch (err) {
+    console.error("Error generating article:", err);
+    clearInterval(interval);
+    clearInterval(dotsInterval);
+  }
 }
 
 function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbuttonContainer, newsAvailable) {
@@ -690,80 +699,17 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
     image.src = turningPointResponse.image;
 
     if (ai) {
-      const loaderDiv = document.createElement('div');
-      loaderDiv.classList.add('loader-div');
-      const loadingSpan = document.createElement('span');
-      loadingSpan.textContent = "Generating";
-      const loadingDots = document.createElement('span');
-      loadingDots.textContent = "."
-      loadingDots.classList.add('loading-dots');
-      loadingSpan.appendChild(loadingDots);
+      await generateAndRenderArticle(turningPointResponse, newsList, "Generating", false);
 
-      setInterval(() => {
-        if (loadingDots.textContent.length >= 3) {
-          loadingDots.textContent = ".";
-        } else {
-          loadingDots.textContent += ".";
-        }
-      }, 500);
-
-      const progressBar = document.createElement('div');
-      progressBar.classList.add('ai-progress-bar');
-      const progressDiv = document.createElement('div');
-      progressDiv.classList.add('progress-div');
-
-      progressBar.appendChild(progressDiv);
-      loaderDiv.appendChild(loadingSpan);
-      loaderDiv.appendChild(progressBar);
-
-      newsArticle.insertAdjacentElement('afterend', loaderDiv);
-
-      //start progress div moving every 100ms to 30%
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 3;
-        if (progressDiv) {
-          progressDiv.style.width = progress + '%';
-        }
-        if (progress >= 30) {
-          clearInterval(interval);
-        }
-      }, 150);
-
-      try {
-        const articleText = await manageRead(turningPointResponse, newsList, progressDiv, interval);
-        if (ai === null) {
-          console.warn("AI not initialized");
-          return;
-        }
-
-        clearInterval(interval);
-        clearInterval(interval2);
-        progressDiv.style.width = '100%';
-
-        setTimeout(() => {
-          loaderDiv.style.opacity = '0';
-
-          setTimeout(() => {
-            loaderDiv.remove();
-
-            const rawHtml = marked.parse(articleText);
-
-            const cleanHtml = DOMPurify.sanitize(rawHtml);
-
-            newsArticle.innerHTML = cleanHtml;
-            newsArticle.style.opacity = '1';
-          }, 150);
-
-        }, 200);
-
+      // Hook para REGENERAR (misma lógica, forzando)
+      const regenBtn = document.getElementById('regenerateArticle');
+      if (regenBtn) {
+        regenBtn.replaceWith(regenBtn.cloneNode(true)); // evita listeners duplicados
+        const newRegenBtn = document.getElementById('regenerateArticle');
+        newRegenBtn.addEventListener('click', () => {
+          generateAndRenderArticle(turningPointResponse, newsList, "Regenerating", true);
+        });
       }
-
-      catch (err) {
-        console.error("Error generating article:", err);
-        clearInterval(interval);
-      }
-
     }
     else {
       const noApiFoundSpan = document.createElement('span');
@@ -921,9 +867,11 @@ function buildContextualPrompt(data, config = {}) {
     driversResults,
     racesNames,
     champions,
-    driverQualiResults
+    driverQualiResults,
+    enrichedAllTime
   } = data;
   const { timing = '', teamId = null, teamName = '', seasonYear = '' } = config;
+  console.log("Building contextual prompt with data:", data, "and config:", config);
 
   let prompt = '';
 
@@ -1001,12 +949,44 @@ function buildContextualPrompt(data, config = {}) {
     }
   }
 
+  if (enrichedAllTime.length > 0) {
+    let list = enrichedAllTime;
+
+    // Si los objetos tienen teamId y hay filtro, aplícalo
+    if (teamId && 'teamId' in (list[0] || {})) {
+      list = list.filter(d => d.teamId === teamId);
+    }
+
+    // Construye las líneas: "<nombre>: X titles, Y wins, Z podiums, W race starts"
+    const lines = list.map(d => {
+      const titles = d.totalChampionshipWins ?? 0;
+      const wins = d.totalWins ?? 0;
+      const podiums = d.totalPodiums ?? 0;
+      const starts = d.totalStarts ?? 0;
+      const name = d.name || `Driver ${d.id}`;
+
+      const tLbl = titles === 1 ? 'drivers championship' : 'drivers championships';
+      const wLbl = wins === 1 ? 'race win' : 'race wins';
+      const pLbl = podiums === 1 ? 'podium' : 'podiums';
+      const sLbl = 'race starts';
+
+      return `${name}: ${titles} ${tLbl}, ${wins} ${wLbl}, ${podiums} ${pLbl}, ${starts} ${sLbl}`;
+    }).join('\n');
+
+
+    if (lines) {
+      prompt += `\n\nHere are the stats for each driver in the grid. Only mention them if relevant:\n${lines}`;
+    }
+  }
+
   return prompt;
 }
 
-async function manageRead(newData, newsList, barProgressDiv, interval) {
-  // 1) Si ya hay texto, no construimos prompt ni llamamos a la IA
-  if (newData.text) {
+async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}) {
+  const { force = false } = opts;
+
+  // 1) Si ya hay texto y NO forzamos, devolvemos el existente
+  if (newData.text && !force) {
     clearInterval(interval);
     if (barProgressDiv) barProgressDiv.style.width = '100%';
     return newData.text;
@@ -1424,29 +1404,57 @@ async function contextualizePotentialChampion(newData) {
   try {
     standingsResp = await command.promiseExecute();
     if (standingsResp && standingsResp.content) {
+      const c = standingsResp.content;
+      const raceNumber = c.racesNames.length + 1;
 
-      const raceNumber = standingsResp.content.racesNames.length + 1;
-
-      const numberOfRace = `The title could be sealed sealed after race ${raceNumber} out of ${standingsResp.content.nRaces} in this season.`;
-
+      // Arregla el doble "sealed sealed"
+      const numberOfRace = `The title could be sealed after race ${raceNumber} out of ${c.nRaces} this season.`;
       prompt += `\n\n${numberOfRace}`;
 
-      prompt += buildContextualPrompt(standingsResp.content, { timing: "before this race" });
+      // Contexto antes de esta carrera
+      prompt += buildContextualPrompt(c, { timing: "before this race" });
 
-      prompt += `\n\nThe maximum amount of points for the winner in each race is ${standingsResp.content.pointsSchema.twoBiggestPoints[0]}.
+      // Reglas de puntos (tal cual las comunicas)
+      prompt += `\n\nThe maximum amount of points for the winner in each race is ${c.pointsSchema.twoBiggestPoints[0]}.
       \nIn each sprint race the maximum points for the winner is 8.
-      \n${standingsResp.content.pointsSchema.isLastraceDouble ? 'The last race of the season awards double points.' : ''}
-      \n${standingsResp.content.pointsSchema.fastestLapBonusPoint ? 'There is also 1 bonus point for the driver who achieves the fastest lap in the race, provided they finish in the top 10.' : ''}
-      \n${standingsResp.content.pointsSchema.poleBonusPoint ? 'There is also 1 bonus point for the driver who achieves pole position in qualifying.' : ''}`;
+      \n${c.pointsSchema.isLastraceDouble ? 'The last race of the season awards double points.' : ''}
+      \n${c.pointsSchema.fastestLapBonusPoint ? 'There is also 1 bonus point for the fastest lap (top 10 finish required).' : ''}
+      \n${c.pointsSchema.poleBonusPoint ? 'There is also 1 bonus point for pole position in qualifying.' : ''}`;
 
-      const rem = standingsResp.content.remainingRaces;
-      if (rem && rem.length > 0) {
-        const racesText = rem
+      // === NUEVO: carreras después de esta (quitamos la primera de remainingRaces) ===
+      const rem = Array.isArray(c.remainingRaces) ? c.remainingRaces : [];
+      const afterThis = rem.length > 0 ? rem.slice(1) : [];
+
+      if (afterThis.length > 0) {
+        const racesText = afterThis
           .map(r => `${r.trackName}${r.sprint ? " (Sprint)" : ""}`)
           .join(", ");
-        prompt += `\n\nThere are ${rem.length} races left: ${racesText}.`;
+        prompt += `\n\nAfter this race, there will be ${afterThis.length} more: ${racesText}.`;
+      } else {
+        prompt += `\n\nAfter this race, there will be no more races left.`;
       }
 
+      // === NUEVO: cálculo de puntos máximos aún disponibles DESPUÉS de esta carrera ===
+      const schema = c.pointsSchema;
+      const raceWinPts = Number(schema.twoBiggestPoints?.[0] ?? 25); // fallback 25
+      const sprintWinPts = 8; // según tu texto
+      const flBonus = schema.fastestLapBonusPoint ? 1 : 0;
+      const poleBonus = schema.poleBonusPoint ? 1 : 0;
+
+      // Sumamos por cada carrera restante (afterThis)
+      // Si isLastraceDouble, duplicamos SOLO los puntos de carrera de la última prueba.
+      let maxRemaining = 0;
+      for (let i = 0; i < afterThis.length; i++) {
+        const r = afterThis[i];
+        const isLast = i === afterThis.length - 1;
+        const baseRacePts = schema.isLastraceDouble && isLast ? raceWinPts * 2 : raceWinPts;
+        const sprintPts = r.sprint ? sprintWinPts : 0;
+
+        // Nota: asumimos que los bonus (pole/FL) NO se duplican aunque la última carrera tenga doble puntuación.
+        maxRemaining += baseRacePts + sprintPts + flBonus + poleBonus;
+      }
+
+      prompt += `\n\nThe maximum number of points still available after this race is ${maxRemaining}.`;
     } else {
       prompt += "\n\nCould not retrieve current championship standings.";
     }
