@@ -1300,7 +1300,7 @@ async function contextualizeTurningPointTransfer(newData, turningPointType) {
     return;
   }
 
-  if (newData.data.driver_substitute) {
+  if (newData.data.driver_substitute && turningPointType.includes("positive")) {
     let driverSubstituteTeam = combined_dict[newData.data.driver_substitute.teamId] || '';
     prompt = prompt.replace(
       /{{\s*driver_substitute_part\s*}}/g,
