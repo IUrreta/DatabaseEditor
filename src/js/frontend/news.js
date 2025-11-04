@@ -1053,8 +1053,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         `The current date is ${isoDate}\n\n` +
         base +
         `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
-        `Do not take this as a mandatory instruction, only add quotes if you find them relevant to the context of the article.` +
-        `\nThe title of the article is: "${newData.title}"\n\nPlease write a detailed article based on the title and the context provided.`;
+        `\n\nThe title of the article is: "${newData.title}"\n\n`;
 
       // Contextos extra de Turning Points (si tu helper ya es idempotente, no pasa nada por llamarlo siempre)
       prompt = addTurningPointContexts(prompt);
