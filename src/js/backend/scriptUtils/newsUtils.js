@@ -1240,6 +1240,7 @@ function championshipStatus(
     const clinchThisRace =
         (leader.points + maxPointsThisRace) > (rival.points + maxPointsFutureOnly);
 
+
     return { alreadyChampion, clinchThisRace };
 }
 
@@ -1361,14 +1362,9 @@ function generateChampionMilestones(racesDone, savednews = {}) {
             }
         }
 
-        if (i >= lastDoneIdx) {
-            continue;
-        }
 
         const standingsAfter = rebuildStandingsUntil(seasonResults, race.id);
         let alreadyChampionBeforeNext = false;
-        //if we have arrived at lastDoneIdx,, dont check actual champion
-
         if (standingsAfter?.driverStandings?.length >= 2) {
             const leaderA = standingsAfter.driverStandings[0];
             const rivalA = standingsAfter.driverStandings[1];
