@@ -786,8 +786,8 @@ async function migrateLegacyNewsOnce() {
     } else {
       console.warn("[migrate] Unexpected response:", resp);
       // Si quieres ser agresivo igualmente:
-      // localStorage.setItem(lsFlagKey, "1");
-      // removeLegacyKeys(base);
+      localStorage.setItem(lsFlagKey, "1");
+      removeLegacyKeys(base);
     }
   } catch (e) {
     console.error("[migrate] Migration error (front):", e);
