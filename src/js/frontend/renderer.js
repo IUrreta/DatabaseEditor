@@ -618,6 +618,8 @@ const messageHandlers = {
         place_drivers(message);
         sortList("free-drivers");
         place_drivers_editStats(message);
+        initFreeDriversElems();
+        initStatsDrivers();
     },
     "Staff fetched": (message) => {
         remove_drivers(true);

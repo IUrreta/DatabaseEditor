@@ -1718,7 +1718,8 @@ async function contextualizeTeamComparison(newData) {
     driverStandings: resp.content.currentDriverStandings,
     teamStandings: resp.content.currentTeamStandings,
     driversResults: resp.content.currentDriversResults,
-    racesNames: resp.content.currentRacesNames
+    racesNames: resp.content.currentRacesNames,
+    enrichedAllTime: resp.content.enrichedAllTime
   };
   prompt += buildContextualPrompt(currentContextData, { teamId: newData.data.team.teamId, teamName: team1 });
 
