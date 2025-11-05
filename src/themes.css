@@ -1,0 +1,545 @@
+:root {
+    /*
+  GENERAL COLORS
+  */
+    --background: #111111;
+    --generals: #1e1e1e;
+    --superficials: #222222;
+    --dropdown-back: #272727;
+    --elements: #303030;
+    --augment-buttons-bg: #474747;
+    --augment-buttons-hover: #5a5a5a;
+    --dropdown-hover: #363636;
+    --table-default: #1b1b1b;
+    --table-default-odd: #1e1e1e;
+    --table-header: #2f2f2f;
+    --dark-text: #b1b1b1;
+    --disabled-text: #7a7a7a;
+    --modal-text: #777777;
+    --negative-text: #292929;
+    --new-primary: #c89efc;
+    /* C37CF9 alternative*/
+    --new-primary-dark: #ba82ff;
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, transparent);
+    --text-selected: #e7d3ff;
+    --text-selected-secondary: #b1dbd6;
+    --new-secondary: #9AD2CB;
+    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, transparent);
+    --new-secondary-dark: #74aaa4;
+    --table-hover: #4a4a4a;
+    --elements-hover: #3a3a3a;
+    --box-shadow: #00000033;
+    --table-first: #fde06b;
+    --table-first-light: #f0e2ac;
+    --table-second: #aeb2b8;
+    --table-second-light: #cacaca;
+    --table-third: #d7985a;
+    --table-third-light: #f2cda6;
+    --text-outline: #000000;
+    --blur-color: #616161d3;
+    --toast-background: #5a5b5c;
+    --console-transparent: #42424299;
+    --separator: #4a4a4a;
+    --separator-light: #4f4f4f;
+    --frozen: #77e2f0;
+    --extra-hard: #edf037;
+    --brutal: #f0c537;
+    --unfair: #f09a37;
+    --insane: #f06b37;
+    --impossible: #f03737;
+    --modal-warning: #f03737a1;
+    --modal-warning-text: #f8bbbb;
+    --engine-table-name: #878787;
+    --engine-table-name-hover: #575757;
+    --support-me: #f96854;
+    --twitter: #51afe9;
+    --reddit: #f87444;
+    --custom-dif: #52ebbd;
+    --discord: #7289da;
+
+    --news-overlays-text: #dedde6;
+    --news-date-text: #292929;
+
+    --primary-gradient: linear-gradient(to right, var(--new-primary) 0%, #ffb38c 100%);
+
+    --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
+
+    --amo-1: #bd6962;
+    --amo-2: #eec987;
+
+    --mentality-enthusiastic: #c055e3;
+    --mentality-positive: #10ffff;
+    --mentality-neutral: #f3f3f3;
+    --mentality-negative: #e9de35;
+    --mentality-demoralized: #dd3356;
+
+    --technical-chief: #ec4e98;
+    --race-engineer: #bce64a;
+    --head-aero: #5097e7;
+    --sporting-director: #925aeb;
+
+    --background-general: #110f24;
+    --slight-contrast: #797599;
+    --white-general: #f3f3f3;
+    --gold-gradient-text: #f3f3f3;
+
+
+    --text-general: #dedde6;
+    --text-general-transparent: #e9e8f0be;
+
+    --text-secondary: #a8a8a8;
+    --text-tertiary: #777777;
+
+    --negative-general: #e95656;
+    --negative-general-clicked: #cf2626;
+    --positive-general: #5bd999;
+    --positive-transparent: color-mix(in srgb, var(--positive-general) 25%, transparent);
+    --positive-general-clicked: #11ac5e;
+    --positive-general-darker: #3f8a6b;
+    --positive--general-darker2: #2f6a4b;
+    --random-general: #d4ff6f;
+    --h2h-general: #34c297;
+    --graph-general: #34bdc2;
+    --h2h-detail: #88ebcd;
+    --graph-detail: #95ebee;
+    --tools-general: #18152e;
+    --component-general: #3f3c57;
+    --component-general-hover: #4e4b69;
+    --component-general-hover-extra: #5d5a7c;
+    --overall-holder: #21202e;
+    --dropdown-back-general: #8b87af;
+    --active-general: #1a1826;
+    --row-cell: #110D14;
+    --row-odd-cell: #15121B;
+    --special-columns: #464166;
+    --delete-div: #f15353;
+    --weather-vis-back: #292738;
+    --weather-vis-border: #2c2b3b;
+    --h2h-back: #1f1b3b;
+    --h2h-back-hover: #302a57;
+    --active-buttons-back: #5f5a7c;
+    --mid-gray-contrast: #63636e;
+    --awaiting-color: #8a8a8a;
+    --mode-line-edit: #fff7b0;
+    --mode-line-ai: #baffea;
+    --mode-line-view: #e8b6ff;
+    --prob-viewer-hover: #625e86;
+    --custom-modal-back: #393744;
+    --text-in-front: #eeedf3;
+    --background--buttons-hover: #6f698f;
+    --ai-transparent: #baffea99;
+    --edit-transparent: #fff7b099;
+    --view-transparent: #e8b6ff99;
+    --white-gradient: #ffffff99;
+
+    --f2-border: #38c8f0;
+    --f2-back: #388cd5;
+    --f2-active: #1374fc;
+    --f3-back: #cf2e2e;
+    --f3-border: #ff7968;
+    --f1-first: #ff0000;
+
+    --shadow-no: 0 1px 2px #00000030,
+        /*dark shadow */
+        0 2px 4px #00000015;
+    /*soft shadow */
+
+    --shadow-s: inset 0 1px 2px #ffffff30,
+        /*top highlight */
+        0 1px 2px #00000030,
+        /*dark shadow */
+        0 2px 4px #00000015;
+    /*soft shadow */
+
+    --shadow-m: inset 0 1px 2px #ffffff50,
+        /*top highlight */
+        0 2px 4px #00000030,
+        /*dark shadow */
+        0 4px 8px #00000015;
+    /*soft shadow */
+
+    --shadow-l: inset 0 1px 2px #ffffff70,
+        /*top highlight */
+        0 4px 6px #00000030,
+        /*dark shadow */
+        0 6px 110px #00000015;
+    /*soft shadow */
+
+
+    /*
+  TEAMS COLORS
+  */
+    --alphatauri-original: #5E8FAA;
+    --alphatauri-secondary-original: #f1f1f1;
+    --alpine-original: #0679c5;
+    --alpine-secondary-original: #fd48c7;
+    --andretti-primary: #fac51c;
+    --andretti-secondary: #1e7696;
+    --lotus-primary: #b09247;
+    --lotus-secondary: #595959;
+    --visarb-primary: #6c8ff3;
+    --visarb-secondary: #f1f1f1;
+    --toyota-primary: #EB0A1B;
+    --toyota-secondary: #f1f1f1;
+    --hugo-primary: #bd9514;
+    --hugo-secondary: #f1f1f1;
+    --alphatauri-primary: #5E8FAA;
+    --porsche-primary: #c50c28;
+    --porsche-secondary: #f1f1f1;
+    --brawn-primary: #d0e610;
+    --brawn-secondary: #f1f1f1;
+    --ferrari-primary: #f53311;
+    --general-secondary: #f1f1f1;
+    --mercedes-primary: #28f4ce;
+    --redbull-primary: #3172bf;
+    --redbull-secondary: #ffd300;
+    --stake-primary: #54d650;
+    --stake-secondary: #595959;
+    --audi-primary: #f50537;
+    --audi-secondary: #f1f1f1;
+    --sauber-primary: #f50537;
+    --aston-primary: #07977b;
+    --aston-secondary: #c3dc00;
+    --alfa-original: #C92D4B;
+    --alfa-secondary-original: #f1f1f1;
+    --alfa-primary: #C92D4B;
+    --alfa-secondary: #f1f1f1;
+    --alphatauri-secondary: #f1f1f1;
+    --haas-primary: #c1c1c7;
+    --haas-secondary: #f62039;
+    --mclaren-primary: #ff7e08;
+    --mclaren-secondary: #47c7fc;
+    --williams-primary: #5abef3;
+    --alpine-primary: #0679c5;
+    --alpine-secondary: #fd48c7;
+    --renault-primary: #f7c82f;
+    --custom-team-primary: #ffffff;
+    --custom-team-secondary: #ffffff;
+
+    --redbull-primary-transparent: color-mix(in srgb, var(--redbull-primary) 30%, var(--elements));
+    --redbull-secondary-transparent: color-mix(in srgb, var(--redbull-secondary) 30%, var(--elements));
+    --ferrari-primary-transparent: color-mix(in srgb, var(--ferrari-primary) 18%, var(--elements));
+    --general-secondary-transparent: color-mix(in srgb, var(--general-secondary) 18%, var(--elements));
+    --mercedes-primary-transparent: color-mix(in srgb, var(--mercedes-primary) 18%, var(--elements));
+    --mclaren-primary-transparent: color-mix(in srgb, var(--mclaren-primary) 18%, var(--elements));
+    --mclaren-secondary-transparent: color-mix(in srgb, var(--mclaren-secondary) 18%, var(--elements));
+    --williams-primary-transparent: color-mix(in srgb, var(--williams-primary) 18%, var(--elements));
+    --haas-primary-transparent: color-mix(in srgb, var(--haas-primary) 18%, var(--elements));
+    --haas-secondary-transparent: color-mix(in srgb, var(--haas-secondary) 18%, var(--elements));
+    --alphatauri-primary-transparent: color-mix(in srgb, var(--alphatauri-primary) 18%, var(--elements));
+    --alphatauri-primary-transparent-original: color-mix(in srgb, var(--alphatauri-original) 18%, var(--elements));
+    --alphatauri-secondary-transparent: color-mix(in srgb, var(--alphatauri-secondary) 18%, var(--elements));
+    --alphatauri-secondary-transparent-original: color-mix(in srgb, var(--alphatauri-secondary-original) 18%, var(--elements));
+    --sauber-primary-transparent: color-mix(in srgb, var(--sauber-primary) 18%, var(--elements));
+    --alpine-primary-transparent: color-mix(in srgb, var(--alpine-primary) 18%, var(--elements));
+    --alpine-primary-transparent-original: color-mix(in srgb, var(--alpine-original) 18%, var(--elements));
+    --alpine-secondary-transparent: color-mix(in srgb, var(--alpine-secondary) 18%, var(--elements));
+    --alpine-secondary-transparent-original: color-mix(in srgb, var(--alpine-secondary-original) 18%, var(--elements));
+    --renault-primary-transparent: color-mix(in srgb, var(--renault-primary) 18%, var(--elements));
+    --aston-primary-transparent: color-mix(in srgb, var(--aston-primary) 18%, var(--elements));
+    --aston-secondary-transparent: color-mix(in srgb, var(--aston-secondary) 18%, var(--elements));
+    --alfa-primary-transparent: color-mix(in srgb, var(--alfa-primary) 18%, var(--elements));
+    --alfa-primary-transparent-original: color-mix(in srgb, var(--alfa-original) 18%, var(--elements));
+    --alfa-secondary-transparent: color-mix(in srgb, var(--alfa-secondary) 18%, var(--elements));
+    --alfa-secondary-transparent-original: color-mix(in srgb, var(--alfa-secondary-original) 18%, var(--elements));
+    --audi-primary-transparent: color-mix(in srgb, var(--audi-primary) 18%, var(--elements));
+    --audi-secondary-transparent: color-mix(in srgb, var(--audi-secondary) 18%, var(--elements));
+    --toyota-primary-transparent: color-mix(in srgb, var(--toyota-primary) 18%, var(--elements));
+    --toyota-secondary-transparent: color-mix(in srgb, var(--toyota-secondary) 18%, var(--elements));
+    --porsche-primary-transparent: color-mix(in srgb, var(--porsche-primary) 18%, var(--elements));
+    --porsche-secondary-transparent: color-mix(in srgb, var(--porsche-secondary) 18%, var(--elements));
+    --brawn-primary-transparent: color-mix(in srgb, var(--brawn-primary) 18%, var(--elements));
+    --brawn-secondary-transparent: color-mix(in srgb, var(--brawn-secondary) 18%, var(--elements));
+    --stake-primary-transparent: color-mix(in srgb, var(--stake-primary) 18%, var(--elements));
+    --stake-secondary-transparent: color-mix(in srgb, var(--stake-secondary) 18%, var(--elements));
+    --visarb-primary-transparent: color-mix(in srgb, var(--visarb-primary) 18%, var(--elements));
+    --visarb-secondary-transparent: color-mix(in srgb, var(--visarb-secondary) 18%, var(--elements));
+    --hugo-primary-transparent: color-mix(in srgb, var(--hugo-primary) 18%, var(--elements));
+    --hugo-secondary-transparent: color-mix(in srgb, var(--hugo-secondary) 18%, var(--elements));
+    --lotus-primary-transparent: color-mix(in srgb, var(--lotus-primary) 18%, var(--elements));
+    --lotus-secondary-transparent: color-mix(in srgb, var(--lotus-secondary) 18%, var(--elements));
+    --andretti-primary-transparent: color-mix(in srgb, var(--andretti-primary) 18%, var(--elements));
+    --andretti-secondary-transparent: color-mix(in srgb, var(--andretti-secondary) 18%, var(--elements));
+    --custom-team-primary-transparent: color-mix(in srgb, var(--custom-team-primary) 18%, var(--elements));
+    --custom-team-secondary-transparent: color-mix(in srgb, var(--custom-team-secondary) 18%, var(--elements));
+}
+
+body.light-theme {
+    --background: #e4e4e4;
+    --generals: #dadada;
+    --superficials: #d0d0d0;
+    --dropdown-back: #cfcfcf;
+    --elements: #cccccc;
+    --table-default: #f5f5f5;
+    --table-default-odd: #e0e0e0;
+    --dropdown-hover: #bbbbbb;
+    --text-general: #252525;
+    --text-secondary: #666666;
+    --text-tertiary: #999999;
+
+    --augment-buttons-bg: #bbbbbb;
+    --augment-buttons-hover: #aaaaaa;
+
+    --white-general: #131313;
+    --dark-text: #444444;
+    --disabled-text: #888888;
+    --modal-text: #666666;
+    --negative-text: #eeeeee;
+    --new-primary: #7a5fd8;
+    --new-primary-dark: #5a42b5;
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, transparent);
+    --text-selected: #aa88ff;
+    --text-selected-secondary: #55aaa9;
+    --new-secondary: #66aabb;
+    --new-secondary-dark: #447788;
+    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, transparent);
+    --table-hover: #cccccc;
+    --elements-hover: #bbbbbb;
+    --box-shadow: #00000022;
+
+    --table-first: #c5ad4d;
+    --table-first-light: #f0e2ac;
+    --table-second: #797b80;
+    --table-second-light: #cacaca;
+    --table-third: #b87a3c;
+    --table-third-light: #f2cda6;
+    --table-header: #d1d1d1;
+
+    --positive-general: #2a9b63;
+
+    --general-secondary: #f1f1f1;
+    --mercedes-primary: #13c2a2;
+    --haas-primary: #57575a;
+    --williams-primary: #4495c0;
+
+    --mentality-enthusiastic: #c055e3;
+    --mentality-positive: #10ffff;
+    --mentality-neutral: #222222;
+    --mentality-negative: #8a8100;
+    --mentality-demoralized: #dd3356;
+
+    --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
+
+    --redbull-primary-transparent: color-mix(in srgb, var(--redbull-primary) 30%, var(--elements));
+    --redbull-secondary-transparent: color-mix(in srgb, var(--redbull-secondary) 30%, var(--elements));
+    --ferrari-primary-transparent: color-mix(in srgb, var(--ferrari-primary) 18%, var(--elements));
+    --general-secondary-transparent: color-mix(in srgb, var(--general-secondary) 18%, var(--elements));
+    --mercedes-primary-transparent: color-mix(in srgb, var(--mercedes-primary) 18%, var(--elements));
+    --mclaren-primary-transparent: color-mix(in srgb, var(--mclaren-primary) 18%, var(--elements));
+    --mclaren-secondary-transparent: color-mix(in srgb, var(--mclaren-secondary) 18%, var(--elements));
+    --williams-primary-transparent: color-mix(in srgb, var(--williams-primary) 18%, var(--elements));
+    --haas-primary-transparent: color-mix(in srgb, var(--haas-primary) 18%, var(--elements));
+    --haas-secondary-transparent: color-mix(in srgb, var(--haas-secondary) 18%, var(--elements));
+    --alphatauri-primary-transparent: color-mix(in srgb, var(--alphatauri-primary) 18%, var(--elements));
+    --alphatauri-primary-transparent-original: color-mix(in srgb, var(--alphatauri-original) 18%, var(--elements));
+    --alphatauri-secondary-transparent: color-mix(in srgb, var(--alphatauri-secondary) 18%, var(--elements));
+    --alphatauri-secondary-transparent-original: color-mix(in srgb, var(--alphatauri-secondary-original) 18%, var(--elements));
+    --sauber-primary-transparent: color-mix(in srgb, var(--sauber-primary) 18%, var(--elements));
+    --alpine-primary-transparent: color-mix(in srgb, var(--alpine-primary) 18%, var(--elements));
+    --alpine-primary-transparent-original: color-mix(in srgb, var(--alpine-original) 18%, var(--elements));
+    --alpine-secondary-transparent: color-mix(in srgb, var(--alpine-secondary) 18%, var(--elements));
+    --alpine-secondary-transparent-original: color-mix(in srgb, var(--alpine-secondary-original) 18%, var(--elements));
+    --renault-primary-transparent: color-mix(in srgb, var(--renault-primary) 18%, var(--elements));
+    --aston-primary-transparent: color-mix(in srgb, var(--aston-primary) 18%, var(--elements));
+    --aston-secondary-transparent: color-mix(in srgb, var(--aston-secondary) 18%, var(--elements));
+    --alfa-primary-transparent: color-mix(in srgb, var(--alfa-primary) 18%, var(--elements));
+    --alfa-primary-transparent-original: color-mix(in srgb, var(--alfa-original) 18%, var(--elements));
+    --alfa-secondary-transparent: color-mix(in srgb, var(--alfa-secondary) 18%, var(--elements));
+    --alfa-secondary-transparent-original: color-mix(in srgb, var(--alfa-secondary-original) 18%, var(--elements));
+    --audi-primary-transparent: color-mix(in srgb, var(--audi-primary) 18%, var(--elements));
+    --audi-secondary-transparent: color-mix(in srgb, var(--audi-secondary) 18%, var(--elements));
+    --toyota-primary-transparent: color-mix(in srgb, var(--toyota-primary) 18%, var(--elements));
+    --toyota-secondary-transparent: color-mix(in srgb, var(--toyota-secondary) 18%, var(--elements));
+    --porsche-primary-transparent: color-mix(in srgb, var(--porsche-primary) 18%, var(--elements));
+    --porsche-secondary-transparent: color-mix(in srgb, var(--porsche-secondary) 18%, var(--elements));
+    --brawn-primary-transparent: color-mix(in srgb, var(--brawn-primary) 18%, var(--elements));
+    --brawn-secondary-transparent: color-mix(in srgb, var(--brawn-secondary) 18%, var(--elements));
+    --stake-primary-transparent: color-mix(in srgb, var(--stake-primary) 18%, var(--elements));
+    --stake-secondary-transparent: color-mix(in srgb, var(--stake-secondary) 18%, var(--elements));
+    --visarb-primary-transparent: color-mix(in srgb, var(--visarb-primary) 18%, var(--elements));
+    --visarb-secondary-transparent: color-mix(in srgb, var(--visarb-secondary) 18%, var(--elements));
+    --hugo-primary-transparent: color-mix(in srgb, var(--hugo-primary) 18%, var(--elements));
+    --hugo-secondary-transparent: color-mix(in srgb, var(--hugo-secondary) 18%, var(--elements));
+    --lotus-primary-transparent: color-mix(in srgb, var(--lotus-primary) 18%, var(--elements));
+    --lotus-secondary-transparent: color-mix(in srgb, var(--lotus-secondary) 18%, var(--elements));
+    --andretti-primary-transparent: color-mix(in srgb, var(--andretti-primary) 18%, var(--elements));
+    --andretti-secondary-transparent: color-mix(in srgb, var(--andretti-secondary) 18%, var(--elements));
+    --custom-team-primary-transparent: color-mix(in srgb, var(--custom-team-primary) 18%, var(--elements));
+    --custom-team-secondary-transparent: color-mix(in srgb, var(--custom-team-secondary) 18%, var(--elements));
+}
+
+body.og-theme {
+    --background: #110f24;
+    --generals: #18152e;
+    --superficials: #1f1b3b;
+    --dropdown-back: #5f5c77;
+    --elements: #323046;
+    --dropdown-hover: #706c8b;
+    --dark-text: #d3d3e7;
+    --disabled-text: #a8a8c3;
+    --modal-text: #9797b8;
+    --negative-text: #3c3c5b;
+    --new-primary: #8f89b8;
+    --new-primary-dark: #6a678f;
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, transparent);
+    --text-selected: #e7d3ff;
+    --text-selected-secondary: #ff8f63;
+    --new-secondary: #ff7c47;
+    --new-secondary-dark: #d76a3b;
+    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, transparent);
+    --table-hover: #50577c;
+    --elements-hover: #3a3852;
+    --box-shadow: #00000044;
+    --footer-og: #797599;
+    --separator: #5f5c77;
+
+    --augment-buttons-bg: #5f5c77;
+    --augment-buttons-hover: #64617d;
+
+    --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
+
+    --table-default: #494561;
+    --table-default-odd: #3c3952;
+    --table-header: #252335;
+
+    --redbull-primary-transparent: color-mix(in srgb, var(--redbull-primary) 30%, var(--elements));
+    --redbull-secondary-transparent: color-mix(in srgb, var(--redbull-secondary) 30%, var(--elements));
+    --ferrari-primary-transparent: color-mix(in srgb, var(--ferrari-primary) 18%, var(--elements));
+    --general-secondary-transparent: color-mix(in srgb, var(--general-secondary) 18%, var(--elements));
+    --mercedes-primary-transparent: color-mix(in srgb, var(--mercedes-primary) 18%, var(--elements));
+    --mclaren-primary-transparent: color-mix(in srgb, var(--mclaren-primary) 18%, var(--elements));
+    --mclaren-secondary-transparent: color-mix(in srgb, var(--mclaren-secondary) 18%, var(--elements));
+    --williams-primary-transparent: color-mix(in srgb, var(--williams-primary) 18%, var(--elements));
+    --haas-primary-transparent: color-mix(in srgb, var(--haas-primary) 18%, var(--elements));
+    --haas-secondary-transparent: color-mix(in srgb, var(--haas-secondary) 18%, var(--elements));
+    --alphatauri-primary-transparent: color-mix(in srgb, var(--alphatauri-primary) 18%, var(--elements));
+    --alphatauri-primary-transparent-original: color-mix(in srgb, var(--alphatauri-original) 18%, var(--elements));
+    --alphatauri-secondary-transparent: color-mix(in srgb, var(--alphatauri-secondary) 18%, var(--elements));
+    --alphatauri-secondary-transparent-original: color-mix(in srgb, var(--alphatauri-secondary-original) 18%, var(--elements));
+    --sauber-primary-transparent: color-mix(in srgb, var(--sauber-primary) 18%, var(--elements));
+    --alpine-primary-transparent: color-mix(in srgb, var(--alpine-primary) 18%, var(--elements));
+    --alpine-primary-transparent-original: color-mix(in srgb, var(--alpine-original) 18%, var(--elements));
+    --alpine-secondary-transparent: color-mix(in srgb, var(--alpine-secondary) 18%, var(--elements));
+    --alpine-secondary-transparent-original: color-mix(in srgb, var(--alpine-secondary-original) 18%, var(--elements));
+    --renault-primary-transparent: color-mix(in srgb, var(--renault-primary) 18%, var(--elements));
+    --aston-primary-transparent: color-mix(in srgb, var(--aston-primary) 18%, var(--elements));
+    --aston-secondary-transparent: color-mix(in srgb, var(--aston-secondary) 18%, var(--elements));
+    --alfa-primary-transparent: color-mix(in srgb, var(--alfa-primary) 18%, var(--elements));
+    --alfa-primary-transparent-original: color-mix(in srgb, var(--alfa-original) 18%, var(--elements));
+    --alfa-secondary-transparent: color-mix(in srgb, var(--alfa-secondary) 18%, var(--elements));
+    --alfa-secondary-transparent-original: color-mix(in srgb, var(--alfa-secondary-original) 18%, var(--elements));
+    --audi-primary-transparent: color-mix(in srgb, var(--audi-primary) 18%, var(--elements));
+    --audi-secondary-transparent: color-mix(in srgb, var(--audi-secondary) 18%, var(--elements));
+    --toyota-primary-transparent: color-mix(in srgb, var(--toyota-primary) 18%, var(--elements));
+    --toyota-secondary-transparent: color-mix(in srgb, var(--toyota-secondary) 18%, var(--elements));
+    --porsche-primary-transparent: color-mix(in srgb, var(--porsche-primary) 18%, var(--elements));
+    --porsche-secondary-transparent: color-mix(in srgb, var(--porsche-secondary) 18%, var(--elements));
+    --brawn-primary-transparent: color-mix(in srgb, var(--brawn-primary) 18%, var(--elements));
+    --brawn-secondary-transparent: color-mix(in srgb, var(--brawn-secondary) 18%, var(--elements));
+    --stake-primary-transparent: color-mix(in srgb, var(--stake-primary) 18%, var(--elements));
+    --stake-secondary-transparent: color-mix(in srgb, var(--stake-secondary) 18%, var(--elements));
+    --visarb-primary-transparent: color-mix(in srgb, var(--visarb-primary) 18%, var(--elements));
+    --visarb-secondary-transparent: color-mix(in srgb, var(--visarb-secondary) 18%, var(--elements));
+    --hugo-primary-transparent: color-mix(in srgb, var(--hugo-primary) 18%, var(--elements));
+    --hugo-secondary-transparent: color-mix(in srgb, var(--hugo-secondary) 18%, var(--elements));
+    --lotus-primary-transparent: color-mix(in srgb, var(--lotus-primary) 18%, var(--elements));
+    --lotus-secondary-transparent: color-mix(in srgb, var(--lotus-secondary) 18%, var(--elements));
+    --andretti-primary-transparent: color-mix(in srgb, var(--andretti-primary) 18%, var(--elements));
+    --andretti-secondary-transparent: color-mix(in srgb, var(--andretti-secondary) 18%, var(--elements));
+    --custom-team-primary-transparent: color-mix(in srgb, var(--custom-team-primary) 18%, var(--elements));
+    --custom-team-secondary-transparent: color-mix(in srgb, var(--custom-team-secondary) 18%, var(--elements));
+}
+
+body.vaporwave-theme {
+    --background: #0d0221;
+    --generals: #1a0942;
+    --superficials: #230b55;
+    --elements: #301070;
+    --dropdown-back: #2a0f63;
+    --dropdown-hover: #43208e;
+    --elements-hover: #5329b5;
+
+    --text-general: #f7dfff;
+    --text-secondary: #cdb7ff;
+    --text-tertiary: #9a82d8;
+    --white-general: #ffffff;
+
+    --new-primary: #ff5ec3;
+    --new-primary-dark: #e94eb1;
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, transparent);
+
+    --new-secondary: #00b3ff;
+    --new-secondary-dark: #0090d1;
+    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, transparent);
+
+    --text-selected: #ff9fff;
+    --text-selected-secondary: #6ef9ff;
+
+    --table-default: #250d58;;
+    --table-default-odd: #2a0f61;
+    --table-header: #3a1488;
+
+    --augment-buttons-bg: #3a1488;
+    --augment-buttons-hover: #4b1da3;
+
+    --table-hover: #44238e;
+    --box-shadow: #00000066;
+    --separator: #5b36b8;
+
+    --positive-general: #5dfbc0;
+    --negative-general: #ff477e;
+
+    --news-overlays-text: #fae6ff;
+    --news-date-text: #0d0221;
+
+    --primary-gradient: linear-gradient(to right, var(--new-primary), var(--new-secondary));
+
+    --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
+
+        --redbull-primary-transparent: color-mix(in srgb, var(--redbull-primary) 30%, var(--elements));
+    --redbull-secondary-transparent: color-mix(in srgb, var(--redbull-secondary) 30%, var(--elements));
+    --ferrari-primary-transparent: color-mix(in srgb, var(--ferrari-primary) 18%, var(--elements));
+    --general-secondary-transparent: color-mix(in srgb, var(--general-secondary) 18%, var(--elements));
+    --mercedes-primary-transparent: color-mix(in srgb, var(--mercedes-primary) 18%, var(--elements));
+    --mclaren-primary-transparent: color-mix(in srgb, var(--mclaren-primary) 18%, var(--elements));
+    --mclaren-secondary-transparent: color-mix(in srgb, var(--mclaren-secondary) 18%, var(--elements));
+    --williams-primary-transparent: color-mix(in srgb, var(--williams-primary) 18%, var(--elements));
+    --haas-primary-transparent: color-mix(in srgb, var(--haas-primary) 18%, var(--elements));
+    --haas-secondary-transparent: color-mix(in srgb, var(--haas-secondary) 18%, var(--elements));
+    --alphatauri-primary-transparent: color-mix(in srgb, var(--alphatauri-primary) 18%, var(--elements));
+    --alphatauri-primary-transparent-original: color-mix(in srgb, var(--alphatauri-original) 18%, var(--elements));
+    --alphatauri-secondary-transparent: color-mix(in srgb, var(--alphatauri-secondary) 18%, var(--elements));
+    --alphatauri-secondary-transparent-original: color-mix(in srgb, var(--alphatauri-secondary-original) 18%, var(--elements));
+    --sauber-primary-transparent: color-mix(in srgb, var(--sauber-primary) 18%, var(--elements));
+    --alpine-primary-transparent: color-mix(in srgb, var(--alpine-primary) 18%, var(--elements));
+    --alpine-primary-transparent-original: color-mix(in srgb, var(--alpine-original) 18%, var(--elements));
+    --alpine-secondary-transparent: color-mix(in srgb, var(--alpine-secondary) 18%, var(--elements));
+    --alpine-secondary-transparent-original: color-mix(in srgb, var(--alpine-secondary-original) 18%, var(--elements));
+    --renault-primary-transparent: color-mix(in srgb, var(--renault-primary) 18%, var(--elements));
+    --aston-primary-transparent: color-mix(in srgb, var(--aston-primary) 18%, var(--elements));
+    --aston-secondary-transparent: color-mix(in srgb, var(--aston-secondary) 18%, var(--elements));
+    --alfa-primary-transparent: color-mix(in srgb, var(--alfa-primary) 18%, var(--elements));
+    --alfa-primary-transparent-original: color-mix(in srgb, var(--alfa-original) 18%, var(--elements));
+    --alfa-secondary-transparent: color-mix(in srgb, var(--alfa-secondary) 18%, var(--elements));
+    --alfa-secondary-transparent-original: color-mix(in srgb, var(--alfa-secondary-original) 18%, var(--elements));
+    --audi-primary-transparent: color-mix(in srgb, var(--audi-primary) 18%, var(--elements));
+    --audi-secondary-transparent: color-mix(in srgb, var(--audi-secondary) 18%, var(--elements));
+    --toyota-primary-transparent: color-mix(in srgb, var(--toyota-primary) 18%, var(--elements));
+    --toyota-secondary-transparent: color-mix(in srgb, var(--toyota-secondary) 18%, var(--elements));
+    --porsche-primary-transparent: color-mix(in srgb, var(--porsche-primary) 18%, var(--elements));
+    --porsche-secondary-transparent: color-mix(in srgb, var(--porsche-secondary) 18%, var(--elements));
+    --brawn-primary-transparent: color-mix(in srgb, var(--brawn-primary) 18%, var(--elements));
+    --brawn-secondary-transparent: color-mix(in srgb, var(--brawn-secondary) 18%, var(--elements));
+    --stake-primary-transparent: color-mix(in srgb, var(--stake-primary) 18%, var(--elements));
+    --stake-secondary-transparent: color-mix(in srgb, var(--stake-secondary) 18%, var(--elements));
+    --visarb-primary-transparent: color-mix(in srgb, var(--visarb-primary) 18%, var(--elements));
+    --visarb-secondary-transparent: color-mix(in srgb, var(--visarb-secondary) 18%, var(--elements));
+    --hugo-primary-transparent: color-mix(in srgb, var(--hugo-primary) 18%, var(--elements));
+    --hugo-secondary-transparent: color-mix(in srgb, var(--hugo-secondary) 18%, var(--elements));
+    --lotus-primary-transparent: color-mix(in srgb, var(--lotus-primary) 18%, var(--elements));
+    --lotus-secondary-transparent: color-mix(in srgb, var(--lotus-secondary) 18%, var(--elements));
+    --andretti-primary-transparent: color-mix(in srgb, var(--andretti-primary) 18%, var(--elements));
+    --andretti-secondary-transparent: color-mix(in srgb, var(--andretti-secondary) 18%, var(--elements));
+    --custom-team-primary-transparent: color-mix(in srgb, var(--custom-team-primary) 18%, var(--elements));
+    --custom-team-secondary-transparent: color-mix(in srgb, var(--custom-team-secondary) 18%, var(--elements));
+}
