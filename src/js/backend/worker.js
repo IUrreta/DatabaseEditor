@@ -229,7 +229,7 @@ const workerCommands = {
     editRetirement(data.driverID, data.isRetired);
     if (data.typeStaff === "0") {
       editSuperlicense(data.driverID, data.superLicense);
-      if (globals.yearIteration == "24") {
+      if (globals.yearIteration === "24") {
         editMarketability(data.driverID, data.marketability);
       }
     }
