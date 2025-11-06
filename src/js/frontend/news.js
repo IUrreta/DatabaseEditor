@@ -870,7 +870,7 @@ function buildContextualPrompt(data, config = {}) {
     driverQualiResults,
     enrichedAllTime
   } = data;
-  const { timing = '', teamId = null, teamName = '', seasonYear = '' } = config;
+  const { timing = '', teamId = null, teamName = '', seasonYear = '', quali = false } = config;
   console.log("Building contextual prompt with data:", data, "and config:", config);
 
   let prompt = '';
@@ -905,18 +905,18 @@ function buildContextualPrompt(data, config = {}) {
 
     const previousResults = resultsToProcess.map((d) => {
       const details = [
-        d.nWins > 0 ? `${d.nWins} wins` : '',
-        d.nPodiums > 0 ? `${d.nPodiums} podiums` : '',
-        (d.nWins === 0 && d.nPodiums === 0 && d.nPointsFinishes > 0) ? `${d.nPointsFinishes} points finishes` : ''
+        d.nWins > 0 ? `${d.nWins} ${quali ? "poles" : "wins"}` : '',
+        d.nPodiums > 0 ? `${d.nPodiums} ${quali ? "top 3s" : "podiums"}` : '',
+        (d.nWins === 0 && d.nPodiums === 0 && d.nPointsFinishes > 0) ? `${d.nPointsFinishes} ${quali ? "top 10s" : "points finishes"}` : ''
       ].filter(Boolean).join(', ');
 
       return `${d.name}${details ? ` (${details})` : ''} ${d.resultsString}`;
     }).join("\n");
 
     if (teamId && teamName) {
-      prompt += `\n\nHere are the previous race results for ${teamName}'s drivers:\n${previousResults}`;
+      prompt += `\n\nHere are the previous ${quali ? "qualifying" : "race"} results for ${teamName}'s drivers:\n${previousResults}`;
     } else if (resultsToProcess.length > 0) {
-      prompt += `\n\nHere are the previous race results for each driver:\n${previousResults}`;
+      prompt += `\n\nHere are the previous ${quali ? "qualifying" : "race"} results for each driver:\n${previousResults}`;
     }
   }
 
@@ -1787,7 +1787,7 @@ async function contextualizeQualiResults(newData) {
 
   prompt += "\n\nHere are the full qualifying results:\n" + qualiResults;
 
-  prompt += buildContextualPrompt(resp.content, { timing: "before this race" });
+  prompt += buildContextualPrompt(resp.content, { timing: "before this race", quali: true });
 
 
   return prompt;
