@@ -21,8 +21,7 @@ Friendly user interface that helps you make the modifications you wish for the d
 
 <img width="2348" height="1157" alt="image" src="https://github.com/user-attachments/assets/f6beb411-9afb-4df2-ba78-1445996585f5" />
 
-4. Edit driver numbers
-5. Editing all staff (including drivers') stats, plus mentality and marketability, and **RENAME** any of them (including abreviations for drivers)
+4. Editing all staff (including drivers') stats, plus mentality and marketability, and **RENAME** any of them (including abreviations for drivers)
 
 <img width="2354" height="1150" alt="image" src="https://github.com/user-attachments/assets/40faf794-d1f2-46a9-a815-ff5fb8445633" />
 
