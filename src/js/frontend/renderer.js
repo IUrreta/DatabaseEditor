@@ -618,6 +618,8 @@ const messageHandlers = {
         place_drivers(message);
         sortList("free-drivers");
         place_drivers_editStats(message);
+        initFreeDriversElems();
+        initStatsDrivers();
     },
     "Staff fetched": (message) => {
         remove_drivers(true);
@@ -736,42 +738,67 @@ const messageHandlers = {
     }
 };
 
-async function migrateLegacyNewsOnce() {
+function removeLegacyKeys(base) {
+  const lsNewsKey = `${base}_news`;
+  const lsTPKey   = `${base}_tps`;
   try {
-    const base = getSaveName().split('.')[0];
-    const lsNewsKey = `${base}_news`;
-    const lsTPKey   = `${base}_tps`;
-    const lsFlagKey = `${base}_migration_v1_done`;
+    console.log("[migrate] Deleting legacy localStorage keys:", lsNewsKey, lsTPKey);
+    localStorage.removeItem(lsNewsKey);
+    localStorage.removeItem(lsTPKey);
+  } catch (e) {
+    console.warn("[migrate] Failed to remove legacy keys:", e);
+  }
+}
 
-    // si ya migraste (fallback local) no hagas nada
-    if (localStorage.getItem(lsFlagKey) === "1") return;
+async function migrateLegacyNewsOnce() {
+  const base = getSaveName().split('.')[0];
+  const lsFlagKey = `${base}_migration_v1_done`;
+  const lsNewsKey = `${base}_news`;
+  const lsTPKey   = `${base}_tps`;
 
-    const lsNewsTxt = localStorage.getItem(lsNewsKey);
-    const lsTPTxt   = localStorage.getItem(lsTPKey);
+  // 1) Si ya está migrado, BORRAR SIEMPRE y salir
+  if (localStorage.getItem(lsFlagKey) === "1") {
+    removeLegacyKeys(base);
+    return;
+  }
 
-    // nada que migrar
-    if (!lsNewsTxt && !lsTPTxt) {
-      localStorage.setItem(lsFlagKey, "1");
-      return;
-    }
+  // 2) Leer posibles datos legacy
+  const lsNewsTxt = localStorage.getItem(lsNewsKey);
+  const lsTPTxt   = localStorage.getItem(lsTPKey);
 
-    // pide al worker que haga la migración (merge + flag en DB)
+  // 3) Si no hay nada que migrar, marca flag y BORRA igual por si quedaron restos
+  if (!lsNewsTxt && !lsTPTxt) {
+    localStorage.setItem(lsFlagKey, "1");
+    removeLegacyKeys(base);
+    return;
+  }
+
+  // 4) Hay algo que migrar → pide al worker
+  try {
     const resp = await new Command("migrateFromLocalStorage", {
       base,
-      lsNewsTxt, // pueden ser null/undefined, el worker ya comprueba
+      lsNewsTxt, // pueden ser null; el worker ya valida
       lsTPTxt
     }).promiseExecute();
 
-    if (resp?.responseMessage === "Migration done") {
-      // limpia LS y marca flag local como backup
-      localStorage.removeItem(lsNewsKey);
-      localStorage.removeItem(lsTPKey);
+    // Considera como éxito "Migration done" o "Already migrated" por si reintentas
+    if (resp?.responseMessage === "Migration done" || resp?.responseMessage === "Already migrated") {
       localStorage.setItem(lsFlagKey, "1");
+      removeLegacyKeys(base); // BORRA tras éxito
+    } else {
+      console.warn("[migrate] Unexpected response:", resp);
+      // Si quieres ser agresivo igualmente:
+      localStorage.setItem(lsFlagKey, "1");
+      removeLegacyKeys(base);
     }
   } catch (e) {
-    console.error("Migration error (front):", e);
+    console.error("[migrate] Migration error (front):", e);
+    // No marcamos flag en error para poder reintentar después.
+    // Pero si quieres limpiar sí o sí, podrías optar por:
+    // removeLegacyKeys(base);
   }
 }
+
 
 
 export async function generateNews() {

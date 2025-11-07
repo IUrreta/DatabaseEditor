@@ -21,4 +21,5 @@ import './js/frontend/teams.js';
 import './js/frontend/dragFile.js';
 import './js/frontend/news.js'
 
+import './themes.css'
 import './styles.css';
