@@ -2774,7 +2774,7 @@ export function getOneQualiDetails(raceId) {
 
     const seasonResults = fetchQualiResults(season, true);
 
-    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceId);
+    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceId - 1, true); //get championship standings before that race
 
     // 1) Obtenemos time y laps del ganador (primera fila)
     const poleTime = results[0][5]; // índice 5 = res.FastestLap
