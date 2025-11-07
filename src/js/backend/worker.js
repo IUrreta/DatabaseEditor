@@ -27,7 +27,8 @@ import {
   migrateLegacyData,
   loadNewsMapFromDB,
   ensureTurningPointsStructure,
-  deleteNews
+  deleteNews,
+  deleteTurningPoints
 } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
@@ -655,6 +656,7 @@ const workerCommands = {
   },
   deleteNews: (data, postMessage) => {
     deleteNews();
+    deleteTurningPoints();
     postMessage({ responseMessage: "News deleted successfully", unlocksDownload: true });
   }
 

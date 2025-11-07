@@ -121,6 +121,11 @@ export const theme_colors = {
         "labels": "#dedde6",
         "grid": "#323046",
         "general_secondary": "#f1f1f1",
+    },
+    "vaporwave-theme": {
+        "labels": "#dedde6",
+        "grid": "#5329b5",
+        "general_secondary": "#f1f1f1",
     }
 }
 
@@ -166,8 +171,8 @@ export const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA"
 export const contintntRacesRegions = {
     "Europe": [24, 5, 6, 10, 9, 12, 13, 14, 23],
     "Asia": [17, 3, 15, 1],
-    "America": [19, 20, 18, 25, 22], 
-    "Middle East": [2, 11, 21, 26, 4], 
+    "America": [19, 20, 18, 25, 22],
+    "Middle East": [2, 11, 21, 26, 4],
 }
 export const continentDict = {
     24: "Europe", 5: "Europe", 6: "Europe", 10: "Europe", 9: "Europe", 8: "Europe", 12: "Europe", 13: "Europe", 14: "Europe", 23: "Europe",
@@ -365,6 +370,25 @@ export function getParamMap(data) {
             original_race: data.originalCountry,
             substitute_race: data.substituteCountry,
             reason: data.reason
+        },
+        106: {
+            driver: data.driver_affected?.name ?? "",
+            team: data.team ?? "",
+            next_race:
+                data.condition?.races_affected?.[0]?.country ??
+                data.condition?.expectedReturnCountry ??
+                "",
+            condition:
+                data.condition?.condition ??
+                data.condition?.type ??
+                "",
+            reserve_driver: data.reserve_driver?.name ?? "",
+            reason: data.condition?.reason ?? "",
+            races_affected_count: Array.isArray(data.condition?.races_affected)
+                ? data.condition.races_affected.length
+                : 0,
+            expected_return: data.condition?.expectedReturnCountry ?? "",
+            end_date: data.condition?.end_date ?? ""
         }
     };
 }
