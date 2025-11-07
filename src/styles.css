@@ -12875,6 +12875,27 @@ body:has(.active #mod25logo) .one-change {
   font-size: 20px;
 }
 
+.news-article h1{
+  font-size: 34px;
+  font-family: 'Formula1Bold';
+  color: var(--new-primary);
+  margin-bottom: 0;
+}
+
+.news-article h2{
+  font-size: 28px;
+  font-family: 'Formula1Bold';
+  color: var(--text-general);
+  margin-bottom: 0;
+}
+
+.news-article h3{
+  font-size: 22px;
+  font-family: 'Formula1Bold';
+  margin-bottom: 0;
+  color: var(--text-secondary);
+}
+
 .news-article p{
   margin: 0;
   color: var(--text-secondary);
@@ -12925,6 +12946,9 @@ body.default-theme .news-article-date{
   padding-right: 10px;
   transition: opacity 0.15s ease;
   height: 60vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .modal-content{
