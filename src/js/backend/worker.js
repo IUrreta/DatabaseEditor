@@ -70,7 +70,6 @@ const workerCommands = {
   yearSelected: (data, postMessage) => {
     const year = data.year
     const isCurrentYear = data.isCurrentYear || true;
-    console.log("IIS CURRENT YER:", isCurrentYear)
     const results = fetchSeasonResults(year, isCurrentYear);
     const events = fetchEventsFrom(year);
     const teams = fetchTeamsStandings(year);

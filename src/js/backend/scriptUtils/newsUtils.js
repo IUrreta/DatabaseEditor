@@ -917,7 +917,6 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
 
 
     const performance = getPerformanceAllTeams(excelDate, null, globals.isCreateATeam)
-    console.log("Performance data for technical directive TP:", performance);
     const championship = queryDB(`SELECT TeamID, Points, Position FROM Races_TeamStandings WHERE SeasonID = ${daySeason[1]} AND RaceFormula = 1 ORDER BY Position`, 'allRows');
 
     const constructorsStandings = {};
@@ -2853,8 +2852,8 @@ export function getOneQualiDetails(raceId) {
     const numberOfRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season}`, 'singleRow')[0];
 
     const drivers = seasonResults.map(r => ({
-        id: r.driverID,
-        name: r.data?.[0] ?? ""
+        id: r.driverID[0] ?? r.DriverID[0] ?? null,
+        name: r.data?.driverName ?? r.driverName ?? ""
     }));
     const enrichedAllTime = enrichDriversWithHistory(drivers);
 
@@ -2955,8 +2954,8 @@ export function getOneRaceDetails(raceId) {
     const numberOfRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season}`, 'singleRow')[0];
 
     const drivers = seasonResults.map(r => ({
-        id: r.driverID,
-        name: r.data?.[0] ?? ""
+        id: r.driverID[0] ?? r.DriverID[0] ?? null,
+        name: r.data?.driverName ?? r.driverName ?? ""
     }));
     const enrichedAllTime = enrichDriversWithHistory(drivers);
 
@@ -3031,64 +3030,57 @@ function getOneQualifyingResults(raceId) {
 }
 
 function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRace = false) {
-    // 4) Acumulamos puntos por piloto y por equipo
+    const seasonResults = (seasonResultsRaw || [])
+        .map(d => (d?.data && typeof d.data === "object") ? d.data : d)
+        .filter(d => d && typeof d.driverName === "string" && Array.isArray(d.races));
+
     const driverMap = {};
     const teamMap = {};
-    let racesNames = []
-    const driversResults = []
-
-    const seasonResults = seasonResultsRaw
-        .map(r => {
-            if (Array.isArray(r)) return r;
-            if (r && Array.isArray(r.data)) return r.data;
-            return r; // por si ya viene como array-like
-        })
-        .filter(Array.isArray);
+    let racesNames = [];
+    const driversResults = [];
 
     seasonResults.forEach(driverRec => {
-        const name = driverRec[0];
-        let resultsString = ""
-        let driverRaces = []
+        const name = driverRec.driverName;
+        let resultsString = "";
+        let driverRaces = [];
         let nPodiums = 0;
         let nWins = 0;
         let nPointsFinishes = 0;
 
-        // obtenemos sólo las carreras hasta esta (de la 3ª columna en adelante)
-        const races = driverRec.slice(3);
+        const races = driverRec.races;
 
-        // sumatorio de puntos (+fastLapPoint) si r[0] <= raceId
+        // 2) Suma de puntos hasta raceId (incluye la actual; el detalle depende de includeCurrentRace)
         const totalDriverPoints = races.reduce((sum, r) => {
-            const thisRaceId = Number(r[0]);
+            const thisRaceId = Number(r.raceId);
             if (thisRaceId <= raceId) {
+                // Detalle solo si < raceId o si queremos incluir la actual
                 if (thisRaceId < raceId || includeCurrentRace) {
                     driverRaces.push(getCircuitInfo(thisRaceId).country);
-                    resultsString += `${parseInt(r[1]) !== -1 ? `P${r[1]}` : "DNF"}, `;
-                    if (parseInt(r[1]) === 1) nWins++;
-                    if (parseInt(r[1]) <= 3 && parseInt(r[1]) > 0) nPodiums++;
-                    if (parseInt(r[2]) > 0) nPointsFinishes++;
+                    const fin = parseInt(r.finishingPos);
+                    resultsString += (fin !== -1 ? `P${fin}` : "DNF") + ", ";
+                    if (fin === 1) nWins++;
+                    if (fin > 0 && fin <= 3) nPodiums++;
+                    if ((parseInt(r.points) || 0) > 0) nPointsFinishes++;
                 }
-                const pts = r[2] > 0 ? r[2] : 0;
-                const sprintPts = r.length >= 9 ? r[7] : 0;
+                const pts = (Number(r.points) > 0) ? Number(r.points) : 0;
+                const sprintPts = (r.sprintPoints != null && Number(r.sprintPoints) !== -1) ? Number(r.sprintPoints) : 0;
                 return sum + pts + sprintPts;
             }
-
-
             return sum;
         }, 0);
 
-        //remove the last comma and space from resultsString
-        if (resultsString.length > 0) {
-            resultsString = resultsString.slice(0, -2);
-        }
+        // quita la coma y espacio final
+        if (resultsString.endsWith(", ")) resultsString = resultsString.slice(0, -2);
 
         if (driverRaces.length > racesNames.length) {
             racesNames = driverRaces;
         }
 
+        // 3) Clasificación de pilotos
         driverMap[name] = {
             name: news_insert_space(name),
             points: totalDriverPoints,
-            teamId: driverRec[1],
+            teamId: driverRec.latestTeamId,   // <-- antes usabas driverRec[1] (formato viejo)
         };
 
         driversResults.push({
@@ -3096,35 +3088,29 @@ function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRace = fa
             resultsString,
             nPodiums,
             nWins,
-            teamId: driverRec[1],
+            teamId: driverRec.latestTeamId,
             nPointsFinishes
         });
 
-        // por cada carrera sumo también al equipo que corrió esa carrera
+        // 4) Puntos por equipo por carrera
         races.forEach(r => {
-            const thisRaceId = Number(r[0]);
+            const thisRaceId = Number(r.raceId);
             if (thisRaceId <= raceId) {
-                const teamId = r[r.length - 1];
-                const pts = r[2] > 0 ? r[2] : 0;
-                const sprintPts = r.length >= 9 ? r[7] : 0;
+                const teamId = Number(r.teamId); // <-- antes r[r.length-1]
+                const pts = (Number(r.points) > 0) ? Number(r.points) : 0;
+                const sprintPts = (r.sprintPoints != null && Number(r.sprintPoints) !== -1) ? Number(r.sprintPoints) : 0;
                 teamMap[teamId] = (teamMap[teamId] || 0) + pts + sprintPts;
             }
         });
     });
 
-    const driverStandings = Object.values(driverMap)
-        .sort((a, b) => b.points - a.points);
+    const driverStandings = Object.values(driverMap).sort((a, b) => b.points - a.points);
 
     const teamStandings = Object.entries(teamMap)
         .map(([teamId, points]) => ({ teamId: Number(teamId), points }))
         .sort((a, b) => b.points - a.points);
 
-    return {
-        driverStandings,
-        teamStandings,
-        driversResults,
-        racesNames
-    }
+    return { driverStandings, teamStandings, driversResults, racesNames };
 }
 
 
@@ -3387,8 +3373,8 @@ export function getTeamComparisonDetails(teamId, season, date) {
         });
 
     const drivers = seasonResults.map(r => ({
-        id: r.driverID,
-        name: r.data?.[0] ?? ""
+        id: r.driverID[0] ?? r.DriverID[0] ?? null,
+        name: r.data?.driverName ?? r.driverName ?? ""
     }));
     const enrichedAllTime = enrichDriversWithHistory(drivers);
 
@@ -3416,8 +3402,8 @@ export function getFullChampionSeasonDetails(season) {
 
     const racesCompleted = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND State = 2`, 'singleValue');
     const drivers = seasonResults.map(r => ({
-        id: r.driverID,
-        name: r.data?.[0] ?? ""
+        id: r.driverID[0] ?? r.DriverID[0] ?? null,
+        name: r.data?.driverName ?? r.driverName ?? ""
     }));
     const enrichedAllTime = enrichDriversWithHistory(drivers);
 
