@@ -249,6 +249,9 @@ function new_color_drivers_table() {
             if (cell.dataset.fastlap === "1") {
                 cell.classList.add("fastest");
             }
+            if (cell.dataset.dotd === "true") {
+                cell.classList.add("dotd");
+            }
             if (cell.dataset.quali === "1") {
                 cell.style.fontFamily = "Formula1Bold";
             }
@@ -852,12 +855,13 @@ function new_addDriver(driver, races_done, odd) {
             );
             raceDiv.dataset.fastlap = race.fastestLap ? 1 : 0; // normaliza a 0/1
             raceDiv.dataset.quali = manage_dataset_info_driver(
-                race.qualifyingPos,
+                race.qualifyingPos === 99 ? race.startingPos : race.qualifyingPos,
                 undefined,
                 "quali"
             );
             raceDiv.dataset.gapToWinner = race.gapToWinner;
             raceDiv.dataset.gapToPole = race.gapToPole;
+            raceDiv.dataset.dotd = race.driverOfTheDay //if its true or false
 
             // Sprint
             if (hasSprintPos) raceDiv.dataset.sprintpos = race.sprintPos;

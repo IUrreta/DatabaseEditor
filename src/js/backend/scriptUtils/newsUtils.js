@@ -1,4 +1,4 @@
-import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations } from "./dbUtils";
+import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows } from "./dbUtils";
 import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names, continentDict, contintntRacesRegions } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import turningPointsTitleTemplates from "../../../data/news/turning_points_titles_templates.json";
@@ -1135,8 +1135,6 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
         return newsList;
     }
 
-    console.log("Selected team for mid-season transfer TP:", randomTeamName);
-
     //the driver from the randomteam with less points
     let driverOut = teamsById[randomTeam] ? Object.entries(teamsById[randomTeam].drivers).sort((a, b) => a[1] - b[1])[0] : null;
     let driverIn, driverSubstitute, driverInTeamId, driverSubstituteTeamId;
@@ -1335,7 +1333,6 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
 
     const title = generateTurningPointTitle(newData, 101, "original");
     const image = getImagePath(null, driverOutName[1], "transfer");
-    console.log("image path for turning point transfer:", image);
 
     const newEntry = {
         id: entryId,
@@ -1353,7 +1350,6 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
 }
 
 function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointState = {}) {
-    console.log("TURNING POINT STATE IN DSQ TP NEWS:", turningPointState);
     const last3Races = racesDone.slice(-3);
     let newsList = [];
     let forcedCleanSeason = false;
@@ -2897,6 +2893,20 @@ export function getOneRaceDetails(raceId) {
     const winnerTime = results[0][10]; // índice 10 = res.Time
     const winnerLaps = results[0][11]; // índice 11 = res.Laps
 
+    const dodDriverId = computeDriverOfTheDayFromRows(results);
+
+    let driverOfTheDayInfo = null;
+    if (dodDriverId != null) {
+        const dodRow = results.find(r => Number(r[2]) === Number(dodDriverId));
+        if (dodRow) {
+            const [nameFormatted] = formatNamesSimple(dodRow);
+            driverOfTheDayInfo = {
+                name: news_insert_space(nameFormatted),
+                teamId: dodRow[3]
+            };
+        }
+    }
+
     const raceDetails = results.map(row => {
         const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
         const time = row[10];
@@ -2918,6 +2928,7 @@ export function getOneRaceDetails(raceId) {
             virtualSafetyCar: row[9],
             gapToWinner,
             gapLaps,
+            driverOfTheDay: Number(driverId) === Number(dodDriverId),
         };
     });
 
@@ -2970,7 +2981,8 @@ export function getOneRaceDetails(raceId) {
         sprintDetails,
         pointsSchema,
         remainingRaces: remainingRacesDetails,
-        enrichedAllTime
+        enrichedAllTime,
+        driverOfTheDayInfo
     }
 }
 

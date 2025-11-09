@@ -2767,7 +2767,7 @@ DRIVERS TABLE
 .teams-table-row.odd:hover .first,
 .teams-table-row:hover .first {
   background-color: var(--table-first) !important;
-  color: #292929 !important;
+  color: var(--table-hover-text) !important;
 }
 
 .second {
@@ -2779,7 +2779,7 @@ DRIVERS TABLE
 .teams-table-row.odd:hover .second,
 .teams-table-row:hover .second {
   background-color: var(--table-second) !important;
-  color: #292929 !important;
+  color: var(--table-hover-text) !important;
 }
 
 .third {
@@ -2791,7 +2791,7 @@ DRIVERS TABLE
 .teams-table-row.odd:hover .third,
 .teams-table-row:hover .third {
   background-color: var(--table-third) !important;
-  color: #292929 !important;
+  color: var(--table-hover-text) !important;
 }
 
 .fastest {
@@ -2801,6 +2801,37 @@ DRIVERS TABLE
   text-underline-offset: 2px;
 }
 
+.dotd::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 12%;
+  height: 27%;
+  border-top: 3px solid var(--positive-general);
+  border-right: 3px solid var(--positive-general);
+}
+
+.dotd::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 12%;
+  height: 27%;
+  border-bottom: 3px solid var(--positive-general);
+  border-left: 3px solid var(--positive-general);
+}
+/* 
+.drivers-table-row:hover .dotd::before {
+  border-bottom: 3px solid var(--table-hover-text);
+  border-left: 3px solid var(--table-hover-text);
+}
+
+.drivers-table-row:hover .dotd::after {
+  border-top: 3px solid var(--table-hover-text);
+  border-right: 3px solid var(--table-hover-text);
+} */
 
 .drivers-table-header,
 .teams-table-header {

@@ -823,6 +823,8 @@ export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true, 
         WHERE StaffID = ${driverID}
       `, 'singleRow');
 
+    const dodMap = computeDriverOfTheDayMap(season);
+
     return formatSeasonResults(
       results,
       driverNameRow,
@@ -831,12 +833,104 @@ export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true, 
       year,
       sprintResults,
       isCurrentYear,
-      includeId
+      includeId,
+      dodMap
     );
   }
 
   return null;
 }
+
+function computeDriverOfTheDayMap(season) {
+  const rows = queryDB(`
+    SELECT RaceID, DriverID, StartingPos, FinishingPos, DNF, Time, Laps
+    FROM Races_Results
+    WHERE Season = ${season}
+  `, 'allRows') || [];
+
+  // Agrupar por RaceID
+  const byRace = new Map();
+  for (const [raceId, driverId, startPos, finishPos, dnf, time, laps] of rows) {
+    if (!byRace.has(raceId)) byRace.set(raceId, []);
+    // Reordenamos al "shape" que espera computeDriverOfTheDayFromRows:
+    // [0]=FirstName, [1]=LastName, [2]=DriverID, [3]=TeamID, [4]=FinishingPos,
+    // [5]=StartingPos, [6]=Points, [7]=DNF, [8]=SC, [9]=VSC, [10]=Time, [11]=Laps
+    byRace.get(raceId).push([null, null, driverId, null, finishPos, startPos, null, dnf, null, null, time, laps]);
+  }
+
+  // Calcula DoD por carrera
+  const result = new Map();
+  for (const [raceId, raceRows] of byRace.entries()) {
+    // Asegúrate de que estén ordenadas por FinishingPos (por si la query no lo garantizase)
+    raceRows.sort((a, b) => Number(a[4]) - Number(b[4]));
+    const winnerId = computeDriverOfTheDayFromRows(raceRows);
+    if (winnerId != null) result.set(raceId, Number(winnerId));
+  }
+
+  return result; // Map<raceId, driverId>
+}
+
+
+// rows = getOneRaceResults(raceId, false)
+// Índices: 2=DriverID, 4=FinishingPos, 5=StartingPos, 7=DNF, 10=Time, 11=Laps
+export function computeDriverOfTheDayFromRows(rows) {
+  if (!rows || !rows.length) return null;
+
+  // --- Regla dura: si P1 saca >15s a P2 (misma vuelta) → DoD = P1
+  const p1 = rows.find(r => Number(r[4]) === 1 && Number(r[7]) === 0);
+  const p2 = rows.find(r => Number(r[4]) === 2 && Number(r[7]) === 0);
+  if (p1 && p2) {
+    const p1Time = Number(p1[10]), p2Time = Number(p2[10]);
+    const p1Laps = Number(p1[11]), p2Laps = Number(p2[11]);
+    if (Number.isFinite(p1Time) && Number.isFinite(p2Time) && p1Laps === p2Laps) {
+      const gapBehind = p2Time - p1Time;
+      if (gapBehind > 15.0) return Number(p1[2]);
+    }
+  }
+
+  // --- Helper: bonus/penalización por posición final
+  const posScore = (finishingPos) => {
+    // Podio: +3, +2, +1
+    if (finishingPos === 1) return 4;
+    if (finishingPos === 2) return 2;
+    if (finishingPos === 3) return 1;
+
+    // Penalizaciones (no acumulativas: se aplica la mayor que corresponda)
+    if (finishingPos > 13) return -4;
+    if (finishingPos > 11) return -3;
+    if (finishingPos > 9) return -2;
+    if (finishingPos > 7)  return -1;
+
+    return 0; // P4-P8 ni bonus ni penalización
+  };
+
+  let best = null; // { driverId, score, gain, finishPos }
+
+  for (const row of rows) {
+    const driverId     = Number(row[2]);
+    const finishingPos = Number(row[4]);
+    const startingPos  = Number(row[5]);
+    const dnf          = Number(row[7]) === 1;
+
+    const valid = !dnf && startingPos > 0 && finishingPos > 0 && finishingPos !== 99;
+    if (!valid) continue;
+
+    const gain = startingPos - finishingPos;
+    const score = gain + posScore(finishingPos);
+
+    if (
+      !best ||
+      score > best.score ||
+      (score === best.score && finishingPos < best.finishPos) // desempate: mejor posición final
+    ) {
+      best = { driverId, score, gain, finishPos: finishingPos };
+    }
+  }
+
+  return best ? best.driverId : null;
+}
+
+
 
 export function fetchOneDriverQualiResults(driver, year, includeId = false) {
   const driverID = driver;
@@ -942,70 +1036,85 @@ export function formatSeasonResults(
   year,
   sprints,
   isCurrentYear = true,
-  includeId = false
+  includeId = false,
+  dodMap = null
 ) {
   const driverID = driver;
   const season = year;
 
-  let nombre = "";
-  let apellido = "";
+  const toSeconds = (t) => {
+    if (t == null) return null;
+    if (typeof t === "number") return t;
+    const s = String(t).trim();
+    if (s === "" || s.toUpperCase() === "NR") return null;
+    const clean = s.startsWith("(") && s.endsWith(")") ? s.slice(1, -1) : s;
+    if (clean.includes(":")) {
+      const [mm, rest] = clean.split(":");
+      const secs = parseFloat(rest);
+      if (isNaN(secs)) return null;
+      return parseInt(mm, 10) * 60 + secs;
+    }
+    const n = parseFloat(clean);
+    return isNaN(n) ? null : n;
+  };
+  const formatGap = (delta) => {
+    if (delta == null) return null;
+    return `+${delta.toFixed(3)}`;
+  };
 
+  let nombre = "", apellido = "";
   const firstName = driverName ? driverName[0] : "";
   const lastName = driverName ? driverName[1] : "";
-
-  // --- Nombre y Apellido legibles (mantiene tu lógica actual) ---
   if (!firstName.includes("STRING_LITERAL")) {
-    const nombrePattern = /StaffName_Forename_(Male|Female)_(\w+)/;
-    const match = firstName.match(nombrePattern);
-    nombre = match ? removeNumber(match[2]) : "";
+    const m = firstName.match(/StaffName_Forename_(Male|Female)_(\w+)/);
+    nombre = m ? removeNumber(m[2]) : "";
   } else {
-    const pattern = /\|([^|]+)\|/;
-    const match = firstName.match(pattern);
-    nombre = match ? match[1] : "";
+    const m = firstName.match(/\|([^|]+)\|/);
+    nombre = m ? m[1] : "";
   }
-
   if (!lastName.includes("STRING_LITERAL")) {
-    const apellidoPattern = /StaffName_Surname_(\w+)/;
-    const match = lastName.match(apellidoPattern);
-    apellido = match ? removeNumber(match[1]) : "";
+    const m = lastName.match(/StaffName_Surname_(\w+)/);
+    apellido = m ? removeNumber(m[1]) : "";
   } else {
-    const pattern = /\|([^|]+)\|/;
-    const match = lastName.match(pattern);
-    apellido = match ? match[1] : "";
+    const m = lastName.match(/\|([^|]+)\|/);
+    apellido = m ? m[1] : "";
   }
-
   const nameFormatted = `${nombre} ${apellido}`.trim();
 
-  // Carreras en las que participó el piloto (ids)
+  // ---- carreras del piloto ----
   const racesParticipated =
-    queryDB(
-      `
+    queryDB(`
       SELECT RaceID
       FROM Races_Results
       WHERE DriverID = ${driverID}
         AND Season = ${season}
-      `,
-      "allRows"
-    ) || [];
+    `, "allRows") || [];
 
-  // results venía con datos base por carrera; antes hacías [r[2], r[3]] (pos, pts)
-  // Creamos un mapa raceId -> objeto base con esos campos
-  // Asumimos que "results" está alineado con "racesParticipated" por índice (como en tu código original).
-  // r[2] = FinishingPos, r[3] = Points
   const raceObjects = [];
-
-  // Primero levantamos los básicos (pos y puntos de "results")
-  let formattedBasics = results.map(r => ({
+  const formattedBasics = results.map(r => ({
     finishingPos: r[2],
     points: r[3]
   }));
 
-  // Rellenamos por cada carrera real (añadiendo todo lo demás)
   for (let i = 0; i < racesParticipated.length; i++) {
     const raceID = racesParticipated[i][0];
 
-    const driverWithFastestLap = queryDB(
-      `
+    // Traemos resultados completos de la carrera para calcular gaps/startingPos en una sola query
+    const raceResults =
+      queryDB(`
+        SELECT DriverID, FinishingPos, Points, Time, StartingPos, DNF
+        FROM Races_Results
+        WHERE Season = ${season}
+          AND RaceID = ${raceID}
+      `, "allRows") || [];
+
+    // info específica del piloto
+    const myRow = raceResults.find(r => Number(r[0]) === Number(driverID));
+    const myDNF = myRow ? (Number(myRow[5]) === 1) : 0;
+    const myStartingPos = myRow ? (myRow[4] ?? 99) : 99;
+
+    // vuelta rápida (tu lógica)
+    const driverWithFastestLap = queryDB(`
         SELECT DriverID
         FROM Races_Results
         WHERE FastestLap > 0
@@ -1013,62 +1122,54 @@ export function formatSeasonResults(
           AND Season = ${season}
         ORDER BY FastestLap
         LIMIT 1
-      `,
-      "singleValue"
-    );
+      `, "singleValue");
 
-    const dnfd =
-      queryDB(
-        `
-        SELECT DNF
-        FROM Races_Results
-        WHERE DriverID = ${driverID}
-          AND Season = ${season}
-          AND RaceID = ${raceID}
-      `,
-        "singleValue"
-      ) || 0;
-
-    // Base del objeto de la carrera
+    // objeto base
     const base = {
       raceId: raceID,
       finishingPos: formattedBasics[i]?.finishingPos ?? 99,
       points: formattedBasics[i]?.points ?? 0,
-      dnf: dnfd === 1,
-      fastestLap: parseInt(driverWithFastestLap) === parseInt(driverID), // boolean
+      dnf: myDNF === 1,
+      fastestLap: parseInt(driverWithFastestLap) === parseInt(driverID),
       qualifyingPos: 99,
-      gapToWinner: null, // timeDifference
-      gapToPole: null,   // poleDifference
+      gapToWinner: null,
+      gapToPole: null,
+      // NUEVOS CAMPOS:
+      startingPos: myStartingPos,
+      gapAhead: null,
+      gapBehind: null,
+      // sprint/equipo
       sprintPoints: 0,
       sprintPos: null,
-      teamId: 0
+      teamId: 0,
+      driverOfTheDay: false
     };
 
-    // Si DNF, igual que antes: -1 en pos y puntos
+    if (dodMap && dodMap.has(raceID)) {
+      const winnerId = dodMap.get(raceID); // número del driver ganador
+      base.driverOfTheDay = Number(driverID) === Number(winnerId);
+    }
+
     if (base.dnf) {
       base.finishingPos = -1;
       base.points = -1;
     }
 
-    // Quali / parrilla
+    // Quali / parrilla (como antes)
     let QRes;
     if (isCurrentYear) {
       const QStage =
-        queryDB(
-          `
+        queryDB(`
           SELECT MAX(QualifyingStage)
           FROM Races_QualifyingResults
           WHERE RaceFormula = 1
             AND RaceID = ${raceID}
             AND SeasonID = ${season}
             AND DriverID = ${driverID}
-        `,
-          "singleValue"
-        ) || 0;
+        `, "singleValue") || 0;
 
       QRes =
-        queryDB(
-          `
+        queryDB(`
           SELECT FinishingPos
           FROM Races_QualifyingResults
           WHERE RaceFormula = 1
@@ -1076,32 +1177,65 @@ export function formatSeasonResults(
             AND SeasonID = ${season}
             AND DriverID = ${driverID}
             AND QualifyingStage = ${QStage}
-        `,
-          "singleValue"
-        ) || 99;
+        `, "singleValue") || 99;
     } else {
       QRes =
-        queryDB(
-          `
+        queryDB(`
           SELECT StartingPos
           FROM Races_Results
           WHERE RaceID = ${raceID}
             AND DriverID = ${driverID}
-        `,
-          "singleValue"
-        ) || 99;
+        `, "singleValue") || 99;
     }
     base.qualifyingPos = QRes;
 
-    // Gaps (se mantienen tus funciones)
+    // Gaps generales (tus funciones existentes)
     base.gapToWinner = calculateTimeDifference(driverID, raceID);
     base.gapToPole = calculateTimeToPole(driverID, raceID);
+
+    // --- NUEVO: calcular gapAhead / gapBehind con todos los clasificados ---
+    if (!base.dnf && raceResults.length > 0) {
+      // clasificados con tiempo interpretable
+      const classified = raceResults
+        .filter(r => Number(r[1]) > 0) // FinishingPos > 0
+        .sort((a, b) => Number(a[1]) - Number(b[1])); // por posición
+
+      const idx = classified.findIndex(r => Number(r[0]) === Number(driverID));
+      if (idx !== -1) {
+        const myTime = toSeconds(classified[idx][3]); // Time
+        // delante
+        if (idx > 0) {
+          const aheadTime = toSeconds(classified[idx - 1][3]);
+          if (myTime != null && aheadTime != null) {
+            base.gapAhead = formatGap(myTime - aheadTime);
+          }
+        }
+        // detrás
+        if (idx < classified.length - 1) {
+          const behindTime = toSeconds(classified[idx + 1][3]);
+          if (myTime != null && behindTime != null) {
+            base.gapBehind = formatGap(behindTime - myTime);
+          }
+        }
+      }
+    }
+
+    // gaps listos
+    // equipo por carrera
+    const teamInRace =
+      queryDB(`
+        SELECT TeamID
+        FROM Races_Results
+        WHERE RaceID = ${raceID}
+          AND DriverID = ${driverID}
+      `, "singleValue") || 0;
+
+    base.teamId = teamInRace;
 
     raceObjects.push(base);
   }
 
-  // Sprints: añadimos sprintPoints y sprintPos en el objeto correspondiente
-  // sprints: array de [sprintRaceID, sprintPos, sprintPoints]
+  // Sprints
   if (Array.isArray(sprints)) {
     const byRace = new Map(raceObjects.map(o => [o.raceId, o]));
     for (const sprintRow of sprints) {
@@ -1114,39 +1248,19 @@ export function formatSeasonResults(
     }
   }
 
-  // teamId por carrera (y guardamos el último para "latestTeamId")
-  let latestTeamId = null;
-  for (let i = 0; i < raceObjects.length; i++) {
-    const raceID = raceObjects[i].raceId;
-    const teamInRace =
-      queryDB(
-        `
-        SELECT TeamID
-        FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND DriverID = ${driverID}
-      `,
-        "singleValue"
-      ) || 0;
+  // último equipo / posición campeonato
+  const latestTeamId =
+    raceObjects.length ? raceObjects[raceObjects.length - 1].teamId : teamID;
 
-    raceObjects[i].teamId = teamInRace;
-    latestTeamId = teamInRace;
-  }
-
-  // Posición final en el campeonato
   const championshipPosition =
-    queryDB(
-      `
+    queryDB(`
       SELECT Position
       FROM Races_Driverstandings
       WHERE RaceFormula = 1
         AND SeasonID = ${season}
         AND DriverID = ${driverID}
-    `,
-      "singleValue"
-    ) || 0;
+    `, "singleValue") || 0;
 
-  // --- Salida nueva y auto-descriptiva ---
   const payload = {
     driverName: nameFormatted,
     latestTeamId,
@@ -1154,10 +1268,9 @@ export function formatSeasonResults(
     races: raceObjects
   };
 
-  return includeId
-    ? { driverID, data: payload }
-    : payload;
+  return includeId ? { driverID, data: payload } : payload;
 }
+
 
 
 export function calculateTimeToPole(driverID, raceID) {
