@@ -75,7 +75,7 @@ export function generate_news(savednews, turningPointState) {
 
     const raceSubstitutionTurningPointNews = generateRaceSubstitutionTurningPointNews(currentMonth, savednews, turningPointState);
 
-    const driverInjuryTurningPointNews = generateDriverInjuryTurningPointNews(currentMonth, savednews, turningPointState);
+    // const driverInjuryTurningPointNews = generateDriverInjuryTurningPointNews(currentMonth, savednews, turningPointState); //disabled for nightly branch
 
     let turningPointOutcomes = [];
     if (Object.keys(savednews).length > 0) {
@@ -87,8 +87,7 @@ export function generate_news(savednews, turningPointState) {
     let newsList = [...raceNews || [], ...qualiNews || [], ...fakeTransferNews || [],
     ...bigConfirmedTransfersNews || [], ...contractRenewalsNews || [], ...comparisonNews || [], ...seasonReviews || [],
     ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...dsqTurningPointNews || [], ...midSeasonTransfersTurningPointNews || [],
-    ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [], ...raceSubstitutionTurningPointNews || [],
-    ...driverInjuryTurningPointNews || []];
+    ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [], ...raceSubstitutionTurningPointNews || []];
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
