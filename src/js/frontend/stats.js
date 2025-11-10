@@ -337,14 +337,14 @@ function recalculateOverall() {
         document.getElementById("ovrholder").className = "overall-holder bold-font alertNeg";
         setTimeout(() => {
             document.getElementById("ovrholder").className = "overall-holder bold-font"
-        }, 150);
+        }, 300);
     }
     else if (oldovr < ovr) {
         document.getElementById("ovrholder").innerHTML = ovr;
         document.getElementById("ovrholder").className = "overall-holder bold-font alertPos";
         setTimeout(() => {
             document.getElementById("ovrholder").className = "overall-holder bold-font"
-        }, 150);
+        }, 300);
     }
 
 }
@@ -416,13 +416,14 @@ function updateStat(input, increment) {
 document.querySelectorAll(".attributes-panel .bi-plus").forEach(button => {
     let bar = button.parentNode.parentNode.parentNode.querySelector(".one-stat-progress");
     let statInput = button.parentNode.parentNode.querySelector("input");
-    attachHold(button, statInput, +1, { min: 0, max: 99, progressEl: bar });
+    attachHold(button, statInput, +1, { min: 0, max: 99, progressEl: bar, onChange: recalculateOverall });
+    recalculateOverall();
 });
 
 document.querySelectorAll(".attributes-panel .bi-dash").forEach(button => {
     let bar = button.parentNode.parentNode.parentNode.querySelector(".one-stat-progress");
     let statInput = button.parentNode.parentNode.querySelector("input");
-    attachHold(button, statInput, -1, { min: 0, max: 99, progressEl: bar });
+    attachHold(button, statInput, -1, { min: 0, max: 99, progressEl: bar, onChange: recalculateOverall });
 });
 
 attachHold(plusBtn, ageSpan, +1, { min: 0, max: 100 });

@@ -1844,12 +1844,12 @@ input.comparing-tag{
 
 
 .alertNeg {
-  animation: colorChangeNeg 0.15s infinite;
+  animation: colorChangeNeg 0.3s;
   margin-bottom: 0px !important;
 }
 
 .alertPos {
-  animation: colorChangePos 0.15s infinite;
+  animation: colorChangePos 0.3s;
   margin-bottom: 0px !important;
 }
 
