@@ -727,11 +727,11 @@ export function buildPerRaceTeamRankContext(seasonResults, raceIds, season) {
   for (const dr of (seasonResults || [])) {
     const races = dr.races || [];
     for (const r of races) {
-      const raceId  = Number(r.raceId);
-      const teamId  = Number(r.teamId);
-      const pts     = Math.max(0, Number(r.points) || 0);
-      const spts    = (r.sprintPoints != null && Number(r.sprintPoints) !== -1) ? Number(r.sprintPoints) : 0;
-      const total   = pts + spts;
+      const raceId = Number(r.raceId);
+      const teamId = Number(r.teamId);
+      const pts = Math.max(0, Number(r.points) || 0);
+      const spts = (r.sprintPoints != null && Number(r.sprintPoints) !== -1) ? Number(r.sprintPoints) : 0;
+      const total = pts + spts;
 
       if (!perRaceTeamPoints.has(raceId)) perRaceTeamPoints.set(raceId, new Map());
       const m = perRaceTeamPoints.get(raceId);
@@ -740,7 +740,7 @@ export function buildPerRaceTeamRankContext(seasonResults, raceIds, season) {
   }
 
   const perRaceRank = new Map();
-  const cumPoints = new Map(); 
+  const cumPoints = new Map();
 
   const orderedRaceIds = [...(raceIds || [])].map(Number).sort((a, b) => a - b);
 
@@ -762,7 +762,7 @@ export function buildPerRaceTeamRankContext(seasonResults, raceIds, season) {
   }
 
   _standingsCache.set(cacheKey, perRaceRank);
-  return perRaceRank; 
+  return perRaceRank;
 }
 
 export function buildPerRaceTeamRankContext_OLD(seasonResults, raceIds, season) {
@@ -776,7 +776,7 @@ export function buildPerRaceTeamRankContext_OLD(seasonResults, raceIds, season) 
       seasonResults,
       raceId,
       false,
-      false  
+      false
     );
 
     const rankMap = new Map();
@@ -799,7 +799,7 @@ function applyDoDFlagsToSeasonResults(seasonResults, dodMap) {
   return seasonResults;
 }
 
-function computeSeasonDriverOfTheDay(seasonResults, season) {
+export function computeSeasonDriverOfTheDay(seasonResults, season) {
   // --- Paso A: contexto por carrera ---
   const raceIds = getSeasonRaceIds(season);
   const perRaceTeamRank = buildPerRaceTeamRankContext(seasonResults, raceIds, season);
@@ -832,16 +832,13 @@ function computeSeasonDriverOfTheDay(seasonResults, season) {
     if (dod != null) dodMap.set(Number(raceId), Number(dod));
   }
 
-  // --- Paso C: marcar en los resultados y devolver ---
-  const enriched = applyDoDFlagsToSeasonResults(seasonResults, dodMap);
-  enriched._driverOfTheDayMap = dodMap; // opcional: mantener referencia
-  return enriched;
+  
+  return dodMap;
 }
 
 export function fetchSeasonResults(
   yearSelected,
-  isCurrentYear = true,
-  fetchDriverOfTheDay = false
+  isCurrentYear = true
 ) {
   const drivers = queryDB(`
       SELECT DriverID
@@ -856,15 +853,9 @@ export function fetchSeasonResults(
     const driverRes = fetchOneDriverSeasonResults([driverID], [yearSelected], isCurrentYear);
     if (driverRes) seasonResults.push(driverRes);
   }
+  
 
-  if (!fetchDriverOfTheDay) {
-    return seasonResults;
-  }
-
-  const resultsWithDoD = computeSeasonDriverOfTheDay(seasonResults, yearSelected);
-
-
-  return resultsWithDoD;
+  return seasonResults;
 }
 
 export function fetchQualiResults(yearSelected) {
@@ -990,12 +981,12 @@ export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
   if (!rows || !rows.length) return null;
 
   // --- constantes internas (sin pasar por opts si quieres fijarlas) ---
-  const TEAM_WEIGHT     = 0.4;
-  const TEAM_BONUS_CAP  = 4;
-  const RANDOM_INTENSITY= 0.8; // ±0.4
+  const TEAM_WEIGHT = 0.4;
+  const TEAM_BONUS_CAP = 4;
+  const RANDOM_INTENSITY = 0.8; // ±0.4
   const dominancePerGap = 1;   // +1 punto por bloque de gap
-  const dominanceBlock  = 4;   // cada 4s → 1 punto
-  const dominanceMax    = 10;
+  const dominanceBlock = 4;   // cada 4s → 1 punto
+  const dominanceMax = 10;
 
   // ranking de equipo
   const teamRankByTeamId = (opts.teamRankByTeamId instanceof Map) ? opts.teamRankByTeamId : new Map();
@@ -1023,21 +1014,21 @@ export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
     if (finishingPos === 3) return 1;
     if (finishingPos > 13) return -10;
     if (finishingPos > 10) return -7;
-    if (finishingPos > 8)  return -2;
+    if (finishingPos > 8) return -2;
     return 0;
   };
 
   // grid válido para expectedPos por equipo
   const validRows = rows.filter(r => Number(r[7]) !== 1 && Number(r[5]) > 0 && Number(r[4]) > 0 && Number(r[4]) !== 99);
-  const gridSize  = validRows.length;
-  const gridFactor= gridSize > 0 ? (gridSize / 20) : 1;
+  const gridSize = validRows.length;
+  const gridFactor = gridSize > 0 ? (gridSize / 20) : 1;
 
   const teamBonus = (teamRank, finishingPos) => {
     if (!Number.isFinite(teamRank) || !Number.isFinite(finishingPos)) return 0;
     const expectedPos = (2 * teamRank - 0.5) * gridFactor; // 2 coches por equipo
     const delta = expectedPos - finishingPos; // + si rinde mejor que lo esperado
     let bonus = delta * TEAM_WEIGHT;
-    if (bonus >  TEAM_BONUS_CAP) bonus =  TEAM_BONUS_CAP;
+    if (bonus > TEAM_BONUS_CAP) bonus = TEAM_BONUS_CAP;
     if (bonus < -TEAM_BONUS_CAP) bonus = -TEAM_BONUS_CAP;
     return bonus;
   };
@@ -1046,18 +1037,18 @@ export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
   let bestId = null, bestScore = -Infinity, bestFinishPos = 99;
 
   for (const row of rows) {
-    const driverId     = Number(row[2]);
-    const teamId       = Number(row[3]);
+    const driverId = Number(row[2]);
+    const teamId = Number(row[3]);
     const finishingPos = Number(row[4]);
-    const startingPos  = Number(row[5]);
-    const dnf          = Number(row[7]) === 1;
+    const startingPos = Number(row[5]);
+    const dnf = Number(row[7]) === 1;
 
     if (dnf || startingPos <= 0 || finishingPos <= 0 || finishingPos === 99) continue;
 
     const gain = startingPos - finishingPos;
-    const ps   = posScore(finishingPos);
-    const tr   = Number(teamRankByTeamId.get(teamId));
-    const tb   = Number.isFinite(tr) ? teamBonus(tr, finishingPos) : 0;
+    const ps = posScore(finishingPos);
+    const tr = Number(teamRankByTeamId.get(teamId));
+    const tb = Number.isFinite(tr) ? teamBonus(tr, finishingPos) : 0;
     const dominanceBonus = (finishingPos === 1) ? p1GapBonus : 0;
 
     const rand = seededRandom(Number(raceId), driverId);
@@ -1085,10 +1076,10 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
   raceId = Number(raceId);
 
   const teamRankByTeamId = (opts.teamRankByTeamId instanceof Map) ? opts.teamRankByTeamId : new Map();
-  const TEAM_WEIGHT =  0.4;
-  const TEAM_BONUS_CAP =  4;
+  const TEAM_WEIGHT = 0.4;
+  const TEAM_BONUS_CAP = 4;
 
-  const dominancePerGap =  1;
+  const dominancePerGap = 1;
   const dominanceMax = 10;
 
   let p1GapBonus = 0;
@@ -1124,7 +1115,7 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
     const factor = gridSize > 0 ? (gridSize / 20) : 1;
     const expectedPos = (2 * teamRank - 0.5) * factor;
 
-    const delta = expectedPos - finishingPos; 
+    const delta = expectedPos - finishingPos;
 
     let bonus = delta * TEAM_WEIGHT;
     if (TEAM_BONUS_CAP > 0) {
@@ -1403,8 +1394,8 @@ export function formatSeasonResults(
     const base = {
       raceId: raceID,
       finishingPos: formattedBasics[i]?.finishingPos ?? 99,
-      points: formattedBasics[i]?.points ?? 0,
-      dnf: myDNF === 1,
+      points: myDNF ? -1 : formattedBasics[i]?.points ?? 0,
+      dnf: myDNF,
       fastestLap: parseInt(driverWithFastestLap) === parseInt(driverID),
       qualifyingPos: 99,
       gapToWinner: null,

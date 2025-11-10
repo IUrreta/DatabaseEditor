@@ -2999,6 +2999,10 @@ DRIVERS TABLE
   border-color: var(--text-general);
 }
 
+.drivers-table-normal[data-pos="DNF"]{
+  color: var(--table-dnf);
+}
+
 
 .drivers-table-normal,
 .teams-table-normal {
