@@ -261,6 +261,20 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
     console.error("Error generating article:", err);
     clearInterval(interval);
     clearInterval(dotsInterval);
+    loaderDiv.remove();
+    //put text telling to retry using the Regenerate article button, if error code is 503 put that the model is overloaded
+    const errorSpan = document.createElement('span');
+    errorSpan.classList.add('news-error', 'model-error');
+    if (err.message?.includes("503") || err.message?.includes("overloaded") || err.status === 503) {
+      errorSpan.textContent = "The model is currently overloaded. Please try again later.";
+    } else if (err.message?.includes("429") || err.message?.includes("rate limit")) {
+      errorSpan.textContent = "Rate limit reached. Please wait a moment before retrying.";
+    } else if (err.message?.includes("network") || err.message?.includes("fetch")) {
+      errorSpan.textContent = "Network error. Please check your connection and try again.";
+    } else {
+      errorSpan.textContent = "Error generating article. Please try again using the Regenerate button.";
+    }
+    newsArticle.appendChild(errorSpan);
   }
 }
 
@@ -360,7 +374,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       const newResp = await command.promiseExecute();
       place_turning_outcome(newResp.content, newsList);
 
-      if (news.type === "turning_point_transfer" || news.type === "turning_point_outcome_transfer") {
+      if (news.type === "turning_point_transfer" || news.type === "turning_point_injury") {
         const commandDrivers = new Command("driversRefresh", {});
         commandDrivers.execute();
       }
@@ -826,10 +840,10 @@ async function addTurningPointContexts(prompt, date) {
   const command = new Command("getNews", {});
   let resp = await command.promiseExecute();
   let news = resp.content;
-  
+
   const newsWithId = Object.entries(news).map(([id, n]) => ({ id, ...n }));
   const turningPointsOutcomes = newsWithId.filter(n => n.id.startsWith('turning_point_outcome_') || n.id.includes('_world_champion'));
-  
+
   if (turningPointsOutcomes.length > 0) {
     let number = 1;
     let turningOutcomesText = ``;
@@ -851,7 +865,7 @@ async function addTurningPointContexts(prompt, date) {
         else if (tp.id.includes("transfer")) {
           return `${number++}. ${tp.data.driver_out?.name} lost his seat at ${tp.data.team} and ${tp.data.driver_in?.name} has been signed to replace him.`;
         }
-        else if(tp.id.includes("_world_champion")) {
+        else if (tp.id.includes("_world_champion")) {
           return `${number++}. ${tp.data.driver_name} (${combined_dict[tp.data.driver_team_id]}) won the ${tp.data.season_year} world championship at the ${tp.data.adjective} GP `;
         }
       }
@@ -1016,6 +1030,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_technical_directive: (nd) => contextualizeTurningPointTechnicalDirective(nd, nd.turning_point_type),
     turning_point_investment: (nd) => contextualizeTurningPointInvestment(nd, nd.turning_point_type),
     turning_point_race_substitution: (nd) => contextualizeTurningPointRaceSubstitution(nd, nd.turning_point_type),
+    turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
   };
 
   // 3) Normaliza tipos "turning_point_outcome_*" -> "turning_point_*"
@@ -1082,6 +1097,44 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
   } finally {
     if (progressInterval) clearInterval(progressInterval);
   }
+}
+
+async function contextualizeTurningPointInjury(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 106);
+  let prompt;
+  let seasonYear = newData.data.season;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+  prompt = prompt
+    .replace(/{{\s*driver\s*}}/g, newData.data.driver_affected?.name || 'the driver')
+    .replace(/{{\s*team\s*}}/g, newData.data.team || 'the team')
+    .replace(/{{\s*condition\s*}}/g, newData.data.condition?.condition || 'a physical issue')
+    .replace(/{{\s*reason\s*}}/g, newData.data.condition?.reason || 'a private medical matter')
+    .replace(/{{\s*races_affected_count\s*}}/g, (newData.data.condition?.races_affected?.length || 1))
+    .replace(/{{\s*reserve_driver\s*}}/g, newData.data.reserve_driver?.name || 'the reserve driver')
+    .replace(/{{\s*expectedReturnCountry\s*}}/g, newData.data.condition?.expectedReturnCountry || 'a later round');
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  prompt += buildContextualPrompt(resp.content, { seasonYear });
+
+  return prompt;
 }
 
 

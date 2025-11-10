@@ -13306,6 +13306,16 @@ body.default-theme .news-article-date{
 
 }
 
+.news-error.model-error{
+  background-color: color-mix(in srgb, var(--negative-general) 20%, var(--elements));
+  padding: 15px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--negative-general);
+  color: var(--negative-general);
+  text-align: center;
+  width: max-content;
+}
+
 span.news-error{
   color: color-mix(in srgb, var(--elements) 60%, var(--text-general));
 }
