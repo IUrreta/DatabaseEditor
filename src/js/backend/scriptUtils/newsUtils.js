@@ -613,7 +613,7 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
     const seasonYear = Number(daySeason[1]);
 
     const newsList = [];
-    for (const m of [4, 5, 6, 7, 8, 9]) { //should only be april, may and june, else is for testing
+    for (const m of [4, 5, 6]) { //should only be april, may and june, else is for testing
         const id = `turning_point_injury_${m}`;
         if (savednews[id]) newsList.push({ id, ...savednews[id] });
         //if there are already 2, return newsList
@@ -623,7 +623,7 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
     }
 
     //should only be april, may and june, else is for testing
-    if (![4, 5, 6, 7, 8, 9].includes(currentMonth) || turningPointState.injuries[currentMonth]) {
+    if (![4, 5, 6].includes(currentMonth) || turningPointState.injuries[currentMonth]) {
         return newsList;
     }
 
@@ -638,11 +638,11 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
         return newsList;
     }
 
-    // 30% chance to happen
-    // if (Math.random() >= 0.3) {
-    //     turningPointState.injuries[currentMonth] = "None";
-    //     return newsList;
-    // }
+    // 20% chance to happen
+    if (Math.random() >= 0.2) {
+        turningPointState.injuries[currentMonth] = "None";
+        return newsList;
+    }
 
     const INJURY_CATALOG = [
         {
