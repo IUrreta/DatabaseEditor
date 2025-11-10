@@ -799,7 +799,7 @@ function applyDoDFlagsToSeasonResults(seasonResults, dodMap) {
   return seasonResults;
 }
 
-export function computeSeasonDriverOfTheDay(seasonResults, season) {
+function computeSeasonDriverOfTheDay(seasonResults, season) {
   // --- Paso A: contexto por carrera ---
   const raceIds = getSeasonRaceIds(season);
   const perRaceTeamRank = buildPerRaceTeamRankContext(seasonResults, raceIds, season);
@@ -832,13 +832,16 @@ export function computeSeasonDriverOfTheDay(seasonResults, season) {
     if (dod != null) dodMap.set(Number(raceId), Number(dod));
   }
 
-  
-  return dodMap;
+  // --- Paso C: marcar en los resultados y devolver ---
+  const enriched = applyDoDFlagsToSeasonResults(seasonResults, dodMap);
+  enriched._driverOfTheDayMap = dodMap; // opcional: mantener referencia
+  return enriched;
 }
 
 export function fetchSeasonResults(
   yearSelected,
-  isCurrentYear = true
+  isCurrentYear = true,
+  fetchDriverOfTheDay = false
 ) {
   const drivers = queryDB(`
       SELECT DriverID
@@ -853,9 +856,15 @@ export function fetchSeasonResults(
     const driverRes = fetchOneDriverSeasonResults([driverID], [yearSelected], isCurrentYear);
     if (driverRes) seasonResults.push(driverRes);
   }
-  
 
-  return seasonResults;
+  if (!fetchDriverOfTheDay) {
+    return seasonResults;
+  }
+
+  const resultsWithDoD = computeSeasonDriverOfTheDay(seasonResults, yearSelected);
+
+
+  return resultsWithDoD;
 }
 
 export function fetchQualiResults(yearSelected) {

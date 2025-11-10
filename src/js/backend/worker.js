@@ -5,8 +5,7 @@ import {
   editEngines, updateCustomConfig, fetchCustomConfig,
   fetch2025ModData, check2025ModCompatibility,
   fetchPointsRegulations,
-  getDate,
-  computeSeasonDriverOfTheDay
+  getDate
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
@@ -71,7 +70,7 @@ const workerCommands = {
   yearSelected: (data, postMessage) => {
     const year = data.year
     const isCurrentYear = data.isCurrentYear || true;
-    const results = fetchSeasonResults(year, isCurrentYear);
+    const results = fetchSeasonResults(year, isCurrentYear, true);
     const events = fetchEventsFrom(year);
     const teams = fetchTeamsStandings(year);
     const pointsInfo = fetchPointsRegulations()
@@ -80,13 +79,6 @@ const workerCommands = {
       responseMessage: "Results fetched",
       content: [events, results, teams, pointsInfo]
     });
-
-    // const resultsWithDoD = computeSeasonDriverOfTheDay(results, year);
-
-    // postMessage({
-    //   responseMessage: "DotDs fetched",
-    //   content: resultsWithDoD
-    // });
   },
 
   saveSelected: (data, postMessage) => {
