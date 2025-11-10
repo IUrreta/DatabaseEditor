@@ -27,7 +27,8 @@ import {
   migrateLegacyData,
   loadNewsMapFromDB,
   ensureTurningPointsStructure,
-  deleteNews
+  deleteNews,
+  deleteTurningPoints
 } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
@@ -69,7 +70,6 @@ const workerCommands = {
   yearSelected: (data, postMessage) => {
     const year = data.year
     const isCurrentYear = data.isCurrentYear || true;
-    console.log("IIS CURRENT YER:", isCurrentYear)
     const results = fetchSeasonResults(year, isCurrentYear);
     const events = fetchEventsFrom(year);
     const teams = fetchTeamsStandings(year);
@@ -655,6 +655,7 @@ const workerCommands = {
   },
   deleteNews: (data, postMessage) => {
     deleteNews();
+    deleteTurningPoints();
     postMessage({ responseMessage: "News deleted successfully", unlocksDownload: true });
   }
 

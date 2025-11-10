@@ -156,7 +156,6 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
       if (exists) {
         //remove d-none from image
         image.classList.remove('d-none');
-        console.log("✅ La imagen existe:", url);
         image.src = news.image;
       } else {
         //add d-none to image
@@ -823,20 +822,20 @@ function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
   newEl.addEventListener('transitionend', newFn);
 }
 
-function addTurningPointContexts(prompt) {
-  let saveName = getSaveName();
-  //remove file extension if any
-  saveName = saveName.split('.')[0];
-  let newsName = `${saveName}_news`;
-  const news = JSON.parse(localStorage.getItem(newsName)) || [];
+async function addTurningPointContexts(prompt, date) {
+  const command = new Command("getNews", {});
+  let resp = await command.promiseExecute();
+  let news = resp.content;
+  
   const newsWithId = Object.entries(news).map(([id, n]) => ({ id, ...n }));
-  const turningPointsOutcomes = newsWithId.filter(n => n.id.startsWith('turning_point_outcome_'));
-
+  const turningPointsOutcomes = newsWithId.filter(n => n.id.startsWith('turning_point_outcome_') || n.id.includes('_world_champion'));
+  
   if (turningPointsOutcomes.length > 0) {
     let number = 1;
-    prompt += `\n\nHere are some other events that happened through the season. Talk about them if relevant to the article:`
-    const turningOutcomesText = turningPointsOutcomes.map(tp => {
-      if (tp.turning_point_type === "positive") {
+    let turningOutcomesText = ``;
+    turningOutcomesText += turningPointsOutcomes.map(tp => {
+      const turningDate = tp.date;
+      if ((tp.turning_point_type === "positive" || tp.id.includes('_world_champion')) && Number(turningDate) <= Number(date)) {
         if (tp.id.includes("investment")) {
           return `${number++}. ${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`
         }
@@ -852,9 +851,14 @@ function addTurningPointContexts(prompt) {
         else if (tp.id.includes("transfer")) {
           return `${number++}. ${tp.data.driver_out?.name} lost his seat at ${tp.data.team} and ${tp.data.driver_in?.name} has been signed to replace him.`;
         }
+        else if(tp.id.includes("_world_champion")) {
+          return `${number++}. ${tp.data.driver_name} (${combined_dict[tp.data.driver_team_id]}) won the ${tp.data.season_year} world championship at the ${tp.data.adjective} GP `;
+        }
       }
     }).join("\n");
-    prompt += `\n${turningOutcomesText}`;
+    if (turningOutcomesText) {
+      prompt += `\n\nHere are some other events that happened through the season. Talk about them if relevant to the article:\n${turningOutcomesText}`;
+    }
   }
   return prompt;
 }
@@ -871,7 +875,6 @@ function buildContextualPrompt(data, config = {}) {
     enrichedAllTime
   } = data;
   const { timing = '', teamId = null, teamName = '', seasonYear = '', quali = false } = config;
-  console.log("Building contextual prompt with data:", data, "and config:", config);
 
   let prompt = '';
 
@@ -1053,19 +1056,12 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         `The current date is ${isoDate}\n\n` +
         base +
         `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
-        `\n\nThe title of the article is: "${newData.title}"\n\n`;
+        `\n\nThe title of the article is: "${newData.title}"`;
 
       // Contextos extra de Turning Points (si tu helper ya es idempotente, no pasa nada por llamarlo siempre)
-      prompt = addTurningPointContexts(prompt);
+      prompt = await addTurningPointContexts(prompt, newData.date);
 
-      prompt += `
-      Use **Markdown** formatting in your response for better readability:
-      - Use "#" or "##" for main and secondary titles.
-      - Use **bold** for important names or key phrases.
-      - Use *italics* for quotes or emotional emphasis.
-      - Use bullet points or numbered lists if needed.
-      Do not include any raw HTML or code blocks.
-      The final output must be valid Markdown ready to render as HTML.`;
+      prompt += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- Use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
     }
 
     console.log("Final prompt for AI:", prompt);
@@ -1124,7 +1120,6 @@ async function contextualizeTurningPointRaceSubstitution(newData, turningPointTy
 
 async function contextualizeTurningPointInvestment(newData, turningPointType) {
   const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 102);
-  console.log("Prompt template entry:", promptTemplateEntry);
   let prompt;
   let seasonYear = newData.data.season;
   if (turningPointType.includes("positive")) {
@@ -1293,7 +1288,6 @@ async function contextualizeTurningPointTransfer(newData, turningPointType) {
   let resp;
   try {
     resp = await command.promiseExecute();
-    console.log("Transfer rumor response:", resp);
   } catch (err) {
     console.error("Error fetching transfer rumor:", err);
     return;
@@ -1838,6 +1832,12 @@ async function contextualizeRaceResults(newData) {
 
   prompt += safetyCarPhrase;
 
+
+  //generate a random number from 35 to 75 both included
+  const randomNumber = Math.floor(Math.random() * (75 - 35 + 1)) + 35;
+  const driverOfTheDayPhrase = `\n\nThe Driver of the day was awarded to ${resp.content.driverOfTheDayInfo.name} (${combined_dict[resp.content.driverOfTheDayInfo.teamId]}) by the fans with ${randomNumber}% of the votes. Dedicate a paragraph discussing why they might have won this award.`;
+
+  prompt += driverOfTheDayPhrase;
 
   if (resp.content.sprintDetails.length > 0) {
     prompt += `\n\nThere was a sprint race held on Saturday, which was won by ${resp.content.sprintDetails[0].name} (${combined_dict[resp.content.sprintDetails[0].teamId]}). Dedicate a paragraph discussing the sprint results`;

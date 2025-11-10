@@ -1,4 +1,4 @@
-import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations } from "./dbUtils";
+import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows } from "./dbUtils";
 import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names, continentDict, contintntRacesRegions } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import turningPointsTitleTemplates from "../../../data/news/turning_points_titles_templates.json";
@@ -74,6 +74,8 @@ export function generate_news(savednews, turningPointState) {
     const investmentTurningPointNews = generateInvestmentTurningPointNews(currentMonth, savednews, turningPointState);
 
     const raceSubstitutionTurningPointNews = generateRaceSubstitutionTurningPointNews(currentMonth, savednews, turningPointState);
+
+    // const driverInjuryTurningPointNews = generateDriverInjuryTurningPointNews(currentMonth, savednews, turningPointState); //disabled for nightly branch
 
     let turningPointOutcomes = [];
     if (Object.keys(savednews).length > 0) {
@@ -205,9 +207,29 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
         }
         maxDate += 1;
     }
+    else if (type === "turning_point_injury") {
+        if (outcome === "positive") {
+            applyDriverInjury(turningPointData);
+        }
+        const entryId = `turning_point_outcome_injury_${turningPointData.month}`;
+        const title = generateTurningPointTitle(turningPointData, 106, outcome);
+        const image = getImagePath(null, null, "injury") || "null.png";
+        newEntry = {
+            id: entryId,
+            title,
+            image,
+            data: turningPointData,
+            date: maxDate + 1,
+            turning_point_type: outcome,
+            type: "turning_point_outcome_injury"
+        }
+        maxDate += 1;
+    }
 
     return newEntry;
 }
+
+
 
 function applyRaceSubstitution(turningPointData) {
     const raceId = turningPointData.raceId;
@@ -582,6 +604,276 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
     return newsList;
 }
 
+function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
+    turningPointState.injuries = turningPointState.injuries || {};
+    console.log("Generating Driver Injury Turning Point News for month:", currentMonth);
+
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const todayExcel = Number(daySeason[0]);
+    const seasonYear = Number(daySeason[1]);
+
+    const newsList = [];
+    for (const m of [4, 5, 6, 9]) { //august and july for test purposes
+        const id = `turning_point_injury_${m}`;
+        if (savednews[id]) newsList.push({ id, ...savednews[id] });
+    }
+
+    // Only trigger in April, May, June (august and july for test purposes)
+    if (![4, 5, 6, 9].includes(currentMonth) || turningPointState.injuries[currentMonth]) {
+        return newsList;
+    }
+
+    // 30% chance to happen
+    // if (Math.random() >= 0.3) {
+    //     turningPointState.injuries[currentMonth] = "None";
+    //     return newsList;
+    // }
+
+    const INJURY_CATALOG = [
+        {
+            share: 35,
+            type: "illness",
+            condition: "an illness",
+            durations: [7, 10, 14],
+            reasons: [
+                "a strong viral infection requiring rest",
+                "high fever and fatigue from a viral infection",
+                "a severe stomach flu affecting performance"
+            ]
+        },
+        {
+            share: 20,
+            type: "minor_injury",
+            condition: "a sprained wrist",
+            durations: [14, 21, 28],
+            reasons: [
+                "a minor wrist sprain during strength training",
+                "an awkward twist of the wrist in a reaction drill",
+                "a wrist knock after a training fall on the bike"
+            ]
+        },
+        {
+            share: 15,
+            type: "back_pain",
+            condition: "a back-pain flare-up",
+            durations: [14, 21, 28, 35],
+            reasons: [
+                "a back-pain flare-up after long simulator sessions",
+                "a lower-back muscle strain requiring physiotherapy",
+                "persistent lumbar discomfort requiring medical rest"
+            ]
+        },
+        {
+            share: 15,
+            type: "concussion",
+            condition: "a concussion",
+            durations: [21, 28, 35, 42],
+            reasons: [
+                "a light crash during private testing (concussion protocol)",
+                "mild concussion symptoms requiring medical clearance",
+                "dizziness and headache after an impact (FIA protocol)"
+            ]
+        },
+        {
+            share: 10,
+            type: "fracture",
+            condition: "a small fracture",
+            durations: [28, 42, 56],
+            reasons: [
+                "a small collarbone fracture from cycling",
+                "a hairline rib fracture during a bike session",
+                "a minor hand fracture requiring immobilization"
+            ]
+        },
+        {
+            share: 5,
+            type: "surgery",
+            condition: "a recent minor surgery",
+            durations: [35, 49, 63],
+            reasons: [
+                "a scheduled minor procedure with ongoing recovery",
+                "a successful minor intervention followed by rehabilitation",
+                "a preventive procedure to address recurring pain"
+            ]
+        }
+    ];
+
+
+    // Weighted random pick helper
+    function weightedPick(arr, key = "share") {
+        const total = arr.reduce((s, it) => s + (it[key] || 0), 0);
+        let r = Math.random() * total;
+        for (const it of arr) {
+            r -= (it[key] || 0);
+            if (r <= 0) return it;
+        }
+        return arr[arr.length - 1];
+    }
+
+    const pickedInjury = weightedPick(INJURY_CATALOG);
+    const baseDuration = randomPick(pickedInjury.durations);
+
+    console.log("Picked injury:", pickedInjury.type, "with base duration:", baseDuration);
+
+    // --- Get teams with two official drivers ---
+    const pairs = queryDB(`
+    SELECT con.TeamID, con.StaffID
+    FROM Staff_Contracts con
+    JOIN Staff_DriverData d ON d.StaffID = con.StaffID
+    WHERE con.ContractType = 0 AND con.PosInTeam <= 2 AND (con.TeamID <= 10 OR con.TeamID = 32)
+  `, 'allRows');
+
+    if (!pairs || !pairs.length) {
+        turningPointState.injuries[currentMonth] = "None";
+        return newsList;
+    }
+
+    const teamToDrivers = {};
+    for (const row of pairs) {
+        const teamId = Number(row[0]);
+        const driverId = Number(row[1]);
+        (teamToDrivers[teamId] ||= []).push(driverId);
+    }
+    const eligibleTeams = Object.keys(teamToDrivers).filter(t => teamToDrivers[t].length >= 2).map(Number);
+    if (!eligibleTeams.length) {
+        turningPointState.injuries[currentMonth] = "None";
+        return newsList;
+    }
+
+    console.log("Eligible teams for injury turning point:", eligibleTeams);
+
+    // Pick random team and driver
+    const teamId = randomPick(eligibleTeams);
+    const teamDrivers = teamToDrivers[teamId];
+    const driverId = randomPick(teamDrivers);
+    const teamName = combined_dict[teamId] || "Unknown Team";
+
+    // Get driver name
+    let nameRow = queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ${driverId}`, 'singleRow') || ["Unknown", "Driver"];
+    const driverName = formatNamesSimple([...nameRow, driverId]);
+
+    // --- Injury dates ---
+    const startDate = new Date(seasonYear, currentMonth - 1, Math.floor(Math.random() * 28) + 1);
+    const startExcel = dateToExcel(startDate);
+
+    // Get next race after start date
+    const nextRaceDay = queryDB(`
+    SELECT MIN(Day) FROM Races
+    WHERE Day > ${startExcel}
+  `, 'singleValue');
+    const nextRaceExcel = nextRaceDay ? Number(nextRaceDay) + 2 : null;
+
+    // Compute end date (extended to cover at least the next race)
+    let endDate = new Date(startDate.getTime());
+    endDate.setDate(endDate.getDate() + baseDuration);
+
+    if (nextRaceExcel) {
+        const nextRaceDate = excelToDate(nextRaceExcel);
+        if (endDate < nextRaceDate) {
+            endDate = new Date(nextRaceDate.getTime());
+        }
+    }
+
+    const endExcel = dateToExcel(endDate);
+
+    // Find affected races between start and end
+    const racesAffected = queryDB(`
+    SELECT RaceID, Day, TrackID
+    FROM Races
+    WHERE Day >= ${startExcel} AND Day <= ${endExcel}
+    ORDER BY Day ASC
+  `, 'allRows') || [];
+
+    const expectedRaceReturn = queryDB(`
+    SELECT MIN(Day), RaceID, TrackID FROM Races
+    WHERE Day > ${endExcel}
+  `, 'singleRow');
+    const expectedReturnRaceId = expectedRaceReturn ? Number(expectedRaceReturn[1]) : null;
+    const expectedReturnCountry = countries_data[races_names[Number(expectedRaceReturn[2])]]?.country
+
+    const reason = randomPick(pickedInjury.reasons);
+
+
+    let reserve = {}
+    let reserveCandidates = [];
+    const reserveDrivers = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
+    FROM Staff_Contracts con
+    JOIN Staff_BasicData bas ON con.StaffID = bas.StaffID
+    JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
+    WHERE con.TeamID = ${teamId} AND con.ContractType = 0 AND con.PosInTeam > 2`, 'allRows');
+    if (reserveDrivers.length) {
+        reserveCandidates = [];
+        for (const rd of reserveDrivers) {
+            const overall = getDriverOverall(rd[2]);
+            reserveCandidates.push({ driverId: rd[2], teamId: rd[3], rating: overall });
+        }
+        reserveCandidates.sort((a, b) => b.rating - a.rating);
+    }
+    else {
+        return newsList;
+    }
+    //get the reserve driver with highest rating
+    reserve.name = formatNamesSimple([reserveDrivers[0][0], reserveDrivers[0][1], reserveDrivers[0][2]])[0];
+    reserve.id = reserveCandidates[0].driverId;
+    reserve.teamId = reserveCandidates[0].teamId;
+
+    // Build data object
+    const entryId = `turning_point_injury_${currentMonth}`;
+    if (savednews[entryId]) return newsList;
+
+    const newData = {
+        team: teamName,
+        teamId,
+        driver_affected: {
+            id: driverId,
+            name: driverName[0],
+            teamId
+        },
+        condition: {
+            type: pickedInjury.type,
+            condition: pickedInjury.condition,
+            reason,
+            start_date: startExcel,
+            end_date: endExcel,
+            next_race_min_enforced: !!nextRaceExcel,
+            races_affected: racesAffected.map(r => ({
+                raceId: Number(r[0]),
+                country: countries_data[races_names[Number(r[2])]]?.country,
+                day: Number(r[1])
+            })),
+            expectedReturnRaceId: expectedReturnRaceId,
+            expectedReturnCountry: expectedReturnCountry
+        },
+        reserve_driver: reserve,
+        month: currentMonth,
+        season: seasonYear
+    };
+
+    console.log("Injury turning point data:", newData);
+
+    turningPointState.injuries[currentMonth] = newData;
+
+    const title = generateTurningPointTitle(newData, 106, "original")
+
+    const image = getImagePath(null, driverId, "injury");
+
+    const entry = {
+        id: entryId,
+        title,
+        image,
+        data: newData,
+        date: startExcel,
+        turning_point_type: "original",
+        type: "turning_point_injury"
+    };
+
+    console.log(`[TurningPoint] ${driverName[0]} (${teamName}) injury: ${pickedInjury.condition} → ${reason}`);
+    newsList.push(entry);
+    return newsList;
+}
+
+
+
 function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
     let newsList = [];
     //get previous technical directive turning point news
@@ -624,7 +916,6 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
 
 
     const performance = getPerformanceAllTeams(excelDate, null, globals.isCreateATeam)
-    console.log("Performance data for technical directive TP:", performance);
     const championship = queryDB(`SELECT TeamID, Points, Position FROM Races_TeamStandings WHERE SeasonID = ${daySeason[1]} AND RaceFormula = 1 ORDER BY Position`, 'allRows');
 
     const constructorsStandings = {};
@@ -843,8 +1134,6 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
         return newsList;
     }
 
-    console.log("Selected team for mid-season transfer TP:", randomTeamName);
-
     //the driver from the randomteam with less points
     let driverOut = teamsById[randomTeam] ? Object.entries(teamsById[randomTeam].drivers).sort((a, b) => a[1] - b[1])[0] : null;
     let driverIn, driverSubstitute, driverInTeamId, driverSubstituteTeamId;
@@ -1043,7 +1332,6 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
 
     const title = generateTurningPointTitle(newData, 101, "original");
     const image = getImagePath(null, driverOutName[1], "transfer");
-    console.log("image path for turning point transfer:", image);
 
     const newEntry = {
         id: entryId,
@@ -1061,7 +1349,6 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
 }
 
 function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointState = {}) {
-    console.log("TURNING POINT STATE IN DSQ TP NEWS:", turningPointState);
     const last3Races = racesDone.slice(-3);
     let newsList = [];
     let forcedCleanSeason = false;
@@ -2560,8 +2847,8 @@ export function getOneQualiDetails(raceId) {
     const numberOfRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season}`, 'singleRow')[0];
 
     const drivers = seasonResults.map(r => ({
-        id: r.driverID,
-        name: r.data?.[0] ?? ""
+        id: r.driverID[0] ?? r.DriverID[0] ?? null,
+        name: r.data?.driverName ?? r.driverName ?? ""
     }));
     const enrichedAllTime = enrichDriversWithHistory(drivers);
 
@@ -2605,6 +2892,20 @@ export function getOneRaceDetails(raceId) {
     const winnerTime = results[0][10]; // índice 10 = res.Time
     const winnerLaps = results[0][11]; // índice 11 = res.Laps
 
+    const dodDriverId = computeDriverOfTheDayFromRows(results);
+
+    let driverOfTheDayInfo = null;
+    if (dodDriverId != null) {
+        const dodRow = results.find(r => Number(r[2]) === Number(dodDriverId));
+        if (dodRow) {
+            const [nameFormatted] = formatNamesSimple(dodRow);
+            driverOfTheDayInfo = {
+                name: news_insert_space(nameFormatted),
+                teamId: dodRow[3]
+            };
+        }
+    }
+
     const raceDetails = results.map(row => {
         const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
         const time = row[10];
@@ -2626,6 +2927,7 @@ export function getOneRaceDetails(raceId) {
             virtualSafetyCar: row[9],
             gapToWinner,
             gapLaps,
+            driverOfTheDay: Number(driverId) === Number(dodDriverId),
         };
     });
 
@@ -2662,8 +2964,8 @@ export function getOneRaceDetails(raceId) {
     const numberOfRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season}`, 'singleRow')[0];
 
     const drivers = seasonResults.map(r => ({
-        id: r.driverID,
-        name: r.data?.[0] ?? ""
+        id: r.driverID[0] ?? r.DriverID[0] ?? null,
+        name: r.data?.driverName ?? r.driverName ?? ""
     }));
     const enrichedAllTime = enrichDriversWithHistory(drivers);
 
@@ -2678,7 +2980,8 @@ export function getOneRaceDetails(raceId) {
         sprintDetails,
         pointsSchema,
         remainingRaces: remainingRacesDetails,
-        enrichedAllTime
+        enrichedAllTime,
+        driverOfTheDayInfo
     }
 }
 
@@ -2738,64 +3041,57 @@ function getOneQualifyingResults(raceId) {
 }
 
 function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRace = false) {
-    // 4) Acumulamos puntos por piloto y por equipo
+    const seasonResults = (seasonResultsRaw || [])
+        .map(d => (d?.data && typeof d.data === "object") ? d.data : d)
+        .filter(d => d && typeof d.driverName === "string" && Array.isArray(d.races));
+
     const driverMap = {};
     const teamMap = {};
-    let racesNames = []
-    const driversResults = []
-
-    const seasonResults = seasonResultsRaw
-        .map(r => {
-            if (Array.isArray(r)) return r;
-            if (r && Array.isArray(r.data)) return r.data;
-            return r; // por si ya viene como array-like
-        })
-        .filter(Array.isArray);
+    let racesNames = [];
+    const driversResults = [];
 
     seasonResults.forEach(driverRec => {
-        const name = driverRec[0];
-        let resultsString = ""
-        let driverRaces = []
+        const name = driverRec.driverName;
+        let resultsString = "";
+        let driverRaces = [];
         let nPodiums = 0;
         let nWins = 0;
         let nPointsFinishes = 0;
 
-        // obtenemos sólo las carreras hasta esta (de la 3ª columna en adelante)
-        const races = driverRec.slice(3);
+        const races = driverRec.races;
 
-        // sumatorio de puntos (+fastLapPoint) si r[0] <= raceId
+        // 2) Suma de puntos hasta raceId (incluye la actual; el detalle depende de includeCurrentRace)
         const totalDriverPoints = races.reduce((sum, r) => {
-            const thisRaceId = Number(r[0]);
+            const thisRaceId = Number(r.raceId);
             if (thisRaceId <= raceId) {
+                // Detalle solo si < raceId o si queremos incluir la actual
                 if (thisRaceId < raceId || includeCurrentRace) {
                     driverRaces.push(getCircuitInfo(thisRaceId).country);
-                    resultsString += `${parseInt(r[1]) !== -1 ? `P${r[1]}` : "DNF"}, `;
-                    if (parseInt(r[1]) === 1) nWins++;
-                    if (parseInt(r[1]) <= 3 && parseInt(r[1]) > 0) nPodiums++;
-                    if (parseInt(r[2]) > 0) nPointsFinishes++;
+                    const fin = parseInt(r.finishingPos);
+                    resultsString += (fin !== -1 ? `P${fin}` : "DNF") + ", ";
+                    if (fin === 1) nWins++;
+                    if (fin > 0 && fin <= 3) nPodiums++;
+                    if ((parseInt(r.points) || 0) > 0) nPointsFinishes++;
                 }
-                const pts = r[2] > 0 ? r[2] : 0;
-                const sprintPts = r.length >= 9 ? r[7] : 0;
+                const pts = (Number(r.points) > 0) ? Number(r.points) : 0;
+                const sprintPts = (r.sprintPoints != null && Number(r.sprintPoints) !== -1) ? Number(r.sprintPoints) : 0;
                 return sum + pts + sprintPts;
             }
-
-
             return sum;
         }, 0);
 
-        //remove the last comma and space from resultsString
-        if (resultsString.length > 0) {
-            resultsString = resultsString.slice(0, -2);
-        }
+        // quita la coma y espacio final
+        if (resultsString.endsWith(", ")) resultsString = resultsString.slice(0, -2);
 
         if (driverRaces.length > racesNames.length) {
             racesNames = driverRaces;
         }
 
+        // 3) Clasificación de pilotos
         driverMap[name] = {
             name: news_insert_space(name),
             points: totalDriverPoints,
-            teamId: driverRec[1],
+            teamId: driverRec.latestTeamId,   // <-- antes usabas driverRec[1] (formato viejo)
         };
 
         driversResults.push({
@@ -2803,35 +3099,29 @@ function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRace = fa
             resultsString,
             nPodiums,
             nWins,
-            teamId: driverRec[1],
+            teamId: driverRec.latestTeamId,
             nPointsFinishes
         });
 
-        // por cada carrera sumo también al equipo que corrió esa carrera
+        // 4) Puntos por equipo por carrera
         races.forEach(r => {
-            const thisRaceId = Number(r[0]);
+            const thisRaceId = Number(r.raceId);
             if (thisRaceId <= raceId) {
-                const teamId = r[r.length - 1];
-                const pts = r[2] > 0 ? r[2] : 0;
-                const sprintPts = r.length >= 9 ? r[7] : 0;
+                const teamId = Number(r.teamId); // <-- antes r[r.length-1]
+                const pts = (Number(r.points) > 0) ? Number(r.points) : 0;
+                const sprintPts = (r.sprintPoints != null && Number(r.sprintPoints) !== -1) ? Number(r.sprintPoints) : 0;
                 teamMap[teamId] = (teamMap[teamId] || 0) + pts + sprintPts;
             }
         });
     });
 
-    const driverStandings = Object.values(driverMap)
-        .sort((a, b) => b.points - a.points);
+    const driverStandings = Object.values(driverMap).sort((a, b) => b.points - a.points);
 
     const teamStandings = Object.entries(teamMap)
         .map(([teamId, points]) => ({ teamId: Number(teamId), points }))
         .sort((a, b) => b.points - a.points);
 
-    return {
-        driverStandings,
-        teamStandings,
-        driversResults,
-        racesNames
-    }
+    return { driverStandings, teamStandings, driversResults, racesNames };
 }
 
 
@@ -3094,8 +3384,8 @@ export function getTeamComparisonDetails(teamId, season, date) {
         });
 
     const drivers = seasonResults.map(r => ({
-        id: r.driverID,
-        name: r.data?.[0] ?? ""
+        id: r.driverID[0] ?? r.DriverID[0] ?? null,
+        name: r.data?.driverName ?? r.driverName ?? ""
     }));
     const enrichedAllTime = enrichDriversWithHistory(drivers);
 
@@ -3123,8 +3413,8 @@ export function getFullChampionSeasonDetails(season) {
 
     const racesCompleted = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND State = 2`, 'singleValue');
     const drivers = seasonResults.map(r => ({
-        id: r.driverID,
-        name: r.data?.[0] ?? ""
+        id: r.driverID[0] ?? r.DriverID[0] ?? null,
+        name: r.data?.driverName ?? r.driverName ?? ""
     }));
     const enrichedAllTime = enrichDriversWithHistory(drivers);
 
@@ -3652,4 +3942,263 @@ export function ensureTurningPointsStructure() {
     saveTPToDBMap(defaultStructure);
 
     return defaultStructure;
+}
+
+// DRIVER INJURY
+
+export function ensureInjurySwapInfrastructure() {
+    queryDB(`
+    CREATE TABLE IF NOT EXISTS Custom_Injury_Swaps (
+      id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+      season_id          INTEGER NOT NULL,
+      start_day          INTEGER NOT NULL,
+      end_day            INTEGER NOT NULL,
+      injured_id         INTEGER NOT NULL,
+      reserve_id         INTEGER NOT NULL,
+      injured_team_id    INTEGER,
+      injured_pos        INTEGER,
+      injured_car_number INTEGER,
+      reserve_team_id    INTEGER,
+      reserve_pos        INTEGER,
+      reserve_car_number INTEGER,
+      processed          INTEGER NOT NULL DEFAULT 0
+    )
+  `);
+
+    queryDB(`
+    CREATE TABLE IF NOT EXISTS Custom_Pairings_Recalc_Queue (
+      team_id   INTEGER PRIMARY KEY,
+      queued_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+    )
+  `);
+}
+
+export function startInjurySwap(injuredId, reserveId, endDay) {
+    const [dayNow, seasonId] = queryDB(`
+    SELECT Day, CurrentSeason
+    FROM Player_State
+  `, 'singleRow');
+
+    // Estado original
+    const injTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${injuredId}`, 'singleValue');
+    const injPos = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${injuredId}`, 'singleValue');
+    const injCar = queryDB(`SELECT AssignedCarNumber FROM Staff_DriverData WHERE StaffID = ${injuredId}`, 'singleValue');
+
+    const resTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${reserveId}`, 'singleValue');
+    const resPos = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${reserveId}`, 'singleValue');
+    const resCar = queryDB(`SELECT AssignedCarNumber FROM Staff_DriverData WHERE StaffID = ${reserveId}`, 'singleValue');
+
+    // Aplica el cambio (tu función ya gestiona engineers y car numbers en este momento)
+    swapDrivers(injuredId, reserveId);
+
+    // Registrar para revertir exactamente en endDay
+    queryDB(`
+    INSERT INTO Custom_Injury_Swaps (
+      season_id, start_day, end_day,
+      injured_id, reserve_id,
+      injured_team_id, injured_pos, injured_car_number,
+      reserve_team_id, reserve_pos, reserve_car_number,
+      processed
+    ) VALUES (
+      ${seasonId}, ${dayNow}, ${endDay},
+      ${injuredId}, ${reserveId},
+      ${injTeam}, ${injPos}, ${injCar === null ? 'NULL' : injCar},
+      ${resTeam}, ${resPos === null ? 'NULL' : resPos}, ${resCar === null ? 'NULL' : resCar},
+      0
+    )
+  `);
+
+    return { seasonId, dayNow };
+}
+
+export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, reserveId, endDay }) {
+    if (!seasonId || !monthNumber || !injuredId || !reserveId || endDay === undefined || endDay === null) {
+        throw new Error('createInjuryRevertTrigger: faltan parámetros obligatorios.');
+    }
+
+    const trigName = `trg_injury_revert_${seasonId}_m${monthNumber}_${injuredId}_${reserveId}_d${endDay}`;
+
+    // Por si re-generas, dejamos el nombre libre
+    queryDB(`DROP TRIGGER IF EXISTS "${trigName}"`);
+
+    // Trigger con igualdad estricta en el día objetivo
+    const sql = `
+    CREATE TRIGGER "${trigName}"
+    AFTER UPDATE OF Day ON Player_State
+    WHEN NEW.Day = ${endDay} AND NEW.CurrentSeason = ${seasonId}
+    BEGIN
+      -- Restaurar lesionado
+      UPDATE Staff_Contracts
+      SET TeamID = (
+            SELECT injured_team_id
+            FROM Custom_Injury_Swaps s
+            WHERE s.injured_id = Staff_Contracts.StaffID
+              AND s.processed = 0
+              AND s.season_id = ${seasonId}
+              AND s.end_day = ${endDay}
+            LIMIT 1
+          ),
+          PosInTeam = (
+            SELECT injured_pos
+            FROM Custom_Injury_Swaps s
+            WHERE s.injured_id = Staff_Contracts.StaffID
+              AND s.processed = 0
+              AND s.season_id = ${seasonId}
+              AND s.end_day = ${endDay}
+            LIMIT 1
+          )
+      WHERE ContractType = 0
+        AND StaffID IN (
+          SELECT injured_id FROM Custom_Injury_Swaps
+          WHERE processed = 0 AND season_id = ${seasonId} AND end_day = ${endDay}
+        );
+
+      UPDATE Staff_DriverData
+      SET AssignedCarNumber = (
+            SELECT injured_car_number
+            FROM Custom_Injury_Swaps s
+            WHERE s.injured_id = Staff_DriverData.StaffID
+              AND s.processed = 0
+              AND s.season_id = ${seasonId}
+              AND s.end_day = ${endDay}
+            LIMIT 1
+          )
+      WHERE StaffID IN (
+        SELECT injured_id FROM Custom_Injury_Swaps
+        WHERE processed = 0 AND season_id = ${seasonId} AND end_day = ${endDay}
+      );
+
+      -- Restaurar reserva
+      UPDATE Staff_Contracts
+      SET TeamID = (
+            SELECT reserve_team_id
+            FROM Custom_Injury_Swaps s
+            WHERE s.reserve_id = Staff_Contracts.StaffID
+              AND s.processed = 0
+              AND s.season_id = ${seasonId}
+              AND s.end_day = ${endDay}
+            LIMIT 1
+          ),
+          PosInTeam = (
+            SELECT reserve_pos
+            FROM Custom_Injury_Swaps s
+            WHERE s.reserve_id = Staff_Contracts.StaffID
+              AND s.processed = 0
+              AND s.season_id = ${seasonId}
+              AND s.end_day = ${endDay}
+            LIMIT 1
+          )
+      WHERE ContractType = 0
+        AND StaffID IN (
+          SELECT reserve_id FROM Custom_Injury_Swaps
+          WHERE processed = 0 AND season_id = ${seasonId} AND end_day = ${endDay}
+        );
+
+      UPDATE Staff_DriverData
+      SET AssignedCarNumber = (
+            SELECT reserve_car_number
+            FROM Custom_Injury_Swaps s
+            WHERE s.reserve_id = Staff_DriverData.StaffID
+              AND s.processed = 0
+              AND s.season_id = ${seasonId}
+              AND s.end_day = ${endDay}
+            LIMIT 1
+          )
+      WHERE StaffID IN (
+        SELECT reserve_id FROM Custom_Injury_Swaps
+        WHERE processed = 0 AND season_id = ${seasonId} AND end_day = ${endDay}
+      );
+
+      -- Marcar como procesado
+      UPDATE Custom_Injury_Swaps
+      SET processed = 1
+      WHERE processed = 0
+        AND season_id = ${seasonId}
+        AND end_day = ${endDay};
+
+      -- Encolar equipos para recalcular emparejamientos en frontend
+      INSERT OR IGNORE INTO Custom_Pairings_Recalc_Queue (team_id)
+      SELECT injured_team_id
+      FROM Custom_Injury_Swaps
+      WHERE processed = 1 AND season_id = ${seasonId} AND end_day = ${endDay};
+
+      INSERT OR IGNORE INTO Custom_Pairings_Recalc_Queue (team_id)
+      SELECT reserve_team_id
+      FROM Custom_Injury_Swaps
+      WHERE processed = 1 AND season_id = ${seasonId} AND end_day = ${endDay};
+    END;
+  `;
+
+    queryDB(sql);
+
+    return trigName; // por si quieres guardarlo para limpieza futura
+}
+
+export function processPairingsRecalcQueue() {
+    const rows = queryDB(`SELECT team_id FROM Custom_Pairings_Recalc_Queue`, 'allRows') || [];
+    if (!rows.length) return;
+
+    rows.forEach(r => {
+        const teamID = r[0];
+        try {
+            rearrangeDriverEngineerPairings(teamID);
+        } catch (e) {
+            console.error('Pairings recalculation failed for team', teamID, e);
+        }
+    });
+
+    queryDB(`DELETE FROM Custom_Pairings_Recalc_Queue`);
+}
+
+/*
+    const newData = {
+        team: teamName,
+        teamId,
+        driver_affected: {
+            id: driverId,
+            name: driverName[0],
+            teamId
+        },
+        condition: {
+            type: pickedInjury.type,
+            condition: pickedInjury.condition,
+            reason,
+            start_date: startExcel,
+            end_date: endExcel,
+            next_race_min_enforced: !!nextRaceExcel,
+            races_affected: racesAffected.map(r => ({
+                raceId: Number(r[0]),
+                country: countries_data[races_names[Number(r[2])]]?.country,
+                day: Number(r[1])
+            })),
+            expectedReturnRaceId: expectedReturnRaceId,
+            expectedReturnCountry: expectedReturnCountry
+        },
+        reserve_driver: reserve,
+        month: currentMonth,
+        season: seasonYear
+    };
+*/
+function applyDriverInjury(turningPointData) {
+    ensureInjurySwapInfrastructure();
+
+    // 1) Aplicar lesión y registrar
+    const injuredId = turningPointData.driver_affected.id;     // ejemplo
+    const reserveId = turningPointData.reserve_driver.id;    // ejemplo
+    const endDay = turningPointData.condition.end_date;    // día del juego en el que termina la lesión
+    const { seasonId } = startInjurySwap(injuredId, reserveId, endDay);
+
+    // 2) Crear trigger con nombre que incluya el mes actual
+    const monthNumber = turningPointData.month; // por ejemplo, noviembre
+    const triggerName = createInjuryRevertTrigger({
+        seasonId,
+        monthNumber,
+        injuredId,
+        reserveId,
+        endDay
+    });
+
+    // 3) Cada vez que abras la partida / detectes avance de día, procesa la cola
+    processPairingsRecalcQueue();
+
 }
