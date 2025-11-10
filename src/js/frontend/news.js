@@ -886,9 +886,11 @@ function buildContextualPrompt(data, config = {}) {
     racesNames,
     champions,
     driverQualiResults,
-    enrichedAllTime
+    enrichedAllTime,
+    driverRaceResults
   } = data;
-  const { timing = '', teamId = null, teamName = '', seasonYear = '', quali = false } = config;
+  const { timing = '', teamId = null, teamName = '', seasonYear = '' } = config;
+  console.log("Building contextual prompt with data:", data, "and config:", config);
 
   let prompt = '';
 
@@ -922,18 +924,41 @@ function buildContextualPrompt(data, config = {}) {
 
     const previousResults = resultsToProcess.map((d) => {
       const details = [
-        d.nWins > 0 ? `${d.nWins} ${quali ? "poles" : "wins"}` : '',
-        d.nPodiums > 0 ? `${d.nPodiums} ${quali ? "top 3s" : "podiums"}` : '',
-        (d.nWins === 0 && d.nPodiums === 0 && d.nPointsFinishes > 0) ? `${d.nPointsFinishes} ${quali ? "top 10s" : "points finishes"}` : ''
+        d.nWins > 0 ? `${d.nWins} wins` : '',
+        d.nPodiums > 0 ? `${d.nPodiums} podiums` : '',
+        (d.nWins === 0 && d.nPodiums === 0 && d.nPointsFinishes > 0) ? `${d.nPointsFinishes} points finishes` : ''
       ].filter(Boolean).join(', ');
 
       return `${d.name}${details ? ` (${details})` : ''} ${d.resultsString}`;
     }).join("\n");
 
     if (teamId && teamName) {
-      prompt += `\n\nHere are the previous ${quali ? "qualifying" : "race"} results for ${teamName}'s drivers:\n${previousResults}`;
+      prompt += `\n\nHere are the previous race results for ${teamName}'s drivers:\n${previousResults}`;
     } else if (resultsToProcess.length > 0) {
-      prompt += `\n\nHere are the previous ${quali ? "qualifying" : "race"} results for each driver:\n${previousResults}`;
+      prompt += `\n\nHere are the previous race results for each driver:\n${previousResults}`;
+    }
+  }
+
+  if (driverQualiResults) {
+    let qualiResultsToProcess = driverQualiResults;
+    if (teamId) {
+      qualiResultsToProcess = driverQualiResults.filter(d => d.teamId === teamId);
+    }
+
+    const previousQualiResults = qualiResultsToProcess.map(d => {
+      const details = [
+        d.nWins > 0 ? `${d.nWins} poles` : '',
+        d.nPodiums > 0 ? `${d.nPodiums} top 3s` : '',
+        (d.nWins === 0 && d.nPodiums === 0 && d.nPointsFinishes > 0) ? `${d.nPointsFinishes} top 10s` : ''
+      ].filter(Boolean).join(', ');
+
+      return `${d.name}${details ? ` (${details})` : ''} ${d.resultsString}`;
+    }).join("\n");
+
+    if (teamId && teamName) {
+      prompt += `\n\nHere are the previous qualifying results for ${teamName}'s drivers:\n${previousQualiResults}`;
+    } else if (qualiResultsToProcess.length > 0) {
+      prompt += `\n\nHere are the previous qualifying results for each driver:\n${previousQualiResults}`;
     }
   }
 
@@ -949,21 +974,6 @@ function buildContextualPrompt(data, config = {}) {
       .map(({ season, drivers }) => `${season}\n${drivers.join('\n')}`)
       .join('\n\n');
     prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
-  }
-
-  if (driverQualiResults) {
-    let qualiResultsToProcess = driverQualiResults;
-    if (teamId) {
-      qualiResultsToProcess = driverQualiResults.filter(d => d.teamId === teamId);
-    }
-
-    const previousQualiResults = qualiResultsToProcess.map(d => `${d.name} - ${d.resultsString}`).join("\n");
-
-    if (teamId && teamName) {
-      prompt += `\n\nHere are the previous qualifying results for ${teamName}'s drivers:\n${previousQualiResults}`;
-    } else if (qualiResultsToProcess.length > 0) {
-      prompt += `\n\nHere are the previous qualifying results for each driver:\n${previousQualiResults}`;
-    }
   }
 
   if (enrichedAllTime.length > 0) {
@@ -1835,7 +1845,7 @@ async function contextualizeQualiResults(newData) {
 
   prompt += "\n\nHere are the full qualifying results:\n" + qualiResults;
 
-  prompt += buildContextualPrompt(resp.content, { timing: "before this race", quali: true, seasonYear });
+  prompt += buildContextualPrompt(resp.content, { timing: "before this race", seasonYear });
 
 
   return prompt;

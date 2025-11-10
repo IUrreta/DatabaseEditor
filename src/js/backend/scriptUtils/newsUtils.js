@@ -1575,7 +1575,7 @@ function generateChampionMilestones(racesDone, savednews = {}) {
 
     const iStart = halfIndex;
     const prevRaceIdStart = iStart > 0 ? allRaces[iStart - 1].id : 0;
-    const standingsBeforeStart = rebuildStandingsUntilCached(currentSeason, seasonResults, prevRaceIdStart);
+    const standingsBeforeStart = rebuildStandingsUntil(seasonResults, prevRaceIdStart);
     let wasAlreadyChampionBeforeThisRace = false;
     if (standingsBeforeStart?.driverStandings?.length >= 2) {
         const leaderS = standingsBeforeStart.driverStandings[0];
@@ -1598,7 +1598,7 @@ function generateChampionMilestones(racesDone, savednews = {}) {
         const race = allRaces[i];
         const prevRaceId = i > 0 ? allRaces[i - 1].id : 0;
 
-        const standingsBefore = rebuildStandingsUntilCached(currentSeason, seasonResults, prevRaceId);
+        const standingsBefore = rebuildStandingsUntil(seasonResults, prevRaceId);
         if (standingsBefore?.driverStandings?.length >= 2) {
             const leaderB = standingsBefore.driverStandings[0];
             const rivalB = standingsBefore.driverStandings[1];
@@ -1662,7 +1662,7 @@ function generateChampionMilestones(racesDone, savednews = {}) {
         }
 
 
-        const standingsAfter = rebuildStandingsUntilCached(currentSeason, seasonResults, race.id);
+        const standingsAfter = rebuildStandingsUntil(seasonResults, race.id);
         let alreadyChampionBeforeNext = false;
         if (standingsAfter?.driverStandings?.length >= 2) {
             const leaderA = standingsAfter.driverStandings[0];
@@ -2774,7 +2774,7 @@ export function generateSeasonReviewNews(savedNews) {
 
         const excelDate = date
 
-        const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntilCached(daySeason[1], seasonResults, raceIdInPoint);
+        const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceIdInPoint);
         const firstDriver = driverStandings[0];
         const firstTeam = teamStandings[0];
         const secondDriver = driverStandings[1];
@@ -2833,8 +2833,11 @@ export function getOneQualiDetails(raceId) {
     const season = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
 
     const seasonResults = fetchQualiResults(season);
+    const seasonRaceResults = fetchSeasonResults(season, true); //to get standings
 
-    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntilCached(season, seasonResults, raceId - 1, true); //get championship standings before that race
+    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceId - 1, true, true, true); //get championship standings before that race
+    const { driverStandings: raceDriverStandings, teamStandings: raceTeamStandings, driversResults: driverRaceResults, racesNames: raceRacesNames } = rebuildStandingsUntil(seasonRaceResults, raceId - 1, true, true, false);
+
 
     // 1) Obtenemos time y laps del ganador (primera fila)
     const poleTime = results[0][5]; // índice 5 = res.FastestLap
@@ -2868,11 +2871,12 @@ export function getOneQualiDetails(raceId) {
         details: poleDetails,
         driverStandings,
         teamStandings,
-        driversResults,
+        driverQualiResults: driversResults,
         racesNames,
         champions,
         nRaces: numberOfRaces,
-        enrichedAllTime
+        enrichedAllTime,
+        driversResults: driverRaceResults
     }
 }
 
@@ -2887,7 +2891,7 @@ export function getOneRaceDetails(raceId) {
     const seasonResults = fetchSeasonResults(season, true);
     const pointsSchema = fetchPointsRegulations();
 
-    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntilCached(season, seasonResults, raceId);
+    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceId);
 
     const remainingRaces = queryDB(`SELECT RaceID, TrackID, WeekendType FROM Races WHERE SeasonID = ${season} AND RaceID > ${raceId} ORDER BY RaceID`, 'allRows');
     //make an object that has raceid, trackId, and race track
@@ -3053,7 +3057,7 @@ function getOneQualifyingResults(raceId) {
     return rows;
 }
 
-export function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRacePrevResults = false, includeCurrentRacePoints = true) {
+export function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRacePrevResults = false, includeCurrentRacePoints = true, isQuali = false) {
     //includeCurrentRacePrevResults only limits previous reace results string, points are always summed up until raceId
     const seasonResults = (seasonResultsRaw || [])
         .map(d => (d?.data && typeof d.data === "object") ? d.data : d)
@@ -3082,7 +3086,12 @@ export function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRa
                 if (thisRaceId < raceId || includeCurrentRacePrevResults) {
                     driverRaces.push(getCircuitInfo(thisRaceId).country);
                     const fin = parseInt(r.finishingPos);
-                    resultsString += (fin !== -1 ? `P${fin}` : "DNF") + ", ";
+                    if (!isQuali) {
+                        resultsString += (fin !== -1 ? `P${fin}` : "DNF") + ", ";
+                    }
+                    else{
+                        resultsString += (r.qualifyingPos !== 99 ? `P${r.qualifyingPos}` : `P${r.startingPos}`) + ", ";
+                    }
                     if (fin === 1) nWins++;
                     if (fin > 0 && fin <= 3) nPodiums++;
                     if ((parseInt(r.points) || 0) > 0) nPointsFinishes++;
@@ -3298,8 +3307,8 @@ export function calculateTeamDropsByDate(season, date) {
     const currentResults = fetchSeasonResultsCached(season);
     const lastYearResults = fetchSeasonResultsCached(season - 1);
 
-    const currentStandings = rebuildStandingsUntilCached(season, currentResults, lastRaceId);
-    const lastYearStandings = rebuildStandingsUntilCached(season - 1, lastYearResults, lastYearEquivalent);
+    const currentStandings = rebuildStandingsUntil(currentResults, lastRaceId);
+    const lastYearStandings = rebuildStandingsUntil(lastYearResults, lastYearEquivalent);
 
     const drops = currentStandings.teamStandings.map(team => {
         const prev = lastYearStandings.teamStandings.find(t => t.teamId === team.teamId);
@@ -3347,7 +3356,7 @@ export function getTransferDetails(drivers, date = null) {
     }
 
     const seasonResults = fetchSeasonResults(daySeason[1], true);
-    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntilCached(daySeason[1], seasonResults, objRace);
+    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, objRace);
     const driversForRecords = seasonResults.map(r => ({
         id: r.driverId,
         name: r.driverName ?? ""
@@ -3374,7 +3383,7 @@ export function getTeamComparisonDetails(teamId, season, date) {
         teamStandings: currentTeamStandings,
         driversResults: currentDriversResults,
         racesNames: currentRacesNames
-    } = rebuildStandingsUntilCached(season, seasonResults, lastRaceBeforeDate, true);
+    } = rebuildStandingsUntil(seasonResults, lastRaceBeforeDate, true);
 
     const racesCount = queryDB(
         `SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND RaceID <= ${lastRaceBeforeDate}`,
@@ -3393,7 +3402,7 @@ export function getTeamComparisonDetails(teamId, season, date) {
         teamStandings: oldTeamStandings,
         driversResults: oldDriversResults,
         racesNames: oldRacesNames
-    } = rebuildStandingsUntilCached(season - 1, lastSeasonResults, lastYearEquivalent, true);
+    } = rebuildStandingsUntil(lastSeasonResults, lastYearEquivalent, true);
 
     const previousResultsTeam = queryDB(`SELECT SeasonID, Points, Position FROM Races_TeamStandings WHERE TeamID = ${teamId}`)
         .map(r => {
@@ -3428,8 +3437,8 @@ export function getFullChampionSeasonDetails(season) {
     const seasonResults = fetchSeasonResults(season, true);
     const qualiResults = fetchQualiResults(season);
     const lastRaceId = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${season} AND State = 2`, 'singleValue');
-    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntilCached(season, seasonResults, lastRaceId, true);
-    const { driverStandings: qualiDriverStandings, teamStandings: qualiTeamStandings, driversResults: driverQualiResults, racesNames: qualiRacesNames } = rebuildStandingsUntil(qualiResults, lastRaceId, true);
+    const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, lastRaceId, true);
+    const { driverStandings: qualiDriverStandings, teamStandings: qualiTeamStandings, driversResults: driverQualiResults, racesNames: qualiRacesNames } = rebuildStandingsUntil(qualiResults, lastRaceId, true, true, true);
     const champions = getLatestChampions(season);
 
     const racesCompleted = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND State = 2`, 'singleValue');
