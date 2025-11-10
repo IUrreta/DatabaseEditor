@@ -967,18 +967,19 @@ function buildContextualPrompt(data, config = {}) {
       const podiums = d.totalPodiums ?? 0;
       const starts = d.totalStarts ?? 0;
       const name = d.name || `Driver ${d.id}`;
+      const isRookie = Number(seasonYear) === Number(d.firstRace.season);
 
       const tLbl = titles === 1 ? 'drivers championship' : 'drivers championships';
       const wLbl = wins === 1 ? 'race win' : 'race wins';
       const pLbl = podiums === 1 ? 'podium' : 'podiums';
       const sLbl = 'race starts';
 
-      return `${name}: ${titles} ${tLbl}, ${wins} ${wLbl}, ${podiums} ${pLbl}, ${starts} ${sLbl}`;
+      return `${name} ${isRookie ? '(Rookie)' : ''}: ${titles} ${tLbl}, ${wins} ${wLbl}, ${podiums} ${pLbl}, ${starts} ${sLbl}`;
     }).join('\n');
 
 
     if (lines) {
-      prompt += `\n\nHere are the stats for each driver in the grid. Only mention them if relevant:\n${lines}`;
+      prompt += `\n\nHere are the stats for each driver in the grid. Drivers not marked with (Rookie) are not rookies anymore. Only mention them if relevant:\n${lines}`;
     }
   }
 
@@ -1359,7 +1360,7 @@ async function contextualizeWorldChampion(newData) {
 
       prompt += `\n\n${numberOfRace}`;
 
-      prompt += buildContextualPrompt(standingsResp.content, { timing: "after this race" });
+      prompt += buildContextualPrompt(standingsResp.content, { timing: "after this race", seasonYear: newData.data.season_year });
     } else {
       prompt += "\n\nCould not retrieve current championship standings.";
     }
@@ -1405,7 +1406,7 @@ async function contextualizePotentialChampion(newData) {
       prompt += `\n\n${numberOfRace}`;
 
       // Contexto antes de esta carrera
-      prompt += buildContextualPrompt(c, { timing: "before this race" });
+      prompt += buildContextualPrompt(c, { timing: "before this race", seasonYear: newData.data.season_year });
 
       // Reglas de puntos (tal cual las comunicas)
       prompt += `\n\nThe maximum amount of points for the winner in each race is ${c.pointsSchema.twoBiggestPoints[0]}.
@@ -1501,7 +1502,7 @@ async function contextualizeSillySeasonTransferNews(newData) {
     });
   });
 
-  prompt += buildContextualPrompt(resp.content);
+  prompt += buildContextualPrompt(resp.content, { seasonYear: season });
 
   return prompt;
 }
@@ -1546,7 +1547,7 @@ async function contextualizeFakeTransferNews(newData) {
   });
 
 
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race" });
+  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
 
   return prompt;
 }
@@ -1604,7 +1605,7 @@ async function contextualizeBigTransferConfirm(newData) {
   });
 
 
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race" });
+  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
 
   return prompt;
 }
@@ -1662,7 +1663,7 @@ async function contextualizeRenewalNews(newData) {
   });
 
 
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race" });
+  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
 
   return prompt;
 }
@@ -1715,7 +1716,7 @@ async function contextualizeTeamComparison(newData) {
     racesNames: resp.content.currentRacesNames,
     enrichedAllTime: resp.content.enrichedAllTime
   };
-  prompt += buildContextualPrompt(currentContextData, { teamId: newData.data.team.teamId, teamName: team1 });
+  prompt += buildContextualPrompt(currentContextData, { teamId: newData.data.team.teamId, teamName: team1, seasonYear });
 
 
   const oldRacesNames = resp.content.oldRacesNames.join(', ');
@@ -1781,7 +1782,7 @@ async function contextualizeQualiResults(newData) {
 
   prompt += "\n\nHere are the full qualifying results:\n" + qualiResults;
 
-  prompt += buildContextualPrompt(resp.content, { timing: "before this race", quali: true });
+  prompt += buildContextualPrompt(resp.content, { timing: "before this race", quali: true, seasonYear });
 
 
   return prompt;
@@ -1833,8 +1834,8 @@ async function contextualizeRaceResults(newData) {
   prompt += safetyCarPhrase;
 
 
-  //generate a random number from 35 to 75 both included
-  const randomNumber = Math.floor(Math.random() * (75 - 35 + 1)) + 35;
+  //generate a random number from 35 to 62 both included
+  const randomNumber = Math.floor(Math.random() * (62 - 35 + 1)) + 35
   const driverOfTheDayPhrase = `\n\nThe Driver of the day was awarded to ${resp.content.driverOfTheDayInfo.name} (${combined_dict[resp.content.driverOfTheDayInfo.teamId]}) by the fans with ${randomNumber}% of the votes. Dedicate a paragraph discussing why they might have won this award.`;
 
   prompt += driverOfTheDayPhrase;
@@ -1864,7 +1865,7 @@ async function contextualizeRaceResults(newData) {
 
 
 
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race" });
+  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear });
 
 
   return prompt;
@@ -1930,7 +1931,7 @@ async function contextualizeSeasonReview(newData) {
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content);
+  prompt += buildContextualPrompt(resp.content, { seasonYear });
 
   const carPerformanceStart = Object.entries(resp.content.carsPerformance[0])
     .sort((a, b) => b[1] - a[1])

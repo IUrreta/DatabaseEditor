@@ -3345,7 +3345,8 @@ export function getTransferDetails(drivers, date = null) {
         teamStandings,
         driversResults,
         racesNames,
-        enrichedAllTime
+        enrichedAllTime,
+        season: daySeason[1]
     }
 }
 
