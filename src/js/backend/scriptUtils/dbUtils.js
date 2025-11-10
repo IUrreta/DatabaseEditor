@@ -1060,7 +1060,7 @@ export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
     const tb = Number.isFinite(tr) ? teamBonus(tr, finishingPos) : 0;
     const dominanceBonus = (finishingPos === 1) ? p1GapBonus : 0;
 
-    const rand = seededRandom(Number(raceId), driverId);
+    const rand = seededRandom(Number(raceId));
     const randomOffset = (rand() - 0.5) * RANDOM_INTENSITY;
 
     const score = gain + ps + tb + dominanceBonus + randomOffset;
