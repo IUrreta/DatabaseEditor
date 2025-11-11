@@ -1,5 +1,5 @@
-import { races_names, team_dict, combined_dict, lightColors, theme_colors  } from "./config";
-import { game_version,  custom_team, selectedTheme } from "./renderer";
+import { races_names, team_dict, combined_dict, lightColors, theme_colors } from "./config";
+import { game_version, custom_team, selectedTheme } from "./renderer";
 import { insert_space, manageColor, format_name } from "./transfers";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -40,15 +40,15 @@ export let mid_grid = 10;
 export let max_races = 23;
 export let relative_grid = 5;
 
-export function setMidGrid(value){
+export function setMidGrid(value) {
     mid_grid = value
 }
 
-export function setMaxRaces(value){
+export function setMaxRaces(value) {
     max_races = value
 }
 
-export function setRelativeGrid(value){
+export function setRelativeGrid(value) {
     relative_grid = value
 }
 
@@ -58,17 +58,17 @@ export let colors_dict;
 Chart.register(ChartDataLabels);
 Chart.register(annotationPlugin);
 
-export function init_colors_dict(theme){
+export function init_colors_dict(theme) {
     console.log("Selected theme:", theme);
-    colors_dict = { "10": "#F91536", "11": theme_colors[theme].general_secondary, "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": theme_colors[theme].general_secondary, "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": theme_colors[theme].general_secondary, "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": theme_colors[theme].general_secondary, "90": "#C92D4B", "91": theme_colors[theme].general_secondary, "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000"}
+    colors_dict = { "10": "#F91536", "11": theme_colors[theme].general_secondary, "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": theme_colors[theme].general_secondary, "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": theme_colors[theme].general_secondary, "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": theme_colors[theme].general_secondary, "90": "#C92D4B", "91": theme_colors[theme].general_secondary, "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000" }
 }
 
 
-export function get_colors_dict(){
+export function get_colors_dict() {
     return colors_dict;
 }
 
-export function edit_colors_dict(key, value){
+export function edit_colors_dict(key, value) {
     colors_dict[key] = value;
 }
 
@@ -223,7 +223,7 @@ export function manage_h2h_bars(data) {
                     d2_width = data[index][1] * relValue
                     elem.querySelector(".driver1-number").textContent = data[index][0]
                     elem.querySelector(".driver2-number").textContent = data[index][1]
-                    
+
                     if (race === 2) {
                         d1_width = 100 - (data[12][0] - 1) * relative_grid
                         d2_width = 100 - (data[12][1] - 1) * relative_grid
@@ -237,7 +237,7 @@ export function manage_h2h_bars(data) {
                         elem.querySelector(".driver2-number").textContent = data[13][1]
                     }
                 }
-                
+
             }
             else if (elem.id === "ptsh2h") {
                 relValue = 100 / Math.max(data[index][0], data[index][1])
@@ -994,7 +994,7 @@ function H2HReady() {
 
 
     manageH2hState()
-    const command = new Command("configuredH2H",  data);
+    const command = new Command("configuredH2H", data);
     command.execute();
 }
 
@@ -1053,11 +1053,11 @@ export function load_labels_initialize_graphs(data) {
     if (mode === "driver") {
         let max = 20
         let q2_line = 15
-        if (game_version === 2024 && custom_team){
+        if (game_version === 2024 && custom_team) {
             max = 22
             q2_line = 16
         }
-        else{
+        else {
             max = 20
         }
         createRaceChart(labels, max)
@@ -1072,23 +1072,23 @@ export function load_labels_initialize_graphs(data) {
 
 }
 
-export function reload_h2h_graphs(){
-    if (typeof qualiGraph !== 'undefined' && qualiGraph !== null){
+export function reload_h2h_graphs() {
+    if (typeof qualiGraph !== 'undefined' && qualiGraph !== null) {
         qualiGraph.destroy()
     }
-    if (typeof driverGraph !== 'undefined' && driverGraph !== null){
+    if (typeof driverGraph !== 'undefined' && driverGraph !== null) {
         driverGraph.destroy()
     }
-    if (typeof pointsGraph !== 'undefined' && pointsGraph !== null){
+    if (typeof pointsGraph !== 'undefined' && pointsGraph !== null) {
         pointsGraph.destroy()
     }
-    if (typeof gapWinnerGraph !== 'undefined' && gapWinnerGraph !== null){
+    if (typeof gapWinnerGraph !== 'undefined' && gapWinnerGraph !== null) {
         gapWinnerGraph.destroy()
     }
-    if (typeof gapPoleGraph !== 'undefined' && gapPoleGraph !== null){
+    if (typeof gapPoleGraph !== 'undefined' && gapPoleGraph !== null) {
         gapPoleGraph.destroy()
     }
-    if (h2hData){
+    if (h2hData) {
         load_labels_initialize_graphs(h2hData)
 
     }
@@ -1191,232 +1191,234 @@ function get_one_driver_points_format(driver, data) {
 }
 
 function load_graphs_data(drivers) {
-  let max_gapPole = 0;
-  let max_gapWinner = 0;
-  console.log(drivers);
-  const races_ids = drivers[0].map(r => r[0]); // array de raceId en orden
+    console.log("data:", drivers);
+    let max_gapPole = 0;
+    let max_gapWinner = 0;
+    console.log(drivers);
+    const races_ids = drivers[0].map(r => r[0]); // array de raceId en orden
+    const races_done = drivers[drivers.length - 1]; // array de raceId ya corridas
 
-  // drivers: array de objetos de piloto (NO metas pairTeamPos/pointsInfo aquí)
-  drivers.forEach(function (driv, index) {
-    // saltamos índices de “cabecera” si antes los tenías; ahora no hace falta,
-    // pero mantengo la condición por seguridad si llamas igual que antes
-    if (index !== 0 && index !== drivers.length - 1) {
-      // buffers
-      let d1_res = [];
-      let d1_races = [];
-      let d1_provisonal = [];
-      let d1_points_provisional = [];
-      let d1_points = [0];
+    // drivers: array de objetos de piloto (NO metas pairTeamPos/pointsInfo aquí)
+    drivers.forEach(function (driv, index) {
+        // saltamos índices de “cabecera” si antes los tenías; ahora no hace falta,
+        // pero mantengo la condición por seguridad si llamas igual que antes
+        if (index !== 0 && index !== drivers.length - 1) {
+            // buffers
+            let d1_res = [];
+            let d1_races = [];
+            let d1_provisonal = [];
+            let d1_points_provisional = [];
+            let d1_points = [0];
 
-      let d1_qualis = [];
-      let d1_provisonal_q = [];
+            let d1_qualis = [];
+            let d1_provisonal_q = [];
 
-      let d1_provisional_gapW = [];
-      let d1_provisional_gapP = [];
-      let d1_gapWinner = [];
-      let d1_gapPole = [];
+            let d1_provisional_gapW = [];
+            let d1_provisional_gapP = [];
+            let d1_gapWinner = [];
+            let d1_gapPole = [];
 
-      let d1_backgroundColors = [];
-      let d1_backgroundColorsPole = [];
+            let d1_backgroundColors = [];
+            let d1_backgroundColorsPole = [];
 
-      // --- construir arrays base a partir de driv.races ---
-      const races = Array.isArray(driv.races) ? driv.races : [];
+            // --- construir arrays base a partir de driv.races ---
+            const races = Array.isArray(driv.races) ? driv.races : [];
 
-      races.forEach(function (r) {
-        // raceId / orden
-        d1_races.push(Number(r.raceId));
+            races.forEach(function (r) {
+                // raceId / orden
+                d1_races.push(Number(r.raceId));
 
-        // posiciones carrera / quali
-        d1_provisonal.push(Number(r.finishingPos));
-        d1_provisonal_q.push(Number(r.qualifyingPos));
+                // posiciones carrera / quali
+                d1_provisonal.push(Number(r.finishingPos));
+                d1_provisonal_q.push(Number(r.qualifyingPos));
 
-        // gaps (se guardan como string "(.xxx)" o "NR"/"...L"; respetamos tu formato)
-        const gw = r.gapToWinner;
-        if (typeof gw === "string") {
-          if (gw.slice(-1) !== "L") {
-            // "(0.123)" → "0.123"
-            d1_provisional_gapW.push(gw.slice(1, -1));
-          } else {
-            d1_provisional_gapW.push(gw); // "…L" → lo marcas como NaN luego
-          }
-        } else if (gw == null) {
-          d1_provisional_gapW.push("NR");
-        } else {
-          d1_provisional_gapW.push(String(gw));
-        }
+                // gaps (se guardan como string "(.xxx)" o "NR"/"...L"; respetamos tu formato)
+                const gw = r.gapToWinner;
+                if (typeof gw === "string") {
+                    if (gw.slice(-1) !== "L") {
+                        // "(0.123)" → "0.123"
+                        d1_provisional_gapW.push(gw.slice(1, -1));
+                    } else {
+                        d1_provisional_gapW.push(gw); // "…L" → lo marcas como NaN luego
+                    }
+                } else if (gw == null) {
+                    d1_provisional_gapW.push("NR");
+                } else {
+                    d1_provisional_gapW.push(String(gw));
+                }
 
-        const gp = r.gapToPole;
-        if (gp === "NR") {
-          d1_provisional_gapP.push("NR");
-        } else if (typeof gp === "string") {
-          d1_provisional_gapP.push(gp.slice(1, -1)); // "(0.123)" → "0.123"
-        } else if (gp == null) {
-          d1_provisional_gapP.push("NR");
-        } else {
-          d1_provisional_gapP.push(String(gp));
-        }
+                const gp = r.gapToPole;
+                if (gp === "NR") {
+                    d1_provisional_gapP.push("NR");
+                } else if (typeof gp === "string") {
+                    d1_provisional_gapP.push(gp.slice(1, -1)); // "(0.123)" → "0.123"
+                } else if (gp == null) {
+                    d1_provisional_gapP.push("NR");
+                } else {
+                    d1_provisional_gapP.push(String(gp));
+                }
 
-        // puntos de esa carrera (+ sprint si existe y no es -1)
-        let ptsThatRace = Number(r.points);
-        if (ptsThatRace === -1) ptsThatRace = 0;
+                // puntos de esa carrera (+ sprint si existe y no es -1)
+                let ptsThatRace = Number(r.points);
+                if (ptsThatRace === -1) ptsThatRace = 0;
 
-        const sprintPts = (r.sprintPoints != null && r.sprintPoints !== -1)
-          ? Number(r.sprintPoints) : 0;
+                const sprintPts = (r.sprintPoints != null && r.sprintPoints !== -1)
+                    ? Number(r.sprintPoints) : 0;
 
-        d1_points_provisional.push(ptsThatRace + sprintPts);
-      });
+                d1_points_provisional.push(ptsThatRace + sprintPts);
+            });
 
-      // --- color del piloto ---
-      const d1Id = graphList[index - 1];
-      const d1pos = graphList.indexOf(d1Id);
-      let d1_color;
-      if (d1pos === graphTeamList.indexOf(String(driv.latestTeamId))) {
-        d1_color = colors_dict[driv.latestTeamId + "0"];
-      } else {
-        d1_color = colors_dict[driv.latestTeamId + "1"];
-      }
-
-      races_ids.forEach(function (rid) {
-        const idx = d1_races.indexOf(Number(rid));
-
-        if (idx !== -1) {
-          // resultado carrera
-          if (d1_provisonal[idx] === -1) {
-            d1_res.push(NaN);
-            d1_gapWinner.push(NaN);
-            d1_backgroundColors.push(d1_color + "50");
-          } else {
-            d1_res.push(d1_provisonal[idx]);
-
-            // gap winner
-            const gwRaw = d1_provisional_gapW[idx];
-            if (typeof gwRaw === "string" && gwRaw.slice(-1) === "L") {
-              d1_gapWinner.push(NaN);
-              d1_backgroundColors.push(d1_color + "76");
+            // --- color del piloto ---
+            const d1Id = graphList[index - 1];
+            const d1pos = graphList.indexOf(d1Id);
+            let d1_color;
+            if (d1pos === graphTeamList.indexOf(String(driv.latestTeamId))) {
+                d1_color = colors_dict[driv.latestTeamId + "0"];
             } else {
-              const gw = parseFloat(gwRaw);
-              d1_gapWinner.push(gw);
-              if (!isNaN(gw) && gw > max_gapWinner) max_gapWinner = gw;
-              d1_backgroundColors.push(d1_color);
+                d1_color = colors_dict[driv.latestTeamId + "1"];
             }
-          }
 
-          // puntos acumulados
-          d1_points.push(d1_points_provisional[idx] + d1_points[d1_points.length - 1]);
+            races_ids.forEach(function (rid) {
+                const idx = d1_races.indexOf(Number(rid));
 
-          // quali
-          d1_qualis.push(d1_provisonal_q[idx]);
+                if (idx !== -1) {
+                    // resultado carrera
+                    if (d1_provisonal[idx] === -1) {
+                        d1_res.push(NaN);
+                        d1_gapWinner.push(NaN);
+                        d1_backgroundColors.push(d1_color + "50");
+                    } else {
+                        d1_res.push(d1_provisonal[idx]);
 
-          // gap pole
-          const gpRaw = d1_provisional_gapP[idx];
-          if (gpRaw === "NR") {
-            d1_gapPole.push(NaN);
-            d1_backgroundColorsPole.push(d1_color + "60");
-          } else {
-            const gp = parseFloat(gpRaw);
-            d1_gapPole.push(gp);
-            if (!isNaN(gp) && gp > max_gapPole) max_gapPole = gp;
-            d1_backgroundColorsPole.push(d1_color);
-          }
-        } else {
-          // no corrió / no hay datos para este rid
-          d1_res.push(NaN);
-          d1_qualis.push(NaN);
-          if (races_done.includes(rid)) {
-            d1_points.push(d1_points[d1_points.length - 1]);
-          } else {
-            d1_points.push(NaN);
-          }
+                        // gap winner
+                        const gwRaw = d1_provisional_gapW[idx];
+                        if (typeof gwRaw === "string" && gwRaw.slice(-1) === "L") {
+                            d1_gapWinner.push(NaN);
+                            d1_backgroundColors.push(d1_color + "76");
+                        } else {
+                            const gw = parseFloat(gwRaw);
+                            d1_gapWinner.push(gw);
+                            if (!isNaN(gw) && gw > max_gapWinner) max_gapWinner = gw;
+                            d1_backgroundColors.push(d1_color);
+                        }
+                    }
+
+                    // puntos acumulados
+                    d1_points.push(d1_points_provisional[idx] + d1_points[d1_points.length - 1]);
+
+                    // quali
+                    d1_qualis.push(d1_provisonal_q[idx]);
+
+                    // gap pole
+                    const gpRaw = d1_provisional_gapP[idx];
+                    if (gpRaw === "NR") {
+                        d1_gapPole.push(NaN);
+                        d1_backgroundColorsPole.push(d1_color + "60");
+                    } else {
+                        const gp = parseFloat(gpRaw);
+                        d1_gapPole.push(gp);
+                        if (!isNaN(gp) && gp > max_gapPole) max_gapPole = gp;
+                        d1_backgroundColorsPole.push(d1_color);
+                    }
+                } else {
+                    // no corrió / no hay datos para este rid
+                    d1_res.push(NaN);
+                    d1_qualis.push(NaN);
+                    if (races_done.includes(rid)) {
+                        d1_points.push(d1_points[d1_points.length - 1]);
+                    } else {
+                        d1_points.push(NaN);
+                    }
+                }
+            });
+
+            // quitamos el 0 inicial
+            d1_points.shift();
+
+            // reemplace NaNs de gaps por la mitad del máximo (tu lógica)
+            d1_gapWinner = d1_gapWinner.map(function (elem) {
+                return isNaN(elem) ? max_gapWinner / 2 : elem;
+            });
+
+            d1_gapPole = d1_gapPole.map(function (elem) {
+                return isNaN(elem) ? max_gapPole / 2 : elem;
+            });
+
+            // ---- push datasets a los gráficos (Chart.js) ----
+            driverGraph.data.datasets.push({
+                label: driv.driverName,
+                data: d1_res,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                borderWidth: 2,
+                fill: false,
+                pointHitRadius: 7
+            });
+
+            qualiGraph.data.datasets.push({
+                label: driv.driverName,
+                data: d1_qualis,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                borderWidth: 2,
+                fill: false,
+                pointHitRadius: 7
+            });
+
+            pointsGraph.data.datasets.push({
+                label: driv.driverName,
+                data: d1_points,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                pointRadius: 0,
+                fill: false,
+                pointHitRadius: 7,
+                datalabels: {
+                    color: function () {
+                        return (lightColors.indexOf(d1_color) !== -1) ? "#272727" : "#eeeef1";
+                    },
+                    backgroundColor: d1_color,
+                    display: function (context) {
+                        return context.dataIndex === findLastNonNaNIndex(context.dataset.data);
+                    },
+                    borderRadius: 5,
+                    font: { family: "Formula1Bold" }
+                }
+            });
+
+            gapWinnerGraph.options.scales.y.max = max_gapWinner;
+            gapPoleGraph.options.scales.y.max = max_gapPole;
+
+            gapWinnerGraph.data.datasets.push({
+                label: driv.driverName,
+                data: d1_gapWinner,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                backgroundColor: d1_backgroundColors,
+                borderWidth: 1,
+                fill: true,
+                pointHitRadius: 7
+            });
+
+            gapPoleGraph.data.datasets.push({
+                label: driv.driverName,
+                data: d1_gapPole,
+                borderColor: d1_color,
+                pointBackgroundColor: d1_color,
+                backgroundColor: d1_backgroundColorsPole,
+                borderWidth: 1,
+                fill: true,
+                pointHitRadius: 7
+            });
         }
-      });
+    });
 
-      // quitamos el 0 inicial
-      d1_points.shift();
-
-      // reemplace NaNs de gaps por la mitad del máximo (tu lógica)
-      d1_gapWinner = d1_gapWinner.map(function (elem) {
-        return isNaN(elem) ? max_gapWinner / 2 : elem;
-      });
-
-      d1_gapPole = d1_gapPole.map(function (elem) {
-        return isNaN(elem) ? max_gapPole / 2 : elem;
-      });
-
-      // ---- push datasets a los gráficos (Chart.js) ----
-      driverGraph.data.datasets.push({
-        label: driv.driverName,
-        data: d1_res,
-        borderColor: d1_color,
-        pointBackgroundColor: d1_color,
-        borderWidth: 2,
-        fill: false,
-        pointHitRadius: 7
-      });
-
-      qualiGraph.data.datasets.push({
-        label: driv.driverName,
-        data: d1_qualis,
-        borderColor: d1_color,
-        pointBackgroundColor: d1_color,
-        borderWidth: 2,
-        fill: false,
-        pointHitRadius: 7
-      });
-
-      pointsGraph.data.datasets.push({
-        label: driv.driverName,
-        data: d1_points,
-        borderColor: d1_color,
-        pointBackgroundColor: d1_color,
-        pointRadius: 0,
-        fill: false,
-        pointHitRadius: 7,
-        datalabels: {
-          color: function () {
-            return (lightColors.indexOf(d1_color) !== -1) ? "#272727" : "#eeeef1";
-          },
-          backgroundColor: d1_color,
-          display: function (context) {
-            return context.dataIndex === findLastNonNaNIndex(context.dataset.data);
-          },
-          borderRadius: 5,
-          font: { family: "Formula1Bold" }
-        }
-      });
-
-      gapWinnerGraph.options.scales.y.max = max_gapWinner;
-      gapPoleGraph.options.scales.y.max = max_gapPole;
-
-      gapWinnerGraph.data.datasets.push({
-        label: driv.driverName,
-        data: d1_gapWinner,
-        borderColor: d1_color,
-        pointBackgroundColor: d1_color,
-        backgroundColor: d1_backgroundColors,
-        borderWidth: 1,
-        fill: true,
-        pointHitRadius: 7
-      });
-
-      gapPoleGraph.data.datasets.push({
-        label: driv.driverName,
-        data: d1_gapPole,
-        borderColor: d1_color,
-        pointBackgroundColor: d1_color,
-        backgroundColor: d1_backgroundColorsPole,
-        borderWidth: 1,
-        fill: true,
-        pointHitRadius: 7
-      });
-    }
-  });
-
-  // actualiza
-  driverGraph.update();
-  qualiGraph.update();
-  pointsGraph.update();
-  gapWinnerGraph.update();
-  gapPoleGraph.update();
+    // actualiza
+    driverGraph.update();
+    qualiGraph.update();
+    pointsGraph.update();
+    gapWinnerGraph.update();
+    gapPoleGraph.update();
 }
 
 
@@ -1806,7 +1808,7 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
                 }
             },
             y: {
-                min: 0, 
+                min: 0,
                 grid: {
                     color: theme_colors[selectedTheme].grid
                 },
@@ -1842,7 +1844,7 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
                     size: 14
                 },
                 callbacks: {
-                    label: function(tooltipItem) {
+                    label: function (tooltipItem) {
                         let dataset = tooltipItem.dataset; // Acceder al dataset actual
                         let index = tooltipItem.dataIndex; // Obtener el índice del dato
                         let color = dataset.backgroundColor[index]; // Obtener el color de fondo del dato actual
@@ -1856,7 +1858,7 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
                         else if (color.endsWith("76")) {
                             result = "Lapped"
                         }
-                        else{
+                        else {
                             result = `${tooltipItem.raw}s`;
                         }
 
@@ -1887,12 +1889,12 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
             ...commonOptions.scales,
             y: {
                 ...commonOptions.scales.y,
-                max: maxGapWinner, 
+                max: maxGapWinner,
             }
         },
         plugins: {
             ...commonOptions.plugins
-        
+
         }
     };
 
@@ -1913,7 +1915,7 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
             ...commonOptions.scales,
             y: {
                 ...commonOptions.scales.y,
-                max: 20 
+                max: 20
             }
         },
         plugins: {
