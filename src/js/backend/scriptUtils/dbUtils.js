@@ -799,42 +799,71 @@ function applyDoDFlagsToSeasonResults(seasonResults, dodMap) {
   return seasonResults;
 }
 
-function computeSeasonDriverOfTheDay(seasonResults, season) {
-  // --- Paso A: contexto por carrera ---
-  const raceIds = getSeasonRaceIds(season);
-  const perRaceTeamRank = buildPerRaceTeamRankContext(seasonResults, raceIds, season);
-
-  // --- Paso B: DoD por carrera ---
+export function getDotDWinnersMap(season) {
   const rows = queryDB(`
-    SELECT RaceID, DriverID, TeamID, StartingPos, FinishingPos, DNF, Time, Laps
-    FROM Races_Results
-    WHERE Season = ${season}
+    SELECT RaceID, DriverID
+    FROM Custom_DriverOfTheDay_Ranking
+    WHERE Season = ${season} AND Rank = 1
   `, 'allRows') || [];
 
-  const byRace = new Map();
-  for (const [raceId, driverId, teamId, startPos, finishPos, dnf, time, laps] of rows) {
-    if (!byRace.has(raceId)) byRace.set(raceId, []);
-    byRace.get(raceId).push([
-      null, null, Number(driverId), Number(teamId),
-      Number(finishPos), Number(startPos),
-      null, Number(dnf), null, null,
-      Number(time), Number(laps)
-    ]);
+  const m = new Map();
+  for (const [raceId, driverId] of rows) {
+    m.set(Number(raceId), Number(driverId));
+  }
+  return m;
+}
+
+function computeSeasonDriverOfTheDay(seasonResults, season) {
+  ensureCustomDoDRankingTable();
+
+  // A) contexto por carrera
+  const raceIds = getSeasonRaceIds(season).map(Number);
+  const perRaceTeamRank = buildPerRaceTeamRankContext(seasonResults, raceIds, season);
+
+  // B) ganadores ya cacheados (Rank=1)
+  const winnersMap = getDotDWinnersMap(season); // Map<raceId, driverId>
+
+  // C) carreras faltantes
+  const missing = raceIds.filter(rid => !winnersMap.has(rid));
+  if (missing.length > 0) {
+    // Trae solo lo necesario
+    const rows = queryDB(`
+      SELECT RaceID, DriverID, TeamID, StartingPos, FinishingPos, DNF, Time, Laps
+      FROM Races_Results
+      WHERE Season = ${season}
+        AND RaceID IN (${missing.join(',')})
+    `, 'allRows') || [];
+
+    // Agrupar por carrera en el formato que ya usas
+    const byRace = new Map();
+    for (const [raceId, driverId, teamId, startPos, finishPos, dnf, time, laps] of rows) {
+      const r = Number(raceId);
+      if (!byRace.has(r)) byRace.set(r, []);
+      byRace.get(r).push([
+        null, null, Number(driverId), Number(teamId),
+        Number(finishPos), Number(startPos),
+        null, Number(dnf), null, null,
+        Number(time), Number(laps)
+      ]);
+    }
+
+    // Calcular leaderboard y guardar top-3
+    for (const raceId of missing) {
+      const raceRows = (byRace.get(raceId) || []).sort((a, b) => Number(a[4]) - Number(b[4]));
+      const ctx = { teamRankByTeamId: perRaceTeamRank.get(raceId) || new Map() };
+
+      const leaderboard = computeDriverOfTheDayLeaderboardFromRows(raceRows, raceId, ctx);
+      if (leaderboard?.length) {
+        upsertDoDRanking(season, raceId, leaderboard, /*topN*/ 3);
+        winnersMap.set(raceId, Number(leaderboard[0].driverId));
+      }
+    }
   }
 
-  const dodMap = new Map();
-  for (const [raceId, raceRows] of byRace.entries()) {
-    raceRows.sort((a, b) => Number(a[4]) - Number(b[4]));
-    const ctx = {
-      teamRankByTeamId: perRaceTeamRank.get(Number(raceId)) || new Map(),
-    };
-    const dod = computeDriverOfTheDayFromRows(raceRows, raceId, ctx);
-    if (dod != null) dodMap.set(Number(raceId), Number(dod));
-  }
-
-  // --- Paso C: marcar en los resultados y devolver ---
+  // D) aplicar flags como ya hacías
+  const dodMap = winnersMap; // Map<raceId, driverId>
   const enriched = applyDoDFlagsToSeasonResults(seasonResults, dodMap);
-  enriched._driverOfTheDayMap = dodMap; // opcional: mantener referencia
+  enriched._driverOfTheDayMap = dodMap;
   return enriched;
 }
 
@@ -1079,7 +1108,7 @@ export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
   return bestId;
 }
 
-export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}) { //ONLY FOR DEBBUGING TO SEE FULL RANKING
+export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}) {
   if (!rows || !rows.length) return [];
 
   raceId = Number(raceId);
@@ -1098,9 +1127,9 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
     const p1Time = Number(p1[10]), p2Time = Number(p2[10]);
     const p1Laps = Number(p1[11]), p2Laps = Number(p2[11]);
     if (Number.isFinite(p1Time) && Number.isFinite(p2Time) && p1Laps === p2Laps) {
-      const gapBehind = p2Time - p1Time; // segundos
+      const gapBehind = p2Time - p1Time; // s
       if (gapBehind > 0) {
-        const blocks = Math.floor(gapBehind / 4); // cada 4s → 1 punto
+        const blocks = Math.floor(gapBehind / 4);
         p1GapBonus = Math.min(blocks * dominancePerGap, dominanceMax);
       }
     }
@@ -1112,7 +1141,7 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
     if (finishingPos === 3) return 1;
     if (finishingPos > 13) return -10;
     if (finishingPos > 10) return -7;
-    if (finishingPos > 8) return -2;
+    if (finishingPos > 8)  return -2;
     return 0;
   };
 
@@ -1123,70 +1152,125 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
     if (!Number.isFinite(teamRank) || !Number.isFinite(finishingPos)) return 0;
     const factor = gridSize > 0 ? (gridSize / 20) : 1;
     const expectedPos = (2 * teamRank - 0.5) * factor;
-
     const delta = expectedPos - finishingPos;
-
     let bonus = delta * TEAM_WEIGHT;
     if (TEAM_BONUS_CAP > 0) {
-      if (bonus > TEAM_BONUS_CAP) bonus = TEAM_BONUS_CAP;
+      if (bonus >  TEAM_BONUS_CAP) bonus =  TEAM_BONUS_CAP;
       if (bonus < -TEAM_BONUS_CAP) bonus = -TEAM_BONUS_CAP;
     }
     return bonus;
   };
 
   const rand = seededRandom(raceId);
-  const RANDOM_INTENSITY = 0.8; // 0.5 = suave, 1.0 = medio, 2.0 = fuerte
+  const RANDOM_INTENSITY = 0.8;
 
   const rowsScored = [];
-
   for (const row of rows) {
-    const driverId = Number(row[2]);
-    const teamId = Number(row[3]);
-    const finishingPos = Number(row[4]);
+    const driverId    = Number(row[2]);
+    const teamId      = Number(row[3]);
+    const finishingPos= Number(row[4]);
     const startingPos = Number(row[5]);
-    const dnf = Number(row[7]) === 1;
+    const dnf         = Number(row[7]) === 1;
 
     if (dnf || startingPos <= 0 || finishingPos <= 0 || finishingPos === 99) continue;
 
     const gain = startingPos - finishingPos;
-    const ps = posScore(finishingPos);
-    const tr = Number(teamRankByTeamId.get(teamId));
-    const tb = Number.isFinite(tr) ? teamBonus(tr, finishingPos) : 0;
+    const ps   = posScore(finishingPos);
+    const tr   = Number(teamRankByTeamId.get(teamId));
+    const tb   = Number.isFinite(tr) ? teamBonus(tr, finishingPos) : 0;
 
     const dominanceBonus = (finishingPos === 1) ? p1GapBonus : 0;
+    const poleBonus      = (startingPos === 1) ? 1.0 : 0.0;
 
-    const poleBonus = (startingPos === 1) ? 1.0 : 0.0;
+    const randomOffset   = (rand() - 0.5) * RANDOM_INTENSITY;
+    const scoreRaw       = gain + ps + tb + dominanceBonus + randomOffset + poleBonus;
 
-    const randomOffset = (rand() - 0.5) * RANDOM_INTENSITY;
-    const score = gain + ps + tb + dominanceBonus + randomOffset + poleBonus;
-
-    let name = getNameByIdAndFormat(driverId);
+    const name = getNameByIdAndFormat(driverId);
     rowsScored.push({
       driverId,
       name: name[0],
-      score,
+      scoreRaw,             // <-- guardamos el bruto para depurar
       finishPos: finishingPos,
-      startPos: startingPos,
+      startPos:  startingPos,
       teamId,
-      components: {
-        gain,
-        posScore: ps,
-        teamBonus: tb,
-        dominanceBonus,
-        poleBonus,
-        randomOffset
-      }
+      components: { gain, posScore: ps, teamBonus: tb, dominanceBonus, poleBonus, randomOffset }
     });
   }
 
-  // Orden: mayor score primero; si empate, mejor posición final
+  // Softmax -> porcentajes que suman 100
+  const shares = softmaxToPercent(rowsScored.map(r => r.scoreRaw), /*temperature*/ 1.0);
+  for (let i = 0; i < rowsScored.length; i++) {
+    rowsScored[i].share = Math.round(shares[i] * 10) / 10; // p.ej., 1 decimal
+  }
+
+  // Orden: mayor share (equivale a mayor scoreRaw)
   rowsScored.sort((a, b) =>
-    (b.score - a.score) || (a.finishPos - b.finishPos)
+    (b.share - a.share) || (a.finishPos - b.finishPos)
   );
 
-  // console.log(`Ranking:`, rowsScored);
-
   return rowsScored;
+}
+
+function softmaxToPercent(values, temperature = 1.0) {
+  // estabilidad numérica
+  const maxV = Math.max(...values);
+  const exps = values.map(v => Math.exp((v - maxV) / temperature));
+  const sum  = exps.reduce((a,b)=>a+b, 0);
+  return exps.map(x => (x / sum) * 100);
+}
+
+export function upsertDoDRanking(season, raceId, leaderboard, topN = 3) {
+  const top = leaderboard.slice(0, topN);
+  for (let i = 0; i < top.length; i++) {
+    const { driverId, share, name, teamId } = top[i]; // usamos share (%)
+    const rank = i + 1;
+    console.log(`
+      INSERT INTO Custom_DriverOfTheDay_Ranking (Season, RaceID, Rank, DriverID, Name, TeamID, Score)
+      VALUES (${season}, ${raceId}, ${rank}, ${driverId}, '${name}', ${teamId}, ${Number(share)})
+      ON CONFLICT(Season, RaceID, Rank) DO UPDATE
+      SET DriverID = excluded.DriverID, Score = excluded.Score
+    `)
+    queryDB(`
+      INSERT INTO Custom_DriverOfTheDay_Ranking (Season, RaceID, Rank, DriverID, Name, TeamID, Score)
+      VALUES (${season}, ${raceId}, ${rank}, ${driverId}, '${name}', ${teamId}, ${Number(share)})
+      ON CONFLICT(Season, RaceID, Rank) DO UPDATE
+      SET DriverID = excluded.DriverID, Score = excluded.Score
+    `, 'allRows');
+  }
+}
+
+export function getDoDTopNForRace(season, raceId, topN = 3) {
+  const rows = queryDB(`
+    SELECT DriverID, Rank, Name, Score, TeamID
+    FROM Custom_DriverOfTheDay_Ranking
+    WHERE Season = ${season} AND RaceID = ${raceId}
+    ORDER BY Rank ASC
+    LIMIT ${topN}
+  `, 'allRows') || [];
+
+  return rows.map(([driverId, rank, name, share, teamId]) => ({
+    driverId: Number(driverId),
+    rank: Number(rank),
+    name,
+    share: Number(share),
+    teamId: Number(teamId)
+  }));
+}
+
+export function ensureCustomDoDRankingTable() {
+  queryDB(`
+    CREATE TABLE IF NOT EXISTS Custom_DriverOfTheDay_Ranking (
+      Season    INTEGER NOT NULL,
+      RaceID    INTEGER NOT NULL,
+      Rank      INTEGER NOT NULL,   -- 1,2,3...
+      DriverID  INTEGER NOT NULL,
+      Name      TEXT    NOT NULL,
+      Score     REAL    NOT NULL,
+      TeamID    INTEGER NOT NULL,
+      PRIMARY KEY (Season, RaceID, Rank)
+    )
+  `, 'allRows');
+
 }
 
 function seededRandom(seed) {

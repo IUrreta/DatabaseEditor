@@ -1,4 +1,4 @@
-import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows } from "./dbUtils";
+import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace } from "./dbUtils";
 import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names, continentDict, contintntRacesRegions } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import turningPointsTitleTemplates from "../../../data/news/turning_points_titles_templates.json";
@@ -2908,20 +2908,17 @@ export function getOneRaceDetails(raceId) {
     const winnerTime = results[0][10]; // índice 10 = res.Time
     const winnerLaps = results[0][11]; // índice 11 = res.Laps
 
-    const teamRankByTeamId = new Map(teamStandings.map((t, i) => [Number(t.teamId), i + 1]));
-    const dodDriverId = computeDriverOfTheDayFromRows(results, raceId, { teamRankByTeamId });
+    const top3DoD = getDoDTopNForRace(season, raceId, 3);
+    console.log("Top 3Driver of the day:", top3DoD);
 
-    let driverOfTheDayInfo = null;
-    if (dodDriverId != null) {
-        const dodRow = results.find(r => Number(r[2]) === Number(dodDriverId));
-        if (dodRow) {
-            const [nameFormatted] = formatNamesSimple(dodRow);
-            driverOfTheDayInfo = {
-                name: news_insert_space(nameFormatted),
-                teamId: dodRow[3]
-            };
-        }
-    }
+    //for each of the top3, changen name for news_insert_space(name), and leave the rest the same
+    const driverOfTheDayInfo = top3DoD.map((dod, index) => {
+        const newName = news_insert_space(dod.name);
+        return {
+            name: newName,
+            ...dod,
+        };
+    });
 
     const raceDetails = results.map(row => {
         const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
@@ -2944,7 +2941,6 @@ export function getOneRaceDetails(raceId) {
             virtualSafetyCar: row[9],
             gapToWinner,
             gapLaps,
-            driverOfTheDay: Number(driverId) === Number(dodDriverId),
         };
     });
 

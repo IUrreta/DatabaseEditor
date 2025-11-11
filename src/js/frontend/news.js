@@ -1898,10 +1898,20 @@ async function contextualizeRaceResults(newData) {
 
 
   //generate a random number from 35 to 62 both included
-  const randomNumber = Math.floor(Math.random() * (62 - 35 + 1)) + 35
-  const driverOfTheDayPhrase = `\n\nThe Driver of the day was awarded to ${resp.content.driverOfTheDayInfo.name} (${combined_dict[resp.content.driverOfTheDayInfo.teamId]}) by the fans with ${randomNumber}% of the votes. Dedicate a paragraph discussing why they might have won this award.`;
+  const top3 = resp.content.driverOfTheDayInfo;
 
-  prompt += driverOfTheDayPhrase;
+  if (Array.isArray(top3) && top3.length > 0) {
+    const first = top3[0];
+    const second = top3[1];
+    const third = top3[2];
+
+    const driverOfTheDayPhrase = `
+      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}) with ${first.share.toFixed(1)}% of the fan votes.\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}) with ${second.share.toFixed(1)}%,` : ''}\n${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}) with ${third.share.toFixed(1)}%.` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
+    `;
+
+    prompt += driverOfTheDayPhrase;
+  }
+  
 
   if (resp.content.sprintDetails.length > 0) {
     prompt += `\n\nThere was a sprint race held on Saturday, which was won by ${resp.content.sprintDetails[0].name} (${combined_dict[resp.content.sprintDetails[0].teamId]}). Dedicate a paragraph discussing the sprint results`;
