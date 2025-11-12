@@ -1037,6 +1037,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     team_comparison: contextualizeTeamComparison,
     driver_comparison: contextualizeDriverComparison,
     season_review: contextualizeSeasonReview,
+    race_reaction: contextualizeRaceReaction,
 
     // Turning points: outcome_ y no-outcome comparten handler
     turning_point_dsq: (nd) => contextualizeDSQ(nd, nd.turning_point_type),
@@ -2005,6 +2006,38 @@ async function contextualizeDriverComparison(newData) {
   }
 
   prompt += buildContextualPrompt(resp.content, { teamId, teamName: combined_dict[teamId], seasonYear });
+
+  return prompt;
+}
+
+async function contextualizeRaceReaction(newData) {
+  let adjective = newData.data.adjective;
+  let seasonYear = newData.data.seasonYear;
+  let happyDriver = newData.data.randomHappyDriver.name;
+  let unhappyDriver = newData.data.randomUnHappyDriver.name;
+  let circuit = newData.data.circuit;
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 16).prompt;
+  prompt = prompt.replace(/{{\s*adjective\s*}}/g, adjective)
+    .replace(/{{\s*season_year\s*}}/g, seasonYear)
+    .replace(/{{\s*happy_driver\s*}}/g, happyDriver)
+    .replace(/{{\s*unhappy_driver\s*}}/g, unhappyDriver)
+    .replace(/{{\s*circuit\s*}}/g, circuit);
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  }); 
+  let resp;
+
+  try {
+    resp = await command.promiseExecute();
+  }
+  catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  prompt += buildContextualPrompt(resp.content, { seasonYear });
 
   return prompt;
 }

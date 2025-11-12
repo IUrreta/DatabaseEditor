@@ -346,10 +346,10 @@ export function getParamMap(data) {
             driver1: data.driver1,
         },
         16: {
-            happy_driver: data.happy_driver?.name ?? "",
-            unhappy_driver: data.unhappy_driver?.name ?? "",
-            happy_team: data.happy_team,
-            unhappy_team: data.unhappy_team,
+            happy_driver: data.randomHappyDriver?.name,
+            unhappy_driver: data.randomUnHappyDriver?.name,
+            happy_team: data.happyTeam,
+            unhappy_team: data.unhappyTeam,
             circuit: data.circuit,
             country: data.country,
             adjective: data.adjective

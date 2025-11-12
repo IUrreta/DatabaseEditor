@@ -90,7 +90,7 @@ export function generate_news(savednews, turningPointState) {
     ...bigConfirmedTransfersNews || [], ...contractRenewalsNews || [], ...comparisonNews || [], ...seasonReviews || [],
     ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...dsqTurningPointNews || [], ...midSeasonTransfersTurningPointNews || [],
     ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [],
-    ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || []];
+    ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || [], ...raceReactions || []];
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
@@ -1779,49 +1779,49 @@ export function getCircuitInfo(raceId) {
 }
 
 function randomRemovalOfNames(data) {
-  let paramsWithName = ["winnerName", "pole_driver", "driver1", "driver2", "driver3", "driver_name"];
-  const nestedPaths = [
-    ["driver_affected", "name"],
-    ["reserve_driver", "name"],
-    ["driver_out", "name"],
-    ["driver_in", "name"],
-    ["driver_substitute", "name"],
-    ["reserve", "name"], 
-  ];
+    let paramsWithName = ["winnerName", "pole_driver", "driver1", "driver2", "driver3", "driver_name"];
+    const nestedPaths = [
+        ["driver_affected", "name"],
+        ["reserve_driver", "name"],
+        ["driver_out", "name"],
+        ["driver_in", "name"],
+        ["driver_substitute", "name"],
+        ["reserve", "name"],
+    ];
 
-  // Campos planos
-  paramsWithName.forEach(param => {
-    const v = data[param];
-    if (typeof v === "string" && v.trim()) {
-      let out = v.trim();
-      if (Math.random() < 0.5) {
-        out = out.split(/\s+/).pop();
-      }
-      out = news_insert_space(out);
-      data[param] = out;
-    }
-  });
+    // Campos planos
+    paramsWithName.forEach(param => {
+        const v = data[param];
+        if (typeof v === "string" && v.trim()) {
+            let out = v.trim();
+            if (Math.random() < 0.5) {
+                out = out.split(/\s+/).pop();
+            }
+            out = news_insert_space(out);
+            data[param] = out;
+        }
+    });
 
-  // Campos anidados .name
-  nestedPaths.forEach(path => {
-    let obj = data;
-    for (let i = 0; i < path.length - 1; i++) {
-      obj = obj?.[path[i]];
-      if (!obj) return;
-    }
-    const lastKey = path[path.length - 1];
-    const v = obj[lastKey];
-    if (typeof v === "string" && v.trim()) {
-      let out = v.trim();
-      if (Math.random() < 0.5) {
-        out = out.split(/\s+/).pop();
-      }
-      out = (typeof news_insert_space === "function" ? news_insert_space(out) : _newsSpace(out));
-      obj[lastKey] = out;
-    }
-  });
+    // Campos anidados .name
+    nestedPaths.forEach(path => {
+        let obj = data;
+        for (let i = 0; i < path.length - 1; i++) {
+            obj = obj?.[path[i]];
+            if (!obj) return;
+        }
+        const lastKey = path[path.length - 1];
+        const v = obj[lastKey];
+        if (typeof v === "string" && v.trim()) {
+            let out = v.trim();
+            if (Math.random() < 0.5) {
+                out = out.split(/\s+/).pop();
+            }
+            out = (typeof news_insert_space === "function" ? news_insert_space(out) : _newsSpace(out));
+            obj[lastKey] = out;
+        }
+    });
 
-  return data;
+    return data;
 }
 
 
@@ -1847,6 +1847,7 @@ function generateTurningPointTitle(data, new_type, turningPointType) {
 
 
 function generateTitle(data, new_type) {
+    console.log("Generating title:", data);
     let dataRandomized = randomRemovalOfNames(data);
     let templateObj = null;
     templateObj = newsTitleTemplates.find(t => t.new_type === new_type);
@@ -1862,6 +1863,8 @@ function generateTitle(data, new_type) {
     const titles = templateObj.titles;
     const idx = Math.floor(Math.random() * titles.length);
     const tpl = titles[idx];
+
+    console.log("Selected template:", tpl);
 
     return tpl.replace(/{{\s*(\w+)\s*}}/g, (_, key) => paramMap[new_type][key] || '');
 }
@@ -2713,12 +2716,12 @@ export function generateRaceResultsNews(events, savednews) {
 }
 
 export function generateRaceReactionsNews(events, savednews) {
-        const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const seasonYear = daySeason[1];
     let newsList = [];
 
     events.forEach(raceId => {
-        const entryId = `${seasonYear}_race_reactions_${raceId}`;
+        const entryId = `${seasonYear}_race_reaction_${raceId}`;
 
         if (savednews[entryId]) {
             newsList.push({ id: entryId, ...savednews[entryId] });
@@ -2753,6 +2756,9 @@ export function generateRaceReactionsNews(events, savednews) {
         const happyDrivers = formatted.filter(r => r.pos <= 4);
         const randomHappyDriver = randomPick(happyDrivers);
 
+        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
+        const code = races_names[parseInt(trackId)];
+
         let titleData = {
             raceId,
             allHappyDrivers: happyDrivers,
@@ -2767,22 +2773,17 @@ export function generateRaceReactionsNews(events, savednews) {
 
         const title = generateTitle(titleData, 16);
 
-        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
-        const code = races_names[parseInt(trackId)];
-
-        const image = getImagePath(formatted[0].teamId, code, "raceQuali");
-
-        const overlay = "race-overlay"
+        const image = getImagePath(randomHappyDriver.teamId, code, "reaction");
 
         const date = queryDB(`SELECT Day FROM Races WHERE RaceID = ${raceId}`, 'singleValue');
 
         const newsEntry = {
             id: entryId,
-            type: "race_reactions",
+            type: "race_reaction",
             title: title,
-            date: date,
+            date: date + 1,
             image: image,
-            overlay: overlay,
+            overlay: null,
             data: titleData,
             text: null
         };
@@ -3375,6 +3376,18 @@ function getImagePath(teamId, code, type) {
         if (useChamp) {
             const randomNum = getRandomInt(1, 5);
             return `./assets/images/news/champ${randomNum}.webp`;
+        }
+        else {
+            return `./assets/images/news/${code}_tra.webp`;
+        }
+
+    }
+    else if (type === "reaction") {
+        const useTeam = Math.random() < 0.8;
+        if (useTeam) {
+            const options = [1,2,3,4,5,6,8,9,10]
+            const randomNum = randomPick(options);
+            return `./assets/images/news/${randomNum}_gar.webp`;
         }
         else {
             return `./assets/images/news/${code}_tra.webp`;
