@@ -849,7 +849,7 @@ async function addTurningPointContexts(prompt, date) {
     let turningOutcomesText = ``;
     turningOutcomesText += turningPointsOutcomes.map(tp => {
       const turningDate = tp.date;
-      if ((tp.turning_point_type === "positive" || tp.id.includes('_world_champion'))) {
+      if ((tp.turning_point_type === "positive" || tp.id.includes('_world_champion')) && Number(turningDate) <= Number(date)) {
         if (tp.id.includes("investment")) {
           return `${number++}. ${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`
         }
