@@ -3558,7 +3558,7 @@ function buildPointsTable(positionAndPointsRows) {
     return tbl;
 }
 
-function getBasePointsForPos(pos, pointsTable, doublePoints) {
+function getBasePointsForPos(pos, pointsTable, doublePoints, isLastRace = false) {
     const base = pointsTable.get(pos) ?? 0;
     return doublePoints ? base * 2 : base;
 }
@@ -3642,10 +3642,13 @@ function disqualifyTeamInRace({
     let pos = 1;
     const afterRacePoints = new Map(); // DriverID -> puntos tras recálculo (sin FL aún)
 
+    const lastRace = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${seasonId}`, 'singleValue');
+    const isLastRace = Number(raceId) === Number(lastRace);
+
     // Clasificados: posiciones 1..K + puntos
     for (const r of classified) {
         const driverId = Number(r[0]);
-        const pts = getBasePointsForPos(pos, pointsTable, doublePts);
+        const pts = getBasePointsForPos(pos, pointsTable, doublePts, isLastRace);
         afterRacePoints.set(driverId, pts);
         queryDB(`
       UPDATE Races_Results
