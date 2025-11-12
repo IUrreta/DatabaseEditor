@@ -315,14 +315,14 @@ function editModeHandler() {
     document.querySelector(".clicked").dataset.retirement = retirement;
     let ageGap = parseInt(document.querySelector(".clicked").dataset.age - age);
     document.querySelector(".clicked").dataset.age = age;
-    let newName = document.querySelector("#driverStatsTitle").value || document.querySelector("#driverStatsTitle").textContent;
+    let newName = document.querySelector("#driverStatsTitle textarea")?.value ?? document.querySelector("#driverStatsTitle").textContent;
     if (newName === document.querySelector(".clicked").dataset.name) {
         newName = "-1"
     }
     else {
         update_name(id, newName)
     }
-    let newCode = document.querySelector("#driverCode").value || document.querySelector("#driverCode").textContent;
+    let newCode = document.querySelector("#driverCode textarea")?.value ?? document.querySelector("#driverCode").textContent;
     if (newCode === document.querySelector(".clicked").dataset.code) {
         newCode = "-1"
     }

@@ -1844,12 +1844,12 @@ input.comparing-tag{
 
 
 .alertNeg {
-  animation: colorChangeNeg 0.15s infinite;
+  animation: colorChangeNeg 0.3s;
   margin-bottom: 0px !important;
 }
 
 .alertPos {
-  animation: colorChangePos 0.15s infinite;
+  animation: colorChangePos 0.3s;
   margin-bottom: 0px !important;
 }
 
@@ -2767,7 +2767,7 @@ DRIVERS TABLE
 .teams-table-row.odd:hover .first,
 .teams-table-row:hover .first {
   background-color: var(--table-first) !important;
-  color: #292929 !important;
+  color: var(--table-hover-text) !important;
 }
 
 .second {
@@ -2779,7 +2779,7 @@ DRIVERS TABLE
 .teams-table-row.odd:hover .second,
 .teams-table-row:hover .second {
   background-color: var(--table-second) !important;
-  color: #292929 !important;
+  color: var(--table-hover-text) !important;
 }
 
 .third {
@@ -2791,7 +2791,7 @@ DRIVERS TABLE
 .teams-table-row.odd:hover .third,
 .teams-table-row:hover .third {
   background-color: var(--table-third) !important;
-  color: #292929 !important;
+  color: var(--table-hover-text) !important;
 }
 
 .fastest {
@@ -2801,6 +2801,37 @@ DRIVERS TABLE
   text-underline-offset: 2px;
 }
 
+.dotd::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 12%;
+  height: 27%;
+  border-top: 3px solid var(--positive-general);
+  border-right: 3px solid var(--positive-general);
+}
+
+.dotd::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 12%;
+  height: 27%;
+  border-bottom: 3px solid var(--positive-general);
+  border-left: 3px solid var(--positive-general);
+}
+/* 
+.drivers-table-row:hover .dotd::before {
+  border-bottom: 3px solid var(--table-hover-text);
+  border-left: 3px solid var(--table-hover-text);
+}
+
+.drivers-table-row:hover .dotd::after {
+  border-top: 3px solid var(--table-hover-text);
+  border-right: 3px solid var(--table-hover-text);
+} */
 
 .drivers-table-header,
 .teams-table-header {
@@ -2966,6 +2997,10 @@ DRIVERS TABLE
   background-color: var(--text-general);
   color: var(--negative-text);
   border-color: var(--text-general);
+}
+
+.drivers-table-normal[data-pos="DNF"]{
+  color: var(--table-dnf);
 }
 
 
@@ -12875,6 +12910,27 @@ body:has(.active #mod25logo) .one-change {
   font-size: 20px;
 }
 
+.news-article h1{
+  font-size: 34px;
+  font-family: 'Formula1Bold';
+  color: var(--new-primary);
+  margin-bottom: 0;
+}
+
+.news-article h2{
+  font-size: 28px;
+  font-family: 'Formula1Bold';
+  color: var(--text-general);
+  margin-bottom: 0;
+}
+
+.news-article h3{
+  font-size: 22px;
+  font-family: 'Formula1Bold';
+  margin-bottom: 0;
+  color: var(--text-secondary);
+}
+
 .news-article p{
   margin: 0;
   color: var(--text-secondary);
@@ -12925,6 +12981,9 @@ body.default-theme .news-article-date{
   padding-right: 10px;
   transition: opacity 0.15s ease;
   height: 60vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .modal-content{
@@ -13245,6 +13304,16 @@ body.default-theme .news-article-date{
 #news > .loader-div{
   top: 450%;
 
+}
+
+.news-error.model-error{
+  background-color: color-mix(in srgb, var(--negative-general) 20%, var(--elements));
+  padding: 15px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--negative-general);
+  color: var(--negative-general);
+  text-align: center;
+  width: max-content;
 }
 
 span.news-error{

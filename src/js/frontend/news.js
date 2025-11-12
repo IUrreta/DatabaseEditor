@@ -156,7 +156,6 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
       if (exists) {
         //remove d-none from image
         image.classList.remove('d-none');
-        console.log("✅ La imagen existe:", url);
         image.src = news.image;
       } else {
         //add d-none to image
@@ -262,6 +261,20 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
     console.error("Error generating article:", err);
     clearInterval(interval);
     clearInterval(dotsInterval);
+    loaderDiv.remove();
+    //put text telling to retry using the Regenerate article button, if error code is 503 put that the model is overloaded
+    const errorSpan = document.createElement('span');
+    errorSpan.classList.add('news-error', 'model-error');
+    if (err.message?.includes("503") || err.message?.includes("overloaded") || err.status === 503) {
+      errorSpan.textContent = "The model is currently overloaded. Please try again later.";
+    } else if (err.message?.includes("429") || err.message?.includes("rate limit")) {
+      errorSpan.textContent = "Rate limit reached. Please wait a moment before retrying.";
+    } else if (err.message?.includes("network") || err.message?.includes("fetch")) {
+      errorSpan.textContent = "Network error. Please check your connection and try again.";
+    } else {
+      errorSpan.textContent = "Error generating article. Please try again using the Regenerate button.";
+    }
+    newsArticle.appendChild(errorSpan);
   }
 }
 
@@ -361,7 +374,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       const newResp = await command.promiseExecute();
       place_turning_outcome(newResp.content, newsList);
 
-      if (news.type === "turning_point_transfer" || news.type === "turning_point_outcome_transfer") {
+      if (news.type === "turning_point_transfer" || news.type === "turning_point_injury") {
         const commandDrivers = new Command("driversRefresh", {});
         commandDrivers.execute();
       }
@@ -823,20 +836,20 @@ function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
   newEl.addEventListener('transitionend', newFn);
 }
 
-function addTurningPointContexts(prompt) {
-  let saveName = getSaveName();
-  //remove file extension if any
-  saveName = saveName.split('.')[0];
-  let newsName = `${saveName}_news`;
-  const news = JSON.parse(localStorage.getItem(newsName)) || [];
+async function addTurningPointContexts(prompt, date) {
+  const command = new Command("getNews", {});
+  let resp = await command.promiseExecute();
+  let news = resp.content;
+
   const newsWithId = Object.entries(news).map(([id, n]) => ({ id, ...n }));
-  const turningPointsOutcomes = newsWithId.filter(n => n.id.startsWith('turning_point_outcome_'));
+  const turningPointsOutcomes = newsWithId.filter(n => n.id.startsWith('turning_point_outcome_') || n.id.includes('_world_champion'));
 
   if (turningPointsOutcomes.length > 0) {
     let number = 1;
-    prompt += `\n\nHere are some other events that happened through the season. Talk about them if relevant to the article:`
-    const turningOutcomesText = turningPointsOutcomes.map(tp => {
-      if (tp.turning_point_type === "positive") {
+    let turningOutcomesText = ``;
+    turningOutcomesText += turningPointsOutcomes.map(tp => {
+      const turningDate = tp.date;
+      if ((tp.turning_point_type === "positive" || tp.id.includes('_world_champion'))) {
         if (tp.id.includes("investment")) {
           return `${number++}. ${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`
         }
@@ -852,12 +865,21 @@ function addTurningPointContexts(prompt) {
         else if (tp.id.includes("transfer")) {
           return `${number++}. ${tp.data.driver_out?.name} lost his seat at ${tp.data.team} and ${tp.data.driver_in?.name} has been signed to replace him.`;
         }
+        else if (tp.id.includes("injury")) {
+          return `${number++}. ${tp.data.driver_affected?.name} suffered ${tp.data.condition?.condition} due to "${tp.data.condition?.reason}", causing him to miss ${tp.data.condition?.races_affected?.length || 1} race(s). ${tp.data.reserve_driver ? `He was replaced by ${tp.data.reserve_driver?.name}.` : ''}`;
+        }
+        else if (tp.id.includes("_world_champion")) {
+          return `${number++}. ${tp.data.driver_name} (${combined_dict[tp.data.driver_team_id]}) won the ${tp.data.season_year} world championship at the ${tp.data.adjective} GP `;
+        }
       }
     }).join("\n");
-    prompt += `\n${turningOutcomesText}`;
+    if (turningOutcomesText) {
+      prompt += `\n\nHere are some other events that happened through the season. Talk about them if relevant to the article:\n${turningOutcomesText}`;
+    }
   }
   return prompt;
 }
+
 
 
 function buildContextualPrompt(data, config = {}) {
@@ -868,9 +890,10 @@ function buildContextualPrompt(data, config = {}) {
     racesNames,
     champions,
     driverQualiResults,
-    enrichedAllTime
+    enrichedAllTime,
+    driverRaceResults
   } = data;
-  const { timing = '', teamId = null, teamName = '', seasonYear = '', quali = false } = config;
+  const { timing = '', teamId = null, teamName = '', seasonYear = '' } = config;
   console.log("Building contextual prompt with data:", data, "and config:", config);
 
   let prompt = '';
@@ -905,18 +928,41 @@ function buildContextualPrompt(data, config = {}) {
 
     const previousResults = resultsToProcess.map((d) => {
       const details = [
-        d.nWins > 0 ? `${d.nWins} ${quali ? "poles" : "wins"}` : '',
-        d.nPodiums > 0 ? `${d.nPodiums} ${quali ? "top 3s" : "podiums"}` : '',
-        (d.nWins === 0 && d.nPodiums === 0 && d.nPointsFinishes > 0) ? `${d.nPointsFinishes} ${quali ? "top 10s" : "points finishes"}` : ''
+        d.nWins > 0 ? `${d.nWins} wins` : '',
+        d.nPodiums > 0 ? `${d.nPodiums} podiums` : '',
+        (d.nWins === 0 && d.nPodiums === 0 && d.nPointsFinishes > 0) ? `${d.nPointsFinishes} points finishes` : ''
       ].filter(Boolean).join(', ');
 
       return `${d.name}${details ? ` (${details})` : ''} ${d.resultsString}`;
     }).join("\n");
 
     if (teamId && teamName) {
-      prompt += `\n\nHere are the previous ${quali ? "qualifying" : "race"} results for ${teamName}'s drivers:\n${previousResults}`;
+      prompt += `\n\nHere are the previous race results for ${teamName}'s drivers:\n${previousResults}`;
     } else if (resultsToProcess.length > 0) {
-      prompt += `\n\nHere are the previous ${quali ? "qualifying" : "race"} results for each driver:\n${previousResults}`;
+      prompt += `\n\nHere are the previous race results for each driver:\n${previousResults}`;
+    }
+  }
+
+  if (driverQualiResults) {
+    let qualiResultsToProcess = driverQualiResults;
+    if (teamId) {
+      qualiResultsToProcess = driverQualiResults.filter(d => d.teamId === teamId);
+    }
+
+    const previousQualiResults = qualiResultsToProcess.map(d => {
+      const details = [
+        d.nWins > 0 ? `${d.nWins} poles` : '',
+        d.nPodiums > 0 ? `${d.nPodiums} top 3s` : '',
+        (d.nWins === 0 && d.nPodiums === 0 && d.nPointsFinishes > 0) ? `${d.nPointsFinishes} top 10s` : ''
+      ].filter(Boolean).join(', ');
+
+      return `${d.name}${details ? ` (${details})` : ''} ${d.resultsString}`;
+    }).join("\n");
+
+    if (teamId && teamName) {
+      prompt += `\n\nHere are the previous qualifying results for ${teamName}'s drivers:\n${previousQualiResults}`;
+    } else if (qualiResultsToProcess.length > 0) {
+      prompt += `\n\nHere are the previous qualifying results for each driver:\n${previousQualiResults}`;
     }
   }
 
@@ -934,21 +980,6 @@ function buildContextualPrompt(data, config = {}) {
     prompt += `\n\nIf you want to mention that someone is the reigning champion, here are the last F1 world champions and runner ups:\n${previousChampions}`;
   }
 
-  if (driverQualiResults) {
-    let qualiResultsToProcess = driverQualiResults;
-    if (teamId) {
-      qualiResultsToProcess = driverQualiResults.filter(d => d.teamId === teamId);
-    }
-
-    const previousQualiResults = qualiResultsToProcess.map(d => `${d.name} - ${d.resultsString}`).join("\n");
-
-    if (teamId && teamName) {
-      prompt += `\n\nHere are the previous qualifying results for ${teamName}'s drivers:\n${previousQualiResults}`;
-    } else if (qualiResultsToProcess.length > 0) {
-      prompt += `\n\nHere are the previous qualifying results for each driver:\n${previousQualiResults}`;
-    }
-  }
-
   if (enrichedAllTime.length > 0) {
     let list = enrichedAllTime;
 
@@ -964,18 +995,19 @@ function buildContextualPrompt(data, config = {}) {
       const podiums = d.totalPodiums ?? 0;
       const starts = d.totalStarts ?? 0;
       const name = d.name || `Driver ${d.id}`;
+      const isRookie = Number(seasonYear) === Number(d.firstRace.season);
 
       const tLbl = titles === 1 ? 'drivers championship' : 'drivers championships';
       const wLbl = wins === 1 ? 'race win' : 'race wins';
       const pLbl = podiums === 1 ? 'podium' : 'podiums';
       const sLbl = 'race starts';
 
-      return `${name}: ${titles} ${tLbl}, ${wins} ${wLbl}, ${podiums} ${pLbl}, ${starts} ${sLbl}`;
+      return `${name} ${isRookie ? '(Rookie)' : ''}: ${titles} ${tLbl}, ${wins} ${wLbl}, ${podiums} ${pLbl}, ${starts} ${sLbl}`;
     }).join('\n');
 
 
     if (lines) {
-      prompt += `\n\nHere are the stats for each driver in the grid. Only mention them if relevant:\n${lines}`;
+      prompt += `\n\nHere are the stats for each driver in the grid. Drivers not marked with (Rookie) are not rookies anymore. Only mention them if relevant:\n${lines}`;
     }
   }
 
@@ -1012,6 +1044,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_technical_directive: (nd) => contextualizeTurningPointTechnicalDirective(nd, nd.turning_point_type),
     turning_point_investment: (nd) => contextualizeTurningPointInvestment(nd, nd.turning_point_type),
     turning_point_race_substitution: (nd) => contextualizeTurningPointRaceSubstitution(nd, nd.turning_point_type),
+    turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
   };
 
   // 3) Normaliza tipos "turning_point_outcome_*" -> "turning_point_*"
@@ -1053,19 +1086,12 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         `The current date is ${isoDate}\n\n` +
         base +
         `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
-        `\n\nThe title of the article is: "${newData.title}"\n\n`;
+        `\n\nThe title of the article is: "${newData.title}"`;
 
       // Contextos extra de Turning Points (si tu helper ya es idempotente, no pasa nada por llamarlo siempre)
-      prompt = addTurningPointContexts(prompt);
+      prompt = await addTurningPointContexts(prompt, newData.date);
 
-      prompt += `
-      Use **Markdown** formatting in your response for better readability:
-      - Use "#" or "##" for main and secondary titles.
-      - Use **bold** for important names or key phrases.
-      - Use *italics* for quotes or emotional emphasis.
-      - Use bullet points or numbered lists if needed.
-      Do not include any raw HTML or code blocks.
-      The final output must be valid Markdown ready to render as HTML.`;
+      prompt += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- Use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
     }
 
     console.log("Final prompt for AI:", prompt);
@@ -1085,6 +1111,77 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
   } finally {
     if (progressInterval) clearInterval(progressInterval);
   }
+}
+
+async function contextualizeTurningPointInjury(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 106);
+  let prompt;
+  let seasonYear = newData.data.season;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+  prompt = prompt
+    .replace(/{{\s*driver\s*}}/g, newData.data.driver_affected?.name || 'the driver')
+    .replace(/{{\s*team\s*}}/g, newData.data.team || 'the team')
+    .replace(/{{\s*condition\s*}}/g, newData.data.condition?.condition || 'a physical issue')
+    .replace(/{{\s*reason\s*}}/g, newData.data.condition?.reason || 'a private medical matter')
+    .replace(/{{\s*races_affected_count\s*}}/g, (newData.data.condition?.races_affected?.length || 1))
+    .replace(/{{\s*expectedReturnCountry\s*}}/g, newData.data.condition?.expectedReturnCountry || 'a later round');
+
+  if (newData.data.reserve_driver) {
+    prompt = prompt.replace(/{{\s*reserve_driver_part\s*}}/g, () => {
+      const reserveName = newData.data.reserve_driver?.name || 'the reserve driver';
+      const isFreeAgent = !!newData.data.reserve_driver?.isFreeAgent;
+
+      const t = String(newData.data.turningPointType || newData.data.turning_point_type || '')
+        .toLowerCase();
+      const isPositive = t.includes('positive');
+      const isNegative = t.includes('negative');
+
+      // Destinos y contexto
+      const inTeam = newData.data.team || 'the team';                 // equipo que sufre la baja (lo usabas arriba)
+      const driverNameOut = newData.data.driver_affected?.name || 'the injured driver'; // piloto que se lesiona
+
+      if (isFreeAgent) {
+        if (isPositive) {
+          return `${reserveName} will join ${inTeam} as a free agent to replace ${driverNameOut}.`;
+        } else if (isNegative) {
+          return `${reserveName} would have joined ${inTeam} as a free agent to replace ${driverNameOut}.`;
+        } else {
+          return `${reserveName} is being considered as a free-agent option to replace ${driverNameOut} at ${inTeam}.`;
+        }
+      } else {
+        if (isPositive) {
+          return `${reserveName} will be promoted from ${inTeam}'s reserve/academy to replace ${driverNameOut} at ${inTeam}.`;
+        } else if (isNegative) {
+          return `${reserveName} would have been promoted from ${inTeam}'s reserve/academy to replace ${driverNameOut} at ${inTeam}.`;
+        } else {
+          return `${reserveName} is being discussed as a promotion candidate from ${inTeam}'s reserve/academy to replace ${driverNameOut} at ${inTeam}.`;
+        }
+      }
+    });
+  }
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  prompt += buildContextualPrompt(resp.content, { seasonYear });
+
+  return prompt;
 }
 
 
@@ -1124,7 +1221,6 @@ async function contextualizeTurningPointRaceSubstitution(newData, turningPointTy
 
 async function contextualizeTurningPointInvestment(newData, turningPointType) {
   const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 102);
-  console.log("Prompt template entry:", promptTemplateEntry);
   let prompt;
   let seasonYear = newData.data.season;
   if (turningPointType.includes("positive")) {
@@ -1293,7 +1389,6 @@ async function contextualizeTurningPointTransfer(newData, turningPointType) {
   let resp;
   try {
     resp = await command.promiseExecute();
-    console.log("Transfer rumor response:", resp);
   } catch (err) {
     console.error("Error fetching transfer rumor:", err);
     return;
@@ -1365,7 +1460,7 @@ async function contextualizeWorldChampion(newData) {
 
       prompt += `\n\n${numberOfRace}`;
 
-      prompt += buildContextualPrompt(standingsResp.content, { timing: "after this race" });
+      prompt += buildContextualPrompt(standingsResp.content, { timing: "after this race", seasonYear: newData.data.season_year });
     } else {
       prompt += "\n\nCould not retrieve current championship standings.";
     }
@@ -1411,7 +1506,7 @@ async function contextualizePotentialChampion(newData) {
       prompt += `\n\n${numberOfRace}`;
 
       // Contexto antes de esta carrera
-      prompt += buildContextualPrompt(c, { timing: "before this race" });
+      prompt += buildContextualPrompt(c, { timing: "before this race", seasonYear: newData.data.season_year });
 
       // Reglas de puntos (tal cual las comunicas)
       prompt += `\n\nThe maximum amount of points for the winner in each race is ${c.pointsSchema.twoBiggestPoints[0]}.
@@ -1507,7 +1602,7 @@ async function contextualizeSillySeasonTransferNews(newData) {
     });
   });
 
-  prompt += buildContextualPrompt(resp.content);
+  prompt += buildContextualPrompt(resp.content, { seasonYear: season });
 
   return prompt;
 }
@@ -1552,7 +1647,7 @@ async function contextualizeFakeTransferNews(newData) {
   });
 
 
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race" });
+  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
 
   return prompt;
 }
@@ -1610,7 +1705,7 @@ async function contextualizeBigTransferConfirm(newData) {
   });
 
 
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race" });
+  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
 
   return prompt;
 }
@@ -1668,7 +1763,7 @@ async function contextualizeRenewalNews(newData) {
   });
 
 
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race" });
+  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
 
   return prompt;
 }
@@ -1721,7 +1816,7 @@ async function contextualizeTeamComparison(newData) {
     racesNames: resp.content.currentRacesNames,
     enrichedAllTime: resp.content.enrichedAllTime
   };
-  prompt += buildContextualPrompt(currentContextData, { teamId: newData.data.team.teamId, teamName: team1 });
+  prompt += buildContextualPrompt(currentContextData, { teamId: newData.data.team.teamId, teamName: team1, seasonYear });
 
 
   const oldRacesNames = resp.content.oldRacesNames.join(', ');
@@ -1787,7 +1882,7 @@ async function contextualizeQualiResults(newData) {
 
   prompt += "\n\nHere are the full qualifying results:\n" + qualiResults;
 
-  prompt += buildContextualPrompt(resp.content, { timing: "before this race", quali: true });
+  prompt += buildContextualPrompt(resp.content, { timing: "before this race", seasonYear });
 
 
   return prompt;
@@ -1839,6 +1934,22 @@ async function contextualizeRaceResults(newData) {
   prompt += safetyCarPhrase;
 
 
+  //generate a random number from 35 to 62 both included
+  const top3 = resp.content.driverOfTheDayInfo;
+
+  if (Array.isArray(top3) && top3.length > 0) {
+    const first = top3[0];
+    const second = top3[1];
+    const third = top3[2];
+
+    const driverOfTheDayPhrase = `
+      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}) with ${first.share.toFixed(1)}% of the fan votes.\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}) with ${second.share.toFixed(1)}%,` : ''}\n${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}) with ${third.share.toFixed(1)}%.` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
+    `;
+
+    prompt += driverOfTheDayPhrase;
+  }
+
+
   if (resp.content.sprintDetails.length > 0) {
     prompt += `\n\nThere was a sprint race held on Saturday, which was won by ${resp.content.sprintDetails[0].name} (${combined_dict[resp.content.sprintDetails[0].teamId]}). Dedicate a paragraph discussing the sprint results`;
 
@@ -1864,7 +1975,7 @@ async function contextualizeRaceResults(newData) {
 
 
 
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race" });
+  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear });
 
 
   return prompt;
@@ -1930,7 +2041,7 @@ async function contextualizeSeasonReview(newData) {
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content);
+  prompt += buildContextualPrompt(resp.content, { seasonYear });
 
   const carPerformanceStart = Object.entries(resp.content.carsPerformance[0])
     .sort((a, b) => b[1] - a[1])

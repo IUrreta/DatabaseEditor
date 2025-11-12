@@ -1,4 +1,4 @@
-import {Gvas, Serializer} from "./UESaveTool";
+import { Gvas, Serializer } from "./UESaveTool";
 import pako from "pako";
 import { saveAs } from "file-saver";
 import { Buffer } from "buffer";
@@ -94,7 +94,7 @@ export const analyzeFileToDatabase = async (file, SQL) => {
           // saveAs(new Blob([metadata.chunk0], {type: "application/binary"}), "chunk0");
         }
 
-        resolve({db, metadata});
+        resolve({ db, metadata });
       };
       reader.readAsArrayBuffer(file);
     }
@@ -102,6 +102,13 @@ export const analyzeFileToDatabase = async (file, SQL) => {
 }
 
 export const repack = (db, metadata, overwrite = false) => {
+  db.exec(`
+    PRAGMA journal_mode = OFF;
+    PRAGMA temp_store = MEMORY;
+    PRAGMA synchronous = OFF;
+    PRAGMA optimize;
+    VACUUM;
+  `);
   const db_data = db.export();
   const db_size = db_data.length;
 
@@ -115,7 +122,7 @@ export const repack = (db, metadata, overwrite = false) => {
   compressedData.set(otherDatabases[0].file, db_size);
   compressedData.set(otherDatabases[1].file, db_size + s1);
 
-  const compressed = pako.deflate(compressedData);
+  const compressed = pako.deflate(compressedData, { level: 9 });
   const compressed_size = compressed.length;
 
   const serialized = gvasMeta.serialize();
@@ -139,8 +146,8 @@ export const repack = (db, metadata, overwrite = false) => {
 
     return { finalData, metadata };
 
-    saveAs(new Blob([finalData], {type: "application/binary"}), metadata.filename);
-    
+    saveAs(new Blob([finalData], { type: "application/binary" }), metadata.filename);
+
   } else {
     alert("Savefile Serialization Check failed.")
   }
@@ -148,5 +155,5 @@ export const repack = (db, metadata, overwrite = false) => {
 }
 
 export const dump = (db, metadata) => {
-  saveAs(new Blob([db.export()], {type: "application/vnd.sqlite3"}), metadata.filename + ".db");
+  saveAs(new Blob([db.export()], { type: "application/vnd.sqlite3" }), metadata.filename + ".db");
 }
