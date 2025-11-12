@@ -50,6 +50,8 @@ export function generate_news(savednews, turningPointState) {
     const raceNews = generateRaceResultsNews(racesDone, savednews);
     const qualiNews = generateQualifyingResultsNews(racesDone, savednews);
 
+    const raceReactions = generateRaceReactionsNews(racesDone, savednews);
+
     const comparisonNews = generateComparisonNews(comparisonMonths, savednews);
 
     const transferRumors = getTrueTransferRumors();
@@ -2710,6 +2712,87 @@ export function generateRaceResultsNews(events, savednews) {
     return newsList;
 }
 
+export function generateRaceReactionsNews(events, savednews) {
+        const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const seasonYear = daySeason[1];
+    let newsList = [];
+
+    events.forEach(raceId => {
+        const entryId = `${seasonYear}_race_reactions_${raceId}`;
+
+        if (savednews[entryId]) {
+            newsList.push({ id: entryId, ...savednews[entryId] });
+            return;
+        }
+
+        const results = getOneRaceResults(raceId);
+
+        const formatted = results.map(row => {
+            const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
+            return {
+                name: news_insert_space(nameFormatted),
+                driverId,
+                teamId,
+                teamName: combined_dict[teamId],
+                pos: row[4],
+                rating: getDriverOverall(driverId)
+            };
+        });
+
+        const unhappyDrivers = formatted.filter(r => r.rating >= 88 && r.pos > 6);
+        if (unhappyDrivers.length === 0) {
+            //get the lowest 88 or more overall driver
+            const sortedByOverall = formatted.filter(r => r.rating >= 88).sort((a, b) => b.rating - a.rating);
+            if (sortedByOverall.length > 0) {
+                unhappyDrivers.push(sortedByOverall[sortedByOverall.length - 1]);
+            }
+        }
+        const randomUnHappyDriver = randomPick(unhappyDrivers);
+
+        //get all drivers who finished in the top 4
+        const happyDrivers = formatted.filter(r => r.pos <= 4);
+        const randomHappyDriver = randomPick(happyDrivers);
+
+        let titleData = {
+            raceId,
+            allHappyDrivers: happyDrivers,
+            allUnhappyDrivers: unhappyDrivers,
+            randomHappyDriver,
+            happyTeam: randomHappyDriver.teamName,
+            unhappyTeam: randomUnHappyDriver.teamName,
+            randomUnHappyDriver,
+            seasonYear,
+            trackId: trackId,
+        }
+
+        const title = generateTitle(titleData, 16);
+
+        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
+        const code = races_names[parseInt(trackId)];
+
+        const image = getImagePath(formatted[0].teamId, code, "raceQuali");
+
+        const overlay = "race-overlay"
+
+        const date = queryDB(`SELECT Day FROM Races WHERE RaceID = ${raceId}`, 'singleValue');
+
+        const newsEntry = {
+            id: entryId,
+            type: "race_reactions",
+            title: title,
+            date: date,
+            image: image,
+            overlay: overlay,
+            data: titleData,
+            text: null
+        };
+        newsList.push(newsEntry);
+
+    });
+
+    return newsList;
+}
+
 export function generateQualifyingResultsNews(events, savednews) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const seasonYear = daySeason[1];
@@ -4127,7 +4210,7 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
         throw new Error('createInjuryRevertTrigger: faltan parámetros obligatorios.');
     }
 
-    const trigName = `trg_injury_revert_${seasonId}_m${monthNumber}_${injuredId}_${reserveId}_d${endDay}`;
+    const trigName = `trg_injury_revert_${seasonId}_${injuredId}`;
 
     // Por si re-generas, dejamos el nombre libre
     queryDB(`DROP TRIGGER IF EXISTS "${trigName}"`);
@@ -4251,8 +4334,8 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
 
       -- Lesionado ↔ su ingeniero original
       INSERT OR IGNORE INTO Staff_RaceEngineerDriverAssignments
-        (RaceEngineerID, DriverID, DaysTogether, DaysApart, IsCurrentAssignment)
-      SELECT s.injured_engineer_id, s.injured_id, 0, 0, 0
+        (RaceEngineerID, DriverID, DaysTogether, IsCurrentAssignment)
+      SELECT s.injured_engineer_id, s.injured_id, 0, 0
       FROM Custom_Injury_Swaps s
       WHERE s.processed = 0 AND s.season_id = ${seasonId} AND s.end_day = ${endDay}
         AND s.injured_engineer_id IS NOT NULL;
@@ -4268,8 +4351,8 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
 
       -- Reserva ↔ su ingeniero original (del equipo de origen del reserva)
       INSERT OR IGNORE INTO Staff_RaceEngineerDriverAssignments
-        (RaceEngineerID, DriverID, DaysTogether, DaysApart, IsCurrentAssignment)
-      SELECT s.reserve_engineer_id, s.reserve_id, 0, 0, 0
+        (RaceEngineerID, DriverID, DaysTogether, IsCurrentAssignment)
+      SELECT s.reserve_engineer_id, s.reserve_id, 0, 0
       FROM Custom_Injury_Swaps s
       WHERE s.processed = 0 AND s.season_id = ${seasonId} AND s.end_day = ${endDay}
         AND s.reserve_engineer_id IS NOT NULL;

@@ -345,6 +345,15 @@ export function getParamMap(data) {
             season_year: data.season,
             driver1: data.driver1,
         },
+        16: {
+            happy_driver: data.happy_driver?.name ?? "",
+            unhappy_driver: data.unhappy_driver?.name ?? "",
+            happy_team: data.happy_team,
+            unhappy_team: data.unhappy_team,
+            circuit: data.circuit,
+            country: data.country,
+            adjective: data.adjective
+        },
         100: {
             component: data.component
         },
