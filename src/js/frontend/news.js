@@ -849,7 +849,7 @@ async function addTurningPointContexts(prompt, date) {
     let turningOutcomesText = ``;
     turningOutcomesText += turningPointsOutcomes.map(tp => {
       const turningDate = tp.date;
-      if ((tp.turning_point_type === "positive" || tp.id.includes('_world_champion'))) {
+      if ((tp.turning_point_type === "positive" || tp.id.includes('_world_champion')) && Number(turningDate) <= Number(date)) {
         if (tp.id.includes("investment")) {
           return `${number++}. ${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`
         }
@@ -894,7 +894,6 @@ function buildContextualPrompt(data, config = {}) {
     driverRaceResults
   } = data;
   const { timing = '', teamId = null, teamName = '', seasonYear = '' } = config;
-  console.log("Building contextual prompt with data:", data, "and config:", config);
 
   let prompt = '';
 
@@ -1092,7 +1091,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
       // Contextos extra de Turning Points (si tu helper ya es idempotente, no pasa nada por llamarlo siempre)
       prompt = await addTurningPointContexts(prompt, newData.date);
 
-      prompt += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- Use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
+      prompt += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
     }
 
     console.log("Final prompt for AI:", prompt);
@@ -1968,11 +1967,11 @@ async function contextualizeRaceResults(newData) {
         : row.gapLaps > 0
           ? `${row.gapLaps} laps`
           : `0 seconds`;
-    return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) (Started P${row.grid}) +${gapStr} (+${row.points} pts)`;
+    return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) (Started P${row.grid}) +${gapStr} ${row.dnf !== 1 ? `(+${row.points} pts)` : 'DNF'}`;
   }).join("\n");
 
 
-  prompt += "\n\nHere are the full race results:\n" + raceResults;
+  prompt += "\n\nHere are the full race results. If two drivers DNF'd with the same amount of laps to go, asume that they crashed into each other:\n" + raceResults;
 
 
 
@@ -2024,9 +2023,9 @@ async function contextualizeRaceReaction(newData) {
     .replace(/{{\s*unhappy_driver\s*}}/g, unhappyDriver)
     .replace(/{{\s*circuit\s*}}/g, circuit);
 
-  const command = new Command("fullChampionshipDetailsRequest", {
-    season: seasonYear,
-  }); 
+  const command = new Command("raceDetailsRequest", {
+    raceid: newData.data.raceId,
+  });
   let resp;
 
   try {
@@ -2036,6 +2035,25 @@ async function contextualizeRaceReaction(newData) {
     console.error("Error fetching full championship details:", err);
     return;
   }
+
+  const raceResults = resp.content.details.map(row => {
+    const gapStr =
+      row.gapToWinner > 0
+        ? `${Number(row.gapToWinner.toFixed(3))} seconds`
+        : row.gapLaps > 0
+          ? `${row.gapLaps} laps`
+          : `0 seconds`;
+    return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) (Started P${row.grid}) +${gapStr} ${row.dnf !== 1 ? `(+${row.points} pts)` : 'DNF'}`;
+  }).join("\n");
+
+  
+  prompt += "\n\nHere are the full race results. If two drivers DNF'd with the same amount of laps to go, asume that they crashed into each other:\n" + raceResults;
+
+  // const driverReactions = resp.content.details.map(row => {
+  //   return `${row.name} (${combined_dict[row.teamId]}): ${row.happiness.label}`;
+  // }).join("\n");
+
+  // prompt += "\n\nHere are the drivers reactions to the race. The reactions should go in line with their feeling:\n" + driverReactions;
 
   prompt += buildContextualPrompt(resp.content, { seasonYear });
 

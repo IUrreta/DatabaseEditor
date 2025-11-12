@@ -1826,7 +1826,6 @@ function randomRemovalOfNames(data) {
 
 
 function generateTurningPointTitle(data, new_type, turningPointType) {
-    console.log("Generating turning point title:", data);
     let dataRandomized = randomRemovalOfNames(data);
     let templateObj = null;
     templateObj = turningPointsTitleTemplates.find(t => t.new_type === new_type);
@@ -1847,7 +1846,6 @@ function generateTurningPointTitle(data, new_type, turningPointType) {
 
 
 function generateTitle(data, new_type) {
-    console.log("Generating title:", data);
     let dataRandomized = randomRemovalOfNames(data);
     let templateObj = null;
     templateObj = newsTitleTemplates.find(t => t.new_type === new_type);
@@ -1863,8 +1861,6 @@ function generateTitle(data, new_type) {
     const titles = templateObj.titles;
     const idx = Math.floor(Math.random() * titles.length);
     const tpl = titles[idx];
-
-    console.log("Selected template:", tpl);
 
     return tpl.replace(/{{\s*(\w+)\s*}}/g, (_, key) => paramMap[new_type][key] || '');
 }
@@ -2728,6 +2724,11 @@ export function generateRaceReactionsNews(events, savednews) {
             return;
         }
 
+        //30% chance of not generating
+        if (Math.random() < 0.3) {
+            return;
+        }
+
         const results = getOneRaceResults(raceId);
 
         const formatted = results.map(row => {
@@ -3033,8 +3034,11 @@ export function getOneRaceDetails(raceId) {
 
     const seasonResults = fetchSeasonResults(season, true);
     const pointsSchema = fetchPointsRegulations();
+    const maxPointsPerRace = pointsSchema.twoBiggestPoints[0]
 
     const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceId);
+
+    console.log("Driver standings:", driverStandings);
 
     const remainingRaces = queryDB(`SELECT RaceID, TrackID, WeekendType FROM Races WHERE SeasonID = ${season} AND RaceID > ${raceId} ORDER BY RaceID`, 'allRows');
     //make an object that has raceid, trackId, and race track
@@ -3047,12 +3051,18 @@ export function getOneRaceDetails(raceId) {
         }
     });
 
+    const nTotalRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season}`, 'singleValue');
+    
+
+    const nRemainingRaces = remainingRaces.length;
+    const nElapsedRaces = nTotalRaces - nRemainingRaces;
+    const aproxMaxPoints = nRemainingRaces * maxPointsPerRace;
+
     // 1) Obtenemos time y laps del ganador (primera fila)
     const winnerTime = results[0][10]; // índice 10 = res.Time
     const winnerLaps = results[0][11]; // índice 11 = res.Laps
 
     const top3DoD = getDoDTopNForRace(season, raceId, 3);
-    console.log("Top 3Driver of the day:", top3DoD);
 
     //for each of the top3, changen name for news_insert_space(name), and leave the rest the same
     const driverOfTheDayInfo = top3DoD.map((dod, index) => {
@@ -3063,16 +3073,17 @@ export function getOneRaceDetails(raceId) {
         };
     });
 
+    const gridOveralls = driverStandings.map(d => getDriverOverall(d.driverId));
+
     const raceDetails = results.map(row => {
         const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
         const time = row[10];
         const laps = row[11];
 
-
         const gapToWinner = time - winnerTime;
-        const gapLaps = winnerLaps - laps
+        const gapLaps = winnerLaps - laps;
 
-        return {
+        const base = {
             name: news_insert_space(nameFormatted),
             driverId,
             teamId,
@@ -3084,6 +3095,28 @@ export function getOneRaceDetails(raceId) {
             virtualSafetyCar: row[9],
             gapToWinner,
             gapLaps,
+            overall: getDriverOverall(driverId),
+            pointsGapToLeader: driverStandings.find(d => d.driverId === driverId)?.gapToLeader
+        };
+
+        const happiness = computeDriverHappiness({
+            pos: base.pos,
+            grid: base.grid,
+            dnf: base.dnf,
+            overall: base.overall,
+            pointsGapToLeader: base.pointsGapToLeader,
+            remainingRaces: nRemainingRaces,
+            maxPointsPerRace,
+            previousResults: driversResults.find(d => d.driverId === driverId)?.results || [],
+            gridOveralls,
+            nElapsedRaces,
+            nTotalRaces
+
+        });
+
+        return {
+            ...base,
+            happiness // { score, label, reasons[] }
         };
     });
 
@@ -3206,6 +3239,7 @@ export function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRa
     const teamMap = {};
     let racesNames = [];
     const driversResults = [];
+    let maxPoints = 0;
 
     seasonResults.forEach(driverRec => {
         const name = driverRec.driverName;
@@ -3240,6 +3274,7 @@ export function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRa
                     const pts = (Number(r.points) > 0) ? Number(r.points) : 0;
                     const sprintPts = (r.sprintPoints != null && Number(r.sprintPoints) !== -1) ? Number(r.sprintPoints) : 0;
                     return sum + pts + sprintPts;
+                    maxPoints = Math.max(maxPoints, sum + pts + sprintPts);
                 }
             }
             return sum;
@@ -3255,8 +3290,10 @@ export function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRa
         // 3) Clasificación de pilotos
         driverMap[name] = {
             name: news_insert_space(name),
+            driverId: driverRec.driverId,
             points: totalDriverPoints,
-            teamId: driverRec.latestTeamId,   // <-- antes usabas driverRec[1] (formato viejo)
+            teamId: driverRec.latestTeamId,
+            gapToLeader: 0,
         };
 
         driversResults.push({
@@ -3281,6 +3318,13 @@ export function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRa
     });
 
     const driverStandings = Object.values(driverMap).sort((a, b) => b.points - a.points);
+    //calcula gap to leader
+    if (driverStandings.length > 0) {
+        const leaderPoints = driverStandings[0].points;
+        driverStandings.forEach(driver => {
+            driver.gapToLeader = leaderPoints - driver.points;
+        });
+    }
 
     const teamStandings = Object.entries(teamMap)
         .map(([teamId, points]) => ({ teamId: Number(teamId), points }))
@@ -3385,7 +3429,7 @@ function getImagePath(teamId, code, type) {
     else if (type === "reaction") {
         const useTeam = Math.random() < 0.8;
         if (useTeam) {
-            const options = [1,2,3,4,5,6,8,9,10]
+            const options = [1, 2, 3, 4, 5, 6, 8, 9, 10]
             const randomNum = randomPick(options);
             return `./assets/images/news/${randomNum}_gar.webp`;
         }
@@ -3583,6 +3627,227 @@ export function getTeamComparisonDetails(teamId, season, date) {
         enrichedAllTime
     };
 }
+
+function computeDriverHappiness({
+    pos,                 // posición final
+    grid,                // posición de salida
+    dnf,                 // 1/true si DNF
+    overall,             // 0-99
+    pointsGapToLeader,   // >=0 (0 si líder)
+    remainingRaces,
+    maxPointsPerRace,
+    previousResultsStr,  // string tipo "P15, P13, DNF, P18"
+    overallDistribution,  // array con los overall de toda la parrilla para normalizar expectativas (opcional)
+    nElapsedRaces,
+    nTotalRaces
+}) {
+    const reasons = [];
+
+    // ---------- Utilidades ----------
+    const toNum = (v, def) => Number.isFinite(Number(v)) ? Number(v) : def;
+    const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+
+    // Parseo histórico: [15,13,null,18] (DNF/null si no es número)
+    function parseHistory(str) {
+        if (!str) return [];
+        return String(str)
+            .split(/[,\s]+/)
+            .map(tok => {
+                const m = tok.match(/P?(\d+)/i);
+                if (m) return toNum(m[1], null);
+                if (/dnf/i.test(tok)) return null;
+                return null;
+            })
+            .filter(x => (x === null || (Number.isFinite(x) && x > 0)));
+    }
+
+    function baseFromPos(p) {
+        // Curva más suave: que P12–P16 no sea automáticamente "angry".
+        if (!Number.isFinite(p) || p <= 0) return 20;
+        if (p === 1) return 100;
+        if (p <= 5) return 100 - (p - 1) * 5;      // P2=95, P5=80
+        if (p <= 10) return 80 - (p - 5) * 4;      // P10=60
+        if (p <= 15) return 60 - (p - 10) * 3;     // P15=45
+        if (p <= 20) return 45 - (p - 15) * 2;     // P20=35
+        return 30;
+    }
+
+    function expectedTopFromPercentile(overall, dist) {
+        // Devuelve la "posición esperada máxima razonable" (ej: 6 = top6).
+        if (!Array.isArray(dist) || dist.length < 5) {
+            // fallback por tiers (más amable):
+            if (overall >= 92) return 4;
+            if (overall >= 88) return 6;
+            if (overall >= 84) return 8;
+            if (overall >= 80) return 10;
+            return 12;
+        }
+        const sorted = [...dist].sort((a, b) => a - b);
+        const idx = sorted.findIndex(x => x >= overall);
+        const rank = idx === -1 ? dist.length - 1 : idx;
+        const percentile = rank / (dist.length - 1 + 1e-9); // 0..1 (0 = peor)
+
+        // Mapear percentil a expectedTop (mejor percentil -> menor expectedTop):
+        // 0.90+ -> top4, 0.75 -> top6, 0.60 -> top8, 0.45 -> top10, 0.25 -> top12, resto top14
+        if (percentile >= 0.90) return 4;
+        if (percentile >= 0.75) return 6;
+        if (percentile >= 0.60) return 8;
+        if (percentile >= 0.45) return 10;
+        if (percentile >= 0.25) return 12;
+        return 14;
+    }
+
+    // ---------- Datos base ----------
+    const remMax = Math.max(0, toNum(remainingRaces, 0)) * Math.max(0, toNum(maxPointsPerRace, 0));
+    const elite = overall >= 92; // subo umbral de "élite" para no penalizar a todos
+    const validPos = Number.isFinite(pos) ? Number(pos) : 99;
+    const validGrid = (Number.isFinite(grid) && grid > 0 && grid !== 99) ? Number(grid) : null;
+    const gap = Number.isFinite(pointsGapToLeader) ? Math.max(0, Number(pointsGapToLeader)) : null;
+
+    const history = parseHistory(previousResultsStr); // e.g. [15,13,null,18]
+    const finishedHistory = history.filter(p => p !== null);
+
+    // ---------- 1) Base por resultado ----------
+    let score = baseFromPos(validPos);
+    reasons.push(`Result base from P${validPos} → ${score}`);
+
+    // ---------- 2) Ganado/perdido vs parrilla ----------
+    if (validGrid !== null) {
+        const delta = validGrid - validPos; // + = gana puestos
+        if (delta > 0) {
+            const gain = Math.min(15, delta * 2.5);  // un poco más suave
+            score += gain;
+            reasons.push(`Gained ${delta} places (+${Math.round(gain)})`);
+        } else if (delta < 0) {
+            const loss = Math.min(18, Math.abs(delta) * 3.5);
+            score -= loss;
+            reasons.push(`Lost ${Math.abs(delta)} places (-${Math.round(loss)})`);
+        } else {
+            reasons.push(`Finished where started`);
+        }
+    }
+
+    // ---------- 3) Expectativas según percentil en la parrilla ----------
+    const expectedTop = expectedTopFromPercentile(overall, overallDistribution);
+    if (validPos <= expectedTop) {
+        const bonus = clamp((expectedTop - validPos) * 2, 0, 10);
+        score += bonus;
+        reasons.push(`Met/exceeded expectation (≤P${expectedTop}) (+${Math.round(bonus)})`);
+    } else {
+        let malus = clamp((validPos - expectedTop) * 3, 0, 18);
+        if (elite) malus = Math.round(malus * 1.15);
+        score -= malus;
+        reasons.push(`Below expectation (>P${expectedTop}) (-${Math.round(malus)})`);
+    }
+
+    // ---------- 4) Contexto del campeonato ----------
+    function earlyTitlePressurePenalty({
+        gap, remMax, maxPointsPerRace, nElapsedRaces, nTotalRaces, elite
+    }) {
+        if (gap === null || remMax <= 0) return 0;
+
+        const races = Math.max(0, Number(nElapsedRaces || 0));
+        const total = Math.max(races, Number(nTotalRaces || 22)); // fallback 22
+        const progress = total > 0 ? races / total : 0;                 // 0..1 (temprano=0)
+        const isEarly = races <= 3;
+
+        // 1) Si es líder → pequeño bonus
+        if (gap === 0) return +10;
+
+        // 2) Umbrales duros al principio de temporada
+        //    Si tras ≤3 carreras el gap ya es enorme, penaliza fuerte.
+        if (isEarly) {
+            if (gap >= 60) return elite ? -28 : -24;
+            if (gap >= 50) return elite ? -24 : -20;
+            if (gap >= 40) return elite ? -20 : -16;
+        }
+
+        // 3) Deriva por carrera: si pierdes de media demasiado por GP, mal síntoma
+        if (races > 0) {
+            const gapPerRace = gap / races; // p.ej. 50/3 ≈ 16.7
+            // Referencia: ganador por GP ~ maxPointsPerRace (25 en F1 clásica)
+            const ratio = gapPerRace / Math.max(1, maxPointsPerRace);
+            if (ratio >= 0.9) return elite ? -20 : -16;   // ritmo título muy comprometido
+            if (ratio >= 0.6) return elite ? -14 : -10;
+            if (ratio >= 0.4) return elite ? -8 : -6;
+        }
+
+        // 4) Ajuste relativo clásico, pero con multiplicador de urgencia al inicio
+        const rel = gap / remMax; // 0..1 (peor cuanto mayor)
+        let adj;
+        if (rel <= 0.25) adj = +5;          // viva la pelea
+        else if (rel <= 0.5) adj = +2;
+        else if (rel <= 0.75) adj = -6;
+        else adj = -10;
+
+        // Urgency: cuanto más temprano, más peso a la parte negativa
+        const urgency = 1 + (1 - progress) * 0.6; // 1.6 al principio, ~1 a final
+        if (adj < 0) adj = Math.round(adj * urgency * (elite ? 1.15 : 1.0));
+
+        return adj;
+    }
+    if (gap !== null && remMax > 0) {
+        const adj = earlyTitlePressurePenalty({
+            gap,
+            remMax,
+            maxPointsPerRace,
+            nElapsedRaces,  
+            nTotalRaces,  
+            elite
+        });
+        score += adj;
+        reasons.push(`Title context adjustment (${adj >= 0 ? '+' : ''}${adj})`);
+    }
+
+    // ---------- 5) Tendencia/forma reciente ----------
+    if (finishedHistory.length >= 2) {
+        const avgRecent = finishedHistory.reduce((a, b) => a + b, 0) / finishedHistory.length;
+        const bestRecent = Math.min(...finishedHistory);
+        const improvementVsAvg = avgRecent - validPos;   // >0 = mejor que su media reciente
+        const improvementVsBest = bestRecent - validPos; // >0 = mejor que su mejor reciente
+
+        // Bonus principal: mejorar claramente su media reciente
+        let trendBonus = clamp(improvementVsAvg * 2.5, -10, 12);
+
+        // Bonus adicional si hace su MEJOR resultado reciente
+        if (validPos < bestRecent) {
+            trendBonus += Math.min(6, (bestRecent - validPos) * 1.5);
+            reasons.push(`Best recent finish (beat P${bestRecent}) (+extra)`);
+        }
+
+        // Si venía de resultados muy malos (media >=14) y hace P≤12, small boost extra
+        if (avgRecent >= 14 && validPos <= 12) {
+            trendBonus += 3;
+            reasons.push(`Turnaround after poor form (+3)`);
+        }
+
+        if (trendBonus !== 0) {
+            score += trendBonus;
+            reasons.push(`Form trend vs avg (Δ=${improvementVsAvg.toFixed(1)}) (${trendBonus >= 0 ? '+' : ''}${Math.round(trendBonus)})`);
+        }
+    }
+
+    // ---------- 6) DNF ----------
+    if (dnf) {
+        const pen = elite ? 28 : 24; // menos bestia
+        score -= pen;
+        reasons.push(`DNF (-${pen})`);
+    }
+
+    // ---------- 7) Clamp + etiqueta ----------
+    score = clamp(Math.round(score), 0, 100);
+
+    let label;
+    if (score >= 85) label = 'ecstatic';
+    else if (score >= 70) label = 'happy';
+    else if (score >= 55) label = 'satisfied';  
+    else if (score >= 40) label = 'neutral';
+    else if (score >= 28) label = 'frustrated';
+    else label = 'disappointed';
+
+    return { score, label, reasons };
+}
+
 
 export function getFullChampionSeasonDetails(season) {
     const seasonResults = fetchSeasonResults(season, true);
@@ -4154,7 +4419,6 @@ export function ensureInjurySwapInfrastructure() {
 }
 
 export function startInjurySwap(injuredId, reserveData, endDay) {
-    console.log("reserveData", reserveData);
     const [dayNow, seasonId] = queryDB(`
         SELECT Day, CurrentSeason
         FROM Player_State
