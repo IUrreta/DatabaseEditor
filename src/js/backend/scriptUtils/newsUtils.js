@@ -820,7 +820,7 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
         reserveCandidates = [];
         for (const rd of reserveDrivers) {
             const overall = getDriverOverall(rd[2]);
-            reserveCandidates.push({ driverId: rd[2], teamId: rd[3], rating: overall });
+            reserveCandidates.push({ driverId: rd[2], teamId: rd[3], rating: overall, name: formatNamesSimple([rd[0], rd[1], rd[4]])[0] });
         }
         reserveCandidates.sort((a, b) => b.rating - a.rating);
     }
@@ -828,9 +828,34 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
         return newsList;
     }
     //get the reserve driver with highest rating
-    reserve.name = formatNamesSimple([reserveDrivers[0][0], reserveDrivers[0][1], reserveDrivers[0][2]])[0];
+    reserve.name = reserveCandidates[0].name;
     reserve.id = reserveCandidates[0].driverId;
     reserve.teamId = reserveCandidates[0].teamId;
+    reserve.overall = reserveCandidates[0].rating;
+
+    //if reserve overall is lower than 70 and fallback
+    if (reserve.overall < 70 || !reserve.overall || !reserve.id) {
+        let freeCandidates = [];
+        const freeAgents = queryDB(`SELECT bas.FirstName, bas.LastName, dri.StaffID
+                    FROM Staff_BasicData bas
+                    JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+                    JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
+                    WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)
+                    AND gd.Retired = 0`, 'allRows');
+        if (freeAgents.length) {
+            for (const fa of freeAgents) {
+                const overall = getDriverOverall(fa[2]);
+                freeCandidates.push({ driverId: fa[2], rating: overall, name: formatNamesSimple([fa[0], fa[1], fa[2]])[0] });
+            }
+            freeCandidates.sort((a, b) => b.rating - a.rating);
+            reserve.name = freeCandidates[0].name;
+            reserve.id = freeCandidates[0].driverId;
+            reserve.teamId = null;
+            reserve.overall = freeCandidates[0].rating;
+            reserve.isFreeAgent = true;
+            reserve.futureTeamId = teamId;
+        }
+    }
 
     // Build data object
     const entryId = `turning_point_injury_${currentMonth}`;
@@ -1752,20 +1777,54 @@ export function getCircuitInfo(raceId) {
 }
 
 function randomRemovalOfNames(data) {
-    let paramsWithName = ["winnerName", "pole_driver", "driver1", " driver2", "driver3", "driver_name"];
-    //if data has any of these params, 50% chance to do split(" ").pop() to retain only last name
-    paramsWithName.forEach(param => {
-        if (data[param]) {
-            if (Math.random() < 0.3) {
-                data[param] = data[param].split(" ").pop();
-            }
-        }
-    });
+  let paramsWithName = ["winnerName", "pole_driver", "driver1", "driver2", "driver3", "driver_name"];
+  const nestedPaths = [
+    ["driver_affected", "name"],
+    ["reserve_driver", "name"],
+    ["driver_out", "name"],
+    ["driver_in", "name"],
+    ["driver_substitute", "name"],
+    ["reserve", "name"], 
+  ];
 
-    return data;
+  // Campos planos
+  paramsWithName.forEach(param => {
+    const v = data[param];
+    if (typeof v === "string" && v.trim()) {
+      let out = v.trim();
+      if (Math.random() < 0.5) {
+        out = out.split(/\s+/).pop();
+      }
+      out = news_insert_space(out);
+      data[param] = out;
+    }
+  });
+
+  // Campos anidados .name
+  nestedPaths.forEach(path => {
+    let obj = data;
+    for (let i = 0; i < path.length - 1; i++) {
+      obj = obj?.[path[i]];
+      if (!obj) return;
+    }
+    const lastKey = path[path.length - 1];
+    const v = obj[lastKey];
+    if (typeof v === "string" && v.trim()) {
+      let out = v.trim();
+      if (Math.random() < 0.5) {
+        out = out.split(/\s+/).pop();
+      }
+      out = (typeof news_insert_space === "function" ? news_insert_space(out) : _newsSpace(out));
+      obj[lastKey] = out;
+    }
+  });
+
+  return data;
 }
 
+
 function generateTurningPointTitle(data, new_type, turningPointType) {
+    console.log("Generating turning point title:", data);
     let dataRandomized = randomRemovalOfNames(data);
     let templateObj = null;
     templateObj = turningPointsTitleTemplates.find(t => t.new_type === new_type);
@@ -3085,7 +3144,7 @@ export function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRa
                     if (!isQuali) {
                         resultsString += (fin !== -1 ? `P${fin}` : "DNF") + ", ";
                     }
-                    else{
+                    else {
                         resultsString += (r.qualifyingPos !== 99 ? `P${r.qualifyingPos}` : `P${r.startingPos}`) + ", ";
                     }
                     if (fin === 1) nWins++;
@@ -3995,23 +4054,25 @@ export function ensureInjurySwapInfrastructure() {
 
 }
 
-export function startInjurySwap(injuredId, reserveId, endDay) {
-  const [dayNow, seasonId] = queryDB(`
-    SELECT Day, CurrentSeason
-    FROM Player_State
-  `, 'singleRow');
+export function startInjurySwap(injuredId, reserveData, endDay) {
+    console.log("reserveData", reserveData);
+    const [dayNow, seasonId] = queryDB(`
+        SELECT Day, CurrentSeason
+        FROM Player_State
+    `, 'singleRow');
+    let reserveId = reserveData.id;
 
-  // Foto del estado original (equipo/pos/coche)
-  const injTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${injuredId}`, 'singleValue');
-  const injPos  = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${injuredId}`, 'singleValue');
-  const injCar  = queryDB(`SELECT AssignedCarNumber FROM Staff_DriverData WHERE StaffID = ${injuredId}`, 'singleValue');
+    // Foto del estado original (equipo/pos/coche)
+    const injTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${injuredId}`, 'singleValue');
+    const injPos = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${injuredId}`, 'singleValue');
+    const injCar = queryDB(`SELECT AssignedCarNumber FROM Staff_DriverData WHERE StaffID = ${injuredId}`, 'singleValue');
 
-  const resTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${reserveId}`, 'singleValue');
-  const resPos  = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${reserveId}`, 'singleValue');
-  const resCar  = queryDB(`SELECT AssignedCarNumber FROM Staff_DriverData WHERE StaffID = ${reserveId}`, 'singleValue');
+    const resTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${reserveId}`, 'singleValue');
+    const resPos = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${reserveId}`, 'singleValue');
+    const resCar = queryDB(`SELECT AssignedCarNumber FROM Staff_DriverData WHERE StaffID = ${reserveId}`, 'singleValue');
 
-  // 🔸 Foto de ingenieros actuales (ANTES del swap)
-  const injEngineer = queryDB(`
+    // 🔸 Foto de ingenieros actuales (ANTES del swap)
+    const injEngineer = queryDB(`
     SELECT RaceEngineerID
     FROM Staff_RaceEngineerDriverAssignments
     WHERE DriverID = ${injuredId} AND IsCurrentAssignment = 1
@@ -4019,7 +4080,7 @@ export function startInjurySwap(injuredId, reserveId, endDay) {
     LIMIT 1
   `, 'singleValue');
 
-  const resEngineer = queryDB(`
+    const resEngineer = queryDB(`
     SELECT RaceEngineerID
     FROM Staff_RaceEngineerDriverAssignments
     WHERE DriverID = ${reserveId} AND IsCurrentAssignment = 1
@@ -4027,11 +4088,15 @@ export function startInjurySwap(injuredId, reserveId, endDay) {
     LIMIT 1
   `, 'singleValue');
 
-  // Aplica el cambio (tu función gestiona engineers/car numbers en este momento)
-  swapDrivers(injuredId, reserveId);
+    if (reserveData.isFreeAgent) {
+        let teamId = reserveData.futureTeamId
+        hireDriver("auto", reserveId, teamId, 10);
+    }
+    // Aplica el cambio (tu función gestiona engineers/car numbers en este momento)
+    swapDrivers(injuredId, reserveId);
 
-  // Registrar TODO para revertir exactamente en endDay
-  queryDB(`
+    // Registrar TODO para revertir exactamente en endDay
+    queryDB(`
     INSERT INTO Custom_Injury_Swaps (
       season_id, start_day, end_day,
       injured_id, reserve_id,
@@ -4050,7 +4115,7 @@ export function startInjurySwap(injuredId, reserveId, endDay) {
     )
   `);
 
-  return { seasonId, dayNow };
+    return { seasonId, dayNow };
 }
 
 
@@ -4234,10 +4299,11 @@ function applyDriverInjury(turningPointData) {
     ensureInjurySwapInfrastructure();
 
     // 1) Aplicar lesión y registrar
-    const injuredId = turningPointData.driver_affected.id;     // ejemplo
-    const reserveId = turningPointData.reserve_driver.id;    // ejemplo
-    const endDay = turningPointData.condition.end_date;    // día del juego en el que termina la lesión
-    const { seasonId } = startInjurySwap(injuredId, reserveId, endDay);
+    const injuredId = turningPointData.driver_affected.id;
+    const reserveData = turningPointData.reserve_driver
+    const endDay = turningPointData.condition.end_date;
+    let reserveId = reserveData.id;
+    const { seasonId } = startInjurySwap(injuredId, reserveData, endDay);
 
     // 2) Crear trigger con nombre que incluya el mes actual
     const monthNumber = turningPointData.month; // por ejemplo, noviembre

@@ -182,7 +182,6 @@ export function initStatsDrivers() {
         const last = el.children[0]?.children[1]?.textContent || "";
         return { el, name: (first + last).toLowerCase() };
     });
-    console.log("Initialized editStatsItems", editStatsItems);
 }
 
 

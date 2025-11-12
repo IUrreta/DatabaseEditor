@@ -849,7 +849,7 @@ async function addTurningPointContexts(prompt, date) {
     let turningOutcomesText = ``;
     turningOutcomesText += turningPointsOutcomes.map(tp => {
       const turningDate = tp.date;
-      if ((tp.turning_point_type === "positive" || tp.id.includes('_world_champion')) && Number(turningDate) <= Number(date)) {
+      if ((tp.turning_point_type === "positive" || tp.id.includes('_world_champion'))) {
         if (tp.id.includes("investment")) {
           return `${number++}. ${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`
         }
@@ -865,6 +865,9 @@ async function addTurningPointContexts(prompt, date) {
         else if (tp.id.includes("transfer")) {
           return `${number++}. ${tp.data.driver_out?.name} lost his seat at ${tp.data.team} and ${tp.data.driver_in?.name} has been signed to replace him.`;
         }
+        else if (tp.id.includes("injury")) {
+          return `${number++}. ${tp.data.driver_affected?.name} suffered ${tp.data.condition?.condition} due to "${tp.data.condition?.reason}", causing him to miss ${tp.data.condition?.races_affected?.length || 1} race(s). ${tp.data.reserve_driver ? `He was replaced by ${tp.data.reserve_driver?.name}.` : ''}`;
+        }
         else if (tp.id.includes("_world_champion")) {
           return `${number++}. ${tp.data.driver_name} (${combined_dict[tp.data.driver_team_id]}) won the ${tp.data.season_year} world championship at the ${tp.data.adjective} GP `;
         }
@@ -876,6 +879,7 @@ async function addTurningPointContexts(prompt, date) {
   }
   return prompt;
 }
+
 
 
 function buildContextualPrompt(data, config = {}) {
@@ -1128,8 +1132,41 @@ async function contextualizeTurningPointInjury(newData, turningPointType) {
     .replace(/{{\s*condition\s*}}/g, newData.data.condition?.condition || 'a physical issue')
     .replace(/{{\s*reason\s*}}/g, newData.data.condition?.reason || 'a private medical matter')
     .replace(/{{\s*races_affected_count\s*}}/g, (newData.data.condition?.races_affected?.length || 1))
-    .replace(/{{\s*reserve_driver\s*}}/g, newData.data.reserve_driver?.name || 'the reserve driver')
     .replace(/{{\s*expectedReturnCountry\s*}}/g, newData.data.condition?.expectedReturnCountry || 'a later round');
+
+  if (newData.data.reserve_driver) {
+    prompt = prompt.replace(/{{\s*reserve_driver_part\s*}}/g, () => {
+      const reserveName = newData.data.reserve_driver?.name || 'the reserve driver';
+      const isFreeAgent = !!newData.data.reserve_driver?.isFreeAgent;
+
+      const t = String(newData.data.turningPointType || newData.data.turning_point_type || '')
+        .toLowerCase();
+      const isPositive = t.includes('positive');
+      const isNegative = t.includes('negative');
+
+      // Destinos y contexto
+      const inTeam = newData.data.team || 'the team';                 // equipo que sufre la baja (lo usabas arriba)
+      const driverNameOut = newData.data.driver_affected?.name || 'the injured driver'; // piloto que se lesiona
+
+      if (isFreeAgent) {
+        if (isPositive) {
+          return `${reserveName} will join ${inTeam} as a free agent to replace ${driverNameOut}.`;
+        } else if (isNegative) {
+          return `${reserveName} would have joined ${inTeam} as a free agent to replace ${driverNameOut}.`;
+        } else {
+          return `${reserveName} is being considered as a free-agent option to replace ${driverNameOut} at ${inTeam}.`;
+        }
+      } else {
+        if (isPositive) {
+          return `${reserveName} will be promoted from ${inTeam}'s reserve/academy to replace ${driverNameOut} at ${inTeam}.`;
+        } else if (isNegative) {
+          return `${reserveName} would have been promoted from ${inTeam}'s reserve/academy to replace ${driverNameOut} at ${inTeam}.`;
+        } else {
+          return `${reserveName} is being discussed as a promotion candidate from ${inTeam}'s reserve/academy to replace ${driverNameOut} at ${inTeam}.`;
+        }
+      }
+    });
+  }
 
   const command = new Command("fullChampionshipDetailsRequest", {
     season: seasonYear,
@@ -1911,7 +1948,7 @@ async function contextualizeRaceResults(newData) {
 
     prompt += driverOfTheDayPhrase;
   }
-  
+
 
   if (resp.content.sprintDetails.length > 0) {
     prompt += `\n\nThere was a sprint race held on Saturday, which was won by ${resp.content.sprintDetails[0].name} (${combined_dict[resp.content.sprintDetails[0].teamId]}). Dedicate a paragraph discussing the sprint results`;
