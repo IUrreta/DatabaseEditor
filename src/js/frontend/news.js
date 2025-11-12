@@ -899,7 +899,7 @@ function buildContextualPrompt(data, config = {}) {
 
   if (driverStandings) {
     const driversChamp = driverStandings
-      .map((d, i) => `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`)
+      .map((d, i) => `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts (${d.gapToLeader ? `+${d.gapToLeader} pts to leader` : ''})`)
       .join("\n");
     prompt += `\n\nCurrent Drivers' Championship standings ${timing}:\n${driversChamp}`;
   }
@@ -2049,11 +2049,19 @@ async function contextualizeRaceReaction(newData) {
   
   prompt += "\n\nHere are the full race results. If two drivers DNF'd with the same amount of laps to go, asume that they crashed into each other:\n" + raceResults;
 
-  // const driverReactions = resp.content.details.map(row => {
-  //   return `${row.name} (${combined_dict[row.teamId]}): ${row.happiness.label}`;
-  // }).join("\n");
+    const top3 = resp.content.driverOfTheDayInfo;
 
-  // prompt += "\n\nHere are the drivers reactions to the race. The reactions should go in line with their feeling:\n" + driverReactions;
+  if (Array.isArray(top3) && top3.length > 0) {
+    const first = top3[0];
+    const second = top3[1];
+    const third = top3[2];
+
+    const driverOfTheDayPhrase = `
+      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}) with ${first.share.toFixed(1)}% of the fan votes.\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}) with ${second.share.toFixed(1)}%,` : ''}\n${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}) with ${third.share.toFixed(1)}%.` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
+    `;
+
+    prompt += driverOfTheDayPhrase;
+  }
 
   prompt += buildContextualPrompt(resp.content, { seasonYear });
 
