@@ -4127,7 +4127,7 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
         throw new Error('createInjuryRevertTrigger: faltan parámetros obligatorios.');
     }
 
-    const trigName = `trg_injury_revert_${seasonId}_m${monthNumber}_${injuredId}_${reserveId}_d${endDay}`;
+    const trigName = `trg_injury_revert_${seasonId}_${injuredId}`;
 
     // Por si re-generas, dejamos el nombre libre
     queryDB(`DROP TRIGGER IF EXISTS "${trigName}"`);
@@ -4251,8 +4251,8 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
 
       -- Lesionado ↔ su ingeniero original
       INSERT OR IGNORE INTO Staff_RaceEngineerDriverAssignments
-        (RaceEngineerID, DriverID, DaysTogether, DaysApart, IsCurrentAssignment)
-      SELECT s.injured_engineer_id, s.injured_id, 0, 0, 0
+        (RaceEngineerID, DriverID, DaysTogether, IsCurrentAssignment)
+      SELECT s.injured_engineer_id, s.injured_id, 0, 0
       FROM Custom_Injury_Swaps s
       WHERE s.processed = 0 AND s.season_id = ${seasonId} AND s.end_day = ${endDay}
         AND s.injured_engineer_id IS NOT NULL;
@@ -4268,8 +4268,8 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
 
       -- Reserva ↔ su ingeniero original (del equipo de origen del reserva)
       INSERT OR IGNORE INTO Staff_RaceEngineerDriverAssignments
-        (RaceEngineerID, DriverID, DaysTogether, DaysApart, IsCurrentAssignment)
-      SELECT s.reserve_engineer_id, s.reserve_id, 0, 0, 0
+        (RaceEngineerID, DriverID, DaysTogether, IsCurrentAssignment)
+      SELECT s.reserve_engineer_id, s.reserve_id, 0, 0
       FROM Custom_Injury_Swaps s
       WHERE s.processed = 0 AND s.season_id = ${seasonId} AND s.end_day = ${endDay}
         AND s.reserve_engineer_id IS NOT NULL;
