@@ -894,13 +894,12 @@ function buildContextualPrompt(data, config = {}) {
     driverRaceResults
   } = data;
   const { timing = '', teamId = null, teamName = '', seasonYear = '' } = config;
-  console.log("Building contextual prompt with data:", data, "and config:", config);
 
   let prompt = '';
 
   if (driverStandings) {
     const driversChamp = driverStandings
-      .map((d, i) => `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`)
+      .map((d, i) => `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts (${d.gapToLeader ? `+${d.gapToLeader} pts to leader` : ''})`)
       .join("\n");
     prompt += `\n\nCurrent Drivers' Championship standings ${timing}:\n${driversChamp}`;
   }
@@ -1037,6 +1036,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     team_comparison: contextualizeTeamComparison,
     driver_comparison: contextualizeDriverComparison,
     season_review: contextualizeSeasonReview,
+    race_reaction: contextualizeRaceReaction,
 
     // Turning points: outcome_ y no-outcome comparten handler
     turning_point_dsq: (nd) => contextualizeDSQ(nd, nd.turning_point_type),
@@ -1091,7 +1091,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
       // Contextos extra de Turning Points (si tu helper ya es idempotente, no pasa nada por llamarlo siempre)
       prompt = await addTurningPointContexts(prompt, newData.date);
 
-      prompt += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- Use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
+      prompt += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
     }
 
     console.log("Final prompt for AI:", prompt);
@@ -1967,11 +1967,11 @@ async function contextualizeRaceResults(newData) {
         : row.gapLaps > 0
           ? `${row.gapLaps} laps`
           : `0 seconds`;
-    return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) (Started P${row.grid}) +${gapStr} (+${row.points} pts)`;
+    return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) (Started P${row.grid}) +${gapStr} ${row.dnf !== 1 ? `(+${row.points} pts)` : 'DNF'}`;
   }).join("\n");
 
 
-  prompt += "\n\nHere are the full race results:\n" + raceResults;
+  prompt += "\n\nHere are the full race results. If two drivers DNF'd with the same amount of laps to go, asume that they crashed into each other:\n" + raceResults;
 
 
 
@@ -2005,6 +2005,65 @@ async function contextualizeDriverComparison(newData) {
   }
 
   prompt += buildContextualPrompt(resp.content, { teamId, teamName: combined_dict[teamId], seasonYear });
+
+  return prompt;
+}
+
+async function contextualizeRaceReaction(newData) {
+  let adjective = newData.data.adjective;
+  let seasonYear = newData.data.seasonYear;
+  let happyDriver = newData.data.randomHappyDriver.name;
+  let unhappyDriver = newData.data.randomUnHappyDriver.name;
+  let circuit = newData.data.circuit;
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 16).prompt;
+  prompt = prompt.replace(/{{\s*adjective\s*}}/g, adjective)
+    .replace(/{{\s*season_year\s*}}/g, seasonYear)
+    .replace(/{{\s*happy_driver\s*}}/g, happyDriver)
+    .replace(/{{\s*unhappy_driver\s*}}/g, unhappyDriver)
+    .replace(/{{\s*circuit\s*}}/g, circuit);
+
+  const command = new Command("raceDetailsRequest", {
+    raceid: newData.data.raceId,
+  });
+  let resp;
+
+  try {
+    resp = await command.promiseExecute();
+  }
+  catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  const raceResults = resp.content.details.map(row => {
+    const gapStr =
+      row.gapToWinner > 0
+        ? `${Number(row.gapToWinner.toFixed(3))} seconds`
+        : row.gapLaps > 0
+          ? `${row.gapLaps} laps`
+          : `0 seconds`;
+    return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) (Started P${row.grid}) +${gapStr} ${row.dnf !== 1 ? `(+${row.points} pts)` : 'DNF'}`;
+  }).join("\n");
+
+  
+  prompt += "\n\nHere are the full race results. If two drivers DNF'd with the same amount of laps to go, asume that they crashed into each other:\n" + raceResults;
+
+    const top3 = resp.content.driverOfTheDayInfo;
+
+  if (Array.isArray(top3) && top3.length > 0) {
+    const first = top3[0];
+    const second = top3[1];
+    const third = top3[2];
+
+    const driverOfTheDayPhrase = `
+      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}) with ${first.share.toFixed(1)}% of the fan votes.\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}) with ${second.share.toFixed(1)}%,` : ''}\n${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}) with ${third.share.toFixed(1)}%.` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
+    `;
+
+    prompt += driverOfTheDayPhrase;
+  }
+
+  prompt += buildContextualPrompt(resp.content, { seasonYear });
 
   return prompt;
 }

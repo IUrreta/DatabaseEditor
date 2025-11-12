@@ -50,6 +50,8 @@ export function generate_news(savednews, turningPointState) {
     const raceNews = generateRaceResultsNews(racesDone, savednews);
     const qualiNews = generateQualifyingResultsNews(racesDone, savednews);
 
+    const raceReactions = generateRaceReactionsNews(racesDone, savednews);
+
     const comparisonNews = generateComparisonNews(comparisonMonths, savednews);
 
     const transferRumors = getTrueTransferRumors();
@@ -88,7 +90,7 @@ export function generate_news(savednews, turningPointState) {
     ...bigConfirmedTransfersNews || [], ...contractRenewalsNews || [], ...comparisonNews || [], ...seasonReviews || [],
     ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...dsqTurningPointNews || [], ...midSeasonTransfersTurningPointNews || [],
     ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [],
-    ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || []];
+    ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || [], ...raceReactions || []];
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
@@ -1777,54 +1779,53 @@ export function getCircuitInfo(raceId) {
 }
 
 function randomRemovalOfNames(data) {
-  let paramsWithName = ["winnerName", "pole_driver", "driver1", "driver2", "driver3", "driver_name"];
-  const nestedPaths = [
-    ["driver_affected", "name"],
-    ["reserve_driver", "name"],
-    ["driver_out", "name"],
-    ["driver_in", "name"],
-    ["driver_substitute", "name"],
-    ["reserve", "name"], 
-  ];
+    let paramsWithName = ["winnerName", "pole_driver", "driver1", "driver2", "driver3", "driver_name"];
+    const nestedPaths = [
+        ["driver_affected", "name"],
+        ["reserve_driver", "name"],
+        ["driver_out", "name"],
+        ["driver_in", "name"],
+        ["driver_substitute", "name"],
+        ["reserve", "name"],
+    ];
 
-  // Campos planos
-  paramsWithName.forEach(param => {
-    const v = data[param];
-    if (typeof v === "string" && v.trim()) {
-      let out = v.trim();
-      if (Math.random() < 0.5) {
-        out = out.split(/\s+/).pop();
-      }
-      out = news_insert_space(out);
-      data[param] = out;
-    }
-  });
+    // Campos planos
+    paramsWithName.forEach(param => {
+        const v = data[param];
+        if (typeof v === "string" && v.trim()) {
+            let out = v.trim();
+            if (Math.random() < 0.5) {
+                out = out.split(/\s+/).pop();
+            }
+            out = news_insert_space(out);
+            data[param] = out;
+        }
+    });
 
-  // Campos anidados .name
-  nestedPaths.forEach(path => {
-    let obj = data;
-    for (let i = 0; i < path.length - 1; i++) {
-      obj = obj?.[path[i]];
-      if (!obj) return;
-    }
-    const lastKey = path[path.length - 1];
-    const v = obj[lastKey];
-    if (typeof v === "string" && v.trim()) {
-      let out = v.trim();
-      if (Math.random() < 0.5) {
-        out = out.split(/\s+/).pop();
-      }
-      out = (typeof news_insert_space === "function" ? news_insert_space(out) : _newsSpace(out));
-      obj[lastKey] = out;
-    }
-  });
+    // Campos anidados .name
+    nestedPaths.forEach(path => {
+        let obj = data;
+        for (let i = 0; i < path.length - 1; i++) {
+            obj = obj?.[path[i]];
+            if (!obj) return;
+        }
+        const lastKey = path[path.length - 1];
+        const v = obj[lastKey];
+        if (typeof v === "string" && v.trim()) {
+            let out = v.trim();
+            if (Math.random() < 0.5) {
+                out = out.split(/\s+/).pop();
+            }
+            out = (typeof news_insert_space === "function" ? news_insert_space(out) : _newsSpace(out));
+            obj[lastKey] = out;
+        }
+    });
 
-  return data;
+    return data;
 }
 
 
 function generateTurningPointTitle(data, new_type, turningPointType) {
-    console.log("Generating turning point title:", data);
     let dataRandomized = randomRemovalOfNames(data);
     let templateObj = null;
     templateObj = turningPointsTitleTemplates.find(t => t.new_type === new_type);
@@ -2710,6 +2711,90 @@ export function generateRaceResultsNews(events, savednews) {
     return newsList;
 }
 
+export function generateRaceReactionsNews(events, savednews) {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const seasonYear = daySeason[1];
+    let newsList = [];
+
+    events.forEach(raceId => {
+        const entryId = `${seasonYear}_race_reaction_${raceId}`;
+
+        if (savednews[entryId]) {
+            newsList.push({ id: entryId, ...savednews[entryId] });
+            return;
+        }
+
+        // //30% chance of not generating
+        // if (Math.random() < 0.3) {
+        //     return;
+        // }
+
+        const results = getOneRaceResults(raceId);
+
+        const formatted = results.map(row => {
+            const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
+            return {
+                name: news_insert_space(nameFormatted),
+                driverId,
+                teamId,
+                teamName: combined_dict[teamId],
+                pos: row[4],
+                rating: getDriverOverall(driverId)
+            };
+        });
+
+        const unhappyDrivers = formatted.filter(r => r.rating >= 88 && r.pos > 6);
+        if (unhappyDrivers.length === 0) {
+            //get the lowest 88 or more overall driver
+            const sortedByOverall = formatted.filter(r => r.rating >= 88).sort((a, b) => b.rating - a.rating);
+            if (sortedByOverall.length > 0) {
+                unhappyDrivers.push(sortedByOverall[sortedByOverall.length - 1]);
+            }
+        }
+        const randomUnHappyDriver = randomPick(unhappyDrivers);
+
+        //get all drivers who finished in the top 4
+        const happyDrivers = formatted.filter(r => r.pos <= 4);
+        const randomHappyDriver = randomPick(happyDrivers);
+
+        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
+        const code = races_names[parseInt(trackId)];
+
+        let titleData = {
+            raceId,
+            allHappyDrivers: happyDrivers,
+            allUnhappyDrivers: unhappyDrivers,
+            randomHappyDriver,
+            happyTeam: randomHappyDriver.teamName,
+            unhappyTeam: randomUnHappyDriver.teamName,
+            randomUnHappyDriver,
+            seasonYear,
+            trackId: trackId,
+        }
+
+        const title = generateTitle(titleData, 16);
+
+        const image = getImagePath(randomHappyDriver.teamId, code, "reaction");
+
+        const date = queryDB(`SELECT Day FROM Races WHERE RaceID = ${raceId}`, 'singleValue');
+
+        const newsEntry = {
+            id: entryId,
+            type: "race_reaction",
+            title: title,
+            date: date + 1,
+            image: image,
+            overlay: null,
+            data: titleData,
+            text: null
+        };
+        newsList.push(newsEntry);
+
+    });
+
+    return newsList;
+}
+
 export function generateQualifyingResultsNews(events, savednews) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const seasonYear = daySeason[1];
@@ -2949,8 +3034,11 @@ export function getOneRaceDetails(raceId) {
 
     const seasonResults = fetchSeasonResults(season, true);
     const pointsSchema = fetchPointsRegulations();
+    const maxPointsPerRace = pointsSchema.twoBiggestPoints[0]
 
     const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceId);
+
+    console.log("Driver standings:", driverStandings);
 
     const remainingRaces = queryDB(`SELECT RaceID, TrackID, WeekendType FROM Races WHERE SeasonID = ${season} AND RaceID > ${raceId} ORDER BY RaceID`, 'allRows');
     //make an object that has raceid, trackId, and race track
@@ -2962,13 +3050,13 @@ export function getOneRaceDetails(raceId) {
             trackName: countries_data[races_names[r[1]]].country
         }
     });
+    
 
     // 1) Obtenemos time y laps del ganador (primera fila)
     const winnerTime = results[0][10]; // índice 10 = res.Time
     const winnerLaps = results[0][11]; // índice 11 = res.Laps
 
     const top3DoD = getDoDTopNForRace(season, raceId, 3);
-    console.log("Top 3Driver of the day:", top3DoD);
 
     //for each of the top3, changen name for news_insert_space(name), and leave the rest the same
     const driverOfTheDayInfo = top3DoD.map((dod, index) => {
@@ -2984,11 +3072,10 @@ export function getOneRaceDetails(raceId) {
         const time = row[10];
         const laps = row[11];
 
-
         const gapToWinner = time - winnerTime;
-        const gapLaps = winnerLaps - laps
+        const gapLaps = winnerLaps - laps;
 
-        return {
+        const base = {
             name: news_insert_space(nameFormatted),
             driverId,
             teamId,
@@ -3000,7 +3087,11 @@ export function getOneRaceDetails(raceId) {
             virtualSafetyCar: row[9],
             gapToWinner,
             gapLaps,
+            overall: getDriverOverall(driverId),
+            pointsGapToLeader: driverStandings.find(d => d.driverId === driverId)?.gapToLeader
         };
+
+        return base;
     });
 
     let sprintDetails = [];
@@ -3122,6 +3213,7 @@ export function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRa
     const teamMap = {};
     let racesNames = [];
     const driversResults = [];
+    let maxPoints = 0;
 
     seasonResults.forEach(driverRec => {
         const name = driverRec.driverName;
@@ -3156,6 +3248,7 @@ export function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRa
                     const pts = (Number(r.points) > 0) ? Number(r.points) : 0;
                     const sprintPts = (r.sprintPoints != null && Number(r.sprintPoints) !== -1) ? Number(r.sprintPoints) : 0;
                     return sum + pts + sprintPts;
+                    maxPoints = Math.max(maxPoints, sum + pts + sprintPts);
                 }
             }
             return sum;
@@ -3171,8 +3264,10 @@ export function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRa
         // 3) Clasificación de pilotos
         driverMap[name] = {
             name: news_insert_space(name),
+            driverId: driverRec.driverId,
             points: totalDriverPoints,
-            teamId: driverRec.latestTeamId,   // <-- antes usabas driverRec[1] (formato viejo)
+            teamId: driverRec.latestTeamId,
+            gapToLeader: 0,
         };
 
         driversResults.push({
@@ -3197,6 +3292,13 @@ export function rebuildStandingsUntil(seasonResultsRaw, raceId, includeCurrentRa
     });
 
     const driverStandings = Object.values(driverMap).sort((a, b) => b.points - a.points);
+    //calcula gap to leader
+    if (driverStandings.length > 0) {
+        const leaderPoints = driverStandings[0].points;
+        driverStandings.forEach(driver => {
+            driver.gapToLeader = leaderPoints - driver.points;
+        });
+    }
 
     const teamStandings = Object.entries(teamMap)
         .map(([teamId, points]) => ({ teamId: Number(teamId), points }))
@@ -3292,6 +3394,18 @@ function getImagePath(teamId, code, type) {
         if (useChamp) {
             const randomNum = getRandomInt(1, 5);
             return `./assets/images/news/champ${randomNum}.webp`;
+        }
+        else {
+            return `./assets/images/news/${code}_tra.webp`;
+        }
+
+    }
+    else if (type === "reaction") {
+        const useTeam = Math.random() < 0.8;
+        if (useTeam) {
+            const options = [1, 2, 3, 4, 5, 6, 8, 9, 10]
+            const randomNum = randomPick(options);
+            return `./assets/images/news/${randomNum}_gar.webp`;
         }
         else {
             return `./assets/images/news/${code}_tra.webp`;
@@ -3487,6 +3601,7 @@ export function getTeamComparisonDetails(teamId, season, date) {
         enrichedAllTime
     };
 }
+
 
 export function getFullChampionSeasonDetails(season) {
     const seasonResults = fetchSeasonResults(season, true);
@@ -4058,7 +4173,6 @@ export function ensureInjurySwapInfrastructure() {
 }
 
 export function startInjurySwap(injuredId, reserveData, endDay) {
-    console.log("reserveData", reserveData);
     const [dayNow, seasonId] = queryDB(`
         SELECT Day, CurrentSeason
         FROM Player_State

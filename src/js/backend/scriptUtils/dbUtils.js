@@ -1224,12 +1224,6 @@ export function upsertDoDRanking(season, raceId, leaderboard, topN = 3) {
   for (let i = 0; i < top.length; i++) {
     const { driverId, share, name, teamId } = top[i]; // usamos share (%)
     const rank = i + 1;
-    console.log(`
-      INSERT INTO Custom_DriverOfTheDay_Ranking (Season, RaceID, Rank, DriverID, Name, TeamID, Score)
-      VALUES (${season}, ${raceId}, ${rank}, ${driverId}, '${name}', ${teamId}, ${Number(share)})
-      ON CONFLICT(Season, RaceID, Rank) DO UPDATE
-      SET DriverID = excluded.DriverID, Score = excluded.Score
-    `)
     queryDB(`
       INSERT INTO Custom_DriverOfTheDay_Ranking (Season, RaceID, Rank, DriverID, Name, TeamID, Score)
       VALUES (${season}, ${raceId}, ${rank}, ${driverId}, '${name}', ${teamId}, ${Number(share)})
