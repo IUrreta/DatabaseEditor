@@ -2751,7 +2751,20 @@ export function generateRaceReactionsNews(events, savednews) {
                 unhappyDrivers.push(sortedByOverall[sortedByOverall.length - 1]);
             }
         }
+        if (unhappyDrivers.length === 0) {
+            //ge tthe driver with 86 or more rating in the lowest position
+            const sortedByOverall = formatted.filter(r => r.rating >= 86).sort((a, b) => b.rating - a.rating);
+            if (sortedByOverall.length > 0) {
+                unhappyDrivers.push(sortedByOverall[sortedByOverall.length - 1]);
+            }
+        }
+        //if sitll no unhappyDrivers, get the last one
+        if (unhappyDrivers.length === 0) {
+            unhappyDrivers.push(formatted[formatted.length - 1]);
+        }
+
         const randomUnHappyDriver = randomPick(unhappyDrivers);
+        
 
         //get all drivers who finished in the top 4
         const happyDrivers = formatted.filter(r => r.pos <= 4);
