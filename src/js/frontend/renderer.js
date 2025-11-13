@@ -106,7 +106,6 @@ const patreonUnlockables = document.querySelector(".patreon-unlockables")
 const downloadSaveButton = document.querySelector(".download-save-button")
 
 const patreonThemes = document.querySelector(".patreon-themes");
-const exportImportNews = document.querySelector(".export-import-news");
 const apiKeySection = document.getElementById("apiKeySection");
 
 const apiKeyInput = document.getElementById("apiKeyInput");
@@ -726,7 +725,6 @@ const messageHandlers = {
         updateModBlocking(message)
     },
     "News fetched": (message) => {
-        manageExportImportNews();
         place_news(message, newsAvailable)
     },
     "Save selected finished": async (message) => {
@@ -2184,6 +2182,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+    const aiModel = localStorage.getItem("ai-model") ?? "gemini-2.5-flash"
+    if (aiModel) {
+        document.querySelector(`.dropdown-item[data-value="${aiModel}"]`).click();
+    }
+
 
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
@@ -2472,77 +2475,6 @@ document.querySelectorAll(".team-logo-container").forEach(function (elem) {
     })
 });
 
-async function manageExportImportNews() {
-    //get if signature is valid
-    let isValid = await isPatronSignatureValid();
-    if (isValid.status === "valid") {
-        exportImportNews.classList.remove("d-none");
-        const exportButton = document.getElementById("exportNewsButton");
-        const importButton = document.getElementById("importNewsButton");
-        exportButton.addEventListener("click", function () {
-            //download a json with saveX_news and saveX_tps
-            let saveName = getSaveName();
-            saveName = saveName.split('.')[0];
-            //get news and tps from localStorage
-            let news = localStorage.getItem(`${saveName}_news`);
-            let tps = localStorage.getItem(`${saveName}_tps`);
-            let data = {
-                news: JSON.parse(news || "{}"),
-                turningPointState: JSON.parse(tps || "{}")
-            };
-            let dataStr = JSON.stringify(data, null, 2);
-            let blob = new Blob([dataStr], { type: "application/json" });
-            let url = URL.createObjectURL(blob);
-            let a = document.createElement("a");
-            a.href = url;
-            a.download = `${saveName}_news_backup.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
-        importButton.addEventListener("click", function () {
-            let input = document.createElement("input");
-            input.type = "file";
-            input.accept = "application/json";
-            input.addEventListener("change", function (e) {
-                let file = e.target.files[0];
-                let reader = new FileReader();
-                reader.onload = function (e) {
-                    try {
-                        let data = JSON.parse(e.target.result);
-                        let saveName = getSaveName();
-                        saveName = saveName.split('.')[0];
-                        //if they are not called newsList and turningPointState, rename then accordingly, being arrays, and newsList having the key as the .id
-                        if (!data.newsList) {
-                            data.news = Object.entries(data.news).map(([key, value]) => ({
-                                id: key,
-                                ...value
-                            }));
-                            data.newsList = data.news;
-                            //remove news from data
-                            delete data.news;
-                        }
-                        if (!data.turningPointState) {
-                            data.turningPointState = data.tps;
-                            //remove tps from data
-                            delete data.tps;
-                        }
-                        console.log("News and TPs imported successfully.");
-                        console.log(data);
-                        place_news(data, newsAvailable);
-                    } catch (err) {
-                        alert(`Error importing news: ${err.message}`);
-                        console.error("Error importing news:", err);
-                    }
-                };
-                reader.readAsText(file);
-            });
-            input.click();
-        });
-    }
-
-}
 
 export async function confirmModal({
     title,
