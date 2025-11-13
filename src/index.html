@@ -657,8 +657,10 @@
                 exclusive features and remove the pop-ups!
               </span>
               <div class="patreon-links">
-                <a href="https://www.patreon.com/posts/november-2025-142579653" class="patreon-link" target="_blank">Backer key</a>
-                <a href="https://www.patreon.com/posts/november-2025-142579707" class="patreon-link" target="_blank">Insider key</a>
+                <a href="https://www.patreon.com/posts/november-2025-142579653" class="patreon-link"
+                  target="_blank">Backer key</a>
+                <a href="https://www.patreon.com/posts/november-2025-142579707" class="patreon-link"
+                  target="_blank">Insider key</a>
               </div>
             </div>
             <div class="api-input-and-status" id="patreonKeyGeneral">
@@ -672,19 +674,7 @@
                 <span class="bold-font" id="patreonKeyText">Valid</span>
               </div>
             </div>
-            <div class="export-import-news d-none">
-              <div class="modal-subtitle bold-font">Export/Import News</div>
-              <div class="patreon-links">
-                <div class="export-news-button button-with-icon" id="exportNewsButton">
-                  <i class="bi bi-box-arrow-up-right"></i>
-                  <span class="">Export News</span>
-                </div>
-                <div class="import-news-button button-with-icon" id="importNewsButton">
-                  <i class="bi bi-box-arrow-in-down-right"></i>
-                  <span class="">Import News</span>
-                </div>
-              </div>
-            </div>
+
             <div class="patreon-unlockables  d-none">
               <div class="patreon-themes">
                 <span class="modal-subtitle bold-font">Choose a theme</span>
@@ -737,7 +727,7 @@
                 </div>
               </div>
               <div class="api-key-section">
-                <span class="modal-subtitle bold-font">API Key</span>
+                <span class="modal-subtitle bold-font">API Settings</span>
                 <div class="modal-text">
                   If you want to read AI-generated articles from the news section, please enter your API key here. You
                   can get one for free
@@ -755,6 +745,30 @@
                   <div class="remove-key" id="removeApiKey">
                     <i class="bi bi-x"></i>
                     <span class="bold-font">Remove</span>
+                  </div>
+                </div>
+                <div class="ai-model-settings">
+                  <div class="patreon-links">
+                    <div class="ai-model-selector">
+                      <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+                        id="modelSelectorButton" data-value="gemini-2.5-flash" data-bs-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Gemini 2.5 Flash
+                      </button>
+                      <div class="dropdown-line"></div>
+                      <ul class="dropdown-menu" id="aiModelmenu" style="font-family: Formula1;">
+                        <a class="dropdown-item" data-value="gemini-2.5-flash"><div class="model-and-description">
+                          <span class="model-name">Gemini 2.5 Flash</span>
+                          <span class="model-description">Better responses, sometimes overloaded</span>
+                        </div><i class="bi bi-check"></i></a>
+                        <a class="dropdown-item inactive" data-value="gemini-2.5-flash-lite">
+                          <div class="model-and-description">
+                            <span class="model-name">Gemini 2.5 Flash Lite</span>
+                            <span class="model-description">Faster responses, lower quality</span>
+                          </div><i class="bi bi-check unactive"></i></a>
+                      </ul>
+                    </div>
+
                   </div>
                 </div>
 

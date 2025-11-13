@@ -20,6 +20,9 @@ let ai = null;
 let interval2 = null;
 let cleaning = false;
 
+let errorCount = 0;
+const MAX_ERRORS = 2;
+
 export function initAI(apiKeyParam) {
   if (!apiKeyParam) {
     console.warn("No API key configured yet");
@@ -198,7 +201,7 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
   });
 }
 
-async function generateAndRenderArticle(news, newsList, label = "Generating", force = false) {
+async function generateAndRenderArticle(news, newsList, label = "Generating", force = false, model) {
   if (!ai) {
     console.warn("AI not initialized");
     return;
@@ -240,7 +243,7 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
   }, 150);
 
   try {
-    const articleText = await manageRead(news, newsList, progressDiv, interval, { force });
+    const articleText = await manageRead(news, newsList, progressDiv, interval, { force, model });
 
     clearInterval(interval);
     clearInterval(dotsInterval);
@@ -258,23 +261,46 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
       }, 150);
     }, 200);
   } catch (err) {
+    errorCount++;
     console.error("Error generating article:", err);
     clearInterval(interval);
     clearInterval(dotsInterval);
     loaderDiv.remove();
+    const actualModel = localStorage.getItem('ai-model');
     //put text telling to retry using the Regenerate article button, if error code is 503 put that the model is overloaded
-    const errorSpan = document.createElement('span');
-    errorSpan.classList.add('news-error', 'model-error');
-    if (err.message?.includes("503") || err.message?.includes("overloaded") || err.status === 503) {
-      errorSpan.textContent = "The model is currently overloaded. Please try again later.";
-    } else if (err.message?.includes("429") || err.message?.includes("rate limit")) {
-      errorSpan.textContent = "Rate limit reached. Please wait a moment before retrying.";
-    } else if (err.message?.includes("network") || err.message?.includes("fetch")) {
-      errorSpan.textContent = "Network error. Please check your connection and try again.";
+    if (errorCount < MAX_ERRORS || actualModel === 'gemini-2.5-flash-lite') {
+      const errorSpan = document.createElement('span');
+      errorSpan.classList.add('news-error', 'model-error');
+      if (err.message?.includes("503") || err.message?.includes("overloaded") || err.status === 503) {
+        errorSpan.textContent = "The model is currently overloaded. Please try again later.";
+      } else if (err.message?.includes("429") || err.message?.includes("rate limit")) {
+        errorSpan.textContent = "Rate limit reached. Please wait until tomorrow to generate more articles.";
+      } else if (err.message?.includes("network") || err.message?.includes("fetch")) {
+        errorSpan.textContent = "Network error. Please check your connection and try again.";
+      } else {
+        errorSpan.textContent = "Error generating article. Please try again using the Regenerate button.";
+      }
+      newsArticle.appendChild(errorSpan);
     } else {
-      errorSpan.textContent = "Error generating article. Please try again using the Regenerate button.";
+      const changeModalSpan = document.createElement('span');
+      changeModalSpan.classList.add('news-error', 'model-retry');
+      changeModalSpan.textContent = "Gemini 2.5 Flash seems to be having issues. Would you like to try the Gemini 2.5 Flash Lite model instead? It offers faster responses with slightly lower quality.";
+      newsArticle.appendChild(changeModalSpan);
+      const retryWithLiteButton = document.createElement('div');
+      const retrySpan = document.createElement('span');
+      retryWithLiteButton.classList.add('button-with-icon', 'retry-with-lite');
+      retrySpan.textContent = "Retry with Gemini 2.5 Flash Lite";
+      const retryIcon = document.createElement('i');
+      retryIcon.classList.add('bi', 'bi-arrow-clockwise');
+      retryWithLiteButton.appendChild(retryIcon);
+      retryWithLiteButton.appendChild(retrySpan);
+      newsArticle.appendChild(retryWithLiteButton);
+      retryWithLiteButton.addEventListener('click', async () => {
+        generateAndRenderArticle(news, newsList, "Regenerating with Gemini 2.5 Flash Lite", true, "gemini-2.5-flash-lite");
+      });
+      changeModalSpan.appendChild(retryWithLiteButton);
+
     }
-    newsArticle.appendChild(errorSpan);
   }
 }
 
@@ -1015,7 +1041,7 @@ function buildContextualPrompt(data, config = {}) {
 }
 
 async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}) {
-  const { force = false } = opts;
+  const { force = false, model } = opts;
 
   // 1) Si ya hay texto y NO forzamos, devolvemos el existente
   if (newData.text && !force) {
@@ -1090,27 +1116,53 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
 
       // Contextos extra de Turning Points (si tu helper ya es idempotente, no pasa nada por llamarlo siempre)
       prompt = await addTurningPointContexts(prompt, newData.date);
+      prompt += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
 
-      prompt += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- Use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
     }
+
 
     console.log("Final prompt for AI:", prompt);
 
     // 6) Llama a la IA y guarda
-    const articleText = await askGenAI(prompt);
-    newData.text = articleText;
+    const articleText = await askGenAI(prompt, { model });
+    const cleanedArticleText = cleanArticleOutput(articleText);
+    newData.text = cleanedArticleText;
 
     new Command("updateNews", {
       stableKey: newData.id ?? computeStableKey(newData),
-      patch: { text: articleText }
+      patch: { text: cleanedArticleText }
     }).execute();
 
     if (barProgressDiv) barProgressDiv.style.width = '100%';
-    return articleText;
+    return cleanedArticleText;
 
   } finally {
     if (progressInterval) clearInterval(progressInterval);
   }
+}
+
+function cleanArticleOutput(rawMd) {
+  let md = rawMd || "";
+
+  md = removeLeading(md);
+  md = italicizeQuotes(md);
+
+  return md.trim();
+}
+
+function removeLeading(md) {
+  return md.replace(/^\s*#{1,3}\s.*\n+/, "").trimStart();
+}
+
+function italicizeQuotes(md) {
+  return md.replace(/"([^"]+)"/g, (match, inner, offset, full) => {
+    const before = full[offset - 1] || "";
+    const after = full[offset + match.length] || "";
+    if (before === "*" || after === "*") {
+      return match;
+    }
+    return `*${match}*`;
+  });
 }
 
 async function contextualizeTurningPointInjury(newData, turningPointType) {
@@ -2073,15 +2125,24 @@ function saveTurningPoints(turningPoints) {
   localStorage.setItem(tpName, JSON.stringify(turningPoints));
 }
 
-async function askGenAI(prompt) {
+async function askGenAI(prompt, opts = {}) {
+  const localStorageModel = localStorage.getItem("ai-model");
+  const fallbackModel = "gemini-2.5-flash";
+
+  // Priority:
+  // 1. opts.model
+  // 2. localStorageModel
+  // 3. fallbackModel
+  console.log(opts.model, localStorageModel, fallbackModel);
+  const aiModel = opts.model || localStorageModel || fallbackModel;
+
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt
+    model: aiModel,
+    contents: prompt,
   });
 
   return response.text;
 }
-
 
 function buildEmergencyOverlay() {
   const overlayDiv = document.createElement('div');
@@ -2296,6 +2357,42 @@ document.querySelectorAll('#newsTypeMenu .dropdown-item').forEach(item => {
     document.querySelectorAll(`.news-item[data-type="${type}"]`).forEach(n => {
       n.style.display = hide ? 'none' : '';
     });
+  });
+});
+
+document.querySelectorAll("#aiModelmenu .dropdown-item").forEach(item => {
+  item.addEventListener("click", function (e) {
+    //do not close the dropdown
+    e.preventDefault();
+    e.stopPropagation();
+
+    console.log(e.target)
+    const selectedModel = e.target.dataset.value;
+    const selectedText = e.target.querySelector(".model-name").innerText;
+
+    document.getElementById("modelSelectorButton").innerText = selectedText;
+    document.getElementById("modelSelectorButton").dataset.value = selectedModel;
+
+    item.classList.toggle("inactive");
+
+    const icon = item.querySelector("i");
+
+    //put all the others i as unactive
+    document.querySelectorAll("#aiModelmenu .dropdown-item").forEach(otherItem => {
+      if (otherItem !== item) {
+        const icon = otherItem.querySelector("i");
+        if (icon) {
+          icon.classList.add("unactive");
+        }
+      }
+      else {
+        if (icon) {
+          icon.classList.remove("unactive");
+        }
+      }
+    });
+
+    localStorage.setItem("ai-model", selectedModel);
   });
 });
 
