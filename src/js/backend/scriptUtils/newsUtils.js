@@ -58,11 +58,10 @@ export function generate_news(savednews, turningPointState) {
 
     const sillySeasonNews = generateTransferRumorsNews(transferRumors, savednews);
 
-    const bigConfirmedTransfers = getConfirmedTransfers(true);
     const contractRenewals = getContractExtensions();
 
     const fakeTransferNews = generateFakeTransferNews(monthsDone, savednews);
-    const bigConfirmedTransfersNews = generateBigConfirmedTransferNews(savednews, bigConfirmedTransfers, currentMonth);
+    const bigConfirmedTransfersNews = generateBigConfirmedTransferNews(savednews, currentMonth);
     const contractRenewalsNews = generateContractRenewalsNews(savednews, contractRenewals, currentMonth);
 
     const seasonReviews = generateSeasonReviewNews(savednews);
@@ -1991,7 +1990,7 @@ export function generateFakeTransferNews(monthsDone, savedNews) {
 
             driversWithOverall.forEach(driver => {
                 if (usedDriverIdsGlobal.has(driver.driverId)) {
-                    return; 
+                    return;
                 }
 
                 const driverPoints = driversResults.find(dr => dr.driverId === driver.driverId)?.points;
@@ -2108,57 +2107,124 @@ export function generateFakeTransferNews(monthsDone, savedNews) {
 
 const randomPick = arr => arr[Math.floor(Math.random() * arr.length)];
 
-export function generateBigConfirmedTransferNews(savedNews = {}, contracts = [], currentMonth) {
+export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const season = daySeason[1];
 
-    const months = [7, 8, 9].filter(m => m < currentMonth);
-    const newsList = [];
-    if (!months.length || !contracts.length) return newsList;
-
-    // 1) Pilotos ya usados en big transfers guardados
-    const used = new Set(
-        Object.values(savedNews)
-            .filter(n => n?.type === "big_transfer" && n?.data?.driverId != null)
-            .map(n => n.data.driverId)
+    const drivers = queryDB(
+        `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
+             FROM Staff_BasicData bas
+             JOIN Staff_DriverData dri
+               ON bas.StaffID = dri.StaffID
+             JOIN Staff_Contracts con
+               ON bas.StaffID = con.StaffID
+             WHERE con.ContractType = 0
+               AND con.PosInTeam <= 2`,
+        'allRows'
     );
 
+    const driversWithHighOverall = [];
+    drivers.forEach(d => {
+        const overall = getDriverOverall(d[2]);
+        const name = formatNamesSimple(d);
+        const teamId = d[3];
+        const teamName = combined_dict[teamId] || "Unknown Team";
+        let driver = {
+            name: name[0],
+            driverId: name[1],
+            team: teamName,
+            teamId: teamId,
+            overall: overall
+        };
+        if (overall >= 88) {
+            driversWithHighOverall.push(driver);
+        }
+    });
 
+    let newsList = [];
 
-    for (const m of months) {
-        const entryId = `big_transfer_${m}`;
+    //iterate through each list
+    driversWithHighOverall.forEach(driver => {
+        const contract = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driver.driverId} AND ContractType = 3`, 'singleValue');
+        if (!contract) return;
 
-        if (savedNews[entryId]) {
-            newsList.push({ id: entryId, ...savedNews[entryId] });
-            const dId = savedNews[entryId]?.data?.driverId;
-            if (dId != null) used.add(dId);
-            continue;
+        const titleData = {
+            driver1: driver.name,
+            team1: driver.team,
+            team2: combined_dict[contract],
+            season_year: season
         }
 
-        const pool = contracts.filter(c => !used.has(c.driverId));
-        if (!pool.length) continue;
+        if (driver.overall < 90) {
+            const entryId = `new_big_transfer_${driver.driverId}`;
+            if (savedNews[entryId]) {
+                newsList.push({ id: entryId, ...savedNews[entryId] });
+                return;
+            }
 
-        const contract = randomPick(pool);
-        used.add(contract.driverId);
+            const title = generateTitle(titleData, 6);
+            const image = getImagePath(contract, driver.driverId, "transfer");
+            const day = Math.floor(Math.random() * 30) + 1;
+            const date = new Date(season, currentMonth - 1, day);
+            const excelDate = dateToExcel(date);
+            newsList.push({
+                id: entryId,
+                type: "big_transfer",
+                title,
+                date: excelDate,
+                image,
+                overlay: null,
+                data: titleData,
+                text: null
+            });
+        }
+        else{
+            const entryId1 = `massive_exit_${driver.driverId}`;
+            if (savedNews[entryId1]) {
+                newsList.push({ id: entryId1, ...savedNews[entryId1] });
+                return;
+            }
 
-        const title = generateTitle(contract, 6);
-        const image = getImagePath(contract.teamId, contract.driverId, "transfer");
+            const title1 = generateTitle(titleData, 17);
+            const image1 = getImagePath(driver.teamId, driver.driverId, "transfer");
+            const day1 = Math.floor(Math.random() * 30) + 1;
+            const date1 = new Date(season, currentMonth - 1, day1);
 
-        //generate a date from the month of the news
-        const newsDate = new Date(season, m - 1, Math.floor(Math.random() * 28) + 1);
-        const excelDate = dateToExcel(newsDate);
+            const excelDate1 = dateToExcel(date1);
+            newsList.push({
+                id: entryId1,
+                type: "big_transfer",
+                title: title1,
+                date: excelDate1,
+                image: image1,
+                overlay: null,
+                data: titleData,
+                text: null
+            });
 
-        newsList.push({
-            id: entryId,
-            type: "big_transfer",
-            title,
-            date: excelDate,
-            image,
-            overlay: null,
-            data: contract,
-            text: null
-        });
-    }
+            const entryId2 = `massive_signing_${driver.driverId}`;
+            if (savedNews[entryId2]) {
+                newsList.push({ id: entryId2, ...savedNews[entryId2] });
+                return;
+            }
+
+            const title2 = generateTitle(titleData, 18);
+            const image2 = getImagePath(contract.teamId, driver.driverId, "transfer");
+            const excelDate2 = excelDate1 + 1;
+
+            newsList.push({
+                id: entryId2,
+                type: "big_transfer",
+                title: title2,
+                date: excelDate2,
+                image: image2,
+                overlay: null,
+                data: titleData,
+                text: null
+            });
+        }
+    });
+
 
     return newsList;
 }

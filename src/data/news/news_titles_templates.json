@@ -522,5 +522,62 @@
             "The {{country}} Grand Prix aftermath – from elation to disappointment",
             "How the drivers summed up their {{adjective}} GP experiences"
         ]
+    },
+    {
+        "id": "massive_exit",
+        "new_type": 17,
+        "titles": [
+            "SHOCKING – {{driver1}} to leave {{team1}} at the end of the season",
+            "Breaking news – {{driver1}} set to exit {{team1}} after {{season_year}}",
+            "Major announcement – {{driver1}} parts ways with {{team1}}",
+            "{{driver1}} confirms departure from {{team1}} after {{season_year}} campaign",
+            "Surprise exit – {{driver1}} to leave {{team1}} in a stunning move",
+            "{{driver1}} and {{team1}} to go separate ways after {{season_year}}",
+            "BREAKING – {{driver1}} ends tenure with {{team1}} at season’s end",
+            "{{driver1}} announces exit from {{team1}}, leaving fans stunned",
+            "End of an era – {{driver1}} to depart {{team1}} after {{season_year}}",
+            "It's done – {{driver1}} set to leave {{team1}}",
+            "{{driver1}} to bid farewell to {{team1}} after the conclusion of {{season_year}}",
+            "Unexpected move – {{driver1}} parts ways with {{team1}}",
+            "{{driver1}} confirms exit from {{team1}}, sparking speculation about future",
+            "Breaking – {{driver1}} to leave {{team1}}, ending a significant chapter",
+            "{{driver1}} set to exit {{team1}}, leaving fans and pundits surprised",
+            "Major shake-up – {{driver1}} to depart from {{team1}} after {{season_year}}",
+            "'It just hasn't worked out' – {{driver1}} to leave {{team1}}",
+            "OFFICIAL - {{driver1}} to leave {{team1}} at the end of the season",
+            "{{driver1}} and {{team1}} will part ways at the end of the season, {{team1}} confirms",
+            "'We're grateful for his time here' – {{team1}} announces {{driver1}}'s exit",
+            "{{driver1}} will leave {{team1}} at the end of the season, {{team1}} confirms"
+        ]
+    },
+    {
+        "id": "massive_signing",
+        "new_type": 18,
+        "titles": [
+            "BREAKING – {{driver1}} signs with {{team2}} for the upcoming season",
+            "Major signing – {{driver1}} joins {{team2}} in a stunning move",
+            "{{driver1}} confirmed as new driver for {{team2}}",
+            "SHOCKING – {{driver1}} to race for {{team2}} next season",
+            "HERE WE GO - {{driver1}} makes the switch  to {{team2}}",
+            "'We're very excited to have him' – {{team2}} announces signing of {{driver1}}",
+            "{{driver1}} to join {{team2}} after signing multi-year deal",
+            "OFFICIAL - {{driver1}} signs with {{team2}} for the next season",
+            "Huge move – {{driver1}} officially joins {{team2}} for next season",
+            "Blockbuster transfer – {{driver1}} signs with {{team2}}",
+            "Confirmed – {{driver1}} becomes new {{team2}} driver for the upcoming season",
+            "Big announcement – {{team2}} secures the signing of {{driver1}}",
+            "It’s done – {{driver1}} to race with {{team2}} from next year",
+            "Massive shake-up – {{driver1}} officially moves to {{team2}}",
+            "{{driver1}} completes major switch to {{team2}}",
+            "{{team2}} lands top talent – {{driver1}} confirmed for next season",
+            "Official statement – {{driver1}} joins {{team2}} on a long-term deal",
+            "{{team2}} announces the signing of {{driver1}} in major transfer news",
+            "Big news – {{driver1}} set to partner with {{team2}} from next year",
+            "Transfer bombshell – {{driver1}} officially heading to {{team2}}",
+            "{{driver1}} signs with {{team2}} in one of the biggest moves of the season",
+            "Statement move – {{team2}} secures star driver {{driver1}}",
+            "'I am looking forward to this new challenge' – {{driver1}} joins {{team2}}",
+            "{{driver1}} makes sensational switch to {{team2}} for the upcoming season"
+        ]
     }
 ]
