@@ -508,3 +508,129 @@ export function editFreezeMentality(state) {
   }
 }
 
+export function editReplaceEngines(state) {
+  if (state === 0) { }
+  else {
+    const sql = `
+    CREATE TRIGGER trg_auto_swap_power_units
+    AFTER UPDATE OF Day ON Player_State
+    WHEN NEW.Day <> OLD.Day
+      AND NOT EXISTS (
+        SELECT 1
+        FROM Races r
+        WHERE r.SeasonID = NEW.CurrentSeason
+          AND r.Day IN (NEW.Day, NEW.Day - 1, NEW.Day - 2)
+      )
+    BEGIN
+      --------------------------------------------------------------------
+      -- PASO 1: Cambiar a un repuesto ya existente con mejor condición
+      --------------------------------------------------------------------
+      UPDATE Parts_CarLoadout AS cl
+      SET ItemID = (
+        SELECT pi2.ItemID
+        FROM Parts_Items      AS pi_actual   -- pieza actualmente montada
+        JOIN Parts_Designs    AS pd          ON pd.DesignID = pi_actual.DesignID
+        JOIN Parts_Items      AS pi2         ON pi2.DesignID    = pi_actual.DesignID
+                                          AND pi2.AssociatedCar = pi_actual.AssociatedCar
+        WHERE pi_actual.ItemID   = cl.ItemID
+          AND pd.DesignType      IN (0, 1, 2)              -- motor, caja, ERS
+          AND pd.TeamID          = cl.TeamID
+          AND pd.PartType        = cl.PartType
+          AND pi_actual.Condition < 0.5                    -- pieza “rota”
+          AND pi2.Condition      >= 0.5                    -- repuesto decente
+          AND pi2.ItemID         <> pi_actual.ItemID       -- que no sea la misma
+        ORDER BY pi2.Condition DESC, pi2.ItemID ASC        -- mejor condición
+        LIMIT 1
+      )
+      WHERE EXISTS (
+        -- Solo tocar loadouts donde lo que está montado es motor/GBX/ERS
+        -- y está por debajo de 0.5 de condición
+        SELECT 1
+        FROM Parts_Items   AS pi
+        JOIN Parts_Designs AS pd ON pd.DesignID = pi.DesignID
+        WHERE pi.ItemID       = cl.ItemID
+          AND pd.DesignType   IN (0, 1, 2)
+          AND pd.TeamID       = cl.TeamID
+          AND pd.PartType     = cl.PartType
+          AND pi.AssociatedCar = cl.AssociatedCar
+          AND pi.Condition    < 0.5
+      )
+      AND EXISTS (
+        -- Y además exista al menos un repuesto viable
+        SELECT 1
+        FROM Parts_Items      AS pi_actual
+        JOIN Parts_Designs    AS pd          ON pd.DesignID = pi_actual.DesignID
+        JOIN Parts_Items      AS pi2         ON pi2.DesignID    = pi_actual.DesignID
+                                          AND pi2.AssociatedCar = pi_actual.AssociatedCar
+        WHERE pi_actual.ItemID   = cl.ItemID
+          AND pd.DesignType      IN (0, 1, 2)
+          AND pd.TeamID          = cl.TeamID
+          AND pd.PartType        = cl.PartType
+          AND pi_actual.Condition < 0.5
+          AND pi2.Condition      >= 0.5
+          AND pi2.ItemID         <> pi_actual.ItemID
+      );
+
+      --------------------------------------------------------------------
+      -- PASO 2: Para los casos donde NO hay repuesto, crear una pieza nueva
+      -- (DesignID igual, Condition = 1, asociada al mismo coche)
+      --------------------------------------------------------------------
+      INSERT INTO Parts_Items (DesignID, Condition, AssociatedCar)
+      SELECT DISTINCT
+            pi.DesignID,
+            1.0 AS Condition,
+            cl.AssociatedCar
+      FROM Parts_CarLoadout cl
+      JOIN Parts_Items      pi  ON pi.ItemID   = cl.ItemID
+      JOIN Parts_Designs    pd  ON pd.DesignID = pi.DesignID
+      WHERE pd.DesignType    IN (0, 1, 2)
+        AND pd.TeamID        = cl.TeamID
+        AND pd.PartType      = cl.PartType
+        AND pi.AssociatedCar = cl.AssociatedCar
+        AND pi.Condition     < 0.5               -- lo que está montado está roto
+        AND NOT EXISTS (
+          -- No existe ningún repuesto >= 0.5 para ese DesignID + coche
+          SELECT 1
+          FROM Parts_Items pi2
+          WHERE pi2.DesignID     = pi.DesignID
+            AND pi2.AssociatedCar = pi.AssociatedCar
+            AND pi2.Condition    >= 0.5
+        );
+
+      --------------------------------------------------------------------
+      -- PASO 3: Volver a intentar el swap, para usar las piezas nuevas (cond=1)
+      --------------------------------------------------------------------
+      UPDATE Parts_CarLoadout AS cl
+      SET ItemID = (
+        SELECT pi2.ItemID
+        FROM Parts_Items      AS pi_actual
+        JOIN Parts_Designs    AS pd          ON pd.DesignID = pi_actual.DesignID
+        JOIN Parts_Items      AS pi2         ON pi2.DesignID    = pi_actual.DesignID
+                                          AND pi2.AssociatedCar = cl.AssociatedCar
+        WHERE pi_actual.ItemID   = cl.ItemID
+          AND pd.DesignType      IN (0, 1, 2)
+          AND pd.TeamID          = cl.TeamID
+          AND pd.PartType        = cl.PartType
+          AND pi_actual.Condition < 0.5
+          AND pi2.Condition      >= 0.5
+          AND pi2.ItemID         <> pi_actual.ItemID
+        ORDER BY pi2.Condition DESC, pi2.ItemID ASC
+        LIMIT 1
+      )
+      WHERE EXISTS (
+        SELECT 1
+        FROM Parts_Items   AS pi
+        JOIN Parts_Designs AS pd ON pd.DesignID = pi.DesignID
+        WHERE pi.ItemID       = cl.ItemID
+          AND pd.DesignType   IN (0, 1, 2)
+          AND pd.TeamID       = cl.TeamID
+          AND pd.PartType     = cl.PartType
+          AND pi.AssociatedCar = cl.AssociatedCar
+          AND pi.Condition    < 0.5
+      );
+    END;
+
+    `
+    queryDB(sql);
+  }
+}
