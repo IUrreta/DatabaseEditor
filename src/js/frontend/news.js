@@ -1058,6 +1058,8 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     potential_champion: contextualizePotentialChampion,
     world_champion: contextualizeWorldChampion,
     big_transfer: contextualizeBigTransferConfirm,
+    massive_exit: contextualizeBigTransferConfirm,
+    massive_signing: contextualizeBigTransferConfirm,
     contract_renewal: contextualizeRenewalNews,
     team_comparison: contextualizeTeamComparison,
     driver_comparison: contextualizeDriverComparison,
@@ -1710,7 +1712,12 @@ async function contextualizeBigTransferConfirm(newData) {
   let originalTeam = newData.data.team2
   const date = newData.date || null;
 
-  let prompt = newsPromptsTemaplates.find(t => t.new_type === 6).prompt;
+  let newType = 6;
+  if (newData.type.includes("massive_exit")){
+    newType = 18;
+  }
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === newType).prompt;
   prompt = prompt.replace(/{{\s*driver1\s*}}/g, driverName)
     .replace(/{{\s*team1\s*}}/g, potentialTeam)
     .replace(/{{\s*team2\s*}}/g, originalTeam);

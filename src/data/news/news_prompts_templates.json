@@ -22,7 +22,7 @@
     {
         "id": "big_transfer",
         "new_type": 6,
-        "prompt": "Write ONLY the body (not the title) of a news article in English confirming the big transfer of {{driver1}} to {{team1}} from {{team2}}. Use clear, natural English in a professional journalistic style, similar to outlets like Autosport or Motorsport.com. Avoid slang, overly dramatic phrasing, or unnecessary flourishes. The article should be between 350 and 450 words long. Focus on the details of the transfer, including the reasons behind it and the implications for both the driver and the team. Use a flowing, paragraph-based structure like a typical F1 news report."
+        "prompt": "Write ONLY the body (not the title) of a news article in English confirming the big transfer of {{driver1}} to {{team2}} from {{team1}}. Use clear, natural English in a professional journalistic style, similar to outlets like Autosport or Motorsport.com. Avoid slang, overly dramatic phrasing, or unnecessary flourishes. The article should be between 350 and 450 words long. Focus on the details of the transfer, including the reasons behind it and the implications for both the driver and the team. Use a flowing, paragraph-based structure like a typical F1 news report."
     },
     {
         "id": "potential_champion",
@@ -68,5 +68,10 @@
         "id": "race_reaction",
         "new_type": 16,
         "prompt": "Write ONLY the body (not the title) of a detailed English news article compiling the post-race reactions from the {{season_year}} {{adjective}} Grand Prix at {{circuit}}. The article should include comments from both the most important drivers at {{adjective}} GP, as well as the top drivers in the championship.\n\nWrite in a professional and authentic journalistic tone similar to Autosport, The Race, or Motorsport.com — informative, balanced, and realistic. Avoid exaggerated or fan-like language. The goal is to recreate a genuine media article covering the emotional and analytical side of the race aftermath.\n\nUse **Markdown** for structure:\n- Begin with a short introductory paragraph summarizing the main talking points of the {{adjective}} GP — key results and the general mood in the paddock.\n- Then, divide the rest of the article into clear sections by driver using Markdown headings (e.g. '## {{happy_driver}}', '## {{unhappy_driver}}', '## Other Reactions'). Each section should include multiple paragraphs mixing direct quotes, paraphrased remarks, and short context about each driver's race.\n\nYour article must:\n- Be as long as 1200 words.\n- Use realistic, natural-sounding driver quotes (in quotation marks) blended into journalistic narration.\n- Capture a range of emotions: joy, frustration, relief, disappointment, pride, etc.\n- Mention contextual details such as the race result, strategy, mistakes, team performance, and weather or track conditions if relevant.\n- Ensure transitions between sections are smooth and professional.\n- Avoid cliché or repetitive expressions like 'amazing race' or 'we gave 110%'; aim for natural, grounded dialogue.\n\nMaintain a professional, immersive tone throughout, as if written for a top-tier F1 publication immediately after the race weekend."
+    },
+    {
+        "id": "massive_exit",
+        "new_type": 18,
+        "prompt": "Write ONLY the body (not the title) of a news article in English reporting that {{team1}} has confirmed that {{driver1}} will leave their team at the end of the season. It is still uncertain of where will {{driver1}} will go.. Use clear, natural English in a professional journalistic style, similar to outlets like Autosport or Motorsport.com. Avoid slang, overly dramatic phrasing, or unnecessary flourishes. The article should be between 350 and 450 words long. Focus on the details of the transfer, including the reasons behind it and the implications for both the driver and the team. Use a flowing, paragraph-based structure like a typical F1 news report."
     }
 ]

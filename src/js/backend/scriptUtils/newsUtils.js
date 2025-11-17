@@ -60,8 +60,8 @@ export function generate_news(savednews, turningPointState) {
 
     const contractRenewals = getContractExtensions();
 
-    const fakeTransferNews = generateFakeTransferNews(monthsDone, savednews);
     const bigConfirmedTransfersNews = generateBigConfirmedTransferNews(savednews, currentMonth);
+    const fakeTransferNews = generateFakeTransferNews(monthsDone, savednews, bigConfirmedTransfersNews);
     const contractRenewalsNews = generateContractRenewalsNews(savednews, contractRenewals, currentMonth);
 
     const seasonReviews = generateSeasonReviewNews(savednews);
@@ -1864,7 +1864,8 @@ function generateTitle(data, new_type) {
     return tpl.replace(/{{\s*(\w+)\s*}}/g, (_, key) => paramMap[new_type][key] || '');
 }
 
-export function generateFakeTransferNews(monthsDone, savedNews) {
+export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTransfersNews) {
+    console.log("SAVED NEWS WHEN FAKING TRANSFERS:", savedNews);
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const season = daySeason[1];
 
@@ -1873,6 +1874,7 @@ export function generateFakeTransferNews(monthsDone, savedNews) {
     const usedDriverIdsGlobal = new Set();
 
     Object.entries(savedNews || {}).forEach(([id, news]) => {
+        console.log("id:", id, "news:", news);
         if (!news || !news.data || !Array.isArray(news.data.drivers)) return;
         // Solo nos interesa mapear fechas por mes para las fake_transfer_*
         if (id.startsWith("fake_transfer_")) {
@@ -1890,6 +1892,22 @@ export function generateFakeTransferNews(monthsDone, savedNews) {
                 delete savedNews[id];
             }
         }
+
+        if (id.startsWith("big_transfer_") || id.startsWith("massive_signing_")) {
+            console.log("NEW BIG SIGNING:", id);
+            let id = news.data.driverId;
+            if (id) {
+                usedDriverIdsGlobal.add(id);
+            }
+        }
+    });
+
+    //alkso put driverids from bigConfirmedTransfersNews into usedDriverIdsGlobal
+    bigConfirmedTransfersNews.forEach(news => {
+        let id = news.data.driverId;
+        if (id) {
+            usedDriverIdsGlobal.add(id);
+        }
     });
 
     let newsList = [];
@@ -1906,7 +1924,8 @@ export function generateFakeTransferNews(monthsDone, savedNews) {
              JOIN Staff_Contracts con
                ON bas.StaffID = con.StaffID
              WHERE con.ContractType = 0
-               AND con.PosInTeam <= 2`,
+               AND con.PosInTeam <= 2
+               AND con.TeamID IN (1,2,3,4,5,6,7,8,9,10,32)`,
             'allRows'
         );
 
@@ -2110,6 +2129,7 @@ const randomPick = arr => arr[Math.floor(Math.random() * arr.length)];
 export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const season = daySeason[1];
+    const month = currentMonth > 9 ? 9 : currentMonth;
 
     const drivers = queryDB(
         `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
@@ -2143,15 +2163,24 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
 
     let newsList = [];
 
+    console.log(driversWithHighOverall)
+
     //iterate through each list
     driversWithHighOverall.forEach(driver => {
-        const contract = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driver.driverId} AND ContractType = 3`, 'singleValue');
+        const contract = queryDB(`SELECT TeamID, Salary, EndSeason FROM Staff_Contracts WHERE StaffID = ${driver.driverId} AND ContractType = 3 AND TeamID != ${driver.teamId}`, 'singleRow');
         if (!contract) return;
+        const futureTeamId = contract[0]
+        
 
-        const titleData = {
+        let titleData = {
             driver1: driver.name,
+            driverId: driver.driverId,
             team1: driver.team,
-            team2: combined_dict[contract],
+            team2Id: futureTeamId,
+            salary: contract[1],
+            endSeason: contract[2],
+            previouslyDrivenTeams: getPreviouslyDrivenTeams(driver.driverId),
+            team2: combined_dict[futureTeamId],
             season_year: season
         }
 
@@ -2163,10 +2192,13 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
             }
 
             const title = generateTitle(titleData, 6);
-            const image = getImagePath(contract, driver.driverId, "transfer");
+            const image = getImagePath(futureTeamId, driver.driverId, "transfer");
             const day = Math.floor(Math.random() * 30) + 1;
-            const date = new Date(season, currentMonth - 1, day);
+            const date = new Date(season, month - 1, day);
             const excelDate = dateToExcel(date);
+
+            titleData.date = excelDate;
+
             newsList.push({
                 id: entryId,
                 type: "big_transfer",
@@ -2188,12 +2220,14 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
             const title1 = generateTitle(titleData, 17);
             const image1 = getImagePath(driver.teamId, driver.driverId, "transfer");
             const day1 = Math.floor(Math.random() * 30) + 1;
-            const date1 = new Date(season, currentMonth - 1, day1);
+            const date1 = new Date(season, month - 1, day1);
 
             const excelDate1 = dateToExcel(date1);
+            titleData.date = excelDate1;
+            titleData.team2Id = driver.teamId;
             newsList.push({
                 id: entryId1,
-                type: "big_transfer",
+                type: "massive_exit",
                 title: title1,
                 date: excelDate1,
                 image: image1,
@@ -2209,12 +2243,13 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
             }
 
             const title2 = generateTitle(titleData, 18);
-            const image2 = getImagePath(contract.teamId, driver.driverId, "transfer");
+            const image2 = getImagePath(futureTeamId, driver.driverId, "transfer");
             const excelDate2 = excelDate1 + 1;
-
+            titleData.date = excelDate2;
+            titleData.team2Id = futureTeamId;
             newsList.push({
                 id: entryId2,
-                type: "big_transfer",
+                type: "massive_signing",
                 title: title2,
                 date: excelDate2,
                 image: image2,
