@@ -29,7 +29,12 @@ module.exports = {
         {
           from: 'assets/images', // ajusta esta ruta a donde tengas tus imágenes
           to: 'assets/images'
+        },
+        {
+          from: 'src/data',
+          to: 'data'
         }
+
       ]
     }),
     new webpack.DefinePlugin({
