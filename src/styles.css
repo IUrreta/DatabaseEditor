@@ -441,7 +441,10 @@ a:has(.patreon-button){
 
 .version-panel.nightly{
   color: var(--new-secondary) !important;
-  pointer-events: none;
+}
+
+.version-panel.nightly:hover{
+  color: var(--text-selected-secondary) !important;
 }
 
 .status:has(.footer-notification.show) .version-panel {
