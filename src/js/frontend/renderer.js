@@ -2560,6 +2560,19 @@ export async function confirmModal({
     });
 }
 
+document.querySelectorAll(".redesigned-dropdown").forEach(dropdown => {
+    dropdown.addEventListener("click", function () {
+        dropdown.classList.toggle("open")
+        //get parent element
+        const parent = dropdown.parentElement;
+        //if parent element is classList dropdown-global
+        if (parent && parent.classList.contains("dropdown-global")) {
+            //get redesigned-dropdown
+        }
+    });
+});
+
+
 export function attachHold(btn, el, step = 1, opts = {}) {
     const min = opts.min ?? -Infinity;
     const max = opts.max ?? Infinity;

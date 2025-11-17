@@ -13,7 +13,7 @@ export let longTermObj;
  */
 document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click", function () {
-        document.querySelector("#teamButton").innerText = elem.querySelector(".team-menu-name").innerText;
+        document.querySelector("#teamButton span").innerText = elem.querySelector(".team-menu-name").innerText;
         teamCod = elem.dataset.teamid;
         let data = {
             teamID: teamCod,
