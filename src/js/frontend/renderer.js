@@ -245,7 +245,7 @@ async function getPatchNotes() {
             });
         }
         else if (versionNow.includes("nightly")) {
-            let response = await fetch(`../src/data/nightly_patch_notes.md`);
+            let response = await fetch('/data/nightly_patch_notes.md');
             let changes = await response.text();
             let changesHTML = marked(changes);
             patchNotesBody.innerHTML = changesHTML
