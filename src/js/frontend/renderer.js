@@ -221,10 +221,32 @@ export function setIsShowingNotification(value) {
  */
 async function getPatchNotes() {
     try {
-        if (versionNow.slice(-3) !== "dev") {
+        if (versionNow.slice(-3) !== "dev" && !versionNow.includes("nightly")) {
             let response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/releases/tags/${versionNow}`);
             let data = await response.json();
             let changes = data.body;
+            let changesHTML = marked(changes);
+            patchNotesBody.innerHTML = changesHTML
+            let h1Elements = patchNotesBody.querySelectorAll("h1");
+
+            h1Elements.forEach(function (h1Element) {
+                let h4Element = document.createElement("h4");
+                h4Element.textContent = h1Element.textContent;
+                h4Element.classList.add("bold-font")
+                patchNotesBody.replaceChild(h4Element, h1Element);
+            });
+
+            let h2Elements = patchNotesBody.querySelectorAll("h2");
+            h2Elements.forEach(function (h1Element) {
+                let h4Element = document.createElement("h4");
+                h4Element.textContent = h1Element.textContent;
+                h4Element.classList.add("bold-font")
+                patchNotesBody.replaceChild(h4Element, h1Element);
+            });
+        }
+        else if (versionNow.includes("nightly")) {
+            let response = await fetch(`../src/data/nightly_patch_notes.md`);
+            let changes = await response.text();
             let changesHTML = marked(changes);
             patchNotesBody.innerHTML = changesHTML
             let h1Elements = patchNotesBody.querySelectorAll("h1");
@@ -737,106 +759,106 @@ const messageHandlers = {
 };
 
 function removeLegacyKeys(base) {
-  const lsNewsKey = `${base}_news`;
-  const lsTPKey   = `${base}_tps`;
-  try {
-    console.log("[migrate] Deleting legacy localStorage keys:", lsNewsKey, lsTPKey);
-    localStorage.removeItem(lsNewsKey);
-    localStorage.removeItem(lsTPKey);
-  } catch (e) {
-    console.warn("[migrate] Failed to remove legacy keys:", e);
-  }
+    const lsNewsKey = `${base}_news`;
+    const lsTPKey = `${base}_tps`;
+    try {
+        console.log("[migrate] Deleting legacy localStorage keys:", lsNewsKey, lsTPKey);
+        localStorage.removeItem(lsNewsKey);
+        localStorage.removeItem(lsTPKey);
+    } catch (e) {
+        console.warn("[migrate] Failed to remove legacy keys:", e);
+    }
 }
 
 async function migrateLegacyNewsOnce() {
-  const base = getSaveName().split('.')[0];
-  const lsFlagKey = `${base}_migration_v1_done`;
-  const lsNewsKey = `${base}_news`;
-  const lsTPKey   = `${base}_tps`;
+    const base = getSaveName().split('.')[0];
+    const lsFlagKey = `${base}_migration_v1_done`;
+    const lsNewsKey = `${base}_news`;
+    const lsTPKey = `${base}_tps`;
 
-  // 1) Si ya está migrado, BORRAR SIEMPRE y salir
-  if (localStorage.getItem(lsFlagKey) === "1") {
-    removeLegacyKeys(base);
-    return;
-  }
-
-  // 2) Leer posibles datos legacy
-  const lsNewsTxt = localStorage.getItem(lsNewsKey);
-  const lsTPTxt   = localStorage.getItem(lsTPKey);
-
-  // 3) Si no hay nada que migrar, marca flag y BORRA igual por si quedaron restos
-  if (!lsNewsTxt && !lsTPTxt) {
-    localStorage.setItem(lsFlagKey, "1");
-    removeLegacyKeys(base);
-    return;
-  }
-
-  // 4) Hay algo que migrar → pide al worker
-  try {
-    const resp = await new Command("migrateFromLocalStorage", {
-      base,
-      lsNewsTxt, // pueden ser null; el worker ya valida
-      lsTPTxt
-    }).promiseExecute();
-
-    // Considera como éxito "Migration done" o "Already migrated" por si reintentas
-    if (resp?.responseMessage === "Migration done" || resp?.responseMessage === "Already migrated") {
-      localStorage.setItem(lsFlagKey, "1");
-      removeLegacyKeys(base); // BORRA tras éxito
-    } else {
-      console.warn("[migrate] Unexpected response:", resp);
-      // Si quieres ser agresivo igualmente:
-      localStorage.setItem(lsFlagKey, "1");
-      removeLegacyKeys(base);
+    // 1) Si ya está migrado, BORRAR SIEMPRE y salir
+    if (localStorage.getItem(lsFlagKey) === "1") {
+        removeLegacyKeys(base);
+        return;
     }
-  } catch (e) {
-    console.error("[migrate] Migration error (front):", e);
-    // No marcamos flag en error para poder reintentar después.
-    // Pero si quieres limpiar sí o sí, podrías optar por:
-    // removeLegacyKeys(base);
-  }
+
+    // 2) Leer posibles datos legacy
+    const lsNewsTxt = localStorage.getItem(lsNewsKey);
+    const lsTPTxt = localStorage.getItem(lsTPKey);
+
+    // 3) Si no hay nada que migrar, marca flag y BORRA igual por si quedaron restos
+    if (!lsNewsTxt && !lsTPTxt) {
+        localStorage.setItem(lsFlagKey, "1");
+        removeLegacyKeys(base);
+        return;
+    }
+
+    // 4) Hay algo que migrar → pide al worker
+    try {
+        const resp = await new Command("migrateFromLocalStorage", {
+            base,
+            lsNewsTxt, // pueden ser null; el worker ya valida
+            lsTPTxt
+        }).promiseExecute();
+
+        // Considera como éxito "Migration done" o "Already migrated" por si reintentas
+        if (resp?.responseMessage === "Migration done" || resp?.responseMessage === "Already migrated") {
+            localStorage.setItem(lsFlagKey, "1");
+            removeLegacyKeys(base); // BORRA tras éxito
+        } else {
+            console.warn("[migrate] Unexpected response:", resp);
+            // Si quieres ser agresivo igualmente:
+            localStorage.setItem(lsFlagKey, "1");
+            removeLegacyKeys(base);
+        }
+    } catch (e) {
+        console.error("[migrate] Migration error (front):", e);
+        // No marcamos flag en error para poder reintentar después.
+        // Pero si quieres limpiar sí o sí, podrías optar por:
+        // removeLegacyKeys(base);
+    }
 }
 
 
 
 export async function generateNews() {
-  const isValid = await isPatronSignatureValid();
-  const canGenerate = checkGenerableNews(isValid);
-  if (canGenerate === "no") return;
+    const isValid = await isPatronSignatureValid();
+    const canGenerate = checkGenerableNews(isValid);
+    if (canGenerate === "no") return;
 
-  // lanzar sin payload, el worker lee de DB
-  new Command("generateNews", {}).execute();
+    // lanzar sin payload, el worker lee de DB
+    new Command("generateNews", {}).execute();
 
-  // loader UI (igual que antes si quieres)
-  const newsView = document.getElementById("news");
-  const loaderDiv = document.createElement('div');
-  loaderDiv.classList.add('loader-div', 'general-news-loader');
+    // loader UI (igual que antes si quieres)
+    const newsView = document.getElementById("news");
+    const loaderDiv = document.createElement('div');
+    loaderDiv.classList.add('loader-div', 'general-news-loader');
 
-  const loadingSpan = document.createElement('span');
-  loadingSpan.textContent = "Updating news";
-  const loadingDots = document.createElement('span');
-  loadingDots.textContent = ".";
-  loadingDots.classList.add('loading-dots');
-  loadingSpan.textContent = "Updating news";
-  loadingSpan.appendChild(loadingDots);
-  
+    const loadingSpan = document.createElement('span');
+    loadingSpan.textContent = "Updating news";
+    const loadingDots = document.createElement('span');
+    loadingDots.textContent = ".";
+    loadingDots.classList.add('loading-dots');
+    loadingSpan.textContent = "Updating news";
+    loadingSpan.appendChild(loadingDots);
 
-  setInterval(() => {
-    if (loadingDots.textContent.length >= 3) loadingDots.textContent = ".";
-    else loadingDots.textContent += ".";
-  }, 500);
 
-  const progressBar = document.createElement('div');
-  progressBar.classList.add('ai-progress-bar');
-  const progressDiv = document.createElement('div');
-  progressDiv.classList.add('progress-div', 'general-news-progress-div');
+    setInterval(() => {
+        if (loadingDots.textContent.length >= 3) loadingDots.textContent = ".";
+        else loadingDots.textContent += ".";
+    }, 500);
 
-  loaderDiv.appendChild(loadingSpan);
-  progressBar.appendChild(progressDiv);
-  loaderDiv.appendChild(progressBar);
+    const progressBar = document.createElement('div');
+    progressBar.classList.add('ai-progress-bar');
+    const progressDiv = document.createElement('div');
+    progressDiv.classList.add('progress-div', 'general-news-progress-div');
 
-  startGeneralNewsProgress(progressDiv);
-  newsView.appendChild(loaderDiv);
+    loaderDiv.appendChild(loadingSpan);
+    progressBar.appendChild(progressDiv);
+    loaderDiv.appendChild(progressBar);
+
+    startGeneralNewsProgress(progressDiv);
+    newsView.appendChild(loaderDiv);
 }
 
 
