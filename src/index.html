@@ -757,15 +757,18 @@
                       </button>
                       <div class="dropdown-line"></div>
                       <ul class="dropdown-menu" id="aiModelmenu" style="font-family: Formula1;">
-                        <a class="dropdown-item" data-value="gemini-2.5-flash"><div class="model-and-description">
-                          <span class="model-name">Gemini 2.5 Flash</span>
-                          <span class="model-description">Better responses, sometimes overloaded</span>
-                        </div><i class="bi bi-check"></i></a>
+                        <a class="dropdown-item" data-value="gemini-2.5-flash">
+                          <div class="model-and-description">
+                            <span class="model-name">Gemini 2.5 Flash</span>
+                            <span class="model-description">Better responses, sometimes overloaded</span>
+                          </div><i class="bi bi-check"></i>
+                        </a>
                         <a class="dropdown-item inactive" data-value="gemini-2.5-flash-lite">
                           <div class="model-and-description">
                             <span class="model-name">Gemini 2.5 Flash Lite</span>
                             <span class="model-description">Faster responses, lower quality</span>
-                          </div><i class="bi bi-check unactive"></i></a>
+                          </div><i class="bi bi-check unactive"></i>
+                        </a>
                       </ul>
                     </div>
 
@@ -2978,10 +2981,10 @@
         <div class="general-top-panel">
           <div class="title-buttons-left">
             <div class="dropdown-global">
-              <button class="redesigned-dropdown" id="teamButton"
-                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button class="redesigned-dropdown bold-font" id="teamButton" data-bs-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
                 <span class="span dropdown-label">Team</span>
-                <i class="bi bi-chevron-down dropdown-arrrow"></i>
+                <i class="redesigned-chevron"></i>
               </button>
               <ul class="redesigned-dropdown-menu" id="teamMenu" style="font-family: Formula1;">
                 <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="1">
@@ -3092,243 +3095,253 @@
         </div>
         <div class="main-viewer-section team-viewer d-none">
           <div id="viewer-first">
-            <div class="viewer-component">
-              <div class="first-component" id="seasonObjective">
-                <div class="component-subtitle bold-font">Season Objective</div>
-                <div class="input-and-buttons">
-                  <input type="number" class="old-custom-input-number" id="seasonObjectiveInput" value="4"></input>
-                  <div class="input-buttons">
-                    <i class="bi bi-chevron-up"></i>
-                    <i class="bi bi-chevron-down"></i>
+            <div class="component-and-title">
+              <div class="component-title bold-font">Objectives</div>
+              <div class="viewer-component">
+                <div class="first-component" id="seasonObjective">
+                  <div class="bold-font">Season Objective</div>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number" id="seasonObjectiveInput" value="4"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-plus new-augment-button"></i>
+                      <i class="bi bi-dash new-augment-button"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="second-component">
+                  <div class="bold-font">Long-term Objective</div>
+                  <div id="objAndYear">
+                    <div class="dropdown-global">
+                      <button class="redesigned-dropdown" id="objectiveButton" data-bs-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        <span class="objective-label dropdown-label">Constructor's champion</span>
+                        <i class="bi bi-chevron-down"></i>
+                      </button>
+                      <ul class="redesigned-dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
+                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj0">Constructor's champion</a>
+                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj1">Podium contender</a>
+                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj2">Points contender</a>
+                      </ul>
+                    </div>
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number" id="longTermInput" value="2024"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <div class="component-and-title">
+              <div class="component-title bold-font">Economy</div>
+              <div class="viewer-component">
+                <div class="first-component" id="teamBudget">
+                  <div class="bold-font">Balance</div>
+                  <div class="input-and-buttons">
+                    <input type="string" class="custom-input-number" id="teamBudgetInput" value="40000000"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-plus new-augment-button"></i>
+                      <i class="bi bi-dash new-augment-button"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="second-component" id="costCap">
+                  <div class="bold-font">Cost cap spent</div>
+                  <div class="input-and-buttons">
+                    <input type="string" class="custom-input-number" id="costCapInput" value="120000000"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-plus new-augment-button"></i>
+                      <i class="bi bi-dash new-augment-button"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="second-component">
-                <div class="component-subtitle bold-font">Long-term Objective</div>
-                <div id="objAndYear">
-                  <div>
-                    <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                      id="objectiveButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <div class="front-gradient objective-label">Constructor's champion</div>
+            </div>
+            <div class="component-and-title">
+              <div class="component-title bold-font">Others</div>
+              <div class="viewer-component">
+                <div class="first-component" id="engineSelector">
+                  <div class="bold-font">Engine</div>
+                  <div class="dropdown-global">
+                    <button class="redesigned-dropdown" id="engineButton" data-bs-toggle="dropdown" aria-haspopup="true"
+                      aria-expanded="false" data-value="0">
+                      <span class="objective-label dropdown-label" id="engineLabel">Engine</span>
+                      <i class="bi bi-chevron-down"></i>
                     </button>
-                    <div class="dropdown-line"></div>
-                    <ul class="dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
-                      <a class="dropdown-item" style="cursor: pointer;" id="longTermObj0">Constructor's champion</a>
-                      <a class="dropdown-item" style="cursor: pointer;" id="longTermObj1">Podium contender</a>
-                      <a class="dropdown-item" style="cursor: pointer;" id="longTermObj2">Points contender</a>
+                    <ul class="redesigned-dropdown-menu" id="engineMenu" style="font-family: Formula1;">
+                      <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="1">Ferrari</a>
+                      <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="4">Red Bull
+                        Powertrains</a>
+                      <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="7">Mercedes</a>
+                      <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="10">Renault</a>
                     </ul>
                   </div>
+                </div>
+                <div class="second-component" id="confidence">
+                  <div class="bold-font">Board confidence</div>
                   <div class="input-and-buttons">
-                    <input type="number" class="old-custom-input-number" id="longTermInput" value="2024"></input>
+                    <input type="number" class="custom-input-number" id="confidenceInput" value="48"></input>
                     <div class="input-buttons">
-                      <i class="bi bi-chevron-up"></i>
-                      <i class="bi bi-chevron-down"></i>
+                      <i class="bi bi-plus new-augment-button"></i>
+                      <i class="bi bi-dash new-augment-button"></i>
                     </div>
                   </div>
+                </div>
 
-                </div>
+              </div>
+            </div>
 
+            <div class="component-and-title">
+              <div class="component-title bold-font">Pit crew</div>
+              <div class="pit-crew-details">
+                <div class="pit-crew-group">
+                  <div class="one-stat-panel" data-crewStat="32">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Jacks</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="one-stat-panel pit-crew-middle" data-crewStat="34">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Wing replace</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="one-stat-panel" data-crewStat="35">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Car release</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="pit-crew-group mt-1">
+                  <div class="one-stat-panel" data-crewStat="36">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Speed</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="one-stat-panel pit-crew-middle" data-crewStat="38">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Fatigue</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="one-stat-panel" data-crewStat="39">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Car build</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="pit-crew-group mt-1">
+                  <div class="one-stat-panel" data-crewStat="40">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Wheel gun</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="one-stat-panel pit-crew-middle" data-crewStat="41">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Tyres off</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="one-stat-panel" data-crewStat="42">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Tyres on</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="viewer-component">
-              <div class="first-component" id="teamBudget">
-                <div class="component-subtitle bold-font">Budget</div>
-                <div class="input-and-buttons">
-                  <input type="string" class="old-custom-input-number" id="teamBudgetInput" value="40000000"></input>
-                  <div class="input-buttons">
-                    <i class="bi bi-plus-lg"></i>
-                    <i class="bi bi-dash-lg"></i>
-                  </div>
-                </div>
-              </div>
-              <div class="second-component" id="costCap">
-                <div class="component-subtitle bold-font">Cost cap spent</div>
-                <div class="input-and-buttons">
-                  <input type="string" class="old-custom-input-number" id="costCapInput" value="120000000"></input>
-                  <div class="input-buttons">
-                    <i class="bi bi-plus-lg"></i>
-                    <i class="bi bi-dash-lg"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="viewer-component">
-              <div class="first-component" id="confidence">
-                <div class="component-subtitle bold-font">Board confidence</div>
-                <div class="blocking-confidence d-none">Only available when editing player's team</div>
-                <div class="input-and-buttons">
-                  <input type="number" class="old-custom-input-number" id="confidenceInput" value="48"></input>
-                  <div class="input-buttons">
-                    <i class="bi bi-plus-lg"></i>
-                    <i class="bi bi-dash-lg"></i>
-                  </div>
-                </div>
-              </div>
-              <div class="second-component" id="engineSelector">
-                <div class="component-subtitle bold-font">Engine</div>
 
-                <div style="max-width: max-content;">
-                  <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                    id="engineButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                    data-value="0">
-                    <div class="front-gradient objective-label" id="engineLabel">Engine</div>
-                  </button>
-                  <div class="dropdown-line"></div>
-                  <ul class="dropdown-menu" id="engineMenu" style="font-family: Formula1;">
-                    <a class="dropdown-item" style="cursor: pointer;" data-engine="1">Ferrari</a>
-                    <a class="dropdown-item" style="cursor: pointer;" data-engine="4">Red Bull Powertrains</a>
-                    <a class="dropdown-item" style="cursor: pointer;" data-engine="7">Mercedes</a>
-                    <a class="dropdown-item" style="cursor: pointer;" data-engine="10">Renault</a>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="viewer-component">
-              <div class="component-subtitle bold-font">Pit crew</div>
-            </div>
-            <div class="pit-crew-details pt-2">
-              <div class="pit-crew-group">
-                <div class="one-stat-panel" data-crewStat="32">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Jacks</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="one-stat-panel" data-crewStat="34">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Wing replace</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="one-stat-panel" data-crewStat="35">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Car release</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="pit-crew-group mt-1">
-                <div class="one-stat-panel" data-crewStat="36">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Speed</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="one-stat-panel" data-crewStat="38">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Fatigue</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="one-stat-panel" data-crewStat="39">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Car build</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="pit-crew-group mt-1">
-                <div class="one-stat-panel" data-crewStat="40">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Wheel gun</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="one-stat-panel" data-crewStat="41">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Tyres off</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="one-stat-panel" data-crewStat="42">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Tyres on</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
           <div class="separator"></div>
           <div id="viewer-second">

@@ -1043,7 +1043,7 @@ export function load_custom_engines(data) {
     engines.forEach(function (engine) {
         add_custom_engine(engine[2], engine[1])
         let engineOption = document.createElement("a")
-        engineOption.classList.add("dropdown-item", "custom-engine")
+        engineOption.classList.add("redesigned-dropdown-item", "custom-engine")
         engineOption.innerText = engine[2].charAt(0).toUpperCase() + engine[2].slice(1)
         engineOption.dataset.engine = engine[0]
         engineOption.href = "#"

@@ -1,6 +1,7 @@
 import {  team_dict  } from "./config";
 import { Command } from "../backend/command.js";
 import { manage_stat_bar } from "./stats";
+import { attachHold } from "./renderer.js";
 
 export let teamCod;
 let currYear;
@@ -18,6 +19,8 @@ document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem
         let data = {
             teamID: teamCod,
         }
+
+        document.querySelector("#teamButton").classList.remove("open")
 
         const command = new Command("teamRequest",  data);
         command.execute();
@@ -70,91 +73,46 @@ function addContinuousListener(element, selector, incrementCallback, decrementCa
     });
 }
 
-/**
- * Listeners for the long term input year
- */
-addContinuousListener(document.querySelector("#objAndYear"), ".bi-chevron-up, .bi-chevron-down",
-    function(input) { input.value = Number(input.value) + 1; },
-    function(input) {
-        let value = Number(input.value) - 1;
-        if (value <= currYear) {
-            value = currYear;
-        }
-        input.value = value;
-    }
-);
+attachHold(document.querySelector("#objAndYear .input-and-buttons .bi-plus"), document.querySelector("#longTermInput"), +1, { min: 2023, max: 2023 + 1000});
+attachHold(document.querySelector("#objAndYear .input-and-buttons .bi-dash"), document.querySelector("#longTermInput"), -1, { min: 2023, max: 2023 + 1000});
 
-/**
- * Listeners for the season objective input
- */
-addContinuousListener(document.querySelector("#seasonObjective"), ".bi-chevron-up, .bi-chevron-down",
-    function(input) {
-        let value = Number(input.value) - 1;
-        if (value <= 1) {
-            value = 1;
-        }
-        input.value = value;
-    },
-    function(input) {
-        let value = Number(input.value) + 1;
-        if (value >= 10) {
-            value = 10;
-        }
-        input.value = value;
-    }
-);
 
-/**
- * Listeners for the board confidence input
- */
-addContinuousListener(document.querySelector("#confidence"), ".bi-plus-lg, .bi-dash-lg",
-    function(input) {
-        let value = Number(input.value) + 5;
-        if (value >= 100) {
-            value = 100;
-        }
-        input.value = value;
-    },
-    function(input) {
-        let value = Number(input.value) - 5;
-        if (value <= 0) {
-            value = 0;
-        }
-        input.value = value;
-    }
-);
+attachHold(document.querySelector("#seasonObjective .bi-plus"), document.querySelector("#seasonObjectiveInput"), -1, { min: 1, max: 10});
+attachHold(document.querySelector("#seasonObjective .bi-dash"), document.querySelector("#seasonObjectiveInput"), +1, { min: 1, max: 10});
 
-/**
- * Listeners for the cost cap input
- */
-addContinuousListener(document.querySelector("#costCap"), ".bi-plus-lg, .bi-dash-lg",
-    function(input) {
+
+attachHold(document.querySelector("#confidence .bi-plus"), document.querySelector("#confidence input"), +5, { min: 0, max: 100});
+attachHold(document.querySelector("#confidence .bi-dash"), document.querySelector("#confidence input"), -5, { min: 0, max: 100});
+
+
+attachHold(document.querySelector("#costCap .bi-plus"), document.querySelector("#costCap input"), +100000,
+ { min: -9999999999, max: 1000000000, onChange: function(input) {
         let valorActual = input.value.replace(/[$,]/g, "");
         let nuevoValor = Number(valorActual) + 100000;
         input.value = nuevoValor.toLocaleString('en-US') + '$';
-    },
-    function(input) {
+    } });
+
+attachHold(document.querySelector("#costCap .bi-dash"), document.querySelector("#costCap input"), -100000,
+ { min: -9999999999, max: 1000000000, onChange: function(input) {
         let valorActual = input.value.replace(/[$,]/g, "");
         let nuevoValor = Number(valorActual) - 100000;
         input.value = nuevoValor.toLocaleString('en-US') + '$';
-    }
-);
+    } });
 
-/**
- * Listeners for the team budget input
- */
-addContinuousListener(document.querySelector("#teamBudget"), ".bi-plus-lg, .bi-dash-lg",
-    function(input) {
+
+attachHold(document.querySelector("#teamBudget .bi-plus"), document.querySelector("#teamBudget input"), +100000,
+ { min: -9999999999, max: 1000000000, onChange: function(input) {
         let valorActual = input.value.replace(/[$,]/g, "");
         let nuevoValor = Number(valorActual) + 100000;
         input.value = nuevoValor.toLocaleString('en-US') + '$';
-    },
-    function(input) {
+    } });
+
+attachHold(document.querySelector("#teamBudget .bi-dash"), document.querySelector("#teamBudget input"), -100000,
+ { min: -9999999999, max: 1000000000, onChange: function(input) {
         let valorActual = input.value.replace(/[$,]/g, "");
         let nuevoValor = Number(valorActual) - 100000;
         input.value = nuevoValor.toLocaleString('en-US') + '$';
-    }
-);
+    } });
 
 
 function updateCondition(input, increment, bar) {
@@ -403,11 +361,11 @@ document.querySelector(".pit-crew-details").querySelectorAll(".bi-dash-lg").forE
  * @param {Number} data Confidence number. If -1, blocking div is activated
  */
 function manageConfidence(data){
-    if(Number(data[0]) !== -1){
-        document.querySelector(".blocking-confidence").classList.add("d-none")
+    if(Number(data[0]) === -1){
+        document.querySelector("#confidence").classList.add("d-none")
     }
     else{
-        document.querySelector(".blocking-confidence").classList.remove("d-none")
+        document.querySelector("#confidence").classList.remove("d-none")
     }
 }
 

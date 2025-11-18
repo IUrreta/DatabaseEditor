@@ -962,8 +962,7 @@ body.og-theme .dropdown-menu a:hover {
 
 
 
-.modal-subtitle,
-.component-subtitle {
+.modal-subtitle{
   color: var(--text-general);
 }
 
@@ -4132,6 +4131,7 @@ DRIVERS TABLE
   display: flex;
   flex-direction: column;
   color: var(--text-general);
+  gap: 5px;
 }
 
 .pit-crew-stat {
@@ -8028,26 +8028,22 @@ body.og-theme .teams-columns, body.og-theme .records-list{
   margin-right: 5px;
 }
 
+.team-viewer .input-buttons{
+  flex-direction: row-reverse;
+}
+
 .input-buttons {
   display: flex;
   flex-direction: column;
-  font-size: 20px;
+  font-size: 16px !important;
   padding-top: 2px;
   gap: 5px;
 }
 
-.input-buttons i {
-  cursor: pointer;
-  background-color: transparent;
-  border-radius: 10px;
-  transition: background-color 0.15s, color 0.15s, transform 0.2;
-  background-color: transparent;
-  width: 25px;
-  height: 25px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.input-buttons .bi-chevron-up, .input-buttons .bi-chevron-down {
+  font-size: 16px !important;
 }
+
 
 .team-menu-logo {
   width: 50px;
@@ -8087,7 +8083,7 @@ body.og-theme .teams-columns, body.og-theme .records-list{
 }
 
 .team-menu-custom {
-  width: 40px;
+  width: 50px;
   height: 40px;
   padding-bottom: 1px;
   padding-top: 1px;
@@ -8122,11 +8118,12 @@ body.og-theme .teams-columns, body.og-theme .records-list{
 }
 
 .team-menu-merc {
-  width: 40px;
+  width: 50px;
   height: 40px;
   padding-bottom: 5px;
   padding-top: 7px;
-  padding-left: 8px;
+  padding-left: 10px;
+  padding-right: 8px;
 }
 
 .team-menu-redbull {
@@ -8249,12 +8246,6 @@ body.og-theme .teams-columns, body.og-theme .records-list{
   gap: 0px;
   padding: 10px;
   justify-content: space-between;
-}
-
-
-.input-buttons i:hover {
-  transform: scale(1.1);
-  color: var(--text-selected) !important;
 }
 
 
@@ -9013,11 +9004,7 @@ input::-webkit-inner-spin-button {
 .team-viewer {
   display: flex;
   flex-direction: row;
-  padding: 12px 12px;
-}
-
-.team-viewer .input-buttons {
-  font-size: 18px;
+  padding: 13px 20px;
 }
 
 #teamBudgetInput {
@@ -9035,8 +9022,18 @@ input::-webkit-inner-spin-button {
   width: 100%;
 }
 
+.component-and-title{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 5px;
+}
+
+.component-and-title:has(.pit-crew-details){
+  gap: 0px;
+}
+
 .viewer-component {
-  margin-top: 20px;
   display: flex;
   flex-direction: row;
 }
@@ -9247,6 +9244,9 @@ input::-webkit-inner-spin-button {
 #viewer-first {
   width: 49%;
   padding-right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 #viewer-second {
@@ -9385,8 +9385,7 @@ input::-webkit-inner-spin-button {
 }
 
 #objectiveButton {
-  margin-top: 5px !important;
-  max-width: 260px !important;
+  max-width: 290px !important;
 }
 
 #objectiveButton::before,
@@ -9406,12 +9405,23 @@ input::-webkit-inner-spin-button {
 
 .pit-crew-details .one-stat-panel input {
   font-size: 14px;
-  max-width: 50px;
+  padding: 5px 0;
+  width: 51px;
+  text-align: center;
+}
+
+.component-title{
+  font-size: 20px;
+  color: var(--text-secondary);
 }
 
 .first-component,
 .second-component {
   width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 3px;
 }
 
 #editorPill{
@@ -9453,6 +9463,7 @@ input::-webkit-inner-spin-button {
 
 .component-subtitle {
   font-size: 20px;
+  color: var(--text-secondary);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -9529,7 +9540,7 @@ input::-webkit-inner-spin-button {
 }
 
 #teamMenu .alphatauri-logo-container:has(.alphataurilogo){
-  width: 40px;
+  width: 50px;
   height: 40px;
   padding: 0px 0px 0px 6px;
 }
@@ -9541,7 +9552,7 @@ input::-webkit-inner-spin-button {
 }
 
 #teamMenu .alphatauri-logo-container:has(.visarblogo){
-  width: 40px;
+  width: 50px;
   height: 40px;
   padding: 0px 4px 0px 6px;
 }
@@ -9559,7 +9570,7 @@ input::-webkit-inner-spin-button {
 }
 
 #teamMenu .alphatauri-logo-container:has(.hugologo){
-  width: 40px;
+  width: 50px;
   height: 40px;
   padding: 5px 0px 5px 2px;
 }
@@ -9570,6 +9581,12 @@ input::-webkit-inner-spin-button {
   padding: 5px 0px;
 }
 
+#teamMenu .alpine-logo-container:has(.alpinelogo){
+  width: 50px;
+  height: 40px;
+  padding: 8px 2px 9px 7px;
+}
+
 .alpine-logo-container:has(.alpinelogo){
   width: 40px;
   height: 40px;
@@ -9577,7 +9594,7 @@ input::-webkit-inner-spin-button {
 }
 
 #teamMenu .alpine-logo-container:has(.andrettilogo){
-  width: 40px;
+  width: 50px;
   height: 40px;
   padding: 6px 2px 6px 7px;
 }
@@ -9589,7 +9606,7 @@ input::-webkit-inner-spin-button {
 }
 
 #teamMenu .alpine-logo-container:has(.renaultlogo){
-  width: 40px;
+  width: 50px;
   height: 40px;
   padding: 5px 0px 7px 5px;
 }
@@ -9601,7 +9618,7 @@ input::-webkit-inner-spin-button {
 }
 
 #teamMenu .alpine-logo-container:has(.lotuslogo){
-  width: 40px;
+  width: 50px;
   height: 40px;
   padding: 1px 0px 1px 5px;
 }
@@ -13543,7 +13560,6 @@ p.news-error-api-key{
   border-radius: 6px;
   color: var(--text-general);
   gap: 10px;
-  font-family: 'Formula1Bold';
   transition: background-color 0.15s, color 0.15s;
   padding: 5px 10px;
 }
@@ -13562,14 +13578,19 @@ p.news-error-api-key{
   color: var(--white-general);
 }
 
+.redesigned-dropdown:hover .redesigned-chevron, .redesigned-dropdown.open .redesigned-chevron {
+  background-color: var(--white-general);
+}
+
 .redesigned-dropdown-menu{
-  background-color: var(--new-primary-background-dropdown);
+  background-color: var(--dropdown-back);
   border: none;
-  /* box-shadow: var(--shadow-m); */
+  box-shadow: var(--shadow-m);
   border-radius: 10px;
   margin-top: 5px;
   padding: 5px;
   position: absolute;
+  z-index: 100;
   transition: opacity 0.15s, transform 0.15s;
 }
 
@@ -13578,8 +13599,16 @@ p.news-error-api-key{
   display: inline-block;
 }
 
-.redesigned-dropdown-item{
+#teamMenu .redesigned-dropdown-item{
   padding: 2px 8px 2px 0px !important;
+}
+
+#objectiveMenu{
+  min-width: 280px;
+}
+
+.redesigned-dropdown-item{
+  padding: 4px 8px;
   border-radius: 7px;
   cursor: pointer;
   text-decoration: none;
@@ -13592,7 +13621,7 @@ p.news-error-api-key{
 }
 
 .redesigned-dropdown-item:hover{
-  background-color: var(--new-primary-background-dropdown-items);
+  background-color: var(--dropdown-hover);
   color: var(--white-general);
 }
 
@@ -13606,4 +13635,45 @@ p.news-error-api-key{
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
+}
+
+/*svg image*/
+.redesigned-chevron{
+  mask: url('/assets/images/redesigned-chevron.svg') no-repeat center;
+  mask-size: contain;
+  background-color: var(--text-general);
+  transition: background-color 0.15s;
+  width: 16px;
+  height: 16px;
+}
+
+#teamMenu{
+  padding-right: 0px;
+  width: 250px;
+}
+
+#seasonObjectiveInput{
+  width: 40px;
+}
+
+.team-viewer .custom-input-number{
+  padding: 5px 8px;
+  text-align: left;
+  font-size: 18px;
+}
+
+.pit-crew-middle{
+  border-left: 2px solid var(--separator-light);
+  border-radius: 0;
+  border-right: 2px solid var(--separator-light);
+  padding: 0 12px;
+}
+
+.pit-crew-group .one-stat-panel{
+  padding: 0 12px;
+  border-radius: 0;
+}
+
+.team-viewer .bar-container{
+  height: auto;
 }

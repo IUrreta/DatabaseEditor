@@ -2432,7 +2432,6 @@ document.querySelectorAll("#aiModelmenu .dropdown-item").forEach(item => {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(e.target)
     const selectedModel = e.target.dataset.value;
     const selectedText = e.target.querySelector(".model-name").innerText;
 
