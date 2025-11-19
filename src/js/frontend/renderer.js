@@ -90,7 +90,51 @@ const newsDiv = document.getElementById("news")
 
 const patchNotesBody = document.getElementById("patchNotesBody")
 const selectImageButton = document.getElementById('selectImage');
-const patreonKeyButton = document.getElementById('patreonKeyButton');
+const patreonLoginButton = document.getElementById('patreonLoginButton');
+
+// Patreon OAuth Logic
+if (patreonLoginButton) {
+    patreonLoginButton.addEventListener('click', () => {
+        window.location.href = '/api/auth/patreon/login';
+    });
+}
+
+// Check for OAuth code
+const urlParams = new URLSearchParams(window.location.search);
+const code = urlParams.get('code');
+
+if (code) {
+    // Clear the code from URL to prevent re-submission on refresh
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    fetch(`/api/auth/patreon/verify?code=${code}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Patreon Data: ", data)
+                new_update_notifications(`Welcome ${data.user.fullName}! Tier: ${data.tier}`, "success");
+                // Here you can update the UI to unlock features based on data.tier
+                // For example:
+                if (data.isMember) {
+                    // Unlock features logic
+                    console.log("User is a member:", data);
+                    // Example: Hide login button, show status
+                    if (patreonLoginButton) patreonLoginButton.style.display = 'none';
+                    const statusDiv = document.getElementById('patreonKeyStatus');
+                    if (statusDiv) {
+                        statusDiv.classList.remove('d-none');
+                        statusDiv.querySelector('#patreonKeyText').textContent = data.tier;
+                    }
+                }
+            } else {
+                new_update_notifications(`Login failed: ${data.error}`, "error");
+            }
+        })
+        .catch(err => {
+            console.error('Patreon verification error:', err);
+            new_update_notifications("Error verifying Patreon status", "error");
+        });
+}
 
 const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, carPerformanceDiv, mod25Div]
 
@@ -273,30 +317,7 @@ async function getPatchNotes() {
 
 }
 
-/**
- * Places and manages the notifications that appear in the tool
- * @param {string} noti message of the notification
- * @param {bool} error if the notification is an error or not
- */
-function update_notifications(noti, code) {
-    let newNoti;
-    newNoti = document.createElement('div');
-    newNoti.className = 'notification';
-    newNoti.textContent = noti;
-    let toast = createToast(noti, code)
-    setTimeout(function () {
-        toast.classList.remove("myShow")
-    }, 150)
-    notificationPanel.appendChild(toast);
-    if (code !== "error") {
-        setTimeout(function () {
-            toast.classList.add("hide")
-            setTimeout(function () {
-                notificationPanel.removeChild(toast);
-            }, 130);
-        }, 4000);
-    }
-}
+
 
 
 
@@ -1916,9 +1937,6 @@ document.querySelector("#cancelDetailsButton").addEventListener("click", functio
     manage_config_content(configCopy[0], false)
 })
 
-patreonKeyButton.addEventListener('click', () => {
-    patreonInput.click();
-});
 
 patreonInput.addEventListener('change', async (e) => {
     if (!e.target.files?.length) return;
