@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 
         // 2. Fetch user identity and memberships
         // Using API v2
-        const identityResponse = await fetch('https://www.patreon.com/api/oauth2/v2/identity?include=memberships.campaign&fields%5Buser%5D=full_name,thumb_url&fields%5Bmember%5D=patron_status,currently_entitled_amount_cents', {
+        const identityResponse = await fetch('https://www.patreon.com/api/oauth2/v2/identity?include=memberships.currently_entitled_tiers&fields%5Buser%5D=full_name,thumb_url&fields%5Bmember%5D=patron_status,currently_entitled_amount_cents&fields%5Btier%5D=title', {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },
@@ -55,18 +55,23 @@ export default async function handler(req, res) {
         let isMember = false;
         let tier = 'Free';
         let amountCents = 0;
+        let tierName = 'None';
+
+        const tierIDs = ["25157070", "25124139", "25132338"];
 
         // Logic to determine tier based on memberships
-        // Note: This logic might need adjustment based on specific campaign structure
-        // For now, we check if there is any active membership
-
         for (const item of memberships) {
             if (item.type === 'member' && item.attributes.patron_status === 'active_patron') {
                 isMember = true;
                 amountCents = item.attributes.currently_entitled_amount_cents;
-                // You can map amountCents to specific tier names if needed
-                break; // Assuming one membership per campaign for simplicity
             }
+            if (item.type === 'tier' && tierIDs.includes(item.id)) {
+                tierName = item.attributes.title;
+            }
+        }
+
+        if (isMember) {
+            tier = tierName;
         }
 
         return res.status(200).json({
@@ -77,7 +82,7 @@ export default async function handler(req, res) {
             },
             isMember,
             amountCents,
-            tier: isMember ? (amountCents > 0 ? 'Patron' : 'Free') : 'None'
+            tier: tier,
         });
 
     } catch (error) {

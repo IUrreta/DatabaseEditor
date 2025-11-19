@@ -92,49 +92,7 @@ const patchNotesBody = document.getElementById("patchNotesBody")
 const selectImageButton = document.getElementById('selectImage');
 const patreonLoginButton = document.getElementById('patreonLoginButton');
 
-// Patreon OAuth Logic
-if (patreonLoginButton) {
-    patreonLoginButton.addEventListener('click', () => {
-        window.location.href = '/api/auth/patreon/login';
-    });
-}
 
-// Check for OAuth code
-const urlParams = new URLSearchParams(window.location.search);
-const code = urlParams.get('code');
-
-if (code) {
-    // Clear the code from URL to prevent re-submission on refresh
-    window.history.replaceState({}, document.title, window.location.pathname);
-
-    fetch(`/api/auth/patreon/verify?code=${code}`)
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                console.log("Patreon Data: ", data)
-                new_update_notifications(`Welcome ${data.user.fullName}! Tier: ${data.tier}`, "success");
-                // Here you can update the UI to unlock features based on data.tier
-                // For example:
-                if (data.isMember) {
-                    // Unlock features logic
-                    console.log("User is a member:", data);
-                    // Example: Hide login button, show status
-                    if (patreonLoginButton) patreonLoginButton.style.display = 'none';
-                    const statusDiv = document.getElementById('patreonKeyStatus');
-                    if (statusDiv) {
-                        statusDiv.classList.remove('d-none');
-                        statusDiv.querySelector('#patreonKeyText').textContent = data.tier;
-                    }
-                }
-            } else {
-                new_update_notifications(`Login failed: ${data.error}`, "error");
-            }
-        })
-        .catch(err => {
-            console.error('Patreon verification error:', err);
-            new_update_notifications("Error verifying Patreon status", "error");
-        });
-}
 
 const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, carPerformanceDiv, mod25Div]
 
@@ -159,7 +117,6 @@ const removeApiKey = document.getElementById("removeApiKey");
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
 const fileInput = document.getElementById('fileInput');
-const patreonInput = document.getElementById('patreonInput');
 const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 let difficulty_dict = {
     "-2": "Custom",
@@ -317,7 +274,108 @@ async function getPatchNotes() {
 
 }
 
+// Patreon OAuth Logic
+if (patreonLoginButton) {
+    patreonLoginButton.addEventListener('click', () => {
+        window.location.href = '/api/auth/patreon/login';
+    });
+}
 
+// Cookie Helpers
+function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+/**
+ * Retrieves the user's Patreon tier from the cookie.
+ * @returns {string|null} The tier name or null if not logged in.
+ */
+export function getUserTier() {
+    let tier = getCookie("patreon_tier");
+    const userInfo = {
+        paidMember: tier === "Backer" || tier === "Insider" || tier === "Founder",
+        tier: tier
+    }
+    return userInfo;
+}
+
+// Check for OAuth code
+const urlParams = new URLSearchParams(window.location.search);
+const code = urlParams.get('code');
+
+if (code) {
+    console.log("There is code")
+    // Clear the code from URL to prevent re-submission on refresh
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    fetch(`/api/auth/patreon/verify?code=${code}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Patreon Data: ", data)
+                new_update_notifications(`Welcome ${data.user.fullName}! Tier: ${data.tier}`, "success");
+
+                // Save tier to cookie
+                setCookie("patreon_tier", data.tier, 30);
+
+                // Update UI
+                updatePatreonUI(data);
+            } else {
+                new_update_notifications(`Login failed: ${data.error}`, "error");
+                updatePatreonUI(data);
+            }
+        })
+        .catch(err => {
+            console.error('Patreon verification error:', err);
+            new_update_notifications("Error verifying Patreon status", "error");
+        });
+} else {
+    // Check if user is already logged in via cookie
+    const savedTier = getUserTier();
+    if (savedTier) {
+        console.log("User logged in via cookie. Tier:", savedTier.tier);
+        updatePatreonUI(savedTier);
+    }
+}
+
+function updatePatreonUI(tier) {
+    init_colors_dict(selectedTheme)
+
+    if (tier.paidMember) {
+        document.querySelector(".patreon-status").classList.add("positive");
+        patreonUnlockables.classList.remove("d-none");
+        patreonThemes.classList.remove("d-none");
+        document.querySelector(".patreonCheck").classList.remove("d-none");
+        document.getElementById("patreonTierText").textContent = tier.tier.charAt(0).toUpperCase() + tier.tier.slice(1);
+        loadTheme();
+    }
+    else {
+        document.querySelector(".patreon-status").classList.remove("positive");
+        patreonUnlockables.classList.add("d-none");
+        patreonThemes.classList.add("d-none");
+        document.querySelector(".patreonCheck").classList.add("d-none");
+        document.getElementById("patreonTierText").textContent = tier.tier ? tier.tier.charAt(0).toUpperCase() + tier.tier.slice(1) : "Not logged in";
+    }
+
+    manageNewsStatus(tier);
+}
 
 
 
@@ -843,8 +901,8 @@ async function migrateLegacyNewsOnce() {
 
 
 export async function generateNews() {
-    const isValid = await isPatronSignatureValid();
-    const canGenerate = checkGenerableNews(isValid);
+    const patreonTier = getUserTier();
+    const canGenerate = checkGenerableNews(patreonTier);
     if (canGenerate === "no") return;
 
     // lanzar sin payload, el worker lee de DB
@@ -1938,36 +1996,6 @@ document.querySelector("#cancelDetailsButton").addEventListener("click", functio
 })
 
 
-patreonInput.addEventListener('change', async (e) => {
-    if (!e.target.files?.length) return;
-
-    const file = e.target.files[0];
-    const text = await file.text();
-    let parsed;
-
-    try {
-        parsed = JSON.parse(text);
-    } catch (err) {
-        alert('Invalid file');
-        return;
-    }
-
-    const { dataString, signature } = parsed;
-    if (!dataString || !signature) {
-        alert('Error');
-        return;
-    }
-
-    const isValid = await verifySignature(dataString, signature, PUBLIC_KEY);
-    if (isValid) {
-        const dataObj = JSON.parse(dataString);
-
-        localStorage.setItem('patreonKey', JSON.stringify({ dataString, signature }));
-        checkPatreonStatus();
-    } else {
-        alert('Invalid file');
-    }
-});
 
 
 async function isPatronSignatureValid() {
@@ -1987,43 +2015,9 @@ async function isPatronSignatureValid() {
     }
 }
 
-async function checkPatreonStatus() {
-    const validSignature = await isPatronSignatureValid();
-    init_colors_dict(selectedTheme)
 
-    if (validSignature.status === "valid") {
-        document.querySelector(".patreon-status").classList.remove("negative")
-        document.querySelector(".patreon-status").classList.add("positive");
-        patreonUnlockables.classList.remove("d-none");
-        patreonThemes.classList.remove("d-none");
-        document.querySelector(".patreonCheck").classList.remove("d-none");
-        document.getElementById("patreonKeyText").textContent = validSignature.role.charAt(0).toUpperCase() + validSignature.role.slice(1);
-        document.querySelector(".patreonX").classList.add("d-none");
-        console.log("Patreon key valid");
-        loadTheme();
-    }
-    else if (validSignature.status === "invalid") {
-        //put the text saying that maybe the old key is invalid
-        document.querySelector(".patreon-status").classList.remove("positive")
-        document.querySelector(".patreon-status").classList.add("negative");
-        document.getElementById("patreonKeyText").textContent = "Invalid";
-        document.querySelector(".patreonCheck").classList.add("d-none");
-        document.querySelector(".patreonX").classList.remove("d-none");
-        console.log("Patreon key invalid or expired");
-    }
-    else if (validSignature.status === "missing") {
-        document.querySelector(".patreon-status").classList.remove("positive")
-        document.querySelector(".patreon-status").classList.remove("negative");
-        document.getElementById("patreonKeyText").textContent = "Not set";
-        document.querySelector(".patreonCheck").classList.add("d-none");
-        document.querySelector(".patreonX").classList.add("d-none");
-        console.log("No patreon key found");
-    }
-    manageNewsStatus(validSignature);
-}
-
-function manageNewsStatus(valid) {
-    const generateNews = checkGenerableNews(valid);
+function manageNewsStatus(patreonTier) {
+    const generateNews = checkGenerableNews(patreonTier);
     if (generateNews === "yes") {
         const extraApiKeySection = document.querySelector('#extraApiKeySection');
         if (extraApiKeySection) {
@@ -2071,15 +2065,15 @@ function manageNewsStatus(valid) {
 
 }
 
-function checkGenerableNews(validSignature) {
+function checkGenerableNews(patreonTier) {
     let canGenerate = "no";
-    if (validSignature.status === "valid") {
+    if (patreonTier.paidMember) {
         canGenerate = "yes";
-        if (validSignature.role === "insider") {
+        if (patreonTier.tier === "Insider" || patreonTier.tier === "Founder") {
             newsAvailable.normal = true;
             newsAvailable.turning = true;
         }
-        else {
+        else if (patreonTier.tier === "Backer") {
             newsAvailable.normal = true;
             newsAvailable.turning = false;
         }
@@ -2234,7 +2228,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector(".splash-box").classList.add("appear")
     document.querySelector(".socials-box").classList.add("appear")
     getPatchNotes()
-    checkPatreonStatus();
     populateMarquee();
 
     if (shouldShowPatchModal(storedVersion, versionNow)) {
