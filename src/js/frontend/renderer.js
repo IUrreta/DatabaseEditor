@@ -91,8 +91,7 @@ const newsDiv = document.getElementById("news")
 const patchNotesBody = document.getElementById("patchNotesBody")
 const selectImageButton = document.getElementById('selectImage');
 const patreonLoginButton = document.getElementById('patreonLoginButton');
-
-
+const patreonLogoutButton = document.getElementById('patreonLogoutButton');
 
 const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, carPerformanceDiv, mod25Div]
 
@@ -281,6 +280,28 @@ if (patreonLoginButton) {
     });
 }
 
+if (patreonLogoutButton) {
+    patreonLogoutButton.addEventListener('click', () => {
+        handleLogout();
+    });
+}
+
+async function handleLogout() {
+    try {
+        const response = await fetch('/api/auth/patreon/logout');
+
+        if (response.ok) {
+            console.log("Logout successful");
+
+            updatePatreonUI({ isLoggedIn: false, tier: 'Free' });
+
+            window.location.reload();
+        }
+    } catch (error) {
+        console.error("Logout failed", error);
+    }
+}
+
 /**
  * Retrieves the user's Patreon tier from the cookie.
  * @returns {Promise<{paidMember: boolean, tier: string}>}
@@ -294,7 +315,8 @@ export async function getUserTier() {
         return {
             paidMember: data.paidMember, // true/false
             tier: data.tier, // "Backer", "Insider", "Free", etc
-            isLoggedIn: data.isLoggedIn
+            isLoggedIn: data.isLoggedIn,
+            user: { fullName: data.user.fullName }
         };
     } catch (error) {
         console.error("Failed to check auth status", error);
@@ -354,6 +376,16 @@ function updatePatreonUI(tier) {
         patreonThemes.classList.add("d-none");
         document.querySelector(".patreonCheck").classList.add("d-none");
         document.getElementById("patreonTierText").textContent = tier.isLoggedIn ? tier.tier : "Not logged in"
+    }
+
+    if (tier.isLoggedIn) {
+        document.querySelector(".user-name-and-logout").classList.remove("d-none");
+        document.getElementById("userName").textContent = tier.user.fullName;
+        document.querySelector("#patreonLoginButton").classList.add("d-none");
+    }
+    else {
+        document.querySelector(".user-name-and-logout").classList.add("d-none");
+        document.querySelector("#patreonLoginButton").classList.remove("d-none");
     }
 
     manageNewsStatus(tier);

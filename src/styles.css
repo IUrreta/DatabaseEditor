@@ -11890,6 +11890,42 @@ a.bi-custom-patreon.close-slide-up {
   gap: 10px;
 }
 
+.api-input-and-status:has(.user-name-and-logout:not(.d-none)) {
+  align-items: flex-start;
+}
+
+.api-input-and-status:has(.user-name-and-logout:not(.d-none)) .saved-status {
+  padding: 3px;
+}
+
+.user-name-and-logout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+#userButton,
+#userButton:hover,
+#userButton:hover i,
+#userButton:hover i::before {
+  color: var(--new-primary);
+  background-color: transparent;
+  cursor: default;
+}
+
+
+#patreonLogoutButton:hover {
+  color: var(--negative-general);
+  background-color: color-mix(in srgb, var(--elements) 75%, var(--negative-general));
+}
+
+#patreonLogoutButton:hover i,
+#patreonLogoutButton:hover i::before {
+  background-color: transparent;
+}
+
+
 .patreon-status.negative {
   color: var(--negative-general) !important;
 }

@@ -24,7 +24,7 @@ export default function handler(req, res) {
             isLoggedIn: true,
             paidMember: isPaid,
             tier: decoded.tier,
-            name: decoded.name
+            user: { fullName: decoded.name },
         });
 
     } catch (err) {
