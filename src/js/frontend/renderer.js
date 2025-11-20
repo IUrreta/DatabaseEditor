@@ -281,40 +281,27 @@ if (patreonLoginButton) {
     });
 }
 
-// Cookie Helpers
-function setCookie(name, value, days) {
-    var expires = "";
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + (value || "") + expires + "; path=/";
-}
-
-function getCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
-}
-
 /**
  * Retrieves the user's Patreon tier from the cookie.
- * @returns {string|null} The tier name or null if not logged in.
+ * @returns {Promise<{paidMember: boolean, tier: string}>}
  */
-export function getUserTier() {
-    let tier = getCookie("patreon_tier");
-    const userInfo = {
-        paidMember: tier === "Backer" || tier === "Insider" || tier === "Founder",
-        tier: tier
+export async function getUserTier() {
+    try {
+        const response = await fetch('/api/me');
+        const data = await response.json();
+
+        // The structure matches what api/me.js returns
+        return {
+            paidMember: data.paidMember, // true/false
+            tier: data.tier, // "Backer", "Insider", "Free", etc
+            isLoggedIn: data.isLoggedIn
+        };
+    } catch (error) {
+        console.error("Failed to check auth status", error);
+        return { paidMember: false, tier: 'Free', isLoggedIn: false };
     }
-    return userInfo;
 }
+
 
 // Check for OAuth code
 const urlParams = new URLSearchParams(window.location.search);
@@ -329,11 +316,7 @@ if (code) {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                console.log("Patreon Data: ", data)
                 new_update_notifications(`Welcome ${data.user.fullName}! Tier: ${data.tier}`, "success");
-
-                // Save tier to cookie
-                setCookie("patreon_tier", data.tier, 30);
 
                 // Update UI
                 updatePatreonUI(data);
@@ -347,12 +330,11 @@ if (code) {
             new_update_notifications("Error verifying Patreon status", "error");
         });
 } else {
-    // Check if user is already logged in via cookie
-    const savedTier = getUserTier();
-    if (savedTier) {
-        console.log("User logged in via cookie. Tier:", savedTier.tier);
-        updatePatreonUI(savedTier);
-    }
+    getUserTier().then(savedTier => {
+        if (savedTier) {
+            updatePatreonUI(savedTier);
+        }
+    });
 }
 
 function updatePatreonUI(tier) {
@@ -363,7 +345,7 @@ function updatePatreonUI(tier) {
         patreonUnlockables.classList.remove("d-none");
         patreonThemes.classList.remove("d-none");
         document.querySelector(".patreonCheck").classList.remove("d-none");
-        document.getElementById("patreonTierText").textContent = tier.tier.charAt(0).toUpperCase() + tier.tier.slice(1);
+        document.getElementById("patreonTierText").textContent = tier.tier
         loadTheme();
     }
     else {
@@ -371,7 +353,7 @@ function updatePatreonUI(tier) {
         patreonUnlockables.classList.add("d-none");
         patreonThemes.classList.add("d-none");
         document.querySelector(".patreonCheck").classList.add("d-none");
-        document.getElementById("patreonTierText").textContent = tier.tier ? tier.tier.charAt(0).toUpperCase() + tier.tier.slice(1) : "Not logged in";
+        document.getElementById("patreonTierText").textContent = tier.isLoggedIn ? tier.tier : "Not logged in"
     }
 
     manageNewsStatus(tier);
@@ -901,7 +883,7 @@ async function migrateLegacyNewsOnce() {
 
 
 export async function generateNews() {
-    const patreonTier = getUserTier();
+    const patreonTier = await getUserTier();
     const canGenerate = checkGenerableNews(patreonTier);
     if (canGenerate === "no") return;
 

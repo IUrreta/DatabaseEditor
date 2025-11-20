@@ -1,3 +1,6 @@
+import jwt from 'jsonwebtoken';
+import { serialize } from 'cookie';
+
 export default async function handler(req, res) {
     const { code } = req.query;
     const { PATREON_CLIENT_ID, PATREON_CLIENT_SECRET, PATREON_REDIRECT_URI } = process.env;
@@ -74,15 +77,38 @@ export default async function handler(req, res) {
             tier = tierName;
         }
 
-        return res.status(200).json({
-            success: true,
-            user: {
-                fullName: identityData.data.attributes.full_name,
-                thumbUrl: identityData.data.attributes.thumb_url,
-            },
+        const patreonUser = {
+            name: identityData.data.attributes.full_name,
+            thumbUrl: identityData.data.attributes.thumb_url,
             isMember,
             amountCents,
             tier: tier,
+        };
+
+        const token = jwt.sign(
+            {
+                name: patreonUser.name,
+                tier: patreonUser.tier
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '30d' }
+        );
+
+        const serializedCookie = serialize('auth_token', token, {
+            httpOnly: true,  // VITAL: Browser JS cannot read this
+            secure: process.env.NODE_ENV === 'production', // HTTPS only
+            sameSite: 'strict',
+            maxAge: 60 * 60 * 24 * 30, // 30 days
+            path: '/'
+        });
+
+        res.setHeader('Set-Cookie', serializedCookie);
+
+        return res.status(200).json({
+            success: true,
+            user: { fullName: patreonUser.name },
+            tier: patreonUser.tier,
+            isLoggedIn: true
         });
 
     } catch (error) {
