@@ -4128,12 +4128,11 @@ function disqualifyTeamInRace({
             SELECT pos
             FROM ranked
             WHERE ranked.DriverID = Races_DriverStandings.DriverID
-              AND ? = ?
               AND RaceFormula = 1
         )
         WHERE SeasonID = ?
         AND RaceFormula = 1;
-    `, [seasonId, seasonId, seasonId, seasonId], 'run');
+    `, [seasonId, seasonId], 'run');
 
         // Recalcular posición en la clasificación de constructores
         queryDB(`
@@ -4150,12 +4149,11 @@ function disqualifyTeamInRace({
             SELECT pos
             FROM ranked
             WHERE ranked.TeamID = Races_TeamStandings.TeamID
-              AND ? = ?
             AND RaceFormula = 1
         )
         WHERE SeasonID = ?
         AND RaceFormula = 1;
-    `, [seasonId, seasonId, seasonId, seasonId], 'run');
+    `, [seasonId, seasonId], 'run');
     }
 }
 
