@@ -4463,16 +4463,26 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
         throw new Error('createInjuryRevertTrigger: faltan parámetros obligatorios.');
     }
 
-    const trigName = `trg_injury_revert_${seasonId}_${injuredId}`;
+    // Validate numeric parameters to prevent SQL injection
+    const validSeasonId = Number(seasonId);
+    const validInjuredId = Number(injuredId);
+    const validEndDay = Number(endDay);
+    
+    if (!Number.isInteger(validSeasonId) || !Number.isInteger(validInjuredId) || !Number.isInteger(validEndDay)) {
+        throw new Error('createInjuryRevertTrigger: seasonId, injuredId, and endDay must be integers.');
+    }
+
+    const trigName = `trg_injury_revert_${validSeasonId}_${validInjuredId}`;
 
     // Por si re-generas, dejamos el nombre libre
-    queryDB(`DROP TRIGGER IF EXISTS ?`, [trigName], 'run');
+    // Note: SQL doesn't support parameterized trigger names in DROP/CREATE statements
+    queryDB(`DROP TRIGGER IF EXISTS "${trigName}"`, [], 'run');
 
     // Trigger con igualdad estricta en el día objetivo
     const sql = `
     CREATE TRIGGER "${trigName}"
     AFTER UPDATE OF Day ON Player_State
-    WHEN NEW.Day = ${endDay} AND NEW.CurrentSeason = ${seasonId}
+    WHEN NEW.Day = ${validEndDay} AND NEW.CurrentSeason = ${validSeasonId}
     BEGIN
       -- Restaurar lesionado
       UPDATE Staff_Contracts
@@ -4481,8 +4491,8 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
             FROM Custom_Injury_Swaps s
             WHERE s.injured_id = Staff_Contracts.StaffID
               AND s.processed = 0
-              AND s.season_id = ${seasonId}
-              AND s.end_day = ${endDay}
+              AND s.season_id = ${validSeasonId}
+              AND s.end_day = ${validEndDay}
             ORDER BY s.id DESC
             LIMIT 1
           ),
@@ -4491,15 +4501,15 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
             FROM Custom_Injury_Swaps s
             WHERE s.injured_id = Staff_Contracts.StaffID
               AND s.processed = 0
-              AND s.season_id = ${seasonId}
-              AND s.end_day = ${endDay}
+              AND s.season_id = ${validSeasonId}
+              AND s.end_day = ${validEndDay}
             ORDER BY s.id DESC
             LIMIT 1
           )
       WHERE ContractType = 0
         AND StaffID IN (
           SELECT injured_id FROM Custom_Injury_Swaps
-          WHERE processed = 0 AND season_id = ${seasonId} AND end_day = ${endDay}
+          WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
         );
 
       UPDATE Staff_DriverData
@@ -4508,14 +4518,14 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
             FROM Custom_Injury_Swaps s
             WHERE s.injured_id = Staff_DriverData.StaffID
               AND s.processed = 0
-              AND s.season_id = ${seasonId}
-              AND s.end_day = ${endDay}
+              AND s.season_id = ${validSeasonId}
+              AND s.end_day = ${validEndDay}
             ORDER BY s.id DESC
             LIMIT 1
           )
       WHERE StaffID IN (
         SELECT injured_id FROM Custom_Injury_Swaps
-        WHERE processed = 0 AND season_id = ${seasonId} AND end_day = ${endDay}
+        WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
       );
 
       -- Restaurar reserva
@@ -4525,8 +4535,8 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
             FROM Custom_Injury_Swaps s
             WHERE s.reserve_id = Staff_Contracts.StaffID
               AND s.processed = 0
-              AND s.season_id = ${seasonId}
-              AND s.end_day = ${endDay}
+              AND s.season_id = ${validSeasonId}
+              AND s.end_day = ${validEndDay}
             ORDER BY s.id DESC
             LIMIT 1
           ),
@@ -4535,15 +4545,15 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
             FROM Custom_Injury_Swaps s
             WHERE s.reserve_id = Staff_Contracts.StaffID
               AND s.processed = 0
-              AND s.season_id = ${seasonId}
-              AND s.end_day = ${endDay}
+              AND s.season_id = ${validSeasonId}
+              AND s.end_day = ${validEndDay}
             ORDER BY s.id DESC
             LIMIT 1
           )
       WHERE ContractType = 0
         AND StaffID IN (
           SELECT reserve_id FROM Custom_Injury_Swaps
-          WHERE processed = 0 AND season_id = ${seasonId} AND end_day = ${endDay}
+          WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
         );
 
       UPDATE Staff_DriverData
@@ -4552,24 +4562,24 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
             FROM Custom_Injury_Swaps s
             WHERE s.reserve_id = Staff_DriverData.StaffID
               AND s.processed = 0
-              AND s.season_id = ${seasonId}
-              AND s.end_day = ${endDay}
+              AND s.season_id = ${validSeasonId}
+              AND s.end_day = ${validEndDay}
             ORDER BY s.id DESC
             LIMIT 1
           )
       WHERE StaffID IN (
         SELECT reserve_id FROM Custom_Injury_Swaps
-        WHERE processed = 0 AND season_id = ${seasonId} AND end_day = ${endDay}
+        WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
       );
 
       UPDATE Staff_RaceEngineerDriverAssignments
       SET IsCurrentAssignment = 0
       WHERE DriverID IN (
         SELECT injured_id FROM Custom_Injury_Swaps
-        WHERE processed = 0 AND season_id = ${seasonId} AND end_day = ${endDay}
+        WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
         UNION
         SELECT reserve_id FROM Custom_Injury_Swaps
-        WHERE processed = 0 AND season_id = ${seasonId} AND end_day = ${endDay}
+        WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
       );
 
       -- 2) Poner a 0 cualquier asignación actual de los ingenieros originales (evita conflictos)
@@ -4577,10 +4587,10 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
       SET IsCurrentAssignment = 0
       WHERE RaceEngineerID IN (
         SELECT injured_engineer_id FROM Custom_Injury_Swaps
-        WHERE processed = 0 AND season_id = ${seasonId} AND end_day = ${endDay}
+        WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
         UNION
         SELECT reserve_engineer_id FROM Custom_Injury_Swaps
-        WHERE processed = 0 AND season_id = ${seasonId} AND end_day = ${endDay}
+        WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
       );
 
       -- 3) Asegurar que existen filas (si no existen, crearlas), y marcar como actuales
@@ -4590,7 +4600,7 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
         (RaceEngineerID, DriverID, DaysTogether, IsCurrentAssignment)
       SELECT s.injured_engineer_id, s.injured_id, 0, 0
       FROM Custom_Injury_Swaps s
-      WHERE s.processed = 0 AND s.season_id = ${seasonId} AND s.end_day = ${endDay}
+      WHERE s.processed = 0 AND s.season_id = ${validSeasonId} AND s.end_day = ${validEndDay}
         AND s.injured_engineer_id IS NOT NULL;
 
       UPDATE Staff_RaceEngineerDriverAssignments
@@ -4598,7 +4608,7 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
       WHERE (DriverID, RaceEngineerID) IN (
         SELECT s.injured_id, s.injured_engineer_id
         FROM Custom_Injury_Swaps s
-        WHERE s.processed = 0 AND s.season_id = ${seasonId} AND s.end_day = ${endDay}
+        WHERE s.processed = 0 AND s.season_id = ${validSeasonId} AND s.end_day = ${validEndDay}
           AND s.injured_engineer_id IS NOT NULL
       );
 
@@ -4607,7 +4617,7 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
         (RaceEngineerID, DriverID, DaysTogether, IsCurrentAssignment)
       SELECT s.reserve_engineer_id, s.reserve_id, 0, 0
       FROM Custom_Injury_Swaps s
-      WHERE s.processed = 0 AND s.season_id = ${seasonId} AND s.end_day = ${endDay}
+      WHERE s.processed = 0 AND s.season_id = ${validSeasonId} AND s.end_day = ${validEndDay}
         AND s.reserve_engineer_id IS NOT NULL;
 
       UPDATE Staff_RaceEngineerDriverAssignments
@@ -4615,7 +4625,7 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
       WHERE (DriverID, RaceEngineerID) IN (
         SELECT s.reserve_id, s.reserve_engineer_id
         FROM Custom_Injury_Swaps s
-        WHERE s.processed = 0 AND s.season_id = ${seasonId} AND s.end_day = ${endDay}
+        WHERE s.processed = 0 AND s.season_id = ${validSeasonId} AND s.end_day = ${validEndDay}
           AND s.reserve_engineer_id IS NOT NULL
       );
 
@@ -4623,8 +4633,8 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
       UPDATE Custom_Injury_Swaps
       SET processed = 1
       WHERE processed = 0
-        AND season_id = ${seasonId}
-        AND end_day = ${endDay};
+        AND season_id = ${validSeasonId}
+        AND end_day = ${validEndDay};
     END;
   `;
 
