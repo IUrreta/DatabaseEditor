@@ -31,13 +31,17 @@ export function setMetaData(meta) {
  *    - 'run': devuelve true si se ejecutó correctamente.
  */
 export function queryDB(query, params = [], type = 'allRows') {
+  const sanitizedParams = Array.isArray(params)
+    ? params.map(p => (Array.isArray(p) && p.length === 1 ? p[0] : p))
+    : params;
+
   if (type === 'run' || type === 'exec') {
-    db.run(query, params);
+    db.run(query, sanitizedParams);
     return true;
   }
 
   const stmt = db.prepare(query);
-  stmt.bind(params);
+  stmt.bind(sanitizedParams);
 
   let result = null;
 

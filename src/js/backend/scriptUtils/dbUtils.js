@@ -965,8 +965,8 @@ export function fetchOneTeamSeasonResults(team, year) {
 }
 
 export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true) {
-  const driverID = driver;
-  const season = year;
+  const driverID = driver[0];
+  const season = year[0];
 
   const results = queryDB(`
       SELECT DriverID, TeamID, FinishingPos, Points
@@ -1141,7 +1141,7 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
     if (finishingPos === 3) return 1;
     if (finishingPos > 13) return -10;
     if (finishingPos > 10) return -7;
-    if (finishingPos > 8)  return -2;
+    if (finishingPos > 8) return -2;
     return 0;
   };
 
@@ -1155,7 +1155,7 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
     const delta = expectedPos - finishingPos;
     let bonus = delta * TEAM_WEIGHT;
     if (TEAM_BONUS_CAP > 0) {
-      if (bonus >  TEAM_BONUS_CAP) bonus =  TEAM_BONUS_CAP;
+      if (bonus > TEAM_BONUS_CAP) bonus = TEAM_BONUS_CAP;
       if (bonus < -TEAM_BONUS_CAP) bonus = -TEAM_BONUS_CAP;
     }
     return bonus;
@@ -1166,24 +1166,24 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
 
   const rowsScored = [];
   for (const row of rows) {
-    const driverId    = Number(row[2]);
-    const teamId      = Number(row[3]);
-    const finishingPos= Number(row[4]);
+    const driverId = Number(row[2]);
+    const teamId = Number(row[3]);
+    const finishingPos = Number(row[4]);
     const startingPos = Number(row[5]);
-    const dnf         = Number(row[7]) === 1;
+    const dnf = Number(row[7]) === 1;
 
     if (dnf || startingPos <= 0 || finishingPos <= 0 || finishingPos === 99) continue;
 
     const gain = startingPos - finishingPos;
-    const ps   = posScore(finishingPos);
-    const tr   = Number(teamRankByTeamId.get(teamId));
-    const tb   = Number.isFinite(tr) ? teamBonus(tr, finishingPos) : 0;
+    const ps = posScore(finishingPos);
+    const tr = Number(teamRankByTeamId.get(teamId));
+    const tb = Number.isFinite(tr) ? teamBonus(tr, finishingPos) : 0;
 
     const dominanceBonus = (finishingPos === 1) ? p1GapBonus : 0;
-    const poleBonus      = (startingPos === 1) ? 1.0 : 0.0;
+    const poleBonus = (startingPos === 1) ? 1.0 : 0.0;
 
-    const randomOffset   = (rand() - 0.5) * RANDOM_INTENSITY;
-    const scoreRaw       = gain + ps + tb + dominanceBonus + randomOffset + poleBonus;
+    const randomOffset = (rand() - 0.5) * RANDOM_INTENSITY;
+    const scoreRaw = gain + ps + tb + dominanceBonus + randomOffset + poleBonus;
 
     const name = getNameByIdAndFormat(driverId);
     rowsScored.push({
@@ -1191,7 +1191,7 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
       name: name[0],
       scoreRaw,             // <-- guardamos el bruto para depurar
       finishPos: finishingPos,
-      startPos:  startingPos,
+      startPos: startingPos,
       teamId,
       components: { gain, posScore: ps, teamBonus: tb, dominanceBonus, poleBonus, randomOffset }
     });
@@ -1215,7 +1215,7 @@ function softmaxToPercent(values, temperature = 1.0) {
   // estabilidad numérica
   const maxV = Math.max(...values);
   const exps = values.map(v => Math.exp((v - maxV) / temperature));
-  const sum  = exps.reduce((a,b)=>a+b, 0);
+  const sum = exps.reduce((a, b) => a + b, 0);
   return exps.map(x => (x / sum) * 100);
 }
 
@@ -1392,8 +1392,8 @@ export function formatSeasonResults(
   sprints,
   isCurrentYear = true
 ) {
-  const driverID = driver;
-  const season = year;
+  const driverID = driver[0];
+  const season = year[0];
 
   const toSeconds = (t) => {
     if (t == null) return null;
@@ -1442,7 +1442,6 @@ export function formatSeasonResults(
       WHERE DriverID = ?
         AND Season = ?
     `, [driverID, season], "allRows") || [];
-
   const raceObjects = [];
   const formattedBasics = results.map(r => ({
     finishingPos: r[2],

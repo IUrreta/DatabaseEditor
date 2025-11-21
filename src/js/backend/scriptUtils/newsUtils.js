@@ -34,8 +34,10 @@ export function rebuildStandingsUntilCached(season, seasonResults, raceId, inclu
 }
 
 export function generate_news(savednews, turningPointState) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const racesDone = fetchEventsDoneFrom(daySeason[1]);
+
+    console.log("First step debug");
 
     // const potentialChampionTestRaceId = 216; // Set to null for normal operation.
 
@@ -47,12 +49,18 @@ export function generate_news(savednews, turningPointState) {
     const comparisonMonths = [4, 5, 6, 7, 8, 9, 10];
     const monthsDone = rumorMonths.filter(m => m <= currentMonth);
 
+    console.log("First step debug A")
+
     const raceNews = generateRaceResultsNews(racesDone, savednews);
     const qualiNews = generateQualifyingResultsNews(racesDone, savednews);
+
+    console.log("First step debug B")
 
     const raceReactions = generateRaceReactionsNews(racesDone, savednews);
 
     const comparisonNews = generateComparisonNews(comparisonMonths, savednews);
+
+    console.log("First step debug C")
 
     const transferRumors = getTrueTransferRumors();
 
@@ -60,9 +68,13 @@ export function generate_news(savednews, turningPointState) {
 
     const contractRenewals = getContractExtensions();
 
+    console.log("First step debug D")
+
     const bigConfirmedTransfersNews = generateBigConfirmedTransferNews(savednews, currentMonth);
     const fakeTransferNews = generateFakeTransferNews(monthsDone, savednews, bigConfirmedTransfersNews);
     const contractRenewalsNews = generateContractRenewalsNews(savednews, contractRenewals, currentMonth);
+
+    console.log("First step debug E")
 
     const seasonReviews = generateSeasonReviewNews(savednews);
 
@@ -77,6 +89,8 @@ export function generate_news(savednews, turningPointState) {
     const raceSubstitutionTurningPointNews = generateRaceSubstitutionTurningPointNews(currentMonth, savednews, turningPointState);
 
     const driverInjuryTurningPointNews = generateDriverInjuryTurningPointNews(currentMonth, savednews, turningPointState); //disabled for nightly branch
+
+    console.log("First step debug F")
 
     let turningPointOutcomes = [];
     if (Object.keys(savednews).length > 0) {
@@ -630,8 +644,8 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
 
     const nRemainingRaces = queryDB(`
         SELECT COUNT(*) FROM Races
-        WHERE SeasonID = ${seasonYear} AND State = 0
-    `, 'singleValue');
+        WHERE SeasonID = ? AND State = 0
+    `, [seasonYear], 'singleValue');
 
     // Need at least 5 races remaining to consider an injury
     if (nRemainingRaces < 5) {
@@ -773,8 +787,8 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
     // Get next race after start date
     const nextRaceDay = queryDB(`
         SELECT MIN(Day) FROM Races
-        WHERE Day > ${startExcel}
-    `, 'singleValue');
+        WHERE Day > ?
+    `, [startExcel], 'singleValue');
     const nextRaceExcel = nextRaceDay ? Number(nextRaceDay) + 2 : null;
 
     // Compute end date (extended to cover at least the next race)
@@ -795,15 +809,15 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
     const racesAffected = queryDB(`
         SELECT RaceID, Day, TrackID
         FROM Races
-        WHERE Day >= ${startExcel} AND Day <= ${endExcel}
+        WHERE Day >= ? AND Day <= ?
         ORDER BY Day ASC
-    `, 'allRows') || [];
+    `, [startExcel, endExcel], 'allRows') || [];
 
 
     const expectedRaceReturn = queryDB(`
         SELECT MIN(Day), RaceID, TrackID FROM Races
-        WHERE Day > ${endExcel}
-    `, 'singleRow');
+        WHERE Day > ?
+    `, [endExcel], 'singleRow');
     const expectedReturnRaceId = expectedRaceReturn ? Number(expectedRaceReturn[1]) : null;
     const expectedReturnCountry = countries_data[races_names[Number(expectedRaceReturn[2])]]?.country
 
@@ -816,7 +830,7 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
     FROM Staff_Contracts con
     JOIN Staff_BasicData bas ON con.StaffID = bas.StaffID
     JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
-    WHERE con.TeamID = ${teamId} AND con.ContractType = 0 AND con.PosInTeam > 2`, 'allRows');
+    WHERE con.TeamID = ? AND con.ContractType = 0 AND con.PosInTeam > 2`, [teamId], 'allRows');
     if (reserveDrivers.length) {
         reserveCandidates = [];
         for (const rd of reserveDrivers) {
@@ -1117,9 +1131,9 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
       ON res.DriverID = con.StaffID
      AND con.ContractType = 0
      AND con.PosInTeam <= 2
-    WHERE res.SeasonID = ${daySeason[1]}
+    WHERE res.SeasonID = ?
       AND res.RaceFormula = 1
-  `);
+    `, [daySeason[1]], "allRows");
 
 
     const teamsById = {};
@@ -1230,7 +1244,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
                 FROM Staff_Contracts con
                 JOIN Staff_BasicData bas ON con.StaffID = bas.StaffID
                 JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
-                WHERE con.TeamID = ${randomTeam} AND con.ContractType = 0 AND con.PosInTeam > 2`, 'allRows');
+                WHERE con.TeamID = ? AND con.ContractType = 0 AND con.PosInTeam > 2`, [randomTeam], 'allRows');
             if (reserveDrivers.length) {
                 //get the best reserve driver by overall
                 const reserveCandidates = [];
@@ -1296,7 +1310,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
                     FROM Staff_Contracts con
                     JOIN Staff_BasicData bas ON con.StaffID = bas.StaffID
                     JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
-                    WHERE con.TeamID = ${driverInTeamId} AND con.ContractType = 0 AND con.PosInTeam > 2`, 'allRows');
+                    WHERE con.TeamID = ? AND con.ContractType = 0 AND con.PosInTeam > 2`, [driverInTeamId], 'allRows');
 
                 if (reserveDrivers.length) {
                     const reserveCandidates = [];
@@ -1577,7 +1591,7 @@ function generateChampionMilestones(racesDone, savednews = {}) {
     const currentSeason = ps[1];
 
     const allSeasonRacesQuery = queryDB(
-        `SELECT RaceID, Day, TrackID FROM Races WHERE SeasonID = ${currentSeason} ORDER BY Day ASC`,
+        `SELECT RaceID, Day, TrackID FROM Races WHERE SeasonID = ? ORDER BY Day ASC`, [currentSeason],
         'allRows'
     );
     if (!allSeasonRacesQuery || allSeasonRacesQuery.length === 0) return [];
@@ -1953,7 +1967,7 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
 
         const pointsSchema = fetchPointsRegulations();
         const racesDone = queryDB(
-            `SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND State = 2`,
+            `SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND State = 2`, [season],
             'singleValue'
         );
         const mostPointsPerRace = pointsSchema.twoBiggestPoints[0];
@@ -1961,9 +1975,9 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
         const championshipLeaderPoints = queryDB(
             `SELECT DriverID, Points
              FROM Races_DriverStandings
-             WHERE SeasonID = ${season}
+             WHERE SeasonID = ?
                AND Position = 1
-               AND RaceFormula = 1`,
+               AND RaceFormula = 1`, [season],
             'singleRow'
         );
 
@@ -2042,10 +2056,10 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
                        ON dri.StaffID = sta.DriverID
                      WHERE con.ContractType = 0
                        AND con.PosInTeam    <= 2
-                       AND con.EndSeason     = ${season}
+                       AND con.EndSeason     = ?
                        AND sta.Position     <= 10
                        AND sta.RaceFormula   = 1
-                       AND sta.SeasonID      = ${season}
+                       AND sta.SeasonID      = ?
                        AND NOT EXISTS (
                            SELECT 1
                            FROM Staff_Contracts c3
@@ -2054,7 +2068,7 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
                            WHERE c3.TeamID      = con.TeamID
                              AND c3.PosInTeam   = con.PosInTeam
                              AND c3.ContractType = 3
-                       );`,
+                       );`, [season, season],
                     'allRows'
                 );
 
@@ -2392,9 +2406,9 @@ export function getTrueTransferRumors() {
         `SELECT DriverID 
      FROM Races_DriverStandings 
      WHERE RaceFormula = 1 
-       AND SeasonID = ${seasonYear} 
+       AND SeasonID = ? 
      ORDER BY Position 
-     LIMIT 5`,
+     LIMIT 5`, [seasonYear],
         'allRows'
     )
     const top5DriverIDs = top5rows.map(r => r[0])
@@ -2787,9 +2801,9 @@ export function generateComparisonNews(comparisonMonths, savedNews) {
                     JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID 
                     JOIN Staff_Contracts con ON bas.StaffID = con.StaffID
                     JOIN Races_DriverStandings sta ON dri.StaffID = sta.DriverID
-                    WHERE sta.SeasonID = ${season} AND sta.RaceFormula = 1
-                    AND con.TeamID = ${teamId} AND con.ContractType = 0 AND con.PosInTeam <= 2
-                    ORDER BY sta.Position`, 'allRows');
+                    WHERE sta.SeasonID = ? AND sta.RaceFormula = 1
+                    AND con.TeamID = ? AND con.ContractType = 0 AND con.PosInTeam <= 2
+                    ORDER BY sta.Position`, [season, teamId], 'allRows');
             if (drivers.length < 2) return;
 
             const formattedDrivers = drivers.map(driver => {
@@ -3389,11 +3403,11 @@ function getOneRaceResults(raceId, sprint = false) {
     FROM Staff_BasicData bas
     JOIN ${sprint ? "Races_SprintResults" : "Races_Results"} res 
       ON bas.StaffID = res.DriverID
-    WHERE res.RaceID = ${raceId}
+    WHERE res.RaceID = ?
     ${sprint ? "AND res.RaceFormula = 1" : ""}
     ORDER BY res.FinishingPos
   `;
-    const rows = queryDB(sql, 'allRows');
+    const rows = queryDB(sql, [raceId], 'allRows');
 
     return rows;
 }
@@ -3410,17 +3424,17 @@ function getOneQualifyingResults(raceId) {
     FROM Staff_BasicData bas
     JOIN Races_QualifyingResults res
         ON bas.StaffID = res.DriverID
-        WHERE res.RaceID = ${raceId}
+        WHERE res.RaceID = ?
         AND res.RaceFormula = 1
         AND res.QualifyingStage =
         (SELECT MAX(res2.QualifyingStage)
         FROM Races_QualifyingResults res2
-        WHERE res2.RaceID = ${raceId} AND res2.DriverID = res.DriverID)
+        WHERE res2.RaceID = ? AND res2.DriverID = res.DriverID)
         AND SprintShootout = 0
         ORDER BY res.FinishingPos;
     `
 
-    const rows = queryDB(sql, 'allRows');
+    const rows = queryDB(sql, [raceId, raceId], 'allRows');
 
     return rows;
 }
@@ -3544,9 +3558,9 @@ function getLatestChampions(seasonId) {
         ON bas.StaffID = sta.DriverID
         WHERE sta.Position <= 3
         AND sta.RaceFormula = 1
-        AND sta.SeasonID < ${seasonId}
+        AND sta.SeasonID < ?
     `;
-    const rows = queryDB(sql, 'allRows');
+    const rows = queryDB(sql, [seasonId], 'allRows');
 
     let champions = rows.map(row => {
         const [nameFormatted, driverId] = formatNamesSimple(row);
@@ -3685,11 +3699,12 @@ export function calculateTeamDropsByDate(season, date) {
     const lastRaceId = racesDone[racesDone.length - 1];
 
     const racesCount = queryDB(
-        `SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND RaceID <= ${lastRaceId}`,
+        `SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND RaceID <= ${lastRaceId}`, [season],
         'singleValue'
     );
     const firstRacePrevSeason = queryDB(
-        `SELECT MIN(RaceID) FROM Races WHERE SeasonID = ${season - 1}`,
+        `SELECT MIN(RaceID) FROM Races WHERE SeasonID = ?`,
+        [season - 1],
         'singleValue'
     );
     const lastYearEquivalent = firstRacePrevSeason + (racesCount - 1);
@@ -3777,12 +3792,12 @@ export function getTeamComparisonDetails(teamId, season, date) {
     } = rebuildStandingsUntil(seasonResults, lastRaceBeforeDate, true);
 
     const racesCount = queryDB(
-        `SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND RaceID <= ${lastRaceBeforeDate}`,
+        `SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND RaceID <= ?`, [season, lastRaceBeforeDate],
         'singleValue'
     );
 
     const firstRacePrevSeason = queryDB(
-        `SELECT MIN(RaceID) FROM Races WHERE SeasonID = ${season - 1}`,
+        `SELECT MIN(RaceID) FROM Races WHERE SeasonID = ?`, [season - 1],
         'singleValue'
     );
 
@@ -3872,9 +3887,9 @@ export function getPreviouslyDrivenTeams(driverId) {
     const sql = `
         SELECT DISTINCT TeamID, Season
         FROM Races_Results
-        WHERE DriverID = ${driverId} AND RaceID NOT IN (122, 124, 100, 101)
+        WHERE DriverID = ? AND RaceID NOT IN (122, 124, 100, 101)
     `
-    const rows = queryDB(sql, 'allRows');
+    const rows = queryDB(sql, [driverId], 'allRows');
     const teams = rows.map(r => {
         return {
             teamId: r[0],
@@ -3905,10 +3920,10 @@ function getFastestLapHolderBySeconds(raceId, queryDB) {
     const row = queryDB(`
     SELECT DriverID 
     FROM Races_Results
-    WHERE RaceID = ${raceId} AND FastestLap IS NOT NULL AND FastestLap > 0
+    WHERE RaceID = ? AND FastestLap IS NOT NULL AND FastestLap > 0
     ORDER BY FastestLap ASC
     LIMIT 1
-  `, 'singleRow');
+  `, [raceId], 'singleRow');
     return row ? Number(row[0]) : null;
 }
 
