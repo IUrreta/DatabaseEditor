@@ -3699,7 +3699,7 @@ export function calculateTeamDropsByDate(season, date) {
     const lastRaceId = racesDone[racesDone.length - 1];
 
     const racesCount = queryDB(
-        `SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND RaceID <= ${lastRaceId}`, [season],
+        `SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND RaceID <= ?`, [season, lastRaceId],
         'singleValue'
     );
     const firstRacePrevSeason = queryDB(
@@ -3955,9 +3955,9 @@ function disqualifyTeamInRace({
     const allRes = queryDB(`
     SELECT DriverID, TeamID, FinishingPos, Points, IFNULL(DNF,0) AS DNF, FastestLap
     FROM Races_Results
-    WHERE RaceID = ${raceId}
+    WHERE RaceID = ?
     ORDER BY FinishingPos ASC
-  `, 'allRows') || [];
+  `, [raceId], 'allRows') || [];
     if (!allRes.length) return;
 
     const prevRacePoints = new Map(); // DriverID -> puntos antes
@@ -3976,8 +3976,8 @@ function disqualifyTeamInRace({
     queryDB(`
     UPDATE Races_Results
     SET FinishingPos = FinishingPos + 1000
-    WHERE RaceID = ${raceId}
-  `);
+    WHERE RaceID = ?
+  `, [raceId], 'run');
 
     // 2) Construye el nuevo orden completo
     const classified = allRes
@@ -4004,9 +4004,9 @@ function disqualifyTeamInRace({
         afterRacePoints.set(driverId, pts);
         queryDB(`
       UPDATE Races_Results
-      SET FinishingPos = ${pos}, Points = ${pts}, DNF = 0
-      WHERE RaceID = ${raceId} AND DriverID = ${driverId}
-    `);
+      SET FinishingPos = ?, Points = ?, DNF = 0
+      WHERE RaceID = ? AND DriverID = ?
+    `, [pos, pts, raceId, driverId], 'run');
         pos++;
     }
 
@@ -4016,9 +4016,9 @@ function disqualifyTeamInRace({
         afterRacePoints.set(driverId, 0);
         queryDB(`
       UPDATE Races_Results
-      SET FinishingPos = ${pos}, Points = 0, DNF = 1
-      WHERE RaceID = ${raceId} AND DriverID = ${driverId}
-    `);
+      SET FinishingPos = ?, Points = 0, DNF = 1
+      WHERE RaceID = ? AND DriverID = ?
+    `, [pos, raceId, driverId], 'run');
         pos++;
     }
 
@@ -4028,9 +4028,9 @@ function disqualifyTeamInRace({
         afterRacePoints.set(driverId, 0);
         queryDB(`
       UPDATE Races_Results
-      SET FinishingPos = ${pos}, Points = 0, DNF = 1
-      WHERE RaceID = ${raceId} AND DriverID = ${driverId}
-    `);
+      SET FinishingPos = ?, Points = 0, DNF = 1
+      WHERE RaceID = ? AND DriverID = ?
+    `, [pos, raceId, driverId], 'run');
         pos++;
     }
 
@@ -4041,8 +4041,8 @@ function disqualifyTeamInRace({
             const row = queryDB(`
         SELECT FinishingPos, IFNULL(DNF,0)
         FROM Races_Results
-        WHERE RaceID = ${raceId} AND DriverID = ${flDriver}
-      `, 'singleRow');
+        WHERE RaceID = ? AND DriverID = ?
+      `, [raceId, flDriver], 'singleRow');
             const fPos = Number(row?.[0] ?? 9999);
             const fDNF = Number(row?.[1] ?? 0);
 
@@ -4053,9 +4053,9 @@ function disqualifyTeamInRace({
                 afterRacePoints.set(flDriver, withBonus);
                 queryDB(`
           UPDATE Races_Results
-          SET Points = ${withBonus}
-          WHERE RaceID = ${raceId} AND DriverID = ${flDriver}
-        `);
+          SET Points = ?
+          WHERE RaceID = ? AND DriverID = ?
+        `, [withBonus, raceId, flDriver], 'run');
             }
         }
     }
@@ -4064,8 +4064,8 @@ function disqualifyTeamInRace({
         const poleDriverId = queryDB(`
         SELECT DriverID
         FROM Races_Results
-        WHERE RaceID = ${raceId} AND StartingPos = 1
-    `, 'singleValue');
+        WHERE RaceID = ? AND StartingPos = 1
+    `, [raceId], 'singleValue');
 
         if (poleDriverId != null) {
             const poleId = Number(poleDriverId);
@@ -4078,9 +4078,9 @@ function disqualifyTeamInRace({
 
                 queryDB(`
                 UPDATE Races_Results
-                SET Points = ${withBonus}
-                WHERE RaceID = ${raceId} AND DriverID = ${poleId}
-            `);
+                SET Points = ?
+                WHERE RaceID = ? AND DriverID = ?
+            `, [withBonus, raceId, poleId], 'run');
             }
         }
     }
@@ -4097,9 +4097,9 @@ function disqualifyTeamInRace({
         if (delta !== 0 && seasonId != null) {
             queryDB(`
         UPDATE Races_DriverStandings
-        SET Points = Points + ${delta}
-        WHERE SeasonID = ${seasonId} AND DriverID = ${driverId}
-      `);
+        SET Points = Points + ?
+        WHERE SeasonID = ? AND DriverID = ?
+      `, [delta, seasonId, driverId], 'run');
         }
         teamDelta.set(team, (teamDelta.get(team) || 0) + delta);
     }
@@ -4109,9 +4109,9 @@ function disqualifyTeamInRace({
             if (delta !== 0) {
                 queryDB(`
           UPDATE Races_TeamStandings
-          SET Points = Points + ${delta}
-          WHERE SeasonID = ${seasonId} AND TeamID = ${team}
-        `);
+          SET Points = Points + ?
+          WHERE SeasonID = ? AND TeamID = ?
+        `, [delta, seasonId, team], 'run');
             }
         }
         queryDB(`
@@ -4120,7 +4120,7 @@ function disqualifyTeamInRace({
                 DriverID,
                 ROW_NUMBER() OVER (PARTITION BY SeasonID ORDER BY Points DESC, DriverID ASC) AS pos
             FROM Races_DriverStandings
-            WHERE SeasonID = ${seasonId}
+            WHERE SeasonID = ?
             AND RaceFormula = 1
         )
         UPDATE Races_DriverStandings
@@ -4128,12 +4128,11 @@ function disqualifyTeamInRace({
             SELECT pos
             FROM ranked
             WHERE ranked.DriverID = Races_DriverStandings.DriverID
-              AND ${seasonId} = ${seasonId}
               AND RaceFormula = 1
         )
-        WHERE SeasonID = ${seasonId}
+        WHERE SeasonID = ?
         AND RaceFormula = 1;
-    `);
+    `, [seasonId, seasonId], 'run');
 
         // Recalcular posición en la clasificación de constructores
         queryDB(`
@@ -4142,7 +4141,7 @@ function disqualifyTeamInRace({
                 TeamID,
                 ROW_NUMBER() OVER (PARTITION BY SeasonID ORDER BY Points DESC, TeamID ASC) AS pos
             FROM Races_TeamStandings
-            WHERE SeasonID = ${seasonId}
+            WHERE SeasonID = ?
             AND RaceFormula = 1
         )
         UPDATE Races_TeamStandings
@@ -4150,12 +4149,11 @@ function disqualifyTeamInRace({
             SELECT pos
             FROM ranked
             WHERE ranked.TeamID = Races_TeamStandings.TeamID
-              AND ${seasonId} = ${seasonId}
             AND RaceFormula = 1
         )
-        WHERE SeasonID = ${seasonId}
+        WHERE SeasonID = ?
         AND RaceFormula = 1;
-    `);
+    `, [seasonId, seasonId], 'run');
     }
 }
 
@@ -4178,9 +4176,10 @@ const decodeJSON = (txt) => {
 export function ensureEditorStateTable() {
     const exists = queryDB(
         `SELECT name FROM sqlite_master WHERE type='table' AND name='Custom_News_State'`,
+        [],
         "singleRow"
     );
-    if (!exists) queryDB(`CREATE TABLE Custom_News_State (key TEXT PRIMARY KEY, value TEXT)`);
+    if (!exists) queryDB(`CREATE TABLE Custom_News_State (key TEXT PRIMARY KEY, value TEXT)`, [], 'run');
 }
 
 export function getEditorState(key) {
@@ -4191,11 +4190,10 @@ export function getEditorState(key) {
 
 export function setEditorState(key, valueText) {
     ensureEditorStateTable();
-    const safe = valueText.replaceAll("'", "''");
     queryDB(`
-    INSERT INTO Custom_News_State (key,value) VALUES ('${key}','${safe}')
+    INSERT INTO Custom_News_State (key,value) VALUES (?, ?)
     ON CONFLICT(key) DO UPDATE SET value=excluded.value
-  `);
+  `, [key, valueText], 'run');
 }
 
 // --- computeStableKey compartido (mismo algoritmo en front y worker) ---
@@ -4405,7 +4403,7 @@ export function ensureInjurySwapInfrastructure() {
         reserve_engineer_id  INTEGER,
         processed            INTEGER NOT NULL DEFAULT 0
         )
-    `);
+    `, [], 'run');
 
 }
 
@@ -4429,18 +4427,18 @@ export function startInjurySwap(injuredId, reserveData, endDay) {
     const injEngineer = queryDB(`
     SELECT RaceEngineerID
     FROM Staff_RaceEngineerDriverAssignments
-    WHERE DriverID = ${injuredId} AND IsCurrentAssignment = 1
+    WHERE DriverID = ? AND IsCurrentAssignment = 1
     ORDER BY DaysTogether DESC, ROWID DESC
     LIMIT 1
-  `, 'singleValue');
+  `, [injuredId], 'singleValue');
 
     const resEngineer = queryDB(`
     SELECT RaceEngineerID
     FROM Staff_RaceEngineerDriverAssignments
-    WHERE DriverID = ${reserveId} AND IsCurrentAssignment = 1
+    WHERE DriverID = ? AND IsCurrentAssignment = 1
     ORDER BY DaysTogether DESC, ROWID DESC
     LIMIT 1
-  `, 'singleValue');
+  `, [reserveId], 'singleValue');
 
     if (reserveData.isFreeAgent) {
         let teamId = reserveData.futureTeamId
@@ -4459,15 +4457,15 @@ export function startInjurySwap(injuredId, reserveData, endDay) {
       injured_engineer_id, reserve_engineer_id,
       processed
     ) VALUES (
-      ${seasonId}, ${dayNow}, ${endDay},
-      ${injuredId}, ${reserveId},
-      ${injTeam}, ${injPos}, ${injCar === null ? 'NULL' : injCar},
-      ${resTeam}, ${resPos === null ? 'NULL' : resPos}, ${resCar === null ? 'NULL' : resCar},
-      ${injEngineer === null ? 'NULL' : injEngineer},
-      ${resEngineer === null ? 'NULL' : resEngineer},
+      ?, ?, ?,
+      ?, ?,
+      ?, ?, ?,
+      ?, ?, ?,
+      ?,
+      ?,
       0
     )
-  `);
+  `, [seasonId, dayNow, endDay, injuredId, reserveId, injTeam, injPos, injCar, resTeam, resPos, resCar, injEngineer, resEngineer], 'run');
 
     return { seasonId, dayNow };
 }
@@ -4491,9 +4489,12 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
 
     // Por si re-generas, dejamos el nombre libre
     // Note: SQL doesn't support parameterized trigger names in DROP/CREATE statements
+    // validSeasonId, validInjuredId, and validEndDay are validated as integers above (lines 4482-4488)
+    // and cannot be parameterized in CREATE TRIGGER syntax, so they are safely interpolated
     queryDB(`DROP TRIGGER IF EXISTS "${trigName}"`, [], 'run');
 
     // Trigger con igualdad estricta en el día objetivo
+    // Note: Trigger definition uses validated integers directly as they cannot be parameterized in CREATE TRIGGER
     const sql = `
     CREATE TRIGGER "${trigName}"
     AFTER UPDATE OF Day ON Player_State
@@ -4653,7 +4654,7 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
     END;
   `;
 
-    queryDB(sql);
+    queryDB(sql, [], 'run');
 
     return trigName; // por si quieres guardarlo para limpieza futura
 }
