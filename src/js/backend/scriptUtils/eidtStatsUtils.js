@@ -41,131 +41,171 @@ export function editStats(driverID, type, stats, retirement, driverNum, wants1) 
     const isStats = queryDB(`
       SELECT *
       FROM Staff_performanceStats
-      WHERE StaffID = ${driverID}
-    `, 'singleRow');
+      WHERE StaffID = ?
+    `, [driverID], 'singleRow');
 
     if (isStats) {
       queryDB(`
         UPDATE Staff_performanceStats
         SET Val = CASE StatID
-          WHEN 2  THEN ${statsParams[0]}
-          WHEN 3  THEN ${statsParams[1]}
-          WHEN 4  THEN ${statsParams[2]}
-          WHEN 5  THEN ${statsParams[3]}
-          WHEN 6  THEN ${statsParams[4]}
-          WHEN 7  THEN ${statsParams[5]}
-          WHEN 8  THEN ${statsParams[6]}
-          WHEN 9  THEN ${statsParams[7]}
-          WHEN 10 THEN ${statsParams[8]}
+          WHEN 2  THEN ?
+          WHEN 3  THEN ?
+          WHEN 4  THEN ?
+          WHEN 5  THEN ?
+          WHEN 6  THEN ?
+          WHEN 7  THEN ?
+          WHEN 8  THEN ?
+          WHEN 9  THEN ?
+          WHEN 10 THEN ?
           ELSE Val
         END
-        WHERE StaffID = ${driverID}
-      `);
+        WHERE StaffID = ?
+      `, [
+        statsParams[0],
+        statsParams[1],
+        statsParams[2],
+        statsParams[3],
+        statsParams[4],
+        statsParams[5],
+        statsParams[6],
+        statsParams[7],
+        statsParams[8],
+        driverID
+      ], 'run');
     } else {
       const statsArray = statsParams.slice(2, 11);
       statsArray.forEach((newStat, i) => {
         const statID = driverStats[i];
         queryDB(`
           INSERT INTO Staff_performanceStats (StaffID, StatID, Val, Max)
-          VALUES (${driverID}, ${statID}, ${newStat}, 100)
-        `);
+          VALUES (?, ?, ?, 100)
+        `, [driverID, statID, newStat], 'run');
       });
     }
     queryDB(`
       UPDATE Staff_DriverData
-      SET Improvability = ${statsParams[9]}, Aggression = ${statsParams[10]}
-      WHERE StaffID = ${driverID}
-    `);
+      SET Improvability = ?, Aggression = ?
+      WHERE StaffID = ?
+    `, [statsParams[9], statsParams[10], driverID], 'run');
     queryDB(`
       UPDATE Staff_GameData
-      SET RetirementAge = ${retirement}
-      WHERE StaffID = ${driverID}
-    `);
+      SET RetirementAge = ?
+      WHERE StaffID = ?
+    `, [retirement, driverID], 'run');
 
     changeDriverNumber(driverID, driverNum);
 
     queryDB(`
       UPDATE Staff_DriverData
-      SET WantsChampionDriverNumber = ${wants1}
-      WHERE StaffID = ${driverID}
-    `);
+      SET WantsChampionDriverNumber = ?
+      WHERE StaffID = ?
+    `, [wants1, driverID], 'run');
   }
   else if (type === "1") {
     queryDB(`
       UPDATE Staff_performanceStats
       SET Val = CASE StatID
-        WHEN 0  THEN ${statsParams[0]}
-        WHEN 1  THEN ${statsParams[1]}
-        WHEN 14 THEN ${statsParams[2]}
-        WHEN 15 THEN ${statsParams[3]}
-        WHEN 16 THEN ${statsParams[4]}
-        WHEN 17 THEN ${statsParams[5]}
+        WHEN 0  THEN ?
+        WHEN 1  THEN ?
+        WHEN 14 THEN ?
+        WHEN 15 THEN ?
+        WHEN 16 THEN ?
+        WHEN 17 THEN ?
         ELSE Val
       END
-      WHERE StaffID = ${driverID}
-    `);
+      WHERE StaffID = ?
+    `, [
+        statsParams[0],
+        statsParams[1],
+        statsParams[2],
+        statsParams[3],
+        statsParams[4],
+        statsParams[5],
+        driverID
+    ], 'run');
     queryDB(`
       UPDATE Staff_GameData
-      SET RetirementAge = ${retirement}
-      WHERE StaffID = ${driverID}
-    `);
+      SET RetirementAge = ?
+      WHERE StaffID = ?
+    `, [retirement, driverID], 'run');
   }
   else if (type === "2") {
     queryDB(`
       UPDATE Staff_performanceStats
       SET Val = CASE StatID
-        WHEN 13 THEN ${statsParams[0]}
-        WHEN 25 THEN ${statsParams[1]}
-        WHEN 43 THEN ${statsParams[2]}
+        WHEN 13 THEN ?
+        WHEN 25 THEN ?
+        WHEN 43 THEN ?
         ELSE Val
       END
-      WHERE StaffID = ${driverID}
-    `);
+      WHERE StaffID = ?
+    `, [
+        statsParams[0],
+        statsParams[1],
+        statsParams[2],
+        driverID
+    ], 'run');
     queryDB(`
       UPDATE Staff_GameData
-      SET RetirementAge = ${retirement}
-      WHERE StaffID = ${driverID}
-    `);
+      SET RetirementAge = ?
+      WHERE StaffID = ?
+    `, [retirement, driverID], 'run');
   }
   else if (type === "3") {
     queryDB(`
       UPDATE Staff_performanceStats
       SET Val = CASE StatID
-        WHEN 19 THEN ${statsParams[0]}
-        WHEN 20 THEN ${statsParams[1]}
-        WHEN 26 THEN ${statsParams[2]}
-        WHEN 27 THEN ${statsParams[3]}
-        WHEN 28 THEN ${statsParams[4]}
-        WHEN 29 THEN ${statsParams[5]}
-        WHEN 30 THEN ${statsParams[6]}
-        WHEN 31 THEN ${statsParams[7]}
+        WHEN 19 THEN ?
+        WHEN 20 THEN ?
+        WHEN 26 THEN ?
+        WHEN 27 THEN ?
+        WHEN 28 THEN ?
+        WHEN 29 THEN ?
+        WHEN 30 THEN ?
+        WHEN 31 THEN ?
         ELSE Val
       END
-      WHERE StaffID = ${driverID}
-    `);
+      WHERE StaffID = ?
+    `, [
+        statsParams[0],
+        statsParams[1],
+        statsParams[2],
+        statsParams[3],
+        statsParams[4],
+        statsParams[5],
+        statsParams[6],
+        statsParams[7],
+        driverID
+    ], 'run');
     queryDB(`
       UPDATE Staff_GameData
-      SET RetirementAge = ${retirement}
-      WHERE StaffID = ${driverID}
-    `);
+      SET RetirementAge = ?
+      WHERE StaffID = ?
+    `, [retirement, driverID], 'run');
   }
   else if (type === "4") {
     queryDB(`
       UPDATE Staff_performanceStats
       SET Val = CASE StatID
-        WHEN 11 THEN ${statsParams[0]}
-        WHEN 22 THEN ${statsParams[1]}
-        WHEN 23 THEN ${statsParams[2]}
-        WHEN 24 THEN ${statsParams[3]}
+        WHEN 11 THEN ?
+        WHEN 22 THEN ?
+        WHEN 23 THEN ?
+        WHEN 24 THEN ?
         ELSE Val
       END
-      WHERE StaffID = ${driverID}
-    `);
+      WHERE StaffID = ?
+    `, [
+        statsParams[0],
+        statsParams[1],
+        statsParams[2],
+        statsParams[3],
+        driverID
+    ], 'run');
     queryDB(`
       UPDATE Staff_GameData
-      SET RetirementAge = ${retirement}
-      WHERE StaffID = ${driverID}
-    `);
+      SET RetirementAge = ?
+      WHERE StaffID = ?
+    `, [retirement, driverID], 'run');
   }
 }
 
@@ -173,38 +213,38 @@ export function changeDriverNumber(driverID, newNumber) {
   const oldNum = queryDB(`
     SELECT Number
     FROM Staff_DriverNumbers
-    WHERE CurrentHolder = ${driverID}
-  `, 'singleValue');
+    WHERE CurrentHolder = ?
+  `, [driverID], 'singleValue');
   if (oldNum) {
     queryDB(`
       UPDATE Staff_DriverNumbers
       SET CurrentHolder = NULL
-      WHERE Number = ${oldNum}
-    `);
+      WHERE Number = ?
+    `, [oldNum], 'run');
   }
   const oldHolderOfNum = queryDB(`
     SELECT CurrentHolder
     FROM Staff_DriverNumbers
-    WHERE Number = ${newNumber}
-  `, 'singleValue');
+    WHERE Number = ?
+  `, [newNumber], 'singleValue');
   if (oldHolderOfNum) {
     const emptyNumbers = queryDB(`
       SELECT Number FROM Staff_DriverNumbers 
       WHERE CurrentHolder IS NULL
-    `, 'allRows');
+    `, [], 'allRows');
     if (emptyNumbers.length) {
       const randomNum = emptyNumbers[Math.floor(Math.random() * emptyNumbers.length)][0];
 
       queryDB(`
-        UPDATE Staff_DriverNumbers SET CurrentHolder = ${oldHolderOfNum} WHERE Number = ${randomNum}
-      `);
+        UPDATE Staff_DriverNumbers SET CurrentHolder = ? WHERE Number = ?
+      `, [oldHolderOfNum, randomNum], 'run');
     }
   }
   queryDB(`
     UPDATE Staff_DriverNumbers
-    SET CurrentHolder = ${driverID}
-    WHERE Number = ${newNumber}
-  `);
+    SET CurrentHolder = ?
+    WHERE Number = ?
+  `, [driverID, newNumber], 'run');
 }
 
 export function editName(driverID, newName) {
@@ -215,19 +255,19 @@ export function editName(driverID, newName) {
   const stringLiteralLastName = `[STRING_LITERAL:Value=|${newLastName}|]`;
   queryDB(`
     UPDATE Staff_BasicData
-    SET FirstName = '${stringLiteralFirstName}',
-        LastName = '${stringLiteralLastName}'
-    WHERE StaffID = ${driverID}
-  `);
+    SET FirstName = ?,
+        LastName = ?
+    WHERE StaffID = ?
+  `, [stringLiteralFirstName, stringLiteralLastName, driverID], 'run');
 }
 
 export function editCode(driverID, newCode) {
   const stringLiteralCode = `[STRING_LITERAL:Value=|${newCode}|]`;
   queryDB(`
     UPDATE Staff_DriverData
-    SET DriverCode = '${stringLiteralCode}'
-    WHERE StaffID = ${driverID}
-  `);
+    SET DriverCode = ?
+    WHERE StaffID = ?
+  `, [stringLiteralCode, driverID], 'run');
 }
 
 // Helpers de fechas
@@ -259,18 +299,18 @@ export function editAge(driverID, ageGap) {
   const driverBirthdate = queryDB(`
     SELECT DOB
     FROM Staff_BasicData
-    WHERE StaffID = ${driverID}
-  `, 'singleValue');
+    WHERE StaffID = ?
+  `, [driverID], 'singleValue');
   const { newDate, newExcelDate } = changeYearsInExcelDate(driverBirthdate, parseInt(ageGap, 10));
   const y = newDate.getFullYear();
   const m = newDate.getMonth() + 1;
   const d = newDate.getDate();
   queryDB(`
     UPDATE Staff_BasicData
-    SET DOB = ${newExcelDate},
-        DOB_ISO = '${y}-${m}-${d}'
-    WHERE StaffID = ${driverID}
-  `);
+    SET DOB = ?,
+        DOB_ISO = ?
+    WHERE StaffID = ?
+  `, [newExcelDate, `${y}-${m}-${d}`, driverID], 'run');
 }
 
 export function editMentality(driverID, mentalityStr) {
@@ -280,75 +320,75 @@ export function editMentality(driverID, mentalityStr) {
     mentalityArray.forEach((value, area) => {
       queryDB(`
       UPDATE Staff_Mentality_AreaOpinions
-      SET Opinion = ${value}
-      WHERE StaffID = ${driverID}
-        AND Category = ${area}
-    `);
+      SET Opinion = ?
+      WHERE StaffID = ?
+        AND Category = ?
+    `, [value, driverID, area], 'run');
       const statuses = mentalityAreas[area];
       const events = mentalityEvents[area];
       sum += parseInt(value, 10);
       statuses.forEach(status => {
         queryDB(`
         UPDATE Staff_Mentality_Statuses
-        SET Opinion = ${value},
-            Value = ${mentalityOpinions[value]}
-        WHERE StaffID = ${driverID}
-          AND Status = ${status}
-      `);
+        SET Opinion = ?,
+            Value = ?
+        WHERE StaffID = ?
+          AND Status = ?
+      `, [value, mentalityOpinions[value], driverID, status], 'run');
       });
       events.forEach(ev => {
         queryDB(`
         UPDATE Staff_Mentality_Events
-        SET Opinion = ${value},
-            Value = ${mentalityOpinions[value]}
-        WHERE StaffID = ${driverID}
-          AND Event = ${ev}
-      `);
+        SET Opinion = ?,
+            Value = ?
+        WHERE StaffID = ?
+          AND Event = ?
+      `, [value, mentalityOpinions[value], driverID, ev], 'run');
       });
     });
     const average = Math.floor(sum / 3);
     queryDB(`
     UPDATE Staff_State
-    SET Mentality = ${mentalityOverall[average]},
-        MentalityOpinion = ${average}
-    WHERE StaffID = ${driverID}
-  `);
+    SET Mentality = ?,
+        MentalityOpinion = ?
+    WHERE StaffID = ?
+  `, [mentalityOverall[average], average, driverID], 'run');
   }
 }
 
 export function editRetirement(driverID, value) {
   queryDB(`
     UPDATE Staff_GameData
-    SET Retired = ${value}
-    WHERE StaffID = ${driverID}
-  `);
+    SET Retired = ?
+    WHERE StaffID = ?
+  `, [value, driverID], 'run');
 }
 
 export function editSuperlicense(driverID, value) {
   queryDB(`
     UPDATE Staff_DriverData
-    SET HasSuperLicense = ${value},
-        HasRacedEnoughToJoinF1 = ${value}
-    WHERE StaffID = ${driverID}
-  `);
+    SET HasSuperLicense = ?,
+        HasRacedEnoughToJoinF1 = ?
+    WHERE StaffID = ?
+  `, [value, value, driverID], 'run');
 }
 
 export function editMarketability(driverID, value) {
   queryDB(`
     UPDATE Staff_DriverData
-    SET Marketability = ${value}
-    WHERE StaffID = ${driverID}
-  `);
+    SET Marketability = ?
+    WHERE StaffID = ?
+  `, [value, driverID], 'run');
 }
 
 export function editFreezeMentality(state) {
   if (state === 0) {
-    queryDB(`DROP TRIGGER IF EXISTS update_Opinion_After_Insert;`);
-    queryDB(`DROP TRIGGER IF EXISTS update_Opinion_After_Update;`);
-    queryDB(`DROP TRIGGER IF EXISTS clear_Staff_Mentality_Statuses;`);
-    queryDB(`DROP TRIGGER IF EXISTS clear_Staff_Mentality_AreaOpinions;`);
-    queryDB(`DROP TRIGGER IF EXISTS clear_Staff_Mentality_Events;`);
-    queryDB(`DROP TRIGGER IF EXISTS reset_Staff_State;`);
+    queryDB(`DROP TRIGGER IF EXISTS update_Opinion_After_Insert;`, [], 'run');
+    queryDB(`DROP TRIGGER IF EXISTS update_Opinion_After_Update;`, [], 'run');
+    queryDB(`DROP TRIGGER IF EXISTS clear_Staff_Mentality_Statuses;`, [], 'run');
+    queryDB(`DROP TRIGGER IF EXISTS clear_Staff_Mentality_AreaOpinions;`, [], 'run');
+    queryDB(`DROP TRIGGER IF EXISTS clear_Staff_Mentality_Events;`, [], 'run');
+    queryDB(`DROP TRIGGER IF EXISTS reset_Staff_State;`, [], 'run');
   } else {
     queryDB(`
       CREATE TRIGGER IF NOT EXISTS update_Opinion_After_Insert
@@ -358,7 +398,7 @@ export function editFreezeMentality(state) {
         SET Opinion = 2
         WHERE Opinion != 2;
       END;
-    `);
+    `, [], 'run');
     queryDB(`
       CREATE TRIGGER IF NOT EXISTS update_Opinion_After_Update
       AFTER UPDATE OF Opinion ON Staff_Mentality_AreaOpinions
@@ -367,21 +407,21 @@ export function editFreezeMentality(state) {
         SET Opinion = 2
         WHERE Opinion != 2;
       END;
-    `);
+    `, [], 'run');
     queryDB(`
       CREATE TRIGGER IF NOT EXISTS clear_Staff_Mentality_Statuses
       AFTER INSERT ON Staff_Mentality_Statuses
       BEGIN
         DELETE FROM Staff_Mentality_Statuses;
       END;
-    `);
+    `, [], 'run');
     queryDB(`
       CREATE TRIGGER IF NOT EXISTS clear_Staff_Mentality_Events
       AFTER INSERT ON Staff_Mentality_Events
       BEGIN
         DELETE FROM Staff_Mentality_Events;
       END;
-    `);
+    `, [], 'run');
     queryDB(`
       CREATE TRIGGER IF NOT EXISTS reset_Staff_State
       AFTER UPDATE ON Staff_State
@@ -389,6 +429,6 @@ export function editFreezeMentality(state) {
         UPDATE Staff_State
         SET Mentality = 50, MentalityOpinion = 2;
       END;
-    `);
+    `, [], 'run');
   }
 }

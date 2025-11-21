@@ -32,13 +32,13 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
   const daySeason = queryDB(`
     SELECT Day, CurrentSeason
     FROM Player_State
-  `, 'singleRow');
+  `, [], 'singleRow');
 
   let actualCalendar = queryDB(`
     SELECT TrackID
     FROM Races
-    WHERE SeasonID = ${daySeason[1]}
-  `, 'allRows') || [];
+    WHERE SeasonID = ?
+  `, [daySeason[1]], 'allRows') || [];
 
   actualCalendar = actualCalendar.map(row => row[0]);
   //build newCalendar with trackId from each element from the array racesData
@@ -48,8 +48,8 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
     const ids = queryDB(`
       SELECT RaceID
       FROM Races
-      WHERE SeasonID = ${daySeason[1]}
-    `, 'allRows') || [];
+      WHERE SeasonID = ?
+    `, [daySeason[1]], 'allRows') || [];
     const raceIDs = ids.map(row => row[0]);
 
     for (let i = 0; i < racesData.length; i++) {
@@ -67,15 +67,15 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
       queryDB(`
         UPDATE Races
         SET
-          RainPractice = ${rainPBool},
-          WeatherStatePractice = ${rainP},
-          RainQualifying = ${rainQBool},
-          WeatherStateQualifying = ${rainQ},
-          RainRace = ${rainRBool},
-          WeatherStateRace = ${rainR},
-          WeekendType = ${format}
-        WHERE RaceID = ${raceIDs[i]}
-      `);
+          RainPractice = ?,
+          WeatherStatePractice = ?,
+          RainQualifying = ?,
+          WeatherStateQualifying = ?,
+          RainRace = ?,
+          WeatherStateRace = ?,
+          WeekendType = ?
+        WHERE RaceID = ?
+      `, [rainPBool, rainP, rainQBool, rainQ, rainRBool, rainR, format, raceIDs[i]], 'run');
     }
   } else {
     const randomBlanks = [];
@@ -108,14 +108,14 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
     const lastRaceLastSeason = queryDB(`
       SELECT MAX(RaceID)
       FROM Races
-      WHERE SeasonID = ${daySeason[1] - 1}
-    `, 'singleValue');
+      WHERE SeasonID = ?
+    `, [daySeason[1] - 1], 'singleValue');
 
     const firstRaceThisSeason = queryDB(`
       SELECT MIN(RaceID)
       FROM Races
-      WHERE SeasonID = ${daySeason[1]}
-    `, 'singleValue');
+      WHERE SeasonID = ?
+    `, [daySeason[1]], 'singleValue');
 
     let raceid;
     if (parseInt(lastRaceLastSeason, 10) === (parseInt(firstRaceThisSeason, 10) - 1)) {
@@ -127,8 +127,8 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
     queryDB(`
       DELETE FROM Races
       WHERE State != 2
-        AND SeasonID = ${daySeason[1]}
-    `);
+        AND SeasonID = ?
+    `, [daySeason[1]], 'run');
 
     for (let i = 0; i < racesData.length; i++) {
       const race = racesData[i];
@@ -145,8 +145,8 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
       const temps = queryDB(`
         SELECT TemperatureMin, TemperatureMax
         FROM Races_Templates
-        WHERE TrackID = ${raceCode}
-      `, 'singleRow');
+        WHERE TrackID = ?
+      `, [raceCode], 'singleRow');
 
       const tempP = randomInt(temps[0], temps[1]);
       const tempQ = randomInt(temps[0], temps[1]);
@@ -159,23 +159,39 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
         queryDB(`
           INSERT INTO Races
           VALUES (
-            ${raceid},
-            ${daySeason[1]},
-            ${day},
-            ${raceCode},
-            ${state},
-            ${rainPBool},
-            ${tempP},
-            ${rainP},
-            ${rainQBool},
-            ${tempQ},
-            ${rainQ},
-            ${rainRBool},
-            ${tempR},
-            ${rainR},
-            ${format}
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
           )
-        `);
+        `, [
+          raceid,
+          daySeason[1],
+          day,
+          raceCode,
+          state,
+          rainPBool,
+          tempP,
+          rainP,
+          rainQBool,
+          tempQ,
+          rainQ,
+          rainRBool,
+          tempR,
+          rainR,
+          format
+        ], 'run');
       }
     }
   }

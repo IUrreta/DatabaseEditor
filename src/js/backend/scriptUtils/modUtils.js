@@ -17,7 +17,7 @@ export function timeTravelWithData(dayNumber, extend = false) {
     const daySeasonRow = queryDB(`
     SELECT Day, CurrentSeason
     FROM Player_State
-  `, 'singleRow');
+  `, [], 'singleRow');
 
     const vanillaSeason = daySeasonRow[1];
     const VanillaDay = daySeasonRow[0];
@@ -44,64 +44,64 @@ export function timeTravelWithData(dayNumber, extend = false) {
     });
 
     // Ahora sustituyo los 'database.exec()' por 'queryDB(...)'
-    queryDB(`UPDATE Player_State SET Day = ${moddedDayNumber}`);
-    queryDB(`UPDATE Player_State SET CurrentSeason = ${wayBackSeason}`);
+    queryDB(`UPDATE Player_State SET Day = ?`, [moddedDayNumber], 'run');
+    queryDB(`UPDATE Player_State SET CurrentSeason = ?`, [wayBackSeason], 'run');
 
     queryDB(`
         UPDATE Calendar_LastActivityDates
         SET
-          LastScoutDate = ${seasonStartDayNumber},
-          LastEngineerDate = ${seasonStartDayNumber},
-          LastDesignProjectDate = ${seasonStartDayNumber},
-          LastResearchProjectDate = ${seasonStartDayNumber}
-      `);
+          LastScoutDate = ?,
+          LastEngineerDate = ?,
+          LastDesignProjectDate = ?,
+          LastResearchProjectDate = ?
+      `, [seasonStartDayNumber, seasonStartDayNumber, seasonStartDayNumber, seasonStartDayNumber], 'run');
 
     // Ajuste en las tablas de partes/diseños
-    queryDB(`UPDATE Parts_Designs SET DayCreated = DayCreated - ${dd} WHERE DayCreated > 0`);
-    queryDB(`UPDATE Parts_Designs SET DayCompleted = DayCompleted - ${dd} WHERE DayCompleted > 0`);
-    queryDB(`UPDATE Parts_Designs SET ValidFrom = ValidFrom - ${yd}`);
+    queryDB(`UPDATE Parts_Designs SET DayCreated = DayCreated - ? WHERE DayCreated > 0`, [dd], 'run');
+    queryDB(`UPDATE Parts_Designs SET DayCompleted = DayCompleted - ? WHERE DayCompleted > 0`, [dd], 'run');
+    queryDB(`UPDATE Parts_Designs SET ValidFrom = ValidFrom - ?`, [yd], 'run');
 
     // Elimino Sponsorship_GuaranteesAndIncentives
     if (yearIteration === "23") {
-        queryDB(`DELETE FROM Sponsorship_GuaranteesAndIncentives`);
+        queryDB(`DELETE FROM Sponsorship_GuaranteesAndIncentives`, [], 'run');
     }
 
     // Elimino temporadas y carreras de otros años
-    queryDB(`DELETE FROM Races WHERE SeasonID != ${vanillaSeason}`);
-    queryDB(`DELETE FROM Seasons WHERE SeasonID != ${vanillaSeason}`);
+    queryDB(`DELETE FROM Races WHERE SeasonID != ?`, [vanillaSeason], 'run');
+    queryDB(`DELETE FROM Seasons WHERE SeasonID != ?`, [vanillaSeason], 'run');
 
     // Si extiendo, cambio el estado de la temporada
     if (extend) {
         queryDB(`
           UPDATE Races
           SET
-            SeasonID = ${wayBackSeason},
+            SeasonID = ?,
             State = 2
-          WHERE SeasonID = ${vanillaSeason}
-        `);
+          WHERE SeasonID = ?
+        `, [wayBackSeason, vanillaSeason], 'run');
     } else {
-        queryDB(`UPDATE Races SET SeasonID = ${wayBackSeason}, Day = Day - ${dd} WHERE SeasonID = ${vanillaSeason}`)
+        queryDB(`UPDATE Races SET SeasonID = ?, Day = Day - ? WHERE SeasonID = ?`, [wayBackSeason, dd, vanillaSeason], 'run')
     }
 
     queryDB(`
         UPDATE Seasons_Deadlines
         SET
-          SeasonID = SeasonID - ${yd},
-          Day = Day - ${dd}
-      `);
+          SeasonID = SeasonID - ?,
+          Day = Day - ?
+      `, [yd, dd], 'run');
 
     // Ajustes para versiones >= 3
     if (version >= 3) {
-        queryDB(`UPDATE Player SET FirstGameDay = ${moddedDayNumber}`);
-        queryDB(`UPDATE Player_Record SET StartSeason = ${wayBackSeason}`);
-        queryDB(`UPDATE Player_History SET StartDay = ${seasonStartDayNumber}`);
-        queryDB(`UPDATE Staff_PitCrew_DevelopmentPlan SET Day = Day - ${dd} WHERE Day > 40000`);
-        queryDB(`UPDATE Onboarding_Tutorial_RestrictedActions SET TutorialIsActiveSetting = 0`);
+        queryDB(`UPDATE Player SET FirstGameDay = ?`, [moddedDayNumber], 'run');
+        queryDB(`UPDATE Player_Record SET StartSeason = ?`, [wayBackSeason], 'run');
+        queryDB(`UPDATE Player_History SET StartDay = ?`, [seasonStartDayNumber], 'run');
+        queryDB(`UPDATE Staff_PitCrew_DevelopmentPlan SET Day = Day - ? WHERE Day > 40000`, [dd], 'run');
+        queryDB(`UPDATE Onboarding_Tutorial_RestrictedActions SET TutorialIsActiveSetting = 0`, [], 'run');
     }
 
     // Ajustes para versión === 2
     if (version === 2) {
-        queryDB(`UPDATE Onboarding_Tutorial_RestrictedActions SET Allowed = 0`);
+        queryDB(`UPDATE Onboarding_Tutorial_RestrictedActions SET Allowed = 0`, [], 'run');
     }
 
 
@@ -176,10 +176,10 @@ export function timeTravelWithData(dayNumber, extend = false) {
         }
         for (const table of pair.table) {
             for (const md of pair.modDay) {
-                queryDB(`UPDATE ${table} SET ${md} = ${md} - ${dd}`);
+                queryDB(`UPDATE ${table} SET ${md} = ${md} - ?`, [dd], 'run');
             }
             for (const ms of pair.modSeason) {
-                queryDB(`UPDATE ${table} SET ${ms} = ${ms} - ${yd} WHERE ${ms} = ${vanillaSeason}`);
+                queryDB(`UPDATE ${table} SET ${ms} = ${ms} - ? WHERE ${ms} = ?`, [yd, vanillaSeason], 'run');
             }
         }
     }
@@ -187,27 +187,27 @@ export function timeTravelWithData(dayNumber, extend = false) {
     // Obtengo la lista de tablas
     const allTables = queryDB(
         "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name ASC",
-        "allRows"
+        [], "allRows"
     );
 
     for (const row of allTables) {
         const table = row[0];
 
         if (table.startsWith("Teams_RaceRecord")) {
-            queryDB(`DELETE FROM ${table}`);
+            queryDB(`DELETE FROM ${table}`, [], 'run');
         }
 
         if (table === "Races_Results") {
-            queryDB(`DELETE FROM ${table} WHERE Season != ${vanillaSeason}`);
-            queryDB(`UPDATE ${table} SET Season = Season - ${yd} WHERE Season = ${vanillaSeason}`);
+            queryDB(`DELETE FROM ${table} WHERE Season != ?`, [vanillaSeason], 'run');
+            queryDB(`UPDATE ${table} SET Season = Season - ? WHERE Season = ?`, [yd, vanillaSeason], 'run');
         } else if (table.startsWith("Races") && table.endsWith("Results")) {
-            queryDB(`DELETE FROM ${table} WHERE SeasonID != ${vanillaSeason}`);
-            queryDB(`UPDATE ${table} SET SeasonID = SeasonID - ${yd} WHERE SeasonID = ${vanillaSeason}`);
+            queryDB(`DELETE FROM ${table} WHERE SeasonID != ?`, [vanillaSeason], 'run');
+            queryDB(`UPDATE ${table} SET SeasonID = SeasonID - ? WHERE SeasonID = ?`, [yd, vanillaSeason], 'run');
         }
     }
 
     if (extend) {
-        queryDB(`UPDATE Staff_Contracts SET EndSeason = EndSeason + 1`);
+        queryDB(`UPDATE Staff_Contracts SET EndSeason = EndSeason + 1`, [], 'run');
     }
 
     setMetaData(metadata)
@@ -218,7 +218,7 @@ export function timeTravelWithData(dayNumber, extend = false) {
 export function changeDriverLineUps() {
     if (contracts.Updates && Array.isArray(contracts.Updates)) {
         contracts.Updates.forEach((update) => {
-            const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${update.DriverID} AND TeamID = 32`, "singleRow");
+            const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ? AND TeamID = 32`, [update.DriverID], "singleRow");
             if (!hasContractWithTeam32) {
                 const {
                     DriverID,
@@ -249,14 +249,14 @@ export function changeDriverLineUps() {
                 modFire(DriverID, TeamID, PosInTeam);
             }
             if (Retire !== null && Retire !== undefined) {
-                queryDB(`UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = ${DriverID}`);
+                queryDB(`UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = ?`, [DriverID], 'run');
             }
         });
     }
 
     if (contracts.Hires && Array.isArray(contracts.Hires)) {
         contracts.Hires.forEach((hire) => {
-            const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${hire.DriverID} AND TeamID = 32`, "singleRow");
+            const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ? AND TeamID = 32`, [hire.DriverID], "singleRow");
             if (!hasContractWithTeam32) {
                 const {
                     DriverID,
@@ -275,7 +275,7 @@ export function changeDriverLineUps() {
                     editSuperlicense(DriverID, GrantsSuperLicense);
                 }
 
-                const contractExists = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${DriverID} AND TeamID = ${TeamID} AND ContractType = 0`, "singleRow");
+                const contractExists = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ? AND TeamID = ? AND ContractType = 0`, [DriverID, TeamID], "singleRow");
                 if (!contractExists) {
                     hireDriver(
                         "manual",
@@ -297,7 +297,7 @@ export function changeDriverLineUps() {
 
     if (contracts.StaffHires && Array.isArray(contracts.StaffHires)) {
         contracts.StaffHires.forEach((hire) => {
-            const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${hire.StaffID} AND TeamID = 32`, "singleRow");
+            const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ? AND TeamID = 32`, [hire.StaffID], "singleRow");
             if (!hasContractWithTeam32) {
                 const {
                     StaffID,
@@ -329,7 +329,7 @@ export function changeDriverLineUps() {
     }
 
 
-    const f1Workers = queryDB(`SELECT StaffID FROM Staff_Contracts WHERE TeamID <= 10 AND PosInTeam <= 2`, "allRows");
+    const f1Workers = queryDB(`SELECT StaffID FROM Staff_Contracts WHERE TeamID <= 10 AND PosInTeam <= 2`, [], "allRows");
     f1Workers.forEach((worker) => {
         removeFutureContract(worker[0]);
     });
@@ -340,38 +340,38 @@ export function changeDriverLineUps() {
 }
 
 export function modFire(driverID, teamID, PosInTeam) {
-    const isInTeam = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${driverID} AND TeamID = ${teamID} AND ContractType = 0`, "singleRow");
+    const isInTeam = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ? AND TeamID = ? AND ContractType = 0`, [driverID, teamID], "singleRow");
     if (isInTeam) {
-        const position = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = ${driverID}`, "singleValue");
-        queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 0 AND TeamID = ${teamID}`);
+        const position = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = ?`, [driverID], "singleValue");
+        queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0 AND TeamID = ?`, [driverID, teamID], 'run');
         if (position < 3) {
-            queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = ${driverID}`);
+            queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = ?`, [driverID], 'run');
         }
         const engineerID = queryDB(
-            `SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = ${driverID}`,
-            "singleValue"
+            `SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = ?`,
+            [driverID], "singleValue"
         );
         if (engineerID) {
-            queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${engineerID} AND DriverID = ${driverID}`);
+            queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ? AND DriverID = ?`, [engineerID, driverID], 'run');
         }
     }
     else {
-        const staffType = queryDB(`SELECT StaffType FROM Staff_GameData WHERE StaffID = ${driverID}`, "singleValue");
+        const staffType = queryDB(`SELECT StaffType FROM Staff_GameData WHERE StaffID = ?`, [driverID], "singleValue");
         const replacement = queryDB(`SELECT con.StaffID FROM Staff_Contracts con
             JOIN Staff_GameData gd ON con.StaffID = gd.StaffID
-            WHERE gd.StaffType = ${staffType} AND
-            con.TeamID = ${teamID} AND con.PosInTeam = ${PosInTeam} AND con.ContractType = 0`, "singleValue");
+            WHERE gd.StaffType = ? AND
+            con.TeamID = ? AND con.PosInTeam = ? AND con.ContractType = 0`, [staffType, teamID, PosInTeam], "singleValue");
         if (replacement) {
-            queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${replacement} AND ContractType = 0 AND TeamID = ${teamID}`);
+            queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0 AND TeamID = ?`, [replacement, teamID], 'run');
             if (PosInTeam < 3) {
-                queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = ${replacement}`);
+                queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = ?`, [replacement], 'run');
             }
             const engineerID = queryDB(
-                `SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = ${replacement}`,
-                "singleValue"
+                `SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = ?`,
+                [replacement], "singleValue"
             );
             if (engineerID) {
-                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${engineerID} AND DriverID = ${replacement}`);
+                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ? AND DriverID = ?`, [engineerID, replacement], 'run');
             }
         }
     }
@@ -387,9 +387,9 @@ export function changeStats() {
 
             queryDB(`
             UPDATE Staff_PerformanceStats
-            SET Val = ${Val}, Max = ${Max}
-            WHERE StaffID = ${StaffID} AND StatID = ${StatID}
-          `);
+            SET Val = ?, Max = ?
+            WHERE StaffID = ? AND StatID = ?
+          `, [Val, Max, StaffID, StatID], 'run');
 
         }
     }
@@ -405,29 +405,29 @@ export function changeDriverEngineerPairs() {
             const { TeamID, Driver1, Engineer1, Driver2, Engineer2 } = entry;
 
             const areAllInSameTeam =
-                queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${Driver1} AND TeamID = ${TeamID} AND PosInTeam <= 2 AND ContractType = 0`, "singleRow") &&
-                queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${Driver2} AND TeamID = ${TeamID} AND PosInTeam <= 2 AND ContractType = 0`, "singleRow") &&
-                queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${Engineer1} AND TeamID = ${TeamID} AND PosInTeam <= 2 AND ContractType = 0`, "singleRow") &&
-                queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${Engineer2} AND TeamID = ${TeamID} AND PosInTeam <= 2 AND ContractType = 0`, "singleRow");
+                queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ? AND TeamID = ? AND PosInTeam <= 2 AND ContractType = 0`, [Driver1, TeamID], "singleRow") &&
+                queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ? AND TeamID = ? AND PosInTeam <= 2 AND ContractType = 0`, [Driver2, TeamID], "singleRow") &&
+                queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ? AND TeamID = ? AND PosInTeam <= 2 AND ContractType = 0`, [Engineer1, TeamID], "singleRow") &&
+                queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ? AND TeamID = ? AND PosInTeam <= 2 AND ContractType = 0`, [Engineer2, TeamID], "singleRow");
 
 
             if (areAllInSameTeam) {
-                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE DriverID = ${Driver1} OR DriverID = ${Driver2}`);
-                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${Engineer1} OR RaceEngineerID = ${Engineer2}`);
+                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE DriverID = ? OR DriverID = ?`, [Driver1, Driver2], 'run');
+                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ? OR RaceEngineerID = ?`, [Engineer1, Engineer2], 'run');
 
-                let driver1Engineer1 = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ${Driver1} AND RaceEngineerID = ${Engineer1}`, "singleRow");
-                let driver2Engineer2 = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ${Driver2} AND RaceEngineerID = ${Engineer2}`, "singleRow");
+                let driver1Engineer1 = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ? AND RaceEngineerID = ?`, [Driver1, Engineer1], "singleRow");
+                let driver2Engineer2 = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ? AND RaceEngineerID = ?`, [Driver2, Engineer2], "singleRow");
 
                 if (driver1Engineer1 && driver1Engineer1.length > 0) {
-                    queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ${Driver1} AND RaceEngineerID = ${Engineer1}`);
+                    queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ? AND RaceEngineerID = ?`, [Driver1, Engineer1], 'run');
                 } else {
-                    queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (${Engineer1}, ${Driver1}, 0, 0, 1)`);
+                    queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (?, ?, 0, 0, 1)`, [Engineer1, Driver1], 'run');
                 }
 
                 if (driver2Engineer2 && driver2Engineer2.length > 0) {
-                    queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ${Driver2} AND RaceEngineerID = ${Engineer2}`);
+                    queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ? AND RaceEngineerID = ?`, [Driver2, Engineer2], 'run');
                 } else {
-                    queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (${Engineer2}, ${Driver2}, 0, 0, 1)`);
+                    queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (?, ?, 0, 0, 1)`, [Engineer2, Driver2], 'run');
                 }
             }
             else {
@@ -448,23 +448,23 @@ export function change2024Standings() {
 
 
             queryDB(`
-            UPDATE Races_DriverStandings SET LastPointsChange = ${LastPointsChange}, LastPositionChange = ${LastPositionChange}, Points = ${Points}, Position = ${Position}
-            WHERE DriverID = ${DriverID} AND RaceFormula = ${RaceFormula} AND SeasonID = ${SeasonID}
-            `);
+            UPDATE Races_DriverStandings SET LastPointsChange = ?, LastPositionChange = ?, Points = ?, Position = ?
+            WHERE DriverID = ? AND RaceFormula = ? AND SeasonID = ?
+            `, [LastPointsChange, LastPositionChange, Points, Position, DriverID, RaceFormula, SeasonID], 'run');
         }
     }
 
     if (!changes.TeamStandings || !Array.isArray(changes.TeamStandings)) {
         console.error("No team standings found");
     } else {
-        queryDB(`DELETE FROM Races_TeamStandings WHERE RaceFormula = 1 AND SeasonID = 2024`);
+        queryDB(`DELETE FROM Races_TeamStandings WHERE RaceFormula = 1 AND SeasonID = 2024`, [], 'run');
         for (const entry of changes.TeamStandings) {
             const { LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID, TeamID } = entry;
 
             queryDB(`
             INSERT INTO Races_TeamStandings (TeamID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID)
-            VALUES (${TeamID}, ${LastPointsChange}, ${LastPositionChange}, ${Points}, ${Position}, ${RaceFormula}, ${SeasonID})
-            `);
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            `, [TeamID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID], 'run');
         }
     }
     update2025SeasonModTable("change-cfd", 1);
@@ -474,26 +474,26 @@ export function manageFeederSeries() {
     if (!contracts.FeederSeries || !Array.isArray(contracts.FeederSeries)) {
         console.error("No feeder series found");
     } else {
-        queryDB(`DELETE FROM Staff_Contracts WHERE PosInTeam <= 3 AND StaffID IN (SELECT StaffID FROM Staff_DriverData) AND TeamID BETWEEN 11 AND 31`);
-        queryDB(`UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = NULL`)
-        const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, "singleRow");
+        queryDB(`DELETE FROM Staff_Contracts WHERE PosInTeam <= 3 AND StaffID IN (SELECT StaffID FROM Staff_DriverData) AND TeamID BETWEEN 11 AND 31`, [], 'run');
+        queryDB(`UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = NULL`, [], 'run')
+        const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], "singleRow");
         const day = daySeason[0];
         for (const entry of contracts.FeederSeries) {
             const { DriverID, TeamID, PosInTeam, Salary, EndSeason } = entry;
             queryDB(`INSERT INTO Staff_Contracts (StaffID, ContractType, TeamID, PosInTeam, StartDay, EndSeason, Salary, StartingBonus, RaceBonus, RaceBonusTargetPos, BreakoutClause, AffiliateDualRoleClause)
-                 VALUES (${DriverID}, 0, ${TeamID}, ${PosInTeam}, ${day}, ${EndSeason}, ${Salary}, 0, 0, 1, 0.5, 0)`);
-            queryDB(`UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = ${PosInTeam}, AssignedCarNumber = NULL, LastKnownDriverNumber = NULL WHERE StaffID = ${DriverID}`);
+                 VALUES (?, 0, ?, ?, ?, ?, ?, 0, 0, 1, 0.5, 0)`, [DriverID, TeamID, PosInTeam, day, EndSeason, Salary], 'run');
+            queryDB(`UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = ?, AssignedCarNumber = NULL, LastKnownDriverNumber = NULL WHERE StaffID = ?`, [PosInTeam, DriverID], 'run');
             const driverTeamRaceEngineers = queryDB(`SELECT gd.StaffID FROM Staff_GameData gd
                 JOIN Staff_Contracts sc ON gd.StaffID = sc.StaffID
                 WHERE gd.StaffType = 2
-                AND gd.StaffID IN (SELECT StaffID FROM Staff_Contracts WHERE TeamID = ${TeamID})`, "allRows");
+                AND gd.StaffID IN (SELECT StaffID FROM Staff_Contracts WHERE TeamID = ?)`, [TeamID], "allRows");
             let newRaceEngineer = driverTeamRaceEngineers[0][0];
-            let pairExists = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE RaceEngineerID = ${newRaceEngineer} AND DriverID = ${DriverID}`, "singleRow");
+            let pairExists = queryDB(`SELECT * FROM Staff_RaceEngineerDriverAssignments WHERE RaceEngineerID = ? AND DriverID = ?`, [newRaceEngineer, DriverID], "singleRow");
             if (pairExists && pairExists.length > 0) {
-                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE RaceEngineerID = ${newRaceEngineer} AND DriverID = ${DriverID}`);
+                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE RaceEngineerID = ? AND DriverID = ?`, [newRaceEngineer, DriverID], 'run');
             } else {
-                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${newRaceEngineer}`);
-                queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (${newRaceEngineer}, ${DriverID}, 0, 0, 1)`);
+                queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ?`, [newRaceEngineer], 'run');
+                queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments (RaceEngineerID, DriverID, DaysTogether, RelationshipLevel, IsCurrentAssignment) VALUES (?, ?, 0, 0, 1)`, [newRaceEngineer, DriverID], 'run');
             }
         }
     }
@@ -505,12 +505,12 @@ export function manageAffiliates() {
         DELETE FROM Staff_Contracts
         WHERE PosInTeam > 2
         AND StaffID IN (SELECT StaffID FROM Staff_DriverData)
-    `);
+    `, [], 'run');
 
     if (contracts.Affiliates && Array.isArray(contracts.Affiliates)) {
         contracts.Affiliates.forEach((affiliate) => {
-            const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${affiliate.DriverID} AND TeamID = 32`, "singleRow");
-            const isFullTimeDriver = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${affiliate.DriverID} AND PosInTeam <= 2 AND (TeamID <= 10 OR TeamID == 32)`, "singleRow");
+            const hasContractWithTeam32 = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ? AND TeamID = 32`, [affiliate.DriverID], "singleRow");
+            const isFullTimeDriver = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ? AND PosInTeam <= 2 AND (TeamID <= 10 OR TeamID == 32)`, [affiliate.DriverID], "singleRow");
             if (!hasContractWithTeam32 && !isFullTimeDriver) {
                 const {
                     DriverID,
@@ -544,8 +544,8 @@ export function manageAffiliates() {
 }
 
 export function manageStandings() {
-    queryDB(`DELETE FROM Races_DriverStandings WHERE RaceFormula = 2 AND SeasonID = 2025`);
-    queryDB(`DELETE FROM Races_DriverStandings WHERE RaceFormula = 3 AND SeasonID = 2025`);
+    queryDB(`DELETE FROM Races_DriverStandings WHERE RaceFormula = 2 AND SeasonID = 2025`, [], 'run');
+    queryDB(`DELETE FROM Races_DriverStandings WHERE RaceFormula = 3 AND SeasonID = 2025`, [], 'run');
     queryDB(`
             DELETE FROM Races_DriverStandings
             WHERE SeasonID = 2025
@@ -556,12 +556,12 @@ export function manageStandings() {
                 WHERE sc.StaffID = Races_DriverStandings.DriverID
                   AND sc.PosInTeam <= 2
               );
-          `);
+          `, [], 'run');
 
     let position = 1;
-    let f1_grid = queryDB(`SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = 2025`, "allRows");
+    let f1_grid = queryDB(`SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = 2025`, [], "allRows");
     f1_grid.forEach((driver) => {
-        queryDB(`UPDATE Races_DriverStandings SET Position = ${position} WHERE DriverID = ${driver[0]} AND RaceFormula = 1 AND SeasonID = 2025`);
+        queryDB(`UPDATE Races_DriverStandings SET Position = ? WHERE DriverID = ? AND RaceFormula = 1 AND SeasonID = 2025`, [position, driver[0]], 'run');
         position++;
     });
 
@@ -589,13 +589,13 @@ export function manageStandings() {
             INNER JOIN Staff_GameData sgd ON sc.StaffID = sgd.StaffID
             WHERE sgd.StaffType = 0
               AND sc.TeamID BETWEEN 11 AND 21
-        `);
+        `, [], 'run');
 
     position = 1;
-    let f2_grid = queryDB(`SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 2 AND SeasonID = 2025`, "allRows");
+    let f2_grid = queryDB(`SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 2 AND SeasonID = 2025`, [], "allRows");
     f2_grid.forEach((driver) => {
-        queryDB(`UPDATE Races_DriverStandings SET Position = ${position} WHERE DriverID = ${driver[0]} AND RaceFormula = 2 AND SeasonID = 2025`);
-        queryDB(`INSERT INTO Races_DriverStandings (SeasonID, DriverID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (2024, ${driver[0]}, 0, ${position}, 0, 0, 2)`);
+        queryDB(`UPDATE Races_DriverStandings SET Position = ? WHERE DriverID = ? AND RaceFormula = 2 AND SeasonID = 2025`, [position, driver[0]], 'run');
+        queryDB(`INSERT INTO Races_DriverStandings (SeasonID, DriverID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (2024, ?, 0, ?, 0, 0, 2)`, [driver[0], position], 'run');
         position++;
     });
 
@@ -622,35 +622,35 @@ export function manageStandings() {
             INNER JOIN Staff_GameData sgd ON sc.StaffID = sgd.StaffID
             WHERE sgd.StaffType = 0
               AND sc.TeamID BETWEEN 22 AND 31
-        `);
+        `, [], 'run');
 
     position = 1;
-    let f3_grid = queryDB(`SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 3 AND SeasonID = 2025`, "allRows");
+    let f3_grid = queryDB(`SELECT DriverID FROM Races_DriverStandings WHERE RaceFormula = 3 AND SeasonID = 2025`, [], "allRows");
     f3_grid.forEach((driver) => {
-        queryDB(`UPDATE Races_DriverStandings SET Position = ${position} WHERE DriverID = ${driver[0]} AND RaceFormula = 3 AND SeasonID = 2025`);
-        queryDB(`INSERT INTO Races_DriverStandings (SeasonID, DriverID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (2024, ${driver[0]}, 0, ${position}, 0, 0, 3)`);
+        queryDB(`UPDATE Races_DriverStandings SET Position = ? WHERE DriverID = ? AND RaceFormula = 3 AND SeasonID = 2025`, [position, driver[0]], 'run');
+        queryDB(`INSERT INTO Races_DriverStandings (SeasonID, DriverID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (2024, ?, 0, ?, 0, 0, 3)`, [driver[0], position], 'run');
         position++;
     });
 
     position = 1;
-    let f2_teams = queryDB(`SELECT TeamID FROM Races_TeamStandings WHERE RaceFormula = 2 AND SeasonID = 2025`, "allRows");
+    let f2_teams = queryDB(`SELECT TeamID FROM Races_TeamStandings WHERE RaceFormula = 2 AND SeasonID = 2025`, [], "allRows");
     f2_teams.forEach((team) => {
-        queryDB(`UPDATE Races_TeamStandings SET Position = ${position} WHERE TeamID = ${team[0]} AND RaceFormula = 2 AND SeasonID = 2025`);
-        queryDB(`INSERT INTO Races_TeamStandings (SeasonID, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (2024, ${team[0]}, 0, ${position}, 0, 0, 2)`);
+        queryDB(`UPDATE Races_TeamStandings SET Position = ? WHERE TeamID = ? AND RaceFormula = 2 AND SeasonID = 2025`, [position, team[0]], 'run');
+        queryDB(`INSERT INTO Races_TeamStandings (SeasonID, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (2024, ?, 0, ?, 0, 0, 2)`, [team[0], position], 'run');
         position++;
     });
 
     position = 1;
-    let f3_teams = queryDB(`SELECT TeamID FROM Races_TeamStandings WHERE RaceFormula = 3 AND SeasonID = 2025`, "allRows");
+    let f3_teams = queryDB(`SELECT TeamID FROM Races_TeamStandings WHERE RaceFormula = 3 AND SeasonID = 2025`, [], "allRows");
     f3_teams.forEach((team) => {
-        queryDB(`UPDATE Races_TeamStandings SET Position = ${position} WHERE TeamID = ${team[0]} AND RaceFormula = 3 AND SeasonID = 2025`);
-        queryDB(`INSERT INTO Races_TeamStandings (SeasonID, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (2024, ${team[0]}, 0, ${position}, 0, 0, 3)`);
+        queryDB(`UPDATE Races_TeamStandings SET Position = ? WHERE TeamID = ? AND RaceFormula = 3 AND SeasonID = 2025`, [position, team[0]], 'run');
+        queryDB(`INSERT INTO Races_TeamStandings (SeasonID, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (2024, ?, 0, ?, 0, 0, 3)`, [team[0], position], 'run');
         position++;
     });
 
     //copy all races_pitcrewstandings form 2025 to 2024
     queryDB(`INSERT INTO Races_PitCrewStandings (SeasonID, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula)
-             SELECT 2024, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula FROM Races_PitCrewStandings WHERE SeasonID = 2025`);
+             SELECT 2024, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula FROM Races_PitCrewStandings WHERE SeasonID = 2025`, [], 'run');
 }
 
 export function changeRaces(type) {
@@ -659,7 +659,7 @@ export function changeRaces(type) {
     }
     else {
         if (type === "Start2024" || type === "End2024") {
-            let maxRaceId = queryDB(`SELECT MAX(RaceID) FROM Races`, "singleRow")[0];
+            let maxRaceId = queryDB(`SELECT MAX(RaceID) FROM Races`, [], "singleRow")[0];
             let newRaceId = maxRaceId + 1;
             for (const entry of changes.Calendar) {
                 const { TrackID, Day, WeekendType } = entry;
@@ -686,7 +686,7 @@ export function changeRaces(type) {
                 ${newRaceId} AS RaceID,
                 2025 AS SeasonID,
                 r.TrackID,
-                ${Day} AS Day,
+                ? AS Day,
                 0 AS State,                          
                 r.RainPractice,
                 r.TemperaturePractice,
@@ -697,12 +697,12 @@ export function changeRaces(type) {
                 r.RainRace,
                 r.TemperatureRace,
                 r.WeatherStateRace,
-                ${WeekendType} AS WeekendType
+                ? AS WeekendType
                 FROM Races r
                 WHERE r.SeasonID = 2024
-                AND r.TrackID = ${TrackID}
+                AND r.TrackID = ?
                 LIMIT 1
-            `);
+            `, [Day, WeekendType, TrackID], 'run');
 
                 newRaceId++;
             }
@@ -720,11 +720,11 @@ export function changeRaces(type) {
             BEGIN
             DELETE FROM Races
             WHERE RaceID = NEW.RaceID;
-            END;`);
+            END;`, [], 'run');
             update2025SeasonModTable("change-calendar", 1);
         }
         else if (type === "Direct2025") {
-            let maxRaceId = queryDB(`SELECT MAX(RaceID) FROM Races`, "singleRow")[0];
+            let maxRaceId = queryDB(`SELECT MAX(RaceID) FROM Races`, [], "singleRow")[0];
             let newRaceId = maxRaceId + 1;
             let firstNewRaceID = newRaceId;
 
@@ -753,7 +753,7 @@ export function changeRaces(type) {
                     ${newRaceId} AS RaceID,
                     2025 AS SeasonID,
                     r.TrackID,
-                    ${Day} AS Day,
+                    ? AS Day,
                     0 AS State,                          
                     r.RainPractice,
                     r.TemperaturePractice,
@@ -764,12 +764,12 @@ export function changeRaces(type) {
                     r.RainRace,
                     r.TemperatureRace,
                     r.WeatherStateRace,
-                    ${WeekendType} AS WeekendType
+                    ? AS WeekendType
                 FROM Races r
                 WHERE r.SeasonID = 2025
-                AND r.TrackID = ${TrackID}
+                AND r.TrackID = ?
                 LIMIT 1
-            `);
+            `, [Day, WeekendType, TrackID], 'run');
 
                 newRaceId++;
             }
@@ -778,8 +778,8 @@ export function changeRaces(type) {
             queryDB(`
             DELETE FROM Races 
             WHERE SeasonID = 2025 
-            AND RaceID < ${firstNewRaceID}
-        `);
+            AND RaceID < ?
+        `, [firstNewRaceID], 'run');
 
         }
     }
@@ -792,10 +792,16 @@ export function insertStaff() {
         if (changes[table] && Array.isArray(changes[table])) {
             changes[table].forEach((entry) => {
                 let columns = Object.keys(entry).join(", ");
-                let values = Object.values(entry)
-                    .map(value => value === null ? "NULL" : typeof value === "string" ? `'${value}'` : value)
-                    .join(", ");
-                queryDB(`INSERT INTO ${table} (${columns}) VALUES (${values})`);
+                let values = Object.values(entry);
+
+                // Generate placeholders for values
+                let placeholders = values.map(() => "?").join(", ");
+
+                // Filter null values for SQL
+                let sqlValues = values.map(value => value === null ? null : value);
+
+                // Table names cannot be parameterized, but values can
+                queryDB(`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`, sqlValues, 'run');
             });
         }
     });
@@ -804,17 +810,17 @@ export function insertStaff() {
 }
 
 function changeBudgets() {
-    queryDB(`UPDATE Finance_TeamBalance SET Balance = Balance + 15000000`);
+    queryDB(`UPDATE Finance_TeamBalance SET Balance = Balance + 15000000`, [], 'run');
 }
 
 
 export function removeFastestLap() {
-    queryDB(`UPDATE Regulations_Enum_Changes SET CurrentValue = 0, PreviousValue = 1 WHERE ChangeID = 9`);
+    queryDB(`UPDATE Regulations_Enum_Changes SET CurrentValue = 0, PreviousValue = 1 WHERE ChangeID = 9`, [], 'run');
     update2025SeasonModTable("change-regulations", 1);
 }
 
 function update2025SeasonModTable(edit, value) {
-    queryDB(`INSERT OR REPLACE INTO Custom_2025_SeasonMod (key, value) VALUES ('${edit}', '${value}')`);
+    queryDB(`INSERT OR REPLACE INTO Custom_2025_SeasonMod (key, value) VALUES (?, ?)`, [edit, value], 'run');
 }
 
 export function updatePerofmrnace2025() {
@@ -844,7 +850,7 @@ export function updatePerofmrnace2025() {
 
 export function fixes_mod() {
     let error = false;
-    const extraDrivers = queryDB(`SELECT value FROM Custom_2025_SeasonMod WHERE key = 'extra-drivers'`, "singleValue");
+    const extraDrivers = queryDB(`SELECT value FROM Custom_2025_SeasonMod WHERE key = 'extra-drivers'`, [], "singleValue");
     if (extraDrivers === "1") {
         if (!changes.Fixes || !Array.isArray(changes.Fixes)) {
             console.log("No fixes found");
@@ -853,9 +859,10 @@ export function fixes_mod() {
             for (const fix of changes.Fixes) {
                 const { StaffID, Table, Column, Value } = fix;
                 // console.log(`SELECT ${Column} FROM ${Table} WHERE StaffID = ${StaffID}`);
-                const value = queryDB(`SELECT ${Column} FROM ${Table} WHERE StaffID = ${StaffID}`, "singleValue");
+                // Column and Table cannot be parameterized
+                const value = queryDB(`SELECT ${Column} FROM ${Table} WHERE StaffID = ?`, [StaffID], "singleValue");
                 if (value !== undefined && value !== Value) {
-                    queryDB(`UPDATE ${Table} SET ${Column} = ${Value} WHERE StaffID = ${StaffID}`);
+                    queryDB(`UPDATE ${Table} SET ${Column} = ? WHERE StaffID = ?`, [Value, StaffID], 'run');
                     error = true;
                 }
                 

@@ -7,7 +7,7 @@ function idsToCsv(ids) {
 
 function fetchHistoryMap(tableName, ids) {
     if (!ids.length) return new Map();
-    const csv = idsToCsv(ids);
+    const placeholders = ids.map(() => '?').join(',');
     const rows = queryDB(`
     SELECT 
       StaffID,
@@ -18,9 +18,9 @@ function fetchHistoryMap(tableName, ids) {
       LastWin     AS LastWinSeason,     LastWinTrackID,
       TotalPoles, TotalPodiums, TotalWins, TotalSprintWins, TotalChampionshipWins, TotalPointsScored, TotalFastestLaps
     FROM ${tableName}
-    WHERE StaffID IN (${csv})
+    WHERE StaffID IN (${placeholders})
     AND Formula = 1
-  `, 'allRows') || [];
+  `, ids, 'allRows') || [];
 
     const map = new Map();
     for (const r of rows) {
@@ -46,7 +46,7 @@ export function fetchDriverHistoryRecords(historyTable, ids, season) {
     const map = new Map();
     if (!ids || !ids.length) return map;
 
-    const csv = idsToCsv(ids);
+    const placeholders = ids.map(() => '?').join(',');
 
     const historyRows = queryDB(`
     SELECT 
@@ -58,9 +58,9 @@ export function fetchDriverHistoryRecords(historyTable, ids, season) {
       LastWin     AS LastWinSeason,     LastWinTrackID,
       TotalPoles, TotalPodiums, TotalWins, TotalSprintWins, TotalChampionshipWins, TotalPointsScored, TotalFastestLaps
     FROM ${historyTable}
-    WHERE StaffID IN (${csv})
+    WHERE StaffID IN (${placeholders})
       AND Formula = 1
-  `, 'allRows') || [];
+  `, ids, 'allRows') || [];
 
     for (const r of historyRows) {
         map.set(r[0], {
@@ -101,9 +101,9 @@ export function fetchDriverHistoryRecords(historyTable, ids, season) {
         TotalPoles, TotalPodiums, TotalWins, TotalSprintWins,
         TotalChampionshipWins, TotalPointsScored, TotalFastestLaps, TotalStarts
       FROM Staff_Driver_RaceRecordPerSeason
-      WHERE StaffID IN (${csv})
-        AND SeasonID = ${season}
-    `, 'allRows') || [];
+      WHERE StaffID IN (${placeholders})
+        AND SeasonID = ?
+    `, [...ids, season], 'allRows') || [];
 
         for (const r of seasonRows) {
             const id = r[0];
@@ -225,7 +225,7 @@ export function getSelectedRecord(type, year) {
       LEFT JOIN Staff_GameData gam ON tab1.StaffID = gam.StaffID
       WHERE tab1.Formula = 1 AND tab1.${recordTargetColumn} IS NOT 0
       ORDER BY tab1.${recordTargetColumn} DESC
-    `, 'allRows');
+    `, [], 'allRows');
 
         const sinceGameStart = queryDB(`
       SELECT bas.FirstName, bas.LastName, tab1.StaffID, tab1.${recordTargetColumn}, COALESCE(con.TeamID, -1) AS TeamID, gam.Retired
@@ -235,7 +235,7 @@ export function getSelectedRecord(type, year) {
       LEFT JOIN Staff_GameData gam ON tab1.StaffID = gam.StaffID
       WHERE tab1.Formula = 1 AND tab1.${recordTargetColumn} IS NOT 0
       ORDER BY tab1.${recordTargetColumn} DESC
-    `, 'allRows');
+    `, [], 'allRows');
 
         const formattedBefore = beforeGameStart.map(r => ({
             name: formatNamesSimple([r[0], r[1]])[0],
@@ -294,7 +294,7 @@ export function getSelectedRecord(type, year) {
         FROM Races_Results rr
         JOIN Races r ON r.RaceID = rr.RaceID
         WHERE rr.DriverID = tab1.StaffID
-            AND r.SeasonID = ${year}
+            AND r.SeasonID = ?
         ORDER BY r.Day DESC, r.RaceID DESC
         LIMIT 1
         ), -1) AS TeamID,
@@ -304,11 +304,11 @@ export function getSelectedRecord(type, year) {
     FROM Staff_Driver_RaceRecordPerSeason tab1
     JOIN Staff_BasicData bas ON tab1.StaffID = bas.StaffID
     LEFT JOIN Staff_GameData gam ON tab1.StaffID = gam.StaffID
-    WHERE tab1.SeasonID = ${year}
+    WHERE tab1.SeasonID = ?
         AND tab1.${recordTargetColumn} IS NOT 0
         AND (tab1.TeamID <= 10 OR tab1.TeamID = 32)
     ORDER BY tab1.${recordTargetColumn} DESC
-    `, 'allRows');
+    `, [year, year], 'allRows');
 
         const formatted = (record || []).map(r => ({
             name: formatNamesSimple([r[0], r[1]])[0],
