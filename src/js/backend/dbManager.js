@@ -22,35 +22,46 @@ export function setMetaData(meta) {
 /**
  * Ejecuta una consulta SQL y devuelve el resultado según 'type'.
  * @param {string} query - La consulta a ejecutar.
- * @param {"singleValue"|"singleRow"|"allRows"} [type="allRows"] - El tipo de resultado.
+ * @param {Array} [params=[]] - Los parámetros para la consulta.
+ * @param {"singleValue"|"singleRow"|"allRows"|"run"} [type="allRows"] - El tipo de resultado.
  * @returns {any} 
  *    - 'singleValue': un único valor (o null).
  *    - 'singleRow': la primera fila (array de valores) o null.
  *    - 'allRows': array de filas (cada fila, array de valores), o [] si no hay ninguna.
+ *    - 'run': devuelve true si se ejecutó correctamente.
  */
-export function queryDB(query, type = 'allRows') {
-  const res = db.exec(query); // o tu instancia real de db
-  if (!res.length) {
-    // No hay resultsets
-    return (type === 'allRows') ? [] : null;
+export function queryDB(query, params = [], type = 'allRows') {
+  if (type === 'run' || type === 'exec') {
+    db.run(query, params);
+    return true;
   }
 
-  const rows = res[0].values; 
-  if (!rows.length) {
-    // Hay resultset pero 0 filas
-    return (type === 'allRows') ? [] : null;
+  const stmt = db.prepare(query);
+  stmt.bind(params);
+
+  let result = null;
+
+  if (type === 'singleValue') {
+    if (stmt.step()) {
+      const row = stmt.get();
+      result = row[0] ?? null;
+    } else {
+      result = null;
+    }
+  } else if (type === 'singleRow') {
+    if (stmt.step()) {
+      result = stmt.get();
+    } else {
+      result = null;
+    }
+  } else {
+    // allRows
+    result = [];
+    while (stmt.step()) {
+      result.push(stmt.get());
+    }
   }
 
-  switch (type) {
-    case 'singleValue':
-      // Devuelvo la primera columna de la primera fila
-      return rows[0][0] ?? null;
-    case 'singleRow':
-      // Devuelvo la primera fila entera (array)
-      return rows[0];
-    case 'allRows':
-    default:
-      // Devuelvo todas las filas
-      return rows;
-  }
+  stmt.free();
+  return result;
 }

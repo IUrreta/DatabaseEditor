@@ -65,77 +65,86 @@ export const minMaxTypeStaff = {
       raceBonusPos = params.raceBonusPos;
     }
     
-    const day = queryDB("SELECT Day FROM Player_State", "singleValue");
-    const year = queryDB("SELECT CurrentSeason FROM Player_State", "singleValue");
+    const day = queryDB("SELECT Day FROM Player_State", [], "singleValue");
+    const year = queryDB("SELECT CurrentSeason FROM Player_State", [], "singleValue");
     const staffType = fetchTypeStaff(driverID);
     
-    const isRetired = queryDB(`SELECT Retired FROM Staff_GameData WHERE StaffID = ${driverID}`, "singleValue");
+    const isRetired = queryDB(`SELECT Retired FROM Staff_GameData WHERE StaffID = ?`, [driverID], "singleValue");
     if (isRetired === 1) {
-      queryDB(`UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = ${driverID}`);
+      queryDB(`UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = ?`, [driverID], 'run');
     }
     
     if (yearIteration === "23") {
       queryDB(
-        `INSERT INTO Staff_Contracts VALUES (${driverID}, 0, 1, ${day}, 1, ${teamID}, ${position}, 1, '[OPINION_STRING_NEUTRAL]', ${day}, ${yearEnd}, 1, '[OPINION_STRING_NEUTRAL]', ${salary}, 1, '[OPINION_STRING_NEUTRAL]', ${startingBonus}, 1, '[OPINION_STRING_NEUTRAL]', ${raceBonus}, 1, '[OPINION_STRING_NEUTRAL]', ${raceBonusPos}, 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')`
+        `INSERT INTO Staff_Contracts VALUES (?, 0, 1, ?, 1, ?, ?, 1, '[OPINION_STRING_NEUTRAL]', ?, ?, 1, '[OPINION_STRING_NEUTRAL]', ?, 1, '[OPINION_STRING_NEUTRAL]', ?, 1, '[OPINION_STRING_NEUTRAL]', ?, 1, '[OPINION_STRING_NEUTRAL]', ?, 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')`,
+        [driverID, day, teamID, position, day, yearEnd, salary, startingBonus, raceBonus, raceBonusPos], 'run'
       );
     } else if (yearIteration === "24") {
       queryDB(
-        `INSERT INTO Staff_Contracts VALUES (${driverID}, 0, ${teamID}, ${position}, ${day}, ${yearEnd}, ${salary}, ${startingBonus}, ${raceBonus}, ${raceBonusPos}, 0.5, 0)`
+        `INSERT INTO Staff_Contracts VALUES (?, 0, ?, ?, ?, ?, ?, ?, ?, ?, 0.5, 0)`,
+        [driverID, teamID, position, day, yearEnd, salary, startingBonus, raceBonus, raceBonusPos], 'run'
       );
     }
     
     if (parseInt(position) < 3 && staffType === 0) {
-      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = ${position} WHERE StaffID = ${driverID}`);
+      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = ? WHERE StaffID = ?`, [position, driverID], 'run');
       const isDrivingInF2F3 = queryDB(
-        `SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 0 AND (TeamID > 10 AND TeamID < 32)`,
+        `SELECT TeamID FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0 AND (TeamID > 10 AND TeamID < 32)`,
+        [driverID],
         "singleValue"
       );
       if (isDrivingInF2F3 !== null && isDrivingInF2F3 !== undefined) {
-        queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 0 AND TeamID = ${isDrivingInF2F3}`);
-        queryDB(`UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = NULL WHERE StaffID = ${driverID}`);
+        queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0 AND TeamID = ?`, [driverID, isDrivingInF2F3], 'run');
+        queryDB(`UPDATE Staff_DriverData SET FeederSeriesAssignedCarNumber = NULL WHERE StaffID = ?`, [driverID], 'run');
       }
       
       let positionInStandings = queryDB(
-        `SELECT MAX(Position) FROM Races_DriverStandings WHERE SeasonID = ${year} AND RaceFormula = 1`,
+        `SELECT MAX(Position) FROM Races_DriverStandings WHERE SeasonID = ? AND RaceFormula = 1`,
+        [year],
         "singleValue"
       );
       let pointsDriverInStandings = queryDB(
-        `SELECT Points FROM Races_DriverStandings WHERE DriverID = ${driverID} AND SeasonID = ${year} AND RaceFormula = 1`,
+        `SELECT Points FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 1`,
+        [driverID, year],
         "singleValue"
       );
       if (pointsDriverInStandings === null || pointsDriverInStandings === undefined) {
         pointsDriverInStandings = 0;
         queryDB(
-          `INSERT INTO Races_DriverStandings VALUES (${year}, ${driverID}, ${pointsDriverInStandings}, ${positionInStandings + 1}, 0, 0, 1)`
+          `INSERT INTO Races_DriverStandings VALUES (?, ?, ?, ?, 0, 0, 1)`,
+          [year, driverID, pointsDriverInStandings, positionInStandings + 1], 'run'
         );
       }
       
       const wasInF2 = queryDB(
-        `SELECT Points FROM Races_DriverStandings WHERE DriverID = ${driverID} AND SeasonID = ${year} AND RaceFormula = 2`,
+        `SELECT Points FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 2`,
+        [driverID, year],
         "singleValue"
       );
       const wasInF3 = queryDB(
-        `SELECT Points FROM Races_DriverStandings WHERE DriverID = ${driverID} AND SeasonID = ${year} AND RaceFormula = 3`,
+        `SELECT Points FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 3`,
+        [driverID, year],
         "singleValue"
       );
       if (wasInF2 !== null && wasInF2 !== undefined) {
-        queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ${driverID} AND SeasonID = ${year} AND RaceFormula = 2`);
+        queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 2`, [driverID, year], 'run');
       }
       if (wasInF3 !== null && wasInF3 !== undefined) {
-        queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ${driverID} AND SeasonID = ${year} AND RaceFormula = 3`);
+        queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 3`, [driverID, year], 'run');
       }
       
       const driverHasNumber = queryDB(
-        `SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = ${driverID}`,
+        `SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder = ?`,
+        [driverID],
         "singleValue"
       );
       if (!driverHasNumber) {
         freeNumbersNotF1();
-        const freeNumbers = queryDB("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL AND Number != 0", "allRows");
+        const freeNumbers = queryDB("SELECT Number FROM Staff_DriverNumbers WHERE CurrentHolder IS NULL AND Number != 0", [], "allRows");
         if (freeNumbers && freeNumbers.length > 0) {
           const randIndex = Math.floor(Math.random() * freeNumbers.length);
           const newNum = freeNumbers[randIndex][0];
-          queryDB(`UPDATE Staff_DriverNumbers SET CurrentHolder = ${driverID} WHERE Number = ${newNum}`);
+          queryDB(`UPDATE Staff_DriverNumbers SET CurrentHolder = ? WHERE Number = ?`, [driverID, newNum], 'run');
         }
       }
     }
@@ -145,29 +154,30 @@ export const minMaxTypeStaff = {
   }
   
   export function freeNumbersNotF1() {
-    const numbers = queryDB("SELECT CurrentHolder, Number FROM Staff_DriverNumbers WHERE Number != 0 AND CurrentHolder IS NOT NULL", "allRows");
+    const numbers = queryDB("SELECT CurrentHolder, Number FROM Staff_DriverNumbers WHERE Number != 0 AND CurrentHolder IS NOT NULL", [], "allRows");
     if (numbers) {
       numbers.forEach(row => {
         const driver = row[0];
         const number = row[1];
         const teamId = queryDB(
-          `SELECT MIN(TeamID) FROM Staff_Contracts WHERE StaffID = ${driver} AND ContractType = 0`,
+          `SELECT MIN(TeamID) FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0`,
+          [driver],
           "singleValue"
         );
         if (teamId !== null && teamId > 10 && teamId < 32) {
-          queryDB(`UPDATE Staff_DriverNumbers SET CurrentHolder = NULL WHERE Number = ${number}`);
+          queryDB(`UPDATE Staff_DriverNumbers SET CurrentHolder = NULL WHERE Number = ?`, [number], 'run');
         }
       });
     }
   }
   
   export function fetchTypeStaff(driverID) {
-    return queryDB(`SELECT StaffType FROM Staff_GameData WHERE StaffID = ${driverID}`, "singleValue");
+    return queryDB(`SELECT StaffType FROM Staff_GameData WHERE StaffID = ?`, [driverID], "singleValue");
   }
   
   export function getParamsAutoContract(driverID, teamID, position, yearIteration = "24") {
-    const day = queryDB("SELECT Day FROM Player_State", "singleValue");
-    const year = queryDB("SELECT CurrentSeason FROM Player_State", "singleValue");
+    const day = queryDB("SELECT Day FROM Player_State", [], "singleValue");
+    const year = queryDB("SELECT CurrentSeason FROM Player_State", [], "singleValue");
     const [tier, type, rating] = getTier(driverID);
 
     // Calcular salary
@@ -219,7 +229,7 @@ export const minMaxTypeStaff = {
       hasBonus = false;
     }
     
-    const driverBirthDate = queryDB(`SELECT DOB_ISO FROM Staff_BasicData WHERE StaffID = ${driverID}`, "singleValue");
+    const driverBirthDate = queryDB(`SELECT DOB_ISO FROM Staff_BasicData WHERE StaffID = ?`, [driverID], "singleValue");
     if (driverBirthDate) {
       const yob = parseInt(driverBirthDate.split("-")[0]);
       if ((parseInt(year) - yob > 34) && type === "driver") {
@@ -234,7 +244,8 @@ export const minMaxTypeStaff = {
         prestigeTableName = "Board_TeamRating";
       }
       const prestigeValues = queryDB(
-        `SELECT PtsFromConstructorResults, PtsFromDriverResults, PtsFromSeasonsEntered, PtsFromChampionshipsWon FROM ${prestigeTableName} WHERE SeasonID = ${year} AND TeamID = ${teamID}`,
+        `SELECT PtsFromConstructorResults, PtsFromDriverResults, PtsFromSeasonsEntered, PtsFromChampionshipsWon FROM ${prestigeTableName} WHERE SeasonID = ? AND TeamID = ?`,
+        [year, teamID],
         "allRows"
       );
       let prestige = 0;
@@ -261,179 +272,200 @@ export const minMaxTypeStaff = {
   }
   
   export function fireDriver(driverID, teamID) {
-    const position = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = ${driverID}`, "singleValue");
-    queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 0 AND TeamID = ${teamID}`);
+    const position = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = ?`, [driverID], "singleValue");
+    queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0 AND TeamID = ?`, [driverID, teamID], 'run');
     if (position < 3) {
-      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = ${driverID}`);
+      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = ?`, [driverID], 'run');
     }
     const engineerID = queryDB(
-      `SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = ${driverID}`,
+      `SELECT RaceEngineerID FROM Staff_RaceEngineerDriverAssignments WHERE IsCurrentAssignment = 1 AND DriverID = ?`,
+      [driverID],
       "singleValue"
     );
     if (engineerID) {
-      queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${engineerID} AND DriverID = ${driverID}`);
+      queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ? AND DriverID = ?`, [engineerID, driverID], 'run');
     }
   }
 
   export function removeFutureContract(driverID){
-    queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 3`);
+    queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 3`, [driverID], 'run');
   }
   
   export function rearrangeDriverEngineerPairings(teamID) {
     const engineers = queryDB(
-      `SELECT gam.StaffID FROM Staff_GameData gam JOIN Staff_Contracts con ON gam.StaffID = con.StaffID WHERE con.TeamID = ${teamID} AND con.ContractType = 0 AND gam.StaffType = 2`,
+      `SELECT gam.StaffID FROM Staff_GameData gam JOIN Staff_Contracts con ON gam.StaffID = con.StaffID WHERE con.TeamID = ? AND con.ContractType = 0 AND gam.StaffType = 2`,
+      [teamID],
       "allRows"
     );
     const drivers = queryDB(
-      `SELECT gam.StaffID FROM Staff_GameData gam JOIN Staff_Contracts con ON gam.StaffID = con.StaffID WHERE con.TeamID = ${teamID} AND con.ContractType = 0 AND gam.StaffType = 0 AND PosInTeam <= 2`,
+      `SELECT gam.StaffID FROM Staff_GameData gam JOIN Staff_Contracts con ON gam.StaffID = con.StaffID WHERE con.TeamID = ? AND con.ContractType = 0 AND gam.StaffType = 0 AND PosInTeam <= 2`,
+      [teamID],
       "allRows"
     );
     if (drivers && drivers.length === 2 && engineers && engineers.length === 2) {
       drivers.forEach(driverRow => {
         const driverID = driverRow[0];
-        queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE DriverID = ${driverID}`);
+        queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE DriverID = ?`, [driverID], 'run');
       });
       engineers.forEach(engineerRow => {
         const engineerID = engineerRow[0];
-        queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ${engineerID}`);
+        queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 0 WHERE RaceEngineerID = ?`, [engineerID], 'run');
       });
       const pair1Exists = queryDB(
-        `SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ${drivers[0][0]} AND RaceEngineerID = ${engineers[0][0]}`,
+        `SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ? AND RaceEngineerID = ?`,
+        [drivers[0][0], engineers[0][0]],
         "singleValue"
       );
       if (pair1Exists !== null && pair1Exists !== undefined) {
-        queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ${drivers[0][0]} AND RaceEngineerID = ${engineers[0][0]}`);
+        queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ? AND RaceEngineerID = ?`, [drivers[0][0], engineers[0][0]], 'run');
       } else {
-        queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments VALUES (${engineers[0][0]}, ${drivers[0][0]}, 0, 0, 1)`);
+        queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments VALUES (?, ?, 0, 0, 1)`, [engineers[0][0], drivers[0][0]], 'run');
       }
       const pair2Exists = queryDB(
-        `SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ${drivers[1][0]} AND RaceEngineerID = ${engineers[1][0]}`,
+        `SELECT DaysTogether FROM Staff_RaceEngineerDriverAssignments WHERE DriverID = ? AND RaceEngineerID = ?`,
+        [drivers[1][0], engineers[1][0]],
         "singleValue"
       );
       if (pair2Exists !== null && pair2Exists !== undefined) {
-        queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ${drivers[1][0]} AND RaceEngineerID = ${engineers[1][0]}`);
+        queryDB(`UPDATE Staff_RaceEngineerDriverAssignments SET IsCurrentAssignment = 1 WHERE DriverID = ? AND RaceEngineerID = ?`, [drivers[1][0], engineers[1][0]], 'run');
       } else {
-        queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments VALUES (${engineers[1][0]}, ${drivers[1][0]}, 0, 0, 1)`);
+        queryDB(`INSERT INTO Staff_RaceEngineerDriverAssignments VALUES (?, ?, 0, 0, 1)`, [engineers[1][0], drivers[1][0]], 'run');
       }
     }
   }
   
   export function swapDrivers(driver1ID, driver2ID) {
-    const position1 = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = ${driver1ID}`, "singleValue");
-    const position2 = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = ${driver2ID}`, "singleValue");
-    const team1ID = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driver1ID}`, "singleValue");
-    const team2ID = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driver2ID}`, "singleValue");
-    const year = queryDB("SELECT CurrentSeason FROM Player_State", "singleValue");
+    const position1 = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = ?`, [driver1ID], "singleValue");
+    const position2 = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = ?`, [driver2ID], "singleValue");
+    const team1ID = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ?`, [driver1ID], "singleValue");
+    const team2ID = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ?`, [driver2ID], "singleValue");
+    const year = queryDB("SELECT CurrentSeason FROM Player_State", [], "singleValue");
     const type1 = fetchTypeStaff(driver1ID);
     const type2 = fetchTypeStaff(driver2ID);
     const isStaff = (type1 === 1 || type2 === 1);
     
     if (position1 < 3 && position2 < 3 && !isStaff) {
-      queryDB(`UPDATE Staff_Contracts SET TeamID = ${team2ID}, PosInTeam = ${position2} WHERE ContractType = 0 AND StaffID = ${driver1ID}`);
-      queryDB(`UPDATE Staff_Contracts SET TeamID = ${team1ID}, PosInTeam = ${position1} WHERE ContractType = 0 AND StaffID = ${driver2ID}`);
-      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = ${position2} WHERE StaffID = ${driver1ID}`);
-      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = ${position1} WHERE StaffID = ${driver2ID}`);
+      queryDB(`UPDATE Staff_Contracts SET TeamID = ?, PosInTeam = ? WHERE ContractType = 0 AND StaffID = ?`, [team2ID, position2, driver1ID], 'run');
+      queryDB(`UPDATE Staff_Contracts SET TeamID = ?, PosInTeam = ? WHERE ContractType = 0 AND StaffID = ?`, [team1ID, position1, driver2ID], 'run');
+      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = ? WHERE StaffID = ?`, [position2, driver1ID], 'run');
+      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = ? WHERE StaffID = ?`, [position1, driver2ID], 'run');
       rearrangeDriverEngineerPairings(team1ID);
       rearrangeDriverEngineerPairings(team2ID);
     } else if ((position1 >= 3 && position2 >= 3) || isStaff) {
-      queryDB(`UPDATE Staff_Contracts SET TeamID = ${team2ID} WHERE ContractType = 0 AND StaffID = ${driver1ID}`);
-      queryDB(`UPDATE Staff_Contracts SET TeamID = ${team1ID} WHERE ContractType = 0 AND StaffID = ${driver2ID}`);
+      queryDB(`UPDATE Staff_Contracts SET TeamID = ? WHERE ContractType = 0 AND StaffID = ?`, [team2ID, driver1ID], 'run');
+      queryDB(`UPDATE Staff_Contracts SET TeamID = ? WHERE ContractType = 0 AND StaffID = ?`, [team1ID, driver2ID], 'run');
     } else if (position1 >= 3) {
       const isDrivingInF2 = queryDB(
-        `SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driver1ID} AND ContractType = 0 AND (TeamID > 10 AND TeamID < 32)`,
+        `SELECT TeamID FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0 AND (TeamID > 10 AND TeamID < 32)`,
+        [driver1ID],
         "singleValue"
       );
       if (isDrivingInF2) {
-        queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driver1ID} AND ContractType = 0 AND TeamID = ${isDrivingInF2}`);
+        queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0 AND TeamID = ?`, [driver1ID, isDrivingInF2], 'run');
       }
       const type = fetchTypeStaff(driver1ID);
       if (parseInt(type) === 0) {
         const wasInF2 = queryDB(
-          `SELECT Points FROM Races_DriverStandings WHERE DriverID = ${driver1ID} AND SeasonID = ${year} AND RaceFormula = 2`,
+          `SELECT Points FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 2`,
+          [driver1ID, year],
           "singleValue"
         );
         const wasInF3 = queryDB(
-          `SELECT Points FROM Races_DriverStandings WHERE DriverID = ${driver1ID} AND SeasonID = ${year} AND RaceFormula = 3`,
+          `SELECT Points FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 3`,
+          [driver1ID, year],
           "singleValue"
         );
         if (wasInF2) {
-          queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ${driver1ID} AND SeasonID = ${year} AND RaceFormula = 2`);
+          queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 2`, [driver1ID, year], 'run');
         }
         if (wasInF3) {
-          queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ${driver1ID} AND SeasonID = ${year} AND RaceFormula = 3`);
+          queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 3`, [driver1ID, year], 'run');
         }
         const position1InStandings = queryDB(
-          `SELECT MAX(Position) FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = ${year}`,
+          `SELECT MAX(Position) FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = ?`,
+          [year],
           "singleValue"
         );
         let pointsDriver1InStandings = queryDB(
-          `SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND DriverID = ${driver1ID} AND SeasonID = ${year}`,
+          `SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND DriverID = ? AND SeasonID = ?`,
+          [driver1ID, year],
           "singleValue"
         );
         if (pointsDriver1InStandings === null || pointsDriver1InStandings === undefined) {
           pointsDriver1InStandings = 0;
           queryDB(
-            `INSERT INTO Races_DriverStandings VALUES (${year}, ${driver1ID}, ${pointsDriver1InStandings}, ${position1InStandings + 1}, 0, 0, 1)`
+            `INSERT INTO Races_DriverStandings VALUES (?, ?, ?, ?, 0, 0, 1)`,
+            [year, driver1ID, pointsDriver1InStandings, position1InStandings + 1], 'run'
           );
         }
       }
       queryDB(
-        `UPDATE Staff_Contracts SET TeamID = ${team1ID}, PosInTeam = ${position1} WHERE ContractType = 0 AND StaffID = ${driver2ID} AND TeamID = ${team2ID}`
+        `UPDATE Staff_Contracts SET TeamID = ?, PosInTeam = ? WHERE ContractType = 0 AND StaffID = ? AND TeamID = ?`,
+        [team1ID, position1, driver2ID, team2ID], 'run'
       );
-      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = ${driver2ID}`);
+      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = ?`, [driver2ID], 'run');
       queryDB(
-        `UPDATE Staff_Contracts SET TeamID = ${team2ID}, PosInTeam = ${position2} WHERE ContractType = 0 AND StaffID = ${driver1ID} AND TeamID = ${team1ID}`
+        `UPDATE Staff_Contracts SET TeamID = ?, PosInTeam = ? WHERE ContractType = 0 AND StaffID = ? AND TeamID = ?`,
+        [team2ID, position2, driver1ID, team1ID], 'run'
       );
-      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = ${position2} WHERE StaffID = ${driver1ID}`);
+      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = ? WHERE StaffID = ?`, [position2, driver1ID], 'run');
       rearrangeDriverEngineerPairings(team1ID);
       rearrangeDriverEngineerPairings(team2ID);
     } else if (position2 >= 3) {
       const isDrivingInF2 = queryDB(
-        `SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driver2ID} AND ContractType = 0 AND (TeamID > 10 AND TeamID < 32)`,
+        `SELECT TeamID FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0 AND (TeamID > 10 AND TeamID < 32)`,
+        [driver2ID],
         "singleValue"
       );
       if (isDrivingInF2) {
-        queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driver2ID} AND ContractType = 0 AND TeamID = ${isDrivingInF2}`);
+        queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0 AND TeamID = ?`, [driver2ID, isDrivingInF2], 'run');
       }
       const type = fetchTypeStaff(driver1ID);
       if (parseInt(type) === 0) {
         const wasInF2 = queryDB(
-          `SELECT Points FROM Races_DriverStandings WHERE DriverID = ${driver2ID} AND SeasonID = ${year} AND RaceFormula = 2`,
+          `SELECT Points FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 2`,
+          [driver2ID, year],
           "singleValue"
         );
         const wasInF3 = queryDB(
-          `SELECT Points FROM Races_DriverStandings WHERE DriverID = ${driver2ID} AND SeasonID = ${year} AND RaceFormula = 3`,
+          `SELECT Points FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 3`,
+          [driver2ID, year],
           "singleValue"
         );
         if (wasInF2) {
-          queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ${driver2ID} AND SeasonID = ${year} AND RaceFormula = 2`);
+          queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 2`, [driver2ID, year], 'run');
         }
         if (wasInF3) {
-          queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ${driver2ID} AND SeasonID = ${year} AND RaceFormula = 3`);
+          queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 3`, [driver2ID, year], 'run');
         }
         const position2InStandings = queryDB(
-          `SELECT MAX(Position) FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = ${year}`,
+          `SELECT MAX(Position) FROM Races_DriverStandings WHERE RaceFormula = 1 AND SeasonID = ?`,
+          [year],
           "singleValue"
         );
         let pointsDriver2InStandings = queryDB(
-          `SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND DriverID = ${driver2ID} AND SeasonID = ${year}`,
+          `SELECT Points FROM Races_DriverStandings WHERE RaceFormula = 1 AND DriverID = ? AND SeasonID = ?`,
+          [driver2ID, year],
           "singleValue"
         );
         if (pointsDriver2InStandings === null || pointsDriver2InStandings === undefined) {
           pointsDriver2InStandings = 0;
           queryDB(
-            `INSERT INTO Races_DriverStandings VALUES (${year}, ${driver2ID}, ${pointsDriver2InStandings}, ${position2InStandings + 1}, 0, 0, 1)`
+            `INSERT INTO Races_DriverStandings VALUES (?, ?, ?, ?, 0, 0, 1)`,
+            [year, driver2ID, pointsDriver2InStandings, position2InStandings + 1], 'run'
           );
         }
       }
       queryDB(
-        `UPDATE Staff_Contracts SET TeamID = ${team2ID}, PosInTeam = ${position2} WHERE ContractType = 0 AND StaffID = ${driver1ID} AND TeamID = ${team1ID}`
+        `UPDATE Staff_Contracts SET TeamID = ?, PosInTeam = ? WHERE ContractType = 0 AND StaffID = ? AND TeamID = ?`,
+        [team2ID, position2, driver1ID, team1ID], 'run'
       );
-      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = ${driver1ID}`);
+      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE StaffID = ?`, [driver1ID], 'run');
       queryDB(
-        `UPDATE Staff_Contracts SET TeamID = ${team1ID}, PosInTeam = ${position1} WHERE ContractType = 0 AND StaffID = ${driver2ID} AND TeamID = ${team2ID}`
+        `UPDATE Staff_Contracts SET TeamID = ?, PosInTeam = ? WHERE ContractType = 0 AND StaffID = ? AND TeamID = ?`,
+        [team1ID, position1, driver2ID, team2ID], 'run'
       );
-      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = ${position1} WHERE StaffID = ${driver2ID}`);
+      queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = ? WHERE StaffID = ?`, [position1, driver2ID], 'run');
       rearrangeDriverEngineerPairings(team1ID);
       rearrangeDriverEngineerPairings(team2ID);
     }
@@ -442,43 +474,49 @@ export const minMaxTypeStaff = {
   
   export function editContract(driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos) {
     const hasContract = queryDB(
-      `SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 0`,
+      `SELECT TeamID FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0`,
+      [driverID],
       "singleValue"
     );
     if (hasContract !== null && hasContract !== undefined) {
       queryDB(
-        `UPDATE Staff_Contracts SET Salary = ${salary}, EndSeason = ${endSeason}, StartingBonus = ${startingBonus}, RaceBonus = ${raceBonus}, RaceBonusTargetPos = ${raceBonusTargetPos} WHERE ContractType = 0 AND StaffID = ${driverID}`
+        `UPDATE Staff_Contracts SET Salary = ?, EndSeason = ?, StartingBonus = ?, RaceBonus = ?, RaceBonusTargetPos = ? WHERE ContractType = 0 AND StaffID = ?`,
+        [salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos, driverID], 'run'
       );
     }
   }
   
   export function futureContract(teamID, driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos, position, yearIteration = "24") {
     if (teamID === "-1") {
-      queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 3`);
+      queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 3`, [driverID], 'run');
     } else {
       let alreadyHasFutureContract = queryDB(
-        `SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 3`,
+        `SELECT TeamID FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 3`,
+        [driverID],
         "singleValue"
       );
       if (alreadyHasFutureContract === null || alreadyHasFutureContract === undefined) {
         alreadyHasFutureContract = -1;
       }
       if (parseInt(alreadyHasFutureContract) !== parseInt(teamID)) {
-        const season = queryDB("SELECT CurrentSeason FROM Player_State", "singleValue");
+        const season = queryDB("SELECT CurrentSeason FROM Player_State", [], "singleValue");
         const day = getExcelDate(parseInt(season) + 1);
-        queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 3`);
+        queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 3`, [driverID], 'run');
         if (yearIteration === "24") {
           queryDB(
-            `INSERT INTO Staff_Contracts VALUES (${driverID}, 3, ${teamID}, ${position}, ${day}, ${endSeason}, ${salary}, ${startingBonus}, ${raceBonus}, ${raceBonusTargetPos}, 0.5, 0)`
+            `INSERT INTO Staff_Contracts VALUES (?, 3, ?, ?, ?, ?, ?, ?, ?, ?, 0.5, 0)`,
+            [driverID, teamID, position, day, endSeason, salary, startingBonus, raceBonus, raceBonusTargetPos], 'run'
           );
         } else if (yearIteration === "23") {
           queryDB(
-            `INSERT INTO Staff_Contracts VALUES (${driverID}, 3, 1, ${day}, 1, ${teamID}, ${position}, 1, '[OPINION_STRING_NEUTRAL]', ${day}, ${endSeason}, 1, '[OPINION_STRING_NEUTRAL]', ${salary}, 1, '[OPINION_STRING_NEUTRAL]', ${startingBonus}, 1, '[OPINION_STRING_NEUTRAL]', ${raceBonus}, 1, '[OPINION_STRING_NEUTRAL]', ${raceBonusTargetPos}, 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')`
+            `INSERT INTO Staff_Contracts VALUES (?, 3, 1, ?, 1, ?, ?, 1, '[OPINION_STRING_NEUTRAL]', ?, ?, 1, '[OPINION_STRING_NEUTRAL]', ?, 1, '[OPINION_STRING_NEUTRAL]', ?, 1, '[OPINION_STRING_NEUTRAL]', ?, 1, '[OPINION_STRING_NEUTRAL]', ?, 1, '[OPINION_STRING_NEUTRAL]', 0, 1, '[OPINION_STRING_NEUTRAL]')`,
+            [driverID, day, teamID, position, day, endSeason, salary, startingBonus, raceBonus, raceBonusTargetPos], 'run'
           );
         }
       } else {
         queryDB(
-          `UPDATE Staff_Contracts SET PosInTeam = ${position}, Salary = ${salary}, EndSeason = ${endSeason}, StartingBonus = ${startingBonus}, RaceBonus = ${raceBonus}, RaceBonusTargetPos = ${raceBonusTargetPos} WHERE StaffID = ${driverID} AND TeamID = ${alreadyHasFutureContract} AND ContractType = 3`
+          `UPDATE Staff_Contracts SET PosInTeam = ?, Salary = ?, EndSeason = ?, StartingBonus = ?, RaceBonus = ?, RaceBonusTargetPos = ? WHERE StaffID = ? AND TeamID = ? AND ContractType = 3`,
+          [position, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos, driverID, alreadyHasFutureContract], 'run'
         );
       }
     }
@@ -492,12 +530,12 @@ export const minMaxTypeStaff = {
   }
   
   export function unretire(driverID) {
-    queryDB(`UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = ${driverID}`);
-    queryDB(`UPDATE Staff_DriverData SET HasSuperLicense = 1 WHERE StaffID = ${driverID}`);
+    queryDB(`UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = ?`, [driverID], 'run');
+    queryDB(`UPDATE Staff_DriverData SET HasSuperLicense = 1 WHERE StaffID = ?`, [driverID], 'run');
   }
   
   export function getTier(driverID) {
-    const driverStats = queryDB(`SELECT Val FROM Staff_PerformanceStats WHERE StaffID = ${driverID}`, "allRows");
+    const driverStats = queryDB(`SELECT Val FROM Staff_PerformanceStats WHERE StaffID = ?`, [driverID], "allRows");
     let type = "driver";
     let rating = 0;
     if (driverStats && driverStats.length === 9) {
@@ -535,7 +573,7 @@ export const minMaxTypeStaff = {
   }
 
   export function getDriverOverall(driverID) {
-    const driverStats = queryDB(`SELECT Val FROM Staff_PerformanceStats WHERE StaffID = ${driverID}`, "allRows");
+    const driverStats = queryDB(`SELECT Val FROM Staff_PerformanceStats WHERE StaffID = ?`, [driverID], "allRows");
     let rating = 0;
     if (driverStats && driverStats.length === 9) {
       const cornering = parseFloat(driverStats[0][0]);
@@ -573,22 +611,21 @@ export const minMaxTypeStaff = {
     } else if (driver === "Dschumacher") {
       driverId = 270;
     } else {
-      driverId = queryDB(`SELECT StaffID FROM Staff_BasicData WHERE LastName = '[StaffName_Surname_${driver}]'`, "singleValue");
+      driverId = queryDB(`SELECT StaffID FROM Staff_BasicData WHERE LastName = '[StaffName_Surname_${driver}]'`, [], "singleValue");
     }
     return driverId;
   }
   
   export function fixDriverStandings() {
-    const year = queryDB("SELECT CurrentSeason FROM Player_State", "singleValue");
-    const driversInStandings = queryDB(`SELECT DriverID FROM Races_DriverStandings WHERE SeasonID = ${year} AND RaceFormula = 1`, "allRows");
+    const year = queryDB("SELECT CurrentSeason FROM Player_State", [], "singleValue");
+    const driversInStandings = queryDB(`SELECT DriverID FROM Races_DriverStandings WHERE SeasonID = ? AND RaceFormula = 1`, [year], "allRows");
     if (driversInStandings) {
       driversInStandings.forEach(driverRow => {
         const driverID = driverRow[0];
-        const isDriver = queryDB(`SELECT StaffType FROM Staff_GameData WHERE StaffID = ${driverID}`, "singleValue");
+        const isDriver = queryDB(`SELECT StaffType FROM Staff_GameData WHERE StaffID = ?`, [driverID], "singleValue");
         if (isDriver !== 0) {
-          queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ${driverID} AND SeasonID = ${year} AND RaceFormula = 1`);
+          queryDB(`DELETE FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 1`, [driverID, year], 'run');
         }
       });
     }
   }
-  
