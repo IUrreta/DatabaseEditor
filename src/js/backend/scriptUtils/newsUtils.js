@@ -4489,6 +4489,8 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
 
     // Por si re-generas, dejamos el nombre libre
     // Note: SQL doesn't support parameterized trigger names in DROP/CREATE statements
+    // validSeasonId, validInjuredId, and validEndDay are validated as integers above (lines 4482-4488)
+    // and cannot be parameterized in CREATE TRIGGER syntax, so they are safely interpolated
     queryDB(`DROP TRIGGER IF EXISTS "${trigName}"`, [], 'run');
 
     // Trigger con igualdad estricta en el día objetivo
