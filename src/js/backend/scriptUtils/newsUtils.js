@@ -237,7 +237,7 @@ function applyRaceSubstitution(turningPointData) {
     const raceId = turningPointData.raceId;
     const newTrackId = turningPointData.newRaceTrackId;
     const newDay = turningPointData.newRaceDay;
-    queryDB(`UPDATE Races SET TrackID = ${newTrackId}, Day = ${newDay} WHERE RaceID = ${raceId}`);
+    queryDB(`UPDATE Races SET TrackID = ?, Day = ? WHERE RaceID = ?`, [newTrackId, newDay, raceId], 'run');
 }
 
 function applyInvestmentEffect(turningPointData) {
@@ -250,7 +250,7 @@ function applyInvestmentEffect(turningPointData) {
         //buildingID is a number that first has the actual id and the last number represents its level
         if (level4Buildings.includes(buildingId)) {
             //put it to at least level4, if its already at 4, improve to 5
-            const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ${teamId} AND BuildingType = ${buildingId}`, 'singleValue');
+            const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ? AND BuildingType = ?`, [teamId, buildingId], 'singleValue');
             let newLevel = 4;
             if (current) {
                 //get last digit
@@ -259,16 +259,16 @@ function applyInvestmentEffect(turningPointData) {
                     newLevel = 5;
                 }
                 const newBuildingId = parseInt(current.toString().slice(0, -1) + newLevel.toString());
-                queryDB(`UPDATE Buildings_HQ SET BuildingID = ${newBuildingId}, DegradationValue = 1 WHERE BuildingType = ${buildingId} AND TeamID = ${teamId}`);
+                queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newBuildingId, buildingId, teamId], 'run');
             }
 
         }
         else {//improve by 1 level
-            const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ${teamId} AND BuildingType = ${buildingId}`, 'singleValue');
+            const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ? AND BuildingType = ?`, [teamId, buildingId], 'singleValue');
             if (current) {
                 // Upgrade the building by 1 level (parse to int first) and refurbish
                 const newLevel = parseInt(current) + 1;
-                queryDB(`UPDATE Buildings_HQ SET BuildingID = ${newLevel}, DegradationValue = 1 WHERE BuildingType = ${buildingId} AND TeamID = ${teamId}`);
+                queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newLevel, buildingId, teamId], 'run');
             }
 
         }
@@ -277,7 +277,7 @@ function applyInvestmentEffect(turningPointData) {
 
     //multiply investment amount by 1 million
     const moneyToAdd = investmentAmount * 1000000;
-    queryDB(`UPDATE Finance_TeamBalance SET Balance = Balance + ${moneyToAdd} WHERE TeamID = ${teamId}`);
+    queryDB(`UPDATE Finance_TeamBalance SET Balance = Balance + ? WHERE TeamID = ?`, [moneyToAdd, teamId], 'run');
 }
 
 function executeMidSeasonTransfer(turningPointData) {
@@ -290,11 +290,11 @@ function executeMidSeasonTransfer(turningPointData) {
         fireDriver(driver_in.id, driver_in.teamId);
 
         // Hire them in their new teams
-        const existingDrivers = queryDB(`SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID WHERE con.TeamID = ${driver_out.teamId} AND con.ContractType = 0 AND con.PosInTeam <= 2`, 'allRows').map(r => r[0]);
+        const existingDrivers = queryDB(`SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID WHERE con.TeamID = ? AND con.ContractType = 0 AND con.PosInTeam <= 2`, [driver_out.teamId], 'allRows').map(r => r[0]);
         const posInTeamForDriverIn = existingDrivers.includes(1) ? 2 : 1;
         hireDriver("auto", driver_in.id, driver_out.teamId, posInTeamForDriverIn);
 
-        const existingDriversSubTeam = queryDB(`SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID WHERE con.TeamID = ${driver_in.teamId} AND con.ContractType = 0 AND con.PosInTeam <= 2`, 'allRows').map(r => r[0]);
+        const existingDriversSubTeam = queryDB(`SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID WHERE con.TeamID = ? AND con.ContractType = 0 AND con.PosInTeam <= 2`, [driver_in.teamId], 'allRows').map(r => r[0]);
         const posInTeamForDriverOut = existingDriversSubTeam.includes(1) ? 2 : 1;
         hireDriver("auto", driver_out.id, driver_in.teamId, posInTeamForDriverOut);
         return;
@@ -313,13 +313,13 @@ function executeMidSeasonTransfer(turningPointData) {
 
     // 2. Hire drivers into their new teams
     // Hire driver_in to the main team (teamId)
-    const existingDrivers = queryDB(`SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID WHERE con.TeamID = ${teamId} AND con.ContractType = 0 AND con.PosInTeam <= 2`, 'allRows').map(r => r[0]);
+    const existingDrivers = queryDB(`SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID WHERE con.TeamID = ? AND con.ContractType = 0 AND con.PosInTeam <= 2`, [teamId], 'allRows').map(r => r[0]);
     const posInTeamForDriverIn = existingDrivers.includes(1) ? 2 : 1;
     hireDriver("auto", driver_in.id, teamId, posInTeamForDriverIn);
 
     // Hire driver_substitute to driver_in's original team (if applicable)
     if (driver_substitute && driver_in.teamId) {
-        const existingDriversSubTeam = queryDB(`SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID WHERE con.TeamID = ${driver_in.teamId} AND con.ContractType = 0 AND con.PosInTeam <= 2`, 'allRows').map(r => r[0]);
+        const existingDriversSubTeam = queryDB(`SELECT con.PosInTeam FROM Staff_Contracts con JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID WHERE con.TeamID = ? AND con.ContractType = 0 AND con.PosInTeam <= 2`, [driver_in.teamId], 'allRows').map(r => r[0]);
         const posInTeamForSubstitute = existingDriversSubTeam.includes(1) ? 2 : 1;
         hireDriver("auto", driver_substitute.id, driver_in.teamId, posInTeamForSubstitute);
     }
@@ -331,27 +331,27 @@ function applyTechnicalDirectiveEffect(turningPointData) {
     for (const [teamIdStr, effect] of Object.entries(turningPointData.effectOnEachteam)) {
         const teamId = Number(teamIdStr);
         const performanceChange = Number(effect.performanceGainLoss);
-        const designs = queryDB(`SELECT DesignID FROM Parts_Designs WHERE TeamID = ${teamId} AND PartType = ${componentId}`, 'allRows');
+        const designs = queryDB(`SELECT DesignID FROM Parts_Designs WHERE TeamID = ? AND PartType = ?`, [teamId, componentId], 'allRows');
         for (const designRow of designs) {
             const designId = designRow[0];
-            const unitValues = queryDB(`SELECT UnitValue, PartStat FROM Parts_Designs_StatValues WHERE DesignID = ${designId} AND  PartStat != 15`, 'allRows');
+            const unitValues = queryDB(`SELECT UnitValue, PartStat FROM Parts_Designs_StatValues WHERE DesignID = ? AND  PartStat != 15`, [designId], 'allRows');
             for (const valueRow of unitValues) {
                 const partStat = valueRow[1];
                 const currentUnitValue = Number(valueRow[0]);
                 const newRelative = 100 + performanceChange;
                 const newUnitValue = (currentUnitValue * newRelative) / 100;
                 const newValue = unitValueToValue[partStat](newUnitValue);
-                queryDB(`UPDATE Parts_Designs_StatValues SET Value = ${newValue}, UnitValue = ${newUnitValue} WHERE DesignID = ${designId} AND PartStat = ${partStat}`);
+                queryDB(`UPDATE Parts_Designs_StatValues SET Value = ?, UnitValue = ? WHERE DesignID = ? AND PartStat = ?`, [newValue, newUnitValue, designId, partStat], 'run');
             }
         }
         //now the expertise
-        const expertise = queryDB(`SELECT Expertise, PartStat FROM Parts_TeamExpertise WHERE TeamID = ${teamId} AND PartType = ${componentId} AND PartStat != 15`, 'allRows');
+        const expertise = queryDB(`SELECT Expertise, PartStat FROM Parts_TeamExpertise WHERE TeamID = ? AND PartType = ? AND PartStat != 15`, [teamId, componentId], 'allRows');
         for (const expRow of expertise) {
             const currentExpertise = Number(expRow[0]);
             const partStat = expRow[1];
             const newRelative = 100 + performanceChange;
             const newExpertise = (currentExpertise * newRelative) / 100;
-            queryDB(`UPDATE Parts_TeamExpertise SET Expertise = ${newExpertise} WHERE TeamID = ${teamId} AND PartType = ${componentId} AND PartStat = ${partStat}`);
+            queryDB(`UPDATE Parts_TeamExpertise SET Expertise = ? WHERE TeamID = ? AND PartType = ? AND PartStat = ?`, [newExpertise, teamId, componentId, partStat], 'run');
         }
     }
 }
@@ -379,7 +379,7 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
     }
 
     //get races that are still to be done
-    const calendar = queryDB(`SELECT RaceID, TrackID, Day FROM Races WHERE SeasonID = ${daySeason[1]} AND State = 0 ORDER BY Day`, 'allRows');
+    const calendar = queryDB(`SELECT RaceID, TrackID, Day FROM Races WHERE SeasonID = ? AND State = 0 ORDER BY Day`, [daySeason[1]], 'allRows');
     //remove the first 4
     const potentialRaces = calendar.slice(4);
 
@@ -762,7 +762,7 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
     const teamName = combined_dict[teamId] || "Unknown Team";
 
     // Get driver name
-    let nameRow = queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ${driverId}`, 'singleRow') || ["Unknown", "Driver"];
+    let nameRow = queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ?`, [driverId], 'singleRow') || ["Unknown", "Driver"];
     const driverName = formatNamesSimple([...nameRow, driverId]);
 
     // --- Injury dates ---
@@ -954,7 +954,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
 
 
     const performance = getPerformanceAllTeams(excelDate, null, globals.isCreateATeam)
-    const championship = queryDB(`SELECT TeamID, Points, Position FROM Races_TeamStandings WHERE SeasonID = ${daySeason[1]} AND RaceFormula = 1 ORDER BY Position`, 'allRows');
+    const championship = queryDB(`SELECT TeamID, Points, Position FROM Races_TeamStandings WHERE SeasonID = ? AND RaceFormula = 1 ORDER BY Position`, [daySeason[1]], 'allRows');
 
     const constructorsStandings = {};
     for (const row of championship) {
@@ -1329,17 +1329,17 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
 
     const excelDate = dateToExcel(new Date(daySeason[1], currentMonth - 1, Math.floor(Math.random() * 28) + 1));
 
-    let driverOutName = driverOut ? queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ${driverOut[0]}`, 'singleRow') : null;
+    let driverOutName = driverOut ? queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ?`, [driverOut[0]], 'singleRow') : null;
     driverOutName.push(driverOut[0], driverOut[1]);
     driverOutName = formatNamesSimple(driverOutName || ["Unknown", "Driver"]);
 
-    let driverInName = driverIn ? queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ${driverIn[0]}`, 'singleRow') : null;
+    let driverInName = driverIn ? queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ?`, [driverIn[0]], 'singleRow') : null;
     driverInName.push(driverIn[0], driverIn[1]);
     driverInName = formatNamesSimple(driverInName || ["Unknown", "Driver"]);
 
     let driverSubstituteName = [];
     if (driverSubstitute) {
-        driverSubstituteName = queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ${driverSubstitute[0]}`, 'singleRow');
+        driverSubstituteName = queryDB(`SELECT FirstName, LastName FROM Staff_BasicData WHERE StaffID = ?`, [driverSubstitute[0]], 'singleRow');
         driverSubstituteName.push(driverSubstitute[0], driverSubstitute[1]);
         driverSubstituteName = formatNamesSimple(driverSubstituteName || ["Unknown", "Driver"]);
     }
@@ -1422,8 +1422,8 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
     }
 
     const raceId = randomPick(racesNotChecked); // Pick from only the new races to check
-    const raceDate = queryDB(`SELECT Day FROM Races WHERE RaceID = ${raceId}`, 'singleValue');
-    const teamsWithPoints = queryDB(`SELECT TeamID, SUM(Points) FROM Races_Results WHERE RaceID = ${raceId} AND Points > 0 GROUP BY TeamID`, 'allRows');
+    const raceDate = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
+    const teamsWithPoints = queryDB(`SELECT TeamID, SUM(Points) FROM Races_Results WHERE RaceID = ? AND Points > 0 GROUP BY TeamID`, [raceId], 'allRows');
 
     if (!teamsWithPoints.length) {
         return newsList;
@@ -1446,7 +1446,7 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
     const component = randomPick(components);
 
     let driver1, driver2;
-    const drivers = queryDB(`SELECT bas.FirstName, bas.LastName, res.TeamID, res.Points, bas.StaffID, res.FinishingPos FROM Races_Results res JOIN Staff_BasicData bas ON res.DriverID = bas.StaffID WHERE res.RaceID = ${raceId}  AND res.TeamID = ${teamId}`, 'allRows');
+    const drivers = queryDB(`SELECT bas.FirstName, bas.LastName, res.TeamID, res.Points, bas.StaffID, res.FinishingPos FROM Races_Results res JOIN Staff_BasicData bas ON res.DriverID = bas.StaffID WHERE res.RaceID = ?  AND res.TeamID = ?`, [raceId, teamId], 'allRows');
     drivers.forEach((d, idx) => {
         const nameFormatted = formatNamesSimple(d);
         if (idx === 0) {
@@ -1494,9 +1494,9 @@ function getMaxPointsForRace(raceId, pointsSchema, seasonId = null) {
     let fastestLapPoint = parseInt(pointsSchema.fastestLapBonusPoint)
     let polePositionPoint = parseInt(pointsSchema.polePositionBonusPoint)
     let isLastraceDouble = parseInt(pointsSchema.isLastraceDouble)
-    const isSprint = queryDB(`SELECT WeekendType FROM Races WHERE RaceID = ${raceId}`, 'singleValue') === 1;
+    const isSprint = queryDB(`SELECT WeekendType FROM Races WHERE RaceID = ?`, [raceId], 'singleValue') === 1;
     const maxSprintPoints = 8;
-    const isLastRaceOfSeason = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${seasonId}`, 'singleValue') === raceId;
+    const isLastRaceOfSeason = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ?`, [seasonId], 'singleValue') === raceId;
 
     if (isLastRaceOfSeason && isLastraceDouble) {
         maxPoints *= 2;
@@ -1771,7 +1771,7 @@ function generateChampionMilestones(racesDone, savednews = {}) {
 
 
 export function getCircuitInfo(raceId) {
-    const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
+    const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
     const code = races_names[parseInt(trackId)];
     if (!code) return "Unknown Circuit";
     return countries_data[code] || code;
@@ -1993,7 +1993,7 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
             const day = Math.floor(Math.random() * 30) + 1;
             const date = new Date(season, m - 1, day);
             const excelDate = dateToExcel(date);
-            const latestRaceDoneUpToDate = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${season} AND State = 2 AND Day <= ${excelDate}`, 'singleValue');
+            const latestRaceDoneUpToDate = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ? AND State = 2 AND Day <= ?`, [season, excelDate], 'singleValue');
 
             const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, latestRaceDoneUpToDate);
             const championshipLeader = driverStandings.find(ds => ds.position === 1);
@@ -2167,7 +2167,7 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
 
     //iterate through each list
     driversWithHighOverall.forEach(driver => {
-        const contract = queryDB(`SELECT TeamID, Salary, EndSeason FROM Staff_Contracts WHERE StaffID = ${driver.driverId} AND ContractType = 3 AND TeamID != ${driver.teamId}`, 'singleRow');
+        const contract = queryDB(`SELECT TeamID, Salary, EndSeason FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 3 AND TeamID != ?`, [driver.driverId, driver.teamId], 'singleRow');
         if (!contract) return;
         const futureTeamId = contract[0]
         
@@ -2361,7 +2361,7 @@ export function getContractExtensions() {
 
     const formattedContracts = contractRenewals.map(contract => {
         const [nameFormatted, driverId, teamId] = formatNamesSimple(contract);
-        const currentTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driverId} AND ContractType = 0`, 'singleValue');
+        const currentTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0`, [driverId], 'singleValue');
         return {
             driver1: nameFormatted,
             driverId: driverId,
@@ -2436,9 +2436,9 @@ export function getTrueTransferRumors() {
 
     const formatted = rows.map(r => {
         const [nameFormatted, driverId] = formatNamesSimple(r)
-        let actualTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${[r[2]]} AND ContractType = 0`, 'singleValue')
+        let actualTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0`, [r[2]], 'singleValue')
         actualTeam = combined_dict[actualTeam]
-        let driverAtRisk = queryDB(`SELECT bas.FirstName, bas.LastName, con.StaffID, con.TeamID FROM Staff_Contracts con JOIN Staff_BasicData bas ON bas.StaffID = con.StaffID RIGHT JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID WHERE con.TeamID = ${r[3]} AND con.PosInTeam = ${r[5]} AND con.ContractType = 0`, 'singleRow')
+        let driverAtRisk = queryDB(`SELECT bas.FirstName, bas.LastName, con.StaffID, con.TeamID FROM Staff_Contracts con JOIN Staff_BasicData bas ON bas.StaffID = con.StaffID RIGHT JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID WHERE con.TeamID = ? AND con.PosInTeam = ? AND con.ContractType = 0`, [r[3], r[5]], 'singleRow')
         //if driverAtRisk[2] is th same as r[2] then remove it
         if (driverAtRisk[2] === r[2]) return null
         driverAtRisk = formatNamesSimple(driverAtRisk)
@@ -2538,7 +2538,7 @@ export function getConfirmedTransfers(bestDrivers = false) {
 
     const formattedContracts = futureContracts.map(contract => {
         const [nameFormatted, driverId, teamId] = formatNamesSimple(contract);
-        const currentTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driverId} AND ContractType = 0`, 'singleValue');
+        const currentTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 0`, [driverId], 'singleValue');
         return {
             driver1: nameFormatted,
             driverId: driverId,
@@ -2574,7 +2574,7 @@ export function generateTransferRumorsNews(offers, savedNews) {
     const validOffers = offers.others.filter(item => item.state !== 'Signed');
 
     const driversDict = validOffers.reduce((acc, item) => {
-        const previousResultsTeam = queryDB(`SELECT SeasonID, Points, Position FROM Races_TeamStandings WHERE TeamID = ${item.actualTeamId}`)
+        const previousResultsTeam = queryDB(`SELECT SeasonID, Points, Position FROM Races_TeamStandings WHERE TeamID = ?`, [item.actualTeamId], 'allRows')
             .map(r => {
                 return {
                     season: r[0],
@@ -2684,7 +2684,7 @@ export function generateTeamsUpgradesNews(events, savednews) {
         }
 
         let nextRaceId = raceId + 1;
-        let trackIdNextRace = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${nextRaceId}`, 'singleValue');
+        let trackIdNextRace = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ?`, [nextRaceId], 'singleValue');
         let newParts = {};
         teamIds.forEach(teamId => {
             let teamName = combined_dict[teamId];
@@ -2883,7 +2883,7 @@ export function generateRaceResultsNews(events, savednews) {
 
         const title = generateTitle(data, 2);
 
-        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
+        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
         const code = races_names[parseInt(trackId)];
 
         const image = getImagePath(formatted[0].teamId, code, "raceQuali");
@@ -2901,7 +2901,7 @@ export function generateRaceResultsNews(events, savednews) {
             seasonYear: seasonYear,
         }
 
-        const date = queryDB(`SELECT Day FROM Races WHERE RaceID = ${raceId}`, 'singleValue');
+        const date = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
 
         const newsEntry = {
             id: entryId,
@@ -2979,7 +2979,7 @@ export function generateRaceReactionsNews(events, savednews) {
         const happyDrivers = formatted.filter(r => r.pos <= 4);
         const randomHappyDriver = randomPick(happyDrivers);
 
-        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
+        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
         const code = races_names[parseInt(trackId)];
 
         let titleData = {
@@ -2998,7 +2998,7 @@ export function generateRaceReactionsNews(events, savednews) {
 
         const image = getImagePath(randomHappyDriver.teamId, code, "reaction");
 
-        const date = queryDB(`SELECT Day FROM Races WHERE RaceID = ${raceId}`, 'singleValue');
+        const date = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
 
         const newsEntry = {
             id: entryId,
@@ -3056,7 +3056,7 @@ export function generateQualifyingResultsNews(events, savednews) {
 
         const title = generateTitle(data, 1);
 
-        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
+        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
         const code = races_names[parseInt(trackId)];
 
         const image = getImagePath(formatted[0].teamId, `${code}_car`, "raceQuali");
@@ -3074,7 +3074,7 @@ export function generateQualifyingResultsNews(events, savednews) {
             seasonYear: seasonYear,
         }
 
-        const date = queryDB(`SELECT Day FROM Races WHERE RaceID = ${raceId}`, 'singleValue') - 1;
+        const date = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue') - 1;
 
         const newsEntry = {
             id: entryId,
@@ -3095,11 +3095,11 @@ export function generateQualifyingResultsNews(events, savednews) {
 
 export function generateSeasonReviewNews(savedNews) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
-    const nRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${daySeason[1]}`, 'singleValue');
+    const nRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ?`, [daySeason[1]], 'singleValue');
     let racesInterval = nRaces / 3;
-    const racesCompleted = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${daySeason[1]} AND State = 2`, 'singleValue');
+    const racesCompleted = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND State = 2`, [daySeason[1]], 'singleValue');
     let newsList = [];
-    const firstRaceSeasonId = queryDB(`SELECT MIN(RaceID) FROM Races WHERE SeasonID = ${daySeason[1]}`, 'singleValue');
+    const firstRaceSeasonId = queryDB(`SELECT MIN(RaceID) FROM Races WHERE SeasonID = ?`, [daySeason[1]], 'singleValue');
     const seasonResults = fetchSeasonResults(daySeason[1]);
 
 
@@ -3125,7 +3125,7 @@ export function generateSeasonReviewNews(savedNews) {
         const raceIdInPoint = firstRaceSeasonId + Math.floor(racesInterval * review.part) - 1;
         const nextRace = raceIdInPoint + 1;
 
-        const dates = queryDB(`SELECT Day FROM Races WHERE RaceID IN (${raceIdInPoint}, ${nextRace})`, 'allRows');
+        const dates = queryDB(`SELECT Day FROM Races WHERE RaceID IN (?, ?)`, [raceIdInPoint, nextRace], 'allRows');
         //pick a random date between those two dates
         let date;
         if (dates.length === 2) {
@@ -3196,7 +3196,7 @@ export function getOneQualiDetails(raceId) {
     const results = getOneQualifyingResults(raceId);
     if (!results.length) return {};
 
-    const season = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
+    const season = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
 
     const seasonResults = fetchQualiResults(season);
     const seasonRaceResults = fetchSeasonResults(season, true); //to get standings
@@ -3225,7 +3225,7 @@ export function getOneQualiDetails(raceId) {
 
     const champions = getLatestChampions(season);
 
-    const numberOfRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season}`, 'singleRow')[0];
+    const numberOfRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ?`, [season], 'singleRow')[0];
 
     const drivers = seasonResults.map(r => ({
         id: r.driverId,
@@ -3252,7 +3252,7 @@ export function getOneRaceDetails(raceId) {
 
     const sprintResults = getOneRaceResults(raceId, true);
 
-    const season = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ${raceId}`, 'singleRow');
+    const season = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
 
     const seasonResults = fetchSeasonResults(season, true);
     const pointsSchema = fetchPointsRegulations();
@@ -3262,7 +3262,7 @@ export function getOneRaceDetails(raceId) {
 
     console.log("Driver standings:", driverStandings);
 
-    const remainingRaces = queryDB(`SELECT RaceID, TrackID, WeekendType FROM Races WHERE SeasonID = ${season} AND RaceID > ${raceId} ORDER BY RaceID`, 'allRows');
+    const remainingRaces = queryDB(`SELECT RaceID, TrackID, WeekendType FROM Races WHERE SeasonID = ? AND RaceID > ? ORDER BY RaceID`, [season, raceId], 'allRows');
     //make an object that has raceid, trackId, and race track
     const remainingRacesDetails = remainingRaces.map(r => {
         return {
@@ -3346,7 +3346,7 @@ export function getOneRaceDetails(raceId) {
 
     const champions = getLatestChampions(season);
 
-    const numberOfRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season}`, 'singleRow')[0];
+    const numberOfRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ?`, [season], 'singleRow')[0];
 
     const drivers = seasonResults.map(r => ({
         id: r.driverId,
@@ -3715,7 +3715,7 @@ export function getTransferDetails(drivers, date = null) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const driverMap = []
     drivers.forEach(d => {
-        const previousResultsTeam = queryDB(`SELECT SeasonID, Points, Position FROM Races_TeamStandings WHERE TeamID = ${d.teamId}`)
+        const previousResultsTeam = queryDB(`SELECT SeasonID, Points, Position FROM Races_TeamStandings WHERE TeamID = ?`, [d.teamId], 'allRows')
             .map(r => {
                 return {
                     season: r[0],
@@ -3739,11 +3739,11 @@ export function getTransferDetails(drivers, date = null) {
     let objRace;
 
     if (date === null) {
-        const lastRaceIdThisSeason = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${daySeason[1]} AND State = 2`, 'singleValue');
+        const lastRaceIdThisSeason = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ? AND State = 2`, [daySeason[1]], 'singleValue');
         objRace = lastRaceIdThisSeason
     }
     else {
-        objRace = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${daySeason[1]} AND State = 2 AND Day <= '${date}'`, 'singleValue');
+        objRace = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ? AND State = 2 AND Day <= ?`, [daySeason[1], date], 'singleValue');
     }
 
     const seasonResults = fetchSeasonResults(daySeason[1], true);
@@ -3766,7 +3766,7 @@ export function getTransferDetails(drivers, date = null) {
 }
 
 export function getTeamComparisonDetails(teamId, season, date) {
-    const lastRaceBeforeDate = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${season} AND Day < '${date}'`, 'singleValue');
+    const lastRaceBeforeDate = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ? AND Day < ?`, [season, date], 'singleValue');
     const seasonResults = fetchSeasonResults(season, true);
     const lastSeasonResults = fetchSeasonResults(season - 1);
     const {
@@ -3795,7 +3795,7 @@ export function getTeamComparisonDetails(teamId, season, date) {
         racesNames: oldRacesNames
     } = rebuildStandingsUntil(lastSeasonResults, lastYearEquivalent, true);
 
-    const previousResultsTeam = queryDB(`SELECT SeasonID, Points, Position FROM Races_TeamStandings WHERE TeamID = ${teamId}`)
+    const previousResultsTeam = queryDB(`SELECT SeasonID, Points, Position FROM Races_TeamStandings WHERE TeamID = ?`, [teamId], 'allRows')
         .map(r => {
             return {
                 season: r[0],
@@ -3828,12 +3828,12 @@ export function getTeamComparisonDetails(teamId, season, date) {
 export function getFullChampionSeasonDetails(season) {
     const seasonResults = fetchSeasonResults(season, true);
     const qualiResults = fetchQualiResults(season);
-    const lastRaceId = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${season} AND State = 2`, 'singleValue');
+    const lastRaceId = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ? AND State = 2`, [season], 'singleValue');
     const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, lastRaceId, true);
     const { driverStandings: qualiDriverStandings, teamStandings: qualiTeamStandings, driversResults: driverQualiResults, racesNames: qualiRacesNames } = rebuildStandingsUntil(qualiResults, lastRaceId, true, true, true);
     const champions = getLatestChampions(season);
 
-    const racesCompleted = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ${season} AND State = 2`, 'singleValue');
+    const racesCompleted = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND State = 2`, [season], 'singleValue');
     const drivers = seasonResults.map(r => ({
         id: r.driverId,
         name: r.driverName ?? ""
@@ -3979,7 +3979,7 @@ function disqualifyTeamInRace({
     let pos = 1;
     const afterRacePoints = new Map(); // DriverID -> puntos tras recálculo (sin FL aún)
 
-    const lastRace = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ${seasonId}`, 'singleValue');
+    const lastRace = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ?`, [seasonId], 'singleValue');
     const isLastRace = Number(raceId) === Number(lastRace);
 
     // Clasificados: posiciones 1..K + puntos
@@ -4170,7 +4170,7 @@ export function ensureEditorStateTable() {
 
 export function getEditorState(key) {
     ensureEditorStateTable();
-    const row = queryDB(`SELECT value FROM Custom_News_State WHERE key='${key}'`, "singleRow");
+    const row = queryDB(`SELECT value FROM Custom_News_State WHERE key = ?`, [key], "singleRow");
     return row ? row[0] : null;
 }
 
@@ -4402,13 +4402,13 @@ export function startInjurySwap(injuredId, reserveData, endDay) {
     let reserveId = reserveData.id;
 
     // Foto del estado original (equipo/pos/coche)
-    const injTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${injuredId}`, 'singleValue');
-    const injPos = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${injuredId}`, 'singleValue');
-    const injCar = queryDB(`SELECT AssignedCarNumber FROM Staff_DriverData WHERE StaffID = ${injuredId}`, 'singleValue');
+    const injTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ?`, [injuredId], 'singleValue');
+    const injPos = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ?`, [injuredId], 'singleValue');
+    const injCar = queryDB(`SELECT AssignedCarNumber FROM Staff_DriverData WHERE StaffID = ?`, [injuredId], 'singleValue');
 
-    const resTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${reserveId}`, 'singleValue');
-    const resPos = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ${reserveId}`, 'singleValue');
-    const resCar = queryDB(`SELECT AssignedCarNumber FROM Staff_DriverData WHERE StaffID = ${reserveId}`, 'singleValue');
+    const resTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ?`, [reserveId], 'singleValue');
+    const resPos = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ?`, [reserveId], 'singleValue');
+    const resCar = queryDB(`SELECT AssignedCarNumber FROM Staff_DriverData WHERE StaffID = ?`, [reserveId], 'singleValue');
 
     // 🔸 Foto de ingenieros actuales (ANTES del swap)
     const injEngineer = queryDB(`
@@ -4466,7 +4466,7 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
     const trigName = `trg_injury_revert_${seasonId}_${injuredId}`;
 
     // Por si re-generas, dejamos el nombre libre
-    queryDB(`DROP TRIGGER IF EXISTS "${trigName}"`);
+    queryDB(`DROP TRIGGER IF EXISTS ?`, [trigName], 'run');
 
     // Trigger con igualdad estricta en el día objetivo
     const sql = `

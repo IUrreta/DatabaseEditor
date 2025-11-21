@@ -611,7 +611,8 @@ export const minMaxTypeStaff = {
     } else if (driver === "Dschumacher") {
       driverId = 270;
     } else {
-      driverId = queryDB(`SELECT StaffID FROM Staff_BasicData WHERE LastName = '[StaffName_Surname_${driver}]'`, [], "singleValue");
+      const lastName = `[StaffName_Surname_${driver}]`;
+      driverId = queryDB(`SELECT StaffID FROM Staff_BasicData WHERE LastName = ?`, [lastName], "singleValue");
     }
     return driverId;
   }
