@@ -1405,61 +1405,66 @@
     <div class="main-panel">
       <div class="background"></div>
       <div class="blocking-div" id="blockDiv">
-        <div class="splash-box">
-          <div class="title-and-spinner">
-            <div class="main-title bold-font">DB <span class="glitch">EDITOR</span> ONLINE</div>
-            <span class="big-subtitle bold-font">
-              <p>Edit</p>
-              <div class="words">
-                <span class="word">everything.</span>
-                <span class="word">contracts</span>
-                <span class="word">calendar</span>
-                <span class="word">attributes</span>
-                <span class="word">performance</span>
-                <span class="word">facilities</span>
-                <span class="word">transfers</span>
-                <span class="word">sprints</span>
-                <span class="word">pit crew</span>
-                <span class="word">difficulty</span>
-                <span class="word">everything.</span>
-              </div>
-              <p class="everywhere">Everywhere.</p>
+        <div class="tech-grid"></div>
+        <div class="glow-spot"></div>
+        <div class="hero-section">
+            <span class="badge-version">
+                version 3.4.0-dev
             </span>
-          </div>
-          <div class="drop-area" id="dropDiv">
-            <div class="list-item">
-              <div class="number-icon">
-                <span>1. </span>
-                <i class="bi bi-check-lg icon-hidden"></i>
-              </div>
-              <span class="list-text" id="saveFileDropped">Drag and drop your save file here</span>
-            </div>
-            <div class="list-item">
-              <div class="number-icon">
-                <span>2. </span>
-                <i class="bi bi-check-lg icon-hidden"></i>
-              </div>
-              <span class="list-text" id="scriptSelected">Select any of the tabs at the top</span>
-            </div>
-          </div>
+            <h1 class="hero-title">
+                DB Editor Online<br>
+                <span class="gradient-text">F1 Manager</span>
+            </h1>
+            <p class="hero-desc">
+                Edita pilotos, presupuestos y estadísticas de rendimiento directamente en tu navegador. Sin instalaciones. Seguro y rápido.
+            </p>
         </div>
-        <div class="socials-box">
-          <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor" target="_blank">&nbsp;DB Editor</a>
-          <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259"
-            target="_blank">&nbsp;My
-            profile</a>
-          <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_" target="_blank">&nbsp;@ignaciourreta_</a>
-          <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta"
-            target="_blank">&nbsp;ignaciourreta</a>
-          <a class="bi-custom-patreon" href="https://www.patreon.com/f1dbeditor" target="_blank">&nbsp;Support the
-            project</a>
-          <a class="bi bi-discord" href="https://discord.gg/3QXg3hsD8B" target="_blank">&nbsp;Join our Discord</a>
-        </div>
-        <div class="patreon-members">
-          <div class="marquee">
-            <div class="marquee__inner">
+
+        <!-- Upload Area -->
+        <div class="upload-wrapper">
+            <div id="dropDiv" class="drop-zone">
+                
+                <input type="file" id="file-input" class="file-input-hidden" accept=".sav">
+                
+                <!-- Idle State Content -->
+                <div id="idle-state" class="idle-content">
+                    <div class="icon-circle">
+                        <i data-lucide="upload-cloud" class="text-primary" style="width: 40px; height: 40px;"></i>
+                    </div>
+                    <h3>Sube tu partida guardada</h3>
+                    <p class="text-muted" style="margin-bottom: 1.5rem;">Arrastra tu archivo .sav aquí o haz clic para explorar</p>
+                    <div class="tags-container">
+                        <span class="tag">MAX 50MB</span>
+                        <span class="tag">ENCRIPTADO AES-256</span>
+                    </div>
+                </div>
+
+                <!-- Loading State (Hidden initially) -->
+                <div id="loading-state" class="overlay-state loading-bg">
+                    <div class="spinner"></div>
+                    <h4 style="font-size: 1.25rem; font-weight: 700; color: white;">Analizando base de datos...</h4>
+                    <p class="text-primary font-mono" style="font-size: 0.875rem; margin-top: 0.5rem;">Leyendo tablas de pilotos</p>
+                    <!-- Progress Bar -->
+                    <div class="progress-track">
+                        <div id="progress-bar" class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <!-- Success State (Hidden initially) -->
+                <div id="success-state" class="overlay-state success-bg">
+                    <div class="icon-circle" style="background-color: rgba(74, 222, 128, 0.2); width: 4rem; height: 4rem; margin-bottom: 1rem;">
+                        <i data-lucide="check" style="color: #4ade80; width: 32px; height: 32px;"></i>
+                    </div>
+                    <h4 style="font-size: 1.25rem; font-weight: 700; color: white; margin-bottom: 0.25rem;">Archivo cargado con éxito</h4>
+                    <p id="filename-display" class="text-muted font-mono" style="font-size: 0.875rem; margin-bottom: 1.5rem;">savegame_01.sav</p>
+                    
+                    <button onclick="window.location.reload()" class="btn-action">
+                        <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i>
+                        Abrir Editor
+                    </button>
+                </div>
+
             </div>
-          </div>
         </div>
       </div>
       <div class="script-view hide unloaded" id="news">

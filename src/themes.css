@@ -2,6 +2,15 @@
     /*
   GENERAL COLORS
   */
+    --text-muted: #94a3b8;
+    --primary-dark: #b07dfc;
+    --primary-glow: rgba(200, 158, 252, 0.3);
+    --bg-dark: #0a0a0f;
+    --card-bg: #13131f;
+    --text-main: #ffffff;
+    --text-muted: #94a3b8; /* slate-400 equivalent */
+    --border-color: #334155; /* slate-700 equivalent */
+
     --background: #111111;
     --generals: #1e1e1e;
     --superficials: #222222;

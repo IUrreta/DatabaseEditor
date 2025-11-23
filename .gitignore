@@ -18,3 +18,5 @@ patreon/
 resize_images.js
 .vscode/
 test/
+.env
+.vercel/
