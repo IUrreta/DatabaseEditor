@@ -17,6 +17,8 @@
 </script>
 
 <body class="font">
+  <div class="tech-grid"></div>
+  <div class="glow-spot"></div>
   <div class="modal custom-modal fade" id="enginesModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
@@ -1318,7 +1320,7 @@
       <label class="bold-font standard-label">SETTINGS</label>
       <div class="standard-line"></div>
     </div>
-    <div class="script-selector bold-font">
+    <div class="script-selector hidden bold-font">
       <div class="py-2">
         <ul class="nav nav-pills">
           <li class="nav-item">
@@ -1393,75 +1395,42 @@
       </div>
 
     </div>
-    <a class="" id="amoPill" href="http://discord.gg/amocommunity" target="_blank">
-      <div id="amoLogo"></div>
-    </a>
 
   </div>
-  <!-- <div class="mode-line">
-    <div class="moving-line"></div>
-  </div> -->
   <div class="scroll-wrapper">
     <button class="save-button bold-font d-none">
       <i class="bi bi-floppy-fill"></i>
       <label class="save-label">Save changes</label>
     </button>
     <div class="main-panel">
-      <div class="background"></div>
-      <div class="blocking-div" id="blockDiv">
-        <div class="splash-box">
-          <div class="title-and-spinner">
-            <div class="main-title bold-font">DB <span class="glitch">EDITOR</span> ONLINE</div>
-            <span class="big-subtitle bold-font">
-              <p>Edit</p>
-              <div class="words">
-                <span class="word">everything.</span>
-                <span class="word">contracts</span>
-                <span class="word">calendar</span>
-                <span class="word">attributes</span>
-                <span class="word">performance</span>
-                <span class="word">facilities</span>
-                <span class="word">transfers</span>
-                <span class="word">sprints</span>
-                <span class="word">pit crew</span>
-                <span class="word">difficulty</span>
-                <span class="word">everything.</span>
-              </div>
-              <p class="everywhere">Everywhere.</p>
-            </span>
-          </div>
-          <div class="drop-area" id="dropDiv">
-            <div class="list-item">
-              <div class="number-icon">
-                <span>1. </span>
-                <i class="bi bi-check-lg icon-hidden"></i>
-              </div>
-              <span class="list-text" id="saveFileDropped">Drag and drop your save file here</span>
-            </div>
-            <div class="list-item">
-              <div class="number-icon">
-                <span>2. </span>
-                <i class="bi bi-check-lg icon-hidden"></i>
-              </div>
-              <span class="list-text" id="scriptSelected">Select any of the tabs at the top</span>
-            </div>
-          </div>
+      <div class="blocking-div drop-div" id="blockDiv">
+        <div class="hero-section">
+          <span class="badge-version">
+            version 3.4.0-dev
+          </span>
+          <h1 class="hero-title">
+            DB Editor Online<br>
+            <span class="gradient-text">F1 Manager</span>
+          </h1>
+          <p class="hero-desc">
+            Edit your F1 Manager save files directly in your browser. No installation required.
+          </p>
         </div>
-        <div class="socials-box">
-          <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor" target="_blank">&nbsp;DB Editor</a>
-          <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259"
-            target="_blank">&nbsp;My
-            profile</a>
-          <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_" target="_blank">&nbsp;@ignaciourreta_</a>
-          <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta"
-            target="_blank">&nbsp;ignaciourreta</a>
-          <a class="bi-custom-patreon" href="https://www.patreon.com/f1dbeditor" target="_blank">&nbsp;Support the
-            project</a>
-          <a class="bi bi-discord" href="https://discord.gg/3QXg3hsD8B" target="_blank">&nbsp;Join our Discord</a>
-        </div>
-        <div class="patreon-members">
-          <div class="marquee">
-            <div class="marquee__inner">
+        <div id="dropDiv" class="drop-zone">
+          <div id="idle-state" class="idle-content">
+            <div class="icon-circle" id="statusCircle">
+              <i class="bi bi-cloud-arrow-up" id="statusIcon"></i>
+              <div class="loading-spinner"></div>
+            </div>
+            <h3 id="statusTitle">Upload your save file</h3>
+            <p class="upload-desc" id="statusDesc">
+              Drop your .sav file here or
+              <input type="button" value="click" style="display: inline-block;">
+              to select it manually.
+            </p>
+            <div class="tags-container">
+              <!-- <span class="tag">MAX 50MB</span>
+                        <span class="tag">ENCRIPTADO AES-256</span> -->
             </div>
           </div>
         </div>
@@ -5421,7 +5390,7 @@
       </a>
     </div>
   </div>
-  <footer class="footer">
+  <footer class="footer hidden">
     <div class="socials">
       <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor" target="_blank">&nbsp;DB Editor</a>
       <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259"
