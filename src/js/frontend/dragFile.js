@@ -14,10 +14,11 @@ const statusIcon = document.getElementById("statusIcon");
 const statusTitle = document.getElementById("statusTitle");
 const loadingSpinner = document.querySelector(".loading-spinner");
 const statusDesc = document.getElementById("statusDesc");
+const body = document.querySelector("body");
 
 dropDiv.addEventListener("dragenter", (event) => {
     event.preventDefault();
-    dropDiv.classList.add("drag-active");
+    body.classList.add("drag-active");
 });
 
 dropDiv.addEventListener("dragover", (event) => {
@@ -27,14 +28,14 @@ dropDiv.addEventListener("dragover", (event) => {
 
 dropDiv.addEventListener("dragleave", (event) => {
     event.preventDefault();
-    dropDiv.classList.remove("drag-active");
+    body.classList.remove("drag-active");
 });
 
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 dropDiv.addEventListener("drop", async (event) => {
     event.preventDefault();
-    dropDiv.classList.remove("drag-active");
+    body.classList.remove("drag-active");
 
     const file = event.dataTransfer.files[0];
 
@@ -105,6 +106,9 @@ dropDiv.addEventListener("drop", async (event) => {
             const command = new Command("saveSelected", {});
             command.execute();
 
+            document.querySelector(".script-selector").classList.remove("hidden");
+            document.querySelector(".footer").classList.remove("hidden");
+
         } catch (error) {
             console.error("Error en el proceso:", error);
             // Aquí podrías poner un updateStatusUI('error') si quisieras
@@ -122,7 +126,7 @@ async function updateStatusUI(type, textConfig) {
         loadingSpinner.classList.add("show");
         
         statusTitle.textContent = "Analyzing database...";
-        statusDesc.innerHTML = `<span class="text-primary font-mono">Reading tables...</span>`;
+        statusDesc.innerText = "This may take a few seconds.";
         
     } else if (type === 'success') {
         loadingSpinner.classList.remove("show");

@@ -25,8 +25,9 @@
 
 body {
   background-color: var(--background) !important;
-  max-height: 930px;
+  height: 100vh;
   overflow-x: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
 }
 
 
@@ -50,7 +51,7 @@ body.og-theme .footer {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: var(--generals);
+  background-color: transparent;
   color: var(--dark-text);
   text-align: center;
   padding: 5px 0;
@@ -63,6 +64,7 @@ body.og-theme .footer {
   overflow-y: clip;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+  transition: opacity 0.15s, transform 0.15s;
 }
 
 .scroll-wrapper {
@@ -438,7 +440,7 @@ patreon-button:active .patreon-button-text {
   cursor: pointer;
   padding: 0 5px;
   border-left: 2px solid transparent;
-  background-color: var(--generals);
+  background-color: var(--background);
   z-index: 3;
   will-change: border;
 }
@@ -2091,7 +2093,7 @@ input.comparing-tag {
 
 .tools-panel {
   color: var(--white-general);
-  background-color: var(--generals);
+  background-color: transparent;
   display: flex;
   flex-direction: row;
   position: relative;
@@ -2224,7 +2226,12 @@ body.vaporwave-theme .background {
   flex-direction: column;
   align-items: center;
   margin-right: 20px;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.script-selector.hidden, .footer.hidden{
+  opacity: 0;
+  pointer-events: none;
 }
 
 
@@ -7929,7 +7936,6 @@ body.og-theme .records-list {
   color: var(--white-general);
   flex-direction: column;
   justify-content: center;
-  background-color: var(--background);
 }
 
 .drop-area.drag-over {
@@ -13764,7 +13770,7 @@ p.news-error-api-key {
 }
 
 .upload-desc {
-  color: var(--text-tertiary);
+  color: var(--text-muted);
 }
 
 .upload-desc input{
@@ -13884,7 +13890,7 @@ p.news-error-api-key {
 }
 
 .hero-desc {
-  color: var(--text-tertiary);
+  color: var(--text-muted);
   font-size: 1.125rem;
   font-weight: 300;
   max-width: 42rem;
@@ -13911,13 +13917,6 @@ p.news-error-api-key {
   overflow: hidden;
 }
 
-
-.drop-zone.drag-active {
-  animation: pulse-glow 1.5s infinite;
-  background: rgba(200, 158, 252, 0.1);
-  transform: scale(1.02);
-  border-color: var(--new-primary);
-}
 
 .select-file-input{
   position: relative;
@@ -14101,7 +14100,7 @@ p.news-error-api-key {
   gap: 0.5rem;
 }
 
-.drop-div.drag-active{
+.drag-active{
   border-color: var(--new-primary); /* Un borde sólido morado */
   color: var(--new-primary);
   

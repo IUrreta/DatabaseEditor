@@ -625,6 +625,7 @@ const messageHandlers = {
     },
     "Save loaded succesfully": (message) => {
         isSaveSelected = 1;
+        document.querySelector("#transferpill").click();
         remove_drivers();
         removeStatsDrivers();
         listenersStaffGroups();
@@ -1558,18 +1559,11 @@ document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", 
  * checks if a save and a script have been selected to unlock the tool
  */
 function check_selected() {
-    if (scriptSelected === 1) {
-        document.getElementById("scriptSelected").classList.add("completed")
+    console.log(isSaveSelected, scriptSelected, divBlocking)
+    if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
+        document.getElementById("blockDiv").classList.add("disappear")
+        divBlocking = 0;
     }
-    else {
-        document.getElementById("scriptSelected").classList.remove("completed")
-    }
-    setTimeout(function () {
-        if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
-            document.getElementById("blockDiv").classList.add("disappear")
-            divBlocking = 0;
-        }
-    }, 150)
 
 }
 
@@ -2213,8 +2207,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
-    document.querySelector(".splash-box").classList.add("appear")
-    document.querySelector(".socials-box").classList.add("appear")
     getPatchNotes()
     checkPatreonStatus();
     populateMarquee();
