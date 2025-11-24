@@ -13,6 +13,11 @@
   src: url("../assets/fonts/NewNumbers.otf") format('truetype');
 }
 
+@font-face {
+  font-family: 'Formula1Dark';
+  src: url("../assets/fonts/Formula1-Display-Black.ttf") format('truetype');
+}
+
 .bold-font {
   font-family: 'Formula1Bold' !important;
 }
@@ -1873,12 +1878,12 @@ input.comparing-tag {
 
 
 .alertNeg {
-  animation: colorChangeNeg 0.3s;
+  animation: colorChangeNeg 0.15s;
   margin-bottom: 0px !important;
 }
 
 .alertPos {
-  animation: colorChangePos 0.3s;
+  animation: colorChangePos 0.15s;
   margin-bottom: 0px !important;
 }
 
@@ -13516,16 +13521,6 @@ body.default-theme .news-article-date {
 }
 
 
-@keyframes spin {
-  from {
-    --angle: 0deg;
-  }
-
-  to {
-    --angle: 360deg;
-  }
-}
-
 .session {
   background-color:
     color-mix(in srgb, white 20%, transparent);
@@ -13731,18 +13726,6 @@ p.news-error-api-key {
   border: 1px solid var(--random-general);
 }
 
-/* NEW LANDING PAGE CHANGES STYLE */
-
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--background);
-  color: var(--white-general);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
-  position: relative;
-}
 
 /* --- FONDOS Y EFECTOS --- */
 .tech-grid {
@@ -13780,8 +13763,17 @@ body {
   color: var(--new-primary);
 }
 
-.text-muted {
-  color: var(--text-muted);
+.upload-desc {
+  color: var(--text-tertiary);
+}
+
+.upload-desc input{
+  background-color: transparent;
+  border: none;
+  color: var(--new-primary);
+  text-decoration: underline;
+  outline: none;
+  cursor: pointer;
 }
 
 .font-mono {
@@ -13822,12 +13814,6 @@ body {
   font-weight: 500;
 }
 
-.nav-links a {
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
 .nav-links a:hover {
   color: var(--new-primary);
 }
@@ -13851,7 +13837,7 @@ body {
   align-items: center;
   display: flex;
   flex-direction: column;
-  margin: 0 auto 3rem auto;
+  margin: 0 auto 1rem auto;
   opacity: 0;
   transform: translateY(20px);
   animation: fadeIn 0.8s ease-out forwards;
@@ -13876,17 +13862,18 @@ body {
   font-size: 3rem;
   /* fallback mobile */
   font-weight: 900;
-  letter-spacing: -0.05em;
+  white-space: nowrap;
   text-transform: uppercase;
   line-height: 0.9;
   text-shadow: 0 0 40px rgba(200, 158, 252, 0.2);
   margin-bottom: 1.5rem;
   text-align: center;
+  font-family: 'Formula1Dark';
 }
 
 @media (min-width: 768px) {
   .hero-title {
-    font-size: 4.5rem;
+    font-size: 5.5rem;
   }
 }
 
@@ -13897,7 +13884,7 @@ body {
 }
 
 .hero-desc {
-  color: var(--text-muted);
+  color: var(--text-tertiary);
   font-size: 1.125rem;
   font-weight: 300;
   max-width: 42rem;
@@ -13919,27 +13906,25 @@ body {
 
 .drop-zone {
   position: relative;
-  border: 2px dashed var(--border-color);
-  border-radius: 1rem;
   padding: 3rem;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
-.drop-zone:hover {
-  border-color: var(--new-primary);
-  background: rgba(200, 158, 252, 0.05);
-  transform: scale(1.01);
-}
 
 .drop-zone.drag-active {
   animation: pulse-glow 1.5s infinite;
   background: rgba(200, 158, 252, 0.1);
   transform: scale(1.02);
   border-color: var(--new-primary);
+}
+
+.select-file-input{
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  color: var(--new-primary);
 }
 
 .file-input-hidden {
@@ -13952,14 +13937,6 @@ body {
   z-index: 20;
 }
 
-/* Estado: Inactivo (Idle) */
-.idle-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.3s;
-}
 
 .icon-circle {
   width: 5rem;
@@ -13969,23 +13946,43 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.5rem;
-  transition: transform 0.3s;
+  margin-bottom: 1rem;
+  transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
-.drop-zone:hover .icon-circle {
-  transform: scale(1.1);
+.icon-circle.success-mode {
+    background-color: var(--positive-transparent) !important;
+}
+
+.idle-content{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon-circle.success-mode i{
+    color: var(--positive-general) !important;
+}
+
+.icon-scale-0 {
+    transform: scale(0) !important;
+}
+
+.icon-circle i{
+  font-size: 3.1rem;
+  padding-bottom: 4px;
+}
+
+#statusIcon {
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.15s ease;
+    transform: scale(1);
 }
 
 .drop-zone h3 {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  transition: color 0.3s;
-}
-
-.drop-zone:hover h3 {
-  color: var(--new-primary);
+  transition: color 0.15s;
 }
 
 .tags-container {
@@ -14104,6 +14101,56 @@ body {
   gap: 0.5rem;
 }
 
+.drop-div.drag-active{
+  border-color: var(--new-primary); /* Un borde sólido morado */
+  color: var(--new-primary);
+  
+  box-shadow: inset 0 0 60px 7px var(--new-primary);
+}
+
+.anim-content {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
+    transform: scale(1);
+    opacity: 1;
+}
+
+
+/* --- Spinner Personalizado --- */
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--new-primary-transparent);
+    border-radius: 50%;
+    border-top-color: var(--new-primary);
+    opacity: 0;
+    position: absolute;
+    transition: opacity 0.15s ease-in-out;
+}
+
+.loading-spinner.show{
+    animation: spin 1s ease-in-out infinite;
+    opacity: 1;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.success-icon-bg {
+    background-color: var(--positive-transparent); /* Tu variable */
+    width: 4rem; 
+    height: 4rem; 
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
+}
+
+
 /* --- ANIMACIONES --- */
 @keyframes fadeIn {
   to {
@@ -14126,8 +14173,3 @@ body {
   }
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}

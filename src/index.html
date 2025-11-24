@@ -1404,7 +1404,7 @@
     </button>
     <div class="main-panel">
       <div class="background"></div>
-      <div class="blocking-div" id="blockDiv">
+      <div class="blocking-div drop-div" id="blockDiv">
         <div class="tech-grid"></div>
         <div class="glow-spot"></div>
         <div class="hero-section">
@@ -1416,7 +1416,7 @@
                 <span class="gradient-text">F1 Manager</span>
             </h1>
             <p class="hero-desc">
-                Edita pilotos, presupuestos y estadísticas de rendimiento directamente en tu navegador. Sin instalaciones. Seguro y rápido.
+                Edit your F1 Manager save files directly in your browser. No installation required.
             </p>
         </div>
 
@@ -1424,44 +1424,22 @@
         <div class="upload-wrapper">
             <div id="dropDiv" class="drop-zone">
                 
-                <input type="file" id="file-input" class="file-input-hidden" accept=".sav">
-                
                 <!-- Idle State Content -->
                 <div id="idle-state" class="idle-content">
-                    <div class="icon-circle">
-                        <i data-lucide="upload-cloud" class="text-primary" style="width: 40px; height: 40px;"></i>
+                    <div class="icon-circle" id="statusCircle">
+                        <i class="bi bi-cloud-arrow-up" id="statusIcon"></i>
+                        <div class="loading-spinner"></div>
                     </div>
-                    <h3>Sube tu partida guardada</h3>
-                    <p class="text-muted" style="margin-bottom: 1.5rem;">Arrastra tu archivo .sav aquí o haz clic para explorar</p>
+                    <h3 id="statusTitle">Upload your save file</h3>
+                    <p class="upload-desc" id="statusDesc">
+                      Drop your .sav file here or
+                      <input type="button" value="click" style="display: inline-block;"> 
+                      to select it manually.
+                    </p>
                     <div class="tags-container">
-                        <span class="tag">MAX 50MB</span>
-                        <span class="tag">ENCRIPTADO AES-256</span>
+                        <!-- <span class="tag">MAX 50MB</span>
+                        <span class="tag">ENCRIPTADO AES-256</span> -->
                     </div>
-                </div>
-
-                <!-- Loading State (Hidden initially) -->
-                <div id="loading-state" class="overlay-state loading-bg">
-                    <div class="spinner"></div>
-                    <h4 style="font-size: 1.25rem; font-weight: 700; color: white;">Analizando base de datos...</h4>
-                    <p class="text-primary font-mono" style="font-size: 0.875rem; margin-top: 0.5rem;">Leyendo tablas de pilotos</p>
-                    <!-- Progress Bar -->
-                    <div class="progress-track">
-                        <div id="progress-bar" class="progress-fill"></div>
-                    </div>
-                </div>
-
-                <!-- Success State (Hidden initially) -->
-                <div id="success-state" class="overlay-state success-bg">
-                    <div class="icon-circle" style="background-color: rgba(74, 222, 128, 0.2); width: 4rem; height: 4rem; margin-bottom: 1rem;">
-                        <i data-lucide="check" style="color: #4ade80; width: 32px; height: 32px;"></i>
-                    </div>
-                    <h4 style="font-size: 1.25rem; font-weight: 700; color: white; margin-bottom: 0.25rem;">Archivo cargado con éxito</h4>
-                    <p id="filename-display" class="text-muted font-mono" style="font-size: 0.875rem; margin-bottom: 1.5rem;">savegame_01.sav</p>
-                    
-                    <button onclick="window.location.reload()" class="btn-action">
-                        <i data-lucide="edit-3" style="width: 16px; height: 16px;"></i>
-                        Abrir Editor
-                    </button>
                 </div>
 
             </div>
