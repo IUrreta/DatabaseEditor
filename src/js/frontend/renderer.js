@@ -2580,7 +2580,9 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     const values = Array.isArray(opts.values) && opts.values.length ? opts.values.slice() : null;
     const loop = !!opts.loop;
     const onChange = typeof opts.onChange === 'function' ? opts.onChange : () => { };
-
+    
+    // NUEVO: Permitimos pasar una función de formateo
+    const format = opts.format || ((v) => v); 
 
     const initialDelay = opts.initialDelay ?? 400;
     const tiers = opts.tiers ?? [
@@ -2593,25 +2595,36 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     let timer, start;
 
     const getText = () => (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') ? (el.value ?? '') : (el.innerText ?? '');
+    
     const setText = (txt) => {
+        // NUEVO: Aplicamos el formato si es un número
+        const valToDisplay = (typeof txt === 'number') ? format(txt) : txt; 
+
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-            el.value = String(txt);
+            el.value = String(valToDisplay);
             el.dispatchEvent(new Event('input', { bubbles: true }));
         } else {
             const current = el.innerText || '';
-            // si contiene un número, sustituimos solo el primero; si no, ponemos el texto entero
             if (/-?\d+(\.\d+)?/.test(current) && typeof txt === 'number') {
-                el.innerText = current.replace(/-?\d+(\.\d+)?/, String(txt));
+                // Nota: Aquí el replace es delicado con formatos, 
+                // para tu caso de Input suele bastar con la línea de arriba (el.value = ...)
+                // pero si usas span, reemplazamos todo para evitar romper el formato parcial.
+                el.innerText = String(valToDisplay); 
             } else {
-                el.innerText = String(txt);
+                el.innerText = String(valToDisplay);
             }
         }
     };
 
     const getNum = () => {
-        if (values) return NaN; // no aplica
-        const raw = getText();
-        const m = String(raw).match(/-?\d+(\.\d+)?/);
+        if (values) return NaN; 
+        let raw = getText();
+        
+        // NUEVO: Eliminamos las comas antes de intentar parsear el número
+        // Esto permite que "100,000" se convierta en "100000" para el cálculo
+        raw = String(raw).replace(/,/g, ''); 
+
+        const m = raw.match(/-?\d+(\.\d+)?/);
         return m ? parseFloat(m[0]) : 0;
     };
 
@@ -2619,16 +2632,17 @@ export function attachHold(btn, el, step = 1, opts = {}) {
         const clamped = Math.max(min, Math.min(max, val));
         setText(clamped);
         updateProgress(clamped);
-        onChange(clamped, currentPercent(clamped));
+        onChange(clamped, currentPercent(clamped)); // Devuelve el valor numérico limpio
     };
 
+    // ... El resto de funciones (findCurrentIndex, setIndex, etc.) se mantienen igual ...
+    // Solo asegúrate de copiar el resto de tu lógica original aquí abajo.
+    
     const findCurrentIndex = () => {
         const raw = String(getText()).trim();
-        // intentamos match estricto; si values numéricos y en el el hay número suelto, los comparamos como string también
         let idx = values.findIndex(v => String(v) === raw);
         if (idx === -1) {
-            // si no coincide textual y hay número en el elemento y values son numéricos, intentamos por número
-            const numMatch = raw.match(/-?\d+(\.\d+)?/);
+            const numMatch = raw.replace(/,/g, '').match(/-?\d+(\.\d+)?/); // Ajuste aquí también por si acaso
             if (numMatch && values.every(v => !isNaN(parseFloat(v)))) {
                 const num = parseFloat(numMatch[0]);
                 idx = values.findIndex(v => Number(v) === num);
@@ -2641,14 +2655,14 @@ export function attachHold(btn, el, step = 1, opts = {}) {
         const len = values.length;
         let next = i;
         if (loop) {
-            next = ((i % len) + len) % len; // wrap-around
+            next = ((i % len) + len) % len; 
         } else {
             next = Math.max(0, Math.min(len - 1, i));
         }
         const val = values[next];
         setText(val);
-        updateProgress(next, /*isIndex*/true);
-        onChange(val, currentPercent(val, /*isIndex*/true));
+        updateProgress(next, true);
+        onChange(val, currentPercent(val, true));
         return next;
     };
 
@@ -2661,7 +2675,6 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     };
 
     const currentPercent = (valOrIdx, isIndex = false) => {
-        // si hay values => % por índice
         if (values) {
             const len = values.length;
             if (len <= 1) return 100;
@@ -2669,13 +2682,12 @@ export function attachHold(btn, el, step = 1, opts = {}) {
             const i = idx < 0 ? 0 : idx;
             return Math.round((i / (len - 1)) * 100);
         }
-        // numérico => % por min/max si finitos
         if (isFinite(min) && isFinite(max) && max > min) {
             const v = Number(valOrIdx);
             const p = ((v - min) / (max - min)) * 100;
             return Math.round(Math.max(0, Math.min(100, p)));
         }
-        return 0; // sin rango definido no podemos mapear bien
+        return 0; 
     };
 
     const updateProgress = (valOrIdx, isIndex = false) => {
@@ -2697,7 +2709,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
 
     const startLoop = () => {
         start = performance.now();
-        tick(); // clic inmediato
+        tick(); 
         const loopFn = () => {
             const held = performance.now() - start;
             timer = setTimeout(() => {

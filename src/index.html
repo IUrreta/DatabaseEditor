@@ -3142,7 +3142,11 @@
                 <div class="first-component" id="teamBudget">
                   <div class="bold-font">Balance</div>
                   <div class="input-and-buttons">
-                    <input type="string" class="custom-input-number" id="teamBudgetInput" value="40000000"></input>
+                    <div class="unit-and-input">
+                      <span class="unit-label">$</span>
+                      <input type="string" class="custom-input-number" id="teamBudgetInput" value="40000000"></input>
+                    </div>
+
                     <div class="input-buttons">
                       <i class="bi bi-plus new-augment-button"></i>
                       <i class="bi bi-dash new-augment-button"></i>
@@ -3152,7 +3156,10 @@
                 <div class="second-component" id="costCap">
                   <div class="bold-font">Cost cap spent</div>
                   <div class="input-and-buttons">
-                    <input type="string" class="custom-input-number" id="costCapInput" value="120000000"></input>
+                    <div class="unit-and-input">
+                      <span class="unit-label">$</span>
+                      <input type="string" class="custom-input-number" id="costCapInput" value="120000000"></input>
+                    </div>
                     <div class="input-buttons">
                       <i class="bi bi-plus new-augment-button"></i>
                       <i class="bi bi-dash new-augment-button"></i>
@@ -3343,24 +3350,36 @@
             </div>
 
           </div>
-          <div class="separator"></div>
+          <div class="team-separator"></div>
           <div id="viewer-second">
             <div class="facility-component-lg">
               <div class="main-second-viewer">
-                <div class="component-subtitle bold-font">
-                  <div>Car development facilities</div>
-                  <div>
-                    <button class="custom-dropdown custom-button" id="carDevButton" data-state="show"
-                      data-bs-toggle="collapse" data-bs-target="#carDevCollapse">
-                      <div class="front-gradient">Hide</div>
-                    </button>
-                    <div class="dropdown-line"></div>
-                  </div>
+                <div class="drivers-teams-pills facilities-pills">
+                  <ul class="nav nav-pills">
+                    <li class="nav-item">
+                      <a class="nav-link bold-font generalPills active" data-bs-toggle="pill" id="carDevPill">
+                        <div class="basic-label bold-font">Car development</div>
+                        <div class="pill-line"></div>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link bold-font generalPills" data-bs-toggle="pill" id="opsPill">
+                        <div class="basic-label bold-font">Operations</div>
+                        <div class="pill-line"></div>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link bold-font generalPills" data-bs-toggle="pill" id="staffFacilitiesPill">
+                        <div class="basic-label bold-font">Staff</div>
+                        <div class="pill-line"></div>
+                      </a>
+                    </li>
+                  </ul>
                 </div>
-                <div class="collapse show" id="carDevCollapse">
+                <div class="facility-group show" id="carDevCollapse">
                   <div class="facility " id="facility3">
                     <div class="facility-name">Factory</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3368,28 +3387,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility2">
                     <div class="facility-name">Design centre</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3397,28 +3413,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility5">
                     <div class="facility-name">Wind tunnel</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3426,28 +3439,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility6">
                     <div class="facility-name">CFD simulator</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3455,28 +3465,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility7">
                     <div class="facility-name">Suspension simulator</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3484,28 +3491,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility8">
                     <div class="facility-name">Car part test centre</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3513,40 +3517,27 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="component-subtitle bold-font">
-                  <div>Operations facilities</div>
-                  <div>
-                    <button class="custom-dropdown custom-button" id="operationButton" data-state="hide"
-                      data-bs-toggle="collapse" data-bs-target="#operationCollapse">
-                      <div class="front-gradient">Show</div>
-                    </button>
-                    <div class="dropdown-line"></div>
-                  </div>
-                </div>
-                <div class="collapse" id="operationCollapse">
+                <div class="facility-group" id="operationCollapse">
                   <div class="facility " id="facility15">
                     <div class="facility-name">Board room</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3554,28 +3545,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility13">
                     <div class="facility-name">Hospitality centre</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3583,28 +3571,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility1">
                     <div class="facility-name">Weather centre</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3612,28 +3597,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility10">
                     <div class="facility-name">Helipad</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3641,28 +3623,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility11">
                     <div class="facility-name">Memorabilia Room</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3670,28 +3649,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility" id="facility12">
                     <div class="facility-name">Tour centre</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3699,40 +3675,27 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="component-subtitle bold-font">
-                  <div>Staff facilities</div>
-                  <div>
-                    <button class="custom-dropdown custom-button" id="staffButton" data-state="hide"
-                      data-bs-toggle="collapse" data-bs-target="#staffColapse">
-                      <div class="front-gradient">Show</div>
-                    </button>
-                    <div class="dropdown-line"></div>
-                  </div>
-                </div>
-                <div class="collapse" id="staffColapse">
+                <div class="facility-group" id="staffCollapse">
                   <div class="facility " id="facility9">
                     <div class="facility-name">Team hub</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3740,28 +3703,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility14">
                     <div class="facility-name">Scouting department</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3769,28 +3729,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility4">
                     <div class="facility-name">Race simulator</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3798,33 +3755,23 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                 </div>
-                <!-- <div class="pit-crew-button">
-                  <button class="custom-dropdown custom-button" id="carDevButton" data-state="show"
-                    data-bs-toggle="modal" data-bs-target="#pitCrewModal">
-                    <div class="front-gradient bold-font">Pit crew</div>
-                  </button>
-                  <div class="dropdown-line"></div>
-                </div> -->
               </div>
             </div>
           </div>
