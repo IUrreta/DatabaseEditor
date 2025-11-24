@@ -2105,9 +2105,37 @@ input.comparing-tag {
   display: flex;
   flex-direction: row;
   position: relative;
+  align-items: center;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
 }
+
+.patreon-login{
+  padding-right: 15px;
+}
+
+body:has(#blockDiv:not(.disappear)) .patreon-login .patreon-login-button{
+  color: var(--text-muted);
+}
+
+.patreon-login .patreon-login-button{
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.patreon-login .patreon-login-button:hover{
+  color: var(--new-primary);
+}
+
+.patreon-login .patreon-login-button:active{
+  transform: scale(0.97);
+  color: var(--new-primary);
+}
+
 
 body.og-theme .tools-panel {
   border-bottom: 1px solid var(--slight-contrast);
@@ -2232,7 +2260,8 @@ body.vaporwave-theme .background {
 .script-selector {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  flex-grow: 1;
   margin-right: 20px;
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
@@ -4400,7 +4429,6 @@ body.light-theme .flag-header img {
   display: flex;
   flex-direction: column;
   font-size: 20px;
-  background-color: var(--elements);
   border-radius: 10px;
   margin-top: 10px;
   margin-left: 10px;
@@ -4410,7 +4438,6 @@ body.light-theme .flag-header img {
   transition: border-color 0.15s, background-color 0.15s;
   align-items: center;
   min-height: 66px;
-  box-shadow: var(--shadow-s);
   border: none;
 }
 
@@ -6963,7 +6990,7 @@ body.og-theme .records-list {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  background-color: var(--elements);
+  background-color: var(--superficials);
   border-radius: 10px;
   padding: 10px 20px;
   align-items: center;
@@ -10882,14 +10909,6 @@ body.vaporwave-theme #blockDiv {
   z-index: 2;
 }
 
-.splash-box.appear {
-  animation: fadeIn 0.5s 0.1s forwards;
-}
-
-.socials-box.appear {
-  animation: fadeIn 0.5s 0.2s forwards;
-}
-
 body:has(#blockDiv:not(.disappear)) .footer .socials {
   opacity: 0;
 }
@@ -13981,6 +14000,25 @@ p.news-error-api-key {
   z-index: 20;
 }
 
+.socials-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  margin-top: 6rem;
+  color: var(--text-muted);
+}
+
+.socials-container a{
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.socials-container a.bi-custom-patreon::before{
+  background-color: var(--text-muted);
+}
 
 .icon-circle {
   width: 5rem;
