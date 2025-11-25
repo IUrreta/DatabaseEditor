@@ -92,6 +92,8 @@ const patchNotesBody = document.getElementById("patchNotesBody")
 const selectImageButton = document.getElementById('selectImage');
 const patreonLoginButton = document.getElementById('patreonLoginButton');
 const patreonLogoutButton = document.getElementById('patreonLogoutButton');
+const patreonToolLoginButton = document.getElementById('patreonToolLoginButton');
+const userToolButton = document.getElementById('userToolButton');
 
 const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, carPerformanceDiv, mod25Div]
 
@@ -280,11 +282,27 @@ if (patreonLoginButton) {
     });
 }
 
+if (patreonToolLoginButton) {
+    patreonToolLoginButton.addEventListener('click', () => {
+        window.location.href = '/api/auth/patreon/login';
+    });
+}
+
 if (patreonLogoutButton) {
     patreonLogoutButton.addEventListener('click', () => {
         handleLogout();
     });
 }
+
+if (userToolButton) {
+    userToolButton.addEventListener('click', () => {
+        const userToolMenu = document.querySelector('.userToolMenu');
+        if (userToolMenu) {
+            userToolMenu.classList.toggle('hidden');
+        }
+    });
+}
+
 
 async function handleLogout() {
     try {
@@ -367,7 +385,7 @@ function updatePatreonUI(tier) {
         patreonUnlockables.classList.remove("d-none");
         patreonThemes.classList.remove("d-none");
         document.querySelector(".patreonCheck").classList.remove("d-none");
-        document.getElementById("patreonTierText").textContent = tier.tier
+        document.getElementById("patreonStatusText").textContent = tier.tier
         loadTheme();
     }
     else {
@@ -375,17 +393,22 @@ function updatePatreonUI(tier) {
         patreonUnlockables.classList.add("d-none");
         patreonThemes.classList.add("d-none");
         document.querySelector(".patreonCheck").classList.add("d-none");
-        document.getElementById("patreonTierText").textContent = tier.isLoggedIn ? tier.tier : "Not logged in"
+        document.getElementById("patreonStatusText").textContent = tier.isLoggedIn ? tier.tier : "Not logged in"
     }
 
     if (tier.isLoggedIn) {
         document.querySelector(".user-name-and-logout").classList.remove("d-none");
+        document.querySelector(".user-name-and-logout-tool").classList.remove("d-none");
         document.getElementById("userName").textContent = tier.user.fullName;
-        document.querySelector("#patreonLoginButton").classList.add("d-none");
+        document.getElementById("userToolName").textContent = tier.user.fullName;
+        patreonLoginButton.classList.add("d-none");
+        patreonToolLoginButton.classList.add("d-none");
     }
     else {
         document.querySelector(".user-name-and-logout").classList.add("d-none");
-        document.querySelector("#patreonLoginButton").classList.remove("d-none");
+        document.querySelector(".user-name-and-logout-tool").classList.add("d-none");
+        patreonLoginButton.classList.remove("d-none");
+        patreonToolLoginButton.classList.remove("d-none");
     }
 
     manageNewsStatus(tier);
@@ -2234,7 +2257,6 @@ document.addEventListener('DOMContentLoaded', () => {
     versionPanel.textContent = `${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
     getPatchNotes()
-    populateMarquee();
 
     if (shouldShowPatchModal(storedVersion, versionNow)) {
         localStorage.setItem('lastVersion', versionNow); // Guardar nueva versión
@@ -2262,28 +2284,6 @@ function createMarqueeItem(name, tier) {
     span.textContent = name;
     span.classList.add(tier);
     return span;
-}
-
-function populateMarquee() {
-    const marqueeInner = document.querySelector(".marquee__inner");
-
-    // Crear dos grupos de nombres para el scroll infinito
-    const group1 = document.createElement("div");
-    group1.classList.add("marquee__group");
-
-    const group2 = document.createElement("div");
-    group2.classList.add("marquee__group", "second-group");
-
-    let randomizedMembers = members.sort(() => Math.random() - 0.5);
-
-    randomizedMembers.forEach(member => {
-        const item = createMarqueeItem(member.name, member.tier);
-        group1.appendChild(item.cloneNode(true));
-        group2.appendChild(item.cloneNode(true));
-    });
-
-    marqueeInner.appendChild(group1);
-    marqueeInner.appendChild(group2);
 }
 
 document.querySelectorAll(".one-theme").forEach(function (elem) {

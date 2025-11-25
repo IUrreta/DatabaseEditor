@@ -1124,12 +1124,45 @@ body.og-theme .dropdown-menu a:hover {
   background-color: var(--new-primary-transparent)
 }
 
-.button-with-icon i::before {
+#patreonLoginButton i::before {
   transition: background-color 0.15s;
 }
 
-.button-with-icon:hover i::before {
+#patreonLoginButton:hover i::before {
   background-color: var(--new-primary);
+}
+
+.user-name-and-logout-tool{
+  position: relative;
+}
+
+.userToolMenu{
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 40px;
+  right: 0px;
+  border-radius: 7px;
+  width: max-content;
+  gap: 2px;
+  padding: 8px 5px;
+  opacity: 1;
+  z-index: 200;
+  transform: translateY(0);
+  pointer-events: auto;
+  background-color: var(--elements);
+  box-shadow: var(--shadow-m);
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.userToolMenu.hidden{
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.button-with-icon#patreonLogoutButton {
+  width: min-content;
 }
 
 .button-with-icon.active {
@@ -1141,6 +1174,24 @@ body.og-theme .dropdown-menu a:hover {
   color: var(--new-primary);
   background-color: var(--new-primary-transparent);
   transform: scale(0.97);
+}
+
+.button-with-icon#patreonStatus:hover{
+  color: var(--text-secondary);
+  background-color: transparent;
+  cursor: default;
+}
+
+.button-with-icon#patreonStatus:active{
+  transform: none;
+}
+
+.button-with-icon#patreonStatus i.bi-custom-patreon::before {
+  background-color: var(--text-secondary);
+}
+
+.button-with-icon#patreonStatus:hover i.bi-custom-patreon::before {
+  background-color: var(--text-secondary);
 }
 
 .comparing-tag {
@@ -2114,8 +2165,12 @@ input.comparing-tag {
   padding-right: 15px;
 }
 
-body:has(#blockDiv:not(.disappear)) .patreon-login .patreon-login-button{
+body:has(#blockDiv:not(.disappear)) .patreon-login .patreon-login-button, body:has(#blockDiv:not(.disappear)) .patreon-login #userToolButton{
   color: var(--text-muted);
+}
+
+body:has(#blockDiv:not(.disappear)) .patreon-login .patreon-login-button:hover, body:has(#blockDiv:not(.disappear)) .patreon-login #userToolButton:hover{
+  color: var(--new-primary);
 }
 
 .patreon-login .patreon-login-button{

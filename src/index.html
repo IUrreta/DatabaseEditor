@@ -668,10 +668,6 @@
                   <i class="bi bi-person-fill"></i>
                   <span id="userName"></span>
                 </div>
-                <div class="button-with-icon" id="patreonLogoutButton">
-                  <i class="bi bi-box-arrow-right"></i>
-                  <span>Logout</span>
-                </div>
               </div>
               <div class="saved-status api-loaded patreon-status" id="patreonKeyStatus">
                 <i class="bi bi-check patreonCheck"></i>
@@ -1396,8 +1392,24 @@
 
     </div>
     <div class="patreon-login">
-      <div type="button" class="patreon-login-button confirm-modal"id="patreonToolLogin">
+      <div type="button" class="patreon-login-button confirm-modal" id="patreonToolLoginButton">
         <span>Login with Patreon</span>
+      </div>
+      <div class="user-name-and-logout-tool d-none">
+        <div class="button-with-icon" id="userToolButton">
+          <i class="bi bi-person-fill"></i>
+          <span id="userToolName"></span>
+        </div>
+        <div class="userToolMenu hidden auto-closable">
+          <div class="button-with-icon" id="patreonStatus">
+            <i class="bi-custom-patreon"></i>
+            <span id="patreonStatusText">Patreon Supporter</span>
+          </div>
+          <div class="button-with-icon" id="patreonLogoutButton">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
