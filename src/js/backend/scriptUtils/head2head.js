@@ -22,11 +22,11 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
   const racesBoth = queryDB(`
       SELECT RaceID
       FROM Races_Results
-      WHERE Season = ${year}
-        AND DriverID IN (${driver1ID}, ${driver2ID})
+      WHERE Season = ?
+        AND DriverID IN (?, ?)
       GROUP BY RaceID
       HAVING COUNT(DISTINCT DriverID) = 2
-    `, 'allRows') || [];
+    `, [year, driver1ID, driver2ID], 'allRows') || [];
 
 
   const raceIDs = racesBoth.map(row => row[0]);
@@ -74,19 +74,19 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
         SELECT MAX(QualifyingStage)
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
-          AND SeasonID = ${year}
-          AND DriverID = ${driver1ID}
-      `, 'singleValue') || 0;
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID = ?
+      `, [raceID, year, driver1ID], 'singleValue') || 0;
 
     const d2_QStage = queryDB(`
         SELECT MAX(QualifyingStage)
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
-          AND SeasonID = ${year}
-          AND DriverID = ${driver2ID}
-      `, 'singleValue') || 0;
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID = ?
+      `, [raceID, year, driver2ID], 'singleValue') || 0;
 
     let d1_QRes, d2_QRes;
 
@@ -95,24 +95,24 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
         SELECT FinishingPos
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
-          AND SeasonID = ${year}
-          AND DriverID = ${driver1ID}
-          AND QualifyingStage = ${d1_QStage}
-      `, 'singleValue') || 99;
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID = ?
+          AND QualifyingStage = ?
+      `, [raceID, year, driver1ID, d1_QStage], 'singleValue') || 99;
 
       d2_QRes = queryDB(`
         SELECT FinishingPos
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
-          AND SeasonID = ${year}
-          AND DriverID = ${driver2ID}
-          AND QualifyingStage = ${d2_QStage}
-      `, 'singleValue') || 99;
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID = ?
+          AND QualifyingStage = ?
+      `, [raceID, year, driver2ID, d2_QStage], 'singleValue') || 99;
     } else {
-      d1_QRes = queryDB(`SELECT StartingPos FROM Races_Results WHERE RaceID = ${raceID} AND Season = ${year} AND DriverID = ${driver1ID}`, 'singleValue') || 99;
-      d2_QRes = queryDB(`SELECT StartingPos FROM Races_Results WHERE RaceID = ${raceID} AND Season = ${year} AND DriverID = ${driver2ID}`, 'singleValue') || 99;
+      d1_QRes = queryDB(`SELECT StartingPos FROM Races_Results WHERE RaceID = ? AND Season = ? AND DriverID = ?`, [raceID, year, driver1ID], 'singleValue') || 99;
+      d2_QRes = queryDB(`SELECT StartingPos FROM Races_Results WHERE RaceID = ? AND Season = ? AND DriverID = ?`, [raceID, year, driver2ID], 'singleValue') || 99;
     }
 
     // --- 3.3) Quién ganó el “duelo” de qualy
@@ -140,21 +140,21 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
         SELECT FastestLap
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
-          AND SeasonID = ${year}
-          AND DriverID = ${driver1ID}
-          AND QualifyingStage = ${minStage}
-      `, 'singleValue') || 0;
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID = ?
+          AND QualifyingStage = ?
+      `, [raceID, year, driver1ID, minStage], 'singleValue') || 0;
 
     const d2_qLap = queryDB(`
         SELECT FastestLap
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
-          AND SeasonID = ${year}
-          AND DriverID = ${driver2ID}
-          AND QualifyingStage = ${minStage}
-      `, 'singleValue') || 0;
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID = ?
+          AND QualifyingStage = ?
+      `, [raceID, year, driver2ID, minStage], 'singleValue') || 0;
 
     if (d1_qLap !== 0 && d2_qLap !== 0) {
       stats.driver1.avgQPace.push(d1_qLap);
@@ -181,18 +181,18 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     const d1_RRes = queryDB(`
         SELECT FinishingPos
         FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND Season = ${year}
-          AND DriverID = ${driver1ID}
-      `, 'singleValue') || 99;
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID = ?
+      `, [raceID, year, driver1ID], 'singleValue') || 99;
 
     const d2_RRes = queryDB(`
         SELECT FinishingPos
         FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND Season = ${year}
-          AND DriverID = ${driver2ID}
-      `, 'singleValue') || 99;
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID = ?
+      `, [raceID, year, driver2ID], 'singleValue') || 99;
 
     // ¿Quién terminó por delante?
     if (d1_RRes < d2_RRes) {
@@ -225,18 +225,18 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     const d1_RDNF = queryDB(`
         SELECT DNF
         FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND Season = ${year}
-          AND DriverID = ${driver1ID}
-      `, 'singleValue') || 0;
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID = ?
+      `, [raceID, year, driver1ID], 'singleValue') || 0;
 
     const d2_RDNF = queryDB(`
         SELECT DNF
         FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND Season = ${year}
-          AND DriverID = ${driver2ID}
-      `, 'singleValue') || 0;
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID = ?
+      `, [raceID, year, driver2ID], 'singleValue') || 0;
 
     if (d1_RDNF === 1) stats.dnfH2H[0] += 1;
     if (d2_RDNF === 1) stats.dnfH2H[1] += 1;
@@ -246,34 +246,34 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
       const d1_time = queryDB(`
           SELECT Time
           FROM Races_Results
-          WHERE RaceID = ${raceID}
-            AND Season = ${year}
-            AND DriverID = ${driver1ID}
-        `, 'singleValue') || 0;
+          WHERE RaceID = ?
+            AND Season = ?
+            AND DriverID = ?
+        `, [raceID, year, driver1ID], 'singleValue') || 0;
 
       const d2_time = queryDB(`
           SELECT Time
           FROM Races_Results
-          WHERE RaceID = ${raceID}
-            AND Season = ${year}
-            AND DriverID = ${driver2ID}
-        `, 'singleValue') || 0;
+          WHERE RaceID = ?
+            AND Season = ?
+            AND DriverID = ?
+        `, [raceID, year, driver2ID], 'singleValue') || 0;
 
       const d1_laps = queryDB(`
           SELECT Laps
           FROM Races_Results
-          WHERE RaceID = ${raceID}
-            AND Season = ${year}
-            AND DriverID = ${driver1ID}
-        `, 'singleValue') || 1;
+          WHERE RaceID = ?
+            AND Season = ?
+            AND DriverID = ?
+        `, [raceID, year, driver1ID], 'singleValue') || 1;
 
       const d2_laps = queryDB(`
           SELECT Laps
           FROM Races_Results
-          WHERE RaceID = ${raceID}
-            AND Season = ${year}
-            AND DriverID = ${driver2ID}
-        `, 'singleValue') || 1;
+          WHERE RaceID = ?
+            AND Season = ?
+            AND DriverID = ?
+        `, [raceID, year, driver2ID], 'singleValue') || 1;
 
       const d1_pace = Number((d1_time / d1_laps).toFixed(3));
       const d2_pace = Number((d2_time / d2_laps).toFixed(3));
@@ -286,18 +286,18 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     const d1_SRes = queryDB(`
         SELECT FinishingPos
         FROM Races_Sprintresults
-        WHERE RaceID = ${raceID}
-          AND SeasonID = ${year}
-          AND DriverID = ${driver1ID}
-      `, 'singleValue');
+        WHERE RaceID = ?
+          AND SeasonID = ?
+          AND DriverID = ?
+      `, [raceID, year, driver1ID], 'singleValue');
 
     const d2_SRes = queryDB(`
         SELECT FinishingPos
         FROM Races_Sprintresults
-        WHERE RaceID = ${raceID}
-          AND SeasonID = ${year}
-          AND DriverID = ${driver2ID}
-      `, 'singleValue');
+        WHERE RaceID = ?
+          AND SeasonID = ?
+          AND DriverID = ?
+      `, [raceID, year, driver2ID], 'singleValue');
 
     if (d1_SRes === 1) stats.sprintWinsH2H[0] += 1;
     if (d2_SRes === 1) stats.sprintWinsH2H[1] += 1;
@@ -308,17 +308,17 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
       SELECT Points
       FROM Races_DriverStandings
       WHERE RaceFormula = 1
-        AND SeasonID = ${year}
-        AND DriverID = ${driver1ID}
-    `, 'singleValue') || 0;
+        AND SeasonID = ?
+        AND DriverID = ?
+    `, [year, driver1ID], 'singleValue') || 0;
 
   const d2_Pts = queryDB(`
       SELECT Points
       FROM Races_DriverStandings
       WHERE RaceFormula = 1
-        AND SeasonID = ${year}
-        AND DriverID = ${driver2ID}
-    `, 'singleValue') || 0;
+        AND SeasonID = ?
+        AND DriverID = ?
+    `, [year, driver2ID], 'singleValue') || 0;
 
   stats.pointsH2H = [d1_Pts, d2_Pts];
 
@@ -371,11 +371,11 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
   const racesBoth = queryDB(`
       SELECT RaceID
       FROM Races_Results
-      WHERE Season = ${season}
-        AND TeamID IN (${t1}, ${t2})
+      WHERE Season = ?
+        AND TeamID IN (?, ?)
       GROUP BY RaceID
       HAVING COUNT(DISTINCT TeamID) = 2
-    `, 'allRows') || [];
+    `, [season, t1, t2], 'allRows') || [];
 
   const raceIDs = racesBoth.map(row => row[0]);
 
@@ -412,17 +412,17 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     const drivers1 = queryDB(`
         SELECT DISTINCT DriverID
         FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND TeamID = ${t1}
-      `, 'allRows') || [];
+        WHERE RaceID = ?
+          AND TeamID = ?
+      `, [raceID, t1], 'allRows') || [];
 
     // Pilotos del team2
     const drivers2 = queryDB(`
         SELECT DISTINCT DriverID
         FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND TeamID = ${t2}
-      `, 'allRows') || [];
+        WHERE RaceID = ?
+          AND TeamID = ?
+      `, [raceID, t2], 'allRows') || [];
 
     // Transformamos el array de arrays/tuplas en un array de IDs
     const drivers1IDs = drivers1.map(d => d[0]);
@@ -434,27 +434,30 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
       continue;
     }
 
-    const drivers1Str = drivers1IDs.join(',');
-    const drivers2Str = drivers2IDs.join(',');
-
     // 3.2) Fase de Qualy más alta para cada equipo
+    // Note: cannot easily parameterize IN clause with array directly in all SQL dialects,
+    // but sql.js/sqlite supports `IN (?, ?, ...)`
+    // We will construct the placeholders string.
+    const d1Placeholders = drivers1IDs.map(() => '?').join(',');
+    const d2Placeholders = drivers2IDs.map(() => '?').join(',');
+
     const d1_QStage = queryDB(`
         SELECT MAX(QualifyingStage)
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
-          AND SeasonID = ${season}
-          AND DriverID IN (${drivers1Str})
-      `, 'singleValue') || 0;
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID IN (${d1Placeholders})
+      `, [raceID, season, ...drivers1IDs], 'singleValue') || 0;
 
     const d2_QStage = queryDB(`
         SELECT MAX(QualifyingStage)
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
-          AND SeasonID = ${season}
-          AND DriverID IN (${drivers2Str})
-      `, 'singleValue') || 0;
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID IN (${d2Placeholders})
+      `, [raceID, season, ...drivers2IDs], 'singleValue') || 0;
 
     let d1_QRes, d2_QRes;
 
@@ -464,24 +467,24 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
         SELECT MIN(FinishingPos)
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
-          AND SeasonID = ${season}
-          AND DriverID IN (${drivers1Str})
-          AND QualifyingStage = ${d1_QStage}
-      `, 'singleValue') || 99;
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID IN (${d1Placeholders})
+          AND QualifyingStage = ?
+      `, [raceID, season, ...drivers1IDs, d1_QStage], 'singleValue') || 99;
 
       d2_QRes = queryDB(`
         SELECT MIN(FinishingPos)
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
-          AND SeasonID = ${season}
-          AND DriverID IN (${drivers2Str})
-          AND QualifyingStage = ${d2_QStage}
-      `, 'singleValue') || 99;
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID IN (${d2Placeholders})
+          AND QualifyingStage = ?
+      `, [raceID, season, ...drivers2IDs, d2_QStage], 'singleValue') || 99;
     } else {
-      d1_QRes = queryDB(`SELECT MIN(StartingPos) FROM Races_Results WHERE RaceID = ${raceID} AND Season = ${season} AND DriverID IN (${drivers1Str})`, 'singleValue') || 99;
-      d2_QRes = queryDB(`SELECT MIN(StartingPos) FROM Races_Results WHERE RaceID = ${raceID} AND Season = ${season} AND DriverID IN (${drivers2Str})`, 'singleValue') || 99;
+      d1_QRes = queryDB(`SELECT MIN(StartingPos) FROM Races_Results WHERE RaceID = ? AND Season = ? AND DriverID IN (${d1Placeholders})`, [raceID, season, ...drivers1IDs], 'singleValue') || 99;
+      d2_QRes = queryDB(`SELECT MIN(StartingPos) FROM Races_Results WHERE RaceID = ? AND Season = ? AND DriverID IN (${d2Placeholders})`, [raceID, season, ...drivers2IDs], 'singleValue') || 99;
     }
 
     // 3.4) Comparativa H2H de qualy
@@ -505,21 +508,21 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
         SELECT FastestLap
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
-          AND SeasonID = ${season}
-          AND DriverID IN (${drivers1Str})
-          AND QualifyingStage = ${minQ}
-      `, 'singleValue') || 0;
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID IN (${d1Placeholders})
+          AND QualifyingStage = ?
+      `, [raceID, season, ...drivers1IDs, minQ], 'singleValue') || 0;
 
     const d2_qLap = queryDB(`
         SELECT FastestLap
         FROM Races_QualifyingResults
         WHERE RaceFormula = 1
-          AND RaceID = ${raceID}
-          AND SeasonID = ${season}
-          AND DriverID IN (${drivers2Str})
-          AND QualifyingStage = ${minQ}
-      `, 'singleValue') || 0;
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID IN (${d2Placeholders})
+          AND QualifyingStage = ?
+      `, [raceID, season, ...drivers2IDs, minQ], 'singleValue') || 0;
 
     if (d1_qLap !== 0 && d2_qLap !== 0) {
       d1_avgQPace.push(d1_qLap);
@@ -546,18 +549,18 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     const d1_RRes = queryDB(`
         SELECT MIN(FinishingPos)
         FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND Season = ${season}
-          AND DriverID IN (${drivers1Str})
-      `, 'singleValue') || 99;
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID IN (${d1Placeholders})
+      `, [raceID, season, ...drivers1IDs], 'singleValue') || 99;
 
     const d2_RRes = queryDB(`
         SELECT MIN(FinishingPos)
         FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND Season = ${season}
-          AND DriverID IN (${drivers2Str})
-      `, 'singleValue') || 99;
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID IN (${d2Placeholders})
+      `, [raceID, season, ...drivers2IDs], 'singleValue') || 99;
 
     // Wins
     if (d1_RRes === 1) winsH2H[0] += 1;
@@ -586,18 +589,18 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     const d1_RDNF = queryDB(`
         SELECT SUM(DNF)
         FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND Season = ${season}
-          AND DriverID IN (${drivers1Str})
-      `, 'singleValue') || 0;
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID IN (${d1Placeholders})
+      `, [raceID, season, ...drivers1IDs], 'singleValue') || 0;
 
     const d2_RDNF = queryDB(`
         SELECT SUM(DNF)
         FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND Season = ${season}
-          AND DriverID IN (${drivers2Str})
-      `, 'singleValue') || 0;
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID IN (${d2Placeholders})
+      `, [raceID, season, ...drivers2IDs], 'singleValue') || 0;
 
     dnfH2H[0] += d1_RDNF;
     dnfH2H[1] += d2_RDNF;
@@ -607,11 +610,11 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     const d1_racePaceStats = queryDB(`
         SELECT COUNT(*), AVG(Time), AVG(Laps)
         FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND Season = ${season}
-          AND DriverID IN (${drivers1Str})
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID IN (${d1Placeholders})
           AND DNF = 0
-      `, 'singleRow') || [0, 0, 0];
+      `, [raceID, season, ...drivers1IDs], 'singleRow') || [0, 0, 0];
 
     if (d1_racePaceStats[0] > 0) { // [0] is COUNT
       const avgTime = d1_racePaceStats[1];
@@ -625,11 +628,11 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     const d2_racePaceStats = queryDB(`
         SELECT COUNT(*), AVG(Time), AVG(Laps)
         FROM Races_Results
-        WHERE RaceID = ${raceID}
-          AND Season = ${season}
-          AND DriverID IN (${drivers2Str})
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID IN (${d2Placeholders})
           AND DNF = 0
-      `, 'singleRow') || [0, 0, 0];
+      `, [raceID, season, ...drivers2IDs], 'singleRow') || [0, 0, 0];
 
     if (d2_racePaceStats[0] > 0) { // [0] is COUNT
       const avgTime = d2_racePaceStats[1];
@@ -644,18 +647,18 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     const d1_SRes = queryDB(`
         SELECT MIN(FinishingPos)
         FROM Races_Sprintresults
-        WHERE RaceID = ${raceID}
-          AND SeasonID = ${season}
-          AND DriverID IN (${drivers1Str})
-      `, 'singleValue');
+        WHERE RaceID = ?
+          AND SeasonID = ?
+          AND DriverID IN (${d1Placeholders})
+      `, [raceID, season, ...drivers1IDs], 'singleValue');
 
     const d2_SRes = queryDB(`
         SELECT MIN(FinishingPos)
         FROM Races_Sprintresults
-        WHERE RaceID = ${raceID}
-          AND SeasonID = ${season}
-          AND DriverID IN (${drivers2Str})
-      `, 'singleValue');
+        WHERE RaceID = ?
+          AND SeasonID = ?
+          AND DriverID IN (${d2Placeholders})
+      `, [raceID, season, ...drivers2IDs], 'singleValue');
 
     if (d1_SRes === 1) {
       sprintWinsH2H[0] += 1;
@@ -670,17 +673,17 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
       SELECT Points
       FROM Races_TeamStandings
       WHERE RaceFormula = 1
-        AND SeasonID = ${season}
-        AND TeamID = ${t1}
-    `, 'singleValue') || 0;
+        AND SeasonID = ?
+        AND TeamID = ?
+    `, [season, t1], 'singleValue') || 0;
 
   const d2_Pts = queryDB(`
       SELECT Points
       FROM Races_TeamStandings
       WHERE RaceFormula = 1
-        AND SeasonID = ${season}
-        AND TeamID = ${t2}
-    `, 'singleValue') || 0;
+        AND SeasonID = ?
+        AND TeamID = ?
+    `, [season, t2], 'singleValue') || 0;
 
   pointsH2H[0] = d1_Pts;
   pointsH2H[1] = d2_Pts;
@@ -731,4 +734,3 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
   // 7) Retornamos el array final
   return resultList;
 }
-

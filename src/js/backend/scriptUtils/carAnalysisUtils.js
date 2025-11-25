@@ -28,7 +28,7 @@ export function getAllPartsFromTeam(teamId) {
     // Obtenemos Day y Season
     const [day, currentSeason] = queryDB(
         "SELECT Day, CurrentSeason FROM Player_State",
-        "singleRow"
+        [], "singleRow"
     ) || [0, 0];
 
 
@@ -50,12 +50,12 @@ export function getAllPartsFromTeam(teamId) {
             ) AS TrackID
           FROM Parts_Designs d
           WHERE 
-            d.PartType = ${j}
-            AND d.TeamID = ${teamId}
-            AND d.ValidFrom = ${currentSeason}
+            d.PartType = ?
+            AND d.TeamID = ?
+            AND d.ValidFrom = ?
             AND d.DayCompleted > 0
         `;
-        let designs = queryDB(sql, "allRows");
+        let designs = queryDB(sql, [j, teamId, currentSeason], "allRows");
 
         // Para cada design, agregamos info extra: equipped_1, equipped_2, n_parts
         designs = designs.map(designRow => {
@@ -66,29 +66,29 @@ export function getAllPartsFromTeam(teamId) {
             const equipped1 = queryDB(`
             SELECT DesignID
             FROM Parts_CarLoadout
-            WHERE TeamID = ${teamId} 
-              AND PartType = ${j} 
+            WHERE TeamID = ?
+              AND PartType = ?
               AND LoadoutID = 1
-          `, "singleValue");
+          `, [teamId, j], "singleValue");
             let eq1 = (equipped1 === designID) ? 1 : 0;
 
             // Equipado en loadout 2?
             const equipped2 = queryDB(`
             SELECT DesignID
             FROM Parts_CarLoadout
-            WHERE TeamID = ${teamId} 
-              AND PartType = ${j} 
+            WHERE TeamID = ?
+              AND PartType = ?
               AND LoadoutID = 2
-          `, "singleValue");
+          `, [teamId, j], "singleValue");
             let eq2 = (equipped2 === designID) ? 1 : 0;
 
             // Número de partes (items) construidas
             const nParts = queryDB(`
             SELECT COUNT(*)
             FROM Parts_Items
-            WHERE DesignID = ${designID}
-              AND BuildWork = ${carConstants.standardBuildworkPerPart[j]}
-          `, "singleValue") || 0;
+            WHERE DesignID = ?
+              AND BuildWork = ?
+          `, [designID, carConstants.standardBuildworkPerPart[j]], "singleValue") || 0;
 
             // Devolvemos un nuevo array con toda la info
             return [
@@ -118,7 +118,7 @@ export function getPartsFromTeam(teamId) {
     // Day, Season
     const [day, season] = queryDB(
         "SELECT Day, CurrentSeason FROM Player_State",
-        "singleRow"
+        [], "singleRow"
     ) || [0, 0];
 
     const designs = {};
@@ -127,11 +127,11 @@ export function getPartsFromTeam(teamId) {
         const row = queryDB(`
           SELECT MAX(DesignID)
           FROM Parts_Designs
-          WHERE PartType = ${j}
-            AND TeamID = ${teamId}
-            AND ValidFrom = ${season}
+          WHERE PartType = ?
+            AND TeamID = ?
+            AND ValidFrom = ?
             AND (DayCompleted > 0 OR DayCreated < 0)
-        `, "allRows");
+        `, [j, teamId, season], "allRows");
         designs[j] = row;
     }
 
@@ -140,8 +140,8 @@ export function getPartsFromTeam(teamId) {
         SELECT MAX(DesignID)
         FROM Parts_Designs
         WHERE PartType = 0
-          AND TeamID = ${teamId}
-      `, "allRows");
+          AND TeamID = ?
+      `, [teamId], "allRows");
     designs[0] = engine;
 
     return designs;
@@ -156,7 +156,7 @@ export function getBestPartsUntil(day, customTeam = false) {
     const [dayCur, season] = queryDB(`
         SELECT Day, CurrentSeason 
         FROM Player_State
-      `, "singleRow") || [0, 0];
+      `, [], "singleRow") || [0, 0];
 
     const teamList = customTeam
         ? [...Array(10).keys()].map(i => i + 1).concat(32)
@@ -169,11 +169,11 @@ export function getBestPartsUntil(day, customTeam = false) {
             const row = queryDB(`
             SELECT MAX(DesignID)
             FROM Parts_Designs
-            WHERE PartType = ${j}
-              AND TeamID = ${t}
-              AND ValidFrom = ${season}
-              AND ((DayCompleted > 0 AND DayCompleted <= ${day}) OR DayCreated < 0)
-          `, "allRows");
+            WHERE PartType = ?
+              AND TeamID = ?
+              AND ValidFrom = ?
+              AND ((DayCompleted > 0 AND DayCompleted <= ?) OR DayCreated < 0)
+          `, [j, t, season, day], "allRows");
             designs[j] = row;
         }
         // engine
@@ -181,8 +181,8 @@ export function getBestPartsUntil(day, customTeam = false) {
           SELECT MAX(DesignID)
           FROM Parts_Designs
           WHERE PartType = 0
-            AND TeamID = ${t}
-        `, "allRows");
+            AND TeamID = ?
+        `, [t], "allRows");
         designs[0] = engine;
 
         teams[t] = designs;
@@ -206,8 +206,8 @@ export function getCarStats(designDict) {
             const rows = queryDB(`
             SELECT PartStat, Value
             FROM Parts_Designs_StatValues
-            WHERE DesignID = ${designID}
-          `, "allRows");
+            WHERE DesignID = ?
+          `, [designID], "allRows");
             // rows => [ [PartStat, Value], [PartStat, Value], ... ]
             const tmp = {};
             for (const [stat, val] of rows) {
@@ -237,8 +237,8 @@ export function getTyreDegStats(designDict) {
             const rows = queryDB(`
             SELECT PartStat, Value
             FROM Parts_Designs_StatValues
-            WHERE DesignID = ${designID}
-          `, "allRows");
+            WHERE DesignID = ?
+          `, [designID], "allRows");
             // rows => [ [PartStat, Value], [PartStat, Value], ... ]
             const tmp = {};
             for (const [stat, val] of rows) {
@@ -264,16 +264,16 @@ export function updateTyreDegStats(designDictTeamReceiver, designDictTeamGiver, 
         let newTyreDegStat = designDictTeamGiver[part][2];
         queryDB(`
             UPDATE Parts_Designs_StatValues
-            SET Value = ${newTyreDegStat}
-            WHERE DesignID = ${designID} AND PartStat = 2
-        `);
+            SET Value = ?
+            WHERE DesignID = ? AND PartStat = 2
+        `, [newTyreDegStat, designID], 'run');
 
         queryDB(`UPDATE Parts_TeamExpertise
-            SET Expertise = ${newTyreDegStat}
-            WHERE TeamID = ${teamReceiver}
-                AND PartType = ${part}
+            SET Expertise = ?
+            WHERE TeamID = ?
+                AND PartType = ?
                 AND PartStat = 2
-        `);
+        `, [newTyreDegStat, teamReceiver, part], 'run');
     }
 }
 
@@ -288,8 +288,8 @@ export function applyBoostToCarStats(designDict, boost, team) {
             const rows = queryDB(`
             SELECT PartStat, Value, UnitValue
             FROM Parts_Designs_StatValues
-            WHERE DesignID = ${designID}
-          `, "allRows");
+            WHERE DesignID = ?
+          `, [designID], "allRows");
             const tmp = {};
             for (const [stat, val, unitVal] of rows) {
                 if (stat !== 15) {
@@ -303,17 +303,17 @@ export function applyBoostToCarStats(designDict, boost, team) {
 
                   queryDB(
                     `UPDATE Parts_Designs_StatValues
-                     SET UnitValue = ${newUnitVal}, Value = ${newVal}
-                     WHERE DesignID = ${designID} AND PartStat = ${stat}`
+                     SET UnitValue = ?, Value = ?
+                     WHERE DesignID = ? AND PartStat = ?`, [newUnitVal, newVal, designID, stat], 'run'
                   );
 
                   queryDB(`
                     UPDATE Parts_TeamExpertise
-                    SET Expertise = ${newVal}
-                    WHERE TeamID = ${team}
-                        AND PartType = ${part}
-                        AND PartStat = ${stat}
-                    `);
+                    SET Expertise = ?
+                    WHERE TeamID = ?
+                        AND PartType = ?
+                        AND PartStat = ?
+                    `, [newVal, team, part, stat], 'run');
 
                   tmp[stat] = Math.round(newVal * 1000) / 1000; // redondeo a 3 decimales
                 }
@@ -366,8 +366,8 @@ export function getUnitValueFromParts(designDict) {
         const rows = queryDB(`
           SELECT PartStat, UnitValue
           FROM Parts_Designs_StatValues
-          WHERE DesignID = ${designID}
-        `, 'allRows');
+          WHERE DesignID = ?
+        `, [designID], 'allRows');
 
         const tmp = {};
         for (const [stat, unitVal] of rows) {
@@ -387,15 +387,15 @@ export function getUnitValueFromOnePart(designId) {
     const partType = queryDB(`
             SELECT PartType
             FROM Parts_Designs
-            WHERE DesignID = ${designId}
-        `, 'singleValue');
+            WHERE DesignID = ?
+        `, [designId], 'singleValue');
 
 
     const rows = queryDB(`
             SELECT PartStat, UnitValue
             FROM Parts_Designs_StatValues
-            WHERE DesignID = ${designId}
-        `, 'allRows');
+            WHERE DesignID = ?
+        `, [designId], 'allRows');
 
 
     const statsValues = {};
@@ -522,25 +522,25 @@ export function getRacesDays() {
     const [day, season] = queryDB(`
         SELECT Day, CurrentSeason 
         FROM Player_State
-      `, 'singleRow') || [0, 0];
+      `, [], 'singleRow') || [0, 0];
 
     // state=2 => completadas, state=0 => no comenzadas
     const races = queryDB(`
         SELECT RaceID, Day, TrackID
         FROM Races
-        WHERE SeasonID = ${season}
+        WHERE SeasonID = ?
           AND State = 2
-      `, 'allRows');
+      `, [season], 'allRows');
 
     // first_race_state_0 => la primera no iniciada
     const firstRaceState0 = queryDB(`
         SELECT RaceID, Day, TrackID
         FROM Races
-        WHERE SeasonID = ${season}
+        WHERE SeasonID = ?
           AND State = 0
         ORDER BY Day ASC
         LIMIT 1
-      `, 'singleRow');
+      `, [season], 'singleRow');
 
     if (firstRaceState0) {
         races.push(firstRaceState0);
@@ -552,13 +552,13 @@ export function getAllRaces() {
     const [day, season] = queryDB(`
         SELECT Day, CurrentSeason
         FROM Player_State
-      `, 'singleRow') || [0, 0];
+      `, [], 'singleRow') || [0, 0];
 
     const rows = queryDB(`
         SELECT RaceID, Day, TrackID
         FROM Races
-        WHERE SeasonID = ${season}
-      `, 'allRows');
+        WHERE SeasonID = ?
+      `, [season], 'allRows');
     return rows;
 }
 
@@ -668,11 +668,11 @@ export function getDriverNumberWithCar(teamId, carId) {
         SELECT con.StaffID
         FROM Staff_Contracts con
         JOIN Staff_GameData gam ON con.StaffID = gam.StaffID
-        WHERE con.TeamID = ${teamId}
+        WHERE con.TeamID = ?
           AND gam.StaffType = 0
           AND con.ContractType = 0
-          AND con.PosInTeam = ${carId}
-      `, 'singleRow');
+          AND con.PosInTeam = ?
+      `, [teamId, carId], 'singleRow');
     if (!row) {
         return null;
     }
@@ -681,8 +681,8 @@ export function getDriverNumberWithCar(teamId, carId) {
     const number = queryDB(`
         SELECT Number
         FROM Staff_DriverNumbers
-        WHERE CurrentHolder = ${driverId}
-      `, 'singleValue');
+        WHERE CurrentHolder = ?
+      `, [driverId], 'singleValue');
     return number ?? null;
 }
 
@@ -705,10 +705,10 @@ export function getFittedDesigns(customTeam = false) {
                 const row = queryDB(`
                     SELECT DesignID
                     FROM Parts_CarLoadout
-                    WHERE TeamID = ${t}
-                        AND PartType = ${part}
-                        AND LoadoutID = ${loadout}
-                    `, 'allRows');
+                    WHERE TeamID = ?
+                        AND PartType = ?
+                        AND LoadoutID = ?
+                    `, [t, part, loadout], 'allRows');
                 designs[part] = row;
             }
             // engine
@@ -716,8 +716,8 @@ export function getFittedDesigns(customTeam = false) {
                     SELECT MAX(DesignID)
                     FROM Parts_Designs
                     WHERE PartType = 0
-                    AND TeamID = ${t}
-                `, 'allRows');
+                    AND TeamID = ?
+                `, [t], 'allRows');
             designs[0] = engine;
 
             teams[t][loadout] = designs;
@@ -734,7 +734,7 @@ export function fitLatestDesignsAllGrid(customTeam = false) {
     const row = queryDB(`
         SELECT Day, CurrentSeason 
         FROM Player_State
-        `, "singleRow");
+        `, [], "singleRow");
 
     if (!row) {
         console.warn("No Player_State data found.");
@@ -766,10 +766,10 @@ export function fitLatestDesignsOneTeam(teamId, parts) {
                 const fittedRow = queryDB(`
                         SELECT DesignID 
                         FROM Parts_CarLoadout
-                        WHERE TeamID = ${teamId}
-                        AND PartType = ${part}
-                        AND LoadoutID = ${loadout}
-                    `, "singleRow");
+                        WHERE TeamID = ?
+                        AND PartType = ?
+                        AND LoadoutID = ?
+                    `, [teamId, part, loadout], "singleRow");
 
                 if (!fittedRow) {
                     console.warn(`No fittedRow found for TeamID=${teamId}, part=${part}, loadout=${loadout}`);
@@ -782,9 +782,9 @@ export function fitLatestDesignsOneTeam(teamId, parts) {
                     const partsAvailable = queryDB(`
                         SELECT ItemID
                         FROM Parts_Items
-                        WHERE DesignID = ${design}
+                        WHERE DesignID = ?
                             AND AssociatedCar IS NULL
-                        `, "allRows");
+                        `, [design], "allRows");
 
                     if (!partsAvailable.length) {
                         // no hay items disponibles => creamos uno nuevo
@@ -802,18 +802,18 @@ export function fitLatestDesignsOneTeam(teamId, parts) {
                     const fittedItemOther = queryDB(`
                         SELECT ItemID 
                         FROM Parts_CarLoadout
-                        WHERE TeamID = ${teamId}
-                            AND PartType = ${part}
-                            AND LoadoutID = ${otherLoadout}
-                        `, "singleRow");
+                        WHERE TeamID = ?
+                            AND PartType = ?
+                            AND LoadoutID = ?
+                        `, [teamId, part, otherLoadout], "singleRow");
 
                     const fittedItem = queryDB(`
                         SELECT ItemID 
                         FROM Parts_CarLoadout
-                        WHERE TeamID = ${teamId}
-                            AND PartType = ${part}
-                            AND LoadoutID = ${loadout}
-                        `, "singleRow");
+                        WHERE TeamID = ?
+                            AND PartType = ?
+                            AND LoadoutID = ?
+                        `, [teamId, part, loadout], "singleRow");
 
                     if (fittedItemOther && fittedItem
                         && fittedItemOther[0] === fittedItem[0]) {
@@ -839,16 +839,16 @@ export function updateItemsForDesignDict(designDict, teamId) {
         const partType = queryDB(`
         SELECT PartType
         FROM Parts_Designs
-        WHERE DesignID = ${design}
-      `, "singleValue");
+        WHERE DesignID = ?
+      `, [design], "singleValue");
 
         // SELECT COUNT(*) FROM Parts_Items WHERE DesignID = {design} AND BuildWork = X
         let actualParts = queryDB(`
         SELECT COUNT(*)
         FROM Parts_Items
-        WHERE DesignID = ${design}
-          AND BuildWork = ${carConstants.standardBuildworkPerPart[partType]}
-      `, "singleValue");
+        WHERE DesignID = ?
+          AND BuildWork = ?
+      `, [design, carConstants.standardBuildworkPerPart[partType]], "singleValue");
         if (actualParts == null) actualParts = 0;
 
         let diff = nParts - actualParts;
@@ -878,10 +878,10 @@ export function fitLoadoutsDict(loadoutsDict, teamId) {
         let fittedDesign1 = queryDB(`
                 SELECT DesignID, ItemID
                 FROM Parts_CarLoadout
-                WHERE TeamID = ${teamId}
-                AND PartType = ${part}
+                WHERE TeamID = ?
+                AND PartType = ?
                 AND LoadoutID = 1
-            `, "singleRow");
+            `, [teamId, part], "singleRow");
 
         if (design1 != null) {
             if (fittedDesign1 && fittedDesign1[0] != null && fittedDesign1[1] != null) {
@@ -890,8 +890,8 @@ export function fitLoadoutsDict(loadoutsDict, teamId) {
                 queryDB(`
                         UPDATE Parts_Items
                         SET AssociatedCar = NULL
-                        WHERE ItemID = ${itemId}
-                    `);
+                        WHERE ItemID = ?
+                    `, [itemId], 'run');
                 // fittedDesign1 = fittedDesign1[0]
                 fittedDesign1 = [fittedDesign1[0], itemId]; // si necesitas retenerlo
             }
@@ -902,10 +902,10 @@ export function fitLoadoutsDict(loadoutsDict, teamId) {
                 const items1 = queryDB(`
                         SELECT ItemID
                         FROM Parts_Items
-                        WHERE DesignID = ${design1}
-                        AND BuildWork = ${carConstants.standardBuildworkPerPart[part]}
+                        WHERE DesignID = ?
+                        AND BuildWork = ?
                         AND AssociatedCar IS NULL
-                    `, "allRows");
+                    `, [design1, carConstants.standardBuildworkPerPart[part]], "allRows");
 
                 let item1;
                 if (!items1.length) {
@@ -922,10 +922,10 @@ export function fitLoadoutsDict(loadoutsDict, teamId) {
         let fittedDesign2 = queryDB(`
                 SELECT DesignID, ItemID
                 FROM Parts_CarLoadout
-                WHERE TeamID = ${teamId}
-                AND PartType = ${part}
+                WHERE TeamID = ?
+                AND PartType = ?
                 AND LoadoutID = 2
-            `, "singleRow");
+            `, [teamId, part], "singleRow");
 
         if (design2 != null) {
             if (fittedDesign2 && fittedDesign2[0] != null && fittedDesign2[1] != null) {
@@ -933,8 +933,8 @@ export function fitLoadoutsDict(loadoutsDict, teamId) {
                 queryDB(`
                         UPDATE Parts_Items
                         SET AssociatedCar = NULL
-                        WHERE ItemID = ${itemId2}
-                    `);
+                        WHERE ItemID = ?
+                    `, [itemId2], 'run');
                 fittedDesign2 = [fittedDesign2[0], itemId2];
             }
 
@@ -942,10 +942,10 @@ export function fitLoadoutsDict(loadoutsDict, teamId) {
                 const items2 = queryDB(`
                         SELECT ItemID
                         FROM Parts_Items
-                        WHERE DesignID = ${design2}
-                        AND BuildWork = ${carConstants.standardBuildworkPerPart[part]}
+                        WHERE DesignID = ?
+                        AND BuildWork = ?
                         AND AssociatedCar IS NULL
-                    `, "allRows");
+                    `, [design2, carConstants.standardBuildworkPerPart[part]], "allRows");
 
                 let item2;
                 if (!items2.length) {
@@ -968,38 +968,38 @@ export function createNewItem(designId, part) {
     let maxItem = queryDB(`
         SELECT MAX(ItemID)
         FROM Parts_Items
-        `, "singleValue");
+        `, [], "singleValue");
 
     const newItem = maxItem + 1;
 
     const numberOfManufactures = queryDB(`
         SELECT ManufactureCount
         FROM Parts_Designs
-        WHERE DesignID = ${designId}
-        `, "singleValue");
+        WHERE DesignID = ?
+        `, [designId], "singleValue");
 
     const newNManufactures = numberOfManufactures + 1;
 
     queryDB(`
         INSERT INTO Parts_Items
         VALUES (
-            ${newItem}, 
-            ${designId},
-            ${carConstants.standardBuildworkPerPart[part]},
+            ?,
+            ?,
+            ?,
             1,
-            ${newNManufactures},
+            ?,
             NULL,
             NULL,
             0,
             NULL
         )
-        `);
+        `, [newItem, designId, carConstants.standardBuildworkPerPart[part], newNManufactures], 'run');
 
     queryDB(`
             UPDATE Parts_Designs
-            SET ManufactureCount = ${newNManufactures}
-            WHERE DesignID = ${designId}
-            `);
+            SET ManufactureCount = ?
+            WHERE DesignID = ?
+            `, [newNManufactures, designId], 'run');
 
     return newItem;
 }
@@ -1009,76 +1009,76 @@ export function deleteItem(designId) {
     const partType = queryDB(`
       SELECT PartType
       FROM Parts_Designs
-      WHERE DesignID = ${designId}
-    `, "singleValue");
+      WHERE DesignID = ?
+    `, [designId], "singleValue");
 
     // SELECT ItemID FROM Parts_Items WHERE DesignID = {designId} AND BuildWork = ...
     const item = queryDB(`
       SELECT ItemID
       FROM Parts_Items
-      WHERE DesignID = ${designId}
-        AND BuildWork = ${carConstants.standardBuildworkPerPart[partType]}
-    `, "singleValue");
+      WHERE DesignID = ?
+        AND BuildWork = ?
+    `, [designId, carConstants.standardBuildworkPerPart[partType]], "singleValue");
 
     queryDB(`
       DELETE FROM Parts_Items
-      WHERE ItemID = ${item}
-    `);
+      WHERE ItemID = ?
+    `, [item], 'run');
 }
 
 export function addNewDesign(part, teamId, day, season, latestDesignPartFromTeam, newDesignId) {
     const maxDesignFromPart = queryDB(`
       SELECT MAX(DesignNumber)
       FROM Parts_Designs
-      WHERE PartType = ${part}
-        AND TeamID = ${teamId}
-    `, "singleValue");
+      WHERE PartType = ?
+        AND TeamID = ?
+    `, [part, teamId], "singleValue");
 
     const newMaxDesign = maxDesignFromPart + 1;
 
     queryDB(`
         UPDATE Parts_Designs_TeamData
-        SET NewDesignsThisSeason = ${newMaxDesign}
-        WHERE TeamID = ${teamId}
-            AND PartType = ${part}
-        `);
+        SET NewDesignsThisSeason = ?
+        WHERE TeamID = ?
+            AND PartType = ?
+        `, [newMaxDesign, teamId, part], 'run');
 
     queryDB(`
         INSERT INTO Parts_Designs
         VALUES (
-            ${newDesignId}, 
-            ${part}, 
+            ?,
+            ?,
             6720, 
             6600, 
-            ${day - 1}, 
-            ${day}, 
+            ?,
+            ?,
             NULL,
             5,
             1,
             0,
             0,
             1500,
-            ${season},
+            ?,
             0,
             0,
             4,
-            ${newMaxDesign},
+            ?,
             1,
-            ${teamId},
+            ?,
             1
         )
-        `);
+        `, [newDesignId, part, day - 1, day, season, newMaxDesign, teamId], 'run');
 
     queryDB(`
         INSERT INTO Parts_DesignHistoryData
         VALUES (
-            ${newDesignId}, 
+            ?,
             0,
             0,
             0,
             0
         )
-        `);
+        `, [newDesignId], 'run');
 
     copyFromTable("building", latestDesignPartFromTeam, newDesignId);
     copyFromTable("staff", latestDesignPartFromTeam, newDesignId);
@@ -1096,15 +1096,15 @@ export function copyFromTable(table, latestDesignId, newDesignId) {
     const rows = queryDB(`
         SELECT *
         FROM ${tableName}
-        WHERE DesignID = ${latestDesignId}
-        `, "allRows");
+        WHERE DesignID = ?
+        `, [latestDesignId], "allRows");
 
     for (const row of rows) {
         // row => [DesignID, col1, col2, ...]
         queryDB(`
                 INSERT INTO ${tableName}
-                VALUES (${newDesignId}, ${row[1]}, ${row[2]}, 0)
-            `);
+                VALUES (?, ?, ?, 0)
+            `, [newDesignId, row[1], row[2]], 'run');
     }
 }
 
@@ -1112,24 +1112,24 @@ export function add4Items(newDesignId, part, teamId) {
     let maxItem = queryDB(`
         SELECT MAX(ItemID)
         FROM Parts_Items
-        `, "singleValue");
+        `, [], "singleValue");
 
     for (let i = 1; i <= 4; i++) {
         maxItem += 1;
         queryDB(`
         INSERT INTO Parts_Items
         VALUES (
-          ${maxItem},
-          ${newDesignId},
-          ${carConstants.standardBuildworkPerPart[part]},
+          ?,
+          ?,
+          ?,
           1,
-          ${i},
+          ?,
           NULL,
           NULL,
           0,
           NULL
         )
-      `);
+      `, [maxItem, newDesignId, carConstants.standardBuildworkPerPart[part], i], 'run');
 
         // Para loadout 1 y 2
         if (i <= 2) {
@@ -1142,17 +1142,17 @@ export function add4Items(newDesignId, part, teamId) {
 export function addPartToLoadout(designId, part, teamId, loadoutId, itemId) {
     queryDB(`
             UPDATE Parts_CarLoadout
-            SET DesignID = ${designId}, ItemID = ${itemId}
-            WHERE TeamID = ${teamId}
-                AND PartType = ${part}
-                AND LoadoutID = ${loadoutId}
-        `);
+            SET DesignID = ?, ItemID = ?
+            WHERE TeamID = ?
+                AND PartType = ?
+                AND LoadoutID = ?
+        `, [designId, itemId, teamId, part, loadoutId], 'run');
 
     queryDB(`
             UPDATE Parts_Items
-            SET AssociatedCar = ${loadoutId}, LastEquippedCar = ${loadoutId}
-            WHERE ItemID = ${itemId}
-        `);
+            SET AssociatedCar = ?, LastEquippedCar = ?
+            WHERE ItemID = ?
+        `, [loadoutId, loadoutId, itemId], 'run');
 }
 
 // overwrite_performance_team(...)
@@ -1160,7 +1160,7 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
     const row = queryDB(`
       SELECT Day, CurrentSeason
       FROM Player_State
-    `, 'singleRow');
+    `, [], 'singleRow');
 
     if (!row) {
         console.warn("Player_State not found");
@@ -1185,14 +1185,14 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
                 const maxDesign = queryDB(`
                         SELECT MAX(DesignID)
                         FROM Parts_Designs
-                    `, 'singleValue');
+                    `, [], 'singleValue');
 
                 const latestDesignPartFromTeam = queryDB(`
                         SELECT MAX(DesignID)
                         FROM Parts_Designs
-                        WHERE PartType = ${part}
-                        AND TeamID = ${teamId}
-                    `, 'singleValue');
+                        WHERE PartType = ?
+                        AND TeamID = ?
+                    `, [part, teamId], 'singleValue');
 
                 const newDesignId = loadoutDict[String(part)][0];
                 addNewDesign(part, Number(teamId), day, season, latestDesignPartFromTeam, newDesignId);
@@ -1216,31 +1216,31 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
                     changeExpertiseBased(part, statKey, value, Number(teamId));
                     queryDB(`
               UPDATE Parts_Designs_StatValues
-              SET UnitValue = ${statsObj[statKey]}
-              WHERE DesignID = ${finalDesign}
-                AND PartStat = ${statKey}
-            `);
+              SET UnitValue = ?
+              WHERE DesignID = ?
+                AND PartStat = ?
+            `, [statsObj[statKey], finalDesign, statKey], 'run');
 
                     queryDB(`
               UPDATE Parts_Designs_StatValues
-              SET Value = ${value}
-              WHERE DesignID = ${finalDesign}
-                AND PartStat = ${statKey}
-            `);
+              SET Value = ?
+              WHERE DesignID = ?
+                AND PartStat = ?
+            `, [value, finalDesign, statKey], 'run');
                 } else {
                     // insert
                     queryDB(`
               INSERT INTO Parts_Designs_StatValues
               VALUES (
-                ${finalDesign}, 
-                ${statKey}, 
-                ${value}, 
-                ${statsObj[statKey]}, 
+                ?,
+                ?,
+                ?,
+                ?,
                 0.5, 
                 1, 
                 0.1
               )
-            `);
+            `, [finalDesign, statKey, value, statsObj[statKey]], 'run');
                 }
             }
 
@@ -1249,15 +1249,15 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
                 queryDB(`
             INSERT INTO Parts_Designs_StatValues
             VALUES (
-              ${finalDesign},
+              ?,
               15,
               500,
-              ${carConstants.standardWeightPerPart[part]},
+              ?,
               0.5,
               0,
               0
             )
-          `);
+          `, [finalDesign, carConstants.standardWeightPerPart[part]], 'run');
 
                 // Tras insertar stats, cambiamos expertise
                 for (const statKey of Object.keys(statsObj)) {
@@ -1282,7 +1282,7 @@ export function changeExpertiseBased(part, stat, newValue, teamId, type = "exist
     const row = queryDB(`
       SELECT Day, CurrentSeason
       FROM Player_State
-    `, 'singleRow');
+    `, [], 'singleRow');
     if (!row) {
         console.warn("No Player_State found to do expertise changes");
         return;
@@ -1295,23 +1295,23 @@ export function changeExpertiseBased(part, stat, newValue, teamId, type = "exist
         currentValue = queryDB(`
         SELECT MAX(Value)
         FROM Parts_Designs_StatValues
-        WHERE PartStat = ${stat}
+        WHERE PartStat = ?
           AND DesignID IN (
             SELECT MAX(DesignID)
             FROM Parts_Designs
-            WHERE PartType = ${part}
-              AND TeamID = ${teamId}
-              AND ValidFrom = ${curSeason}
+            WHERE PartType = ?
+              AND TeamID = ?
+              AND ValidFrom = ?
           )
-      `, 'singleValue');
+      `, [stat, part, teamId, curSeason], 'singleValue');
     } else if (type === "new") {
         // SELECT Value FROM Parts_Designs_StatValues ...
         currentValue = queryDB(`
         SELECT Value
         FROM Parts_Designs_StatValues
-        WHERE PartStat = ${stat}
-          AND DesignID = ${oldDesign}
-      `, 'singleValue');
+        WHERE PartStat = ?
+          AND DesignID = ?
+      `, [stat, oldDesign], 'singleValue');
     }
 
     if (!currentValue) {
@@ -1324,10 +1324,10 @@ export function changeExpertiseBased(part, stat, newValue, teamId, type = "exist
     const currentExpertise = queryDB(`
         SELECT Expertise
         FROM Parts_TeamExpertise
-        WHERE TeamID = ${teamId}
-          AND PartType = ${part}
-          AND PartStat = ${stat}
-      `, 'singleValue') || 0;
+        WHERE TeamID = ?
+          AND PartType = ?
+          AND PartStat = ?
+      `, [teamId, part, stat], 'singleValue') || 0;
 
     // console.log(newValue, currentValue, currentExpertise);
 
@@ -1337,11 +1337,11 @@ export function changeExpertiseBased(part, stat, newValue, teamId, type = "exist
     // console.log(`Old expertise: ${currentExpertise}, New expertise: ${newExpertise}`);
     queryDB(`
         UPDATE Parts_TeamExpertise
-        SET Expertise = ${newExpertise}
-        WHERE TeamID = ${teamId}
-            AND PartType = ${part}
-            AND PartStat = ${stat}
-        `);
+        SET Expertise = ?
+        WHERE TeamID = ?
+            AND PartType = ?
+            AND PartStat = ?
+        `, [newExpertise, teamId, part, stat], 'run');
 }
 
 
@@ -1377,7 +1377,7 @@ export function getFirstDaySeason() {
         ORDER BY Occurrences DESC
         LIMIT 1;
         `;
-    const row = queryDB(query, 'singleRow');
+    const row = queryDB(query, [], 'singleRow');
     if (!row) {
         console.warn("No firstDay found");
         return 0;
@@ -1408,7 +1408,7 @@ export function getMaxDesign() {
     const val = queryDB(`
         SELECT MAX(DesignID)
         FROM Parts_Designs
-        `, 'singleValue');
+        `, [], 'singleValue');
     return val;
 }
 
