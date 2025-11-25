@@ -1,9 +1,7 @@
 // dragDrop.js
-import { analyzeFileToDatabase } from "../backend/UESaveHandler";
-import { setDatabase, queryDB } from "../backend/dbManager.js";
 import { gamePill, editorPill, setSaveName, new_update_notifications, setIsShowingNotification } from "./renderer.js";
+import { saveHandleToRecents, getRecentHandles } from "./recentsManager.js";
 import { Command } from "../backend/command.js";
-import { getCombinedDict } from "./config.js";
 
 let carAnalysisUtils = null;
 export const dbWorker = new Worker(new URL('../backend/worker.js', import.meta.url));
@@ -37,7 +35,32 @@ dropDiv.addEventListener("drop", async (event) => {
     event.preventDefault();
     body.classList.remove("drag-active");
 
-    const file = event.dataTransfer.files[0];
+    const item = event.dataTransfer.items[0];
+
+    if (item && item.kind === 'file') {
+        try {
+            const handle = await item.getAsFileSystemHandle();
+            
+            if (handle) {
+                await saveHandleToRecents(handle);
+
+                const file = await handle.getFile();
+                await processSaveFile(file)
+            } else {
+                const file = item.getAsFile();
+                await processSaveFile(file);
+            }
+        } catch (e) {
+            console.error("Error with file handle:", e);
+            const file = event.dataTransfer.files[0];
+            await processSaveFile(file);
+        }
+    }
+});
+
+
+export async function processSaveFile(file) {
+    if (!file) return;
 
     // --- Validaciones de archivo ---
     if (file.name.split('.').pop() === "vdf") {
@@ -48,18 +71,19 @@ dropDiv.addEventListener("drop", async (event) => {
         );
         return;
     } else if (file.name.split('.').pop() === "sav") {
+        
         const footerNotification = document.querySelector('.footer-notification');
-        if (footerNotification.classList.contains('error')) {
+        if (footerNotification && footerNotification.classList.contains('error')) {
             footerNotification.classList.remove('show');
             setIsShowingNotification(false);
         }
+        
         setSaveName(file.name);
-        if (!file) return;
 
         // 1. Ponemos el icono en modo SPINNER
         await updateStatusUI('loading');
 
-        // 2. Definimos la tarea de carga (pero no ponemos 'await' todavía)
+        // 2. Definimos la tarea de carga
         const dbLoadTask = new Promise((resolve, reject) => {
             dbWorker.postMessage({ command: 'loadDB', data: { file: file } });
 
@@ -72,7 +96,6 @@ dropDiv.addEventListener("drop", async (event) => {
                     const year = dateObj.getFullYear();
                     const completeDay = day + (day % 10 == 1 && day != 11 ? "st" : day % 10 == 2 && day != 12 ? "nd" : day % 10 == 3 && day != 13 ? "rd" : "th");
                     
-                    // Actualizamos fechas en el DOM (esto pasa por detrás mientras gira el spinner)
                     document.querySelector("#dateDay").textContent = completeDay;
                     document.querySelector("#dateMonth").textContent = month;
                     document.querySelector("#dateYear").textContent = year;
@@ -85,18 +108,17 @@ dropDiv.addEventListener("drop", async (event) => {
             };
         });
 
-        // 3. Ejecutamos: Carga de DB + Espera de 2 segundos SIMULTÁNEAMENTE
-        // Esto garantiza que el spinner se vea por lo menos 2 segundos
+        // 3. Ejecutamos: Carga + Espera
         try {
             await Promise.all([
                 dbLoadTask,
-                wait(2000) // Esta función debe estar definida arriba (ver abajo)
+                wait(2000)
             ]);
 
-            // 4. Ponemos el icono en modo CHECK VERDE (Success)
+            // 4. Ponemos el icono en modo CHECK VERDE
             await updateStatusUI('success', { filename: file.name });
 
-            // 5. Esperamos 1 segundo extra para que el usuario disfrute de ver el check verde
+            // 5. Esperamos 1 segundo extra
             await wait(1000);
 
             // 6. Finalmente mostramos el editor
@@ -111,10 +133,10 @@ dropDiv.addEventListener("drop", async (event) => {
 
         } catch (error) {
             console.error("Error en el proceso:", error);
-            // Aquí podrías poner un updateStatusUI('error') si quisieras
+            // Aquí podrías manejar el error visualmente si quisieras
         }
     }
-});
+}
 
 
 async function updateStatusUI(type, textConfig) {

@@ -1441,12 +1441,17 @@
             <h3 id="statusTitle">Upload your save file</h3>
             <p class="upload-desc" id="statusDesc">
               Drop your .sav file here or
-              <input type="button" value="click" style="display: inline-block;">
+              <input type="button" value="click" style="display: inline-block;" class="save-file-button" id="saveFileButton">
+              <input class="d-none" type="file" id="saveFileInput" accept=".sav">
               to select it manually.
             </p>
             <div class="tags-container">
               <!-- <span class="tag">MAX 50MB</span>
                         <span class="tag">ENCRIPTADO AES-256</span> -->
+            </div>
+            <div class="recents-container">
+              <span class="recent-label">Recent</span>
+              <div class="recents-list" id="recentsList"></div>
             </div>
             <div class="socials-container">
                 <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor" target="_blank">&nbsp;DB Editor</a>

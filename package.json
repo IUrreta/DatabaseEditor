@@ -24,6 +24,7 @@
     "crypto-browserify": "^3.12.1",
     "dompurify": "^3.3.0",
     "file-saver": "^2.0.5",
+    "idb-keyval": "^6.2.2",
     "interactjs": "^1.10.17",
     "jsonwebtoken": "^9.0.2",
     "lz-string": "^1.5.0",

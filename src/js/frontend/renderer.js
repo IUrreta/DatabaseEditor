@@ -29,12 +29,14 @@ import {
 import { place_news, initAI, getAI } from './news.js';
 import { loadRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
-import { dbWorker } from './dragFile';
+import { dbWorker, processSaveFile } from './dragFile';
 import { Command } from "../backend/command.js";
 import { PUBLIC_KEY } from './public_key.js';
+import { saveAs } from "file-saver";
 import members from "../../data/members.json"
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { getRecentHandles } from './recentsManager.js';
 
 
 const names_configs = {
@@ -94,6 +96,7 @@ const patreonLoginButton = document.getElementById('patreonLoginButton');
 const patreonLogoutButton = document.getElementById('patreonLogoutButton');
 const patreonToolLoginButton = document.getElementById('patreonToolLoginButton');
 const userToolButton = document.getElementById('userToolButton');
+const saveFileButton = document.getElementById('saveFileButton');
 
 const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, carPerformanceDiv, mod25Div]
 
@@ -118,6 +121,7 @@ const removeApiKey = document.getElementById("removeApiKey");
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
 const fileInput = document.getElementById('fileInput');
+const saveFileInput = document.getElementById('saveFileInput');
 const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 let difficulty_dict = {
     "-2": "Custom",
@@ -166,6 +170,7 @@ let newsAvailable = {
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
+const versionBadge = document.querySelector('.badge-version');
 const parchModalTitle = document.getElementById("patchModalTitle")
 
 let notificationsQueue = [];
@@ -300,6 +305,20 @@ if (userToolButton) {
         if (userToolMenu) {
             userToolMenu.classList.toggle('hidden');
         }
+    });
+}
+
+if (saveFileButton) {
+    saveFileButton.addEventListener('click', () => {
+        //create a file input and click it
+        saveFileInput.click();
+        //get the file from the input
+        saveFileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                processSaveFile(file);
+            }
+        });
     });
 }
 
@@ -741,7 +760,6 @@ const messageHandlers = {
     },
     "Save loaded succesfully": (message) => {
         isSaveSelected = 1;
-        document.querySelector("#transferpill").click();
         remove_drivers();
         removeStatsDrivers();
         listenersStaffGroups();
@@ -822,6 +840,7 @@ const messageHandlers = {
     },
     "Config": (message) => {
         manage_config(message)
+        document.querySelector("#transferpill").click();
     },
     "24 Year": (message) => {
         manage_config(message, true)
@@ -2220,7 +2239,7 @@ function hexToArrayBuffer(hex) {
     return array.buffer;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const hostname = window.location.hostname;
     const isNightly = hostname.includes("nightly");
     versionNow = APP_VERSION;
@@ -2255,6 +2274,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
+    versionBadge.textContent = `Version ${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
     getPatchNotes()
 
@@ -2264,6 +2284,10 @@ document.addEventListener('DOMContentLoaded', () => {
         patchModal.show();
     }
 
+    let recents = await getRecentHandles();
+    console.log("Recent handles loaded:", recents);
+    populateRecentHandles(recents);
+
     //check if apiKey in localStorage
     const apiKey = localStorage.getItem("apiKey");
     if (apiKey) {
@@ -2272,6 +2296,76 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
+function populateRecentHandles(recents) {
+    if (recents.length === 0) {
+        document.querySelector(".recents-container").classList.add("d-none");
+        return;
+    }
+    const recentList = document.getElementById("recentsList");
+    recentList.innerHTML = ""; // Clear existing items
+
+    recents.forEach(handle => {
+        const listItem = document.createElement("div");
+        listItem.className = "recent-file";
+        
+        const fileName = document.createElement("span");
+        fileName.classList.add("file-name");
+        fileName.textContent = handle.name;
+        fileName.addEventListener("click", async () => {
+            const fileHandle = handle.handle;
+            const hasPermission = await verifyPermission(fileHandle, false);
+
+            if (!hasPermission) {
+                console.error("No permission to access the file:", handle.name);
+                return;
+            }
+            const file = fileHandle.getFile();
+            file.then(f => {
+                processSaveFile(f);
+            });
+
+        });
+
+        const lastOpened = document.createElement("span");
+        lastOpened.classList.add("last-opened-time");
+        const now = new Date();
+        const openedDate = new Date(handle.lastOpened);
+        console.log("now:", now, "openedDate:", openedDate);
+        const diffTime = Math.abs(now - openedDate);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        let timeString;
+
+        if (diffDays === 0) {
+            timeString = "Today"; 
+        } else if (diffDays === 1) {
+            timeString = "Yesterday";
+        } else {
+            timeString = `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        }
+
+        lastOpened.textContent = timeString;
+
+        listItem.appendChild(fileName);
+        listItem.appendChild(lastOpened);
+        recentList.appendChild(listItem);
+    });
+}
+
+async function verifyPermission(fileHandle) {
+    const options = { mode: 'read' };
+
+    if ((await fileHandle.queryPermission(options)) === 'granted') {
+        return true;
+    }
+
+    if ((await fileHandle.requestPermission(options)) === 'granted') {
+        return true;
+    }
+
+    return false;
+}
 
 removeApiKey.addEventListener('click', () => {
     localStorage.removeItem("apiKey");

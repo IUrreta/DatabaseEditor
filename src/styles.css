@@ -13890,6 +13890,7 @@ p.news-error-api-key {
 
 .upload-desc {
   color: var(--text-muted);
+  height: 30px;
 }
 
 .upload-desc input{
@@ -14061,7 +14062,7 @@ p.news-error-api-key {
   justify-content: center;
   align-items: center;
   gap: 25px;
-  margin-top: 6rem;
+  margin-top: 4rem;
   color: var(--text-muted);
 }
 
@@ -14267,6 +14268,74 @@ p.news-error-api-key {
 .loading-spinner.show{
     animation: spin 1s ease-in-out infinite;
     opacity: 1;
+}
+
+.save-file-button{
+  text-decoration: none !important;
+  color: var(--new-primary);
+  background-color: transparent;
+  padding: 3px 5px;
+  border-radius: 5px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.save-file-button:hover{
+  text-decoration: none;
+  background-color: var(--new-primary-transparent);
+}
+
+.save-file-button:active{
+  transform: scale(0.96);
+}
+
+.recents-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.recents-label{
+  font-size: 18px;
+  font-family: 'Formula1Bold';
+  color: var(--text-general);
+}
+
+.recents-list{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.recent-file{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3px;
+}
+
+.file-name:hover{
+  background-color: var(--new-primary-transparent);
+}
+
+.file-name:active{
+  transform: scale(0.96);
+}
+
+.file-name{
+  color: var(--new-primary);
+  font-size: 14px;
+  cursor: pointer;
+  background-color: transparent;
+  padding: 3px 5px;
+  border-radius: 5px;
+  transition: background-color 0.15s, color 0.15s;
+  text-decoration: underline;
+}
+
+.last-opened-time{
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
 @keyframes spin {

@@ -1149,8 +1149,6 @@ function load_teams_points_graph(data) {
 }
 
 function get_one_driver_points_format(driver, data) {
-    console.log("driver:", driver);
-    console.log("data:", data);
     let d1_races = [];
     let d1_points_provisional = []
     let d1_points = [0]
@@ -1191,10 +1189,8 @@ function get_one_driver_points_format(driver, data) {
 }
 
 function load_graphs_data(drivers) {
-    console.log("data:", drivers);
     let max_gapPole = 0;
     let max_gapWinner = 0;
-    console.log(drivers);
     const races_ids = drivers[0].map(r => r[0]); // array de raceId en orden
     const races_done = drivers[drivers.length - 1]; // array de raceId ya corridas
 
