@@ -366,9 +366,6 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
   const t1 = teamID1;
   const t2 = teamID2;
   const season = year;
-  console.log("TEAMS: ", teamID1, teamID2, season, isCurrentYear);
-
-
 
   // 1) Obtenemos todas las carreras en las que participaron ambos equipos
   const racesBoth = queryDB(`
@@ -426,9 +423,6 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
         WHERE RaceID = ?
           AND TeamID = ?
       `, [raceID, t2], 'allRows') || [];
-
-    console.log("Drivers1: ", drivers1);
-    console.log("Drivers2: ", drivers2);
 
     // Transformamos el array de arrays/tuplas en un array de IDs
     const drivers1IDs = drivers1.map(d => d[0]);

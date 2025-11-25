@@ -2,6 +2,7 @@
     /*
   GENERAL COLORS
   */
+
     --background: #111111;
     --generals: #1e1e1e;
     --superficials: #222222;
@@ -16,6 +17,7 @@
     --dark-text: #b1b1b1;
     --disabled-text: #7a7a7a;
     --modal-text: #777777;
+    --text-muted: #94a3b8; 
     --negative-text: #292929;
     --new-primary: #c89efc;
     /* C37CF9 alternative*/

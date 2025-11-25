@@ -1879,7 +1879,6 @@ function generateTitle(data, new_type) {
 }
 
 export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTransfersNews) {
-    console.log("SAVED NEWS WHEN FAKING TRANSFERS:", savedNews);
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
     const season = daySeason[1];
 
@@ -1888,7 +1887,6 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
     const usedDriverIdsGlobal = new Set();
 
     Object.entries(savedNews || {}).forEach(([id, news]) => {
-        console.log("id:", id, "news:", news);
         if (!news || !news.data || !Array.isArray(news.data.drivers)) return;
         // Solo nos interesa mapear fechas por mes para las fake_transfer_*
         if (id.startsWith("fake_transfer_")) {
@@ -1908,7 +1906,6 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
         }
 
         if (id.startsWith("big_transfer_") || id.startsWith("massive_signing_")) {
-            console.log("NEW BIG SIGNING:", id);
             let id = news.data.driverId;
             if (id) {
                 usedDriverIdsGlobal.add(id);
@@ -1927,8 +1924,6 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
     let newsList = [];
 
     monthsDone.forEach(m => {
-        console.log("Generating fake transfer news for month:", m);
-
         // ---- Cálculos que no dependen del "slot" ----
         const drivers = queryDB(
             `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
@@ -2176,8 +2171,6 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
     });
 
     let newsList = [];
-
-    console.log(driversWithHighOverall)
 
     //iterate through each list
     driversWithHighOverall.forEach(driver => {
@@ -3274,9 +3267,7 @@ export function getOneRaceDetails(raceId) {
 
     const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceId);
 
-    console.log("Driver standings:", driverStandings);
-
-    const remainingRaces = queryDB(`SELECT RaceID, TrackID, WeekendType FROM Races WHERE SeasonID = ? AND RaceID > ? ORDER BY RaceID`, [season, raceId], 'allRows');
+    const remainingRaces = queryDB(`SELECT RaceID, TrackID, WeekendType FROM Races WHERE SeasonID = ${season} AND RaceID > ${raceId} ORDER BY RaceID`, 'allRows');
     //make an object that has raceid, trackId, and race track
     const remainingRacesDetails = remainingRaces.map(r => {
         return {

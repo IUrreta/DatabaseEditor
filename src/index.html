@@ -17,6 +17,8 @@
 </script>
 
 <body class="font">
+  <div class="tech-grid"></div>
+  <div class="glow-spot"></div>
   <div class="modal custom-modal fade" id="enginesModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
@@ -652,26 +654,24 @@
                 exclusive content and features. Please consider supporting the tool if you find it useful!
               </span>
               <span>
-                If you are already a patreon supporter, please download your patreon key from the patreon website and
-                upload it here to unlock the
-                exclusive features and remove the pop-ups!
+                If you are already a patreon supporter, please log in with your account to unlock the exclusive features
+                and remove the pop-ups!
               </span>
-              <div class="patreon-links">
-                <a href="https://www.patreon.com/posts/november-2025-142579653" class="patreon-link"
-                  target="_blank">Backer key</a>
-                <a href="https://www.patreon.com/posts/november-2025-142579707" class="patreon-link"
-                  target="_blank">Insider key</a>
-              </div>
             </div>
             <div class="api-input-and-status" id="patreonKeyGeneral">
-              <div type="button" class="confirm-modal button-with-icon" id="patreonKeyButton">
-                <i class="bi bi-cloud-arrow-up"></i>
-                <span>Upload patreon key</span>
+              <div type="button" class="confirm-modal button-with-icon" id="patreonLoginButton">
+                <i class="bi-custom-patreon"></i>
+                <span>Login with Patreon</span>
+              </div>
+              <div class="user-name-and-logout d-none">
+                <div class="button-with-icon" id="userButton">
+                  <i class="bi bi-person-fill"></i>
+                  <span id="userName"></span>
+                </div>
               </div>
               <div class="saved-status api-loaded patreon-status" id="patreonKeyStatus">
                 <i class="bi bi-check patreonCheck"></i>
-                <i class="bi bi-x d-none patreonX"></i>
-                <span class="bold-font" id="patreonKeyText">Valid</span>
+                <span class="bold-font" id="patreonTierText">Valid</span>
               </div>
             </div>
 
@@ -757,15 +757,18 @@
                       </button>
                       <div class="dropdown-line"></div>
                       <ul class="dropdown-menu" id="aiModelmenu" style="font-family: Formula1;">
-                        <a class="dropdown-item" data-value="gemini-2.5-flash"><div class="model-and-description">
-                          <span class="model-name">Gemini 2.5 Flash</span>
-                          <span class="model-description">Better responses, sometimes overloaded</span>
-                        </div><i class="bi bi-check"></i></a>
+                        <a class="dropdown-item" data-value="gemini-2.5-flash">
+                          <div class="model-and-description">
+                            <span class="model-name">Gemini 2.5 Flash</span>
+                            <span class="model-description">Better responses, sometimes overloaded</span>
+                          </div><i class="bi bi-check"></i>
+                        </a>
                         <a class="dropdown-item inactive" data-value="gemini-2.5-flash-lite">
                           <div class="model-and-description">
                             <span class="model-name">Gemini 2.5 Flash Lite</span>
                             <span class="model-description">Faster responses, lower quality</span>
-                          </div><i class="bi bi-check unactive"></i></a>
+                          </div><i class="bi bi-check unactive"></i>
+                        </a>
                       </ul>
                     </div>
 
@@ -777,7 +780,6 @@
 
 
           </div>
-          <input class="d-none" type="file" id="patreonInput" accept=".json">
 
         </div>
         <div class="modal-footer custom-footer">
@@ -1314,7 +1316,7 @@
       <label class="bold-font standard-label">SETTINGS</label>
       <div class="standard-line"></div>
     </div>
-    <div class="script-selector bold-font">
+    <div class="script-selector hidden bold-font">
       <div class="py-2">
         <ul class="nav nav-pills">
           <li class="nav-item">
@@ -1389,75 +1391,78 @@
       </div>
 
     </div>
-    <a class="" id="amoPill" href="http://discord.gg/amocommunity" target="_blank">
-      <div id="amoLogo"></div>
-    </a>
-
+    <div class="patreon-login">
+      <div type="button" class="patreon-login-button confirm-modal" id="patreonToolLoginButton">
+        <span>Login with Patreon</span>
+      </div>
+      <div class="user-name-and-logout-tool d-none">
+        <div class="button-with-icon" id="userToolButton">
+          <i class="bi bi-person-fill"></i>
+          <span id="userToolName"></span>
+        </div>
+        <div class="userToolMenu hidden auto-closable">
+          <div class="button-with-icon" id="patreonStatus">
+            <i class="bi-custom-patreon"></i>
+            <span id="patreonStatusText">Patreon Supporter</span>
+          </div>
+          <div class="button-with-icon" id="patreonLogoutButton">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <!-- <div class="mode-line">
-    <div class="moving-line"></div>
-  </div> -->
   <div class="scroll-wrapper">
     <button class="save-button bold-font d-none">
       <i class="bi bi-floppy-fill"></i>
       <label class="save-label">Save changes</label>
     </button>
     <div class="main-panel">
-      <div class="background"></div>
-      <div class="blocking-div" id="blockDiv">
-        <div class="splash-box">
-          <div class="title-and-spinner">
-            <div class="main-title bold-font">DB <span class="glitch">EDITOR</span> ONLINE</div>
-            <span class="big-subtitle bold-font">
-              <p>Edit</p>
-              <div class="words">
-                <span class="word">everything.</span>
-                <span class="word">contracts</span>
-                <span class="word">calendar</span>
-                <span class="word">attributes</span>
-                <span class="word">performance</span>
-                <span class="word">facilities</span>
-                <span class="word">transfers</span>
-                <span class="word">sprints</span>
-                <span class="word">pit crew</span>
-                <span class="word">difficulty</span>
-                <span class="word">everything.</span>
-              </div>
-              <p class="everywhere">Everywhere.</p>
-            </span>
-          </div>
-          <div class="drop-area" id="dropDiv">
-            <div class="list-item">
-              <div class="number-icon">
-                <span>1. </span>
-                <i class="bi bi-check-lg icon-hidden"></i>
-              </div>
-              <span class="list-text" id="saveFileDropped">Drag and drop your save file here</span>
-            </div>
-            <div class="list-item">
-              <div class="number-icon">
-                <span>2. </span>
-                <i class="bi bi-check-lg icon-hidden"></i>
-              </div>
-              <span class="list-text" id="scriptSelected">Select any of the tabs at the top</span>
-            </div>
-          </div>
+      <div class="blocking-div drop-div" id="blockDiv">
+        <div class="hero-section">
+          <span class="badge-version">
+            version 3.4.0-dev
+          </span>
+          <h1 class="hero-title">
+            DB Editor Online<br>
+            <span class="gradient-text">F1 Manager</span>
+          </h1>
+          <p class="hero-desc">
+            Edit your F1 Manager save files directly in your browser. No installation required.
+          </p>
         </div>
-        <div class="socials-box">
-          <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor" target="_blank">&nbsp;DB Editor</a>
-          <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259"
-            target="_blank">&nbsp;My
-            profile</a>
-          <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_" target="_blank">&nbsp;@ignaciourreta_</a>
-          <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta"
-            target="_blank">&nbsp;ignaciourreta</a>
-          <a class="bi-custom-patreon" href="https://www.patreon.com/f1dbeditor" target="_blank">&nbsp;Support the
-            project</a>
-          <a class="bi bi-discord" href="https://discord.gg/3QXg3hsD8B" target="_blank">&nbsp;Join our Discord</a>
-        </div>
-        <div class="patreon-members">
-          <div class="marquee">
-            <div class="marquee__inner">
+        <div id="dropDiv" class="drop-zone">
+          <div id="idle-state" class="idle-content">
+            <div class="icon-circle" id="statusCircle">
+              <i class="bi bi-cloud-arrow-up" id="statusIcon"></i>
+              <div class="loading-spinner"></div>
+            </div>
+            <h3 id="statusTitle">Upload your save file</h3>
+            <p class="upload-desc" id="statusDesc">
+              Drop your .sav file here or
+              <input type="button" value="click" style="display: inline-block;" class="save-file-button" id="saveFileButton">
+              <input class="d-none" type="file" id="saveFileInput" accept=".sav">
+              to select it manually.
+            </p>
+            <div class="tags-container">
+              <!-- <span class="tag">MAX 50MB</span>
+                        <span class="tag">ENCRIPTADO AES-256</span> -->
+            </div>
+            <div class="recents-container">
+              <span class="recent-label">Recent</span>
+              <div class="recents-list" id="recentsList"></div>
+            </div>
+            <div class="socials-container">
+                <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor" target="_blank">&nbsp;DB Editor</a>
+                <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259"
+                  target="_blank">&nbsp;My
+                  profile</a>
+                <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_" target="_blank">&nbsp;@ignaciourreta_</a>
+                <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta" target="_blank">&nbsp;ignaciourreta</a>
+                <a class="bi-custom-patreon" href="https://www.patreon.com/f1dbeditor" target="_blank">&nbsp;Support the
+                  project</a>
+                <a class="bi bi-discord" href="https://discord.gg/3QXg3hsD8B" target="_blank">&nbsp;Join our Discord</a>
             </div>
           </div>
         </div>
@@ -1551,9 +1556,9 @@
             </div>
             <div class="one-statH2H" id="raceh2h">
               <div class="name-H2H bold-font" style="justify-content: space-between;">
-                <i class="bi bi-chevron-left"></i>
+                <i class="bi bi-chevron-left new-augment-button"></i>
                 <div class="only-name">RACE</div>
-                <i class="bi bi-chevron-right"></i>
+                <i class="bi bi-chevron-right new-augment-button"></i>
               </div>
               <div class="bar-space">
                 <div class="driver1-number bold-font" style="justify-content: space-between;"></div>
@@ -1575,9 +1580,9 @@
             </div>
             <div class="one-statH2H" id="qualih2h">
               <div class="name-H2H bold-font">
-                <i class="bi bi-chevron-left"></i>
+                <i class="bi bi-chevron-left new-augment-button"></i>
                 <div class="only-name">QUALIFYING</div>
-                <i class="bi bi-chevron-right"></i>
+                <i class="bi bi-chevron-right new-augment-button"></i>
               </div>
               <div class="bar-space">
                 <div class="driver1-number bold-font"></div>
@@ -1633,9 +1638,9 @@
             </div>
             <div class="one-statH2H" id="bestrh2h">
               <div class="name-H2H bold-font">
-                <i class="bi bi-chevron-left d-none"></i>
+                <i class="bi bi-chevron-left d-none new-augment-button"></i>
                 <div class="only-name">BEST RACE</div>
-                <i class="bi bi-chevron-right d-none"></i>
+                <i class="bi bi-chevron-right d-none new-augment-button"></i>
               </div>
               <div class="bar-space">
                 <div class="driver1-number bold-font"></div>
@@ -5417,7 +5422,7 @@
       </a>
     </div>
   </div>
-  <footer class="footer">
+  <footer class="footer hidden">
     <div class="socials">
       <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor" target="_blank">&nbsp;DB Editor</a>
       <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259"

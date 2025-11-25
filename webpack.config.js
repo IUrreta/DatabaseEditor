@@ -7,7 +7,7 @@ const packageJson = require('./package.json');
 
 
 module.exports = {
-  mode: 'development', // Cambia a 'production' para producción
+  mode: process.env.NODE_ENV || 'development',
 
   entry: './src/index.js',  // Archivo de entrada principal
 
