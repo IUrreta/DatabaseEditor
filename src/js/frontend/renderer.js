@@ -2295,6 +2295,87 @@ document.addEventListener('DOMContentLoaded', async () => {
         initAI(apiKey);
     }
 
+    const phrases = [
+    "Change the contract of every staff in game",
+    "Customize your calendar however you want it",
+    "Edit the attributes of each driver just how you want them",
+    "Create your own custom teams and engines",
+    "Predict the outcome of races with AI",
+    "Compare drivers and teams with detailed graphs",
+    "Modify car performance to your liking",
+    "Get AI-generated news articles about your save",
+    "Unlock hidden features of the game"
+    ];
+
+    const animatedText = document.getElementById('animated-text');
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+
+    function typePhrase() {
+        const currentPhrase = phrases[phraseIndex];
+        if (isDeleting) {
+            animatedText.innerHTML = animatedText.innerHTML.slice(0, -1);
+            charIndex--;
+            if (charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+            }
+        } else {
+            const char = currentPhrase[charIndex];
+            const span = document.createElement('span');
+            span.className = 'char';
+            span.textContent = char;
+            animatedText.appendChild(span);
+            charIndex++;
+            if (charIndex === currentPhrase.length) {
+                isDeleting = true;
+            }
+        }
+    }
+
+    function animateText() {
+        const currentPhrase = phrases[phraseIndex];
+        const aT = document.getElementById('animated-text');
+
+        // Deleting phase
+        let deleteInterval = setInterval(() => {
+            if (aT.innerHTML.length > 0) {
+                aT.innerHTML = aT.innerHTML.slice(0, -1);
+            } else {
+                clearInterval(deleteInterval);
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                const nextPhrase = phrases[phraseIndex];
+
+                // Typing phase
+                let charIndex = 0;
+                let typeInterval = setInterval(() => {
+                    if (charIndex < nextPhrase.length) {
+                        const char = nextPhrase[charIndex];
+                        const span = document.createElement('span');
+                        span.className = 'char';
+                        span.style.opacity = 0; // Start invisible
+                        span.textContent = char;
+                        aT.appendChild(span);
+
+                        // Trigger animation with a slight delay
+                        setTimeout(() => {
+                            span.style.opacity = 1;
+                        }, 10);
+
+                        charIndex++;
+                    } else {
+                        clearInterval(typeInterval);
+                    }
+                }, 50); // Typing speed
+            }
+        }, 30); // Deleting speed
+    }
+
+    // Clear initial text and start animation
+    document.getElementById('animated-text').innerHTML = '';
+    setInterval(animateText, 5000); // Cycle every 5 seconds
+    animateText(); // Start immediately
 });
 
 function populateRecentHandles(recents) {

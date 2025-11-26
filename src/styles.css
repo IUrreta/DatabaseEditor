@@ -14017,6 +14017,33 @@ p.news-error-api-key {
   margin: 0 auto;
   text-align: center;
   line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#animated-text, #static-text {
+  color: var(--text-general);
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(5px) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+#animated-text .char {
+  display: inline-block;
+  animation: pop-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 /* --- UPLOAD AREA --- */
