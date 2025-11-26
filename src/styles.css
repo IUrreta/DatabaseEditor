@@ -595,7 +595,7 @@ i.bi-file-text:hover {
   gap: 10px;
   padding-right: 14px;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
 }
 
 .title-buttons-left .custom-dropdown {
@@ -704,7 +704,7 @@ i.bi-file-text:hover {
 
 .auto-contract {
   color: var(--text-general);
-  font-size: 20px;
+  font-size: 16px;
   padding-right: 2rem;
   position: absolute;
   right: 0;
@@ -838,7 +838,7 @@ input[type="checkbox"]:focus {
 
 .annotations {
   color: var(--text-general);
-  font-size: 20px;
+  font-size: 16px;
   padding-right: 1rem;
 }
 
@@ -13902,6 +13902,16 @@ p.news-error-api-key {
   cursor: pointer;
 }
 
+body:has(.toolbar-title.nightly) .upload-desc input{
+  color: var(--new-secondary);
+}
+
+body:has(.toolbar-title.nightly) .upload-desc input:hover{
+  background-color: var(--new-secondary-transparent);
+  color: var(--new-secondary);
+}
+
+
 .font-mono {
   font-family: monospace;
 }
@@ -13973,9 +13983,8 @@ p.news-error-api-key {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
-  background-color: rgba(200, 158, 252, 0.1);
-  /* primary with opacity */
-  border: 1px solid rgba(200, 158, 252, 0.3);
+  background-color: var(--new-primary-transparent);
+  border: 1px solid var(--new-primary);
   color: var(--new-primary);
   font-size: 0.75rem;
   font-weight: 700;
@@ -13983,6 +13992,13 @@ p.news-error-api-key {
   text-transform: uppercase;
   margin-bottom: 1.5rem;
 }
+
+body:has(.toolbar-title.nightly) .badge-version{
+    background-color: var(--new-secondary-transparent);
+    border: 1px solid var(--new-secondary);
+    color: var(--new-secondary);
+}
+
 
 .hero-title {
   font-size: 3rem;
@@ -13992,6 +14008,7 @@ p.news-error-api-key {
   text-transform: uppercase;
   line-height: 0.9;
   text-shadow: 0 0 40px rgba(200, 158, 252, 0.2);
+  color: var(--hero-title);
   margin-bottom: 1.5rem;
   text-align: center;
   font-family: 'Formula1Dark';
@@ -14003,8 +14020,26 @@ p.news-error-api-key {
   }
 }
 
+body:has(.toolbar-title.nightly) .gradient-text{
+    background: linear-gradient(135deg, var(--hero-title) 30%, var(--new-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body:has(.toolbar-title.nightly) .glow-spot{
+    background-color: var(--new-secondary);
+}
+
+body:has(.toolbar-title.nightly) .icon-circle{
+    background-color: var(--new-secondary-transparent);
+}
+
+#statusTitle {
+  color: var(--text-general) !important;
+}
+
 .gradient-text {
-  background: linear-gradient(135deg, #fff 30%, var(--new-primary) 100%);
+  background: linear-gradient(135deg, var(--hero-title) 30%, var(--new-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -14080,7 +14115,7 @@ p.news-error-api-key {
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
-  background-color: rgba(200, 158, 252, 0.1);
+  background-color: var(--new-primary-transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14112,8 +14147,16 @@ p.news-error-api-key {
 }
 
 #statusIcon {
-    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.15s ease;
-    transform: scale(1);
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.15s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: scale(1);
+}
+
+.bi-lock#statusIcon {
+  font-size: 2.8rem;
+  color: var(--new-secondary);
 }
 
 .drop-zone h3 {
@@ -14265,6 +14308,11 @@ p.news-error-api-key {
     transition: opacity 0.15s ease-in-out;
 }
 
+body:has(.toolbar-title.nightly) .loading-spinner {
+    border: 5px solid var(--new-secondary-transparent);
+    border-top-color: var(--new-secondary);
+}
+
 .loading-spinner.show{
     animation: spin 1s ease-in-out infinite;
     opacity: 1;
@@ -14294,9 +14342,8 @@ p.news-error-api-key {
   align-items: center;
 }
 
-.recents-label{
+.recent-label{
   font-size: 18px;
-  font-family: 'Formula1Bold';
   color: var(--text-general);
 }
 
@@ -14322,6 +14369,7 @@ p.news-error-api-key {
   transform: scale(0.96);
 }
 
+
 .file-name{
   color: var(--new-primary);
   font-size: 14px;
@@ -14331,6 +14379,15 @@ p.news-error-api-key {
   border-radius: 5px;
   transition: background-color 0.15s, color 0.15s;
   text-decoration: underline;
+}
+
+body:has(.toolbar-title.nightly) .file-name{
+  color: var(--new-secondary);
+}
+
+body:has(.toolbar-title.nightly) .file-name:hover{
+  background-color: var(--new-secondary-transparent);
+  color: var(--new-secondary);
 }
 
 .last-opened-time{

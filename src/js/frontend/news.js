@@ -529,7 +529,6 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
   const readButton = document.createElement('div');
   readButton.classList.add('read-button');
   const readButtonSpan = document.createElement('span');
-  readButtonSpan.classList.add('gradient-text');
   readButtonSpan.innerText = "Read";
   readButton.appendChild(readButtonSpan);
 
@@ -708,7 +707,6 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
   const readButton = document.createElement('div');
   readButton.classList.add('read-button');
   const readButtonSpan = document.createElement('span');
-  readButtonSpan.classList.add('gradient-text');
   readButtonSpan.innerText = "Read";
   readButton.appendChild(readButtonSpan);
 

@@ -29,14 +29,14 @@ import {
 import { place_news, initAI, getAI } from './news.js';
 import { loadRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
-import { dbWorker, processSaveFile } from './dragFile';
+import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
 import { Command } from "../backend/command.js";
 import { PUBLIC_KEY } from './public_key.js';
 import { saveAs } from "file-saver";
 import members from "../../data/members.json"
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { getRecentHandles } from './recentsManager.js';
+import { getRecentHandles, saveHandleToRecents } from './recentsManager.js';
 
 
 const names_configs = {
@@ -148,6 +148,7 @@ let difcultyCustom = "default"
 
 export let game_version = 2023;
 export let custom_team = false;
+export let nightlyBlock = false;
 let firstShow = false;
 let configCopy;
 
@@ -309,16 +310,45 @@ if (userToolButton) {
 }
 
 if (saveFileButton) {
-    saveFileButton.addEventListener('click', () => {
-        //create a file input and click it
-        saveFileInput.click();
-        //get the file from the input
-        saveFileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                processSaveFile(file);
+    saveFileButton.addEventListener('click', async () => {
+        
+        // modern api
+        if ('showOpenFilePicker' in window) {
+            try {
+                const [handle] = await window.showOpenFilePicker({
+                    types: [{
+                        description: 'Database Editor Save File',
+                        accept: {
+                            'application/octet-stream': ['.sav']
+                        }
+                    }],
+                    multiple: false 
+                });
+                await saveHandleToRecents(handle);
+
+                const file = await handle.getFile();
+                await processSaveFile(file);
+
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error("Error selecting file:", err);
+                }
             }
-        });
+        } 
+        // fallback
+        else {
+            saveFileInput.click();
+        }
+    });
+
+    //fallback for older browsers
+    saveFileInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            //not save handlers in recents since we don't have a handle
+            await processSaveFile(file);
+        }
+        saveFileInput.value = ''; 
     });
 }
 
@@ -341,7 +371,7 @@ async function handleLogout() {
 
 /**
  * Retrieves the user's Patreon tier from the cookie.
- * @returns {Promise<{paidMember: boolean, tier: string}>}
+ * @returns {Promise<{paidMember: boolean, tier: string, isLoggedIn: boolean, user: {fullName: string}}>} An object containing the user's tier information.
  */
 export async function getUserTier() {
     try {
@@ -2255,6 +2285,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         const moonIcon = document.createElement("i");
         moonIcon.className = "bi bi-moon-fill nightly-icon";
         document.querySelector(".toolbar-title").appendChild(moonIcon);
+
+        const tierInfo = await getUserTier();
+        let restrictionMessage = null;
+
+        if (!tierInfo.paidMember && tierInfo.isLoggedIn) {
+            restrictionMessage = "Please support us on Patreon to access the nightly version.";
+        } else if (!tierInfo.isLoggedIn) {
+            restrictionMessage = "Please log in with your patreon account to access the nightly version.";
+        }
+
+        if (restrictionMessage !== null) {
+            nightlyBlock = true;
+            const dropDiv = document.querySelector(".drop-div");
+            dropDiv.removeEventListener("dragover", handleDragOver);
+            dropDiv.removeEventListener("dragenter", handleDragEnter);
+            dropDiv.removeEventListener("dragleave", handleDragLeave);
+            dropDiv.removeEventListener("drop", handleDrop);
+            document.getElementById("statusIcon").className = "bi bi-lock";
+            document.getElementById("statusTitle").textContent = "Nightly version is only available for patrons.";
+            document.getElementById("statusDesc").textContent = restrictionMessage;
+
+            const recentsContainer = document.querySelector(".recents-container");
+            if (recentsContainer) recentsContainer.remove();
+
+            document.querySelectorAll(".script-view").forEach(div => {
+                div.remove();
+            });
+        }
 
         const now = new Date();
         const day = String(now.getDate()).padStart(2, '0');
