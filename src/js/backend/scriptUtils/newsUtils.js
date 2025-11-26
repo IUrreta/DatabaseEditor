@@ -371,7 +371,7 @@ function applyTechnicalDirectiveEffect(turningPointData) {
 }
 
 function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     let newsList = [];
     //check if there is anmy news with race substitution turning point, and return the first one found
     for (let month of [4, 5, 6, 7, 8, 9, 10, 11]) {
@@ -521,7 +521,7 @@ function generateRaceSubstitutionTurningPointNews(currentMonth, savednews = {}, 
 }
 
 function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     let newsList = [];
     //check if there is anmy news with investment turning point, and return the first one found
     for (let month of [4, 5, 6, 7, 8, 9, 10, 11]) {
@@ -623,7 +623,7 @@ function generateInvestmentTurningPointNews(currentMonth, savednews = {}, turnin
 function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
     turningPointState.injuries = turningPointState.injuries || {};
 
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const todayExcel = Number(daySeason[0]);
     const seasonYear = Number(daySeason[1]);
 
@@ -750,7 +750,7 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
     FROM Staff_Contracts con
     JOIN Staff_DriverData d ON d.StaffID = con.StaffID
     WHERE con.ContractType = 0 AND con.PosInTeam <= 2 AND (con.TeamID <= 10 OR con.TeamID = 32)
-  `, 'allRows');
+    `, [], 'allRows');
 
     if (!pairs || !pairs.length) {
         turningPointState.injuries[currentMonth] = "None";
@@ -856,7 +856,7 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
                     JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
                     JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
                     WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)
-                    AND gd.Retired = 0`, 'allRows');
+                    AND gd.Retired = 0`, [], 'allRows');
         if (freeAgents.length) {
             for (const fa of freeAgents) {
                 const overall = getDriverOverall(fa[2]);
@@ -951,7 +951,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
         turningPointState.technicalDirectives[currentMonth] = "None";
         return newsList;
     }
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
 
 
     const parts = [3, 4, 5, 6, 7, 8]
@@ -1102,7 +1102,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
 }
 
 function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, savednews = {}, turningPointState = {}) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     let newsList = [];
     for (let month = 5; month <= 7; month++) {
         const entryId = `turning_point_transfer_${month}`;
@@ -1220,7 +1220,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
                     JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
                     JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
                     WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)
-                    AND gd.Retired = 0`, 'allRows');
+                    AND gd.Retired = 0`, [], 'allRows');
                 if (freeAgents.length) {
                     for (const fa of freeAgents) {
                         const overall = getDriverOverall(fa[2]);
@@ -1282,7 +1282,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
                         JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
                         JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
                         WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)
-                        AND gd.Retired = 0`, 'allRows');
+                        AND gd.Retired = 0`, [], 'allRows');
                 if (freeAgents.length) {
                     for (const fa of freeAgents) {
                         const overall = getDriverOverall(fa[2]);
@@ -1327,7 +1327,7 @@ function generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, sa
                         JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
                         JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
                         WHERE dri.StaffID NOT IN (SELECT StaffID FROM Staff_Contracts)
-                        AND gd.Retired = 0`, 'allRows');
+                        AND gd.Retired = 0`, [], 'allRows');
                     if (freeAgents.length) {
                         for (const fa of freeAgents) {
                             const overall = getDriverOverall(fa[2]);
@@ -1429,7 +1429,7 @@ function generateDSQTurningPointNews(racesDone, savednews = {}, turningPointStat
         return newsList; // All recent races checked, return existing news
     }
 
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
 
     if (Math.random() > 0.08 || forcedCleanSeason) { //testing, should be 0.08
         return newsList; // Random chance to not generate
@@ -1586,7 +1586,7 @@ function championshipStatus(
 function generateChampionMilestones(racesDone, savednews = {}) {
     const pointsSchema = fetchPointsRegulations();
 
-    const ps = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const ps = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     if (!ps) return [];
     const currentSeason = ps[1];
 
@@ -1879,7 +1879,7 @@ function generateTitle(data, new_type) {
 }
 
 export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTransfersNews) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const season = daySeason[1];
 
     const seasonResults = fetchSeasonResults(season);
@@ -1934,7 +1934,7 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
                ON bas.StaffID = con.StaffID
              WHERE con.ContractType = 0
                AND con.PosInTeam <= 2
-               AND con.TeamID IN (1,2,3,4,5,6,7,8,9,10,32)`,
+               AND con.TeamID IN (1,2,3,4,5,6,7,8,9,10,32)`, [],
             'allRows'
         );
 
@@ -2136,7 +2136,7 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
 const randomPick = arr => arr[Math.floor(Math.random() * arr.length)];
 
 export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const season = daySeason[1];
     const month = currentMonth > 9 ? 9 : currentMonth;
 
@@ -2148,7 +2148,7 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
              JOIN Staff_Contracts con
                ON bas.StaffID = con.StaffID
              WHERE con.ContractType = 0
-               AND con.PosInTeam <= 2`,
+               AND con.PosInTeam <= 2`, [],
         'allRows'
     );
 
@@ -2273,7 +2273,7 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
 
 export function generateContractRenewalsNews(savedNews = {}, contractRenewals = [], currentMonth) {
     const renewalMonths = [8, 9, 10].filter(m => m < currentMonth);
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const season = daySeason[1];
 
 
@@ -2326,7 +2326,7 @@ export function generateContractRenewalsNews(savedNews = {}, contractRenewals = 
 
 export function getContractExtensions() {
     const daySeason = queryDB(
-        `SELECT Day, CurrentSeason FROM Player_State`,
+        `SELECT Day, CurrentSeason FROM Player_State`, [],
         'singleRow'
     )
     const seasonYear = daySeason[1]
@@ -2354,7 +2354,7 @@ export function getContractExtensions() {
                 AND con0.PosInTeam <= 2
         );
         `
-        , 'allRows')
+        ,  [], 'allRows')
 
     // contractRenewals.forEach(contract => {
     //     let driverID = contract[2];
@@ -2390,7 +2390,7 @@ export function getContractExtensions() {
 
 export function getTrueTransferRumors() {
     const daySeason = queryDB(
-        `SELECT Day, CurrentSeason FROM Player_State`,
+        `SELECT Day, CurrentSeason FROM Player_State`, [],
         'singleRow'
     )
     const seasonYear = daySeason[1]
@@ -2435,7 +2435,7 @@ export function getTrueTransferRumors() {
     AND ofe.PosInTeam <= 2
     `
 
-    const rows = queryDB(sql, 'allRows')
+    const rows = queryDB(sql, [], 'allRows')
         .filter(r => {
             const date = excelToDate(r[7])
             return date.getFullYear() === seasonYear
@@ -2503,7 +2503,7 @@ export function getTrueTransferRumors() {
 }
 
 export function getConfirmedTransfers(bestDrivers = false) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const day = daySeason[0];
     const seasonYear = daySeason[1];
 
@@ -2530,7 +2530,7 @@ export function getConfirmedTransfers(bestDrivers = false) {
                 -- Opcional: filtros por temporada si aplica, por ejemplo:
                 -- AND con0.EndSeason = con3.EndSeason
         );`
-        , 'allRows')
+        , [], 'allRows')
 
     if (bestDrivers) {
         futureContracts.forEach(contract => {
@@ -2565,7 +2565,7 @@ export function getConfirmedTransfers(bestDrivers = false) {
 
 export function generateTransferRumorsNews(offers, savedNews) {
     if (!offers) return null;
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const day = daySeason[0];
     const seasonYear = daySeason[1];
     let newsList = [];
@@ -2677,7 +2677,7 @@ export function generateTeamsUpgradesNews(events, savednews) {
         teamIds.push(32);
     }
 
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const seasonYear = daySeason[1];
     const parts = getAllPartsFromTeam(32);
 
@@ -2714,7 +2714,7 @@ export function generateTeamsUpgradesNews(events, savednews) {
 }
 
 export function generateComparisonNews(comparisonMonths, savedNews) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const season = daySeason[1];
     const currentDate = excelToDate(daySeason[0]);
     const currentMonth = currentDate.getMonth() + 1;
@@ -2853,7 +2853,7 @@ export function generateComparisonNews(comparisonMonths, savedNews) {
 }
 
 export function generateRaceResultsNews(events, savednews) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const seasonYear = daySeason[1];
     let newsList = [];
 
@@ -2928,7 +2928,7 @@ export function generateRaceResultsNews(events, savednews) {
 }
 
 export function generateRaceReactionsNews(events, savednews) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const seasonYear = daySeason[1];
     let newsList = [];
 
@@ -3025,7 +3025,7 @@ export function generateRaceReactionsNews(events, savednews) {
 }
 
 export function generateQualifyingResultsNews(events, savednews) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const seasonYear = daySeason[1];
     let newsList = [];
 
@@ -3101,7 +3101,7 @@ export function generateQualifyingResultsNews(events, savednews) {
 }
 
 export function generateSeasonReviewNews(savedNews) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const nRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ?`, [daySeason[1]], 'singleValue');
     let racesInterval = nRaces / 3;
     const racesCompleted = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND State = 2`, [daySeason[1]], 'singleValue');
@@ -3267,7 +3267,7 @@ export function getOneRaceDetails(raceId) {
 
     const { driverStandings, teamStandings, driversResults, racesNames } = rebuildStandingsUntil(seasonResults, raceId);
 
-    const remainingRaces = queryDB(`SELECT RaceID, TrackID, WeekendType FROM Races WHERE SeasonID = ${season} AND RaceID > ${raceId} ORDER BY RaceID`, 'allRows');
+    const remainingRaces = queryDB(`SELECT RaceID, TrackID, WeekendType FROM Races WHERE SeasonID = ? AND RaceID > ? ORDER BY RaceID`, [season, raceId], 'allRows');
     //make an object that has raceid, trackId, and race track
     const remainingRacesDetails = remainingRaces.map(r => {
         return {
@@ -3718,7 +3718,7 @@ export function calculateTeamDropsByDate(season, date) {
 }
 
 export function getTransferDetails(drivers, date = null) {
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const driverMap = []
     drivers.forEach(d => {
         const previousResultsTeam = queryDB(`SELECT SeasonID, Points, Position FROM Races_TeamStandings WHERE TeamID = ?`, [d.teamId], 'allRows')
@@ -3934,7 +3934,7 @@ function disqualifyTeamInRace({
     pointsReg,
 }) {
     // 0) Contexto temporada
-    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const seasonId = daySeason?.[1];
 
     // 1) Config de puntos
@@ -4043,10 +4043,10 @@ function disqualifyTeamInRace({
                 const withBonus = base + bonus;
                 afterRacePoints.set(flDriver, withBonus);
                 queryDB(`
-          UPDATE Races_Results
-          SET Points = ?
-          WHERE RaceID = ? AND DriverID = ?
-        `, [withBonus, raceId, flDriver], 'run');
+                    UPDATE Races_Results
+                    SET Points = ?
+                    WHERE RaceID = ? AND DriverID = ?
+                `, [withBonus, raceId, flDriver], 'run');
             }
         }
     }
@@ -4402,7 +4402,7 @@ export function startInjurySwap(injuredId, reserveData, endDay) {
     const [dayNow, seasonId] = queryDB(`
         SELECT Day, CurrentSeason
         FROM Player_State
-    `, 'singleRow');
+    `, [], 'singleRow');
     let reserveId = reserveData.id;
 
     // Foto del estado original (equipo/pos/coche)

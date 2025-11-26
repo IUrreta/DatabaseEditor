@@ -14,36 +14,34 @@ const loadingSpinner = document.querySelector(".loading-spinner");
 const statusDesc = document.getElementById("statusDesc");
 const body = document.querySelector("body");
 
-dropDiv.addEventListener("dragenter", (event) => {
+export const handleDragEnter = (event) => {
     event.preventDefault();
     body.classList.add("drag-active");
-});
+};
 
-dropDiv.addEventListener("dragover", (event) => {
+export const handleDragOver = (event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "copy";
-});
+};
 
-dropDiv.addEventListener("dragleave", (event) => {
+export const handleDragLeave = (event) => {
     event.preventDefault();
     body.classList.remove("drag-active");
-});
+};
 
-const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-dropDiv.addEventListener("drop", async (event) => {
+export const handleDrop = async (event) => {
     event.preventDefault();
     body.classList.remove("drag-active");
 
     const item = event.dataTransfer.items[0];
-
+    
+    // ... el resto de tu lógica de drop ...
     if (item && item.kind === 'file') {
         try {
             const handle = await item.getAsFileSystemHandle();
             
             if (handle) {
                 await saveHandleToRecents(handle);
-
                 const file = await handle.getFile();
                 await processSaveFile(file)
             } else {
@@ -56,7 +54,14 @@ dropDiv.addEventListener("drop", async (event) => {
             await processSaveFile(file);
         }
     }
-});
+};
+
+dropDiv.addEventListener("dragenter", handleDragEnter);
+dropDiv.addEventListener("dragover", handleDragOver);
+dropDiv.addEventListener("dragleave", handleDragLeave);
+dropDiv.addEventListener("drop", handleDrop);
+
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 
 export async function processSaveFile(file) {
