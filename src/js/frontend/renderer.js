@@ -311,7 +311,7 @@ if (userToolButton) {
 
 if (saveFileButton) {
     saveFileButton.addEventListener('click', async () => {
-        
+
         // modern api
         if ('showOpenFilePicker' in window) {
             try {
@@ -322,7 +322,7 @@ if (saveFileButton) {
                             'application/octet-stream': ['.sav']
                         }
                     }],
-                    multiple: false 
+                    multiple: false
                 });
                 await saveHandleToRecents(handle);
 
@@ -334,7 +334,7 @@ if (saveFileButton) {
                     console.error("Error selecting file:", err);
                 }
             }
-        } 
+        }
         // fallback
         else {
             saveFileInput.click();
@@ -348,7 +348,7 @@ if (saveFileButton) {
             //not save handlers in recents since we don't have a handle
             await processSaveFile(file);
         }
-        saveFileInput.value = ''; 
+        saveFileInput.value = '';
     });
 }
 
@@ -430,33 +430,24 @@ function updatePatreonUI(tier) {
     init_colors_dict(selectedTheme)
 
     if (tier.paidMember) {
-        document.querySelector(".patreon-status").classList.add("positive");
         patreonUnlockables.classList.remove("d-none");
         patreonThemes.classList.remove("d-none");
-        document.querySelector(".patreonCheck").classList.remove("d-none");
         document.getElementById("patreonStatusText").textContent = tier.tier
         loadTheme();
     }
     else {
-        document.querySelector(".patreon-status").classList.remove("positive");
         patreonUnlockables.classList.add("d-none");
         patreonThemes.classList.add("d-none");
-        document.querySelector(".patreonCheck").classList.add("d-none");
         document.getElementById("patreonStatusText").textContent = tier.isLoggedIn ? tier.tier : "Not logged in"
     }
 
     if (tier.isLoggedIn) {
-        document.querySelector(".user-name-and-logout").classList.remove("d-none");
         document.querySelector(".user-name-and-logout-tool").classList.remove("d-none");
-        document.getElementById("userName").textContent = tier.user.fullName;
         document.getElementById("userToolName").textContent = tier.user.fullName;
-        patreonLoginButton.classList.add("d-none");
         patreonToolLoginButton.classList.add("d-none");
     }
     else {
-        document.querySelector(".user-name-and-logout").classList.add("d-none");
         document.querySelector(".user-name-and-logout-tool").classList.add("d-none");
-        patreonLoginButton.classList.remove("d-none");
         patreonToolLoginButton.classList.remove("d-none");
     }
 
@@ -1260,7 +1251,7 @@ document.querySelector(".gear-container").addEventListener("click", function () 
 })
 
 function manage_config(info, year_config = false) {
-    document.querySelector(".bi-gear").classList.remove("hidden")
+    document.querySelector(".bi-gear-fill#settingsIcon").classList.remove("hidden")
     configCopy = info
     manage_config_content(info, year_config)
 }
@@ -2353,87 +2344,64 @@ document.addEventListener('DOMContentLoaded', async () => {
         initAI(apiKey);
     }
 
-    const phrases = [
-    "Change the contract of every staff in game",
-    "Customize your calendar however you want it",
-    "Edit the attributes of each driver just how you want them",
-    "Create your own custom teams and engines",
-    "Predict the outcome of races with AI",
-    "Compare drivers and teams with detailed graphs",
-    "Modify car performance to your liking",
-    "Get AI-generated news articles about your save",
-    "Unlock hidden features of the game"
+    let phrases = [
+        "Change the contract of every staff available in game",
+        "Customize your calendar however you want it",
+        "Edit the attributes of each driver just how you want them",
+        "Create your own custom engines",
+        "Get stories from your save using AI",
+        "Compare drivers and teams with detailed graphs",
+        "Modify car performance to your liking",
+        "Fix game-breaking issues with ease",
+        "No installation required, works in your browser",
     ];
 
-    const animatedText = document.getElementById('animated-text');
-    let phraseIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
+    //reorder them randomly
+    phrases = phrases.sort(() => Math.random() - 0.5);
 
-    function typePhrase() {
-        const currentPhrase = phrases[phraseIndex];
-        if (isDeleting) {
-            animatedText.innerHTML = animatedText.innerHTML.slice(0, -1);
-            charIndex--;
-            if (charIndex === 0) {
-                isDeleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
+    const animatedText = document.getElementById('animatedText');
+    const fakeText = document.querySelector('.fake-text');
+    let phraseIndex = 0;
+
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    async function animateTextLoop() {
+        while (true) {
+            const currentPhrase = phrases[phraseIndex];
+            fakeText.textContent = currentPhrase;
+
+            // Typing phase
+            for (let i = 0; i < currentPhrase.length; i++) {
+                const char = currentPhrase[i];
+                const span = document.createElement('span');
+                span.className = 'char';
+                span.textContent = char;
+                animatedText.appendChild(span);
+                await sleep(10); // Typing speed
             }
-        } else {
-            const char = currentPhrase[charIndex];
-            const span = document.createElement('span');
-            span.className = 'char';
-            span.textContent = char;
-            animatedText.appendChild(span);
-            charIndex++;
-            if (charIndex === currentPhrase.length) {
-                isDeleting = true;
+
+            // Wait phase (read time)
+            await sleep(5000);
+
+            // Deleting phase
+            while (animatedText.firstChild) {
+                if (animatedText.lastChild) {
+                    animatedText.removeChild(animatedText.lastChild);
+                }
+                await sleep(8); // Deleting speed
             }
+
+            // Move to next phrase
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+
+            // Small pause before typing next one
+            await sleep(200);
         }
     }
 
-    function animateText() {
-        const currentPhrase = phrases[phraseIndex];
-        const aT = document.getElementById('animated-text');
-
-        // Deleting phase
-        let deleteInterval = setInterval(() => {
-            if (aT.innerHTML.length > 0) {
-                aT.innerHTML = aT.innerHTML.slice(0, -1);
-            } else {
-                clearInterval(deleteInterval);
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-                const nextPhrase = phrases[phraseIndex];
-
-                // Typing phase
-                let charIndex = 0;
-                let typeInterval = setInterval(() => {
-                    if (charIndex < nextPhrase.length) {
-                        const char = nextPhrase[charIndex];
-                        const span = document.createElement('span');
-                        span.className = 'char';
-                        span.style.opacity = 0; // Start invisible
-                        span.textContent = char;
-                        aT.appendChild(span);
-
-                        // Trigger animation with a slight delay
-                        setTimeout(() => {
-                            span.style.opacity = 1;
-                        }, 10);
-
-                        charIndex++;
-                    } else {
-                        clearInterval(typeInterval);
-                    }
-                }, 50); // Typing speed
-            }
-        }, 30); // Deleting speed
-    }
-
-    // Clear initial text and start animation
-    document.getElementById('animated-text').innerHTML = '';
-    setInterval(animateText, 5000); // Cycle every 5 seconds
-    animateText(); // Start immediately
+    // Clear initial text and start animation loop
+    animatedText.innerHTML = '';
+    animateTextLoop();
 });
 
 function populateRecentHandles(recents) {
@@ -2447,7 +2415,7 @@ function populateRecentHandles(recents) {
     recents.forEach(handle => {
         const listItem = document.createElement("div");
         listItem.className = "recent-file";
-        
+
         const fileName = document.createElement("span");
         fileName.classList.add("file-name");
         fileName.textContent = handle.name;
@@ -2477,7 +2445,7 @@ function populateRecentHandles(recents) {
         let timeString;
 
         if (diffDays === 0) {
-            timeString = "Today"; 
+            timeString = "Today";
         } else if (diffDays === 1) {
             timeString = "Yesterday";
         } else {

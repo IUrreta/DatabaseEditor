@@ -1132,11 +1132,11 @@ body.og-theme .dropdown-menu a:hover {
   background-color: var(--new-primary);
 }
 
-.user-name-and-logout-tool{
+.user-name-and-logout-tool {
   position: relative;
 }
 
-.userToolMenu{
+.userToolMenu {
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -1155,7 +1155,7 @@ body.og-theme .dropdown-menu a:hover {
   transition: opacity 0.15s, transform 0.15s;
 }
 
-.userToolMenu.hidden{
+.userToolMenu.hidden {
   opacity: 0;
   transform: translateY(-10px);
   pointer-events: none;
@@ -1176,13 +1176,13 @@ body.og-theme .dropdown-menu a:hover {
   transform: scale(0.97);
 }
 
-.button-with-icon#patreonStatus:hover{
+.button-with-icon#patreonStatus:hover {
   color: var(--text-secondary);
   background-color: transparent;
   cursor: default;
 }
 
-.button-with-icon#patreonStatus:active{
+.button-with-icon#patreonStatus:active {
   transform: none;
 }
 
@@ -2161,19 +2161,21 @@ input.comparing-tag {
   border-bottom-right-radius: 10px;
 }
 
-.patreon-login{
+.patreon-login {
   padding-right: 15px;
 }
 
-body:has(#blockDiv:not(.disappear)) .patreon-login .patreon-login-button, body:has(#blockDiv:not(.disappear)) .patreon-login #userToolButton{
+body:has(#blockDiv:not(.disappear)) .patreon-login .patreon-login-button,
+body:has(#blockDiv:not(.disappear)) .patreon-login #userToolButton {
   color: var(--text-muted);
 }
 
-body:has(#blockDiv:not(.disappear)) .patreon-login .patreon-login-button:hover, body:has(#blockDiv:not(.disappear)) .patreon-login #userToolButton:hover{
+body:has(#blockDiv:not(.disappear)) .patreon-login .patreon-login-button:hover,
+body:has(#blockDiv:not(.disappear)) .patreon-login #userToolButton:hover {
   color: var(--new-primary);
 }
 
-.patreon-login .patreon-login-button{
+.patreon-login .patreon-login-button {
   background-color: transparent;
   border: none;
   outline: none;
@@ -2182,11 +2184,11 @@ body:has(#blockDiv:not(.disappear)) .patreon-login .patreon-login-button:hover, 
   transition: color 0.15s, background-color 0.15s;
 }
 
-.patreon-login .patreon-login-button:hover{
+.patreon-login .patreon-login-button:hover {
   color: var(--new-primary);
 }
 
-.patreon-login .patreon-login-button:active{
+.patreon-login .patreon-login-button:active {
   transform: scale(0.97);
   color: var(--new-primary);
 }
@@ -2321,7 +2323,9 @@ body.vaporwave-theme .background {
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
-.script-selector.hidden, .footer.hidden{
+.script-selector.hidden,
+.gear-container.hidden,
+.footer.hidden {
   opacity: 0;
   pointer-events: none;
 }
@@ -2340,11 +2344,10 @@ body.vaporwave-theme .background {
   justify-content: center;
   align-items: center;
   position: relative;
-  transition: width 0.15s;
+  transition: width 0.15s, opacity 0.15s;
   cursor: pointer;
   border-top: 2px solid transparent;
   border-bottom: 2px solid transparent;
-
 }
 
 .gear-container::before {
@@ -2373,7 +2376,7 @@ body.vaporwave-theme .background {
   width: 40px;
 }
 
-.gear-container:hover .bi-gear {
+.gear-container:hover .bi-gear-fill {
   opacity: 0;
 }
 
@@ -2401,7 +2404,7 @@ body.vaporwave-theme .background {
   bottom: 7px;
 }
 
-.bi-gear {
+.gear-container .bi-gear-fill {
   color: var(--text-general);
   opacity: 1;
   transition: color 0.15s, opacity 0.1s;
@@ -2411,12 +2414,12 @@ body.vaporwave-theme .background {
   bottom: 5px;
 }
 
-.bi-gear.hidden {
+.gear-container .bi-gear-fill.hidden {
   opacity: 0;
   pointer-events: none;
 }
 
-.bi-gear:hover .standard-line {
+.gear-container.bi-gear-fill:hover .standard-line {
   width: 100%;
   background-color: var(--text-general);
 }
@@ -13893,7 +13896,7 @@ p.news-error-api-key {
   height: 30px;
 }
 
-.upload-desc input{
+.upload-desc input {
   background-color: transparent;
   border: none;
   color: var(--new-primary);
@@ -13902,11 +13905,11 @@ p.news-error-api-key {
   cursor: pointer;
 }
 
-body:has(.toolbar-title.nightly) .upload-desc input{
+body:has(.toolbar-title.nightly) .upload-desc input {
   color: var(--new-secondary);
 }
 
-body:has(.toolbar-title.nightly) .upload-desc input:hover{
+body:has(.toolbar-title.nightly) .upload-desc input:hover {
   background-color: var(--new-secondary-transparent);
   color: var(--new-secondary);
 }
@@ -13993,10 +13996,10 @@ body:has(.toolbar-title.nightly) .upload-desc input:hover{
   margin-bottom: 1.5rem;
 }
 
-body:has(.toolbar-title.nightly) .badge-version{
-    background-color: var(--new-secondary-transparent);
-    border: 1px solid var(--new-secondary);
-    color: var(--new-secondary);
+body:has(.toolbar-title.nightly) .badge-version {
+  background-color: var(--new-secondary-transparent);
+  border: 1px solid var(--new-secondary);
+  color: var(--new-secondary);
 }
 
 
@@ -14020,18 +14023,18 @@ body:has(.toolbar-title.nightly) .badge-version{
   }
 }
 
-body:has(.toolbar-title.nightly) .gradient-text{
-    background: linear-gradient(135deg, var(--hero-title) 30%, var(--new-secondary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+body:has(.toolbar-title.nightly) .gradient-text {
+  background: linear-gradient(135deg, var(--hero-title) 30%, var(--new-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-body:has(.toolbar-title.nightly) .glow-spot{
-    background-color: var(--new-secondary);
+body:has(.toolbar-title.nightly) .glow-spot {
+  background-color: var(--new-secondary);
 }
 
-body:has(.toolbar-title.nightly) .icon-circle{
-    background-color: var(--new-secondary-transparent);
+body:has(.toolbar-title.nightly) .icon-circle {
+  background-color: var(--new-secondary-transparent);
 }
 
 #statusTitle {
@@ -14049,47 +14052,64 @@ body:has(.toolbar-title.nightly) .icon-circle{
   font-size: 1.125rem;
   font-weight: 300;
   max-width: 42rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin: 0 auto;
   text-align: center;
   line-height: 1.6;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
-#animated-text, #static-text {
-  color: var(--text-general);
+.fake-text-and-animated-container {
+  position: relative;
+  height: 28px;
+}
+
+#animatedText {
+  white-space: pre;
+  text-align: left;
+  height: 28px;
+  display: inline-block;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  color: var(--text-muted);
+}
+
+.fake-text {
+  opacity: 0;
+  height: 28px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+#static-text {
+  color: var(--text-muted);
 }
 
 @keyframes pop-in {
   0% {
     opacity: 0;
     transform: translateY(-20px) scale(0.8);
+    color: var(--text-general);
   }
-  70% {
+
+  50% {
     opacity: 1;
-    transform: translateY(5px) scale(1.1);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
+    color: var(--text-muted);
   }
 }
 
-#animated-text .char {
+#animatedText .char {
   display: inline-block;
-  animation: pop-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-
-/* --- UPLOAD AREA --- */
-.upload-wrapper {
-  width: 100%;
-  max-width: 42rem;
-  /* max-w-2xl */
   opacity: 0;
-  transform: translateY(20px);
-  animation: fadeIn 0.8s ease-out forwards;
-  animation-delay: 0.2s;
+  animation: pop-in 0.10s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .drop-zone {
@@ -14100,7 +14120,7 @@ body:has(.toolbar-title.nightly) .icon-circle{
 }
 
 
-.select-file-input{
+.select-file-input {
   position: relative;
   display: inline-block;
   width: 100%;
@@ -14118,7 +14138,7 @@ body:has(.toolbar-title.nightly) .icon-circle{
   z-index: 20;
 }
 
-.socials-container{
+.socials-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -14128,13 +14148,13 @@ body:has(.toolbar-title.nightly) .icon-circle{
   color: var(--text-muted);
 }
 
-.socials-container a{
+.socials-container a {
   color: var(--text-muted);
   text-decoration: none;
   transition: color 0.15s;
 }
 
-.socials-container a.bi-custom-patreon::before{
+.socials-container a.bi-custom-patreon::before {
   background-color: var(--text-muted);
 }
 
@@ -14151,24 +14171,24 @@ body:has(.toolbar-title.nightly) .icon-circle{
 }
 
 .icon-circle.success-mode {
-    background-color: var(--positive-transparent) !important;
+  background-color: var(--positive-transparent) !important;
 }
 
-.idle-content{
+.idle-content {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.icon-circle.success-mode i{
-    color: var(--positive-general) !important;
+.icon-circle.success-mode i {
+  color: var(--positive-general) !important;
 }
 
 .icon-scale-0 {
-    transform: scale(0) !important;
+  transform: scale(0) !important;
 }
 
-.icon-circle i{
+.icon-circle i {
   font-size: 3.1rem;
   padding-bottom: 4px;
 }
@@ -14309,43 +14329,44 @@ body:has(.toolbar-title.nightly) .icon-circle{
   gap: 0.5rem;
 }
 
-.drag-active{
-  border-color: var(--new-primary); /* Un borde sólido morado */
+.drag-active {
+  border-color: var(--new-primary);
+  /* Un borde sólido morado */
   color: var(--new-primary);
-  
+
   box-shadow: inset 0 0 60px 7px var(--new-primary);
 }
 
 .anim-content {
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
-    transform: scale(1);
-    opacity: 1;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
+  transform: scale(1);
+  opacity: 1;
 }
 
 
 /* --- Spinner Personalizado --- */
 .loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid var(--new-primary-transparent);
-    border-radius: 50%;
-    border-top-color: var(--new-primary);
-    opacity: 0;
-    position: absolute;
-    transition: opacity 0.15s ease-in-out;
+  width: 50px;
+  height: 50px;
+  border: 5px solid var(--new-primary-transparent);
+  border-radius: 50%;
+  border-top-color: var(--new-primary);
+  opacity: 0;
+  position: absolute;
+  transition: opacity 0.15s ease-in-out;
 }
 
 body:has(.toolbar-title.nightly) .loading-spinner {
-    border: 5px solid var(--new-secondary-transparent);
-    border-top-color: var(--new-secondary);
+  border: 5px solid var(--new-secondary-transparent);
+  border-top-color: var(--new-secondary);
 }
 
-.loading-spinner.show{
-    animation: spin 1s ease-in-out infinite;
-    opacity: 1;
+.loading-spinner.show {
+  animation: spin 1s ease-in-out infinite;
+  opacity: 1;
 }
 
-.save-file-button{
+.save-file-button {
   text-decoration: none !important;
   color: var(--new-primary);
   background-color: transparent;
@@ -14354,50 +14375,50 @@ body:has(.toolbar-title.nightly) .loading-spinner {
   transition: background-color 0.15s, color 0.15s;
 }
 
-.save-file-button:hover{
+.save-file-button:hover {
   text-decoration: none;
   background-color: var(--new-primary-transparent);
 }
 
-.save-file-button:active{
+.save-file-button:active {
   transform: scale(0.96);
 }
 
-.recents-container{
+.recents-container {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.recent-label{
+.recent-label {
   font-size: 18px;
   color: var(--text-general);
 }
 
-.recents-list{
+.recents-list {
   display: flex;
   flex-direction: row;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.recent-file{
+.recent-file {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 3px;
 }
 
-.file-name:hover{
+.file-name:hover {
   background-color: var(--new-primary-transparent);
 }
 
-.file-name:active{
+.file-name:active {
   transform: scale(0.96);
 }
 
 
-.file-name{
+.file-name {
   color: var(--new-primary);
   font-size: 14px;
   cursor: pointer;
@@ -14408,16 +14429,16 @@ body:has(.toolbar-title.nightly) .loading-spinner {
   text-decoration: underline;
 }
 
-body:has(.toolbar-title.nightly) .file-name{
+body:has(.toolbar-title.nightly) .file-name {
   color: var(--new-secondary);
 }
 
-body:has(.toolbar-title.nightly) .file-name:hover{
+body:has(.toolbar-title.nightly) .file-name:hover {
   background-color: var(--new-secondary-transparent);
   color: var(--new-secondary);
 }
 
-.last-opened-time{
+.last-opened-time {
   font-size: 12px;
   color: var(--text-muted);
 }
@@ -14429,15 +14450,16 @@ body:has(.toolbar-title.nightly) .file-name:hover{
 }
 
 .success-icon-bg {
-    background-color: var(--positive-transparent); /* Tu variable */
-    width: 4rem; 
-    height: 4rem; 
-    margin-bottom: 1rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem auto;
+  background-color: var(--positive-transparent);
+  /* Tu variable */
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
 }
 
 
@@ -14462,4 +14484,3 @@ body:has(.toolbar-title.nightly) .file-name:hover{
     border-color: #e0c4ff;
   }
 }
-
