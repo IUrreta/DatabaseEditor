@@ -2198,11 +2198,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const tierInfo = await getUserTier();
         let restrictionMessage = null;
+        const insiderOrFounder = tierInfo.tier === "Insider" || tierInfo.tier === "Founder";
 
-        if (!tierInfo.paidMember && tierInfo.isLoggedIn) {
-            restrictionMessage = "Please support us on Patreon to access the nightly version.";
+        if (tierInfo.isLoggedIn && !insiderOrFounder) {
+            restrictionMessage = "Please upgrade to the Insider or Founder tier on Patreon to access the nightly version.";
         } else if (!tierInfo.isLoggedIn) {
-            restrictionMessage = "Please log in with your patreon account to access the nightly version.";
+            restrictionMessage = "Please log in with your Patreon account to access the nightly version.";
         }
 
         if (restrictionMessage !== null) {
@@ -2253,7 +2254,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     let recents = await getRecentHandles();
-    console.log("Recent handles loaded:", recents);
     populateRecentHandles(recents);
 
     //check if apiKey in localStorage

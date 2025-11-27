@@ -62,6 +62,13 @@ export default async function handler(req, res) {
 
         const tierIDs = ["25157070", "25124139", "25132338"];
         const paidTiers = ["Backer", "Insider", "Founder"];
+        const patronStatusOrder = {
+            "None": 0,
+            "Free": 0,
+            "Backer": 1,
+            "Insider": 2,
+            "Founder": 3
+        };
 
         // Logic to determine tier based on memberships
         for (const item of memberships) {
@@ -70,7 +77,10 @@ export default async function handler(req, res) {
                 amountCents = item.attributes.currently_entitled_amount_cents;
             }
             if (item.type === 'tier' && tierIDs.includes(item.id)) {
-                tierName = item.attributes.title;
+                //get the highest, order is backer -> insider -> founder
+                if (patronStatusOrder[item.attributes.title] > patronStatusOrder[tierName]) {
+                    tierName = item.attributes.title;
+                }
             }
         }
 
