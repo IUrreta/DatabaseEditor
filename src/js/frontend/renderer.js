@@ -1,4 +1,5 @@
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 import { resetTeamEditing, fillLevels, longTermObj, originalCostCap, gather_team_data, gather_pit_crew, teamCod } from './teams';
 import {
@@ -232,7 +233,7 @@ async function getPatchNotes() {
             let response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/releases/tags/${versionNow}`);
             let data = await response.json();
             let changes = data.body;
-            let changesHTML = marked(changes);
+            let changesHTML = DOMPurify.sanitize(marked(changes));
             patchNotesBody.innerHTML = changesHTML
             let h1Elements = patchNotesBody.querySelectorAll("h1");
 
@@ -254,7 +255,7 @@ async function getPatchNotes() {
         else if (versionNow.includes("nightly")) {
             let response = await fetch('/data/nightly_patch_notes.md');
             let changes = await response.text();
-            let changesHTML = marked(changes);
+            let changesHTML = DOMPurify.sanitize(marked(changes));
             patchNotesBody.innerHTML = changesHTML
             let h1Elements = patchNotesBody.querySelectorAll("h1");
 
@@ -362,7 +363,7 @@ export async function getUserTier() {
             paidMember: data.paidMember, // true/false
             tier: data.tier, // "Backer", "Insider", "Free", etc
             isLoggedIn: data.isLoggedIn,
-            user: { fullName: data.user.fullName }
+            user: { fullName: data.user?.fullName || '' }
         };
     } catch (error) {
         console.error("Failed to check auth status", error);
