@@ -529,7 +529,6 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
   const readButton = document.createElement('div');
   readButton.classList.add('read-button');
   const readButtonSpan = document.createElement('span');
-  readButtonSpan.classList.add('gradient-text');
   readButtonSpan.innerText = "Read";
   readButton.appendChild(readButtonSpan);
 
@@ -708,7 +707,6 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
   const readButton = document.createElement('div');
   readButton.classList.add('read-button');
   const readButtonSpan = document.createElement('span');
-  readButtonSpan.classList.add('gradient-text');
   readButtonSpan.innerText = "Read";
   readButton.appendChild(readButtonSpan);
 
@@ -2432,7 +2430,6 @@ document.querySelectorAll("#aiModelmenu .dropdown-item").forEach(item => {
     e.preventDefault();
     e.stopPropagation();
 
-    console.log(e.target)
     const selectedModel = e.target.dataset.value;
     const selectedText = e.target.querySelector(".model-name").innerText;
 

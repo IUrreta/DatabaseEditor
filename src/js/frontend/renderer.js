@@ -1,4 +1,5 @@
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 import { resetTeamEditing, fillLevels, longTermObj, originalCostCap, gather_team_data, gather_pit_crew, teamCod } from './teams';
 import {
@@ -29,12 +30,13 @@ import {
 import { place_news, initAI, getAI } from './news.js';
 import { loadRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
-import { dbWorker } from './dragFile';
+import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
 import { Command } from "../backend/command.js";
-import { PUBLIC_KEY } from './public_key.js';
+import { saveAs } from "file-saver";
 import members from "../../data/members.json"
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { getRecentHandles, saveHandleToRecents } from './recentsManager.js';
 
 
 const names_configs = {
@@ -90,7 +92,11 @@ const newsDiv = document.getElementById("news")
 
 const patchNotesBody = document.getElementById("patchNotesBody")
 const selectImageButton = document.getElementById('selectImage');
-const patreonKeyButton = document.getElementById('patreonKeyButton');
+const patreonLoginButton = document.getElementById('patreonLoginButton');
+const patreonLogoutButton = document.getElementById('patreonLogoutButton');
+const patreonToolLoginButton = document.getElementById('patreonToolLoginButton');
+const userToolButton = document.getElementById('userToolButton');
+const saveFileButton = document.getElementById('saveFileButton');
 
 const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, carPerformanceDiv, mod25Div]
 
@@ -115,7 +121,7 @@ const removeApiKey = document.getElementById("removeApiKey");
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
 const fileInput = document.getElementById('fileInput');
-const patreonInput = document.getElementById('patreonInput');
+const saveFileInput = document.getElementById('saveFileInput');
 const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 let difficulty_dict = {
     "-2": "Custom",
@@ -142,6 +148,7 @@ let difcultyCustom = "default"
 
 export let game_version = 2023;
 export let custom_team = false;
+export let nightlyBlock = false;
 let firstShow = false;
 let configCopy;
 
@@ -164,6 +171,7 @@ let newsAvailable = {
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
+const versionBadge = document.querySelector('.badge-version');
 const parchModalTitle = document.getElementById("patchModalTitle")
 
 let notificationsQueue = [];
@@ -225,7 +233,7 @@ async function getPatchNotes() {
             let response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/releases/tags/${versionNow}`);
             let data = await response.json();
             let changes = data.body;
-            let changesHTML = marked(changes);
+            let changesHTML = DOMPurify.sanitize(marked(changes));
             patchNotesBody.innerHTML = changesHTML
             let h1Elements = patchNotesBody.querySelectorAll("h1");
 
@@ -247,7 +255,7 @@ async function getPatchNotes() {
         else if (versionNow.includes("nightly")) {
             let response = await fetch('/data/nightly_patch_notes.md');
             let changes = await response.text();
-            let changesHTML = marked(changes);
+            let changesHTML = DOMPurify.sanitize(marked(changes));
             patchNotesBody.innerHTML = changesHTML
             let h1Elements = patchNotesBody.querySelectorAll("h1");
 
@@ -273,29 +281,158 @@ async function getPatchNotes() {
 
 }
 
-/**
- * Places and manages the notifications that appear in the tool
- * @param {string} noti message of the notification
- * @param {bool} error if the notification is an error or not
- */
-function update_notifications(noti, code) {
-    let newNoti;
-    newNoti = document.createElement('div');
-    newNoti.className = 'notification';
-    newNoti.textContent = noti;
-    let toast = createToast(noti, code)
-    setTimeout(function () {
-        toast.classList.remove("myShow")
-    }, 150)
-    notificationPanel.appendChild(toast);
-    if (code !== "error") {
-        setTimeout(function () {
-            toast.classList.add("hide")
-            setTimeout(function () {
-                notificationPanel.removeChild(toast);
-            }, 130);
-        }, 4000);
+// Patreon OAuth Logic
+if (patreonLoginButton) {
+    patreonLoginButton.addEventListener('click', () => {
+        window.location.href = '/api/auth/patreon/login';
+    });
+}
+
+if (patreonToolLoginButton) {
+    patreonToolLoginButton.addEventListener('click', () => {
+        window.location.href = '/api/auth/patreon/login';
+    });
+}
+
+if (patreonLogoutButton) {
+    patreonLogoutButton.addEventListener('click', () => {
+        handleLogout();
+    });
+}
+
+if (userToolButton) {
+    userToolButton.addEventListener('click', () => {
+        const userToolMenu = document.querySelector('.userToolMenu');
+        if (userToolMenu) {
+            userToolMenu.classList.toggle('hidden');
+        }
+    });
+}
+
+if (saveFileButton && saveFileInput) {
+    saveFileInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            await processSaveFile(file);
+        }
+        saveFileInput.value = '';
+    });
+
+    saveFileButton.addEventListener('click', async () => {
+        const ok = await confirmModal({
+            title: "Warning about selecting your save file",
+            body: "Selecting your save file this way (in stead of drag and drop) will not save your save in the Recents section. Are you sure you want to continue?",
+            confirmText: "Continue",
+            cancelText: "Cancel"
+        })
+        if (ok) {
+            saveFileInput.click();
+        }
+    });
+}
+
+
+
+async function handleLogout() {
+    try {
+        const response = await fetch('/api/auth/patreon/logout');
+
+        if (response.ok) {
+            console.log("Logout successful");
+
+            updatePatreonUI({ isLoggedIn: false, tier: 'Free' });
+
+            window.location.reload();
+        }
+    } catch (error) {
+        console.error("Logout failed", error);
     }
+}
+
+/**
+ * Retrieves the user's Patreon tier from the cookie.
+ * @returns {Promise<{paidMember: boolean, tier: string, isLoggedIn: boolean, user: {fullName: string}}>} An object containing the user's tier information.
+ */
+export async function getUserTier() {
+    try {
+        const response = await fetch('/api/me');
+        const data = await response.json();
+
+        // The structure matches what api/me.js returns
+        return {
+            paidMember: data.paidMember, // true/false
+            tier: data.tier, // "Backer", "Insider", "Free", etc
+            isLoggedIn: data.isLoggedIn,
+            user: { fullName: data.user?.fullName || '' }
+        };
+    } catch (error) {
+        console.error("Failed to check auth status", error);
+        return { paidMember: false, tier: 'Free', isLoggedIn: false };
+    }
+}
+
+
+// Check for OAuth code
+const urlParams = new URLSearchParams(window.location.search);
+const code = urlParams.get('code');
+
+if (code) {
+    console.log("There is code")
+    // Clear the code from URL to prevent re-submission on refresh
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    fetch(`/api/auth/patreon/verify?code=${code}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                new_update_notifications(`Welcome ${data.user.fullName}! Tier: ${data.tier}`, "success");
+
+                // Update UI
+                updatePatreonUI(data);
+            } else {
+                new_update_notifications(`Login failed: ${data.error}`, "error");
+                updatePatreonUI(data);
+            }
+        })
+        .catch(err => {
+            console.error('Patreon verification error:', err);
+            new_update_notifications("Error verifying Patreon status", "error");
+        });
+} else {
+    getUserTier().then(savedTier => {
+        if (savedTier) {
+            updatePatreonUI(savedTier);
+        }
+    });
+}
+
+function updatePatreonUI(tier) {
+    console.log("Updating Patreon UI", tier);
+    init_colors_dict(selectedTheme)
+
+    if (tier.paidMember) {
+        patreonUnlockables.classList.remove("d-none");
+        patreonThemes.classList.remove("d-none");
+        document.getElementById("patreonStatusText").textContent = tier.tier
+        loadTheme();
+    }
+    else {
+        patreonUnlockables.classList.add("d-none");
+        patreonThemes.classList.add("d-none");
+        document.getElementById("patreonStatusText").textContent = tier.isLoggedIn ? tier.tier : "Not logged in"
+    }
+
+    if (tier.isLoggedIn) {
+        document.querySelector(".user-name-and-logout-tool").classList.remove("d-none");
+        document.getElementById("userToolName").textContent = tier.user.fullName;
+        patreonToolLoginButton.classList.add("d-none");
+    }
+    else {
+        document.querySelector(".user-name-and-logout-tool").classList.add("d-none");
+        patreonToolLoginButton.classList.remove("d-none");
+    }
+
+    manageNewsStatus(tier);
 }
 
 
@@ -705,6 +842,7 @@ const messageHandlers = {
     },
     "Config": (message) => {
         manage_config(message)
+        document.querySelector("#transferpill").click();
     },
     "24 Year": (message) => {
         manage_config(message, true)
@@ -822,8 +960,8 @@ async function migrateLegacyNewsOnce() {
 
 
 export async function generateNews() {
-    const isValid = await isPatronSignatureValid();
-    const canGenerate = checkGenerableNews(isValid);
+    const patreonTier = await getUserTier();
+    const canGenerate = checkGenerableNews(patreonTier);
     if (canGenerate === "no") return;
 
     // lanzar sin payload, el worker lee de DB
@@ -1094,7 +1232,7 @@ document.querySelector(".gear-container").addEventListener("click", function () 
 })
 
 function manage_config(info, year_config = false) {
-    document.querySelector(".bi-gear").classList.remove("hidden")
+    document.querySelector(".bi-gear-fill#settingsIcon").classList.remove("hidden")
     configCopy = info
     manage_config_content(info, year_config)
 }
@@ -1558,18 +1696,11 @@ document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", 
  * checks if a save and a script have been selected to unlock the tool
  */
 function check_selected() {
-    if (scriptSelected === 1) {
-        document.getElementById("scriptSelected").classList.add("completed")
+    console.log(isSaveSelected, scriptSelected, divBlocking)
+    if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
+        document.getElementById("blockDiv").classList.add("disappear")
+        divBlocking = 0;
     }
-    else {
-        document.getElementById("scriptSelected").classList.remove("completed")
-    }
-    setTimeout(function () {
-        if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
-            document.getElementById("blockDiv").classList.add("disappear")
-            divBlocking = 0;
-        }
-    }, 150)
 
 }
 
@@ -1916,96 +2047,13 @@ document.querySelector("#cancelDetailsButton").addEventListener("click", functio
     manage_config_content(configCopy[0], false)
 })
 
-patreonKeyButton.addEventListener('click', () => {
-    patreonInput.click();
-});
-
-patreonInput.addEventListener('change', async (e) => {
-    if (!e.target.files?.length) return;
-
-    const file = e.target.files[0];
-    const text = await file.text();
-    let parsed;
-
-    try {
-        parsed = JSON.parse(text);
-    } catch (err) {
-        alert('Invalid file');
-        return;
-    }
-
-    const { dataString, signature } = parsed;
-    if (!dataString || !signature) {
-        alert('Error');
-        return;
-    }
-
-    const isValid = await verifySignature(dataString, signature, PUBLIC_KEY);
-    if (isValid) {
-        const dataObj = JSON.parse(dataString);
-
-        localStorage.setItem('patreonKey', JSON.stringify({ dataString, signature }));
-        checkPatreonStatus();
-    } else {
-        alert('Invalid file');
-    }
-});
 
 
-async function isPatronSignatureValid() {
-    const stored = localStorage.getItem('patreonKey');
-    if (!stored) return { status: "missing", role: null };
 
-    try {
-        const { dataString, signature } = JSON.parse(stored);
-        if (!dataString || !signature) return { status: "invalid", role: null };
 
-        const valid = await verifySignature(dataString, signature, PUBLIC_KEY);
-        const role = valid ? JSON.parse(dataString).role : null;
-        return { status: valid ? "valid" : "invalid", role };
-    } catch (err) {
-        console.error("Error verificando firma:", err);
-        return { status: "invalid", role: null };
-    }
-}
 
-async function checkPatreonStatus() {
-    const validSignature = await isPatronSignatureValid();
-    init_colors_dict(selectedTheme)
-
-    if (validSignature.status === "valid") {
-        document.querySelector(".patreon-status").classList.remove("negative")
-        document.querySelector(".patreon-status").classList.add("positive");
-        patreonUnlockables.classList.remove("d-none");
-        patreonThemes.classList.remove("d-none");
-        document.querySelector(".patreonCheck").classList.remove("d-none");
-        document.getElementById("patreonKeyText").textContent = validSignature.role.charAt(0).toUpperCase() + validSignature.role.slice(1);
-        document.querySelector(".patreonX").classList.add("d-none");
-        console.log("Patreon key valid");
-        loadTheme();
-    }
-    else if (validSignature.status === "invalid") {
-        //put the text saying that maybe the old key is invalid
-        document.querySelector(".patreon-status").classList.remove("positive")
-        document.querySelector(".patreon-status").classList.add("negative");
-        document.getElementById("patreonKeyText").textContent = "Invalid";
-        document.querySelector(".patreonCheck").classList.add("d-none");
-        document.querySelector(".patreonX").classList.remove("d-none");
-        console.log("Patreon key invalid or expired");
-    }
-    else if (validSignature.status === "missing") {
-        document.querySelector(".patreon-status").classList.remove("positive")
-        document.querySelector(".patreon-status").classList.remove("negative");
-        document.getElementById("patreonKeyText").textContent = "Not set";
-        document.querySelector(".patreonCheck").classList.add("d-none");
-        document.querySelector(".patreonX").classList.add("d-none");
-        console.log("No patreon key found");
-    }
-    manageNewsStatus(validSignature);
-}
-
-function manageNewsStatus(valid) {
-    const generateNews = checkGenerableNews(valid);
+function manageNewsStatus(patreonTier) {
+    const generateNews = checkGenerableNews(patreonTier);
     if (generateNews === "yes") {
         const extraApiKeySection = document.querySelector('#extraApiKeySection');
         if (extraApiKeySection) {
@@ -2053,15 +2101,15 @@ function manageNewsStatus(valid) {
 
 }
 
-function checkGenerableNews(validSignature) {
+function checkGenerableNews(patreonTier) {
     let canGenerate = "no";
-    if (validSignature.status === "valid") {
+    if (patreonTier.paidMember) {
         canGenerate = "yes";
-        if (validSignature.role === "insider") {
+        if (patreonTier.tier === "Insider" || patreonTier.tier === "Founder") {
             newsAvailable.normal = true;
             newsAvailable.turning = true;
         }
-        else {
+        else if (patreonTier.tier === "Backer") {
             newsAvailable.normal = true;
             newsAvailable.turning = false;
         }
@@ -2094,8 +2142,8 @@ function checkGenerableNews(validSignature) {
 
 
 async function checkOpenSlideUp() {
-    const validSignature = await isPatronSignatureValid();
-
+    const tier = await getUserTier();
+    if (tier.paidMember) return;
 
     const lastShownStr = localStorage.getItem('patreonModalLastShown');
     if (!canShowPatreonModal(lastShownStr) || validSignature.status === "valid") {
@@ -2131,53 +2179,8 @@ function canShowPatreonModal(lastShown) {
     return diffDays >= 1;
 }
 
-/**
- * @param {string} dataString - Cadena JSON que se firmó en Node
- * @param {string} signatureHex - Firma en hex
- * @param {string} spkiPublicKey - Clave pública en formato PEM (SPKI)
- * @returns {Promise<boolean>}
- */
-async function verifySignature(dataString, signatureHex, spkiPublicKey) {
-    const keyBuffer = pemToArrayBuffer(spkiPublicKey);
-    const publicKey = await crypto.subtle.importKey(
-        "spki",
-        keyBuffer,
-        { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-        false,
-        ["verify"]
-    );
 
-    const sigBuffer = hexToArrayBuffer(signatureHex);
-    const dataBuffer = new TextEncoder().encode(dataString);
-
-    return crypto.subtle.verify("RSASSA-PKCS1-v1_5", publicKey, sigBuffer, dataBuffer);
-}
-
-
-function pemToArrayBuffer(pem) {
-    const b64 = pem
-        .replace("-----BEGIN PUBLIC KEY-----", "")
-        .replace("-----END PUBLIC KEY-----", "")
-        .replace(/\s+/g, "");
-    const raw = atob(b64);
-    const buffer = new Uint8Array(raw.length);
-    for (let i = 0; i < raw.length; i++) {
-        buffer[i] = raw.charCodeAt(i);
-    }
-    return buffer.buffer;
-}
-
-
-function hexToArrayBuffer(hex) {
-    const length = hex.length / 2;
-    const array = new Uint8Array(length);
-    for (let i = 0; i < length; i++) {
-        array[i] = parseInt(hex.substr(i * 2, 2), 16);
-    }
-    return array.buffer;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const hostname = window.location.hostname;
     const isNightly = hostname.includes("nightly");
     versionNow = APP_VERSION;
@@ -2193,6 +2196,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const moonIcon = document.createElement("i");
         moonIcon.className = "bi bi-moon-fill nightly-icon";
         document.querySelector(".toolbar-title").appendChild(moonIcon);
+
+        const tierInfo = await getUserTier();
+        let restrictionMessage = null;
+
+        if (!tierInfo.paidMember && tierInfo.isLoggedIn) {
+            restrictionMessage = "Please support us on Patreon to access the nightly version.";
+        } else if (!tierInfo.isLoggedIn) {
+            restrictionMessage = "Please log in with your patreon account to access the nightly version.";
+        }
+
+        if (restrictionMessage !== null) {
+            nightlyBlock = true;
+            const dropDiv = document.querySelector(".drop-div");
+            dropDiv.removeEventListener("dragover", handleDragOver);
+            dropDiv.removeEventListener("dragenter", handleDragEnter);
+            dropDiv.removeEventListener("dragleave", handleDragLeave);
+            dropDiv.removeEventListener("drop", handleDrop);
+            document.getElementById("statusIcon").className = "bi bi-lock";
+            document.getElementById("statusTitle").textContent = "Nightly version is only available for patrons.";
+            document.getElementById("statusDesc").textContent = restrictionMessage;
+
+            const recentsContainer = document.querySelector(".recents-container");
+            if (recentsContainer) recentsContainer.remove();
+
+            document.querySelectorAll(".script-view").forEach(div => {
+                div.remove();
+            });
+        }
 
         const now = new Date();
         const day = String(now.getDate()).padStart(2, '0');
@@ -2212,18 +2243,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
+    versionBadge.textContent = `Version ${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
-    document.querySelector(".splash-box").classList.add("appear")
-    document.querySelector(".socials-box").classList.add("appear")
     getPatchNotes()
-    checkPatreonStatus();
-    populateMarquee();
 
     if (shouldShowPatchModal(storedVersion, versionNow)) {
         localStorage.setItem('lastVersion', versionNow); // Guardar nueva versión
         const patchModal = new bootstrap.Modal(document.getElementById('patchModal'));
         patchModal.show();
     }
+
+    let recents = await getRecentHandles();
+    console.log("Recent handles loaded:", recents);
+    populateRecentHandles(recents);
 
     //check if apiKey in localStorage
     const apiKey = localStorage.getItem("apiKey");
@@ -2232,7 +2264,135 @@ document.addEventListener('DOMContentLoaded', () => {
         initAI(apiKey);
     }
 
+    let phrases = [
+        "Change the contract of every staff available in game",
+        "Customize your calendar however you want it",
+        "Edit the attributes of each driver just how you want them",
+        "Create your own custom engines",
+        "Get stories from your save using AI",
+        "Compare drivers and teams with detailed graphs",
+        "Modify car performance to your liking",
+        "Fix game-breaking issues with ease",
+        "No installation required, works in your browser",
+    ];
+
+    //reorder them randomly
+    phrases = phrases.sort(() => Math.random() - 0.5);
+
+    const animatedText = document.getElementById('animatedText');
+    const fakeText = document.querySelector('.fake-text');
+    let phraseIndex = 0;
+
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    async function animateTextLoop() {
+        while (true) {
+            const currentPhrase = phrases[phraseIndex];
+            fakeText.textContent = currentPhrase;
+
+            // Typing phase
+            for (let i = 0; i < currentPhrase.length; i++) {
+                const char = currentPhrase[i];
+                const span = document.createElement('span');
+                span.className = 'char';
+                span.textContent = char;
+                animatedText.appendChild(span);
+                await sleep(10); // Typing speed
+            }
+
+            // Wait phase (read time)
+            await sleep(5000);
+
+            // Deleting phase
+            while (animatedText.firstChild) {
+                if (animatedText.lastChild) {
+                    animatedText.removeChild(animatedText.lastChild);
+                }
+                await sleep(8); // Deleting speed
+            }
+
+            // Move to next phrase
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+
+            // Small pause before typing next one
+            await sleep(200);
+        }
+    }
+
+    // Clear initial text and start animation loop
+    animatedText.innerHTML = '';
+    animateTextLoop();
 });
+
+function populateRecentHandles(recents) {
+    if (recents.length === 0) {
+        document.querySelector(".recents-container").classList.add("d-none");
+        return;
+    }
+    const recentList = document.getElementById("recentsList");
+    recentList.innerHTML = ""; // Clear existing items
+
+    recents.forEach(handle => {
+        const listItem = document.createElement("div");
+        listItem.className = "recent-file";
+
+        const fileName = document.createElement("span");
+        fileName.classList.add("file-name");
+        fileName.textContent = handle.name;
+        fileName.addEventListener("click", async () => {
+            const fileHandle = handle.handle;
+            const hasPermission = await verifyPermission(fileHandle, false);
+
+            if (!hasPermission) {
+                console.error("No permission to access the file:", handle.name);
+                return;
+            }
+            const file = fileHandle.getFile();
+            file.then(f => {
+                processSaveFile(f);
+            });
+
+        });
+
+        const lastOpened = document.createElement("span");
+        lastOpened.classList.add("last-opened-time");
+        const now = new Date();
+        const openedDate = new Date(handle.lastOpened);
+        console.log("now:", now, "openedDate:", openedDate);
+        const diffTime = Math.abs(now - openedDate);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        let timeString;
+
+        if (diffDays === 0) {
+            timeString = "Today";
+        } else if (diffDays === 1) {
+            timeString = "Yesterday";
+        } else {
+            timeString = `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        }
+
+        lastOpened.textContent = timeString;
+
+        listItem.appendChild(fileName);
+        listItem.appendChild(lastOpened);
+        recentList.appendChild(listItem);
+    });
+}
+
+async function verifyPermission(fileHandle) {
+    const options = { mode: 'read' };
+
+    if ((await fileHandle.queryPermission(options)) === 'granted') {
+        return true;
+    }
+
+    if ((await fileHandle.requestPermission(options)) === 'granted') {
+        return true;
+    }
+
+    return false;
+}
 
 removeApiKey.addEventListener('click', () => {
     localStorage.removeItem("apiKey");
@@ -2245,28 +2405,6 @@ function createMarqueeItem(name, tier) {
     span.textContent = name;
     span.classList.add(tier);
     return span;
-}
-
-function populateMarquee() {
-    const marqueeInner = document.querySelector(".marquee__inner");
-
-    // Crear dos grupos de nombres para el scroll infinito
-    const group1 = document.createElement("div");
-    group1.classList.add("marquee__group");
-
-    const group2 = document.createElement("div");
-    group2.classList.add("marquee__group", "second-group");
-
-    let randomizedMembers = members.sort(() => Math.random() - 0.5);
-
-    randomizedMembers.forEach(member => {
-        const item = createMarqueeItem(member.name, member.tier);
-        group1.appendChild(item.cloneNode(true));
-        group2.appendChild(item.cloneNode(true));
-    });
-
-    marqueeInner.appendChild(group1);
-    marqueeInner.appendChild(group2);
 }
 
 document.querySelectorAll(".one-theme").forEach(function (elem) {
