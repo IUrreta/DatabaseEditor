@@ -407,7 +407,6 @@ if (code) {
 }
 
 function updatePatreonUI(tier) {
-    console.log("Updating Patreon UI", tier);
     init_colors_dict(selectedTheme)
 
     if (tier.paidMember) {
@@ -2326,7 +2325,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function populateRecentHandles(recents) {
     if (recents.length === 0) {
-        document.querySelector(".recents-container").classList.add("d-none");
+        const recentsContainer = document.querySelector(".recents-container");
+        if (recentsContainer) recentsContainer.classList.add("d-none");
         return;
     }
     const recentList = document.getElementById("recentsList");
