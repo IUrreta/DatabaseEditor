@@ -39,7 +39,10 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       APP_VERSION: JSON.stringify(packageJson.version),
-    }),
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.PATREON_CLIENT_ID': JSON.stringify(process.env.PATREON_CLIENT_ID),
+      'process.env.PATREON_REDIRECT_URI': JSON.stringify(process.env.PATREON_REDIRECT_URI),
+    })
   ],
 
   resolve: {
