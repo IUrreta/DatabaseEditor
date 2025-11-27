@@ -32,10 +32,7 @@
     "pako": "^2.1.0",
     "playwright": "^1.57.0",
     "simple-git": "^3.19.1",
-    "sql.js": "^1.13.0"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.57.0",
+    "sql.js": "^1.13.0",
     "autoprefixer": "^10.4.20",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
@@ -50,5 +47,8 @@
     "style-loader": "^4.0.0",
     "webpack": "^5.97.1",
     "webpack-cli": "^5.1.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0"
   }
 }
