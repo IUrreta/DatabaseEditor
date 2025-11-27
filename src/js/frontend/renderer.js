@@ -31,7 +31,6 @@ import { loadRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
 import { Command } from "../backend/command.js";
-import { PUBLIC_KEY } from './public_key.js';
 import { saveAs } from "file-saver";
 import members from "../../data/members.json"
 
@@ -2050,22 +2049,6 @@ document.querySelector("#cancelDetailsButton").addEventListener("click", functio
 
 
 
-async function isPatronSignatureValid() {
-    const stored = localStorage.getItem('patreonKey');
-    if (!stored) return { status: "missing", role: null };
-
-    try {
-        const { dataString, signature } = JSON.parse(stored);
-        if (!dataString || !signature) return { status: "invalid", role: null };
-
-        const valid = await verifySignature(dataString, signature, PUBLIC_KEY);
-        const role = valid ? JSON.parse(dataString).role : null;
-        return { status: valid ? "valid" : "invalid", role };
-    } catch (err) {
-        console.error("Error verificando firma:", err);
-        return { status: "invalid", role: null };
-    }
-}
 
 
 function manageNewsStatus(patreonTier) {
@@ -2158,8 +2141,8 @@ function checkGenerableNews(patreonTier) {
 
 
 async function checkOpenSlideUp() {
-    const validSignature = await isPatronSignatureValid();
-
+    const tier = await getUserTier();
+    if (tier.paidMember) return;
 
     const lastShownStr = localStorage.getItem('patreonModalLastShown');
     if (!canShowPatreonModal(lastShownStr) || validSignature.status === "valid") {
@@ -2195,51 +2178,6 @@ function canShowPatreonModal(lastShown) {
     return diffDays >= 1;
 }
 
-/**
- * @param {string} dataString - Cadena JSON que se firmó en Node
- * @param {string} signatureHex - Firma en hex
- * @param {string} spkiPublicKey - Clave pública en formato PEM (SPKI)
- * @returns {Promise<boolean>}
- */
-async function verifySignature(dataString, signatureHex, spkiPublicKey) {
-    const keyBuffer = pemToArrayBuffer(spkiPublicKey);
-    const publicKey = await crypto.subtle.importKey(
-        "spki",
-        keyBuffer,
-        { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-        false,
-        ["verify"]
-    );
-
-    const sigBuffer = hexToArrayBuffer(signatureHex);
-    const dataBuffer = new TextEncoder().encode(dataString);
-
-    return crypto.subtle.verify("RSASSA-PKCS1-v1_5", publicKey, sigBuffer, dataBuffer);
-}
-
-
-function pemToArrayBuffer(pem) {
-    const b64 = pem
-        .replace("-----BEGIN PUBLIC KEY-----", "")
-        .replace("-----END PUBLIC KEY-----", "")
-        .replace(/\s+/g, "");
-    const raw = atob(b64);
-    const buffer = new Uint8Array(raw.length);
-    for (let i = 0; i < raw.length; i++) {
-        buffer[i] = raw.charCodeAt(i);
-    }
-    return buffer.buffer;
-}
-
-
-function hexToArrayBuffer(hex) {
-    const length = hex.length / 2;
-    const array = new Uint8Array(length);
-    for (let i = 0; i < length; i++) {
-        array[i] = parseInt(hex.substr(i * 2, 2), 16);
-    }
-    return array.buffer;
-}
 
 document.addEventListener('DOMContentLoaded', async () => {
     const hostname = window.location.hostname;
