@@ -309,48 +309,28 @@ if (userToolButton) {
     });
 }
 
-if (saveFileButton) {
-    saveFileButton.addEventListener('click', async () => {
-        
-        // modern api
-        if ('showOpenFilePicker' in window) {
-            try {
-                const [handle] = await window.showOpenFilePicker({
-                    types: [{
-                        description: 'Database Editor Save File',
-                        accept: {
-                            'application/octet-stream': ['.sav']
-                        }
-                    }],
-                    multiple: false 
-                });
-                await saveHandleToRecents(handle);
-
-                const file = await handle.getFile();
-                await processSaveFile(file);
-
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    console.error("Error selecting file:", err);
-                }
-            }
-        } 
-        // fallback
-        else {
-            saveFileInput.click();
-        }
-    });
-
-    //fallback for older browsers
+if (saveFileButton && saveFileInput) {
     saveFileInput.addEventListener('change', async (event) => {
         const file = event.target.files[0];
         if (file) {
-            //not save handlers in recents since we don't have a handle
             await processSaveFile(file);
         }
-        saveFileInput.value = ''; 
+        saveFileInput.value = '';
+    });
+
+    saveFileButton.addEventListener('click', async () => {
+        const ok = await confirmModal({
+            title: "Warning about selecting your save file",
+            body: "Selecting your save file this way (in stead of drag and drop) will not save your save in the Recents section. Are you sure you want to continue?",
+            confirmText: "Continue",
+            cancelText: "Cancel"
+        })
+        if (ok) {
+            saveFileInput.click();
+        }
     });
 }
+
 
 
 async function handleLogout() {
@@ -427,36 +407,28 @@ if (code) {
 }
 
 function updatePatreonUI(tier) {
+    console.log("Updating Patreon UI", tier);
     init_colors_dict(selectedTheme)
 
     if (tier.paidMember) {
-        document.querySelector(".patreon-status").classList.add("positive");
         patreonUnlockables.classList.remove("d-none");
         patreonThemes.classList.remove("d-none");
-        document.querySelector(".patreonCheck").classList.remove("d-none");
         document.getElementById("patreonStatusText").textContent = tier.tier
         loadTheme();
     }
     else {
-        document.querySelector(".patreon-status").classList.remove("positive");
         patreonUnlockables.classList.add("d-none");
         patreonThemes.classList.add("d-none");
-        document.querySelector(".patreonCheck").classList.add("d-none");
         document.getElementById("patreonStatusText").textContent = tier.isLoggedIn ? tier.tier : "Not logged in"
     }
 
     if (tier.isLoggedIn) {
-        document.querySelector(".user-name-and-logout").classList.remove("d-none");
         document.querySelector(".user-name-and-logout-tool").classList.remove("d-none");
-        document.getElementById("userName").textContent = tier.user.fullName;
         document.getElementById("userToolName").textContent = tier.user.fullName;
-        patreonLoginButton.classList.add("d-none");
         patreonToolLoginButton.classList.add("d-none");
     }
     else {
-        document.querySelector(".user-name-and-logout").classList.add("d-none");
         document.querySelector(".user-name-and-logout-tool").classList.add("d-none");
-        patreonLoginButton.classList.remove("d-none");
         patreonToolLoginButton.classList.remove("d-none");
     }
 
@@ -1260,7 +1232,7 @@ document.querySelector(".gear-container").addEventListener("click", function () 
 })
 
 function manage_config(info, year_config = false) {
-    document.querySelector(".bi-gear").classList.remove("hidden")
+    document.querySelector(".bi-gear-fill#settingsIcon").classList.remove("hidden")
     configCopy = info
     manage_config_content(info, year_config)
 }
@@ -2353,6 +2325,64 @@ document.addEventListener('DOMContentLoaded', async () => {
         initAI(apiKey);
     }
 
+    let phrases = [
+        "Change the contract of every staff available in game",
+        "Customize your calendar however you want it",
+        "Edit the attributes of each driver just how you want them",
+        "Create your own custom engines",
+        "Get stories from your save using AI",
+        "Compare drivers and teams with detailed graphs",
+        "Modify car performance to your liking",
+        "Fix game-breaking issues with ease",
+        "No installation required, works in your browser",
+    ];
+
+    //reorder them randomly
+    phrases = phrases.sort(() => Math.random() - 0.5);
+
+    const animatedText = document.getElementById('animatedText');
+    const fakeText = document.querySelector('.fake-text');
+    let phraseIndex = 0;
+
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    async function animateTextLoop() {
+        while (true) {
+            const currentPhrase = phrases[phraseIndex];
+            fakeText.textContent = currentPhrase;
+
+            // Typing phase
+            for (let i = 0; i < currentPhrase.length; i++) {
+                const char = currentPhrase[i];
+                const span = document.createElement('span');
+                span.className = 'char';
+                span.textContent = char;
+                animatedText.appendChild(span);
+                await sleep(10); // Typing speed
+            }
+
+            // Wait phase (read time)
+            await sleep(5000);
+
+            // Deleting phase
+            while (animatedText.firstChild) {
+                if (animatedText.lastChild) {
+                    animatedText.removeChild(animatedText.lastChild);
+                }
+                await sleep(8); // Deleting speed
+            }
+
+            // Move to next phrase
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+
+            // Small pause before typing next one
+            await sleep(200);
+        }
+    }
+
+    // Clear initial text and start animation loop
+    animatedText.innerHTML = '';
+    animateTextLoop();
 });
 
 function populateRecentHandles(recents) {
@@ -2366,7 +2396,7 @@ function populateRecentHandles(recents) {
     recents.forEach(handle => {
         const listItem = document.createElement("div");
         listItem.className = "recent-file";
-        
+
         const fileName = document.createElement("span");
         fileName.classList.add("file-name");
         fileName.textContent = handle.name;
@@ -2396,7 +2426,7 @@ function populateRecentHandles(recents) {
         let timeString;
 
         if (diffDays === 0) {
-            timeString = "Today"; 
+            timeString = "Today";
         } else if (diffDays === 1) {
             timeString = "Yesterday";
         } else {

@@ -36,9 +36,6 @@ export function rebuildStandingsUntilCached(season, seasonResults, raceId, inclu
 export function generate_news(savednews, turningPointState) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const racesDone = fetchEventsDoneFrom(daySeason[1]);
-
-    console.log("First step debug");
-
     // const potentialChampionTestRaceId = 216; // Set to null for normal operation.
 
     const potentialChampionNewsList = generateChampionMilestones(racesDone, savednews);
@@ -49,18 +46,12 @@ export function generate_news(savednews, turningPointState) {
     const comparisonMonths = [4, 5, 6, 7, 8, 9, 10];
     const monthsDone = rumorMonths.filter(m => m <= currentMonth);
 
-    console.log("First step debug A")
-
     const raceNews = generateRaceResultsNews(racesDone, savednews);
     const qualiNews = generateQualifyingResultsNews(racesDone, savednews);
-
-    console.log("First step debug B")
 
     const raceReactions = generateRaceReactionsNews(racesDone, savednews);
 
     const comparisonNews = generateComparisonNews(comparisonMonths, savednews);
-
-    console.log("First step debug C")
 
     const transferRumors = getTrueTransferRumors();
 
@@ -68,13 +59,9 @@ export function generate_news(savednews, turningPointState) {
 
     const contractRenewals = getContractExtensions();
 
-    console.log("First step debug D")
-
     const bigConfirmedTransfersNews = generateBigConfirmedTransferNews(savednews, currentMonth);
     const fakeTransferNews = generateFakeTransferNews(monthsDone, savednews, bigConfirmedTransfersNews);
     const contractRenewalsNews = generateContractRenewalsNews(savednews, contractRenewals, currentMonth);
-
-    console.log("First step debug E")
 
     const seasonReviews = generateSeasonReviewNews(savednews);
 
@@ -89,8 +76,6 @@ export function generate_news(savednews, turningPointState) {
     const raceSubstitutionTurningPointNews = generateRaceSubstitutionTurningPointNews(currentMonth, savednews, turningPointState);
 
     const driverInjuryTurningPointNews = generateDriverInjuryTurningPointNews(currentMonth, savednews, turningPointState); //disabled for nightly branch
-
-    console.log("First step debug F")
 
     let turningPointOutcomes = [];
     if (Object.keys(savednews).length > 0) {

@@ -334,7 +334,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"
+                <a class="nav-link bold-font categoryPills generalPills active d-none" data-bs-toggle="pill"
                   data-section=".engines-section" id="patreonPill">
                   <div class="basic-label bold-font">Patreon</div>
                   <div class="pill-line"></div>
@@ -658,23 +658,6 @@
                 and remove the pop-ups!
               </span>
             </div>
-            <div class="api-input-and-status" id="patreonKeyGeneral">
-              <div type="button" class="confirm-modal button-with-icon" id="patreonLoginButton">
-                <i class="bi-custom-patreon"></i>
-                <span>Login with Patreon</span>
-              </div>
-              <div class="user-name-and-logout d-none">
-                <div class="button-with-icon" id="userButton">
-                  <i class="bi bi-person-fill"></i>
-                  <span id="userName"></span>
-                </div>
-              </div>
-              <div class="saved-status api-loaded patreon-status" id="patreonKeyStatus">
-                <i class="bi bi-check patreonCheck"></i>
-                <span class="bold-font" id="patreonTierText">Valid</span>
-              </div>
-            </div>
-
             <div class="patreon-unlockables  d-none">
               <div class="patreon-themes">
                 <span class="modal-subtitle bold-font">Choose a theme</span>
@@ -1311,8 +1294,8 @@
         <span class="bold-font">EDITOR</span>
       </div>
     </div>
-    <div class="gear-container my-2">
-      <i class="bi bi-gear"></i>
+    <div class="gear-container hidden my-2">
+      <i class="bi bi-gear-fill" id="settingsIcon"></i>
       <label class="bold-font standard-label">SETTINGS</label>
       <div class="standard-line"></div>
     </div>
@@ -1428,9 +1411,12 @@
             DB Editor Online<br>
             <span class="gradient-text">F1 Manager</span>
           </h1>
-          <p class="hero-desc">
-            Edit your F1 Manager save files directly in your browser. No installation required.
-          </p>
+          <div class="hero-desc">
+            <div class="fake-text-and-animated-container">
+              <span id="animatedText">Edit your F1 Manager save files directly in your browser.</span>
+              <span class="fake-text">Edit your F1 Manager save files directly in your browser.</span>
+            </div>
+          </div>
         </div>
         <div id="dropDiv" class="drop-zone">
           <div id="idle-state" class="idle-content">
@@ -1441,7 +1427,8 @@
             <h3 id="statusTitle">Upload your save file</h3>
             <p class="upload-desc" id="statusDesc">
               Drop your .sav file here or
-              <input type="button" value="click" style="display: inline-block;" class="save-file-button" id="saveFileButton">
+              <input type="button" value="click" style="display: inline-block;" class="save-file-button"
+                id="saveFileButton">
               <input class="d-none" type="file" id="saveFileInput" accept=".sav">
               to select it manually.
             </p>
@@ -1454,15 +1441,18 @@
               <div class="recents-list" id="recentsList"></div>
             </div>
             <div class="socials-container">
-                <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor" target="_blank">&nbsp;DB Editor</a>
-                <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259"
-                  target="_blank">&nbsp;My
-                  profile</a>
-                <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_" target="_blank">&nbsp;@ignaciourreta_</a>
-                <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta" target="_blank">&nbsp;ignaciourreta</a>
-                <a class="bi-custom-patreon" href="https://www.patreon.com/f1dbeditor" target="_blank">&nbsp;Support the
-                  project</a>
-                <a class="bi bi-discord" href="https://discord.gg/3QXg3hsD8B" target="_blank">&nbsp;Join our Discord</a>
+              <a class="bi bi-github" href="https://github.com/IUrreta/DatabaseEditor" target="_blank">&nbsp;DB
+                Editor</a>
+              <a class="bi bi-linkedin" href="https://www.linkedin.com/in/ignacio-urretavizcaya-tato-2345a4259"
+                target="_blank">&nbsp;My
+                profile</a>
+              <a class="bi bi-twitter-x" href="https://twitter.com/ignaciourreta_"
+                target="_blank">&nbsp;@ignaciourreta_</a>
+              <a class="bi bi-reddit" href="https://www.reddit.com/user/ignaciourreta"
+                target="_blank">&nbsp;ignaciourreta</a>
+              <a class="bi-custom-patreon" href="https://www.patreon.com/f1dbeditor" target="_blank">&nbsp;Support the
+                project</a>
+              <a class="bi bi-discord" href="https://discord.gg/3QXg3hsD8B" target="_blank">&nbsp;Join our Discord</a>
             </div>
           </div>
         </div>

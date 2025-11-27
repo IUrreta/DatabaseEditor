@@ -61,6 +61,7 @@ export default async function handler(req, res) {
         let tierName = 'None';
 
         const tierIDs = ["25157070", "25124139", "25132338"];
+        const paidTiers = ["Backer", "Insider", "Founder"];
 
         // Logic to determine tier based on memberships
         for (const item of memberships) {
@@ -76,6 +77,8 @@ export default async function handler(req, res) {
         if (isMember) {
             tier = tierName;
         }
+
+        const isPaid = paidTiers.includes(tierName);
 
         const patreonUser = {
             name: identityData.data.attributes.full_name,
@@ -108,7 +111,8 @@ export default async function handler(req, res) {
             success: true,
             user: { fullName: patreonUser.name },
             tier: patreonUser.tier,
-            isLoggedIn: true
+            isLoggedIn: true,
+            paidMember: isPaid
         });
 
     } catch (error) {
