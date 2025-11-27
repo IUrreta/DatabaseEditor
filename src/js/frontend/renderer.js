@@ -309,48 +309,28 @@ if (userToolButton) {
     });
 }
 
-if (saveFileButton) {
-    saveFileButton.addEventListener('click', async () => {
-
-        // modern api
-        if ('showOpenFilePicker' in window) {
-            try {
-                const [handle] = await window.showOpenFilePicker({
-                    types: [{
-                        description: 'Database Editor Save File',
-                        accept: {
-                            'application/octet-stream': ['.sav']
-                        }
-                    }],
-                    multiple: false
-                });
-                await saveHandleToRecents(handle);
-
-                const file = await handle.getFile();
-                await processSaveFile(file);
-
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    console.error("Error selecting file:", err);
-                }
-            }
-        }
-        // fallback
-        else {
-            saveFileInput.click();
-        }
-    });
-
-    //fallback for older browsers
+if (saveFileButton && saveFileInput) {
     saveFileInput.addEventListener('change', async (event) => {
         const file = event.target.files[0];
         if (file) {
-            //not save handlers in recents since we don't have a handle
             await processSaveFile(file);
         }
         saveFileInput.value = '';
     });
+
+    saveFileButton.addEventListener('click', async () => {
+        const ok = await confirmModal({
+            title: "Warning about selecting your save file",
+            body: "Selecting your save file this way (in stead of drag and drop) will not save your save in the Recents section. Are you sure you want to continue?",
+            confirmText: "Continue",
+            cancelText: "Cancel"
+        })
+        if (ok) {
+            saveFileInput.click();
+        }
+    });
 }
+
 
 
 async function handleLogout() {
@@ -427,6 +407,7 @@ if (code) {
 }
 
 function updatePatreonUI(tier) {
+    console.log("Updating Patreon UI", tier);
     init_colors_dict(selectedTheme)
 
     if (tier.paidMember) {
