@@ -164,34 +164,6 @@ function updateGaugeVisual(container, value) {
 }
 
 
-/**
- * Listeners for the show and hide buttons facilities
- */
-document.querySelector("#carDevPill").addEventListener("click", function () {
-    if (!document.querySelector("#carDevCollapse").classList.contains("show")) {
-        document.querySelector("#carDevCollapse").classList.add("show")
-    }
-    document.querySelector("#operationCollapse").classList.remove("show")
-    document.querySelector("#staffCollapse").classList.remove("show")
-})
-
-document.querySelector("#opsPill").addEventListener("click", function () {
-    if (!document.querySelector("#operationCollapse").classList.contains("show")) {
-        document.querySelector("#operationCollapse").classList.add("show")
-    }
-    document.querySelector("#carDevCollapse").classList.remove("show")
-    document.querySelector("#staffCollapse").classList.remove("show")
-
-})
-
-document.querySelector("#staffFacilitiesPill").addEventListener("click", function () {
-    if (!document.querySelector("#staffCollapse").classList.contains("show")) {
-        document.querySelector("#staffCollapse").classList.add("show")
-    }
-    document.querySelector("#operationCollapse").classList.remove("show")
-    document.querySelector("#carDevCollapse").classList.remove("show")
-})
-
 
 /**
  * Fills the level for each facility

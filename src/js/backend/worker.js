@@ -513,7 +513,8 @@ const workerCommands = {
         unlocksDownload: true
       });
     } catch (e) {
-      console.error(e);
+        console.error("ERROR COMPLETO:", e);
+      console.error("STACK:", e.stack);
       postMessage({ responseMessage: "Error", error: e.message });
     }
   },

@@ -2699,17 +2699,21 @@ export async function confirmModal({
 }
 
 document.querySelectorAll(".redesigned-dropdown").forEach(dropdown => {
-    dropdown.addEventListener("click", function () {
-        dropdown.classList.toggle("open")
-        //get parent element
-        const parent = dropdown.parentElement;
-        //if parent element is classList dropdown-global
-        if (parent && parent.classList.contains("dropdown-global")) {
-            //get redesigned-dropdown
-        }
+    dropdown.addEventListener("click", function (e) {
+        e.stopPropagation();
+        dropdown.classList.toggle("open");
     });
 });
 
+document.addEventListener("click", function (e) {
+    document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
+        // Si el click NO ocurre dentro del dropdown ni en su botón
+        if (!openDropdown.contains(e.target)) {
+            openDropdown.classList.remove("open");
+        }
+
+    });
+});
 
 export function attachHold(btn, el, step = 1, opts = {}) {
     const min = opts.min ?? -Infinity;

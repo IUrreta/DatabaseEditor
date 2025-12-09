@@ -31,41 +31,52 @@ export function setMetaData(meta) {
  *    - 'run': devuelve true si se ejecutó correctamente.
  */
 export function queryDB(query, params = [], type = 'allRows') {
-  const sanitizedParams = Array.isArray(params)
-    ? params.map(p => (Array.isArray(p) && p.length === 1 ? p[0] : p))
-    : params;
+  try {
+    const sanitizedParams = Array.isArray(params)
+      ? params.map(p => (Array.isArray(p) && p.length === 1 ? p[0] : p))
+      : params;
 
-  if (type === 'run' || type === 'exec') {
-    db.run(query, sanitizedParams);
-    return true;
-  }
+    if (type === 'run' || type === 'exec') {
+      db.run(query, sanitizedParams);
+      return true;
+    }
 
-  const stmt = db.prepare(query);
-  stmt.bind(sanitizedParams);
+    const stmt = db.prepare(query);
+    stmt.bind(sanitizedParams);
 
-  let result = null;
+    let result = null;
 
-  if (type === 'singleValue') {
-    if (stmt.step()) {
-      const row = stmt.get();
-      result = row[0] ?? null;
+    if (type === 'singleValue') {
+      if (stmt.step()) {
+        const row = stmt.get();
+        result = row[0] ?? null;
+      } else {
+        result = null;
+      }
+    } else if (type === 'singleRow') {
+      if (stmt.step()) {
+        result = stmt.get();
+      } else {
+        result = null;
+      }
     } else {
-      result = null;
+      // allRows
+      result = [];
+      while (stmt.step()) {
+        result.push(stmt.get());
+      }
     }
-  } else if (type === 'singleRow') {
-    if (stmt.step()) {
-      result = stmt.get();
-    } else {
-      result = null;
-    }
-  } else {
-    // allRows
-    result = [];
-    while (stmt.step()) {
-      result.push(stmt.get());
-    }
-  }
 
-  stmt.free();
-  return result;
+    stmt.free();
+    return result;
+
+  } catch (err) {
+    // 💥 AQUÍ cazamos errores de SQL.js, incluyendo binds mal pasados
+    const fullErr = new Error(
+      `SQL ERROR\nQuery: ${query}\nParams: ${JSON.stringify(params)}\nOriginal: ${err.message}`
+    );
+    console.error(fullErr);
+    throw fullErr;
+  }
 }
+

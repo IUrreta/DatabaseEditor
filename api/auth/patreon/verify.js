@@ -88,6 +88,11 @@ export default async function handler(req, res) {
             tier = tierName;
         }
 
+        //if username if Ignacio (the developer), always set to founder
+        if (identityData.data.attributes.full_name === "Ignacio") {
+            tier = "Founder";
+        }
+
         const isPaid = paidTiers.includes(tierName);
 
         const patreonUser = {
