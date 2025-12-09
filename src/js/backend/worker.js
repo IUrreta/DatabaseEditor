@@ -43,7 +43,7 @@ const workerCommands = {
   loadDB: async (data, postMessage) => {
     console.log(data)
     const SQL = await initSqlJs({
-      locateFile: file => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/sql-wasm.wasm',
+      locateFile: file => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.wasm',
       wasmMemory: new WebAssembly.Memory({ initial: 1024, maximum: 2048 })
     });
 
