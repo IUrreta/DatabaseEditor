@@ -1,6 +1,6 @@
 import { queryDB } from "../dbManager";
 
-// Constantes para referencias en la edición de mentalidad
+// Constants for mentality editing references
 export const driverStats = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 export const mentalityAreas = {
@@ -31,9 +31,17 @@ export const mentalityOverall = {
   4: 5
 };
 
-// Editar estadísticas de un Staff (driver o staff general)
+/**
+ * Edits the statistics of a staff member (driver or regular staff).
+ * @param {number} driverID - The ID of the staff member.
+ * @param {string} type - The type of staff ("0" for driver, others for staff roles).
+ * @param {string} stats - Space-separated string of stats values.
+ * @param {number} retirement - Retirement age.
+ * @param {number} driverNum - Driver number.
+ * @param {number} wants1 - Whether the driver wants the champion number (1).
+ */
 export function editStats(driverID, type, stats, retirement, driverNum, wants1) {
-  //creat sttasParasm from stats string to an array
+  // create statsParams from stats string to an array
   const statsParams = stats.split(" ");
 
 
@@ -169,6 +177,11 @@ export function editStats(driverID, type, stats, retirement, driverNum, wants1) 
   }
 }
 
+/**
+ * Changes a driver's number, handling conflicts by swapping if necessary.
+ * @param {number} driverID - The ID of the driver.
+ * @param {number} newNumber - The new number to assign.
+ */
 export function changeDriverNumber(driverID, newNumber) {
   const oldNum = queryDB(`
     SELECT Number
@@ -207,6 +220,11 @@ export function changeDriverNumber(driverID, newNumber) {
   `);
 }
 
+/**
+ * Edits a staff member's name.
+ * @param {number} driverID - The ID of the staff member.
+ * @param {string} newName - The new full name.
+ */
 export function editName(driverID, newName) {
   const parts = newName.split(" ");
   const newFirstName = parts[0];
@@ -221,6 +239,11 @@ export function editName(driverID, newName) {
   `);
 }
 
+/**
+ * Edits a driver's code (e.g., "HAM").
+ * @param {number} driverID - The ID of the driver.
+ * @param {string} newCode - The new 3-letter code.
+ */
 export function editCode(driverID, newCode) {
   const stringLiteralCode = `[STRING_LITERAL:Value=|${newCode}|]`;
   queryDB(`
@@ -230,19 +253,36 @@ export function editCode(driverID, newCode) {
   `);
 }
 
-// Helpers de fechas
+// Date helpers
+
+/**
+ * Converts an Excel serial date to a JS Date object.
+ * @param {number} excelDate - The Excel date serial number.
+ * @returns {Date} The corresponding JS Date.
+ */
 export function excelToDate(excelDate) {
   const baseDate = new Date(1899, 11, 30);
   const ms = excelDate * 86400000;
   return new Date(baseDate.getTime() + ms);
 }
 
+/**
+ * Converts a JS Date object to an Excel serial date.
+ * @param {Date} date - The JS Date.
+ * @returns {number} The Excel date serial number.
+ */
 export function dateToExcel(date) {
   const baseDate = new Date(1899, 11, 30);
   const diff = date.getTime() - baseDate.getTime();
   return Math.floor(diff / 86400000);
 }
 
+/**
+ * Adjusts an Excel date by a number of years.
+ * @param {number} excelDate - The original Excel date.
+ * @param {number} years - The number of years to add/subtract.
+ * @returns {Object} An object with { newDate, newExcelDate }.
+ */
 export function changeYearsInExcelDate(excelDate, years) {
   const oldDate = excelToDate(excelDate);
   let newYear = oldDate.getFullYear() + years;
@@ -255,6 +295,11 @@ export function changeYearsInExcelDate(excelDate, years) {
   return { newDate, newExcelDate };
 }
 
+/**
+ * Adjusts the age of a driver by modifying their date of birth.
+ * @param {number} driverID - The ID of the driver.
+ * @param {number} ageGap - The number of years to shift the DOB by.
+ */
 export function editAge(driverID, ageGap) {
   const driverBirthdate = queryDB(`
     SELECT DOB
@@ -273,6 +318,11 @@ export function editAge(driverID, ageGap) {
   `);
 }
 
+/**
+ * Edits the mentality of a staff member.
+ * @param {number} driverID - The ID of the staff member.
+ * @param {string|number} mentalityStr - Space-separated string of mentality values or -1 to skip.
+ */
 export function editMentality(driverID, mentalityStr) {
   if (mentalityStr !== -1) {
     const mentalityArray = mentalityStr.split(" ");
@@ -316,6 +366,11 @@ export function editMentality(driverID, mentalityStr) {
   }
 }
 
+/**
+ * Sets the retirement status of a staff member.
+ * @param {number} driverID - The ID of the staff member.
+ * @param {number} value - 1 for retired, 0 for active.
+ */
 export function editRetirement(driverID, value) {
   queryDB(`
     UPDATE Staff_GameData
@@ -324,6 +379,11 @@ export function editRetirement(driverID, value) {
   `);
 }
 
+/**
+ * Sets the superlicense status of a driver.
+ * @param {number} driverID - The ID of the driver.
+ * @param {number} value - 1 for has superlicense, 0 otherwise.
+ */
 export function editSuperlicense(driverID, value) {
   queryDB(`
     UPDATE Staff_DriverData
@@ -333,6 +393,11 @@ export function editSuperlicense(driverID, value) {
   `);
 }
 
+/**
+ * Sets the marketability of a driver.
+ * @param {number} driverID - The ID of the driver.
+ * @param {number} value - Marketability value (0-100).
+ */
 export function editMarketability(driverID, value) {
   queryDB(`
     UPDATE Staff_DriverData
@@ -341,6 +406,10 @@ export function editMarketability(driverID, value) {
   `);
 }
 
+/**
+ * Freezes or unfreezes staff mentality using database triggers.
+ * @param {number} state - 1 to freeze (create triggers), 0 to unfreeze (drop triggers).
+ */
 export function editFreezeMentality(state) {
   if (state === 0) {
     queryDB(`DROP TRIGGER IF EXISTS update_Opinion_After_Insert;`);

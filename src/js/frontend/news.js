@@ -23,6 +23,11 @@ let cleaning = false;
 let errorCount = 0;
 const MAX_ERRORS = 2;
 
+/**
+ * Initializes the Google Generative AI instance with the provided API key.
+ * @param {string} apiKeyParam - The API key for Google GenAI.
+ * @returns {Object|null} The initialized AI instance or null if no key provided.
+ */
 export function initAI(apiKeyParam) {
   if (!apiKeyParam) {
     console.warn("No API key configured yet");
@@ -33,11 +38,28 @@ export function initAI(apiKeyParam) {
   return ai;
 }
 
+/**
+ * Returns the current AI instance.
+ * @returns {Object|null} The AI instance.
+ */
 export function getAI() {
   return ai;
 }
 
+/**
+ * Utility promise to wait for a specified duration.
+ * @param {number} ms - Milliseconds to wait.
+ * @returns {Promise<void>}
+ */
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+/**
+ * Utility promise to wait for a CSS transition end on an element.
+ * @param {HTMLElement} el - The element to listen to.
+ * @param {string} propName - The property name expected to transition.
+ * @param {number} timeoutMs - Timeout in ms to resolve anyway.
+ * @returns {Promise<void>}
+ */
 const onTransitionEnd = (el, propName, timeoutMs) =>
   new Promise(resolve => {
     let done = false;
@@ -54,6 +76,9 @@ const onTransitionEnd = (el, propName, timeoutMs) =>
     }
   });
 
+/**
+ * Finishes the general news loading animation and removes the loader.
+ */
 async function finishGeneralLoader() {
   const pageLoaderDiv = document.querySelector('.general-news-loader');
   if (!pageLoaderDiv) return;
@@ -69,7 +94,7 @@ async function finishGeneralLoader() {
   }
 
   if (pageProgressDiv) {
-    await new Promise(requestAnimationFrame);     // asegura estado inicial
+    await new Promise(requestAnimationFrame);     // ensures initial state
     pageProgressDiv.style.width = '100%';
     await Promise.race([
       onTransitionEnd(pageProgressDiv, 'width', 220),
@@ -86,6 +111,9 @@ async function finishGeneralLoader() {
   pageLoaderDiv.remove();
 }
 
+/**
+ * Cleans up the state of an opened news item (closes it).
+ */
 async function cleanupOpenedNewsItem() {
   if (cleaning) return;
   cleaning = true;
@@ -93,7 +121,7 @@ async function cleanupOpenedNewsItem() {
   const newsItem = document.querySelector('.news-item.opened');
   if (newsItem) {
     newsItem.classList.remove('opened');
-    // Espera a que termine la transición del item (tu utilidad)
+    // Wait for item transition
     await onTransitionEnd(newsItem, 'transform', 150);
     newsItem.classList.remove('with-transition');
   }
@@ -116,6 +144,11 @@ newsModalEl.addEventListener('hide.bs.modal', () => {
   cleanupOpenedNewsItem();
 });
 
+/**
+ * Generates a simple hash from a string.
+ * @param {string} str - The input string.
+ * @returns {number} The hash value.
+ */
 function hashStr(str) {
   let h = 2166136261 >>> 0;
   for (let i = 0; i < str.length; i++) {
@@ -128,6 +161,13 @@ function hashStr(str) {
 const BUCKET_TURNING = 5;
 const BUCKET_NORMAL = 7;
 
+/**
+ * Adds an event listener to the "Read" button of a news item to open the modal and generate content.
+ * @param {HTMLElement} readButton - The button element.
+ * @param {HTMLElement} newsItem - The news item container.
+ * @param {Object} news - The news data object.
+ * @param {Array} newsList - List of all news.
+ */
 function addReadButtonListener(readButton, newsItem, news, newsList) {
   readButton.addEventListener('click', async () => {
     newsItem.classList.add('with-transition', 'opened');
@@ -176,7 +216,7 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
 
       const regenerateButton = document.getElementById('regenerateArticle');
       if (regenerateButton) {
-        // evitar listeners duplicados si abres varias noticias
+        // avoid duplicate listeners if opening multiple news
         regenerateButton.replaceWith(regenerateButton.cloneNode(true));
         const newRegenerateButton = document.getElementById('regenerateArticle');
 
@@ -201,6 +241,14 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
   });
 }
 
+/**
+ * Handles the generation and rendering of the AI article content.
+ * @param {Object} news - The news data.
+ * @param {Array} newsList - List of news.
+ * @param {string} [label="Generating"] - Label for the loading state.
+ * @param {boolean} [force=false] - Whether to force regeneration.
+ * @param {string} [model] - Specific AI model to use.
+ */
 async function generateAndRenderArticle(news, newsList, label = "Generating", force = false, model) {
   if (!ai) {
     console.warn("AI not initialized");
@@ -304,6 +352,15 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
   }
 }
 
+/**
+ * Manages the display and actions of turning point buttons (approve, cancel, random).
+ * @param {Object} news - The news object.
+ * @param {Array} newsList - The list of news.
+ * @param {number} maxDate - The max date for ordering.
+ * @param {HTMLElement} newsBody - The body element of the news item.
+ * @param {HTMLElement} readbuttonContainer - The container for action buttons.
+ * @param {Object} newsAvailable - Status of news availability (backer/insider).
+ */
 function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbuttonContainer, newsAvailable) {
   let approveButton, randomButton, cancelButton;
 
@@ -424,7 +481,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
 
 
     randomButton.addEventListener('click', () => {
-      // Evita dobles clics
+      // Avoid double clicks
       randomButton.classList.add('tp-button-selected');
       const span = document.createElement('span');
       span.classList.add('tp-result-span');
@@ -484,19 +541,28 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
 
     const swap = (btn) => {
       if (!btn) return null;
-      const clone = btn.cloneNode(true); // clona (sin listeners)
-      btn.replaceWith(clone);            // mete el clon en el DOM
-      clone.addEventListener('click', showInsiderModal); // añade el nuevo listener
-      return clone;                       // devuelve la nueva referencia
+      const clone = btn.cloneNode(true); // clone (no listeners)
+      btn.replaceWith(clone);            // replace in DOM
+      clone.addEventListener('click', showInsiderModal); // add new listener
+      return clone;                       // return reference
     };
 
-    // ¡OJO!: usa let para poder reasignar
+    // NOTE: Use let to reassign
     approveButton = swap(approveButton);
     randomButton = swap(randomButton);
     cancelButton = swap(cancelButton);
   }
 }
 
+/**
+ * Creates the DOM element for a single news item.
+ * @param {Object} news - News data.
+ * @param {number} index - Index for animation stagger.
+ * @param {Object} newsAvailable - Permissions object.
+ * @param {Array} newsList - Complete list of news.
+ * @param {number} maxDate - Latest date.
+ * @returns {HTMLElement} The created news item element.
+ */
 function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
   const isTurning =
     news.turning_point_type === 'original' ||
@@ -508,7 +574,7 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
 
   if (news.hiddenByAvailability) {
     newsItem.dataset.hiddenReason = news.hiddenReason || 'none';
-    newsItem.classList.add('hidden-by-availability'); // para que lo estilices si quieres
+    newsItem.classList.add('hidden-by-availability');
   }
 
   const newsBody = document.createElement('div');
@@ -624,6 +690,11 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
   return newsItem;
 }
 
+/**
+ * Computes a stable key for a news item based on its ID or content.
+ * @param {Object} n - News item.
+ * @returns {string} Stable key string.
+ */
 function computeStableKey(n) {
   if (n.id != null && n.id !== "") return String(n.id);
   return "h:" + hashStr(`${n.title}|${n.date}`);
@@ -631,6 +702,11 @@ function computeStableKey(n) {
 
 
 
+/**
+ * Orchestrates placing news items into the grid.
+ * @param {Object} newsAndTurningPoints - Data object containing lists and states.
+ * @param {Object} newsAvailable - Permission flags.
+ */
 export async function place_news(newsAndTurningPoints, newsAvailable) {
   let newsList = newsAndTurningPoints.newsList;
   let turningPointState = newsAndTurningPoints.turningPointState;
@@ -642,7 +718,7 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
   for (let i = 0; i < newsList.length; i++) {
     const news = newsList[i];
 
-    // clave estable
+    // stable key
     news.stableKey = news.stableKey ?? computeStableKey(news);
 
     const isTurning = (
@@ -676,8 +752,14 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
   }
 }
 
+/**
+ * Places a turning point outcome news item at the top of the grid.
+ * @param {Object} turningPointResponse - The turning point outcome data.
+ * @param {Array} newsList - Current list of news.
+ */
 export async function place_turning_outcome(turningPointResponse, newsList) {
   let saveName = getSaveName();
+  //remove file extension if any
   saveName = saveName.split('.')[0];
 
   const newsItem = document.createElement('div');
@@ -740,10 +822,10 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
     if (ai) {
       await generateAndRenderArticle(turningPointResponse, newsList, "Generating", false);
 
-      // Hook para REGENERAR (misma lógica, forzando)
+      // Hook for REGENERATION
       const regenBtn = document.getElementById('regenerateArticle');
       if (regenBtn) {
-        regenBtn.replaceWith(regenBtn.cloneNode(true)); // evita listeners duplicados
+        regenBtn.replaceWith(regenBtn.cloneNode(true)); // avoid duplicate listeners
         const newRegenBtn = document.getElementById('regenerateArticle');
         newRegenBtn.addEventListener('click', () => {
           generateAndRenderArticle(turningPointResponse, newsList, "Regenerating", true);
@@ -778,6 +860,11 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
   prependAnimated(newsGrid, newsItem, 250, 'cubic-bezier(.2,.8,.2,1)');
 }
 
+/**
+ * Checks if an image URL is reachable.
+ * @param {string} url - The URL to check.
+ * @returns {Promise<boolean>} True if reachable.
+ */
 async function imageExists(url) {
   try {
     const res = await fetch(url, { method: 'HEAD' });
@@ -787,31 +874,36 @@ async function imageExists(url) {
   }
 }
 
+/**
+ * Prepends an element to a container with animation.
+ * @param {HTMLElement} container - The container element.
+ * @param {HTMLElement} newEl - The new element.
+ * @param {number} duration - Animation duration in ms.
+ * @param {string} easing - CSS easing function.
+ */
 function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
-  // 1) Hijos actuales y posiciones BEFORE
+  // 1) Current children and BEFORE positions
   const oldChildren = Array.from(container.children);
   const before = new Map();
   oldChildren.forEach(el => before.set(el, el.getBoundingClientRect()));
 
-  // 2) Inserta el nuevo al principio (todavía sin transición)
+  // 2) Insert new at start (no transition yet)
   container.insertBefore(newEl, container.firstChild);
 
-  // 3) Forzamos reflow tras el insert (importante)
-  //    Leer una propiedad de layout obliga al navegador a calcular posiciones.
-  //    offsetHeight / getBoundingClientRect / getComputedStyle valen.
+  // 3) Force reflow
   void container.offsetHeight;
 
-  // 4) Posiciones AFTER de los elementos que ya estaban
+  // 4) AFTER positions
   const after = new Map();
   oldChildren.forEach(el => after.set(el, el.getBoundingClientRect()));
 
-  // 5) Preparar el NUEVO para entrar desde arriba (sin transición aún)
+  // 5) Prepare NEW to enter from top
   const newRect = newEl.getBoundingClientRect();
   newEl.style.willChange = 'transform, opacity';
   newEl.style.transform = `translateY(-${newRect.height}px)`;
   newEl.style.opacity = '0';
 
-  // 6) Preparar los ANTIGUOS con el delta (sin transición aún)
+  // 6) Prepare OLD with delta
   oldChildren.forEach(el => {
     const a = after.get(el);
     const b = before.get(el);
@@ -823,16 +915,15 @@ function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
     el.style.transform = `translate(${dx}px, ${dy}px)`;
   });
 
-  // 7) Forzamos reflow otra vez para “congelar” los transforms iniciales
+  // 7) Force reflow again
   void container.offsetHeight;
 
-  // 8) Activamos transición y “soltamos” a 0 para que animen
+  // 8) Activate transition and release to 0
   newEl.style.transition = `transform ${duration}ms ${easing}, opacity ${duration}ms ${easing}`;
   oldChildren.forEach(el => {
     el.style.transition = `transform ${duration}ms ${easing}`;
   });
 
-  // Usar rAF ayuda a que el navegador separe bien los pasos
   requestAnimationFrame(() => {
     newEl.style.transform = 'translate(0, 0)';
     newEl.style.opacity = '1';
@@ -841,7 +932,7 @@ function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
     });
   });
 
-  // 9) Limpieza al terminar
+  // 9) Cleanup on finish
   const clean = (el, prop) => (e) => {
     if (e.propertyName !== prop) return;
     el.style.transition = '';
@@ -862,6 +953,12 @@ function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
   newEl.addEventListener('transitionend', newFn);
 }
 
+/**
+ * Appends contextual info about past turning points to the prompt.
+ * @param {string} prompt - The prompt text.
+ * @param {number} date - Current date in Excel format.
+ * @returns {Promise<string>} Enhanced prompt.
+ */
 async function addTurningPointContexts(prompt, date) {
   const command = new Command("getNews", {});
   let resp = await command.promiseExecute();
@@ -908,6 +1005,12 @@ async function addTurningPointContexts(prompt, date) {
 
 
 
+/**
+ * Builds a contextual data string for prompts based on championship state.
+ * @param {Object} data - The data object containing standings, results, etc.
+ * @param {Object} config - Configuration including timing, teamId, etc.
+ * @returns {string} The contextual text block.
+ */
 function buildContextualPrompt(data, config = {}) {
   const {
     driverStandings,
@@ -1008,12 +1111,12 @@ function buildContextualPrompt(data, config = {}) {
   if (enrichedAllTime.length > 0) {
     let list = enrichedAllTime;
 
-    // Si los objetos tienen teamId y hay filtro, aplícalo
+    // Filter by team if requested
     if (teamId && 'teamId' in (list[0] || {})) {
       list = list.filter(d => d.teamId === teamId);
     }
 
-    // Construye las líneas: "<nombre>: X titles, Y wins, Z podiums, W race starts"
+    // Build lines: "<name>: X titles, Y wins, Z podiums, W race starts"
     const lines = list.map(d => {
       const titles = d.totalChampionshipWins ?? 0;
       const wins = d.totalWins ?? 0;
@@ -1039,17 +1142,26 @@ function buildContextualPrompt(data, config = {}) {
   return prompt;
 }
 
+/**
+ * Manages fetching, generating, or retrieving cached article text.
+ * @param {Object} newData - The news data.
+ * @param {Array} newsList - News list.
+ * @param {HTMLElement} barProgressDiv - Progress bar element.
+ * @param {number} interval - Interval ID to clear.
+ * @param {Object} opts - Options (force, model).
+ * @returns {Promise<string>} The article text.
+ */
 async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}) {
   const { force = false, model } = opts;
 
-  // 1) Si ya hay texto y NO forzamos, devolvemos el existente
+  // 1) If text exists and not forced, return cached
   if (newData.text && !force) {
     clearInterval(interval);
     if (barProgressDiv) barProgressDiv.style.width = '100%';
     return newData.text;
   }
 
-  // 2) Tabla de contextualizadores
+  // 2) Context handlers table
   const ctx = {
     race_result: contextualizeRaceResults,
     quali_result: contextualizeQualiResults,
@@ -1066,7 +1178,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     season_review: contextualizeSeasonReview,
     race_reaction: contextualizeRaceReaction,
 
-    // Turning points: outcome_ y no-outcome comparten handler
+    // Turning points: outcome_ and no-outcome share handler
     turning_point_dsq: (nd) => contextualizeDSQ(nd, nd.turning_point_type),
     turning_point_transfer: (nd) => contextualizeTurningPointTransfer(nd, nd.turning_point_type),
     turning_point_technical_directive: (nd) => contextualizeTurningPointTechnicalDirective(nd, nd.turning_point_type),
@@ -1075,7 +1187,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
   };
 
-  // 3) Normaliza tipos "turning_point_outcome_*" -> "turning_point_*"
+  // 3) Normalize types "turning_point_outcome_*" -> "turning_point_*"
   const normalizeType = (t) =>
     t?.startsWith("turning_point_outcome_")
       ? t.replace("turning_point_outcome_", "turning_point_")
@@ -1087,8 +1199,8 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     console.warn("No handler for news type:", newData.type);
   }
 
-  // 4) Progreso visual
-  clearInterval(interval); // detenemos el anterior
+  // 4) Visual progress
+  clearInterval(interval); // stop previous
   let progressInterval;
   try {
     if (barProgressDiv) barProgressDiv.style.width = '50%';
@@ -1099,16 +1211,16 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
       if (progress >= 98) clearInterval(progressInterval);
     }, 350);
 
-    // 5) Construir prompt SOLO si hace falta
+    // 5) Build prompt only if needed
     let prompt = "";
     if (handler) {
       const base = await handler(newData);
-      const normalDate = excelToDate(newData.date); // ya la tienes
+      const normalDate = excelToDate(newData.date); // you already have it
       const isoDate = new Date(
         normalDate.getFullYear(),
         normalDate.getMonth(),
         normalDate.getDate()
-      ).toISOString().split("T")[0]; // evita sorpresas de TZ en toISOString
+      ).toISOString().split("T")[0]; // avoids TZ surprises in toISOString
 
       prompt =
         `The current date is ${isoDate}\n\n` +
@@ -1116,7 +1228,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
         `\n\nThe title of the article is: "${newData.title}"`;
 
-      // Contextos extra de Turning Points (si tu helper ya es idempotente, no pasa nada por llamarlo siempre)
+      // Extra contexts from Turning Points (if idempotency is safe)
       prompt = await addTurningPointContexts(prompt, newData.date);
 
       prompt += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
@@ -1125,7 +1237,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
 
     console.log("Final prompt for AI:", prompt);
 
-    // 6) Llama a la IA y guarda
+    // 6) Call AI and save
     const articleText = await askGenAI(prompt, { model });
     const cleanedArticleText = cleanArticleOutput(articleText);
     newData.text = cleanedArticleText;
@@ -1143,6 +1255,11 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
   }
 }
 
+/**
+ * Cleans and formats the raw markdown output from the AI.
+ * @param {string} rawMd - The raw markdown string.
+ * @returns {string} Cleaned markdown string.
+ */
 function cleanArticleOutput(rawMd) {
   let md = rawMd || "";
 
@@ -1152,10 +1269,20 @@ function cleanArticleOutput(rawMd) {
   return md.trim();
 }
 
+/**
+ * Removes leading headers or whitespace from the markdown.
+ * @param {string} md - Markdown string.
+ * @returns {string} Processed string.
+ */
 function removeLeading(md) {
   return md.replace(/^\s*#{1,3}\s.*\n+/, "").trimStart();
 }
 
+/**
+ * Italicizes quoted text in the markdown.
+ * @param {string} md - Markdown string.
+ * @returns {string} Markdown string with italicized quotes.
+ */
 function italicizeQuotes(md) {
   return md.replace(/"([^"]+)"/g, (match, inner, offset, full) => {
     const before = full[offset - 1] || "";
@@ -1198,9 +1325,9 @@ async function contextualizeTurningPointInjury(newData, turningPointType) {
       const isPositive = t.includes('positive');
       const isNegative = t.includes('negative');
 
-      // Destinos y contexto
-      const inTeam = newData.data.team || 'the team';                 // equipo que sufre la baja (lo usabas arriba)
-      const driverNameOut = newData.data.driver_affected?.name || 'the injured driver'; // piloto que se lesiona
+      // Destinations and context
+      const inTeam = newData.data.team || 'the team';                 // team suffering the loss
+      const driverNameOut = newData.data.driver_affected?.name || 'the injured driver'; // injured driver
 
       if (isFreeAgent) {
         if (isPositive) {
@@ -1555,21 +1682,21 @@ async function contextualizePotentialChampion(newData) {
       const c = standingsResp.content;
       const raceNumber = c.racesNames.length + 1;
 
-      // Arregla el doble "sealed sealed"
+      // Fix double "sealed sealed"
       const numberOfRace = `The title could be sealed after race ${raceNumber} out of ${c.nRaces} this season.`;
       prompt += `\n\n${numberOfRace}`;
 
-      // Contexto antes de esta carrera
+      // Context before this race
       prompt += buildContextualPrompt(c, { timing: "before this race", seasonYear: newData.data.season_year });
 
-      // Reglas de puntos (tal cual las comunicas)
+      // Point rules (as per your text)
       prompt += `\n\nThe maximum amount of points for the winner in each race is ${c.pointsSchema.twoBiggestPoints[0]}.
       \nIn each sprint race the maximum points for the winner is 8.
       \n${c.pointsSchema.isLastraceDouble ? 'The last race of the season awards double points.' : ''}
       \n${c.pointsSchema.fastestLapBonusPoint ? 'There is also 1 bonus point for the fastest lap (top 10 finish required).' : ''}
       \n${c.pointsSchema.poleBonusPoint ? 'There is also 1 bonus point for pole position in qualifying.' : ''}`;
 
-      // === NUEVO: carreras después de esta (quitamos la primera de remainingRaces) ===
+      // === NEW: races after this one (remove first of remainingRaces) ===
       const rem = Array.isArray(c.remainingRaces) ? c.remainingRaces : [];
       const afterThis = rem.length > 0 ? rem.slice(1) : [];
 
@@ -1582,15 +1709,15 @@ async function contextualizePotentialChampion(newData) {
         prompt += `\n\nAfter this race, there will be no more races left.`;
       }
 
-      // === NUEVO: cálculo de puntos máximos aún disponibles DESPUÉS de esta carrera ===
+      // === NEW: calculation of max points still available AFTER this race ===
       const schema = c.pointsSchema;
       const raceWinPts = Number(schema.twoBiggestPoints?.[0] ?? 25); // fallback 25
-      const sprintWinPts = 8; // según tu texto
+      const sprintWinPts = 8; // as per your text
       const flBonus = schema.fastestLapBonusPoint ? 1 : 0;
       const poleBonus = schema.poleBonusPoint ? 1 : 0;
 
-      // Sumamos por cada carrera restante (afterThis)
-      // Si isLastraceDouble, duplicamos SOLO los puntos de carrera de la última prueba.
+      // Sum for each remaining race (afterThis)
+      // If isLastraceDouble, double ONLY the race points of the last event.
       let maxRemaining = 0;
       for (let i = 0; i < afterThis.length; i++) {
         const r = afterThis[i];
@@ -1598,7 +1725,7 @@ async function contextualizePotentialChampion(newData) {
         const baseRacePts = schema.isLastraceDouble && isLast ? raceWinPts * 2 : raceWinPts;
         const sprintPts = r.sprint ? sprintWinPts : 0;
 
-        // Nota: asumimos que los bonus (pole/FL) NO se duplican aunque la última carrera tenga doble puntuación.
+        // Note: we assume bonuses (pole/FL) are NOT doubled even if last race has double points.
         maxRemaining += baseRacePts + sprintPts + flBonus + poleBonus;
       }
 
@@ -2191,6 +2318,12 @@ function saveTurningPoints(turningPoints) {
   localStorage.setItem(tpName, JSON.stringify(turningPoints));
 }
 
+/**
+ * Sends a prompt to the generative AI model and returns the response.
+ * @param {string} prompt - The prompt text.
+ * @param {Object} opts - Options including the model to use.
+ * @returns {Promise<string>} The generated text.
+ */
 async function askGenAI(prompt, opts = {}) {
   const localStorageModel = localStorage.getItem("ai-model");
   const fallbackModel = "gemini-2.5-flash";
@@ -2238,6 +2371,13 @@ function ensureEmergencyOverlay(imageContainer) {
   }
 }
 
+/**
+ * Manages the overlay elements on news images based on type.
+ * @param {HTMLElement} imageContainer - The container for the image.
+ * @param {string} overlay - The type of overlay ("race-overlay", "quali-overlay", etc.).
+ * @param {Object} data - Data required to populate the overlay.
+ * @param {string|HTMLImageElement} image - The image source or element.
+ */
 function manage_overlay(imageContainer, overlay, data, image) {
   let overlayDiv = null;
   if (overlay === "race-overlay" || overlay === "quali-overlay") {
@@ -2380,7 +2520,7 @@ function manage_overlay(imageContainer, overlay, data, image) {
       return;
     }
     const probe = new Image();
-    probe.onload = () => { /* ok, no hacemos nada */ };
+    probe.onload = () => { /* ok, no action */ };
     probe.onerror = () => { ensureEmergencyOverlay(imageContainer); };
     probe.src = url;
   } catch {
@@ -2388,11 +2528,16 @@ function manage_overlay(imageContainer, overlay, data, image) {
   }
 }
 
+/**
+ * Returns the ordinal suffix for a number (e.g., "st", "nd", "rd", "th").
+ * @param {number} n - The number.
+ * @returns {string} The ordinal suffix.
+ */
 function getOrdinalSuffix(n) {
   if (typeof n !== 'number' || isNaN(n) || !isFinite
     (n)) {
     console.error("Invalid input for getOrdinalSuffix:", n);
-    return n; // Return the original value if it's not a valid number
+    return n; // Return original if invalid
   }
   let j = n % 10, k = n % 100;
   if (j == 1 && k != 11) {
@@ -2414,7 +2559,7 @@ document.querySelectorAll('#newsTypeMenu .dropdown-item').forEach(item => {
 
     item.classList.toggle('inactive');
 
-    // sincroniza el icono
+    // synchronize icon
     item.querySelector('i').classList.toggle('unactive', item.classList.contains('inactive'));
 
     const type = item.dataset.value;

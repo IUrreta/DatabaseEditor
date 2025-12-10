@@ -1,10 +1,22 @@
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
 import { formatNamesSimple } from "./dbUtils.js";
 import records from "../../../data/records.json";
+
+/**
+ * Converts an array of IDs to a comma-separated string for SQL queries.
+ * @param {Array<number|string>} ids - Array of IDs.
+ * @returns {string} CSV string.
+ */
 function idsToCsv(ids) {
     return Array.from(new Set(ids)).filter(x => x != null).join(",");
 }
 
+/**
+ * Fetches historical records for a list of staff IDs from a specified table.
+ * @param {string} tableName - The name of the table to query.
+ * @param {Array<number>} ids - List of staff IDs.
+ * @returns {Map} Map of staff ID to their history record object.
+ */
 function fetchHistoryMap(tableName, ids) {
     if (!ids.length) return new Map();
     const csv = idsToCsv(ids);
@@ -42,6 +54,13 @@ function fetchHistoryMap(tableName, ids) {
     return map;
 }
 
+/**
+ * Fetches driver history records, optionally for a specific season.
+ * @param {string} historyTable - The history table name.
+ * @param {Array<number>} ids - List of driver IDs.
+ * @param {number|null} season - The season to filter by (optional).
+ * @returns {Map} Map of driver ID to history record.
+ */
 export function fetchDriverHistoryRecords(historyTable, ids, season) {
     const map = new Map();
     if (!ids || !ids.length) return map;
@@ -136,11 +155,21 @@ export function fetchDriverHistoryRecords(historyTable, ids, season) {
 }
 
 
-
+/**
+ * Helper to check if a season object is valid.
+ * @param {Object} x - The season object.
+ * @returns {boolean} True if valid.
+ */
 function validSeason(x) {
     return x && x.season && x.season !== 0;
 }
 
+/**
+ * Enriches a list of drivers with their full career history.
+ * @param {Array<Object>} drivers - List of driver objects.
+ * @param {number|null} season - Season to filter by.
+ * @returns {Array<Object>} Enriched driver objects.
+ */
 export function enrichDriversWithHistory(drivers, season = null) {
     if (!drivers || drivers.length === 0) return drivers;
 
@@ -202,6 +231,12 @@ export function enrichDriversWithHistory(drivers, season = null) {
     });
 }
 
+/**
+ * Gets selected records for drivers based on type and year.
+ * @param {string} type - Record type (e.g., "wins", "podiums").
+ * @param {string|number} year - "all" or specific year.
+ * @returns {Array} List of enriched record objects.
+ */
 export function getSelectedRecord(type, year) {
     let recordTargetColumn, recordTargetTable;
 
@@ -264,13 +299,13 @@ export function getSelectedRecord(type, year) {
 
         const combinedArray = Object.values(byId).sort((a, b) => b.value - a.value);
 
-        // enriquecemos aquí
+        // Enrich here
         const enriched = enrichDriversWithHistory(combinedArray);
 
         const ALLTIME_EXTERNAL_DRIVERS = records;
         const merged = mergeWithExternalRecords(enriched, ALLTIME_EXTERNAL_DRIVERS, type, year);
 
-        //sort again after merging
+        // Sort again after merging
         merged.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
 
         console.log("final all-time records:", merged);
@@ -278,7 +313,7 @@ export function getSelectedRecord(type, year) {
         return merged;
     }
     else {
-        // temporada concreta
+        // Specific season
         recordTargetTable = "Staff_Driver_RaceRecordPerSeason";
 
         const record = queryDB(`
@@ -288,7 +323,7 @@ export function getSelectedRecord(type, year) {
         tab1.StaffID,
         tab1.${recordTargetColumn},
 
-        -- Team en la ÚLTIMA carrera de esa temporada
+        -- Team in the LAST race of that season
         COALESCE((
         SELECT rr.TeamID
         FROM Races_Results rr
@@ -319,13 +354,19 @@ export function getSelectedRecord(type, year) {
             retired: r[5],
         })).sort((a, b) => b.value - a.value);
 
-        // enriquecemos también para temporada concreta con histórico all-time
+        // Enrich for specific season with all-time history
         return enrichDriversWithHistory(formatted, year);
 
     }
 
 }
 
+/**
+ * Extracts a specific value from a record item based on type.
+ * @param {Object} item - Record item.
+ * @param {string} type - Record type.
+ * @returns {number} The value.
+ */
 function pickValueFromType(item, type) {
     if (!item) return 0;
     switch (type) {
@@ -340,17 +381,23 @@ function pickValueFromType(item, type) {
     }
 }
 
+/**
+ * Maps an external record item to the internal structure.
+ * @param {Object} item - External record item.
+ * @param {string} type - Record type.
+ * @returns {Object} Mapped item.
+ */
 function mapExternalItem(item, type) {
     return {
         ...item,
-        // forzados como pediste
+        // forced values as requested
         id: -1,
         retired: 1,
         teamId: -1,
         record: type,
         value: pickValueFromType(item, type),
 
-        // por si en tu app esperas que existan siempre
+        // ensure properties exist
         totalStarts: item.totalStarts ?? 0,
         totalPoles: item.totalPoles ?? 0,
         totalPodiums: item.totalPodiums ?? 0,
@@ -369,6 +416,14 @@ function mapExternalItem(item, type) {
     };
 }
 
+/**
+ * Merges database driver records with external JSON records.
+ * @param {Array} dbDrivers - Drivers from DB.
+ * @param {Array} externalJson - External records.
+ * @param {string} type - Record type.
+ * @param {string|number} year - Year filter.
+ * @returns {Array} Merged and sorted list.
+ */
 function mergeWithExternalRecords(dbDrivers, externalJson, type, year) {
     const normName = (name) => {
         return (name || "").replace(/\s+/g, " ").trim().toLowerCase();
@@ -384,7 +439,7 @@ function mergeWithExternalRecords(dbDrivers, externalJson, type, year) {
 
     const merged = [...(dbDrivers || []), ...externalMapped];
 
-    // Ordenamos por la columna value desc
+    // Sort by value desc
     merged.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
     return merged;
 }

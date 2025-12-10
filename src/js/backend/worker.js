@@ -38,8 +38,13 @@ import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
 
-// Diccionario de comandos
+// Command Dictionary
 const workerCommands = {
+  /**
+   * Loads the database from a file provided in the data.
+   * @param {Object} data - Contains the file to load.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   loadDB: async (data, postMessage) => {
     console.log(data)
     const SQL = await initSqlJs({
@@ -58,6 +63,12 @@ const workerCommands = {
 
     postMessage({ responseMessage: "Database loaded", content: date });
   },
+
+  /**
+   * Exports the current state of the database to a save file.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   exportSave: async (data, postMessage) => {
     const db = getDatabase();
     const metadata = getMetadata();
@@ -67,6 +78,11 @@ const workerCommands = {
     postMessage({ responseMessage: "Database exported", content: result });
   },
 
+  /**
+   * Fetches data for a specific season/year.
+   * @param {Object} data - Contains the year and whether it is the current year.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   yearSelected: (data, postMessage) => {
     const year = data.year
     const isCurrentYear = data.isCurrentYear || true;
@@ -81,6 +97,11 @@ const workerCommands = {
     });
   },
 
+  /**
+   * Handles the selection of a save file, loading various game data.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   saveSelected: (data, postMessage) => {
 
     const yearData = checkYearSave();
@@ -144,6 +165,12 @@ const workerCommands = {
 
     postMessage({ responseMessage: "Save selected finished" });
   },
+
+  /**
+   * Fetches Head-to-Head data for drivers or teams.
+   * @param {Object} data - Contains H2H parameters and graph configuration.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   configuredH2H: (data, postMessage) => {
     if (data.h2h !== "-1") {
       let h2hRes;
@@ -169,7 +196,7 @@ const workerCommands = {
       h2hDrivers.push(res);
     });
 
-    // Consulta eventos y los envía al frontend
+    // Query events and send to frontend
     const eventsDone = fetchEventsDoneFrom(data.year);
     const allEvents = fetchEventsFrom(data.year);
     h2hDrivers.push(eventsDone);
@@ -177,6 +204,12 @@ const workerCommands = {
 
     postMessage({ responseMessage: "H2HDriver fetched", content: h2hDrivers });
   },
+
+  /**
+   * Updates custom engine data.
+   * @param {Object} data - Contains engine data.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   customEngines: (data, postMessage) => {
     updateCustomEngines(data.enginesData);
     postMessage({
@@ -188,16 +221,34 @@ const workerCommands = {
     const engines = fetchEngines();
     postMessage({ responseMessage: "Engines fetched", content: engines });
   },
+
+  /**
+   * Fetches drivers for a specific year for H2H comparison.
+   * @param {Object} data - Contains the year.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   yearSelectedH2H: (data, postMessage) => {
     const drivers = fetchDriversPerYear(data.year);
 
     postMessage({ responseMessage: "DriversH2H fetched", content: drivers });
   },
+
+  /**
+   * Fetches data for a specific team.
+   * @param {Object} data - Contains the team ID.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   teamRequest: (data, postMessage) => {
     const teamID = data.teamID;
     const teamData = fetchTeamData(teamID);
     postMessage({ responseMessage: "TeamData fetched", content: teamData });
   },
+
+  /**
+   * Fetches performance parts data for a team.
+   * @param {Object} data - Contains the team ID.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   performanceRequest: (data, postMessage) => {
     const designDict = getPartsFromTeam(data.teamID);
     const unitValues = getUnitValueFromParts(designDict);
@@ -207,14 +258,32 @@ const workerCommands = {
     const designResponse = { responseMessage: "Parts stats fetched", content: [unitValues, allParts, maxDesign] };
     postMessage(designResponse);
   },
+
+  /**
+   * Fetches contract data for a driver.
+   * @param {Object} data - Contains the driver ID.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   driverRequest: (data, postMessage) => {
     const contract = fetchDriverContract(data.driverID);
     postMessage({ responseMessage: "Contract fetched", content: contract });
   },
+
+  /**
+   * Fetches values for a specific part design.
+   * @param {Object} data - Contains the design ID.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   partRequest: (data, postMessage) => {
     const partValues = getUnitValueFromOnePart(data.designID);
     postMessage({ responseMessage: "Part values fetched", content: partValues });
   },
+
+  /**
+   * Updates team details.
+   * @param {Object} data - Contains team data to update.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   editTeam: (data, postMessage) => {
     editTeam(data);
     postMessage({
@@ -224,6 +293,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Updates driver statistics.
+   * @param {Object} data - Contains driver stats and update parameters.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   editStats: (data, postMessage) => {
     const globals = getGlobals();
     editRetirement(data.driverID, data.isRetired);
@@ -253,6 +328,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Updates team performance and car parts.
+   * @param {Object} data - Contains parts and loadout data.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   editPerformance: (data, postMessage) => {
     let globals = getGlobals();
 
@@ -280,6 +361,12 @@ const workerCommands = {
     };
     postMessage(carPerformanceResponse);
   },
+
+  /**
+   * Updates engine data.
+   * @param {Object} data - Contains engine update data.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   editEngine: (data, postMessage) => {
     editEngines(data.engines)
     postMessage({
@@ -289,6 +376,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Updates driver contract.
+   * @param {Object} data - Contains contract details.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   editContract: (data, postMessage) => {
     const year = getGlobals().yearIteration;
 
@@ -305,6 +398,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Updates calendar data.
+   * @param {Object} data - Contains calendar codes and race data.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   editCalendar: (data, postMessage) => {
     const year = getGlobals().yearIteration;
     editCalendar(data.calendarCodes, year, data.racesData);
@@ -315,6 +414,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Updates custom configuration.
+   * @param {Object} data - Contains configuration data.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   configUpdate: (data, postMessage) => {
     updateCustomConfig(data);
     postMessage({
@@ -323,6 +428,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Fires a driver from a team.
+   * @param {Object} data - Contains driver and team IDs.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   fireDriver: (data, postMessage) => {
     fireDriver(data.driverID, data.teamID);
     postMessage({
@@ -332,6 +443,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Hires a driver to a team.
+   * @param {Object} data - Contains driver, team, and contract details.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   hireDriver: (data, postMessage) => {
     hireDriver("hire", data.driverID, data.teamID, data.position, data.salary, data.signBonus, data.raceBonus, data.raceBonusPos, data.year, getGlobals().yearIteration);
     postMessage({
@@ -341,6 +458,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Automatically assigns a driver to a team with default contract.
+   * @param {Object} data - Contains driver and team IDs.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   autoContract: (data, postMessage) => {
     hireDriver("auto", data.driverID, data.teamID, data.position, getGlobals().yearIteration);
     postMessage({
@@ -350,6 +473,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Swaps two drivers between their teams.
+   * @param {Object} data - Contains IDs of both drivers.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   swapDrivers: (data, postMessage) => {
     swapDrivers(data.driver1ID, data.driver2ID);
     postMessage({
@@ -359,6 +488,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Advances time in the game to a specific day.
+   * @param {Object} data - Contains the day number.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   timeTravel: (data, postMessage) => {
     timeTravelWithData(data.dayNumber, true);
     // manageStandings();
@@ -368,6 +503,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Updates driver lineups, affiliates, feeder series, and engineer pairs.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   changeLineUps: (data, postMessage) => {
     changeDriverLineUps();
     manageAffiliates();
@@ -387,16 +528,34 @@ const workerCommands = {
     const staff = fetchStaff(yearData[0]);
     postMessage({ responseMessage: "Staff fetched", content: staff });
   },
+
+  /**
+   * Refreshes the drivers data.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   driversRefresh: (data, postMessage) => {
     const yearData = checkYearSave();
 
     const drivers = fetchDrivers(yearData[0]);
     postMessage({ responseMessage: "Drivers fetched", content: drivers });
   },
+
+  /**
+   * Refreshes the calendar data.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   calendarRefresh: (data, postMessage) => {
     const calendar = fetchCalendar();
     postMessage({ responseMessage: "Calendar fetched", content: calendar });
   },
+
+  /**
+   * Applies changes to statistics.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   changeStats: (data, postMessage) => {
     changeStats();
     postMessage({
@@ -410,6 +569,12 @@ const workerCommands = {
     const staff = fetchStaff(yearData[0]);
     postMessage({ responseMessage: "Staff fetched", content: staff });
   },
+
+  /**
+   * Updates CFD times.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   changeCfd: (data, postMessage) => {
     change2024Standings();
     postMessage({
@@ -418,6 +583,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Changes game regulations.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   changeRegulations: (data, postMessage) => {
     removeFastestLap();
     postMessage({
@@ -426,6 +597,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Changes the calendar type.
+   * @param {Object} data - Contains the calendar type.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   changeCalendar: (data, postMessage) => {
     changeRaces(data.type);
     postMessage({
@@ -437,6 +614,12 @@ const workerCommands = {
     const calendar = fetchCalendar();
     postMessage({ responseMessage: "Calendar fetched", content: calendar });
   },
+
+  /**
+   * Adds extra drivers/staff.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   extraDrivers: (data, postMessage) => {
     insertStaff();
     postMessage({
@@ -445,6 +628,12 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+
+  /**
+   * Updates 2025 performance data.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   changePerformance: (data, postMessage) => {
     updatePerofmrnace2025();
     postMessage({
@@ -474,6 +663,12 @@ const workerCommands = {
 
     postMessage(carPerformanceResponse);
   },
+
+  /**
+   * Refreshes performance data.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   performanceRefresh: (data, postMessage) => {
     const yearData = checkYearSave();
 
@@ -496,12 +691,18 @@ const workerCommands = {
 
     postMessage(carPerformanceResponse);
   },
+
+  /**
+   * Generates news items.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   generateNews: (data, postMessage) => {
     try {
-      const savedNewsMap = loadNewsMapFromDB();   // ← desde DB
-      const tpStateFromDB = loadTPFromDB();        // ← desde DB
+      const savedNewsMap = loadNewsMapFromDB();   // ← from DB
+      const tpStateFromDB = loadTPFromDB();        // ← from DB
 
-      // si necesitas asegurar estructura mínima de TP, hazlo aquí
+      // if you need to ensure minimal TP structure, do it here
       const tpState = ensureTurningPointsStructure(tpStateFromDB);
 
       const { newsList, turningPointState } = generate_news(savedNewsMap, tpState);
@@ -517,6 +718,12 @@ const workerCommands = {
       postMessage({ responseMessage: "Error", error: e.message });
     }
   },
+
+  /**
+   * Updates the combined dictionary with new team name.
+   * @param {Object} data - Contains team ID and new name.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   updateCombinedDict: (data, postMessage) => {
     const teamId = data.teamID;
     const newName = data.newName;
@@ -524,18 +731,36 @@ const workerCommands = {
     combined_dict[teamId] = newName;
     postMessage({ responseMessage: "Combined dict updated", content: combined_dict });
   },
+
+  /**
+   * Fetches details for a specific race.
+   * @param {Object} data - Contains race ID.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   raceDetailsRequest: (data, postMessage) => {
     const raceId = data.raceid;
     const results = getOneRaceDetails(raceId);
 
     postMessage({ responseMessage: "Race details fetched", content: results });
   },
+
+  /**
+   * Fetches details for a specific qualifying session.
+   * @param {Object} data - Contains race ID.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   qualiDetailsRequest: (data, postMessage) => {
     const qualiId = data.raceid;
     const results = getOneQualiDetails(qualiId);
 
     postMessage({ responseMessage: "Quali details fetched", content: results });
   },
+
+  /**
+   * Fetches transfer rumors and details.
+   * @param {Object} data - Contains drivers and date.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   transferRumorRequest: (data, postMessage) => {
     const drivers = data.drivers;
     const date = data.date || null; // New date parameter
@@ -544,6 +769,12 @@ const workerCommands = {
 
     postMessage({ responseMessage: "Transfer details fetched", content: info });
   },
+
+  /**
+   * Fetches team comparison details.
+   * @param {Object} data - Contains team ID, season, and date.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   teamComparisonRequest: (data, postMessage) => {
     const teamId = data.team;
     const season = data.season;
@@ -552,12 +783,24 @@ const workerCommands = {
     const results = getTeamComparisonDetails(teamId, season, date);
     postMessage({ responseMessage: "Team comparison details fetched", content: results });
   },
+
+  /**
+   * Fetches full championship season details.
+   * @param {Object} data - Contains the season.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   fullChampionshipDetailsRequest: (data, postMessage) => {
     const season = data.season;
 
     const results = getFullChampionSeasonDetails(season);
     postMessage({ responseMessage: "Full championship details fetched", content: results });
   },
+
+  /**
+   * Fetches a specific record.
+   * @param {Object} data - Contains record type and year.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   recordSelected: (data, postMessage) => {
     const type = data.type;
     const year = data.year;
@@ -566,6 +809,12 @@ const workerCommands = {
 
     postMessage({ responseMessage: "Record fetched", content: record });
   },
+
+  /**
+   * Approves a turning point, generating positive news.
+   * @param {Object} data - Contains turning point data, type, maxDate, etc.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   approveTurningPoint: (data, postMessage) => {
     const turningPointData = data.turningPointData;
     const type = data.type;
@@ -588,6 +837,12 @@ const workerCommands = {
 
     postMessage({ responseMessage: "Turning point positive", noti_msg: "Accepted turning point", content: newResponse, isEditCommand: true, unlocksDownload: true });
   },
+
+  /**
+   * Cancels a turning point, generating negative news.
+   * @param {Object} data - Contains turning point data, type, maxDate, etc.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   cancelTurningPoint: (data, postMessage) => {
     const turningPointData = data.turningPointData;
     const type = data.type;
@@ -605,6 +860,12 @@ const workerCommands = {
 
     postMessage({ responseMessage: "Turning point negative", noti_msg: "Cancelled turning point", content: newResponse, isEditCommand: true, unlocksDownload: true });
   },
+
+  /**
+   * Saves the list of news.
+   * @param {Object} data - Contains the news list.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   saveNewsState: (data, postMessage) => {
     try {
       upsertNews(data.newsList || []);
@@ -614,6 +875,12 @@ const workerCommands = {
       postMessage({ responseMessage: "Error", error: e.message, unlocksDownload: true });
     }
   },
+
+  /**
+   * Updates specific fields of a news item.
+   * @param {Object} data - Contains stableKey and patch data.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   updateNews: (data, postMessage) => {
     try {
       const ok = updateNewsFields(
@@ -626,10 +893,22 @@ const workerCommands = {
       postMessage({ responseMessage: "Error", error: e.message, unlocksDownload: true });
     }
   },
+
+  /**
+   * Retrieves all news.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   getNews: (data, postMessage) => {
     const newsMap = loadNewsMapFromDB();
     postMessage({ responseMessage: "News map", content: newsMap });
   },
+
+  /**
+   * Saves the state of turning points.
+   * @param {Object} data - Contains turning point state.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   saveTurningPoints: (data, postMessage) => {
     try {
       upsertTurningPoints(data.turningPointState || {});
@@ -639,10 +918,22 @@ const workerCommands = {
       postMessage({ responseMessage: "Error", error: e.message, unlocksDownload: true });
     }
   },
+
+  /**
+   * Retrieves turning points.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   getTurningPoints: (data, postMessage) => {
     const turningPoints = loadTPFromDB();
     postMessage({ responseMessage: "Turning points", content: turningPoints });
   },
+
+  /**
+   * Migrates legacy data from local storage.
+   * @param {Object} data - Contains legacy news and TP text.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   migrateFromLocalStorage: (data, postMessage) => {
     try {
       const { lsNewsTxt, lsTPTxt } = data || {};
@@ -653,6 +944,12 @@ const workerCommands = {
       postMessage({ responseMessage: "Error", error: e.message });
     }
   },
+
+  /**
+   * Deletes all news and turning points.
+   * @param {Object} data - Unused.
+   * @param {Function} postMessage - Function to send a message back to the main thread.
+   */
   deleteNews: (data, postMessage) => {
     deleteNews();
     deleteTurningPoints();

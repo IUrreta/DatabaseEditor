@@ -8,8 +8,8 @@ let deleted = false;
 
 /**
  * Positions both the div the user's moving and the one he has moved it into
- * @param {div} div0 The div the user is moving
- * @param {div} div1 The div the user has moved div0 into
+ * @param {HTMLDivElement} div0 The div the user is moving
+ * @param {HTMLDivElement} div1 The div the user has moved div0 into
  * @param {string} beforeAfter If the user has moved div0 before or after div1
  */
 function reubicate(div0,div1,beforeAfter) {
@@ -29,6 +29,12 @@ function reubicate(div0,div1,beforeAfter) {
 /**
  * Adds a race in the calendar div
  * @param {string} code Code from the race
+ * @param {number|string} rainP Rain value for practice
+ * @param {number|string} rainQ Rain value for qualifying
+ * @param {number|string} rainR Rain value for race
+ * @param {number|string} type Race type (0: normal, 1: sprint, 2: ATA)
+ * @param {number|string} trackID The ID of the track
+ * @param {number|string} state State of the race (e.g., 2 for completed)
  */
 function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
     let imageUrl = codes_dict[code];
@@ -187,6 +193,9 @@ function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
 }
 
 
+/**
+ * Updates the visual weather icons for all races in the calendar.
+ */
 function updateVisualizers(){
     document.querySelector(".main-calendar").querySelectorAll(".weather-vis").forEach(function(elem){
         elem.innerHTML = ""
@@ -197,6 +206,10 @@ function updateVisualizers(){
     })
 }
 
+/**
+ * Loads the calendar UI with the given race data.
+ * @param {Array} races - Array of race data arrays.
+ */
 export function load_calendar(races){
     document.querySelector('.main-calendar-section').innerHTML = ""
     races.forEach(function(elem){
@@ -209,6 +222,9 @@ export function load_calendar(races){
 
 }
 
+/**
+ * Updates the race numbering in the calendar view.
+ */
 function update_numbers(){
     document.querySelectorAll(".race-calendar-number").forEach(function(elem, index){
         elem.textContent = index + 1
@@ -216,6 +232,11 @@ function update_numbers(){
 }
 
 
+/**
+ * Transforms weather state code to internal value.
+ * @param {number} state - Weather state code.
+ * @returns {number} Internal weather value.
+ */
 function transformWeather(state){
     let realWeather;
     if(state === 1){
@@ -241,7 +262,7 @@ function transformWeather(state){
 
 /**
  * Changes the number after the race code to specify the format
- * @param {div} div div from the race that's changing format
+ * @param {HTMLDivElement} div div from the race that's changing format
  * @param {string} format code of the format
  */
 function changeFormat(div,format) {

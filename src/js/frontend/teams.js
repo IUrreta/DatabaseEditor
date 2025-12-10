@@ -41,6 +41,10 @@ document.querySelector("#objectiveMenu").querySelectorAll("a").forEach(function 
 
 /**
  * Helper function to add mousedown listener with auto increment/decrement
+ * @param {HTMLElement} element - The container element for the buttons.
+ * @param {string} selector - CSS selector for the buttons within the container.
+ * @param {Function} incrementCallback - Function to execute on increment action.
+ * @param {Function} decrementCallback - Function to execute on decrement action.
  */
 function addContinuousListener(element, selector, incrementCallback, decrementCallback) {
     let intervalId;
@@ -157,6 +161,12 @@ addContinuousListener(document.querySelector("#teamBudget"), ".bi-plus-lg, .bi-d
 );
 
 
+/**
+ * Updates the condition value and progress bar.
+ * @param {HTMLInputElement|HTMLElement} input - Input or element holding the value.
+ * @param {number} increment - Value to add/subtract.
+ * @param {HTMLElement} bar - Progress bar element.
+ */
 function updateCondition(input, increment, bar) {
     let actual = input.innerText.split("%")[0];
     let val = parseInt(actual) + increment;
@@ -267,7 +277,7 @@ document.querySelector("#staffButton").addEventListener("click", function () {
 
 /**
  * Fills the level for each facility
- * @param {object} teamData info of the team facilities
+ * @param {Array} teamData info of the team facilities
  */
 export function fillLevels(teamData) {
     teamData.slice(0, 15).forEach(function (elem) {
@@ -350,6 +360,11 @@ export function resetTeamEditing(){
 }
 
 
+/**
+ * Updates a pit crew stat value.
+ * @param {HTMLInputElement} input - Input element for the stat.
+ * @param {number} increment - Value to add/subtract.
+ */
 function updatePitStat(input, increment) {
     let actual = input.value.split("%")[0];
     let val = parseInt(actual) + increment;
@@ -452,7 +467,7 @@ document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-left").forEa
 
 /**
  * Collects the data for each facility
- * @returns array with tuples for each facility
+ * @returns {Array} array with tuples for each facility
  */
 export function gather_team_data() {
     let facilities = document.getElementsByClassName('facility');
@@ -460,17 +475,21 @@ export function gather_team_data() {
 
     for (let i = 0; i < facilities.length; i++) {
         let facility = facilities[i];
-        let id = facility.id.match(/\d+$/)[0]; // Extrae el número al final del id
+        let id = facility.id.match(/\d+$/)[0]; // Extract the number at the end of the id
         let levelIndicator = facility.getElementsByClassName('facility-level-indicator')[0];
         let level = levelIndicator.getAttribute('data-value');
-        let number = id + level; // Compone el número concatenando los strings
+        let number = id + level; // Compose the number by concatenating strings
         let condition = facility.querySelector('.condition-container-value').innerText.split("%")[0] / 100;
-        result.push([number, condition]); // Añade la tupla a la lista
+        result.push([number, condition]); // Add the tuple to the list
     }
 
     return result
 }
 
+/**
+ * Collects pit crew statistics from the UI.
+ * @returns {Object} Key-value pairs of crew stats.
+ */
 export function gather_pit_crew(){
     let pitCrewStats = document.querySelectorAll(".pit-crew-details .one-stat-panel");
     let result = {};

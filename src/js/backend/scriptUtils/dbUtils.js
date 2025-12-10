@@ -8,13 +8,19 @@ import { _standingsCache, rebuildStandingsUntil, rebuildStandingsUntilCached } f
 
 
 /**
- * Convierte un color ARGB a hexadecimal.
+ * Converts an ARGB color integer to a hexadecimal string.
+ * @param {number} argb - The ARGB color value.
+ * @returns {string} The hexadecimal color string (e.g., "#RRGGBB").
  */
 export function argbToHex(argb) {
-  const rgb = argb & 0xFFFFFF; // Ignora el canal alfa
+  const rgb = argb & 0xFFFFFF; // Ignore alpha channel
   return `#${rgb.toString(16).padStart(6, '0').toUpperCase()}`;
 }
 
+/**
+ * Retrieves the current date and season from the Player_State table.
+ * @returns {Array} An array containing [Day, CurrentSeason].
+ */
 export function getDate() {
   const daySeason = queryDB(`
         SELECT Day, CurrentSeason
@@ -25,11 +31,11 @@ export function getDate() {
 }
 
 /**
- * Verifica si el archivo de guardado es de un año específico.
- * @returns {Array} [ "23" o "24", TeamName, primaryColor, secondaryColor ]
+ * Checks the year of the save file and retrieves team colors if applicable.
+ * @returns {Array} An array containing [year ("23" or "24"), TeamName, primaryColor, secondaryColor].
  */
 export function checkYearSave() {
-  // Ver si existe la tabla Countries_RaceRecord
+  // Check if Countries_RaceRecord table exists
   const row = queryDB(`
       SELECT name 
       FROM sqlite_master 
@@ -37,11 +43,11 @@ export function checkYearSave() {
     `, 'singleRow');
 
   if (!row) {
-    // No existe la tabla -> asumo que es "23"
+    // Table does not exist -> assume "23"
     return ["23", null, null, null];
   }
 
-  // Si existe, entonces busco TeamNameLocKey del TeamID=32
+  // If exists, find TeamNameLocKey for TeamID=32
   const nameValue = queryDB(`
       SELECT TeamNameLocKey 
       FROM Teams 
@@ -49,18 +55,18 @@ export function checkYearSave() {
     `, 'singleValue');
 
   if (!nameValue) {
-    // No hay valor -> devuelvo "24" sin datos
+    // No value -> return "24" with no extra data
     return ["24", null, null, null];
   }
 
-  // Extraer nombre
+  // Extract name
   const match = nameValue.match(/\[STRING_LITERAL:Value=\|(.*?)\|\]/);
   let name = null, primaryColor = null, secondaryColor = null;
 
   if (match) {
     name = match[1];
 
-    // Busco los colores
+    // Find colors
     const primaryColorRow = queryDB(`
         SELECT Colour
         FROM Teams_Colours
@@ -84,6 +90,12 @@ export function checkYearSave() {
   return ["24", name, primaryColor, secondaryColor];
 }
 
+/**
+ * Fetches the nationality of a driver.
+ * @param {number} driverID - The ID of the driver.
+ * @param {string} gameYear - The game year ("23" or "24").
+ * @returns {string} The driver's nationality abbreviation.
+ */
 export function fetchNationality(driverID, gameYear) {
   if (gameYear === "24") {
     const countryID = queryDB(`
@@ -124,6 +136,11 @@ export function fetchNationality(driverID, gameYear) {
   return "";
 }
 
+/**
+ * Fetches the team ID for a driver's future contract.
+ * @param {number} driverID - The ID of the driver.
+ * @returns {number} The team ID or -1 if no future contract exists.
+ */
 export function fetchForFutureContract(driverID) {
   const teamID = queryDB(`
       SELECT TeamID 
@@ -135,6 +152,10 @@ export function fetchForFutureContract(driverID) {
   return teamID ?? -1;
 }
 
+/**
+ * Fetches data for all engines, including stats and allocations.
+ * @returns {Array} An array containing [enginesList, engineAllocations].
+ */
 export function fetchEngines() {
   const statsIds = [6, 10, 11, 12, 14, 15];
   const enginesList = [];
@@ -150,7 +171,7 @@ export function fetchEngines() {
   for (let i = 0; i < newEngineIds.length; i++) {
     let resultDict = {};
 
-    // Obtener valores de stats
+    // Get stats values
     for (const stat of statsIds) {
       const statResult = queryDB(`
                 SELECT partStat, unitValue 
@@ -163,7 +184,7 @@ export function fetchEngines() {
     }
 
 
-    // Obtener valor de ERS
+    // Get ERS value
     const ersResult = queryDB(`
             SELECT UnitValue 
             FROM Custom_Engines_Stats 
@@ -173,7 +194,7 @@ export function fetchEngines() {
       resultDict[18] = ersResult;
     }
 
-    // Obtener valor de gearbox
+    // Get gearbox value
     const gearboxResult = queryDB(`
             SELECT UnitValue 
             FROM Custom_Engines_Stats 
@@ -189,7 +210,7 @@ export function fetchEngines() {
           WHERE engineID = ${newEngineIds[i]}
       `, 'singleValue');
 
-    // Añadir la información del motor a la lista
+    // Add engine info to list
     enginesList.push([newEngineIds[i], resultDict, engineName]);
   }
 
@@ -201,15 +222,20 @@ export function fetchEngines() {
 }
 
 
+/**
+ * Fetches mentality data for a staff member.
+ * @param {number} staffID - The ID of the staff member.
+ * @returns {Array} An array containing [morale (Array of arrays), globalMentality].
+ */
 export function fetchMentality(staffID) {
-  // Obtengo todas las filas (morale es un array de arrays [[opinion],[opinion], ...])
+  // Get all rows (morale is an array of arrays [[opinion],[opinion], ...])
   const morale = queryDB(`
       SELECT Opinion
       FROM Staff_Mentality_AreaOpinions
       WHERE StaffID = ${staffID}
     `, 'allRows');
 
-  // Obtengo un solo valor
+  // Get a single value
   const globalMentality = queryDB(`
       SELECT Mentality
       FROM Staff_State
@@ -219,6 +245,11 @@ export function fetchMentality(staffID) {
   return [morale, globalMentality];
 }
 
+/**
+ * Checks if a staff member drives for team 32 and updates their data if so.
+ * @param {Array} staffData - The staff data array.
+ * @returns {Array} The updated staff data array.
+ */
 export function checkDrivesForTeam32(staffData) {
   // staffData = [ firstName, lastName, staffID, teamID, posInTeam, minContractType, retired, countContracts ]
 
@@ -245,6 +276,11 @@ export function checkDrivesForTeam32(staffData) {
   return staffData;
 }
 
+/**
+ * Removes trailing numbers from a string.
+ * @param {string} str - The string to process.
+ * @returns {string} The string without trailing numbers.
+ */
 export function removeNumber(str) {
   if (str && /\d$/.test(str)) {
     return str.slice(0, -1);
@@ -252,6 +288,12 @@ export function removeNumber(str) {
   return str;
 }
 
+/**
+ * Formats names and fetches statistics for drivers or staff.
+ * @param {Array} nameData - Array containing name and basic info.
+ * @param {string} type - The type of personnel ("driver", "staff1", etc.).
+ * @returns {Array} An array containing formatted name, ID, team info, and stats.
+ */
 export function formatNamesAndFetchStats(nameData, type) {
   // nameData: [ FirstName, LastName, StaffID, teamId, positionInTeam, minContractType, retired, countContracts ]
   let firstName = "";
@@ -279,7 +321,7 @@ export function formatNamesAndFetchStats(nameData, type) {
   let teamId = nameData[3] ?? 0;
   let positionInTeam = nameData[4] ?? 0;
 
-  // para drivers que tienen minContractType != 0 (p.ej. reservas)
+  // for drivers with minContractType != 0 (e.g. reserves)
   if (type === "driver" && nameData[5] !== 0) {
     teamId = 0;
     positionInTeam = 0;
@@ -287,14 +329,14 @@ export function formatNamesAndFetchStats(nameData, type) {
 
   let baseResult;
   if (type === "driver") {
-    // [nombre, staffID, teamID, posInTeam, retired]
+    // [name, staffID, teamID, posInTeam, retired]
     baseResult = [formattedName, nameData[2], teamId, positionInTeam, nameData[6]];
   } else {
-    // staff normal
+    // normal staff
     baseResult = [formattedName, nameData[2], teamId, positionInTeam];
   }
 
-  // Buscamos stats
+  // Search stats
   if (type === "driver") {
     const statsRows = queryDB(`
         SELECT Val
@@ -305,7 +347,7 @@ export function formatNamesAndFetchStats(nameData, type) {
 
     let stats = statsRows;
     if (!stats || !stats.length) {
-      // si no hay stats, por defecto 50
+      // default 50 if no stats
       stats = Array(9).fill([50]);
     }
 
@@ -315,16 +357,16 @@ export function formatNamesAndFetchStats(nameData, type) {
         WHERE StaffID = ${nameData[2]}
       `, 'singleRow');
 
-    // Concatenamos: baseResult + stats + extraRow
-    // stats es array de arrays: [[val],[val],...]
-    // mapeamos para quedarnos con stats[i][0]
+    // Concatenate: baseResult + stats + extraRow
+    // stats is array of arrays: [[val],[val],...]
+    // map to keep stats[i][0]
     return baseResult.concat(
       stats.map(s => s[0]),
       extraRow ?? []
     );
   }
 
-  // staff normal
+  // normal staff
   let statIDs = [];
   if (type === "staff1") {
     statIDs = [0, 1, 14, 15, 16, 17];
@@ -347,10 +389,15 @@ export function formatNamesAndFetchStats(nameData, type) {
     return baseResult.concat(statsRows.map(s => s[0]));
   }
 
-  // Si no entra en esos casos, simplemente devolvemos baseResult
+  // If not matching cases, return baseResult
   return baseResult;
 }
 
+/**
+ * Fetches retirement age and current age for a driver.
+ * @param {number} driverID - The ID of the driver.
+ * @returns {Array} An array containing [retirementAge, age].
+ */
 export function fetchDriverRetirement(driverID) {
   const playerRow = queryDB(`
       SELECT Day, CurrentSeason
@@ -361,7 +408,7 @@ export function fetchDriverRetirement(driverID) {
   if (playerRow) {
     [day, currentSeason] = playerRow;
   } else {
-    console.warn("No se encontraron datos en Player_State.");
+    console.warn("No data found in Player_State.");
   }
 
   const retirementAge = queryDB(`
@@ -380,6 +427,11 @@ export function fetchDriverRetirement(driverID) {
   return [retirementAge, age];
 }
 
+/**
+ * Fetches the driver code.
+ * @param {number} driverID - The ID of the driver.
+ * @returns {string} The driver code (e.g., "HAM").
+ */
 export function fetchDriverCode(driverID) {
   let code = queryDB(`
       SELECT DriverCode
@@ -400,6 +452,10 @@ export function fetchDriverCode(driverID) {
   return code.toUpperCase();
 }
 
+/**
+ * Fetches the current season year.
+ * @returns {number} The current season year.
+ */
 export function fetchYear() {
   const row = queryDB(`
       SELECT Day, CurrentSeason
@@ -410,10 +466,15 @@ export function fetchYear() {
     console.warn("No data found in Player_State.");
     return 0;
   }
-  // Devolvemos CurrentSeason (row[1])
+  // Return CurrentSeason (row[1])
   return row[1];
 }
 
+/**
+ * Fetches driver number details.
+ * @param {number} driverID - The ID of the driver.
+ * @returns {Array} An array containing [currentNumber, wantsChampion].
+ */
 export function fetchDriverNumberDetails(driverID) {
   let currentNumber = queryDB(`
       SELECT Number
@@ -422,7 +483,7 @@ export function fetchDriverNumberDetails(driverID) {
     `, 'singleValue');
 
   if (currentNumber == null) {
-    // Si no tiene número, ver si hay libres
+    // If no number, check free ones
     const available = queryDB(`
         SELECT Number
         FROM Staff_DriverNumbers
@@ -432,13 +493,13 @@ export function fetchDriverNumberDetails(driverID) {
     if (!available.length) {
       currentNumber = 0;
     } else {
-      // Elige uno aleatorio
+      // Pick random
       const randomIdx = Math.floor(Math.random() * available.length);
       currentNumber = available[randomIdx][0];
     }
   }
 
-  // Quiere usar número de campeón?
+  // Wants champion number?
   const wantsChampion = queryDB(`
       SELECT WantsChampionDriverNumber
       FROM Staff_DriverData
@@ -448,6 +509,11 @@ export function fetchDriverNumberDetails(driverID) {
   return [currentNumber, wantsChampion];
 }
 
+/**
+ * Fetches the race formula/category for a driver based on their team.
+ * @param {number} driverID - The ID of the driver.
+ * @returns {number} The category ID (1=F1, 2=F2, 3=F3, 4=Other).
+ */
 export function fetchRaceFormula(driverID) {
   const category = queryDB(`
       SELECT MAX(
@@ -462,10 +528,15 @@ export function fetchRaceFormula(driverID) {
       WHERE ContractType = 0 AND StaffID = ${driverID}
     `, 'singleValue');
 
-  // Por defecto 4 si no existe
+  // Default 4 if not exists
   return category ?? 4;
 }
 
+/**
+ * Fetches driver marketability.
+ * @param {number} driverID - The ID of the driver.
+ * @returns {number} Marketability value.
+ */
 export function fetchMarketability(driverID) {
   return queryDB(`
       SELECT Marketability
@@ -474,6 +545,11 @@ export function fetchMarketability(driverID) {
     `, 'singleValue');
 }
 
+/**
+ * Fetches superlicense status.
+ * @param {number} driverID - The ID of the driver.
+ * @returns {number} 1 if has superlicense, 0 otherwise.
+ */
 export function fetchSuperlicense(driverID) {
   return queryDB(`
       SELECT HasSuperLicense
@@ -482,6 +558,11 @@ export function fetchSuperlicense(driverID) {
     `, 'singleValue');
 }
 
+/**
+ * Fetches all drivers for the given game year.
+ * @param {string} gameYear - The game year ("23" or "24").
+ * @returns {Array} An array of driver objects containing comprehensive driver data.
+ */
 export function fetchDrivers(gameYear) {
   const rows = queryDB(`
       SELECT DISTINCT 
@@ -498,14 +579,14 @@ export function fetchDrivers(gameYear) {
   const formattedData = [];
 
   for (let driver of rows) {
-    // Si driver[7] > 1 => hay más de un contrato
+    // If driver[7] > 1 => more than one contract
     if (driver[7] > 1) {
       driver = checkDrivesForTeam32(driver);
     }
 
     const driverID = driver[2];
 
-    // Ignoramos placeholders
+    // Ignore placeholders
     if (driver[0] === "Placeholder") {
       continue;
     }
@@ -522,7 +603,7 @@ export function fetchDrivers(gameYear) {
     const driverCode = fetchDriverCode(driverID);
     const nationality = fetchNationality(driverID, gameYear);
 
-    // result es array, lo convertimos a objeto para mayor claridad
+    // result is array, convert to object
     const data = { ...result };
     data.driver_number = driverNumber;
     data.wants1 = wants1;
@@ -534,12 +615,12 @@ export function fetchDrivers(gameYear) {
     data.driver_code = driverCode;
     data.nationality = nationality;
 
-    // Datos específicos para 2024
+    // Specific data for 2024
     if (gameYear === "24") {
       const [morale, gMentality] = fetchMentality(driverID);
       data.global_mentality = gMentality ?? null;
 
-      // morale es array de arrays. Ejemplo: [ [op1], [op2], [op3] ]
+      // morale is array of arrays. Example: [ [op1], [op2], [op3] ]
       if (morale.length >= 3) {
         data.mentality0 = morale[0][0];
         data.mentality1 = morale[1][0];
@@ -556,6 +637,11 @@ export function fetchDrivers(gameYear) {
   return formattedData;
 }
 
+/**
+ * Fetches staff members for the given game year.
+ * @param {string} gameYear - The game year ("23" or "24").
+ * @returns {Array} An array of staff objects.
+ */
 export function fetchStaff(gameYear) {
   const rows = queryDB(`
       SELECT DISTINCT
@@ -625,8 +711,13 @@ export function fetchStaff(gameYear) {
   return formattedData;
 }
 
+/**
+ * Fetches drivers participating in a specific season.
+ * @param {number} year - The season year.
+ * @returns {Array} List of formatted driver tuples [FormattedName, DriverID, TeamID].
+ */
 export function fetchDriversPerYear(year) {
-  // Construimos la consulta SQL
+  // Build SQL query
   const sql = `
       SELECT 
         bas.FirstName, 
@@ -645,31 +736,36 @@ export function fetchDriversPerYear(year) {
       ORDER BY res.TeamID
     `;
 
-  // Obtenemos todas las filas (array de objetos o tuplas)
+  // Get all rows
   const drivers = queryDB(sql, 'allRows') || [];
 
-  // Formateamos cada fila como quieras (equivalente a "format_names_simple")
+  // Format each row
   const formattedTuples = drivers.map(row => formatNamesSimple(row));
 
   return formattedTuples;
 }
 
+/**
+ * Formats driver names simply.
+ * @param {Array} name - Array containing [FirstName, LastName, DriverID, TeamID].
+ * @returns {Array} Array containing [FormattedName, DriverID, TeamID].
+ */
 export function formatNamesSimple(name) {
   let nombre = "";
   let apellido = "";
 
-  // Si no contiene "STRING_LITERAL", buscamos "StaffName_Forename_(Male|Female)_(...)".
+  // If not "STRING_LITERAL", match "StaffName_Forename_(Male|Female)_(...)".
   if (!name[0].includes("STRING_LITERAL")) {
     const nombrePattern = /StaffName_Forename_(Male|Female)_(\w+)/;
     const match = name[0].match(nombrePattern);
     if (match) {
-      // Asumiendo que tienes un método removeNumber similar al de Python
+      // Assuming removeNumber helper exists
       nombre = removeNumber(match[2]);
     } else {
       nombre = "";
     }
   } else {
-    // De lo contrario, buscamos la parte entre "| ... |"
+    // Otherwise, match part between "| ... |"
     const pattern = /\|([^|]+)\|/;
     const match = name[0].match(pattern);
     if (match) {
@@ -679,7 +775,7 @@ export function formatNamesSimple(name) {
     }
   }
 
-  // Repetimos la lógica para el apellido
+  // Same logic for last name
   if (!name[1].includes("STRING_LITERAL")) {
     const apellidoPattern = /StaffName_Surname_(\w+)/;
     const match = name[1].match(apellidoPattern);
@@ -698,16 +794,21 @@ export function formatNamesSimple(name) {
     }
   }
 
-  // Construimos el nombre completo
+  // Build full name
   const nameFormatted = `${nombre} ${apellido}`.trim();
 
-  // El TeamID (índice 3 en el array). Si es nulo/indefinido, lo ponemos a 0
+  // TeamID (index 3). If null/undefined, set to 0
   const teamId = name[3] != null ? name[3] : 0;
 
-  // Devolvemos la misma estructura que en Python: (Nombre Formateado, DriverID, TeamID)
+  // Return structure: [FormattedName, DriverID, TeamID]
   return [nameFormatted, name[2], teamId];
 }
 
+/**
+ * Gets all race IDs for a season.
+ * @param {number} season - The season year.
+ * @returns {Array<number>} Array of race IDs.
+ */
 function getSeasonRaceIds(season) {
   return (queryDB(`
     SELECT RaceID
@@ -717,6 +818,13 @@ function getSeasonRaceIds(season) {
   `, 'allRows') || []).map(r => Number(r[0]));
 }
 
+/**
+ * Builds the team rank context for each race in a season.
+ * @param {Array} seasonResults - The season results.
+ * @param {Array} raceIds - List of race IDs.
+ * @param {number} season - The season year.
+ * @returns {Map} Map of raceID to team rank map.
+ */
 export function buildPerRaceTeamRankContext(seasonResults, raceIds, season) {
   const cacheKey = `teamRanks:${season}:prev=false:pts=false`;
   const cached = _standingsCache.get(cacheKey);
@@ -765,12 +873,19 @@ export function buildPerRaceTeamRankContext(seasonResults, raceIds, season) {
   return perRaceRank;
 }
 
+/**
+ * Legacy build context function.
+ * @param {Array} seasonResults - The season results.
+ * @param {Array} raceIds - List of race IDs.
+ * @param {number} season - The season year.
+ * @returns {Map} Map of raceID to team rank map.
+ */
 export function buildPerRaceTeamRankContext_OLD(seasonResults, raceIds, season) {
   // raceId -> Map(teamId -> rank 1..10)
   const perRace = new Map();
 
   for (const raceId of raceIds) {
-    // reconstruye standings "hasta" esa carrera
+    // rebuild standings "until" that race
     const { teamStandings } = rebuildStandingsUntilCached(
       season,
       seasonResults,
@@ -787,6 +902,12 @@ export function buildPerRaceTeamRankContext_OLD(seasonResults, raceIds, season) 
   return perRace;
 }
 
+/**
+ * Applies Driver of the Day flags to season results.
+ * @param {Array} seasonResults - The season results array.
+ * @param {Map} dodMap - Map of race ID to driver ID (winner).
+ * @returns {Array} Enriched season results.
+ */
 function applyDoDFlagsToSeasonResults(seasonResults, dodMap) {
   for (const dr of seasonResults) {
     const driverId =
@@ -799,6 +920,11 @@ function applyDoDFlagsToSeasonResults(seasonResults, dodMap) {
   return seasonResults;
 }
 
+/**
+ * Gets a map of Driver of the Day winners for a season.
+ * @param {number} season - The season year.
+ * @returns {Map} Map of race ID to driver ID.
+ */
 export function getDotDWinnersMap(season) {
   const rows = queryDB(`
     SELECT RaceID, DriverID
@@ -813,20 +939,26 @@ export function getDotDWinnersMap(season) {
   return m;
 }
 
+/**
+ * Computes Driver of the Day for the entire season.
+ * @param {Array} seasonResults - The season results.
+ * @param {number} season - The season year.
+ * @returns {Array} Season results enriched with DoD data.
+ */
 function computeSeasonDriverOfTheDay(seasonResults, season) {
   ensureCustomDoDRankingTable();
 
-  // A) contexto por carrera
+  // A) context per race
   const raceIds = getSeasonRaceIds(season).map(Number);
   const perRaceTeamRank = buildPerRaceTeamRankContext(seasonResults, raceIds, season);
 
-  // B) ganadores ya cacheados (Rank=1)
+  // B) winners already cached (Rank=1)
   const winnersMap = getDotDWinnersMap(season); // Map<raceId, driverId>
 
-  // C) carreras faltantes
+  // C) missing races
   const missing = raceIds.filter(rid => !winnersMap.has(rid));
   if (missing.length > 0) {
-    // Trae solo lo necesario
+    // Fetch only needed
     const rows = queryDB(`
       SELECT RaceID, DriverID, TeamID, StartingPos, FinishingPos, DNF, Time, Laps
       FROM Races_Results
@@ -834,7 +966,7 @@ function computeSeasonDriverOfTheDay(seasonResults, season) {
         AND RaceID IN (${missing.join(',')})
     `, 'allRows') || [];
 
-    // Agrupar por carrera en el formato que ya usas
+    // Group by race
     const byRace = new Map();
     for (const [raceId, driverId, teamId, startPos, finishPos, dnf, time, laps] of rows) {
       const r = Number(raceId);
@@ -847,7 +979,7 @@ function computeSeasonDriverOfTheDay(seasonResults, season) {
       ]);
     }
 
-    // Calcular leaderboard y guardar top-3
+    // Compute leaderboard and save top-3
     for (const raceId of missing) {
       const raceRows = (byRace.get(raceId) || []).sort((a, b) => Number(a[4]) - Number(b[4]));
       const ctx = { teamRankByTeamId: perRaceTeamRank.get(raceId) || new Map() };
@@ -860,13 +992,20 @@ function computeSeasonDriverOfTheDay(seasonResults, season) {
     }
   }
 
-  // D) aplicar flags como ya hacías
+  // D) apply flags
   const dodMap = winnersMap; // Map<raceId, driverId>
   const enriched = applyDoDFlagsToSeasonResults(seasonResults, dodMap);
   enriched._driverOfTheDayMap = dodMap;
   return enriched;
 }
 
+/**
+ * Fetches comprehensive season results for all drivers.
+ * @param {number} yearSelected - The year to fetch.
+ * @param {boolean} [isCurrentYear=true] - Whether it is the current year.
+ * @param {boolean} [fetchDriverOfTheDay=false] - Whether to fetch DoD data.
+ * @returns {Array} Array of season results for each driver.
+ */
 export function fetchSeasonResults(
   yearSelected,
   isCurrentYear = true,
@@ -896,6 +1035,11 @@ export function fetchSeasonResults(
   return resultsWithDoD;
 }
 
+/**
+ * Fetches qualifying results for the season.
+ * @param {number} yearSelected - The year to fetch.
+ * @returns {Array} Array of qualifying results.
+ */
 export function fetchQualiResults(yearSelected) {
   const drivers = queryDB(`
       SELECT DriverID
@@ -915,6 +1059,11 @@ export function fetchQualiResults(yearSelected) {
   return seasonResults;
 }
 
+/**
+ * Fetches team standings for the season.
+ * @param {number} year - The season year.
+ * @returns {Array} Array of team standings.
+ */
 export function fetchTeamsStandings(year) {
   return queryDB(`
       SELECT TeamID, Position
@@ -924,6 +1073,10 @@ export function fetchTeamsStandings(year) {
     `, 'allRows') || [];
 }
 
+/**
+ * Fetches points regulations and scheme.
+ * @returns {Object} Object containing points scheme details.
+ */
 export function fetchPointsRegulations() {
   const pointScheme = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 7`, 'singleValue');
   const twoBiggestPoints = queryDB(`SELECT Points FROM Regulations_NonTechnical_PointSchemes WHERE (PointScheme = ${pointScheme}) AND (RacePos = 1 OR RacePos = 2); `, 'allRows');
@@ -943,6 +1096,12 @@ export function fetchPointsRegulations() {
   return res;
 }
 
+/**
+ * Fetches season results for a specific team.
+ * @param {number} team - Team ID.
+ * @param {number} year - Season year.
+ * @returns {Array} Array of driver results for that team.
+ */
 export function fetchOneTeamSeasonResults(team, year) {
   const teamID = team;
   const season = year;
@@ -964,6 +1123,13 @@ export function fetchOneTeamSeasonResults(team, year) {
   return results;
 }
 
+/**
+ * Fetches season results for a specific driver.
+ * @param {number} driver - Driver ID.
+ * @param {number} year - Season year.
+ * @param {boolean} [isCurrentYear=true] - Whether it's the current year.
+ * @returns {Object|null} Driver season results object or null.
+ */
 export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true) {
   const driverID = driver;
   const season = year;
@@ -1007,6 +1173,13 @@ export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true) 
 }
 
 
+/**
+ * Computes Driver of the Day from result rows (wrapper).
+ * @param {Array} rows - Race result rows.
+ * @param {number} raceId - Race ID.
+ * @param {Object} opts - Options.
+ * @returns {number|null} Driver ID of the winner.
+ */
 export function computeDriverOfTheDayFromRows(rows, raceId, opts = {}) {
   // const lb = computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts); //debug
   // console.table(lb.slice(0, 10));
@@ -1015,21 +1188,28 @@ export function computeDriverOfTheDayFromRows(rows, raceId, opts = {}) {
   return dodId;
 }
 
+/**
+ * Fast computation of Driver of the Day from rows.
+ * @param {Array} rows - Race result rows.
+ * @param {number} raceId - Race ID.
+ * @param {Object} opts - Options including team rank context.
+ * @returns {number|null} Driver ID of the winner.
+ */
 export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
   if (!rows || !rows.length) return null;
 
-  // --- constantes internas (sin pasar por opts si quieres fijarlas) ---
+  // --- internal constants ---
   const TEAM_WEIGHT = 0.4;
   const TEAM_BONUS_CAP = 4;
   const RANDOM_INTENSITY = 0.8; // ±0.4
-  const dominancePerGap = 1;   // +1 punto por bloque de gap
-  const dominanceBlock = 4;   // cada 4s → 1 punto
+  const dominancePerGap = 1;   // +1 point per gap block
+  const dominanceBlock = 4;   // every 4s -> 1 point
   const dominanceMax = 10;
 
-  // ranking de equipo
+  // team ranking
   const teamRankByTeamId = (opts.teamRankByTeamId instanceof Map) ? opts.teamRankByTeamId : new Map();
 
-  // bonus por dominancia del ganador (P1 vs P2 en misma vuelta)
+  // winner dominance bonus (P1 vs P2 in same lap)
   let p1GapBonus = 0;
   const p1 = rows.find(r => Number(r[4]) === 1 && Number(r[7]) === 0);
   const p2 = rows.find(r => Number(r[4]) === 2 && Number(r[7]) === 0);
@@ -1045,7 +1225,7 @@ export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
     }
   }
 
-  // posScore fijo
+  // fixed posScore
   const posScore = (finishingPos) => {
     if (finishingPos === 1) return 4;
     if (finishingPos === 2) return 2;
@@ -1056,22 +1236,22 @@ export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
     return 0;
   };
 
-  // grid válido para expectedPos por equipo
+  // valid grid for expectedPos per team
   const validRows = rows.filter(r => Number(r[7]) !== 1 && Number(r[5]) > 0 && Number(r[4]) > 0 && Number(r[4]) !== 99);
   const gridSize = validRows.length;
   const gridFactor = gridSize > 0 ? (gridSize / 20) : 1;
 
   const teamBonus = (teamRank, finishingPos) => {
     if (!Number.isFinite(teamRank) || !Number.isFinite(finishingPos)) return 0;
-    const expectedPos = (2 * teamRank - 0.5) * gridFactor; // 2 coches por equipo
-    const delta = expectedPos - finishingPos; // + si rinde mejor que lo esperado
+    const expectedPos = (2 * teamRank - 0.5) * gridFactor; // 2 cars per team
+    const delta = expectedPos - finishingPos; // + if performing better than expected
     let bonus = delta * TEAM_WEIGHT;
     if (bonus > TEAM_BONUS_CAP) bonus = TEAM_BONUS_CAP;
     if (bonus < -TEAM_BONUS_CAP) bonus = -TEAM_BONUS_CAP;
     return bonus;
   };
 
-  // ganador en una sola pasada (sin arrays ni sort)
+  // winner in single pass (no arrays nor sort)
   let bestId = null, bestScore = -Infinity, bestFinishPos = 99;
 
   for (const row of rows) {
@@ -1094,7 +1274,7 @@ export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
 
     const score = gain + ps + tb + dominanceBonus + randomOffset;
 
-    // desempate por mejor posición final
+    // tie-break by best finishing position
     if (
       score > bestScore ||
       (score === bestScore && finishingPos < bestFinishPos)
@@ -1108,6 +1288,13 @@ export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
   return bestId;
 }
 
+/**
+ * Computes Driver of the Day leaderboard from rows.
+ * @param {Array} rows - Race result rows.
+ * @param {number} raceId - Race ID.
+ * @param {Object} opts - Options.
+ * @returns {Array} Leaderboard array sorted by score.
+ */
 export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}) {
   if (!rows || !rows.length) return [];
 
@@ -1189,7 +1376,7 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
     rowsScored.push({
       driverId,
       name: name[0],
-      scoreRaw,             // <-- guardamos el bruto para depurar
+      scoreRaw,             // <-- keep raw for debug
       finishPos: finishingPos,
       startPos:  startingPos,
       teamId,
@@ -1197,13 +1384,13 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
     });
   }
 
-  // Softmax -> porcentajes que suman 100
+  // Softmax -> percentages summing to 100
   const shares = softmaxToPercent(rowsScored.map(r => r.scoreRaw), /*temperature*/ 1.0);
   for (let i = 0; i < rowsScored.length; i++) {
-    rowsScored[i].share = Math.round(shares[i] * 10) / 10; // p.ej., 1 decimal
+    rowsScored[i].share = Math.round(shares[i] * 10) / 10; // e.g., 1 decimal
   }
 
-  // Orden: mayor share (equivale a mayor scoreRaw)
+  // Sort: higher share (equivalent to higher scoreRaw)
   rowsScored.sort((a, b) =>
     (b.share - a.share) || (a.finishPos - b.finishPos)
   );
@@ -1211,18 +1398,31 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
   return rowsScored;
 }
 
+/**
+ * Converts array of values to percentages using Softmax.
+ * @param {Array<number>} values - Input values.
+ * @param {number} temperature - Softmax temperature.
+ * @returns {Array<number>} Percentages.
+ */
 function softmaxToPercent(values, temperature = 1.0) {
-  // estabilidad numérica
+  // numerical stability
   const maxV = Math.max(...values);
   const exps = values.map(v => Math.exp((v - maxV) / temperature));
   const sum  = exps.reduce((a,b)=>a+b, 0);
   return exps.map(x => (x / sum) * 100);
 }
 
+/**
+ * Inserts or updates the Driver of the Day ranking in the database.
+ * @param {number} season - Season year.
+ * @param {number} raceId - Race ID.
+ * @param {Array} leaderboard - Ranked driver list.
+ * @param {number} [topN=3] - Number of top drivers to store.
+ */
 export function upsertDoDRanking(season, raceId, leaderboard, topN = 3) {
   const top = leaderboard.slice(0, topN);
   for (let i = 0; i < top.length; i++) {
-    const { driverId, share, name, teamId } = top[i]; // usamos share (%)
+    const { driverId, share, name, teamId } = top[i]; // using share (%)
     const rank = i + 1;
     queryDB(`
       INSERT INTO Custom_DriverOfTheDay_Ranking (Season, RaceID, Rank, DriverID, Name, TeamID, Score)
@@ -1233,6 +1433,13 @@ export function upsertDoDRanking(season, raceId, leaderboard, topN = 3) {
   }
 }
 
+/**
+ * Gets the top N Driver of the Day rankings for a race.
+ * @param {number} season - Season year.
+ * @param {number} raceId - Race ID.
+ * @param {number} [topN=3] - Number of results to return.
+ * @returns {Array} List of ranking objects.
+ */
 export function getDoDTopNForRace(season, raceId, topN = 3) {
   const rows = queryDB(`
     SELECT DriverID, Rank, Name, Score, TeamID
@@ -1251,6 +1458,9 @@ export function getDoDTopNForRace(season, raceId, topN = 3) {
   }));
 }
 
+/**
+ * Ensures the Custom_DriverOfTheDay_Ranking table exists.
+ */
 export function ensureCustomDoDRankingTable() {
   queryDB(`
     CREATE TABLE IF NOT EXISTS Custom_DriverOfTheDay_Ranking (
@@ -1267,6 +1477,11 @@ export function ensureCustomDoDRankingTable() {
 
 }
 
+/**
+ * Creates a seeded random number generator.
+ * @param {number} seed - Seed value.
+ * @returns {Function} Random number generator function.
+ */
 function seededRandom(seed) {
   // xmur3 + mulberry32 style
   let t = (seed + 0x6D2B79F5) | 0;
@@ -1276,6 +1491,11 @@ function seededRandom(seed) {
   };
 }
 
+/**
+ * Gets and formats a driver name by ID.
+ * @param {number} driverID - Driver ID.
+ * @returns {Array} Formatted name array.
+ */
 function getNameByIdAndFormat(driverID) {
   const driverNameRow = queryDB(`
       SELECT FirstName, LastName, StaffID
@@ -1288,6 +1508,12 @@ function getNameByIdAndFormat(driverID) {
 }
 
 
+/**
+ * Fetches qualifying results for a single driver.
+ * @param {number} driver - Driver ID.
+ * @param {number} year - Season year.
+ * @returns {Object|null} Driver qualifying results object or null.
+ */
 export function fetchOneDriverQualiResults(driver, year) {
   const driverID = driver;
   const season = year;
@@ -1324,6 +1550,11 @@ export function fetchOneDriverQualiResults(driver, year) {
 }
 
 
+/**
+ * Fetches IDs of races completed so far in the season.
+ * @param {number} year - Season year.
+ * @returns {Array} List of completed race IDs.
+ */
 export function fetchEventsDoneFrom(year) {
   const daySeasonRow = queryDB(`
       SELECT Day, CurrentSeason
@@ -1348,6 +1579,12 @@ export function fetchEventsDoneFrom(year) {
   return eventsIds;
 }
 
+/**
+ * Fetches IDs of races completed before a specific day.
+ * @param {number} year - Season year.
+ * @param {number} day - The day threshold.
+ * @returns {Array} List of race IDs.
+ */
 export function fetchEventsDoneBefore(year, day) {
   const daySeasonRow = queryDB(`
       SELECT Day, CurrentSeason
@@ -1371,6 +1608,11 @@ export function fetchEventsDoneBefore(year, day) {
   return eventsIds;
 }
 
+/**
+ * Fetches all race events for a season.
+ * @param {number} year - Season year.
+ * @returns {Array} List of race event arrays [RaceID, TrackID, WeekendType].
+ */
 export function fetchEventsFrom(year) {
   const seasonEventsRows = queryDB(`
       SELECT RaceID, TrackID, WeekendType
@@ -1378,11 +1620,22 @@ export function fetchEventsFrom(year) {
       WHERE SeasonID = ${year}
     `, 'allRows') || [];
 
-  return seasonEventsRows; // Ya es un array de arrays con [RaceID, TrackID]
+  return seasonEventsRows; // Already an array of arrays [RaceID, TrackID]
 }
 
 
 
+/**
+ * Formats season results for a driver.
+ * @param {Array} results - Raw results from DB.
+ * @param {Array} driverName - Driver name data.
+ * @param {number} teamID - Team ID.
+ * @param {number} driver - Driver ID.
+ * @param {number} year - Season year.
+ * @param {Array} sprints - Sprint results.
+ * @param {boolean} [isCurrentYear=true] - Whether it's the current year.
+ * @returns {Object} Formatted driver results object.
+ */
 export function formatSeasonResults(
   results,
   driverName,
@@ -1434,7 +1687,7 @@ export function formatSeasonResults(
   }
   const nameFormatted = `${nombre} ${apellido}`.trim();
 
-  // ---- carreras del piloto ----
+  // ---- driver races ----
   const racesParticipated =
     queryDB(`
       SELECT RaceID
@@ -1452,7 +1705,7 @@ export function formatSeasonResults(
   for (let i = 0; i < racesParticipated.length; i++) {
     const raceID = racesParticipated[i][0];
 
-    // Traemos resultados completos de la carrera para calcular gaps/startingPos en una sola query
+    // Get full race results to calculate gaps/startingPos in one query
     const raceResults =
       queryDB(`
         SELECT DriverID, FinishingPos, Points, Time, StartingPos, DNF
@@ -1461,12 +1714,12 @@ export function formatSeasonResults(
           AND RaceID = ${raceID}
       `, "allRows") || [];
 
-    // info específica del piloto
+    // driver specific info
     const myRow = raceResults.find(r => Number(r[0]) === Number(driverID));
     const myDNF = myRow ? (Number(myRow[5]) === 1) : 0;
     const myStartingPos = myRow ? (myRow[4] ?? 99) : 99;
 
-    // vuelta rápida (tu lógica)
+    // fastest lap
     const driverWithFastestLap = queryDB(`
         SELECT DriverID
         FROM Races_Results
@@ -1477,7 +1730,7 @@ export function formatSeasonResults(
         LIMIT 1
       `, "singleValue");
 
-    // objeto base
+    // base object
     const base = {
       raceId: raceID,
       finishingPos: formattedBasics[i]?.finishingPos ?? 99,
@@ -1487,11 +1740,11 @@ export function formatSeasonResults(
       qualifyingPos: 99,
       gapToWinner: null,
       gapToPole: null,
-      // NUEVOS CAMPOS:
+      // NEW FIELDS:
       startingPos: myStartingPos,
       gapAhead: null,
       gapBehind: null,
-      // sprint/equipo
+      // sprint/team
       sprintPoints: 0,
       sprintPos: null,
       teamId: 0,
@@ -1503,7 +1756,7 @@ export function formatSeasonResults(
       base.points = -1;
     }
 
-    // Quali / parrilla (como antes)
+    // Quali / grid
     let QRes;
     if (isCurrentYear) {
       const QStage =
@@ -1537,28 +1790,28 @@ export function formatSeasonResults(
     }
     base.qualifyingPos = QRes;
 
-    // Gaps generales (tus funciones existentes)
+    // General gaps
     base.gapToWinner = calculateTimeDifference(driverID, raceID);
     base.gapToPole = calculateTimeToPole(driverID, raceID);
 
-    // --- NUEVO: calcular gapAhead / gapBehind con todos los clasificados ---
+    // --- NEW: calculate gapAhead / gapBehind with all classified ---
     if (!base.dnf && raceResults.length > 0) {
-      // clasificados con tiempo interpretable
+      // classified with interpretable time
       const classified = raceResults
         .filter(r => Number(r[1]) > 0) // FinishingPos > 0
-        .sort((a, b) => Number(a[1]) - Number(b[1])); // por posición
+        .sort((a, b) => Number(a[1]) - Number(b[1])); // by position
 
       const idx = classified.findIndex(r => Number(r[0]) === Number(driverID));
       if (idx !== -1) {
         const myTime = toSeconds(classified[idx][3]); // Time
-        // delante
+        // ahead
         if (idx > 0) {
           const aheadTime = toSeconds(classified[idx - 1][3]);
           if (myTime != null && aheadTime != null) {
             base.gapAhead = formatGap(myTime - aheadTime);
           }
         }
-        // detrás
+        // behind
         if (idx < classified.length - 1) {
           const behindTime = toSeconds(classified[idx + 1][3]);
           if (myTime != null && behindTime != null) {
@@ -1568,8 +1821,8 @@ export function formatSeasonResults(
       }
     }
 
-    // gaps listos
-    // equipo por carrera
+    // gaps ready
+    // team per race
     const teamInRace =
       queryDB(`
         SELECT TeamID
@@ -1596,7 +1849,7 @@ export function formatSeasonResults(
     }
   }
 
-  // último equipo / posición campeonato
+  // latest team / championship pos
   const latestTeamId =
     raceObjects.length ? raceObjects[raceObjects.length - 1].teamId : teamID;
 
@@ -1622,6 +1875,12 @@ export function formatSeasonResults(
 
 
 
+/**
+ * Calculates the time difference to the pole position.
+ * @param {number} driverID - Driver ID.
+ * @param {number} raceID - Race ID.
+ * @returns {string} Formatted gap time (e.g., "+0.15s") or "NR".
+ */
 export function calculateTimeToPole(driverID, raceID) {
   const QStage = queryDB(`
       SELECT MAX(QualifyingStage)
@@ -1657,6 +1916,12 @@ export function calculateTimeToPole(driverID, raceID) {
   }
 }
 
+/**
+ * Calculates the time difference to the winner.
+ * @param {number} driverID - Driver ID.
+ * @param {number} raceID - Race ID.
+ * @returns {string} Formatted gap time (e.g., "+10.5s" or "+1 L").
+ */
 export function calculateTimeDifference(driverID, raceID) {
   const totalLaps = queryDB(`
       SELECT MAX(Laps)
@@ -1704,8 +1969,12 @@ export function calculateTimeDifference(driverID, raceID) {
 
 
 
+/**
+ * Fetches the race calendar.
+ * @returns {Array} List of race objects.
+ */
 export function fetchCalendar() {
-  // Saco [ Day, CurrentSeason ] de Player_State
+  // Get [ Day, CurrentSeason ] from Player_State
   const daySeason = queryDB(`
       SELECT Day, CurrentSeason
       FROM Player_State
@@ -1718,7 +1987,7 @@ export function fetchCalendar() {
 
   const [day, currentSeason] = daySeason;
 
-  // Saco el calendario
+  // Get calendar
   const calendar = queryDB(`
       SELECT TrackID, WeatherStatePractice, WeatherStateQualifying, WeatherStateRace, WeekendType, State
       FROM Races
@@ -1728,6 +1997,10 @@ export function fetchCalendar() {
   return calendar;
 }
 
+/**
+ * Fetches all driver numbers currently in use.
+ * @returns {Array<number>} List of driver numbers.
+ */
 export function fetchDriverNumbers() {
   const numbers = queryDB(`SELECT DISTINCT Number
        FROM Staff_DriverNumbers dn 
@@ -1736,31 +2009,40 @@ export function fetchDriverNumbers() {
   return numbers.map(n => n[0]);
 }
 
+/**
+ * Fetches contract details for a driver.
+ * @param {number} id - Driver ID.
+ * @returns {Array} Array containing [currentContract, futureContract, currentSeason].
+ */
 export function fetchDriverContract(id) {
-  // Obtener el contrato actual
+  // Get current contract
   const currentContract = queryDB(`
         SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, TeamID
         FROM Staff_Contracts
         WHERE ContractType = 0 AND StaffID = ${id}
     `, 'singleRow');
 
-  // Obtener el contrato futuro
+  // Get future contract
   const futureContract = queryDB(`
         SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, PosInTeam, TeamID
         FROM Staff_Contracts
         WHERE ContractType = 3 AND StaffID = ${id}
     `, 'singleRow');
 
-  // Obtener el día y la temporada actual
+  // Get current day and season
   const daySeason = queryDB(`
         SELECT Day, CurrentSeason
         FROM Player_State
     `, 'singleRow');
 
-  // Retornar los resultados
+  // Return results
   return [currentContract, futureContract, daySeason ? daySeason[1] : null];
 }
 
+/**
+ * Checks and initializes custom tables for engines and config.
+ * @param {string} year - Current game year.
+ */
 export function checkCustomTables(year) {
   let createdEnginesList = false;
   let createdEnginesStats = false;
@@ -1845,14 +2127,18 @@ export function checkCustomTables(year) {
 
 }
 
+/**
+ * Fixes the Custom_Engines_Stats table by ensuring it has a primary key.
+ * Used for migrating older DB versions.
+ */
 export function fixCustomEnginesStatsTable() {
-  // Verificar si la tabla tiene la PRIMARY KEY
+  // Check if table has PRIMARY KEY
   const hasPrimaryKey = queryDB(`
     PRAGMA table_info(Custom_Engines_Stats);
   `);
 
   let primaryKeyExists = hasPrimaryKey.some(
-    (column) => column.pk > 0 // Comprueba si alguna columna está marcada como parte de la clave primaria
+    (column) => column.pk > 0 // Checks if any column is part of primary key
   );
 
   if (!primaryKeyExists) {
@@ -1886,6 +2172,14 @@ export function fixCustomEnginesStatsTable() {
   }
 }
 
+/**
+ * Inserts default engine data into custom tables.
+ * @param {boolean} list - Whether to insert into list table.
+ * @param {boolean} stats - Whether to insert into stats table.
+ * @param {boolean} allocations - Whether to insert allocations.
+ * @param {boolean} customSave - Whether to insert custom save config.
+ * @param {string} year - The current year ("23" or "24").
+ */
 export function insertDefualtEnginesData(list, stats, allocations, customSave, year) {
   const engines = [
     {
@@ -2003,6 +2297,10 @@ export function insertDefualtEnginesData(list, stats, allocations, customSave, y
 
 }
 
+/**
+ * Updates custom engines data in the DB.
+ * @param {Object} engineData - Dictionary of engine data to update.
+ */
 export function updateCustomEngines(engineData) {
   for (let engineId in engineData) {
     const nameCapitalized = engineData[engineId].name.charAt(0).toUpperCase() + engineData[engineId].name.slice(1);
@@ -2030,6 +2328,10 @@ export function updateCustomEngines(engineData) {
   }
 }
 
+/**
+ * Edits custom engines based on input data.
+ * @param {Object} engineData - Dictionary of engine data.
+ */
 export function editEngines(engineData) {
   for (let engineId in engineData) {
     for (let stat in engineData[engineId]) {
@@ -2055,6 +2357,11 @@ export function editEngines(engineData) {
   }
 }
 
+/**
+ * Checks compatibility for the 2025 mod.
+ * @param {string} year_version - The current game year version.
+ * @returns {string} Compatibility status string.
+ */
 export function check2025ModCompatibility(year_version) {
   const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
   const currentDay = daySeason[0];
@@ -2097,6 +2404,11 @@ export function check2025ModCompatibility(year_version) {
 }
 
 
+/**
+ * Updates stats for all teams supplied by a specific engine.
+ * @param {number} engineId - The engine ID.
+ * @param {Object} stats - The new engine stats.
+ */
 export function updateTeamsSuppliedByEngine(engineId, stats) {
   const teamsSupplied = queryDB(`SELECT teamID FROM Custom_Engine_Allocations WHERE engineId = ${engineId}`, 'allRows');
   teamsSupplied.forEach(team => {
@@ -2122,6 +2434,10 @@ export function updateTeamsSuppliedByEngine(engineId, stats) {
 
 }
 
+/**
+ * Updates the custom configuration settings.
+ * @param {Object} data - Configuration data to update.
+ */
 export function updateCustomConfig(data) {
   const alfaRomeo = data.alfa;
   const alphaTauri = data.alphatauri;
@@ -2176,6 +2492,10 @@ export function updateCustomConfig(data) {
 
 }
 
+/**
+ * Updates the player's team in the database.
+ * @param {number} teamID - The new team ID for the player.
+ */
 function updateTeam(teamID) {
   const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, 'singleRow');
   const currentDay = daySeason[0];
@@ -2192,6 +2512,10 @@ function updateTeam(teamID) {
 }
 
 
+/**
+ * Fetches the custom configuration from the database.
+ * @returns {Object} Custom configuration object.
+ */
 export function fetchCustomConfig() {
   const rows = queryDB(`SELECT key, value FROM Custom_Save_Config`, 'allRows') || [];
   const config = {
@@ -2225,6 +2549,10 @@ export function fetchCustomConfig() {
   return config;
 }
 
+/**
+ * Fetches the player's current team ID.
+ * @returns {number} Player's team ID.
+ */
 function fetchPlayerTeam() {
   const playerTeam = queryDB(`
       SELECT TeamID
@@ -2234,6 +2562,10 @@ function fetchPlayerTeam() {
   return playerTeam;
 }
 
+/**
+ * Fetches data for the 2025 season mod.
+ * @returns {Object} Mod configuration dictionary.
+ */
 export function fetch2025ModData() {
   let tableExists = queryDB(`SELECT name FROM sqlite_master WHERE type='table' AND name='Custom_2025_SeasonMod'`, "singleRow");
   if (!tableExists) {

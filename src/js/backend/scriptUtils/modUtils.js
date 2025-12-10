@@ -7,6 +7,12 @@ import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats
 import contracts from "../../../data/contracts.json"
 import changes from "../../../data/2025_changes.json"
 
+/**
+ * Advances the game state to a specific day, effectively time-traveling.
+ * Adjusts metadata, player state, activity dates, and cleans up old data.
+ * @param {number} dayNumber - The target Excel serial date.
+ * @param {boolean} [extend=false] - If true, extends the season state.
+ */
 export function timeTravelWithData(dayNumber, extend = false) {
     let metadata, version;
     metadata = getMetadata();
@@ -43,7 +49,7 @@ export function timeTravelWithData(dayNumber, extend = false) {
         }
     });
 
-    // Ahora sustituyo los 'database.exec()' por 'queryDB(...)'
+    // Replace database.exec() with queryDB(...)
     queryDB(`UPDATE Player_State SET Day = ${moddedDayNumber}`);
     queryDB(`UPDATE Player_State SET CurrentSeason = ${wayBackSeason}`);
 
@@ -56,21 +62,21 @@ export function timeTravelWithData(dayNumber, extend = false) {
           LastResearchProjectDate = ${seasonStartDayNumber}
       `);
 
-    // Ajuste en las tablas de partes/diseños
+    // Adjust parts/designs tables
     queryDB(`UPDATE Parts_Designs SET DayCreated = DayCreated - ${dd} WHERE DayCreated > 0`);
     queryDB(`UPDATE Parts_Designs SET DayCompleted = DayCompleted - ${dd} WHERE DayCompleted > 0`);
     queryDB(`UPDATE Parts_Designs SET ValidFrom = ValidFrom - ${yd}`);
 
-    // Elimino Sponsorship_GuaranteesAndIncentives
+    // Remove Sponsorship_GuaranteesAndIncentives
     if (yearIteration === "23") {
         queryDB(`DELETE FROM Sponsorship_GuaranteesAndIncentives`);
     }
 
-    // Elimino temporadas y carreras de otros años
+    // Remove seasons and races from other years
     queryDB(`DELETE FROM Races WHERE SeasonID != ${vanillaSeason}`);
     queryDB(`DELETE FROM Seasons WHERE SeasonID != ${vanillaSeason}`);
 
-    // Si extiendo, cambio el estado de la temporada
+    // If extending, change season state
     if (extend) {
         queryDB(`
           UPDATE Races
@@ -90,7 +96,7 @@ export function timeTravelWithData(dayNumber, extend = false) {
           Day = Day - ${dd}
       `);
 
-    // Ajustes para versiones >= 3
+    // Adjustments for version >= 3
     if (version >= 3) {
         queryDB(`UPDATE Player SET FirstGameDay = ${moddedDayNumber}`);
         queryDB(`UPDATE Player_Record SET StartSeason = ${wayBackSeason}`);
@@ -99,7 +105,7 @@ export function timeTravelWithData(dayNumber, extend = false) {
         queryDB(`UPDATE Onboarding_Tutorial_RestrictedActions SET TutorialIsActiveSetting = 0`);
     }
 
-    // Ajustes para versión === 2
+    // Adjustments for version === 2
     if (version === 2) {
         queryDB(`UPDATE Onboarding_Tutorial_RestrictedActions SET Allowed = 0`);
     }
@@ -111,7 +117,7 @@ export function timeTravelWithData(dayNumber, extend = false) {
         prestigeTableName = "Board_TeamRating";
     }
 
-    // Pares de tablas y columnas a modificar
+    // Pairs of tables and columns to modify
     const moddingPairs = [
         {
             table: ["Staff_Contracts"],
@@ -169,7 +175,7 @@ export function timeTravelWithData(dayNumber, extend = false) {
         },
     ];
 
-    // Aplico modificaciones en masa
+    // Apply mass modifications
     for (const pair of moddingPairs) {
         if (pair.versions && !pair.versions.includes(version)) {
             continue;
@@ -184,7 +190,7 @@ export function timeTravelWithData(dayNumber, extend = false) {
         }
     }
 
-    // Obtengo la lista de tablas
+    // Get list of tables
     const allTables = queryDB(
         "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name ASC",
         "allRows"
@@ -215,6 +221,10 @@ export function timeTravelWithData(dayNumber, extend = false) {
 
 }
 
+/**
+ * Updates driver lineups based on contract data.
+ * Handles firing, hiring, retiring, and contract updates.
+ */
 export function changeDriverLineUps() {
     if (contracts.Updates && Array.isArray(contracts.Updates)) {
         contracts.Updates.forEach((update) => {
@@ -339,6 +349,12 @@ export function changeDriverLineUps() {
 
 }
 
+/**
+ * Fires a driver or staff member from a team.
+ * @param {number} driverID - The ID of the driver/staff.
+ * @param {number} teamID - The team ID.
+ * @param {number} PosInTeam - The position in the team.
+ */
 export function modFire(driverID, teamID, PosInTeam) {
     const isInTeam = queryDB(`SELECT * FROM Staff_Contracts WHERE StaffID = ${driverID} AND TeamID = ${teamID} AND ContractType = 0`, "singleRow");
     if (isInTeam) {
@@ -377,6 +393,9 @@ export function modFire(driverID, teamID, PosInTeam) {
     }
 }
 
+/**
+ * Updates staff statistics based on changes data.
+ */
 export function changeStats() {
     if (!changes.Stats || !Array.isArray(changes.Stats)) {
         console.log("No stats found");
@@ -397,6 +416,9 @@ export function changeStats() {
 
 }
 
+/**
+ * Updates or rearranges driver-engineer pairings.
+ */
 export function changeDriverEngineerPairs() {
     if (!changes.TeamLineUps || !Array.isArray(changes.TeamLineUps)) {
         console.error("No driver-engineer pairs");
@@ -439,6 +461,9 @@ export function changeDriverEngineerPairs() {
     }
 }
 
+/**
+ * Updates 2024 season standings for drivers and teams.
+ */
 export function change2024Standings() {
     if (!changes.DriverStandings || !Array.isArray(changes.DriverStandings)) {
         console.error("No driver standings found");
@@ -470,6 +495,9 @@ export function change2024Standings() {
     update2025SeasonModTable("change-cfd", 1);
 }
 
+/**
+ * Manages feeder series contracts and assignments.
+ */
 export function manageFeederSeries() {
     if (!contracts.FeederSeries || !Array.isArray(contracts.FeederSeries)) {
         console.error("No feeder series found");
@@ -499,6 +527,9 @@ export function manageFeederSeries() {
     }
 }
 
+/**
+ * Manages affiliate driver contracts.
+ */
 export function manageAffiliates() {
 
     queryDB(`
@@ -543,6 +574,9 @@ export function manageAffiliates() {
     }
 }
 
+/**
+ * Updates driver and team standings for the new season.
+ */
 export function manageStandings() {
     queryDB(`DELETE FROM Races_DriverStandings WHERE RaceFormula = 2 AND SeasonID = 2025`);
     queryDB(`DELETE FROM Races_DriverStandings WHERE RaceFormula = 3 AND SeasonID = 2025`);
@@ -599,7 +633,7 @@ export function manageStandings() {
         position++;
     });
 
-    // 2) TeamID entre 22 y 31 => RaceFormula = 3
+    // 2) TeamID between 22 and 31 => RaceFormula = 3
     queryDB(`
             INSERT INTO Races_DriverStandings (
                 SeasonID,
@@ -648,11 +682,15 @@ export function manageStandings() {
         position++;
     });
 
-    //copy all races_pitcrewstandings form 2025 to 2024
+    // copy all races_pitcrewstandings form 2025 to 2024
     queryDB(`INSERT INTO Races_PitCrewStandings (SeasonID, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula)
              SELECT 2024, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula FROM Races_PitCrewStandings WHERE SeasonID = 2025`);
 }
 
+/**
+ * Changes the race calendar based on the selected type.
+ * @param {string} type - The type of calendar change ("Start2024", "End2024", "Direct2025").
+ */
 export function changeRaces(type) {
     if (!changes.Calendar || !Array.isArray(changes.Calendar)) {
         console.log("No calendar data found");
@@ -774,7 +812,7 @@ export function changeRaces(type) {
                 newRaceId++;
             }
 
-            // Borra las filas antiguas de la temporada 2025
+            // Delete old rows for season 2025
             queryDB(`
             DELETE FROM Races 
             WHERE SeasonID = 2025 
@@ -786,6 +824,9 @@ export function changeRaces(type) {
 
 }
 
+/**
+ * Inserts new staff data into the database.
+ */
 export function insertStaff() {
     let tables = ["Staff_BasicData", "Staff_PerformanceStats", "Staff_State", "Staff_DriverData", "Staff_GameData"];
     tables.forEach((table) => {
@@ -803,20 +844,34 @@ export function insertStaff() {
     update2025SeasonModTable("extra-drivers", 1);
 }
 
+/**
+ * Updates team budgets.
+ */
 function changeBudgets() {
     queryDB(`UPDATE Finance_TeamBalance SET Balance = Balance + 15000000`);
 }
 
 
+/**
+ * Removes the fastest lap point rule.
+ */
 export function removeFastestLap() {
     queryDB(`UPDATE Regulations_Enum_Changes SET CurrentValue = 0, PreviousValue = 1 WHERE ChangeID = 9`);
     update2025SeasonModTable("change-regulations", 1);
 }
 
+/**
+ * Updates the 2025 season mod table.
+ * @param {string} edit - The edit key.
+ * @param {number} value - The value.
+ */
 function update2025SeasonModTable(edit, value) {
     queryDB(`INSERT OR REPLACE INTO Custom_2025_SeasonMod (key, value) VALUES ('${edit}', '${value}')`);
 }
 
+/**
+ * Updates 2025 performance stats.
+ */
 export function updatePerofmrnace2025() {
     const globals = getGlobals();
     const teamDict = getBestParts(globals.isCreateATeam);
@@ -824,7 +879,7 @@ export function updatePerofmrnace2025() {
 
 
     for (let team of Object.keys(teamDict).filter(key => key !== "0")) {
-        //remove the part 0 from teamDict[team]
+        // remove the part 0 from teamDict[team]
         delete teamDict[team]["0"];
         let teamboost = changes.Performance.find(x => x.TeamID === Number(team));
         applyBoostToCarStats(teamDict[team], teamboost.Boost, teamboost.TeamID);
@@ -842,6 +897,10 @@ export function updatePerofmrnace2025() {
 
 }
 
+/**
+ * Applies fixes for known mod issues.
+ * @returns {boolean} True if any fixes were applied, false otherwise.
+ */
 export function fixes_mod() {
     let error = false;
     const extraDrivers = queryDB(`SELECT value FROM Custom_2025_SeasonMod WHERE key = 'extra-drivers'`, "singleValue");
@@ -867,6 +926,10 @@ export function fixes_mod() {
     return error;
 }
 
+/**
+ * Updates the frontend UI based on applied mod data.
+ * @param {Object} data - Mod data.
+ */
 export function updateEditsWithModData(data) {
     for (let key in data) {
         if (data[key] === "1") {

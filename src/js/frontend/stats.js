@@ -32,20 +32,33 @@ let plusNumberBtn = document.querySelector('.number-buttons .bi-plus');
 let minusNumberBtn = document.querySelector('.number-buttons .bi-dash');
 let numberSpan = document.querySelector('.number-holder');
 
+/**
+ * Sets the visibility state of the stats panel.
+ * @param {number} value - 0 for hidden, 1 for shown.
+ */
 export function setStatPanelShown(value) {
     statPanelShown = value;
 }
 
+/**
+ * Sets the overall type context (e.g., 'driver', 'staff').
+ * @param {string} value - The type of overall to calculate.
+ */
 export function setTypeOverall(value) {
     typeOverall = value;
 }
 
+/**
+ * Sets the specific edit type (e.g., '0' for driver, '1' for chief, etc.).
+ * @param {string} value - The edit type code.
+ */
 export function setTypeEdit(value) {
     typeEdit = value;
 }
 
 /**
  * Removes all the staff from their list
+ * @param {boolean} staffOnly - If true, only removes staff, preserving drivers.
  */
 export function removeStatsDrivers(staffOnly = false) {
     document.querySelectorAll(".staff-list").forEach(function (elem) {
@@ -176,6 +189,9 @@ export function place_drivers_editStats(driversArray) {
 
 }
 
+/**
+ * Initializes the list of items for filtering in the stats panel.
+ */
 export function initStatsDrivers() {
     editStatsItems = [...document.querySelectorAll(".normal-driver")].map(el => {
         const first = el.children[0]?.children[0]?.textContent || "";
@@ -312,6 +328,11 @@ export function place_staff_editStats(staffArray) {
 
 }
 
+/**
+ * Retrieves the mentality modifier based on a mentality value.
+ * @param {number} mentality - Mentality score.
+ * @returns {number|null} The modifier value or null if not found.
+ */
 function getMentalityModifier(mentality) {
     let keys = Object.keys(mentalityModifiers).map(Number).sort((a, b) => a - b);
 
@@ -355,8 +376,8 @@ function recalculateOverall() {
 
 /**
  * Gets the named with a space between name and lastname
- * @param {*} html element with the name bad formatted
- * @returns the name formatted
+ * @param {HTMLElement} html element with the name bad formatted
+ * @returns {string} the name formatted
  */
 export function getName(html) {
     let name = ""
@@ -374,7 +395,7 @@ export function getName(html) {
  * Mathematic calculations to get a staff's overall value
  * @param {string} stats all stats spearated by a space between them
  * @param {string} type type of staff
- * @returns the number of his overall value
+ * @returns {number} the number of his overall value
  */
 export function calculateOverall(stats, type) {
     let statsArray = stats.split(" ").map(Number);
@@ -402,6 +423,11 @@ export function calculateOverall(stats, type) {
     return Math.round(rating)
 }
 
+/**
+ * Updates a specific stat value and reflects changes in UI.
+ * @param {HTMLInputElement} input - Input element for the stat.
+ * @param {number} increment - Value to add (can be negative).
+ */
 function updateStat(input, increment) {
     let val = parseInt(input.value) + increment;
     if (val > 100) val = 100;
@@ -647,14 +673,18 @@ export function listenersStaffGroups() {
     document.getElementById("driverStatsDrop").click()
 }
 
+/**
+ * Reorders the driver/staff list based on sorting state.
+ * @param {number} state - 0: default, 1: descending overall, 2: ascending overall.
+ */
 function manage_order(state) {
     let elements = document.querySelectorAll(".normal-driver");
     let array = Array.from(elements);
 
-    // Crear un objeto para almacenar los padres originales
+    // Create an object to store original parents
     let parents = {};
     array.forEach(elem => {
-        parents[elem.dataset.driverid] = elem.parentNode; // Asumiendo que cada .normal-driver tiene un data-id único
+        parents[elem.dataset.driverid] = elem.parentNode; // Assuming each .normal-driver has a unique data-id
     });
 
     let sortedArray = array.sort(function (a, b) {
@@ -682,12 +712,12 @@ function manage_order(state) {
         }
     });
 
-    // Limpiar los contenedores
+    // Clear containers
     document.querySelectorAll(".staff-list").forEach(function (elem) {
         elem.innerHTML = "";
     });
 
-    // Volver a colocar los elementos ordenados en sus padres originales
+    // Re-append elements to their original parents in order
     sortedArray.forEach(function (elem) {
         let parent = parents[elem.dataset.driverid];
         parent.appendChild(elem);
@@ -696,6 +726,11 @@ function manage_order(state) {
 
 
 
+/**
+ * Updates the visual progress bar for a stat.
+ * @param {HTMLElement} element - The input element associated with the stat.
+ * @param {number} value - The new value (0-100).
+ */
 export function manage_stat_bar(element, value) {
     let container = element.parentNode.parentNode.parentNode
     let bar = container.querySelector(".one-stat-progress")
@@ -706,7 +741,7 @@ export function manage_stat_bar(element, value) {
 
 /**
  * Loads the stats into the input numbers
- * @param {div} div div of the staff that is about to be edited
+ * @param {HTMLElement} div div of the staff that is about to be edited
  */
 function load_stats(div) {
     let statsArray = div.dataset.stats.split(" ").map(Number);
@@ -727,15 +762,15 @@ function load_stats(div) {
         return { labelFull, value };
     });
 
-    // Excluir Growth y Aggression (incluida variante "Aggresion")
+    // Exclude Growth and Aggression
     const excluded = new Set(['growth', 'aggression', 'aggresion', 'marketability']);
     const filtered = pairs.filter(p => !excluded.has(p.labelFull.toLowerCase()));
 
-    // Labels = 3 primeras letras en MAYÚSCULAS
+    // Labels = first 3 letters uppercase
     const labelsArray = filtered.map(p => p.labelFull.slice(0, 3).toUpperCase());
     const valuesArray = filtered.map(p => p.value);
 
-    // (Re)crear si cambian etiquetas; si no, solo actualizar datos
+    // (Re)create if labels change
     if (!statsRadarChart ||
         statsRadarChart.data.labels.length !== labelsArray.length ||
         statsRadarChart.data.labels.some((l, i) => l !== labelsArray[i])) {
@@ -876,7 +911,7 @@ document.querySelectorAll(".bar-container .bi-chevron-left").forEach(function (e
 
 /**
  * Loads all the numbers into the number menu
- * @param {Object} nums all numbers array
+ * @param {Array<number>} nums all numbers array
  */
 export function loadNumbers(nums) {
     numbersAvailable = nums;
@@ -892,10 +927,10 @@ document.querySelector("#editNameButton").addEventListener("click", function (e)
     const codeSpan = document.getElementById("driverCode");
 
     if (!btn.classList.contains("editing")) {
-        // --- ENTRAMOS EN MODO EDICIÓN ---
+        // --- ENTER EDIT MODE ---
         btn.className = "bi bi-check editing";
 
-        // Guardar tamaños originales como dataset
+        // Save original sizes
         const nameRect = nameSpan.getBoundingClientRect();
         const codeRect = codeSpan.getBoundingClientRect();
         nameSpan.dataset.originalWidth = nameRect.width;
@@ -903,18 +938,18 @@ document.querySelector("#editNameButton").addEventListener("click", function (e)
         codeSpan.dataset.originalWidth = codeRect.width;
         codeSpan.dataset.originalHeight = codeRect.height;
 
-        // Crear textareas
+        // Create textareas
         const nameInput = document.createElement("textarea");
         const codeInput = document.createElement("textarea");
 
-        // Asignar valores
+        // Assign values
         nameInput.value = nameSpan.innerText.trim();
         codeInput.value = codeSpan.innerText.trim();
 
         const newNameWidth = nameRect.width;
         const newCodeWidth = codeRect.width;
 
-        // Asignar tamaño
+        // Assign size
         nameInput.style.width = newNameWidth + "px";
         nameInput.style.height = nameRect.height + "px";
         nameSpan.style.width = newNameWidth + "px";
@@ -925,7 +960,7 @@ document.querySelector("#editNameButton").addEventListener("click", function (e)
         codeSpan.style.width = newCodeWidth + "px";
         codeSpan.style.height = codeRect.height + "px";
 
-        // Reemplazar contenido
+        // Replace content
         nameSpan.innerHTML = "";
         nameSpan.appendChild(nameInput);
 
@@ -933,24 +968,24 @@ document.querySelector("#editNameButton").addEventListener("click", function (e)
         codeSpan.appendChild(codeInput);
     } 
     else {
-        // --- GUARDAMOS CAMBIOS ---
+        // --- SAVE CHANGES ---
         btn.className = "bi bi-pencil-fill";
         btn.classList.remove("editing");
 
         const nameInput = nameSpan.querySelector("textarea");
         const codeInput = codeSpan.querySelector("textarea");
 
-        // Restaurar tamaño original
+        // Restore original size
         nameSpan.style.width = "auto"
         nameSpan.style.height = "auto";
         codeSpan.style.width = "auto";
         codeSpan.style.height = "auto";
 
-        // Restaurar texto
+        // Restore text
         nameSpan.innerText = nameInput.value.trim();
         codeSpan.innerText = codeInput.value.trim();
 
-        // Limpiar los datasets
+        // Clear datasets
         delete nameSpan.dataset.originalWidth;
         delete nameSpan.dataset.originalHeight;
         delete codeSpan.dataset.originalWidth;
@@ -963,15 +998,15 @@ document.querySelector("#editNameButton").addEventListener("click", function (e)
 
 
 function capitalizeFirstLetter(str) {
-    if (!str) return str; // Manejo de cadena vacía
+    if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
 
 /**
  * Generates the name title on the main panel of the edit stats
- * @param {div} html div from the staff selected
- * @returns the html necessary to put in the name with correct color
+ * @param {HTMLElement} html div from the staff selected
+ * @returns {string} the html necessary to put in the name with correct color
  */
 function manage_stats_title(html) {
     let colorClass = ""
@@ -982,15 +1017,13 @@ function manage_stats_title(html) {
     let spanLastName = document.createElement("span")
     let name = "<span>" + html.children[0].children[0].innerText + " </span>" + "<span class='" + colorClass + "'>" + html.children[0].children[1].innerText + "</span>"
 
-    //let name = html.substring(0,html.length - 2).trim();
-
     return name;
 
 }
 
 /**
  * Changes the input number that are taken into account to change stats 
- * @param {div} divID div that contains the correct input numbers  
+ * @param {string} divID div that contains the correct input numbers
  */
 export function change_elegibles(divID) {
     document.querySelectorAll(".elegible").forEach(function (elem) {
@@ -1013,6 +1046,12 @@ export function change_elegibles(divID) {
 
 }
 
+/**
+ * Gets a CSS variable value or returns a fallback.
+ * @param {string} name - Variable name.
+ * @param {string} fallback - Fallback value.
+ * @returns {string} The CSS variable value.
+ */
 function cssVar(name, fallback) {
     const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
     return v || fallback;
@@ -1025,14 +1064,13 @@ function ensureStatsGraphCanvas() {
     if (!canvas) {
         canvas = document.createElement('canvas');
         canvas.id = 'statsRadar';
-        wrap.innerHTML = '';         // por si acaso
+        wrap.innerHTML = '';
         wrap.appendChild(canvas);
     }
     return canvas.getContext('2d');
 }
 
 function getThemeColor(fallback = '#4DA3FF') {
-    // intenta leer de CSS variables; ajusta nombres si ya las tienes
     const root = getComputedStyle(document.documentElement);
     const c = root.getPropertyValue('--accent')?.trim()
         || root.getPropertyValue('--primary')?.trim()
@@ -1041,7 +1079,6 @@ function getThemeColor(fallback = '#4DA3FF') {
 }
 
 function rgbaFromHex(hex, alpha) {
-    // admite #RGB o #RRGGBB
     let h = hex.replace('#', '');
     if (h.length === 3) h = h.split('').map(x => x + x).join('');
     const r = parseInt(h.slice(0, 2), 16);
@@ -1050,6 +1087,10 @@ function rgbaFromHex(hex, alpha) {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+/**
+ * Creates and renders the radar chart for stats.
+ * @param {Array<string>} labels - Chart labels.
+ */
 function createStatsRadarChart(labels) {
     const ctx = ensureStatsGraphCanvas();
 
@@ -1099,15 +1140,13 @@ function createStatsRadarChart(labels) {
                         size: 12
                     },
                     callbacks: {
-                        // Mostrar el nombre completo de la stat
+                        // Show full name of stat
                         title: function (tooltipItems) {
                             const index = tooltipItems[0].dataIndex;
-                            // Recupera el nombre completo desde tu array original
-                            // (debes tenerlo guardado globalmente o en chart.config._fullLabels)
                             const fullLabel = statsRadarChart?.config?._fullLabels?.[index];
                             return fullLabel || tooltipItems[0].label;
                         },
-                        // Línea del dataset
+                        // Dataset label
                         label: function (context) {
                             const datasetLabel = context.dataset.label || '';
                             const value = context.formattedValue;
@@ -1185,22 +1224,25 @@ function addDatasetToStatsRadarData(values, color, name) {
 function recalculateRadarScale() {
     if (!statsRadarChart) return;
 
-    // 1️⃣ Obtenemos todos los valores de todos los datasets
+    // 1. Get all values
     const allValues = statsRadarChart.data.datasets.flatMap(ds => ds.data);
 
-    // 2️⃣ Calculamos el mínimo y máximo reales
+    // 2. Calculate min/max
     const minVal = Math.min(...allValues);
     const maxVal = Math.max(...allValues);
 
-    // 3️⃣ Creamos un margen dinámico (por ejemplo, 20 por debajo y 5 por encima)
+    // 3. Dynamic margin
     const lowerMargin = 15;
     const upperMargin = 5;
 
-    // 4️⃣ Ajustamos la escala del radar chart
+    // 4. Adjust scale
     statsRadarChart.options.scales.r.min = Math.max(0, minVal - lowerMargin);
     statsRadarChart.options.scales.r.max = Math.min(100, maxVal + upperMargin);
 }
 
+/**
+ * Toggles the comparison mode state and updates the UI accordingly.
+ */
 function toggleComparisonMode() {
     isComparisonModeActive = !isComparisonModeActive;
     const editStatsPanel = document.getElementById('editStatsPanel');
@@ -1225,9 +1267,8 @@ function toggleComparisonMode() {
             comparingTag.textContent = "Comparing";
             nameDiv.appendChild(comparingTag);
         } else {
-            // Handle case where no driver is selected, maybe disable the button?
+            // Handle case where no driver is selected
             console.warn("No driver selected for comparison.");
-            // possibly exit comparison mode if no driver is selected to start with
             isComparisonModeActive = false;
             compareButton.querySelector("span").textContent = 'Compare';
             editStatsPanel.classList.remove('comparison-active');
@@ -1279,6 +1320,9 @@ if (compareButton) {
     compareButton.addEventListener('click', toggleComparisonMode);
 }
 
+/**
+ * Resets the comparison UI, removing secondary bars and values.
+ */
 function resetComparisonUI() {
     // Restore UI to single-driver view
     const statPanels = document.querySelectorAll('.one-stat-panel:has(.elegible)');
@@ -1359,6 +1403,9 @@ function resetComparisonUI() {
     }
 }
 
+/**
+ * Updates the UI to show comparison between two drivers/staff.
+ */
 function updateComparisonUI() {
     if (!firstDriverStats || !secondDriverStats) return;
 

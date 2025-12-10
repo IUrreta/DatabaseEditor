@@ -1,3 +1,7 @@
+/**
+ * Constants and dictionaries related to car parts, stats, and attributes.
+ */
+
 export const stats = {
     0: "airflow_front",
     1: "airflow_sensitivity",

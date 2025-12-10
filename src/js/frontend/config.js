@@ -1,4 +1,7 @@
 // calendar
+/**
+ * Maps calendar codes to image URLs.
+ */
 export let codes_dict = {
     "bah0": "../assets/images/bahrain.png", "sau0": "../assets/images/saudi.jpg", "aus0": "../assets/images/australia.png", "aze0": "../assets/images/azerbaiyan.png",
     "mia0": "../assets/images/usa.png", "imo0": "../assets/images/italy.png", "mon0": "../assets/images/monaco.png", "spa0": "../assets/images/spain.png", "can0": "../assets/images/canada.png",
@@ -6,6 +9,10 @@ export let codes_dict = {
     "ita0": "../assets/images/italy.png", "jap0": "../assets/images/japan.png", "sgp0": "../assets/images/singapore.png", "qat0": "../assets/images/qatar.png", "usa0": "../assets/images/usa.png", "mex0": "../assets/images/mexico.png",
     "bra0": "../assets/images/brazil.png", "veg0": "../assets/images/usa.png", "uae0": "../assets/images/uae.png", "chi0": "../assets/images/china.png"
 }
+
+/**
+ * Maps calendar codes to country names.
+ */
 export let countries_dict = {
     "bah0": "Bahrain", "sau0": "Saudi Arabia", "aus0": "Australia", "aze0": "Azerbaijan",
     "mia0": "Miami", "imo0": "Imola", "mon0": "Monaco", "spa0": "Spain", "can0": "Canada",
@@ -14,6 +21,9 @@ export let countries_dict = {
     "bra0": "Brazil", "veg0": "Vegas", "uae0": "Abu Dhbai", "chi0": "China"
 };
 
+/**
+ * Maps weather IDs to Bootstrap icons.
+ */
 export let weather_dict = {
     0: "bi bi-sun", 1: "bi bi-cloud-sun", 2: "bi bi-cloud", 3: "bi bi-cloud-drizzle", 4: "bi bi-cloud-rain", 5: "bi bi-cloud-rain-heavy"
 }
@@ -34,6 +44,9 @@ export const default_dict = {
     32: "Custom Team"
 }
 
+/**
+ * Combined dictionary of team names, including F2/F3 and custom teams.
+ */
 export let combined_dict = {
     1: "Ferrari",
     2: "McLaren",
@@ -69,10 +82,19 @@ export let combined_dict = {
     32: "Custom Team"
 }
 
+/**
+ * Gets the updated team name from combined_dict.
+ * @param {number} teamId - The team ID.
+ * @returns {string} The team name.
+ */
 export function getUpdatedName(teamId) {
     return combined_dict[teamId]
 }
 
+/**
+ * Returns the combined dictionary of teams.
+ * @returns {Object} The combined_dict.
+ */
 export function getCombinedDict() {
     return combined_dict
 }
@@ -275,6 +297,11 @@ export const countries_data = {
     "CHI": { "country": "China", "adjective": "Chinese", "circuit": "Shanghai" }
 };
 
+/**
+ * Returns a mapping of parameters to data values for templates.
+ * @param {Object} data - The data object containing news details.
+ * @returns {Object} Parameter mapping.
+ */
 export function getParamMap(data) {
     return {
         1: {

@@ -202,14 +202,26 @@ const repoName = 'DatabaseEditor';
 })();
 
 
+/**
+ * Sets the save name.
+ * @param {string} name - The name of the save file.
+ */
 export function setSaveName(name) {
     saveName = name;
 }
 
+/**
+ * Retrieves the save name.
+ * @returns {string} The save file name.
+ */
 export function getSaveName() {
     return saveName;
 }
 
+/**
+ * Sets the notification visibility state.
+ * @param {boolean} value - Whether a notification is currently showing.
+ */
 export function setIsShowingNotification(value) {
     isShowingNotification = value;
 }
@@ -508,6 +520,9 @@ function performanceModeHandler() {
 
 }
 
+/**
+ * Shows a one-time animation for the save button.
+ */
 export function first_show_animation() {
     let button = document.querySelector(".save-button")
     if (!firstShow) {
@@ -519,6 +534,11 @@ export function first_show_animation() {
     }
 }
 
+/**
+ * Manages the visibility and behavior of the save button based on the active mode.
+ * @param {boolean} show - Whether to show the button.
+ * @param {string} mode - The active mode (e.g., "stats", "calendar").
+ */
 export function manageSaveButton(show, mode) {
     let button = document.querySelector(".save-button")
     button.removeEventListener("click", editModeHandler);
@@ -547,6 +567,10 @@ export function manageSaveButton(show, mode) {
     }
 }
 
+/**
+ * Handles updates from the backend and routes them to specific handlers.
+ * @param {Object} data - The response data from the worker.
+ */
 export async function updateFront(data) {
     console.log("UPDATING FRONT")
     console.log(data)
@@ -567,6 +591,11 @@ export async function updateFront(data) {
     }
 }
 
+/**
+ * Adds a new notification to the queue.
+ * @param {string} message - Notification text.
+ * @param {string} type - Notification type ("success" or "error").
+ */
 export function new_update_notifications(message, type = "success") {
     notificationsQueue.push(message);
     showNextNotification(type);
@@ -606,6 +635,11 @@ function showNextNotification(type) {
 
 }
 
+/**
+ * Formats a name string to be more readable (Capitalized Last Word).
+ * @param {string} text - The input text.
+ * @returns {string} Formatted name.
+ */
 export function make_name_prettier(text) {
     const words = text.trim().split(/\s+/);
 
@@ -821,15 +855,18 @@ async function migrateLegacyNewsOnce() {
 
 
 
+/**
+ * Triggers the news generation process if valid.
+ */
 export async function generateNews() {
     const isValid = await isPatronSignatureValid();
     const canGenerate = checkGenerableNews(isValid);
     if (canGenerate === "no") return;
 
-    // lanzar sin payload, el worker lee de DB
+    // launch without payload, worker reads from DB
     new Command("generateNews", {}).execute();
 
-    // loader UI (igual que antes si quieres)
+    // loader UI (same as before if needed)
     const newsView = document.getElementById("news");
     const loaderDiv = document.createElement('div');
     loaderDiv.classList.add('loader-div', 'general-news-loader');
@@ -862,6 +899,10 @@ export async function generateNews() {
 }
 
 
+/**
+ * Animates the general news loading progress bar.
+ * @param {HTMLElement} progressDiv - The progress bar element.
+ */
 export function startGeneralNewsProgress(progressDiv) {
     let width = 0;
     const id = setInterval(() => {
@@ -1319,7 +1360,7 @@ function alpineReplace(info) {
                 elem.classList.remove("andrettilogo")
                 elem.classList.remove("renaultlogo")
                 elem.classList.remove("lotuslogo")
-                elem.classList.add("alpinelogo")
+                elem.classList.add(alpinelogo)
             }
             if (elem.classList.contains("secondary")) {
                 elem.src = elem.src.slice(0, -4) + "2.png"

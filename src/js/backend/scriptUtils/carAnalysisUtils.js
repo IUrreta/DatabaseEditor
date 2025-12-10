@@ -4,14 +4,15 @@ import { queryDB } from '../dbManager.js';
 
 
 /**
- * Devuelve las mejores piezas para cada equipo.
- * @param {boolean} customTeam - si es true, incluye el equipo 32 además de 1..10
+ * Returns the best parts for each team.
+ * @param {boolean} customTeam - If true, includes team 32 (custom team) in addition to 1..10.
+ * @returns {Object} A dictionary where keys are team IDs and values are the parts from `getPartsFromTeam`.
  */
 export function getBestParts(customTeam = false) {
     const teams = {};
-    // Creamos la lista de equipos
+    // Create team list
     const teamList = customTeam
-        ? [...Array(10).keys()].map(i => i + 1).concat(32) // 1..10 y 32
+        ? [...Array(10).keys()].map(i => i + 1).concat(32) // 1..10 and 32
         : [...Array(10).keys()].map(i => i + 1);          // 1..10
 
     for (const teamId of teamList) {
@@ -21,11 +22,12 @@ export function getBestParts(customTeam = false) {
 }
 
 /**
- * Obtiene TODAS las piezas (varias designs) de un equipo
- * (Como en Python: get_all_parts_from_team)
+ * Gets ALL parts (multiple designs) from a team.
+ * @param {number} teamId - The ID of the team.
+ * @returns {Object} A dictionary where keys are part types (e.g., 'Front Wing') and values are arrays of design details.
  */
 export function getAllPartsFromTeam(teamId) {
-    // Obtenemos Day y Season
+    // Get Day and Season
     const [day, currentSeason] = queryDB(
         "SELECT Day, CurrentSeason FROM Player_State",
         "singleRow"
@@ -34,7 +36,7 @@ export function getAllPartsFromTeam(teamId) {
 
     const partsDict = {};
 
-    // Ej. en Python, PartType iba de 3..8
+    // In Python, PartType went from 3..8
     for (let j = 3; j < 9; j++) {
         const sql = `
           SELECT 
@@ -57,12 +59,12 @@ export function getAllPartsFromTeam(teamId) {
         `;
         let designs = queryDB(sql, "allRows");
 
-        // Para cada design, agregamos info extra: equipped_1, equipped_2, n_parts
+        // For each design, add extra info: equipped_1, equipped_2, n_parts
         designs = designs.map(designRow => {
             // designRow => [ DesignID, DayCreated, DayCompleted, TrackID ]
             const [designID, dayCreated, dayCompleted, trackID] = designRow;
 
-            // Vemos si está equipado en loadout 1
+            // Check if equipped in loadout 1
             const equipped1 = queryDB(`
             SELECT DesignID
             FROM Parts_CarLoadout
@@ -72,7 +74,7 @@ export function getAllPartsFromTeam(teamId) {
           `, "singleValue");
             let eq1 = (equipped1 === designID) ? 1 : 0;
 
-            // Equipado en loadout 2?
+            // Check if equipped in loadout 2
             const equipped2 = queryDB(`
             SELECT DesignID
             FROM Parts_CarLoadout
@@ -82,7 +84,7 @@ export function getAllPartsFromTeam(teamId) {
           `, "singleValue");
             let eq2 = (equipped2 === designID) ? 1 : 0;
 
-            // Número de partes (items) construidas
+            // Number of parts (items) built
             const nParts = queryDB(`
             SELECT COUNT(*)
             FROM Parts_Items
@@ -90,7 +92,7 @@ export function getAllPartsFromTeam(teamId) {
               AND BuildWork = ${carConstants.standardBuildworkPerPart[j]}
           `, "singleValue") || 0;
 
-            // Devolvemos un nuevo array con toda la info
+            // Return new array with all info
             return [
                 designID,      // 0
                 dayCreated,    // 1
@@ -102,8 +104,8 @@ export function getAllPartsFromTeam(teamId) {
             ];
         });
 
-        // Asignamos a partsDict[ parts[j] ] = designs
-        // Asumiendo que 'parts[j]' existe. Ajusta si es distinto
+        // Assign to partsDict[ parts[j] ] = designs
+        // Assuming 'parts[j]' exists. Adjust if different
         partsDict[carConstants.parts[j]] = designs;
     }
 
@@ -111,8 +113,9 @@ export function getAllPartsFromTeam(teamId) {
 }
 
 /**
- * Obtiene las piezas "mejores" (MAX(DesignID)) para un equipo y su season actual
- * (Similar a get_parts_from_team en el Python original)
+ * Gets the "best" parts (MAX(DesignID)) for a team in the current season.
+ * @param {number} teamId - The ID of the team.
+ * @returns {Object} A dictionary where keys are part types (0 for engine, 3-8 for others) and values are design rows.
  */
 export function getPartsFromTeam(teamId) {
     // Day, Season
@@ -122,7 +125,7 @@ export function getPartsFromTeam(teamId) {
     ) || [0, 0];
 
     const designs = {};
-    // En Python, j va de 3..8 => motor = 0
+    // In Python, j goes from 3..8 => engine = 0
     for (let j = 3; j < 9; j++) {
         const row = queryDB(`
           SELECT MAX(DesignID)
@@ -148,8 +151,10 @@ export function getPartsFromTeam(teamId) {
 }
 
 /**
- * Obtiene las mejores piezas hasta un día concreto (versión con day param)
- * (Similar a get_best_parts_until en el Python original)
+ * Gets the best parts created up to a specific day.
+ * @param {number} day - The day to check up to.
+ * @param {boolean} customTeam - If true, includes the custom team.
+ * @returns {Object} A dictionary of teams and their best parts.
  */
 export function getBestPartsUntil(day, customTeam = false) {
     // Day, season
@@ -191,9 +196,9 @@ export function getBestPartsUntil(day, customTeam = false) {
 }
 
 /**
- * Devuelve un diccionario con los valores de stats (PartStat -> Value)
- * de cada parte (partType).
- * (get_car_stats en el Python original)
+ * Returns a dictionary with stat values (PartStat -> Value) for each part (partType).
+ * @param {Object} designDict - A dictionary of parts and their design info.
+ * @returns {Object} A dictionary of stat values for each part.
  */
 export function getCarStats(designDict) {
     const statsValues = {};
@@ -225,6 +230,11 @@ export function getCarStats(designDict) {
     return statsValues;
 }
 
+/**
+ * Gets tyre degradation stats (stats 2) for parts 4 and 8.
+ * @param {Object} designDict - Dictionary of parts designs.
+ * @returns {Object} Dictionary with tyre degradation stats.
+ */
 export function getTyreDegStats(designDict) {
     const statsValues = {};
     //only part 4 and 8
@@ -256,6 +266,13 @@ export function getTyreDegStats(designDict) {
     return statsValues;
 }
 
+/**
+ * Updates tyre degradation stats for a receiver team based on a giver team's design.
+ * @param {Object} designDictTeamReceiver - Design dictionary for the receiving team.
+ * @param {Object} designDictTeamGiver - Design dictionary for the giving team.
+ * @param {number} teamReceiver - ID of the receiving team.
+ * @param {number} teamGiver - ID of the giving team.
+ */
 export function updateTyreDegStats(designDictTeamReceiver, designDictTeamGiver, teamReceiver, teamGiver) {
     //only part 4 and 8
     const reducedDesignDictTeamReceiver = {4: designDictTeamReceiver[4][0][0], 8: designDictTeamReceiver[8][0][0]};
@@ -277,6 +294,13 @@ export function updateTyreDegStats(designDictTeamReceiver, designDictTeamGiver, 
     }
 }
 
+/**
+ * Applies a boost to car stats based on a normalized range.
+ * @param {Object} designDict - Dictionary of parts designs.
+ * @param {number} boost - Boost multiplier (0 to 1 range basically).
+ * @param {number} team - Team ID.
+ * @returns {Object} Updated stats dictionary.
+ */
 export function applyBoostToCarStats(designDict, boost, team) {
     const statsValues = {};
     for (const part in designDict) {
@@ -315,7 +339,7 @@ export function applyBoostToCarStats(designDict, boost, team) {
                         AND PartStat = ${stat}
                     `);
 
-                  tmp[stat] = Math.round(newVal * 1000) / 1000; // redondeo a 3 decimales
+                  tmp[stat] = Math.round(newVal * 1000) / 1000; // round to 3 decimals
                 }
               }
             statsValues[part] = tmp;
@@ -330,34 +354,42 @@ export function applyBoostToCarStats(designDict, boost, team) {
     return statsValues;
 }
 
+/**
+ * Calculates a new stat value based on a boost factor within min/max bounds.
+ * @param {number} originalValue - The original stat value.
+ * @param {number} statID - The ID of the stat type.
+ * @param {number} boost - The boost factor.
+ * @returns {number} The new calculated value.
+ */
 function applyScaledBoostToStatValue(originalValue, statID, boost) {
-    // 1) Identificar el rango correspondiente a este stat
-    const [minVal, maxVal] = carConstants.statsMinMax[statID] || [0, 100]; // fallback [0,100] si no está en el diccionario
+    // 1) Identify the range for this stat
+    const [minVal, maxVal] = carConstants.statsMinMax[statID] || [0, 100]; // fallback [0,100] if not in dictionary
     
-    // Evitar división por cero en caso de minVal == maxVal
+    // Avoid division by zero
     const rangeSize = maxVal - minVal;
     if (rangeSize <= 0) {
       return originalValue; 
     }
   
-    // 2) Normalizar (0 a 1)
+    // 2) Normalize (0 to 1)
     let normalized = (originalValue - minVal) / rangeSize;
   
-    // 3) Multiplicar por el boost
+    // 3) Multiply by boost
     normalized *= boost;
   
-    // 4) Clamp a [0,1]
+    // 4) Clamp to [0,1]
     if (normalized > 1) normalized = 1;
     if (normalized < 0) normalized = 0;
   
-    // 5) Des-normalizar
+    // 5) De-normalize
     const newValue = minVal + normalized * rangeSize;
     return newValue;
   }
 
 /**
- * Devuelve el UnitValue de cada stat de un dict de diseños
- * (En Python: get_unitvalue_from_parts)
+ * Returns the UnitValue of each stat from a design dictionary.
+ * @param {Object} designDict - Dictionary of designs.
+ * @returns {Object} Dictionary of stats with their UnitValues.
  */
 export function getUnitValueFromParts(designDict) {
     const statsValues = {};
@@ -379,8 +411,9 @@ export function getUnitValueFromParts(designDict) {
 }
 
 /**
- * UnitValue de un solo diseño
- * (get_unitvalue_from_one_part en Python)
+ * Returns UnitValues for a single design.
+ * @param {number} designId - The ID of the design.
+ * @returns {Object} A dictionary containing the part type and its stat UnitValues.
  */
 export function getUnitValueFromOnePart(designId) {
 
@@ -408,8 +441,11 @@ export function getUnitValueFromOnePart(designId) {
 }
 
 /**
- * Simple helper: convierte un porcentaje a valor físico según min/max
- * (convert_percentage_to_value en Python)
+ * Helper: converts a percentage to a physical value based on min/max ranges.
+ * @param {string} attribute - The attribute name.
+ * @param {number} percentage - The percentage value.
+ * @param {Object} minMax - Dictionary defining min/max values for attributes.
+ * @returns {number} The physical value.
  */
 export function convertPercentageToValue(attribute, percentage, minMax) {
     // minMax[attribute] = [min_value, max_value]
@@ -418,8 +454,9 @@ export function convertPercentageToValue(attribute, percentage, minMax) {
 }
 
 /**
- * Pasa todos los atributos a rango human-readable
- * (make_attributes_readable en Python)
+ * Converts all attributes to a human-readable format.
+ * @param {Object} attributes - Dictionary of attributes.
+ * @returns {Object} Dictionary of human-readable attributes.
  */
 export function makeAttributesReadable(attributes) {
     for (const attribute in attributes) {
@@ -428,7 +465,7 @@ export function makeAttributesReadable(attributes) {
             attributes[attribute],
             carConstants.attributesMinMax
         );
-        // redondea a 3 dec
+        // round to 3 decimals
         attributes[attribute] = Math.round(attributes[attribute] * 1000) / 1000;
         attributes[attribute] = `${attributes[attribute]} ${carConstants.attributesUnits[attribute]}`;
     }
@@ -436,8 +473,9 @@ export function makeAttributesReadable(attributes) {
 }
 
 /**
- * Calcula la performance global sumando (valorStat * contribución)
- * (calculate_overall_performance en Python)
+ * Calculates global performance by summing (statValue * contribution).
+ * @param {Object} attributes - Dictionary of car attributes.
+ * @returns {number} Overall performance score rounded to 2 decimals.
  */
 export function calculateOverallPerformance(attributes) {
     let ovr = 0;
@@ -448,18 +486,17 @@ export function calculateOverallPerformance(attributes) {
 }
 
 /**
- * Devuelve un diccionario con las contribuciones
- * (get_contributors_dict en Python)
+ * Returns a dictionary with attribute contributions.
+ * @returns {Object} Dictionary of attribute contributions per stat.
  */
 export function getContributorsDict() {
-    // Lógica similar a Python
     const contributorsValues = {};
     const totalValues = {};
 
     for (const attribute in carConstants.carAttributes) {
         totalValues[attribute] = 0;
         const referenceDict = carConstants[`${carConstants.carAttributes[attribute]}_contributors`];
-        // O donde sea que esté definido
+        // Or wherever defined
         for (const stat in referenceDict) {
             totalValues[attribute] += referenceDict[stat];
         }
@@ -478,8 +515,9 @@ export function getContributorsDict() {
 }
 
 /**
- * Suma los factores de cada stat de cada parte
- * (get_part_stats_dict en Python)
+ * Sums the factors of each stat for each part.
+ * @param {Object} carDict - Dictionary of car parts stats.
+ * @returns {Object} Dictionary of summed stats.
  */
 export function getPartStatsDict(carDict) {
     const partStats = {};
@@ -496,12 +534,14 @@ export function getPartStatsDict(carDict) {
 }
 
 /**
- * Calcula los atributos finales sumando (contribución * partStats[stat]) / 10
- * (calculate_car_attributes en Python)
+ * Calculates final car attributes based on contributors and parts stats.
+ * @param {Object} contributors - Dictionary of contributors.
+ * @param {Object} partsStats - Dictionary of aggregated part stats.
+ * @returns {Object} Dictionary of calculated car attributes.
  */
 export function calculateCarAttributes(contributors, partsStats) {
     const attributesDict = {};
-    // Ajuste: partsStats[16] = (20000 - partsStats[15]) / 20  (como en el .py)
+    // Adjustment: partsStats[16] = (20000 - partsStats[15]) / 20  (as in .py)
     partsStats[16] = (20000 - partsStats[15]) / 20;
 
     for (const attribute in contributors) {
@@ -515,8 +555,8 @@ export function calculateCarAttributes(contributors, partsStats) {
 }
 
 /**
- * Obtiene días de carreras
- * (get_races_days en Python)
+ * Gets days on which races occur (completed or next upcoming).
+ * @returns {Array} Array of race objects (RaceID, Day, TrackID).
  */
 export function getRacesDays() {
     const [day, season] = queryDB(`
@@ -524,7 +564,7 @@ export function getRacesDays() {
         FROM Player_State
       `, 'singleRow') || [0, 0];
 
-    // state=2 => completadas, state=0 => no comenzadas
+    // state=2 => completed, state=0 => not started
     const races = queryDB(`
         SELECT RaceID, Day, TrackID
         FROM Races
@@ -532,7 +572,7 @@ export function getRacesDays() {
           AND State = 2
       `, 'allRows');
 
-    // first_race_state_0 => la primera no iniciada
+    // first_race_state_0 => the first one not started
     const firstRaceState0 = queryDB(`
         SELECT RaceID, Day, TrackID
         FROM Races
@@ -548,6 +588,10 @@ export function getRacesDays() {
     return races;
 }
 
+/**
+ * Gets all races for the current season.
+ * @returns {Array} Array of all race objects.
+ */
 export function getAllRaces() {
     const [day, season] = queryDB(`
         SELECT Day, CurrentSeason
@@ -563,8 +607,11 @@ export function getAllRaces() {
 }
 
 /**
- * Devuelve la performance de todos los equipos en un día dado (o actual)
- * (get_performance_all_teams en Python)
+ * Returns performance of all teams on a given day (or current).
+ * @param {number|null} day - The day to check performance for.
+ * @param {Object|null} previous - Previous performance data (unused logic here).
+ * @param {boolean} customTeam - If true, includes custom team.
+ * @returns {Object} Dictionary of team performances.
  */
 export function getPerformanceAllTeams(day = null, previous = null, customTeam = false) {
     const teams = {};
@@ -576,7 +623,7 @@ export function getPerformanceAllTeams(day = null, previous = null, customTeam =
 
     let parts;
     if (day == null) {
-        // Usamos getBestParts
+        // Use getBestParts
         parts = getBestParts(customTeam);
     } else {
         parts = getBestPartsUntil(day, customTeam);
@@ -593,8 +640,9 @@ export function getPerformanceAllTeams(day = null, previous = null, customTeam =
 }
 
 /**
- * Devuelve la performance de todos los coches (car1 y car2) de cada equipo
- * (get_performance_all_cars en Python)
+ * Returns performance of all cars (car1 and car2) for each team.
+ * @param {boolean} customTeam - If true, includes custom team.
+ * @returns {Object} Dictionary of cars performance.
  */
 export function getPerformanceAllCars(customTeam = false) {
     const cars = {};
@@ -604,14 +652,13 @@ export function getPerformanceAllCars(customTeam = false) {
         ? [...Array(10).keys()].map(i => i + 1).concat(32)
         : [...Array(10).keys()].map(i => i + 1);
 
-    // Este método en Python usaba "get_fitted_designs(custom_team=custom_team)"
     const carsParts = getFittedDesigns(customTeam);
 
     for (const teamId of Object.keys(carsParts)) {
         cars[teamId] = {};
         for (const carId of Object.keys(carsParts[teamId])) {
             const dict = getCarStats(carsParts[teamId][carId]);
-            // Falta ver si hay partes sin design
+            // Check for parts without design
             const missingParts = [];
             for (const part in carsParts[teamId][carId]) {
                 if (carsParts[teamId][carId][part][0][0] == null) {
@@ -632,8 +679,9 @@ export function getPerformanceAllCars(customTeam = false) {
 }
 
 /**
- * Devuelve los atributos de todos los coches
- * (get_attributes_all_cars en Python)
+ * Returns attributes of all cars.
+ * @param {boolean} customTeam - If true, includes custom team.
+ * @returns {Object} Dictionary of car attributes.
  */
 export function getAttributesAllCars(customTeam = false) {
     const cars = {};
@@ -651,7 +699,7 @@ export function getAttributesAllCars(customTeam = false) {
             const dict = getCarStats(carsParts[teamId][carId]);
             const partStats = getPartStatsDict(dict);
             const attributes = calculateCarAttributes(contributors, partStats);
-            // (En Python, se dejaba la opción de "make_attributes_readable")
+            // (In Python, there was an option for "make_attributes_readable")
             // attributes = makeAttributesReadable(attributes);
             cars[teamId][carId] = attributes;
         }
@@ -660,8 +708,10 @@ export function getAttributesAllCars(customTeam = false) {
 }
 
 /**
- * Devuelve el número del driver que conduce un coche concreto
- * (get_driver_number_with_car en Python)
+ * Returns the number of the driver driving a specific car.
+ * @param {number} teamId - The team ID.
+ * @param {number} carId - The car ID (position in team).
+ * @returns {number|null} The driver's number or null.
  */
 export function getDriverNumberWithCar(teamId, carId) {
     const row = queryDB(`
@@ -687,8 +737,9 @@ export function getDriverNumberWithCar(teamId, carId) {
 }
 
 /**
- * Obtiene los diseños equipados en cada coche (loadout 1 y 2) de cada equipo
- * (get_fitted_designs en Python)
+ * Gets the designs fitted on each car (loadout 1 and 2) for each team.
+ * @param {boolean} customTeam - If true, includes custom team.
+ * @returns {Object} Dictionary of fitted designs.
  */
 export function getFittedDesigns(customTeam = false) {
     const teams = {};
@@ -698,7 +749,7 @@ export function getFittedDesigns(customTeam = false) {
 
     for (const t of teamList) {
         teams[t] = {};
-        // loadout => 1 o 2
+        // loadout => 1 or 2
         for (let loadout = 1; loadout <= 2; loadout++) {
             const designs = {};
             for (let part = 3; part < 9; part++) {
@@ -726,9 +777,10 @@ export function getFittedDesigns(customTeam = false) {
     return teams;
 }
 
-// Asumiendo que tu clase CarAnalysisUtils ya tiene otros métodos traducidos
-// Añadimos/completamos con estos métodos:
-
+/**
+ * Fits the latest designs for all teams on the grid.
+ * @param {boolean} customTeam - If true, includes custom team.
+ */
 export function fitLatestDesignsAllGrid(customTeam = false) {
     // SELECT Day, CurrentSeason FROM Player_State
     const row = queryDB(`
@@ -742,27 +794,32 @@ export function fitLatestDesignsAllGrid(customTeam = false) {
     }
 
     const [day, season] = row;
-    // Obtenemos las mejores piezas hasta 'day'
+    // Get best parts until 'day'
     const bestParts = getBestPartsUntil(day, customTeam);
 
-    // Para cada equipo en bestParts
+    // For each team in bestParts
     for (const team of Object.keys(bestParts)) {
         fitLatestDesignsOneTeam(team, bestParts[team]);
     }
 
-    // conn.commit() (en SQL.js no es necesario típicamente)
+    // conn.commit() (typically not needed in SQL.js)
 }
 
+/**
+ * Fits the latest designs for a single team.
+ * @param {number} teamId - The team ID.
+ * @param {Object} parts - Dictionary of parts for the team.
+ */
 export function fitLatestDesignsOneTeam(teamId, parts) {
-    // Recorremos loadout = 1 y 2
+    // Loop through loadout 1 and 2
     for (let loadout = 1; loadout <= 2; loadout++) {
-        // Para cada 'part' en el objeto parts
+        // For each 'part' in parts object
         for (const partKey of Object.keys(parts)) {
             const part = Number(partKey);
             if (part !== 0) {
-                // En Python, parts[part] = [[designId], ...], asumiendo la estructura
+                // In Python, parts[part] = [[designId], ...], assuming structure
                 const design = parts[part][0][0]; // -> designID
-                // fitted_design actual
+                // current fitted_design
                 const fittedRow = queryDB(`
                         SELECT DesignID 
                         FROM Parts_CarLoadout
@@ -778,7 +835,7 @@ export function fitLatestDesignsOneTeam(teamId, parts) {
                 const fittedDesign = fittedRow[0];
 
                 if (design !== fittedDesign) {
-                    // Buscamos items disponibles
+                    // Check available items
                     const partsAvailable = queryDB(`
                         SELECT ItemID
                         FROM Parts_Items
@@ -787,16 +844,16 @@ export function fitLatestDesignsOneTeam(teamId, parts) {
                         `, "allRows");
 
                     if (!partsAvailable.length) {
-                        // no hay items disponibles => creamos uno nuevo
+                        // no items available => create new one
                         const item = createNewItem(design, part);
                         addPartToLoadout(design, part, teamId, loadout, item);
                     } else {
-                        const item = partsAvailable[0][0]; // primer item
+                        const item = partsAvailable[0][0]; // first item
                         addPartToLoadout(design, part, teamId, loadout, item);
                     }
                 } else {
-                    // design ya está equipado en este loadout
-                    // Miramos si loadout 1 y 2 comparten item
+                    // design already equipped in this loadout
+                    // Check if loadout 1 and 2 share the same item
                     const otherLoadout = (loadout === 2) ? 1 : 2;
 
                     const fittedItemOther = queryDB(`
@@ -817,7 +874,7 @@ export function fitLatestDesignsOneTeam(teamId, parts) {
 
                     if (fittedItemOther && fittedItem
                         && fittedItemOther[0] === fittedItem[0]) {
-                        // Ambos loadouts tienen el mismo item => creamos uno nuevo
+                        // Both loadouts have the same item => create a new one
                         const item = createNewItem(design, part);
                         addPartToLoadout(design, part, teamId, loadout, item);
                     }
@@ -827,9 +884,13 @@ export function fitLatestDesignsOneTeam(teamId, parts) {
     }
 
     // commit
-    // (en SQL.js no es necesario, pero podrías hacer db.run("BEGIN/COMMIT") si fuera el caso)
 }
 
+/**
+ * Updates items for a design dictionary, ensuring the count matches.
+ * @param {Object} designDict - Dictionary of designs.
+ * @param {number} teamId - The team ID.
+ */
 export function updateItemsForDesignDict(designDict, teamId) {
     for (const designKey of Object.keys(designDict)) {
         const design = Number(designKey);
@@ -868,6 +929,11 @@ export function updateItemsForDesignDict(designDict, teamId) {
     // commit
 }
 
+/**
+ * Fits items according to a loadouts dictionary.
+ * @param {Object} loadoutsDict - Dictionary of loadout configurations.
+ * @param {number} teamId - The team ID.
+ */
 export function fitLoadoutsDict(loadoutsDict, teamId) {
     for (const partKey of Object.keys(loadoutsDict)) {
         const part = Number(partKey);
@@ -893,10 +959,10 @@ export function fitLoadoutsDict(loadoutsDict, teamId) {
                         WHERE ItemID = ${itemId}
                     `);
                 // fittedDesign1 = fittedDesign1[0]
-                fittedDesign1 = [fittedDesign1[0], itemId]; // si necesitas retenerlo
+                fittedDesign1 = [fittedDesign1[0], itemId]; // if needed to retain
             }
 
-            // Si la design1 actual es distinta...
+            // If current design1 is different...
             if (!fittedDesign1 || fittedDesign1[0] !== design1) {
                 // SELECT ItemID FROM Parts_Items WHERE ...
                 const items1 = queryDB(`
@@ -918,7 +984,7 @@ export function fitLoadoutsDict(loadoutsDict, teamId) {
             }
         }
 
-        // Ahora loadout 2
+        // Now loadout 2
         let fittedDesign2 = queryDB(`
                 SELECT DesignID, ItemID
                 FROM Parts_CarLoadout
@@ -962,7 +1028,12 @@ export function fitLoadoutsDict(loadoutsDict, teamId) {
     // commit
 }
 
-// En Python: create_new_item(design_id, part)
+/**
+ * Creates a new item in the database.
+ * @param {number} designId - The design ID.
+ * @param {number} part - The part type ID.
+ * @returns {number} The new item ID.
+ */
 export function createNewItem(designId, part) {
     // SELECT MAX(ItemID) FROM Parts_Items
     let maxItem = queryDB(`
@@ -1004,6 +1075,10 @@ export function createNewItem(designId, part) {
     return newItem;
 }
 
+/**
+ * Deletes an item from the database.
+ * @param {number} designId - The design ID.
+ */
 export function deleteItem(designId) {
     // SELECT PartType FROM Parts_Designs WHERE DesignID = {designId}
     const partType = queryDB(`
@@ -1026,6 +1101,15 @@ export function deleteItem(designId) {
     `);
 }
 
+/**
+ * Adds a new design to the database.
+ * @param {number} part - Part type ID.
+ * @param {number} teamId - Team ID.
+ * @param {number} day - Current day.
+ * @param {number} season - Current season.
+ * @param {number} latestDesignPartFromTeam - ID of the latest design from the team.
+ * @param {number} newDesignId - ID for the new design.
+ */
 export function addNewDesign(part, teamId, day, season, latestDesignPartFromTeam, newDesignId) {
     const maxDesignFromPart = queryDB(`
       SELECT MAX(DesignNumber)
@@ -1085,6 +1169,12 @@ export function addNewDesign(part, teamId, day, season, latestDesignPartFromTeam
     add4Items(newDesignId, part, teamId);
 }
 
+/**
+ * Copies data from one table to another for a new design.
+ * @param {string} table - The table type ("building" or "staff").
+ * @param {number} latestDesignId - The ID of the source design.
+ * @param {number} newDesignId - The ID of the new design.
+ */
 export function copyFromTable(table, latestDesignId, newDesignId) {
     let tableName = "";
     if (table === "building") {
@@ -1108,6 +1198,12 @@ export function copyFromTable(table, latestDesignId, newDesignId) {
     }
 }
 
+/**
+ * Adds 4 items for a new design.
+ * @param {number} newDesignId - The ID of the new design.
+ * @param {number} part - The part type ID.
+ * @param {number} teamId - The team ID.
+ */
 export function add4Items(newDesignId, part, teamId) {
     let maxItem = queryDB(`
         SELECT MAX(ItemID)
@@ -1131,7 +1227,7 @@ export function add4Items(newDesignId, part, teamId) {
         )
       `);
 
-        // Para loadout 1 y 2
+        // For loadout 1 and 2
         if (i <= 2) {
             const loadoutId = i;
             addPartToLoadout(newDesignId, part, teamId, loadoutId, maxItem);
@@ -1139,6 +1235,14 @@ export function add4Items(newDesignId, part, teamId) {
     }
 }
 
+/**
+ * Associates a part item to a car loadout.
+ * @param {number} designId - The design ID.
+ * @param {number} part - The part type ID.
+ * @param {number} teamId - The team ID.
+ * @param {number} loadoutId - The loadout ID (1 or 2).
+ * @param {number} itemId - The item ID.
+ */
 export function addPartToLoadout(designId, part, teamId, loadoutId, itemId) {
     queryDB(`
             UPDATE Parts_CarLoadout
@@ -1155,7 +1259,14 @@ export function addPartToLoadout(designId, part, teamId, loadoutId, itemId) {
         `);
 }
 
-// overwrite_performance_team(...)
+/**
+ * Overwrites performance for a team, updating parts and stats.
+ * @param {number} teamId - The team ID.
+ * @param {Object} performance - Dictionary of performance stats to update.
+ * @param {boolean} [customTeam=null] - Whether it is a custom team (unused in function body).
+ * @param {string} [yearIteration=null] - The game year iteration ("23" or "24").
+ * @param {Object} [loadoutDict=null] - Dictionary of loadouts for new designs.
+ */
 export function overwritePerformanceTeam(teamId, performance, customTeam = null, yearIteration = null, loadoutDict = null) {
     const row = queryDB(`
       SELECT Day, CurrentSeason
@@ -1174,7 +1285,7 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
     for (const partKey of Object.keys(teamParts)) {
         const part = Number(partKey);
         if (part !== 0) {
-            const design = teamParts[part][0][0]; // design actual
+            const design = teamParts[part][0][0]; // current design
             const partName = carConstants.parts[part];         // "Suspension", "Wing", etc.
             const newDesign = performance[partName]["designEditing"];
             delete performance[partName]["designEditing"];
@@ -1244,7 +1355,7 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
                 }
             }
 
-            // si newDesign == -1 => insertamos el peso standard
+            // if newDesign == -1 => insert standard weight
             if (Number(newDesign) === -1) {
                 queryDB(`
             INSERT INTO Parts_Designs_StatValues
@@ -1259,7 +1370,7 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
             )
           `);
 
-                // Tras insertar stats, cambiamos expertise
+                // After inserting stats, change expertise
                 for (const statKey of Object.keys(statsObj)) {
                     const statNum = parseFloat(statsObj[statKey]);
                     let value;
@@ -1277,6 +1388,15 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
     // commit
 }
 
+/**
+ * Changes team expertise based on new part values.
+ * @param {number} part - Part type ID.
+ * @param {number} stat - Stat type ID.
+ * @param {number} newValue - New stat value.
+ * @param {number} teamId - Team ID.
+ * @param {string} [type="existing"] - "existing" or "new".
+ * @param {number|null} [oldDesign=null] - ID of the old design (if type is "new").
+ */
 export function changeExpertiseBased(part, stat, newValue, teamId, type = "existing", oldDesign = null) {
     // SELECT Day, CurrentSeason FROM Player_State
     const row = queryDB(`
@@ -1315,7 +1435,7 @@ export function changeExpertiseBased(part, stat, newValue, teamId, type = "exist
     }
 
     if (!currentValue) {
-        currentValue = 1; // si no hay valor
+        currentValue = 1; // if no value
     }
     if (currentValue === 0) {
         currentValue = 1;
@@ -1345,16 +1465,21 @@ export function changeExpertiseBased(part, stat, newValue, teamId, type = "exist
 }
 
 
+/**
+ * Gets the season performance for all teams.
+ * @param {boolean} customTeam - If true, includes custom team.
+ * @returns {Array} Array containing performance data array and races array.
+ */
 export function getPerformanceAllTeamsSeason(customTeam = false) {
     const races = getRacesDays();
     const firstDay = getFirstDaySeason();
-    // Insertamos al principio (0, firstDay, 0)
-    races.unshift([0, firstDay, 0]); // similar a insert(0, first_tuple)
+    // Insert at beginning (0, firstDay, 0)
+    races.unshift([0, firstDay, 0]); // similar to insert(0, first_tuple)
 
     const racesPerformances = [];
     let previous = null;
     for (const raceDay of races) {
-        // raceDay => [RaceID, Day, TrackID], en python pilla el day en [1]
+        // raceDay => [RaceID, Day, TrackID], python takes day at [1]
         const day = raceDay[1];
         const performances = getPerformanceAllTeams(day, previous, customTeam);
         racesPerformances.push(performances);
@@ -1365,6 +1490,10 @@ export function getPerformanceAllTeamsSeason(customTeam = false) {
     return [racesPerformances, allRaces];
 }
 
+/**
+ * Gets the first day of the season (based on part creation dates).
+ * @returns {number} The first day number.
+ */
 export function getFirstDaySeason() {
     const query = `
         SELECT Number, COUNT(*) as Occurrences
@@ -1386,6 +1515,11 @@ export function getFirstDaySeason() {
     return firstDay;
 }
 
+/**
+ * Gets the attributes for all teams based on their best parts.
+ * @param {boolean} customTeam - If true, includes custom team.
+ * @returns {Object} Dictionary of team attributes.
+ */
 export function getAttributesAllTeams(customTeam = false) {
     const teams = {};
     const contributors = getContributorsDict();
@@ -1404,6 +1538,10 @@ export function getAttributesAllTeams(customTeam = false) {
     return teams;
 }
 
+/**
+ * Gets the maximum design ID currently in the database.
+ * @returns {number} The maximum design ID.
+ */
 export function getMaxDesign() {
     const val = queryDB(`
         SELECT MAX(DesignID)

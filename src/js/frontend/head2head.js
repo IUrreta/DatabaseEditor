@@ -40,14 +40,26 @@ export let mid_grid = 10;
 export let max_races = 23;
 export let relative_grid = 5;
 
+/**
+ * Sets the number of teams for mid-grid calculation.
+ * @param {number} value - The mid-grid value.
+ */
 export function setMidGrid(value) {
     mid_grid = value
 }
 
+/**
+ * Sets the maximum number of races for the season.
+ * @param {number} value - The max races value.
+ */
 export function setMaxRaces(value) {
     max_races = value
 }
 
+/**
+ * Sets the relative grid size for visualization.
+ * @param {number} value - The relative grid value.
+ */
 export function setRelativeGrid(value) {
     relative_grid = value
 }
@@ -58,16 +70,29 @@ export let colors_dict;
 Chart.register(ChartDataLabels);
 Chart.register(annotationPlugin);
 
+/**
+ * Initializes the color dictionary based on the selected theme.
+ * @param {string} theme - The name of the theme (e.g., "default-theme").
+ */
 export function init_colors_dict(theme) {
     console.log("Selected theme:", theme);
     colors_dict = { "10": "#F91536", "11": theme_colors[theme].general_secondary, "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": theme_colors[theme].general_secondary, "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": theme_colors[theme].general_secondary, "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": theme_colors[theme].general_secondary, "90": "#C92D4B", "91": theme_colors[theme].general_secondary, "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000" }
 }
 
 
+/**
+ * Returns the current color dictionary.
+ * @returns {Object} The colors_dict.
+ */
 export function get_colors_dict() {
     return colors_dict;
 }
 
+/**
+ * Edits a value in the color dictionary.
+ * @param {string} key - The key to edit.
+ * @param {string} value - The new color value.
+ */
 export function edit_colors_dict(key, value) {
     colors_dict[key] = value;
 }
@@ -273,7 +298,7 @@ export function manage_h2h_bars(data) {
 }
 /**
  * Fills the bars for the elem with driver1 and 2 data
- * @param {div} elem general bar for the comparision
+ * @param {HTMLDivElement} elem general bar for the comparision
  * @param {Number} d1_width driver 1's width for his bar
  * @param {Number} d2_width driver 2's width for his bar
  */
@@ -342,6 +367,9 @@ function toggle_sprints() {
     fill_bars(elem, d1_width, d2_width)
 }
 
+/**
+ * Toggles the race pace comparison view.
+ */
 function toggle_racePace() {
     let d1_width;
     let d2_width;
@@ -400,6 +428,9 @@ function toggle_racePace() {
 
 }
 
+/**
+ * Toggles the qualifying pace comparison view.
+ */
 function toggle_qualiPace() {
     let elem = document.querySelector("#qualih2h")
     let d1_width;
@@ -823,6 +854,9 @@ document.querySelector("#clearAll").addEventListener("click", function () {
     resetH2H()
 })
 
+/**
+ * Resets the H2H selection state.
+ */
 export function resetH2H() {
     h2hCount = 0;
     graphCount = 0;
@@ -999,6 +1033,9 @@ function H2HReady() {
 }
 
 
+/**
+ * Updates the H2H UI state (blocking overlay, resetting bars).
+ */
 function manageH2hState() {
     if (h2hCount === 2) {
         document.querySelector(".blocking-h2h").classList.add("d-none")
@@ -1028,6 +1065,10 @@ function manageH2hState() {
     }
 }
 
+/**
+ * Initializes and loads the graph labels and data.
+ * @param {Array} data - The data for the graphs.
+ */
 export function load_labels_initialize_graphs(data) {
     h2hData = data
     var labels = [];
@@ -1072,6 +1113,9 @@ export function load_labels_initialize_graphs(data) {
 
 }
 
+/**
+ * Reloads the H2H graphs with existing data.
+ */
 export function reload_h2h_graphs() {
     if (typeof qualiGraph !== 'undefined' && qualiGraph !== null) {
         qualiGraph.destroy()
@@ -1094,6 +1138,10 @@ export function reload_h2h_graphs() {
     }
 }
 
+/**
+ * Loads data into the team points graph.
+ * @param {Array} data - Team points data.
+ */
 function load_teams_points_graph(data) {
     data.forEach(function (team, ind) {
         if (ind !== 0 && ind !== data.length - 1) {
@@ -1148,6 +1196,12 @@ function load_teams_points_graph(data) {
     pointsGraph.update()
 }
 
+/**
+ * Formats points for a single driver for graphing.
+ * @param {Object} driver - Driver data object.
+ * @param {Array} data - General H2H data context.
+ * @returns {Array} Array of cumulative points.
+ */
 function get_one_driver_points_format(driver, data) {
     console.log("driver:", driver);
     console.log("data:", data);
@@ -1190,18 +1244,21 @@ function get_one_driver_points_format(driver, data) {
 
 }
 
+/**
+ * Loads graph data for drivers.
+ * @param {Array} drivers - Array of driver data.
+ */
 function load_graphs_data(drivers) {
     console.log("data:", drivers);
     let max_gapPole = 0;
     let max_gapWinner = 0;
     console.log(drivers);
-    const races_ids = drivers[0].map(r => r[0]); // array de raceId en orden
-    const races_done = drivers[drivers.length - 1]; // array de raceId ya corridas
+    const races_ids = drivers[0].map(r => r[0]); // ordered raceIds
+    const races_done = drivers[drivers.length - 1]; // completed raceIds
 
-    // drivers: array de objetos de piloto (NO metas pairTeamPos/pointsInfo aquí)
+    // drivers: array of driver objects (do not include pairTeamPos/pointsInfo here)
     drivers.forEach(function (driv, index) {
-        // saltamos índices de “cabecera” si antes los tenías; ahora no hace falta,
-        // pero mantengo la condición por seguridad si llamas igual que antes
+        // Skip header indices if applicable (maintained for safety)
         if (index !== 0 && index !== drivers.length - 1) {
             // buffers
             let d1_res = [];
@@ -1221,25 +1278,25 @@ function load_graphs_data(drivers) {
             let d1_backgroundColors = [];
             let d1_backgroundColorsPole = [];
 
-            // --- construir arrays base a partir de driv.races ---
+            // --- build base arrays from driv.races ---
             const races = Array.isArray(driv.races) ? driv.races : [];
 
             races.forEach(function (r) {
-                // raceId / orden
+                // raceId / order
                 d1_races.push(Number(r.raceId));
 
-                // posiciones carrera / quali
+                // finishing positions / quali
                 d1_provisonal.push(Number(r.finishingPos));
                 d1_provisonal_q.push(Number(r.qualifyingPos));
 
-                // gaps (se guardan como string "(.xxx)" o "NR"/"...L"; respetamos tu formato)
+                // gaps (saved as string "(.xxx)" or "NR"/"...L"; respecting format)
                 const gw = r.gapToWinner;
                 if (typeof gw === "string") {
                     if (gw.slice(-1) !== "L") {
                         // "(0.123)" → "0.123"
                         d1_provisional_gapW.push(gw.slice(1, -1));
                     } else {
-                        d1_provisional_gapW.push(gw); // "…L" → lo marcas como NaN luego
+                        d1_provisional_gapW.push(gw); // "…L" → marked as NaN later
                     }
                 } else if (gw == null) {
                     d1_provisional_gapW.push("NR");
@@ -1258,7 +1315,7 @@ function load_graphs_data(drivers) {
                     d1_provisional_gapP.push(String(gp));
                 }
 
-                // puntos de esa carrera (+ sprint si existe y no es -1)
+                // points for that race (+ sprint if exists and not -1)
                 let ptsThatRace = Number(r.points);
                 if (ptsThatRace === -1) ptsThatRace = 0;
 
@@ -1268,7 +1325,7 @@ function load_graphs_data(drivers) {
                 d1_points_provisional.push(ptsThatRace + sprintPts);
             });
 
-            // --- color del piloto ---
+            // --- driver color ---
             const d1Id = graphList[index - 1];
             const d1pos = graphList.indexOf(d1Id);
             let d1_color;
@@ -1282,7 +1339,7 @@ function load_graphs_data(drivers) {
                 const idx = d1_races.indexOf(Number(rid));
 
                 if (idx !== -1) {
-                    // resultado carrera
+                    // race result
                     if (d1_provisonal[idx] === -1) {
                         d1_res.push(NaN);
                         d1_gapWinner.push(NaN);
@@ -1303,7 +1360,7 @@ function load_graphs_data(drivers) {
                         }
                     }
 
-                    // puntos acumulados
+                    // cumulative points
                     d1_points.push(d1_points_provisional[idx] + d1_points[d1_points.length - 1]);
 
                     // quali
@@ -1321,7 +1378,7 @@ function load_graphs_data(drivers) {
                         d1_backgroundColorsPole.push(d1_color);
                     }
                 } else {
-                    // no corrió / no hay datos para este rid
+                    // did not race / no data
                     d1_res.push(NaN);
                     d1_qualis.push(NaN);
                     if (races_done.includes(rid)) {
@@ -1332,10 +1389,10 @@ function load_graphs_data(drivers) {
                 }
             });
 
-            // quitamos el 0 inicial
+            // remove initial 0
             d1_points.shift();
 
-            // reemplace NaNs de gaps por la mitad del máximo (tu lógica)
+            // replace NaN gaps with half max (for visual consistency?)
             d1_gapWinner = d1_gapWinner.map(function (elem) {
                 return isNaN(elem) ? max_gapWinner / 2 : elem;
             });
@@ -1344,7 +1401,7 @@ function load_graphs_data(drivers) {
                 return isNaN(elem) ? max_gapPole / 2 : elem;
             });
 
-            // ---- push datasets a los gráficos (Chart.js) ----
+            // ---- push datasets to charts (Chart.js) ----
             driverGraph.data.datasets.push({
                 label: driv.driverName,
                 data: d1_res,
@@ -1413,7 +1470,7 @@ function load_graphs_data(drivers) {
         }
     });
 
-    // actualiza
+    // update
     driverGraph.update();
     qualiGraph.update();
     pointsGraph.update();
@@ -1425,7 +1482,7 @@ function load_graphs_data(drivers) {
 /**
  * Finds tha last non NaN element in an array
  * @param {Array} arr array in which the function will look
- * @returns the indef on which is the last non NaN or -1 if there is none
+ * @returns {number} the index on which is the last non NaN or -1 if there is none
  */
 function findLastNonNaNIndex(arr) {
     for (let i = arr.length - 1; i >= 0; i--) {
@@ -1433,9 +1490,13 @@ function findLastNonNaNIndex(arr) {
             return i;
         }
     }
-    return -1; // Devuelve -1 si todos los valores son NaN
+    return -1; // Returns -1 if all values are NaN
 }
 
+/**
+ * Updates the max Y axis value for race and quali graphs.
+ * @param {number} newMax - The new maximum value.
+ */
 function updateMaxYAxis(newMax) {
     driverGraph.options.scales.y.max = newMax;
     qualiGraph.options.scales.y.max = newMax;
@@ -1446,6 +1507,7 @@ function updateMaxYAxis(newMax) {
 /**
  * Creates the head to head race chart
  * @param {Array} labelsArray array with all the labels for the races
+ * @param {number} max - max value for y axis
  */
 function createRaceChart(labelsArray, max) {
     const dataD = {
@@ -1571,6 +1633,8 @@ function createRaceChart(labelsArray, max) {
 /**
  * Creates the head to head qualifying chart
  * @param {Array} labelsArray array with all the labels for the races
+ * @param {number} max - max value for y axis
+ * @param {number} q2_line - position line for Q2 cutoff
  */
 function createQualiChart(labelsArray, max, q2_line) {
     const dataD = {
@@ -1700,7 +1764,7 @@ function createQualiChart(labelsArray, max, q2_line) {
 }
 
 /**
- * Creates the head to head qualifying chart
+ * Creates the points progression chart
  * @param {Array} labelsArray array with all the labels for the races
  */
 function createPointsChart(labelsArray) {
@@ -1782,6 +1846,12 @@ function createPointsChart(labelsArray) {
     );
 }
 
+/**
+ * Creates charts for gap to winner and gap to pole.
+ * @param {Array} labelsArray - Array of race labels.
+ * @param {number} maxGapWinner - Maximum Y value for gap to winner chart.
+ * @param {number} maxGapPole - Maximum Y value for gap to pole chart.
+ */
 function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
     const dataD1 = {
         labels: labelsArray,

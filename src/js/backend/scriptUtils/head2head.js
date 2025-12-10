@@ -1,12 +1,21 @@
 import { queryDB } from "../dbManager";
 
-// Helpers para estadísticos:
+/**
+ * Calculates the mean of an array of numbers.
+ * @param {Array<number>} arr - The input array.
+ * @returns {number} The mean value.
+ */
 const mean = (arr) => {
   if (!arr.length) return 0;
   const total = arr.reduce((acc, n) => acc + n, 0);
   return total / arr.length;
 };
 
+/**
+ * Calculates the median of an array of numbers.
+ * @param {Array<number>} arr - The input array.
+ * @returns {number} The median value.
+ */
 const median = (arr) => {
   if (!arr.length) return 0;
   const sorted = [...arr].sort((a, b) => a - b);
@@ -16,9 +25,17 @@ const median = (arr) => {
     : (sorted[mid - 1] + sorted[mid]) / 2;
 };
 
+/**
+ * Fetches Head-to-Head statistics between two drivers.
+ * @param {number} driver1ID - ID of the first driver.
+ * @param {number} driver2ID - ID of the second driver.
+ * @param {number} year - The season year.
+ * @param {boolean} [isCurrentYear=true] - Whether it is the current year.
+ * @returns {Array} An array containing various H2H statistics.
+ */
 export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true) {
 
-  // 1) Obtenemos todas las carreras en las que participaron ambos pilotos
+  // 1) Get all races where both drivers participated
   const racesBoth = queryDB(`
       SELECT RaceID
       FROM Races_Results
@@ -68,7 +85,7 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     }
   };
 
-  // 3) Iteramos en cada carrera en la que compitieron ambos
+  // 3) Iterate through each race where both competed
   for (const raceID of raceIDs) {
     const d1_QStage = queryDB(`
         SELECT MAX(QualifyingStage)
@@ -115,13 +132,13 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
       d2_QRes = queryDB(`SELECT StartingPos FROM Races_Results WHERE RaceID = ${raceID} AND Season = ${year} AND DriverID = ${driver2ID}`, 'singleValue') || 99;
     }
 
-    // --- 3.3) Quién ganó el “duelo” de qualy
+    // --- 3.3) Who won the qualifying duel
     if (d1_QStage < d2_QStage) {
       stats.qualiH2H[1] += 1;
     } else if (d1_QStage > d2_QStage) {
       stats.qualiH2H[0] += 1;
     } else {
-      // misma fase de qualy
+      // same qualifying stage
       if (d1_QRes < d2_QRes) {
         stats.qualiH2H[0] += 1;
       } else if (d1_QRes > d2_QRes) {
@@ -129,11 +146,11 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
       }
     }
 
-    // Guardar posiciones de qualy para estadísticas finales
+    // Save quali positions for final statistics
     stats.driver1.QPositions.push(d1_QRes);
     stats.driver2.QPositions.push(d2_QRes);
 
-    // --- 3.4) Lap más rápida comparando la misma fase “mínima”
+    // --- 3.4) Fastest lap comparing the same "minimum" stage
     const minStage = Math.min(d1_QStage, d2_QStage);
 
     const d1_qLap = queryDB(`
@@ -161,7 +178,7 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
       stats.driver2.avgQPace.push(d2_qLap);
     }
 
-    // --- 3.5) Poles: Q3 y posición 1
+    // --- 3.5) Poles: Q3 and position 1
     if (d1_QRes === 1 && (!isCurrentYear || d1_QStage === 3)) {
       stats.polesH2H[0] += 1;
     }
@@ -169,7 +186,7 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
       stats.polesH2H[1] += 1;
     }
 
-    // Mejor qualifying
+    // Best qualifying
     if (d1_QRes < stats.driver1.bestQuali) {
       stats.driver1.bestQuali = d1_QRes;
     }
@@ -177,7 +194,7 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
       stats.driver2.bestQuali = d2_QRes;
     }
 
-    // --- 3.6) Resultados de carrera
+    // --- 3.6) Race results
     const d1_RRes = queryDB(`
         SELECT FinishingPos
         FROM Races_Results
@@ -194,7 +211,7 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
           AND DriverID = ${driver2ID}
       `, 'singleValue') || 99;
 
-    // ¿Quién terminó por delante?
+    // Who finished ahead?
     if (d1_RRes < d2_RRes) {
       stats.raceH2H[0] += 1;
     } else if (d1_RRes > d2_RRes) {
@@ -205,11 +222,11 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     if (d1_RRes === 1) stats.winsH2H[0] += 1;
     if (d2_RRes === 1) stats.winsH2H[1] += 1;
 
-    // Podios
+    // Podiums
     if (d1_RRes <= 3) stats.podiumsH2H[0] += 1;
     if (d2_RRes <= 3) stats.podiumsH2H[1] += 1;
 
-    // Mejor posición en carrera
+    // Best race position
     if (d1_RRes < stats.driver1.bestRace) {
       stats.driver1.bestRace = d1_RRes;
     }
@@ -217,7 +234,7 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
       stats.driver2.bestRace = d2_RRes;
     }
 
-    // Guardamos posición de carrera
+    // Save race position
     stats.driver1.RPositions.push(d1_RRes);
     stats.driver2.RPositions.push(d2_RRes);
 
@@ -241,7 +258,7 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     if (d1_RDNF === 1) stats.dnfH2H[0] += 1;
     if (d2_RDNF === 1) stats.dnfH2H[1] += 1;
 
-    // --- 3.8) Ritmo en carrera (avg pace) si ninguno hizo DNF
+    // --- 3.8) Race pace (avg pace) if no DNF
     if (d1_RDNF !== 1 && d2_RDNF !== 1) {
       const d1_time = queryDB(`
           SELECT Time
@@ -303,7 +320,7 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     if (d2_SRes === 1) stats.sprintWinsH2H[1] += 1;
   }
 
-  // 4) Puntos totales en el campeonato (no por carrera)
+  // 4) Total championship points (not per race)
   const d1_Pts = queryDB(`
       SELECT Points
       FROM Races_DriverStandings
@@ -338,7 +355,7 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
   const qDifferences = stats.driver1.avgQPace.map((val, i) => (stats.driver2.avgQPace[i] ?? 0) - val);
   const avg_qualidiff = Number(mean(qDifferences).toFixed(3));
 
-  // 3) Armamos el array final en el mismo orden que en tu Python:
+  // 3) Construct the final array in the same order as Python:
   const resultList = [
     stats.raceH2H,                           // 0) (raceH2H)
     stats.qualiH2H,                          // 1) (qualiH2H)
@@ -358,10 +375,18 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     [medianQd1, medianQd2]                   // 15) (medianQd1, medianQd2)
   ];
 
-  // 4) Retornamos este array en vez de 'stats'
+  // 4) Return this array instead of 'stats'
   return resultList;
 }
 
+/**
+ * Fetches Head-to-Head statistics between two teams.
+ * @param {number} teamID1 - ID of the first team.
+ * @param {number} teamID2 - ID of the second team.
+ * @param {number} year - The season year.
+ * @param {boolean} [isCurrentYear=true] - Whether it is the current year.
+ * @returns {Array} An array containing various H2H statistics for teams.
+ */
 export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true) {
   const t1 = teamID1;
   const t2 = teamID2;
@@ -370,7 +395,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
 
 
 
-  // 1) Obtenemos todas las carreras en las que participaron ambos equipos
+  // 1) Get all races where both teams participated
   const racesBoth = queryDB(`
       SELECT RaceID
       FROM Races_Results
@@ -382,7 +407,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
 
   const raceIDs = racesBoth.map(row => row[0]);
 
-  // 2) Inicializamos contadores / arreglos
+  // 2) Initialize counters / arrays
   const raceH2H = [0, 0];
   const qualiH2H = [0, 0];
   const dnfH2H = [0, 0];
@@ -404,14 +429,14 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
   const d1_avgQPace = [];
   const d2_avgQPace = [];
 
-  // 3) Iteramos por cada carrera encontrada
+  // 3) Iterate through each race found
   for (const raceID of raceIDs) {
 
-    // 3.1) Obtenemos todos los DriverIDs de cada equipo en Quali
-    //      (En Python, se guardan como tuples y luego se hace "IN (drivers1_str)").
-    //      En JS, construiremos la string manualmente.
+    // 3.1) Get all DriverIDs for each team in Quali
+    //      (In Python, stored as tuples and then done "IN (drivers1_str)").
+    //      In JS, we build the string manually.
 
-    // Pilotos del team1
+    // Drivers of team1
     const drivers1 = queryDB(`
         SELECT DISTINCT DriverID
         FROM Races_Results
@@ -419,7 +444,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
           AND TeamID = ${t1}
       `, 'allRows') || [];
 
-    // Pilotos del team2
+    // Drivers of team2
     const drivers2 = queryDB(`
         SELECT DISTINCT DriverID
         FROM Races_Results
@@ -430,20 +455,20 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     console.log("Drivers1: ", drivers1);
     console.log("Drivers2: ", drivers2);
 
-    // Transformamos el array de arrays/tuplas en un array de IDs
+    // Transform array of arrays/tuples into array of IDs
     const drivers1IDs = drivers1.map(d => d[0]);
     const drivers2IDs = drivers2.map(d => d[0]);
 
-    // Si no hay pilotos, podemos continuar a la siguiente carrera (para evitar queries "IN ()")
+    // If no drivers, we can skip to next race (to avoid queries "IN ()")
     if (!drivers1IDs.length || !drivers2IDs.length) {
-      // Team 1 o Team 2 no participa en esta carrera, saltamos
+      // Team 1 or Team 2 does not participate in this race, skip
       continue;
     }
 
     const drivers1Str = drivers1IDs.join(',');
     const drivers2Str = drivers2IDs.join(',');
 
-    // 3.2) Fase de Qualy más alta para cada equipo
+    // 3.2) Highest Qualy Stage for each team
     const d1_QStage = queryDB(`
         SELECT MAX(QualifyingStage)
         FROM Races_QualifyingResults
@@ -464,7 +489,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
 
     let d1_QRes, d2_QRes;
 
-    // 3.3) Posición mínima en esa fase de Qualy (equivalente a "SELECT MIN(FinishingPos)")
+    // 3.3) Minimum position in that Qualy stage (equivalent to "SELECT MIN(FinishingPos)")
     if (isCurrentYear) {
       d1_QRes = queryDB(`
         SELECT MIN(FinishingPos)
@@ -490,13 +515,13 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
       d2_QRes = queryDB(`SELECT MIN(StartingPos) FROM Races_Results WHERE RaceID = ${raceID} AND Season = ${season} AND DriverID IN (${drivers2Str})`, 'singleValue') || 99;
     }
 
-    // 3.4) Comparativa H2H de qualy
+    // 3.4) Qualy H2H comparison
     if (d1_QStage < d2_QStage) {
       qualiH2H[1] += 1;
     } else if (d1_QStage > d2_QStage) {
       qualiH2H[0] += 1;
     } else {
-      // misma fase de qualy
+      // same qualy stage
       if (d1_QRes < d2_QRes) {
         qualiH2H[0] += 1;
       } else if (d1_QRes > d2_QRes) {
@@ -504,7 +529,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
       }
     }
 
-    // 3.5) Lap más rápida comparando la misma fase mínima
+    // 3.5) Fastest lap comparing the same minimum stage
     const minQ = Math.min(d1_QStage, d2_QStage);
 
     const d1_qLap = queryDB(`
@@ -532,7 +557,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
       d2_avgQPace.push(d2_qLap);
     }
 
-    // Poles: si QStage = 3 y la "mejor" posición = 1
+    // Poles: if QStage = 3 and "best" position = 1
     if (d1_QRes === 1 && (!isCurrentYear || d1_QStage === 3)) {
       polesH2H[0] += 1;
     }
@@ -548,7 +573,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
       d2_BestQauli = d2_QRes;
     }
 
-    // 3.6) Resultados de carrera (usamos MIN(FinishingPos))
+    // 3.6) Race results (use MIN(FinishingPos))
     const d1_RRes = queryDB(`
         SELECT MIN(FinishingPos)
         FROM Races_Results
@@ -576,7 +601,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
       raceH2H[1] += 1;
     }
 
-    // Podios
+    // Podiums
     if (d1_RRes <= 3) podiumsH2H[0] += 1;
     if (d2_RRes <= 3) podiumsH2H[1] += 1;
 
@@ -588,7 +613,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
       d2_BestRace = d2_RRes;
     }
 
-    // 3.7) DNF => sumamos
+    // 3.7) DNF => sum
     const d1_RDNF = queryDB(`
         SELECT SUM(DNF)
         FROM Races_Results
@@ -609,7 +634,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     dnfH2H[1] += d2_RDNF;
 
 
-    // 3.8) Ritmo de carrera (si al menos un piloto del equipo no hizo DNF)
+    // 3.8) Race pace (if at least one driver of the team did not DNF)
     const d1_racePaceStats = queryDB(`
         SELECT COUNT(*), AVG(Time), AVG(Laps)
         FROM Races_Results
@@ -671,7 +696,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     }
   }
 
-  // 4) Puntos de cada equipo en el campeonato (TeamStandings)
+  // 4) Team points in the championship (TeamStandings)
   const d1_Pts = queryDB(`
       SELECT Points
       FROM Races_TeamStandings
@@ -696,8 +721,8 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
   bestQuali[0] = d1_BestQauli;
   bestQuali[1] = d2_BestQauli;
 
-  // 5) Calculamos la diferencia media de ritmo (race y quali).
-  //    rDifferences = (d2_avg - d1_avg) para cada par
+  // 5) Calculate mean pace difference (race and quali).
+  //    rDifferences = (d2_avg - d1_avg) for each pair
   const rDifferences = d1_avgPace.map((val, i) => {
     const d2Val = d2_avgPace[i] || 0;
     return d2Val - val;
@@ -708,7 +733,7 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     return d2Val - val;
   });
 
-  // Helpers para la media
+  // Helpers for mean
   const mean = (arr) => {
     if (!arr.length) return 0;
     const sum = arr.reduce((acc, num) => acc + num, 0);
@@ -734,7 +759,6 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     [-avg_qualidiff, avg_qualidiff]
   ];
 
-  // 7) Retornamos el array final
+  // 7) Return final array
   return resultList;
 }
-

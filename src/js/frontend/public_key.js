@@ -1,3 +1,7 @@
+/**
+ * The public key used for verifying signatures.
+ * This key is in PEM format.
+ */
 export const PUBLIC_KEY = `
 -----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1keiXmPhKZOEEAko0OHL

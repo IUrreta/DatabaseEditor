@@ -1,3 +1,7 @@
+/**
+ * Dictionary mapping country names to their 2-letter ISO codes.
+ * @type {Object.<string, string>}
+ */
 export const countries_abreviations = {
     "Andorra": "AD",
     "United Arab Emirates": "AE",
@@ -250,6 +254,10 @@ export const countries_abreviations = {
     "Zimbabwe": "ZW"
 }
 
+/**
+ * Dictionary mapping 2-letter ISO codes back to country names.
+ * @type {Object.<string, string>}
+ */
 export const inverted_countries_abreviations = Object.fromEntries(
     Object.entries(countries_abreviations).map(([key, value]) => [value, key])
 );

@@ -32,19 +32,35 @@ export let engine_names = { //this one is changed as the user adds engines, so i
     10: "Renault"
 }
 
+/**
+ * Adds a new engine name to the map.
+ * @param {number} id - Engine ID.
+ * @param {string} name - Engine name.
+ */
 export function addEngineName(id, name) {
     engine_names[id] = name
 }
 
+/**
+ * Deletes an engine name from the map.
+ * @param {number} id - Engine ID.
+ */
 export function deleteEngineName(id) {
     delete engine_names[id]
 }
 
+/**
+ * Sets the engine allocations map.
+ * @param {Object} allocations - Allocation data.
+ */
 export function setEngineAllocations(allocations) {
     engine_allocations = allocations
 }
 
 
+/**
+ * Resets the viewer state (tables, variables).
+ */
 export function resetViewer() {
     if (seasonTable) {
         seasonTable.destroy()
@@ -55,6 +71,9 @@ export function resetViewer() {
     }
 }
 
+/**
+ * Resets year selection buttons and hides tables.
+ */
 export function resetYearButtons() {
     document.getElementById("yearButton").textContent = "Year"
     isYearSelected = false
@@ -80,6 +99,9 @@ document.getElementById("teamspill").addEventListener("click", function () {
 })
 
 
+/**
+ * Toggles visibility between drivers and teams tables based on selection.
+ */
 function manage_show_tables() {
     const recordsList = document.querySelector(".records-list")
     recordsList.innerHTML = ""
@@ -117,6 +139,9 @@ document.querySelectorAll("#tableTypeDropdown a").forEach(function (elem) {
 
 
 
+/**
+ * Updates driver table cells to show points or positions.
+ */
 function change_points_pos_drivers() {
     driverCells.forEach(function (cell) {
         if (cell.dataset[pointsOrPos] !== undefined) {
@@ -128,6 +153,9 @@ function change_points_pos_drivers() {
     })
 }
 
+/**
+ * Updates team table cells to show points or positions.
+ */
 function change_points_pos_teams() {
     teamCells.forEach(function (cell) {
         if (cell.dataset[pointsOrPos] !== undefined) {
@@ -140,6 +168,10 @@ function change_points_pos_teams() {
 
 }
 
+/**
+ * Creates the structure for the drivers table.
+ * @param {Array} data - Calendar data.
+ */
 export function new_drivers_table(data) {
     calendarData = data
     races_ids = []
@@ -176,6 +208,10 @@ export function new_drivers_table(data) {
 
 }
 
+/**
+ * Creates the structure for the teams table.
+ * @param {Array} data - Calendar data.
+ */
 export function new_teams_table(data) {
     calendarData = data
     races_ids = []
@@ -211,6 +247,9 @@ export function new_teams_table(data) {
     header.appendChild(PointsDiv)
 }
 
+/**
+ * Adjusts column width based on scrollbar presence.
+ */
 function checkscroll() {
     let datazone = document.querySelector(".drivers-table-data")
     let pointscol = document.querySelector(".drivers-table-header").querySelector(".drivers-table-points")
@@ -222,6 +261,9 @@ function checkscroll() {
     }
 }
 
+/**
+ * Colors the driver table cells based on results (1st, 2nd, 3rd, fastest lap, DoD).
+ */
 function new_color_drivers_table() {
     let datazone = document.querySelector(".drivers-table-data");
     let rows = datazone.querySelectorAll(".drivers-table-row");
@@ -260,6 +302,9 @@ function new_color_drivers_table() {
 }
 
 
+/**
+ * Updates team logos in the teams table based on current configuration.
+ */
 function manage_teams_table_logos() {
     let logos = document.querySelectorAll(".teams-table-logo-inner")
     logos.forEach(function (logo) {
@@ -345,6 +390,9 @@ function manage_teams_table_logos() {
     })
 }
 
+/**
+ * Updates team names in the teams table based on configuration.
+ */
 function manage_teams_table_names() {
     let names = document.querySelectorAll(".teams-table-team")
     names.forEach(function (name) {
@@ -399,6 +447,9 @@ function manage_teams_table_names() {
     })
 }
 
+/**
+ * Colors team table cells based on points/ranking.
+ */
 function new_color_teams_table() {
     let datazone = document.querySelector(".teams-table-data")
     calendarData.forEach(function (race) {
@@ -444,6 +495,9 @@ function new_color_teams_table() {
     })
 }
 
+/**
+ * Reorders the teams table based on position.
+ */
 function order_teams_table() {
     let datazone = document.querySelector(".teams-table-data")
     let rows = datazone.querySelectorAll(".teams-table-row")
@@ -459,6 +513,10 @@ function order_teams_table() {
 
 }
 
+/**
+ * Populates the drivers table with new data.
+ * @param {Array} data - Driver data array.
+ */
 export function new_load_drivers_table(data) {
     seasonResults = data
     let datazone = document.querySelector(".drivers-table-data")
@@ -485,6 +543,13 @@ export function new_load_drivers_table(data) {
     driverCells = document.querySelectorAll(".drivers-table-data .drivers-table-normal")
 }
 
+/**
+ * Checks if the leading driver has mathematically won the championship.
+ * @param {Object} driver1 - Leading driver object.
+ * @param {number} driver1Points - Points of leading driver.
+ * @param {number} driver2Points - Points of second driver.
+ * @param {Object} pointsInfo - Points configuration.
+ */
 function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsInfo) {
     if (driver1 !== undefined) {
         const lastRaceDone = driver1["races"][driver1["races"].length - 1]["raceId"];
@@ -515,6 +580,12 @@ function new_order_drivers(array) {
     return array.sort((a, b) => a["championshipPosition"] - b["championshipPosition"]);
 }
 
+/**
+ * Updates the team logo in the UI (e.g. during rebrand).
+ * @param {string} team - Internal team key.
+ * @param {string} logo - New logo URL/class.
+ * @param {string} newTeam - New team name key.
+ */
 export function update_logo(team, logo, newTeam) {
     if (team === "alpine") {
         alpineReplace = newTeam
@@ -536,6 +607,9 @@ export function update_logo(team, logo, newTeam) {
     }
 }
 
+/**
+ * Reloads all season tables if data zone is populated.
+ */
 export function reloadTables() {
     let datazone = document.querySelector(".drivers-table-data")
     //if not empty
@@ -547,25 +621,29 @@ export function reloadTables() {
     }
 }
 
+/**
+ * Populates the teams table with data.
+ * @param {Array} data - Team data array including drivers and points.
+ */
 export function new_load_teams_table(data) {
-    // Mantenemos el mismo "shape" de entrada:
+    // Keep same input shape:
     // data = [driversArray, pairTeamPos, pointsInfo]
     const pairTeamPos = data[data.length - 2];
     const pointsInfo = data[data.length - 1];
 
-    // Mapa posEquipo -> posición (1..10)
+    // Map posTeam -> position (1..10)
     const pairTeamPosDict = {};
     pairTeamPos.forEach(function (pair) {
         pairTeamPosDict[pair[0]] = pair[1];
     });
 
-    // Ahora data[0] es el array de pilotos con formato-objeto
+    // data[0] is the driver object array
     const drivers = data[0];
 
     const datazone = document.querySelector(".teams-table-data");
     datazone.innerHTML = "";
 
-    // Estructura: teamData[teamId] = Map<raceId, RaceObj[] de ese equipo en esa carrera>
+    // Structure: teamData[teamId] = Map<raceId, RaceObj[] for that team in that race>
     const teamData = {
         1: new Map(), 2: new Map(), 3: new Map(), 4: new Map(), 5: new Map(),
         6: new Map(), 7: new Map(), 8: new Map(), 9: new Map(), 10: new Map()
@@ -574,9 +652,9 @@ export function new_load_teams_table(data) {
         teamData[32] = new Map();
     }
 
-    // Construimos el map por equipo/carrera
+    // Build map per team/race
     drivers.forEach(function (driver) {
-        // driver.latestTeamId sigue existiendo, pero para cada carrera usamos race.teamId
+        // driver.latestTeamId exists, but for each race use race.teamId
         driver.races?.forEach(function (raceObj) {
             const team = raceObj.teamId;
             if (!teamData[team]) return;
@@ -587,15 +665,15 @@ export function new_load_teams_table(data) {
         });
     });
 
-    // Normalizamos: aseguramos que cada equipo tenga entradas (vacías) para todas las carreras
+    // Normalize: ensure every team has entries (empty if needed) for all races
     for (let team in teamData) {
         const bucket = teamData[team];
         races_ids.forEach(rid => {
-            if (!bucket.has(rid)) bucket.set(rid, []); // aún no llegaron los 2 pilotos o no corrieron
+            if (!bucket.has(rid)) bucket.set(rid, []); // both drivers missing or did not race
         });
     }
 
-    // Pintamos filas por equipo, usando tu orden/posiciones
+    // Render rows per team
     let team1Points = 0, team2Points = 0, firstTeamId = 0;
     for (let team in combined_dict) {
         if (f1_teams.includes(parseInt(team))) {
@@ -675,24 +753,24 @@ function new_addTeam(teamRaceMap, name, pos, id) {
 
     let teampoints = 0;
 
-    // Iteramos las carreras en orden por races_ids (como antes)
+    // Iterate races in order by races_ids
     races_ids.forEach((raceId) => {
         const raceDiv = document.createElement("div");
         raceDiv.classList = "teams-table-normal";
 
-        // Recuperamos los objetos de los dos pilotos del equipo en esta carrera
+        // Get pair of drivers for this team and race
         const pair = (teamRaceMap && teamRaceMap.get(raceId)) || [];
 
         if (pair.length > 0) {
-            // Aseguramos 2 elementos (puede faltar uno)
+            // Ensure 2 elements
             const d1 = pair[0] || null;
             const d2 = pair[1] || null;
 
             const safePoints = (v) => {
-                if (v === -1) return 0; // DNF → 0 puntos
+                if (v === -1) return 0; // DNF -> 0 points
                 const n = parseInt(v);
                 return Number.isFinite(n) ? Math.max(0, n) : 0;
-                // usamos Math.max(0, n) por si hubiese negativos raros
+                // use Math.max(0, n) just in case
             };
 
             const d1Points = d1 ? safePoints(d1.points) : 0;
@@ -733,7 +811,7 @@ function new_addTeam(teamRaceMap, name, pos, id) {
             raceDiv.dataset.fastlap1 = d1 && d1.fastestLap ? 1 : 0;
             raceDiv.dataset.fastlap2 = d2 && d2.fastestLap ? 1 : 0;
 
-            // Suma de puntos de carrera
+            // Sum race points
             teampoints += parseInt(raceDiv.dataset.pointsCount);
 
             // Sprint
@@ -853,7 +931,7 @@ function new_addDriver(driver, races_done, odd) {
                 hasSprintPoints ? race.sprintPoints : undefined,
                 "points"
             );
-            raceDiv.dataset.fastlap = race.fastestLap ? 1 : 0; // normaliza a 0/1
+            raceDiv.dataset.fastlap = race.fastestLap ? 1 : 0; // normalize to 0/1
             raceDiv.dataset.quali = manage_dataset_info_driver(
                 race.qualifyingPos === 99 ? race.startingPos : race.qualifyingPos,
                 undefined,
@@ -861,7 +939,7 @@ function new_addDriver(driver, races_done, odd) {
             );
             raceDiv.dataset.gapToWinner = race.gapToWinner;
             raceDiv.dataset.gapToPole = race.gapToPole;
-            raceDiv.dataset.dotd = race.driverOfTheDay //if its true or false
+            raceDiv.dataset.dotd = race.driverOfTheDay // if true or false
 
             // Sprint
             if (hasSprintPos) raceDiv.dataset.sprintpos = race.sprintPos;
@@ -872,7 +950,7 @@ function new_addDriver(driver, races_done, odd) {
                 }
             }
 
-            // Puntos carrera (ignora -1)
+            // Race points (ignore -1)
             driverpoints += Math.max(0, parseInt(race.points) || 0);
 
             raceDiv.textContent = raceDiv.dataset[pointsOrPos];
@@ -1180,13 +1258,13 @@ export function generateYearsMenu(actualYear) {
     yearMenu.innerHTML = "";
     yearH2H.innerHTML = "";
 
-    // años (con data-year)
+    // years (with data-year)
     for (let year = actualYear; year >= game_version; year--) {
         const a = document.createElement("a");
         a.textContent = String(year);
         a.className = "dropdown-item";
         a.style.cursor = "pointer";
-        a.dataset.year = String(year);                 // <- aquí
+        a.dataset.year = String(year);                 // <- here
         yearMenu.appendChild(a);
         a.addEventListener("click", () => manageRecordsSelected(a));
 
@@ -1201,17 +1279,17 @@ export function generateYearsMenu(actualYear) {
             document.querySelectorAll(".modal-team").forEach(el => el.classList.remove("d-none"));
             const yearBtnH2H = document.getElementById("yearButtonH2H");
             yearBtnH2H.textContent = a2.textContent;
-            yearBtnH2H.dataset.year = a2.dataset.year;  // <- también lo guardo
+            yearBtnH2H.dataset.year = a2.dataset.year;  // <- also saving it
             new Command("yearSelectedH2H", { year: a2.dataset.year }).execute();
         });
     }
 
-    // All Time al principio (con data-year="all")
+    // All Time at beginning (with data-year="all")
     const allTime = document.createElement("a");
     allTime.textContent = "All Time";
     allTime.className = "dropdown-item";
     allTime.id = "allTimeRecords";
-    allTime.dataset.year = "all";                   // <- clave
+    allTime.dataset.year = "all";                   // <- key
     yearMenu.insertBefore(allTime, yearMenu.firstChild);
     allTime.addEventListener("click", () => {
         setYearButton(allTime);
@@ -1230,20 +1308,20 @@ function manageRecordsSelected(forcedYearEl = null) {
     const yearBtn = document.getElementById("yearButton");
     const typeVal = document.querySelector("#recordsTypeButton").dataset.value;
 
-    // resolve seleccionado actual
+    // resolve currently selected
     let selectedEl = forcedYearEl
         || yearItems.find(i => i.dataset.year === yearBtn.dataset.year)
         || yearItems[0];
 
     const isAllTime = el => el.dataset.year === "all";
 
-    // si es standings y estaba en All Time, forzar primer año real
+    // if standings and was All Time, force first real year
     if (typeVal === "standings" && isAllTime(selectedEl)) {
         const firstReal = yearItems.find(i => !isAllTime(i));
         if (firstReal) selectedEl = firstReal;
     }
 
-    // reflejar en el botón
+    // reflect in button
     setYearButton(selectedEl);
 
     const selectedYear = selectedEl.dataset.year;
@@ -1273,9 +1351,13 @@ function manageShowRecords() {
 function setYearButton(el) {
     const yearBtn = document.getElementById("yearButton");
     yearBtn.textContent = el.textContent.trim();
-    yearBtn.dataset.year = el.dataset.year;           // <- guardamos el valor
+    yearBtn.dataset.year = el.dataset.year;           // <- saving value
 }
 
+/**
+ * Populates the records list in the UI.
+ * @param {Array} data - Records data.
+ */
 export function loadRecordsList(data) {
     const recordsList = document.querySelector(".records-list")
     recordsList.innerHTML = ""
@@ -1497,14 +1579,14 @@ document.querySelector(".hide-historic-drivers").addEventListener("click", funct
 
     const recordsList = document.querySelectorAll(".record-item");
 
-    // Ocultar/mostrar históricos
+    // Hide/show historic drivers
     recordsList.forEach(function (record) {
         if (record.classList.contains("historic-driver")) {
             record.classList.toggle("d-none");
         }
     });
 
-    // Renumerar solo los visibles
+    // Renumber only visible rows
     let visibleIndex = 1;
     recordsList.forEach(function (record) {
         if (!record.classList.contains("d-none")) {

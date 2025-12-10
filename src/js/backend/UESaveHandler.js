@@ -3,6 +3,11 @@ import pako from "pako";
 import { saveAs } from "file-saver";
 import { Buffer } from "buffer";
 
+/**
+ * Parses GVAS properties to extract career save metadata.
+ * @param {Object} Properties - The properties object from the GVAS structure.
+ * @returns {Object} An object containing the extracted career save metadata.
+ */
 export const parseGvasProps = (Properties) => {
   const careerSaveMetadata = {};
   const metadataProperty = Properties.Properties.filter(x => x.Name === "MetaData")[0];
@@ -15,6 +20,12 @@ export const parseGvasProps = (Properties) => {
   return { careerSaveMetadata };
 }
 
+/**
+ * Analyzes a save file, decompresses the database, and prepares it for usage.
+ * @param {File} file - The save file to analyze.
+ * @param {Object} SQL - The initialized SQL.js module.
+ * @returns {Promise<Object>} A promise that resolves with an object containing the database instance and metadata.
+ */
 export const analyzeFileToDatabase = async (file, SQL) => {
   return new Promise((resolve) => {
     if (file !== undefined) {
@@ -101,6 +112,13 @@ export const analyzeFileToDatabase = async (file, SQL) => {
   });
 }
 
+/**
+ * Repacks the modified database into the GVAS save format.
+ * @param {Object} db - The SQL.js database instance.
+ * @param {Object} metadata - The metadata associated with the save file.
+ * @param {boolean} [overwrite=false] - Whether to overwrite existing data (unused).
+ * @returns {Object} An object containing the final binary data and metadata, or prompts a download.
+ */
 export const repack = (db, metadata, overwrite = false) => {
   db.exec(`
     PRAGMA journal_mode = OFF;
@@ -154,6 +172,11 @@ export const repack = (db, metadata, overwrite = false) => {
 
 }
 
+/**
+ * Dumps the database to a file.
+ * @param {Object} db - The SQL.js database instance.
+ * @param {Object} metadata - The metadata associated with the database.
+ */
 export const dump = (db, metadata) => {
   saveAs(new Blob([db.export()], { type: "application/vnd.sqlite3" }), metadata.filename + ".db");
 }

@@ -1,8 +1,14 @@
+/**
+ * Entry point for the application.
+ * Imports Bootstrap, Chart.js libraries, and all frontend logic modules.
+ * Also imports global styles.
+ */
+
 // Bootstrap
 import "bootstrap/dist/css/bootstrap.min.css";
 import 'bootstrap-icons/font/bootstrap-icons.min.css';
 
-// Resto de imports
+// Rest of imports
 import interact from 'interactjs';
 
 import Chart from 'chart.js/auto';

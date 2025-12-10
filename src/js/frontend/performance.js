@@ -27,6 +27,11 @@ let actualMaxDesign = 0;
 let customEnginesCopy;
 let currentData;
 
+/**
+ * Normalizes data values to a 0-100 scale for visualization.
+ * @param {Object} data - The data object to normalize.
+ * @returns {Object} Normalized data.
+ */
 function normalizeData(data) {
     let values = Object.values(data);
 
@@ -48,6 +53,10 @@ function normalizeData(data) {
 
 
 
+/**
+ * Loads team performance data into the UI.
+ * @param {Object} teams - Dictionary of team performance data.
+ */
 export function load_performance(teams) {
     // let teams = normalizeData(teams);
     for (let key in teams) {
@@ -66,6 +75,10 @@ export function load_performance(teams) {
     }
 }
 
+/**
+ * Loads car performance data into the UI.
+ * @param {Object} data - Dictionary of car performance data.
+ */
 export function load_cars(data) {
     for (let key in data) {
         let cars = document.querySelectorAll(`#carsDiv .car[data-teamid='${key}']`);
@@ -105,6 +118,10 @@ export function load_cars(data) {
     }
 }
 
+/**
+ * Loads team attributes into the UI (hidden attributes on progress bars).
+ * @param {Object} teams - Team attributes data.
+ */
 export function load_attributes(teams) {
     for (let key in teams) {
         for (let attribute in teams[key]) {
@@ -116,6 +133,10 @@ export function load_attributes(teams) {
     }
 }
 
+/**
+ * Loads car attributes into the UI.
+ * @param {Object} teams - Car attributes data grouped by team.
+ */
 export function load_car_attributes(teams) {
     for (let key in teams) {
         for (let car in teams[key]) {
@@ -129,6 +150,10 @@ export function load_car_attributes(teams) {
     }
 }
 
+/**
+ * Orders the performance list by a specific criterion.
+ * @param {string} criterion - The data attribute to sort by.
+ */
 export function order_by(criterion) {
     let teams = document.querySelectorAll(".team-performance");
     let teamsArray = Array.from(teams);
@@ -217,6 +242,10 @@ enginesPill.addEventListener("click", function () {
     first_show_animation()
 })
 
+/**
+ * Gathers performance data from engine inputs.
+ * @returns {Object} Engine data dictionary.
+ */
 export function gather_engines_data() {
     let engines = document.querySelectorAll("#enginesPerformance .engine-performance")
     let enginesData = {}
@@ -235,6 +264,10 @@ export function gather_engines_data() {
 }
 
 
+/**
+ * Updates the maximum design ID.
+ * @param {number|string} data - The max design ID.
+ */
 export function update_max_design(data) {
     actualMaxDesign = parseInt(data) + 1;
 }
@@ -325,6 +358,10 @@ document.querySelectorAll(".engine").forEach(function (elem) {
     })
 })
 
+/**
+ * Loads part statistics into the UI.
+ * @param {Object} data - Parts data.
+ */
 export function load_parts_stats(data) {
     for (let key in data) {
         if (key !== "engine") {
@@ -344,6 +381,10 @@ export function load_parts_stats(data) {
     }
 }
 
+/**
+ * Loads the list of parts available for editing.
+ * @param {Object} data - Parts data.
+ */
 export function load_parts_list(data) {
     for (let key in data) {
         let list = document.querySelector(`.part-performance[data-part='${key}'] .parts-list`)
@@ -433,6 +474,10 @@ export function load_parts_list(data) {
     }
 }
 
+/**
+ * Adds a button to create new parts.
+ * @param {HTMLElement} list - The parts list container.
+ */
 function add_new_part_button(list) {
     let new_part_div = document.createElement("div")
     new_part_div.classList.add("new-part")
@@ -487,6 +532,10 @@ function add_new_part_button(list) {
     })
 }
 
+/**
+ * Adds buttons to increment/decrement part count.
+ * @param {HTMLElement} loadoutContainer - The container for loadout icons.
+ */
 function add_n_parts_buttons(loadoutContainer) {
     let buttonsContainer = document.createElement("div")
     buttonsContainer.classList.add("n-parts-buttons")
@@ -533,6 +582,10 @@ function add_n_parts_buttons(loadoutContainer) {
     loadoutContainer.appendChild(buttonsContainer)
 }
 
+/**
+ * Loads details for a single part.
+ * @param {Object} data - Part data.
+ */
 export function load_one_part(data) {
     let key = Object.keys(data)[0]
     let part = document.querySelector(`.part-performance[data-part='${key}']`)
@@ -549,6 +602,12 @@ export function load_one_part(data) {
     }
 }
 
+/**
+ * Adds listener to part names for selection/editing.
+ * @param {HTMLElement} div - The part name element.
+ * @param {HTMLElement} subtitle - The subtitle element to update.
+ * @param {string} type - "old" or "new".
+ */
 function add_partName_listener(div, subtitle, type = "old") {
     div.addEventListener("click", function () {
         if (type === "new") {
@@ -570,6 +629,12 @@ function add_partName_listener(div, subtitle, type = "old") {
     })
 }
 
+/**
+ * Adds listener for fitting parts to loadouts.
+ * @param {HTMLElement} icon - The loadout icon.
+ * @param {string} loadout_n - Loadout number ("1" or "2").
+ * @param {HTMLElement} partTitle - The part title element.
+ */
 function loadout_listener(icon, loadout_n, partTitle) {
     icon.addEventListener("click", function () {
         let part_design = icon.parentNode.parentNode.querySelector(".one-part-name").dataset.designId;
@@ -802,6 +867,11 @@ document.querySelector(".performance-show").querySelectorAll(".new-or-existing-p
 })
 
 
+/**
+ * Helper function to update input values within min/max bounds.
+ * @param {HTMLInputElement} input - The input element.
+ * @param {number} increment - Value to increment by.
+ */
 function updateValue(input, increment) {
     let value = input.value.split(' ')[0];
     let unit = input.value.split(' ')[1];
@@ -851,12 +921,12 @@ document.querySelectorAll(".part-performance-title .bi-chevron-down").forEach(fu
         let partEditing = list.querySelector('.one-part-name.editing').parentNode.parentNode;
         let newPart = partEditing.nextElementSibling;
 
-        // Si el siguiente es 'new-part', nos movemos al primero
+        // If next is 'new-part', go to first
         if (newPart && newPart.classList.contains('new-part')) {
             newPart = list.firstElementChild;
         }
 
-        // Simulamos el click en el nuevo elemento encontrado (si es válido)
+        // Simulate click
         if (newPart) {
             newPart.querySelector(".one-part-name").click();
         }
@@ -888,6 +958,11 @@ function resetBars() {
     })
 }
 
+/**
+ * Adds a new custom engine to the UI list.
+ * @param {string} name - Engine name.
+ * @param {Object} stats - Engine stats.
+ */
 function add_custom_engine(name, stats) {
     let generalEngineDiv = document.createElement("div")
     let engineTitle = document.createElement("input")
@@ -1031,6 +1106,10 @@ document.querySelector("#confirmCustomEnginesButton").addEventListener("click", 
 })
 
 
+/**
+ * Loads the list of custom engines into the dropdown and UI.
+ * @param {Array} data - Custom engine data.
+ */
 export function load_custom_engines(data) {
     let engines = data
     customEnginesCopy = data
@@ -1067,8 +1146,8 @@ document.querySelector("#cancelCustomEnginesButton").addEventListener("click", f
 
 /**
  * Manages the progression of the bars 
- * @param {div} bar bar that is about to be edited
- * @param {int} progress number that determines the progress of the bar 
+ * @param {HTMLDivElement} bar bar that is about to be edited
+ * @param {number} progress number that determines the progress of the bar
  */
 function manage_bar(bar, progress) {
     if (bar.dataset.type === "engine") {
@@ -1104,6 +1183,9 @@ function manage_bar(bar, progress) {
     bar.parentNode.querySelector(".performance-data").innerHTML = progress * 10 + "%"
 }
 
+/**
+ * Reloads the performance graph with current data.
+ */
 export function reload_performance_graph() {
     if (typeof performanceGraph !== 'undefined' && performanceGraph !== null) {
         performanceGraph.destroy(); 
@@ -1112,6 +1194,10 @@ export function reload_performance_graph() {
     
 }
 
+/**
+ * Loads and renders the performance graph.
+ * @param {Array} data - Performance data for teams.
+ */
 export function load_performance_graph(data) {
     currentData = data
     let labelsArray = []
@@ -1126,7 +1212,7 @@ export function load_performance_graph(data) {
     performanceGraph.update()
     let teamPerformances = {};
 
-    // Inicializar un array vacío para cada equipo
+    // Initialize empty array for each team
     for (let i = 1; i <= 10; i++) {
         teamPerformances[i] = [];
     }
@@ -1218,7 +1304,7 @@ function createPerformanceChart(labelsArray) {
                                 family: "Formula1Bold"
                             },
                             callback: function (value) {
-                                return value.toFixed(1); // Mostrar solo un decimal
+                                return value.toFixed(1); // Show only one decimal
                             }
                         }
 

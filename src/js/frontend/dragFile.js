@@ -6,25 +6,44 @@ import { Command } from "../backend/command.js";
 import { getCombinedDict } from "./config.js";
 
 let carAnalysisUtils = null;
+/**
+ * The worker instance for handling database operations.
+ */
 export const dbWorker = new Worker(new URL('../backend/worker.js', import.meta.url));
 
 const dropDiv = document.getElementById("dropDiv");
 
+/**
+ * Event listener for drag enter.
+ * Adds visual indication for drag over.
+ */
 dropDiv.addEventListener("dragenter", (event) => {
     event.preventDefault();
     dropDiv.classList.add("drag-over");
 });
 
+/**
+ * Event listener for drag over.
+ * Prevents default behavior to allow drop.
+ */
 dropDiv.addEventListener("dragover", (event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "copy";
 });
 
+/**
+ * Event listener for drag leave.
+ * Removes visual indication for drag over.
+ */
 dropDiv.addEventListener("dragleave", (event) => {
     event.preventDefault();
     dropDiv.classList.remove("drag-over");
 });
 
+/**
+ * Event listener for file drop.
+ * Processes the dropped file, validates extension, loads DB via worker, and updates UI.
+ */
 dropDiv.addEventListener("drop", async (event) => {
     event.preventDefault();
     dropDiv.classList.remove("drag-over");
@@ -67,7 +86,7 @@ dropDiv.addEventListener("drop", async (event) => {
                     document.querySelector("#dateDay").textContent = completeDay;
                     document.querySelector("#dateMonth").textContent = month;
                     document.querySelector("#dateYear").textContent = year;
-                    resolve();  // Continuamos cuando la base de datos esté cargada
+                    resolve();  // Continue when database is loaded
                 } else if (msg.data.error) {
                     console.error("[Main Thread] Error loading DB:", msg.data.error);
                     reject(new Error(msg.data.error));
@@ -84,6 +103,3 @@ dropDiv.addEventListener("drop", async (event) => {
         command.execute();
     }
 });
-
-
-

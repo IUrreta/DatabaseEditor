@@ -9,6 +9,12 @@ const weatherDict = {
   "5": 32
 };
 
+/**
+ * Edits the race calendar, either updating existing races or regenerating it with new data.
+ * @param {string} calendarStr - String representation of the calendar (e.g., race codes).
+ * @param {string} year_iteration - The current year iteration ("23" or "24").
+ * @param {Array<Object>} racesData - Array of race objects containing trackId, state, type, weather info, etc.
+ */
 export function editCalendar(calendarStr, year_iteration, racesData) {
   const calendar = calendarStr.toLowerCase();
   const yearIteration = year_iteration;
@@ -41,7 +47,7 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
   `, 'allRows') || [];
 
   actualCalendar = actualCalendar.map(row => row[0]);
-  //build newCalendar with trackId from each element from the array racesData
+  // build newCalendar with trackId from each element from the array racesData
   const newCalendar = racesData.map(race => parseInt(race.trackId));
 
   if (arraysEqual(actualCalendar, newCalendar)) {
@@ -62,7 +68,7 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
       const rainQBool = (parseFloat(rainQ) >= 8) ? 1 : 0;
       const rainP = weatherDict[race.rainPractice];
       const rainPBool = (parseFloat(rainP) >= 8) ? 1 : 0;
-      // race_code = race.slice(0, -5); // en Python, no lo usas aquí para nada
+      // race_code = race.slice(0, -5); // unused in JS version
 
       queryDB(`
         UPDATE Races
@@ -183,6 +189,12 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
 
 // Helpers
 
+/**
+ * Checks if two arrays are equal.
+ * @param {Array} a - First array.
+ * @param {Array} b - Second array.
+ * @returns {boolean} True if arrays are equal, false otherwise.
+ */
 function arraysEqual(a, b) {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; i++) {
@@ -191,6 +203,12 @@ function arraysEqual(a, b) {
   return true;
 }
 
+/**
+ * Generates a random integer between min and max (inclusive).
+ * @param {number} min - Minimum value.
+ * @param {number} max - Maximum value.
+ * @returns {number} Random integer.
+ */
 function randomInt(min, max) {
   const mn = parseInt(min, 10);
   const mx = parseInt(max, 10);

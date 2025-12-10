@@ -1,5 +1,8 @@
 import { queryDB } from "../dbManager";
 
+/**
+ * Difficulty settings and their associated modifiers.
+ */
 const difficultyDict = {
   0: {
     name: "default",
@@ -64,6 +67,10 @@ const invertedDifficultyDict = Object.fromEntries(
   Object.entries(difficultyDict).map(([key, entry]) => [entry.name, Number(key)])
 );
 
+/**
+ * Manages all difficulty triggers based on the provided list.
+ * @param {Object} triggerList - List of difficulty settings.
+ */
 export function manageDifficultyTriggers(triggerList) {
   if (triggerList.statDif !== undefined) manageDesignBoostTriggers(triggerList.statDif);
   if (triggerList.designTimeDif !== undefined) manageDesignTimeTriggers(triggerList.designTimeDif);
@@ -72,6 +79,10 @@ export function manageDifficultyTriggers(triggerList) {
   if (triggerList.researchDif !== undefined) manageResearchTriggers(triggerList.researchDif);
 }
 
+/**
+ * Creates triggers to manage car part weight for AI teams.
+ * @param {number} triggerLevel - Difficulty level.
+ */
 export function manageWeightTrigger(triggerLevel) {
   queryDB("DROP TRIGGER IF EXISTS reduced_weight_normal");
   queryDB("DROP TRIGGER IF EXISTS reduced_weight_extreme");
@@ -143,6 +154,10 @@ export function manageWeightTrigger(triggerLevel) {
   }
 }
 
+/**
+ * Creates triggers to reduce design time for AI teams.
+ * @param {number} triggerLevel - Difficulty level.
+ */
 export function manageDesignTimeTriggers(triggerLevel) {
   queryDB("DROP TRIGGER IF EXISTS designTime_extraHard");
   queryDB("DROP TRIGGER IF EXISTS designTime_brutal");
@@ -173,6 +188,10 @@ export function manageDesignTimeTriggers(triggerLevel) {
   }
 }
 
+/**
+ * Creates triggers to boost design stats for AI teams based on difficulty.
+ * @param {number} triggerLevel - Difficulty level.
+ */
 export function manageDesignBoostTriggers(triggerLevel) {
   queryDB("DROP TRIGGER IF EXISTS difficulty_extraHard");
   queryDB("DROP TRIGGER IF EXISTS difficulty_brutal");
@@ -261,6 +280,10 @@ export function manageDesignBoostTriggers(triggerLevel) {
   }
 }
 
+/**
+ * Creates triggers for instant part building for AI teams.
+ * @param {number} triggerLevel - Difficulty level.
+ */
 export function manageInstantBuildTriggers(triggerLevel) {
   queryDB("DROP TRIGGER IF EXISTS instant_build_insane");
   queryDB("DROP TRIGGER IF EXISTS instant_build_impossible");
@@ -356,6 +379,10 @@ export function manageInstantBuildTriggers(triggerLevel) {
   }
 }
 
+/**
+ * Creates triggers to boost research expertise gain for AI teams.
+ * @param {number} triggerLevel - Difficulty level.
+ */
 export function manageResearchTriggers(triggerLevel) {
   queryDB("DROP TRIGGER IF EXISTS research_extraHard");
   queryDB("DROP TRIGGER IF EXISTS research_brutal");
@@ -388,6 +415,10 @@ export function manageResearchTriggers(triggerLevel) {
   }
 }
 
+/**
+ * Upgrades factory buildings for AI teams.
+ * @param {number} triggerLevel - Difficulty level determining the upgrade extent.
+ */
 export function upgradeFactories(triggerLevel) {
   if (triggerLevel === 4) {
     queryDB("UPDATE Buildings_HQ SET BuildingID = 34, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 34");
@@ -398,6 +429,10 @@ export function upgradeFactories(triggerLevel) {
   }
 }
 
+/**
+ * Creates triggers to fix factory degradation for AI teams.
+ * @param {number} type - 1 to enable fix trigger.
+ */
 export function manageRefurbishTrigger(type) {
   queryDB("DROP TRIGGER IF EXISTS refurbish_fix");
   if (type === 1) {
@@ -416,6 +451,10 @@ export function manageRefurbishTrigger(type) {
   }
 }
 
+/**
+ * Fetches currently active difficulty triggers from the database.
+ * @returns {Object} Current trigger configuration.
+ */
 export function fetchExistingTriggers() {
   let highest_difficulty = 0;
   const triggerList = {
@@ -456,6 +495,10 @@ export function fetchExistingTriggers() {
   return { highest_difficulty, triggerList, refurbish, frozenMentality };
 }
 
+/**
+ * Creates triggers to freeze or unfreeze staff mentality.
+ * @param {number} state - 1 to freeze (create triggers), 0 to unfreeze (drop triggers).
+ */
 export function editFreezeMentality(state) {
   if (state === 0) {
     queryDB("DROP TRIGGER IF EXISTS update_Opinion_After_Insert;");

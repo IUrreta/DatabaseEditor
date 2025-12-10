@@ -52,6 +52,7 @@ let name_dict = { 'ferrari': "Ferrari", 'mclaren': "McLaren", 'redbull': "Red Bu
 
 /**
  * Removes all the drivers from teams and categories
+ * @param {boolean} staffOnly - If true, only remove staff elements.
  */
 export function remove_drivers(staffOnly = false) {
     if (!staffOnly) {
@@ -69,10 +70,22 @@ export function remove_drivers(staffOnly = false) {
     freeStaffDiv.innerHTML = ""
 }
 
+/**
+ * Inserts spaces before uppercase letters in a string.
+ * @param {string} str - The input string.
+ * @returns {string} The formatted string.
+ */
 export function insert_space(str) {
     return str.replace(/([A-Z])/g, ' $1').trim();
 }
 
+/**
+ * Formats a driver's full name into abbreviated and last name components.
+ * @param {string} fullName - Full name.
+ * @param {Array<string>} nameSplitted - Split name array.
+ * @param {HTMLElement} spanName - Element for first name.
+ * @param {HTMLElement} spanLastName - Element for last name.
+ */
 export function format_name(fullName, nameSplitted, spanName, spanLastName) {
     if (fullName.length > 17) {
         let nameArray = fullName.split(" ");
@@ -95,7 +108,7 @@ export function format_name(fullName, nameSplitted, spanName, spanLastName) {
 
 /**
  * Places all drivers in their respective team, category etc
- * @param {Object} driversArray List of drivers
+ * @param {Array} driversArray List of drivers
  */
 export function place_drivers(driversArray) {
     let divPosition;
@@ -161,6 +174,11 @@ function add_edit_container(div) {
 }
 
 
+/**
+ * Updates a driver's name in both free driver and normal driver views.
+ * @param {string} driverID - ID of the driver.
+ * @param {string} name - New name.
+ */
 export function update_name(driverID, name) {
     let freeDiv = document.querySelector(`.free-driver[data-driverid='${driverID}']`)
     let normalDiv = document.querySelector(`.normal-driver[data-driverid='${driverID}']`)
@@ -180,6 +198,10 @@ export function update_name(driverID, name) {
 }
 
 
+/**
+ * Sorts drivers in a list based on future team and name.
+ * @param {string} divID - ID of the container div.
+ */
 export function sortList(divID) {
     let container = document.getElementById(divID);
 
@@ -205,6 +227,10 @@ export function sortList(divID) {
     divs.forEach(div => container.appendChild(div));
 }
 
+/**
+ * Places staff members into their respective containers.
+ * @param {Array} staffArray - Array of staff data.
+ */
 export function place_staff(staffArray) {
     let divPosition;
     staffArray.forEach((staff) => {
@@ -269,6 +295,9 @@ export function place_staff(staffArray) {
     })
 }
 
+/**
+ * Initializes the list of free drivers for search filtering.
+ */
 export function initFreeDriversElems() {
     freeDriverItems = [
         ...document.querySelectorAll("#free-drivers .free-driver"),
@@ -345,7 +374,7 @@ document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {
 
 /**
  * Updates the color from the div depending on the team, both in contract and stats view
- * @param {div} div div from the driver
+ * @param {HTMLElement} div div from the driver
  */
 function updateColor(div) {
     let surnameDiv = div.querySelector(".bold-font")
@@ -362,8 +391,8 @@ function updateColor(div) {
 
 /**
  * Manages the color depending on the team
- * @param {div} div div from the driver
- * @param {span} lastName the lastname span from the driver
+ * @param {HTMLElement} div div from the driver
+ * @param {HTMLElement} lastName the lastname span from the driver
  */
 export function manageColor(div, lastName) {
     if (div.dataset.teamid != 0) {
@@ -376,7 +405,7 @@ export function manageColor(div, lastName) {
 
 /**
  * Adds the edit icon
- * @param {div} div div from the driver that is going to add the icon into
+ * @param {HTMLElement} div div from the driver that is going to add the icon into
  */
 function addIcon(div) {
     let iconDiv = document.createElement("div");
@@ -391,7 +420,7 @@ function addIcon(div) {
 
 /**
  * Adds the eventlistener for one icon
- * @param {div} icon div from the icon
+ * @param {HTMLElement} icon div from the icon
  */
 function iconListener(icon) {
     icon.addEventListener("click", function () {
@@ -536,7 +565,7 @@ function manage_modal_driver_staff(type) {
 
 /**
  * Places all the values for the modal that just openend
- * @param {Object} info values for the contract modal that just opened
+ * @param {Array} info values for the contract modal that just opened
  */
 export function manage_modal(info) {
     if (info[0] !== null) {
@@ -765,7 +794,7 @@ function updateContractValue(input, increment) {
 
 /**
  * Sends the message that requests the details from the driver
- * @param {div} elem div from the driver its requesting its details
+ * @param {HTMLElement} elem div from the driver its requesting its details
  */
 function queryContract(elem) {
     driverEditingID = elem.dataset.driverid

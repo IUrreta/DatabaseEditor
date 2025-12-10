@@ -1,5 +1,8 @@
 import { queryDB  } from "../dbManager";
 
+/**
+ * Defines salary and bonus ranges for staff types and tiers.
+ */
 export const minMaxTypeStaff = {
     driver: {
       salary: {
@@ -55,6 +58,19 @@ export const minMaxTypeStaff = {
     }
   };
   
+  /**
+   * Hires a driver to a team, either automatically or with manual contract parameters.
+   * @param {string} type - "auto" for automatic contract generation, "manual" otherwise.
+   * @param {number} driverID - ID of the driver.
+   * @param {number} teamID - ID of the team.
+   * @param {number} position - Position in team (1, 2, or reserve).
+   * @param {string} [salary=""] - Annual salary.
+   * @param {string} [startingBonus=""] - Signing bonus.
+   * @param {string} [raceBonus=""] - Bonus per race.
+   * @param {string} [raceBonusPos=""] - Position required for race bonus.
+   * @param {string} [yearEnd=""] - Contract end year.
+   * @param {string} [yearIteration="24"] - Game version year.
+   */
   export function hireDriver(type, driverID, teamID, position, salary = "", startingBonus = "", raceBonus = "", raceBonusPos = "", yearEnd = "", yearIteration = "24") {
     if (type === "auto" || salary === "" || startingBonus === "") {
       const params = getParamsAutoContract(driverID, teamID, position, yearIteration);
@@ -144,6 +160,9 @@ export const minMaxTypeStaff = {
     fixDriverStandings();
   }
   
+  /**
+   * Frees up driver numbers held by drivers not in F1 (teams > 10 and < 32).
+   */
   export function freeNumbersNotF1() {
     const numbers = queryDB("SELECT CurrentHolder, Number FROM Staff_DriverNumbers WHERE Number != 0 AND CurrentHolder IS NOT NULL", "allRows");
     if (numbers) {
@@ -161,16 +180,29 @@ export const minMaxTypeStaff = {
     }
   }
   
+  /**
+   * Fetches the staff type for a given ID.
+   * @param {number} driverID - The staff ID.
+   * @returns {number} The staff type (0 for driver).
+   */
   export function fetchTypeStaff(driverID) {
     return queryDB(`SELECT StaffType FROM Staff_GameData WHERE StaffID = ${driverID}`, "singleValue");
   }
   
+  /**
+   * Generates automatic contract parameters based on driver tier and team prestige.
+   * @param {number} driverID - Driver ID.
+   * @param {number} teamID - Team ID.
+   * @param {number} position - Position in team.
+   * @param {string} [yearIteration="24"] - Game year version.
+   * @returns {Object} Object containing generated contract parameters.
+   */
   export function getParamsAutoContract(driverID, teamID, position, yearIteration = "24") {
     const day = queryDB("SELECT Day FROM Player_State", "singleValue");
     const year = queryDB("SELECT CurrentSeason FROM Player_State", "singleValue");
     const [tier, type, rating] = getTier(driverID);
 
-    // Calcular salary
+    // Calculate salary
     const salaryRange = minMaxTypeStaff[type].salary[tier];
     let salary = (Math.round((Math.random() * (salaryRange[1] - salaryRange[0]) + salaryRange[0]) * 1000) / 1000) * 1000000;
     salary = salary.toString();
@@ -260,6 +292,11 @@ export const minMaxTypeStaff = {
     return { salary, yearEnd, position, startingBonus, raceBonus, raceBonusPos };
   }
   
+  /**
+   * Fires a driver from a team, deleting their contract and resetting assignments.
+   * @param {number} driverID - Driver ID.
+   * @param {number} teamID - Team ID.
+   */
   export function fireDriver(driverID, teamID) {
     const position = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = ${driverID}`, "singleValue");
     queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 0 AND TeamID = ${teamID}`);
@@ -275,10 +312,18 @@ export const minMaxTypeStaff = {
     }
   }
 
+  /**
+   * Removes any future contract for a driver.
+   * @param {number} driverID - Driver ID.
+   */
   export function removeFutureContract(driverID){
     queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 3`);
   }
   
+  /**
+   * Rearranges driver-engineer pairings for a team to ensure active assignments.
+   * @param {number} teamID - Team ID.
+   */
   export function rearrangeDriverEngineerPairings(teamID) {
     const engineers = queryDB(
       `SELECT gam.StaffID FROM Staff_GameData gam JOIN Staff_Contracts con ON gam.StaffID = con.StaffID WHERE con.TeamID = ${teamID} AND con.ContractType = 0 AND gam.StaffType = 2`,
@@ -318,6 +363,11 @@ export const minMaxTypeStaff = {
     }
   }
   
+  /**
+   * Swaps two drivers between their respective teams.
+   * @param {number} driver1ID - First driver ID.
+   * @param {number} driver2ID - Second driver ID.
+   */
   export function swapDrivers(driver1ID, driver2ID) {
     const position1 = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = ${driver1ID}`, "singleValue");
     const position2 = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE StaffID = ${driver2ID}`, "singleValue");
@@ -440,6 +490,15 @@ export const minMaxTypeStaff = {
     fixDriverStandings();
   }
   
+  /**
+   * Updates an existing contract for a driver.
+   * @param {number} driverID - Driver ID.
+   * @param {string} salary - New salary.
+   * @param {string} endSeason - New end season.
+   * @param {string} startingBonus - New signing bonus.
+   * @param {string} raceBonus - New race bonus.
+   * @param {string} raceBonusTargetPos - New race bonus target position.
+   */
   export function editContract(driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos) {
     const hasContract = queryDB(
       `SELECT TeamID FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 0`,
@@ -452,6 +511,18 @@ export const minMaxTypeStaff = {
     }
   }
   
+  /**
+   * Sets or updates a future contract for a driver.
+   * @param {string} teamID - Target team ID (or "-1" to delete).
+   * @param {number} driverID - Driver ID.
+   * @param {string} salary - Salary.
+   * @param {string} endSeason - End season.
+   * @param {string} startingBonus - Signing bonus.
+   * @param {string} raceBonus - Race bonus.
+   * @param {string} raceBonusTargetPos - Race bonus target.
+   * @param {string} position - Position in team.
+   * @param {string} [yearIteration="24"] - Game year version.
+   */
   export function futureContract(teamID, driverID, salary, endSeason, startingBonus, raceBonus, raceBonusTargetPos, position, yearIteration = "24") {
     if (teamID === "-1") {
       queryDB(`DELETE FROM Staff_Contracts WHERE StaffID = ${driverID} AND ContractType = 3`);
@@ -484,6 +555,11 @@ export const minMaxTypeStaff = {
     }
   }
   
+  /**
+   * Calculates the Excel serial date for the start of a given year.
+   * @param {number} year - The year.
+   * @returns {number} The Excel date serial.
+   */
   export function getExcelDate(year) {
     const excelStartDate = new Date(1900, 0, 1);
     const targetDate = new Date(year, 0, 1);
@@ -491,11 +567,20 @@ export const minMaxTypeStaff = {
     return diffDays;
   }
   
+  /**
+   * Unretires a driver, setting their status to active and granting a superlicense.
+   * @param {number} driverID - The driver ID.
+   */
   export function unretire(driverID) {
     queryDB(`UPDATE Staff_GameData SET Retired = 0 WHERE StaffID = ${driverID}`);
     queryDB(`UPDATE Staff_DriverData SET HasSuperLicense = 1 WHERE StaffID = ${driverID}`);
   }
   
+  /**
+   * Calculates the tier, type, and rating of a staff member.
+   * @param {number} driverID - The staff ID.
+   * @returns {Array} Array containing [tier, type, rating].
+   */
   export function getTier(driverID) {
     const driverStats = queryDB(`SELECT Val FROM Staff_PerformanceStats WHERE StaffID = ${driverID}`, "allRows");
     let type = "driver";
@@ -534,6 +619,11 @@ export const minMaxTypeStaff = {
     return [tier, type, rating];
   }
 
+  /**
+   * Calculates the overall rating of a driver.
+   * @param {number} driverID - The driver ID.
+   * @returns {number} The rounded overall rating.
+   */
   export function getDriverOverall(driverID) {
     const driverStats = queryDB(`SELECT Val FROM Staff_PerformanceStats WHERE StaffID = ${driverID}`, "allRows");
     let rating = 0;
@@ -559,6 +649,11 @@ export const minMaxTypeStaff = {
     return Math.round(rating);
   }
   
+  /**
+   * Retrieves the driver ID based on their name.
+   * @param {string} name - The driver's name.
+   * @returns {number} The driver ID.
+   */
   export function getDriverId(name) {
     let driver = name.charAt(0).toUpperCase() + name.slice(1);
     const multipleDrivers = ["Perez", "Raikkonen", "Hulkenberg", "Toth", "Stanek", "Villagomez", "Bolukbasi", "Marti"];
@@ -578,6 +673,9 @@ export const minMaxTypeStaff = {
     return driverId;
   }
   
+  /**
+   * Fixes driver standings by removing non-drivers.
+   */
   export function fixDriverStandings() {
     const year = queryDB("SELECT CurrentSeason FROM Player_State", "singleValue");
     const driversInStandings = queryDB(`SELECT DriverID FROM Races_DriverStandings WHERE SeasonID = ${year} AND RaceFormula = 1`, "allRows");

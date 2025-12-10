@@ -1,5 +1,10 @@
 import { queryDB } from "../dbManager";
 
+/**
+ * Fetches comprehensive data for a specific team.
+ * @param {number} teamID - The ID of the team.
+ * @returns {Array} An array containing facilities, objectives, balance, cost cap, confidence, season, pit stats, and engine ID.
+ */
 export function fetchTeamData(teamID){
     const levCon = queryDB(`
         SELECT BuildingID, DegradationValue
@@ -90,13 +95,18 @@ export function fetchTeamData(teamID){
       return data;
 }
 
-// manageCostCap(teamID, amount)
+/**
+ * Manages the cost cap adjustments for a team.
+ * Adjusts previous transactions or inserts new ones to meet the target amount.
+ * @param {number} teamID - The team ID.
+ * @param {number} amount - The amount to adjust.
+ */
 export function manageCostCap(teamID, amount) {
   let remaining = parseInt(amount, 10);
 
   if (remaining > 0) {
     while (remaining > 0) {
-      // Obtenemos la transacción negativa más reciente
+      // Get the most recent negative transaction
       const transaction = queryDB(`
         SELECT ROWID, Value, Reference
         FROM Finance_Transactions
@@ -112,7 +122,7 @@ export function manageCostCap(teamID, amount) {
       } else {
         const rowid = transaction[0];
         const value = transaction[1];
-        // reference = transaction[2]; // no se usa directamente
+        // reference = transaction[2]; // unused directly
 
         let amountToAdd;
         if ((value + remaining) <= 0) {
@@ -131,7 +141,7 @@ export function manageCostCap(teamID, amount) {
       }
     }
   } 
-  // Si remaining <= 0, insertamos una transacción que incremente el CostCap (o lo modifique negativamente)
+  // If remaining <= 0, insert a transaction to increase CostCap (or modify negatively)
   else {
     const daySeason = queryDB(`
       SELECT Day, CurrentSeason
@@ -145,6 +155,20 @@ export function manageCostCap(teamID, amount) {
   }
 }
 
+/**
+ * Updates team details including facilities, objectives, budget, and pit crew stats.
+ * @param {Object} info - Object containing team update data.
+ * @param {number} info.teamID - The team ID.
+ * @param {Array} info.facilities - Array of facility data.
+ * @param {number} info.seasonObj - Season objective target position.
+ * @param {number} info.longTermObj - Long term objective type.
+ * @param {number} info.longTermYear - Long term objective target year.
+ * @param {string} info.confidence - Board confidence value.
+ * @param {number} info.teamBudget - New team budget.
+ * @param {number} info.costCapEdit - Cost cap adjustment amount.
+ * @param {Object} info.pitCrew - Dictionary of pit crew stats.
+ * @param {number} info.engine - Engine ID to set.
+ */
 export function editTeam(info) {
   const daySeason = queryDB(`
     SELECT Day, CurrentSeason
@@ -153,10 +177,10 @@ export function editTeam(info) {
 
   const teamID = info.teamID;
 
-  // Actualización de Buildings_HQ
+  // Update Buildings_HQ
   info.facilities.forEach(facility => {
     const id = facility[0].slice(0, -1); 
-    // facility[0] podría ser "160a", por ejemplo, y con slice(0, -1) quitas el último carácter
+    // facility[0] could be "160a", slice(0, -1) removes last char
     
     queryDB(`
       UPDATE Buildings_HQ
@@ -175,7 +199,7 @@ export function editTeam(info) {
       AND SeasonID = ${daySeason[1]}
   `);
 
-  // Board_Objectives (objetivo a largo plazo)
+  // Board_Objectives (long term objective)
   const maxTargetYear = queryDB(`
     SELECT MAX(TargetEndYear)
     FROM Board_Objectives
@@ -206,10 +230,10 @@ export function editTeam(info) {
     WHERE TeamID = ${teamID}
   `);
 
-  // Ajuste de CostCap
+  // CostCap adjustment
   manageCostCap(teamID, info.costCapEdit);
 
-  // Actualizar Staff_PitCrew_PerformanceStats
+  // Update Staff_PitCrew_PerformanceStats
   Object.keys(info.pitCrew).forEach(statID => {
     queryDB(`
       UPDATE Staff_PitCrew_PerformanceStats
@@ -219,10 +243,15 @@ export function editTeam(info) {
     `);
   });
 
-  // La parte de manage_engine_change la manejas tú
+  // Handle engine change
   manage_engine_change(teamID, info.engine);
 }
 
+/**
+ * Handles changing a team's engine provider.
+ * @param {number} teamID - The team ID.
+ * @param {number} engineId - The new engine ID.
+ */
 export function manage_engine_change(teamID, engineId) {
 
   const oldEngineId = queryDB(`SELECT DesignID FROM Parts_Designs WHERE TeamID = ${teamID} AND PartType = 0`, 'singleValue');
@@ -254,7 +283,7 @@ export function manage_engine_change(teamID, engineId) {
     queryDB(`UPDATE Parts_TeamHistory SET EngineManufacturer = ${newEngineManufacturer} WHERE TeamID = ${teamID} AND SeasonID = ${year}`);
   }
 
-  queryDB(`UPDATE Custom_Engine_Allocations SET engineId = ${engineId} WHERE teamId = ${teamID}`);
+  queryDB(`UPDATE Custom_Engine_Allocations SET engineId = ${engineId} WHERE teamId = ${teamID} AND SeasonID = ${year}`);
 
 
 }
