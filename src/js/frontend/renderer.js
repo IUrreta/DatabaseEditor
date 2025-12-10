@@ -2145,7 +2145,7 @@ async function checkOpenSlideUp() {
     if (tier.paidMember) return;
 
     const lastShownStr = localStorage.getItem('patreonModalLastShown');
-    if (!canShowPatreonModal(lastShownStr) || validSignature.status === "valid") {
+    if (!canShowPatreonModal(lastShownStr)) {
         return;
     }
 
