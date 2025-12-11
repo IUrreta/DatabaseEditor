@@ -243,7 +243,7 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
   }, 150);
 
   try {
-    const articleText = await manageRead(news, newsList, progressDiv, interval, { force, model });
+    const articleText = await manageRead(news, newsList, progressDiv, interval, { force });
 
     clearInterval(interval);
     clearInterval(dotsInterval);
@@ -1185,7 +1185,7 @@ function buildContextualPrompt(data, config = {}) {
 }
 
 async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}) {
-  const { force = false, model } = opts;
+  const { force = false } = opts;
 
   // 1) Si ya hay texto y NO forzamos, devolvemos el existente
   if (newData.text && !force) {
@@ -1285,7 +1285,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     console.log("Final messages for AI:", messages);
 
     // 6) Llama a la IA y guarda
-    const articleText = await askGenAI(messages, { model });
+    const articleText = await askGenAI(messages);
     const cleanedArticleText = cleanArticleOutput(articleText);
     newData.text = cleanedArticleText;
 
@@ -1897,7 +1897,7 @@ async function contextualizeBigTransferConfirm(newData) {
   const date = newData.date || null;
 
   let newType = 6;
-  if (newData.type.includes("massive_exit")){
+  if (newData.type.includes("massive_exit")) {
     newType = 18;
   }
 
@@ -2404,39 +2404,24 @@ function saveTurningPoints(turningPoints) {
 }
 
 async function askGenAI(messages, opts = {}) {
-  const localStorageModel = localStorage.getItem("ai-model");
-  const fallbackModel = "gemini-2.5-flash";
+  const aiModel = opts.model || "gpt-5-mini";
+  console.log("Asking messages to GenAI:", messages, "with options", opts);
 
-  // Priority:
-  // 1. opts.model
-  // 2. localStorageModel
-  // 3. fallbackModel
-  console.log(opts.model, localStorageModel, fallbackModel);
-  const aiModel = opts.model || localStorageModel || fallbackModel;
-
-  let contents = [];
-
-  if (Array.isArray(messages)) {
-    contents = messages.map(msg => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: msg.content }]
-    }));
-  } else {
-    // Fallback for simple string prompt
-    contents = [{
-      role: 'user',
-      parts: [{ text: messages }]
-    }];
-  }
-
-  const response = await ai.models.generateContent({
-    model: aiModel,
-    contents: contents,
+  const response = await fetch("/api/ask-openai", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      messages,
+      model: aiModel,
+      max_tokens: opts.max_tokens || 5000
+    })
   });
 
-  return response.text();
-}
+  const data = await response.json();
+  console.log("GenAI response:", data);
 
+  return data.text;
+}
 function buildEmergencyOverlay() {
   const overlayDiv = document.createElement('div');
   overlayDiv.classList.add('breaking-news-overlay', 'bold-font');
@@ -2634,7 +2619,7 @@ function getOrdinalSuffix(n) {
   return n + "th";
 }
 
-document.querySelectorAll('#newsTypeMenu .dropdown-item').forEach(item => {
+document.querySelectorAll('#newsTypeMenu .redesigned-dropdown-item').forEach(item => {
   item.addEventListener('click', function (e) {
     e.preventDefault();
     e.stopPropagation();
