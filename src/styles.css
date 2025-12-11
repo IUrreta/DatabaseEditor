@@ -2177,14 +2177,6 @@ body:has(#blockDiv:not(.disappear)) .patreon-login #userToolButton:hover {
   color: var(--new-primary);
 }
 
-.patreon-login .patreon-login-button {
-  background-color: transparent;
-  border: none;
-  outline: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: color 0.15s, background-color 0.15s;
-}
 
 .patreon-login .patreon-login-button:hover {
   color: var(--new-primary);

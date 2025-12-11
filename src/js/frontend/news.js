@@ -497,7 +497,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
   }
 }
 
-function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
+function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, isCurrentSeason = true) {
   const isTurning =
     news.turning_point_type === 'original' ||
     news.turning_point_type === 'approved' ||
@@ -605,6 +605,13 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
 
   }
 
+  //if news has .isCurrentSeason and its false, remove read button and turning point buttons
+  if (isCurrentSeason === false && (news.text === undefined || news.text === null)) {
+    readButton.remove();
+    const tpDiv = readbuttonContainer.querySelector('.turning-point-div');
+    if (tpDiv) tpDiv.remove();
+  }
+
 
   newsItem.appendChild(newsBody);
 
@@ -633,6 +640,7 @@ function computeStableKey(n) {
 export async function place_news(newsAndTurningPoints, newsAvailable) {
   let newsList = newsAndTurningPoints.newsList;
   let turningPointState = newsAndTurningPoints.turningPointState;
+  let isCurrentSeason = newsAndTurningPoints.isCurrentSeason;
   await finishGeneralLoader();
 
   let maxDate;
@@ -665,13 +673,22 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
 
     if (!maxDate || news.date > maxDate) maxDate = news.date;
 
-    const newsItem = createNewsItemElement(news, i, newsAvailable, newsList, maxDate);
+    const newsItem = createNewsItemElement(news, i, newsAvailable, newsList, maxDate, isCurrentSeason);
     newsGrid.appendChild(newsItem);
     setTimeout(() => {
       newsItem.classList.remove('fade-in');
       newsItem.style.removeProperty('--order');
       newsItem.style.opacity = '1';
     }, 1500);
+  }
+
+  if (!isCurrentSeason && isCurrentSeason !== undefined){ //if it's undefined it should go to else
+    document.querySelector("#reloadNews").classList.add("d-none");
+    document.querySelector("#regenerateArticle").classList.add("d-none");
+  }
+  else{
+    document.querySelector("#reloadNews").classList.remove("d-none");
+    document.querySelector("#regenerateArticle").classList.remove("d-none");
   }
 }
 
@@ -2671,7 +2688,7 @@ document.querySelectorAll("#aiModelmenu .dropdown-item").forEach(item => {
   });
 });
 
-document.querySelector(".reload-news").addEventListener("click", async () => {
+document.querySelector("#reloadNews").addEventListener("click", async () => {
   const newsGrid = document.querySelector(".news-grid");
   newsGrid.innerHTML = '';
 
@@ -2680,3 +2697,29 @@ document.querySelector(".reload-news").addEventListener("click", async () => {
 
   generateNews();
 });
+
+export function updateNewsYearsButton(message){
+  let years = message.yearsAvailable;
+  const newsYearsMenu = document.getElementById("newsSeasonMenu");
+  const newsYearsButton = document.getElementById("newsSeasonButton");
+  newsYearsMenu.innerHTML = '';
+
+  years.forEach((year) => {
+    const item = document.createElement("a");
+    item.classList.add("redesigned-dropdown-item");
+    item.href = "#";
+    item.dataset.value = year;
+    item.innerText = year;
+    item.addEventListener("click", function (e) {
+      console.log("Selected news year:", year);
+      newsYearsButton.querySelector("span").innerText = year;
+      const command = new Command("getNewsFromSeason", { season: year });
+      command.execute();
+    });
+    newsYearsMenu.appendChild(item);
+  });
+  //set the text in the button to the current year
+  const lastYear = Math.max(...years);
+  newsYearsButton.querySelector("span").innerText = lastYear;
+
+}

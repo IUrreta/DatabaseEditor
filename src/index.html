@@ -1375,7 +1375,7 @@
 
     </div>
     <div class="patreon-login">
-      <div type="button" class="patreon-login-button confirm-modal" id="patreonToolLoginButton">
+      <div type="button" class="patreon-login-button button-with-icon" id="patreonToolLoginButton">
         <span>Login with Patreon</span>
       </div>
       <div class="user-name-and-logout-tool d-none">
@@ -1474,12 +1474,21 @@
                 <a class="redesigned-dropdown-item" data-value="turning_points">Turning points <i class="bi bi-check"></i></a>
               </ul>
             </div>
+            <div class="dropdown-global">
+              <button class="redesigned-dropdown bold-font"
+                id="newsSeasonButton" aria-haspopup="true" aria-expanded="false">
+                <span class="dropdown-label">Season</span>
+                <i class="redesigned-chevron"></i>
+              </button>
+              <ul class="redesigned-dropdown-menu" id="newsSeasonMenu" style="font-family: Formula1;">
+              </ul>
+            </div>
           </div>
           <div class="title transfer-title bold-font">
             Latest news
           </div>
           <div class="title-buttons-right">
-            <div class="reload-news">
+            <div class="button-with-icon" id="reloadNews">
               <i class="bi bi-arrow-clockwise"></i>
               <span class="">Regenerate news</span>
             </div>
