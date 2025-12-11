@@ -20,3 +20,4 @@ resize_images.js
 test/
 .env
 .vercel/
+.env*.local

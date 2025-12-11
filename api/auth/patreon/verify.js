@@ -106,7 +106,8 @@ export default async function handler(req, res) {
         const token = jwt.sign(
             {
                 name: patreonUser.name,
-                tier: patreonUser.tier
+                tier: patreonUser.tier,
+                patreonId: identityData.data.id
             },
             process.env.JWT_SECRET,
             { expiresIn: '30d' }

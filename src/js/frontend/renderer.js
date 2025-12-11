@@ -371,6 +371,24 @@ export async function getUserTier() {
     }
 }
 
+async function validateSession() {
+    try {
+        const res = await fetch("/api/check-cookie");
+        const data = await res.json();
+
+        if (data.valid === false) {
+            console.log("Old Patreon cookie → redirecting to login");
+            window.location.href = "/api/auth/patreon/login";
+            return false;
+        }
+
+        return true;
+
+    } catch (err) {
+        console.error("Error checking Patreon session:", err);
+        return false;
+    }
+}
 
 // Check for OAuth code
 const urlParams = new URLSearchParams(window.location.search);
@@ -399,10 +417,8 @@ if (code) {
             new_update_notifications("Error verifying Patreon status", "error");
         });
 } else {
-    getUserTier().then(savedTier => {
-        if (savedTier) {
-            updatePatreonUI(savedTier);
-        }
+    validateSession().then(() => {
+        getUserTier().then(updatePatreonUI);
     });
 }
 
@@ -2726,9 +2742,9 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     const values = Array.isArray(opts.values) && opts.values.length ? opts.values.slice() : null;
     const loop = !!opts.loop;
     const onChange = typeof opts.onChange === 'function' ? opts.onChange : () => { };
-    
+
     // NUEVO: Permitimos pasar una función de formateo
-    const format = opts.format || ((v) => v); 
+    const format = opts.format || ((v) => v);
 
     const initialDelay = opts.initialDelay ?? 400;
     const tiers = opts.tiers ?? [
@@ -2741,10 +2757,10 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     let timer, start;
 
     const getText = () => (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') ? (el.value ?? '') : (el.innerText ?? '');
-    
+
     const setText = (txt) => {
         // NUEVO: Aplicamos el formato si es un número
-        const valToDisplay = (typeof txt === 'number') ? format(txt) : txt; 
+        const valToDisplay = (typeof txt === 'number') ? format(txt) : txt;
 
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
             el.value = String(valToDisplay);
@@ -2755,7 +2771,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
                 // Nota: Aquí el replace es delicado con formatos, 
                 // para tu caso de Input suele bastar con la línea de arriba (el.value = ...)
                 // pero si usas span, reemplazamos todo para evitar romper el formato parcial.
-                el.innerText = String(valToDisplay); 
+                el.innerText = String(valToDisplay);
             } else {
                 el.innerText = String(valToDisplay);
             }
@@ -2763,12 +2779,12 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     };
 
     const getNum = () => {
-        if (values) return NaN; 
+        if (values) return NaN;
         let raw = getText();
-        
+
         // NUEVO: Eliminamos las comas antes de intentar parsear el número
         // Esto permite que "100,000" se convierta en "100000" para el cálculo
-        raw = String(raw).replace(/,/g, ''); 
+        raw = String(raw).replace(/,/g, '');
 
         const m = raw.match(/-?\d+(\.\d+)?/);
         return m ? parseFloat(m[0]) : 0;
@@ -2783,7 +2799,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
 
     // ... El resto de funciones (findCurrentIndex, setIndex, etc.) se mantienen igual ...
     // Solo asegúrate de copiar el resto de tu lógica original aquí abajo.
-    
+
     const findCurrentIndex = () => {
         const raw = String(getText()).trim();
         let idx = values.findIndex(v => String(v) === raw);
@@ -2801,7 +2817,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
         const len = values.length;
         let next = i;
         if (loop) {
-            next = ((i % len) + len) % len; 
+            next = ((i % len) + len) % len;
         } else {
             next = Math.max(0, Math.min(len - 1, i));
         }
@@ -2833,7 +2849,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
             const p = ((v - min) / (max - min)) * 100;
             return Math.round(Math.max(0, Math.min(100, p)));
         }
-        return 0; 
+        return 0;
     };
 
     const updateProgress = (valOrIdx, isIndex = false) => {
@@ -2855,7 +2871,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
 
     const startLoop = () => {
         start = performance.now();
-        tick(); 
+        tick();
         const loopFn = () => {
             const held = performance.now() - start;
             timer = setTimeout(() => {

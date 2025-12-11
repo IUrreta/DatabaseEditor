@@ -13307,6 +13307,14 @@ body:has(.active #mod25logo) .one-change {
   color: var(--text-secondary);
 }
 
+.news-article ul{
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 28px;
+}
+
 .news-article p {
   margin: 0;
   color: var(--text-secondary);
