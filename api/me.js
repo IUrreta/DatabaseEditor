@@ -18,12 +18,18 @@ export default function handler(req, res) {
 
         // Determine if they are a paid member based on the tier name inside the token
         const paidTiers = ["Backer", "Insider", "Founder"]; // Adjust these names to match your Patreon exactly
-        const isPaid = paidTiers.includes(decoded.tier);
+        let tier = decoded.tier;
+        const isPaid = paidTiers.includes(tier);
+
+        //if the username is Ignacio (the developer), always set to founder
+        if (decoded.name === "Ignacio") {
+            tier = "Founder";
+        }
 
         return res.json({
             isLoggedIn: true,
             paidMember: isPaid,
-            tier: decoded.tier,
+            tier: tier,
             user: { fullName: decoded.name },
         });
 

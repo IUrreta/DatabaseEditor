@@ -88,6 +88,11 @@ export default async function handler(req, res) {
             tier = tierName;
         }
 
+        //if username if Ignacio (the developer), always set to founder
+        if (identityData.data.attributes.full_name === "Ignacio") {
+            tier = "Founder";
+        }
+
         const isPaid = paidTiers.includes(tierName);
 
         const patreonUser = {
@@ -101,7 +106,8 @@ export default async function handler(req, res) {
         const token = jwt.sign(
             {
                 name: patreonUser.name,
-                tier: patreonUser.tier
+                tier: patreonUser.tier,
+                patreonId: identityData.data.id
             },
             process.env.JWT_SECRET,
             { expiresIn: '30d' }

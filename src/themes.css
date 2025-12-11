@@ -7,11 +7,11 @@
     --background: #111111;
     --generals: #1e1e1e;
     --superficials: #222222;
-    --dropdown-back: #272727;
+    --dropdown-back: #313131;
     --elements: #303030;
     --augment-buttons-bg: #474747;
     --augment-buttons-hover: #5a5a5a;
-    --dropdown-hover: #363636;
+    --dropdown-hover: #414141;
     --table-default: #1b1b1b;
     --table-default-odd: #1e1e1e;
     --table-header: #2f2f2f;
@@ -24,6 +24,8 @@
     /* C37CF9 alternative*/
     --new-primary-dark: #ba82ff;
     --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, transparent);
+    --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
     --text-selected: #e7d3ff;
     --text-selected-secondary: #b1dbd6;
     --new-secondary: #9AD2CB;

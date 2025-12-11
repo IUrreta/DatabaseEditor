@@ -243,7 +243,7 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
   }, 150);
 
   try {
-    const articleText = await manageRead(news, newsList, progressDiv, interval, { force, model });
+    const articleText = await manageRead(news, newsList, progressDiv, interval, { force });
 
     clearInterval(interval);
     clearInterval(dotsInterval);
@@ -497,7 +497,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
   }
 }
 
-function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
+function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, isCurrentSeason = true) {
   const isTurning =
     news.turning_point_type === 'original' ||
     news.turning_point_type === 'approved' ||
@@ -605,6 +605,13 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
 
   }
 
+  //if news has .isCurrentSeason and its false, remove read button and turning point buttons
+  if (isCurrentSeason === false && (news.text === undefined || news.text === null)) {
+    readButton.remove();
+    const tpDiv = readbuttonContainer.querySelector('.turning-point-div');
+    if (tpDiv) tpDiv.remove();
+  }
+
 
   newsItem.appendChild(newsBody);
 
@@ -633,6 +640,7 @@ function computeStableKey(n) {
 export async function place_news(newsAndTurningPoints, newsAvailable) {
   let newsList = newsAndTurningPoints.newsList;
   let turningPointState = newsAndTurningPoints.turningPointState;
+  let isCurrentSeason = newsAndTurningPoints.isCurrentSeason;
   await finishGeneralLoader();
 
   let maxDate;
@@ -665,13 +673,22 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
 
     if (!maxDate || news.date > maxDate) maxDate = news.date;
 
-    const newsItem = createNewsItemElement(news, i, newsAvailable, newsList, maxDate);
+    const newsItem = createNewsItemElement(news, i, newsAvailable, newsList, maxDate, isCurrentSeason);
     newsGrid.appendChild(newsItem);
     setTimeout(() => {
       newsItem.classList.remove('fade-in');
       newsItem.style.removeProperty('--order');
       newsItem.style.opacity = '1';
     }, 1500);
+  }
+
+  if (!isCurrentSeason && isCurrentSeason !== undefined){ //if it's undefined it should go to else
+    document.querySelector("#reloadNews").classList.add("d-none");
+    document.querySelector("#regenerateArticle").classList.add("d-none");
+  }
+  else{
+    document.querySelector("#reloadNews").classList.remove("d-none");
+    document.querySelector("#regenerateArticle").classList.remove("d-none");
   }
 }
 
@@ -860,7 +877,7 @@ function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
   newEl.addEventListener('transitionend', newFn);
 }
 
-async function addTurningPointContexts(prompt, date) {
+async function getTurningPointEvents(date) {
   const command = new Command("getNews", {});
   let resp = await command.promiseExecute();
   let news = resp.content;
@@ -868,43 +885,173 @@ async function addTurningPointContexts(prompt, date) {
   const newsWithId = Object.entries(news).map(([id, n]) => ({ id, ...n }));
   const turningPointsOutcomes = newsWithId.filter(n => n.id.startsWith('turning_point_outcome_') || n.id.includes('_world_champion'));
 
+  const events = [];
+
   if (turningPointsOutcomes.length > 0) {
-    let number = 1;
-    let turningOutcomesText = ``;
-    turningOutcomesText += turningPointsOutcomes.map(tp => {
+    turningPointsOutcomes.forEach(tp => {
       const turningDate = tp.date;
       if ((tp.turning_point_type === "positive" || tp.id.includes('_world_champion')) && Number(turningDate) <= Number(date)) {
         if (tp.id.includes("investment")) {
-          return `${number++}. ${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`
+          events.push({
+            type: "investment",
+            country: tp.data.country,
+            amount: tp.data.investmentAmount,
+            team: tp.data.teamName,
+            share: tp.data.investmentShare
+          });
         }
         else if (tp.id.includes("technical_directive")) {
-          return `${number++}. The FIA introduced a technical directive in relation to the ${tp.data.component} because of ${tp.data.reason}.`
+          events.push({
+            type: "technical_directive",
+            component: tp.data.component,
+            reason: tp.data.reason
+          });
         }
         else if (tp.id.includes("dsq")) {
-          return `${number++}. After the post-race technical inspection of the ${tp.data.country} GP, both cars from ${tp.data.team} were disqualified due to an ilegality with their ${tp.data.component}.`
+          events.push({
+            type: "disqualification",
+            country: tp.data.country,
+            team: tp.data.team,
+            component: tp.data.component
+          });
         }
         else if (tp.id.includes("substitution")) {
-          return `${number++}. The race that was going to be held in ${tp.data.originalCountry} was cancelled due to ${tp.data.reason} and was substituted by a race in ${tp.data.substituteCountry}.`
+          events.push({
+            type: "race_substitution",
+            original: tp.data.originalCountry,
+            reason: tp.data.reason,
+            substitute: tp.data.substituteCountry
+          });
         }
         else if (tp.id.includes("transfer")) {
-          return `${number++}. ${tp.data.driver_out?.name} lost his seat at ${tp.data.team} and ${tp.data.driver_in?.name} has been signed to replace him.`;
+          events.push({
+            type: "driver_transfer",
+            driverOut: tp.data.driver_out?.name,
+            team: tp.data.team,
+            driverIn: tp.data.driver_in?.name
+          });
         }
         else if (tp.id.includes("injury")) {
-          return `${number++}. ${tp.data.driver_affected?.name} suffered ${tp.data.condition?.condition} due to "${tp.data.condition?.reason}", causing him to miss ${tp.data.condition?.races_affected?.length || 1} race(s). ${tp.data.reserve_driver ? `He was replaced by ${tp.data.reserve_driver?.name}.` : ''}`;
+          events.push({
+            type: "driver_injury",
+            driver: tp.data.driver_affected?.name,
+            condition: tp.data.condition?.condition,
+            reason: tp.data.condition?.reason,
+            racesMissed: tp.data.condition?.races_affected?.length || 1,
+            replacement: tp.data.reserve_driver?.name
+          });
         }
         else if (tp.id.includes("_world_champion")) {
-          return `${number++}. ${tp.data.driver_name} (${combined_dict[tp.data.driver_team_id]}) won the ${tp.data.season_year} world championship at the ${tp.data.adjective} GP `;
+          events.push({
+            type: "world_champion_crowned",
+            driver: tp.data.driver_name,
+            team: combined_dict[tp.data.driver_team_id],
+            season: tp.data.season_year,
+            race: tp.data.adjective
+          });
         }
       }
-    }).join("\n");
-    if (turningOutcomesText) {
-      prompt += `\n\nHere are some other events that happened through the season. Talk about them if relevant to the article:\n${turningOutcomesText}`;
-    }
+    });
   }
-  return prompt;
+  return events;
 }
 
 
+
+function buildContextData(data, config = {}) {
+  const {
+    driverStandings,
+    teamStandings,
+    driversResults,
+    racesNames,
+    champions,
+    driverQualiResults,
+    enrichedAllTime
+  } = data;
+  const { timing = '', teamId = null, teamName = '', seasonYear = '' } = config;
+
+  const contextData = {
+    timing,
+    seasonYear
+  };
+
+  if (driverStandings) {
+    contextData.driverStandings = driverStandings.map((d, i) => ({
+      position: i + 1,
+      name: d.name,
+      team: combined_dict[d.teamId],
+      points: d.points,
+      gapToLeader: d.gapToLeader || 0
+    }));
+  }
+
+  if (teamStandings) {
+    contextData.teamStandings = teamStandings.map((t, i) => ({
+      position: i + 1,
+      name: combined_dict[t.teamId] || `Team ${t.teamId}`,
+      points: t.points
+    }));
+  }
+
+  if (racesNames && racesNames.length > 0) {
+    contextData.previousRaces = racesNames;
+  }
+
+  if (driversResults) {
+    let resultsToProcess = driversResults;
+    if (teamId) {
+      resultsToProcess = driversResults.filter(d => d.teamId === teamId);
+    }
+    contextData.driverRaceResults = resultsToProcess.map(d => ({
+      name: d.name,
+      wins: d.nWins,
+      podiums: d.nPodiums,
+      pointsFinishes: d.nPointsFinishes,
+      resultsHistory: d.resultsString
+    }));
+  }
+
+  if (driverQualiResults) {
+    let resultsToProcess = driverQualiResults;
+    if (teamId) {
+      resultsToProcess = driverQualiResults.filter(d => d.teamId === teamId);
+    }
+    contextData.driverQualiResults = resultsToProcess.map(d => ({
+      name: d.name,
+      wins: d.nWins,
+      podiums: d.nPodiums,
+      pointsFinishes: d.nPointsFinishes,
+      resultsHistory: d.resultsString
+    }));
+  }
+
+  if (champions) {
+    contextData.championsHistory = Object.values(
+      champions.reduce((acc, { season, pos, name, points }) => {
+        if (!acc[season]) acc[season] = { season, drivers: [] };
+        acc[season].drivers.push({ position: pos, name, points });
+        return acc;
+      }, {})
+    ).sort((a, b) => b.season - a.season);
+  }
+
+  if (enrichedAllTime && enrichedAllTime.length > 0) {
+    let list = enrichedAllTime;
+    if (teamId && 'teamId' in (list[0] || {})) {
+      list = list.filter(d => d.teamId === teamId);
+    }
+    contextData.driverCareerStats = list.map(d => ({
+      name: d.name || `Driver ${d.id}`,
+      championships: d.totalChampionshipWins ?? 0,
+      wins: d.totalWins ?? 0,
+      podiums: d.totalPodiums ?? 0,
+      starts: d.totalStarts ?? 0,
+      isRookie: Number(seasonYear) === Number(d.firstRace.season)
+    }));
+  }
+
+  return contextData;
+}
 
 function buildContextualPrompt(data, config = {}) {
   const {
@@ -1038,7 +1185,7 @@ function buildContextualPrompt(data, config = {}) {
 }
 
 async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}) {
-  const { force = false, model } = opts;
+  const { force = false } = opts;
 
   // 1) Si ya hay texto y NO forzamos, devolvemos el existente
   if (newData.text && !force) {
@@ -1098,33 +1245,47 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     }, 350);
 
     // 5) Construir prompt SOLO si hace falta
-    let prompt = "";
+    let messages = [];
     if (handler) {
-      const base = await handler(newData);
-      const normalDate = excelToDate(newData.date); // ya la tienes
+      const { instruction, context } = await handler(newData);
+      const normalDate = excelToDate(newData.date);
       const isoDate = new Date(
         normalDate.getFullYear(),
         normalDate.getMonth(),
         normalDate.getDate()
-      ).toISOString().split("T")[0]; // evita sorpresas de TZ en toISOString
+      ).toISOString().split("T")[0];
 
-      prompt =
-        `The current date is ${isoDate}\n\n` +
-        base +
+      // Add turning point events to context
+      const seasonEvents = await getTurningPointEvents(newData.date);
+      if (seasonEvents.length > 0) {
+        context.seasonEvents = seasonEvents;
+      }
+
+      // Add additional contextual info to the prompt template
+      let finalInstruction = `The current date is ${isoDate}\n\n` +
+        instruction +
         `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
         `\n\nThe title of the article is: "${newData.title}"`;
 
-      // Contextos extra de Turning Points (si tu helper ya es idempotente, no pasa nada por llamarlo siempre)
-      prompt = await addTurningPointContexts(prompt, newData.date);
+      finalInstruction += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
 
-      prompt += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
+      // Message 1: Context Data
+      messages.push({
+        role: "user",
+        content: `Here is the context data for the article in JSON format. Use this data to inform your writing, but do not output JSON.\n\n${JSON.stringify(context)}`
+      });
+
+      // Message 2: Instruction
+      messages.push({
+        role: "user",
+        content: finalInstruction
+      });
     }
 
-
-    console.log("Final prompt for AI:", prompt);
+    console.log("Final messages for AI:", messages);
 
     // 6) Llama a la IA y guarda
-    const articleText = await askGenAI(prompt, { model });
+    const articleText = await askGenAI(messages);
     const cleanedArticleText = cleanArticleOutput(articleText);
     newData.text = cleanedArticleText;
 
@@ -1231,9 +1392,10 @@ async function contextualizeTurningPointInjury(newData, turningPointType) {
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: buildContextData(resp.content, { seasonYear })
+  };
 }
 
 
@@ -1266,9 +1428,10 @@ async function contextualizeTurningPointRaceSubstitution(newData, turningPointTy
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: buildContextData(resp.content, { seasonYear })
+  };
 }
 
 async function contextualizeTurningPointInvestment(newData, turningPointType) {
@@ -1302,9 +1465,10 @@ async function contextualizeTurningPointInvestment(newData, turningPointType) {
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: buildContextData(resp.content, { seasonYear })
+  };
 }
 
 async function contextualizeDSQ(newData, type) {
@@ -1346,9 +1510,11 @@ async function contextualizeDSQ(newData, type) {
   }
 
   const timing = type.includes("positive") ? "after the disqualification" : "";
-  prompt += buildContextualPrompt(resp.content, { timing, teamId, teamName, seasonYear: currentSeason });
 
-  return prompt;
+  return {
+    instruction: prompt,
+    context: buildContextData(resp.content, { timing, teamId, teamName, seasonYear: currentSeason })
+  };
 
 }
 
@@ -1396,9 +1562,10 @@ async function contextualizeTurningPointTechnicalDirective(newData, turningPoint
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: buildContextData(resp.content, { seasonYear })
+  };
 }
 
 async function contextualizeTurningPointTransfer(newData, turningPointType) {
@@ -1475,11 +1642,10 @@ async function contextualizeTurningPointTransfer(newData, turningPointType) {
     prompt = prompt.replace(/{{\s*driver_substitute_part\s*}}/g, '');
   }
 
-
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
-
-  return prompt;
-
+  return {
+    instruction: prompt,
+    context: buildContextData(resp.content, { seasonYear })
+  };
 }
 
 async function contextualizeWorldChampion(newData) {
@@ -1502,6 +1668,8 @@ async function contextualizeWorldChampion(newData) {
   });
 
   let standingsResp, previousRaces = '';
+  let contextData = {};
+
   try {
     standingsResp = await command.promiseExecute();
     if (standingsResp && standingsResp.content) {
@@ -1512,7 +1680,7 @@ async function contextualizeWorldChampion(newData) {
 
       prompt += `\n\n${numberOfRace}`;
 
-      prompt += buildContextualPrompt(standingsResp.content, { timing: "after this race", seasonYear: newData.data.season_year });
+      contextData = buildContextData(standingsResp.content, { timing: "after this race", seasonYear: newData.data.season_year });
     } else {
       prompt += "\n\nCould not retrieve current championship standings.";
     }
@@ -1521,7 +1689,10 @@ async function contextualizeWorldChampion(newData) {
     prompt += "\n\nError fetching championship standings.";
   }
 
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizePotentialChampion(newData) {
@@ -1547,6 +1718,8 @@ async function contextualizePotentialChampion(newData) {
   });
 
   let standingsResp, previousRaces = '';
+  let contextData = {};
+
   try {
     standingsResp = await command.promiseExecute();
     if (standingsResp && standingsResp.content) {
@@ -1558,7 +1731,7 @@ async function contextualizePotentialChampion(newData) {
       prompt += `\n\n${numberOfRace}`;
 
       // Contexto antes de esta carrera
-      prompt += buildContextualPrompt(c, { timing: "before this race", seasonYear: newData.data.season_year });
+      contextData = buildContextData(c, { timing: "before this race", seasonYear: newData.data.season_year });
 
       // Reglas de puntos (tal cual las comunicas)
       prompt += `\n\nThe maximum amount of points for the winner in each race is ${c.pointsSchema.twoBiggestPoints[0]}.
@@ -1609,7 +1782,10 @@ async function contextualizePotentialChampion(newData) {
     prompt += "\n\nError fetching championship standings.";
   }
 
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeSillySeasonTransferNews(newData) {
@@ -1633,30 +1809,37 @@ async function contextualizeSillySeasonTransferNews(newData) {
     return;
   }
 
-  prompt += `\n\nHere are the transfers that you have to talk about:\n`;
+  const transferRumors = newData.data.drivers.map(d => ({
+    driver: d.name,
+    currentTeam: d.actualTeam,
+    potentialMoves: d.offers.map(o => ({
+      targetTeam: o.potentialTeam,
+      salary: o.salary,
+      contractUntil: o.endSeason,
+      seatAtRisk: o.driverAtRisk,
+      driverOpinion: {
+        salary: o.salaryOpinion,
+        length: o.lengthOpinion
+      }
+    })),
+    currentTeamRecentHistory: d.previousResultsTeam.map(t => ({
+      season: t.season,
+      position: t.position,
+      points: t.points
+    })),
+    driverHistory: d.previouslyDrivenTeams.map(t => ({
+      season: t.season,
+      team: t.teamName
+    }))
+  }));
 
-  newData.data.drivers.forEach((d) => {
-    prompt += `${d.name} could be leaving ${d.actualTeam}\n`;
+  const contextData = buildContextData(resp.content, { seasonYear: season });
+  contextData.transferRumors = transferRumors;
 
-    prompt += `\n\nHere are the offers that ${d.name} has:\n`;
-    d.offers.forEach((o) => {
-      prompt += `${o.potentialTeam} with an expected salary of around ${o.salary}€ per year until ${o.endSeason}, targeting ${o.driverAtRisk}'s seat. ${d.name}'s opinion on salary is ${o.salaryOpinion} and on length is ${o.lengthOpinion}\n`;
-    });
-
-    prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
-    d.previousResultsTeam.forEach((t) => {
-      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
-    })
-
-    prompt += `\n\nHere are the teams that ${d.name} has drivern for in recent years:\n`;
-    d.previouslyDrivenTeams.forEach((t) => {
-      prompt += `${t.season} - ${t.teamName}\n`;
-    });
-  });
-
-  prompt += buildContextualPrompt(resp.content, { seasonYear: season });
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeFakeTransferNews(newData) {
@@ -1682,26 +1865,29 @@ async function contextualizeFakeTransferNews(newData) {
     return;
   }
 
-  prompt += `\n\nHere are the transfers that you have to talk about:\n`;
+  const transferDetails = resp.content.driverMap.map(d => ({
+    driver: d.name,
+    currentTeam: d.actualTeam,
+    potentialTeam: d.potentialTeam,
+    expectedSalary: d.potentialSalary,
+    currentTeamRecentHistory: d.actualTeamPreviousResults.map(t => ({
+      season: t.season,
+      position: t.position,
+      points: t.points
+    })),
+    driverHistory: d.previouslyDrivenTeams.map(t => ({
+      season: t.season,
+      team: t.teamName
+    }))
+  }));
 
-  resp.content.driverMap.forEach((d) => {
-    prompt += `${d.name} could be leaving ${d.actualTeam} ${d.potentialTeam ? " for " + d.potentialTeam : ""} ${d.potentialSalary ? "with an expected salary of around " + d.potentialSalary : ""}\n`;
+  const contextData = buildContextData(resp.content, { timing: "after this race", seasonYear: resp.content.season });
+  contextData.transferDetails = transferDetails;
 
-    prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
-    d.actualTeamPreviousResults.forEach((t) => {
-      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
-    })
-
-    prompt += `\n\nHere are the teams that ${d.name} has driven for in recent years:\n`;
-    d.previouslyDrivenTeams.forEach((t) => {
-      prompt += `${t.season} - ${t.teamName}\n`;
-    });
-  });
-
-
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeBigTransferConfirm(newData) {
@@ -1711,7 +1897,7 @@ async function contextualizeBigTransferConfirm(newData) {
   const date = newData.date || null;
 
   let newType = 6;
-  if (newData.type.includes("massive_exit")){
+  if (newData.type.includes("massive_exit")) {
     newType = 18;
   }
 
@@ -1745,26 +1931,29 @@ async function contextualizeBigTransferConfirm(newData) {
     return;
   }
 
-  prompt += `\n\nHere is the confirmed transfer that you have to talk about:\n`;
+  const confirmedTransfer = resp.content.driverMap.map(d => ({
+    driver: d.name,
+    leavingTeam: d.actualTeam,
+    joiningTeam: d.potentialTeam,
+    salary: d.potentialSalary,
+    currentTeamRecentHistory: d.actualTeamPreviousResults.map(t => ({
+      season: t.season,
+      position: t.position,
+      points: t.points
+    })),
+    driverHistory: d.previouslyDrivenTeams.map(t => ({
+      season: t.season,
+      team: t.teamName
+    }))
+  }));
 
-  resp.content.driverMap.forEach((d) => {
-    prompt += `${d.name} will be leaving ${d.actualTeam} ${d.potentialTeam ? " for " + d.potentialTeam : ""} ${d.potentialSalary ? "with an expected salary of around " + d.potentialSalary : ""}\n`;
+  const contextData = buildContextData(resp.content, { timing: "after this race", seasonYear: resp.content.season });
+  contextData.confirmedTransfer = confirmedTransfer;
 
-    prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
-    d.actualTeamPreviousResults.forEach((t) => {
-      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
-    })
-
-    prompt += `\n\nHere are the teams that ${d.name} has driven for in recent years:\n`;
-    d.previouslyDrivenTeams.forEach((t) => {
-      prompt += `${t.season} - ${t.teamName}\n`;
-    });
-  });
-
-
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeRenewalNews(newData) {
@@ -1803,26 +1992,29 @@ async function contextualizeRenewalNews(newData) {
     return;
   }
 
-  prompt += `\n\nHere is the confirmed contract renewal that you have to talk about:\n`;
+  const renewalDetails = resp.content.driverMap.map(d => ({
+    driver: d.name,
+    team: d.actualTeam,
+    salary: d.potentialSalary,
+    contractUntil: d.potentialYearEnd,
+    teamRecentHistory: d.actualTeamPreviousResults.map(t => ({
+      season: t.season,
+      position: t.position,
+      points: t.points
+    })),
+    driverHistory: d.previouslyDrivenTeams.map(t => ({
+      season: t.season,
+      team: t.teamName
+    }))
+  }));
 
-  resp.content.driverMap.forEach((d) => {
-    prompt += `${d.name} will be staying at ${d.actualTeam} ${d.potentialSalary ? "with an expected salary of around " + d.potentialSalary + "€" : ""} ${d.potentialYearEnd ? "until the end of " + d.potentialYearEnd : ""}\n`;
+  const contextData = buildContextData(resp.content, { timing: "after this race", seasonYear: resp.content.season });
+  contextData.renewalDetails = renewalDetails;
 
-    prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
-    d.actualTeamPreviousResults.forEach((t) => {
-      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
-    })
-
-    prompt += `\n\nHere are the teams that ${d.name} has driven for in recent years:\n`;
-    d.previouslyDrivenTeams.forEach((t) => {
-      prompt += `${t.season} - ${t.teamName}\n`;
-    });
-  });
-
-
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeTeamComparison(newData) {
@@ -1851,12 +2043,10 @@ async function contextualizeTeamComparison(newData) {
   }
   );
 
-  if (compType === "good") {
-    prompt += `\n\n${team1} has scored ${ptsDif} more points compared to last season at the same point of the season.`;
-  }
-  else {
-    prompt += `\n\n${team1} has scored ${ptsDif} fewer points compared to last season at the same point of the season.`;
-  }
+  const comparisonDetails = {
+    pointsDiff: ptsDif,
+    type: compType === "good" ? "improvement" : "decline"
+  };
 
   let resp;
   try {
@@ -1873,26 +2063,33 @@ async function contextualizeTeamComparison(newData) {
     racesNames: resp.content.currentRacesNames,
     enrichedAllTime: resp.content.enrichedAllTime
   };
-  prompt += buildContextualPrompt(currentContextData, { teamId: newData.data.team.teamId, teamName: team1, seasonYear });
 
+  const contextData = buildContextData(currentContextData, { teamId: newData.data.team.teamId, teamName: team1, seasonYear });
 
-  const oldRacesNames = resp.content.oldRacesNames.join(', ');
-  const oldSeasonResults = resp.content.oldDriversResults
-    .filter(d => d.teamId === newData.data.team.teamId)
-    .map(d => `${d.name} - ${d.resultsString}`)
-    .join("\n");
+  contextData.comparison = comparisonDetails;
 
-  prompt += `\n\nHere are the results from ${team1}'s drivers in ${seasonYear - 1}: ${oldRacesNames}\n`;
-  prompt += `\n\n${oldSeasonResults}`;
+  contextData.previousSeasonData = {
+    races: resp.content.oldRacesNames,
+    driverResults: resp.content.oldDriversResults
+      .filter(d => d.teamId === newData.data.team.teamId)
+      .map(d => ({
+        name: d.name,
+        results: d.resultsString
+      }))
+  };
 
-  prompt += `\n\nHere are the previous results of ${team1} in recent years:\n`;
-  resp.content.previousResultsTeam.forEach((t) => {
-    if (t.season !== seasonYear) {
-      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
-    }
-  });
+  contextData.teamHistory = resp.content.previousResultsTeam
+    .filter(t => t.season !== seasonYear)
+    .map(t => ({
+      season: t.season,
+      position: t.position,
+      points: t.points
+    }));
 
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeQualiResults(newData) {
@@ -1923,27 +2120,24 @@ async function contextualizeQualiResults(newData) {
 
   const raceNumber = resp.content.racesNames.length + 1;
 
-  let previousRaces = '';
-  resp.content.racesNames.forEach((r) => {
-    previousRaces += `${r}, `;
-  });
-  previousRaces = previousRaces.slice(0, -2);
-
   const numberOfRace = `This was qualifying ${raceNumber} out of ${resp.content.nRaces} in this season.`;
 
   prompt += `\n\n${numberOfRace}`;
 
-  const qualiResults = resp.content.details.map(row => {
-    return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) +${row.gapToPole.toFixed(3)} seconds`;
-  }).join("\n");
+  const qualiResults = resp.content.details.map(row => ({
+    position: row.pos,
+    name: row.name,
+    team: combined_dict[row.teamId],
+    gapToPole: row.gapToPole.toFixed(3)
+  }));
 
-  prompt += "\n\nHere are the full qualifying results:\n" + qualiResults;
+  const contextData = buildContextData(resp.content, { timing: "before this race", seasonYear });
+  contextData.qualifyingResults = qualiResults;
 
-  prompt += buildContextualPrompt(resp.content, { timing: "before this race", seasonYear });
-
-
-  return prompt;
-
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 
@@ -1972,70 +2166,74 @@ async function contextualizeRaceResults(newData) {
   }
 
   const raceNumber = resp.content.racesNames.length + 1;
-
-  let previousRaces = '';
-  resp.content.racesNames.forEach((r) => {
-    previousRaces += `${r}, `;
-  });
-  previousRaces = previousRaces.slice(0, -2);
+  const numberOfRace = `This was race ${raceNumber} out of ${resp.content.nRaces} in this season.`;
+  prompt += `\n\n${numberOfRace}`;
 
   const safetyCars = resp.content.details[0].safetyCar;
   const virtualSafetyCars = resp.content.details[0].virtualSafetyCar;
-
-  const numberOfRace = `This was race ${raceNumber} out of ${resp.content.nRaces} in this season.`;
-
-  prompt += `\n\n${numberOfRace}`;
-
   const safetyCarPhrase = `\n\nThere were ${safetyCars} safety car${safetyCars > 1 ? "s" : ""} and ${virtualSafetyCars} virtual safety car${virtualSafetyCars > 1 ? "s" : ""} during the race.`
-
   prompt += safetyCarPhrase;
 
-
-  //generate a random number from 35 to 62 both included
   const top3 = resp.content.driverOfTheDayInfo;
-
   if (Array.isArray(top3) && top3.length > 0) {
     const first = top3[0];
     const second = top3[1];
     const third = top3[2];
-
     const driverOfTheDayPhrase = `
       \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}) with ${first.share.toFixed(1)}% of the fan votes.\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}) with ${second.share.toFixed(1)}%,` : ''}\n${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}) with ${third.share.toFixed(1)}%.` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
     `;
-
     prompt += driverOfTheDayPhrase;
   }
 
-
   if (resp.content.sprintDetails.length > 0) {
     prompt += `\n\nThere was a sprint race held on Saturday, which was won by ${resp.content.sprintDetails[0].name} (${combined_dict[resp.content.sprintDetails[0].teamId]}). Dedicate a paragraph discussing the sprint results`;
-
-    const sprintResults = resp.content.sprintDetails.map(row => {
-      return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) +${row.gapToWinner.toFixed(3)} seconds (+${row.points} pts)`;
-    }).join("\n");
-
-    prompt += `\n\nHere are the sprint results:\n${sprintResults}`;
   }
 
-  const raceResults = resp.content.details.map(row => {
+  const contextData = buildContextData(resp.content, { timing: "after this race", seasonYear });
+
+  contextData.raceDetails = {
+    raceNumber,
+    totalRaces: resp.content.nRaces,
+    safetyCars,
+    virtualSafetyCars,
+    driverOfTheDay: top3.map(d => ({
+      name: d.name,
+      team: combined_dict[d.teamId],
+      voteShare: d.share
+    }))
+  };
+
+  if (resp.content.sprintDetails.length > 0) {
+    contextData.sprintResults = resp.content.sprintDetails.map(row => ({
+      position: row.pos,
+      name: row.name,
+      team: combined_dict[row.teamId],
+      gapToWinner: row.gapToWinner.toFixed(3),
+      points: row.points
+    }));
+  }
+
+  contextData.raceResults = resp.content.details.map(row => {
     const gapStr =
       row.gapToWinner > 0
         ? `${Number(row.gapToWinner.toFixed(3))} seconds`
         : row.gapLaps > 0
           ? `${row.gapLaps} laps`
           : `0 seconds`;
-    return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) (Started P${row.grid}) +${gapStr} ${row.dnf !== 1 ? `(+${row.points} pts)` : 'DNF'}`;
-  }).join("\n");
+    return {
+      position: row.pos,
+      name: row.name,
+      team: combined_dict[row.teamId],
+      startPos: row.grid,
+      gap: gapStr,
+      status: row.dnf !== 1 ? `+${row.points} pts` : 'DNF'
+    };
+  });
 
-
-  prompt += "\n\nHere are the full race results. If two drivers DNF'd with the same amount of laps to go, asume that they crashed into each other:\n" + raceResults;
-
-
-
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear });
-
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeDriverComparison(newData) {
@@ -2061,9 +2259,10 @@ async function contextualizeDriverComparison(newData) {
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { teamId, teamName: combined_dict[teamId], seasonYear });
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: buildContextData(resp.content, { teamId, teamName: combined_dict[teamId], seasonYear })
+  };
 }
 
 async function contextualizeRaceReaction(newData) {
@@ -2100,13 +2299,17 @@ async function contextualizeRaceReaction(newData) {
         : row.gapLaps > 0
           ? `${row.gapLaps} laps`
           : `0 seconds`;
-    return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) (Started P${row.grid}) +${gapStr} ${row.dnf !== 1 ? `(+${row.points} pts)` : 'DNF'}`;
-  }).join("\n");
+    return {
+      position: row.pos,
+      name: row.name,
+      team: combined_dict[row.teamId],
+      startPos: row.grid,
+      gap: gapStr,
+      status: row.dnf !== 1 ? `+${row.points} pts` : 'DNF'
+    };
+  });
 
-  
-  prompt += "\n\nHere are the full race results. If two drivers DNF'd with the same amount of laps to go, asume that they crashed into each other:\n" + raceResults;
-
-    const top3 = resp.content.driverOfTheDayInfo;
+  const top3 = resp.content.driverOfTheDayInfo;
 
   if (Array.isArray(top3) && top3.length > 0) {
     const first = top3[0];
@@ -2120,9 +2323,21 @@ async function contextualizeRaceReaction(newData) {
     prompt += driverOfTheDayPhrase;
   }
 
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
+  const contextData = buildContextData(resp.content, { seasonYear });
 
-  return prompt;
+  contextData.raceDetails = {
+    raceResults,
+    driverOfTheDay: top3.map(d => ({
+      name: d.name,
+      team: combined_dict[d.teamId],
+      voteShare: d.share
+    }))
+  };
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeSeasonReview(newData) {
@@ -2157,26 +2372,25 @@ async function contextualizeSeasonReview(newData) {
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
+  const contextData = buildContextData(resp.content, { seasonYear });
 
-  const carPerformanceStart = Object.entries(resp.content.carsPerformance[0])
-    .sort((a, b) => b[1] - a[1])
-    .map(([team, value]) => `${team}: ${value.toFixed(2)}`)
-    .join("\n");
+  const formatPerformance = (perfObj) =>
+    Object.entries(perfObj)
+      .sort((a, b) => b[1] - a[1])
+      .map(([team, value]) => ({ team, value: value.toFixed(2) }));
 
-  const carPerformanceEnd = Object.entries(resp.content.carsPerformance[resp.content.carsPerformance.length - 1])
-    .sort((a, b) => b[1] - a[1])
-    .map(([team, value]) => `${team}: ${value.toFixed(2)}`)
-    .join("\n");
+  contextData.carPerformance = {
+    startOfSeason: formatPerformance(resp.content.carsPerformance[0]),
+    latestRace: formatPerformance(resp.content.carsPerformance[resp.content.carsPerformance.length - 1]),
+    note: "Performance is measured 0-100. Higher is better. Estimates only."
+  };
 
   prompt += `\n\nThe performance of each car is measured on a scale from 0 to 100, where 100 represents the ideal possible performance. A higher value indicates a better-performing car. The performance values should be taken with a grain of salt, as they are estimates, but they are very important to understand drivers and teams performance. Never ever mention the numbers given as they are only an estimate rather than an absolute truth and are only there to put into numbers the performance of each car. You can mention if a car is performing well or poorly, or how has it evolved but never give the exact numbers.\n`;
 
-  prompt += `\n\nHere is the performance of each car at the start of the season:\n${carPerformanceStart}`;
-  prompt += `\n\nHere is the performance of each car at the latest race:\n${carPerformanceEnd}`;
-
-  return prompt;
-
-
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 
@@ -2189,25 +2403,25 @@ function saveTurningPoints(turningPoints) {
   localStorage.setItem(tpName, JSON.stringify(turningPoints));
 }
 
-async function askGenAI(prompt, opts = {}) {
-  const localStorageModel = localStorage.getItem("ai-model");
-  const fallbackModel = "gemini-2.5-flash";
+async function askGenAI(messages, opts = {}) {
+  const aiModel = opts.model || "gpt-5-mini";
+  console.log("Asking messages to GenAI:", messages, "with options", opts);
 
-  // Priority:
-  // 1. opts.model
-  // 2. localStorageModel
-  // 3. fallbackModel
-  console.log(opts.model, localStorageModel, fallbackModel);
-  const aiModel = opts.model || localStorageModel || fallbackModel;
-
-  const response = await ai.models.generateContent({
-    model: aiModel,
-    contents: prompt,
+  const response = await fetch("/api/ask-openai", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      messages,
+      model: aiModel,
+      max_tokens: opts.max_tokens || 5000
+    })
   });
 
-  return response.text;
-}
+  const data = await response.json();
+  console.log("GenAI response:", data);
 
+  return data.text;
+}
 function buildEmergencyOverlay() {
   const overlayDiv = document.createElement('div');
   overlayDiv.classList.add('breaking-news-overlay', 'bold-font');
@@ -2405,7 +2619,7 @@ function getOrdinalSuffix(n) {
   return n + "th";
 }
 
-document.querySelectorAll('#newsTypeMenu .dropdown-item').forEach(item => {
+document.querySelectorAll('#newsTypeMenu .redesigned-dropdown-item').forEach(item => {
   item.addEventListener('click', function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -2459,7 +2673,7 @@ document.querySelectorAll("#aiModelmenu .dropdown-item").forEach(item => {
   });
 });
 
-document.querySelector(".reload-news").addEventListener("click", async () => {
+document.querySelector("#reloadNews").addEventListener("click", async () => {
   const newsGrid = document.querySelector(".news-grid");
   newsGrid.innerHTML = '';
 
@@ -2468,3 +2682,29 @@ document.querySelector(".reload-news").addEventListener("click", async () => {
 
   generateNews();
 });
+
+export function updateNewsYearsButton(message){
+  let years = message.yearsAvailable;
+  const newsYearsMenu = document.getElementById("newsSeasonMenu");
+  const newsYearsButton = document.getElementById("newsSeasonButton");
+  newsYearsMenu.innerHTML = '';
+
+  years.forEach((year) => {
+    const item = document.createElement("a");
+    item.classList.add("redesigned-dropdown-item");
+    item.href = "#";
+    item.dataset.value = year;
+    item.innerText = year;
+    item.addEventListener("click", function (e) {
+      console.log("Selected news year:", year);
+      newsYearsButton.querySelector("span").innerText = year;
+      const command = new Command("getNewsFromSeason", { season: year });
+      command.execute();
+    });
+    newsYearsMenu.appendChild(item);
+  });
+  //set the text in the button to the current year
+  const lastYear = Math.max(...years);
+  newsYearsButton.querySelector("span").innerText = lastYear;
+
+}

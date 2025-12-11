@@ -4180,10 +4180,12 @@ export function computeStableKey(n) {
 }
 
 // --- NEWS: load/save/upsert ---
-export function loadNewsMapFromDB() {
+export function loadNewsMapFromDB(season = null) {
     const globals = getGlobals();
-    const year = globals?.currentDate[1]
-    const key = `${year}_news`;
+    if (season == null) {
+        season = globals?.currentDate[1];
+    }
+    const key = `${season}_news`;
     return decodeJSON(getEditorState(key)) || {};
 }
 
@@ -4235,10 +4237,12 @@ export function upsertNews(newsList = []) {
 }
 
 // --- TP: load/save/upsert (simple: arrays -> replace, objetos -> merge, primitivos -> replace) ---
-export function loadTPFromDB() {
+export function loadTPFromDB(season = null) {
     const globals = getGlobals();
-    const year = globals?.currentDate[1]
-    const key = `${year}_turning_points`;
+    if (season == null) {
+        season = globals?.currentDate[1];
+    }
+    const key = `${season}_turning_points`;
     return decodeJSON(getEditorState(key)) || {};
 }
 
@@ -4356,6 +4360,31 @@ export function ensureTurningPointsStructure() {
     saveTPToDBMap(defaultStructure);
 
     return defaultStructure;
+}
+
+export function getNewsAndTpYearsAvailable() {
+    const yearsSet = new Set();
+    const editorStateRows = queryDB(
+        `SELECT key FROM Custom_News_State WHERE key LIKE '%_news' OR key LIKE '%_turning_points'`,
+        [],
+        'allRows'
+    );
+    for (const [key] of editorStateRows) {
+        const match = key.match(/^(\d{4})_(news|turning_points)$/);
+        if (match) {
+            const year = Number(match[1]);
+            yearsSet.add(year);
+        }
+    }
+    const years = Array.from(yearsSet);
+    years.sort((a, b) => b - a);
+    return years;
+}
+
+export function getNewsFromSeason(season) {
+    const newsMap = loadNewsMapFromDB(season);
+    const tpMap = loadTPFromDB(season);
+    return { newsList: Object.values(newsMap).sort((a, b) => new Date(b.date) - new Date(a.date)), turningPointState: tpMap };
 }
 
 // DRIVER INJURY

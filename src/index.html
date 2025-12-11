@@ -1375,7 +1375,7 @@
 
     </div>
     <div class="patreon-login">
-      <div type="button" class="patreon-login-button confirm-modal" id="patreonToolLoginButton">
+      <div type="button" class="patreon-login-button button-with-icon" id="patreonToolLoginButton">
         <span>Login with Patreon</span>
       </div>
       <div class="user-name-and-logout-tool d-none">
@@ -1460,18 +1460,27 @@
       <div class="script-view hide unloaded" id="news">
         <div class="general-top-panel">
           <div class="title-buttons-left">
-            <div style="padding-bottom: 2px;">
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                id="newsTypeButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Filter
+            <div class="dropdown-global">
+              <button class="redesigned-dropdown bold-font"
+                id="newsTypeButton" aria-haspopup="true" aria-expanded="false">
+                <span class="dropdown-label">Filter</span>
+                <i class="redesigned-chevron"></i>
               </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="newsTypeMenu" style="font-family: Formula1;">
-                <a class="dropdown-item" data-value="race_result">Race results <i class="bi bi-check"></i></a>
-                <a class="dropdown-item" data-value="quali_result">Qualifying results <i class="bi bi-check"></i></a>
-                <a class="dropdown-item" data-value="driver_transfers">Driver transfers <i class="bi bi-check"></i></a>
-                <a class="dropdown-item" data-value="others">Other news <i class="bi bi-check"></i></a>
-                <a class="dropdown-item" data-value="turning_points">Turning points <i class="bi bi-check"></i></a>
+              <ul class="redesigned-dropdown-menu" id="newsTypeMenu" style="font-family: Formula1;">
+                <a class="redesigned-dropdown-item " data-value="race_result">Race results <i class="bi bi-check"></i></a>
+                <a class="redesigned-dropdown-item" data-value="quali_result">Qualifying results <i class="bi bi-check"></i></a>
+                <a class="redesigned-dropdown-item" data-value="driver_transfers">Driver transfers <i class="bi bi-check"></i></a>
+                <a class="redesigned-dropdown-item" data-value="others">Other news <i class="bi bi-check"></i></a>
+                <a class="redesigned-dropdown-item" data-value="turning_points">Turning points <i class="bi bi-check"></i></a>
+              </ul>
+            </div>
+            <div class="dropdown-global">
+              <button class="redesigned-dropdown bold-font"
+                id="newsSeasonButton" aria-haspopup="true" aria-expanded="false">
+                <span class="dropdown-label">Season</span>
+                <i class="redesigned-chevron"></i>
+              </button>
+              <ul class="redesigned-dropdown-menu" id="newsSeasonMenu" style="font-family: Formula1;">
               </ul>
             </div>
           </div>
@@ -1479,7 +1488,7 @@
             Latest news
           </div>
           <div class="title-buttons-right">
-            <div class="reload-news">
+            <div class="button-with-icon" id="reloadNews">
               <i class="bi bi-arrow-clockwise"></i>
               <span class="">Regenerate news</span>
             </div>
@@ -2972,14 +2981,14 @@
       <div class="script-view hide unloaded" id="edit_teams">
         <div class="general-top-panel">
           <div class="title-buttons-left">
-            <div>
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="teamButton"
-                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Team
+            <div class="dropdown-global">
+              <button class="redesigned-dropdown bold-font" id="teamButton"
+                aria-haspopup="true" aria-expanded="false">
+                <span class="span dropdown-label">Team</span>
+                <i class="redesigned-chevron"></i>
               </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="teamMenu" style="font-family: Formula1;">
-                <a class="dropdown-item feborder-down bold-font" style="cursor: pointer;" data-teamid="1">
+              <ul class="redesigned-dropdown-menu" id="teamMenu" style="font-family: Formula1;">
+                <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="1">
                   <div class="team-menu-logo">
                     <img src="../assets/images/ferrari.png" class="team-menu-ferrari">
                   </div>
@@ -2987,7 +2996,7 @@
                     FERRARI
                   </div>
                 </a>
-                <a class="dropdown-item mcborder-down bold-font" style="cursor: pointer;" data-teamid="2">
+                <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="2">
                   <div class="team-menu-logo">
                     <img src="../assets/images/mclaren.png" class="team-menu-mclaren">
                   </div>
@@ -2995,13 +3004,13 @@
                     MCLAREN
                   </div>
                 </a>
-                <a class="dropdown-item rbborder-down bold-font" style="cursor: pointer;" data-teamid="3">
+                <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="3">
                   <div class="team-menu-logo">
                     <img src="../assets/images/redbull.png" class="team-menu-redbull">
                   </div>
                   <div class="team-menu-name">RED BULL</div>
                 </a>
-                <a class="dropdown-item meborder-down bold-font" style="cursor: pointer;" data-teamid="4">
+                <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="4">
                   <div class="team-menu-logo">
                     <img src="../assets/images/mercedes.png" class="team-menu-merc">
                   </div>
@@ -3010,7 +3019,7 @@
                     MERCEDES
                   </div>
                 </a>
-                <a class="dropdown-item alborder-down bold-font" style="cursor: pointer;" data-teamid="5">
+                <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="5">
                   <div class="team-menu-logo">
                     <div class="alpine-logo-container">
                       <div class="alpinelogo-replace alpinelogo team-menu-alpine-replace changable-team-menu-alpine">
@@ -3022,7 +3031,7 @@
                     ALPINE
                   </div>
                 </a>
-                <a class="dropdown-item wiborder-down bold-font" style="cursor: pointer;" data-teamid="6">
+                <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="6">
                   <div class="team-menu-logo">
                     <img src="../assets/images/williams.png" class="team-menu-williams">
                   </div>
@@ -3030,7 +3039,7 @@
                     WILLIAMS
                   </div>
                 </a>
-                <a class="dropdown-item haborder-down bold-font" style="cursor: pointer;" data-teamid="7">
+                <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="7">
                   <div class="team-menu-logo">
                     <img src="../assets/images/haas.png" class="team-menu-haas">
                   </div>
@@ -3038,7 +3047,7 @@
                     HAAS
                   </div>
                 </a>
-                <a class="dropdown-item atborder-down bold-font" style="cursor: pointer;" data-teamid="8">
+                <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="8">
                   <div class="team-menu-logo">
                     <div class="alphatauri-logo-container">
                       <div
@@ -3050,7 +3059,7 @@
                     ALPHA TAURI
                   </div>
                 </a>
-                <a class="dropdown-item afborder-down bold-font" style="cursor: pointer;" data-teamid="9">
+                <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="9">
                   <div class="team-menu-logo">
                     <img src="../assets/images/alfaromeo.png"
                       class="alfalogo-replace alfalogo team-menu-alfa-replace changable-team-menu-alfa">
@@ -3059,7 +3068,7 @@
                     ALFA ROMEO
                   </div>
                 </a>
-                <a class="dropdown-item asborder-down bold-font" style="cursor: pointer;" data-teamid="10">
+                <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="10">
                   <div class="team-menu-logo">
                     <img src="../assets/images/astonMartin.png" class="team-menu-aston">
                   </div>
@@ -3067,7 +3076,7 @@
                     ASTON MARTIN
                   </div>
                 </a>
-                <a class="dropdown-item ctborder-down bold-font" style="cursor: pointer;" data-teamid="32"
+                <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="32"
                   id="customTeamDropdown">
                   <div class="team-menu-logo">
                     <img src="../assets/images/placeholder.png" class="team-menu-custom  custom-replace">
@@ -3087,262 +3096,270 @@
         </div>
         <div class="main-viewer-section team-viewer d-none">
           <div id="viewer-first">
-            <div class="viewer-component">
-              <div class="first-component" id="seasonObjective">
-                <div class="component-subtitle bold-font">Season Objective</div>
-                <div class="input-and-buttons">
-                  <input type="number" class="old-custom-input-number" id="seasonObjectiveInput" value="4"></input>
-                  <div class="input-buttons">
-                    <i class="bi bi-chevron-up"></i>
-                    <i class="bi bi-chevron-down"></i>
+            <div class="component-and-title">
+              <div class="component-title bold-font">Objectives</div>
+              <div class="viewer-component">
+                <div class="first-component" id="seasonObjective">
+                  <div class="bold-font">Season Objective</div>
+                  <div class="input-and-buttons">
+                    <input type="number" class="custom-input-number" id="seasonObjectiveInput" value="4"></input>
+                    <div class="input-buttons">
+                      <i class="bi bi-plus new-augment-button"></i>
+                      <i class="bi bi-dash new-augment-button"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="second-component">
+                  <div class="bold-font">Long-term Objective</div>
+                  <div id="objAndYear">
+                    <div class="dropdown-global">
+                      <button class="redesigned-dropdown" id="objectiveButton"
+                        aria-haspopup="true" aria-expanded="false">
+                        <span class="objective-label dropdown-label">Constructor's champion</span>
+                        <i class="bi bi-chevron-down"></i>
+                      </button>
+                      <ul class="redesigned-dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
+                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj0">Constructor's champion</a>
+                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj1">Podium contender</a>
+                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj2">Points contender</a>
+                      </ul>
+                    </div>
+                    <div class="input-and-buttons">
+                      <input type="number" class="custom-input-number" id="longTermInput" value="2024"></input>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <div class="component-and-title">
+              <div class="component-title bold-font">Economy</div>
+              <div class="viewer-component">
+                <div class="first-component" id="teamBudget">
+                  <div class="bold-font">Balance</div>
+                  <div class="input-and-buttons">
+                    <div class="unit-and-input">
+                      <span class="unit-label">$</span>
+                      <input type="string" class="custom-input-number" id="teamBudgetInput" value="40000000"></input>
+                    </div>
+
+                    <div class="input-buttons">
+                      <i class="bi bi-plus new-augment-button"></i>
+                      <i class="bi bi-dash new-augment-button"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="second-component" id="costCap">
+                  <div class="bold-font">Cost cap spent</div>
+                  <div class="input-and-buttons">
+                    <div class="unit-and-input">
+                      <span class="unit-label">$</span>
+                      <input type="string" class="custom-input-number" id="costCapInput" value="120000000"></input>
+                    </div>
+                    <div class="input-buttons">
+                      <i class="bi bi-plus new-augment-button"></i>
+                      <i class="bi bi-dash new-augment-button"></i>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="second-component">
-                <div class="component-subtitle bold-font">Long-term Objective</div>
-                <div id="objAndYear">
-                  <div>
-                    <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                      id="objectiveButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <div class="front-gradient objective-label">Constructor's champion</div>
+            </div>
+            <div class="component-and-title">
+              <div class="component-title bold-font">Others</div>
+              <div class="viewer-component">
+                <div class="first-component" id="engineSelector">
+                  <div class="bold-font">Engine</div>
+                  <div class="dropdown-global">
+                    <button class="redesigned-dropdown" id="engineButton" aria-haspopup="true"
+                      aria-expanded="false" data-value="0">
+                      <span class="objective-label dropdown-label" id="engineLabel">Engine</span>
+                      <i class="bi bi-chevron-down"></i>
                     </button>
-                    <div class="dropdown-line"></div>
-                    <ul class="dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
-                      <a class="dropdown-item" style="cursor: pointer;" id="longTermObj0">Constructor's champion</a>
-                      <a class="dropdown-item" style="cursor: pointer;" id="longTermObj1">Podium contender</a>
-                      <a class="dropdown-item" style="cursor: pointer;" id="longTermObj2">Points contender</a>
+                    <ul class="redesigned-dropdown-menu" id="engineMenu" style="font-family: Formula1;">
+                      <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="1">Ferrari</a>
+                      <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="4">Red Bull
+                        Powertrains</a>
+                      <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="7">Mercedes</a>
+                      <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="10">Renault</a>
                     </ul>
                   </div>
+                </div>
+                <div class="second-component" id="confidence">
+                  <div class="bold-font">Board confidence</div>
                   <div class="input-and-buttons">
-                    <input type="number" class="old-custom-input-number" id="longTermInput" value="2024"></input>
+                    <input type="number" class="custom-input-number" id="confidenceInput" value="48"></input>
                     <div class="input-buttons">
-                      <i class="bi bi-chevron-up"></i>
-                      <i class="bi bi-chevron-down"></i>
+                      <i class="bi bi-plus new-augment-button"></i>
+                      <i class="bi bi-dash new-augment-button"></i>
                     </div>
                   </div>
+                </div>
 
-                </div>
+              </div>
+            </div>
 
+            <div class="component-and-title">
+              <div class="component-title bold-font">Pit crew</div>
+              <div class="pit-crew-details">
+                <div class="pit-crew-group">
+                  <div class="one-stat-panel" data-crewStat="32">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Jacks</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="one-stat-panel pit-crew-middle" data-crewStat="34">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Wing replace</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="one-stat-panel" data-crewStat="35">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Car release</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="pit-crew-group mt-1">
+                  <div class="one-stat-panel" data-crewStat="36">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Speed</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="one-stat-panel pit-crew-middle" data-crewStat="38">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Fatigue</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="one-stat-panel" data-crewStat="39">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Car build</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="pit-crew-group mt-1">
+                  <div class="one-stat-panel" data-crewStat="40">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Wheel gun</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="one-stat-panel pit-crew-middle" data-crewStat="41">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Tyres off</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="one-stat-panel" data-crewStat="42">
+                    <div class="name-and-stat">
+                      <span class="bold-font">Tyres on</span>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button"></i>
+                      </div>
+                    </div>
+                    <div class="bar-container">
+                      <div class="one-stat-bar">
+                        <div class="one-stat-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="viewer-component">
-              <div class="first-component" id="teamBudget">
-                <div class="component-subtitle bold-font">Budget</div>
-                <div class="input-and-buttons">
-                  <input type="string" class="old-custom-input-number" id="teamBudgetInput" value="40000000"></input>
-                  <div class="input-buttons">
-                    <i class="bi bi-plus-lg"></i>
-                    <i class="bi bi-dash-lg"></i>
-                  </div>
-                </div>
-              </div>
-              <div class="second-component" id="costCap">
-                <div class="component-subtitle bold-font">Cost cap spent</div>
-                <div class="input-and-buttons">
-                  <input type="string" class="old-custom-input-number" id="costCapInput" value="120000000"></input>
-                  <div class="input-buttons">
-                    <i class="bi bi-plus-lg"></i>
-                    <i class="bi bi-dash-lg"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="viewer-component">
-              <div class="first-component" id="confidence">
-                <div class="component-subtitle bold-font">Board confidence</div>
-                <div class="blocking-confidence d-none">Only available when editing player's team</div>
-                <div class="input-and-buttons">
-                  <input type="number" class="old-custom-input-number" id="confidenceInput" value="48"></input>
-                  <div class="input-buttons">
-                    <i class="bi bi-plus-lg"></i>
-                    <i class="bi bi-dash-lg"></i>
-                  </div>
-                </div>
-              </div>
-              <div class="second-component" id="engineSelector">
-                <div class="component-subtitle bold-font">Engine</div>
 
-                <div style="max-width: max-content;">
-                  <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                    id="engineButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                    data-value="0">
-                    <div class="front-gradient objective-label" id="engineLabel">Engine</div>
-                  </button>
-                  <div class="dropdown-line"></div>
-                  <ul class="dropdown-menu" id="engineMenu" style="font-family: Formula1;">
-                    <a class="dropdown-item" style="cursor: pointer;" data-engine="1">Ferrari</a>
-                    <a class="dropdown-item" style="cursor: pointer;" data-engine="4">Red Bull Powertrains</a>
-                    <a class="dropdown-item" style="cursor: pointer;" data-engine="7">Mercedes</a>
-                    <a class="dropdown-item" style="cursor: pointer;" data-engine="10">Renault</a>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="viewer-component">
-              <div class="component-subtitle bold-font">Pit crew</div>
-            </div>
-            <div class="pit-crew-details pt-2">
-              <div class="pit-crew-group">
-                <div class="one-stat-panel" data-crewStat="32">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Jacks</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="one-stat-panel" data-crewStat="34">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Wing replace</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="one-stat-panel" data-crewStat="35">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Car release</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="pit-crew-group mt-1">
-                <div class="one-stat-panel" data-crewStat="36">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Speed</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="one-stat-panel" data-crewStat="38">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Fatigue</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="one-stat-panel" data-crewStat="39">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Car build</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="pit-crew-group mt-1">
-                <div class="one-stat-panel" data-crewStat="40">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Wheel gun</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="one-stat-panel" data-crewStat="41">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Tyres off</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="one-stat-panel" data-crewStat="42">
-                  <div class="name-and-stat">
-                    <span class="bold-font">Tyres on</span>
-                    <div class="stat-number">
-                      <i class="bi bi-dash-lg"></i>
-                      <input type="text" class="custom-input-number">
-                      <i class="bi bi-plus-lg"></i>
-                    </div>
-                  </div>
-                  <div class="bar-container">
-                    <div class="one-stat-bar">
-                      <div class="one-stat-progress"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
-          <div class="separator"></div>
+          <div class="team-separator"></div>
           <div id="viewer-second">
             <div class="facility-component-lg">
               <div class="main-second-viewer">
-                <div class="component-subtitle bold-font">
-                  <div>Car development facilities</div>
-                  <div>
-                    <button class="custom-dropdown custom-button" id="carDevButton" data-state="show"
-                      data-bs-toggle="collapse" data-bs-target="#carDevCollapse">
-                      <div class="front-gradient">Hide</div>
-                    </button>
-                    <div class="dropdown-line"></div>
-                  </div>
-                </div>
-                <div class="collapse show" id="carDevCollapse">
+                <div class="facility-group show" id="carDevCollapse">
+                  <div class="group-title component-title bold-font">Car Development</div>
                   <div class="facility " id="facility3">
                     <div class="facility-name">Factory</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3350,28 +3367,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility2">
                     <div class="facility-name">Design centre</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3379,28 +3393,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility5">
                     <div class="facility-name">Wind tunnel</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3408,28 +3419,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility6">
                     <div class="facility-name">CFD simulator</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3437,28 +3445,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility7">
                     <div class="facility-name">Suspension simulator</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3466,28 +3471,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility8">
                     <div class="facility-name">Car part test centre</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3495,40 +3497,28 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="component-subtitle bold-font">
-                  <div>Operations facilities</div>
-                  <div>
-                    <button class="custom-dropdown custom-button" id="operationButton" data-state="hide"
-                      data-bs-toggle="collapse" data-bs-target="#operationCollapse">
-                      <div class="front-gradient">Show</div>
-                    </button>
-                    <div class="dropdown-line"></div>
-                  </div>
-                </div>
-                <div class="collapse" id="operationCollapse">
+                <div class="facility-group" id="operationCollapse">
+                  <div class="group-title component-title bold-font">Operations</div>
                   <div class="facility " id="facility15">
                     <div class="facility-name">Board room</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3536,28 +3526,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility13">
                     <div class="facility-name">Hospitality centre</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3565,28 +3552,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility1">
                     <div class="facility-name">Weather centre</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3594,28 +3578,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility10">
                     <div class="facility-name">Helipad</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3623,28 +3604,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility11">
                     <div class="facility-name">Memorabilia Room</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3652,28 +3630,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility" id="facility12">
                     <div class="facility-name">Tour centre</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3681,40 +3656,28 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="component-subtitle bold-font">
-                  <div>Staff facilities</div>
-                  <div>
-                    <button class="custom-dropdown custom-button" id="staffButton" data-state="hide"
-                      data-bs-toggle="collapse" data-bs-target="#staffColapse">
-                      <div class="front-gradient">Show</div>
-                    </button>
-                    <div class="dropdown-line"></div>
-                  </div>
-                </div>
-                <div class="collapse" id="staffColapse">
+                <div class="facility-group" id="staffCollapse">
+                  <div class="group-title component-title bold-font">Staff Facilities</div>
                   <div class="facility " id="facility9">
                     <div class="facility-name">Team hub</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3722,28 +3685,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility14">
                     <div class="facility-name">Scouting department</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3751,28 +3711,25 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                   <div class="facility " id="facility4">
                     <div class="facility-name">Race simulator</div>
-                    <i class="bi bi-chevron-left"></i>
+                    <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
                       <div class="level"></div>
@@ -3780,33 +3737,23 @@
                       <div class="level"></div>
                       <div class="level"></div>
                     </div>
-                    <i class="bi bi-chevron-right"></i>
-                    <div class="facility-refurbish">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                        <path fill-rule="evenodd"
-                          d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
-                          clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                    <div class="condition-container">
-                      <div class="condition-container-bar">
-                        <div class="condition-container-bar-progress"></div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                    <div class="stats-header-separator"></div>
+                    <div class="gauge-and-buttons">
+                      <div class="gauge-container" style="--perc: 0">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
+                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
+                          <span class="gauge-indicator">50%</span>
+                        </svg>
                       </div>
-                      <div class="condition-container-value">33%</div>
-                      <div class="condition-container-buttons">
-                        <i class="bi bi-dash"></i>
-                        <i class="bi bi-plus"></i>
+                      <div class="input-buttons">
+                        <i class="bi bi-plus new-augment-button"></i>
+                        <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
                   </div>
                 </div>
-                <!-- <div class="pit-crew-button">
-                  <button class="custom-dropdown custom-button" id="carDevButton" data-state="show"
-                    data-bs-toggle="modal" data-bs-target="#pitCrewModal">
-                    <div class="front-gradient bold-font">Pit crew</div>
-                  </button>
-                  <div class="dropdown-line"></div>
-                </div> -->
               </div>
             </div>
           </div>

@@ -12,3 +12,9 @@
 - Refactor of the main function to access the DB (user shouldn't notice)
 - Added "Recents" save files in landing page
 - Added Patreon Oauth and removed "Patreon Key" system
+
+## 11th december
+- Redesigned the teams tab
+- Moved from Google's API to OpenAI's API for news generations
+- Added dropdown to viuew news from past years
+- Introduced some soft rate limits for testing
