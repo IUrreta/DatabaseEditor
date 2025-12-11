@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { getUserTierServer } from "../lib/getUserTierServer.js"
 import { redis } from "../lib/redis";
-export const maxDuration = 100;
+export const maxDuration = 60;
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
