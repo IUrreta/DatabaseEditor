@@ -28,7 +28,9 @@ import {
   loadNewsMapFromDB,
   ensureTurningPointsStructure,
   deleteNews,
-  deleteTurningPoints
+  deleteTurningPoints,
+  getNewsAndTpYearsAvailable,
+  getNewsFromSeason
 } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
@@ -505,11 +507,12 @@ const workerCommands = {
       const tpState = ensureTurningPointsStructure(tpStateFromDB);
 
       const { newsList, turningPointState } = generate_news(savedNewsMap, tpState);
+      const yearsAvailable = getNewsAndTpYearsAvailable()
 
       postMessage({
         responseMessage: "News fetched",
         noti_msg: "News generated successfully",
-        content: { newsList, turningPointState },
+        content: { newsList, turningPointState, yearsAvailable },
         unlocksDownload: true
       });
     } catch (e) {
@@ -517,6 +520,13 @@ const workerCommands = {
       console.error("STACK:", e.stack);
       postMessage({ responseMessage: "Error", error: e.message });
     }
+  },
+  getNewsFromSeason: (data, postMessage) => {
+    const season = data.season;
+    let newsAndTp = getNewsFromSeason(season);
+    const currentSeason = getGlobals().currentDate[1];
+    newsAndTp.isCurrentSeason = (season == currentSeason);
+    postMessage({ responseMessage: "News from season fetched", content: newsAndTp });
   },
   updateCombinedDict: (data, postMessage) => {
     const teamId = data.teamID;

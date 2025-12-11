@@ -27,7 +27,7 @@ import {
     resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
     reload_h2h_graphs, init_colors_dict, edit_colors_dict, setMidGrid, setMaxRaces, setRelativeGrid
 } from './head2head';
-import { place_news, initAI, getAI } from './news.js';
+import { place_news, initAI, getAI, updateNewsYearsButton } from './news.js';
 import { loadRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
@@ -884,6 +884,10 @@ const messageHandlers = {
         updateModBlocking(message)
     },
     "News fetched": (message) => {
+        place_news(message, newsAvailable)
+        updateNewsYearsButton(message)
+    },
+    "News from season fetched": (message) => {
         place_news(message, newsAvailable)
     },
     "Save selected finished": async (message) => {
