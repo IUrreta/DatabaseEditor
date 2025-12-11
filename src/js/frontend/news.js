@@ -681,6 +681,15 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
       newsItem.style.opacity = '1';
     }, 1500);
   }
+
+  if (!isCurrentSeason && isCurrentSeason !== undefined){ //if it's undefined it should go to else
+    document.querySelector("#reloadNews").classList.add("d-none");
+    document.querySelector("#regenerateArticle").classList.add("d-none");
+  }
+  else{
+    document.querySelector("#reloadNews").classList.remove("d-none");
+    document.querySelector("#regenerateArticle").classList.remove("d-none");
+  }
 }
 
 export async function place_turning_outcome(turningPointResponse, newsList) {
