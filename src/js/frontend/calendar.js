@@ -264,7 +264,7 @@ function load_addRaces() {
         let elem = countries_dict[dataCode]
         let li = document.createElement('li');
         let a = document.createElement('a');
-        a.classList.add('dropdown-item');
+        a.classList.add('redesigned-dropdown-item');
         a.classList.add('menu-race');
         a.href = '#';
         a.textContent = elem;
@@ -309,7 +309,7 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
             elem.parentNode.removeChild(elem)
             update_numbers()
         })
-        this.className = "custom-dropdown custom-button bold-font"
+        this.className = "close-modal"
         document.querySelectorAll(".race-calendar").forEach(function (elem) {
             if(elem.firstChild.className !== "complete-div"){
                 elem.classList = "race-calendar";
@@ -348,7 +348,7 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
 
 
         })
-        this.className = "custom-dropdown custom-button bold-font delete-mode"
+        this.className = "close-modal delete-mode"
 
     }
 

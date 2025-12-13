@@ -110,7 +110,7 @@ document.querySelectorAll("#tableTypeDropdown a").forEach(function (elem) {
         start = performance.now()
         change_points_pos_teams()
         end = performance.now()
-        document.querySelector("#tableTypeButton").textContent = elem.textContent
+        document.querySelector("#tableTypeButton span").textContent = elem.textContent
     })
 })
 
@@ -1184,7 +1184,7 @@ export function generateYearsMenu(actualYear) {
     for (let year = actualYear; year >= game_version; year--) {
         const a = document.createElement("a");
         a.textContent = String(year);
-        a.className = "dropdown-item";
+        a.className = "redesigned-dropdown-item";
         a.style.cursor = "pointer";
         a.dataset.year = String(year);                 // <- aquí
         yearMenu.appendChild(a);
@@ -1192,7 +1192,7 @@ export function generateYearsMenu(actualYear) {
 
         const a2 = document.createElement("a");
         a2.textContent = String(year);
-        a2.className = "dropdown-item";
+        a2.className = "redesigned-dropdown-item";
         a2.style.cursor = "pointer";
         a2.dataset.year = String(year);
         yearH2H.appendChild(a2);
@@ -1200,7 +1200,7 @@ export function generateYearsMenu(actualYear) {
             resetH2H();
             document.querySelectorAll(".modal-team").forEach(el => el.classList.remove("d-none"));
             const yearBtnH2H = document.getElementById("yearButtonH2H");
-            yearBtnH2H.textContent = a2.textContent;
+            yearBtnH2H.querySelector("span.dropdown-label").textContent = a2.textContent;
             yearBtnH2H.dataset.year = a2.dataset.year;  // <- también lo guardo
             new Command("yearSelectedH2H", { year: a2.dataset.year }).execute();
         });
@@ -1209,7 +1209,7 @@ export function generateYearsMenu(actualYear) {
     // All Time al principio (con data-year="all")
     const allTime = document.createElement("a");
     allTime.textContent = "All Time";
-    allTime.className = "dropdown-item";
+    allTime.className = "redesigned-dropdown-item";
     allTime.id = "allTimeRecords";
     allTime.dataset.year = "all";                   // <- clave
     yearMenu.insertBefore(allTime, yearMenu.firstChild);
@@ -1272,7 +1272,7 @@ function manageShowRecords() {
 
 function setYearButton(el) {
     const yearBtn = document.getElementById("yearButton");
-    yearBtn.textContent = el.textContent.trim();
+    yearBtn.querySelector("span.dropdown-label").textContent = el.textContent.trim();
     yearBtn.dataset.year = el.dataset.year;           // <- guardamos el valor
 }
 
@@ -1470,7 +1470,7 @@ export function loadRecordsList(data) {
 
 document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {
     elem.addEventListener("click", function () {
-        document.querySelector("#recordsTypeButton").textContent = elem.textContent
+        document.querySelector("#recordsTypeButton span").textContent = elem.textContent
         document.querySelector("#recordsTypeButton").dataset.value = elem.dataset.value
         if (elem.dataset.value === "standings") {
             const allTime = document.getElementById("allTimeRecords")

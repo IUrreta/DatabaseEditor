@@ -1106,13 +1106,12 @@
           <div class="info-modal-section">
             <div class="modal-buttons">
               <div>
-                <div>
-                  <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                    id="yearButtonH2H" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Year
+                <div class="dropdown-global">
+                  <button class="redesigned-dropdown bold-font" id="yearButtonH2H">
+                    <span class="dropdown-label">Year</span>
+                    <i class="redesigned-chevron"></i>
                   </button>
-                  <div class="dropdown-line"></div>
-                  <ul class="dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
+                  <ul class="redesigned-dropdown-menu" id="yearMenuH2H" style="font-family: Formula1;">
                   </ul>
                 </div>
               </div>
@@ -1502,14 +1501,9 @@
       <div class="script-view hide unloaded" id="head2head_viewer">
         <div class="general-top-panel">
           <div class="title-buttons-left">
-            <div>
-              <button class="custom-dropdown bold-font" id="compDataButton" data-bs-toggle="modal"
-                data-bs-target="#compDataModal">
-                Data
-              </button>
-              <div class="dropdown-line"></div>
-            </div>
-            <div class="config-content bold-font ms-4" id="compConfigContent"></div>
+              <div class="button-with-icon"  id="compDataButton" data-bs-toggle="modal"
+                data-bs-target="#compDataModal">Data</div>
+            <div class="config-content bold-font" id="compConfigContent"></div>
           </div>
           <div class="title-buttons-right">
             <div class="form-check annotations form-switch">
@@ -1517,18 +1511,18 @@
                 checked>
               <label class="form-check-label" for="flexSwitchCheckDefault">Annotations</label>
             </div>
-            <div>
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font ms-2"
-                id="graphTypeButton" data-bs-toggle="dropdown">
-                Race form
+            <div class="dropdown-global">
+              <button class="redesigned-dropdown bold-font"
+                id="graphTypeButton">
+                <span class="dropdown-label">Graph type</span>
+                <i class="redesigned-chevron"></i>
               </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="graphTypeDropdown" style="font-family: Formula1;">
-                <a class="dropdown-item" style="cursor: pointer;" id="raceForm">Race form</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="qualiForm">Qualifying form</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="gapToWinner">Gap to winner</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="gapToPole">Gap to pole</a>
+              <ul class="redesigned-dropdown-menu" id="graphTypeDropdown" style="font-family: Formula1;">
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="raceForm">Race form</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="qualiForm">Qualifying form</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="gapToWinner">Gap to winner</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="gapToPole">Gap to pole</a>
               </ul>
             </div>
           </div>
@@ -1555,9 +1549,9 @@
             </div>
             <div class="one-statH2H" id="raceh2h">
               <div class="name-H2H bold-font" style="justify-content: space-between;">
-                <i class="bi bi-chevron-left new-augment-button"></i>
+                <i class="bi bi-chevron-left new-augment-button transparent"></i>
                 <div class="only-name">RACE</div>
-                <i class="bi bi-chevron-right new-augment-button"></i>
+                <i class="bi bi-chevron-right new-augment-button transparent"></i>
               </div>
               <div class="bar-space">
                 <div class="driver1-number bold-font" style="justify-content: space-between;"></div>
@@ -1579,9 +1573,9 @@
             </div>
             <div class="one-statH2H" id="qualih2h">
               <div class="name-H2H bold-font">
-                <i class="bi bi-chevron-left new-augment-button"></i>
+                <i class="bi bi-chevron-left new-augment-button transparent"></i>
                 <div class="only-name">QUALIFYING</div>
-                <i class="bi bi-chevron-right new-augment-button"></i>
+                <i class="bi bi-chevron-right new-augment-button transparent"></i>
               </div>
               <div class="bar-space">
                 <div class="driver1-number bold-font"></div>
@@ -1726,16 +1720,16 @@
                 </li>
               </ul>
             </div>
-            <div>
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                id="tableTypeButton" data-bs-toggle="dropdown">
-                Points
+            <div class="dropdown-global">
+              <button type="button" class="redesigned-dropdown bold-font"
+                id="tableTypeButton">
+                <span class="dropdown-label">Points</span>
+                <i class="redesigned-chevron"></i>
               </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="tableTypeDropdown" style="font-family: Formula1;">
-                <a class="dropdown-item" style="cursor: pointer;" id="pointspill" data-value="points">Points</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="pospill" data-value="pos">Positions</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="qualipill" data-value="quali">Qualifying</a>
+              <ul class="redesigned-dropdown-menu" id="tableTypeDropdown" style="font-family: Formula1;">
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointspill" data-value="points">Points</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pospill" data-value="pos">Positions</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="qualipill" data-value="quali">Qualifying</a>
               </ul>
             </div>
           </div>
@@ -1745,30 +1739,30 @@
               data-bs-target="#standingsmodal">?</i>
           </div>
           <div class="title-buttons-left">
-            <div>
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                id="recordsTypeButton" data-bs-toggle="dropdown" data-value="standings">
-                Standings
+            <div class="dropdown-global">
+              <button class="redesigned-dropdown bold-font"
+                id="recordsTypeButton" data-value="standings">
+                <span class="dropdown-label">Records</span>
+                <i class="redesigned-chevron"></i>
               </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="recordsTypeDropdown" style="font-family: Formula1;">
-                <a class="dropdown-item" style="cursor: pointer;" id="standingspill"
+              <ul class="redesigned-dropdown-menu" id="recordsTypeDropdown" style="font-family: Formula1;">
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="standingspill"
                   data-value="standings">Standings</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="winspill" data-value="wins">Wins</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="polespill" data-value="poles">Poles</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="podiumspill" data-value="podiums">Podiums</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="champspill" data-value="champs">Championships</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="pointsRecordpill" data-value="points">Points</a>
-                <a class="dropdown-item" style="cursor: pointer;" id="racespill" data-value="races">Races</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="winspill" data-value="wins">Wins</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="polespill" data-value="poles">Poles</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="podiumspill" data-value="podiums">Podiums</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="champspill" data-value="champs">Championships</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointsRecordpill" data-value="points">Points</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="racespill" data-value="races">Races</a>
               </ul>
             </div>
-            <div style=" /* padding-bottom: 2px; */">
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="yearButton"
-                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Year
+            <div class="dropdown-global">
+              <button class="redesigned-dropdown bold-font" id="yearButton"
+               aria-haspopup="true" aria-expanded="false">
+                <span class="dropdown-label">Year</span>
+                <i class="redesigned-chevron"></i>
               </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="yearMenu" style="font-family: Formula1;">
+              <ul class="redesigned-dropdown-menu" id="yearMenu" style="font-family: Formula1;">
               </ul>
             </div>
 
@@ -1801,16 +1795,16 @@
       <div class="script-view hide unloaded" id="driver_transfers">
         <div class="transfer-top-panel">
           <div class="title-buttons-left">
-            <div class="dropdown">
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                id="staffTransfersDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+            <div class="dropdown-global">
+              <button class="redesigned-dropdown bold-font"
+                id="staffTransfersDropdown" aria-haspopup="true" aria-expanded="false"
                 data-value="drivers">
-                Drivers
+                <span class="dropdown-label">Drivers</span>
+                <i class="redesigned-chevron"></i>
               </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="stafftransfersMenu" style="font-family: Formula1;" data-bs-display="static">
-                <a class="dropdown-item" data-value="drivers">Drivers</a>
-                <a class="dropdown-item" data-value="staff">Staff</a>
+              <ul class="redesigned-dropdown-menu" id="stafftransfersMenu" style="font-family: Formula1;" data-bs-display="static">
+                <a class="redesigned-dropdown-item" data-value="drivers">Drivers</a>
+                <a class="redesigned-dropdown-item" data-value="staff">Staff</a>
               </ul>
             </div>
             <div class="filter-container">
@@ -2163,22 +2157,22 @@
       <div class="script-view hide unloaded" id="edit_stats">
         <div class="general-top-panel">
           <div class="title-buttons-left">
-            <div>
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font" id="staffDropdown"
-                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Staff Type
+            <div class="dropdown-global">
+              <button type="button" class="redesigned-dropdown bold-font" id="staffDropdown"
+                aria-haspopup="true" aria-expanded="false">
+                <span class="dropdown-label">Staff Type</span>
+                <i class="redesigned-chevron"></i>
               </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="staffMenu" style="font-family: Formula1;">
-                <a class="dropdown-item" data-list="fulldriverlist" data-spaceStats="driverStats"
+              <ul class="redesigned-dropdown-menu" id="staffMenu" style="font-family: Formula1;">
+                <a class="redesigned-dropdown-item" data-list="fulldriverlist" data-spaceStats="driverStats"
                   id="driverStatsDrop">Drivers</a>
-                <a class="dropdown-item" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical
+                <a class="redesigned-dropdown-item" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical
                   Chiefs</a>
-                <a class="dropdown-item" data-list="fullEngineerList" data-spaceStats="engineerStats">Race
+                <a class="redesigned-dropdown-item" data-list="fullEngineerList" data-spaceStats="engineerStats">Race
                   Engineers</a>
-                <a class="dropdown-item" data-list="fullAeroList" data-spaceStats="aeroStats">H. of
+                <a class="redesigned-dropdown-item" data-list="fullAeroList" data-spaceStats="aeroStats">H. of
                   Aerodynamics</a>
-                <a class="dropdown-item" data-list="fullDirectorList" data-spaceStats="directorStats">Sporting
+                <a class="redesigned-dropdown-item" data-list="fullDirectorList" data-spaceStats="directorStats">Sporting
                   Directors</a>
               </ul>
             </div>
@@ -3767,21 +3761,18 @@
         <div class="main-calendar">
           <div class="general-top-panel">
             <div class="title-buttons-left">
-              <div>
-                <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
+              <div class="dropdown-global">
+                <button class="redesigned-dropdown bold-font"
                   id="addRaceButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Add race
+                  <span class="dropdown-label">Add race</span>
+                  <i class="redesigned-chevron"></i>
                 </button>
-                <div class="dropdown-line"></div>
-                <ul class="dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
+                <ul class="redesigned-dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
                 </ul>
               </div>
-              <div>
-                <button class="custom-dropdown custom-button bold-font" id="deleteTracks">
+                <div class="close-modal" id="deleteTracks">
                   Delete race
-                </button>
-                <div class="dropdown-line"></div>
-              </div>
+                </div>
             </div>
             <div class="title bold-font">
               Calendar
@@ -3797,23 +3788,23 @@
       <div class="script-view hide unloaded" id="car_performance">
         <div class="general-top-panel">
           <div class="title-buttons-left" id="carAttributeSelector">
-            <div>
-              <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                id="attributeButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Overall
+            <div class="dropdown-global">
+              <button class="redesigned-dropdown bold-font"
+                id="attributeButton" aria-haspopup="true" aria-expanded="false">
+                <span class="dropdown-label">Overall</span>
+                <i class="redesigned-chevron"></i>
               </button>
-              <div class="dropdown-line"></div>
-              <ul class="dropdown-menu" id="attributeMenu" style="font-family: Formula1;">
-                <a class="dropdown-item" data-attribute="top_speed">Top speed</a>
-                <a class="dropdown-item" data-attribute="acceleration">Acceleration</a>
-                <a class="dropdown-item" data-attribute="low_speed">Low speed</a>
-                <a class="dropdown-item" data-attribute="medium_speed">Medium speed</a>
-                <a class="dropdown-item" data-attribute="high_speed">High speed</a>
-                <a class="dropdown-item" data-attribute="drs">DRS Effectiveness</a>
-                <a class="dropdown-item" data-attribute="dirty_air">Dirty air tolerance</a>
-                <a class="dropdown-item brake-cooling-replace" data-attribute="brake_cooling">Brake cooling</a>
-                <a class="dropdown-item" data-attribute="engine_cooling">Engine cooling</a>
-                <a class="dropdown-item" data-attribute="overall">Overall</a>
+              <ul class="redesigned-dropdown-menu" id="attributeMenu" style="font-family: Formula1;">
+                <a class="redesigned-dropdown-item" data-attribute="top_speed">Top speed</a>
+                <a class="redesigned-dropdown-item" data-attribute="acceleration">Acceleration</a>
+                <a class="redesigned-dropdown-item" data-attribute="low_speed">Low speed</a>
+                <a class="redesigned-dropdown-item" data-attribute="medium_speed">Medium speed</a>
+                <a class="redesigned-dropdown-item" data-attribute="high_speed">High speed</a>
+                <a class="redesigned-dropdown-item" data-attribute="drs">DRS Effectiveness</a>
+                <a class="redesigned-dropdown-item" data-attribute="dirty_air">Dirty air tolerance</a>
+                <a class="redesigned-dropdown-item brake-cooling-replace" data-attribute="brake_cooling">Brake cooling</a>
+                <a class="redesigned-dropdown-item" data-attribute="engine_cooling">Engine cooling</a>
+                <a class="redesigned-dropdown-item" data-attribute="overall">Overall</a>
               </ul>
             </div>
             <div class="performance-graph-button">
