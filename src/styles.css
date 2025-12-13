@@ -1172,10 +1172,6 @@ body.og-theme .dropdown-menu a:hover {
   pointer-events: none;
 }
 
-.button-with-icon#patreonLogoutButton {
-  width: min-content;
-}
-
 .button-with-icon.active {
   color: var(--new-primary);
   background-color: var(--new-primary-transparent);
@@ -11919,31 +11915,6 @@ a.bi-custom-patreon.close-slide-up {
   color: var(--new-primary-dark);
 }
 
-#apiKeyInput {
-  width: 350px;
-  background-color: var(--elements);
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  color: var(--text);
-  padding: 5px 10px;
-  margin-top: 5px;
-}
-
-.api-input-and-status {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-
-.api-input-and-status:has(.user-name-and-logout:not(.d-none)) {
-  align-items: flex-start;
-}
-
-.api-input-and-status:has(.user-name-and-logout:not(.d-none)) .saved-status {
-  padding: 3px;
-}
 
 .user-name-and-logout {
   display: flex;
@@ -12063,11 +12034,64 @@ a.bi-custom-patreon.close-slide-up {
   pointer-events: none;
 }
 
-.api-input-and-status:has(.saved-status.api-loaded) .remove-key,
-.api-input-and-status:has(.saved-status.api-loaded) #savedKeySeparator {
-  opacity: 1;
-  transform: translateY(0px);
-  pointer-events: auto;
+.limit-bar-and-text{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.limit-bar{
+  height: 8px;
+  width: 100px;
+  background-color: var(--elements);
+  border-radius: 4px;
+}
+
+.limit-bar-fill{
+  height: 8px;
+  background-color: var(--new-primary);
+  border-radius: 4px;
+  transition: width 0.15s;
+}
+
+.limit-text{
+  font-size: 14px;
+  color: var(--modal-text);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.rate-ok .limit-bar-fill {
+  background-color: var(--rate-ok-color);
+}
+.rate-ok .limit-text {
+  color: var(--rate-ok-color);
+  background-color: var(--rate-ok-bg);
+}
+
+.rate-warning .limit-bar-fill {
+  background-color: var(--rate-warning-color);
+}
+.rate-warning .limit-text {
+  color: var(--rate-warning-color);
+  background-color: var(--rate-warning-bg);
+}
+
+.rate-danger .limit-bar-fill {
+  background-color: var(--rate-danger-color);
+}
+.rate-danger .limit-text {
+  color: var(--rate-danger-color);
+  background-color: var(--rate-danger-bg);
+}
+
+.rate-blocked .limit-bar-fill {
+  background-color: var(--rate-blocked-color);
+}
+.rate-blocked .limit-text {
+  color: var(--rate-blocked-color);
+  background-color: var(--rate-blocked-bg);
 }
 
 .remove-key i,

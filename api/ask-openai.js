@@ -1,18 +1,11 @@
 import OpenAI from "openai";
-import { getUserTierServer } from "../lib/getUserTierServer.js"
-import { redis } from "../lib/redis";
+import { getUserTierServer } from "../lib/getUserTierServer.js";
+import { getDailyLimitForTier } from "../lib/rateLimits.js";
+import { redis } from "../lib/redis.js";
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-// DAILY LIMITS by tier
-const DAILY_LIMITS = {
-  Founder: 20,
-  Insider: 20,
-  Backer: 20,
-  Free: 20 // ahora todos tienen 20
-};
 
 export default async function handler(req, res) {
   try {
@@ -21,42 +14,40 @@ export default async function handler(req, res) {
 
     const { messages, model, max_tokens } = body;
 
-    // 1️⃣  Leer tier del usuario desde cookie (server-side)
+    // 1️⃣ Auth
     const user = getUserTierServer(req);
-
     if (!user.isLoggedIn) {
       return res.status(401).json({ error: "Not logged in" });
     }
 
     const tier = user.tier;
-    const userId = user.id; // <-- ahora sí existe gracias a patreonId en JWT
-    const limit = DAILY_LIMITS[tier];
+    const userId = user.id;
 
-    // 2️⃣  Construir key del rate-limit
+    // 2️⃣ Limit desde ENV
+    const limit = getDailyLimitForTier(tier);
+
+    // 3️⃣ Redis key
     const today = new Date().toISOString().slice(0, 10);
     const redisKey = `ratelimit:${userId}:${today}`;
 
-    let used = await redis.get(redisKey);
-    if (!used) used = 0;
+    let used = Number(await redis.get(redisKey)) || 0;
 
-    // 3️⃣  Comprobar rate limit
+    // 4️⃣ Rate limit
     if (used >= limit) {
       return res.status(429).json({
-        error: `Daily limit reached (${used}/${limit})`,
-        used,
-        limit
+        error: "Daily limit reached",
       });
     }
 
-    // 4️⃣  Incrementar contador
+    // 5️⃣ Incremento
     await redis.incr(redisKey);
-    await redis.expire(redisKey, 60 * 60 * 24); // expira en 24h
+    await redis.expire(redisKey, 60 * 60 * 24);
 
-    // 5️⃣  Llamada a OpenAI (Responses API)
+    // 6️⃣ OpenAI
     const aiModel = model || "gpt-5-mini";
     const safeMaxTokens = Math.min(max_tokens || 1500, 4000);
 
-    const input = messages.map((m) => ({
+    const input = messages.map(m => ({
       role: m.role,
       content: m.content
     }));

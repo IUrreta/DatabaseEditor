@@ -710,52 +710,17 @@
                 </div>
               </div>
               <div class="api-key-section">
-                <span class="modal-subtitle bold-font">API Settings</span>
+                <span class="modal-subtitle bold-font">API Limits</span>
                 <div class="modal-text">
-                  If you want to read AI-generated articles from the news section, please enter your API key here. You
-                  can get one for free
-                  from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
-                  <span class="important-text bold-font">Create API Key</span> on the top right corner
-
+                  The editor uses OpenAI's API for the news' articles generation. This service is not free, so to
+                  prevent super power users from abusing it, there is a daily limit of requests based on your Patreon
+                  tier.
                 </div>
-                <div class="api-input-and-status">
-                  <input type="text" class="" id="apiKeyInput" placeholder="Enter your API key">
-                  <div class="saved-status" id="apiKeyStatus">
-                    <i class="bi bi-check"></i>
-                    <span class="bold-font">Saved</span>
+                <div class="limit-bar-and-text" id="rateLimitContainer">
+                  <div class="limit-bar">
+                    <div class="limit-bar-fill" id="limitBarFill"></div>
                   </div>
-                  <div class="separator" id="savedKeySeparator"></div>
-                  <div class="remove-key" id="removeApiKey">
-                    <i class="bi bi-x"></i>
-                    <span class="bold-font">Remove</span>
-                  </div>
-                </div>
-                <div class="ai-model-settings">
-                  <div class="patreon-links">
-                    <div class="ai-model-selector">
-                      <button type="button" class="btn btn-primary dropdown-toggle custom-dropdown bold-font"
-                        id="modelSelectorButton" data-value="gemini-2.5-flash" data-bs-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                        Gemini 2.5 Flash
-                      </button>
-                      <div class="dropdown-line"></div>
-                      <ul class="dropdown-menu" id="aiModelmenu" style="font-family: Formula1;">
-                        <a class="dropdown-item" data-value="gemini-2.5-flash">
-                          <div class="model-and-description">
-                            <span class="model-name">Gemini 2.5 Flash</span>
-                            <span class="model-description">Better responses, sometimes overloaded</span>
-                          </div><i class="bi bi-check"></i>
-                        </a>
-                        <a class="dropdown-item inactive" data-value="gemini-2.5-flash-lite">
-                          <div class="model-and-description">
-                            <span class="model-name">Gemini 2.5 Flash Lite</span>
-                            <span class="model-description">Faster responses, lower quality</span>
-                          </div><i class="bi bi-check unactive"></i>
-                        </a>
-                      </ul>
-                    </div>
-
-                  </div>
+                  <div class="limit-text" id="limitText">Plenty of requests available</div>
                 </div>
 
               </div>

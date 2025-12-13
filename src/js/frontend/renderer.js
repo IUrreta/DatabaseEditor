@@ -27,7 +27,7 @@ import {
     resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
     reload_h2h_graphs, init_colors_dict, edit_colors_dict, setMidGrid, setMaxRaces, setRelativeGrid
 } from './head2head';
-import { place_news, initAI, getAI, updateNewsYearsButton } from './news.js';
+import { place_news, updateNewsYearsButton } from './news.js';
 import { loadRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
@@ -113,10 +113,6 @@ const downloadSaveButton = document.querySelector(".download-save-button")
 
 const patreonThemes = document.querySelector(".patreon-themes");
 const apiKeySection = document.getElementById("apiKeySection");
-
-const apiKeyInput = document.getElementById("apiKeyInput");
-const apiKeyStatus = document.getElementById("apiKeyStatus");
-const removeApiKey = document.getElementById("removeApiKey");
 
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
@@ -1684,14 +1680,6 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         replace_custom_team_logo(document.querySelector(".logo-preview").src)
     }
 
-    //if apiKeyInput has a value, save it to localStorage
-    let apiKeyValue = apiKeyInput.value.trim();
-    if (apiKeyValue) {
-        localStorage.setItem("apiKey", apiKeyValue);
-        apiKeyStatus.classList.add("api-loaded")
-        apiKeyInput.value = ""
-        initAI(apiKeyValue);
-    }
 
 })
 
@@ -2087,36 +2075,6 @@ function manageNewsStatus(patreonTier) {
             generateNews();
         }
     }
-    else {
-        if (generateNews === "provisional") {
-            const apiKeySection = document.querySelector('.api-key-section');
-
-            patreonUnlockables.classList.remove("d-none");
-            patreonThemes.classList.add("d-none");
-
-
-            let diffDays = 0;
-            const firstNewsEntered = localStorage.getItem('firstNewsEntered');
-            if (firstNewsEntered) {
-                const firstDate = new Date(firstNewsEntered);
-                const now = new Date();
-                const diffTime = Math.abs(now - firstDate);
-                diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            }
-
-            if (apiKeySection) {
-                const timeRemainingSpan = document.createElement('span');
-                timeRemainingSpan.className = 'modal-text';
-                timeRemainingSpan.innerHTML = `You have: <span class="important-text bold-font">${8 - diffDays} days </span> left of free news generation. Become a <a href="https://www.patreon.com/f1dbeditor" target="_blank">patreon member</a> to continue using this feature!`;
-
-                //insert after modal-subtitle in apiKeySection
-                const subtitle = apiKeySection.querySelector('.modal-subtitle');
-                if (subtitle) {
-                    subtitle.insertAdjacentElement('afterend', timeRemainingSpan);
-                }
-            }
-        }
-    }
 
 }
 
@@ -2254,12 +2212,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         versionPanel.classList.add("nightly");
     }
 
-
-    const aiModel = localStorage.getItem("ai-model") ?? "gemini-2.5-flash"
-    if (aiModel) {
-        document.querySelector(`.dropdown-item[data-value="${aiModel}"]`).click();
-    }
-
+    updateRateLimitsDisplay();
 
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
@@ -2276,12 +2229,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let recents = await getRecentHandles();
     populateRecentHandles(recents);
 
-    //check if apiKey in localStorage
-    const apiKey = localStorage.getItem("apiKey");
-    if (apiKey) {
-        apiKeyStatus.classList.add("api-loaded")
-        initAI(apiKey);
-    }
 
     let phrases = [
         "Change the contract of every staff available in game",
@@ -2342,6 +2289,53 @@ document.addEventListener('DOMContentLoaded', async () => {
     animatedText.innerHTML = '';
     animateTextLoop();
 });
+
+export async function updateRateLimitsDisplay() {
+  try {
+    const res = await fetch("/api/usage-today");
+    if (!res.ok) return;
+
+    const { used, limit, percentage } = await res.json();
+
+    const fill = document.getElementById("limitBarFill");
+    const text = document.getElementById("limitText");
+    const container = document.getElementById("rateLimitContainer");
+
+    fill.style.width = `${percentage}%`;
+
+    // limpiar estados previos
+    container.classList.remove(
+      "rate-ok",
+      "rate-warning",
+      "rate-danger",
+      "rate-blocked"
+    );
+
+    let message = "";
+    let state = "";
+
+    if (percentage < 50) {
+      state = "rate-ok";
+      message = "Plenty of requests available";
+    } else if (percentage < 80) {
+      state = "rate-warning";
+      message = "You're halfway through today's limit";
+    } else if (percentage < 100) {
+      state = "rate-danger";
+      message = `Only ${limit - used} requests left today`;
+    } else {
+      state = "rate-blocked";
+      message = "Daily limit reached";
+    }
+
+    container.classList.add(state);
+    text.textContent = message;
+
+  } catch (err) {
+    console.error("Failed to update rate limits display:", err);
+  }
+}
+
 
 function populateRecentHandles(recents) {
     if (recents.length === 0) {
@@ -2413,12 +2407,6 @@ async function verifyPermission(fileHandle) {
 
     return false;
 }
-
-removeApiKey.addEventListener('click', () => {
-    localStorage.removeItem("apiKey");
-    apiKeyStatus.classList.remove("api-loaded")
-    initAI(null);
-});
 
 function createMarqueeItem(name, tier) {
     const span = document.createElement("span");
