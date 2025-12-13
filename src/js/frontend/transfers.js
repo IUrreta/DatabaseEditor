@@ -283,7 +283,7 @@ export function initFreeDriversElems() {
 
 document.querySelectorAll("#stafftransfersMenu a").forEach(function (elem) {
     elem.addEventListener("click", function () {
-        document.querySelector("#staffTransfersDropdown").innerText = elem.innerText;
+        document.querySelector("#staffTransfersDropdown span.dropdown-label").innerText = elem.innerText;
         let value = elem.dataset.value;
         document.querySelector("#staffTransfersDropdown").dataset.value = value;
         manage_staff_drivers(value)

@@ -181,7 +181,7 @@ document.getElementById("teamsCarsButton").addEventListener("click", function (e
 
 document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click", function () {
-        document.querySelector("#attributeButton").innerText = elem.innerText;
+        document.querySelector("#attributeButton span").innerText = elem.innerText;
         order_by(elem.dataset.attribute);
     })
 })

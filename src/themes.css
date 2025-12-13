@@ -75,6 +75,18 @@
     --amo-1: #bd6962;
     --amo-2: #eec987;
 
+    --rate-ok-color: #2ecc71;
+    --rate-ok-bg: color-mix(in srgb, var(--rate-ok-color) 30%, transparent);
+
+    --rate-warning-color: #f1c40f;
+    --rate-warning-bg: color-mix(in srgb, var(--rate-warning-color) 30%, transparent);
+
+    --rate-danger-color: #e67e22;
+    --rate-danger-bg: color-mix(in srgb, var(--rate-danger-color) 30%, transparent);
+
+    --rate-blocked-color: #e74c3c;
+    --rate-blocked-bg: color-mix(in srgb, var(--rate-blocked-color) 30%, transparent);
+
     --mentality-enthusiastic: #c055e3;
     --mentality-positive: #10ffff;
     --mentality-neutral: #f3f3f3;

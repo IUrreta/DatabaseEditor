@@ -965,8 +965,9 @@ export function fetchOneTeamSeasonResults(team, year) {
 }
 
 export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true) {
-  const driverID = driver[0];
-  const season = year[0];
+  const driverID = Array.isArray(driver) ? driver[0] : driver; //if its not an array, take it as is, if it is, take first element
+  const season = Array.isArray(year) ? year[0] : year;
+
 
   const results = queryDB(`
       SELECT DriverID, TeamID, FinishingPos, Points
@@ -1392,8 +1393,8 @@ export function formatSeasonResults(
   sprints,
   isCurrentYear = true
 ) {
-  const driverID = driver[0];
-  const season = year[0];
+  const driverID = Array.isArray(driver) ? driver[0] : driver;
+  const season = Array.isArray(year) ? year[0] : year;
 
   const toSeconds = (t) => {
     if (t == null) return null;

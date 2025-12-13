@@ -7,7 +7,7 @@ import turningPointsTemplates from "../../data/news/turning_points_prompts_templ
 import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
-import { generateNews, getSaveName, confirmModal } from "./renderer";
+import { generateNews, getSaveName, confirmModal, updateRateLimitsDisplay } from "./renderer";
 import { marked } from 'marked';
 import DOMPurify from "dompurify";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -16,26 +16,12 @@ const newsGrid = document.querySelector('.news-grid');
 const newsModalEl = document.getElementById('newsModal');
 const closeBtn = document.getElementById('closeNewsArticle');
 
-let ai = null;
 let interval2 = null;
 let cleaning = false;
 
 let errorCount = 0;
 const MAX_ERRORS = 2;
 
-export function initAI(apiKeyParam) {
-  if (!apiKeyParam) {
-    console.warn("No API key configured yet");
-    ai = null;
-    return null;
-  }
-  ai = new GoogleGenAI({ apiKey: apiKeyParam });
-  return ai;
-}
-
-export function getAI() {
-  return ai;
-}
 
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
 const onTransitionEnd = (el, propName, timeoutMs) =>
@@ -166,12 +152,6 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
       }
     })();
 
-
-
-
-
-
-    if (ai) {
       await generateAndRenderArticle(news, newsList, "Generating", false);
 
       const regenerateButton = document.getElementById('regenerateArticle');
@@ -184,29 +164,11 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
           await generateAndRenderArticle(news, newsList, "Regenerating", true);
         });
       }
-    }
-    else {
-      const noApiFoundSpan = document.createElement('span');
-      noApiFoundSpan.classList.add('news-error');
-      noApiFoundSpan.textContent = "No API key found. Please set it in the settings.";
-      newsArticle.appendChild(noApiFoundSpan);
-      const googleAIStudioSpan = document.createElement('p');
-      googleAIStudioSpan.classList.add('news-error', 'news-error-api-key');
-      googleAIStudioSpan.innerHTML = `If you want to read AI-generated articles from the news section, please enter your API key here. You can get one for free
-                from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
-                <span class="important-text bold-font">Create API Key</span> on the top right corner`
-      newsArticle.appendChild(googleAIStudioSpan);
-    }
 
   });
 }
 
 async function generateAndRenderArticle(news, newsList, label = "Generating", force = false, model) {
-  if (!ai) {
-    console.warn("AI not initialized");
-    return;
-  }
-
   const newsArticle = document.querySelector('#newsModal .news-article');
   newsArticle.innerHTML = '';
 
@@ -261,45 +223,22 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
       }, 150);
     }, 200);
   } catch (err) {
-    errorCount++;
     console.error("Error generating article:", err);
+
     clearInterval(interval);
     clearInterval(dotsInterval);
-    loaderDiv.remove();
-    const actualModel = localStorage.getItem('ai-model');
-    //put text telling to retry using the Regenerate article button, if error code is 503 put that the model is overloaded
-    if (errorCount < MAX_ERRORS || actualModel === 'gemini-2.5-flash-lite') {
-      const errorSpan = document.createElement('span');
-      errorSpan.classList.add('news-error', 'model-error');
-      if (err.message?.includes("503") || err.message?.includes("overloaded") || err.status === 503) {
-        errorSpan.textContent = "The model is currently overloaded. Please try again later.";
-      } else if (err.message?.includes("429") || err.message?.includes("rate limit")) {
-        errorSpan.textContent = "Rate limit reached. Please wait until tomorrow to generate more articles.";
-      } else if (err.message?.includes("network") || err.message?.includes("fetch")) {
-        errorSpan.textContent = "Network error. Please check your connection and try again.";
-      } else {
-        errorSpan.textContent = "Error generating article. Please try again using the Regenerate button.";
-      }
-      newsArticle.appendChild(errorSpan);
-    } else {
-      const changeModalSpan = document.createElement('span');
-      changeModalSpan.classList.add('news-error', 'model-retry');
-      changeModalSpan.textContent = "Gemini 2.5 Flash seems to be having issues. Would you like to try the Gemini 2.5 Flash Lite model instead? It offers faster responses with slightly lower quality.";
-      newsArticle.appendChild(changeModalSpan);
-      const retryWithLiteButton = document.createElement('div');
-      const retrySpan = document.createElement('span');
-      retryWithLiteButton.classList.add('button-with-icon', 'retry-with-lite');
-      retrySpan.textContent = "Retry with Gemini 2.5 Flash Lite";
-      const retryIcon = document.createElement('i');
-      retryIcon.classList.add('bi', 'bi-arrow-clockwise');
-      retryWithLiteButton.appendChild(retryIcon);
-      retryWithLiteButton.appendChild(retrySpan);
-      newsArticle.appendChild(retryWithLiteButton);
-      retryWithLiteButton.addEventListener('click', async () => {
-        generateAndRenderArticle(news, newsList, "Regenerating with Gemini 2.5 Flash Lite", true, "gemini-2.5-flash-lite");
-      });
-      changeModalSpan.appendChild(retryWithLiteButton);
 
+    loaderDiv.remove();
+
+    const errorDiv = document.createElement('div');
+    errorDiv.classList.add('news-error', 'model-error');
+    
+    if (err.status === 429) {
+      errorDiv.innerText = "Daily limit reached. Tomorrow you'll be able to generate more articles.";
+      newsArticle.appendChild(errorDiv);
+    } else {
+      errorDiv.innerText = "Error generating article. Please try again.";
+      newsArticle.appendChild(errorDiv);
     }
   }
 }
@@ -752,30 +691,16 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
     const image = document.querySelector('#newsModal .news-image-background');
     image.src = turningPointResponse.image;
 
-    if (ai) {
-      await generateAndRenderArticle(turningPointResponse, newsList, "Generating", false);
+    await generateAndRenderArticle(turningPointResponse, newsList, "Generating", false);
 
-      // Hook para REGENERAR (misma lógica, forzando)
-      const regenBtn = document.getElementById('regenerateArticle');
-      if (regenBtn) {
-        regenBtn.replaceWith(regenBtn.cloneNode(true)); // evita listeners duplicados
-        const newRegenBtn = document.getElementById('regenerateArticle');
-        newRegenBtn.addEventListener('click', () => {
-          generateAndRenderArticle(turningPointResponse, newsList, "Regenerating", true);
-        });
-      }
-    }
-    else {
-      const noApiFoundSpan = document.createElement('span');
-      noApiFoundSpan.classList.add('news-error');
-      noApiFoundSpan.textContent = "No API key found. Please set it in the settings.";
-      newsArticle.appendChild(noApiFoundSpan);
-      const googleAIStudioSpan = document.createElement('p');
-      googleAIStudioSpan.classList.add('news-error', 'news-error-api-key');
-      googleAIStudioSpan.innerHTML = `If you want to read AI-generated articles from the news section, please enter your API key here. You can get one for free
-                  from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
-                  <span class="important-text bold-font">Create API Key</span> on the top right corner`
-      newsArticle.appendChild(googleAIStudioSpan);
+    // Hook para REGENERAR (misma lógica, forzando)
+    const regenBtn = document.getElementById('regenerateArticle');
+    if (regenBtn) {
+      regenBtn.replaceWith(regenBtn.cloneNode(true)); // evita listeners duplicados
+      const newRegenBtn = document.getElementById('regenerateArticle');
+      newRegenBtn.addEventListener('click', () => {
+        generateAndRenderArticle(turningPointResponse, newsList, "Regenerating", true);
+      });
     }
 
   });
@@ -1288,6 +1213,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     const articleText = await askGenAI(messages);
     const cleanedArticleText = cleanArticleOutput(articleText);
     newData.text = cleanedArticleText;
+    updateRateLimitsDisplay();
 
     new Command("updateNews", {
       stableKey: newData.id ?? computeStableKey(newData),
@@ -2405,7 +2331,6 @@ function saveTurningPoints(turningPoints) {
 
 async function askGenAI(messages, opts = {}) {
   const aiModel = opts.model || "gpt-5-mini";
-  console.log("Asking messages to GenAI:", messages, "with options", opts);
 
   const response = await fetch("/api/ask-openai", {
     method: "POST",
@@ -2417,11 +2342,23 @@ async function askGenAI(messages, opts = {}) {
     })
   });
 
-  const data = await response.json();
-  console.log("GenAI response:", data);
+  let data = {};
+  try {
+    data = await response.json();
+  } catch {
+    // ignore JSON parse errors
+  }
+
+  if (!response.ok) {
+    const error = new Error(data.error || "AI request failed");
+    error.status = response.status;
+    throw error;
+  }
 
   return data.text;
 }
+
+
 function buildEmergencyOverlay() {
   const overlayDiv = document.createElement('div');
   overlayDiv.classList.add('breaking-news-overlay', 'bold-font');
@@ -2635,41 +2572,6 @@ document.querySelectorAll('#newsTypeMenu .redesigned-dropdown-item').forEach(ite
     document.querySelectorAll(`.news-item[data-type="${type}"]`).forEach(n => {
       n.style.display = hide ? 'none' : '';
     });
-  });
-});
-
-document.querySelectorAll("#aiModelmenu .dropdown-item").forEach(item => {
-  item.addEventListener("click", function (e) {
-    //do not close the dropdown
-    e.preventDefault();
-    e.stopPropagation();
-
-    const selectedModel = e.target.dataset.value;
-    const selectedText = e.target.querySelector(".model-name").innerText;
-
-    document.getElementById("modelSelectorButton").innerText = selectedText;
-    document.getElementById("modelSelectorButton").dataset.value = selectedModel;
-
-    item.classList.toggle("inactive");
-
-    const icon = item.querySelector("i");
-
-    //put all the others i as unactive
-    document.querySelectorAll("#aiModelmenu .dropdown-item").forEach(otherItem => {
-      if (otherItem !== item) {
-        const icon = otherItem.querySelector("i");
-        if (icon) {
-          icon.classList.add("unactive");
-        }
-      }
-      else {
-        if (icon) {
-          icon.classList.remove("unactive");
-        }
-      }
-    });
-
-    localStorage.setItem("ai-model", selectedModel);
   });
 });
 

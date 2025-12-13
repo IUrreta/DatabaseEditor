@@ -862,7 +862,7 @@ export function resetH2H() {
  * Event listeners for the 3 types of graphs
  */
 document.querySelector("#pointsProgression").addEventListener("click", function (elem) {
-    document.querySelector("#graphTypeButton").innerText = "Points progression"
+    document.querySelector("#graphTypeButton span").innerText = "Points progression"
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.remove("d-none")
@@ -871,7 +871,7 @@ document.querySelector("#pointsProgression").addEventListener("click", function 
 })
 
 document.querySelector("#raceForm").addEventListener("click", function (elem) {
-    document.querySelector("#graphTypeButton").innerText = "Race form"
+    document.querySelector("#graphTypeButton span").innerText = "Race form"
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.remove("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
@@ -880,7 +880,7 @@ document.querySelector("#raceForm").addEventListener("click", function (elem) {
 })
 
 document.querySelector("#qualiForm").addEventListener("click", function (elem) {
-    document.querySelector("#graphTypeButton").innerText = "Qualifying form"
+    document.querySelector("#graphTypeButton span").innerText = "Qualifying form"
     document.querySelector("#qualiGraph").classList.remove("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
@@ -889,7 +889,7 @@ document.querySelector("#qualiForm").addEventListener("click", function (elem) {
 })
 
 document.querySelector("#gapToWinner").addEventListener("click", function (elem) {
-    document.querySelector("#graphTypeButton").innerText = "Gap to winner"
+    document.querySelector("#graphTypeButton span").innerText = "Gap to winner"
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
@@ -899,7 +899,7 @@ document.querySelector("#gapToWinner").addEventListener("click", function (elem)
 })
 
 document.querySelector("#gapToPole").addEventListener("click", function (elem) {
-    document.querySelector("#graphTypeButton").innerText = "Gap to pole"
+    document.querySelector("#graphTypeButton span").innerText = "Gap to pole"
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
@@ -1189,6 +1189,7 @@ function get_one_driver_points_format(driver, data) {
 }
 
 function load_graphs_data(drivers) {
+    console.log(drivers)
     let max_gapPole = 0;
     let max_gapWinner = 0;
     const races_ids = drivers[0].map(r => r[0]); // array de raceId en orden

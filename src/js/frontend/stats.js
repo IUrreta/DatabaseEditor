@@ -631,7 +631,7 @@ export function listenersStaffGroups() {
 
             }
 
-            staffButton.innerHTML = staffSelected;
+            staffButton.querySelector(".dropdown-label").innerHTML = staffSelected;
             change_elegibles(item.dataset.spacestats)
             document.querySelectorAll(".staff-list").forEach(function (elem) {
                 elem.classList.add("d-none")
