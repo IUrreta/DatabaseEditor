@@ -112,7 +112,6 @@ const patreonUnlockables = document.querySelector(".patreon-unlockables")
 const downloadSaveButton = document.querySelector(".download-save-button")
 
 const patreonThemes = document.querySelector(".patreon-themes");
-const apiKeySection = document.getElementById("apiKeySection");
 
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
@@ -2062,10 +2061,6 @@ document.querySelector("#cancelDetailsButton").addEventListener("click", functio
 function manageNewsStatus(patreonTier) {
     const generateNews = checkGenerableNews(patreonTier);
     if (generateNews === "yes") {
-        const extraApiKeySection = document.querySelector('#extraApiKeySection');
-        if (extraApiKeySection) {
-            extraApiKeySection.remove();
-        }
         const newsgenerationEnded = document.querySelector('.news-generation-ended');
         if (newsgenerationEnded) {
             newsgenerationEnded.remove();
@@ -2088,29 +2083,6 @@ function checkGenerableNews(patreonTier) {
         }
         else if (patreonTier.tier === "Backer") {
             newsAvailable.normal = true;
-            newsAvailable.turning = false;
-        }
-    }
-    else {
-        const firstNewsEntered = localStorage.getItem('firstNewsEntered');
-        if (!firstNewsEntered) {
-            const today = new Date().toISOString().split('T')[0];
-            localStorage.setItem('firstNewsEntered', today);
-            canGenerate = "provisional";
-        }
-        else {
-            const firstDate = new Date(firstNewsEntered);
-            const now = new Date();
-            const diffTime = Math.abs(now - firstDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            canGenerate = diffDays < 8 ? "provisional" : "hiding";
-        }
-        if (canGenerate === "provisional") {
-            newsAvailable.normal = true;
-            newsAvailable.turning = false;
-        }
-        else if (canGenerate === "hiding") {
-            newsAvailable.normal = false;
             newsAvailable.turning = false;
         }
     }
