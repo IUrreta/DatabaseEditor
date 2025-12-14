@@ -17,6 +17,7 @@
 - Redesigned the teams tab
 - Moved from Google's API to OpenAI's API for news generations
 - Added dropdown to viuew news from past years
+- Changed news context from text based format to JSON format to reduce costs
 - Introduced some soft rate limits for testing
 
 ## 13th december
@@ -24,3 +25,6 @@
 - Updated styles for most dropdowns
 - Fixed a bug that broke the comparison graph
 - Increased rate limits for all tiers (still provisional)
+
+## 14th december
+- Rollback to text-formatted context to test model behaviour

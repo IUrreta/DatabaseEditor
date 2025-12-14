@@ -1,6 +1,5 @@
 import { team_dict, combined_dict, races_names, names_full, countries_data, logos_disc, lightColors } from "./config";
 import { Command } from "../backend/command";
-import { GoogleGenAI } from "@google/genai";
 import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 import turningPointsTemplates from "../../data/news/turning_points_prompts_templates.json";

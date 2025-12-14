@@ -10,7 +10,6 @@
   "author": "IUrreta",
   "license": "LGPL-3.0-or-later",
   "dependencies": {
-    "@google/genai": "^0.12.0",
     "@upstash/redis": "^1.35.7",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
