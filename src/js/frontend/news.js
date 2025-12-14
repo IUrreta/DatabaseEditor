@@ -198,9 +198,9 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
 
   let progress = 0;
   const interval = setInterval(() => {
-    progress += 3;
+    progress += 2;
     if (progressDiv) progressDiv.style.width = progress + '%';
-    if (progress >= 30) clearInterval(interval);
+    if (progress >= 20) clearInterval(interval);
   }, 150);
 
   try {
@@ -1134,6 +1134,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     driver_comparison: contextualizeDriverComparison,
     season_review: contextualizeSeasonReview,
     race_reaction: contextualizeRaceReaction,
+    next_season_grid: contextualizeNextSeasonGrid,
 
     // Turning points: outcome_ y no-outcome comparten handler
     turning_point_dsq: (nd) => contextualizeDSQ(nd, nd.turning_point_type),
@@ -1160,13 +1161,13 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
   clearInterval(interval); // detenemos el anterior
   let progressInterval;
   try {
-    if (barProgressDiv) barProgressDiv.style.width = '50%';
-    let progress = 50;
+    if (barProgressDiv) barProgressDiv.style.width = '30%';
+    let progress = 30;
     progressInterval = setInterval(() => {
       progress = Math.min(progress + 1, 98);
       if (barProgressDiv) barProgressDiv.style.width = progress + '%';
       if (progress >= 98) clearInterval(progressInterval);
-    }, 350);
+    }, 450);
 
     // 5) Construir prompt SOLO si hace falta
     let messages = [];
@@ -1791,6 +1792,57 @@ async function contextualizeFakeTransferNews(newData) {
   });
 
   const contextData = buildContextualPrompt(resp.content, { timing: "after the last race", seasonYear: resp.content.season });
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeNextSeasonGrid(newData) {
+  let season = newData.data.season_year;
+  const date = newData.date || null;
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 19).prompt;
+  prompt = prompt.replace(/{{\s*season_year\s*}}/g, season);
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: season,
+    date: date
+  }
+  );
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching race details:", err);
+    return;
+  }
+
+  function buildTeamLineupSection(title, teams, driversKey) {
+    return [
+      `\n\n${title}\n`,
+      ...Object.values(teams).map(team =>
+        [
+          `\n**${team.name}**:\n`,
+          team[driversKey].map(d => `- ${d.name}`).join('\n'),
+        ].join('')
+      )
+    ].join('');
+  }
+
+  prompt += buildTeamLineupSection(
+    `Here is the confirmed team lineup for each team for the next season (${season}):`,
+    newData.data.teams,
+    'driversNextSeason'
+  );
+
+  prompt += buildTeamLineupSection(
+    `Here are the driver line ups for each team in the season that just ended (${season - 1}):`,
+    newData.data.teams,
+    'driversThisSeason'
+  );
+
+  const contextData = buildContextualPrompt(resp.content, { seasonYear: season - 1 });
 
   return {
     instruction: prompt,

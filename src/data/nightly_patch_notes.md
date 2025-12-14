@@ -29,3 +29,7 @@
 ## 14th december
 - Rollback to text-formatted context to test model behaviour
 - Adjusted messages about rate limits for the day
+
+## 15th december
+- Added "next season grid" news at the end of the season
+- Slightly changed the style of the query limit display
