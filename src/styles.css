@@ -12039,6 +12039,9 @@ a.bi-custom-patreon.close-slide-up {
   flex-direction: row;
   align-items: center;
   gap: 10px;
+  width: max-content;
+  padding: 4px 8px;
+  border-radius: 4px;
 }
 
 .limit-bar{
@@ -12057,15 +12060,14 @@ a.bi-custom-patreon.close-slide-up {
 
 .limit-text{
   font-size: 14px;
-  color: var(--modal-text);
-  padding: 2px 6px;
-  border-radius: 4px;
+  color: inherit;
 }
 
 .rate-ok .limit-bar-fill {
   background-color: var(--rate-ok-color);
 }
-.rate-ok .limit-text {
+
+.rate-ok.limit-bar-and-text {
   color: var(--rate-ok-color);
   background-color: var(--rate-ok-bg);
 }
@@ -12073,7 +12075,7 @@ a.bi-custom-patreon.close-slide-up {
 .rate-warning .limit-bar-fill {
   background-color: var(--rate-warning-color);
 }
-.rate-warning .limit-text {
+.rate-warning.limit-bar-and-text {
   color: var(--rate-warning-color);
   background-color: var(--rate-warning-bg);
 }
@@ -12081,7 +12083,7 @@ a.bi-custom-patreon.close-slide-up {
 .rate-danger .limit-bar-fill {
   background-color: var(--rate-danger-color);
 }
-.rate-danger .limit-text {
+.rate-danger.limit-bar-and-text {
   color: var(--rate-danger-color);
   background-color: var(--rate-danger-bg);
 }
@@ -12089,7 +12091,8 @@ a.bi-custom-patreon.close-slide-up {
 .rate-blocked .limit-bar-fill {
   background-color: var(--rate-blocked-color);
 }
-.rate-blocked .limit-text {
+
+.rate-blocked.limit-bar-and-text {
   color: var(--rate-blocked-color);
   background-color: var(--rate-blocked-bg);
 }

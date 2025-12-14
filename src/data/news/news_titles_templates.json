@@ -579,5 +579,21 @@
             "'I am looking forward to this new challenge' – {{driver1}} joins {{team2}}",
             "{{driver1}} makes sensational switch to {{team2}} for the upcoming season"
         ]
+    },
+    {
+        "id": "next_season_grid",
+        "new_type": 19,
+        "titles": [
+            "The {{season_year}} F1 grid – all confirmed driver line-ups",
+            "Looking ahead to {{season_year}} – complete driver roster revealed",
+            "Next season’s grid – who’s where in {{season_year}} Formula 1",
+            "{{season_year}} driver line-ups confirmed – full team-by-team guide",
+            "The future is set – {{season_year}} F1 driver line-ups announced",
+            "Breaking down the {{season_year}} Formula 1 grid – who’s driving for whom",
+            "Complete guide to the {{season_year}} F1 driver roster",
+            "What to expect in {{season_year}} – full driver line-ups revealed",
+            "Team-by-team look at the {{season_year}} Formula 1 grid",
+            "{{season_year}} F1 driver line-ups – all you need to know"
+        ]
     }
 ]

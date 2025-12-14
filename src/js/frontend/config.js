@@ -363,6 +363,9 @@ export function getParamMap(data) {
             driver1: data.driver1,
             team2: data.team2
         },
+        19: {
+            season_year: data.season_year
+        },
         100: {
             component: data.component
         },

@@ -65,6 +65,9 @@ export function generate_news(savednews, turningPointState) {
 
     const seasonReviews = generateSeasonReviewNews(savednews);
 
+    const nextSeasonGridNews = generateNextSeasonGridNews(savednews, currentMonth);
+    console.log("Generated next season grid news:", nextSeasonGridNews);
+
     const dsqTurningPointNews = generateDSQTurningPointNews(racesDone, savednews, turningPointState);
 
     const midSeasonTransfersTurningPointNews = generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, savednews, turningPointState);
@@ -88,7 +91,7 @@ export function generate_news(savednews, turningPointState) {
     ...bigConfirmedTransfersNews || [], ...contractRenewalsNews || [], ...comparisonNews || [], ...seasonReviews || [],
     ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...dsqTurningPointNews || [], ...midSeasonTransfersTurningPointNews || [],
     ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [],
-    ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || [], ...raceReactions || []];
+    ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || [], ...raceReactions || [], ...nextSeasonGridNews || []];
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
@@ -2256,6 +2259,112 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
     return newsList;
 }
 
+function generateNextSeasonGridNews(savedNews = {}, currentMonth) {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+    const season = daySeason[1];
+    const newsList = [];
+    const allRacesDone = queryDB(
+        `SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND State = 2`, [season],
+        'singleValue'
+    );
+    const totalRaces = queryDB(
+        `SELECT COUNT(*) FROM Races WHERE SeasonID = ?`, [season],
+        'singleValue'
+    );
+    //if we are not in the last month or not all races done, return empty list
+    if (currentMonth < 11 || allRacesDone < totalRaces) {
+        return newsList;
+    }
+    const entryId = `next_season_grid`;
+
+    if (savedNews[entryId]) {
+        return [{ id: entryId, ...savedNews[entryId] }];
+    }
+
+    const globals = getGlobals();
+    let teamIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    if (globals.isCreateATeam) {
+        teamIds.push(32);
+    }
+    let teamsDict = {};
+    teamIds.forEach(teamId => {
+        const teamName = combined_dict[teamId] || "Unknown Team";
+        let teamInfo = {
+            "name": teamName,
+            "teamId": teamId,
+            "driversNextSeason": [],
+            "driversThisSeason": []
+        }
+        const driversThisSeason = queryDB(
+            `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID, con.ContractType
+                FROM Staff_BasicData bas
+                JOIN Staff_DriverData dri
+                  ON bas.StaffID = dri.StaffID
+                JOIN Staff_Contracts con
+                    ON bas.StaffID = con.StaffID
+                WHERE con.TeamID = ?
+                  AND con.PosInTeam <= 2
+                  AND con.ContractType = 0
+                  AND EndSeason >= ?`, [teamId, season],
+            'allRows'
+        );
+        const driversNextSeason = queryDB(
+            `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID, con.ContractType
+                FROM Staff_BasicData bas
+                JOIN Staff_DriverData dri
+                  ON bas.StaffID = dri.StaffID
+                JOIN Staff_Contracts con
+                    ON bas.StaffID = con.StaffID
+                WHERE con.TeamID = ?
+                  AND con.PosInTeam <= 2
+                  AND con.ContractType IN (0,3)
+                  AND EndSeason > ?`, [teamId, season],
+            'allRows'
+        );
+        driversNextSeason.forEach(d => {
+            const name = formatNamesSimple(d);
+            const contractType = d[4];
+            let driverInfo = {
+                "name": news_insert_space(name[0]),
+                "driverId": name[1],
+                "isForNextSeason": contractType === 3
+            }
+            teamInfo.driversNextSeason.push(driverInfo);
+        });
+        driversThisSeason.forEach(d => {
+            const name = formatNamesSimple(d);
+            let driverInfo = {
+                "name": news_insert_space(name[0]),
+                "driverId": name[1]
+            }
+            teamInfo.driversThisSeason.push(driverInfo);
+        });
+        teamsDict[teamId] = teamInfo;
+    });
+
+    const title = generateTitle({ season_year: season + 1 }, 19);
+    const image = getImagePath(null, null, "grid_next_season");
+    const newsDate = new Date(season, 11, 15);
+    const excelDate = dateToExcel(newsDate);
+    
+    newsList.push({
+        id: entryId,
+        type: "next_season_grid",
+        title,
+        date: excelDate,
+        image,
+        overlay: "next-season-grid",
+        data: {
+            season_year: season + 1,
+            teams: teamsDict
+        },
+        text: null
+    });
+
+    return newsList;
+    
+}
+
 export function generateContractRenewalsNews(savedNews = {}, contractRenewals = [], currentMonth) {
     const renewalMonths = [8, 9, 10].filter(m => m < currentMonth);
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
@@ -3655,6 +3764,10 @@ function getImagePath(teamId, code, type) {
     }
     else if (type === "injury") {
         return `./assets/images/news/${code}_pad.webp`;
+    }
+    else if (type === "grid_next_season") {
+        const randomNum = getRandomInt(1, 12);
+        return `./assets/images/news/con${randomNum}.webp`;
     }
 }
 

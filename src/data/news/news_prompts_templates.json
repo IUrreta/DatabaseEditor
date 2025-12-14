@@ -73,5 +73,10 @@
         "id": "massive_exit",
         "new_type": 18,
         "prompt": "Write ONLY the body (not the title) of a news article in English reporting that {{team1}} has confirmed that {{driver1}} will leave their team at the end of the season. It is still uncertain of where will {{driver1}} will go.. Use clear, natural English in a professional journalistic style, similar to outlets like Autosport or Motorsport.com. Avoid slang, overly dramatic phrasing, or unnecessary flourishes. The article should be between 350 and 450 words long. Focus on the details of the transfer, including the reasons behind it and the implications for both the driver and the team. Use a flowing, paragraph-based structure like a typical F1 news report."
+    },
+    {
+        "id": "next_season_grid",
+        "new_type": 19,
+        "prompt": "Write ONLY the body (not the title) of a news article in English previewing the driver lineup for the upcoming {{season_year}} Formula 1 season. Use clear, natural English in a professional journalistic style, similar to outlets like Autosport or Motorsport.com. Avoid slang, overly dramatic phrasing, or unnecessary flourishes. The article should be between 700 and 800 words long. Focus on the confirmed driver-team pairings for the new season, highlighting any significant changes from the previous year. Discuss the implications of these changes for both the drivers and the teams involved. Mention any notable rookies or returning drivers, as well as any shifts in team dynamics that may impact performance. Use a flowing, paragraph-based structure like a typical F1 news report."
     }
 ]
