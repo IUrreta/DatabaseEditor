@@ -2286,7 +2286,11 @@ export async function updateRateLimitsDisplay() {
     let message = "";
     let state = "";
 
-    if (percentage < 50) {
+    if (percentage === 0) {
+        state = "rate-ok";
+        message = "All requests available";
+    }
+    else if (percentage < 50) {
       state = "rate-ok";
       message = "Plenty of requests available";
     } else if (percentage < 80) {
@@ -2294,7 +2298,7 @@ export async function updateRateLimitsDisplay() {
       message = "You're halfway through today's limit";
     } else if (percentage < 100) {
       state = "rate-danger";
-      message = `Only ${limit - used} requests left today`;
+      message = `Only a few requests left today`;
     } else {
       state = "rate-blocked";
       message = "Daily limit reached";

@@ -28,3 +28,4 @@
 
 ## 14th december
 - Rollback to text-formatted context to test model behaviour
+- Adjusted messages about rate limits for the day
