@@ -13489,10 +13489,6 @@ body.default-theme .news-article-date {
 }
 
 .reload-article {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  z-index: 3;
   opacity: 1;
 }
 
@@ -14757,4 +14753,56 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .new-augment-button.bi-chevron-right{
   padding-left: 2px;
+}
+
+.news-options-global{
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  /* display: flex; */
+  text-align: center;
+  z-index: 200;
+}
+
+.news-options{
+  background-color: var(--elements);
+  border-radius: 5px;
+  width: 24px;
+  height: 24px;
+  color: var(--text-general);
+  cursor: pointer;
+}
+
+.news-options:hover{
+  color: var(--new-primary);
+}
+
+.news-options:active{
+  transform: scale(0.96);
+}
+
+.news-options i{
+  pointer-events: none;
+}
+
+.news-options-menu{
+  background-color: var(--dropdown-back);
+  border-radius: 10px;
+  box-shadow: var(--shadow-m);
+  position: absolute;
+  z-index: 200;
+  margin-top: 5px;
+  padding: 5px;
+  width: max-content;
+  right: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px);
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.news-options-global:has(.news-options.active) .news-options-menu{
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }

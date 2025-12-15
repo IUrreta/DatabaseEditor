@@ -8,12 +8,16 @@ import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
 import { generateNews, getSaveName, confirmModal, updateRateLimitsDisplay } from "./renderer";
 import { marked } from 'marked';
+import TurndownService from "turndown";
 import DOMPurify from "dompurify";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const newsGrid = document.querySelector('.news-grid');
 const newsModalEl = document.getElementById('newsModal');
 const closeBtn = document.getElementById('closeNewsArticle');
+const newsOptionsBtn = document.querySelector('.news-options');
+const copyArticleBtn = document.getElementById('copyArticle');
+const editArticleBtn = document.getElementById('editArticle');
 
 let interval2 = null;
 let cleaning = false;
@@ -2316,6 +2320,31 @@ async function askGenAI(messages, opts = {}) {
 
   return data.text;
 }
+
+newsOptionsBtn.addEventListener("click", (e) => {
+  e.target.classList.toggle("active");
+});
+
+copyArticleBtn.addEventListener("click", async () => {
+  const titleEl = document.querySelector("#newsModalTitle");
+  const articleEl = document.querySelector("#newsModal .news-article");
+
+  if (!titleEl || !articleEl) return;
+
+  const title = titleEl.innerText.trim();
+
+  const turndownService = new TurndownService({
+    headingStyle: "atx",
+    bulletListMarker: "-",
+    codeBlockStyle: "fenced",
+  });
+
+  const articleMarkdown = turndownService.turndown(articleEl.innerHTML);
+
+  const finalText = `# ${title}\n\n${articleMarkdown}`;
+
+  await navigator.clipboard.writeText(finalText);
+});
 
 
 function buildEmergencyOverlay() {
