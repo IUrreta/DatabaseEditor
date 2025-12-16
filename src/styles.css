@@ -13386,6 +13386,17 @@ body.default-theme .news-article-date {
   border-top: 0 !important;
 }
 
+.news-edit-textarea {
+  background-color: transparent;
+  border: none;
+  resize: none;
+  width: 100%;
+  min-height: 320px;
+  color: var(--text-general);
+  font: inherit;
+  outline: none;
+}
+
 
 #newsModalTitle {
   z-index: 1;
