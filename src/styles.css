@@ -13904,6 +13904,11 @@ p.news-error-api-key {
   opacity: 0.1;
   z-index: 0;
   pointer-events: none;
+  transition: opacity 200ms ease, left 200ms ease, top 200ms ease, transform 200ms ease;
+}
+
+.glow-spot--off {
+  opacity: 0;
 }
 
 /* --- UTILIDADES TEXTO --- */
