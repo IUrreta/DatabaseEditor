@@ -5529,6 +5529,7 @@ body.og-theme .records-list {
   border-radius: 10px !important;
 }
 
+
 #patreonModal .custom-modal,
 #patreonModal .modal-dialog {
   min-width: 800px !important;
@@ -10941,6 +10942,10 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
   opacity: 0;
 }
 
+body:has(#blockDiv:not(.disappear)){
+  overflow: hidden;
+}
+
 .socials-box {
   background-color: var(--superficials);
   border-radius: 20px;
@@ -13904,7 +13909,7 @@ p.news-error-api-key {
   opacity: 0.1;
   z-index: 0;
   pointer-events: none;
-  transition: opacity 200ms ease, left 200ms ease, top 200ms ease, transform 200ms ease;
+  transition: opacity 0.15s ease;
 }
 
 .glow-spot--off {
