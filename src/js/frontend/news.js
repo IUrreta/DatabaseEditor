@@ -263,6 +263,8 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
         const cleanHtml = DOMPurify.sanitize(rawHtml);
         newsArticle.innerHTML = cleanHtml;
         newsArticle.style.opacity = '1';
+        newsOptionsBtn.classList.remove('d-none');
+
       }, 150);
     }, 200);
   } catch (err) {
