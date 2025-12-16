@@ -22,6 +22,13 @@ const editArticleBtn = document.getElementById('editArticle');
 let interval2 = null;
 let cleaning = false;
 
+let currentModalNews = null;
+let isEditingArticle = false;
+let originalArticleHTML = '';
+let editTextarea = null;
+let saveArticleBtn = null;
+let cancelArticleBtn = null;
+
 let errorCount = 0;
 const MAX_ERRORS = 2;
 
@@ -102,8 +109,31 @@ closeBtn.addEventListener('click', async () => {
 
 
 newsModalEl.addEventListener('hide.bs.modal', () => {
+  exitArticleEditMode();
   cleanupOpenedNewsItem();
 });
+
+function exitArticleEditMode(opts = {}) {
+  const { restoreOriginal = true } = opts;
+  if (!isEditingArticle) return;
+
+  const newsArticle = document.querySelector('#newsModal .news-article');
+
+  if (newsArticle && restoreOriginal) {
+    newsArticle.innerHTML = originalArticleHTML;
+  }
+
+  if (saveArticleBtn) saveArticleBtn.remove();
+  if (cancelArticleBtn) cancelArticleBtn.remove();
+
+  closeBtn?.classList.remove('d-none');
+
+  isEditingArticle = false;
+  originalArticleHTML = '';
+  editTextarea = null;
+  saveArticleBtn = null;
+  cancelArticleBtn = null;
+}
 
 function hashStr(str) {
   let h = 2166136261 >>> 0;
@@ -119,6 +149,8 @@ const BUCKET_NORMAL = 7;
 
 function addReadButtonListener(readButton, newsItem, news, newsList) {
   readButton.addEventListener('click', async () => {
+    exitArticleEditMode();
+    currentModalNews = news;
     newsItem.classList.add('with-transition', 'opened');
     const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
       keyboard: false
@@ -172,6 +204,7 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
 }
 
 async function generateAndRenderArticle(news, newsList, label = "Generating", force = false, model) {
+  exitArticleEditMode();
   const newsArticle = document.querySelector('#newsModal .news-article');
   newsArticle.innerHTML = '';
 
@@ -670,6 +703,8 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
   readButton.appendChild(readButtonSpan);
 
   readButton.addEventListener('click', async () => {
+    exitArticleEditMode();
+    currentModalNews = turningPointResponse;
     const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
       keyboard: false
     });
@@ -2345,6 +2380,85 @@ copyArticleBtn.addEventListener("click", async () => {
 
   await navigator.clipboard.writeText(finalText);
 });
+
+function createEditFooterButtons(articleEl) {
+  const buttonsWrapper = closeBtn?.parentElement;
+  if (!buttonsWrapper) return;
+
+  closeBtn.classList.add('d-none');
+
+  saveArticleBtn = document.createElement('button');
+  saveArticleBtn.type = 'button';
+  saveArticleBtn.classList.add('confirm-modal');
+  saveArticleBtn.textContent = 'Save';
+
+  cancelArticleBtn = document.createElement('button');
+  cancelArticleBtn.type = 'button';
+  cancelArticleBtn.classList.add('close-modal');
+  cancelArticleBtn.textContent = 'Cancel';
+
+  buttonsWrapper.appendChild(cancelArticleBtn);
+  buttonsWrapper.appendChild(saveArticleBtn);
+  
+
+  cancelArticleBtn.addEventListener('click', () => exitArticleEditMode());
+
+  saveArticleBtn.addEventListener('click', async () => {
+    if (!editTextarea) return;
+
+    const markdownText = editTextarea.value.trim();
+    const parsedHtml = marked.parse(markdownText);
+    const safeHtml = DOMPurify.sanitize(parsedHtml);
+
+    articleEl.innerHTML = safeHtml;
+
+    if (currentModalNews) {
+      currentModalNews.text = markdownText;
+
+      new Command("updateNews", {
+        stableKey: currentModalNews.id ?? computeStableKey(currentModalNews),
+        patch: { text: markdownText }
+      }).execute();
+    }
+
+    exitArticleEditMode({ restoreOriginal: false });
+    originalArticleHTML = articleEl.innerHTML;
+  });
+}
+
+function startArticleEditMode() {
+  if (isEditingArticle) return;
+
+  const articleEl = document.querySelector("#newsModal .news-article");
+  if (!articleEl || !currentModalNews) return;
+
+  newsOptionsBtn?.classList.remove('active');
+
+  const turndownService = new TurndownService({
+    headingStyle: "atx",
+    bulletListMarker: "-",
+    codeBlockStyle: "fenced",
+  });
+
+  const markdownText = turndownService.turndown(
+    articleEl.innerHTML || currentModalNews.text || ''
+  );
+
+  originalArticleHTML = articleEl.innerHTML;
+  articleEl.innerHTML = '';
+
+  editTextarea = document.createElement('textarea');
+  editTextarea.classList.add('news-edit-textarea');
+  editTextarea.value = markdownText;
+
+  articleEl.appendChild(editTextarea);
+
+  isEditingArticle = true;
+
+  createEditFooterButtons(articleEl);
+}
+
+editArticleBtn?.addEventListener("click", startArticleEditMode);
 
 
 function buildEmergencyOverlay() {
