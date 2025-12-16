@@ -156,6 +156,13 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
       keyboard: false
     });
 
+    if (!news.text){
+      newsOptionsBtn.classList.add('d-none');
+    }
+    else{
+      newsOptionsBtn.classList.remove('d-none');
+    }
+
     newsModal.show();
     const modalTitle = document.querySelector('#newsModal .modal-title');
     modalTitle.textContent = news.title;
@@ -709,6 +716,13 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
       keyboard: false
     });
     newsModal.show();
+
+    if (!turningPointResponse.text){
+      newsOptionsBtn.classList.add('d-none');
+    }
+    else{
+      newsOptionsBtn.classList.remove('d-none');
+    }
 
     const modalTitle = document.querySelector('#newsModal .modal-title');
     modalTitle.textContent = turningPointResponse.title;
