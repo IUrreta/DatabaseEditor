@@ -2397,8 +2397,9 @@ function createEditFooterButtons(articleEl) {
   cancelArticleBtn.classList.add('close-modal');
   cancelArticleBtn.textContent = 'Cancel';
 
-  buttonsWrapper.appendChild(saveArticleBtn);
   buttonsWrapper.appendChild(cancelArticleBtn);
+  buttonsWrapper.appendChild(saveArticleBtn);
+  
 
   cancelArticleBtn.addEventListener('click', () => exitArticleEditMode());
 
