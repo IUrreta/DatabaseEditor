@@ -5532,6 +5532,7 @@ body.og-theme .records-list {
   border-radius: 10px !important;
 }
 
+
 #patreonModal .custom-modal,
 #patreonModal .modal-dialog {
   min-width: 800px !important;
@@ -10944,6 +10945,10 @@ body:has(#blockDiv:not(.disappear)) .footer .socials {
   opacity: 0;
 }
 
+body:has(#blockDiv:not(.disappear)){
+  overflow: hidden;
+}
+
 .socials-box {
   background-color: var(--superficials);
   border-radius: 20px;
@@ -13924,6 +13929,11 @@ p.news-error-api-key {
   opacity: 0.1;
   z-index: 0;
   pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.glow-spot--off {
+  opacity: 0;
 }
 
 /* --- UTILIDADES TEXTO --- */
