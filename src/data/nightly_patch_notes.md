@@ -33,3 +33,9 @@
 ## 15th december
 - Added "next season grid" news at the end of the season
 - Slightly changed the style of the query limit display
+
+## 16th december
+- Adjusted fill abr style for request limit to represent requests left, not used
+- Added copy article button
+- Added edit article button
+- Add glow spot on landing page to follow mouse

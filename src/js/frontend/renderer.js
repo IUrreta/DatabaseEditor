@@ -2273,7 +2273,8 @@ export async function updateRateLimitsDisplay() {
     const text = document.getElementById("limitText");
     const container = document.getElementById("rateLimitContainer");
 
-    fill.style.width = `${percentage}%`;
+    //100% corresponds to not using any
+    fill.style.width = `${100 - percentage}%`;
 
     // limpiar estados previos
     container.classList.remove(
@@ -2289,19 +2290,18 @@ export async function updateRateLimitsDisplay() {
     if (percentage === 0) {
         state = "rate-ok";
         message = "All requests available";
-    }
-    else if (percentage < 50) {
-      state = "rate-ok";
-      message = "Plenty of requests available";
+    } else if (percentage < 50) {
+        state = "rate-ok";
+        message = "Plenty of requests available";
     } else if (percentage < 80) {
-      state = "rate-warning";
-      message = "You're halfway through today's limit";
+        state = "rate-warning";
+        message = "You're halfway through today's limit";
     } else if (percentage < 100) {
-      state = "rate-danger";
-      message = `Only a few requests left today`;
+        state = "rate-danger";
+        message = "Only a few requests left today";
     } else {
-      state = "rate-blocked";
-      message = "Daily limit reached";
+        state = "rate-blocked";
+        message = "Daily limit reached";
     }
 
     container.classList.add(state);
