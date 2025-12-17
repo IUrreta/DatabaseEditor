@@ -1124,6 +1124,10 @@ body.og-theme .dropdown-menu a:hover {
   border-radius: 5px;
 }
 
+.button-with-icon.close-modal{
+  padding: 3px 7px;
+}
+
 #compDataButton.button-with-icon {
   color: var(--text-general);
 }
@@ -13431,6 +13435,8 @@ body.default-theme .news-article-date {
   field-sizing: content;
   height: 42px;
 }
+
+
 
 
 #newsModalTitle {

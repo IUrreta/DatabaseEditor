@@ -17,6 +17,7 @@ const newsModalEl = document.getElementById('newsModal');
 const closeBtn = document.getElementById('closeNewsArticle');
 const newsOptionsBtn = document.querySelector('.news-options');
 const copyArticleBtn = document.getElementById('copyArticle');
+const deleteArticleBtn = document.getElementById('deleteArticle');
 const editArticleBtn = document.getElementById('editArticle');
 
 let interval2 = null;
@@ -172,6 +173,8 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
       newsOptionsBtn.classList.remove('d-none');
     }
 
+    newsModal._element.setAttribute("data-article-id", news.id || '');
+
     newsModal.show();
     const modalTitle = document.querySelector('#newsModal .modal-title');
     modalTitle.textContent = news.title;
@@ -273,7 +276,6 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
         newsArticle.innerHTML = cleanHtml;
         newsArticle.style.opacity = '1';
         newsOptionsBtn.classList.remove('d-none');
-
       }, 150);
     }, 200);
   } catch (err) {
@@ -734,6 +736,8 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
     else{
       newsOptionsBtn.classList.remove('d-none');
     }
+
+    newsModal._element.setAttribute("data-article-id", turningPointResponse.id || '');
 
     const modalTitle = document.querySelector('#newsModal .modal-title');
     modalTitle.textContent = turningPointResponse.title;
@@ -2384,6 +2388,31 @@ async function askGenAI(messages, opts = {}) {
 newsOptionsBtn.addEventListener("click", (e) => {
   e.target.classList.toggle("active");
 });
+
+deleteArticleBtn.addEventListener("click", async () => {
+  // const ok = await confirmModal({
+  //   title: "Delete Article",
+  //   body: "Are you sure you want to delete this article? This action cannot be undone.",
+  //   confirmText: "Delete",
+  //   cancelText: "Cancel",
+  // });
+  // if (ok) {
+  //   const articleId = document.querySelector("#newsModal").getAttribute("data-article-id");
+  //   // const command = new Command("deleteNewsArticle", { articleId });
+  //   console.log("Deleting article with ID:", articleId);
+  // }
+  const articleId = document.querySelector("#newsModal").getAttribute("data-article-id");
+  console.log("Deleting article with ID:", articleId);
+  const command = new Command("deleteNewsArticle", { articleId });
+  command.promiseExecute().then(() => {
+    // Close the modal after deletion
+    const newsModal = document.querySelector("#newsModal");
+    if (newsModal) {
+      newsModal.classList.remove("active");
+    }
+  });
+});
+  
 
 copyArticleBtn.addEventListener("click", async () => {
   const titleEl = document.querySelector("#newsModalTitle");

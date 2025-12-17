@@ -4395,6 +4395,16 @@ export function updateNewsFields(stableKey, patch) {
     return true;
 }
 
+export function deleteNewByKey(stableKey) {
+    const map = loadNewsMapFromDB();
+    if (map[stableKey]) {
+        delete map[stableKey];
+        saveNewsToDBMap(map);
+        return true;
+    }
+    return false;
+}
+
 export function isMigrationDone() {
     return getEditorState("_migration_v1_done") === "1";
 }
