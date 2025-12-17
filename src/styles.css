@@ -13422,18 +13422,23 @@ body.default-theme .news-article-date {
   border-bottom: 2px solid var(--text-secondary);
   outline: none;
   box-sizing: border-box;
-  padding: 6px 0 8px;
+  padding: 0;
   margin: 0;
   overflow: hidden;
   white-space: nowrap;
   overflow-x: hidden;
   overflow-y: hidden;
-  width: 100%;
+  field-sizing: content;
+  height: 42px;
 }
 
 
 #newsModalTitle {
   z-index: 1;
+}
+
+#newsModalTitle:has(textarea){
+  height: 42px;
 }
 
 .news-title {

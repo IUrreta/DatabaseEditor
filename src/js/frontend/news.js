@@ -127,7 +127,7 @@ function exitArticleEditMode(opts = {}) {
   }
 
   if (modalTitle && restoreOriginal) {
-    modalTitle.textContent = originalTitleText;
+    modalTitle.innerHTML = originalTitleText;
   }
 
   if (saveArticleBtn) saveArticleBtn.remove();
@@ -2496,11 +2496,19 @@ function startArticleEditMode() {
   originalArticleHTML = articleEl.innerHTML;
   articleEl.innerHTML = '';
 
+  const actualTitle = document.querySelector("#newsModalTitle");
   editTitleInput = document.createElement('textarea');
   editTitleInput.rows = 1;
   editTitleInput.classList.add('news-edit-title');
   editTitleInput.value = currentTitle;
-  articleEl.appendChild(editTitleInput);
+  actualTitle.innerHTML = '';
+  actualTitle.appendChild(editTitleInput);
+
+  //get width of newsModal .modal-header
+  const modalHeader = document.querySelector('#newsModal .modal-header');
+  if (modalHeader) {
+    editTitleInput.style.maxWidth = (modalHeader.clientWidth - 60) + 'px';
+  }
 
   editTextarea = document.createElement('textarea');
   editTextarea.classList.add('news-edit-textarea');
