@@ -26,8 +26,10 @@ let currentModalNews = null;
 let isEditingArticle = false;
 let originalArticleHTML = '';
 let editTextarea = null;
+let editTitleInput = null;
 let saveArticleBtn = null;
 let cancelArticleBtn = null;
+let originalTitleText = '';
 
 let errorCount = 0;
 const MAX_ERRORS = 2;
@@ -118,9 +120,14 @@ function exitArticleEditMode(opts = {}) {
   if (!isEditingArticle) return;
 
   const newsArticle = document.querySelector('#newsModal .news-article');
+  const modalTitle = document.querySelector('#newsModal .modal-title');
 
   if (newsArticle && restoreOriginal) {
     newsArticle.innerHTML = originalArticleHTML;
+  }
+
+  if (modalTitle && restoreOriginal) {
+    modalTitle.textContent = originalTitleText;
   }
 
   if (saveArticleBtn) saveArticleBtn.remove();
@@ -131,8 +138,10 @@ function exitArticleEditMode(opts = {}) {
   isEditingArticle = false;
   originalArticleHTML = '';
   editTextarea = null;
+  editTitleInput = null;
   saveArticleBtn = null;
   cancelArticleBtn = null;
+  originalTitleText = '';
 }
 
 function hashStr(str) {
@@ -2420,20 +2429,40 @@ function createEditFooterButtons(articleEl) {
   cancelArticleBtn.addEventListener('click', () => exitArticleEditMode());
 
   saveArticleBtn.addEventListener('click', async () => {
-    if (!editTextarea) return;
+    if (!editTextarea || !editTitleInput) return;
 
     const markdownText = editTextarea.value.trim();
+    const newTitle = editTitleInput.value.trim();
     const parsedHtml = marked.parse(markdownText);
     const safeHtml = DOMPurify.sanitize(parsedHtml);
+    const modalTitle = document.querySelector('#newsModal .modal-title');
 
     articleEl.innerHTML = safeHtml;
 
+    if (modalTitle && newTitle) {
+      modalTitle.textContent = newTitle;
+    }
+
     if (currentModalNews) {
+      if (newTitle) {
+        currentModalNews.title = newTitle;
+      }
       currentModalNews.text = markdownText;
 
       new Command("updateNews", {
         stableKey: currentModalNews.id ?? computeStableKey(currentModalNews),
-        patch: { text: markdownText }
+        patch: { text: markdownText, title: newTitle || currentModalNews.title }
+      }).execute();
+
+      const openedNewsTitle = document.querySelector('.news-item.opened .news-title');
+      if (openedNewsTitle && newTitle) {
+        openedNewsTitle.textContent = newTitle;
+      }
+    }
+    else {
+      new Command("updateNews", {
+        stableKey: computeStableKey({ title: newTitle, date: null }),
+        patch: { text: markdownText, title: newTitle }
       }).execute();
     }
 
@@ -2460,8 +2489,18 @@ function startArticleEditMode() {
     articleEl.innerHTML || currentModalNews.text || ''
   );
 
+  const modalTitle = document.querySelector('#newsModal .modal-title');
+  const currentTitle = modalTitle?.textContent?.trim() || currentModalNews.title || '';
+  originalTitleText = currentTitle;
+
   originalArticleHTML = articleEl.innerHTML;
   articleEl.innerHTML = '';
+
+  editTitleInput = document.createElement('input');
+  editTitleInput.type = 'text';
+  editTitleInput.classList.add('news-edit-title');
+  editTitleInput.value = currentTitle;
+  articleEl.appendChild(editTitleInput);
 
   editTextarea = document.createElement('textarea');
   editTextarea.classList.add('news-edit-textarea');
