@@ -2496,8 +2496,8 @@ function startArticleEditMode() {
   originalArticleHTML = articleEl.innerHTML;
   articleEl.innerHTML = '';
 
-  editTitleInput = document.createElement('input');
-  editTitleInput.type = 'text';
+  editTitleInput = document.createElement('textarea');
+  editTitleInput.rows = 1;
   editTitleInput.classList.add('news-edit-title');
   editTitleInput.value = currentTitle;
   articleEl.appendChild(editTitleInput);

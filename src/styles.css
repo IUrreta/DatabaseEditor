@@ -13367,7 +13367,8 @@ body.default-theme .news-article-date {
   gap: 12px;
 }
 
-.news-article:has(.news-edit-textarea){
+.news-article:has(.news-edit-textarea),
+.news-article:has(.news-edit-title){
   padding-right: 0;
 }
 
@@ -13409,6 +13410,25 @@ body.default-theme .news-article-date {
   color: var(--text-general);
   font: inherit;
   outline: none;
+}
+
+.news-edit-title {
+  resize: none;
+  background: transparent;
+  color: var(--text-general);
+  font: inherit;
+  font-weight: 700;
+  border: none;
+  border-bottom: 2px solid var(--text-secondary);
+  outline: none;
+  box-sizing: border-box;
+  padding: 6px 0 8px;
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  width: 100%;
 }
 
 
