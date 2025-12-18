@@ -1371,7 +1371,7 @@ document.querySelectorAll(".color-reader").forEach(function (elem) {
 
 
 function alphaTauriReplace(info) {
-    document.querySelector("#alphaTauriReplaceButton").querySelector("button").textContent = names_configs[info]
+    document.querySelector("#alphaTauriReplaceButton").querySelector("button span").textContent = names_configs[info]
     document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
     combined_dict[8] = pretty_names[info]
     abreviations_dict[8] = abreviations_for_replacements[info]
@@ -1474,7 +1474,7 @@ function alphaTauriReplace(info) {
 }
 
 function alpineReplace(info) {
-    document.querySelector("#alpineReplaceButton").querySelector("button").textContent = names_configs[info]
+    document.querySelector("#alpineReplaceButton").querySelector("button span").textContent = names_configs[info]
     document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value = info
     combined_dict[5] = pretty_names[info]
     abreviations_dict[5] = abreviations_for_replacements[info]
@@ -1559,7 +1559,7 @@ function alpineReplace(info) {
 }
 
 function alfaReplace(info) {
-    document.querySelector("#alfaReplaceButton").querySelector("button").textContent = names_configs[info]
+    document.querySelector("#alfaReplaceButton").querySelector("button span").textContent = names_configs[info]
     document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value = info
     combined_dict[9] = pretty_names[info]
     abreviations_dict[9] = abreviations_for_replacements[info]
@@ -1660,7 +1660,7 @@ function replace_modal_teams(version) {
 document.querySelectorAll(".team-change-button").forEach(function (elem) {
     elem.querySelectorAll("a").forEach(function (a) {
         a.addEventListener("click", function () {
-            elem.querySelector("button").textContent = a.textContent
+            elem.querySelector("button span").textContent = a.textContent
             elem.querySelector("button").dataset.value = a.dataset.value
         })
     })
@@ -2233,6 +2233,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const year = String(now.getFullYear());
         const shortBuildId = BUILD_ID.startsWith("dpl_")
+
             ? BUILD_ID.replace("dpl_", "").slice(0, 7)
             : BUILD_ID.slice(0, 7);
         versionNow = `${APP_VERSION.replace("-dev", "")}.nightly.${day}-${month}-${year}.${shortBuildId}`;

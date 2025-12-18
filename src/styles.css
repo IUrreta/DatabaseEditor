@@ -3335,7 +3335,7 @@ DRIVERS TABLE
 }
 
 .logo-porsche-table {
-  padding: 5px 2px;
+  padding: 3px 3px;
 }
 
 .logo-williams-table {
@@ -9376,7 +9376,6 @@ input::-webkit-inner-spin-button {
   align-items: center;
   justify-content: flex-start;
   padding: 0;
-  margin-right: 7px;
 }
 
 
@@ -14616,8 +14615,12 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   display: inline-block;
 }
 
-#teamMenu .redesigned-dropdown-item {
+#teamMenu .redesigned-dropdown-item, .team-select-menu .redesigned-dropdown-item {
   padding: 2px 8px 2px 0px !important;
+}
+
+.team-select-menu .redesigned-dropdown-item{
+  min-width: 230px;
 }
 
 #objectiveMenu {
