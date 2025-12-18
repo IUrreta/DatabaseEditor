@@ -32,6 +32,16 @@ let cancelArticleBtn = null;
 let errorCount = 0;
 const MAX_ERRORS = 2;
 
+const DEFAULT_NEWS_LANGUAGE = "English";
+const NEWS_LANGUAGE_STORAGE_KEY = "newsLanguage";
+const NEWS_LANGUAGE_OPTIONS = [
+  { value: "English", label: "English" },
+  { value: "Spanish", label: "Spanish" },
+  { value: "Italian", label: "Italian" },
+  { value: "French", label: "French" },
+  { value: "German", label: "German" },
+];
+
 
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
 const onTransitionEnd = (el, propName, timeoutMs) =>
@@ -80,6 +90,78 @@ async function finishGeneralLoader() {
   ]);
 
   pageLoaderDiv.remove();
+}
+
+function getNewsLanguage() {
+  try {
+    return localStorage.getItem(NEWS_LANGUAGE_STORAGE_KEY) || DEFAULT_NEWS_LANGUAGE;
+  } catch {
+    return DEFAULT_NEWS_LANGUAGE;
+  }
+}
+
+function replaceLanguagePlaceholder(text, language) {
+  if (typeof text !== 'string') return text;
+  return text.replace(/{{\s*language\s*}}/gi, language);
+}
+
+function syncNewsLanguageDropdown(selectedLanguage) {
+  const menu = document.getElementById('newsLanguageMenu');
+  const button = document.getElementById('newsLanguageButton');
+
+  if (button) {
+    const label = button.querySelector('span');
+    if (label) {
+      label.innerText = selectedLanguage;
+    }
+  }
+
+  if (menu) {
+    menu.querySelectorAll('.redesigned-dropdown-item').forEach(item => {
+      const isSelected = item.dataset.value === selectedLanguage;
+      item.querySelector('i')?.classList.toggle('unactive', !isSelected);
+    });
+  }
+}
+
+function setNewsLanguage(language) {
+  const selected = NEWS_LANGUAGE_OPTIONS.find(opt => opt.value === language)?.value || DEFAULT_NEWS_LANGUAGE;
+  try {
+    localStorage.setItem(NEWS_LANGUAGE_STORAGE_KEY, selected);
+  } catch {
+    // Ignore storage errors and keep using the selected value in memory
+  }
+  syncNewsLanguageDropdown(selected);
+}
+
+function setupNewsLanguageDropdown() {
+  const menu = document.getElementById('newsLanguageMenu');
+  const button = document.getElementById('newsLanguageButton');
+  if (!menu || !button) return;
+
+  menu.innerHTML = '';
+
+  NEWS_LANGUAGE_OPTIONS.forEach(({ value, label }) => {
+    const item = document.createElement('a');
+    item.classList.add('redesigned-dropdown-item');
+    item.dataset.value = value;
+    item.href = '#';
+    item.innerText = label;
+
+    const checkIcon = document.createElement('i');
+    checkIcon.classList.add('bi', 'bi-check');
+    item.appendChild(checkIcon);
+
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setNewsLanguage(value);
+    });
+
+    menu.appendChild(item);
+  });
+
+  syncNewsLanguageDropdown(getNewsLanguage());
 }
 
 async function cleanupOpenedNewsItem() {
@@ -1226,6 +1308,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
 
     // 5) Construir prompt SOLO si hace falta
     let messages = [];
+    const selectedLanguage = getNewsLanguage();
     if (handler) {
       let { instruction, context } = await handler(newData);
       const normalDate = excelToDate(newData.date);
@@ -1246,6 +1329,8 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         `\n\nThe title of the article is: "${newData.title}"`;
 
       finalInstruction += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
+
+      finalInstruction = replaceLanguagePlaceholder(finalInstruction, selectedLanguage);
 
       // Message 1: Context Data
       messages.push({
@@ -2673,6 +2758,8 @@ function getOrdinalSuffix(n) {
   }
   return n + "th";
 }
+
+setupNewsLanguageDropdown();
 
 document.querySelectorAll('#newsTypeMenu .redesigned-dropdown-item').forEach(item => {
   item.addEventListener('click', function (e) {

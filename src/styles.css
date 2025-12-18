@@ -13820,11 +13820,13 @@ p.news-error-api-key {
   display: inline-block;
 }
 
-#newsTypeMenu .redesigned-dropdown-item{
+#newsTypeMenu .redesigned-dropdown-item,
+#newsLanguageMenu .redesigned-dropdown-item{
   min-width: 200px;
 }
 
-#newsTypeMenu .redesigned-dropdown-item i {
+#newsTypeMenu .redesigned-dropdown-item i,
+#newsLanguageMenu .redesigned-dropdown-item i {
   display: inline-block;
   font-size: 18px;
   margin-left: 8px;
@@ -13833,6 +13835,7 @@ p.news-error-api-key {
 }
 
 #newsTypeMenu .redesigned-dropdown-item i.unactive,
+#newsLanguageMenu .redesigned-dropdown-item i.unactive,
 #aiModelmenu .dropdown-item i.unactive {
   transform: rotate(-90deg);
   opacity: 0;
