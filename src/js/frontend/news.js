@@ -17,6 +17,7 @@ const newsModalEl = document.getElementById('newsModal');
 const closeBtn = document.getElementById('closeNewsArticle');
 const newsOptionsBtn = document.querySelector('.news-options');
 const copyArticleBtn = document.getElementById('copyArticle');
+const deleteArticleBtn = document.getElementById('deleteArticle');
 const editArticleBtn = document.getElementById('editArticle');
 
 let interval2 = null;
@@ -26,8 +27,10 @@ let currentModalNews = null;
 let isEditingArticle = false;
 let originalArticleHTML = '';
 let editTextarea = null;
+let editTitleInput = null;
 let saveArticleBtn = null;
 let cancelArticleBtn = null;
+let originalTitleText = '';
 
 let errorCount = 0;
 const MAX_ERRORS = 2;
@@ -118,9 +121,14 @@ function exitArticleEditMode(opts = {}) {
   if (!isEditingArticle) return;
 
   const newsArticle = document.querySelector('#newsModal .news-article');
+  const modalTitle = document.querySelector('#newsModal .modal-title');
 
   if (newsArticle && restoreOriginal) {
     newsArticle.innerHTML = originalArticleHTML;
+  }
+
+  if (modalTitle && restoreOriginal) {
+    modalTitle.innerHTML = originalTitleText;
   }
 
   if (saveArticleBtn) saveArticleBtn.remove();
@@ -131,8 +139,10 @@ function exitArticleEditMode(opts = {}) {
   isEditingArticle = false;
   originalArticleHTML = '';
   editTextarea = null;
+  editTitleInput = null;
   saveArticleBtn = null;
   cancelArticleBtn = null;
+  originalTitleText = '';
 }
 
 function hashStr(str) {
@@ -162,6 +172,8 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
     else{
       newsOptionsBtn.classList.remove('d-none');
     }
+
+    newsModal._element.setAttribute("data-article-id", news.id || '');
 
     newsModal.show();
     const modalTitle = document.querySelector('#newsModal .modal-title');
@@ -264,7 +276,6 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
         newsArticle.innerHTML = cleanHtml;
         newsArticle.style.opacity = '1';
         newsOptionsBtn.classList.remove('d-none');
-
       }, 150);
     }, 200);
   } catch (err) {
@@ -725,6 +736,8 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
     else{
       newsOptionsBtn.classList.remove('d-none');
     }
+
+    newsModal._element.setAttribute("data-article-id", turningPointResponse.id || '');
 
     const modalTitle = document.querySelector('#newsModal .modal-title');
     modalTitle.textContent = turningPointResponse.title;
@@ -2376,6 +2389,19 @@ newsOptionsBtn.addEventListener("click", (e) => {
   e.target.classList.toggle("active");
 });
 
+deleteArticleBtn.addEventListener("click", async () => {
+  const articleId = document.querySelector("#newsModal").getAttribute("data-article-id");
+  const command = new Command("deleteNewsArticle", { articleId });
+  command.promiseExecute().then(() => {
+    const openedNewsItem = document.querySelector('.news-item.opened');
+    if (openedNewsItem) {
+      openedNewsItem.remove();
+    }
+    closeBtn?.click();
+  });
+});
+  
+
 copyArticleBtn.addEventListener("click", async () => {
   const titleEl = document.querySelector("#newsModalTitle");
   const articleEl = document.querySelector("#newsModal .news-article");
@@ -2420,20 +2446,40 @@ function createEditFooterButtons(articleEl) {
   cancelArticleBtn.addEventListener('click', () => exitArticleEditMode());
 
   saveArticleBtn.addEventListener('click', async () => {
-    if (!editTextarea) return;
+    if (!editTextarea || !editTitleInput) return;
 
     const markdownText = editTextarea.value.trim();
+    const newTitle = editTitleInput.value.trim();
     const parsedHtml = marked.parse(markdownText);
     const safeHtml = DOMPurify.sanitize(parsedHtml);
+    const modalTitle = document.querySelector('#newsModal .modal-title');
 
     articleEl.innerHTML = safeHtml;
 
+    if (modalTitle && newTitle) {
+      modalTitle.textContent = newTitle;
+    }
+
     if (currentModalNews) {
+      if (newTitle) {
+        currentModalNews.title = newTitle;
+      }
       currentModalNews.text = markdownText;
 
       new Command("updateNews", {
         stableKey: currentModalNews.id ?? computeStableKey(currentModalNews),
-        patch: { text: markdownText }
+        patch: { text: markdownText, title: newTitle || currentModalNews.title }
+      }).execute();
+
+      const openedNewsTitle = document.querySelector('.news-item.opened .news-title');
+      if (openedNewsTitle && newTitle) {
+        openedNewsTitle.textContent = newTitle;
+      }
+    }
+    else {
+      new Command("updateNews", {
+        stableKey: computeStableKey({ title: newTitle, date: null }),
+        patch: { text: markdownText, title: newTitle }
       }).execute();
     }
 
@@ -2460,8 +2506,26 @@ function startArticleEditMode() {
     articleEl.innerHTML || currentModalNews.text || ''
   );
 
+  const modalTitle = document.querySelector('#newsModal .modal-title');
+  const currentTitle = modalTitle?.textContent?.trim() || currentModalNews.title || '';
+  originalTitleText = currentTitle;
+
   originalArticleHTML = articleEl.innerHTML;
   articleEl.innerHTML = '';
+
+  const actualTitle = document.querySelector("#newsModalTitle");
+  editTitleInput = document.createElement('textarea');
+  editTitleInput.rows = 1;
+  editTitleInput.classList.add('news-edit-title');
+  editTitleInput.value = currentTitle;
+  actualTitle.innerHTML = '';
+  actualTitle.appendChild(editTitleInput);
+
+  //get width of newsModal .modal-header
+  const modalHeader = document.querySelector('#newsModal .modal-header');
+  if (modalHeader) {
+    editTitleInput.style.maxWidth = (modalHeader.clientWidth - 60) + 'px';
+  }
 
   editTextarea = document.createElement('textarea');
   editTextarea.classList.add('news-edit-textarea');

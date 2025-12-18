@@ -30,7 +30,8 @@ import {
   deleteNews,
   deleteTurningPoints,
   getNewsAndTpYearsAvailable,
-  getNewsFromSeason
+  getNewsFromSeason,
+  deleteNewByKey
 } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
@@ -664,6 +665,11 @@ const workerCommands = {
       console.error("Migration error (worker):", e);
       postMessage({ responseMessage: "Error", error: e.message });
     }
+  },
+  deleteNewsArticle: (data, postMessage) => {
+    const articleId = data.articleId;
+    const ok = deleteNewByKey(articleId);
+    postMessage({ responseMessage: ok ? "Article deleted successfully" : "Article not found", noti_msg: ok ? "Article deleted successfully" : "Article not found", isEditCommand: true, unlocksDownload: true });
   },
   deleteNews: (data, postMessage) => {
     deleteNews();

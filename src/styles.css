@@ -1124,6 +1124,10 @@ body.og-theme .dropdown-menu a:hover {
   border-radius: 5px;
 }
 
+.button-with-icon.close-modal{
+  padding: 3px 7px;
+}
+
 #compDataButton.button-with-icon {
   color: var(--text-general);
 }
@@ -13367,7 +13371,8 @@ body.default-theme .news-article-date {
   gap: 12px;
 }
 
-.news-article:has(.news-edit-textarea){
+.news-article:has(.news-edit-textarea),
+.news-article:has(.news-edit-title){
   padding-right: 0;
 }
 
@@ -13411,9 +13416,35 @@ body.default-theme .news-article-date {
   outline: none;
 }
 
+.news-edit-title {
+  resize: none;
+  background: transparent;
+  color: var(--text-general);
+  font: inherit;
+  font-weight: 700;
+  border: none;
+  border-bottom: 2px solid var(--text-secondary);
+  outline: none;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  field-sizing: content;
+  height: 42px;
+}
+
+
+
 
 #newsModalTitle {
   z-index: 1;
+}
+
+#newsModalTitle:has(textarea){
+  height: 42px;
 }
 
 .news-title {

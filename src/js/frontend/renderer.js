@@ -118,6 +118,9 @@ const updateInfo = document.querySelector(".update-info")
 const fileInput = document.getElementById('fileInput');
 const saveFileInput = document.getElementById('saveFileInput');
 const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+const glowSpot = document.querySelector('.glow-spot');
+const blockDiv = document.getElementById('blockDiv');
+
 let difficulty_dict = {
     "-2": "Custom",
     0: "default",
@@ -972,6 +975,56 @@ async function migrateLegacyNewsOnce() {
 }
 
 
+if (glowSpot && blockDiv) {
+    const defaultPosition = {
+        left: '50%',
+        top: '0',
+        transform: 'translateX(-50%)',
+    };
+
+    let restoreTimeout;
+
+    const isLandingVisible = () => !blockDiv.classList.contains('disappear');
+
+    const resetGlowSpotPosition = () => {
+        glowSpot.style.left = defaultPosition.left;
+        glowSpot.style.top = defaultPosition.top;
+        glowSpot.style.transform = defaultPosition.transform;
+    };
+
+    const updateGlowSpotPosition = (event) => {
+        if (!isLandingVisible()) {
+            return;
+        }
+
+        glowSpot.classList.remove('glow-spot--off');
+        glowSpot.style.left = `${event.clientX}px`;
+        glowSpot.style.top = `${event.clientY}px`;
+        glowSpot.style.transform = 'translate(-50%, -50%)';
+    };
+
+    const fadeToDefaultPosition = () => {
+        glowSpot.classList.add('glow-spot--off');
+
+        clearTimeout(restoreTimeout);
+        restoreTimeout = setTimeout(() => {
+            resetGlowSpotPosition();
+            glowSpot.classList.remove('glow-spot--off');
+        }, 200);
+    };
+
+    const observer = new MutationObserver(() => {
+        if (isLandingVisible()) {
+            glowSpot.classList.remove('glow-spot--off');
+        } else {
+            fadeToDefaultPosition();
+        }
+    });
+
+    observer.observe(blockDiv, { attributes: true, attributeFilter: ['class'] });
+
+    window.addEventListener('mousemove', updateGlowSpotPosition);
+}
 
 export async function generateNews() {
     const patreonTier = await getUserTier();
@@ -2179,8 +2232,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const day = String(now.getDate()).padStart(2, '0');
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const year = String(now.getFullYear());
+        const buildId = BUILD_ID; // existe siempre
+        versionNow = `${APP_VERSION.replace("-dev", "")}.nightly.${day}-${month}-${year}.${buildId}`;
         //remove -dev from APP_VERSION
-        versionNow = `${APP_VERSION.replace("-dev", "")}-nightly-${day}-${month}-${year}`;
+
         versionPanel.classList.add("nightly");
     }
 
