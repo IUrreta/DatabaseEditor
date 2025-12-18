@@ -18,7 +18,6 @@ import './js/frontend/performance.js';
 import './js/frontend/seasonViewer.js';
 import './js/frontend/head2head.js';
 import './js/frontend/teams.js';
-import './js/frontend/glowSpot.js';
 import './js/frontend/dragFile.js';
 import './js/frontend/news.js'
 
