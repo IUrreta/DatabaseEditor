@@ -2179,8 +2179,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const day = String(now.getDate()).padStart(2, '0');
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const year = String(now.getFullYear());
+        const buildId = BUILD_ID; // existe siempre
+        versionNow = `${APP_VERSION.replace("-dev", "")}.nightly.${day}-${month}-${year}.${buildId}`;
         //remove -dev from APP_VERSION
-        versionNow = `${APP_VERSION.replace("-dev", "")}-nightly-${day}-${month}-${year}`;
+
         versionPanel.classList.add("nightly");
     }
 

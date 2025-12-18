@@ -2390,26 +2390,14 @@ newsOptionsBtn.addEventListener("click", (e) => {
 });
 
 deleteArticleBtn.addEventListener("click", async () => {
-  // const ok = await confirmModal({
-  //   title: "Delete Article",
-  //   body: "Are you sure you want to delete this article? This action cannot be undone.",
-  //   confirmText: "Delete",
-  //   cancelText: "Cancel",
-  // });
-  // if (ok) {
-  //   const articleId = document.querySelector("#newsModal").getAttribute("data-article-id");
-  //   // const command = new Command("deleteNewsArticle", { articleId });
-  //   console.log("Deleting article with ID:", articleId);
-  // }
   const articleId = document.querySelector("#newsModal").getAttribute("data-article-id");
-  console.log("Deleting article with ID:", articleId);
   const command = new Command("deleteNewsArticle", { articleId });
   command.promiseExecute().then(() => {
-    // Close the modal after deletion
-    const newsModal = document.querySelector("#newsModal");
-    if (newsModal) {
-      newsModal.classList.remove("active");
+    const openedNewsItem = document.querySelector('.news-item.opened');
+    if (openedNewsItem) {
+      openedNewsItem.remove();
     }
+    closeBtn?.click();
   });
 });
   

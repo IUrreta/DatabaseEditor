@@ -2209,7 +2209,6 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
             const entryId1 = `massive_exit_${driver.driverId}`;
             if (savedNews[entryId1]) {
                 newsList.push({ id: entryId1, ...savedNews[entryId1] });
-                return;
             }
 
             const title1 = generateTitle(titleData, 17);
@@ -2233,6 +2232,7 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
 
             const entryId2 = `massive_signing_${driver.driverId}`;
             if (savedNews[entryId2]) {
+                console.log("YA ESTA")
                 newsList.push({ id: entryId2, ...savedNews[entryId2] });
                 return;
             }
@@ -2252,6 +2252,7 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
                 data: titleData,
                 text: null
             });
+            console.log("NUEVA")
         }
     });
 
