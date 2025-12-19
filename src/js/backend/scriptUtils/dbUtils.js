@@ -1766,6 +1766,7 @@ export function checkCustomTables(year) {
   let createdEnginesStats = false;
   let createdEnginesAllocations = false;
   let createdCustomSaveConfig = false;
+  let createdEngineRegulationState = false;
 
   const tablesToCheck = [
     {
@@ -1808,6 +1809,15 @@ export function checkCustomTables(year) {
             
           )
         `
+    },
+    {
+      name: 'Custom_Engine_Regulation_State',
+      createSQL: `
+            CREATE TABLE IF NOT EXISTS Custom_Engine_Regulation_State (
+              id INTEGER PRIMARY KEY CHECK (id = 1),
+              lastSeasonApplied INTEGER
+            );
+        `
     }
   ];
 
@@ -1836,13 +1846,17 @@ export function checkCustomTables(year) {
       else if (table.name === 'Custom_Save_Config') {
         createdCustomSaveConfig = true;
       }
+      else if (table.name === 'Custom_Engine_Regulation_State') {
+        createdEngineRegulationState = true;
+      }
     }
   });
 
   fixCustomEnginesStatsTable();
 
-  insertDefualtEnginesData(createdEnginesList, createdEnginesStats, createdEnginesAllocations, createdCustomSaveConfig, year);
+  insertDefualtEnginesData(createdEnginesList, createdEnginesStats, createdEnginesAllocations, createdCustomSaveConfig, createdEngineRegulationState, year);
 
+  createEngineMigrationTrigger();
 }
 
 export function fixCustomEnginesStatsTable() {
@@ -1886,7 +1900,7 @@ export function fixCustomEnginesStatsTable() {
   }
 }
 
-export function insertDefualtEnginesData(list, stats, allocations, customSave, year) {
+export function insertDefualtEnginesData(list, stats, allocations, customSave, engineRegulationState, year) {
   const engines = [
     {
       id: 1,
@@ -1998,6 +2012,12 @@ export function insertDefualtEnginesData(list, stats, allocations, customSave, y
         VALUES (?, ?)
       `, [engine[0], engine[1]], 'run');
     });
+  }
+  if (engineRegulationState) {
+    queryDB(`
+      INSERT OR IGNORE INTO Custom_Engine_Regulation_State (id, lastSeasonApplied)
+      VALUES (1, -1);
+    `, [], 'run');
   }
 
 
@@ -2253,4 +2273,150 @@ export function fetch2025ModData() {
 
   return config;
 
+}
+
+function createEngineMigrationTrigger(){
+  const sql = `
+  DROP TRIGGER IF EXISTS trg_sync_engine_stats_on_first_full_season_day;
+
+  CREATE TRIGGER trg_sync_engine_stats_on_first_full_season_day
+  AFTER UPDATE OF Day ON Player_State
+  WHEN
+    NEW.CurrentSeason = OLD.CurrentSeason
+    AND NEW.CurrentSeason >
+        (SELECT lastSeasonApplied FROM Custom_Engine_Regulation_State WHERE id = 1)
+  BEGIN
+    --------------------------------------------------------------------
+    -- Marca la season como ya aplicada (LO PRIMERO)
+    --------------------------------------------------------------------
+    UPDATE Custom_Engine_Regulation_State
+    SET lastSeasonApplied = NEW.CurrentSeason
+    WHERE id = 1;
+    --------------------------------------------------------------------
+    -- 1) MOTOR (PartType = 0): copia todas las stats PartStat tal cual
+    --------------------------------------------------------------------
+    UPDATE Parts_Designs_StatValues
+    SET
+      Value = (
+        SELECT ces.Value
+        FROM Parts_Designs pd
+        JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+        JOIN Custom_Engines_Stats ces
+          ON ces.EngineID = cea.EngineID
+        AND ces.DesignID = cea.EngineID               -- motor base
+        AND ces.PartStat = Parts_Designs_StatValues.PartStat
+        WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+          AND pd.PartType = 0
+        LIMIT 1
+      ),
+      UnitValue = (
+        SELECT ces.UnitValue
+        FROM Parts_Designs pd
+        JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+        JOIN Custom_Engines_Stats ces
+          ON ces.EngineID = cea.EngineID
+        AND ces.DesignID = cea.EngineID
+        AND ces.PartStat = Parts_Designs_StatValues.PartStat
+        WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+          AND pd.PartType = 0
+        LIMIT 1
+      )
+    WHERE EXISTS (
+      SELECT 1
+      FROM Parts_Designs pd
+      JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+      JOIN Custom_Engines_Stats ces
+        ON ces.EngineID = cea.EngineID
+      AND ces.DesignID = cea.EngineID
+      AND ces.PartStat = Parts_Designs_StatValues.PartStat
+      WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+        AND pd.PartType = 0
+    );
+
+    --------------------------------------------------------------------
+    -- 2) CAJA DE CAMBIOS (PartType = 1): copia stats desde designId=engineId+2
+    --------------------------------------------------------------------
+    UPDATE Parts_Designs_StatValues
+    SET
+      Value = (
+        SELECT ces.Value
+        FROM Parts_Designs pd
+        JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+        JOIN Custom_Engines_Stats ces
+          ON ces.EngineID = cea.EngineID
+        AND ces.DesignID = cea.EngineID + 2           -- gearbox
+        AND ces.PartStat = Parts_Designs_StatValues.PartStat
+        WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+          AND pd.PartType = 1
+        LIMIT 1
+      ),
+      UnitValue = (
+        SELECT ces.UnitValue
+        FROM Parts_Designs pd
+        JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+        JOIN Custom_Engines_Stats ces
+          ON ces.EngineID = cea.EngineID
+        AND ces.DesignID = cea.EngineID + 2
+        AND ces.PartStat = Parts_Designs_StatValues.PartStat
+        WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+          AND pd.PartType = 1
+        LIMIT 1
+      )
+    WHERE EXISTS (
+      SELECT 1
+      FROM Parts_Designs pd
+      JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+      JOIN Custom_Engines_Stats ces
+        ON ces.EngineID = cea.EngineID
+      AND ces.DesignID = cea.EngineID + 2
+      AND ces.PartStat = Parts_Designs_StatValues.PartStat
+      WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+        AND pd.PartType = 1
+    );
+
+    --------------------------------------------------------------------
+    -- 3) ERS (PartType = 2): copia stats desde designId=engineId+1
+    --------------------------------------------------------------------
+    UPDATE Parts_Designs_StatValues
+    SET
+      Value = (
+        SELECT ces.Value
+        FROM Parts_Designs pd
+        JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+        JOIN Custom_Engines_Stats ces
+          ON ces.EngineID = cea.EngineID
+        AND ces.DesignID = cea.EngineID + 1           -- ERS
+        AND ces.PartStat = Parts_Designs_StatValues.PartStat
+        WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+          AND pd.PartType = 2
+        LIMIT 1
+      ),
+      UnitValue = (
+        SELECT ces.UnitValue
+        FROM Parts_Designs pd
+        JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+        JOIN Custom_Engines_Stats ces
+          ON ces.EngineID = cea.EngineID
+        AND ces.DesignID = cea.EngineID + 1
+        AND ces.PartStat = Parts_Designs_StatValues.PartStat
+        WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+          AND pd.PartType = 2
+        LIMIT 1
+      )
+    WHERE EXISTS (
+      SELECT 1
+      FROM Parts_Designs pd
+      JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+      JOIN Custom_Engines_Stats ces
+        ON ces.EngineID = cea.EngineID
+      AND ces.DesignID = cea.EngineID + 1
+      AND ces.PartStat = Parts_Designs_StatValues.PartStat
+      WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+        AND pd.PartType = 2
+    );
+
+  END;
+  `
+  queryDB(sql, [], 'exec');
+  console.log("INSERTING TRIGGER FOR ENGINE STATS SYNC ON SEASON CHANGE");
 }

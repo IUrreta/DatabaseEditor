@@ -282,5 +282,41 @@
             "‘We’re good to go’ — {{team}} confirms {{driver}} ready after {{condition}} review",
             "Cleared - {{driver}} set for {{next_race}} — {{condition}} no longer an issue"
         ]
+    },
+    {
+        "id": "turning_point_engine_regulation",
+        "new_type": 107,
+        "turning_titles": [
+            "Late engine regulation changes could shake up the grid, insiders say",
+            "Could the FIA's last-minute engine rules alter the championship dynamics?",
+            "'It could happen' – whispers of sudden engine regulation tweaks",
+            "Speculation grows over potential late engine regulation adjustments",
+            "Teams brace for possible last-minute engine rule changes",
+            "Rumors of unexpected engine regulation shifts circulate in the paddock",
+            "'We're preparing for anything' – teams on potential engine rule changes",
+            "Next season engines face uncertainty amid regulation change talks",
+            "'It's a possibility' – FIA on potential late engine regulation changes",
+            "Insiders hint at sudden engine regulation updates ahead of the new season"
+        ],
+        "positive_titles": [
+            "FIA implements new engine regulations, teams react to the changes",
+            "Confirmed - major engine regulation changes set to impact next season",
+            "Teams adapt to FIA's new engine rules ahead of the upcoming season",
+            "FIA's engine regulation overhaul expected to reshape team strategies",
+            "New engine regulations announced, teams prepare for the challenges",
+            "FIA's latest engine rules spark debate among teams and drivers",
+            "BREAKING - FIA confirms significant engine regulation changes",
+            "'We have to adapt quickly' – teams respond to new engine regulations"
+        ],
+        "negative_titles": [
+            "FIA decides against proposed engine regulation changes",
+            "No changes to engine regulations after FIA review",
+            "Rumors dismissed - engine regulations remain unchanged",
+            "FIA confirms no alterations to engine rules for the upcoming season",
+            "Relief among teams as FIA maintains current engine regulations",
+            "FIA opts not to pursue engine regulation changes",
+            "FIA reassures teams with decision to keep engine rules intact",
+            "'We found no need for changes' – FIA on maintaining engine regulations"
+        ]
     }
 ]

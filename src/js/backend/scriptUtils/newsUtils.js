@@ -1,4 +1,4 @@
-import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace } from "./dbUtils";
+import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace, editEngines } from "./dbUtils";
 import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names, continentDict, contintntRacesRegions } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import turningPointsTitleTemplates from "../../../data/news/turning_points_titles_templates.json";
@@ -78,7 +78,9 @@ export function generate_news(savednews, turningPointState) {
 
     const raceSubstitutionTurningPointNews = generateRaceSubstitutionTurningPointNews(currentMonth, savednews, turningPointState);
 
-    const driverInjuryTurningPointNews = generateDriverInjuryTurningPointNews(currentMonth, savednews, turningPointState); //disabled for nightly branch
+    const driverInjuryTurningPointNews = generateDriverInjuryTurningPointNews(currentMonth, savednews, turningPointState);
+
+    const enginesTurningPointNews = generateEnginesTurningPointNews(currentMonth, savednews, turningPointState);
 
     let turningPointOutcomes = [];
     if (Object.keys(savednews).length > 0) {
@@ -91,7 +93,8 @@ export function generate_news(savednews, turningPointState) {
     ...bigConfirmedTransfersNews || [], ...contractRenewalsNews || [], ...comparisonNews || [], ...seasonReviews || [],
     ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...dsqTurningPointNews || [], ...midSeasonTransfersTurningPointNews || [],
     ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [],
-    ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || [], ...raceReactions || [], ...nextSeasonGridNews || []];
+    ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || [], ...raceReactions || [], ...nextSeasonGridNews || [],
+    ...enginesTurningPointNews || []];
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
@@ -226,6 +229,24 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
             date: maxDate + 1,
             turning_point_type: outcome,
             type: "turning_point_outcome_injury"
+        }
+        maxDate += 1;
+    }
+    else if (type === "turning_point_engine_regulation") {
+        if (outcome === "positive") {
+            editEngines(turningPointData.engineData);
+        }
+        const entryId = `turning_point_outcome_engine_regulation_${turningPointData.season}`;
+        const title = generateTurningPointTitle(turningPointData, 107, outcome);
+        const image = getImagePath(null, "engine", "engine") || "null.png";
+        newEntry = {
+            id: entryId,
+            title,
+            image,
+            data: turningPointData,
+            date: maxDate + 1,
+            turning_point_type: outcome,
+            type: "turning_point_outcome_engine_regulation"
         }
         maxDate += 1;
     }
@@ -909,6 +930,210 @@ function generateDriverInjuryTurningPointNews(currentMonth, savednews = {}, turn
     };
 
     newsList.push(entry);
+    return newsList;
+}
+
+
+function generateEnginesTurningPointNews(currentMonth, savednews = {}, turningPointState = {}) {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], "singleRow");
+    const season = daySeason[1];
+    const newsList = [];
+
+    const allRacesDone = queryDB(
+        `SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND State = 2`,
+        [season],
+        "singleValue"
+    );
+    const totalRaces = queryDB(
+        `SELECT COUNT(*) FROM Races WHERE SeasonID = ?`,
+        [season],
+        "singleValue"
+    );
+
+    // Solo último mes + temporada terminada
+    if (currentMonth < 11 || allRacesDone < totalRaces) {
+        return newsList;
+    }
+
+    const entryId = `turning_point_engine_regulation_${season}`;
+    if (savednews[entryId]) {
+        newsList.push({ id: entryId, ...savednews[entryId] });
+        return newsList;
+    }
+
+    // // 50% chance de ocurrir
+    // if (Math.random() >= 0.5) {
+    //     return newsList;
+    // }
+
+    // --- Lectura DB ---
+    const engines = queryDB(`SELECT * FROM Custom_Engines_list`, [], "allRows");
+    const engineStats = queryDB(`SELECT * FROM Custom_Engines_stats`, [], "allRows");
+
+    // --- Tipo de regulación ---
+    let changeType = "minor";
+    if (Math.random() < 0.1) changeType = "major";
+
+    const VAR = changeType === "major" ? 0.30 : 0.05;
+
+    const randBetween = (min, max) => min + Math.random() * (max - min);
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+
+
+    const currentStats = {};
+    for (const row of engineStats) {
+        const engineId = String(row[0]);
+        const designId = Number(row[1]);
+        const partStat = Number(row[2]);
+        const unitValue = Number(row[3]); // 4º valor = unitValue (según tu tabla)
+
+        if (!currentStats[engineId]) currentStats[engineId] = {};
+
+        const eNum = Number(engineId);
+        if (partStat === 15 && designId === eNum + 1) {
+            currentStats[engineId][18] = unitValue; // ERS
+        } else if (partStat === 15 && designId === eNum + 2) {
+            currentStats[engineId][19] = unitValue; // Gearbox
+        } else {
+            currentStats[engineId][partStat] = unitValue;
+        }
+    }
+
+    // --- 2) Decide beneficiado/perjudicado ANTES (Opción A) ---
+    // Distribución:
+    // minor: 35% win, 35% lose, 30% neutral
+    // major: 45% win, 45% lose, 10% neutral
+    const engineBias = {}; // engineId -> -1 | 0 | +1
+    const winners = [];
+    const losers = [];
+    const neutrals = [];
+
+    for (const engineId of Object.keys(currentStats)) {
+        const r = Math.random();
+        let bias;
+
+        if (changeType === "major") {
+            bias = r < 0.45 ? 1 : r < 0.90 ? -1 : 0;
+        } else {
+            bias = r < 0.35 ? 1 : r < 0.70 ? -1 : 0;
+        }
+
+        engineBias[engineId] = bias;
+        if (bias === 1) winners.push(engineId);
+        else if (bias === -1) losers.push(engineId);
+        else neutrals.push(engineId);
+    }
+
+    // --- 3) Genera engineData aplicando variación SOLO en dirección del bias ---
+    // engineData[engineId][stat] = nuevo unitValue
+    const engineData = {};
+    const engineImpact = {}; // engineId -> % medio (ej 0.032 = +3.2%) para ordenar si quieres
+
+    for (const engineId of Object.keys(currentStats)) {
+        engineData[engineId] = {};
+
+        let sumPct = 0;
+        let count = 0;
+
+        for (const statKey of Object.keys(currentStats[engineId])) {
+            const stat = Number(statKey);
+            const cur = Number(currentStats[engineId][stat]);
+
+            // No tocar 11 y 12
+            if (stat === 11 || stat === 12) {
+                engineData[engineId][stat] = cur;
+                continue;
+            }
+
+            const bias = engineBias[engineId];
+
+            let mult = 1;
+            if (bias === 1) mult = 1 + randBetween(0, VAR);          // solo sube
+            else if (bias === -1) mult = 1 - randBetween(0, VAR);    // solo baja
+            else mult = 1 + randBetween(-VAR, VAR);                  // neutro: libre
+
+            let next = Math.round(cur * mult);
+
+            next = Math.max(0, next);
+            next = clamp(next, 0, 100);
+
+            engineData[engineId][stat] = next;
+
+            if (cur > 0) {
+                sumPct += (next - cur) / cur;
+                count++;
+            }
+        }
+
+        engineImpact[engineId] = count ? sumPct / count : 0;
+
+        const eNum = Number(engineId);
+
+        if (engineData[engineId][18] === undefined) {
+            const ersUnit = queryDB(
+                `SELECT UnitValue FROM Custom_Engines_Stats WHERE engineId = ? AND designId = ? AND partStat = 15`,
+                [engineId, eNum + 1],
+                "singleValue"
+            );
+            engineData[engineId][18] = ersUnit != null ? clamp(Math.max(0, Number(ersUnit)), 0, 100) : 0;
+        }
+
+        if (engineData[engineId][19] === undefined) {
+            const gbUnit = queryDB(
+                `SELECT UnitValue FROM Custom_Engines_Stats WHERE engineId = ? AND designId = ? AND partStat = 15`,
+                [engineId, eNum + 2],
+                "singleValue"
+            );
+            engineData[engineId][19] = gbUnit != null ? clamp(Math.max(0, Number(gbUnit)), 0, 100) : 0;
+        }
+    }
+
+    // --- 4) Mapea nombres de motores para news (opcional pero útil) ---
+    // engines viene tipo: [[1,"Ferrari"], [4,"Red Bull"], ...]
+    const engineNameById = {};
+    engines.forEach(row => {
+        engineNameById[String(row[0])] = row[1];
+    });
+
+    const winnerNames = winners.map(id => engineNameById[id] ?? id);
+    const loserNames = losers.map(id => engineNameById[id] ?? id);
+    const neutralNames = neutrals.map(id => engineNameById[id] ?? id);
+
+    const titleData = {
+        changeType,
+        variability: VAR,
+        engineData,       // <- lo pasas a editEngines(engineData)
+        engineBias,       // <- +1/-1/0 por motor
+        engineImpact,     // <- % medio por motor
+        winners,
+        losers,
+        neutrals,
+        winnerNames,
+        loserNames,
+        neutralNames,
+        season
+    };
+
+
+    turningPointState.engineRegulation = titleData;
+
+    const title = generateTurningPointTitle(titleData, 107, "original");
+    const image = getImagePath(null, "engine", "engine");
+    const newsDate = new Date(season, 11, Math.floor(Math.random() * 8) + 13);
+    const excelDate = dateToExcel(newsDate);
+
+    const newsEntry = {
+        id: entryId,
+        title,
+        image,
+        date: excelDate,
+        data: titleData,
+        turning_point_type: "original",
+        type: "turning_point_engine_regulation"
+    };
+
+    newsList.push(newsEntry);
+
     return newsList;
 }
 
@@ -2165,7 +2390,7 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
         const contract = queryDB(`SELECT TeamID, Salary, EndSeason FROM Staff_Contracts WHERE StaffID = ? AND ContractType = 3 AND TeamID != ?`, [driver.driverId, driver.teamId], 'singleRow');
         if (!contract) return;
         const futureTeamId = contract[0]
-        
+
 
         let titleData = {
             driver1: driver.name,
@@ -2205,7 +2430,7 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
                 text: null
             });
         }
-        else{
+        else {
             const entryId1 = `massive_exit_${driver.driverId}`;
             if (savedNews[entryId1]) {
                 newsList.push({ id: entryId1, ...savedNews[entryId1] });
@@ -2345,7 +2570,7 @@ function generateNextSeasonGridNews(savedNews = {}, currentMonth) {
     const image = getImagePath(null, null, "grid_next_season");
     const newsDate = new Date(season, 11, 15);
     const excelDate = dateToExcel(newsDate);
-    
+
     newsList.push({
         id: entryId,
         type: "next_season_grid",
@@ -2361,7 +2586,7 @@ function generateNextSeasonGridNews(savedNews = {}, currentMonth) {
     });
 
     return newsList;
-    
+
 }
 
 export function generateContractRenewalsNews(savedNews = {}, contractRenewals = [], currentMonth) {
@@ -2447,7 +2672,7 @@ export function getContractExtensions() {
                 AND con0.PosInTeam <= 2
         );
         `
-        ,  [], 'allRows')
+        , [], 'allRows')
 
     // contractRenewals.forEach(contract => {
     //     let driverID = contract[2];
@@ -3768,6 +3993,10 @@ function getImagePath(teamId, code, type) {
         const randomNum = getRandomInt(1, 12);
         return `./assets/images/news/con${randomNum}.webp`;
     }
+    else if (type === "engine"){
+        const randomNum = getRandomInt(1, 5);
+        return `./assets/images/news/engine_${randomNum}.webp`;
+    }
 }
 
 export function calculateTeamDropsByDate(season, date) {
@@ -4607,7 +4836,7 @@ export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, re
     const validSeasonId = Number(seasonId);
     const validInjuredId = Number(injuredId);
     const validEndDay = Number(endDay);
-    
+
     if (!Number.isInteger(validSeasonId) || !Number.isInteger(validInjuredId) || !Number.isInteger(validEndDay)) {
         throw new Error('createInjuryRevertTrigger: seasonId, injuredId, and endDay must be integers.');
     }
