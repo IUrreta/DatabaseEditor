@@ -6,7 +6,7 @@ import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
     new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables
 } from './seasonViewer';
-import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict } from './config';
+import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig } from './config';
 import {
     freeDriversDiv, insert_space, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal,
@@ -1339,17 +1339,8 @@ function manage_config_content(info, year_config = false) {
         }
 
         document.querySelector(`.team-logo-container[data-teamid="${info["playerTeam"]}"]`).classList.add("active")
-
+        update_difficulty_info(info["triggerList"])
         update_mentality_span(info["frozenMentality"])
-        let difficultySlider = document.getElementById("difficultySlider")
-        difficultySlider.value = info["difficulty"] || 0
-        update_difficulty_span(info["difficulty"])
-        if (info["difficulty"] === "-2") {
-            load_difficulty_warnings(info["triggerList"])
-        }
-        else {
-            manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])], info["triggerList"])
-        }
         update_refurbish_span(info["refurbish"])
     }
 }
@@ -1368,6 +1359,30 @@ document.querySelectorAll(".color-reader").forEach(function (elem) {
         picker.value = elem.value.toLowerCase()
     })
 })
+
+function update_difficulty_info(triggerList) {
+    console.log("TRIGGER LIST", triggerList)
+    //iterate through the objetc
+    for (let key in triggerList) {
+        let value = triggerList[key];
+        let nameSpan = document.getElementById(key)
+        if (!nameSpan) continue;
+        let status = nameSpan.parentNode.querySelector(".dif-status")
+        let options;
+        if (key === "lightDif"){
+            options = weightDifConfig
+        }
+        else{
+            options = defaultDifficultiesConfig
+        }
+        if (value < 0) {
+            value = 0;
+        }
+        status.dataset.value = value;
+        status.textContent = options[value].text;
+        status.className = `dif-status ${options[value].className}`;
+    }
+}
 
 
 function alphaTauriReplace(info) {
@@ -1679,32 +1694,18 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         refurbish = 1;
     }
     let difficulty = 0;
-    let difficultySlider = document.getElementById("difficultySlider")
-    let difficultyValue = document.getElementById("difficultySpan").textContent === "Custom" ? -2 : parseInt(difficultySlider.value)
     let disabledList = {}
     let triggerList = {}
     let playerTeam = managingTeamChanged ? document.querySelector(".team-logo-container.active").dataset.teamid : -1
-    document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
-        let id = elem.id
-        if (elem.classList.contains("disabled") || elem.classList.contains("d-none")) {
-            disabledList[id] = 1
-        }
-        else {
-            disabledList[id] = 0
-        }
-        if (elem.className === "dif-warning") {
-            triggerList[id] = 0;
-        }
-        else {
-            triggerList[id] = elem.classList && (elem.classList.contains("d-none") || elem.classList.contains("disabled")) ? -1 : inverted_difficulty_dict[elem.className.split(" ")[1]];
-        }
+    document.querySelectorAll(".dif-status").forEach(function (elem) {
+        let id = elem.parentNode.querySelector(".dif-name").id
+        triggerList[id] = elem.dataset.value
     })
     let data = {
         alphatauri: alphatauri,
         alpine: alpine,
         alfa: alfa,
         frozenMentality: mentalityFrozen,
-        difficulty: difficultyValue,
         refurbish: refurbish,
         disabled: disabledList,
         triggerList: triggerList,
@@ -1755,7 +1756,6 @@ document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", 
  * checks if a save and a script have been selected to unlock the tool
  */
 function check_selected() {
-    console.log(isSaveSelected, scriptSelected, divBlocking)
     if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
         document.getElementById("blockDiv").classList.add("disappear")
         divBlocking = 0;
@@ -1859,30 +1859,6 @@ patreonPill.addEventListener("click", function () {
 
 
 
-document.getElementById("difficultySlider").addEventListener("input", function () {
-    let value = this.value;
-    update_difficulty_span(value)
-    manage_difficulty_warnings(difficulty_dict[parseInt(value)])
-    difcultyCustom = "default"
-    document.getElementById("customGearButton").classList.remove("custom")
-});
-
-function update_difficulty_span(value = 0) {
-    let span = document.querySelector("#difficultySpan")
-    let difficulty = difficulty_dict[parseInt(value)]
-    if (difficulty === "reduced weight") {
-        span.className = "option-state reduced-weight"
-    }
-    else if (difficulty === "Custom") {
-        span.className = "option-state custom"
-        document.getElementById("customGearButton").classList.remove("custom")
-        document.getElementById("customGearButton").click()
-    }
-    else {
-        span.className = "option-state " + difficulty
-    }
-    span.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1)
-}
 
 document.getElementById("freezeMentalityToggle").addEventListener("change", function () {
     let value = this.checked;
@@ -1958,97 +1934,50 @@ function load_difficulty_warnings(triggerList) {
     }
 }
 
-document.getElementById("customGearButton").addEventListener("click", function () {
-    this.classList.toggle("custom")
-    if (this.classList.contains("custom")) {
-        difcultyCustom = "custom"
-        document.querySelector("#difficultySpan").textContent = "Custom"
-        document.querySelector("#difficultySpan").className = "option-state custom"
-        document.querySelector(".custom-description").textContent = "cycle through its states"
-        let warnigs = document.querySelectorAll(".dif-warning")
-        warnigs.forEach(function (elem) {
-            if (elem.id !== "defaultDif") {
-                for (let level in difficultyConfig) {
-                    if (difficultyConfig[level].visible.includes(elem.id)) {
-                        elem.className = difficultyConfig[level][elem.id]?.className || "dif-warning";
-                        elem.textContent = difficultyConfig[level][elem.id]?.text || "";
-                        break;
-                    }
-                }
-            }
-            else {
-                elem.classList.add("d-none")
-            }
-        })
+
+
+document.querySelectorAll(".one-difficulty .bi-plus").forEach(function (elem) {
+    const title = elem.parentNode.parentNode
+    const status = title.querySelector(".dif-status")
+    const name = title.querySelector(".dif-name")
+    let options;
+    if (name.id === "lightDif") {
+        options = weightDifConfig
     }
-    else {
-        difcultyCustom = "default"
-        document.querySelector(".custom-description").textContent = "remove/add it"
-        actualDifficulty = document.getElementById("difficultySlider").value
-        manage_difficulty_warnings(difficulty_dict[parseInt(actualDifficulty)])
-        update_difficulty_span(actualDifficulty)
+    else{
+        options = defaultDifficultiesConfig
     }
-})
-
-function rotateDifficultyLevel(elementId) {
-    const levels = ["extra-hard", "brutal", "unfair", "insane", "impossible"];
-    const element = document.getElementById(elementId);
-
-    // Detectar si el elemento está en estado "disabled" actualmente
-    if (element.classList.contains("disabled")) {
-        let nextConfig;
-        for (let level in difficultyConfig) {
-            if (difficultyConfig[level].visible.includes(elementId)) {
-                nextConfig = difficultyConfig[level][elementId]
-                break
-            }
-        }
-        if (nextConfig) {
-            element.className = nextConfig.className;
-            element.textContent = nextConfig.text;
-        }
-        return;
-    }
-
-    let currentLevelIndex = levels.findIndex(level => {
-        return difficultyConfig[level][elementId] &&
-            element.classList.contains(difficultyConfig[level][elementId].className.split(" ")[1]);
-    });
-
-    if (currentLevelIndex === levels.length - 1) {
-        element.className = "dif-warning disabled";
-        return;
-    }
-
-    let nextLevelIndex = (currentLevelIndex + 1) % levels.length;
-    let nextConfig = difficultyConfig[levels[nextLevelIndex]][elementId];
-
-
-    while (
-        (!nextConfig ||
-            (nextConfig.className === element.className && nextConfig.text === element.textContent) ||
-            !difficultyConfig[levels[nextLevelIndex]].visible.includes(elementId)) &&
-        nextLevelIndex !== currentLevelIndex
-    ) {
-        nextLevelIndex = (nextLevelIndex + 1) % levels.length;
-        nextConfig = difficultyConfig[levels[nextLevelIndex]][elementId];
-    }
-
-    if (nextConfig) {
-        element.className = nextConfig.className;
-        element.textContent = nextConfig.text;
-    }
-}
-
-document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
+    const maxOptions = Object.keys(options).length;
     elem.addEventListener("click", function () {
-        if (difcultyCustom === "custom") {
-            rotateDifficultyLevel(elem.id);
-        } else {
-            elem.classList.toggle("disabled");
-        }
+        let actualValue = parseInt(status.dataset.value);
+        let newValue = (actualValue + 1) % maxOptions;
+        status.dataset.value = newValue;
+        status.textContent = options[newValue].text;
+        status.className = `dif-status ${options[newValue].className}`;
     });
 });
+
+document.querySelectorAll(".one-difficulty .bi-dash").forEach(function (elem) {
+    const title = elem.parentNode.parentNode
+    const status = title.querySelector(".dif-status")
+    const name = title.querySelector(".dif-name")
+    let options;
+    if (name.id === "lightDif"){
+        options = weightDifConfig
+    }
+    else{
+        options = defaultDifficultiesConfig
+    }
+    const maxOptions = Object.keys(options).length;
+    elem.addEventListener("click", function () {
+        let actualValue = parseInt(status.dataset.value);
+        let newValue = (actualValue - 1 + maxOptions) % maxOptions;
+        status.dataset.value = newValue;
+        status.textContent = options[newValue].text;
+        status.className = `dif-status ${options[newValue].className}`;
+    });
+});
+
 
 /**
  * Manages the stats of the divs associated with the pills
@@ -2406,7 +2335,6 @@ function populateRecentHandles(recents) {
         lastOpened.classList.add("last-opened-time");
         const now = new Date();
         const openedDate = new Date(handle.lastOpened);
-        console.log("now:", now, "openedDate:", openedDate);
         const diffTime = Math.abs(now - openedDate);
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 

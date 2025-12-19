@@ -163,7 +163,6 @@ const workerCommands = {
 
     const h2hDrivers = [];
     data.graph.forEach(driver => {
-      console.log(" Driver in H2H:", driver);
       let res;
       if (data.mode === "driver") {
         res = fetchOneDriverSeasonResults(driver, data.year, data.isCurrentYear);

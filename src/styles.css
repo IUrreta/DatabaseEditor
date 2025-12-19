@@ -1830,6 +1830,7 @@ input.comparing-tag {
   font-size: 22px;
   cursor: pointer;
   transition: background-color 0.15s, color 0.15s;
+  user-select: none;
 }
 
 .new-augment-button.small {
@@ -10788,39 +10789,45 @@ body.og-theme .option-state.fixed {
 
 .option-state.extra-hard,
 span.extra-hard,
-.dif-warning.extra-hard {
+.dif-warning.extra-hard,
+.dif-status.extra-hard {
   color: var(--extra-hard)
 }
 
 .option-state.brutal,
 span.brutal,
-.dif-warning.brutal {
+.dif-warning.brutal,
+.dif-status.brutal {
   color: var(--brutal)
 }
 
 .option-state.unfair,
 span.unfair,
-.dif-warning.unfair {
+.dif-warning.unfair,
+.dif-status.unfair {
   color: var(--unfair)
 }
 
 .option-state.insane,
 span.insane,
-.dif-warning.insane {
+.dif-warning.insane,
+.dif-status.insane {
   color: var(--insane)
 }
 
 .option-state.impossible,
 span.impossible,
-.dif-warning.impossible {
+.dif-warning.impossible,
+.dif-status.impossible {
   color: var(--impossible)
 }
 
 .option-state.fixed,
 span.fixed,
 .dif-warning.fixed,
-#lightDif.impossible {
-  color: var(--new-primary)
+#lightDif.impossible,
+#lightDif~.dif-status.impossible {
+  color: var(--new-primary) !important;
 }
 
 .option-state.reduced-weight,
@@ -14869,4 +14876,46 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
+}
+
+.difficulty-options{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.one-difficulty{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.dif-title{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+}
+
+.dif-buttons{
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+}
+
+.dif-title .avg-separator{
+  background-color: var(--disabled-text);
+  width: 1px;
+}
+
+.dif-status{
+  font-size: 13px;
+  flex-grow: 1;
+}
+
+.dif-description{
+  font-size: 13px;
 }

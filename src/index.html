@@ -610,30 +610,49 @@
                     </div>
                   </div>
                   <div class="difficulty-changes">
-                    <div class="modal-subtitle bold-font">Game difficulty <i class="bi bi-gear-fill"
-                        id="customGearButton"></i> <span class="option-state default" id="difficultySpan">Default</span>
-                    </div>
-                    <div class="difficulty-warnings">
-                      <div class="dif-warning default" id="defaultDif">In-game difficulty</div>
-                      <div class="dif-warning extra-hard" id="lightDif">lightweight parts</div>
-                      <div class="dif-warning extra-hard" id="researchDif">ResearchBoost</div>
-                      <div class="dif-warning extra-hard" id="statDif">Stat boost</div>
-                      <div class="dif-warning brutal" id="designTimeDif">Design times reduced</div>
-                      <div class="dif-warning insane" id="buildDif">+1 part when design completed</div>
-                    </div>
-                    <div class="modal-text">
-                      Changes the difficulty of the development race against the AI.
-                      <br>
-                      Only recommended if you find Hard development difficulty not challenging.
-                      <br>
-                      Click on the <i class="bi bi-gear-fill"> </i> icon to customize the difficulty.
-                      <br>
-                      Click on any item on the list to <span class="custom-description">remove/add it</span>.
-                    </div>
-                    <div class="mentality-selector">
-                      <label class="form-check-label">Default</label>
-                      <input type="range" class="form-range" id="difficultySlider" min="0" max="6" step="1" value="0">
-                      <label class="form-check-label">Impossible</label>
+                    <div class="difficulty-options">
+                      <div class="one-difficulty">
+                        <div class="dif-title">
+                          <span class="dif-name bold-font" id="lightDif">Weight red.</span>
+                          <div class="avg-separator"></div>
+                          <span class="dif-status" data-value="0">Disabled</span>
+                          <div class="dif-buttons">
+                            <i class="bi bi-dash new-augment-button"></i>
+                            <i class="bi bi-plus new-augment-button"></i>
+                          </div>
+                        </div>
+                        <div class="dif-description modal-text">
+                          The AI will design every part  with less weight. With ULTRA, they will put the minimum weight possible.
+                        </div>
+                      </div>
+                      <div class="one-difficulty">
+                        <div class="dif-title">
+                          <span class="dif-name bold-font" id="statDif">Design boost</span>
+                          <div class="avg-separator"></div>
+                          <span class="dif-status" data-value="0">Disabled</span>
+                          <div class="dif-buttons">
+                            <i class="bi bi-dash new-augment-button"></i>
+                            <i class="bi bi-plus new-augment-button"></i>
+                          </div>
+                        </div>
+                        <div class="dif-description modal-text">
+                          Gives the AI a boost in each stat when designing new parts. The higher the difficulty, the better the stats.
+                        </div>
+                      </div>
+                      <div class="one-difficulty">
+                        <div class="dif-title">
+                          <span class="dif-name bold-font" id="researchDif">Research boost</span>
+                          <div class="avg-separator"></div>
+                          <span class="dif-status" data-value="0">Disabled</span>
+                          <div class="dif-buttons">
+                            <i class="bi bi-dash new-augment-button"></i>
+                            <i class="bi bi-plus new-augment-button"></i>
+                          </div>
+                        </div>
+                        <div class="dif-description modal-text">
+                          Gives the AI a boost on expertise when doing research. The higher the difficulty, the bigger the boost.
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

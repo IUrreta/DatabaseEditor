@@ -1189,7 +1189,6 @@ function get_one_driver_points_format(driver, data) {
 }
 
 function load_graphs_data(drivers) {
-    console.log(drivers)
     let max_gapPole = 0;
     let max_gapWinner = 0;
     const races_ids = drivers[0].map(r => r[0]); // array de raceId en orden

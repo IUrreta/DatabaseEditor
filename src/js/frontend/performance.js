@@ -617,7 +617,6 @@ document.querySelector("#fitButton").addEventListener("click", function () {
 
     }
     //pending
-    console.log(data)
 })
 
 document.querySelectorAll(".part-performance-title .bi-caret-down-fill").forEach(function (elem) {

@@ -2156,10 +2156,9 @@ export function updateCustomConfig(data) {
     VALUES ('secondaryColor', ?)
   `, [secondaryColor], 'run');
 
-  queryDB(`
-    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
-    VALUES ('difficulty', ?)
-  `, [difficulty], 'run');
+  //delete the difficulty key from Custom_Save_Config every time
+  queryDB(`DELETE FROM Custom_Save_Config WHERE key = 'difficulty'`, [], 'run');
+
 
   if (parseInt(playerTeam) !== -1) {
     updateTeam(playerTeam)
