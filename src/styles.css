@@ -638,7 +638,7 @@ i.bi-file-text:hover {
   border-radius: 8px;
   transition: color 0.15s, border 0.15s, transform 0.15s;
   padding: 8px;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .add-contract.enabled {
@@ -646,24 +646,14 @@ i.bi-file-text:hover {
   color: var(--dark-text);
 }
 
-.add-contract i {
-  font-style: normal;
+.add-contract:not(.enabled) .button-with-icon {
+  pointer-events: none;
 }
 
-.add-contract i::before {
-  margin: 0 9px;
-}
-
-.add-contract.enabled span,
-.add-contract.enabled i {
+.add-contract.enabled .button-with-icon {
   cursor: pointer;
-  transition: color 0.15s, transform 0.15s;
 }
 
-.add-contract.enabled i:hover {
-  color: var(--new-primary);
-  transform: scale(1.1);
-}
 
 #teamContractButton {
   margin-top: 0 !important;
@@ -684,23 +674,12 @@ i.bi-file-text:hover {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  font-size: 24px;
+  font-size: 20px;
   font-family: 'Formula1Bold';
   color: var(--white-general);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-.break-contract {
-  color: var(--dark-text);
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s;
-  font-size: 18px;
-}
-
-.break-contract:hover {
-  color: var(--negative-general);
-  transform: scale(1.1);
-}
 
 .auto-contract {
   color: var(--text-general);
@@ -8775,13 +8754,25 @@ body.og-theme .records-list {
   text-align: center;
 }
 
-.contract-details .old-custom-input-number {
-  width: 70%;
+#contractModal .contract-modal-input {
+  padding: 6px;
+  margin-right: 0;
   max-width: none;
   text-align: left;
+  border-bottom: 2px solid transparent;
+  border-right: 0px solid;
+  border-left: 0px solid;
+  border-top: 0px solid;
+  width: 140px;
+  font-size: 18px;
 }
 
-.contract-details i {
+#contractModal .contract-details .unit-and-input {
+  gap: 6px;
+  font-size: 16px;
+}
+
+.contract-details i:not(.new-augment-button) {
   transition: transform 0.15s, color 0.15s;
 }
 
@@ -9370,6 +9361,7 @@ input::-webkit-inner-spin-button {
   align-items: center;
   justify-content: flex-start;
   padding: 0;
+  min-width: 215px;
 }
 
 .team-select-menu a {
@@ -14918,4 +14910,11 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .dif-description{
   font-size: 13px;
+}
+
+
+#contractModal .modal-subtitle{
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 16px;
 }

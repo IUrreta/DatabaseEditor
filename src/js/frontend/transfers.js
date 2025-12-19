@@ -1,5 +1,5 @@
 import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict, f1_teams, f2_teams, f3_teams, inverted_dict, getUpdatedName } from "./config";
-import { game_version, make_name_prettier } from "./renderer";
+import { attachHold, game_version, make_name_prettier } from "./renderer";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import interact from 'interactjs';
 import { Command } from "../backend/command.js";
@@ -396,7 +396,7 @@ function addIcon(div) {
 function iconListener(icon) {
     icon.addEventListener("click", function () {
         modalType = "edit"
-        document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g, ' ') + "'s contract";
+        document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g, ' ') + "'s";
         queryContract(icon.parentNode.parentNode)
         let space = icon.parentNode.parentNode.parentNode
         if (space.classList.contains("driver-space") || space.classList.contains("affiliates-space") || (space.id === "free-drivers" && (f2_teams.includes(parseInt(icon.parentNode.parentNode.dataset.teamid)) || f3_teams.includes(parseInt(icon.parentNode.parentNode.dataset.teamid))))) {
@@ -555,9 +555,9 @@ export function manage_modal(info) {
         document.getElementById("yearInput").dataset.maxYear = info[2]
         document.getElementById("yearInput").min = info[2]
         document.getElementById("yearInputFuture").min = info[2] + 1
-        document.querySelector("#currentContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem, index) {
+        document.querySelector("#currentContractOptions").querySelectorAll(".contract-modal-input").forEach(function (elem, index) {
             if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
-                elem.value = info[0][index].toLocaleString("en-US") + " $"
+                elem.value = info[0][index].toLocaleString("en-US")
             }
             else {
                 elem.value = info[0][index]
@@ -569,7 +569,7 @@ export function manage_modal(info) {
         document.querySelector(".add-contract").classList.remove("d-none")
         document.querySelector("#futureContractTitle").classList.add("d-none")
         document.querySelector("#futureContractOptions").classList.add("d-none")
-        document.querySelector("#teamContractButton").innerText = "Team"
+        document.querySelector("#teamContractButton span").innerText = "Team"
         document.querySelector("#teamContractButton").dataset.teamid = "-1"
     }
     else {
@@ -580,9 +580,9 @@ export function manage_modal(info) {
         document.getElementById("futureContract").innerText = getUpdatedName(info[1][6]).toUpperCase()
         document.querySelector("#teamContractButton").dataset.teamid = info[1][6]
         document.getElementById("futureContract").className = "team-contract engine-" + team_dict[info[1][6]]
-        document.querySelector("#futureContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem, index) {
+        document.querySelector("#futureContractOptions").querySelectorAll(".contract-modal-input").forEach(function (elem, index) {
             if (elem.id === "salaryInputFuture" || elem.id === "signBonusInputFuture" || elem.id === "raceBonusAmtFuture") {
-                elem.value = info[1][index].toLocaleString("en-US") + " $"
+                elem.value = info[1][index].toLocaleString("en-US")
             }
             else {
                 elem.value = info[1][index]
@@ -597,7 +597,7 @@ export function manage_modal(info) {
  */
 document.querySelector("#teamContractMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click", function () {
-        document.querySelector("#teamContractButton").innerText = elem.querySelector(".team-menu-name").innerText;
+        document.querySelector("#teamContractButton span").innerText = elem.querySelector(".team-menu-name").innerText;
         document.querySelector("#teamContractButton").dataset.teamid = elem.dataset.teamid;
         document.querySelector(".add-contract").classList.add("enabled")
     })
@@ -607,32 +607,31 @@ function formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-document.querySelector(".add-contract i").addEventListener("click", function () {
-    if (event.target.parentNode.classList.contains("enabled")) {
-        document.getElementById("yearInput").value = document.getElementById("yearInput").dataset.maxYear
-        document.querySelector("#futureYear").innerText = "Next year's contract"
-        document.querySelector("#futureContract").className = "team-contract engine-" + team_dict[document.querySelector("#teamContractButton").dataset.teamid]
-        document.querySelector("#futureContract").innerText = document.querySelector("#teamContractButton").innerText
-        document.querySelector(".add-contract").classList.add("d-none")
-        document.querySelector("#futureContractTitle").classList.remove("d-none")
-        document.querySelector("#futureContractOptions").classList.remove("d-none")
-        if (document.querySelector("#salaryInput").value !== "") {
-            document.querySelector("#salaryInputFuture").value = formatNumber((parseFloat(document.querySelector("#salaryInput").value.replace(/,/g, '').split(" ")[0]) * 1.3).toFixed(0)) + " $";
-            document.querySelector("#signBonusInputFuture").value = formatNumber((parseFloat(document.querySelector("#signBonusInput").value.replace(/,/g, '').split(" ")[0]) * 1.15).toFixed(0)) + " $";
-            document.querySelector("#raceBonusAmtFuture").value = formatNumber((parseFloat(document.querySelector("#raceBonusAmt").value.replace(/,/g, '').split(" ")[0]) * 1.15).toFixed(0)) + " $";
-            document.querySelector("#raceBonusPosFuture").value = parseInt(document.querySelector("#raceBonusPos").value)
-            document.querySelector("#yearInputFuture").value = parseInt(document.querySelector("#yearInput").value) + 2
-        }
-        else {
-            document.querySelector("#salaryInputFuture").value = "1,000,000 $"
-            document.querySelector("#signBonusInputFuture").value = "100,000 $"
-            document.querySelector("#raceBonusAmtFuture").value = "0 $"
-            document.querySelector("#raceBonusPosFuture").value = "1"
-            document.querySelector("#yearInputFuture").value = parseInt(currentSeason) + 1
-        }
-
-        document.querySelector("#posInTeamFuture").value = 1;
+document.querySelector(".add-contract .button-with-icon").addEventListener("click", function () {
+    document.getElementById("yearInput").value = document.getElementById("yearInput").dataset.maxYear
+    document.querySelector("#futureYear").innerText = "Next year's contract"
+    document.querySelector("#futureContract").className = "team-contract engine-" + team_dict[document.querySelector("#teamContractButton").dataset.teamid]
+    document.querySelector("#futureContract").innerText = document.querySelector("#teamContractButton span").innerText
+    document.querySelector(".add-contract").classList.add("d-none")
+    document.querySelector("#futureContractTitle").classList.remove("d-none")
+    document.querySelector("#futureContractOptions").classList.remove("d-none")
+    if (document.querySelector("#salaryInput").value !== "") {
+        document.querySelector("#salaryInputFuture").value = formatNumber((parseFloat(document.querySelector("#salaryInput").value.replace(/[$,]/g, '')) * 1.3).toFixed(0));
+        document.querySelector("#signBonusInputFuture").value = formatNumber((parseFloat(document.querySelector("#signBonusInput").value.replace(/[$,]/g, '')) * 1.15).toFixed(0));
+        document.querySelector("#raceBonusAmtFuture").value = formatNumber((parseFloat(document.querySelector("#raceBonusAmt").value.replace(/[$,]/g, '')) * 1.15).toFixed(0));
+        document.querySelector("#raceBonusPosFuture").value = parseInt(document.querySelector("#raceBonusPos").value)
+        document.querySelector("#yearInputFuture").value = parseInt(document.querySelector("#yearInput").value) + 2
     }
+    else {
+        document.querySelector("#salaryInputFuture").value = "1,000,000"
+        document.querySelector("#signBonusInputFuture").value = "100,000"
+        document.querySelector("#raceBonusAmtFuture").value = "0"
+        document.querySelector("#raceBonusPosFuture").value = "1"
+        document.querySelector("#yearInputFuture").value = parseInt(currentSeason) + 1
+    }
+
+    document.querySelector("#posInTeamFuture").value = 1;
+    
 })
 
 
@@ -640,128 +639,71 @@ document.querySelector(".break-contract").addEventListener("click", function () 
     document.querySelector(".add-contract").classList.remove("d-none")
     document.querySelector("#futureContractTitle").classList.add("d-none")
     document.querySelector("#futureContractOptions").classList.add("d-none")
-    document.querySelector("#teamContractButton").innerText = "Team"
+    document.querySelector("#teamContractButton span").innerText = "Team"
     document.querySelector("#teamContractButton").dataset.teamid = "-1"
     document.querySelector(".add-contract").classList.remove("enabled")
 })
 
-document.querySelector(".contract-options").querySelectorAll('.bi-plus-lg').forEach(button => {
-    let intervalId;
-    let increment = 10000;
-    button.addEventListener('mousedown', function () {
-        let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
-        if (input.id === "salaryInput") {
-            increment = 100000;
-        }
-        updateContractMoneyValue(input, increment);
-        intervalId = setInterval(() => {
-            updateContractMoneyValue(input, increment);
-        }, 100);
+function attachHoldWithAttrClamp(btn, input, step, opts = {}) {
+    if (!btn || !input) return;
+    if (btn.dataset.holdAttached === "1") return;
+
+    btn.dataset.holdAttached = "1";
+    const format = typeof opts.format === "function" ? opts.format : undefined;
+
+    attachHold(btn, input, step, {
+        min: -Infinity,
+        max: Infinity,
+        format,
+        onChange: (val) => {
+            if (typeof val !== "number" || !Number.isFinite(val)) return;
+
+            const min = input.min !== "" ? Number(input.min) : -Infinity;
+            const max = input.max !== "" ? Number(input.max) : Infinity;
+            let clamped = val;
+
+            if (Number.isFinite(min)) clamped = Math.max(min, clamped);
+            if (Number.isFinite(max)) clamped = Math.min(max, clamped);
+
+            if (clamped === val) return;
+
+            input.value = String(format ? format(clamped) : clamped);
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+        },
     });
-
-    button.addEventListener('mouseup', function () {
-        clearInterval(intervalId);
-    });
-
-    button.addEventListener('mouseleave', function () {
-        clearInterval(intervalId);
-    });
-});
-
-document.querySelector(".contract-options").querySelectorAll('.bi-dash-lg').forEach(button => {
-    let intervalId;
-    let increment = -10000;
-    button.addEventListener('mousedown', function () {
-        let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
-        if (input.id === "salaryInput") {
-            increment = -100000;
-        }
-        updateContractMoneyValue(input, increment);
-        intervalId = setInterval(() => {
-            updateContractMoneyValue(input, increment);
-        }, 100);
-    });
-
-    button.addEventListener('mouseup', function () {
-        clearInterval(intervalId);
-    });
-
-    button.addEventListener('mouseleave', function () {
-        clearInterval(intervalId);
-    });
-});
-
-document.querySelector(".contract-options").querySelectorAll('.bi-chevron-up').forEach(button => {
-    let intervalId;
-    let increment = 1;
-    button.addEventListener('mousedown', function () {
-        let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
-        if (input.id == "raceBonusPos") {
-            increment = -1
-        }
-        updateContractValue(input, increment);
-        intervalId = setInterval(() => {
-            updateContractValue(input, increment);
-        }, 100);
-    });
-
-    button.addEventListener('mouseup', function () {
-        clearInterval(intervalId);
-    });
-
-    button.addEventListener('mouseleave', function () {
-        clearInterval(intervalId);
-    });
-});
-
-document.querySelector(".contract-options").querySelectorAll('.bi-chevron-down').forEach(button => {
-    let intervalId;
-    let increment = -1;
-    button.addEventListener('mousedown', function () {
-        let input = this.parentNode.parentNode.querySelector(".old-custom-input-number");
-        if (input.id == "raceBonusPos") {
-            increment = 1
-        }
-        updateContractValue(input, increment);
-        intervalId = setInterval(() => {
-            updateContractValue(input, increment);
-        }, 100);
-    });
-
-    button.addEventListener('mouseup', function () {
-        clearInterval(intervalId);
-    }
-    );
-
-    button.addEventListener('mouseleave', function () {
-        clearInterval(intervalId);
-    }
-    );
-});
-
-
-
-function updateContractMoneyValue(input, increment) {
-    let val = input.value.replace(/[$,]/g, "");
-    let new_val = Number(val) + increment;
-    if (new_val < parseInt(input.min)) {
-        new_val = input.min;
-    }
-    let formatted = new_val.toLocaleString('en-US') + '$';
-    input.value = formatted;
 }
 
-function updateContractValue(input, increment) {
-    let val = input.value;
-    let new_val = Number(val) + increment;
-    if (new_val < parseInt(input.min)) {
-        new_val = input.min;
-    }
-    if (new_val > parseInt(input.max)) {
-        new_val = input.max;
-    }
-    input.value = new_val;
+function setupContractModalButtons() {
+    const moneyFormat = (val) => Number(val).toLocaleString("en-US");
+    const moneyInputs = new Set([
+        "salaryInput",
+        "signBonusInput",
+        "raceBonusAmt",
+        "salaryInputFuture",
+        "signBonusInputFuture",
+        "raceBonusAmtFuture",
+    ]);
+
+    document.querySelectorAll("#contractModal .contract-options .input-and-buttons").forEach((wrapper) => {
+        const input = wrapper.querySelector("input");
+        const plusBtn = wrapper.querySelector(".bi-plus");
+        const minusBtn = wrapper.querySelector(".bi-dash");
+        if (!input || !plusBtn || !minusBtn) return;
+
+        const isMoney = moneyInputs.has(input.id);
+        const isSalary = input.id === "salaryInput" || input.id === "salaryInputFuture";
+        const isRacePos = input.id === "raceBonusPos" || input.id === "raceBonusPosFuture";
+
+        const baseStep = isSalary ? 100000 : isMoney ? 10000 : 1;
+        const plusStep = isRacePos ? -baseStep : +baseStep;
+        const minusStep = isRacePos ? +baseStep : -baseStep;
+
+        attachHoldWithAttrClamp(plusBtn, input, plusStep, { format: isMoney ? moneyFormat : undefined });
+        attachHoldWithAttrClamp(minusBtn, input, minusStep, { format: isMoney ? moneyFormat : undefined });
+    });
 }
+
+setupContractModalButtons();
 
 /**
  * Sends the message that requests the details from the driver
@@ -816,7 +758,7 @@ document.getElementById("confirmButton").addEventListener('click', function () {
  * Clears the modal's inputs
  */
 function clearModal() {
-    document.querySelectorAll(".old-custom-input-number").forEach(function (elem) {
+    document.querySelectorAll(".contract-modal-input").forEach(function (elem) {
         elem.value = ""
     })
 }
@@ -826,7 +768,7 @@ function clearModal() {
  */
 function editContract() {
     let values = []
-    document.querySelector("#currentContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem) {
+    document.querySelector("#currentContractOptions").querySelectorAll(".contract-modal-input").forEach(function (elem) {
         if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
             values.push(elem.value.replace(/[$,]/g, ""))
         }
@@ -835,7 +777,7 @@ function editContract() {
         }
     })
     let futureValues = []
-    document.querySelector("#futureContractOptions").querySelectorAll(".old-custom-input-number").forEach(function (elem) {
+    document.querySelector("#futureContractOptions").querySelectorAll(".contract-modal-input").forEach(function (elem) {
         if (elem.id === "salaryInputFuture" || elem.id === "signBonusInputFuture" || elem.id === "raceBonusAmtFuture") {
             futureValues.push(elem.value.replace(/[$,]/g, ""))
         }
