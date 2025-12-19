@@ -36,7 +36,7 @@ import { saveAs } from "file-saver";
 import members from "../../data/members.json"
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { getRecentHandles, saveHandleToRecents } from './recentsManager.js';
+import { getRecentHandles, saveHandleToRecents, removeRecentHandle } from './recentsManager.js';
 
 
 const names_configs = {
@@ -2300,6 +2300,23 @@ export async function updateRateLimitsDisplay() {
 }
 
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function getRecentsTimeLabel(openedDate, now = new Date()) {
+    const startNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOpened = new Date(openedDate.getFullYear(), openedDate.getMonth(), openedDate.getDate());
+    let diffDays = Math.round((startNow - startOpened) / MS_PER_DAY);
+    if (diffDays < 0) diffDays = 0;
+
+    if (diffDays === 0) {
+        return "Today";
+    }
+    if (diffDays === 1) {
+        return "Yesterday";
+    }
+    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+}
+
 function populateRecentHandles(recents) {
     if (recents.length === 0) {
         const recentsContainer = document.querySelector(".recents-container");
@@ -2324,31 +2341,39 @@ function populateRecentHandles(recents) {
                 console.error("No permission to access the file:", handle.name);
                 return;
             }
-            const file = fileHandle.getFile();
-            file.then(f => {
-                processSaveFile(f);
-            });
+            const file = await fileHandle.getFile();
+            await saveHandleToRecents(fileHandle);
+            handle.lastOpened = new Date();
+            updateTimeLabel();
+            processSaveFile(file);
 
         });
 
         const lastOpened = document.createElement("span");
         lastOpened.classList.add("last-opened-time");
-        const now = new Date();
-        const openedDate = new Date(handle.lastOpened);
-        const diffTime = Math.abs(now - openedDate);
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        const updateTimeLabel = () => {
+            const openedDate = new Date(handle.lastOpened);
+            lastOpened.textContent = getRecentsTimeLabel(openedDate);
+        };
 
-        let timeString;
+        updateTimeLabel();
 
-        if (diffDays === 0) {
-            timeString = "Today";
-        } else if (diffDays === 1) {
-            timeString = "Yesterday";
-        } else {
-            timeString = `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-        }
+        lastOpened.addEventListener("mouseenter", () => {
+            lastOpened.textContent = "Remove";
+        });
 
-        lastOpened.textContent = timeString;
+        lastOpened.addEventListener("mouseleave", () => {
+            updateTimeLabel();
+        });
+
+        lastOpened.addEventListener("click", async () => {
+            await removeRecentHandle(handle.name);
+            listItem.remove();
+            if (recentList.children.length === 0) {
+                const recentsContainer = document.querySelector(".recents-container");
+                if (recentsContainer) recentsContainer.classList.add("d-none");
+            }
+        });
 
         listItem.appendChild(fileName);
         listItem.appendChild(lastOpened);

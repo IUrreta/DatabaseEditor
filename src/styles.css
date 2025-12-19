@@ -14519,7 +14519,19 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .last-opened-time {
   font-size: 12px;
+  cursor: pointer;
   color: var(--text-muted);
+  background-color: transparent;
+  padding: 3px 5px;
+  border-radius: 5px;
+  min-width: 67px;
+  text-align: center;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.last-opened-time:hover {
+  color: var(--negative-general);
+  background-color: color-mix(in srgb, var(--elements) 75%, var(--negative-general));
 }
 
 @keyframes spin {

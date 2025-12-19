@@ -36,3 +36,9 @@ export async function saveHandleToRecents(handle) {
 export async function getRecentHandles() {
     return (await get('recentFiles')) || [];
 }
+
+export async function removeRecentHandle(name) {
+    let recents = (await get('recentFiles')) || [];
+    recents = recents.filter(r => r.name !== name);
+    await set('recentFiles', recents);
+}
