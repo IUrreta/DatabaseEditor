@@ -2993,6 +2993,7 @@ DRIVERS TABLE
 .teams-table-data {
   overflow-y: auto;
   font-size: 15px;
+  max-height: 80vh;
 }
 
 .drivers-table-row:first-child .drivers-table-position,
@@ -3304,6 +3305,10 @@ DRIVERS TABLE
   height: 30px;
 }
 
+.junior-team-logo-team{
+  width: 60px;
+}
+
 .team-logo-abbr {
   font-family: 'Formula1Bold';
   font-size: 12px;
@@ -3315,6 +3320,65 @@ DRIVERS TABLE
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/*
+phm
+*/
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="17"]) img { 
+  padding: 7px 0;
+  width: 32px;
+}
+
+/* mp */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="16"]) img { 
+  width: 38px;
+  padding: 3px 0px;
+}
+
+/* carlin*/
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="13"]) img { 
+  padding: 9px 2px;
+}
+
+/*trident*/
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="21"]) img {
+  width: 45px;
+}
+
+/* art */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="15"]) img {
+  width: 38px;
+}
+
+/*hitech*/
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="14"]) img {
+  width: 38px;
+}
+
+/* var */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="20"]) img {
+  width: 38px;
+}
+
+/* prema */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="11"]) img {
+  padding: 6px 2px;
+}
+
+/* campos */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="19"]) img {
+  width: 38px;
+}
+
+/* invicta */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="12"]) img {
+  width: 42px;
+}
+
+/* dams */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="18"]) img {
+  width: 36px;
 }
 
 .team-logo-abbr-small {

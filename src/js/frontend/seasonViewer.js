@@ -170,7 +170,7 @@ function buildTeamAbbrElement(teamId, sizeClass) {
     let logo_src = logos_disc[teamId]
     if (logo_src) {
         let logo = document.createElement("img")
-        logo.classList = "junior-team-logo-driver"
+        logo.classList = sizeClass
         logo.dataset.teamid = teamId
         logo.setAttribute("src", logo_src)
         abbrDiv.appendChild(logo)
@@ -788,7 +788,7 @@ function new_addTeam(teamRaceMap, name, pos, id) {
         logoDiv.appendChild(logo);
     }
     else {
-        logoDiv.appendChild(buildTeamAbbrElement(id, "team-logo-abbr-large"));
+        logoDiv.appendChild(buildTeamAbbrElement(id, "junior-team-logo-team"));
     }
     row.appendChild(logoDiv);
     row.appendChild(nameDiv);
@@ -1017,7 +1017,7 @@ function new_addDriver(driver, races_done, odd) {
         logoDiv.appendChild(logo);
     }
     else {
-        logoDiv.appendChild(buildTeamAbbrElement(driver["latestTeamId"], "team-logo-abbr-small"));
+        logoDiv.appendChild(buildTeamAbbrElement(driver["latestTeamId"], "junior-team-logo-driver"));
     }
 
     logoDiv.classList.add(team_dict[driver["latestTeamId"]] + "hoverback");
