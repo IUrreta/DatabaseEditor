@@ -166,7 +166,18 @@ function buildTeamAbbrElement(teamId, sizeClass) {
     if (sizeClass) {
         abbrDiv.classList.add(sizeClass)
     }
-    abbrDiv.textContent = abbr
+    //get team logo from logos_disc if exists
+    let logo_src = logos_disc[teamId]
+    if (logo_src) {
+        let logo = document.createElement("img")
+        logo.classList = "junior-team-logo-driver"
+        logo.dataset.teamid = teamId
+        logo.setAttribute("src", logo_src)
+        abbrDiv.appendChild(logo)
+    }
+    else{
+        abbrDiv.textContent = abbr
+    }
     return abbrDiv
 }
 
@@ -180,7 +191,10 @@ function createHeaderCell(trackId, labelSuffix = "", baseClass = "drivers-table-
     let headerPosDiv = document.createElement("div")
     headerPosDiv.classList.add("text-in-front")
     headerPosDiv.classList.add("bold-font")
-    headerPosDiv.innerText = labelSuffix ? `${races_names[trackId]} ${labelSuffix}` : races_names[trackId]
+    headerPosDiv.innerText = labelSuffix ? `${labelSuffix}` : races_names[trackId]
+    if (labelSuffix === "SPR") {
+        headerPosDiv.classList.add("sprint-label")
+    }
     headerPos.appendChild(headerPosFlag)
     headerPos.appendChild(headerPosDiv)
     return headerPos
@@ -232,6 +246,12 @@ export function new_drivers_table(data) {
     header.appendChild(PositionDiv)
     header.appendChild(driverDiv)
     const isF1 = currentFormula === 1
+    if (currentFormula === 2) {
+        document.querySelector(".drivers-table-data").className = "drivers-table-data f2-table-data"
+    }
+    else if (currentFormula === 3) {
+        document.querySelector(".drivers-table-data").className = "drivers-table-data f3-table-data"
+    }
     data.forEach(function (elem) {
         const raceId = elem[0]
         const trackId = elem[1]
@@ -240,7 +260,7 @@ export function new_drivers_table(data) {
             header.appendChild(createHeaderCell(trackId))
         }
         else {
-            header.appendChild(createHeaderCell(trackId, "S"))
+            header.appendChild(createHeaderCell(trackId, "SPR"))
             header.appendChild(createHeaderCell(trackId))
         }
     })
@@ -265,6 +285,12 @@ export function new_teams_table(data) {
     header.appendChild(PositionDiv)
     header.appendChild(driverDiv)
     const isF1 = currentFormula === 1
+    if (currentFormula === 2) {
+        document.querySelector(".teams-table-data").className = "teams-table-data f2-table-data"
+    }
+    else if (currentFormula === 3) {
+        document.querySelector(".teams-table-data").className = "teams-table-data f3-table-data"
+    }
     data.forEach(function (elem) {
         const raceId = elem[0]
         const trackId = elem[1]

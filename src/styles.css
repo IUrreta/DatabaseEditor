@@ -2962,6 +2962,8 @@ DRIVERS TABLE
   border-right: 3px solid var(--table-hover-text);
 } */
 
+
+
 .drivers-table-header,
 .teams-table-header {
   display: flex;
@@ -2996,6 +2998,18 @@ DRIVERS TABLE
 .drivers-table-row:first-child .drivers-table-position,
 .teams-table-row:first-child .teams-table-position {
   background: var(--f1-first) !important;
+  color: var(--gold-gradient-text);
+}
+
+.f2-table-data .drivers-table-row:first-child .drivers-table-position,
+.f2-table-data .teams-table-row:first-child .teams-table-position {
+  background: var(--f2-back) !important;
+  color: var(--gold-gradient-text);
+}
+
+.f3-table-data .drivers-table-row:first-child .drivers-table-position,
+.f3-table-data .teams-table-row:first-child .teams-table-position {
+  background: var(--f3-back) !important;
   color: var(--gold-gradient-text);
 }
 
@@ -3283,6 +3297,11 @@ DRIVERS TABLE
   padding: 5px;
   position: relative;
   z-index: 1;
+}
+
+.junior-team-logo-driver{
+  width: 30px;
+  height: 30px;
 }
 
 .team-logo-abbr {
@@ -4171,6 +4190,10 @@ DRIVERS TABLE
   width: 100%;
   height: 100%;
   align-content: center;
+}
+
+.sprint-label{
+  color: var(--f2-border);
 }
 
 .light-theme .drivers-table-header .flag-header img,
