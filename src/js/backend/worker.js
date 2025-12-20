@@ -31,7 +31,9 @@ import {
   deleteTurningPoints,
   getNewsAndTpYearsAvailable,
   getNewsFromSeason,
-  deleteNewByKey
+  deleteNewByKey,
+  checkDoublePointsBug,
+  fixDoublePointsBug
 } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
@@ -508,12 +510,13 @@ const workerCommands = {
       const tpState = ensureTurningPointsStructure(tpStateFromDB);
 
       const { newsList, turningPointState } = generate_news(savedNewsMap, tpState);
+      const doublePointsBug = checkDoublePointsBug(turningPointState)
       const yearsAvailable = getNewsAndTpYearsAvailable()
 
       postMessage({
         responseMessage: "News fetched",
         noti_msg: "News generated successfully",
-        content: { newsList, turningPointState, yearsAvailable },
+        content: { newsList, turningPointState, yearsAvailable, doublePointsBug },
         unlocksDownload: true
       });
     } catch (e) {
@@ -521,6 +524,12 @@ const workerCommands = {
       console.error("STACK:", e.stack);
       postMessage({ responseMessage: "Error", error: e.message });
     }
+  },
+  fixDoublePointsBug: (data, postMessage) => {
+    const raceBugged = data.raceId;
+    fixDoublePointsBug(raceBugged);
+
+    postMessage({ responseMessage: "Double points bug fixed", noti_msg: "Double points bug fixed successfully", unlocksDownload: true });
   },
   getNewsFromSeason: (data, postMessage) => {
     const season = data.season;

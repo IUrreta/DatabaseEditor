@@ -477,7 +477,8 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       const newResp = await command.promiseExecute();
       place_turning_outcome(newResp.content, newsList);
 
-      if (news.type === "turning_point_transfer" || news.type === "turning_point_injury" || news.type === "turning_point_young_drivers") {
+      if (news.type === "turning_point_transfer" || news.type === "turning_point_injury" ||
+         news.type === "turning_point_young_drivers" || news.type === "turning_point_young_drivers") {
         const commandDrivers = new Command("driversRefresh", {});
         commandDrivers.execute();
       }

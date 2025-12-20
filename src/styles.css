@@ -11685,7 +11685,7 @@ body:has(.active #mod25logo) .creator-separator {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--generals);
+  background-color: transparent;
 }
 
 .loader {
