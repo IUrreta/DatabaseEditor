@@ -1497,6 +1497,7 @@ function formatSeasonResultsF2F3(
       gapBehind: null,
       sprintPoints: 0,
       sprintPos: null,
+      sprintQualiPos: null,
       teamId: teamId,
       driverOfTheDay: false
     };
@@ -1518,6 +1519,13 @@ function formatSeasonResultsF2F3(
 
     base.qualifyingPos = qualiPos;
     base.startingPos = qualiPos;
+    const invertLimit = Number(formula) === 2 ? 10 : (Number(formula) === 3 ? 12 : 0);
+    if (invertLimit > 0 && Number.isFinite(Number(qualiPos))) {
+      const qPos = Number(qualiPos);
+      base.sprintQualiPos = (qPos > 0 && qPos <= invertLimit) ? (invertLimit + 1 - qPos) : qPos;
+    } else {
+      base.sprintQualiPos = qualiPos;
+    }
 
     const fastestLapDriver = queryDB(`
         SELECT DriverID

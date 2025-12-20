@@ -211,10 +211,10 @@ function inferFormulaFromCalendar(data) {
     if (!Array.isArray(data) || data.length === 0) {
         return currentFormula
     }
-    const isF2 = data.every(row => Number(row[3]) === 1)
-    if (isF2) return 2
     const isF3 = data.every(row => Number(row[4]) === 1)
     if (isF3) return 3
+    const isF2 = data.every(row => Number(row[3]) === 1)
+    if (isF2) return 2
     return 1
 }
 
@@ -299,7 +299,7 @@ export function new_teams_table(data) {
             header.appendChild(createHeaderCell(trackId, "", "teams-table-normal"))
         }
         else {
-            header.appendChild(createHeaderCell(trackId, "S", "teams-table-normal"))
+            header.appendChild(createHeaderCell(trackId, "SPR", "teams-table-normal"))
             header.appendChild(createHeaderCell(trackId, "", "teams-table-normal"))
         }
     })
@@ -516,9 +516,10 @@ function new_color_teams_table() {
             });
             values.sort((a, b) => {
                 function parseValue(val) {
+                    if (val === null || val === undefined || val === "") return 0;
                     if (typeof val === "number") return val;
 
-                    const match = val.match(/^(\d+)(?:\((\d+)\))?$/);
+                    const match = String(val).match(/^(\d+)(?:\((\d+)\))?$/);
                     if (match) {
                         const base = parseInt(match[1], 10);
                         const extra = match[2] ? parseInt(match[2], 10) : 0;
@@ -704,9 +705,16 @@ export function new_load_teams_table(data) {
 
     // Pintamos filas por equipo, usando tu orden/posiciones
     let team1Points = 0, team2Points = 0, firstTeamId = 0;
+    const teamRows = [];
     teamIds.forEach((teamId) => {
         const pos = pairTeamPosDict[teamId];
-        const points = new_addTeam(teamData[teamId], combined_dict[teamId], pos, teamId);
+        let teamName = combined_dict[teamId] //remove the final (F2) or (F3) that may exist
+        if (teamName.endsWith(" (F2)") || teamName.endsWith(" (F3)")) {
+            teamName = teamName.slice(0, -5)
+        }
+        const result = new_addTeam(teamData[teamId], teamName, pos, teamId);
+        const points = result.points;
+        teamRows.push({ teamId, pos, points, row: result.row, posDiv: result.posDiv });
         if (pos === 1) {
             team1Points = points;
             firstTeamId = teamId;
@@ -715,8 +723,20 @@ export function new_load_teams_table(data) {
         }
     });
 
+    const needsFallbackPositions = teamRows.some(team => !Number.isFinite(Number(team.pos)));
+    if (needsFallbackPositions) {
+        const sorted = [...teamRows].sort((a, b) => b.points - a.points);
+        sorted.forEach((team, index) => {
+            const position = index + 1;
+            team.pos = position;
+            if (team.posDiv) {
+                team.posDiv.innerText = String(position);
+            }
+        });
+    }
+
+    new_color_teams_table();
     if (currentFormula === 1) {
-        new_color_teams_table();
         checkIfTeamIsChamp(team1Points, team2Points, pointsInfo);
         manage_teams_table_logos();
         manage_teams_table_names();
@@ -898,6 +918,12 @@ function new_addTeam(teamRaceMap, name, pos, id) {
                 const sprintPos = [d1?.sprintPos ?? null, d2?.sprintPos ?? null];
                 const hasSprint = sprintPos.some(v => v !== null && v !== undefined);
 
+                const sprintQuali = [d1?.sprintQualiPos ?? "-", d2?.sprintQualiPos ?? "-"];
+                sprintDiv.dataset.quali = manage_dataset_info_team(
+                    sprintQuali,
+                    undefined,
+                    "quali"
+                );
                 if (hasSprint) {
                     sprintDiv.dataset.points = manage_dataset_info_team(
                         [sprintPoints[0] ?? 0, sprintPoints[1] ?? 0],
@@ -909,7 +935,6 @@ function new_addTeam(teamRaceMap, name, pos, id) {
                         undefined,
                         "pos"
                     );
-                    sprintDiv.dataset.quali = "-";
                     sprintDiv.textContent = sprintDiv.dataset[pointsOrPos];
                 } else {
                     sprintDiv.textContent = "-";
@@ -955,7 +980,7 @@ function new_addTeam(teamRaceMap, name, pos, id) {
     row.appendChild(pointsDiv);
 
     data.appendChild(row);
-    return teampoints;
+    return { points: teampoints, row, posDiv };
 }
 
 
@@ -1085,10 +1110,10 @@ function new_addDriver(driver, races_done, odd) {
                 const hasSprintPos = typeof race.sprintPos !== "undefined" && race.sprintPos !== null;
                 const hasSprintPoints = typeof race.sprintPoints !== "undefined" && race.sprintPoints !== null;
 
+                sprintDiv.dataset.quali = formatDriverCellValue(race.sprintQualiPos, "quali");
                 if (hasSprintPos) {
                     sprintDiv.dataset.points = formatDriverCellValue(race.sprintPoints, "points");
                     sprintDiv.dataset.pos = formatDriverCellValue(race.sprintPos, "pos");
-                    sprintDiv.dataset.quali = "-";
                     sprintDiv.dataset.gapToWinner = "-";
                     sprintDiv.dataset.gapToPole = "-";
                     sprintDiv.textContent = sprintDiv.dataset[pointsOrPos];
