@@ -3285,6 +3285,27 @@ DRIVERS TABLE
   z-index: 1;
 }
 
+.team-logo-abbr {
+  font-family: 'Formula1Bold';
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: #f5f5f5;
+  text-transform: uppercase;
+  width: 30px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-logo-abbr-small {
+  font-size: 11px;
+}
+
+.team-logo-abbr-large {
+  font-size: 14px;
+}
+
 
 .drivers-table-logo {
   padding: 0px 2px;
@@ -3642,6 +3663,102 @@ DRIVERS TABLE
 
 .ctNewBackground {
   background-color: var(--custom-team-primary);
+}
+
+.drivers-table-row:hover .prehoverback {
+  background-color: #d0142c;
+}
+
+.teams-table-row .preiconback {
+  background-color: #d0142c;
+}
+
+.drivers-table-row:hover .virhoverback {
+  background-color: #c6a400;
+}
+
+.teams-table-row .viriconback {
+  background-color: #c6a400;
+}
+
+.drivers-table-row:hover .carhoverback {
+  background-color: #1b6fe0;
+}
+
+.teams-table-row .cariconback {
+  background-color: #1b6fe0;
+}
+
+.drivers-table-row:hover .hithoverback {
+  background-color: #00a39b;
+}
+
+.teams-table-row .hiticonback {
+  background-color: #00a39b;
+}
+
+.drivers-table-row:hover .arthoverback {
+  background-color: #2b2d42;
+}
+
+.teams-table-row .articonback {
+  background-color: #2b2d42;
+}
+
+.drivers-table-row:hover .mphoverback {
+  background-color: #ff8c1a;
+}
+
+.teams-table-row .mpiconback {
+  background-color: #ff8c1a;
+}
+
+.drivers-table-row:hover .phmhoverback {
+  background-color: #7b5de6;
+}
+
+.teams-table-row .phmiconback {
+  background-color: #7b5de6;
+}
+
+.drivers-table-row:hover .damhoverback {
+  background-color: #0052cc;
+}
+
+.teams-table-row .damiconback {
+  background-color: #0052cc;
+}
+
+.drivers-table-row:hover .camhoverback {
+  background-color: #c73b2f;
+}
+
+.teams-table-row .camiconback {
+  background-color: #c73b2f;
+}
+
+.drivers-table-row:hover .varhoverback {
+  background-color: #2ea86c;
+}
+
+.teams-table-row .variconback {
+  background-color: #2ea86c;
+}
+
+.drivers-table-row:hover .trihoverback {
+  background-color: #4f4f4f;
+}
+
+.teams-table-row .triiconback {
+  background-color: #4f4f4f;
+}
+
+.drivers-table-row:hover .jenhoverback {
+  background-color: #ff4fa5;
+}
+
+.teams-table-row .jeniconback {
+  background-color: #ff4fa5;
 }
 
 .new-team-logo {

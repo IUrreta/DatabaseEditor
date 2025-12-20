@@ -242,7 +242,7 @@ export const f2_teams = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 export const f3_teams = [22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
 export const staff_positions = { 1: "technical-chief", 2: "race-engineer", 3: "head-aero", 4: "sporting-director" }
 export const staff_pics = { 1: "../assets/images/technicalChief.png", 2: "../assets/images/raceEngineer2.png", 3: "../assets/images/headAero.png", 4: "../assets/images/sportingDirector.png" }
-export let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 32: "ct", 33: "f2", 34: "f3" }
+export let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 11: "pre", 12: "vir", 13: "car", 14: "hit", 15: "art", 16: "mp", 17: "phm", 18: "dam", 19: "cam", 20: "var", 21: "tri", 22: "pre", 23: "tri", 24: "art", 25: "hit", 26: "var", 27: "mp", 28: "cam", 29: "car", 30: "jen", 31: "phm", 32: "ct", 33: "f2", 34: "f3" }
 export let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10, 'custom': 32 }
 
 

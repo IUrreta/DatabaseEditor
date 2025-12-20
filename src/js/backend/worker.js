@@ -73,9 +73,10 @@ const workerCommands = {
   yearSelected: (data, postMessage) => {
     const year = data.year
     const isCurrentYear = data.isCurrentYear || true;
-    const results = fetchSeasonResults(year, isCurrentYear, true);
-    const events = fetchEventsFrom(year);
-    const teams = fetchTeamsStandings(year);
+    const formula = data.formula ? Number(data.formula) : 1;
+    const results = fetchSeasonResults(year, isCurrentYear, formula === 1, formula);
+    const events = fetchEventsFrom(year, formula);
+    const teams = fetchTeamsStandings(year, formula);
     const pointsInfo = fetchPointsRegulations()
 
     postMessage({

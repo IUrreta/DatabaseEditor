@@ -870,23 +870,24 @@ function computeSeasonDriverOfTheDay(seasonResults, season) {
 export function fetchSeasonResults(
   yearSelected,
   isCurrentYear = true,
-  fetchDriverOfTheDay = false
+  fetchDriverOfTheDay = false,
+  formula = 1
 ) {
   const drivers = queryDB(`
-      SELECT DriverID
-      FROM Races_DriverStandings
-      WHERE RaceFormula = 1
-        AND SeasonID = ?
-    `, [yearSelected], 'allRows') || [];
+        SELECT DriverID
+        FROM Races_DriverStandings
+        WHERE RaceFormula = ?
+          AND SeasonID = ?
+      `, [formula, yearSelected], 'allRows') || [];
 
   const seasonResults = [];
   for (const row of drivers) {
     const driverID = row[0];
-    const driverRes = fetchOneDriverSeasonResults([driverID], [yearSelected], isCurrentYear);
+    const driverRes = fetchOneDriverSeasonResults([driverID], [yearSelected], isCurrentYear, formula);
     if (driverRes) seasonResults.push(driverRes);
   }
 
-  if (!fetchDriverOfTheDay) {
+  if (!fetchDriverOfTheDay || Number(formula) !== 1) {
     return seasonResults;
   }
 
@@ -915,13 +916,13 @@ export function fetchQualiResults(yearSelected) {
   return seasonResults;
 }
 
-export function fetchTeamsStandings(year) {
+export function fetchTeamsStandings(year, formula = 1) {
   return queryDB(`
-      SELECT TeamID, Position
-      FROM Races_TeamStandings
-      WHERE SeasonID = ?
-        AND RaceFormula = 1
-    `, [year], 'allRows') || [];
+        SELECT TeamID, Position
+        FROM Races_TeamStandings
+        WHERE SeasonID = ?
+          AND RaceFormula = ?
+      `, [year, formula], 'allRows') || [];
 }
 
 export function fetchPointsRegulations() {
@@ -964,47 +965,93 @@ export function fetchOneTeamSeasonResults(team, year) {
   return results;
 }
 
-export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true) {
+export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true, formula = 1) {
   const driverID = Array.isArray(driver) ? driver[0] : driver; //if its not an array, take it as is, if it is, take first element
   const season = Array.isArray(year) ? year[0] : year;
 
+  if (Number(formula) === 1) {
+    const results = queryDB(`
+          SELECT DriverID, TeamID, FinishingPos, Points
+          FROM Races_Results
+          WHERE Season = ?
+            AND DriverID = ?
+        `, [season, driverID], 'allRows') || [];
 
-  const results = queryDB(`
-      SELECT DriverID, TeamID, FinishingPos, Points
-      FROM Races_Results
-      WHERE Season = ?
+    if (results.length > 0) {
+      const sprintResults = queryDB(`
+            SELECT RaceID, FinishingPos, ChampionshipPoints
+            FROM Races_SprintResults
+            WHERE SeasonID = ?
+              AND DriverID = ?
+              AND RaceFormula = ?
+          `, [season, driverID, formula], 'allRows') || [];
+
+      const teamID = results[0][1];
+
+      const driverNameRow = queryDB(`
+            SELECT FirstName, LastName
+            FROM Staff_BasicData
+            WHERE StaffID = ?
+          `, [driverID], 'singleRow');
+
+      return formatSeasonResults(
+        results,
+        driverNameRow,
+        teamID,
+        driver,
+        year,
+        sprintResults,
+        isCurrentYear,
+        formula
+      );
+    }
+
+    return null;
+  }
+  else if (Number(formula) > 1) {
+
+    const results = queryDB(`
+      SELECT RaceID, TeamID, FinishingPos, ChampionshipPoints, 0, FastestLap
+      FROM Races_FeatureRaceResults
+      WHERE SeasonID = ?
         AND DriverID = ?
-    `, [season, driverID], 'allRows') || [];
+        AND RaceFormula = ?
+      ORDER BY RaceID
+    `, [season, driverID, formula], 'allRows') || [];
 
-  if (results.length > 0) {
-    const sprintResults = queryDB(`
+    if (results.length > 0) {
+      const sprintResults = queryDB(`
         SELECT RaceID, FinishingPos, ChampionshipPoints
         FROM Races_SprintResults
         WHERE SeasonID = ?
           AND DriverID = ?
-      `, [season, driverID], 'allRows') || [];
+          AND RaceFormula = ?
+      `, [season, driverID, formula], 'allRows') || [];
 
+      const teamID = results[0][1];
 
-    const teamID = results[0][1];
-
-    const driverNameRow = queryDB(`
+      const driverNameRow = queryDB(`
         SELECT FirstName, LastName
         FROM Staff_BasicData
         WHERE StaffID = ?
       `, [driverID], 'singleRow');
 
-    return formatSeasonResults(
-      results,
-      driverNameRow,
-      teamID,
-      driver,
-      year,
-      sprintResults,
-      isCurrentYear
-    );
+      return formatSeasonResults(
+        results,
+        driverNameRow,
+        teamID,
+        driver,
+        year,
+        sprintResults,
+        isCurrentYear,
+        formula
+      );
+    }
+
+    return null;
   }
 
-  return null;
+  
 }
 
 
@@ -1372,17 +1419,154 @@ export function fetchEventsDoneBefore(year, day) {
   return eventsIds;
 }
 
-export function fetchEventsFrom(year) {
+export function fetchEventsFrom(year, formula = 1) {
   const seasonEventsRows = queryDB(`
-      SELECT RaceID, TrackID, WeekendType
-      FROM Races
-      WHERE SeasonID = ?
+      SELECT r.RaceID, r.TrackID, r.WeekendType, t.isF2Race, t.IsF3Race
+      FROM Races r
+      LEFT JOIN Races_Tracks t ON r.TrackID = t.TrackID
+      WHERE r.SeasonID = ?
+      ORDER BY r.RaceID
     `, [year], 'allRows') || [];
 
-  return seasonEventsRows; // Ya es un array de arrays con [RaceID, TrackID]
+  if (Number(formula) === 2) {
+    return seasonEventsRows.filter(row => Number(row[3]) === 1);
+  }
+  if (Number(formula) === 3) {
+    return seasonEventsRows.filter(row => Number(row[4]) === 1);
+  }
+  return seasonEventsRows;
 }
 
 
+
+function formatDriverName(driverName) {
+  let nombre = "", apellido = "";
+  const firstName = driverName ? driverName[0] : "";
+  const lastName = driverName ? driverName[1] : "";
+  if (!firstName.includes("STRING_LITERAL")) {
+    const m = firstName.match(/StaffName_Forename_(Male|Female)_(\w+)/);
+    nombre = m ? removeNumber(m[2]) : "";
+  } else {
+    const m = firstName.match(/\|([^|]+)\|/);
+    nombre = m ? m[1] : "";
+  }
+  if (!lastName.includes("STRING_LITERAL")) {
+    const m = lastName.match(/StaffName_Surname_(\w+)/);
+    apellido = m ? removeNumber(m[1]) : "";
+  } else {
+    const m = lastName.match(/\|([^|]+)\|/);
+    apellido = m ? m[1] : "";
+  }
+  return `${nombre} ${apellido}`.trim();
+}
+
+function formatSeasonResultsF2F3(
+  results,
+  driverName,
+  teamID,
+  driver,
+  year,
+  sprints,
+  formula
+) {
+  const driverID = Array.isArray(driver) ? driver[0] : driver;
+  const season = Array.isArray(year) ? year[0] : year;
+  const nameFormatted = formatDriverName(driverName);
+
+  const raceObjects = [];
+  const byRace = new Map();
+
+  results.forEach((row) => {
+    const raceID = row[0];
+    const teamId = row[1] ?? teamID;
+    const finishingPos = row[2];
+    const points = row[3];
+    const dnf = Number(row[4]) === 1;
+
+    const base = {
+      raceId: raceID,
+      finishingPos: finishingPos ?? 99,
+      points: points ?? 0,
+      dnf: dnf,
+      fastestLap: false,
+      qualifyingPos: 99,
+      gapToWinner: null,
+      gapToPole: null,
+      startingPos: 99,
+      gapAhead: null,
+      gapBehind: null,
+      sprintPoints: 0,
+      sprintPos: null,
+      teamId: teamId,
+      driverOfTheDay: false
+    };
+
+    if (base.dnf) {
+      base.finishingPos = -1;
+      base.points = -1;
+    }
+
+    const qualiPos = queryDB(`
+        SELECT FinishingPos
+        FROM Races_QualifyingResults
+        WHERE RaceFormula = ?
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID = ?
+          AND QualifyingStage = 1
+      `, [formula, raceID, season, driverID], "singleValue") || 99;
+
+    base.qualifyingPos = qualiPos;
+    base.startingPos = qualiPos;
+
+    const fastestLapDriver = queryDB(`
+        SELECT DriverID
+        FROM Races_FeatureRaceResults
+        WHERE FastestLap > 0
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND RaceFormula = ?
+        ORDER BY FastestLap
+        LIMIT 1
+      `, [raceID, season, formula], "singleValue");
+
+    base.fastestLap = parseInt(fastestLapDriver) === parseInt(driverID);
+
+    raceObjects.push(base);
+    byRace.set(raceID, base);
+  });
+
+  if (Array.isArray(sprints)) {
+    for (const sprintRow of sprints) {
+      const [sprintRaceID, sprintPos, sprintPoints] = sprintRow;
+      const obj = byRace.get(sprintRaceID);
+      if (obj) {
+        obj.sprintPoints = sprintPoints ?? 0;
+        obj.sprintPos = sprintPos ?? null;
+      }
+    }
+  }
+
+  const latestTeamId =
+    raceObjects.length ? raceObjects[raceObjects.length - 1].teamId : teamID;
+
+  const championshipPosition =
+    queryDB(`
+      SELECT Position
+      FROM Races_Driverstandings
+      WHERE RaceFormula = ?
+        AND SeasonID = ?
+        AND DriverID = ?
+    `, [formula, season, driverID], "singleValue") || 0;
+
+  return {
+    driverName: nameFormatted,
+    latestTeamId,
+    driverId: driverID[0] || driverID,
+    championshipPosition,
+    races: raceObjects
+  };
+}
 
 export function formatSeasonResults(
   results,
@@ -1391,8 +1575,12 @@ export function formatSeasonResults(
   driver,
   year,
   sprints,
-  isCurrentYear = true
+  isCurrentYear = true,
+  formula = 1
 ) {
+  if (Number(formula) !== 1) {
+    return formatSeasonResultsF2F3(results, driverName, teamID, driver, year, sprints, formula);
+  }
   const driverID = Array.isArray(driver) ? driver[0] : driver;
   const season = Array.isArray(year) ? year[0] : year;
 
@@ -1416,24 +1604,7 @@ export function formatSeasonResults(
     return `+${delta.toFixed(3)}`;
   };
 
-  let nombre = "", apellido = "";
-  const firstName = driverName ? driverName[0] : "";
-  const lastName = driverName ? driverName[1] : "";
-  if (!firstName.includes("STRING_LITERAL")) {
-    const m = firstName.match(/StaffName_Forename_(Male|Female)_(\w+)/);
-    nombre = m ? removeNumber(m[2]) : "";
-  } else {
-    const m = firstName.match(/\|([^|]+)\|/);
-    nombre = m ? m[1] : "";
-  }
-  if (!lastName.includes("STRING_LITERAL")) {
-    const m = lastName.match(/StaffName_Surname_(\w+)/);
-    apellido = m ? removeNumber(m[1]) : "";
-  } else {
-    const m = lastName.match(/\|([^|]+)\|/);
-    apellido = m ? m[1] : "";
-  }
-  const nameFormatted = `${nombre} ${apellido}`.trim();
+  const nameFormatted = formatDriverName(driverName);
 
   // ---- carreras del piloto ----
   const racesParticipated =
@@ -1602,12 +1773,12 @@ export function formatSeasonResults(
 
   const championshipPosition =
     queryDB(`
-      SELECT Position
-      FROM Races_Driverstandings
-      WHERE RaceFormula = 1
-        AND SeasonID = ?
-        AND DriverID = ?
-    `, [season, driverID], "singleValue") || 0;
+        SELECT Position
+        FROM Races_Driverstandings
+        WHERE RaceFormula = ?
+          AND SeasonID = ?
+          AND DriverID = ?
+      `, [formula, season, driverID], "singleValue") || 0;
 
   const payload = {
     driverName: nameFormatted,
@@ -2275,7 +2446,7 @@ export function fetch2025ModData() {
 
 }
 
-function createEngineMigrationTrigger(){
+function createEngineMigrationTrigger() {
   const sql = `
   DROP TRIGGER IF EXISTS trg_sync_engine_stats_on_first_full_season_day;
 
