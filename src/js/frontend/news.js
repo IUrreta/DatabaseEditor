@@ -413,7 +413,10 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
         const commandCalendar = new Command("calendarRefresh", {});
         commandCalendar.execute();
       }
-
+      else if (news.type === "turning_point_engine_regulation") {
+        const commandEngines = new Command("enginesRefresh", {});
+        commandEngines.execute();
+      }
     });
 
 
@@ -1211,6 +1214,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_investment: (nd) => contextualizeTurningPointInvestment(nd, nd.turning_point_type),
     turning_point_race_substitution: (nd) => contextualizeTurningPointRaceSubstitution(nd, nd.turning_point_type),
     turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
+    turning_point_engine_regulation: (nd) => contextualizeTurningPointEngineRegulation(nd, nd.turning_point_type),
   };
 
   // 3) Normaliza tipos "turning_point_outcome_*" -> "turning_point_*"
@@ -1548,6 +1552,61 @@ async function contextualizeTurningPointTechnicalDirective(newData, turningPoint
     replace(/{{\s*worse_team\s*}}/g, worstTeams[0]?.teamName || 'The team').
     replace(/{{\s*second_worse\s*}}/g, worstTeams[1]?.teamName || 'The team').
     replace(/{{\s*reason\s*}}/g, newData.data.reason || 'The reason')
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeTurningPointEngineRegulation(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 107);
+  let prompt;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+
+  const seasonYear = newData.data.season;
+  const changeType = newData.data.changeType || "minor";
+  const changeArea = newData.data.mainChangeArea || "engine regulations";
+  const winners = Array.isArray(newData.data.winnerNames) ? newData.data.winnerNames : [];
+  const losers = Array.isArray(newData.data.loserNames) ? newData.data.loserNames : [];
+
+  const formatList = (list, fallback) => {
+    if (!list.length) return fallback;
+    if (list.length === 1) return list[0];
+    if (list.length === 2) return `${list[0]} and ${list[1]}`;
+    return `${list.slice(0, -1).join(", ")} and ${list[list.length - 1]}`;
+  };
+
+  const winnerNames = formatList(winners, "several manufacturers");
+  const loserNames = formatList(losers, "a few rivals");
+
+  prompt = prompt
+    .replace(/{{\s*type\s*}}/g, changeType)
+    .replace(/{{\s*change_area\s*}}/g, changeArea)
+    .replace(/{{\s*winner_names\s*}}/g, winnerNames)
+    .replace(/{{\s*loser_names\s*}}/g, loserNames);
 
   const command = new Command("fullChampionshipDetailsRequest", {
     season: seasonYear,

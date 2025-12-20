@@ -410,6 +410,10 @@ export function getParamMap(data) {
                 : 0,
             expected_return: data.condition?.expectedReturnCountry ?? "",
             end_date: data.condition?.end_date ?? ""
+        },
+        107: {
+            type: data.changeType ?? "",
+            change_area: data.mainChangeArea ?? ""
         }
     };
 }

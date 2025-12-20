@@ -974,6 +974,27 @@ function generateEnginesTurningPointNews(currentMonth, savednews = {}, turningPo
     let changeType = "minor";
     if (Math.random() < 0.1) changeType = "major";
 
+    const minorChangeAreas = [
+        "fuel flow monitoring",
+        "ERS deployment limits",
+        "MGU-K usage rules",
+        "cooling system allowances",
+        "gearbox durability limits",
+        "turbo efficiency limits",
+        "oil consumption rules"
+    ];
+    const majorChangeAreas = [
+        "hybrid system architecture",
+        "engine architecture layout",
+        "combustion concept rules",
+        "turbocharger design limits",
+        "energy recovery system redesign",
+        "fuel system design rules",
+        "power unit packaging regulations"
+    ];
+    const changeAreasPool = changeType === "major" ? majorChangeAreas : minorChangeAreas;
+    const mainChangeArea = randomPick(changeAreasPool);
+
     const VAR = changeType === "major" ? 0.30 : 0.05;
 
     const randBetween = (min, max) => min + Math.random() * (max - min);
@@ -1101,6 +1122,7 @@ function generateEnginesTurningPointNews(currentMonth, savednews = {}, turningPo
 
     const titleData = {
         changeType,
+        mainChangeArea,
         variability: VAR,
         engineData,       // <- lo pasas a editEngines(engineData)
         engineBias,       // <- +1/-1/0 por motor
@@ -2567,7 +2589,7 @@ function generateNextSeasonGridNews(savedNews = {}, currentMonth) {
     });
 
     const title = generateTitle({ season_year: season + 1 }, 19);
-    const image = getImagePath(null, null, "grid_next_season");
+    const image = getImagePath(null, null, "grid");
     const newsDate = new Date(season, 11, 15);
     const excelDate = dateToExcel(newsDate);
 
@@ -3989,13 +4011,13 @@ function getImagePath(teamId, code, type) {
     else if (type === "injury") {
         return `./assets/images/news/${code}_pad.webp`;
     }
-    else if (type === "grid_next_season") {
-        const randomNum = getRandomInt(1, 12);
-        return `./assets/images/news/con${randomNum}.webp`;
-    }
     else if (type === "engine"){
         const randomNum = getRandomInt(1, 5);
         return `./assets/images/news/engine_${randomNum}.webp`;
+    }
+    else if (type === "grid"){
+        const randomNum = getRandomInt(1, 4);
+        return `./assets/images/news/grid_${randomNum}.webp`;
     }
 }
 

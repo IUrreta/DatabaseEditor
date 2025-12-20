@@ -674,6 +674,10 @@ const workerCommands = {
     deleteNews();
     deleteTurningPoints();
     postMessage({ responseMessage: "News deleted successfully", unlocksDownload: true });
+  },
+  enginesRefresh: (data, postMessage) => {
+    const engines = fetchEngines();
+    postMessage({ responseMessage: "Engines fetched", content: engines });
   }
 
 
