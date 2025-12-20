@@ -410,6 +410,15 @@ export function getParamMap(data) {
                 : 0,
             expected_return: data.condition?.expectedReturnCountry ?? "",
             end_date: data.condition?.end_date ?? ""
+        },
+        107: {
+            type: data.changeType ?? "",
+            change_area: data.mainChangeArea ?? ""
+        },
+        108: {
+            driver1: data.driver1,
+            driver2: data.driver2,
+            driver3: data.driver3
         }
     };
 }
@@ -472,3 +481,10 @@ export const difficultyConfig = {
         buildDif: { className: "dif-warning impossible", text: "+2 parts when design completed" },
     }
 };
+
+export const weightDifConfig = {0 : {text: "Disabled", className: "disabled"}, 1 : {text: "Lightweight parts", className: "extra-hard"},
+        2 : {text: "ULTRA Lightweight parts", className: "impossible"}}
+
+export const defaultDifficultiesConfig = {0 : {text: "Disabled", className: "disabled"}, 1 : {text: "Extra Hard", className: "extra-hard"},
+        2 : {text: "Brutal", className: "brutal"}, 3 : {text: "Unfair", className: "unfair"},
+        4 : {text: "Insane", className: "insane"}, 5 : {text: "Impossible", className: "impossible"}}

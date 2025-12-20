@@ -17,6 +17,7 @@ const newsModalEl = document.getElementById('newsModal');
 const closeBtn = document.getElementById('closeNewsArticle');
 const newsOptionsBtn = document.querySelector('.news-options');
 const copyArticleBtn = document.getElementById('copyArticle');
+const deleteArticleBtn = document.getElementById('deleteArticle');
 const editArticleBtn = document.getElementById('editArticle');
 
 let interval2 = null;
@@ -26,8 +27,10 @@ let currentModalNews = null;
 let isEditingArticle = false;
 let originalArticleHTML = '';
 let editTextarea = null;
+let editTitleInput = null;
 let saveArticleBtn = null;
 let cancelArticleBtn = null;
+let originalTitleText = '';
 
 let errorCount = 0;
 const MAX_ERRORS = 2;
@@ -200,9 +203,14 @@ function exitArticleEditMode(opts = {}) {
   if (!isEditingArticle) return;
 
   const newsArticle = document.querySelector('#newsModal .news-article');
+  const modalTitle = document.querySelector('#newsModal .modal-title');
 
   if (newsArticle && restoreOriginal) {
     newsArticle.innerHTML = originalArticleHTML;
+  }
+
+  if (modalTitle && restoreOriginal) {
+    modalTitle.innerHTML = originalTitleText;
   }
 
   if (saveArticleBtn) saveArticleBtn.remove();
@@ -213,8 +221,10 @@ function exitArticleEditMode(opts = {}) {
   isEditingArticle = false;
   originalArticleHTML = '';
   editTextarea = null;
+  editTitleInput = null;
   saveArticleBtn = null;
   cancelArticleBtn = null;
+  originalTitleText = '';
 }
 
 function hashStr(str) {
@@ -244,6 +254,8 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
     else{
       newsOptionsBtn.classList.remove('d-none');
     }
+
+    newsModal._element.setAttribute("data-article-id", news.id || '');
 
     newsModal.show();
     const modalTitle = document.querySelector('#newsModal .modal-title');
@@ -346,7 +358,6 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
         newsArticle.innerHTML = cleanHtml;
         newsArticle.style.opacity = '1';
         newsOptionsBtn.classList.remove('d-none');
-
       }, 150);
     }, 200);
   } catch (err) {
@@ -466,7 +477,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       const newResp = await command.promiseExecute();
       place_turning_outcome(newResp.content, newsList);
 
-      if (news.type === "turning_point_transfer" || news.type === "turning_point_injury") {
+      if (news.type === "turning_point_transfer" || news.type === "turning_point_injury" || news.type === "turning_point_young_drivers") {
         const commandDrivers = new Command("driversRefresh", {});
         commandDrivers.execute();
       }
@@ -484,7 +495,10 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
         const commandCalendar = new Command("calendarRefresh", {});
         commandCalendar.execute();
       }
-
+      else if (news.type === "turning_point_engine_regulation") {
+        const commandEngines = new Command("enginesRefresh", {});
+        commandEngines.execute();
+      }
     });
 
 
@@ -807,6 +821,8 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
     else{
       newsOptionsBtn.classList.remove('d-none');
     }
+
+    newsModal._element.setAttribute("data-article-id", turningPointResponse.id || '');
 
     const modalTitle = document.querySelector('#newsModal .modal-title');
     modalTitle.textContent = turningPointResponse.title;
@@ -1280,6 +1296,8 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_investment: (nd) => contextualizeTurningPointInvestment(nd, nd.turning_point_type),
     turning_point_race_substitution: (nd) => contextualizeTurningPointRaceSubstitution(nd, nd.turning_point_type),
     turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
+    turning_point_engine_regulation: (nd) => contextualizeTurningPointEngineRegulation(nd, nd.turning_point_type),
+    turning_point_young_drivers: (nd) => contextualizeTurningPointYoungDrivers(nd, nd.turning_point_type),
   };
 
   // 3) Normaliza tipos "turning_point_outcome_*" -> "turning_point_*"
@@ -1641,7 +1659,130 @@ async function contextualizeTurningPointTechnicalDirective(newData, turningPoint
   };
 }
 
-async function contextualizeTurningPointTransfer(newData, turningPointType) {
+async function contextualizeTurningPointEngineRegulation(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 107);
+  let prompt;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+
+  const seasonYear = newData.data.season;
+  const changeType = newData.data.changeType || "minor";
+  const changeArea = newData.data.mainChangeArea || "engine regulations";
+  const winners = Array.isArray(newData.data.winnerNames) ? newData.data.winnerNames : [];
+  const losers = Array.isArray(newData.data.loserNames) ? newData.data.loserNames : [];
+
+  const formatList = (list, fallback) => {
+    if (!list.length) return fallback;
+    if (list.length === 1) return list[0];
+    if (list.length === 2) return `${list[0]} and ${list[1]}`;
+    return `${list.slice(0, -1).join(", ")} and ${list[list.length - 1]}`;
+  };
+
+  const winnerNames = formatList(winners, "several manufacturers");
+  const loserNames = formatList(losers, "a few rivals");
+
+  prompt = prompt
+    .replace(/{{\s*type\s*}}/g, changeType)
+    .replace(/{{\s*change_area\s*}}/g, changeArea)
+    .replace(/{{\s*winner_names\s*}}/g, winnerNames)
+    .replace(/{{\s*loser_names\s*}}/g, loserNames);
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeTurningPointYoungDrivers(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 108);
+  let prompt;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+
+  const prospects = Array.isArray(newData.data.prospects) ? newData.data.prospects : [];
+  const prospectsList = prospects.map(p => {
+    const series = p.series || "Junior";
+    const age = p.age != null ? `age ${p.age}` : "age unknown";
+    const pos = p.position != null ? `P${p.position}` : "";
+    const points = p.points != null ? `${p.points} pts` : "";
+    return `${p.name} (${series}, ${age}, ${pos}, ${points})`;
+  }).join("\n");
+
+  const seriesSet = new Set(prospects.map(p => p.series).filter(Boolean));
+  const seriesList = Array.from(seriesSet).filter(s => s !== "Free");
+  let seriesContext = "";
+  if (seriesSet.size === 0) {
+    seriesContext = "There is no confirmed series breakdown for these prospects.";
+  } else if (seriesSet.size === 1 && seriesSet.has("Free")) {
+    seriesContext = "The standout names this year are drivers from regional formulas outside the main junior championships.";
+  } else if (seriesSet.has("Free") && seriesList.length) {
+    seriesContext = `The shortlist includes drivers from ${seriesList.join(" and ")} as well as drivers from regional formulas outside those championships.`;
+  } else {
+    seriesContext = `The shortlist includes drivers from ${seriesList.join(" and ")}.`;
+  }
+
+  prompt = prompt
+    .replace(/{{\s*driver1\s*}}/g, newData.data.driver1 || "a leading prospect")
+    .replace(/{{\s*driver2\s*}}/g, newData.data.driver2 || "another leading prospect")
+    .replace(/{{\s*prospects_list\s*}}/g, prospectsList || "No prospect data available.");
+
+  if (seriesContext) {
+    prompt += `\n\n${seriesContext}`;
+  }
+
+  const seasonYear = newData.data.season;
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  let contextData = buildContextualPrompt(resp.content, { seasonYear });
+  if (prospectsList) {
+    contextData += `\n\nYoung prospects summary:\n${prospectsList}`;
+  }
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeTurningPointTransfer(newData, turningPointType) {   
   const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 101);
   let prompt;
   if (turningPointType.includes("positive")) {
@@ -2461,6 +2602,19 @@ newsOptionsBtn.addEventListener("click", (e) => {
   e.target.classList.toggle("active");
 });
 
+deleteArticleBtn.addEventListener("click", async () => {
+  const articleId = document.querySelector("#newsModal").getAttribute("data-article-id");
+  const command = new Command("deleteNewsArticle", { articleId });
+  command.promiseExecute().then(() => {
+    const openedNewsItem = document.querySelector('.news-item.opened');
+    if (openedNewsItem) {
+      openedNewsItem.remove();
+    }
+    closeBtn?.click();
+  });
+});
+  
+
 copyArticleBtn.addEventListener("click", async () => {
   const titleEl = document.querySelector("#newsModalTitle");
   const articleEl = document.querySelector("#newsModal .news-article");
@@ -2505,20 +2659,40 @@ function createEditFooterButtons(articleEl) {
   cancelArticleBtn.addEventListener('click', () => exitArticleEditMode());
 
   saveArticleBtn.addEventListener('click', async () => {
-    if (!editTextarea) return;
+    if (!editTextarea || !editTitleInput) return;
 
     const markdownText = editTextarea.value.trim();
+    const newTitle = editTitleInput.value.trim();
     const parsedHtml = marked.parse(markdownText);
     const safeHtml = DOMPurify.sanitize(parsedHtml);
+    const modalTitle = document.querySelector('#newsModal .modal-title');
 
     articleEl.innerHTML = safeHtml;
 
+    if (modalTitle && newTitle) {
+      modalTitle.textContent = newTitle;
+    }
+
     if (currentModalNews) {
+      if (newTitle) {
+        currentModalNews.title = newTitle;
+      }
       currentModalNews.text = markdownText;
 
       new Command("updateNews", {
         stableKey: currentModalNews.id ?? computeStableKey(currentModalNews),
-        patch: { text: markdownText }
+        patch: { text: markdownText, title: newTitle || currentModalNews.title }
+      }).execute();
+
+      const openedNewsTitle = document.querySelector('.news-item.opened .news-title');
+      if (openedNewsTitle && newTitle) {
+        openedNewsTitle.textContent = newTitle;
+      }
+    }
+    else {
+      new Command("updateNews", {
+        stableKey: computeStableKey({ title: newTitle, date: null }),
+        patch: { text: markdownText, title: newTitle }
       }).execute();
     }
 
@@ -2545,8 +2719,26 @@ function startArticleEditMode() {
     articleEl.innerHTML || currentModalNews.text || ''
   );
 
+  const modalTitle = document.querySelector('#newsModal .modal-title');
+  const currentTitle = modalTitle?.textContent?.trim() || currentModalNews.title || '';
+  originalTitleText = currentTitle;
+
   originalArticleHTML = articleEl.innerHTML;
   articleEl.innerHTML = '';
+
+  const actualTitle = document.querySelector("#newsModalTitle");
+  editTitleInput = document.createElement('textarea');
+  editTitleInput.rows = 1;
+  editTitleInput.classList.add('news-edit-title');
+  editTitleInput.value = currentTitle;
+  actualTitle.innerHTML = '';
+  actualTitle.appendChild(editTitleInput);
+
+  //get width of newsModal .modal-header
+  const modalHeader = document.querySelector('#newsModal .modal-header');
+  if (modalHeader) {
+    editTitleInput.style.maxWidth = (modalHeader.clientWidth - 60) + 'px';
+  }
 
   editTextarea = document.createElement('textarea');
   editTextarea.classList.add('news-edit-textarea');

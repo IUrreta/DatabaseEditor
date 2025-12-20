@@ -30,7 +30,8 @@ import {
   deleteNews,
   deleteTurningPoints,
   getNewsAndTpYearsAvailable,
-  getNewsFromSeason
+  getNewsFromSeason,
+  deleteNewByKey
 } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
@@ -162,7 +163,6 @@ const workerCommands = {
 
     const h2hDrivers = [];
     data.graph.forEach(driver => {
-      console.log(" Driver in H2H:", driver);
       let res;
       if (data.mode === "driver") {
         res = fetchOneDriverSeasonResults(driver, data.year, data.isCurrentYear);
@@ -665,10 +665,19 @@ const workerCommands = {
       postMessage({ responseMessage: "Error", error: e.message });
     }
   },
+  deleteNewsArticle: (data, postMessage) => {
+    const articleId = data.articleId;
+    const ok = deleteNewByKey(articleId);
+    postMessage({ responseMessage: ok ? "Article deleted successfully" : "Article not found", noti_msg: ok ? "Article deleted successfully" : "Article not found", isEditCommand: true, unlocksDownload: true });
+  },
   deleteNews: (data, postMessage) => {
     deleteNews();
     deleteTurningPoints();
     postMessage({ responseMessage: "News deleted successfully", unlocksDownload: true });
+  },
+  enginesRefresh: (data, postMessage) => {
+    const engines = fetchEngines();
+    postMessage({ responseMessage: "Engines fetched", content: engines });
   }
 
 

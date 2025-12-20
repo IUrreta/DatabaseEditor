@@ -39,3 +39,7 @@
 - Added copy article button
 - Added edit article button
 - Add glow spot on landing page to follow mouse
+
+## 18th december
+- Added editing title in edit article mode
+- Added delete article button   

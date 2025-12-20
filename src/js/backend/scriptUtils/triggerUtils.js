@@ -65,6 +65,7 @@ const invertedDifficultyDict = Object.fromEntries(
 );
 
 export function manageDifficultyTriggers(triggerList) {
+  console.log("Managing difficulty triggers with list:", triggerList);
   if (triggerList.statDif !== undefined) manageDesignBoostTriggers(triggerList.statDif);
   if (triggerList.designTimeDif !== undefined) manageDesignTimeTriggers(triggerList.designTimeDif);
   if (triggerList.lightDif !== undefined) manageWeightTrigger(triggerList.lightDif);
@@ -73,9 +74,11 @@ export function manageDifficultyTriggers(triggerList) {
 }
 
 export function manageWeightTrigger(triggerLevel) {
+  console.log("Managing weight trigger with level:", triggerLevel);
   queryDB("DROP TRIGGER IF EXISTS reduced_weight_normal", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS reduced_weight_extreme", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS reduced_weight_impossible", [], 'run');
+  triggerLevel = parseInt(triggerLevel);
   let triggerSQL = "";
   if (triggerLevel > 0) {
     if (triggerLevel === 1) {
@@ -108,7 +111,7 @@ export function manageWeightTrigger(triggerLevel) {
             AND PartStat = 15;
           END;
         `;
-    } else if (triggerLevel === 6) {
+    } else if (triggerLevel === 2) {
       triggerSQL = `
           CREATE TRIGGER reduced_weight_impossible
           AFTER INSERT ON Parts_Designs_StatValues
@@ -149,31 +152,10 @@ export function manageDesignTimeTriggers(triggerLevel) {
   queryDB("DROP TRIGGER IF EXISTS designTime_unfair", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS designTime_insane", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS designTime_impossible", [], 'run');
-  let triggerSQL = "";
-  if (triggerLevel > 0) {
-    const triggerName = `designTime_${difficultyDict[triggerLevel].name}`;
-    const reduction = difficultyDict[triggerLevel].reduction;
-    triggerSQL = `
-        CREATE TRIGGER ${triggerName}
-        AFTER INSERT ON Parts_Designs_StatValues
-        FOR EACH ROW
-        WHEN (
-          SELECT TeamID FROM Parts_Designs WHERE DesignID = NEW.DesignID
-          AND ValidFrom = (SELECT CurrentSeason FROM Player_State)
-        ) != (SELECT TeamID FROM Player)
-        AND NEW.PartStat != 15
-        BEGIN
-          UPDATE Parts_Designs
-          SET DesignWork = DesignWork + (${reduction} * (DesignWorkMax - DesignWork))
-          WHERE DesignID = NEW.DesignID
-          AND DayCompleted = -1 AND DesignWork IS NOT NULL;
-        END;
-      `;
-    queryDB(triggerSQL, [], 'run');
-  }
 }
 
 export function manageDesignBoostTriggers(triggerLevel) {
+  triggerLevel = parseInt(triggerLevel);
   queryDB("DROP TRIGGER IF EXISTS difficulty_extraHard", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS difficulty_brutal", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS difficulty_unfair", [], 'run');
@@ -264,96 +246,6 @@ export function manageDesignBoostTriggers(triggerLevel) {
 export function manageInstantBuildTriggers(triggerLevel) {
   queryDB("DROP TRIGGER IF EXISTS instant_build_insane", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS instant_build_impossible", [], 'run');
-  let triggerSQL = "";
-  if (triggerLevel > 0) {
-    const triggerName = `instant_build_${difficultyDict[triggerLevel].name}`;
-    if (triggerLevel === 5) {
-      triggerSQL = `
-          CREATE TRIGGER ${triggerName}
-          AFTER UPDATE ON Parts_Designs
-          FOR EACH ROW
-          WHEN NEW.DesignWork >= NEW.DesignWorkMax
-          AND NEW.TeamID != (SELECT TeamID FROM Player)
-          AND NEW.DayCompleted = -1
-          AND NEW.DayCreated != -1
-          BEGIN
-            INSERT INTO Parts_Items (ItemID, DesignID, BuildWork, Condition, ManufactureNumber, ProjectID, AssociatedCar, InspectionState, LastEquippedCar)
-            VALUES (
-              (SELECT IFNULL(MAX(ItemID), 0) + 1 FROM Parts_Items), 
-              NEW.DesignID,                                        
-              CASE NEW.PartType                                    
-                WHEN 3 THEN 2000
-                WHEN 4 THEN 500
-                WHEN 5 THEN 500
-                WHEN 6 THEN 1500
-                WHEN 7 THEN 1500
-                WHEN 8 THEN 1500
-                ELSE 1000 
-              END,
-              1,
-              NEW.ManufactureCount + 1,
-              NULL, NULL, 0, NULL
-            );
-            
-            UPDATE Parts_Designs
-            SET ManufactureCount = NEW.ManufactureCount + 1
-            WHERE DesignID = NEW.DesignID;
-          END;
-        `;
-    } else if (triggerLevel === 6) {
-      triggerSQL = `
-          CREATE TRIGGER ${triggerName}
-          AFTER UPDATE ON Parts_Designs
-          FOR EACH ROW
-          WHEN NEW.DesignWork >= NEW.DesignWorkMax
-          AND NEW.TeamID != (SELECT TeamID FROM Player)
-          AND NEW.DayCompleted = -1
-          AND NEW.DayCreated != -1
-          BEGIN
-            INSERT INTO Parts_Items (ItemID, DesignID, BuildWork, Condition, ManufactureNumber, ProjectID, AssociatedCar, InspectionState, LastEquippedCar)
-            VALUES (
-              (SELECT IFNULL(MAX(ItemID), 0) + 1 FROM Parts_Items),
-              NEW.DesignID,                                        
-              CASE NEW.PartType                                    
-                WHEN 3 THEN 2000
-                WHEN 4 THEN 500
-                WHEN 5 THEN 500
-                WHEN 6 THEN 1500
-                WHEN 7 THEN 1500
-                WHEN 8 THEN 1500
-                ELSE 1000
-              END,
-              1,
-              NEW.ManufactureCount + 1,
-              NULL, NULL, 0, NULL
-            );
-            
-            INSERT INTO Parts_Items (ItemID, DesignID, BuildWork, Condition, ManufactureNumber, ProjectID, AssociatedCar, InspectionState, LastEquippedCar)
-            VALUES (
-              (SELECT IFNULL(MAX(ItemID), 0) + 1 FROM Parts_Items), 
-              NEW.DesignID,                                        
-              CASE NEW.PartType                                    
-                WHEN 3 THEN 2000
-                WHEN 4 THEN 500
-                WHEN 5 THEN 500
-                WHEN 6 THEN 1500
-                WHEN 7 THEN 1500
-                WHEN 8 THEN 1500
-                ELSE 1000 
-              END,
-              1,
-              NEW.ManufactureCount + 2,
-              NULL, NULL, 0, NULL
-            );
-            
-            UPDATE Parts_Designs
-            SET ManufactureCount = NEW.ManufactureCount + 2
-            WHERE DesignID = NEW.DesignID;
-          END;
-        `;
-    }
-    if (triggerSQL) queryDB(triggerSQL, [], 'run');
-  }
 }
 
 export function manageResearchTriggers(triggerLevel) {
@@ -362,6 +254,7 @@ export function manageResearchTriggers(triggerLevel) {
   queryDB("DROP TRIGGER IF EXISTS research_unfair", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS research_insane", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS research_impossible", [], 'run');
+  triggerLevel = parseInt(triggerLevel);
   let triggerSQL = "";
   if (triggerLevel > 0) {
     const triggerName = `research_${difficultyDict[triggerLevel].name}`;
@@ -444,7 +337,13 @@ export function fetchExistingTriggers() {
       } else if (type_trigger === "research") {
         triggerList.researchDif = dif_level;
       } else if (type_trigger === "reduced") {
-        triggerList.lightDif = dif_level;
+        console.log("Found weight trigger with difficulty level:", dif_level);
+        if (dif_level === 6) {
+          triggerList.lightDif = 2;
+        }
+        else{
+          triggerList.lightDif = dif_level;
+        }
       } else if (type_trigger === "refurbish") {
         refurbish = 1;
       } else if (type_trigger === "clear") {

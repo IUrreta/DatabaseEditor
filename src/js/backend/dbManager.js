@@ -36,11 +36,16 @@ export function queryDB(query, params = [], type = 'allRows') {
       ? params.map(p => (Array.isArray(p) && p.length === 1 ? p[0] : p))
       : params;
 
-    if (type === 'run' || type === 'exec') {
-      db.run(query, sanitizedParams);
+    if (type === 'exec') {
+      db.exec(query);
       return true;
     }
 
+    if (type === 'run') {
+      db.run(query, sanitizedParams);
+      return true;
+    }
+    
     const stmt = db.prepare(query);
     stmt.bind(sanitizedParams);
 
