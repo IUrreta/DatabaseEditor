@@ -43,3 +43,6 @@
 ## 18th december
 - Added editing title in edit article mode
 - Added delete article button   
+
+## 20th december
+- Fixed issue with DSQ turning point and double points

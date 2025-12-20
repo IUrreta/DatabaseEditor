@@ -4002,7 +4002,7 @@ function buildPointsTable(positionAndPointsRows) {
 
 function getBasePointsForPos(pos, pointsTable, doublePoints, isLastRace = false) {
     const base = pointsTable.get(pos) ?? 0;
-    return doublePoints ? base * 2 : base;
+    return doublePoints && isLastRace ? base * 2 : base;
 }
 
 // ---- Fastest Lap (FastestLap en segundos) ----
