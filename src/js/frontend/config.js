@@ -414,6 +414,11 @@ export function getParamMap(data) {
         107: {
             type: data.changeType ?? "",
             change_area: data.mainChangeArea ?? ""
+        },
+        108: {
+            driver1: data.driver1,
+            driver2: data.driver2,
+            driver3: data.driver3
         }
     };
 }

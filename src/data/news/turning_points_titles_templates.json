@@ -322,5 +322,30 @@
                                 "Proposed {{type}} {{change_area}} changes will not go ahead",
                                 "FIA shelves {{type}} {{change_area}} regulation changes"
                             ]
+    },
+    {
+        "id":  "young_drivers",
+        "new_type":  108,
+        "turning_titles":  [
+                               "The future generation of F1: {{driver1}} and {{driver2}}. Can they make it?",
+                               "Rising stars on the radar: {{driver1}} and {{driver2}} turn heads in the junior ranks",
+                               "Young guns impress: {{driver1}} and {{driver2}} lead the next wave toward F1",
+                               "Paddock buzz grows around {{driver1}} and {{driver2}} as F1's next generation",
+                               "Who is next? {{driver1}} and {{driver2}} emerge as standout prospects"
+                           ],
+        "positive_titles":  [
+                                "F1's future looks bright: {{driver1}} and {{driver2}} earn major praise",
+                                "Prospects shine: {{driver1}} and {{driver2}} hailed as the real deal",
+                                "Breakout year for {{driver1}} and {{driver2}} fuels F1 hype",
+                                "{{driver1}} and {{driver2}} impress teams with standout junior seasons",
+                                "Paddock raves about {{driver1}} and {{driver2}} as top prospects"
+                            ],
+        "negative_titles":  [
+                                "Hype cools on {{driver1}} and {{driver2}} despite junior success",
+                                "Not the finished product: doubts linger over {{driver1}} and {{driver2}}",
+                                "Paddock splits on {{driver1}} and {{driver2}} as F1 prospects",
+                                "{{driver1}} and {{driver2}} face skepticism over F1 readiness",
+                                "Promising, but not proven: {{driver1}} and {{driver2}} still have work to do"
+                            ]
     }
 ]

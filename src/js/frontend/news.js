@@ -395,7 +395,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       const newResp = await command.promiseExecute();
       place_turning_outcome(newResp.content, newsList);
 
-      if (news.type === "turning_point_transfer" || news.type === "turning_point_injury") {
+      if (news.type === "turning_point_transfer" || news.type === "turning_point_injury" || news.type === "turning_point_young_drivers") {
         const commandDrivers = new Command("driversRefresh", {});
         commandDrivers.execute();
       }
@@ -1215,6 +1215,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_race_substitution: (nd) => contextualizeTurningPointRaceSubstitution(nd, nd.turning_point_type),
     turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
     turning_point_engine_regulation: (nd) => contextualizeTurningPointEngineRegulation(nd, nd.turning_point_type),
+    turning_point_young_drivers: (nd) => contextualizeTurningPointYoungDrivers(nd, nd.turning_point_type),
   };
 
   // 3) Normaliza tipos "turning_point_outcome_*" -> "turning_point_*"
@@ -1628,7 +1629,75 @@ async function contextualizeTurningPointEngineRegulation(newData, turningPointTy
   };
 }
 
-async function contextualizeTurningPointTransfer(newData, turningPointType) {
+async function contextualizeTurningPointYoungDrivers(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 108);
+  let prompt;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+
+  const prospects = Array.isArray(newData.data.prospects) ? newData.data.prospects : [];
+  const prospectsList = prospects.map(p => {
+    const series = p.series || "Junior";
+    const age = p.age != null ? `age ${p.age}` : "age unknown";
+    const pos = p.position != null ? `P${p.position}` : "";
+    const points = p.points != null ? `${p.points} pts` : "";
+    return `${p.name} (${series}, ${age}, ${pos}, ${points})`;
+  }).join("\n");
+
+  const seriesSet = new Set(prospects.map(p => p.series).filter(Boolean));
+  const seriesList = Array.from(seriesSet).filter(s => s !== "Free");
+  let seriesContext = "";
+  if (seriesSet.size === 0) {
+    seriesContext = "There is no confirmed series breakdown for these prospects.";
+  } else if (seriesSet.size === 1 && seriesSet.has("Free")) {
+    seriesContext = "The standout names this year are drivers from regional formulas outside the main junior championships.";
+  } else if (seriesSet.has("Free") && seriesList.length) {
+    seriesContext = `The shortlist includes drivers from ${seriesList.join(" and ")} as well as drivers from regional formulas outside those championships.`;
+  } else {
+    seriesContext = `The shortlist includes drivers from ${seriesList.join(" and ")}.`;
+  }
+
+  prompt = prompt
+    .replace(/{{\s*driver1\s*}}/g, newData.data.driver1 || "a leading prospect")
+    .replace(/{{\s*driver2\s*}}/g, newData.data.driver2 || "another leading prospect")
+    .replace(/{{\s*prospects_list\s*}}/g, prospectsList || "No prospect data available.");
+
+  if (seriesContext) {
+    prompt += `\n\n${seriesContext}`;
+  }
+
+  const seasonYear = newData.data.season;
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  let contextData = buildContextualPrompt(resp.content, { seasonYear });
+  if (prospectsList) {
+    contextData += `\n\nYoung prospects summary:\n${prospectsList}`;
+  }
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeTurningPointTransfer(newData, turningPointType) {   
   const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 101);
   let prompt;
   if (turningPointType.includes("positive")) {
