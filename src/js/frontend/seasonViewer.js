@@ -514,6 +514,13 @@ function new_color_teams_table() {
                     cell.classList.add("fastest")
                 }
             });
+            const hasResults = values.some(([value], idx) => {
+                const text = colCells[idx].textContent?.trim();
+                return value !== undefined && value !== null && String(value) !== "" && text !== "-";
+            });
+            if (!hasResults) {
+                return;
+            }
             values.sort((a, b) => {
                 function parseValue(val) {
                     if (val === null || val === undefined || val === "") return 0;
@@ -724,7 +731,8 @@ export function new_load_teams_table(data) {
     });
 
     const needsFallbackPositions = teamRows.some(team => !Number.isFinite(Number(team.pos)));
-    if (needsFallbackPositions) {
+    const sortByPoints = currentFormula !== 1 || needsFallbackPositions;
+    if (sortByPoints) {
         const sorted = [...teamRows].sort((a, b) => b.points - a.points);
         sorted.forEach((team, index) => {
             const position = index + 1;
@@ -815,25 +823,40 @@ function new_addTeam(teamRaceMap, name, pos, id) {
 
     let teampoints = 0;
 
+    const safePoints = (v) => {
+        if (v === -1) return 0; // DNF → 0 puntos
+        const n = parseInt(v);
+        return Number.isFinite(n) ? Math.max(0, n) : 0;
+    };
+
+    const pickTopEntries = (pair) => {
+        if (!pair || pair.length <= 2) {
+            return [pair[0] || null, pair[1] || null];
+        }
+
+        const scoring = pair
+            .map((entry, index) => ({
+                entry,
+                index,
+                total: safePoints(entry?.points) + safePoints(entry?.sprintPoints)
+            }))
+            .sort((a, b) => b.total - a.total || a.index - b.index);
+
+        return [scoring[0]?.entry || null, scoring[1]?.entry || null];
+    };
+
     // Iteramos las carreras en orden por races_ids (como antes)
     races_ids.forEach((raceId) => {
         const pair = (teamRaceMap && teamRaceMap.get(raceId)) || [];
         const isF1 = currentFormula === 1;
-
-        const safePoints = (v) => {
-            if (v === -1) return 0; // DNF → 0 puntos
-            const n = parseInt(v);
-            return Number.isFinite(n) ? Math.max(0, n) : 0;
-        };
 
         if (isF1) {
             const raceDiv = document.createElement("div");
             raceDiv.classList = "teams-table-normal";
 
             if (pair.length > 0) {
-                // Aseguramos 2 elementos (puede faltar uno)
-                const d1 = pair[0] || null;
-                const d2 = pair[1] || null;
+                // Aseguramos 2 elementos (puede faltar uno) y priorizamos los que más puntúan
+                const [d1, d2] = pickTopEntries(pair);
 
                 const d1Points = d1 ? safePoints(d1.points) : 0;
                 const d2Points = d2 ? safePoints(d2.points) : 0;
@@ -911,8 +934,7 @@ function new_addTeam(teamRaceMap, name, pos, id) {
             featureDiv.dataset.raceid = raceId;
 
             if (pair.length > 0) {
-                const d1 = pair[0] || null;
-                const d2 = pair[1] || null;
+                const [d1, d2] = pickTopEntries(pair);
 
                 const sprintPoints = [d1?.sprintPoints ?? null, d2?.sprintPoints ?? null];
                 const sprintPos = [d1?.sprintPos ?? null, d2?.sprintPos ?? null];
