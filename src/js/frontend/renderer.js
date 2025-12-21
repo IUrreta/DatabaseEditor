@@ -900,6 +900,7 @@ const messageHandlers = {
     "News fetched": (message) => {
         place_news(message, newsAvailable)
         updateNewsYearsButton(message)
+        askFixDoublePointsBug(message)
     },
     "News from season fetched": (message) => {
         place_news(message, newsAvailable)
@@ -910,6 +911,9 @@ const messageHandlers = {
     },
     "Record fetched": (message) => {
         loadRecordsList(message)
+    },
+    "Double points bug fixed": (message) => {
+        //TODO CLICK ON THE FIRST EYAR OF yearMenu
     }
 };
 
@@ -1735,6 +1739,28 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
 
 
 })
+
+async function askFixDoublePointsBug(message){
+    const bugInfo = message.doublePointsBug;
+    if (!bugInfo.result) return;
+    if (localStorage.getItem(`${saveName}_doublePointsBugIgnored_${bugInfo.raceId}`) === 'true') {
+        return;
+    }
+    const ok = await confirmModal({
+        title: 'Fix Double Points Bug',
+        body: 'The current save has a known issue with double points being awarded in certain races where a double DSQ Turning point happened. Do you want to fix this issue now?',
+        confirmText: 'Yes, fix it',
+        cancelText: 'No, ignore',
+    })
+    if (ok) {
+        const command = new Command("fixDoublePointsBug", { raceId: bugInfo.raceId });
+        command.execute();
+    }
+    else{
+        //save in lcoalstorage a flag that he didn't want to fix the bug with raceid bugInfo.raceId
+        localStorage.setItem(`${saveName}_doublePointsBugIgnored_${bugInfo.raceId}`, 'true');
+    }
+}
 
 document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", function () {
     dbWorker.postMessage({

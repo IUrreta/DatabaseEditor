@@ -4607,6 +4607,65 @@ function getFastestLapHolderBySeconds(raceId, queryDB) {
     return row ? Number(row[0]) : null;
 }
 
+export function checkDoublePointsBug(turningPointState){
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+    let wasBugged = {result : false, raceId: null};
+    const ilegalRaces = turningPointState.ilegalRaces
+    if (ilegalRaces.length === 0) return wasBugged;
+
+    for (let i = 0; i < ilegalRaces.length; i++) {
+        let raceId = ilegalRaces[i].race_id;
+        let winnerRow = queryDB(`
+            SELECT DriverID, Points FROM Races_Results
+            WHERE RaceID = ? AND FinishingPos = 1
+        `, [raceId], 'singleRow');
+        console.log("Winner row race " + raceId + ": ", winnerRow);
+        
+        let winnerRowPrevRace = queryDB(`
+            SELECT DriverID, Points FROM Races_Results
+            WHERE RaceID = ? AND FinishingPos = 1 AND Season = ?
+        `, [raceId - 1, daySeason[1]], 'singleRow');
+        console.log("Winner row previous race " + (raceId - 1) + ": ", winnerRowPrevRace);
+        //if it doesnt existe then take the next race
+        if (!winnerRowPrevRace) {
+            winnerRowPrevRace = queryDB(`
+                SELECT DriverID, Points FROM Races_Results
+                WHERE RaceID = ? AND FinishingPos = 1 AND Season = ?
+            `, [raceId + 1, daySeason[1]], 'singleRow');
+        }
+
+        //if points are more than double, then bug happened
+        if (winnerRow && winnerRowPrevRace) {
+            if (Number(winnerRow[1]) >= Number(winnerRowPrevRace[1]) * 2) {
+                wasBugged = {result : true, raceId: raceId};
+                return wasBugged;
+            }
+        }
+
+    }
+
+    return wasBugged;
+}
+
+export function fixDoublePointsBug(raceId) {
+    const rows = queryDB(`
+        SELECT DriverID, Points 
+        FROM Races_Results
+        WHERE RaceID = ? AND Points > 0
+    `, [raceId], 'allRows');
+
+    for (let i = 0; i < rows.length; i++) {
+        let driverId = rows[i][0];
+        let champPoints = Number(rows[i][1]);
+        let fixedPoints = Math.floor(champPoints / 2);
+        queryDB(`
+            UPDATE Races_Results SET Points = ?
+            WHERE RaceID = ? AND DriverID = ?
+        `, [fixedPoints, raceId, driverId], 'run');
+    }
+    
+}
+
 /**
  * Descalifica al equipo y recalcula todo lo necesario (pilotos + constructores + vuelta rápida).
  *

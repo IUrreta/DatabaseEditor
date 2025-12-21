@@ -4938,18 +4938,19 @@ body.light-theme .flag-header img {
 .part-buttons {
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 5px;
 }
 
-.part-buttons i {
+
+.part-performance-title .redesigned-chevron{
+  height: 28px;
   cursor: pointer;
-  transition: color 0.15s, transform 0.15s ease-in-out;
+  transition: background-color 0.15s, transform 0.15s;
 }
 
-.part-buttons i:hover {
-  cursor: pointer;
-  color: var(--text-selected);
-  transform: scale(1.1);
+.part-performance-title .redesigned-chevron:hover{
+  background-color: var(--new-primary);
 }
 
 .custom-engines-div {
@@ -4975,21 +4976,6 @@ body.light-theme .flag-header img {
   font-style: normal;
 }
 
-.add-engine i::before {
-  margin: 0 9px;
-}
-
-.add-engine span,
-.add-engine i {
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s;
-}
-
-.add-engine i:hover {
-  color: var(--new-primary);
-  transform: scale(1.05);
-}
-
 .custom-engines-div .engine-performance-stats {
   margin-top: 2px;
   border-top: 2px solid var(--separator);
@@ -5011,23 +4997,18 @@ body.light-theme .flag-header img {
 }
 
 
-.engine-performance .bi-caret-down-fill {
+.engine-performance .redesigned-chevron {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s;
   color: var(--text-general);
   position: absolute;
-  right: 10px;
-  top: 5px;
-  font-size: 22px;
+  right: 14px;
+  top: 7px;
+  height: 26px;
 }
 
-.engine-performance .bi-caret-down-fill:hover {
+.engine-performance .redesigned-chevron:hover {
   color: var(--text-selected);
-  transform: scale(1.05);
-}
-
-.engine-performance .bi-caret-down-fill.clicked {
-  color: var(--new-primary);
 }
 
 .part-performance,
@@ -5040,8 +5021,13 @@ body.light-theme .flag-header img {
   position: relative;
 }
 
-.engine-performance {
+.main-columns-drag-section .engine-performance {
   min-height: 318px;
+}
+
+.blank-engine-space{
+  height: 100px;
+  width: 100%;
 }
 
 .engine-f2 {
@@ -5138,7 +5124,9 @@ input.engine-performance-title:focus {
   flex-direction: column;
   gap: 10px;
   max-height: 600px;
+  min-height: 300px;
   overflow-y: scroll;
+  padding: 0 10px 5px 10px !important;
 }
 
 .part-performance-stat,
@@ -5167,17 +5155,6 @@ input.engine-performance-title:focus {
   height: 2px;
   transition: width 0.15s;
   background-color: var(--new-primary);
-}
-
-.part-performance-title i {
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s ease-in-out;
-}
-
-.part-performance-title i:hover {
-  cursor: pointer;
-  color: var(--new-primary);
-  transform: scale(1.1);
 }
 
 .part-performance-title i.clicked {
@@ -5496,21 +5473,9 @@ input.engine-performance-title:focus {
 .part-performance-stat .custom-input-number,
 .engine-performance-stat .custom-input-number {
   font-size: 16px;
-  max-width: 85px;
+  max-width: 70px;
 }
 
-.part-performance-stat i,
-.engine-performance-stat i {
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s ease-in-out;
-}
-
-.part-performance-stat i:hover,
-.engine-performance-stat i:hover {
-  cursor: pointer;
-  color: var(--text-selected);
-  transform: scale(1.1);
-}
 
 .teams-show,
 .engines-show {
@@ -11977,7 +11942,7 @@ body:has(.active #mod25logo) .creator-separator {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--generals);
+  background-color: transparent;
 }
 
 .loader {
@@ -14880,6 +14845,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   border-radius: 6px;
   color: var(--text-general);
   gap: 10px;
+  transform: rotate(0deg);
   transition: background-color 0.15s, color 0.15s;
   padding: 5px 10px;
 }
@@ -14969,9 +14935,13 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   mask: url('/assets/images/redesigned-chevron.svg') no-repeat center;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
+  transition: background-color 0.15s, transform 0.15s;
   width: 12px;
   height: 12px;
+}
+
+.redesigned-chevron.clicked{
+  transform: rotate(180deg);
 }
 
 #teamMenu {
@@ -15108,6 +15078,10 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .facilities-pills a:hover .basic-label{
   color: var(--text-general);
+}
+
+.unit-measure{
+  color: var(--text-tertiary);
 }
 
 .new-augment-button.bi-chevron-left, .new-augment-button.bi-chevron-right{
