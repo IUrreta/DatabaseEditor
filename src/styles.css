@@ -3168,6 +3168,24 @@ DRIVERS TABLE
   position: relative;
 }
 
+.teams-table-multi {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2px 6px;
+  width: 100%;
+  line-height: 1.1;
+}
+
+.teams-table-multi-item {
+  white-space: nowrap;
+}
+
+.f3-table-data .teams-table-multi-item {
+  font-size: 12px;
+}
+
 .drivers-table-position,
 .teams-table-position {
   width: 40px;
@@ -3330,10 +3348,18 @@ phm
   width: 32px;
 }
 
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="17"]) img,  .team-logo-abbr:has(.junior-team-logo-team[data-teamid="31"]) img{ 
+  width: 70px;
+}
+
 /* mp */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="16"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="27"]) img { 
   width: 38px;
   padding: 3px 0px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="16"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="27"]) img { 
+  width: 90px;
 }
 
 /* carlin*/
@@ -3341,9 +3367,17 @@ phm
   padding: 9px 2px;
 }
 
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="13"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="29"]) img { 
+  width: 55px;
+}
+
 /*trident*/
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="21"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="23"]) img {
   width: 45px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="21"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="23"]) img {
+  width: 110px;
 }
 
 /* art */
@@ -3351,14 +3385,26 @@ phm
   width: 38px;
 }
 
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="15"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="24"]) img {
+  width: 80px;
+}
+
 /*hitech*/
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="14"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="25"]) img {
   width: 38px;
 }
 
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="14"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="25"]) img {
+  width: 74px;
+}
+
 /* var */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="20"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="26"]) img {
   width: 38px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="20"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="26"]) img {
+  width: 80px;
 }
 
 /* prema */
@@ -3371,14 +3417,37 @@ phm
   width: 38px;
 }
 
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="19"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="28"]) img {
+  width: 76px;
+}
+
 /* invicta */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="12"]) img {
   width: 42px;
 }
 
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="12"]) img {
+  width: 88px;
+}
+
 /* dams */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="18"]) img {
   width: 36px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="18"]) img {
+  width: 72px;
+}
+
+
+/* jenzer */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="30"]) img {
+  width: 38px;
+}
+
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="30"]) img {
+  width: 74px;
 }
 
 .team-logo-abbr-small {
@@ -3749,19 +3818,19 @@ phm
 }
 
 .drivers-table-row:hover .prehoverback {
-  background-color: #F20001;
+  background-color: #ebebeb;
 }
 
 .teams-table-row .preiconback {
-  background-color: #F20001;
+  background-color: #ebebeb;
 }
 
 .drivers-table-row:hover .virhoverback {
-  background-color: #FEFE00;
+  background-color: #2a2a2a;
 }
 
 .teams-table-row .viriconback {
-  background-color: #FEFE00;
+  background-color: #2a2a2a;
 }
 
 .drivers-table-row:hover .carhoverback {
@@ -3821,11 +3890,11 @@ phm
 }
 
 .drivers-table-row:hover .varhoverback {
-  background-color: #E14A03;
+  background-color: #dfdfdf;
 }
 
 .teams-table-row .variconback {
-  background-color: #E14A03;
+  background-color: #dfdfdf;
 }
 
 .drivers-table-row:hover .trihoverback {
@@ -3837,11 +3906,11 @@ phm
 }
 
 .drivers-table-row:hover .jenhoverback {
-  background-color: #ff4fa5;
+  background-color: #cbcbcb;
 }
 
 .teams-table-row .jeniconback {
-  background-color: #ff4fa5;
+  background-color: #cbcbcb;
 }
 
 .new-team-logo {

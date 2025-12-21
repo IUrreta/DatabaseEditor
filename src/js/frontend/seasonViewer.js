@@ -187,8 +187,37 @@ function change_points_pos_drivers() {
     })
 }
 
+function renderTeamCellList(cell, values) {
+    cell.innerHTML = ""
+    if (!Array.isArray(values) || values.length === 0) {
+        cell.innerText = "-"
+        return
+    }
+    const container = document.createElement("div")
+    container.className = "teams-table-multi"
+    values.forEach((value) => {
+        const item = document.createElement("div")
+        item.className = "teams-table-multi-item"
+        item.textContent = value
+        container.appendChild(item)
+    })
+    cell.appendChild(container)
+}
+
 function change_points_pos_teams() {
     teamCells.forEach(function (cell) {
+        if (currentFormula === 3 && (pointsOrPos === "pos" || pointsOrPos === "quali")) {
+            const listKey = pointsOrPos === "pos" ? "poslist" : "qualilist"
+            if (cell.dataset[listKey]) {
+                try {
+                    const values = JSON.parse(cell.dataset[listKey])
+                    renderTeamCellList(cell, values)
+                    return
+                } catch (err) {
+                    // fall back to text if data is malformed
+                }
+            }
+        }
         if (cell.dataset[pointsOrPos] !== undefined) {
             cell.innerText = cell.dataset[pointsOrPos]
         }
@@ -292,11 +321,13 @@ export function new_drivers_table(data) {
     header.appendChild(PositionDiv)
     header.appendChild(driverDiv)
     const isF1 = currentFormula === 1
+    const driversData = document.querySelector(".drivers-table-data")
+    driversData.className = "drivers-table-data"
     if (currentFormula === 2) {
-        document.querySelector(".drivers-table-data").className = "drivers-table-data f2-table-data"
+        driversData.classList.add("f2-table-data")
     }
     else if (currentFormula === 3) {
-        document.querySelector(".drivers-table-data").className = "drivers-table-data f3-table-data"
+        driversData.classList.add("f3-table-data")
     }
     data.forEach(function (elem) {
         const raceId = elem[0]
@@ -331,11 +362,13 @@ export function new_teams_table(data) {
     header.appendChild(PositionDiv)
     header.appendChild(driverDiv)
     const isF1 = currentFormula === 1
+    const teamsData = document.querySelector(".teams-table-data")
+    teamsData.className = "teams-table-data"
     if (currentFormula === 2) {
-        document.querySelector(".teams-table-data").className = "teams-table-data f2-table-data"
+        teamsData.classList.add("f2-table-data")
     }
     else if (currentFormula === 3) {
-        document.querySelector(".teams-table-data").className = "teams-table-data f3-table-data"
+        teamsData.classList.add("f3-table-data")
     }
     data.forEach(function (elem) {
         const raceId = elem[0]
@@ -891,6 +924,37 @@ function new_addTeam(teamRaceMap, name, pos, id) {
         return [scoring[0]?.entry || null, scoring[1]?.entry || null];
     };
 
+    const formatTeamPosValue = (entry, useSprint) => {
+        if (!entry) return "-"
+        const points = useSprint ? entry.sprintPoints : entry.points
+        const pos = useSprint ? entry.sprintPos : entry.finishingPos
+        if (points === -1 || pos === -1) return "DNF"
+        if (pos === null || pos === undefined) return "-"
+        return String(pos)
+    };
+
+    const formatTeamQualiValue = (entry, useSprint) => {
+        if (!entry) return "-"
+        if (useSprint) {
+            return entry.sprintQualiPos !== undefined && entry.sprintQualiPos !== null
+                ? String(entry.sprintQualiPos)
+                : "-"
+        }
+        const quali = entry.qualifyingPos ?? 99
+        return String(quali)
+    };
+
+    const buildTeamResultList = (entries, type, useSprint) => {
+        if (!Array.isArray(entries) || entries.length === 0) return []
+        if (type === "pos") {
+            return entries.map((entry) => formatTeamPosValue(entry, useSprint))
+        }
+        if (type === "quali") {
+            return entries.map((entry) => formatTeamQualiValue(entry, useSprint))
+        }
+        return []
+    };
+
     // Iteramos las carreras en orden por races_ids (como antes)
     races_ids.forEach((raceId) => {
         const pair = (teamRaceMap && teamRaceMap.get(raceId)) || [];
@@ -981,6 +1045,8 @@ function new_addTeam(teamRaceMap, name, pos, id) {
 
             if (pair.length > 0) {
                 const [d1, d2] = pickTopEntries(pair);
+                const allEntries = pair;
+                const wantsList = currentFormula === 3 && (pointsOrPos === "pos" || pointsOrPos === "quali");
 
                 const sprintPoints = [d1?.sprintPoints ?? null, d2?.sprintPoints ?? null];
                 const sprintPos = [d1?.sprintPos ?? null, d2?.sprintPos ?? null];
@@ -992,8 +1058,20 @@ function new_addTeam(teamRaceMap, name, pos, id) {
                     undefined,
                     "quali"
                 );
+                if (currentFormula === 3) {
+                    const sprintPosList = hasSprint ? buildTeamResultList(allEntries, "pos", true) : [];
+                    const sprintQualiList = buildTeamResultList(allEntries, "quali", true);
+                    sprintDiv.dataset.poslist = JSON.stringify(sprintPosList);
+                    sprintDiv.dataset.qualilist = JSON.stringify(sprintQualiList);
+                    if (pointsOrPos === "pos") {
+                        renderTeamCellList(sprintDiv, sprintPosList);
+                    }
+                    else if (pointsOrPos === "quali") {
+                        renderTeamCellList(sprintDiv, sprintQualiList);
+                    }
+                }
                 if (hasSprint) {
-                    sprintDiv.dataset.points = manage_dataset_info_team(
+                    sprintDiv.dataset.points = manage_dataset_info_team(        
                         [sprintPoints[0] ?? 0, sprintPoints[1] ?? 0],
                         undefined,
                         "points"
@@ -1003,7 +1081,9 @@ function new_addTeam(teamRaceMap, name, pos, id) {
                         undefined,
                         "pos"
                     );
-                    sprintDiv.textContent = sprintDiv.dataset[pointsOrPos];
+                    if (!wantsList) {
+                        sprintDiv.textContent = sprintDiv.dataset[pointsOrPos];
+                    }
                 } else {
                     sprintDiv.textContent = "-";
                 }
@@ -1028,7 +1108,21 @@ function new_addTeam(teamRaceMap, name, pos, id) {
                     undefined,
                     "quali"
                 );
-                featureDiv.textContent = featureDiv.dataset[pointsOrPos];
+                if (currentFormula === 3) {
+                    const featurePosList = buildTeamResultList(allEntries, "pos", false);
+                    const featureQualiList = buildTeamResultList(allEntries, "quali", false);
+                    featureDiv.dataset.poslist = JSON.stringify(featurePosList);
+                    featureDiv.dataset.qualilist = JSON.stringify(featureQualiList);
+                    if (pointsOrPos === "pos") {
+                        renderTeamCellList(featureDiv, featurePosList);
+                    }
+                    else if (pointsOrPos === "quali") {
+                        renderTeamCellList(featureDiv, featureQualiList);
+                    }
+                }
+                if (!wantsList) {
+                    featureDiv.textContent = featureDiv.dataset[pointsOrPos];
+                }      
 
                 const sprintTeamPoints = hasSprint ? (safePoints(sprintPoints[0]) + safePoints(sprintPoints[1])) : 0;
                 teampoints += d1Points + d2Points + sprintTeamPoints;
