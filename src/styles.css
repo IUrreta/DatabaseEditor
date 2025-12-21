@@ -3325,49 +3325,49 @@ DRIVERS TABLE
 /*
 phm
 */
-.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="17"]) img { 
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="17"]) img,  .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="31"]) img{ 
   padding: 7px 0;
   width: 32px;
 }
 
 /* mp */
-.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="16"]) img { 
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="16"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="27"]) img { 
   width: 38px;
   padding: 3px 0px;
 }
 
 /* carlin*/
-.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="13"]) img { 
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="13"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="29"]) img { 
   padding: 9px 2px;
 }
 
 /*trident*/
-.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="21"]) img {
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="21"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="23"]) img {
   width: 45px;
 }
 
 /* art */
-.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="15"]) img {
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="15"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="24"]) img {
   width: 38px;
 }
 
 /*hitech*/
-.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="14"]) img {
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="14"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="25"]) img {
   width: 38px;
 }
 
 /* var */
-.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="20"]) img {
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="20"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="26"]) img {
   width: 38px;
 }
 
 /* prema */
-.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="11"]) img {
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="11"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="22"]) img {
   padding: 6px 2px;
 }
 
 /* campos */
-.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="19"]) img {
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="19"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="28"]) img {
   width: 38px;
 }
 

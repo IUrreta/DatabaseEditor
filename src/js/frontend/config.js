@@ -53,7 +53,7 @@ export let combined_dict = {
     16: "MP Motorsport (F2)",
     17: "PHM Racing (F2)",
     18: "DAMS (F2)",
-    19: "Campo Racing (F2)",
+    19: "Campos Racing (F2)",
     20: "VAR Racing (F2)",
     21: "Trident (F2)",
     22: "Prema Racing (F3)",
