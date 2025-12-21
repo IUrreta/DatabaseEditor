@@ -115,14 +115,59 @@ document.querySelectorAll("#tableTypeDropdown a").forEach(function (elem) {
     })
 })
 
-document.querySelectorAll("#seriesTypeDropdown a").forEach(function (elem) {
+function forceStandingsCurrentSeason() {
+    const recordsButton = document.getElementById("recordsTypeButton")
+    const standingsItem = document.querySelector("#recordsTypeDropdown a[data-value='standings']")
+    if (recordsButton) {
+        recordsButton.dataset.value = "standings"
+        const label = recordsButton.querySelector("span.dropdown-label")
+        if (label) {
+            label.textContent = standingsItem ? standingsItem.textContent : "Standings"
+        }
+    }
+    const standingsSettings = document.getElementById("standingsSettings")
+    const recordsSettings = document.getElementById("recordsSettings")
+    if (standingsSettings) {
+        standingsSettings.classList.remove("d-none")
+    }
+    if (recordsSettings) {
+        recordsSettings.classList.add("d-none")
+    }
+
+    const yearMenu = document.querySelector("#yearMenu")
+    const yearItems = yearMenu ? Array.from(yearMenu.querySelectorAll("a")) : []
+    if (yearItems.length > 1) {
+        const currentYearEl = yearItems.find(item => item.dataset.year !== "all")
+        if (currentYearEl) {
+            manageRecordsSelected(currentYearEl)
+        }
+    }
+}
+
+function updateSeriesControls() {
+    const showRecordsControls = currentFormula === 1
+    const recordsWrapper = document.getElementById("recordsTypeButton")?.closest(".dropdown-global")
+    const yearWrapper = document.getElementById("yearButton")?.closest(".dropdown-global")
+    if (recordsWrapper) {
+        recordsWrapper.classList.toggle("d-none", !showRecordsControls)
+    }
+    if (yearWrapper) {
+        yearWrapper.classList.toggle("d-none", !showRecordsControls)
+    }
+}
+
+document.querySelectorAll("#seriesTypeDropdown a").forEach(function (elem) {    
     elem.addEventListener("click", function () {
         const value = parseInt(elem.dataset.value, 10)
         currentFormula = Number.isFinite(value) ? value : 1
-        const seriesButton = document.getElementById("seriesTypeButton")
+        const seriesButton = document.getElementById("seriesTypeButton")        
         seriesButton.querySelector("span.dropdown-label").textContent = elem.textContent
         seriesButton.dataset.value = elem.dataset.value
-        if (document.querySelector("#recordsTypeButton").dataset.value === "standings") {
+        updateSeriesControls()
+        if (currentFormula !== 1) {
+            forceStandingsCurrentSeason()
+        }
+        else if (document.querySelector("#recordsTypeButton").dataset.value === "standings") {
             manageRecordsSelected(null)
         }
     })
@@ -222,13 +267,14 @@ function syncFormulaFromCalendar(data) {
     const inferred = inferFormulaFromCalendar(data)
     if (inferred !== currentFormula) {
         currentFormula = inferred
-        const seriesButton = document.getElementById("seriesTypeButton")
+        const seriesButton = document.getElementById("seriesTypeButton")        
         if (seriesButton) {
             const label = inferred === 2 ? "F2" : (inferred === 3 ? "F3" : "F1")
             seriesButton.querySelector("span.dropdown-label").textContent = label
             seriesButton.dataset.value = String(inferred)
         }
     }
+    updateSeriesControls()
 }
 
 export function new_drivers_table(data) {

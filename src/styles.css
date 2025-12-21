@@ -3749,19 +3749,19 @@ phm
 }
 
 .drivers-table-row:hover .prehoverback {
-  background-color: #d0142c;
+  background-color: #F20001;
 }
 
 .teams-table-row .preiconback {
-  background-color: #d0142c;
+  background-color: #F20001;
 }
 
 .drivers-table-row:hover .virhoverback {
-  background-color: #c6a400;
+  background-color: #FEFE00;
 }
 
 .teams-table-row .viriconback {
-  background-color: #c6a400;
+  background-color: #FEFE00;
 }
 
 .drivers-table-row:hover .carhoverback {
@@ -3773,11 +3773,11 @@ phm
 }
 
 .drivers-table-row:hover .hithoverback {
-  background-color: #00a39b;
+  background-color: #9FB4C7;
 }
 
 .teams-table-row .hiticonback {
-  background-color: #00a39b;
+  background-color: #9FB4C7;
 }
 
 .drivers-table-row:hover .arthoverback {
@@ -3789,51 +3789,51 @@ phm
 }
 
 .drivers-table-row:hover .mphoverback {
-  background-color: #ff8c1a;
+  background-color: #FF9144;
 }
 
 .teams-table-row .mpiconback {
-  background-color: #ff8c1a;
+  background-color: #FF9144;
 }
 
 .drivers-table-row:hover .phmhoverback {
-  background-color: #7b5de6;
+  background-color: #793118;
 }
 
 .teams-table-row .phmiconback {
-  background-color: #7b5de6;
+  background-color: #793118;
 }
 
 .drivers-table-row:hover .damhoverback {
-  background-color: #0052cc;
+  background-color: #00C8FF;
 }
 
 .teams-table-row .damiconback {
-  background-color: #0052cc;
+  background-color: #00C8FF;
 }
 
 .drivers-table-row:hover .camhoverback {
-  background-color: #c73b2f;
+  background-color: #707070;
 }
 
 .teams-table-row .camiconback {
-  background-color: #c73b2f;
+  background-color: #707070;
 }
 
 .drivers-table-row:hover .varhoverback {
-  background-color: #2ea86c;
+  background-color: #E14A03;
 }
 
 .teams-table-row .variconback {
-  background-color: #2ea86c;
+  background-color: #E14A03;
 }
 
 .drivers-table-row:hover .trihoverback {
-  background-color: #4f4f4f;
+  background-color: #7B01FF;
 }
 
 .teams-table-row .triiconback {
-  background-color: #4f4f4f;
+  background-color: #7B01FF;
 }
 
 .drivers-table-row:hover .jenhoverback {
