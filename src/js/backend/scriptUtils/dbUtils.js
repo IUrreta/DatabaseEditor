@@ -1490,6 +1490,7 @@ function formatSeasonResultsF2F3(
       dnf: dnf,
       fastestLap: false,
       qualifyingPos: 99,
+      qualifyingPoints: 0,
       gapToWinner: null,
       gapToPole: null,
       startingPos: 99,
@@ -1507,17 +1508,19 @@ function formatSeasonResultsF2F3(
       base.points = -1;
     }
 
-    const qualiPos = queryDB(`
-        SELECT FinishingPos
+    const qualiRow = queryDB(`
+        SELECT FinishingPos, ChampionshipPoints
         FROM Races_QualifyingResults
         WHERE RaceFormula = ?
           AND RaceID = ?
           AND SeasonID = ?
           AND DriverID = ?
           AND QualifyingStage = 1
-      `, [formula, raceID, season, driverID], "singleValue") || 99;
+      `, [formula, raceID, season, driverID], "singleRow") || [];
 
+    const qualiPos = qualiRow[0] ?? 99;
     base.qualifyingPos = qualiPos;
+    base.qualifyingPoints = qualiRow[1] ?? 0;
     base.startingPos = qualiPos;
     const invertLimit = Number(formula) === 2 ? 10 : (Number(formula) === 3 ? 12 : 0);
     if (invertLimit > 0 && Number.isFinite(Number(qualiPos))) {

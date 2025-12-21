@@ -268,6 +268,7 @@ function createHeaderCell(trackId, labelSuffix = "", baseClass = "drivers-table-
     headerPosDiv.innerText = labelSuffix ? `${labelSuffix}` : races_names[trackId]
     if (labelSuffix === "SPR") {
         headerPosDiv.classList.add("sprint-label")
+        headerPosDiv.classList.add("sprint-result-cell")
     }
     headerPos.appendChild(headerPosFlag)
     headerPos.appendChild(headerPosDiv)
@@ -1040,6 +1041,8 @@ function new_addTeam(teamRaceMap, name, pos, id) {
             const featureDiv = document.createElement("div");
             sprintDiv.classList = "teams-table-normal";
             featureDiv.classList = "teams-table-normal";
+            sprintDiv.classList.add("sprint-result-cell");
+            featureDiv.classList.add("feature-result-cell");
             sprintDiv.dataset.raceid = raceId;
             featureDiv.dataset.raceid = raceId;
 
@@ -1071,11 +1074,20 @@ function new_addTeam(teamRaceMap, name, pos, id) {
                     }
                 }
                 if (hasSprint) {
-                    sprintDiv.dataset.points = manage_dataset_info_team(        
-                        [sprintPoints[0] ?? 0, sprintPoints[1] ?? 0],
-                        undefined,
-                        "points"
-                    );
+                    if (currentFormula === 3) {
+                        const sprintPointsTotal = allEntries.reduce(
+                            (sum, entry) => sum + safePoints(entry?.sprintPoints),
+                            0
+                        );
+                        sprintDiv.dataset.points = String(sprintPointsTotal);
+                    }
+                    else {
+                        sprintDiv.dataset.points = manage_dataset_info_team(
+                            [sprintPoints[0] ?? 0, sprintPoints[1] ?? 0],
+                            undefined,
+                            "points"
+                        );
+                    }
                     sprintDiv.dataset.pos = manage_dataset_info_team(
                         [sprintPos[0] ?? "-", sprintPos[1] ?? "-"],
                         undefined,
@@ -1093,11 +1105,23 @@ function new_addTeam(teamRaceMap, name, pos, id) {
                 const d1Pos = d1 ? (d1.points === -1 || d1.finishingPos === -1 ? "DNF" : d1.finishingPos) : "-";
                 const d2Pos = d2 ? (d2.points === -1 || d2.finishingPos === -1 ? "DNF" : d2.finishingPos) : "-";
 
-                featureDiv.dataset.points = manage_dataset_info_team(
-                    [d1 ? d1.points : 0, d2 ? d2.points : 0],
-                    undefined,
-                    "points"
-                );
+                const d1PointsTotal = (d1 ? d1.points : 0) + (d1?.qualifyingPoints ?? 0);
+                const d2PointsTotal = (d2 ? d2.points : 0) + (d2?.qualifyingPoints ?? 0);
+                if (currentFormula === 3) {
+                    const featurePointsTotal = allEntries.reduce(
+                        (sum, entry) =>
+                            sum + safePoints(entry?.points) + safePoints(entry?.qualifyingPoints),
+                        0
+                    );
+                    featureDiv.dataset.points = String(featurePointsTotal);
+                }
+                else {
+                    featureDiv.dataset.points = manage_dataset_info_team(
+                        [d1PointsTotal, d2PointsTotal],
+                        undefined,
+                        "points"
+                    );
+                }
                 featureDiv.dataset.pos = manage_dataset_info_team(
                     [d1Pos, d2Pos],
                     undefined,
@@ -1121,11 +1145,25 @@ function new_addTeam(teamRaceMap, name, pos, id) {
                     }
                 }
                 if (!wantsList) {
-                    featureDiv.textContent = featureDiv.dataset[pointsOrPos];
-                }      
+                    featureDiv.textContent = featureDiv.dataset[pointsOrPos];   
+                }
 
-                const sprintTeamPoints = hasSprint ? (safePoints(sprintPoints[0]) + safePoints(sprintPoints[1])) : 0;
-                teampoints += d1Points + d2Points + sprintTeamPoints;
+                const sprintTeamPoints = hasSprint
+                    ? (currentFormula === 3
+                        ? allEntries.reduce(
+                            (sum, entry) => sum + safePoints(entry?.sprintPoints),
+                            0
+                        )
+                        : (safePoints(sprintPoints[0]) + safePoints(sprintPoints[1])))
+                    : 0;
+                const featureTeamPoints = currentFormula === 3
+                    ? allEntries.reduce(
+                        (sum, entry) =>
+                            sum + safePoints(entry?.points) + safePoints(entry?.qualifyingPoints),
+                        0
+                    )
+                    : (d1Points + d2Points + safePoints(d1?.qualifyingPoints) + safePoints(d2?.qualifyingPoints));
+                teampoints += featureTeamPoints + sprintTeamPoints;
             } else {
                 sprintDiv.textContent = "-";
                 featureDiv.textContent = "-";
@@ -1267,6 +1305,8 @@ function new_addDriver(driver, races_done, odd) {
             const featureDiv = document.createElement("div");
             sprintDiv.classList = "drivers-table-normal";
             featureDiv.classList = "drivers-table-normal";
+            sprintDiv.classList.add("sprint-result-cell");
+            featureDiv.classList.add("feature-result-cell");
 
             if (races_done.includes(raceid) && race) {
                 const hasSprintPos = typeof race.sprintPos !== "undefined" && race.sprintPos !== null;
@@ -1285,7 +1325,9 @@ function new_addDriver(driver, races_done, odd) {
                 }
 
                 featureDiv.dataset.pos = formatDriverCellValue(race.finishingPos, "pos");
-                featureDiv.dataset.points = formatDriverCellValue(race.points, "points");
+                const qualiPoints = parseInt(race.qualifyingPoints) || 0;
+                const featurePoints = (parseInt(race.points) || 0) + Math.max(0, qualiPoints);
+                featureDiv.dataset.points = formatDriverCellValue(featurePoints, "points");
                 featureDiv.dataset.fastlap = race.fastestLap ? 1 : 0;
                 featureDiv.dataset.quali = formatDriverCellValue(
                     race.qualifyingPos === 99 ? race.startingPos : race.qualifyingPos,
@@ -1294,9 +1336,10 @@ function new_addDriver(driver, races_done, odd) {
                 featureDiv.dataset.gapToWinner = race.gapToWinner ?? "-";
                 featureDiv.dataset.gapToPole = race.gapToPole ?? "-";
                 featureDiv.dataset.dotd = race.driverOfTheDay;
-                featureDiv.textContent = featureDiv.dataset[pointsOrPos];
+                featureDiv.textContent = featureDiv.dataset[pointsOrPos];       
 
-                driverpoints += Math.max(0, parseInt(race.points) || 0);
+                driverpoints += Math.max(0, parseInt(race.points) || 0);        
+                driverpoints += Math.max(0, parseInt(race.qualifyingPoints) || 0);
                 if (hasSprintPos && hasSprintPoints) {
                     driverpoints += Math.max(0, parseInt(race.sprintPoints) || 0);
                 }

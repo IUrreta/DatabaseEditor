@@ -4330,6 +4330,19 @@ phm
   color: var(--f2-border);
 }
 
+.sprint-result-cell{
+  box-sizing: border-box;
+  border-left: 1px solid var(--table-dnf);
+}
+
+.drivers-table:has(.f2-table-data) .drivers-table-points,
+.teams-table:has(.f2-table-data) .teams-table-points, 
+.drivers-table:has(.f3-table-data) .drivers-table-points,
+.teams-table:has(.f3-table-data) .teams-table-points{
+  border-left: 1px solid var(--table-dnf);
+}
+
+
 .drivers-table:has(.f3-table-data) .sprint-label,
 .teams-table:has(.f3-table-data) .sprint-label {
   color: var(--f3-border);
