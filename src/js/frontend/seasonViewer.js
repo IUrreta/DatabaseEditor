@@ -1079,7 +1079,7 @@ function new_addTeam(teamRaceMap, name, pos, id) {
                             (sum, entry) => sum + safePoints(entry?.sprintPoints),
                             0
                         );
-                        sprintDiv.dataset.points = String(sprintPointsTotal);
+                        sprintDiv.dataset.points = sprintPointsTotal === 0 ? "" : String(sprintPointsTotal);
                     }
                     else {
                         sprintDiv.dataset.points = manage_dataset_info_team(
@@ -1113,7 +1113,7 @@ function new_addTeam(teamRaceMap, name, pos, id) {
                             sum + safePoints(entry?.points) + safePoints(entry?.qualifyingPoints),
                         0
                     );
-                    featureDiv.dataset.points = String(featurePointsTotal);
+                    featureDiv.dataset.points = featurePointsTotal === 0 ? "" : String(featurePointsTotal);
                 }
                 else {
                     featureDiv.dataset.points = manage_dataset_info_team(
@@ -1176,7 +1176,7 @@ function new_addTeam(teamRaceMap, name, pos, id) {
 
     let pointsDiv = document.createElement("div");
     pointsDiv.classList = "teams-table-points bold-font";
-    pointsDiv.innerText = teampoints;
+    pointsDiv.innerText = (currentFormula === 3 && teampoints === 0) ? "" : teampoints;
     row.appendChild(pointsDiv);
 
     data.appendChild(row);
