@@ -617,13 +617,16 @@ const workerCommands = {
     const originalStableKey = data.id;
 
     const newResponse = generateTurningResponse(turningPointData, type, maxDate, "negative");
-    newResponse.stableKey = newResponse.stableKey ?? computeStableKey(newResponse);
+
 
     if (originalStableKey) {
       updateNewsFields(originalStableKey, { turning_point_type: "cancelled" });
     }
 
-    upsertNews([newResponse]);
+    if (newResponse){
+      newResponse.stableKey = newResponse.stableKey ?? computeStableKey(newResponse);
+      upsertNews([newResponse]);
+    } 
 
     postMessage({ responseMessage: "Turning point negative", noti_msg: "Cancelled turning point", content: newResponse, isEditCommand: true, unlocksDownload: true });
   },

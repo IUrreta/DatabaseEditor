@@ -1337,8 +1337,8 @@ function getNameByIdAndFormat(driverID) {
 
 
 export function fetchOneDriverQualiResults(driver, year) {
-  const driverID = driver;
-  const season = year;
+  const driverID = Array.isArray(driver) ? driver[0] : driver;
+  const season = Array.isArray(year) ? year[0] : year;
 
   const results = queryDB(`
       SELECT DriverID, TeamID, StartingPos, Points

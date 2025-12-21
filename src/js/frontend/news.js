@@ -774,6 +774,7 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
 }
 
 export async function place_turning_outcome(turningPointResponse, newsList) {
+  if (!turningPointResponse) return;
   let saveName = getSaveName();
   saveName = saveName.split('.')[0];
 
@@ -1264,6 +1265,7 @@ function buildContextualPrompt(data, config = {}) {
 
 async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}) {
   const { force = false } = opts;
+  const stableKey = newData.stableKey ?? newData.id ?? computeStableKey(newData);
 
   // 1) Si ya hay texto y NO forzamos, devolvemos el existente
   if (newData.text && !force) {
@@ -1328,6 +1330,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     // 5) Construir prompt SOLO si hace falta
     let messages = [];
     const selectedLanguage = getNewsLanguage();
+    const expectsJson = selectedLanguage !== DEFAULT_NEWS_LANGUAGE;
     if (handler) {
       let { instruction, context } = await handler(newData);
       const normalDate = excelToDate(newData.date);
@@ -1349,6 +1352,13 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
 
       finalInstruction += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
 
+      if (expectsJson) {
+        finalInstruction += `\n\nReturn ONLY a JSON object with exactly two keys: "title" and "body".` +
+          ` The "title" must be the translated headline in ${selectedLanguage}.` +
+          ` The "body" must be the full article in ${selectedLanguage} using Markdown.` +
+          ` Do not include the title inside the body. Do not add extra keys or wrap the JSON in code fences.`;
+      }
+
       finalInstruction = replaceLanguagePlaceholder(finalInstruction, selectedLanguage);
 
       // Message 1: Context Data
@@ -1368,13 +1378,41 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
 
     // 6) Llama a la IA y guarda
     const articleText = await askGenAI(messages);
-    const cleanedArticleText = cleanArticleOutput(articleText);
+    const parsedJson = tryParseJsonObject(articleText);
+    let translatedTitle = "";
+    let cleanedArticleText = "";
+
+    if (parsedJson && typeof parsedJson.body === "string" && parsedJson.body.trim()) {
+      cleanedArticleText = cleanArticleOutput(parsedJson.body);
+      if (typeof parsedJson.title === "string") {
+        translatedTitle = parsedJson.title.trim();
+      }
+    } else {
+      cleanedArticleText = cleanArticleOutput(articleText);
+    }
+
     newData.text = cleanedArticleText;
+    if (translatedTitle) {
+      newData.title = translatedTitle;
+      const modalTitle = document.querySelector('#newsModal .modal-title');
+      if (modalTitle) {
+        modalTitle.textContent = translatedTitle;
+      }
+      const openedNewsTitle = document.querySelector('.news-item.opened .news-title');
+      if (openedNewsTitle) {
+        openedNewsTitle.textContent = translatedTitle;
+      }
+    }
     updateRateLimitsDisplay();
 
+    const patch = { text: cleanedArticleText };
+    if (translatedTitle) {
+      patch.title = translatedTitle;
+    }
+
     new Command("updateNews", {
-      stableKey: newData.id ?? computeStableKey(newData),
-      patch: { text: cleanedArticleText }
+      stableKey,
+      patch
     }).execute();
 
     if (barProgressDiv) barProgressDiv.style.width = '100%';
@@ -1392,6 +1430,43 @@ function cleanArticleOutput(rawMd) {
   md = italicizeQuotes(md);
 
   return md.trim();
+}
+
+function safeJsonParse(raw) {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function tryParseJsonObject(raw) {
+  if (typeof raw !== "string") return null;
+  let text = raw.trim();
+  if (!text) return null;
+
+  if (text.startsWith("```")) {
+    text = text
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/```\s*$/i, "")
+      .trim();
+  }
+
+  let parsed = safeJsonParse(text);
+  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+    return parsed;
+  }
+
+  const first = text.indexOf("{");
+  const last = text.lastIndexOf("}");
+  if (first !== -1 && last !== -1 && last > first) {
+    parsed = safeJsonParse(text.slice(first, last + 1));
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed;
+    }
+  }
+
+  return null;
 }
 
 function removeLeading(md) {
