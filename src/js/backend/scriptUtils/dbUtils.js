@@ -1886,30 +1886,6 @@ export function calculateTimeDifference(driverID, raceID) {
 
 
 
-export function fetchCalendar() {
-  // Saco [ Day, CurrentSeason ] de Player_State
-  const daySeason = queryDB(`
-      SELECT Day, CurrentSeason
-      FROM Player_State
-    `, [], 'singleRow');
-
-  if (!daySeason) {
-    console.warn("No data found in Player_State.");
-    return [];
-  }
-
-  const [day, currentSeason] = daySeason;
-
-  // Saco el calendario
-  const calendar = queryDB(`
-      SELECT TrackID, WeatherStatePractice, WeatherStateQualifying, WeatherStateRace, WeekendType, State
-      FROM Races
-      WHERE SeasonID = ?
-    `, [currentSeason], 'allRows');
-
-  return calendar;
-}
-
 export function fetchDriverNumbers() {
   const numbers = queryDB(`SELECT DISTINCT Number
        FROM Staff_DriverNumbers dn 

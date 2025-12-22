@@ -1,6 +1,6 @@
 import {
   fetchSeasonResults, fetchEventsFrom, fetchTeamsStandings,
-  fetchDrivers, fetchStaff, fetchEngines, fetchCalendar, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
+  fetchDrivers, fetchStaff, fetchEngines, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContract,
   editEngines, updateCustomConfig, fetchCustomConfig,
   fetch2025ModData, check2025ModCompatibility,
@@ -14,7 +14,7 @@ import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
 import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
-import { editCalendar } from "./scriptUtils/calendarUtils";
+import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
 import {
@@ -313,7 +313,7 @@ const workerCommands = {
   },
   editCalendar: (data, postMessage) => {
     const year = getGlobals().yearIteration;
-    editCalendar(data.calendarCodes, year, data.racesData);
+    editCalendar(year, data.racesData);
     postMessage({
       responseMessage: "Calendar updated",
       noti_msg: "Succesfully updated the calendar",

@@ -552,8 +552,7 @@ function editModeHandler() {
 }
 
 function calendarModeHandler() {
-    let dataCodesString = '';
-    let raceArray = [];
+    const raceArray = [];
 
     document.querySelectorAll(".race-calendar").forEach((race) => {
         let raceData = {
@@ -562,15 +561,14 @@ function calendarModeHandler() {
             rainQuali: race.dataset.rainQ.toString(),
             rainRace: race.dataset.rainR.toString(),
             type: race.dataset.type.toString(),
-            state: race.dataset.state.toString()
+            state: race.dataset.state.toString(),
+            isF2Race: race.dataset.isf2 ? Number(race.dataset.isf2) : 0,
+            isF3Race: race.dataset.isf3 ? Number(race.dataset.isf3) : 0,
         };
         raceArray.push(raceData);
-        dataCodesString += race.dataset.trackid.toString() + race.dataset.rainP.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString() + race.dataset.state.toString() + ' ';
     });
 
-    dataCodesString = dataCodesString.trim();
     let dataCalendar = {
-        calendarCodes: dataCodesString,
         racesData: raceArray
     };
 

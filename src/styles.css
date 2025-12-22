@@ -4430,6 +4430,49 @@ phm
   border: none;
 }
 
+.race-series-badges {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+
+.race-series-badge {
+  border: none;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+  background-color: transparent;
+  cursor: default;
+  transition: background-color 0.15s, color 0.15s, transform 0.15s;
+}
+
+.race-series-badge:active {
+  transform: scale(0.96);
+}
+
+.race-series-badge-f2 {
+  color: var(--f2-border);
+  background-color: color-mix(in srgb, var(--f2-border) 70%, transparent);
+}
+
+.race-series-badge-f2:hover {
+  background-color: color-mix(in srgb, var(--f2-border) 85%, transparent);
+  color: var(--f2-border);
+}
+
+.race-series-badge-f3 {
+  color: var(--f3-border);
+  background-color: color-mix(in srgb, var(--f3-border) 70%, transparent);
+}
+
+.race-series-badge-f3:hover {
+  background-color: color-mix(in srgb, var(--f3-border) 85%, transparent);
+  color: var(--f3-border);
+}
+
 .race-calendar-number {
   border-right: 2px solid var(--separator);
   font-size: 30px;
