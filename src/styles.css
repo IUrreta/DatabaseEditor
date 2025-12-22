@@ -4371,10 +4371,8 @@ phm
   border-radius: 10px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  background-color: var(--generals);
-  box-shadow: var(--shadow-s);
   gap: 8px;
-  padding: 8px;
+  overflow-x: hidden;
   grid-auto-rows: min-content;
 }
 
@@ -4434,43 +4432,51 @@ phm
   position: absolute;
   top: 6px;
   left: 6px;
+  cursor: pointer;
   display: flex;
-  gap: 6px;
+  gap: 4px;
   z-index: 2;
 }
 
 .race-series-badge {
   border: none;
   border-radius: 6px;
-  padding: 2px 8px;
+  padding: 2px 5px;
   font-size: 12px;
-  background-color: transparent;
+  background-color: var(--elements-hover);
+  color: var(--text-secondary);
   cursor: default;
-  transition: background-color 0.15s, color 0.15s, transform 0.15s;
+  box-shadow: var(--shadow-xs);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.race-series-badge:hover {
+  background-color: var(--table-hover);
+  color: var(--text-general);
 }
 
 .race-series-badge:active {
   transform: scale(0.96);
 }
 
-.race-series-badge-f2 {
+.race-series-badge-f2.active-badge {
+  color: var(--f2-back);
+  background-color: color-mix(in srgb, var(--f2-back) 30%, transparent);
+}
+
+.race-series-badge-f2.active-badge:hover {
   color: var(--f2-border);
-  background-color: color-mix(in srgb, var(--f2-border) 70%, transparent);
+  background-color: color-mix(in srgb, var(--f2-border) 30%, transparent);
 }
 
-.race-series-badge-f2:hover {
-  background-color: color-mix(in srgb, var(--f2-border) 85%, transparent);
-  color: var(--f2-border);
+.race-series-badge-f3.active-badge {
+  color: var(--f3-back);
+  background-color: color-mix(in srgb, var(--f3-back) 30%, transparent);
 }
 
-.race-series-badge-f3 {
+.race-series-badge-f3.active-badge:hover {
   color: var(--f3-border);
-  background-color: color-mix(in srgb, var(--f3-border) 70%, transparent);
-}
-
-.race-series-badge-f3:hover {
-  background-color: color-mix(in srgb, var(--f3-border) 85%, transparent);
-  color: var(--f3-border);
+  background-color: color-mix(in srgb, var(--f3-border) 30%, transparent);
 }
 
 .race-calendar-number {
@@ -4530,9 +4536,11 @@ phm
 .weather-selector {
   display: flex;
   flex-direction: row;
+  align-items: center;
   margin-left: 5px;
   font-size: 20px;
   padding-top: 2px;
+  gap: 4px;
 }
 
 .weather-selector i {
@@ -4543,22 +4551,6 @@ phm
 .race-calendar:hover {
   color: var(--white-general);
   background-color: var(--elements-hover);
-}
-
-.race-calendar .bi-chevron-left,
-.race-calendar .bi-chevron-right {
-  transition: color 0.15s, transform 0.15s;
-}
-
-.race-calendar:hover .bi-chevron-left,
-.race-calendar:hover .bi-chevron-right {
-  color: var(--text-general);
-}
-
-.race-calendar .bi-chevron-left:hover,
-.race-calendar .bi-chevron-right:hover {
-  color: var(--new-primary);
-  transform: scale(1.1);
 }
 
 .pit-crew-button {

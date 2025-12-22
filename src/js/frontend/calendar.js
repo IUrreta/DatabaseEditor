@@ -75,22 +75,44 @@ function addRace(race) {
 
     const seriesBadges = document.createElement('div');
     seriesBadges.className = "race-series-badges";
+    const f2Badge = document.createElement('button');
+    f2Badge.className = "race-series-badge race-series-badge-f2 bold-font";
+    f2Badge.type = "button";
+    f2Badge.textContent = "F2";
+    seriesBadges.appendChild(f2Badge);
+    const f3Badge = document.createElement('button');
+    f3Badge.className = "race-series-badge race-series-badge-f3 bold-font";
+    f3Badge.type = "button";
+    f3Badge.textContent = "F3";
+    seriesBadges.appendChild(f3Badge);
 
     if (Number(isF2Race) === 1) {
-        const f2Badge = document.createElement('button');
-        f2Badge.className = "race-series-badge race-series-badge-f2 bold-font";
-        f2Badge.type = "button";
-        f2Badge.textContent = "F2";
-        seriesBadges.appendChild(f2Badge);
+        f2Badge.classList.add("active-badge");
     }
 
     if (Number(isF3Race) === 1) {
-        const f3Badge = document.createElement('button');
-        f3Badge.className = "race-series-badge race-series-badge-f3 bold-font";
-        f3Badge.type = "button";
-        f3Badge.textContent = "F3";
-        seriesBadges.appendChild(f3Badge);
+        f3Badge.classList.add("active-badge");
     }
+
+    f2Badge.addEventListener("click", function () {
+        if (div.dataset.isf2 === "1") {
+            div.dataset.isf2 = "0";
+            f2Badge.classList.remove("active-badge");
+        } else {
+            div.dataset.isf2 = "1";
+            f2Badge.classList.add("active-badge");
+        }
+    });
+    
+    f3Badge.addEventListener("click", function () {
+        if (div.dataset.isf3 === "1") {
+            div.dataset.isf3 = "0";
+            f3Badge.classList.remove("active-badge");
+        } else {
+            div.dataset.isf3 = "1";
+            f3Badge.classList.add("active-badge");
+        }
+    });
 
     if (seriesBadges.childElementCount > 0) {
         div.appendChild(seriesBadges);

@@ -156,7 +156,7 @@
     --f2-back: #388cd5;
     --f2-active: #1374fc;
     --f3-back: #cf2e2e;
-    --f3-border: #ff7968;
+    --f3-border: #ff6956;
     --f1-first: #ff0000;
 
     --shadow-no: 0 1px 2px #00000030,
@@ -170,6 +170,12 @@
         /*dark shadow */
         0 2px 4px #00000015;
     /*soft shadow */
+
+    --shadow-xs: inset 0 1px 2px #ffffff20,
+        /*top highlight */
+        0 1px 2px #00000020,
+        /*dark shadow */
+        0 2px 4px #00000010;
 
     --shadow-m: inset 0 1px 2px #ffffff50,
         /*top highlight */

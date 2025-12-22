@@ -261,22 +261,7 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
     else if (type === "turning_point_young_drivers") {
         if (outcome === "positive") {
             applyYoungDriversBoost(turningPointData);
-            const entryId = `turning_point_outcome_young_drivers_${turningPointData.season}`;
-            const title = generateTurningPointTitle(turningPointData, 108, outcome);
-            const image = getImagePath(null, null, "young") || "null.png";
-            newEntry = {
-                id: entryId,
-                title,
-                image,
-                data: turningPointData,
-                date: maxDate + 1,
-                turning_point_type: outcome,
-                type: "turning_point_outcome_young_drivers"
-            }
-            maxDate += 1;
         }
-        //if outcome is negative, no news is generated
-
     }
 
     return newEntry;
@@ -1023,7 +1008,7 @@ function generateEnginesTurningPointNews(currentMonth, savednews = {}, turningPo
     const changeAreasPool = changeType === "major" ? majorChangeAreas : minorChangeAreas;
     const mainChangeArea = randomPick(changeAreasPool);
 
-    const VAR = changeType === "major" ? 0.30 : 0.05;
+    const VAR = changeType === "major" ? 0.15 : 0.05;
 
     const randBetween = (min, max) => min + Math.random() * (max - min);
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
