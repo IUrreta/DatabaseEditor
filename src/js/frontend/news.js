@@ -32,9 +32,6 @@ let saveArticleBtn = null;
 let cancelArticleBtn = null;
 let originalTitleText = '';
 
-let errorCount = 0;
-const MAX_ERRORS = 2;
-
 const DEFAULT_NEWS_LANGUAGE = "English";
 const NEWS_LANGUAGE_STORAGE_KEY = "newsLanguage";
 const NEWS_LANGUAGE_OPTIONS = [
@@ -43,6 +40,13 @@ const NEWS_LANGUAGE_OPTIONS = [
   { value: "Italian", label: "Italian" },
   { value: "French", label: "French" },
   { value: "German", label: "German" },
+  { value: "Dutch", label: "Dutch" },
+  { value: "Polish", label: "Polish" },
+  { value: "Portuguese", label: "Portuguese" },
+  { value: "Russian", label: "Russian" },
+  { value: "Chinese", label: "Chinese" },
+  { value: "Japanese", label: "Japanese" },
+
 ];
 
 
