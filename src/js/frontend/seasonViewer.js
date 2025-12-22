@@ -1,4 +1,4 @@
-import { races_names, names_full, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams } from "./config";
+import { races_names, names_full, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams, f2_teams, f3_teams } from "./config";
 import { resetH2H } from './head2head';
 import { game_version, custom_team } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
@@ -14,6 +14,7 @@ let races_ids = []
 let seasonResults;
 let calendarData;
 let pointsOrPos = "points"
+let currentFormula = 1
 let alphaReplace = "alphatauri"
 let alpineReplace = "alpine"
 let alfaReplace = "alfa"
@@ -100,7 +101,7 @@ function manage_show_tables() {
     }
 }
 
-document.querySelectorAll("#tableTypeDropdown a").forEach(function (elem) {
+document.querySelectorAll("#tableTypeDropdown a").forEach(function (elem) {     
     elem.addEventListener("click", function () {
         pointsOrPos = elem.dataset.value
         //count time to execute the function
@@ -111,6 +112,64 @@ document.querySelectorAll("#tableTypeDropdown a").forEach(function (elem) {
         change_points_pos_teams()
         end = performance.now()
         document.querySelector("#tableTypeButton span").textContent = elem.textContent
+    })
+})
+
+function forceStandingsCurrentSeason() {
+    const recordsButton = document.getElementById("recordsTypeButton")
+    const standingsItem = document.querySelector("#recordsTypeDropdown a[data-value='standings']")
+    if (recordsButton) {
+        recordsButton.dataset.value = "standings"
+        const label = recordsButton.querySelector("span.dropdown-label")
+        if (label) {
+            label.textContent = standingsItem ? standingsItem.textContent : "Standings"
+        }
+    }
+    const standingsSettings = document.getElementById("standingsSettings")
+    const recordsSettings = document.getElementById("recordsSettings")
+    if (standingsSettings) {
+        standingsSettings.classList.remove("d-none")
+    }
+    if (recordsSettings) {
+        recordsSettings.classList.add("d-none")
+    }
+
+    const yearMenu = document.querySelector("#yearMenu")
+    const yearItems = yearMenu ? Array.from(yearMenu.querySelectorAll("a")) : []
+    if (yearItems.length > 1) {
+        const currentYearEl = yearItems.find(item => item.dataset.year !== "all")
+        if (currentYearEl) {
+            manageRecordsSelected(currentYearEl)
+        }
+    }
+}
+
+function updateSeriesControls() {
+    const showRecordsControls = currentFormula === 1
+    const recordsWrapper = document.getElementById("recordsTypeButton")?.closest(".dropdown-global")
+    const yearWrapper = document.getElementById("yearButton")?.closest(".dropdown-global")
+    if (recordsWrapper) {
+        recordsWrapper.classList.toggle("d-none", !showRecordsControls)
+    }
+    if (yearWrapper) {
+        yearWrapper.classList.toggle("d-none", !showRecordsControls)
+    }
+}
+
+document.querySelectorAll("#seriesTypeDropdown a").forEach(function (elem) {    
+    elem.addEventListener("click", function () {
+        const value = parseInt(elem.dataset.value, 10)
+        currentFormula = Number.isFinite(value) ? value : 1
+        const seriesButton = document.getElementById("seriesTypeButton")        
+        seriesButton.querySelector("span.dropdown-label").textContent = elem.textContent
+        seriesButton.dataset.value = elem.dataset.value
+        updateSeriesControls()
+        if (currentFormula !== 1) {
+            forceStandingsCurrentSeason()
+        }
+        else if (document.querySelector("#recordsTypeButton").dataset.value === "standings") {
+            manageRecordsSelected(null)
+        }
     })
 })
 
@@ -128,8 +187,37 @@ function change_points_pos_drivers() {
     })
 }
 
+function renderTeamCellList(cell, values) {
+    cell.innerHTML = ""
+    if (!Array.isArray(values) || values.length === 0) {
+        cell.innerText = "-"
+        return
+    }
+    const container = document.createElement("div")
+    container.className = "teams-table-multi"
+    values.forEach((value) => {
+        const item = document.createElement("div")
+        item.className = "teams-table-multi-item"
+        item.textContent = value
+        container.appendChild(item)
+    })
+    cell.appendChild(container)
+}
+
 function change_points_pos_teams() {
     teamCells.forEach(function (cell) {
+        if (currentFormula === 3 && (pointsOrPos === "pos" || pointsOrPos === "quali")) {
+            const listKey = pointsOrPos === "pos" ? "poslist" : "qualilist"
+            if (cell.dataset[listKey]) {
+                try {
+                    const values = JSON.parse(cell.dataset[listKey])
+                    renderTeamCellList(cell, values)
+                    return
+                } catch (err) {
+                    // fall back to text if data is malformed
+                }
+            }
+        }
         if (cell.dataset[pointsOrPos] !== undefined) {
             cell.innerText = cell.dataset[pointsOrPos]
         }
@@ -140,8 +228,88 @@ function change_points_pos_teams() {
 
 }
 
+function getTeamAbbr(teamId) {
+    const abbr = team_dict[teamId]
+    return abbr ? abbr.toUpperCase() : ""
+}
+
+function buildTeamAbbrElement(teamId, sizeClass) {
+    const abbr = getTeamAbbr(teamId)
+    const abbrDiv = document.createElement("div")
+    abbrDiv.classList = "team-logo-abbr"
+    if (sizeClass) {
+        abbrDiv.classList.add(sizeClass)
+    }
+    //get team logo from logos_disc if exists
+    let logo_src = logos_disc[teamId]
+    if (logo_src) {
+        let logo = document.createElement("img")
+        logo.classList = sizeClass
+        logo.dataset.teamid = teamId
+        logo.setAttribute("src", logo_src)
+        abbrDiv.appendChild(logo)
+    }
+    else{
+        abbrDiv.textContent = abbr
+    }
+    return abbrDiv
+}
+
+function createHeaderCell(trackId, labelSuffix = "", baseClass = "drivers-table-normal") {
+    let headerPos = document.createElement("div")
+    headerPos.className = `${baseClass} bold-font flag-header`
+    let headerPosFlag = document.createElement("img")
+    let race = races_map[trackId]
+    let flag_src = codes_dict[race]
+    headerPosFlag.src = flag_src
+    let headerPosDiv = document.createElement("div")
+    headerPosDiv.classList.add("text-in-front")
+    headerPosDiv.classList.add("bold-font")
+    headerPosDiv.innerText = labelSuffix ? `${labelSuffix}` : races_names[trackId]
+    if (labelSuffix === "SPR") {
+        headerPosDiv.classList.add("sprint-label")
+        headerPosDiv.classList.add("sprint-result-cell")
+    }
+    headerPos.appendChild(headerPosFlag)
+    headerPos.appendChild(headerPosDiv)
+    return headerPos
+}
+
+function formatDriverCellValue(value, type) {
+    if (value === null || value === undefined) {
+        return "-"
+    }
+    return manage_dataset_info_driver(value, undefined, type)
+}
+
+function inferFormulaFromCalendar(data) {
+    if (!Array.isArray(data) || data.length === 0) {
+        return currentFormula
+    }
+    const isF3 = data.every(row => Number(row[4]) === 1)
+    if (isF3) return 3
+    const isF2 = data.every(row => Number(row[3]) === 1)
+    if (isF2) return 2
+    return 1
+}
+
+function syncFormulaFromCalendar(data) {
+    const inferred = inferFormulaFromCalendar(data)
+    if (inferred !== currentFormula) {
+        currentFormula = inferred
+        const seriesButton = document.getElementById("seriesTypeButton")        
+        if (seriesButton) {
+            const label = inferred === 2 ? "F2" : (inferred === 3 ? "F3" : "F1")
+            seriesButton.querySelector("span.dropdown-label").textContent = label
+            seriesButton.dataset.value = String(inferred)
+        }
+    }
+    updateSeriesControls()
+}
+
 export function new_drivers_table(data) {
     calendarData = data
+    syncFormulaFromCalendar(data)
     races_ids = []
     let header = document.querySelector(".drivers-table-header")
     header.innerHTML = ""
@@ -153,21 +321,26 @@ export function new_drivers_table(data) {
     PositionDiv.innerText = "#"
     header.appendChild(PositionDiv)
     header.appendChild(driverDiv)
+    const isF1 = currentFormula === 1
+    const driversData = document.querySelector(".drivers-table-data")
+    driversData.className = "drivers-table-data"
+    if (currentFormula === 2) {
+        driversData.classList.add("f2-table-data")
+    }
+    else if (currentFormula === 3) {
+        driversData.classList.add("f3-table-data")
+    }
     data.forEach(function (elem) {
-        races_ids.push(elem[0])
-        let headerPos = document.createElement("div")
-        headerPos.className = "drivers-table-normal bold-font flag-header"
-        let headerPosFlag = document.createElement("img")
-        let race = races_map[elem[1]]
-        let flag_src = codes_dict[race]
-        headerPosFlag.src = flag_src
-        let headerPosDiv = document.createElement("div")
-        headerPosDiv.classList.add("text-in-front")
-        headerPosDiv.classList.add("bold-font")
-        headerPosDiv.innerText = races_names[elem[1]]
-        headerPos.appendChild(headerPosFlag)
-        headerPos.appendChild(headerPosDiv)
-        header.appendChild(headerPos)
+        const raceId = elem[0]
+        const trackId = elem[1]
+        races_ids.push(raceId)
+        if (isF1) {
+            header.appendChild(createHeaderCell(trackId))
+        }
+        else {
+            header.appendChild(createHeaderCell(trackId, "SPR"))
+            header.appendChild(createHeaderCell(trackId))
+        }
     })
     let PointsDiv = document.createElement("div")
     PointsDiv.classList = "drivers-table-points bold-font"
@@ -189,21 +362,26 @@ export function new_teams_table(data) {
     PositionDiv.innerText = "#"
     header.appendChild(PositionDiv)
     header.appendChild(driverDiv)
+    const isF1 = currentFormula === 1
+    const teamsData = document.querySelector(".teams-table-data")
+    teamsData.className = "teams-table-data"
+    if (currentFormula === 2) {
+        teamsData.classList.add("f2-table-data")
+    }
+    else if (currentFormula === 3) {
+        teamsData.classList.add("f3-table-data")
+    }
     data.forEach(function (elem) {
-        races_ids.push(elem[0])
-        let headerPos = document.createElement("div")
-        headerPos.className = "teams-table-normal bold-font flag-header"
-        let headerPosFlag = document.createElement("img")
-        let race = races_map[elem[1]]
-        let flag_src = codes_dict[race]
-        headerPosFlag.src = flag_src
-        let headerPosDiv = document.createElement("div")
-        headerPosDiv.classList.add("text-in-front")
-        headerPosDiv.classList.add("bold-font")
-        headerPosDiv.innerText = races_names[elem[1]]
-        headerPos.appendChild(headerPosFlag)
-        headerPos.appendChild(headerPosDiv)
-        header.appendChild(headerPos)
+        const raceId = elem[0]
+        const trackId = elem[1]
+        races_ids.push(raceId)
+        if (isF1) {
+            header.appendChild(createHeaderCell(trackId, "", "teams-table-normal"))
+        }
+        else {
+            header.appendChild(createHeaderCell(trackId, "SPR", "teams-table-normal"))
+            header.appendChild(createHeaderCell(trackId, "", "teams-table-normal"))
+        }
     })
     let PointsDiv = document.createElement("div")
     PointsDiv.classList = "teams-table-points bold-font"
@@ -416,11 +594,19 @@ function new_color_teams_table() {
                     cell.classList.add("fastest")
                 }
             });
+            const hasResults = values.some(([value], idx) => {
+                const text = colCells[idx].textContent?.trim();
+                return value !== undefined && value !== null && String(value) !== "" && text !== "-";
+            });
+            if (!hasResults) {
+                return;
+            }
             values.sort((a, b) => {
                 function parseValue(val) {
+                    if (val === null || val === undefined || val === "") return 0;
                     if (typeof val === "number") return val;
 
-                    const match = val.match(/^(\d+)(?:\((\d+)\))?$/);
+                    const match = String(val).match(/^(\d+)(?:\((\d+)\))?$/);
                     if (match) {
                         const base = parseInt(match[1], 10);
                         const extra = match[2] ? parseInt(match[2], 10) : 0;
@@ -478,7 +664,15 @@ export function new_load_drivers_table(data) {
             driver2Points = points
         }
     })
-    checkIfDriverIsChampion(data[0], driver1Poitns, driver2Points, pointsInfo)
+    if (currentFormula === 1) {
+        checkIfDriverIsChampion(data[0], driver1Poitns, driver2Points, pointsInfo)
+    }
+    else {
+        const firstDriverPos = document.querySelector(".drivers-table-data .drivers-table-position")
+        const firstDriverPoints = document.querySelector(".drivers-table-data .drivers-table-points")
+        if (firstDriverPos) firstDriverPos.classList.remove("champion")
+        if (firstDriverPoints) firstDriverPoints.classList.remove("champion")
+    }
     hoverListeners()
     checkscroll()
     new_color_drivers_table()
@@ -566,11 +760,12 @@ export function new_load_teams_table(data) {
     datazone.innerHTML = "";
 
     // Estructura: teamData[teamId] = Map<raceId, RaceObj[] de ese equipo en esa carrera>
-    const teamData = {
-        1: new Map(), 2: new Map(), 3: new Map(), 4: new Map(), 5: new Map(),
-        6: new Map(), 7: new Map(), 8: new Map(), 9: new Map(), 10: new Map()
-    };
-    if (game_version === 2024 && custom_team) {
+    const teamIds = currentFormula === 1 ? f1_teams : (currentFormula === 2 ? f2_teams : f3_teams)
+    const teamData = {};
+    teamIds.forEach((id) => {
+        teamData[id] = new Map();
+    });
+    if (currentFormula === 1 && game_version === 2024 && custom_team && !teamData[32]) {
         teamData[32] = new Map();
     }
 
@@ -597,24 +792,50 @@ export function new_load_teams_table(data) {
 
     // Pintamos filas por equipo, usando tu orden/posiciones
     let team1Points = 0, team2Points = 0, firstTeamId = 0;
-    for (let team in combined_dict) {
-        if (f1_teams.includes(parseInt(team))) {
-            const pos = pairTeamPosDict[team];
-            const points = new_addTeam(teamData[team], combined_dict[team], pos, parseInt(team));
-            if (pos === 1) {
-                team1Points = points;
-                firstTeamId = team;
-            } else if (pos === 2) {
-                team2Points = points;
-            }
+    const teamRows = [];
+    teamIds.forEach((teamId) => {
+        const pos = pairTeamPosDict[teamId];
+        let teamName = combined_dict[teamId] //remove the final (F2) or (F3) that may exist
+        if (teamName.endsWith(" (F2)") || teamName.endsWith(" (F3)")) {
+            teamName = teamName.slice(0, -5)
         }
+        const result = new_addTeam(teamData[teamId], teamName, pos, teamId);
+        const points = result.points;
+        teamRows.push({ teamId, pos, points, row: result.row, posDiv: result.posDiv });
+        if (pos === 1) {
+            team1Points = points;
+            firstTeamId = teamId;
+        } else if (pos === 2) {
+            team2Points = points;
+        }
+    });
+
+    const needsFallbackPositions = teamRows.some(team => !Number.isFinite(Number(team.pos)));
+    const sortByPoints = currentFormula !== 1 || needsFallbackPositions;
+    if (sortByPoints) {
+        const sorted = [...teamRows].sort((a, b) => b.points - a.points);
+        sorted.forEach((team, index) => {
+            const position = index + 1;
+            team.pos = position;
+            if (team.posDiv) {
+                team.posDiv.innerText = String(position);
+            }
+        });
     }
 
     new_color_teams_table();
+    if (currentFormula === 1) {
+        checkIfTeamIsChamp(team1Points, team2Points, pointsInfo);
+        manage_teams_table_logos();
+        manage_teams_table_names();
+    }
+    else {
+        const firstTeamPos = document.querySelector(".teams-table-data .teams-table-position")
+        const firstTeamPoints = document.querySelector(".teams-table-data .teams-table-points")
+        if (firstTeamPos) firstTeamPos.classList.remove("champion")
+        if (firstTeamPoints) firstTeamPoints.classList.remove("champion")
+    }
     order_teams_table();
-    checkIfTeamIsChamp(team1Points, team2Points, pointsInfo);
-    manage_teams_table_logos();
-    manage_teams_table_names();
     teamCells = document.querySelectorAll(".teams-table-data .teams-table-normal");
 }
 
@@ -647,14 +868,16 @@ function new_addTeam(teamRaceMap, name, pos, id) {
 
     let nameDiv = document.createElement("div");
     let teamName = document.createElement("span");
-    let engineName = document.createElement("span");
-    engineName.classList = "teams-table-engine-name bold-font";
-    engineName.textContent = engine_names[engine_allocations[id]];
     nameDiv.dataset.teamid = id;
     nameDiv.classList = "teams-table-team bold-font";
     teamName.innerText = name.toUpperCase();
     nameDiv.appendChild(teamName);
-    nameDiv.appendChild(engineName);
+    if (currentFormula === 1) {
+        let engineName = document.createElement("span");
+        engineName.classList = "teams-table-engine-name bold-font";
+        engineName.textContent = engine_names[engine_allocations[id]];
+        nameDiv.appendChild(engineName);
+    }
     row.appendChild(nameDiv);
 
     let posDiv = document.createElement("div");
@@ -664,112 +887,300 @@ function new_addTeam(teamRaceMap, name, pos, id) {
 
     let logoDiv = document.createElement("div");
     logoDiv.classList = "teams-table-logo";
-    let logo = document.createElement("img");
-    logo.classList = "teams-table-logo-inner";
-    logo.dataset.teamid = id;
     logoDiv.classList.add(team_dict[id] + "iconback");
-    logo.setAttribute("src", logos_disc[id]);
-    logoDiv.appendChild(logo);
+    if (currentFormula === 1 && logos_disc[id]) {
+        let logo = document.createElement("img");
+        logo.classList = "teams-table-logo-inner";
+        logo.dataset.teamid = id;
+        logo.setAttribute("src", logos_disc[id]);
+        logoDiv.appendChild(logo);
+    }
+    else {
+        logoDiv.appendChild(buildTeamAbbrElement(id, "junior-team-logo-team"));
+    }
     row.appendChild(logoDiv);
     row.appendChild(nameDiv);
 
     let teampoints = 0;
 
-    // Iteramos las carreras en orden por races_ids (como antes)
-    races_ids.forEach((raceId) => {
-        const raceDiv = document.createElement("div");
-        raceDiv.classList = "teams-table-normal";
+    const safePoints = (v) => {
+        if (v === -1) return 0; // DNF → 0 puntos
+        const n = parseInt(v);
+        return Number.isFinite(n) ? Math.max(0, n) : 0;
+    };
 
-        // Recuperamos los objetos de los dos pilotos del equipo en esta carrera
-        const pair = (teamRaceMap && teamRaceMap.get(raceId)) || [];
-
-        if (pair.length > 0) {
-            // Aseguramos 2 elementos (puede faltar uno)
-            const d1 = pair[0] || null;
-            const d2 = pair[1] || null;
-
-            const safePoints = (v) => {
-                if (v === -1) return 0; // DNF → 0 puntos
-                const n = parseInt(v);
-                return Number.isFinite(n) ? Math.max(0, n) : 0;
-                // usamos Math.max(0, n) por si hubiese negativos raros
-            };
-
-            const d1Points = d1 ? safePoints(d1.points) : 0;
-            const d2Points = d2 ? safePoints(d2.points) : 0;
-            const d1Pos = d1 ? (d1.points === -1 || d1.finishingPos === -1 ? "DNF" : d1.finishingPos) : "-";
-            const d2Pos = d2 ? (d2.points === -1 || d2.finishingPos === -1 ? "DNF" : d2.finishingPos) : "-";
-
-            // datasets base
-            raceDiv.dataset.raceid = raceId;
-            raceDiv.dataset.pointsCount = d1Points + d2Points;
-
-            const s1pts = d1?.sprintPoints;
-            const s2pts = d2?.sprintPoints;
-            const s1pos = d1?.sprintPos;
-            const s2pos = d2?.sprintPos;
-
-            raceDiv.dataset.points = manage_dataset_info_team(
-                [d1 ? d1.points : 0, d2 ? d2.points : 0],
-                (typeof s1pts !== "undefined" || typeof s2pts !== "undefined") ? [s1pts ?? 0, s2pts ?? 0] : undefined,
-                "points"
-            );
-
-            raceDiv.dataset.pos = manage_dataset_info_team(
-                [d1Pos, d2Pos],
-                (s1pos == null || s2pos == null) ? undefined : [s1pos, s2pos],
-                "pos"
-            );
-
-            raceDiv.dataset.quali = manage_dataset_info_team(
-                [d1 ? d1.qualifyingPos ?? 99 : 99, d2 ? d2.qualifyingPos ?? 99 : 99],
-                undefined,
-                "quali"
-            );
-
-            raceDiv.dataset.quali1 = d1 ? d1.qualifyingPos ?? 99 : 99;
-            raceDiv.dataset.quali2 = d2 ? d2.qualifyingPos ?? 99 : 99;
-
-            raceDiv.dataset.fastlap1 = d1 && d1.fastestLap ? 1 : 0;
-            raceDiv.dataset.fastlap2 = d2 && d2.fastestLap ? 1 : 0;
-
-            // Suma de puntos de carrera
-            teampoints += parseInt(raceDiv.dataset.pointsCount);
-
-            // Sprint
-            let d1SprintPoints = 0, d2SprintPoints = 0;
-            let d1SprintPos = "-", d2SprintPos = "-";
-
-            if (typeof s1pts !== "undefined") {
-                if (s1pts === -1) { d1SprintPoints = 0; d1SprintPos = "DNF"; }
-                else { d1SprintPoints = parseInt(s1pts) || 0; d1SprintPos = (typeof s1pos === "number" ? s1pos : (s1pos ?? "-")); }
-            }
-            if (typeof s2pts !== "undefined") {
-                if (s2pts === -1) { d2SprintPoints = 0; d2SprintPos = "DNF"; }
-                else { d2SprintPoints = parseInt(s2pts) || 0; d2SprintPos = (typeof s2pos === "number" ? s2pos : (s2pos ?? "-")); }
-            }
-
-            raceDiv.dataset.sprintpoints = d1SprintPoints + d2SprintPoints;
-            raceDiv.dataset.sprintpos1 = d1SprintPos;
-            raceDiv.dataset.sprintpos2 = d2SprintPos;
-
-            teampoints += parseInt(raceDiv.dataset.sprintpoints);
-
-            raceDiv.textContent = raceDiv.dataset[pointsOrPos];
-        } else {
-            raceDiv.innerText = "-";
+    const pickTopEntries = (pair) => {
+        if (!pair || pair.length <= 2) {
+            return [pair[0] || null, pair[1] || null];
         }
 
-        row.appendChild(raceDiv);
+        const scoring = pair
+            .map((entry, index) => ({
+                entry,
+                index,
+                total: safePoints(entry?.points) + safePoints(entry?.sprintPoints)
+            }))
+            .sort((a, b) => b.total - a.total || a.index - b.index);
+
+        return [scoring[0]?.entry || null, scoring[1]?.entry || null];
+    };
+
+    const formatTeamPosValue = (entry, useSprint) => {
+        if (!entry) return "-"
+        const points = useSprint ? entry.sprintPoints : entry.points
+        const pos = useSprint ? entry.sprintPos : entry.finishingPos
+        if (points === -1 || pos === -1) return "DNF"
+        if (pos === null || pos === undefined) return "-"
+        return String(pos)
+    };
+
+    const formatTeamQualiValue = (entry, useSprint) => {
+        if (!entry) return "-"
+        if (useSprint) {
+            return entry.sprintQualiPos !== undefined && entry.sprintQualiPos !== null
+                ? String(entry.sprintQualiPos)
+                : "-"
+        }
+        const quali = entry.qualifyingPos ?? 99
+        return String(quali)
+    };
+
+    const buildTeamResultList = (entries, type, useSprint) => {
+        if (!Array.isArray(entries) || entries.length === 0) return []
+        if (type === "pos") {
+            return entries.map((entry) => formatTeamPosValue(entry, useSprint))
+        }
+        if (type === "quali") {
+            return entries.map((entry) => formatTeamQualiValue(entry, useSprint))
+        }
+        return []
+    };
+
+    // Iteramos las carreras en orden por races_ids (como antes)
+    races_ids.forEach((raceId) => {
+        const pair = (teamRaceMap && teamRaceMap.get(raceId)) || [];
+        const isF1 = currentFormula === 1;
+
+        if (isF1) {
+            const raceDiv = document.createElement("div");
+            raceDiv.classList = "teams-table-normal";
+
+            if (pair.length > 0) {
+                // Aseguramos 2 elementos (puede faltar uno) y priorizamos los que más puntúan
+                const [d1, d2] = pickTopEntries(pair);
+
+                const d1Points = d1 ? safePoints(d1.points) : 0;
+                const d2Points = d2 ? safePoints(d2.points) : 0;
+                const d1Pos = d1 ? (d1.points === -1 || d1.finishingPos === -1 ? "DNF" : d1.finishingPos) : "-";
+                const d2Pos = d2 ? (d2.points === -1 || d2.finishingPos === -1 ? "DNF" : d2.finishingPos) : "-";
+
+                // datasets base
+                raceDiv.dataset.raceid = raceId;
+                raceDiv.dataset.pointsCount = d1Points + d2Points;
+
+                const s1pts = d1?.sprintPoints;
+                const s2pts = d2?.sprintPoints;
+                const s1pos = d1?.sprintPos;
+                const s2pos = d2?.sprintPos;
+
+                raceDiv.dataset.points = manage_dataset_info_team(
+                    [d1 ? d1.points : 0, d2 ? d2.points : 0],
+                    (typeof s1pts !== "undefined" || typeof s2pts !== "undefined") ? [s1pts ?? 0, s2pts ?? 0] : undefined,
+                    "points"
+                );
+
+                raceDiv.dataset.pos = manage_dataset_info_team(
+                    [d1Pos, d2Pos],
+                    (s1pos == null || s2pos == null) ? undefined : [s1pos, s2pos],
+                    "pos"
+                );
+
+                raceDiv.dataset.quali = manage_dataset_info_team(
+                    [d1 ? d1.qualifyingPos ?? 99 : 99, d2 ? d2.qualifyingPos ?? 99 : 99],
+                    undefined,
+                    "quali"
+                );
+
+                raceDiv.dataset.quali1 = d1 ? d1.qualifyingPos ?? 99 : 99;
+                raceDiv.dataset.quali2 = d2 ? d2.qualifyingPos ?? 99 : 99;
+
+                raceDiv.dataset.fastlap1 = d1 && d1.fastestLap ? 1 : 0;
+                raceDiv.dataset.fastlap2 = d2 && d2.fastestLap ? 1 : 0;
+
+                // Suma de puntos de carrera
+                teampoints += parseInt(raceDiv.dataset.pointsCount);
+
+                // Sprint
+                let d1SprintPoints = 0, d2SprintPoints = 0;
+                let d1SprintPos = "-", d2SprintPos = "-";
+
+                if (typeof s1pts !== "undefined") {
+                    if (s1pts === -1) { d1SprintPoints = 0; d1SprintPos = "DNF"; }
+                    else { d1SprintPoints = parseInt(s1pts) || 0; d1SprintPos = (typeof s1pos === "number" ? s1pos : (s1pos ?? "-")); }
+                }
+                if (typeof s2pts !== "undefined") {
+                    if (s2pts === -1) { d2SprintPoints = 0; d2SprintPos = "DNF"; }
+                    else { d2SprintPoints = parseInt(s2pts) || 0; d2SprintPos = (typeof s2pos === "number" ? s2pos : (s2pos ?? "-")); }
+                }
+
+                raceDiv.dataset.sprintpoints = d1SprintPoints + d2SprintPoints;
+                raceDiv.dataset.sprintpos1 = d1SprintPos;
+                raceDiv.dataset.sprintpos2 = d2SprintPos;
+
+                teampoints += parseInt(raceDiv.dataset.sprintpoints);
+
+                raceDiv.textContent = raceDiv.dataset[pointsOrPos];
+            } else {
+                raceDiv.innerText = "-";
+            }
+
+            row.appendChild(raceDiv);
+        }
+        else {
+            const sprintDiv = document.createElement("div");
+            const featureDiv = document.createElement("div");
+            sprintDiv.classList = "teams-table-normal";
+            featureDiv.classList = "teams-table-normal";
+            sprintDiv.classList.add("sprint-result-cell");
+            featureDiv.classList.add("feature-result-cell");
+            sprintDiv.dataset.raceid = raceId;
+            featureDiv.dataset.raceid = raceId;
+
+            if (pair.length > 0) {
+                const [d1, d2] = pickTopEntries(pair);
+                const allEntries = pair;
+                const wantsList = currentFormula === 3 && (pointsOrPos === "pos" || pointsOrPos === "quali");
+
+                const sprintPoints = [d1?.sprintPoints ?? null, d2?.sprintPoints ?? null];
+                const sprintPos = [d1?.sprintPos ?? null, d2?.sprintPos ?? null];
+                const hasSprint = sprintPos.some(v => v !== null && v !== undefined);
+
+                const sprintQuali = [d1?.sprintQualiPos ?? "-", d2?.sprintQualiPos ?? "-"];
+                sprintDiv.dataset.quali = manage_dataset_info_team(
+                    sprintQuali,
+                    undefined,
+                    "quali"
+                );
+                if (currentFormula === 3) {
+                    const sprintPosList = hasSprint ? buildTeamResultList(allEntries, "pos", true) : [];
+                    const sprintQualiList = buildTeamResultList(allEntries, "quali", true);
+                    sprintDiv.dataset.poslist = JSON.stringify(sprintPosList);
+                    sprintDiv.dataset.qualilist = JSON.stringify(sprintQualiList);
+                    if (pointsOrPos === "pos") {
+                        renderTeamCellList(sprintDiv, sprintPosList);
+                    }
+                    else if (pointsOrPos === "quali") {
+                        renderTeamCellList(sprintDiv, sprintQualiList);
+                    }
+                }
+                if (hasSprint) {
+                    if (currentFormula === 3) {
+                        const sprintPointsTotal = allEntries.reduce(
+                            (sum, entry) => sum + safePoints(entry?.sprintPoints),
+                            0
+                        );
+                        sprintDiv.dataset.points = sprintPointsTotal === 0 ? "" : String(sprintPointsTotal);
+                    }
+                    else {
+                        sprintDiv.dataset.points = manage_dataset_info_team(
+                            [sprintPoints[0] ?? 0, sprintPoints[1] ?? 0],
+                            undefined,
+                            "points"
+                        );
+                    }
+                    sprintDiv.dataset.pos = manage_dataset_info_team(
+                        [sprintPos[0] ?? "-", sprintPos[1] ?? "-"],
+                        undefined,
+                        "pos"
+                    );
+                    if (!wantsList) {
+                        sprintDiv.textContent = sprintDiv.dataset[pointsOrPos];
+                    }
+                } else {
+                    sprintDiv.textContent = "-";
+                }
+
+                const d1Points = d1 ? safePoints(d1.points) : 0;
+                const d2Points = d2 ? safePoints(d2.points) : 0;
+                const d1Pos = d1 ? (d1.points === -1 || d1.finishingPos === -1 ? "DNF" : d1.finishingPos) : "-";
+                const d2Pos = d2 ? (d2.points === -1 || d2.finishingPos === -1 ? "DNF" : d2.finishingPos) : "-";
+
+                const d1PointsTotal = (d1 ? d1.points : 0) + (d1?.qualifyingPoints ?? 0);
+                const d2PointsTotal = (d2 ? d2.points : 0) + (d2?.qualifyingPoints ?? 0);
+                if (currentFormula === 3) {
+                    const featurePointsTotal = allEntries.reduce(
+                        (sum, entry) =>
+                            sum + safePoints(entry?.points) + safePoints(entry?.qualifyingPoints),
+                        0
+                    );
+                    featureDiv.dataset.points = featurePointsTotal === 0 ? "" : String(featurePointsTotal);
+                }
+                else {
+                    featureDiv.dataset.points = manage_dataset_info_team(
+                        [d1PointsTotal, d2PointsTotal],
+                        undefined,
+                        "points"
+                    );
+                }
+                featureDiv.dataset.pos = manage_dataset_info_team(
+                    [d1Pos, d2Pos],
+                    undefined,
+                    "pos"
+                );
+                featureDiv.dataset.quali = manage_dataset_info_team(
+                    [d1 ? d1.qualifyingPos ?? 99 : 99, d2 ? d2.qualifyingPos ?? 99 : 99],
+                    undefined,
+                    "quali"
+                );
+                if (currentFormula === 3) {
+                    const featurePosList = buildTeamResultList(allEntries, "pos", false);
+                    const featureQualiList = buildTeamResultList(allEntries, "quali", false);
+                    featureDiv.dataset.poslist = JSON.stringify(featurePosList);
+                    featureDiv.dataset.qualilist = JSON.stringify(featureQualiList);
+                    if (pointsOrPos === "pos") {
+                        renderTeamCellList(featureDiv, featurePosList);
+                    }
+                    else if (pointsOrPos === "quali") {
+                        renderTeamCellList(featureDiv, featureQualiList);
+                    }
+                }
+                if (!wantsList) {
+                    featureDiv.textContent = featureDiv.dataset[pointsOrPos];   
+                }
+
+                const sprintTeamPoints = hasSprint
+                    ? (currentFormula === 3
+                        ? allEntries.reduce(
+                            (sum, entry) => sum + safePoints(entry?.sprintPoints),
+                            0
+                        )
+                        : (safePoints(sprintPoints[0]) + safePoints(sprintPoints[1])))
+                    : 0;
+                const featureTeamPoints = currentFormula === 3
+                    ? allEntries.reduce(
+                        (sum, entry) =>
+                            sum + safePoints(entry?.points) + safePoints(entry?.qualifyingPoints),
+                        0
+                    )
+                    : (d1Points + d2Points + safePoints(d1?.qualifyingPoints) + safePoints(d2?.qualifyingPoints));
+                teampoints += featureTeamPoints + sprintTeamPoints;
+            } else {
+                sprintDiv.textContent = "-";
+                featureDiv.textContent = "-";
+            }
+
+            row.appendChild(sprintDiv);
+            row.appendChild(featureDiv);
+        }
     });
 
     let pointsDiv = document.createElement("div");
     pointsDiv.classList = "teams-table-points bold-font";
-    pointsDiv.innerText = teampoints;
+    pointsDiv.innerText = (currentFormula === 3 && teampoints === 0) ? "" : teampoints;
     row.appendChild(pointsDiv);
 
     data.appendChild(row);
-    return teampoints;
+    return { points: teampoints, row, posDiv };
 }
 
 
@@ -779,6 +1190,7 @@ function new_addDriver(driver, races_done, odd) {
     let row = document.createElement("div");
     row.classList = "drivers-table-row";
     if (odd) row.classList.add("odd");
+    const isF1 = currentFormula === 1;
 
     let nameDiv = document.createElement("div");
     nameDiv.classList = "drivers-table-driver";
@@ -802,84 +1214,142 @@ function new_addDriver(driver, races_done, odd) {
 
     let logoDiv = document.createElement("div");
     logoDiv.classList = "drivers-table-logo-div";
-    let logo = document.createElement("img");
-    logo.classList = "drivers-table-logo";
-    logo.dataset.teamid = driver["latestTeamId"];
+    if (isF1) {
+        let logo = document.createElement("img");
+        logo.classList = "drivers-table-logo";
+        logo.dataset.teamid = driver["latestTeamId"];
 
-    if (driver["latestTeamId"] === 1) logo.classList.add("logo-ferrari-table");
-    if (driver["latestTeamId"] === 2) logo.classList.add("logo-reduce");
-    if (driver["latestTeamId"] === 3) logo.classList.add("logo-up-down-mid");
-    if (driver["latestTeamId"] === 6) logo.classList.add("logo-williams-table");
-    if (driver["latestTeamId"] === 4 || driver["latestTeamId"] === 7) logo.classList.add("logo-merc-table");
-    if (driver["latestTeamId"] === 5) {
-        logo = document.createElement("div");
-        logo.classList.add(driversTableLogosDict[alpineReplace]);
-    }
-    if (driver["latestTeamId"] === 8) {
-        if (["alphatauri", "visarb", "brawn", "hugo"].includes(alphaReplace)) {
+        if (driver["latestTeamId"] === 1) logo.classList.add("logo-ferrari-table");
+        if (driver["latestTeamId"] === 2) logo.classList.add("logo-reduce");
+        if (driver["latestTeamId"] === 3) logo.classList.add("logo-up-down-mid");
+        if (driver["latestTeamId"] === 6) logo.classList.add("logo-williams-table");
+        if (driver["latestTeamId"] === 4 || driver["latestTeamId"] === 7) logo.classList.add("logo-merc-table");
+        if (driver["latestTeamId"] === 5) {
             logo = document.createElement("div");
+            logo.classList.add(driversTableLogosDict[alpineReplace]);
         }
-        logo.classList.add(driversTableLogosDict[alphaReplace]);
+        if (driver["latestTeamId"] === 8) {
+            if (["alphatauri", "visarb", "brawn", "hugo"].includes(alphaReplace)) {
+                logo = document.createElement("div");
+            }
+            logo.classList.add(driversTableLogosDict[alphaReplace]);
+        }
+        if (driver["latestTeamId"] === 9) logo.classList.add(driversTableLogosDict[alfaReplace]);
+        if (driver["latestTeamId"] === 10 || driver["latestTeamId"] === 32) logo.classList.add("logo-up-down-little");
+        if (driver["latestTeamId"] === 32) logo.classList.add("custom-replace");
+
+        if (logo.tagName === "IMG") logo.src = logos_disc[driver["latestTeamId"]];
+        logoDiv.appendChild(logo);
     }
-    if (driver["latestTeamId"] === 9) logo.classList.add(driversTableLogosDict[alfaReplace]);
-    if (driver["latestTeamId"] === 10 || driver["latestTeamId"] === 32) logo.classList.add("logo-up-down-little");
-    if (driver["latestTeamId"] === 32) logo.classList.add("custom-replace");
+    else {
+        logoDiv.appendChild(buildTeamAbbrElement(driver["latestTeamId"], "junior-team-logo-driver"));
+    }
 
     logoDiv.classList.add(team_dict[driver["latestTeamId"]] + "hoverback");
-    if (logo.tagName === "IMG") logo.src = logos_disc[driver["latestTeamId"]];
-    logoDiv.appendChild(logo);
     row.appendChild(logoDiv);
     row.appendChild(nameDiv);
 
     let driverpoints = 0;
 
     races_ids.forEach(function (raceid) {
-        let raceDiv = document.createElement("div");
-        raceDiv.classList = "drivers-table-normal";
-
         const race = driver.races?.find(r => r.raceId === raceid);
 
-        if (races_done.includes(raceid) && race) {
-            const hasSprintPoints = typeof race.sprintPoints !== "undefined" && race.sprintPoints !== null;
-            const hasSprintPos = typeof race.sprintPos !== "undefined" && race.sprintPos !== null;
+        if (isF1) {
+            let raceDiv = document.createElement("div");
+            raceDiv.classList = "drivers-table-normal";
 
-            raceDiv.dataset.pos = manage_dataset_info_driver(
-                race.finishingPos,
-                hasSprintPos ? race.sprintPos : undefined,
-                "pos"
-            );
-            raceDiv.dataset.points = manage_dataset_info_driver(
-                race.points,
-                hasSprintPoints ? race.sprintPoints : undefined,
-                "points"
-            );
-            raceDiv.dataset.fastlap = race.fastestLap ? 1 : 0; // normaliza a 0/1
-            raceDiv.dataset.quali = manage_dataset_info_driver(
-                race.qualifyingPos === 99 ? race.startingPos : race.qualifyingPos,
-                undefined,
-                "quali"
-            );
-            raceDiv.dataset.gapToWinner = race.gapToWinner;
-            raceDiv.dataset.gapToPole = race.gapToPole;
-            raceDiv.dataset.dotd = race.driverOfTheDay //if its true or false
+            if (races_done.includes(raceid) && race) {
+                const hasSprintPoints = typeof race.sprintPoints !== "undefined" && race.sprintPoints !== null;
+                const hasSprintPos = typeof race.sprintPos !== "undefined" && race.sprintPos !== null;
 
-            // Sprint
-            if (hasSprintPos) raceDiv.dataset.sprintpos = race.sprintPos;
-            if (hasSprintPoints) {
-                raceDiv.dataset.sprintpoints = race.sprintPoints;
-                if (race.sprintPoints !== -1) {
+                raceDiv.dataset.pos = manage_dataset_info_driver(
+                    race.finishingPos,
+                    hasSprintPos ? race.sprintPos : undefined,
+                    "pos"
+                );
+                raceDiv.dataset.points = manage_dataset_info_driver(
+                    race.points,
+                    hasSprintPoints ? race.sprintPoints : undefined,
+                    "points"
+                );
+                raceDiv.dataset.fastlap = race.fastestLap ? 1 : 0; // normaliza a 0/1
+                raceDiv.dataset.quali = manage_dataset_info_driver(
+                    race.qualifyingPos === 99 ? race.startingPos : race.qualifyingPos,
+                    undefined,
+                    "quali"
+                );
+                raceDiv.dataset.gapToWinner = race.gapToWinner;
+                raceDiv.dataset.gapToPole = race.gapToPole;
+                raceDiv.dataset.dotd = race.driverOfTheDay //if its true or false
+
+                // Sprint
+                if (hasSprintPos) raceDiv.dataset.sprintpos = race.sprintPos;
+                if (hasSprintPoints) {
+                    raceDiv.dataset.sprintpoints = race.sprintPoints;
+                    if (race.sprintPoints !== -1) {
+                        driverpoints += Math.max(0, parseInt(race.sprintPoints) || 0);
+                    }
+                }
+
+                // Puntos carrera (ignora -1)
+                driverpoints += Math.max(0, parseInt(race.points) || 0);
+
+                raceDiv.textContent = raceDiv.dataset[pointsOrPos];
+            } else {
+                raceDiv.innerText = "-";
+            }
+            row.appendChild(raceDiv);
+        }
+        else {
+            const sprintDiv = document.createElement("div");
+            const featureDiv = document.createElement("div");
+            sprintDiv.classList = "drivers-table-normal";
+            featureDiv.classList = "drivers-table-normal";
+            sprintDiv.classList.add("sprint-result-cell");
+            featureDiv.classList.add("feature-result-cell");
+
+            if (races_done.includes(raceid) && race) {
+                const hasSprintPos = typeof race.sprintPos !== "undefined" && race.sprintPos !== null;
+                const hasSprintPoints = typeof race.sprintPoints !== "undefined" && race.sprintPoints !== null;
+
+                sprintDiv.dataset.quali = formatDriverCellValue(race.sprintQualiPos, "quali");
+                if (hasSprintPos) {
+                    sprintDiv.dataset.points = formatDriverCellValue(race.sprintPoints, "points");
+                    sprintDiv.dataset.pos = formatDriverCellValue(race.sprintPos, "pos");
+                    sprintDiv.dataset.gapToWinner = "-";
+                    sprintDiv.dataset.gapToPole = "-";
+                    sprintDiv.textContent = sprintDiv.dataset[pointsOrPos];
+                }
+                else {
+                    sprintDiv.textContent = "-";
+                }
+
+                featureDiv.dataset.pos = formatDriverCellValue(race.finishingPos, "pos");
+                const qualiPoints = parseInt(race.qualifyingPoints) || 0;
+                const featurePoints = (parseInt(race.points) || 0) + Math.max(0, qualiPoints);
+                featureDiv.dataset.points = formatDriverCellValue(featurePoints, "points");
+                featureDiv.dataset.fastlap = race.fastestLap ? 1 : 0;
+                featureDiv.dataset.quali = formatDriverCellValue(
+                    race.qualifyingPos === 99 ? race.startingPos : race.qualifyingPos,
+                    "quali"
+                );
+                featureDiv.dataset.gapToWinner = race.gapToWinner ?? "-";
+                featureDiv.dataset.gapToPole = race.gapToPole ?? "-";
+                featureDiv.dataset.dotd = race.driverOfTheDay;
+                featureDiv.textContent = featureDiv.dataset[pointsOrPos];       
+
+                driverpoints += Math.max(0, parseInt(race.points) || 0);        
+                driverpoints += Math.max(0, parseInt(race.qualifyingPoints) || 0);
+                if (hasSprintPos && hasSprintPoints) {
                     driverpoints += Math.max(0, parseInt(race.sprintPoints) || 0);
                 }
+            } else {
+                sprintDiv.textContent = "-";
+                featureDiv.textContent = "-";
             }
 
-            // Puntos carrera (ignora -1)
-            driverpoints += Math.max(0, parseInt(race.points) || 0);
-
-            raceDiv.textContent = raceDiv.dataset[pointsOrPos];
-            row.appendChild(raceDiv);
-        } else {
-            raceDiv.innerText = "-";
-            row.appendChild(raceDiv);
+            row.appendChild(sprintDiv);
+            row.appendChild(featureDiv);
         }
     });
 
@@ -1142,6 +1612,9 @@ function manageTeamsText(raceDiv) {
 }
 
 function hoverListeners() {
+    if (currentFormula !== 1) {
+        return;
+    }
     document.querySelectorAll(".drivers-table-row").forEach(function (row) {
         row.addEventListener("mouseenter", function () {
             if (this.dataset.teamid === "2" || this.dataset.teamid === "6" || (this.dataset.teamid === "5" && alpineReplace !== "alpine")
@@ -1252,7 +1725,7 @@ function manageRecordsSelected(forcedYearEl = null) {
     if (typeVal === "standings") {
         isYearSelected = true
         manage_show_tables();
-        new Command("yearSelected", { year: selectedYear, isCurrentYear }).execute();
+        new Command("yearSelected", { year: selectedYear, isCurrentYear, formula: currentFormula }).execute();
     } else {
         new Command("recordSelected", { type: typeVal, year: selectedYear }).execute();
         manageShowRecords();

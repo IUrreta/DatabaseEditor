@@ -53,7 +53,7 @@ export let combined_dict = {
     16: "MP Motorsport (F2)",
     17: "PHM Racing (F2)",
     18: "DAMS (F2)",
-    19: "Campo Racing (F2)",
+    19: "Campos Racing (F2)",
     20: "VAR Racing (F2)",
     21: "Trident (F2)",
     22: "Prema Racing (F3)",
@@ -192,8 +192,32 @@ export let logos_disc = {
     8: '../assets/images/alphatauri.png',
     9: '../assets/images/alfaromeo.png',
     10: '../assets/images/astonMartin.png',
+    11: '../assets/images/prema.png',
+    12: '../assets/images/invicta.png',
+    13: '../assets/images/carlin.png',
+    14: '../assets/images/hitech.png',
+    15: '../assets/images/art.png',
+    16: '../assets/images/mp.png',
+    17: '../assets/images/phm.png',
+    18: '../assets/images/dams.png',
+    19: '../assets/images/campos.png',
+    20: '../assets/images/var.png',
+    21: '../assets/images/trident.png',
+    22: '../assets/images/prema.png',
+    23: '../assets/images/trident.png',
+    24: '../assets/images/art.png',
+    25: '../assets/images/hitech.png',
+    26: '../assets/images/var.png',
+    27: '../assets/images/mp.png',
+    28: '../assets/images/campos.png',
+    29: '../assets/images/carlin.png',
+    30: '../assets/images/jenzer.png',
+    31: '../assets/images/phm.png',
     32: '../assets/images/placeholder.png'
 };
+
+
+
 export const points_race = {
     1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1,
     11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, "DNF": 0
@@ -242,7 +266,7 @@ export const f2_teams = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 export const f3_teams = [22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
 export const staff_positions = { 1: "technical-chief", 2: "race-engineer", 3: "head-aero", 4: "sporting-director" }
 export const staff_pics = { 1: "../assets/images/technicalChief.png", 2: "../assets/images/raceEngineer2.png", 3: "../assets/images/headAero.png", 4: "../assets/images/sportingDirector.png" }
-export let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 32: "ct", 33: "f2", 34: "f3" }
+export let team_dict = { 1: "fe", 2: "mc", 3: "rb", 4: "me", 5: "al", 6: "wi", 7: "ha", 8: "at", 9: "af", 10: "as", 11: "pre", 12: "vir", 13: "car", 14: "hit", 15: "art", 16: "mp", 17: "phm", 18: "dam", 19: "cam", 20: "var", 21: "tri", 22: "pre", 23: "tri", 24: "art", 25: "hit", 26: "var", 27: "mp", 28: "cam", 29: "car", 30: "jen", 31: "phm", 32: "ct", 33: "f2", 34: "f3" }
 export let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4, 'alpine': 5, 'williams': 6, 'haas': 7, 'alphatauri': 8, 'alfaromeo': 9, 'astonmartin': 10, 'custom': 32 }
 
 
@@ -410,6 +434,15 @@ export function getParamMap(data) {
                 : 0,
             expected_return: data.condition?.expectedReturnCountry ?? "",
             end_date: data.condition?.end_date ?? ""
+        },
+        107: {
+            type: data.changeType ?? "",
+            change_area: data.mainChangeArea ?? ""
+        },
+        108: {
+            driver1: data.driver1,
+            driver2: data.driver2,
+            driver3: data.driver3
         }
     };
 }
@@ -472,3 +505,10 @@ export const difficultyConfig = {
         buildDif: { className: "dif-warning impossible", text: "+2 parts when design completed" },
     }
 };
+
+export const weightDifConfig = {0 : {text: "Disabled", className: "disabled"}, 1 : {text: "Lightweight parts", className: "extra-hard"},
+        2 : {text: "ULTRA Lightweight parts", className: "impossible"}}
+
+export const defaultDifficultiesConfig = {0 : {text: "Disabled", className: "disabled"}, 1 : {text: "Extra Hard", className: "extra-hard"},
+        2 : {text: "Brutal", className: "brutal"}, 3 : {text: "Unfair", className: "unfair"},
+        4 : {text: "Insane", className: "insane"}, 5 : {text: "Impossible", className: "impossible"}}

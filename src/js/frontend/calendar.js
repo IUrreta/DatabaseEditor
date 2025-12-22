@@ -28,9 +28,21 @@ function reubicate(div0,div1,beforeAfter) {
 
 /**
  * Adds a race in the calendar div
- * @param {string} code Code from the race
+ * @param {Object} race
  */
-function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
+function addRace(race) {
+    const {
+        code,
+        rainP,
+        rainQ,
+        rainR,
+        type,
+        trackId,
+        state,
+        isF2Race = 0,
+        isF3Race = 0,
+    } = race;
+
     let imageUrl = codes_dict[code];
 
     let div = document.createElement('div');
@@ -41,12 +53,14 @@ function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
     let rightDiv = document.createElement('div');
     rightDiv.className = "right-race"
     div.classList.add('race-calendar');
-    div.dataset.trackid = trackID
+    div.dataset.trackid = trackId
     div.dataset.rainQ = rainQ
     div.dataset.rainR = rainR
     div.dataset.rainP = rainP
     div.dataset.type = type
     div.dataset.state = state
+    div.dataset.isf2 = isF2Race
+    div.dataset.isf3 = isF3Race
     if(state === 2){
         div.classList.add("completed")
         let compDiv = document.createElement('div');
@@ -57,6 +71,51 @@ function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
         divText.style.fontSize = "18px"
         compDiv.appendChild(divText)
         div.appendChild(compDiv)
+    }
+
+    const seriesBadges = document.createElement('div');
+    seriesBadges.className = "race-series-badges";
+    const f2Badge = document.createElement('button');
+    f2Badge.className = "race-series-badge race-series-badge-f2 bold-font";
+    f2Badge.type = "button";
+    f2Badge.textContent = "F2";
+    seriesBadges.appendChild(f2Badge);
+    const f3Badge = document.createElement('button');
+    f3Badge.className = "race-series-badge race-series-badge-f3 bold-font";
+    f3Badge.type = "button";
+    f3Badge.textContent = "F3";
+    seriesBadges.appendChild(f3Badge);
+
+    if (Number(isF2Race) === 1) {
+        f2Badge.classList.add("active-badge");
+    }
+
+    if (Number(isF3Race) === 1) {
+        f3Badge.classList.add("active-badge");
+    }
+
+    f2Badge.addEventListener("click", function () {
+        if (div.dataset.isf2 === "1") {
+            div.dataset.isf2 = "0";
+            f2Badge.classList.remove("active-badge");
+        } else {
+            div.dataset.isf2 = "1";
+            f2Badge.classList.add("active-badge");
+        }
+    });
+    
+    f3Badge.addEventListener("click", function () {
+        if (div.dataset.isf3 === "1") {
+            div.dataset.isf3 = "0";
+            f3Badge.classList.remove("active-badge");
+        } else {
+            div.dataset.isf3 = "1";
+            f3Badge.classList.add("active-badge");
+        }
+    });
+
+    if (seriesBadges.childElementCount > 0) {
+        div.appendChild(seriesBadges);
     }
 
     let upperDiv = document.createElement('div');
@@ -115,9 +174,9 @@ function addRace(code, rainP, rainQ, rainR, type, trackID, state) {
     let wSelector = document.createElement('div');
     wSelector.className = "weather-selector"
     let leftArrow = document.createElement('i');
-    leftArrow.className = "bi bi-chevron-left"
+    leftArrow.classList.add("bi", "bi-chevron-left", "new-augment-button", "transparent")
     let rightArrow = document.createElement('i');
-    rightArrow.className = "bi bi-chevron-right"
+    rightArrow.classList.add("bi", "bi-chevron-right", "new-augment-button", "transparent")
     let wVis = document.createElement('div');
     wVis.className = "weather-vis"
     wVis.dataset.value = Number(rainQ)
@@ -200,8 +259,17 @@ function updateVisualizers(){
 export function load_calendar(races){
     document.querySelector('.main-calendar-section').innerHTML = ""
     races.forEach(function(elem){
-        let code = races_map[elem[0]]
-        addRace(code, transformWeather(elem[1]), transformWeather(elem[2]), transformWeather(elem[3]), elem[4], elem[0], elem[5])
+        addRace({
+            code: races_map[elem.trackId],
+            rainP: transformWeather(elem.weatherStatePractice),
+            rainQ: transformWeather(elem.weatherStateQualifying),
+            rainR: transformWeather(elem.weatherStateRace),
+            type: elem.weekendType,
+            trackId: elem.trackId,
+            state: elem.state,
+            isF2Race: elem.isF2Race,
+            isF3Race: elem.isF3Race
+        })
     })
     updateVisualizers()
     update_numbers()
@@ -292,7 +360,17 @@ function listenerRaces() {
     document.querySelectorAll('#addTrackMenu a').forEach(item => {
         item.addEventListener("click",function () {
             if (document.querySelector(".main-calendar-section").childElementCount < max_races) {
-                addRace(item.dataset.code, 0, 0, 0, 0, item.dataset.trackid, 0)
+                addRace({
+                    code: item.dataset.code,
+                    rainP: 0,
+                    rainQ: 0,
+                    rainR: 0,
+                    type: 0,
+                    trackId: item.dataset.trackid,
+                    state: 0,
+                    isF2Race: 0,
+                    isF3Race: 0
+                })
                 updateVisualizers()
                 update_numbers()
             }

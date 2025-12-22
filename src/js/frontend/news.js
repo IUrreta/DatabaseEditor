@@ -32,8 +32,22 @@ let saveArticleBtn = null;
 let cancelArticleBtn = null;
 let originalTitleText = '';
 
-let errorCount = 0;
-const MAX_ERRORS = 2;
+const DEFAULT_NEWS_LANGUAGE = "English";
+const NEWS_LANGUAGE_STORAGE_KEY = "newsLanguage";
+const NEWS_LANGUAGE_OPTIONS = [
+  { value: "English", label: "English" },
+  { value: "Spanish", label: "Spanish" },
+  { value: "Italian", label: "Italian" },
+  { value: "French", label: "French" },
+  { value: "German", label: "German" },
+  { value: "Dutch", label: "Dutch" },
+  { value: "Polish", label: "Polish" },
+  { value: "Portuguese", label: "Portuguese" },
+  { value: "Russian", label: "Russian" },
+  { value: "Chinese", label: "Chinese" },
+  { value: "Japanese", label: "Japanese" },
+
+];
 
 
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
@@ -83,6 +97,78 @@ async function finishGeneralLoader() {
   ]);
 
   pageLoaderDiv.remove();
+}
+
+function getNewsLanguage() {
+  try {
+    return localStorage.getItem(NEWS_LANGUAGE_STORAGE_KEY) || DEFAULT_NEWS_LANGUAGE;
+  } catch {
+    return DEFAULT_NEWS_LANGUAGE;
+  }
+}
+
+function replaceLanguagePlaceholder(text, language) {
+  if (typeof text !== 'string') return text;
+  return text.replace(/{{\s*language\s*}}/gi, language);
+}
+
+function syncNewsLanguageDropdown(selectedLanguage) {
+  const menu = document.getElementById('newsLanguageMenu');
+  const button = document.getElementById('newsLanguageButton');
+
+  if (button) {
+    const label = button.querySelector('span');
+    if (label) {
+      label.innerText = selectedLanguage;
+    }
+  }
+
+  if (menu) {
+    menu.querySelectorAll('.redesigned-dropdown-item').forEach(item => {
+      const isSelected = item.dataset.value === selectedLanguage;
+      item.querySelector('i')?.classList.toggle('unactive', !isSelected);
+    });
+  }
+}
+
+function setNewsLanguage(language) {
+  const selected = NEWS_LANGUAGE_OPTIONS.find(opt => opt.value === language)?.value || DEFAULT_NEWS_LANGUAGE;
+  try {
+    localStorage.setItem(NEWS_LANGUAGE_STORAGE_KEY, selected);
+  } catch {
+    // Ignore storage errors and keep using the selected value in memory
+  }
+  syncNewsLanguageDropdown(selected);
+}
+
+function setupNewsLanguageDropdown() {
+  const menu = document.getElementById('newsLanguageMenu');
+  const button = document.getElementById('newsLanguageButton');
+  if (!menu || !button) return;
+
+  menu.innerHTML = '';
+
+  NEWS_LANGUAGE_OPTIONS.forEach(({ value, label }) => {
+    const item = document.createElement('a');
+    item.classList.add('redesigned-dropdown-item');
+    item.dataset.value = value;
+    item.href = '#';
+    item.innerText = label;
+
+    const checkIcon = document.createElement('i');
+    checkIcon.classList.add('bi', 'bi-check');
+    item.appendChild(checkIcon);
+
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setNewsLanguage(value);
+    });
+
+    menu.appendChild(item);
+  });
+
+  syncNewsLanguageDropdown(getNewsLanguage());
 }
 
 async function cleanupOpenedNewsItem() {
@@ -395,7 +481,8 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       const newResp = await command.promiseExecute();
       place_turning_outcome(newResp.content, newsList);
 
-      if (news.type === "turning_point_transfer" || news.type === "turning_point_injury") {
+      if (news.type === "turning_point_transfer" || news.type === "turning_point_injury" ||
+         news.type === "turning_point_young_drivers" || news.type === "turning_point_young_drivers") {
         const commandDrivers = new Command("driversRefresh", {});
         commandDrivers.execute();
       }
@@ -413,7 +500,10 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
         const commandCalendar = new Command("calendarRefresh", {});
         commandCalendar.execute();
       }
-
+      else if (news.type === "turning_point_engine_regulation") {
+        const commandEngines = new Command("enginesRefresh", {});
+        commandEngines.execute();
+      }
     });
 
 
@@ -688,6 +778,7 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
 }
 
 export async function place_turning_outcome(turningPointResponse, newsList) {
+  if (!turningPointResponse) return;
   let saveName = getSaveName();
   saveName = saveName.split('.')[0];
 
@@ -1178,6 +1269,7 @@ function buildContextualPrompt(data, config = {}) {
 
 async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}) {
   const { force = false } = opts;
+  const stableKey = newData.stableKey ?? newData.id ?? computeStableKey(newData);
 
   // 1) Si ya hay texto y NO forzamos, devolvemos el existente
   if (newData.text && !force) {
@@ -1211,6 +1303,8 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_investment: (nd) => contextualizeTurningPointInvestment(nd, nd.turning_point_type),
     turning_point_race_substitution: (nd) => contextualizeTurningPointRaceSubstitution(nd, nd.turning_point_type),
     turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
+    turning_point_engine_regulation: (nd) => contextualizeTurningPointEngineRegulation(nd, nd.turning_point_type),
+    turning_point_young_drivers: (nd) => contextualizeTurningPointYoungDrivers(nd, nd.turning_point_type),
   };
 
   // 3) Normaliza tipos "turning_point_outcome_*" -> "turning_point_*"
@@ -1239,6 +1333,8 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
 
     // 5) Construir prompt SOLO si hace falta
     let messages = [];
+    const selectedLanguage = getNewsLanguage();
+    const expectsJson = selectedLanguage !== DEFAULT_NEWS_LANGUAGE;
     if (handler) {
       let { instruction, context } = await handler(newData);
       const normalDate = excelToDate(newData.date);
@@ -1260,6 +1356,15 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
 
       finalInstruction += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
 
+      if (expectsJson) {
+        finalInstruction += `\n\nReturn ONLY a JSON object with exactly two keys: "title" and "body".` +
+          ` The "title" must be the translated headline in ${selectedLanguage}.` +
+          ` The "body" must be the full article in ${selectedLanguage} using Markdown.` +
+          ` Do not include the title inside the body. Do not add extra keys or wrap the JSON in code fences.`;
+      }
+
+      finalInstruction = replaceLanguagePlaceholder(finalInstruction, selectedLanguage);
+
       // Message 1: Context Data
       messages.push({
         role: "user",
@@ -1277,13 +1382,41 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
 
     // 6) Llama a la IA y guarda
     const articleText = await askGenAI(messages);
-    const cleanedArticleText = cleanArticleOutput(articleText);
+    const parsedJson = tryParseJsonObject(articleText);
+    let translatedTitle = "";
+    let cleanedArticleText = "";
+
+    if (parsedJson && typeof parsedJson.body === "string" && parsedJson.body.trim()) {
+      cleanedArticleText = cleanArticleOutput(parsedJson.body);
+      if (typeof parsedJson.title === "string") {
+        translatedTitle = parsedJson.title.trim();
+      }
+    } else {
+      cleanedArticleText = cleanArticleOutput(articleText);
+    }
+
     newData.text = cleanedArticleText;
+    if (translatedTitle) {
+      newData.title = translatedTitle;
+      const modalTitle = document.querySelector('#newsModal .modal-title');
+      if (modalTitle) {
+        modalTitle.textContent = translatedTitle;
+      }
+      const openedNewsTitle = document.querySelector('.news-item.opened .news-title');
+      if (openedNewsTitle) {
+        openedNewsTitle.textContent = translatedTitle;
+      }
+    }
     updateRateLimitsDisplay();
 
+    const patch = { text: cleanedArticleText };
+    if (translatedTitle) {
+      patch.title = translatedTitle;
+    }
+
     new Command("updateNews", {
-      stableKey: newData.id ?? computeStableKey(newData),
-      patch: { text: cleanedArticleText }
+      stableKey,
+      patch
     }).execute();
 
     if (barProgressDiv) barProgressDiv.style.width = '100%';
@@ -1301,6 +1434,43 @@ function cleanArticleOutput(rawMd) {
   md = italicizeQuotes(md);
 
   return md.trim();
+}
+
+function safeJsonParse(raw) {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function tryParseJsonObject(raw) {
+  if (typeof raw !== "string") return null;
+  let text = raw.trim();
+  if (!text) return null;
+
+  if (text.startsWith("```")) {
+    text = text
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/```\s*$/i, "")
+      .trim();
+  }
+
+  let parsed = safeJsonParse(text);
+  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+    return parsed;
+  }
+
+  const first = text.indexOf("{");
+  const last = text.lastIndexOf("}");
+  if (first !== -1 && last !== -1 && last > first) {
+    parsed = safeJsonParse(text.slice(first, last + 1));
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed;
+    }
+  }
+
+  return null;
 }
 
 function removeLeading(md) {
@@ -1569,7 +1739,130 @@ async function contextualizeTurningPointTechnicalDirective(newData, turningPoint
   };
 }
 
-async function contextualizeTurningPointTransfer(newData, turningPointType) {
+async function contextualizeTurningPointEngineRegulation(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 107);
+  let prompt;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+
+  const seasonYear = newData.data.season;
+  const changeType = newData.data.changeType || "minor";
+  const changeArea = newData.data.mainChangeArea || "engine regulations";
+  const winners = Array.isArray(newData.data.winnerNames) ? newData.data.winnerNames : [];
+  const losers = Array.isArray(newData.data.loserNames) ? newData.data.loserNames : [];
+
+  const formatList = (list, fallback) => {
+    if (!list.length) return fallback;
+    if (list.length === 1) return list[0];
+    if (list.length === 2) return `${list[0]} and ${list[1]}`;
+    return `${list.slice(0, -1).join(", ")} and ${list[list.length - 1]}`;
+  };
+
+  const winnerNames = formatList(winners, "several manufacturers");
+  const loserNames = formatList(losers, "a few rivals");
+
+  prompt = prompt
+    .replace(/{{\s*type\s*}}/g, changeType)
+    .replace(/{{\s*change_area\s*}}/g, changeArea)
+    .replace(/{{\s*winner_names\s*}}/g, winnerNames)
+    .replace(/{{\s*loser_names\s*}}/g, loserNames);
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeTurningPointYoungDrivers(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 108);
+  let prompt;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+
+  const prospects = Array.isArray(newData.data.prospects) ? newData.data.prospects : [];
+  const prospectsList = prospects.map(p => {
+    const series = p.series || "Junior";
+    const age = p.age != null ? `age ${p.age}` : "age unknown";
+    const pos = p.position != null ? `P${p.position}` : "";
+    const points = p.points != null ? `${p.points} pts` : "";
+    return `${p.name} (${series}, ${age}, ${pos}, ${points})`;
+  }).join("\n");
+
+  const seriesSet = new Set(prospects.map(p => p.series).filter(Boolean));
+  const seriesList = Array.from(seriesSet).filter(s => s !== "Free");
+  let seriesContext = "";
+  if (seriesSet.size === 0) {
+    seriesContext = "There is no confirmed series breakdown for these prospects.";
+  } else if (seriesSet.size === 1 && seriesSet.has("Free")) {
+    seriesContext = "The standout names this year are drivers from regional formulas outside the main junior championships.";
+  } else if (seriesSet.has("Free") && seriesList.length) {
+    seriesContext = `The shortlist includes drivers from ${seriesList.join(" and ")} as well as drivers from regional formulas outside those championships.`;
+  } else {
+    seriesContext = `The shortlist includes drivers from ${seriesList.join(" and ")}.`;
+  }
+
+  prompt = prompt
+    .replace(/{{\s*driver1\s*}}/g, newData.data.driver1 || "a leading prospect")
+    .replace(/{{\s*driver2\s*}}/g, newData.data.driver2 || "another leading prospect")
+    .replace(/{{\s*prospects_list\s*}}/g, prospectsList || "No prospect data available.");
+
+  if (seriesContext) {
+    prompt += `\n\n${seriesContext}`;
+  }
+
+  const seasonYear = newData.data.season;
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  let contextData = buildContextualPrompt(resp.content, { seasonYear });
+  if (prospectsList) {
+    contextData += `\n\nYoung prospects summary:\n${prospectsList}`;
+  }
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeTurningPointTransfer(newData, turningPointType) {   
   const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 101);
   let prompt;
   if (turningPointType.includes("positive")) {
@@ -2737,6 +3030,8 @@ function getOrdinalSuffix(n) {
   }
   return n + "th";
 }
+
+setupNewsLanguageDropdown();
 
 document.querySelectorAll('#newsTypeMenu .redesigned-dropdown-item').forEach(item => {
   item.addEventListener('click', function (e) {

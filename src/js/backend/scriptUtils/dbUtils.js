@@ -870,23 +870,24 @@ function computeSeasonDriverOfTheDay(seasonResults, season) {
 export function fetchSeasonResults(
   yearSelected,
   isCurrentYear = true,
-  fetchDriverOfTheDay = false
+  fetchDriverOfTheDay = false,
+  formula = 1
 ) {
   const drivers = queryDB(`
-      SELECT DriverID
-      FROM Races_DriverStandings
-      WHERE RaceFormula = 1
-        AND SeasonID = ?
-    `, [yearSelected], 'allRows') || [];
+        SELECT DriverID
+        FROM Races_DriverStandings
+        WHERE RaceFormula = ?
+          AND SeasonID = ?
+      `, [formula, yearSelected], 'allRows') || [];
 
   const seasonResults = [];
   for (const row of drivers) {
     const driverID = row[0];
-    const driverRes = fetchOneDriverSeasonResults([driverID], [yearSelected], isCurrentYear);
+    const driverRes = fetchOneDriverSeasonResults([driverID], [yearSelected], isCurrentYear, formula);
     if (driverRes) seasonResults.push(driverRes);
   }
 
-  if (!fetchDriverOfTheDay) {
+  if (!fetchDriverOfTheDay || Number(formula) !== 1) {
     return seasonResults;
   }
 
@@ -915,13 +916,13 @@ export function fetchQualiResults(yearSelected) {
   return seasonResults;
 }
 
-export function fetchTeamsStandings(year) {
+export function fetchTeamsStandings(year, formula = 1) {
   return queryDB(`
-      SELECT TeamID, Position
-      FROM Races_TeamStandings
-      WHERE SeasonID = ?
-        AND RaceFormula = 1
-    `, [year], 'allRows') || [];
+        SELECT TeamID, Position
+        FROM Races_TeamStandings
+        WHERE SeasonID = ?
+          AND RaceFormula = ?
+      `, [year, formula], 'allRows') || [];
 }
 
 export function fetchPointsRegulations() {
@@ -964,47 +965,93 @@ export function fetchOneTeamSeasonResults(team, year) {
   return results;
 }
 
-export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true) {
+export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true, formula = 1) {
   const driverID = Array.isArray(driver) ? driver[0] : driver; //if its not an array, take it as is, if it is, take first element
   const season = Array.isArray(year) ? year[0] : year;
 
+  if (Number(formula) === 1) {
+    const results = queryDB(`
+          SELECT DriverID, TeamID, FinishingPos, Points
+          FROM Races_Results
+          WHERE Season = ?
+            AND DriverID = ?
+        `, [season, driverID], 'allRows') || [];
 
-  const results = queryDB(`
-      SELECT DriverID, TeamID, FinishingPos, Points
-      FROM Races_Results
-      WHERE Season = ?
+    if (results.length > 0) {
+      const sprintResults = queryDB(`
+            SELECT RaceID, FinishingPos, ChampionshipPoints
+            FROM Races_SprintResults
+            WHERE SeasonID = ?
+              AND DriverID = ?
+              AND RaceFormula = ?
+          `, [season, driverID, formula], 'allRows') || [];
+
+      const teamID = results[0][1];
+
+      const driverNameRow = queryDB(`
+            SELECT FirstName, LastName
+            FROM Staff_BasicData
+            WHERE StaffID = ?
+          `, [driverID], 'singleRow');
+
+      return formatSeasonResults(
+        results,
+        driverNameRow,
+        teamID,
+        driver,
+        year,
+        sprintResults,
+        isCurrentYear,
+        formula
+      );
+    }
+
+    return null;
+  }
+  else if (Number(formula) > 1) {
+
+    const results = queryDB(`
+      SELECT RaceID, TeamID, FinishingPos, ChampionshipPoints, 0, FastestLap
+      FROM Races_FeatureRaceResults
+      WHERE SeasonID = ?
         AND DriverID = ?
-    `, [season, driverID], 'allRows') || [];
+        AND RaceFormula = ?
+      ORDER BY RaceID
+    `, [season, driverID, formula], 'allRows') || [];
 
-  if (results.length > 0) {
-    const sprintResults = queryDB(`
+    if (results.length > 0) {
+      const sprintResults = queryDB(`
         SELECT RaceID, FinishingPos, ChampionshipPoints
         FROM Races_SprintResults
         WHERE SeasonID = ?
           AND DriverID = ?
-      `, [season, driverID], 'allRows') || [];
+          AND RaceFormula = ?
+      `, [season, driverID, formula], 'allRows') || [];
 
+      const teamID = results[0][1];
 
-    const teamID = results[0][1];
-
-    const driverNameRow = queryDB(`
+      const driverNameRow = queryDB(`
         SELECT FirstName, LastName
         FROM Staff_BasicData
         WHERE StaffID = ?
       `, [driverID], 'singleRow');
 
-    return formatSeasonResults(
-      results,
-      driverNameRow,
-      teamID,
-      driver,
-      year,
-      sprintResults,
-      isCurrentYear
-    );
+      return formatSeasonResults(
+        results,
+        driverNameRow,
+        teamID,
+        driver,
+        year,
+        sprintResults,
+        isCurrentYear,
+        formula
+      );
+    }
+
+    return null;
   }
 
-  return null;
+  
 }
 
 
@@ -1290,8 +1337,8 @@ function getNameByIdAndFormat(driverID) {
 
 
 export function fetchOneDriverQualiResults(driver, year) {
-  const driverID = driver;
-  const season = year;
+  const driverID = Array.isArray(driver) ? driver[0] : driver;
+  const season = Array.isArray(year) ? year[0] : year;
 
   const results = queryDB(`
       SELECT DriverID, TeamID, StartingPos, Points
@@ -1372,17 +1419,165 @@ export function fetchEventsDoneBefore(year, day) {
   return eventsIds;
 }
 
-export function fetchEventsFrom(year) {
+export function fetchEventsFrom(year, formula = 1) {
   const seasonEventsRows = queryDB(`
-      SELECT RaceID, TrackID, WeekendType
-      FROM Races
-      WHERE SeasonID = ?
+      SELECT r.RaceID, r.TrackID, r.WeekendType, t.isF2Race, t.IsF3Race
+      FROM Races r
+      LEFT JOIN Races_Tracks t ON r.TrackID = t.TrackID
+      WHERE r.SeasonID = ?
+      ORDER BY r.RaceID
     `, [year], 'allRows') || [];
 
-  return seasonEventsRows; // Ya es un array de arrays con [RaceID, TrackID]
+  if (Number(formula) === 2) {
+    return seasonEventsRows.filter(row => Number(row[3]) === 1);
+  }
+  if (Number(formula) === 3) {
+    return seasonEventsRows.filter(row => Number(row[4]) === 1);
+  }
+  return seasonEventsRows;
 }
 
 
+
+function formatDriverName(driverName) {
+  let nombre = "", apellido = "";
+  const firstName = driverName ? driverName[0] : "";
+  const lastName = driverName ? driverName[1] : "";
+  if (!firstName.includes("STRING_LITERAL")) {
+    const m = firstName.match(/StaffName_Forename_(Male|Female)_(\w+)/);
+    nombre = m ? removeNumber(m[2]) : "";
+  } else {
+    const m = firstName.match(/\|([^|]+)\|/);
+    nombre = m ? m[1] : "";
+  }
+  if (!lastName.includes("STRING_LITERAL")) {
+    const m = lastName.match(/StaffName_Surname_(\w+)/);
+    apellido = m ? removeNumber(m[1]) : "";
+  } else {
+    const m = lastName.match(/\|([^|]+)\|/);
+    apellido = m ? m[1] : "";
+  }
+  return `${nombre} ${apellido}`.trim();
+}
+
+function formatSeasonResultsF2F3(
+  results,
+  driverName,
+  teamID,
+  driver,
+  year,
+  sprints,
+  formula
+) {
+  const driverID = Array.isArray(driver) ? driver[0] : driver;
+  const season = Array.isArray(year) ? year[0] : year;
+  const nameFormatted = formatDriverName(driverName);
+
+  const raceObjects = [];
+  const byRace = new Map();
+
+  results.forEach((row) => {
+    const raceID = row[0];
+    const teamId = row[1] ?? teamID;
+    const finishingPos = row[2];
+    const points = row[3];
+    const dnf = Number(row[4]) === 1;
+
+    const base = {
+      raceId: raceID,
+      finishingPos: finishingPos ?? 99,
+      points: points ?? 0,
+      dnf: dnf,
+      fastestLap: false,
+      qualifyingPos: 99,
+      qualifyingPoints: 0,
+      gapToWinner: null,
+      gapToPole: null,
+      startingPos: 99,
+      gapAhead: null,
+      gapBehind: null,
+      sprintPoints: 0,
+      sprintPos: null,
+      sprintQualiPos: null,
+      teamId: teamId,
+      driverOfTheDay: false
+    };
+
+    if (base.dnf) {
+      base.finishingPos = -1;
+      base.points = -1;
+    }
+
+    const qualiRow = queryDB(`
+        SELECT FinishingPos, ChampionshipPoints
+        FROM Races_QualifyingResults
+        WHERE RaceFormula = ?
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND DriverID = ?
+          AND QualifyingStage = 1
+      `, [formula, raceID, season, driverID], "singleRow") || [];
+
+    const qualiPos = qualiRow[0] ?? 99;
+    base.qualifyingPos = qualiPos;
+    base.qualifyingPoints = qualiRow[1] ?? 0;
+    base.startingPos = qualiPos;
+    const invertLimit = Number(formula) === 2 ? 10 : (Number(formula) === 3 ? 12 : 0);
+    if (invertLimit > 0 && Number.isFinite(Number(qualiPos))) {
+      const qPos = Number(qualiPos);
+      base.sprintQualiPos = (qPos > 0 && qPos <= invertLimit) ? (invertLimit + 1 - qPos) : qPos;
+    } else {
+      base.sprintQualiPos = qualiPos;
+    }
+
+    const fastestLapDriver = queryDB(`
+        SELECT DriverID
+        FROM Races_FeatureRaceResults
+        WHERE FastestLap > 0
+          AND RaceID = ?
+          AND SeasonID = ?
+          AND RaceFormula = ?
+        ORDER BY FastestLap
+        LIMIT 1
+      `, [raceID, season, formula], "singleValue");
+
+    base.fastestLap = parseInt(fastestLapDriver) === parseInt(driverID);
+
+    raceObjects.push(base);
+    byRace.set(raceID, base);
+  });
+
+  if (Array.isArray(sprints)) {
+    for (const sprintRow of sprints) {
+      const [sprintRaceID, sprintPos, sprintPoints] = sprintRow;
+      const obj = byRace.get(sprintRaceID);
+      if (obj) {
+        obj.sprintPoints = sprintPoints ?? 0;
+        obj.sprintPos = sprintPos ?? null;
+      }
+    }
+  }
+
+  const latestTeamId =
+    raceObjects.length ? raceObjects[raceObjects.length - 1].teamId : teamID;
+
+  const championshipPosition =
+    queryDB(`
+      SELECT Position
+      FROM Races_Driverstandings
+      WHERE RaceFormula = ?
+        AND SeasonID = ?
+        AND DriverID = ?
+    `, [formula, season, driverID], "singleValue") || 0;
+
+  return {
+    driverName: nameFormatted,
+    latestTeamId,
+    driverId: driverID[0] || driverID,
+    championshipPosition,
+    races: raceObjects
+  };
+}
 
 export function formatSeasonResults(
   results,
@@ -1391,8 +1586,12 @@ export function formatSeasonResults(
   driver,
   year,
   sprints,
-  isCurrentYear = true
+  isCurrentYear = true,
+  formula = 1
 ) {
+  if (Number(formula) !== 1) {
+    return formatSeasonResultsF2F3(results, driverName, teamID, driver, year, sprints, formula);
+  }
   const driverID = Array.isArray(driver) ? driver[0] : driver;
   const season = Array.isArray(year) ? year[0] : year;
 
@@ -1416,24 +1615,7 @@ export function formatSeasonResults(
     return `+${delta.toFixed(3)}`;
   };
 
-  let nombre = "", apellido = "";
-  const firstName = driverName ? driverName[0] : "";
-  const lastName = driverName ? driverName[1] : "";
-  if (!firstName.includes("STRING_LITERAL")) {
-    const m = firstName.match(/StaffName_Forename_(Male|Female)_(\w+)/);
-    nombre = m ? removeNumber(m[2]) : "";
-  } else {
-    const m = firstName.match(/\|([^|]+)\|/);
-    nombre = m ? m[1] : "";
-  }
-  if (!lastName.includes("STRING_LITERAL")) {
-    const m = lastName.match(/StaffName_Surname_(\w+)/);
-    apellido = m ? removeNumber(m[1]) : "";
-  } else {
-    const m = lastName.match(/\|([^|]+)\|/);
-    apellido = m ? m[1] : "";
-  }
-  const nameFormatted = `${nombre} ${apellido}`.trim();
+  const nameFormatted = formatDriverName(driverName);
 
   // ---- carreras del piloto ----
   const racesParticipated =
@@ -1602,12 +1784,12 @@ export function formatSeasonResults(
 
   const championshipPosition =
     queryDB(`
-      SELECT Position
-      FROM Races_Driverstandings
-      WHERE RaceFormula = 1
-        AND SeasonID = ?
-        AND DriverID = ?
-    `, [season, driverID], "singleValue") || 0;
+        SELECT Position
+        FROM Races_Driverstandings
+        WHERE RaceFormula = ?
+          AND SeasonID = ?
+          AND DriverID = ?
+      `, [formula, season, driverID], "singleValue") || 0;
 
   const payload = {
     driverName: nameFormatted,
@@ -1704,30 +1886,6 @@ export function calculateTimeDifference(driverID, raceID) {
 
 
 
-export function fetchCalendar() {
-  // Saco [ Day, CurrentSeason ] de Player_State
-  const daySeason = queryDB(`
-      SELECT Day, CurrentSeason
-      FROM Player_State
-    `, [], 'singleRow');
-
-  if (!daySeason) {
-    console.warn("No data found in Player_State.");
-    return [];
-  }
-
-  const [day, currentSeason] = daySeason;
-
-  // Saco el calendario
-  const calendar = queryDB(`
-      SELECT TrackID, WeatherStatePractice, WeatherStateQualifying, WeatherStateRace, WeekendType, State
-      FROM Races
-      WHERE SeasonID = ?
-    `, [currentSeason], 'allRows');
-
-  return calendar;
-}
-
 export function fetchDriverNumbers() {
   const numbers = queryDB(`SELECT DISTINCT Number
        FROM Staff_DriverNumbers dn 
@@ -1766,6 +1924,7 @@ export function checkCustomTables(year) {
   let createdEnginesStats = false;
   let createdEnginesAllocations = false;
   let createdCustomSaveConfig = false;
+  let createdEngineRegulationState = false;
 
   const tablesToCheck = [
     {
@@ -1808,6 +1967,15 @@ export function checkCustomTables(year) {
             
           )
         `
+    },
+    {
+      name: 'Custom_Engine_Regulation_State',
+      createSQL: `
+            CREATE TABLE IF NOT EXISTS Custom_Engine_Regulation_State (
+              id INTEGER PRIMARY KEY CHECK (id = 1),
+              lastSeasonApplied INTEGER
+            );
+        `
     }
   ];
 
@@ -1836,13 +2004,17 @@ export function checkCustomTables(year) {
       else if (table.name === 'Custom_Save_Config') {
         createdCustomSaveConfig = true;
       }
+      else if (table.name === 'Custom_Engine_Regulation_State') {
+        createdEngineRegulationState = true;
+      }
     }
   });
 
   fixCustomEnginesStatsTable();
 
-  insertDefualtEnginesData(createdEnginesList, createdEnginesStats, createdEnginesAllocations, createdCustomSaveConfig, year);
+  insertDefualtEnginesData(createdEnginesList, createdEnginesStats, createdEnginesAllocations, createdCustomSaveConfig, createdEngineRegulationState, year);
 
+  createEngineMigrationTrigger();
 }
 
 export function fixCustomEnginesStatsTable() {
@@ -1886,7 +2058,7 @@ export function fixCustomEnginesStatsTable() {
   }
 }
 
-export function insertDefualtEnginesData(list, stats, allocations, customSave, year) {
+export function insertDefualtEnginesData(list, stats, allocations, customSave, engineRegulationState, year) {
   const engines = [
     {
       id: 1,
@@ -1998,6 +2170,12 @@ export function insertDefualtEnginesData(list, stats, allocations, customSave, y
         VALUES (?, ?)
       `, [engine[0], engine[1]], 'run');
     });
+  }
+  if (engineRegulationState) {
+    queryDB(`
+      INSERT OR IGNORE INTO Custom_Engine_Regulation_State (id, lastSeasonApplied)
+      VALUES (1, -1);
+    `, [], 'run');
   }
 
 
@@ -2156,10 +2334,9 @@ export function updateCustomConfig(data) {
     VALUES ('secondaryColor', ?)
   `, [secondaryColor], 'run');
 
-  queryDB(`
-    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
-    VALUES ('difficulty', ?)
-  `, [difficulty], 'run');
+  //delete the difficulty key from Custom_Save_Config every time
+  queryDB(`DELETE FROM Custom_Save_Config WHERE key = 'difficulty'`, [], 'run');
+
 
   if (parseInt(playerTeam) !== -1) {
     updateTeam(playerTeam)
@@ -2254,4 +2431,150 @@ export function fetch2025ModData() {
 
   return config;
 
+}
+
+function createEngineMigrationTrigger() {
+  const sql = `
+  DROP TRIGGER IF EXISTS trg_sync_engine_stats_on_first_full_season_day;
+
+  CREATE TRIGGER trg_sync_engine_stats_on_first_full_season_day
+  AFTER UPDATE OF Day ON Player_State
+  WHEN
+    NEW.CurrentSeason = OLD.CurrentSeason
+    AND NEW.CurrentSeason >
+        (SELECT lastSeasonApplied FROM Custom_Engine_Regulation_State WHERE id = 1)
+  BEGIN
+    --------------------------------------------------------------------
+    -- Marca la season como ya aplicada (LO PRIMERO)
+    --------------------------------------------------------------------
+    UPDATE Custom_Engine_Regulation_State
+    SET lastSeasonApplied = NEW.CurrentSeason
+    WHERE id = 1;
+    --------------------------------------------------------------------
+    -- 1) MOTOR (PartType = 0): copia todas las stats PartStat tal cual
+    --------------------------------------------------------------------
+    UPDATE Parts_Designs_StatValues
+    SET
+      Value = (
+        SELECT ces.Value
+        FROM Parts_Designs pd
+        JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+        JOIN Custom_Engines_Stats ces
+          ON ces.EngineID = cea.EngineID
+        AND ces.DesignID = cea.EngineID               -- motor base
+        AND ces.PartStat = Parts_Designs_StatValues.PartStat
+        WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+          AND pd.PartType = 0
+        LIMIT 1
+      ),
+      UnitValue = (
+        SELECT ces.UnitValue
+        FROM Parts_Designs pd
+        JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+        JOIN Custom_Engines_Stats ces
+          ON ces.EngineID = cea.EngineID
+        AND ces.DesignID = cea.EngineID
+        AND ces.PartStat = Parts_Designs_StatValues.PartStat
+        WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+          AND pd.PartType = 0
+        LIMIT 1
+      )
+    WHERE EXISTS (
+      SELECT 1
+      FROM Parts_Designs pd
+      JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+      JOIN Custom_Engines_Stats ces
+        ON ces.EngineID = cea.EngineID
+      AND ces.DesignID = cea.EngineID
+      AND ces.PartStat = Parts_Designs_StatValues.PartStat
+      WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+        AND pd.PartType = 0
+    );
+
+    --------------------------------------------------------------------
+    -- 2) CAJA DE CAMBIOS (PartType = 1): copia stats desde designId=engineId+2
+    --------------------------------------------------------------------
+    UPDATE Parts_Designs_StatValues
+    SET
+      Value = (
+        SELECT ces.Value
+        FROM Parts_Designs pd
+        JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+        JOIN Custom_Engines_Stats ces
+          ON ces.EngineID = cea.EngineID
+        AND ces.DesignID = cea.EngineID + 2           -- gearbox
+        AND ces.PartStat = Parts_Designs_StatValues.PartStat
+        WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+          AND pd.PartType = 1
+        LIMIT 1
+      ),
+      UnitValue = (
+        SELECT ces.UnitValue
+        FROM Parts_Designs pd
+        JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+        JOIN Custom_Engines_Stats ces
+          ON ces.EngineID = cea.EngineID
+        AND ces.DesignID = cea.EngineID + 2
+        AND ces.PartStat = Parts_Designs_StatValues.PartStat
+        WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+          AND pd.PartType = 1
+        LIMIT 1
+      )
+    WHERE EXISTS (
+      SELECT 1
+      FROM Parts_Designs pd
+      JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+      JOIN Custom_Engines_Stats ces
+        ON ces.EngineID = cea.EngineID
+      AND ces.DesignID = cea.EngineID + 2
+      AND ces.PartStat = Parts_Designs_StatValues.PartStat
+      WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+        AND pd.PartType = 1
+    );
+
+    --------------------------------------------------------------------
+    -- 3) ERS (PartType = 2): copia stats desde designId=engineId+1
+    --------------------------------------------------------------------
+    UPDATE Parts_Designs_StatValues
+    SET
+      Value = (
+        SELECT ces.Value
+        FROM Parts_Designs pd
+        JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+        JOIN Custom_Engines_Stats ces
+          ON ces.EngineID = cea.EngineID
+        AND ces.DesignID = cea.EngineID + 1           -- ERS
+        AND ces.PartStat = Parts_Designs_StatValues.PartStat
+        WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+          AND pd.PartType = 2
+        LIMIT 1
+      ),
+      UnitValue = (
+        SELECT ces.UnitValue
+        FROM Parts_Designs pd
+        JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+        JOIN Custom_Engines_Stats ces
+          ON ces.EngineID = cea.EngineID
+        AND ces.DesignID = cea.EngineID + 1
+        AND ces.PartStat = Parts_Designs_StatValues.PartStat
+        WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+          AND pd.PartType = 2
+        LIMIT 1
+      )
+    WHERE EXISTS (
+      SELECT 1
+      FROM Parts_Designs pd
+      JOIN Custom_Engine_Allocations cea ON cea.TeamID = pd.TeamID
+      JOIN Custom_Engines_Stats ces
+        ON ces.EngineID = cea.EngineID
+      AND ces.DesignID = cea.EngineID + 1
+      AND ces.PartStat = Parts_Designs_StatValues.PartStat
+      WHERE pd.DesignID = Parts_Designs_StatValues.DesignID
+        AND pd.PartType = 2
+    );
+
+  END;
+  `
+  queryDB(sql, [], 'exec');
+  console.log("INSERTING TRIGGER FOR ENGINE STATS SYNC ON SEASON CHANGE");
 }

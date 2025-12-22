@@ -9,8 +9,46 @@ const weatherDict = {
   "5": 32
 };
 
-export function editCalendar(calendarStr, year_iteration, racesData) {
-  const calendar = calendarStr.toLowerCase();
+export function fetchCalendar() {
+  const daySeason = queryDB(`
+    SELECT Day, CurrentSeason
+    FROM Player_State
+  `, [], 'singleRow');
+
+  if (!daySeason) {
+    console.warn("No data found in Player_State.");
+    return [];
+  }
+
+  const currentSeason = daySeason[1];
+
+  const calendarRows = queryDB(`
+    SELECT r.TrackID,
+           r.WeatherStatePractice,
+           r.WeatherStateQualifying,
+           r.WeatherStateRace,
+           r.WeekendType,
+           r.State,
+           t.isF2Race,
+           t.IsF3Race AS isF3Race
+    FROM Races r
+    LEFT JOIN Races_Tracks t ON r.TrackID = t.TrackID
+    WHERE r.SeasonID = ?
+  `, [currentSeason], 'allRows') || [];
+
+  return calendarRows.map((row) => ({
+    trackId: row[0],
+    weatherStatePractice: row[1],
+    weatherStateQualifying: row[2],
+    weatherStateRace: row[3],
+    weekendType: row[4],
+    state: row[5],
+    isF2Race: row[6] ?? 0,
+    isF3Race: row[7] ?? 0,
+  }));
+}
+
+export function editCalendar(year_iteration, racesData) {
   const yearIteration = year_iteration;
 
   let maxRaces;
@@ -62,6 +100,9 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
       const rainQBool = (parseFloat(rainQ) >= 8) ? 1 : 0;
       const rainP = weatherDict[race.rainPractice];
       const rainPBool = (parseFloat(rainP) >= 8) ? 1 : 0;
+      const isF2Race = parseInt(race.isF2Race, 10) || 0;
+      const isF3Race = parseInt(race.isF3Race, 10) || 0;
+      const trackId = parseInt(race.trackId, 10);
       // race_code = race.slice(0, -5); // en Python, no lo usas aquí para nada
 
       queryDB(`
@@ -76,6 +117,14 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
           WeekendType = ?
         WHERE RaceID = ?
       `, [rainPBool, rainP, rainQBool, rainQ, rainRBool, rainR, format, raceIDs[i]], 'run');
+
+      queryDB(`
+        UPDATE Races_Tracks
+        SET
+          isF2Race = ?,
+          IsF3Race = ?
+        WHERE TrackID = ?
+      `, [isF2Race, isF3Race, trackId], 'run');
     }
   } else {
     const randomBlanks = [];
@@ -141,6 +190,8 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
       const rainP = weatherDict[race.rainPractice];
       const rainPBool = (parseFloat(rainP) >= 8) ? 1 : 0;
       const raceCode = parseInt(race.trackId);
+      const isF2Race = parseInt(race.isF2Race, 10) || 0;
+      const isF3Race = parseInt(race.isF3Race, 10) || 0;
 
       const temps = queryDB(`
         SELECT TemperatureMin, TemperatureMax
@@ -193,6 +244,14 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
           format
         ], 'run');
       }
+
+      queryDB(`
+        UPDATE Races_Tracks
+        SET
+          isF2Race = ?,
+          IsF3Race = ?
+        WHERE TrackID = ?
+      `, [isF2Race, isF3Race, raceCode], 'run');
     }
   }
 }

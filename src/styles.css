@@ -638,7 +638,7 @@ i.bi-file-text:hover {
   border-radius: 8px;
   transition: color 0.15s, border 0.15s, transform 0.15s;
   padding: 8px;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .add-contract.enabled {
@@ -646,24 +646,14 @@ i.bi-file-text:hover {
   color: var(--dark-text);
 }
 
-.add-contract i {
-  font-style: normal;
+.add-contract:not(.enabled) .button-with-icon {
+  pointer-events: none;
 }
 
-.add-contract i::before {
-  margin: 0 9px;
-}
-
-.add-contract.enabled span,
-.add-contract.enabled i {
+.add-contract.enabled .button-with-icon {
   cursor: pointer;
-  transition: color 0.15s, transform 0.15s;
 }
 
-.add-contract.enabled i:hover {
-  color: var(--new-primary);
-  transform: scale(1.1);
-}
 
 #teamContractButton {
   margin-top: 0 !important;
@@ -684,23 +674,12 @@ i.bi-file-text:hover {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  font-size: 24px;
+  font-size: 20px;
   font-family: 'Formula1Bold';
   color: var(--white-general);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-.break-contract {
-  color: var(--dark-text);
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s;
-  font-size: 18px;
-}
-
-.break-contract:hover {
-  color: var(--negative-general);
-  transform: scale(1.1);
-}
 
 .auto-contract {
   color: var(--text-general);
@@ -1830,6 +1809,7 @@ input.comparing-tag {
   font-size: 22px;
   cursor: pointer;
   transition: background-color 0.15s, color 0.15s;
+  user-select: none;
 }
 
 .new-augment-button.small {
@@ -2982,6 +2962,8 @@ DRIVERS TABLE
   border-right: 3px solid var(--table-hover-text);
 } */
 
+
+
 .drivers-table-header,
 .teams-table-header {
   display: flex;
@@ -3011,11 +2993,24 @@ DRIVERS TABLE
 .teams-table-data {
   overflow-y: auto;
   font-size: 15px;
+  max-height: 80vh;
 }
 
 .drivers-table-row:first-child .drivers-table-position,
 .teams-table-row:first-child .teams-table-position {
   background: var(--f1-first) !important;
+  color: var(--gold-gradient-text);
+}
+
+.f2-table-data .drivers-table-row:first-child .drivers-table-position,
+.f2-table-data .teams-table-row:first-child .teams-table-position {
+  background: var(--f2-back) !important;
+  color: var(--gold-gradient-text);
+}
+
+.f3-table-data .drivers-table-row:first-child .drivers-table-position,
+.f3-table-data .teams-table-row:first-child .teams-table-position {
+  background: var(--f3-back) !important;
   color: var(--gold-gradient-text);
 }
 
@@ -3173,6 +3168,24 @@ DRIVERS TABLE
   position: relative;
 }
 
+.teams-table-multi {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2px 6px;
+  width: 100%;
+  line-height: 1.1;
+}
+
+.teams-table-multi-item {
+  white-space: nowrap;
+}
+
+.f3-table-data .teams-table-multi-item {
+  font-size: 12px;
+}
+
 .drivers-table-position,
 .teams-table-position {
   width: 40px;
@@ -3305,6 +3318,146 @@ DRIVERS TABLE
   z-index: 1;
 }
 
+.junior-team-logo-driver{
+  width: 30px;
+  height: 30px;
+}
+
+.junior-team-logo-team{
+  width: 60px;
+}
+
+.team-logo-abbr {
+  font-family: 'Formula1Bold';
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: #f5f5f5;
+  text-transform: uppercase;
+  width: 30px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*
+phm
+*/
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="17"]) img,  .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="31"]) img{ 
+  padding: 7px 0;
+  width: 32px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="17"]) img,  .team-logo-abbr:has(.junior-team-logo-team[data-teamid="31"]) img{ 
+  width: 70px;
+}
+
+/* mp */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="16"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="27"]) img { 
+  width: 38px;
+  padding: 3px 0px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="16"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="27"]) img { 
+  width: 90px;
+}
+
+/* carlin*/
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="13"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="29"]) img { 
+  padding: 9px 2px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="13"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="29"]) img { 
+  width: 55px;
+}
+
+/*trident*/
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="21"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="23"]) img {
+  width: 45px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="21"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="23"]) img {
+  width: 110px;
+}
+
+/* art */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="15"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="24"]) img {
+  width: 38px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="15"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="24"]) img {
+  width: 80px;
+}
+
+/*hitech*/
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="14"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="25"]) img {
+  width: 38px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="14"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="25"]) img {
+  width: 74px;
+}
+
+/* var */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="20"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="26"]) img {
+  width: 38px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="20"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="26"]) img {
+  width: 80px;
+}
+
+/* prema */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="11"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="22"]) img {
+  padding: 6px 2px;
+}
+
+/* campos */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="19"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="28"]) img {
+  width: 38px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="19"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="28"]) img {
+  width: 76px;
+}
+
+/* invicta */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="12"]) img {
+  width: 42px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="12"]) img {
+  width: 88px;
+}
+
+/* dams */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="18"]) img {
+  width: 36px;
+}
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="18"]) img {
+  width: 72px;
+}
+
+
+/* jenzer */
+.team-logo-abbr:has(.junior-team-logo-driver[data-teamid="30"]) img {
+  width: 38px;
+}
+
+
+.team-logo-abbr:has(.junior-team-logo-team[data-teamid="30"]) img {
+  width: 74px;
+}
+
+.team-logo-abbr-small {
+  font-size: 11px;
+}
+
+.team-logo-abbr-large {
+  font-size: 14px;
+}
+
 
 .drivers-table-logo {
   padding: 0px 2px;
@@ -3335,7 +3488,7 @@ DRIVERS TABLE
 }
 
 .logo-porsche-table {
-  padding: 5px 2px;
+  padding: 3px 3px;
 }
 
 .logo-williams-table {
@@ -3662,6 +3815,102 @@ DRIVERS TABLE
 
 .ctNewBackground {
   background-color: var(--custom-team-primary);
+}
+
+.drivers-table-row:hover .prehoverback {
+  background-color: #ebebeb;
+}
+
+.teams-table-row .preiconback {
+  background-color: #ebebeb;
+}
+
+.drivers-table-row:hover .virhoverback {
+  background-color: #2a2a2a;
+}
+
+.teams-table-row .viriconback {
+  background-color: #2a2a2a;
+}
+
+.drivers-table-row:hover .carhoverback {
+  background-color: #1b6fe0;
+}
+
+.teams-table-row .cariconback {
+  background-color: #1b6fe0;
+}
+
+.drivers-table-row:hover .hithoverback {
+  background-color: #9FB4C7;
+}
+
+.teams-table-row .hiticonback {
+  background-color: #9FB4C7;
+}
+
+.drivers-table-row:hover .arthoverback {
+  background-color: #2b2d42;
+}
+
+.teams-table-row .articonback {
+  background-color: #2b2d42;
+}
+
+.drivers-table-row:hover .mphoverback {
+  background-color: #FF9144;
+}
+
+.teams-table-row .mpiconback {
+  background-color: #FF9144;
+}
+
+.drivers-table-row:hover .phmhoverback {
+  background-color: #793118;
+}
+
+.teams-table-row .phmiconback {
+  background-color: #793118;
+}
+
+.drivers-table-row:hover .damhoverback {
+  background-color: #00C8FF;
+}
+
+.teams-table-row .damiconback {
+  background-color: #00C8FF;
+}
+
+.drivers-table-row:hover .camhoverback {
+  background-color: #707070;
+}
+
+.teams-table-row .camiconback {
+  background-color: #707070;
+}
+
+.drivers-table-row:hover .varhoverback {
+  background-color: #dfdfdf;
+}
+
+.teams-table-row .variconback {
+  background-color: #dfdfdf;
+}
+
+.drivers-table-row:hover .trihoverback {
+  background-color: #7B01FF;
+}
+
+.teams-table-row .triiconback {
+  background-color: #7B01FF;
+}
+
+.drivers-table-row:hover .jenhoverback {
+  background-color: #cbcbcb;
+}
+
+.teams-table-row .jeniconback {
+  background-color: #cbcbcb;
 }
 
 .new-team-logo {
@@ -4076,6 +4325,29 @@ DRIVERS TABLE
   align-content: center;
 }
 
+.drivers-table:has(.f2-table-data) .sprint-label,
+.teams-table:has(.f2-table-data) .sprint-label {
+  color: var(--f2-border);
+}
+
+.sprint-result-cell{
+  box-sizing: border-box;
+  border-left: 1px solid var(--table-dnf);
+}
+
+.drivers-table:has(.f2-table-data) .drivers-table-points,
+.teams-table:has(.f2-table-data) .teams-table-points, 
+.drivers-table:has(.f3-table-data) .drivers-table-points,
+.teams-table:has(.f3-table-data) .teams-table-points{
+  border-left: 1px solid var(--table-dnf);
+}
+
+
+.drivers-table:has(.f3-table-data) .sprint-label,
+.teams-table:has(.f3-table-data) .sprint-label {
+  color: var(--f3-border);
+}
+
 .light-theme .drivers-table-header .flag-header img,
 .light-theme .teams-table-header .flag-header img {
   opacity: 0.85 !important;
@@ -4099,10 +4371,8 @@ DRIVERS TABLE
   border-radius: 10px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  background-color: var(--generals);
-  box-shadow: var(--shadow-s);
   gap: 8px;
-  padding: 8px;
+  overflow-x: hidden;
   grid-auto-rows: min-content;
 }
 
@@ -4156,6 +4426,57 @@ DRIVERS TABLE
   box-shadow: var(--shadow-s);
   justify-content: space-between;
   border: none;
+}
+
+.race-series-badges {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  cursor: pointer;
+  display: flex;
+  gap: 4px;
+  z-index: 2;
+}
+
+.race-series-badge {
+  border: none;
+  border-radius: 6px;
+  padding: 2px 5px;
+  font-size: 12px;
+  background-color: var(--elements-hover);
+  color: var(--text-secondary);
+  cursor: default;
+  box-shadow: var(--shadow-xs);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.race-series-badge:hover {
+  background-color: var(--table-hover);
+  color: var(--text-general);
+}
+
+.race-series-badge:active {
+  transform: scale(0.96);
+}
+
+.race-series-badge-f2.active-badge {
+  color: var(--f2-back);
+  background-color: color-mix(in srgb, var(--f2-back) 30%, transparent);
+}
+
+.race-series-badge-f2.active-badge:hover {
+  color: var(--f2-border);
+  background-color: color-mix(in srgb, var(--f2-border) 30%, transparent);
+}
+
+.race-series-badge-f3.active-badge {
+  color: var(--f3-back);
+  background-color: color-mix(in srgb, var(--f3-back) 30%, transparent);
+}
+
+.race-series-badge-f3.active-badge:hover {
+  color: var(--f3-border);
+  background-color: color-mix(in srgb, var(--f3-border) 30%, transparent);
 }
 
 .race-calendar-number {
@@ -4215,9 +4536,11 @@ DRIVERS TABLE
 .weather-selector {
   display: flex;
   flex-direction: row;
+  align-items: center;
   margin-left: 5px;
   font-size: 20px;
   padding-top: 2px;
+  gap: 4px;
 }
 
 .weather-selector i {
@@ -4228,22 +4551,6 @@ DRIVERS TABLE
 .race-calendar:hover {
   color: var(--white-general);
   background-color: var(--elements-hover);
-}
-
-.race-calendar .bi-chevron-left,
-.race-calendar .bi-chevron-right {
-  transition: color 0.15s, transform 0.15s;
-}
-
-.race-calendar:hover .bi-chevron-left,
-.race-calendar:hover .bi-chevron-right {
-  color: var(--text-general);
-}
-
-.race-calendar .bi-chevron-left:hover,
-.race-calendar .bi-chevron-right:hover {
-  color: var(--new-primary);
-  transform: scale(1.1);
 }
 
 .pit-crew-button {
@@ -4666,18 +4973,19 @@ body.light-theme .flag-header img {
 .part-buttons {
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 5px;
 }
 
-.part-buttons i {
+
+.part-performance-title .redesigned-chevron{
+  height: 28px;
   cursor: pointer;
-  transition: color 0.15s, transform 0.15s ease-in-out;
+  transition: background-color 0.15s, transform 0.15s;
 }
 
-.part-buttons i:hover {
-  cursor: pointer;
-  color: var(--text-selected);
-  transform: scale(1.1);
+.part-performance-title .redesigned-chevron:hover{
+  background-color: var(--new-primary);
 }
 
 .custom-engines-div {
@@ -4703,21 +5011,6 @@ body.light-theme .flag-header img {
   font-style: normal;
 }
 
-.add-engine i::before {
-  margin: 0 9px;
-}
-
-.add-engine span,
-.add-engine i {
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s;
-}
-
-.add-engine i:hover {
-  color: var(--new-primary);
-  transform: scale(1.05);
-}
-
 .custom-engines-div .engine-performance-stats {
   margin-top: 2px;
   border-top: 2px solid var(--separator);
@@ -4739,23 +5032,18 @@ body.light-theme .flag-header img {
 }
 
 
-.engine-performance .bi-caret-down-fill {
+.engine-performance .redesigned-chevron {
   cursor: pointer;
   transition: color 0.15s, transform 0.15s;
   color: var(--text-general);
   position: absolute;
-  right: 10px;
-  top: 5px;
-  font-size: 22px;
+  right: 14px;
+  top: 7px;
+  height: 26px;
 }
 
-.engine-performance .bi-caret-down-fill:hover {
+.engine-performance .redesigned-chevron:hover {
   color: var(--text-selected);
-  transform: scale(1.05);
-}
-
-.engine-performance .bi-caret-down-fill.clicked {
-  color: var(--new-primary);
 }
 
 .part-performance,
@@ -4768,8 +5056,13 @@ body.light-theme .flag-header img {
   position: relative;
 }
 
-.engine-performance {
+.main-columns-drag-section .engine-performance {
   min-height: 318px;
+}
+
+.blank-engine-space{
+  height: 100px;
+  width: 100%;
 }
 
 .engine-f2 {
@@ -4866,7 +5159,9 @@ input.engine-performance-title:focus {
   flex-direction: column;
   gap: 10px;
   max-height: 600px;
+  min-height: 300px;
   overflow-y: scroll;
+  padding: 0 10px 5px 10px !important;
 }
 
 .part-performance-stat,
@@ -4895,17 +5190,6 @@ input.engine-performance-title:focus {
   height: 2px;
   transition: width 0.15s;
   background-color: var(--new-primary);
-}
-
-.part-performance-title i {
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s ease-in-out;
-}
-
-.part-performance-title i:hover {
-  cursor: pointer;
-  color: var(--new-primary);
-  transform: scale(1.1);
 }
 
 .part-performance-title i.clicked {
@@ -5224,21 +5508,9 @@ input.engine-performance-title:focus {
 .part-performance-stat .custom-input-number,
 .engine-performance-stat .custom-input-number {
   font-size: 16px;
-  max-width: 85px;
+  max-width: 70px;
 }
 
-.part-performance-stat i,
-.engine-performance-stat i {
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s ease-in-out;
-}
-
-.part-performance-stat i:hover,
-.engine-performance-stat i:hover {
-  cursor: pointer;
-  color: var(--text-selected);
-  transform: scale(1.1);
-}
 
 .teams-show,
 .engines-show {
@@ -8774,13 +9046,25 @@ body.og-theme .records-list {
   text-align: center;
 }
 
-.contract-details .old-custom-input-number {
-  width: 70%;
+#contractModal .contract-modal-input {
+  padding: 6px;
+  margin-right: 0;
   max-width: none;
   text-align: left;
+  border-bottom: 2px solid transparent;
+  border-right: 0px solid;
+  border-left: 0px solid;
+  border-top: 0px solid;
+  width: 140px;
+  font-size: 18px;
 }
 
-.contract-details i {
+#contractModal .contract-details .unit-and-input {
+  gap: 6px;
+  font-size: 16px;
+}
+
+.contract-details i:not(.new-augment-button) {
   transition: transform 0.15s, color 0.15s;
 }
 
@@ -9369,6 +9653,7 @@ input::-webkit-inner-spin-button {
   align-items: center;
   justify-content: flex-start;
   padding: 0;
+  min-width: 215px;
 }
 
 .team-select-menu a {
@@ -9376,7 +9661,6 @@ input::-webkit-inner-spin-button {
   align-items: center;
   justify-content: flex-start;
   padding: 0;
-  margin-right: 7px;
 }
 
 
@@ -10789,39 +11073,45 @@ body.og-theme .option-state.fixed {
 
 .option-state.extra-hard,
 span.extra-hard,
-.dif-warning.extra-hard {
+.dif-warning.extra-hard,
+.dif-status.extra-hard {
   color: var(--extra-hard)
 }
 
 .option-state.brutal,
 span.brutal,
-.dif-warning.brutal {
+.dif-warning.brutal,
+.dif-status.brutal {
   color: var(--brutal)
 }
 
 .option-state.unfair,
 span.unfair,
-.dif-warning.unfair {
+.dif-warning.unfair,
+.dif-status.unfair {
   color: var(--unfair)
 }
 
 .option-state.insane,
 span.insane,
-.dif-warning.insane {
+.dif-warning.insane,
+.dif-status.insane {
   color: var(--insane)
 }
 
 .option-state.impossible,
 span.impossible,
-.dif-warning.impossible {
+.dif-warning.impossible,
+.dif-status.impossible {
   color: var(--impossible)
 }
 
 .option-state.fixed,
 span.fixed,
 .dif-warning.fixed,
-#lightDif.impossible {
-  color: var(--new-primary)
+#lightDif.impossible,
+#lightDif~.dif-status.impossible {
+  color: var(--new-primary) !important;
 }
 
 .option-state.reduced-weight,
@@ -11687,7 +11977,7 @@ body:has(.active #mod25logo) .creator-separator {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--generals);
+  background-color: transparent;
 }
 
 .loader {
@@ -13851,11 +14141,13 @@ p.news-error-api-key {
   display: inline-block;
 }
 
-#newsTypeMenu .redesigned-dropdown-item{
+#newsTypeMenu .redesigned-dropdown-item,
+#newsLanguageMenu .redesigned-dropdown-item{
   min-width: 200px;
 }
 
-#newsTypeMenu .redesigned-dropdown-item i {
+#newsTypeMenu .redesigned-dropdown-item i,
+#newsLanguageMenu .redesigned-dropdown-item i {
   display: inline-block;
   font-size: 18px;
   margin-left: 8px;
@@ -13864,6 +14156,7 @@ p.news-error-api-key {
 }
 
 #newsTypeMenu .redesigned-dropdown-item i.unactive,
+#newsLanguageMenu .redesigned-dropdown-item i.unactive,
 #aiModelmenu .dropdown-item i.unactive {
   transform: rotate(-90deg);
   opacity: 0;
@@ -14521,7 +14814,19 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .last-opened-time {
   font-size: 12px;
+  cursor: pointer;
   color: var(--text-muted);
+  background-color: transparent;
+  padding: 3px 5px;
+  border-radius: 5px;
+  min-width: 67px;
+  text-align: center;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.last-opened-time:hover {
+  color: var(--negative-general);
+  background-color: color-mix(in srgb, var(--elements) 75%, var(--negative-general));
 }
 
 @keyframes spin {
@@ -14575,6 +14880,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   border-radius: 6px;
   color: var(--text-general);
   gap: 10px;
+  transform: rotate(0deg);
   transition: background-color 0.15s, color 0.15s;
   padding: 5px 10px;
 }
@@ -14616,8 +14922,12 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   display: inline-block;
 }
 
-#teamMenu .redesigned-dropdown-item {
+#teamMenu .redesigned-dropdown-item, .team-select-menu .redesigned-dropdown-item {
   padding: 2px 8px 2px 0px !important;
+}
+
+.team-select-menu .redesigned-dropdown-item{
+  min-width: 230px;
 }
 
 #objectiveMenu {
@@ -14660,9 +14970,13 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   mask: url('/assets/images/redesigned-chevron.svg') no-repeat center;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
+  transition: background-color 0.15s, transform 0.15s;
   width: 12px;
   height: 12px;
+}
+
+.redesigned-chevron.clicked{
+  transform: rotate(180deg);
 }
 
 #teamMenu {
@@ -14801,6 +15115,10 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   color: var(--text-general);
 }
 
+.unit-measure{
+  color: var(--text-tertiary);
+}
+
 .new-augment-button.bi-chevron-left, .new-augment-button.bi-chevron-right{
   font-size: 14px;
   width: 18px;
@@ -14866,4 +15184,57 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
+}
+
+.difficulty-options{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.one-difficulty{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.dif-title{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+}
+
+.dif-buttons{
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+}
+
+.dif-title .avg-separator{
+  background-color: var(--disabled-text);
+  width: 1px;
+}
+
+.dif-status{
+  font-size: 13px;
+  flex-grow: 1;
+}
+
+.dif-description{
+  font-size: 13px;
+}
+
+.dif-status.disabled{
+  color: var(--text-tertiary);
+}
+
+
+#contractModal .modal-subtitle{
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 16px;
 }

@@ -1,6 +1,6 @@
 import {
   fetchSeasonResults, fetchEventsFrom, fetchTeamsStandings,
-  fetchDrivers, fetchStaff, fetchEngines, fetchCalendar, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
+  fetchDrivers, fetchStaff, fetchEngines, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContract,
   editEngines, updateCustomConfig, fetchCustomConfig,
   fetch2025ModData, check2025ModCompatibility,
@@ -14,7 +14,7 @@ import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
 import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
-import { editCalendar } from "./scriptUtils/calendarUtils";
+import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
 import {
@@ -31,7 +31,9 @@ import {
   deleteTurningPoints,
   getNewsAndTpYearsAvailable,
   getNewsFromSeason,
-  deleteNewByKey
+  deleteNewByKey,
+  checkDoublePointsBug,
+  fixDoublePointsBug
 } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
@@ -73,9 +75,10 @@ const workerCommands = {
   yearSelected: (data, postMessage) => {
     const year = data.year
     const isCurrentYear = data.isCurrentYear || true;
-    const results = fetchSeasonResults(year, isCurrentYear, true);
-    const events = fetchEventsFrom(year);
-    const teams = fetchTeamsStandings(year);
+    const formula = data.formula ? Number(data.formula) : 1;
+    const results = fetchSeasonResults(year, isCurrentYear, formula === 1, formula);
+    const events = fetchEventsFrom(year, formula);
+    const teams = fetchTeamsStandings(year, formula);
     const pointsInfo = fetchPointsRegulations()
 
     postMessage({
@@ -163,7 +166,6 @@ const workerCommands = {
 
     const h2hDrivers = [];
     data.graph.forEach(driver => {
-      console.log(" Driver in H2H:", driver);
       let res;
       if (data.mode === "driver") {
         res = fetchOneDriverSeasonResults(driver, data.year, data.isCurrentYear);
@@ -311,7 +313,7 @@ const workerCommands = {
   },
   editCalendar: (data, postMessage) => {
     const year = getGlobals().yearIteration;
-    editCalendar(data.calendarCodes, year, data.racesData);
+    editCalendar(year, data.racesData);
     postMessage({
       responseMessage: "Calendar updated",
       noti_msg: "Succesfully updated the calendar",
@@ -509,12 +511,13 @@ const workerCommands = {
       const tpState = ensureTurningPointsStructure(tpStateFromDB);
 
       const { newsList, turningPointState } = generate_news(savedNewsMap, tpState);
+      const doublePointsBug = checkDoublePointsBug(turningPointState)
       const yearsAvailable = getNewsAndTpYearsAvailable()
 
       postMessage({
         responseMessage: "News fetched",
         noti_msg: "News generated successfully",
-        content: { newsList, turningPointState, yearsAvailable },
+        content: { newsList, turningPointState, yearsAvailable, doublePointsBug },
         unlocksDownload: true
       });
     } catch (e) {
@@ -522,6 +525,12 @@ const workerCommands = {
       console.error("STACK:", e.stack);
       postMessage({ responseMessage: "Error", error: e.message });
     }
+  },
+  fixDoublePointsBug: (data, postMessage) => {
+    const raceBugged = data.raceId;
+    fixDoublePointsBug(raceBugged);
+
+    postMessage({ responseMessage: "Double points bug fixed", noti_msg: "Double points bug fixed successfully", unlocksDownload: true });
   },
   getNewsFromSeason: (data, postMessage) => {
     const season = data.season;
@@ -608,13 +617,16 @@ const workerCommands = {
     const originalStableKey = data.id;
 
     const newResponse = generateTurningResponse(turningPointData, type, maxDate, "negative");
-    newResponse.stableKey = newResponse.stableKey ?? computeStableKey(newResponse);
+
 
     if (originalStableKey) {
       updateNewsFields(originalStableKey, { turning_point_type: "cancelled" });
     }
 
-    upsertNews([newResponse]);
+    if (newResponse){
+      newResponse.stableKey = newResponse.stableKey ?? computeStableKey(newResponse);
+      upsertNews([newResponse]);
+    } 
 
     postMessage({ responseMessage: "Turning point negative", noti_msg: "Cancelled turning point", content: newResponse, isEditCommand: true, unlocksDownload: true });
   },
@@ -675,6 +687,10 @@ const workerCommands = {
     deleteNews();
     deleteTurningPoints();
     postMessage({ responseMessage: "News deleted successfully", unlocksDownload: true });
+  },
+  enginesRefresh: (data, postMessage) => {
+    const engines = fetchEngines();
+    postMessage({ responseMessage: "Engines fetched", content: engines });
   }
 
 
