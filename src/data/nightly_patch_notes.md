@@ -52,5 +52,6 @@
 - Added F2/F3 buttons on the Calendar tab for each race to customize F2/F3 races
 - Added news translations dropdown on the news tab
 - Updated the style of the transfer modal
+- Added the possibility to reomve "Recent" saves by hovering and clicking on their timestamp
 - Upodated the style of many buttons across the whole UI, and added new progressive buttons to the performance tab
 - Fixed the issue with double points being awarded if a DSQ turning point was accepted, even if it wasn't the last race. If your save is affected by this bug, it should ask you if you want to fix it

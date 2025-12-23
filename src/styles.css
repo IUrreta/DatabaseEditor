@@ -3348,6 +3348,7 @@ phm
   width: 32px;
 }
 
+
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="17"]) img,  .team-logo-abbr:has(.junior-team-logo-team[data-teamid="31"]) img{ 
   width: 70px;
 }
@@ -3356,6 +3357,10 @@ phm
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="16"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="27"]) img { 
   width: 38px;
   padding: 3px 0px;
+}
+
+.junior-formula-logo img[data-junior-team-id="16"], .junior-formula-logo img[data-junior-team-id="27"] {
+  width: 38px;
 }
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="16"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="27"]) img { 
@@ -3367,6 +3372,10 @@ phm
   padding: 9px 2px;
 }
 
+.junior-formula-logo img[data-junior-team-id="13"], .junior-formula-logo img[data-junior-team-id="29"] {
+  padding: 5px 2px;
+}
+
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="13"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="29"]) img { 
   width: 55px;
 }
@@ -3374,6 +3383,10 @@ phm
 /*trident*/
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="21"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="23"]) img {
   width: 45px;
+}
+
+.junior-formula-logo img[data-junior-team-id="21"], .junior-formula-logo img[data-junior-team-id="23"] {
+  width: 40px;
 }
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="21"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="23"]) img {
@@ -3385,6 +3398,10 @@ phm
   width: 38px;
 }
 
+.junior-formula-logo img[data-junior-team-id="15"], .junior-formula-logo img[data-junior-team-id="24"] {
+  width: 34px;
+}
+
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="15"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="24"]) img {
   width: 80px;
 }
@@ -3392,6 +3409,10 @@ phm
 /*hitech*/
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="14"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="25"]) img {
   width: 38px;
+}
+
+.junior-formula-logo img[data-junior-team-id="14"], .junior-formula-logo img[data-junior-team-id="25"] {
+  width: 34px;
 }
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="14"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="25"]) img {
@@ -3403,6 +3424,10 @@ phm
   width: 38px;
 }
 
+.junior-formula-logo img[data-junior-team-id="20"], .junior-formula-logo img[data-junior-team-id="26"] {
+  width: 32px;
+}
+
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="20"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="26"]) img {
   width: 80px;
 }
@@ -3412,9 +3437,17 @@ phm
   padding: 6px 2px;
 }
 
+.junior-formula-logo img[data-junior-team-id="11"], .junior-formula-logo img[data-junior-team-id="22"] {
+  padding: 3px 1px;
+}
+
 /* campos */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="19"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="28"]) img {
   width: 38px;
+}
+
+.junior-formula-logo img[data-junior-team-id="19"], .junior-formula-logo img[data-junior-team-id="28"] {
+  width: 30px;
 }
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="19"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="28"]) img {
@@ -3424,6 +3457,10 @@ phm
 /* invicta */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="12"]) img {
   width: 42px;
+}
+
+.junior-formula-logo img[data-junior-team-id="12"] {
+  width: 32px;
 }
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="12"]) img {
@@ -3448,6 +3485,28 @@ phm
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="30"]) img {
   width: 74px;
+}
+
+.junior-formula-logo {
+  width: 26px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+}
+
+.junior-formula-logo img{
+  width: 26px;
+  height: 22px;
+}
+
+.junior-formula-logo.f2-team{
+  padding-left: 2px;
+  border-left: 2px solid var(--f2-back);
+}
+
+.junior-formula-logo.f3-team{
+  padding-left: 4px;
+  border-left: 2px solid var(--f3-back);
 }
 
 .team-logo-abbr-small {
@@ -7105,14 +7164,27 @@ body.og-theme .records-list {
   background-color: var(--ferrari-primary);
 }
 
+.noti-fe-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--ferrari-primary);
+}
+
 .noti-rb {
   background-color: var(--redbull-primary);
 }
 
-
+.noti-rb-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--redbull-primary);
+}
 
 .noti-mc {
   background-color: var(--mclaren-primary);
+}
+
+.noti-mc-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--mclaren-primary);
 }
 
 
@@ -7120,11 +7192,19 @@ body.og-theme .records-list {
   background-color: var(--aston-primary);
 }
 
-
+.noti-as-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--aston-primary);
+}
 
 
 .noti-al {
   background-color: var(--alpine-primary);
+}
+
+.noti-al-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--alpine-primary);
 }
 
 
@@ -7133,34 +7213,58 @@ body.og-theme .records-list {
 }
 
 
+.noti-af-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--alfa-primary);
+}
+
 
 .noti-ha {
   background-color: var(--haas-primary);
 }
 
+.noti-ha-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--haas-primary);
+}
 
 
 .noti-wi {
   background-color: var(--williams-primary);
 }
 
+.noti-wi-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--williams-primary);
+}
 
 .noti-at {
   background-color: var(--alphatauri-primary);
 }
 
+.noti-at-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--alphatauri-primary);
+}
 
 
 .noti-me {
   background-color: var(--mercedes-primary);
 }
 
+.noti-me-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--mercedes-primary);
+}
+
 .noti-ct {
   background-color: var(--custom-team-primary);
 }
 
-
-
+.noti-ct-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--custom-team-primary);
+}
 
 .name-container {
   display: flex;

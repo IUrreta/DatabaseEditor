@@ -1,4 +1,4 @@
-import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict, f1_teams, f2_teams, f3_teams, inverted_dict, getUpdatedName } from "./config";
+import { staff_pics, team_dict, combined_dict, staff_positions, typeStaff_dict, f1_teams, f2_teams, f3_teams, inverted_dict, getUpdatedName, logos_disc } from "./config";
 import { attachHold, game_version, make_name_prettier } from "./renderer";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import interact from 'interactjs';
@@ -98,6 +98,7 @@ export function format_name(fullName, nameSplitted, spanName, spanLastName) {
  * @param {Object} driversArray List of drivers
  */
 export function place_drivers(driversArray) {
+    console.log("DRIVERS ARRAY", driversArray)
     let divPosition;
     driversArray.forEach((driver) => {
         let newDiv = document.createElement("div");
@@ -113,12 +114,15 @@ export function place_drivers(driversArray) {
         spanLastName.classList.add("bold-font")
         nameContainer.appendChild(spanName)
         nameContainer.appendChild(spanLastName)
+        if (driver["team_junior"] && driver["team_junior"].teamId !== -1) {
+            add_junior_formula_logo(newDiv, driver["team_junior"])
+        }
         newDiv.appendChild(nameContainer)
         newDiv.classList.add(team_dict[driver[2]] + "-transparent")
-        if (driver["team_future"] !== -1) {
+        if (driver["team_future"].teamId !== -1) {
             add_future_team_noti(newDiv, driver["team_future"])
         }
-        newDiv.dataset.futureteam = driver["team_future"]
+        newDiv.dataset.futureteam = driver["team_future"].teamId
         manageColor(newDiv, spanLastName)
         divPosition = "free-drivers"
         let position = driver[3]
@@ -232,10 +236,10 @@ export function place_staff(staffArray) {
         marqueeContainer.appendChild(nameContainer)
         newDiv.appendChild(marqueeContainer)
         newDiv.classList.add(team_dict[staff[2]] + "-transparent")
-        if (staff["team_future"] !== -1) {
+        if (staff["team_future"].teamId !== -1) {
             add_future_team_noti(newDiv, staff["team_future"])
         }
-        newDiv.dataset.futureteam = staff["team_future"]
+        newDiv.dataset.futureteam = staff["team_future"].teamId
         manageColor(newDiv, spanLastName)
         // if (staff[4] === 1) {
         //     addUnRetireIcon(newDiv)
@@ -313,10 +317,26 @@ function manage_staff_drivers(value) {
     }
 }
 
-function add_future_team_noti(driverDiv, teamID) {
+function add_future_team_noti(driverDiv, teamInfo) {
     let notiDiv = document.createElement("div")
-    notiDiv.className = "future-contract-noti noti-" + team_dict[teamID]
+    notiDiv.className = `future-contract-noti noti-${team_dict[teamInfo.teamId]}${teamInfo.posInTeam > 2 ? "-affiliate" : ""}`
     driverDiv.appendChild(notiDiv)
+}
+
+function add_junior_formula_logo(driverDiv, juniorInfo) {
+    let imgContainer = document.createElement("div")
+    imgContainer.className = "junior-formula-logo"
+    let img = document.createElement("img")
+    img.src = logos_disc[juniorInfo.teamId]
+    if (f2_teams.includes(juniorInfo.teamId)) {
+        imgContainer.classList.add("f2-team")
+    }
+    else if (f3_teams.includes(juniorInfo.teamId)) {
+        imgContainer.classList.add("f3-team")
+    }
+    img.dataset.juniorTeamId = juniorInfo.teamId
+    imgContainer.appendChild(img)
+    driverDiv.appendChild(imgContainer)
 }
 
 document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {

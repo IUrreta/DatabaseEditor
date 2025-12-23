@@ -125,14 +125,45 @@ export function fetchNationality(driverID, gameYear) {
 }
 
 export function fetchForFutureContract(driverID) {
-  const teamID = queryDB(`
-      SELECT TeamID 
+  const teamInfo = queryDB(`
+      SELECT TeamID, PosInTeam 
       FROM Staff_Contracts 
       WHERE StaffID = ?
         AND ContractType = 3
-    `, [driverID], 'singleValue');
+    `, [driverID], 'singleRow');
 
-  return teamID ?? -1;
+  let futureTeamInfo = {
+    teamId: -1,
+    posInTeam: -1
+  }
+
+  if (teamInfo) {
+    futureTeamInfo.teamId = teamInfo[0];
+    futureTeamInfo.posInTeam = teamInfo[1];
+  }
+
+  return futureTeamInfo;
+}
+
+function fetchJuniorContracts(driverID) {
+  const juniorContracts = queryDB(`
+    SELECT TeamID, PosInTeam
+    FROM Staff_Contracts
+    WHERE StaffID = ?
+      AND (ContractType = 0 OR ContractType = 3)
+      AND TeamID BETWEEN 11 AND 31
+  `, [driverID], 'allRows');
+  
+  let juniorFormulaInfo = {
+    teamId: -1,
+    posInTeam: -1
+  }
+  if (juniorContracts && juniorContracts.length > 0) {
+    juniorFormulaInfo.teamId = juniorContracts[0][0];
+    juniorFormulaInfo.posInTeam = juniorContracts[0][1];
+  }
+
+  return juniorFormulaInfo;
 }
 
 export function fetchEngines() {
@@ -519,6 +550,7 @@ export function fetchDrivers(gameYear) {
     const [driverNumber, wants1] = fetchDriverNumberDetails(driverID);
     const superlicense = fetchSuperlicense(driverID);
     const futureTeam = fetchForFutureContract(driverID);
+    const juniorContracts = fetchJuniorContracts(driverID);
     const driverCode = fetchDriverCode(driverID);
     const nationality = fetchNationality(driverID, gameYear);
 
@@ -531,6 +563,7 @@ export function fetchDrivers(gameYear) {
     data.superlicense = superlicense;
     data.race_formula = raceFormula;
     data.team_future = futureTeam;
+    data.team_junior = juniorContracts;
     data.driver_code = driverCode;
     data.nationality = nationality;
 
