@@ -30,9 +30,7 @@
     "simple-git": "^3.19.1",
     "sql.js": "^1.12.0",
     "webpack": "^5.97.1",
-    "webpack-cli": "^6.0.1"
-  },
-  "devDependencies": {
+    "webpack-cli": "^6.0.1",
     "autoprefixer": "^10.4.20",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
