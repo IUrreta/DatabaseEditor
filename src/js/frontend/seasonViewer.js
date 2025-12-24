@@ -282,34 +282,20 @@ function formatDriverCellValue(value, type) {
     return manage_dataset_info_driver(value, undefined, type)
 }
 
-function inferFormulaFromCalendar(data) {
-    if (!Array.isArray(data) || data.length === 0) {
-        return currentFormula
+function syncFormulaFromCalendar(formula) {
+    const seriesButton = document.getElementById("seriesTypeButton")        
+    if (seriesButton) {
+        const label = formula === 2 ? "F2" : (formula === 3 ? "F3" : "F1")
+        seriesButton.querySelector("span.dropdown-label").textContent = label
+        seriesButton.dataset.value = String(formula)
     }
-    const isF3 = data.every(row => Number(row[4]) === 1)
-    if (isF3) return 3
-    const isF2 = data.every(row => Number(row[3]) === 1)
-    if (isF2) return 2
-    return 1
-}
-
-function syncFormulaFromCalendar(data) {
-    const inferred = inferFormulaFromCalendar(data)
-    if (inferred !== currentFormula) {
-        currentFormula = inferred
-        const seriesButton = document.getElementById("seriesTypeButton")        
-        if (seriesButton) {
-            const label = inferred === 2 ? "F2" : (inferred === 3 ? "F3" : "F1")
-            seriesButton.querySelector("span.dropdown-label").textContent = label
-            seriesButton.dataset.value = String(inferred)
-        }
-    }
+    
     updateSeriesControls()
 }
 
 export function new_drivers_table(data) {
     calendarData = data
-    syncFormulaFromCalendar(data)
+    syncFormulaFromCalendar(currentFormula)
     races_ids = []
     let header = document.querySelector(".drivers-table-header")
     header.innerHTML = ""
