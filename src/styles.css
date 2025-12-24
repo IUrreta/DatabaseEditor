@@ -13531,7 +13531,7 @@ p.news-error-api-key{
   border: 1px solid var(--random-general);
 }
 
-snowflake {
+.snowflake {
   color: #fff;
   font-size: 1em;
   font-family: Arial, sans-serif;
