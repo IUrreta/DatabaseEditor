@@ -374,7 +374,9 @@ async function validateSession() {
         const res = await fetch("/api/check-cookie");
         const data = await res.json();
 
-        if (data.valid === false) {
+        // Only force an OAuth refresh when an existing cookie is detected but invalid/legacy.
+        // Not having a cookie simply means "not logged in" and should not redirect.
+        if (data.valid === false && data.hasCookie === true) {
             console.log("Old Patreon cookie → redirecting to login");
             window.location.href = "/api/auth/patreon/login";
             return false;
@@ -405,6 +407,7 @@ if (code) {
 
                 // Update UI
                 updatePatreonUI(data);
+                maybeReloadForNightlyAccess(data);
             } else {
                 new_update_notifications(`Login failed: ${data.error}`, "error");
                 updatePatreonUI(data);
@@ -418,6 +421,16 @@ if (code) {
     validateSession().then(() => {
         getUserTier().then(updatePatreonUI);
     });
+}
+
+function maybeReloadForNightlyAccess(tierInfo) {
+    const isNightly = window.location.hostname.includes("nightly");
+    if (!isNightly) return;
+
+    const insiderOrFounder = tierInfo?.tier === "Insider" || tierInfo?.tier === "Founder";
+    if (nightlyBlock && tierInfo?.isLoggedIn && insiderOrFounder) {
+        setTimeout(() => window.location.reload(), 50);
+    }
 }
 
 function updatePatreonUI(tier) {

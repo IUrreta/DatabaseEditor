@@ -5,7 +5,8 @@ export default function handler(req, res) {
   const { auth_token } = req.cookies || {};
 
   if (!auth_token) {
-    return res.status(200).json({ ok: true, valid: false });
+    // No cookie present: user is simply not logged in; no redirect needed.
+    return res.status(200).json({ ok: true, hasCookie: false, valid: true });
   }
 
   try {
@@ -22,10 +23,10 @@ export default function handler(req, res) {
       });
 
       res.setHeader("Set-Cookie", del);
-      return res.status(200).json({ ok: true, valid: false });
+      return res.status(200).json({ ok: true, hasCookie: true, valid: false });
     }
 
-    return res.status(200).json({ ok: true, valid: true });
+    return res.status(200).json({ ok: true, hasCookie: true, valid: true });
   } catch (err) {
     // Bad cookie → borrar también
     const del = serialize("auth_token", "", {
@@ -37,6 +38,6 @@ export default function handler(req, res) {
     });
 
     res.setHeader("Set-Cookie", del);
-    return res.status(200).json({ ok: true, valid: false });
+    return res.status(200).json({ ok: true, hasCookie: true, valid: false });
   }
 }
