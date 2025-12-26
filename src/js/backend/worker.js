@@ -16,7 +16,7 @@ import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, ge
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
-import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
+import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
@@ -357,6 +357,20 @@ const workerCommands = {
       isEditCommand: true,
       unlocksDownload: true
     });
+  },
+  juniorTransfer(data, postMessage) {
+    transferJuniorDriver(data.driverID, data.teamID, data.posInTeam, getGlobals().yearIteration);
+    postMessage({
+      responseMessage: "Junior driver transferred",
+      noti_msg: `Succesfully transferred ${data.driver} to ${data.team}`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+
+    const yearData = checkYearSave();
+
+    const drivers = fetchDrivers(yearData[0]);
+    postMessage({ responseMessage: "Drivers fetched", content: drivers });
   },
   autoContract: (data, postMessage) => {
     hireDriver("auto", data.driverID, data.teamID, data.position, getGlobals().yearIteration);

@@ -8557,7 +8557,7 @@ body.og-theme .records-list {
 
 .input-buttons .bi-chevron-up,
 .input-buttons .bi-chevron-down {
-  font-size: 16px !important;
+  font-size: 14px !important;
 }
 
 
@@ -15406,7 +15406,6 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .junior-team-drivers-list{
   display: flex;
   flex-direction: column;
-  gap: 5px;
   margin-top: 10px;
 }
 

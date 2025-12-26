@@ -668,6 +668,8 @@ export function manage_modal(info) {
         el.classList.remove("active");
     });
     document.querySelector(".contract-category.f1-contract")?.classList.add("active");
+    document.querySelector("#juniorContractDropdown")?.classList.add("d-none");
+    document.querySelector("#currentContract")?.classList.remove("d-none");
     document.querySelector(".junior-contract-info")?.classList.add("d-none");
     document.querySelector("#currentContractOptions")?.classList.remove("d-none");
 
@@ -804,6 +806,7 @@ function ensureJuniorTeamDropdownBuilt() {
             setJuniorPosInputLimits(teamId);
             juniorTeamDrivers = [];
             juniorContractDirty = true;
+            document.querySelector(".junior-contract-info")?.classList.remove("d-none");
 
             const listDiv = document.querySelector(".junior-team-drivers-list");
             if (listDiv) listDiv.innerHTML = "<div class=\"modal-subtitle bold-font\">Loading drivers...</div>";
@@ -823,8 +826,8 @@ function ensureJuniorTeamDropdownBuilt() {
         });
 
         const wrapper = posInput.closest(".input-and-buttons");
-        const plusBtn = wrapper?.querySelector(".bi-plus");
-        const minusBtn = wrapper?.querySelector(".bi-dash");
+        const plusBtn = wrapper?.querySelector(".bi-chevron-down");
+        const minusBtn = wrapper?.querySelector(".bi-chevron-up");
 
         const wrapStep = (delta) => {
             const max = Number(posInput.max || 1);
@@ -863,14 +866,6 @@ export function loadJuniorTeamDrivers(payload) {
     renderJuniorDriversList();
 }
 
-function queueJuniorContractUpdateTODO() {
-    const teamId = Number(document.getElementById("juniorTeamContractButton")?.dataset.teamid || -1);
-    const posInTeam = Number(document.getElementById("juniorPosInTeam")?.value || 1);
-
-    const data = { driverID: driverEditingID, teamID: teamId, posInTeam };
-    console.log("[TODO] junior contract update:", data);
-    window.__juniorContractPendingUpdate = data;
-}
 
 document.querySelectorAll(".contract-category").forEach(function (elem) {
     elem.addEventListener("click", function () {
@@ -886,7 +881,12 @@ document.querySelectorAll(".contract-category").forEach(function (elem) {
             document.querySelector(".add-contract").classList.add("d-none")
             document.querySelector("#juniorContractDropdown").classList.remove("d-none")
             document.querySelector("#currentContract").classList.add("d-none")
-            document.querySelector(".junior-contract-info").classList.remove("d-none")
+            const selectedTeamId = Number(document.getElementById("juniorTeamContractButton")?.dataset.teamid || -1);
+            if (selectedTeamId === -1) {
+                document.querySelector(".junior-contract-info").classList.add("d-none")
+            } else {
+                document.querySelector(".junior-contract-info").classList.remove("d-none")
+            }
         }
         else{
             document.querySelector("#currentContractOptions").classList.remove("d-none")
@@ -1050,9 +1050,17 @@ document.getElementById("confirmButton").addEventListener('click', function () {
     const juniorActive = document.querySelector(".contract-category.junior-contract")?.classList.contains("active");
     if (juniorActive) {
         if (juniorContractDirty) {
-            queueJuniorContractUpdateTODO();
             juniorContractDirty = false;
         }
+        let data = {
+            driverID: driverEditingID,
+            driver: driverEditingName,
+            team: combined_dict[juniorTeamIdActive] || "",
+            teamID: juniorTeamIdActive,
+            posInTeam: document.getElementById("juniorPosInTeam").value
+        }
+        const command = new Command("juniorTransfer", data);
+        command.execute();
         modalType = "";
         setTimeout(clearModal, 500);
         return;
