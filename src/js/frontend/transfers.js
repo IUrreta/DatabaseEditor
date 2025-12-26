@@ -417,7 +417,7 @@ function iconListener(icon) {
     icon.addEventListener("click", function () {
         modalType = "edit"
         document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g, ' ') + "'s";
-        queryContract(icon.parentNode.parentNode)
+        fetchContracts(icon.parentNode.parentNode)
         let space = icon.parentNode.parentNode.parentNode
         if (space.classList.contains("driver-space") || space.classList.contains("affiliates-space") || (space.id === "free-drivers" && (f2_teams.includes(parseInt(icon.parentNode.parentNode.dataset.teamid)) || f3_teams.includes(parseInt(icon.parentNode.parentNode.dataset.teamid))))) {
             manage_modal_driver_staff("driver")
@@ -572,9 +572,9 @@ export function manage_modal(info) {
         }
         document.getElementById("currentContract").innerText = getUpdatedName(info[0][5]).toUpperCase()
         document.getElementById("currentContract").className = "team-contract engine-" + team_dict[teamID]
-        document.getElementById("yearInput").dataset.maxYear = info[2]
-        document.getElementById("yearInput").min = info[2]
-        document.getElementById("yearInputFuture").min = info[2] + 1
+        document.getElementById("yearInput").dataset.maxYear = info[3]
+        document.getElementById("yearInput").min = info[3]
+        document.getElementById("yearInputFuture").min = info[3] + 1
         document.querySelector("#currentContractOptions").querySelectorAll(".contract-modal-input").forEach(function (elem, index) {
             if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
                 elem.value = info[0][index].toLocaleString("en-US")
@@ -610,7 +610,156 @@ export function manage_modal(info) {
         })
     }
 
+    ensureJuniorTeamDropdownBuilt();
+
+    const juniorPill = document.querySelector(".contract-category.junior-contract");
+    if (info[2] !== null) {
+        document.getElementById("contractPills").classList.remove("d-none");
+        juniorPill?.classList.remove("d-none");
+
+        const juniorTeamId = info[2][6];
+        const juniorButton = document.getElementById("juniorTeamContractButton");
+        if (juniorButton && Number.isFinite(juniorTeamId)) {
+            juniorButton.dataset.teamid = String(juniorTeamId);
+            const label = juniorButton.querySelector("span");
+            if (label) label.innerText = (combined_dict[juniorTeamId] || "Select junior team").toUpperCase();
+
+            const listDiv = document.querySelector(".junior-team-drivers-list");
+            if (listDiv) listDiv.innerHTML = "<div class=\"modal-subtitle bold-font\">Loading drivers...</div>";
+            const command = new Command("juniorTeamDriversRequest", { teamID: juniorTeamId });
+            command.execute();
+        }
+    }
+    else {
+        juniorPill?.classList.add("d-none");
+    }
+
+    document.querySelectorAll(".contract-category").forEach(function (el) {
+        el.classList.remove("active");
+    });
+    document.querySelector(".contract-category.f1-contract")?.classList.add("active");
+    document.querySelector(".junior-contract-info")?.classList.add("d-none");
+    document.querySelector("#currentContractOptions")?.classList.remove("d-none");
+
+    if (info[1] === null) {
+        document.querySelector(".add-contract")?.classList.remove("d-none");
+        document.querySelector("#futureContractTitle")?.classList.add("d-none");
+        document.querySelector("#futureContractOptions")?.classList.add("d-none");
+    } else {
+        document.querySelector(".add-contract")?.classList.add("d-none");
+        document.querySelector("#futureContractTitle")?.classList.remove("d-none");
+        document.querySelector("#futureContractOptions")?.classList.remove("d-none");
+    }
+
 }
+
+function ensureJuniorTeamDropdownBuilt() {
+    const menu = document.getElementById("juniorTeamContractMenu");
+
+    menu.innerHTML = "";
+
+    const juniorIds = Object.keys(combined_dict)
+        .map((k) => Number(k))
+        .filter((id) => id >= 11 && id <= 31)
+        .sort((a, b) => a - b);
+
+    juniorIds.forEach((teamId) => {
+        const item = document.createElement("a");
+        item.className = "redesigned-dropdown-item bold-font";
+        item.style.cursor = "pointer";
+        item.dataset.teamid = String(teamId);
+
+        const logoWrap = document.createElement("div");
+        logoWrap.className = "team-menu-logo";
+
+        const logo = document.createElement("img");
+        logo.src = logos_disc[teamId] || "";
+        logo.alt = combined_dict[teamId] || `Team ${teamId}`;
+        logo.className = "team-menu-junior-generic";
+        logoWrap.appendChild(logo);
+
+        const nameWrap = document.createElement("div");
+        nameWrap.className = "team-menu-name";
+        nameWrap.innerText = (combined_dict[teamId] || `Team ${teamId}`).toUpperCase();
+
+        item.appendChild(logoWrap);
+        item.appendChild(nameWrap);
+        menu.appendChild(item);
+    });
+
+    menu.querySelectorAll("a").forEach(function (elem) {
+        elem.addEventListener("click", function () {
+            const teamId = Number(elem.dataset.teamid);
+            const button = document.getElementById("juniorTeamContractButton");
+            const label = button?.querySelector("span");
+            if (label) label.innerText = elem.querySelector(".team-menu-name")?.innerText || "Select junior team";
+            if (button) button.dataset.teamid = String(teamId);
+
+            const listDiv = document.querySelector(".junior-team-drivers-list");
+            if (listDiv) listDiv.innerHTML = "<div class=\"modal-subtitle bold-font\">Loading drivers...</div>";
+
+            const command = new Command("juniorTeamDriversRequest", { teamID: teamId });
+            command.execute();
+        });
+    });
+}
+
+export function loadJuniorTeamDrivers(payload) {
+    const listDiv = document.querySelector(".junior-team-drivers-list");
+    if (!listDiv) return;
+
+    const driverNames = payload?.driverNames || [];
+
+    if (!driverNames.length) {
+        listDiv.innerHTML = "<div class=\"modal-subtitle bold-font\">No drivers found</div>";
+        return;
+    }
+
+    const header = document.createElement("h5");
+    header.className = "modal-subtitle bold-font";
+    header.innerText = "Drivers";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "junior-team-drivers-list";
+    driverNames.forEach((name) => {
+        const row = document.createElement("div");
+        row.className = "team-contract";
+        row.innerText = name;
+        wrapper.appendChild(row);
+    });
+
+    listDiv.innerHTML = "";
+    listDiv.appendChild(header);
+    listDiv.appendChild(wrapper);
+}
+
+document.querySelectorAll(".contract-category").forEach(function (elem) {
+    elem.addEventListener("click", function () {
+        document.querySelectorAll(".contract-category").forEach(function (el) {
+            el.classList.remove("active")
+        })
+        elem.classList.add("active");
+        let category = elem.dataset.category;
+        if (category === "junior") {
+            document.querySelector("#currentContractOptions").classList.add("d-none")
+            // document.querySelector("#futureContractTitle").classList.add("d-none")
+            // document.querySelector("#futureContractOptions").classList.add("d-none")
+            document.querySelector(".add-contract").classList.add("d-none")
+            document.querySelector("#juniorContractDropdown").classList.remove("d-none")
+            document.querySelector("#currentContract").classList.add("d-none")
+            document.querySelector(".junior-contract-info").classList.remove("d-none")
+        }
+        else{
+            document.querySelector("#currentContractOptions").classList.remove("d-none")
+            // document.querySelector("#futureContractTitle").classList.remove("d-none")
+            // document.querySelector("#futureContractOptions").classList.remove("d-none")
+            document.querySelector("#juniorContractDropdown").classList.add("d-none")
+            document.querySelector("#currentContract").classList.remove("d-none")
+            document.querySelector(".add-contract").classList.remove("d-none")
+            document.querySelector(".junior-contract-info").classList.add("d-none")
+        }
+    })
+})
 
 /**
  * Listener for the team menu buttons
@@ -729,7 +878,7 @@ setupContractModalButtons();
  * Sends the message that requests the details from the driver
  * @param {div} elem div from the driver its requesting its details
  */
-function queryContract(elem) {
+function fetchContracts(elem) {
     driverEditingID = elem.dataset.driverid
     driverEditingName = make_name_prettier(elem.innerText)
 

@@ -11,50 +11,50 @@
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag() { dataLayer.push(arguments); }
-  gtag('js', new Date());
+  gtag('js',new Date());
 
-  gtag('config', 'G-81CY6HY9K6');
+  gtag('config','G-81CY6HY9K6');
 </script>
 
 <body class="font">
   <div class="snowflakes" aria-hidden="true">
-  <div class="snowflake">
-    <div class="inner">❅</div>
+    <div class="snowflake">
+      <div class="inner">❅</div>
+    </div>
+    <div class="snowflake">
+      <div class="inner">❅</div>
+    </div>
+    <div class="snowflake">
+      <div class="inner">.</div>
+    </div>
+    <div class="snowflake">
+      <div class="inner">❅</div>
+    </div>
+    <div class="snowflake">
+      <div class="inner">.</div>
+    </div>
+    <div class="snowflake">
+      <div class="inner">❅</div>
+    </div>
+    <div class="snowflake">
+      <div class="inner">❅</div>
+    </div>
+    <div class="snowflake">
+      <div class="inner">❅</div>
+    </div>
+    <div class="snowflake">
+      <div class="inner">❅</div>
+    </div>
+    <div class="snowflake">
+      <div class="inner">.</div>
+    </div>
+    <div class="snowflake">
+      <div class="inner">.</div>
+    </div>
+    <div class="snowflake">
+      <div class="inner">.</div>
+    </div>
   </div>
-  <div class="snowflake">
-    <div class="inner">❅</div>
-  </div>
-  <div class="snowflake">
-    <div class="inner">.</div>
-  </div>
-  <div class="snowflake">
-    <div class="inner">❅</div>
-  </div>
-  <div class="snowflake">
-    <div class="inner">.</div>
-  </div>
-  <div class="snowflake">
-    <div class="inner">❅</div>
-  </div>
-  <div class="snowflake">
-    <div class="inner">❅</div>
-  </div>
-  <div class="snowflake">
-    <div class="inner">❅</div>
-  </div>
-  <div class="snowflake">
-    <div class="inner">❅</div>
-  </div>
-  <div class="snowflake">
-    <div class="inner">.</div>
-  </div>
-  <div class="snowflake">
-    <div class="inner">.</div>
-  </div>
-  <div class="snowflake">
-    <div class="inner">.</div>
-  </div>
-</div>
   <div class="tech-grid"></div>
   <div class="glow-spot"></div>
   <div class="modal custom-modal fade" id="enginesModal" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -90,7 +90,20 @@
           <div class="contract-options">
             <div class="contract-title" id="currentContractTitle">
               <div>Current contract</div>
+              <div class="contract-categories" id="contractPills">
+                <div class="contract-category f1-contract" data-category="f1">F1</div>
+                <div class="contract-category junior-contract" data-category="junior">F2/F3</div>
+              </div>
               <div class="team-contract" id="currentContract"></div>
+              <div class="dropdown-global d-none" id="juniorContractDropdown">
+                  <button class="redesigned-dropdown bold-font" id="juniorTeamContractButton" data-teamid="-1">
+                    <span class="dropdown-label">Select junior team</span>
+                    <i class="redesigned-chevron"></i>
+                  </button>
+                  <ul class="redesigned-dropdown-menu dropdown-menu-end" id="juniorTeamContractMenu"
+                    style="font-family: Formula1;">
+                  </ul>
+              </div>
             </div>
             <div class="contract-details pt-1 mb-3" id="currentContractOptions">
               <div>
@@ -157,6 +170,9 @@
                   </div>
                 </div>
               </div>
+            </div>
+            <div class="junior-contract-info d-none">
+              <div class="junior-team-drivers-list mt-3"></div>
             </div>
             <div class="contract-title pt-3" id="futureContractTitle">
               <div class="year-and-break">
@@ -251,12 +267,12 @@
                 <span class="">Add future contract</span>
               </div>
               <div class="dropdown-global">
-                <button class="redesigned-dropdown bold-font"
-                  id="teamContractButton">
+                <button class="redesigned-dropdown bold-font" id="teamContractButton">
                   <span class="dropdown-label">Select team</span>
                   <i class="redesigned-chevron"></i>
                 </button>
-                <ul class="redesigned-dropdown-menu dropdown-menu-end" id="teamContractMenu" style="font-family: Formula1;">
+                <ul class="redesigned-dropdown-menu dropdown-menu-end" id="teamContractMenu"
+                  style="font-family: Formula1;">
                   <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="1">
                     <div class="team-menu-logo">
                       <img src="../assets/images/ferrari.png" class="team-menu-ferrari">
@@ -429,8 +445,7 @@
                 <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
                 <div class="team-change-button" id="alphaTauriReplaceButton">
                   <div class="dropdown-global" style="width: max-content;">
-                    <button class="redesigned-dropdown bold-font"
-                      aria-haspopup="true" data-value="alphatauri">
+                    <button class="redesigned-dropdown bold-font" aria-haspopup="true" data-value="alphatauri">
                       <span class="dropdown-label">ALPHA TAURI</span>
                       <i class="redesigned-chevron"></i>
                     </button>
@@ -691,7 +706,8 @@
                           </div>
                         </div>
                         <div class="dif-description modal-text">
-                          The AI will design every part  with less weight. With ULTRA, they will put the minimum weight possible.
+                          The AI will design every part with less weight. With ULTRA, they will put the minimum weight
+                          possible.
                         </div>
                       </div>
                       <div class="one-difficulty">
@@ -705,7 +721,8 @@
                           </div>
                         </div>
                         <div class="dif-description modal-text">
-                          Gives the AI a boost in each stat when designing new parts. The higher the difficulty, the better the stats.
+                          Gives the AI a boost in each stat when designing new parts. The higher the difficulty, the
+                          better the stats.
                         </div>
                       </div>
                       <div class="one-difficulty">
@@ -719,7 +736,8 @@
                           </div>
                         </div>
                         <div class="dif-description modal-text">
-                          Gives the AI a boost on expertise when doing research. The higher the difficulty, the bigger the boost.
+                          Gives the AI a boost on expertise when doing research. The higher the difficulty, the bigger
+                          the boost.
                         </div>
                       </div>
                     </div>
@@ -1528,22 +1546,26 @@
         <div class="general-top-panel">
           <div class="title-buttons-left">
             <div class="dropdown-global">
-              <button class="redesigned-dropdown bold-font"
-                id="newsTypeButton" aria-haspopup="true" aria-expanded="false">
+              <button class="redesigned-dropdown bold-font" id="newsTypeButton" aria-haspopup="true"
+                aria-expanded="false">
                 <span class="dropdown-label">Filter</span>
                 <i class="redesigned-chevron"></i>
               </button>
               <ul class="redesigned-dropdown-menu" id="newsTypeMenu" style="font-family: Formula1;">
-                <a class="redesigned-dropdown-item " data-value="race_result">Race results <i class="bi bi-check"></i></a>
-                <a class="redesigned-dropdown-item" data-value="quali_result">Qualifying results <i class="bi bi-check"></i></a>
-                <a class="redesigned-dropdown-item" data-value="driver_transfers">Driver transfers <i class="bi bi-check"></i></a>
+                <a class="redesigned-dropdown-item " data-value="race_result">Race results <i
+                    class="bi bi-check"></i></a>
+                <a class="redesigned-dropdown-item" data-value="quali_result">Qualifying results <i
+                    class="bi bi-check"></i></a>
+                <a class="redesigned-dropdown-item" data-value="driver_transfers">Driver transfers <i
+                    class="bi bi-check"></i></a>
                 <a class="redesigned-dropdown-item" data-value="others">Other news <i class="bi bi-check"></i></a>
-                <a class="redesigned-dropdown-item" data-value="turning_points">Turning points <i class="bi bi-check"></i></a>
+                <a class="redesigned-dropdown-item" data-value="turning_points">Turning points <i
+                    class="bi bi-check"></i></a>
               </ul>
             </div>
             <div class="dropdown-global">
-              <button class="redesigned-dropdown bold-font"
-                id="newsSeasonButton" aria-haspopup="true" aria-expanded="false">
+              <button class="redesigned-dropdown bold-font" id="newsSeasonButton" aria-haspopup="true"
+                aria-expanded="false">
                 <span class="dropdown-label">Season</span>
                 <i class="redesigned-chevron"></i>
               </button>
@@ -1551,8 +1573,8 @@
               </ul>
             </div>
             <div class="dropdown-global">
-              <button class="redesigned-dropdown bold-font"
-                id="newsLanguageButton" aria-haspopup="true" aria-expanded="false">
+              <button class="redesigned-dropdown bold-font" id="newsLanguageButton" aria-haspopup="true"
+                aria-expanded="false">
                 <span class="dropdown-label">Language</span>
                 <i class="redesigned-chevron"></i>
               </button>
@@ -1578,8 +1600,8 @@
       <div class="script-view hide unloaded" id="head2head_viewer">
         <div class="general-top-panel">
           <div class="title-buttons-left">
-              <div class="button-with-icon"  id="compDataButton" data-bs-toggle="modal"
-                data-bs-target="#compDataModal">Data</div>
+            <div class="button-with-icon" id="compDataButton" data-bs-toggle="modal" data-bs-target="#compDataModal">
+              Data</div>
             <div class="config-content bold-font" id="compConfigContent"></div>
           </div>
           <div class="title-buttons-right">
@@ -1589,15 +1611,15 @@
               <label class="form-check-label" for="flexSwitchCheckDefault">Annotations</label>
             </div>
             <div class="dropdown-global">
-              <button class="redesigned-dropdown bold-font"
-                id="graphTypeButton">
+              <button class="redesigned-dropdown bold-font" id="graphTypeButton">
                 <span class="dropdown-label">Graph type</span>
                 <i class="redesigned-chevron"></i>
               </button>
               <ul class="redesigned-dropdown-menu" id="graphTypeDropdown" style="font-family: Formula1;">
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="raceForm">Race form</a>
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="qualiForm">Qualifying form</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointsProgression">Points progression</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointsProgression">Points
+                  progression</a>
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="gapToWinner">Gap to winner</a>
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="gapToPole">Gap to pole</a>
               </ul>
@@ -1798,15 +1820,16 @@
               </ul>
             </div>
             <div class="dropdown-global">
-              <button type="button" class="redesigned-dropdown bold-font"
-                id="tableTypeButton">
+              <button type="button" class="redesigned-dropdown bold-font" id="tableTypeButton">
                 <span class="dropdown-label">Points</span>
                 <i class="redesigned-chevron"></i>
               </button>
               <ul class="redesigned-dropdown-menu" id="tableTypeDropdown" style="font-family: Formula1;">
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointspill" data-value="points">Points</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointspill"
+                  data-value="points">Points</a>
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pospill" data-value="pos">Positions</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="qualipill" data-value="quali">Qualifying</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="qualipill"
+                  data-value="quali">Qualifying</a>
               </ul>
             </div>
           </div>
@@ -1817,24 +1840,18 @@
           </div>
           <div class="title-buttons-left">
             <div class="dropdown-global">
-              <button class="redesigned-dropdown bold-font"
-                id="seriesTypeButton" data-value="1">
+              <button class="redesigned-dropdown bold-font" id="seriesTypeButton" data-value="1">
                 <span class="dropdown-label">F1</span>
                 <i class="redesigned-chevron"></i>
               </button>
-              <ul class="redesigned-dropdown-menu" id="seriesTypeDropdown"
-                style="font-family: Formula1;">
-                <a class="redesigned-dropdown-item" style="cursor: pointer;"
-                  data-value="1">F1</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;"
-                  data-value="2">F2</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;"
-                  data-value="3">F3</a>
+              <ul class="redesigned-dropdown-menu" id="seriesTypeDropdown" style="font-family: Formula1;">
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" data-value="1">F1</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" data-value="2">F2</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" data-value="3">F3</a>
               </ul>
             </div>
             <div class="dropdown-global">
-              <button class="redesigned-dropdown bold-font"
-                id="recordsTypeButton" data-value="standings">
+              <button class="redesigned-dropdown bold-font" id="recordsTypeButton" data-value="standings">
                 <span class="dropdown-label">Records</span>
                 <i class="redesigned-chevron"></i>
               </button>
@@ -1843,15 +1860,17 @@
                   data-value="standings">Standings</a>
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="winspill" data-value="wins">Wins</a>
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="polespill" data-value="poles">Poles</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="podiumspill" data-value="podiums">Podiums</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="champspill" data-value="champs">Championships</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointsRecordpill" data-value="points">Points</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="podiumspill"
+                  data-value="podiums">Podiums</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="champspill"
+                  data-value="champs">Championships</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointsRecordpill"
+                  data-value="points">Points</a>
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="racespill" data-value="races">Races</a>
               </ul>
-              </div>
-              <div class="dropdown-global">
-                <button class="redesigned-dropdown bold-font" id="yearButton"   
-                 aria-haspopup="true" aria-expanded="false">
+            </div>
+            <div class="dropdown-global">
+              <button class="redesigned-dropdown bold-font" id="yearButton" aria-haspopup="true" aria-expanded="false">
                 <span class="dropdown-label">Year</span>
                 <i class="redesigned-chevron"></i>
               </button>
@@ -1889,13 +1908,13 @@
         <div class="transfer-top-panel">
           <div class="title-buttons-left">
             <div class="dropdown-global">
-              <button class="redesigned-dropdown bold-font"
-                id="staffTransfersDropdown" aria-haspopup="true" aria-expanded="false"
-                data-value="drivers">
+              <button class="redesigned-dropdown bold-font" id="staffTransfersDropdown" aria-haspopup="true"
+                aria-expanded="false" data-value="drivers">
                 <span class="dropdown-label">Drivers</span>
                 <i class="redesigned-chevron"></i>
               </button>
-              <ul class="redesigned-dropdown-menu" id="stafftransfersMenu" style="font-family: Formula1;" data-bs-display="static">
+              <ul class="redesigned-dropdown-menu" id="stafftransfersMenu" style="font-family: Formula1;"
+                data-bs-display="static">
                 <a class="redesigned-dropdown-item" data-value="drivers">Drivers</a>
                 <a class="redesigned-dropdown-item" data-value="staff">Staff</a>
               </ul>
@@ -2251,8 +2270,8 @@
         <div class="general-top-panel">
           <div class="title-buttons-left">
             <div class="dropdown-global">
-              <button type="button" class="redesigned-dropdown bold-font" id="staffDropdown"
-                aria-haspopup="true" aria-expanded="false">
+              <button type="button" class="redesigned-dropdown bold-font" id="staffDropdown" aria-haspopup="true"
+                aria-expanded="false">
                 <span class="dropdown-label">Staff Type</span>
                 <i class="redesigned-chevron"></i>
               </button>
@@ -2265,7 +2284,8 @@
                   Engineers</a>
                 <a class="redesigned-dropdown-item" data-list="fullAeroList" data-spaceStats="aeroStats">H. of
                   Aerodynamics</a>
-                <a class="redesigned-dropdown-item" data-list="fullDirectorList" data-spaceStats="directorStats">Sporting
+                <a class="redesigned-dropdown-item" data-list="fullDirectorList"
+                  data-spaceStats="directorStats">Sporting
                   Directors</a>
               </ul>
             </div>
@@ -3069,8 +3089,7 @@
         <div class="general-top-panel">
           <div class="title-buttons-left">
             <div class="dropdown-global">
-              <button class="redesigned-dropdown bold-font" id="teamButton"
-                aria-haspopup="true" aria-expanded="false">
+              <button class="redesigned-dropdown bold-font" id="teamButton" aria-haspopup="true" aria-expanded="false">
                 <span class="span dropdown-label">Team</span>
                 <i class="redesigned-chevron"></i>
               </button>
@@ -3200,15 +3219,18 @@
                   <div class="bold-font">Long-term Objective</div>
                   <div id="objAndYear">
                     <div class="dropdown-global">
-                      <button class="redesigned-dropdown" id="objectiveButton"
-                        aria-haspopup="true" aria-expanded="false">
+                      <button class="redesigned-dropdown" id="objectiveButton" aria-haspopup="true"
+                        aria-expanded="false">
                         <span class="objective-label dropdown-label">Constructor's champion</span>
                         <i class="bi bi-chevron-down"></i>
                       </button>
                       <ul class="redesigned-dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
-                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj0">Constructor's champion</a>
-                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj1">Podium contender</a>
-                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj2">Points contender</a>
+                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj0">Constructor's
+                          champion</a>
+                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj1">Podium
+                          contender</a>
+                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj2">Points
+                          contender</a>
                       </ul>
                     </div>
                     <div class="input-and-buttons">
@@ -3262,8 +3284,8 @@
                 <div class="first-component" id="engineSelector">
                   <div class="bold-font">Engine</div>
                   <div class="dropdown-global">
-                    <button class="redesigned-dropdown" id="engineButton" aria-haspopup="true"
-                      aria-expanded="false" data-value="0">
+                    <button class="redesigned-dropdown" id="engineButton" aria-haspopup="true" aria-expanded="false"
+                      data-value="0">
                       <span class="objective-label dropdown-label" id="engineLabel">Engine</span>
                       <i class="bi bi-chevron-down"></i>
                     </button>
@@ -3855,17 +3877,17 @@
           <div class="general-top-panel">
             <div class="title-buttons-left">
               <div class="dropdown-global">
-                <button class="redesigned-dropdown bold-font"
-                  id="addRaceButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="redesigned-dropdown bold-font" id="addRaceButton" data-bs-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false">
                   <span class="dropdown-label">Add race</span>
                   <i class="redesigned-chevron"></i>
                 </button>
                 <ul class="redesigned-dropdown-menu" id="addTrackMenu" style="font-family: Formula1;">
                 </ul>
               </div>
-                <div class="close-modal" id="deleteTracks">
-                  Delete race
-                </div>
+              <div class="close-modal" id="deleteTracks">
+                Delete race
+              </div>
             </div>
             <div class="title bold-font">
               Calendar
@@ -3882,8 +3904,8 @@
         <div class="general-top-panel">
           <div class="title-buttons-left" id="carAttributeSelector">
             <div class="dropdown-global">
-              <button class="redesigned-dropdown bold-font"
-                id="attributeButton" aria-haspopup="true" aria-expanded="false">
+              <button class="redesigned-dropdown bold-font" id="attributeButton" aria-haspopup="true"
+                aria-expanded="false">
                 <span class="dropdown-label">Overall</span>
                 <i class="redesigned-chevron"></i>
               </button>
@@ -3895,7 +3917,8 @@
                 <a class="redesigned-dropdown-item" data-attribute="high_speed">High speed</a>
                 <a class="redesigned-dropdown-item" data-attribute="drs">DRS Effectiveness</a>
                 <a class="redesigned-dropdown-item" data-attribute="dirty_air">Dirty air tolerance</a>
-                <a class="redesigned-dropdown-item brake-cooling-replace" data-attribute="brake_cooling">Brake cooling</a>
+                <a class="redesigned-dropdown-item brake-cooling-replace" data-attribute="brake_cooling">Brake
+                  cooling</a>
                 <a class="redesigned-dropdown-item" data-attribute="engine_cooling">Engine cooling</a>
                 <a class="redesigned-dropdown-item" data-attribute="overall">Overall</a>
               </ul>
@@ -4512,7 +4535,8 @@
                   <div class="part-performance-stats">
                     <div class="part-stats">
                       <div class="part-performance-stat" data-attribute="4">
-                        <div class="part-performance-stat-title">Drag reduction <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Drag reduction <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4520,7 +4544,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="5">
-                        <div class="part-performance-stat-title">Engine cooling <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Engine cooling <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4528,7 +4553,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="13">
-                        <div class="part-performance-stat-title">Airflow middle <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Airflow middle <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4536,7 +4562,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="3" id="drs24">
-                        <div class="part-performance-stat-title">DRS Delta <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">DRS Delta <span class="unit-measure bold-font">%</span>
+                        </div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4567,7 +4594,8 @@
                   <div class="part-performance-stats">
                     <div class="part-stats">
                       <div class="part-performance-stat" data-attribute="0">
-                        <div class="part-performance-stat-title">Airflow front <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Airflow front <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4575,7 +4603,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="1">
-                        <div class="part-performance-stat-title">Airflow sensitivity <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Airflow sensitivity <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4583,7 +4612,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="2">
-                        <div class="part-performance-stat-title brake-cooling-replace">Brake cooling <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title brake-cooling-replace">Brake cooling <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4591,7 +4621,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="7">
-                        <div class="part-performance-stat-title">Low speed downforce <span class="unit-measure bold-font">kN</span></div>
+                        <div class="part-performance-stat-title">Low speed downforce <span
+                            class="unit-measure bold-font">kN</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="3" max="5">
@@ -4599,7 +4630,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="8">
-                        <div class="part-performance-stat-title">Medium speed downforce <span class="unit-measure bold-font">kN</span></div>
+                        <div class="part-performance-stat-title">Medium speed downforce <span
+                            class="unit-measure bold-font">kN</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="5" max="7">
@@ -4607,7 +4639,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="9">
-                        <div class="part-performance-stat-title">High speed downforce <span class="unit-measure bold-font">kN</span></div>
+                        <div class="part-performance-stat-title">High speed downforce <span
+                            class="unit-measure bold-font">kN</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="7" max="8">
@@ -4638,7 +4671,8 @@
                   <div class="part-performance-stats">
                     <div class="part-stats">
                       <div class="part-performance-stat" data-attribute="1">
-                        <div class="part-performance-stat-title">Airflow sensitivity <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Airflow sensitivity <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4646,7 +4680,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="3">
-                        <div class="part-performance-stat-title">DRS Delta <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">DRS Delta <span class="unit-measure bold-font">%</span>
+                        </div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4654,7 +4689,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="4">
-                        <div class="part-performance-stat-title">Drag reduction <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Drag reduction <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number">
@@ -4662,7 +4698,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="7">
-                        <div class="part-performance-stat-title">Low speed downforce <span class="unit-measure bold-font">kN</span></div>
+                        <div class="part-performance-stat-title">Low speed downforce <span
+                            class="unit-measure bold-font">kN</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="3" max="5">
@@ -4670,7 +4707,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="8">
-                        <div class="part-performance-stat-title">Medium speed downforce <span class="unit-measure bold-font">kN</span></div>
+                        <div class="part-performance-stat-title">Medium speed downforce <span
+                            class="unit-measure bold-font">kN</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="5" max="7">
@@ -4678,7 +4716,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="9">
-                        <div class="part-performance-stat-title">High speed downforce <span class="unit-measure bold-font">kN</span></div>
+                        <div class="part-performance-stat-title">High speed downforce <span
+                            class="unit-measure bold-font">kN</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="7" max="8">
@@ -4709,7 +4748,8 @@
                   <div class="part-performance-stats">
                     <div class="part-stats">
                       <div class="part-performance-stat" data-attribute="0">
-                        <div class="part-performance-stat-title">Airflow front <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Airflow front <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4717,7 +4757,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="4">
-                        <div class="part-performance-stat-title">Drag reduction <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Drag reduction <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4725,7 +4766,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="5">
-                        <div class="part-performance-stat-title">Engine cooling <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Engine cooling <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4733,7 +4775,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="13">
-                        <div class="part-performance-stat-title">Airflow middle <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Airflow middle <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4764,7 +4807,8 @@
                   <div class="part-performance-stats">
                     <div class="part-stats">
                       <div class="part-performance-stat" data-attribute="1">
-                        <div class="part-performance-stat-title">Airflow sensitivity <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Airflow sensitivity <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4772,7 +4816,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="4">
-                        <div class="part-performance-stat-title">Drag reduction <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Drag reduction <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4780,7 +4825,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="7">
-                        <div class="part-performance-stat-title">Low speed downforce <span class="unit-measure bold-font">kN</span></div>
+                        <div class="part-performance-stat-title">Low speed downforce <span
+                            class="unit-measure bold-font">kN</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="3" max="5">
@@ -4788,7 +4834,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="8">
-                        <div class="part-performance-stat-title">Medium speed downforce <span class="unit-measure bold-font">kN</span></div>
+                        <div class="part-performance-stat-title">Medium speed downforce <span
+                            class="unit-measure bold-font">kN</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="5" max="7">
@@ -4796,7 +4843,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="9">
-                        <div class="part-performance-stat-title">High speed downforce <span class="unit-measure bold-font">kN</span></div>
+                        <div class="part-performance-stat-title">High speed downforce <span
+                            class="unit-measure bold-font">kN</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="7" max="8">
@@ -4827,7 +4875,8 @@
                   <div class="part-performance-stats">
                     <div class="part-stats">
                       <div class="part-performance-stat" data-attribute="0">
-                        <div class="part-performance-stat-title">Airflow front <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Airflow front <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4835,7 +4884,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="2">
-                        <div class="part-performance-stat-title brake-cooling-replace">Brake cooling <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title brake-cooling-replace">Brake cooling <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4843,7 +4893,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="4">
-                        <div class="part-performance-stat-title">Drag reduction <span class="unit-measure bold-font">%</span></div>
+                        <div class="part-performance-stat-title">Drag reduction <span
+                            class="unit-measure bold-font">%</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="0" max="100">
@@ -4851,7 +4902,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="7">
-                        <div class="part-performance-stat-title">Low speed downforce <span class="unit-measure bold-font">kN</span></div>
+                        <div class="part-performance-stat-title">Low speed downforce <span
+                            class="unit-measure bold-font">kN</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="3" max="5">
@@ -4859,7 +4911,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="8">
-                        <div class="part-performance-stat-title">Medium speed downforce <span class="unit-measure bold-font">kN</span></div>
+                        <div class="part-performance-stat-title">Medium speed downforce <span
+                            class="unit-measure bold-font">kN</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="5" max="7">
@@ -4867,7 +4920,8 @@
                         </div>
                       </div>
                       <div class="part-performance-stat" data-attribute="9">
-                        <div class="part-performance-stat-title">High speed downforce <span class="unit-measure bold-font">kN</span></div>
+                        <div class="part-performance-stat-title">High speed downforce <span
+                            class="unit-measure bold-font">kN</span></div>
                         <div class="stat-number">
                           <i class="bi bi-dash new-augment-button transparent"></i>
                           <input type="text" class="custom-input-number" min="7" max="8">
@@ -4899,7 +4953,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="6">
-                <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -4910,7 +4965,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat engine24" data-attribute="11">
-                <div class="part-performance-stat-title">Performance threshold <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Performance threshold <span
+                    class="unit-measure bold-font">%</span></div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -4921,7 +4977,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat engine24" data-attribute="12">
-                <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -4932,7 +4989,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="14">
-                <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -4943,7 +5001,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="18">
-                <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -4954,7 +5013,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="19">
-                <div class="part-performance-stat-title">Gearbox durability <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Gearbox durability <span
+                    class="unit-measure bold-font">%</span></div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -4981,7 +5041,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="6">
-                <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -4992,7 +5053,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat engine24" data-attribute="11">
-                <div class="part-performance-stat-title">Performance threshold <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Performance threshold <span
+                    class="unit-measure bold-font">%</span></div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5003,7 +5065,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat engine24" data-attribute="12">
-                <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5014,7 +5077,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="14">
-                <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5025,7 +5089,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="18">
-                <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5036,7 +5101,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="19">
-                <div class="part-performance-stat-title">Gearbox durability <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Gearbox durability <span
+                    class="unit-measure bold-font">%</span></div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5063,7 +5129,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="6">
-                <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5074,7 +5141,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat engine24" data-attribute="11">
-                <div class="part-performance-stat-title">Performance threshold <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Performance threshold <span
+                    class="unit-measure bold-font">%</span></div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5085,7 +5153,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat engine24" data-attribute="12">
-                <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5096,7 +5165,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="14">
-                <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5107,7 +5177,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="18">
-                <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5118,7 +5189,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="19">
-                <div class="part-performance-stat-title">Gearbox durability <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Gearbox durability <span
+                    class="unit-measure bold-font">%</span></div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5145,7 +5217,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="6">
-                <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5156,7 +5229,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat engine24" data-attribute="11">
-                <div class="part-performance-stat-title">Performance threshold <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Performance threshold <span
+                    class="unit-measure bold-font">%</span></div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5167,7 +5241,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat engine24" data-attribute="12">
-                <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5178,7 +5253,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="14">
-                <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5189,7 +5265,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="18">
-                <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span>
+                </div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5200,7 +5277,8 @@
                 </div>
               </div>
               <div class="engine-performance-stat" data-attribute="19">
-                <div class="part-performance-stat-title">Gearbox durability <span class="unit-measure bold-font">%</span></div>
+                <div class="part-performance-stat-title">Gearbox durability <span
+                    class="unit-measure bold-font">%</span></div>
                 <div class="stat-number">
                   <i class="bi bi-dash new-augment-button transparent"></i>
                   <input type="text" class="custom-input-number">
@@ -5479,5 +5557,3 @@
 </body>
 
 </html>
-
-

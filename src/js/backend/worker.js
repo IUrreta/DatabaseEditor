@@ -1,7 +1,8 @@
 import {
   fetchSeasonResults, fetchEventsFrom, fetchTeamsStandings,
   fetchDrivers, fetchStaff, fetchEngines, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
-  fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContract,
+  fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContracts,
+  fetchJuniorTeamDriverNames,
   editEngines, updateCustomConfig, fetchCustomConfig,
   fetch2025ModData, check2025ModCompatibility,
   fetchPointsRegulations,
@@ -214,8 +215,18 @@ const workerCommands = {
     postMessage(designResponse);
   },
   driverRequest: (data, postMessage) => {
-    const contract = fetchDriverContract(data.driverID);
+    const contract = fetchDriverContracts(data.driverID);
     postMessage({ responseMessage: "Contract fetched", content: contract });
+  },
+  juniorTeamDriversRequest: (data, postMessage) => {
+    const teamID = Number(data.teamID);
+    if (!Number.isFinite(teamID) || teamID < 11 || teamID > 31) {
+      postMessage({ responseMessage: "Error", error: "Invalid junior team id" });
+      return;
+    }
+
+    const driverNames = fetchJuniorTeamDriverNames(teamID);
+    postMessage({ responseMessage: "Junior team drivers fetched", content: { teamID, driverNames } });
   },
   partRequest: (data, postMessage) => {
     const partValues = getUnitValueFromOnePart(data.designID);

@@ -10,6 +10,7 @@ import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_
 import {
     freeDriversDiv, insert_space, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal,
+    loadJuniorTeamDrivers,
     initFreeDriversElems
 } from './transfers';
 import { load_calendar } from './calendar';
@@ -821,6 +822,9 @@ const messageHandlers = {
     },
     "Contract fetched": (message) => {
         manage_modal(message);
+    },
+    "Junior team drivers fetched": (message) => {
+        loadJuniorTeamDrivers(message);
     },
     "Year fetched": (message) => {
         generateYearsMenu(message);

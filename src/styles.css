@@ -856,7 +856,8 @@ input[type="checkbox"]:focus {
 .engine-modal-body::-webkit-scrollbar,
 .news-article::-webkit-scrollbar,
 .main-second-viewer::-webkit-scrollbar,
-.news-edit-textarea::-webkit-scrollbar {
+.news-edit-textarea::-webkit-scrollbar,
+#juniorTeamContractMenu {
   width: 4px;
 }
 
@@ -873,7 +874,8 @@ input[type="checkbox"]:focus {
 .engine-modal-body::-webkit-scrollbar-thumb,
 .news-article::-webkit-scrollbar-thumb,
 .main-second-viewer::-webkit-scrollbar-thumb,
-.news-edit-textarea::-webkit-scrollbar-thumb {
+.news-edit-textarea::-webkit-scrollbar-thumb,
+#juniorTeamContractMenu::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -891,7 +893,8 @@ input[type="checkbox"]:focus {
 .engine-modal-body::-webkit-scrollbar-thumb:hover,
 .news-article::-webkit-scrollbar-thumb:hover,
 .main-second-viewer::-webkit-scrollbar-thumb:hover,
-.news-edit-textarea::-webkit-scrollbar-thumb:hover {
+.news-edit-textarea::-webkit-scrollbar-thumb:hover,
+#juniorTeamContractMenu::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
 
@@ -8560,6 +8563,12 @@ body.og-theme .records-list {
   height: 42px;
 }
 
+.team-menu-junior-generic {
+  width: 50px;
+  height: 42px;
+  object-fit: contain;
+}
+
 .team-menu-aston {
   width: 50px;
   height: 45px;
@@ -15342,6 +15351,58 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   margin: 0;
   font-size: 16px;
 }
+
+#juniorTeamContractMenu{
+  max-height: 300px;
+  min-width: 400px;
+  overflow-y: auto;
+}
+
+#juniorTeamContractMenu a{
+  font-size: 16px;
+  justify-content: flex-start;
+}
+
+.junior-team-drivers-list{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.contract-categories{
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  margin-left: 10px;
+  flex-grow: 1;
+}
+
+.contract-categories .contract-category{
+  padding: 2px 5px;
+  border-radius: 5px;
+  background-color: transparent;
+  color: var(--text-tertiary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.contract-categories .contract-category.active{
+  background-color: var(--new-primary-transparent);
+  color: var(--new-primary);
+}
+
+.contract-categories .contract-category:hover{
+  background-color: var(--new-primary-transparent);
+  color: var(--new-primary);
+}
+
+.contract-categories .contract-category:active{
+  transform: scale(0.96);
+}
+
 /* customizable snowflake styling */
 .snowflake {
   color: #fff;

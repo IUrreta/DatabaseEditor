@@ -1927,14 +1927,15 @@ export function fetchDriverNumbers() {
   return numbers.map(n => n[0]);
 }
 
-export function fetchDriverContract(id) {
+export function fetchDriverContracts(id) {
   // Obtener el contrato actual
   const currentContract = queryDB(`
         SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, TeamID
         FROM Staff_Contracts
         WHERE ContractType = 0 AND StaffID = ?
+        AND (TeamID BETWEEN 1 AND 10 OR TeamID = 32)
     `, [id], 'singleRow');
-
+    //teamID between 1 and 1 10 (10 included) and alsoc na be 32
   // Obtener el contrato futuro
   const futureContract = queryDB(`
         SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, PosInTeam, TeamID
@@ -1948,8 +1949,57 @@ export function fetchDriverContract(id) {
         FROM Player_State
     `, [], 'singleRow');
 
+  const juniorFormulasContract = queryDB(`
+        SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, PosInTeam, TeamID
+        FROM Staff_Contracts
+        WHERE ContractType = 0 AND StaffID = ?
+        AND (TeamID > 10 AND TeamID <> 32)
+    `, [id], 'singleRow');
+
   // Retornar los resultados
-  return [currentContract, futureContract, daySeason ? daySeason[1] : null];
+  return [currentContract, futureContract, juniorFormulasContract, daySeason ? daySeason[1] : null];
+}
+
+function formatStaffNameFromLocKeys(firstNameLocKey, lastNameLocKey) {
+  let firstName = "";
+  let lastName = "";
+
+  if (typeof firstNameLocKey === "string") {
+    if (!firstNameLocKey.includes("STRING_LITERAL")) {
+      const m = firstNameLocKey.match(/StaffName_Forename_(?:Male|Female)_(\\w+)/);
+      firstName = m ? removeNumber(m[1]) : "";
+    } else {
+      const m = firstNameLocKey.match(/\\|([^|]+)\\|/);
+      firstName = m ? m[1] : "";
+    }
+  }
+
+  if (typeof lastNameLocKey === "string") {
+    if (!lastNameLocKey.includes("STRING_LITERAL")) {
+      const m = lastNameLocKey.match(/StaffName_Surname_(\\w+)/);
+      lastName = m ? removeNumber(m[1]) : "";
+    } else {
+      const m = lastNameLocKey.match(/\\|([^|]+)\\|/);
+      lastName = m ? m[1] : "";
+    }
+  }
+
+  return `${firstName} ${lastName}`.trim();
+}
+
+export function fetchJuniorTeamDriverNames(teamId) {
+  const rows = queryDB(`
+      SELECT bas.FirstName, bas.LastName, con.PosInTeam, con.TeamID
+      FROM Staff_BasicData bas
+      JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+      JOIN Staff_Contracts con ON bas.StaffID = con.StaffID
+      WHERE con.ContractType = 0
+        AND con.TeamID = ?
+      ORDER BY con.PosInTeam, bas.LastName, bas.FirstName
+    `, [teamId], 'allRows');
+
+
+  return rows.map(row => formatNamesSimple(row)[0]);
 }
 
 export function checkCustomTables(year) {
