@@ -41,6 +41,10 @@ let driver2;
 let originalTeamId
 export let currentSeason;
 
+let juniorTeamIdActive = -1;
+let juniorTeamDrivers = [];
+let juniorContractDirty = false;
+
 export function setCurrentSeason(season) {
     currentSeason = season
 }
@@ -617,12 +621,21 @@ export function manage_modal(info) {
         document.getElementById("contractPills").classList.remove("d-none");
         juniorPill?.classList.remove("d-none");
 
-        const juniorTeamId = info[2][6];
+        const juniorTeamId = Number(info[2][6]);
         const juniorButton = document.getElementById("juniorTeamContractButton");
+        const posInput = document.getElementById("juniorPosInTeam");
         if (juniorButton && Number.isFinite(juniorTeamId)) {
+            juniorTeamIdActive = juniorTeamId;
+            juniorContractDirty = false;
             juniorButton.dataset.teamid = String(juniorTeamId);
             const label = juniorButton.querySelector("span");
             if (label) label.innerText = (combined_dict[juniorTeamId] || "Select junior team").toUpperCase();
+
+            setJuniorPosInputLimits(juniorTeamId);
+            if (posInput) {
+                const pos = Number(info[2][5]);
+                posInput.value = Number.isFinite(pos) ? String(pos) : "1";
+            }
 
             const listDiv = document.querySelector(".junior-team-drivers-list");
             if (listDiv) listDiv.innerHTML = "<div class=\"modal-subtitle bold-font\">Loading drivers...</div>";
@@ -631,7 +644,24 @@ export function manage_modal(info) {
         }
     }
     else {
-        juniorPill?.classList.add("d-none");
+        juniorPill?.classList.remove("d-none");
+        juniorTeamIdActive = -1;
+        juniorTeamDrivers = [];
+        juniorContractDirty = false;
+        const juniorButton = document.getElementById("juniorTeamContractButton");
+        if (juniorButton) {
+            juniorButton.dataset.teamid = "-1";
+            const label = juniorButton.querySelector("span");
+            if (label) label.innerText = "Select junior team";
+        }
+        const posInput = document.getElementById("juniorPosInTeam");
+        if (posInput) {
+            posInput.min = "1";
+            posInput.max = "3";
+            posInput.value = "1";
+        }
+        const listDiv = document.querySelector(".junior-team-drivers-list");
+        if (listDiv) listDiv.innerHTML = "";
     }
 
     document.querySelectorAll(".contract-category").forEach(function (el) {
@@ -653,8 +683,83 @@ export function manage_modal(info) {
 
 }
 
+function getJuniorMaxCars(teamId) {
+    if (f2_teams.includes(teamId)) return 2;
+    if (f3_teams.includes(teamId)) return 3;
+    if (teamId >= 11 && teamId <= 21) return 2;
+    if (teamId >= 22 && teamId <= 31) return 3;
+    return 2;
+}
+
+function setJuniorPosInputLimits(teamId) {
+    const input = document.getElementById("juniorPosInTeam");
+    if (!input) return;
+
+    const maxCars = getJuniorMaxCars(teamId);
+    input.min = "1";
+    input.max = String(maxCars);
+
+    const current = Number(input.value || 1);
+    if (!Number.isFinite(current)) {
+        input.value = "1";
+        return;
+    }
+    input.value = String(Math.min(maxCars, Math.max(1, current)));
+}
+
+function renderJuniorDriversList() {
+    const listDiv = document.querySelector(".junior-team-drivers-list");
+    if (!listDiv) return;
+
+    const maxCars = getJuniorMaxCars(juniorTeamIdActive);
+    const input = document.getElementById("juniorPosInTeam");
+    const selectedPos = Math.min(maxCars, Math.max(1, Number(input?.value || 1)));
+
+    const driversByPos = new Map();
+    (juniorTeamDrivers || []).forEach((d) => {
+        const pos = Number(d?.posInTeam);
+        if (!Number.isFinite(pos)) return;
+        driversByPos.set(pos, d?.name || "Free driver");
+    });
+
+    listDiv.innerHTML = "";
+
+    for (let pos = 1; pos <= maxCars; pos++) {
+        const row = document.createElement("div");
+        row.className = "junior-driver-row";
+
+        const left = document.createElement("div");
+        left.className = "junior-driver-left";
+
+        const car = document.createElement("div");
+        car.className = "junior-driver-car";
+        car.innerText = `CAR ${pos}`;
+
+        const name = document.createElement("div");
+        name.className = "junior-driver-name";
+        name.innerText = driversByPos.get(pos) || "Free driver";
+
+        left.appendChild(car);
+        left.appendChild(name);
+
+        const right = document.createElement("div");
+        right.className = "junior-driver-right";
+        if (pos === selectedPos) {
+            const tag = document.createElement("div");
+            tag.className = "junior-replacing-tag";
+            tag.innerText = "< Replacing";
+            right.appendChild(tag);
+        }
+
+        row.appendChild(left);
+        row.appendChild(right);
+        listDiv.appendChild(row);
+    }
+}
+
 function ensureJuniorTeamDropdownBuilt() {
     const menu = document.getElementById("juniorTeamContractMenu");
+    if (!menu) return;
 
     menu.innerHTML = "";
 
@@ -695,6 +800,11 @@ function ensureJuniorTeamDropdownBuilt() {
             if (label) label.innerText = elem.querySelector(".team-menu-name")?.innerText || "Select junior team";
             if (button) button.dataset.teamid = String(teamId);
 
+            juniorTeamIdActive = teamId;
+            setJuniorPosInputLimits(teamId);
+            juniorTeamDrivers = [];
+            juniorContractDirty = true;
+
             const listDiv = document.querySelector(".junior-team-drivers-list");
             if (listDiv) listDiv.innerHTML = "<div class=\"modal-subtitle bold-font\">Loading drivers...</div>";
 
@@ -702,35 +812,64 @@ function ensureJuniorTeamDropdownBuilt() {
             command.execute();
         });
     });
+
+    const posInput = document.getElementById("juniorPosInTeam");
+    if (posInput && posInput.dataset.listenerAttached !== "1") {
+        posInput.dataset.listenerAttached = "1";
+        posInput.addEventListener("input", function () {
+            if (juniorTeamIdActive !== -1) setJuniorPosInputLimits(juniorTeamIdActive);
+            juniorContractDirty = true;
+            renderJuniorDriversList();
+        });
+
+        const wrapper = posInput.closest(".input-and-buttons");
+        const plusBtn = wrapper?.querySelector(".bi-plus");
+        const minusBtn = wrapper?.querySelector(".bi-dash");
+
+        const wrapStep = (delta) => {
+            const max = Number(posInput.max || 1);
+            const min = Number(posInput.min || 1);
+            const cur = Number(posInput.value || min);
+            const normalized = Number.isFinite(cur) ? cur : min;
+
+            let next = normalized + delta;
+            if (next > max) next = min;
+            if (next < min) next = max;
+
+            posInput.value = String(next);
+            posInput.dispatchEvent(new Event("input", { bubbles: true }));
+        };
+
+        plusBtn?.addEventListener("click", function () {
+            wrapStep(1);
+        });
+        minusBtn?.addEventListener("click", function () {
+            wrapStep(-1);
+        });
+    }
 }
 
 export function loadJuniorTeamDrivers(payload) {
     const listDiv = document.querySelector(".junior-team-drivers-list");
     if (!listDiv) return;
 
-    const driverNames = payload?.driverNames || [];
-
-    if (!driverNames.length) {
-        listDiv.innerHTML = "<div class=\"modal-subtitle bold-font\">No drivers found</div>";
-        return;
+    const teamId = Number(payload?.teamID);
+    if (Number.isFinite(teamId)) {
+        juniorTeamIdActive = teamId;
+        setJuniorPosInputLimits(teamId);
     }
 
-    const header = document.createElement("h5");
-    header.className = "modal-subtitle bold-font";
-    header.innerText = "Drivers";
+    juniorTeamDrivers = Array.isArray(payload?.driverNames) ? payload.driverNames : [];
+    renderJuniorDriversList();
+}
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "junior-team-drivers-list";
-    driverNames.forEach((name) => {
-        const row = document.createElement("div");
-        row.className = "team-contract";
-        row.innerText = name;
-        wrapper.appendChild(row);
-    });
+function queueJuniorContractUpdateTODO() {
+    const teamId = Number(document.getElementById("juniorTeamContractButton")?.dataset.teamid || -1);
+    const posInTeam = Number(document.getElementById("juniorPosInTeam")?.value || 1);
 
-    listDiv.innerHTML = "";
-    listDiv.appendChild(header);
-    listDiv.appendChild(wrapper);
+    const data = { driverID: driverEditingID, teamID: teamId, posInTeam };
+    console.log("[TODO] junior contract update:", data);
+    window.__juniorContractPendingUpdate = data;
 }
 
 document.querySelectorAll(".contract-category").forEach(function (elem) {
@@ -858,6 +997,7 @@ function setupContractModalButtons() {
         const plusBtn = wrapper.querySelector(".bi-plus");
         const minusBtn = wrapper.querySelector(".bi-dash");
         if (!input || !plusBtn || !minusBtn) return;
+        if (input.id === "juniorPosInTeam") return;
 
         const isMoney = moneyInputs.has(input.id);
         const isSalary = input.id === "salaryInput" || input.id === "salaryInputFuture";
@@ -907,6 +1047,16 @@ function manageDrivers(...divs) {
  * Event listener for the confirm button from the modal
  */
 document.getElementById("confirmButton").addEventListener('click', function () {
+    const juniorActive = document.querySelector(".contract-category.junior-contract")?.classList.contains("active");
+    if (juniorActive) {
+        if (juniorContractDirty) {
+            queueJuniorContractUpdateTODO();
+            juniorContractDirty = false;
+        }
+        modalType = "";
+        setTimeout(clearModal, 500);
+        return;
+    }
     if (modalType === "hire") {
         if (((f2_teams.includes(originalTeamId) | f3_teams.includes(originalTeamId)) && !destinationParent.classList.contains("affiliates-space")) | originalParent.className === "driver-space" | originalParent.classList.contains("affiliates-space") | originalParent.className === "staff-space") {
             signDriver("fireandhire")

@@ -4723,20 +4723,23 @@ body.light-theme .flag-header img {
 
 .staff-list::-webkit-scrollbar,
 .news-grid::-webkit-scrollbar,
-.records-list::-webkit-scrollbar {
+.records-list::-webkit-scrollbar,
+#juniorTeamContractMenu::-webkit-scrollbar {
   width: 4px;
 }
 
 .staff-list::-webkit-scrollbar-thumb,
 .news-grid::-webkit-scrollbar-thumb,
-.records-list::-webkit-scrollbar-thumb {
+.records-list::-webkit-scrollbar-thumb,
+#juniorTeamContractMenu::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
 
 .staff-list::-webkit-scrollbar-thumb:hover,
 .news-grid::-webkit-scrollbar-thumb:hover,
-.records-list::-webkit-scrollbar-thumb:hover {
+.records-list::-webkit-scrollbar-thumb:hover,
+#juniorTeamContractMenu::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
 
@@ -8567,6 +8570,39 @@ body.og-theme .records-list {
   width: 50px;
   height: 42px;
   object-fit: contain;
+}
+
+.junior-driver-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 4px 0;
+}
+
+#juniorPosInTeam{
+  width: 30px !important;
+}
+
+.junior-driver-left {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.junior-driver-car {
+  color: var(--text-general);
+  opacity: 0.75;
+  font-size: 12px;
+  min-width: 52px;
+}
+
+.junior-driver-name {
+  color: var(--text-general);
+}
+
+.junior-replacing-tag {
+  color: var(--new-primary);
+  font-weight: 700;
 }
 
 .team-menu-aston {
@@ -15350,6 +15386,10 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   color: var(--text-secondary);
   margin: 0;
   font-size: 16px;
+}
+
+.junior-driver-right{
+  margin-left: 10px;
 }
 
 #juniorTeamContractMenu{

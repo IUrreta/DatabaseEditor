@@ -1966,20 +1966,20 @@ function formatStaffNameFromLocKeys(firstNameLocKey, lastNameLocKey) {
 
   if (typeof firstNameLocKey === "string") {
     if (!firstNameLocKey.includes("STRING_LITERAL")) {
-      const m = firstNameLocKey.match(/StaffName_Forename_(?:Male|Female)_(\\w+)/);
+      const m = firstNameLocKey.match(/StaffName_Forename_(?:Male|Female)_(\w+)/);
       firstName = m ? removeNumber(m[1]) : "";
     } else {
-      const m = firstNameLocKey.match(/\\|([^|]+)\\|/);
+      const m = firstNameLocKey.match(/\|([^|]+)\|/);
       firstName = m ? m[1] : "";
     }
   }
 
   if (typeof lastNameLocKey === "string") {
     if (!lastNameLocKey.includes("STRING_LITERAL")) {
-      const m = lastNameLocKey.match(/StaffName_Surname_(\\w+)/);
+      const m = lastNameLocKey.match(/StaffName_Surname_(\w+)/);
       lastName = m ? removeNumber(m[1]) : "";
     } else {
-      const m = lastNameLocKey.match(/\\|([^|]+)\\|/);
+      const m = lastNameLocKey.match(/\|([^|]+)\|/);
       lastName = m ? m[1] : "";
     }
   }
@@ -1988,18 +1988,36 @@ function formatStaffNameFromLocKeys(firstNameLocKey, lastNameLocKey) {
 }
 
 export function fetchJuniorTeamDriverNames(teamId) {
+  const maxCars = (teamId >= 11 && teamId <= 21) ? 2 : (teamId >= 22 && teamId <= 31) ? 3 : 0;
+  if (!maxCars) return [];
+
   const rows = queryDB(`
-      SELECT bas.FirstName, bas.LastName, con.PosInTeam, con.TeamID
+      SELECT bas.FirstName, bas.LastName, con.PosInTeam
       FROM Staff_BasicData bas
       JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
       JOIN Staff_Contracts con ON bas.StaffID = con.StaffID
       WHERE con.ContractType = 0
         AND con.TeamID = ?
       ORDER BY con.PosInTeam, bas.LastName, bas.FirstName
-    `, [teamId], 'allRows');
+    `, [teamId], 'allRows') || [];
 
+  const byPos = new Map();
 
-  return rows.map(row => formatNamesSimple(row)[0]);
+  rows.forEach(([firstName, lastName, posInTeam]) => {
+    const pos = Number(posInTeam);
+    if (!Number.isFinite(pos) || pos < 1 || pos > maxCars) return;
+    if (byPos.has(pos)) return;
+
+    const name = formatStaffNameFromLocKeys(firstName, lastName);
+    byPos.set(pos, name || "Free driver");
+  });
+
+  const result = [];
+  for (let pos = 1; pos <= maxCars; pos++) {
+    result.push({ name: byPos.get(pos) || "Free driver", posInTeam: pos });
+  }
+
+  return result;
 }
 
 export function checkCustomTables(year) {
