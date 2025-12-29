@@ -746,13 +746,19 @@ export function new_load_teams_table(data) {
     datazone.innerHTML = "";
 
     // Estructura: teamData[teamId] = Map<raceId, RaceObj[] de ese equipo en esa carrera>
-    const teamIds = currentFormula === 1 ? f1_teams : (currentFormula === 2 ? f2_teams : f3_teams)
+    let teamIds = currentFormula === 1 ? f1_teams : (currentFormula === 2 ? f2_teams : f3_teams)
     const teamData = {};
     teamIds.forEach((id) => {
         teamData[id] = new Map();
     });
-    if (currentFormula === 1 && game_version === 2024 && custom_team && !teamData[32]) {
+
+    if (currentFormula === 1 && game_version === 2024 && custom_team) {
         teamData[32] = new Map();
+    }
+    else{
+        delete teamData[32];
+        //remove 32 from teamIds
+        teamIds = teamIds.filter(id => id !== 32);
     }
 
     // Construimos el map por equipo/carrera
@@ -782,7 +788,7 @@ export function new_load_teams_table(data) {
     teamIds.forEach((teamId) => {
         const pos = pairTeamPosDict[teamId];
         let teamName = combined_dict[teamId] //remove the final (F2) or (F3) that may exist
-        if (teamName.endsWith(" (F2)") || teamName.endsWith(" (F3)")) {
+        if (teamName && (teamName.endsWith(" (F2)") || teamName.endsWith(" (F3)"))) {
             teamName = teamName.slice(0, -5)
         }
         const result = new_addTeam(teamData[teamId], teamName, pos, teamId);

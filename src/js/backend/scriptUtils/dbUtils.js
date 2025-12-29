@@ -2324,16 +2324,19 @@ export function updateCustomConfig(data) {
     VALUES ('alpine', ?)
   `, [alpine], 'run');
 
-  queryDB(`
-    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
-    VALUES ('primaryColor', ?)
-  `, [primaryColor], 'run');
+  if (primaryColor){
+    queryDB(`
+      INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+      VALUES ('primaryColor', ?)
+    `, [primaryColor], 'run');
+  }
 
-  queryDB(`
-    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
-    VALUES ('secondaryColor', ?)
-  `, [secondaryColor], 'run');
-
+  if (secondaryColor) {
+    queryDB(`
+      INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+      VALUES ('secondaryColor', ?)
+    `, [secondaryColor], 'run');
+  }
   //delete the difficulty key from Custom_Save_Config every time
   queryDB(`DELETE FROM Custom_Save_Config WHERE key = 'difficulty'`, [], 'run');
 
