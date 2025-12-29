@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
+import { getEffectiveTier } from '../../../lib/accessControl.js';
 
 export default async function handler(req, res) {
     const { code } = req.query;
@@ -88,25 +89,23 @@ export default async function handler(req, res) {
             tier = tierName;
         }
 
-        //if username if Ignacio (the developer), always set to founder
-        if (identityData.data.attributes.full_name === "Ignacio") {
-            tier = "Founder";
-        }
-
-        const isPaid = paidTiers.includes(tierName);
+        const fullName = identityData?.data?.attributes?.full_name || "";
+        const baseTier = tier;
+        const effectiveTier = getEffectiveTier({ name: fullName, baseTier });
+        const isPaid = paidTiers.includes(effectiveTier);
 
         const patreonUser = {
-            name: identityData.data.attributes.full_name,
+            name: fullName,
             thumbUrl: identityData.data.attributes.thumb_url,
             isMember,
             amountCents,
-            tier: tier,
+            tier: effectiveTier,
         };
 
         const token = jwt.sign(
             {
                 name: patreonUser.name,
-                tier: patreonUser.tier,
+                tier: baseTier,
                 patreonId: identityData.data.id
             },
             process.env.JWT_SECRET,

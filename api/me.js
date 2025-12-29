@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { getEffectiveTier } from '../lib/accessControl.js';
 
 export default function handler(req, res) {
     // Vercel parses the cookie string automatically into req.cookies
@@ -16,15 +17,9 @@ export default function handler(req, res) {
         // Verify the token signature
         const decoded = jwt.verify(auth_token, process.env.JWT_SECRET);
 
-        // Determine if they are a paid member based on the tier name inside the token
-        const paidTiers = ["Backer", "Insider", "Founder"]; // Adjust these names to match your Patreon exactly
-        let tier = decoded.tier;
+        const paidTiers = ["Backer", "Insider", "Founder"];
+        const tier = getEffectiveTier({ name: decoded.name, baseTier: decoded.tier });
         const isPaid = paidTiers.includes(tier);
-
-        //if the username is Ignacio (the developer), always set to founder
-        if (decoded.name === "Ignacio") {
-            tier = "Founder";
-        }
 
         return res.json({
             isLoggedIn: true,
