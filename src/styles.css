@@ -3388,11 +3388,11 @@ DRIVERS TABLE
 }
 
 .alpine-team-table-logo {
-  padding: 9px 2px !important
+  padding: 13px 2px !important
 }
 
 .williams-team-table-logo {
-  padding: 10px 6px !important;
+  padding: 2px!important;
 }
 
 .haas-team-table-logo {
@@ -3704,6 +3704,15 @@ phm
   padding: 4px;
 }
 
+.wihoverback {
+  width: 30px;
+  height: 30px;
+}
+
+.wihoverback:has(.logo-williams-2026-table) {
+  padding: 0px 0px;
+}
+
 .athoverback {
   width: 30px;
   height: 30px;
@@ -3734,7 +3743,6 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 .logo-hugo-table {
@@ -3745,7 +3753,6 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 
@@ -3757,7 +3764,6 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 .logo-brawn-table {
@@ -3768,7 +3774,6 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 .logo-alpine-table {
@@ -3779,7 +3784,16 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
+}
+
+.logo-williams-2026-table {
+  width: 100%;
+  height: 100%;
+  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--williams-primary);
 }
 
 .alhoverback {
@@ -3809,7 +3823,6 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 .logo-renault-table {
@@ -3820,7 +3833,6 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 .logo-lotus-table {
@@ -3831,12 +3843,12 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 .drivers-table-row:hover .logo-alpine-table,
 .drivers-table-row:hover .logo-visarb-table,
-.drivers-table-row:hover .logo-alphatauri-table {
+.drivers-table-row:hover .logo-alphatauri-table,
+.drivers-table-row:hover .logo-williams-2026-table {
   background-color: #ffffff;
 }
 
@@ -10519,10 +10531,6 @@ input::-webkit-inner-spin-button {
 #wilogo {
   width: 40px;
   height: 40px;
-  padding-bottom: 9px;
-  padding-left: 6px;
-  padding-top: 8px;
-  padding-right: 6px;
 }
 
 .team1,

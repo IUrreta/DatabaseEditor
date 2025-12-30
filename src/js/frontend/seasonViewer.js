@@ -457,11 +457,11 @@ function manage_teams_table_logos() {
             }
         }
         else if (logo.dataset.teamid === "6") {
-            logo.className = "teams-table-logo-inner williams-team-table-logo"
-            logo.src = "../assets/images/williams2.png"
+            logo.className = "teams-table-logo-inner williams-team-table-logo"  
+            logo.src = "../assets/images/Williams_2026_logo.svg"
         }
         else if (logo.dataset.teamid === "7") {
-            logo.className = "teams-table-logo-inner haas-team-table-logo"
+            logo.className = "teams-table-logo-inner haas-team-table-logo"      
         }
         else if (logo.dataset.teamid === "8") {
             if (alphaReplace === "alphatauri") {
@@ -1208,7 +1208,10 @@ function new_addDriver(driver, races_done, odd) {
         if (driver["latestTeamId"] === 1) logo.classList.add("logo-ferrari-table");
         if (driver["latestTeamId"] === 2) logo.classList.add("logo-reduce");
         if (driver["latestTeamId"] === 3) logo.classList.add("logo-up-down-mid");
-        if (driver["latestTeamId"] === 6) logo.classList.add("logo-williams-table");
+        if (driver["latestTeamId"] === 6) {
+            logo = document.createElement("div");
+            logo.classList.add("logo-williams-2026-table");
+        }
         if (driver["latestTeamId"] === 4 || driver["latestTeamId"] === 7) logo.classList.add("logo-merc-table");
         if (driver["latestTeamId"] === 5) {
             logo = document.createElement("div");
@@ -1603,20 +1606,24 @@ function hoverListeners() {
     }
     document.querySelectorAll(".drivers-table-row").forEach(function (row) {
         row.addEventListener("mouseenter", function () {
-            if (this.dataset.teamid === "2" || this.dataset.teamid === "6" || (this.dataset.teamid === "5" && alpineReplace !== "alpine")
+            if (this.dataset.teamid === "2" || (this.dataset.teamid === "5" && alpineReplace !== "alpine")
                 || (this.dataset.teamid === "9" && alfaReplace === "sauber") || (this.dataset.teamid === "8" && (alphaReplace === "brawn" || alphaReplace === "hugo" || alphaReplace === "toyota"))) {
 
                 let logo = this.querySelector(".drivers-table-logo");
-                let new_src = logos_disc[this.dataset.teamid].slice(0, -4) + "2" + logo.src.slice(-4);
-                logo.src = new_src
+                if (!logo) return;
+                const baseSrc = logos_disc[this.dataset.teamid];
+                if (typeof baseSrc !== "string" || !/\.(png|jpe?g)$/i.test(baseSrc)) return;
+                logo.src = baseSrc.replace(/(\.[^.]+)$/, "2$1");
             }
         });
         row.addEventListener("mouseleave", function () {
-            if (this.dataset.teamid === "2" || this.dataset.teamid === "6" || (this.dataset.teamid === "5" && alpineReplace !== "alpine")
+            if (this.dataset.teamid === "2" || (this.dataset.teamid === "5" && alpineReplace !== "alpine")
                 || (this.dataset.teamid === "9" && alfaReplace === "sauber") || (this.dataset.teamid === "8" && (alphaReplace === "brawn" || alphaReplace === "hugo" || alphaReplace === "toyota"))) {
                 let logo = this.querySelector(".drivers-table-logo");
-                let new_src = logos_disc[this.dataset.teamid].slice(0, -4) + logo.src.slice(-4);
-                logo.src = new_src
+                if (!logo) return;
+                const baseSrc = logos_disc[this.dataset.teamid];
+                if (typeof baseSrc !== "string" || !/\.(png|jpe?g)$/i.test(baseSrc)) return;
+                logo.src = baseSrc;
             }
         });
     });

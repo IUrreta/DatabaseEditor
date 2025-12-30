@@ -187,7 +187,7 @@ export let logos_disc = {
     3: '../assets/images/redbull.png',
     4: '../assets/images/mercedes.png',
     5: '../assets/images/alpine.png',
-    6: '../assets/images/williams.png',
+    6: '../assets/images/Williams_2026_logo.svg',
     7: '../assets/images/haas.png',
     8: '../assets/images/alphatauri.png',
     9: '../assets/images/alfaromeo.png',
