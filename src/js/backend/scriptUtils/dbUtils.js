@@ -955,6 +955,7 @@ export function fetchTeamsStandings(year, formula = 1) {
         FROM Races_TeamStandings
         WHERE SeasonID = ?
           AND RaceFormula = ?
+        ORDER BY Position
       `, [year, formula], 'allRows') || [];
 }
 

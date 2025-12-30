@@ -794,7 +794,49 @@ export function make_name_prettier(text) {
 
     const lastWord = words.pop();
 
-    return lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();
+    return lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();  
+}
+
+function orderTeamTemplatesByStandings(standingsRows) {
+    const parent = document.querySelector(".main-columns-drag-section.teams-columns");
+    if (!parent) return;
+
+    const templates = Array.from(parent.querySelectorAll(":scope > .team-template"));
+    if (templates.length === 0) return;
+
+    const positionByTeamId = new Map();
+    if (Array.isArray(standingsRows)) {
+        standingsRows.forEach((row) => {
+            if (!Array.isArray(row) || row.length < 2) return;
+            const teamId = Number(row[0]);
+            const position = Number(row[1]);
+            if (!Number.isFinite(teamId) || !Number.isFinite(position) || position <= 0) return;
+            const prev = positionByTeamId.get(teamId);
+            if (!Number.isFinite(prev) || position < prev) {
+                positionByTeamId.set(teamId, position);
+            }
+        });
+    }
+
+    const decorated = templates.map((el, index) => {
+        const staffSection = el.querySelector(".staff-section[data-teamid]");
+        const teamId = staffSection ? Number(staffSection.dataset.teamid) : NaN;
+        const position = Number.isFinite(teamId) ? positionByTeamId.get(teamId) : undefined;
+        return { el, index, teamId, position };
+    });
+
+    decorated.sort((a, b) => {
+        const aHas = Number.isFinite(a.position);
+        const bHas = Number.isFinite(b.position);
+        if (aHas && bHas) return a.position - b.position;
+        if (aHas) return -1;
+        if (bHas) return 1;
+        return a.index - b.index;
+    });
+
+    const frag = document.createDocumentFragment();
+    decorated.forEach(({ el }) => frag.appendChild(el));
+    parent.appendChild(frag);
 }
 
 
@@ -848,6 +890,10 @@ const messageHandlers = {
     },
     "Year fetched": (message) => {
         generateYearsMenu(message);
+    },
+    "Previous year teams standings fetched": (message) => {
+        const standings = message?.standings || message;
+        orderTeamTemplatesByStandings(standings);
     },
     "Numbers fetched": (message) => {
         loadNumbers(message);

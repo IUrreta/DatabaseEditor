@@ -127,10 +127,19 @@ const workerCommands = {
     postMessage({ responseMessage: "Regulations fetched", content: regulations });
 
     const year = fetchYear();
-    postMessage({ responseMessage: "Year fetched", content: year });      
+    postMessage({ responseMessage: "Year fetched", content: year });       
+
+    const previousYear = Number(year) - 1;
+    if (Number.isFinite(previousYear) && previousYear > 0) {
+      const standings = fetchTeamsStandings(previousYear, 1);
+      postMessage({
+        responseMessage: "Previous year teams standings fetched",
+        content: { year: previousYear, standings }
+      });
+    }
 
     const numbers = fetchDriverNumbers();
-    postMessage({ responseMessage: "Numbers fetched", content: numbers });
+    postMessage({ responseMessage: "Numbers fetched", content: numbers });      
 
     const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
     postMessage({ responseMessage: "Season performance fetched", content: [performance, races] });
