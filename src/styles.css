@@ -8807,6 +8807,11 @@ body.og-theme .records-list {
   padding-left: 7px;
   padding-top: 10px;
   padding-right: 4px;
+  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
 }
 
 .changable-team-menu-brawn {
@@ -10372,7 +10377,7 @@ input::-webkit-inner-spin-button {
   mask: url('/assets/images/alpine.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--text-general);
+  background-color: var(--logos-general);
 }
 
 .renaultlogo {
@@ -10380,7 +10385,7 @@ input::-webkit-inner-spin-button {
   mask: url('/assets/images/renault.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--text-general);
+  background-color: var(--logos-general);
 }
 
 .andrettilogo {
@@ -10388,7 +10393,7 @@ input::-webkit-inner-spin-button {
   mask: url('/assets/images/andretti.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--text-general);
+  background-color: var(--logos-general);
 }
 
 .lotuslogo {
@@ -10396,7 +10401,7 @@ input::-webkit-inner-spin-button {
   mask: url('/assets/images/lotus.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--text-general);
+  background-color: var(--logos-general);
 }
 
 .mclarenlogo,
@@ -10524,13 +10529,26 @@ input::-webkit-inner-spin-button {
   mask: url('/assets/images/alphatauri.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--text-general);
+  background-color: var(--logos-general);
 }
 
 .williamslogo,
 #wilogo {
   width: 40px;
   height: 40px;
+  padding-bottom: 9px;
+  padding-left: 6px;
+  padding-top: 8px;
+  padding-right: 6px;
+  transition: opacity 0.15s;
+}
+
+.williamslogo {
+  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--logos-general);
 }
 
 .team1,
@@ -11498,18 +11516,6 @@ span.reduced-weight,
 #blockDiv {
   opacity: 1;
   transition: all 0.15s;
-}
-
-body.light-theme #blockDiv {
-  background-image: url('../assets/images/background2light.svg');
-}
-
-body.og-theme #blockDiv {
-  background-image: url('../assets/images/background2og.svg');
-}
-
-body.vaporwave-theme #blockDiv {
-  background-image: url('../assets/images/background2vaporwave.svg');
 }
 
 #blockDiv.disappear {

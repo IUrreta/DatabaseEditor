@@ -107,6 +107,8 @@
     --text-general: #dedde6;
     --text-general-transparent: #e9e8f0be;
 
+    --logos-general: #f0f0f0;
+
     --text-secondary: #a8a8a8;
     --text-tertiary: #777777;
 
@@ -303,6 +305,10 @@ body.light-theme {
     --text-secondary: #666666;
     --text-tertiary: #999999;
 
+    --hero-title: #111111;
+    --text-muted: #475569;
+    --logos-general: #333333;
+
     --augment-buttons-bg: #bbbbbb;
     --augment-buttons-hover: #aaaaaa;
 
@@ -336,7 +342,6 @@ body.light-theme {
     --general-secondary: #f1f1f1;
     --mercedes-primary: #13c2a2;
     --haas-primary: #57575a;
-    --williams-primary: #4495c0;
 
     --mentality-enthusiastic: #c055e3;
     --mentality-positive: #10ffff;
