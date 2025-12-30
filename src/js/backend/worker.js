@@ -40,6 +40,7 @@ import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
+import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
 
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
@@ -122,8 +123,11 @@ const workerCommands = {
     const calendar = fetchCalendar();
     postMessage({ responseMessage: "Calendar fetched", content: calendar });
 
+    const regulations = fetchRegulationsData();
+    postMessage({ responseMessage: "Regulations fetched", content: regulations });
+
     const year = fetchYear();
-    postMessage({ responseMessage: "Year fetched", content: year });
+    postMessage({ responseMessage: "Year fetched", content: year });      
 
     const numbers = fetchDriverNumbers();
     postMessage({ responseMessage: "Numbers fetched", content: numbers });
@@ -328,6 +332,17 @@ const workerCommands = {
     postMessage({
       responseMessage: "Calendar updated",
       noti_msg: "Succesfully updated the calendar",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+  },
+  editRegulations: (data, postMessage) => {
+    updateRegulations(data);
+    const regulations = fetchRegulationsData();
+    postMessage({
+      responseMessage: "Regulations fetched",
+      content: regulations,
+      noti_msg: "Succesfully updated regulations",
       isEditCommand: true,
       unlocksDownload: true
     });

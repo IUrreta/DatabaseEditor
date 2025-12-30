@@ -1452,6 +1452,13 @@
             </a>
           </li>
           <li class="nav-item">
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" id="regulationspill">
+              <i class="bi bi-journal-bookmark pill-icon"></i>
+              <label class="bold-font pill-label">REGULATIONS</label>
+              <div class="pill-line"></div>
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" id="carpill">
               <div id="specialCarIcon" class="pill-icon"></div>
               <label class="bold-font pill-label">PERFORMANCE</label>
@@ -3914,6 +3921,131 @@
           </div>
         </div>
 
+      </div>
+      <div class="script-view hide unloaded" id="regulations">
+        <div class="general-top-panel">
+          <div class="title-buttons-left">
+            <div class="button-with-icon" id="regCreatePointScheme">
+              <i class="bi bi-plus-circle"></i>
+              <span class="">Create point system</span>
+            </div>
+            <div class="button-with-icon" id="regCreateResourcePackage">
+              <i class="bi bi-plus-circle"></i>
+              <span class="">Create resource package</span>
+            </div>
+          </div>
+          <div class="title bold-font">
+            Regulations
+          </div>
+        </div>
+
+        <div class="d-flex regulations-main">
+          <div class="main-viewer-section small-regulations">
+            <div class="viewer-details">
+              <div class="viewer-title bold-font">Sporting regulations</div>
+
+              <div class="viewer-element">
+                <div class="viewer-element-name bold-font">Cost cap ($)</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash new-augment-button transparent"></i>
+                  <input type="text" class="custom-input-number" id="regSpendingCap">
+                  <i class="bi bi-plus new-augment-button transparent"></i>
+                </div>
+              </div>
+
+              <div class="viewer-element">
+                <div class="viewer-element-name bold-font">Season engine limit</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash new-augment-button transparent"></i>
+                  <input type="text" class="custom-input-number" id="regEngineLimit">
+                  <i class="bi bi-plus new-augment-button transparent"></i>
+                </div>
+              </div>
+
+              <div class="viewer-element">
+                <div class="viewer-element-name bold-font">Season ERS limit</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash new-augment-button transparent"></i>
+                  <input type="text" class="custom-input-number" id="regErsLimit">
+                  <i class="bi bi-plus new-augment-button transparent"></i>
+                </div>
+              </div>
+
+              <div class="viewer-element">
+                <div class="viewer-element-name bold-font">Season gearbox limit</div>
+                <div class="stat-number">
+                  <i class="bi bi-dash new-augment-button transparent"></i>
+                  <input type="text" class="custom-input-number" id="regGearboxLimit">
+                  <i class="bi bi-plus new-augment-button transparent"></i>
+                </div>
+              </div>
+
+              <div class="viewer-element">
+                <label class="viewer-element-name bold-font" for="regDoubleLastRacePoints">Double points for last race</label>
+                <div class="form-switch regulations-switch">
+                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="regDoubleLastRacePoints">
+                </div>
+              </div>
+              <div class="viewer-element">
+                <label class="viewer-element-name bold-font" for="regFastestLapBonusPoint">1 point for fastest lap</label>
+                <div class="form-switch regulations-switch">
+                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="regFastestLapBonusPoint">
+                </div>
+              </div>
+              <div class="viewer-element">
+                <label class="viewer-element-name bold-font" for="regPolePositionBonusPoint">1 point for pole position</label>
+                <div class="form-switch regulations-switch">
+                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="regPolePositionBonusPoint">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="main-viewer-section points-and-cfd">
+            <div class="regulations-panels">
+              <div class="viewer-details">
+                <div class="viewer-title bold-font">Points system</div>
+                <div class="dropdown-global">
+                  <button class="redesigned-dropdown bold-font" id="regPointSchemeButton" aria-haspopup="true" aria-expanded="false">
+                    <span class="dropdown-label">Point system</span>
+                    <i class="redesigned-chevron"></i>
+                  </button>
+                  <ul class="redesigned-dropdown-menu" id="regPointSchemeMenu" style="font-family: Formula1;"></ul>
+                </div>
+                <div class="viewer-element regulations-table-wrap">
+                  <div class="regulations-grid regulations-grid-points">
+                    <div class="regulations-grid-header">
+                      <div class="regulations-colheader">Pos</div>
+                      <div class="regulations-colheader">Points</div>
+                    </div>
+                    <div class="regulations-grid-body" id="regPointSchemeBody"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="viewer-details">
+                <div class="viewer-title bold-font">Wind tunnel &amp; CFD</div>
+                <div class="dropdown-global">
+                  <button class="redesigned-dropdown bold-font" id="regResourcePackageButton" aria-haspopup="true" aria-expanded="false">
+                    <span class="dropdown-label">Resource package</span>
+                    <i class="redesigned-chevron"></i>
+                  </button>
+                  <ul class="redesigned-dropdown-menu" id="regResourcePackageMenu" style="font-family: Formula1;"></ul>
+                </div>
+                <div class="viewer-element regulations-table-wrap">
+                  <div class="regulations-grid regulations-grid-resources">
+                    <div class="regulations-grid-header">
+                      <div class="regulations-colheader">Pos</div>
+                      <div class="regulations-colheader">Wind tunnel</div>
+                      <div class="regulations-colheader">CFD</div>
+                    </div>
+                    <div class="regulations-grid-body" id="regResourcePackageBody"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="script-view hide unloaded" id="car_performance">
         <div class="general-top-panel">

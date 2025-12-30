@@ -29,6 +29,7 @@ import {
     reload_h2h_graphs, init_colors_dict, edit_colors_dict, setMidGrid, setMaxRaces, setRelativeGrid
 } from './head2head';
 import { place_news, updateNewsYearsButton } from './news.js';
+import { load_regulations, gather_regulations_data } from './regulations.js';
 import { loadRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
@@ -67,13 +68,14 @@ const logos_classes_configs = {
     "alfa": "alfalogo", "audi": "audilogo", "sauber": "sauberlogo", "stake": "alfalogo"
 }
 
-const driverTransferPill = document.getElementById("transferpill");
+const driverTransferPill = document.getElementById("transferpill");       
 const editStatsPill = document.getElementById("statspill");
 const CalendarPill = document.getElementById("calendarpill");
+const regulationsPill = document.getElementById("regulationspill");
 const carPill = document.getElementById("carpill");
 const viewPill = document.getElementById("viewerpill");
 const h2hPill = document.getElementById("h2hpill");
-const constructorsPill = document.getElementById("constructorspill")
+const constructorsPill = document.getElementById("constructorspill")      
 const newsPill = document.getElementById("newspill")
 const modPill = document.getElementById("modpill")
 
@@ -84,6 +86,7 @@ const patreonPill = document.getElementById("patreonPill")
 const driverTransferDiv = document.getElementById("driver_transfers");
 const editStatsDiv = document.getElementById("edit_stats");
 const customCalendarDiv = document.getElementById("custom_calendar");
+const regulationsDiv = document.getElementById("regulations");
 const carPerformanceDiv = document.getElementById("car_performance");
 const viewDiv = document.getElementById("season_viewer");
 const h2hDiv = document.getElementById("head2head_viewer");
@@ -99,7 +102,7 @@ const patreonToolLoginButton = document.getElementById('patreonToolLoginButton')
 const userToolButton = document.getElementById('userToolButton');
 const saveFileButton = document.getElementById('saveFileButton');
 
-const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, carPerformanceDiv, mod25Div]
+const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, mod25Div]
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -590,6 +593,16 @@ function calendarModeHandler() {
     command.execute();
 }
 
+function regulationsModeHandler() {
+    const data = gather_regulations_data();
+    if (!data) {
+        new_update_notifications("Regulations not loaded", "error");
+        return;
+    }
+    const command = new Command("editRegulations", data);
+    command.execute();
+}
+
 function teamsModeHandler() {
 
     let seasonObjData = document.querySelector("#seasonObjectiveInput").value;
@@ -685,6 +698,7 @@ export function manageSaveButton(show, mode) {
     let button = document.querySelector(".save-button")
     button.removeEventListener("click", editModeHandler);
     button.removeEventListener("click", calendarModeHandler);
+    button.removeEventListener("click", regulationsModeHandler);
     button.removeEventListener("click", teamsModeHandler);
     button.removeEventListener("click", performanceModeHandler);
 
@@ -700,6 +714,9 @@ export function manageSaveButton(show, mode) {
     }
     else if (mode === "calendar") {
         button.addEventListener("click", calendarModeHandler);
+    }
+    else if (mode === "regulations") {
+        button.addEventListener("click", regulationsModeHandler);
     }
     else if (mode === "teams") {
         button.addEventListener("click", teamsModeHandler);
@@ -815,6 +832,9 @@ const messageHandlers = {
     },
     "Calendar fetched": (message) => {
         load_calendar(message)
+    },
+    "Regulations fetched": (message) => {
+        load_regulations(message)
     },
     "Engines fetched": (message) => {
         manage_engineStats(message[0]);
@@ -1806,35 +1826,35 @@ function check_selected() {
 
 h2hPill.addEventListener("click", function () {
 
-    manageScripts("hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 viewPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 driverTransferPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "show", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 editStatsPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "show", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "show", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "stats")
 })
 
 constructorsPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "teams")
@@ -1842,37 +1862,44 @@ constructorsPill.addEventListener("click", function () {
 
 
 CalendarPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "calendar")
 })
 
+regulationsPill.addEventListener("click", function () {
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "show", "hide", "hide")
+    scriptSelected = 1
+    check_selected()
+    manageSaveButton(true, "regulations")
+})
+
 carPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "show", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(!viewingGraph, "performance")
 })
 
 modPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 newsPill.addEventListener("click", function () {
-    manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 document.querySelector(".toolbar-logo-and-title").addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 0
-    document.getElementById("blockDiv").classList.remove("disappear")
+    document.getElementById("blockDiv").classList.remove("disappear")    
     if (document.querySelector(".scriptPills.active")) {
         document.querySelector(".scriptPills.active").classList.remove("active")
     }

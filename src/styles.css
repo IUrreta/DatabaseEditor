@@ -2828,12 +2828,155 @@ body.og-theme .main-calendar-section {
 #edit_stats,
 #car_performance,
 #driver_transfers,
+#regulations,
 #season_viewer,
 #head2head_viewer,
 #car_performance,
 #mod_25,
 #news {
   flex-direction: column;
+}
+
+#regulations .main-viewer-section.points-and-cfd{
+  margin-left: 0px;
+  flex-grow: 1;
+}
+
+#regulations .custom-input-number{
+  padding: 0 3px;
+}
+
+#regulations .main-viewer-section.small-regulations{
+  width: 36%;
+}
+
+#regulations .main-viewer-section.small-regulations .viewer-element{
+  height: 56px;
+}
+
+#regulations .regulations-main {
+  flex: 1;
+  min-height: 0;
+  gap: 14px;
+}
+
+#regulations .regulations-panels {
+  display: flex;
+  gap: 14px;
+  min-height: 0;
+}
+
+#regulations .regulations-panels .viewer-details {
+  min-height: 0;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+#regulations .viewer-details {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#regulations .viewer-title {
+  font-family: 'Formula1Bold';
+  font-size: 18px;
+  color: var(--white-general);
+}
+
+#regulations .viewer-element {
+  background-color: var(--elements);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow-s);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#regulations .viewer-element-name {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+#regulations .viewer-element .stat-number {
+  gap: 6px;
+}
+
+#regulations .regulations-table-wrap {
+  overflow-x: auto;
+}
+
+#regulations .regulations-grid {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#regulations .regulations-grid-header {
+  display: flex;
+  gap: 8px;
+  padding: 0 2px 6px;
+}
+
+#regulations .regulations-grid-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#regulations .regulations-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background-color: color-mix(in srgb, var(--background) 55%, transparent);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+#regulations .regulations-cell {
+  color: var(--text-general);
+}
+
+#regulations .regulations-colheader {
+  font-family: 'Formula1Bold';
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+#regulations .regulations-keycell {
+  font-family: 'Formula1Bold';
+  color: var(--white-general);
+  white-space: nowrap;
+  text-align: center;
+  width: 30px;
+  text-align: center;
+}
+
+#regulations #regPointSchemeBody input.custom-input-number,
+#regulations #regResourcePackageBody input.custom-input-number {
+  width: 6ch;
+  max-width: 6ch;
+}
+
+#regulations #regSpendingCap.custom-input-number {
+  width: 12ch;
+  max-width: 14ch;
+}
+
+#regulations .regulations-switch.form-switch {
+  padding-left: 0;
+  display: flex;
+  align-items: center;
+}
+
+#regulations .regulations-switch .form-check-input {
+  margin: 0;
 }
 
 #probText {
@@ -8936,6 +9079,13 @@ body.og-theme .records-list {
 #calendarpill.active .pill-line,
 #calendarpill.active {
   width: 130px;
+}
+
+#regulationspill:hover,
+#regulationspill:hover .pill-line,
+#regulationspill.active .pill-line,
+#regulationspill.active {
+  width: 160px;
 }
 
 #carpill:hover,
