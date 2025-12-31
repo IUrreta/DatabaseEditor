@@ -329,6 +329,9 @@ body.light-theme {
     --elements-hover: #bbbbbb;
     --box-shadow: #00000022;
 
+    --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
+
     --table-first: #c5ad4d;
     --table-first-light: #f0e2ac;
     --table-second: #797b80;
@@ -433,6 +436,9 @@ body.og-theme {
     --table-default-odd: #3c3952;
     --table-header: #252335;
 
+    --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
+
     --redbull-primary-transparent: color-mix(in srgb, var(--redbull-primary) 30%, var(--elements));
     --redbull-secondary-transparent: color-mix(in srgb, var(--redbull-secondary) 30%, var(--elements));
     --ferrari-primary-transparent: color-mix(in srgb, var(--ferrari-primary) 18%, var(--elements));
@@ -527,7 +533,10 @@ body.vaporwave-theme {
 
     --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
 
-        --redbull-primary-transparent: color-mix(in srgb, var(--redbull-primary) 30%, var(--elements));
+    --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
+
+    --redbull-primary-transparent: color-mix(in srgb, var(--redbull-primary) 30%, var(--elements));
     --redbull-secondary-transparent: color-mix(in srgb, var(--redbull-secondary) 30%, var(--elements));
     --ferrari-primary-transparent: color-mix(in srgb, var(--ferrari-primary) 18%, var(--elements));
     --general-secondary-transparent: color-mix(in srgb, var(--general-secondary) 18%, var(--elements));

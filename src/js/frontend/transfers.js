@@ -143,6 +143,7 @@ export function place_drivers(driversArray) {
     })
 
 
+    document.querySelectorAll(".affiliates-and-arrows").forEach(updateAffiliateArrows)
 }
 
 function add_edit_container(div) {
@@ -343,27 +344,115 @@ function add_junior_formula_logo(driverDiv, juniorInfo) {
     driverDiv.appendChild(imgContainer)
 }
 
-document.querySelectorAll(".affiliates-and-arrows").forEach(function (elem) {
-    elem.querySelector(".bi-chevron-right").addEventListener("click", function (event) {
-        let parent = elem.parentNode.parentNode;
-        let affiliatesDiv = parent.querySelector(".affiliates-space");
+const affiliatesScrollDisabledClass = "affiliates-scroll-disabled"
+const affiliatesScrollEpsilon = 2
 
-        let maxScrollLeft = affiliatesDiv.scrollWidth - affiliatesDiv.clientWidth;
+function getDirectAffiliateDrivers(affiliatesDiv) {
+    return Array.from(affiliatesDiv.children).filter(child => child.classList?.contains("free-driver"))
+}
 
-        let newScrollLeft = affiliatesDiv.scrollLeft + 100;
-        if (newScrollLeft > maxScrollLeft) {
-            event.target.parentNode.classList.add("d-none")
-        }
+function getAffiliateScrollStep(affiliatesDiv) {
+    const items = getDirectAffiliateDrivers(affiliatesDiv)
+    if (items.length >= 2) {
+        const step = items[1].offsetLeft - items[0].offsetLeft
+        return step > 0 ? step : 0
+    }
+    if (items.length === 1) {
+        const style = window.getComputedStyle(items[0])
+        const marginLeft = parseFloat(style.marginLeft) || 0
+        const marginRight = parseFloat(style.marginRight) || 0
+        return items[0].getBoundingClientRect().width + marginLeft + marginRight
+    }
+    return 0
+}
 
-        affiliatesDiv.scrollTo({ left: newScrollLeft, behavior: 'smooth' });
-    });
+function clamp(number, min, max) {
+    return Math.min(max, Math.max(min, number))
+}
 
-    elem.querySelector(".bi-chevron-left").addEventListener("click", function () {
-        let parent = elem.parentNode.parentNode
-        let affiliatesDiv = parent.querySelector(".affiliates-space")
-        elem.parentNode.querySelector(".bi-chevron-right").parentNode.classList.remove("d-none")
-        affiliatesDiv.scrollBy({ left: -100, behavior: 'smooth' });
+function updateAffiliateArrows(wrapper) {
+    const affiliatesDiv = wrapper.querySelector(".affiliates-space")
+    const leftArrow = wrapper.querySelector(".bi-chevron-left")
+    const rightArrow = wrapper.querySelector(".bi-chevron-right")
+
+    if (!affiliatesDiv || !leftArrow || !rightArrow) {
+        return
+    }
+
+    const items = getDirectAffiliateDrivers(affiliatesDiv)
+    const shouldShowArrows = items.length > 0
+
+    leftArrow.classList.toggle("d-none", !shouldShowArrows)
+    rightArrow.classList.toggle("d-none", !shouldShowArrows)
+
+    if (!shouldShowArrows) {
+        leftArrow.classList.remove(affiliatesScrollDisabledClass)
+        rightArrow.classList.remove(affiliatesScrollDisabledClass)
+        return
+    }
+
+    const maxScrollLeft = Math.max(0, affiliatesDiv.scrollWidth - affiliatesDiv.clientWidth)
+    if (affiliatesDiv.scrollLeft > maxScrollLeft) {
+        affiliatesDiv.scrollLeft = Math.max(0, maxScrollLeft)
+    }
+
+    if (affiliatesDiv.clientWidth <= 0) {
+        leftArrow.classList.remove(affiliatesScrollDisabledClass)
+        rightArrow.classList.remove(affiliatesScrollDisabledClass)
+        return
+    }
+
+    const hasOverflow = maxScrollLeft > affiliatesScrollEpsilon
+    const canScrollLeft = hasOverflow && affiliatesDiv.scrollLeft > affiliatesScrollEpsilon
+    const canScrollRight = hasOverflow && affiliatesDiv.scrollLeft < (maxScrollLeft - affiliatesScrollEpsilon)
+
+    leftArrow.classList.toggle(affiliatesScrollDisabledClass, !canScrollLeft)
+    rightArrow.classList.toggle(affiliatesScrollDisabledClass, !canScrollRight)
+}
+
+function setupAffiliateScroller(wrapper) {
+    const affiliatesDiv = wrapper.querySelector(".affiliates-space")
+    const leftArrow = wrapper.querySelector(".bi-chevron-left")
+    const rightArrow = wrapper.querySelector(".bi-chevron-right")
+
+    if (!affiliatesDiv || !leftArrow || !rightArrow) {
+        return
+    }
+
+    leftArrow.addEventListener("click", function () {
+        const step = getAffiliateScrollStep(affiliatesDiv)
+        if (step <= 0) return
+
+        const maxScrollLeft = affiliatesDiv.scrollWidth - affiliatesDiv.clientWidth
+        const target = clamp(affiliatesDiv.scrollLeft - step, 0, maxScrollLeft)
+        affiliatesDiv.scrollTo({ left: target, behavior: "smooth" })
     })
+
+    rightArrow.addEventListener("click", function () {
+        const step = getAffiliateScrollStep(affiliatesDiv)
+        if (step <= 0) return
+
+        const maxScrollLeft = affiliatesDiv.scrollWidth - affiliatesDiv.clientWidth
+        const target = clamp(affiliatesDiv.scrollLeft + step, 0, maxScrollLeft)
+        affiliatesDiv.scrollTo({ left: target, behavior: "smooth" })
+    })
+
+    affiliatesDiv.addEventListener("scroll", function () {
+        updateAffiliateArrows(wrapper)
+    }, { passive: true })
+
+    const observer = new MutationObserver(function () {
+        updateAffiliateArrows(wrapper)
+    })
+    observer.observe(affiliatesDiv, { childList: true })
+
+    updateAffiliateArrows(wrapper)
+}
+
+const affiliateScrollers = Array.from(document.querySelectorAll(".affiliates-and-arrows"))
+affiliateScrollers.forEach(setupAffiliateScroller)
+window.addEventListener("resize", function () {
+    affiliateScrollers.forEach(updateAffiliateArrows)
 })
 
 

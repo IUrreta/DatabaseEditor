@@ -2916,10 +2916,17 @@ body.og-theme .main-calendar-section {
   gap: 2px;
 }
 
+.regulations-grid-resources .regulations-grid-header,
+.regulations-grid-resources .regulations-row,
+.regulations-grid-points .regulations-grid-header,
+.regulations-grid-points .regulations-row {
+  justify-content: space-between;
+}
+
 #regulations .regulations-grid-header {
   display: flex;
   gap: 8px;
-  padding: 0 2px 6px;
+  padding: 0 10px 6px;
 }
 
 #regulations .regulations-grid-body {
@@ -2954,14 +2961,21 @@ body.og-theme .main-calendar-section {
   color: var(--white-general);
   white-space: nowrap;
   text-align: center;
-  width: 30px;
+  width: 45px;
   text-align: center;
+  cursor: default;
 }
 
 #regulations #regPointSchemeBody input.custom-input-number,
-#regulations #regResourcePackageBody input.custom-input-number {
-  width: 6ch;
-  max-width: 6ch;
+#regulations #regResourcePackageBody input.custom-input-number,
+.regulations-grid-resources .regulations-grid-header .regulations-colheader,
+.regulations-grid-points .regulations-grid-header .regulations-colheader {
+  width: 45px;
+  text-align: center;
+}
+
+.wind-tunnel-header, .points-header {
+  width: min-content !important;
 }
 
 #regulations #regSpendingCap.custom-input-number {
@@ -4034,8 +4048,13 @@ phm
   background-color: var(--custom-team-primary);
 }
 
+body.light-theme .drivers-table:has(.f2-table-data) .drivers-table-row .drivers-table-logo-div,
+body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-table-logo-div {
+  background-color: var(--white-general);
+}
+
 .drivers-table-row:hover .prehoverback {
-  background-color: #ebebeb;
+  background-color: #ebebeb !important;
 }
 
 .teams-table-row .preiconback {
@@ -4043,7 +4062,7 @@ phm
 }
 
 .drivers-table-row:hover .virhoverback {
-  background-color: #2a2a2a;
+  background-color: #2a2a2a !important;
 }
 
 .teams-table-row .viriconback {
@@ -4051,7 +4070,7 @@ phm
 }
 
 .drivers-table-row:hover .carhoverback {
-  background-color: #1b6fe0;
+  background-color: #1b6fe0 !important;
 }
 
 .teams-table-row .cariconback {
@@ -4059,7 +4078,7 @@ phm
 }
 
 .drivers-table-row:hover .hithoverback {
-  background-color: #9FB4C7;
+  background-color: #9FB4C7 !important;
 }
 
 .teams-table-row .hiticonback {
@@ -4067,7 +4086,7 @@ phm
 }
 
 .drivers-table-row:hover .arthoverback {
-  background-color: #2b2d42;
+  background-color: #2b2d42 !important;
 }
 
 .teams-table-row .articonback {
@@ -4075,7 +4094,7 @@ phm
 }
 
 .drivers-table-row:hover .mphoverback {
-  background-color: #FF9144;
+  background-color: #FF9144 !important;
 }
 
 .teams-table-row .mpiconback {
@@ -4083,7 +4102,7 @@ phm
 }
 
 .drivers-table-row:hover .phmhoverback {
-  background-color: #793118;
+  background-color: #793118 !important;
 }
 
 .teams-table-row .phmiconback {
@@ -4091,7 +4110,7 @@ phm
 }
 
 .drivers-table-row:hover .damhoverback {
-  background-color: #00C8FF;
+  background-color: #00C8FF !important;
 }
 
 .teams-table-row .damiconback {
@@ -4099,7 +4118,7 @@ phm
 }
 
 .drivers-table-row:hover .camhoverback {
-  background-color: #707070;
+  background-color: #707070 !important;
 }
 
 .teams-table-row .camiconback {
@@ -4107,7 +4126,7 @@ phm
 }
 
 .drivers-table-row:hover .varhoverback {
-  background-color: #dfdfdf;
+  background-color: #dfdfdf !important;
 }
 
 .teams-table-row .variconback {
@@ -4115,7 +4134,7 @@ phm
 }
 
 .drivers-table-row:hover .trihoverback {
-  background-color: #7B01FF;
+  background-color: #7B01FF !important;
 }
 
 .teams-table-row .triiconback {
@@ -4123,7 +4142,7 @@ phm
 }
 
 .drivers-table-row:hover .jenhoverback {
-  background-color: #cbcbcb;
+  background-color: #cbcbcb !important;
 }
 
 .teams-table-row .jeniconback {
@@ -5065,74 +5084,27 @@ body.light-theme .flag-header img {
 .affiliates-and-arrows {
   display: flex;
   flex-direction: row;
-  width: 63%;
-}
-
-.affiliates-and-arrows .bi-chevron-right,
-.affiliates-and-arrows .bi-chevron-left {
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s ease-in-out;
-}
-
-.affiliates-and-arrows .bi-chevron-left {
-  left: 0;
-}
-
-.arrow-back {
-  background-color: var(--superficials);
-  height: 100%;
-  position: absolute;
-  right: 0;
-  height: 100%;
-  display: flex;
   align-items: center;
-  width: 20px;
-  justify-content: center;
-  top: 0;
-  z-index: 4;
-}
-
-.affiliates-and-arrows .bi-chevron-right:hover,
-.affiliates-and-arrows .bi-chevron-left:hover {
-  cursor: pointer;
-  color: var(--text-selected);
-  transform: scale(1.1);
-}
-
-.affiliates-and-arrows {
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  position: relative;
+  gap: 2px;
+  width: 60%;
   flex-grow: 1;
-}
-
-.affiliates-and-arrows .bi-chevron-left,
-.affiliates-and-arrows .bi-chevron-right {
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s ease-in-out;
-  position: absolute;
-  z-index: 4;
-}
-
-.arrow-left {
-  left: 0;
-}
-
-.arrow-right {
-  right: 0;
 }
 
 .affiliates-space {
   display: flex;
   overflow-x: hidden;
-  flex-grow: 1;
-  max-width: max-content;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
   flex-wrap: nowrap;
-  min-width: 100%;
   min-height: 40px;
   align-items: center;
-  margin-left: 15px;
+}
+
+.affiliates-and-arrows .new-augment-button.affiliates-scroll-disabled {
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .affiliates-space .free-driver {
