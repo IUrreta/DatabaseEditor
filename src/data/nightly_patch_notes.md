@@ -1,5 +1,5 @@
 ## 12th november
-- Added driver's reactiosn news after each race weekend with quotes from them
+- Added driver's reactions news after each race weekend with quotes from them
 
 ## 17th november
 - Made transfer rumors more interesting (should talk about better drivers always first)
@@ -55,3 +55,13 @@
 - Added the possibility to reomve "Recent" saves by hovering and clicking on their timestamp
 - Upodated the style of many buttons across the whole UI, and added new progressive buttons to the performance tab
 - Fixed the issue with double points being awarded if a DSQ turning point was accepted, even if it wasn't the last race. If your save is affected by this bug, it should ask you if you want to fix it
+
+## 26th december
+- Added empty circles as indicators for affiliates future contracts
+- Added F2/F3 logos for junior drivers in transfers tab
+- Added F2/F3 tab in contract modal to move drivers to F2/F3 teams
+
+# 30th december
+- Added **Regulations** tab to allow players to change Cost cap, engine part limit, points reglations, CFD/WT allocations, etc.
+- Updated Williams logo and color for the 2026 season
+- Updated other team's colors

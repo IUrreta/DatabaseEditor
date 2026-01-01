@@ -1351,6 +1351,10 @@ fileInput.addEventListener('change', (event) => {
 });
 
 function replace_custom_team_logo(path) {
+    //if not image selected, return
+    if (!path) {
+        return;
+    }
     // Si el string base64 no tiene el prefijo, se lo agregamos.
     if (!path.startsWith("data:image/")) {
         // Ajusta el tipo de imagen ("png", "jpeg", etc.) según corresponda.

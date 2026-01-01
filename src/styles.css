@@ -577,7 +577,7 @@ i.bi-file-text:hover {
   text-align: center;
   color: var(--white-general);
   font-size: 26px;
-  padding: 0px 0 10px 0px;
+  padding: 5px 0 5px 0px;
   flex: 1;
 }
 
@@ -2885,6 +2885,13 @@ body.og-theme .main-calendar-section {
   color: var(--white-general);
 }
 
+#regulations .viewer-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
 #regulations .viewer-element {
   background-color: var(--elements);
   border-radius: 10px;
@@ -3863,7 +3870,14 @@ phm
 .drivers-table-row:hover .logo-visarb-table,
 .drivers-table-row:hover .logo-alphatauri-table,
 .drivers-table-row:hover .logo-williams-2026-table {
-  background-color: #ffffff;
+  background-color: #f0f0f0;
+}
+
+.drivers-table-row:hover .logo-renault-table,
+.drivers-table-row:hover .logo-lotus-table,
+.drivers-table-row:hover .logo-andretti-table,
+.drivers-table-row:hover .logo-lotus-table {
+  background-color: #333333;
 }
 
 .logo-reduce {
@@ -5000,21 +5014,31 @@ body.light-theme .flag-header img {
   background-color: red !important;
 }
 
+#mainH2h .col-3.main-viewer-section{
+  padding: 10px;
+}
+
+/*First .one-statH2H with margin top 25 px and no border top*/
+#raceh2h {
+  margin-top: 25px;
+}
+
+#dnfh2h {
+  margin-bottom: 0px;
+}
+
 .one-statH2H {
   padding-top: 5px;
   display: flex;
   flex-direction: column;
   font-size: 20px;
-  border-radius: 10px;
-  margin-top: 10px;
-  margin-left: 10px;
-  margin-right: 10px;
   color: var(--text-general);
-  border: 2px solid transparent;
   transition: border-color 0.15s, background-color 0.15s;
   align-items: center;
   min-height: 66px;
-  border: none;
+  border-top: 2px solid var(--separator);
+  padding: 10px 10px 0px;
+  margin-bottom: 10px;
 }
 
 .one-statH2H:hover .name-H2H .only-name {
@@ -5030,7 +5054,6 @@ body.light-theme .flag-header img {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  padding: 10px;
   font-size: 20px;
   height: 110px;
   margin-top: 6px;

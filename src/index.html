@@ -3902,16 +3902,6 @@
       </div>
       <div class="script-view hide unloaded" id="regulations">
         <div class="general-top-panel">
-          <div class="title-buttons-left">
-            <div class="button-with-icon" id="regCreatePointScheme">
-              <i class="bi bi-plus-circle"></i>
-              <span class="">Create point system</span>
-            </div>
-            <div class="button-with-icon" id="regCreateResourcePackage">
-              <i class="bi bi-plus-circle"></i>
-              <span class="">Create resource package</span>
-            </div>
-          </div>
           <div class="title bold-font">
             Regulations
           </div>
@@ -3982,10 +3972,16 @@
           <div class="main-viewer-section points-and-cfd">
             <div class="regulations-panels">
               <div class="viewer-details">
-                <div class="viewer-title bold-font">Points system</div>
+                <div class="viewer-title-row">
+                  <div class="viewer-title bold-font">Points system</div>
+                  <div class="button-with-icon" id="regCreatePointScheme">
+                    <i class="bi bi-plus-circle"></i>
+                    <span class="">Create point system</span>
+                  </div>
+                </div>
                 <div class="dropdown-global">
                   <button class="redesigned-dropdown bold-font" id="regPointSchemeButton" aria-haspopup="true" aria-expanded="false">
-                    <span class="dropdown-label">Point system</span>
+                    <span class="dropdown-label">Point system</span>       
                     <i class="redesigned-chevron"></i>
                   </button>
                   <ul class="redesigned-dropdown-menu" id="regPointSchemeMenu" style="font-family: Formula1;"></ul>
@@ -4002,10 +3998,16 @@
               </div>
 
               <div class="viewer-details">
-                <div class="viewer-title bold-font">Wind tunnel &amp; CFD</div>
+                <div class="viewer-title-row">
+                  <div class="viewer-title bold-font">Wind tunnel &amp; CFD</div>
+                  <div class="button-with-icon" id="regCreateResourcePackage">   
+                    <i class="bi bi-plus-circle"></i>
+                    <span class="">Create resource package</span>
+                  </div>
+                </div>
                 <div class="dropdown-global">
                   <button class="redesigned-dropdown bold-font" id="regResourcePackageButton" aria-haspopup="true" aria-expanded="false">
-                    <span class="dropdown-label">Resource package</span>
+                    <span class="dropdown-label">Resource package</span>   
                     <i class="redesigned-chevron"></i>
                   </button>
                   <ul class="redesigned-dropdown-menu" id="regResourcePackageMenu" style="font-family: Formula1;"></ul>
