@@ -101,6 +101,13 @@
     --background-general: #110f24;
     --slight-contrast: #797599;
     --white-general: #f3f3f3;
+    --tech-grid-color: var(--text-general);
+    --tech-grid-line: color-mix(in srgb, var(--tech-grid-color) 2%, transparent);
+    --glow-x: 50%;
+    --glow-y: 0px;
+    --tech-grid-highlight-color: var(--new-primary);
+    --tech-grid-highlight-opacity: 0.54;
+    --tech-grid-highlight-radius: 240px;
     --gold-gradient-text: #f3f3f3;
 
 
@@ -313,6 +320,8 @@ body.light-theme {
     --augment-buttons-hover: #aaaaaa;
 
     --white-general: #131313;
+    --tech-grid-color: var(--text-general);
+    --tech-grid-line: color-mix(in srgb, var(--tech-grid-color) 5%, transparent);
     --dark-text: #444444;
     --disabled-text: #888888;
     --modal-text: #666666;
@@ -426,6 +435,9 @@ body.og-theme {
     --box-shadow: #00000044;
     --footer-og: #797599;
     --separator: #5f5c77;
+
+    --tech-grid-color: transparent;
+    --tech-grid-line: transparent;
 
     --augment-buttons-bg: #5f5c77;
     --augment-buttons-hover: #64617d;

@@ -1104,10 +1104,22 @@ if (glowSpot && blockDiv) {
 
     const isLandingVisible = () => !blockDiv.classList.contains('disappear');
 
+    const rootStyle = document.documentElement.style;
+    const setGlowVars = (x, y) => {
+        rootStyle.setProperty('--glow-x', x);
+        rootStyle.setProperty('--glow-y', y);
+    };
+
+    const syncGlowVarsToGlowSpotCenter = () => {
+        const rect = glowSpot.getBoundingClientRect();
+        setGlowVars(`${rect.left + rect.width / 2}px`, `${rect.top + rect.height / 2}px`);
+    };
+
     const resetGlowSpotPosition = () => {
         glowSpot.style.left = defaultPosition.left;
         glowSpot.style.top = defaultPosition.top;
         glowSpot.style.transform = defaultPosition.transform;
+        syncGlowVarsToGlowSpotCenter();
     };
 
     const updateGlowSpotPosition = (event) => {
@@ -1116,9 +1128,12 @@ if (glowSpot && blockDiv) {
         }
 
         glowSpot.classList.remove('glow-spot--off');
-        glowSpot.style.left = `${event.clientX}px`;
-        glowSpot.style.top = `${event.clientY}px`;
+        const x = `${event.clientX}px`;
+        const y = `${event.clientY}px`;
+        glowSpot.style.left = x;
+        glowSpot.style.top = y;
         glowSpot.style.transform = 'translate(-50%, -50%)';
+        setGlowVars(x, y);
     };
 
     const fadeToDefaultPosition = () => {
@@ -1141,6 +1156,7 @@ if (glowSpot && blockDiv) {
 
     observer.observe(blockDiv, { attributes: true, attributeFilter: ['class'] });
 
+    resetGlowSpotPosition();
     window.addEventListener('mousemove', updateGlowSpotPosition);
 }
 

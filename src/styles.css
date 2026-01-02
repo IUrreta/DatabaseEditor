@@ -14457,12 +14457,15 @@ p.news-error-api-key {
   box-shadow: 0 0 0 2px var(--new-primary) inset;
   background-color: transparent;
   min-width: 160px;
+  border-radius: 5px;
+  overflow: hidden;
   outline: none;
 }
 
 .progress-div {
   width: 0%;
   height: 100%;
+  border-radius: 5px;
   background-color: var(--new-primary);
   transition: width 0.15s;
   will-change: width;
@@ -14593,7 +14596,6 @@ p.news-error-api-key {
 }
 
 
-/* --- FONDOS Y EFECTOS --- */
 .tech-grid {
   position: absolute;
   top: 0;
@@ -14603,10 +14605,23 @@ p.news-error-api-key {
   z-index: 0;
   pointer-events: none;
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-image: linear-gradient(to right, var(--tech-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--tech-grid-line) 1px, transparent 1px);
   mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
   -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+}
+
+.tech-grid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-size: inherit;
+  background-image: linear-gradient(to right, var(--tech-grid-highlight-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--tech-grid-highlight-color) 1px, transparent 1px);
+  opacity: var(--tech-grid-highlight-opacity);
+  mask-image: radial-gradient(circle var(--tech-grid-highlight-radius) at var(--glow-x) var(--glow-y), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 70%);
+  -webkit-mask-image: radial-gradient(circle var(--tech-grid-highlight-radius) at var(--glow-x) var(--glow-y), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 70%);
 }
 
 .glow-spot {
@@ -14736,7 +14751,18 @@ body:has(.toolbar-title.nightly) .upload-desc input:hover {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  cursor: pointer;
   margin-bottom: 1.5rem;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.badge-version:hover {
+  background-color: var(--new-primary);
+  color: var(--white-general);
+}
+
+.badge-version:active {
+  transform: scale(0.96);
 }
 
 body:has(.toolbar-title.nightly) .badge-version {
@@ -15015,62 +15041,6 @@ body:has(.toolbar-title.nightly) .icon-circle {
   margin-bottom: 1rem;
 }
 
-/* Barra de Progreso */
-.progress-track {
-  width: 16rem;
-  height: 0.25rem;
-  background-color: #1e293b;
-  border-radius: 9999px;
-  margin-top: 1.5rem;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background-color: var(--new-primary);
-  width: 0%;
-  transition: width 2s ease-in-out;
-}
-
-/* Botón de Éxito */
-.btn-action {
-  background-color: var(--new-primary);
-  color: black;
-  font-weight: 700;
-  padding: 0.75rem 2rem;
-  border-radius: 0.5rem;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 0 20px rgba(200, 158, 252, 0.4);
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn-action:hover {
-  background-color: var(--new-primary-dark);
-  transform: scale(1.05);
-}
-
-/* --- FOOTER INFO --- */
-.footer-info {
-  margin-top: 3rem;
-  display: flex;
-  gap: 2rem;
-  color: #475569;
-  font-size: 0.875rem;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeIn 0.8s ease-out forwards;
-  animation-delay: 0.4s;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
 
 .drag-active {
   border-color: var(--new-primary);
@@ -15080,11 +15050,6 @@ body:has(.toolbar-title.nightly) .icon-circle {
   box-shadow: inset 0 0 60px 7px var(--new-primary);
 }
 
-.anim-content {
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
-  transform: scale(1);
-  opacity: 1;
-}
 
 
 /* --- Spinner Personalizado --- */
