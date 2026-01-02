@@ -1746,9 +1746,7 @@ function alfaReplace(info) {
     document.querySelectorAll(".alfa-name").forEach(function (elem) {
         let name = names_configs[info]
         if (elem.parentElement.classList.contains("car-title")) {
-            console.log("GOT HERE")
             const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
-            console.log("MATCH", match)
             if (match) {
                 name = pretty_names[info]
                 elem.textContent = `${name} ${match[2]}`;

@@ -2293,7 +2293,7 @@ function generateChampionMilestones(racesDone, savednews = {}) {
                         const jsDate = excelToDate(race.day); jsDate.setDate(jsDate.getDate() - 2);
                         const finalNewsDateExcel = dateToExcel(jsDate);
 
-                        const code = races_names[Number(race.trackId)];
+                        const code = races_names[Number(race.trackId)].toLowerCase();
                         const image = getImagePath(leaderB.teamId, code, "champion");
 
                         const title = generateTitle({
@@ -2358,6 +2358,11 @@ function generateChampionMilestones(racesDone, savednews = {}) {
 
                 if (alreadyChampionBeforeNext && !wasAlreadyChampionBeforeThisRace) {
                     const newsId = `${currentSeason}_world_champion`;
+                    const doneRace = queryDB(`SELECT State FROM Races WHERE RaceID = ?`, [race.id], 'singleValue');
+                    if (doneRace !== 2) {
+                        // Si la carrera no está marcada como "hecha", no generar la noticia
+                        continue;
+                    }
                     if (savednews && savednews[newsId]) {
                         out.push({ id: newsId, ...savednews[newsId] });
                     } else {
@@ -3792,7 +3797,7 @@ export function generateRaceReactionsNews(events, savednews) {
         const randomHappyDriver = randomPick(happyDrivers);
 
         const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
-        const code = races_names[parseInt(trackId)];
+        const code = races_names[parseInt(trackId)].toLowerCase();
 
         let titleData = {
             raceId,
