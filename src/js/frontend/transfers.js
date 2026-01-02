@@ -508,6 +508,8 @@ function addIcon(div) {
  */
 function iconListener(icon) {
     icon.addEventListener("click", function () {
+        document.querySelector("#juniorContractDropdown").classList.remove("d-none")
+        document.querySelector("#contractPills").classList.remove("d-none")
         modalType = "edit"
         document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g, ' ') + "'s";
         fetchContracts(icon.parentNode.parentNode)
@@ -696,6 +698,9 @@ export function manage_modal(info) {
         document.querySelector("#futureContractOptions").querySelectorAll(".contract-modal-input").forEach(function (elem, index) {
             if (elem.id === "salaryInputFuture" || elem.id === "signBonusInputFuture" || elem.id === "raceBonusAmtFuture") {
                 elem.value = info[1][index].toLocaleString("en-US")
+            }
+            else if (elem.id === "posInTeamFuture") {
+                setPosInTeamFutureValue(elem, info[1][index], { dispatch: false });
             }
             else {
                 elem.value = info[1][index]
@@ -1004,6 +1009,110 @@ function formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+function formatPosInTeamFutureLabel(pos) {
+    const n = Math.trunc(Number(pos));
+    if (!Number.isFinite(n)) return "";
+    if (n === 1) return "Car 1";
+    if (n === 2) return "Car 2";
+    return `Reserve ${n}`;
+}
+
+function parsePosInTeamFutureValue(raw) {
+    if (raw === null || raw === undefined) return NaN;
+    const str = String(raw).trim();
+    if (!str) return NaN;
+
+    const match = str.match(/(\d+)/);
+    if (!match) return NaN;
+    return Number(match[1]);
+}
+
+function getPosInTeamFutureValue(input) {
+    if (!input) return NaN;
+
+    const parsed = parsePosInTeamFutureValue(input.value);
+    if (Number.isFinite(parsed)) return parsed;
+
+    const fromDataset = Number(input.dataset.posValue);
+    if (Number.isFinite(fromDataset)) return fromDataset;
+
+    return 1;
+}
+
+function setPosInTeamFutureValue(input, pos, opts = {}) {
+    if (!input) return;
+
+    const min = input.min !== "" ? Number(input.min) : -Infinity;
+    const max = input.max !== "" ? Number(input.max) : Infinity;
+
+    let next = Math.trunc(Number(pos));
+    if (!Number.isFinite(next)) next = 1;
+    if (Number.isFinite(min)) next = Math.max(min, next);
+    if (Number.isFinite(max)) next = Math.min(max, next);
+
+    input.dataset.posValue = String(next);
+    input.value = formatPosInTeamFutureLabel(next);
+
+    if (opts.dispatch !== false) {
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+}
+
+function attachHoldPosInTeamFuture(btn, input, delta) {
+    if (!btn || !input) return;
+    if (btn.dataset.holdAttached === "1") return;
+
+    btn.dataset.holdAttached = "1";
+
+    let intervalId = null;
+    let timeoutId = null;
+
+    const stepOnce = () => {
+        const current = getPosInTeamFutureValue(input);
+        setPosInTeamFutureValue(input, current + delta);
+    };
+
+    const clearTimers = () => {
+        if (timeoutId !== null) clearTimeout(timeoutId);
+        if (intervalId !== null) clearInterval(intervalId);
+        timeoutId = null;
+        intervalId = null;
+    };
+
+    btn.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        clearTimers();
+        stepOnce();
+        timeoutId = setTimeout(() => {
+            intervalId = setInterval(stepOnce, 75);
+        }, 350);
+    });
+
+    ["pointerup", "pointercancel", "pointerleave", "lostpointercapture"].forEach((evt) => {
+        btn.addEventListener(evt, clearTimers);
+    });
+}
+
+function setupPosInTeamFutureControls(input, plusBtn, minusBtn) {
+    if (!input || !plusBtn || !minusBtn) return;
+
+    if (input.dataset.posSetup === "1") return;
+    input.dataset.posSetup = "1";
+
+    input.type = "text";
+    input.placeholder = "ex: Car 1";
+
+    const initial = getPosInTeamFutureValue(input);
+    setPosInTeamFutureValue(input, initial, { dispatch: false });
+
+    input.addEventListener("change", () => {
+        setPosInTeamFutureValue(input, getPosInTeamFutureValue(input), { dispatch: false });
+    });
+
+    attachHoldPosInTeamFuture(plusBtn, input, +1);
+    attachHoldPosInTeamFuture(minusBtn, input, -1);
+}
+
 document.querySelector(".add-contract .button-with-icon").addEventListener("click", function () {
     document.getElementById("yearInput").value = document.getElementById("yearInput").dataset.maxYear
     document.querySelector("#futureYear").innerText = "Next year's contract"
@@ -1027,8 +1136,8 @@ document.querySelector(".add-contract .button-with-icon").addEventListener("clic
         document.querySelector("#yearInputFuture").value = parseInt(currentSeason) + 1
     }
 
-    document.querySelector("#posInTeamFuture").value = 1;
-    
+    setPosInTeamFutureValue(document.querySelector("#posInTeamFuture"), 1);
+
 })
 
 
@@ -1087,6 +1196,10 @@ function setupContractModalButtons() {
         const minusBtn = wrapper.querySelector(".bi-dash");
         if (!input || !plusBtn || !minusBtn) return;
         if (input.id === "juniorPosInTeam") return;
+        if (input.id === "posInTeamFuture") {
+            setupPosInTeamFutureControls(input, plusBtn, minusBtn);
+            return;
+        }
 
         const isMoney = moneyInputs.has(input.id);
         const isSalary = input.id === "salaryInput" || input.id === "salaryInputFuture";
@@ -1175,6 +1288,9 @@ document.getElementById("confirmButton").addEventListener('click', function () {
  */
 function clearModal() {
     document.querySelectorAll(".contract-modal-input").forEach(function (elem) {
+        if (elem.id === "posInTeamFuture") {
+            delete elem.dataset.posValue;
+        }
         elem.value = ""
     })
 }
@@ -1196,6 +1312,9 @@ function editContract() {
     document.querySelector("#futureContractOptions").querySelectorAll(".contract-modal-input").forEach(function (elem) {
         if (elem.id === "salaryInputFuture" || elem.id === "signBonusInputFuture" || elem.id === "raceBonusAmtFuture") {
             futureValues.push(elem.value.replace(/[$,]/g, ""))
+        }
+        else if (elem.id === "posInTeamFuture") {
+            futureValues.push(String(getPosInTeamFutureValue(elem)))
         }
         else {
             futureValues.push(elem.value)
@@ -1359,13 +1478,19 @@ document.querySelector("#nameFilterTransfer").addEventListener("input", (e) => {
 document.querySelector("#filterIconTransfers").addEventListener("click", function () {
     document.querySelector(".category-filters").classList.toggle("show")
     document.querySelector(".filter-container").classList.toggle("focused")
+    if (document.querySelector(".filter-container").classList.contains("focused")) {
+        document.querySelector("#filterIconTransfers").className = "bi bi-filter-circle-fill filter-icon"
+    }
+    else {
+        document.querySelector("#filterIconTransfers").className = "bi bi-filter-circle filter-icon"
+    }
 })
 
-document.getElementById("driver_transfers").querySelectorAll(".filter-pills").forEach(function (elem) {
+document.getElementById("driver_transfers").querySelectorAll(".new-pills-filters").forEach(function (elem) {
     elem.addEventListener("click", function (event) {
         let isActive = elem.classList.contains('active');
 
-        document.getElementById("driver_transfers").querySelectorAll('.filter-pills').forEach(function (el) {
+        document.getElementById("driver_transfers").querySelectorAll('.new-pills-filters').forEach(function (el) {
             el.classList.remove('active');
         });
 
@@ -1478,6 +1603,8 @@ function hire_modal_standars() {
     document.querySelector(".add-contract").classList.add("d-none")
     document.querySelector("#futureContractTitle").classList.add("d-none")
     document.querySelector("#futureContractOptions").classList.add("d-none")
+    document.querySelector("#juniorContractDropdown").classList.add("d-none")
+    document.querySelector("#contractPills").classList.add("d-none")
     document.getElementById("currentContract").innerText = getUpdatedName(inverted_dict[teamDestiniy]).toUpperCase()
     document.getElementById("currentContract").className = "team-contract engine-" + team_dict[inverted_dict[teamDestiniy]]
 }

@@ -873,35 +873,25 @@
         </div>
         <div class="modal-body custom-body">
           <div class="d-flex" style="gap: 7px;">
-            <div class="standings-list bold-font">Bold</div> <span> - Pole poisiton in that race (only drivers)</span>
+            <div class="standings-list bold-font">Bold</div> <span> - Pole poisiton in that race</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="color: #c90fd7;">Purple</div> <span> - Fastest lap that race (only
-              drivers)</span>
+            <div class="standings-list fastest">Pos</div> <span> - Fastest lap that race</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list" style="background-color: #FDE06B; color: #18152e;">&nbsp;</div> <span> - 1st
               place that race (drivers)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: #FDE06B; color: #18152e;">&nbsp;</div> <span> - Most
-              points in that race (teams)</span>
-          </div>
-          <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list" style="background-color: #AEB2B8; color: #18152e;">&nbsp;</div> <span> - 2nd
               place that race (drivers)</span>
-          </div>
-          <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: #AEB2B8; color: #18152e;">&nbsp;</div> <span> - 2nd
-              most points in that race (teams)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list" style="background-color: #d7985a; color: #18152e;">&nbsp;</div> <span> - 3rd
               place that race (drivers)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: #d7985a; color: #18152e;">&nbsp;</div> <span> - 3rd
-              most points in that race (teams)</span>
+            <div class="standings-list" style="background-color: transparent; position: relative;"><div class="dotd">Pos</div></div> <span> - Driver of the day</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list">DNF</div>
@@ -909,7 +899,7 @@
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list">( )</div>
-            <div> - Sprint result</div>
+            <div> - Sprint result (F1 only)</div>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list standings-list-engine bold-font">NAME</div>
@@ -929,19 +919,16 @@
           <h3 class="modal-title bold-font">Contracts info</h3>
         </div>
         <div class="modal-body custom-body">
-          <div class="d-flex" style="gap: 7px;">
-            <div><i class="bi bi-ban"></i></div> <span> - Means the driver is retired. Click to unretire him</span>
-          </div>
           <div class="d-flex mt-2" style="gap: 7px;">
             <div><i class="bi bi-pencil-square"></i></div> <span> - Click to edit driver's contract</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div style="width: 170px;">Auto contract</div> <span> - Will give the drivers contracts automatically based
+            <div style="width: 173px;">Auto contract</div> <span> - Will give the drivers contracts automatically based
               on their rating</span>
           </div>
           <div class="mt-2" style="gap: 7px;">
             You can enable filters in the driver list by <span class="important-text bold-font">clicking </span> in the
-            <span><i class="bi bi-funnel"></i></span></i> icon.
+            <span><i class="bi bi-filter-circle"></i></span></i> icon.
           </div>
         </div>
         <div class="modal-footer custom-footer">
@@ -1464,7 +1451,7 @@
           </li>
           <li class="nav-item">
             <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" id="regulationspill">
-              <i class="bi bi-journal-bookmark pill-icon"></i>
+              <i class="bi bi-journal-bookmark-fill pill-icon"></i>
               <label class="bold-font pill-label">REGULATIONS</label>
               <div class="pill-line"></div>
             </a>
@@ -1956,25 +1943,22 @@
               </ul>
             </div>
             <div class="filter-container">
-              <i class="bi bi-funnel filter-icon" id="filterIconTransfers"></i>
+              <i class="bi bi-filter-circle filter-icon" id="filterIconTransfers"></i>
               <div class="category-filters">
                 <ul class="nav nav-pills">
                   <li class="nav-item">
-                    <a class="nav-link bold-font generalPills filter-pills" id="freefilterTransfers">
+                    <a class="nav-link bold-font new-pills-filters" id="freefilterTransfers">
                       <div class="basic-label bold-font">FREE</div>
-                      <div class="pill-line"></div>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link bold-font generalPills filter-pills" id="F2filterTransfers">
+                    <a class="nav-link bold-font new-pills-filters f2-filter" id="F2filterTransfers">
                       <div class="basic-label bold-font">F2</div>
-                      <div class="pill-line"></div>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link bold-font generalPills filter-pills" id="F3filterTransfers">
+                    <a class="nav-link bold-font new-pills-filters f3-filter" id="F3filterTransfers">
                       <div class="basic-label bold-font">F3</div>
-                      <div class="pill-line"></div>
                     </a>
                   </li>
                 </ul>
@@ -2304,31 +2288,27 @@
               </ul>
             </div>
             <div class="filter-container">
-              <i class="bi bi-funnel filter-icon" id="filterIcon"></i>
+              <i class="bi bi-filter-circle filter-icon" id="filterIcon"></i>
               <div class="category-filters">
                 <ul class="nav nav-pills">
                   <li class="nav-item">
-                    <a class="nav-link bold-font generalPills filter-pills" id="freefilter">
+                    <a class="nav-link bold-font new-pills-filters" id="freefilter">
                       <div class="basic-label bold-font">FREE</div>
-                      <div class="pill-line"></div>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link bold-font generalPills filter-pills" id="F1filter">
+                    <a class="nav-link bold-font new-pills-filters" id="F1filter">
                       <div class="basic-label bold-font">F1</div>
-                      <div class="pill-line"></div>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link bold-font generalPills filter-pills" id="F2filter">
+                    <a class="nav-link bold-font new-pills-filters f2-filter" id="F2filter">
                       <div class="basic-label bold-font">F2</div>
-                      <div class="pill-line"></div>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link bold-font generalPills filter-pills" id="F3filter">
+                    <a class="nav-link bold-font new-pills-filters f3-filter" id="F3filter">
                       <div class="basic-label bold-font">F3</div>
-                      <div class="pill-line"></div>
                     </a>
                   </li>
                 </ul>

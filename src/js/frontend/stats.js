@@ -460,13 +460,19 @@ document.querySelectorAll(".text-filter-container .bi-x").forEach(function (elem
 document.querySelector("#filterIcon").addEventListener("click", function () {
     document.getElementById("edit_stats").querySelector(".category-filters").classList.toggle("show")
     document.getElementById("edit_stats").querySelector(".filter-container").classList.toggle("focused")
+    if (document.getElementById("edit_stats").querySelector(".filter-container").classList.contains("focused")) {
+        document.querySelector("#filterIcon").className = "bi bi-filter-circle-fill filter-icon"
+    }
+    else {
+        document.querySelector("#filterIcon").className = "bi bi-filter-circle filter-icon"
+    }
 })
 
-document.getElementById("edit_stats").querySelectorAll(".filter-pills").forEach(function (elem) {
+document.getElementById("edit_stats").querySelectorAll(".new-pills-filters").forEach(function (elem) {
     elem.addEventListener("click", function (event) {
         let isActive = elem.classList.contains('active');
 
-        document.getElementById("edit_stats").querySelectorAll('.filter-pills').forEach(function (el) {
+        document.getElementById("edit_stats").querySelectorAll('.new-pills-filters').forEach(function (el) {
             el.classList.remove('active');
         });
 

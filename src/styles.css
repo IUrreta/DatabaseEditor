@@ -1530,13 +1530,70 @@ input.comparing-tag {
 .filter-icon {
   color: var(--dark-text);
   font-size: 20px;
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  transition: color 0.15s, transform 0.15s;
+  transition: color 0.15s;
+}
+
+.new-pills-filters{
+  padding: 3px 10px !important;
+  border-radius: 6px !important;
+  background-color: transparent;
+}
+
+.new-pills-filters:hover{
+  background-color: var(--new-primary-transparent);
+  color: var(--new-primary);
+}
+
+.new-pills-filters:active{
+  transform: scale(0.97);
+}
+
+.new-pills-filters.active{
+  background-color: var(--new-primary-transparent) !important;
+  color: var(--new-primary) !important;
+}
+
+.new-pills-filters.f2-filter:hover{
+  color: var(--f2-back);
+  background-color: color-mix(in srgb, var(--f2-back) 30%, transparent);
+  transform: scale(1.05);
+}
+
+.new-pills-filters.f2-filter:active{
+  transform: scale(0.97);
+}
+
+.new-pills-filters.f2-filter.active{
+  color: var(--f2-back);
+  background-color: color-mix(in srgb, var(--f2-back) 30%, transparent);
+}
+
+.new-pills-filters.f3-filter:hover{
+  color: var(--f3-back);
+  background-color: color-mix(in srgb, var(--f3-back) 30%, transparent);
+  transform: scale(1.05);
+}
+
+.new-pills-filters.f3-filter:active{
+  transform: scale(0.97);
+}
+
+.new-pills-filters.f3-filter.active{
+  color: var(--f3-back);
+  background-color: color-mix(in srgb, var(--f3-back) 30%, transparent);
 }
 
 .filter-icon:hover {
   color: var(--new-primary);
-  transform: scale(1.1);
+  transform: scale(1.05);
+}
+
+.filter-icon:active {
+  color: var(--new-primary);
+  transform: scale(0.97);
 }
 
 .filter-container {
@@ -1545,8 +1602,9 @@ input.comparing-tag {
   box-shadow: 0 0 0 0 var(--box-shadow);
   transition: background-color 0.15s, box-shadow 0.15s;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
+  font-size: 14px;
   padding: 2px 12px;
 }
 
@@ -1554,26 +1612,10 @@ input.comparing-tag {
   pointer-events: none;
 }
 
-.filter-pills::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0% !important;
-  height: 0% !important;
-  background: transparent !important;
-  opacity: 0;
-  pointer-events: none;
+.filter-container.focused .filter-icon {
+  color: var(--new-primary);
 }
 
-.filter-pills:hover .basic-label {
-  transform: scale(1.1);
-}
-
-.filter-container.focused {
-  background-color: var(--generals);
-  box-shadow: var(--shadow-s)
-}
 
 .category-filters,
 .order-filters {
